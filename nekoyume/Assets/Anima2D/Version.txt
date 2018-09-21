@@ -1,0 +1,98 @@
+VERSION LOG
+v1.1.5 2018-08-11
+- Using same auto-weights from 2d animation package.
+- Auto-weights for linux.
+- Fixed TRex sample assets to work with 2018.3
+- Fixed loading pose into an animation could make your bones to loop.
+- Fixed IK orient child could make loops.
+- Fixed textures in rect mesh mode would not work.
+
+v1.1.4 2017-10-22
+- Compatible with 2017.2
+- No more original textures in the build when using SpriteAtlases.
+- With this update we lose some inspector previews.
+- "sharedMaterials" property in SpriteMesh is gone.
+- Fixed Bone2D color setter.
+- Added SpriteMask materials to interact with unity's SpriteMask.
+- Fixed BakeAnimations in 2017.1
+- Examples using new SpriteAtlas assets.
+- Creating SpriteMeshInstance from SpriteRenderer will preserve sorting values.
+- Fixed Sprite geometry override on textures using single sprite mode.
+
+v1.1.3 2017-04-01
+- Unity 5.6 compatible.
+- Fix: Texture's userData will only change when applying changes in SpriteMeshEditorWindow.
+- Fix: Sprite's pivot from a texture with single sprite mode option set was not overriden.
+
+v1.1.2 2017-01-05
+- Unity 5.5 compatible.
+
+v1.1.1 2016-06-24
+- Unity 5.4 beta compatible.
+- Added SpriteMesh Animation component.
+- IKs will update during Animation Mode.
+- IKs will not record bone keyframes by default.
+- New IK properties: Record, Restore Default Pose, Orient Child.
+- Bake Animations.
+- Create Avatar Masks.
+- Onion Skin
+- Added sortingLayerName property to SpriteMeshInstance.
+- Added alpha, zoom and mipmap GUI to SpriteMesh Editor.
+- Combiner now works on characters not placed in 0,0,0.
+- Fixed slice tool rect.
+- Fixed invalid vertices bug.
+- Fixed frequent reimport of textures.
+- Fixed texture import settings max size bug.
+- Fixed bone outline on scaled bones.
+- Rolled back linked parent bone update system.
+
+
+v1.1.0 2016-03-24
+- Override Unity sprite geometry.
+- Automatic mesh slice with optional inner tessellation.
+- Pivot point editor (with optional pixel-snap).
+- Compatible with Unity generated Atlases.
+- Mesh self-overlapping control (bone z-order).
+- Improved Weight tool.
+- Weights can now have unassigned indices if not used.
+- Unity-Chan sample scene.
+- Combined mesh sample scene.
+- Drag and drop of skinned SpriteMeshes will reconstruct its bone hierarchy.
+- SpriteMesh single asset file instead of the prefab-like structure.
+- Project view and inspector SpriteMesh previews.
+- Improved scene bone selection.
+- Rotating the bone by dragging now works on bones with negative scale.
+- Bone highlight will show vanishing child bones.
+- Added bone alpha color slider.
+- SpriteMeshInstance: should use Sprite dedicated materials.
+- SpriteMeshInstance: color tint.
+- SpriteMeshInstance: can swap SpriteMesh through scripting.
+- SpriteMeshInstance: can set new bones through scripting.
+
+v1.0.2 2015-12-20
+- SpriteMesh Editor: Additive vertex selection using control button was not working on windows.
+- Create SpriteMesh: works on selected textures in the Project View.
+- PoseManager: now checks and shows invalid duplicate bone paths.
+- PoseManager: Load pose will set the position of the attached IKs.
+- Visible and Locked Layers now work as expected in bones.
+- SpriteMeshInstanceEditor: added warning messages when bone list is not valid for skinning.
+- Scene GUI: Highlight the current hovered bone.
+- Scene GUI: Improved bone gizmo size taking zoom into account.
+- Compatible with Unity 5.3.x.
+
+- Fix: SpriteMeshInstace "Set skinned renderer" button now sets the "root bone" property.
+- Fix: Several Undo related bugs:
+  Undo breaking bone chain by unparenting transforms was not recovering the child bone reference.
+  Undo bone hierarchy deletion was causing problems in SpriteMesh Editor, IK components and SpriteMeshInstances.
+- Fix: nullref exceptions when undoing bone hierarchy deletion.
+- Fix: Created SpriteMeshes could have a small offset compared to the original Sprite.
+- Fix: You can now scale bones attached to a LimbIK.
+- Fix: IKs do not update on scene pan/orbit/FPS mouse drag anymore.
+  That introduced unwanted keyframes in animation mode.
+
+
+v1.0.1 2015-11-23
+- Fixed bug: "Cannot calculate automatic weights. Specify bones to the SpriteMeshInstance."
+
+v1.0 2015-10
+- Release! All your 2D base are belong to us.

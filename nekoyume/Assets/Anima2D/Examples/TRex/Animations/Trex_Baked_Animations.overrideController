@@ -1,0 +1,14 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!221 &22100000
+AnimatorOverrideController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: Trex_Baked_Animations
+  m_Controller: {fileID: 9100000, guid: a12a518ce3c7249308eddd9db82800f7, type: 2}
+  m_Clips:
+  - m_OriginalClip: {fileID: 7400000, guid: 60a4e0e5be13d462b8721f2aa076bcf6, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: aa6549755d219428ba10f10cba5bd443, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: d611b3a3027c64f4783e473600c95b1f, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 242740043abb84fe793a2597e44204d2, type: 2}

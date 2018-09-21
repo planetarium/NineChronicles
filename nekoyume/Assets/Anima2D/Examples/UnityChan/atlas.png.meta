@@ -1,0 +1,342 @@
+fileFormatVersion: 2
+guid: dd105a39e474c4706aba36b8be4febd9
+timeCreated: 1458997913
+licenseType: Store
+TextureImporter:
+  fileIDToRecycleName:
+    21300000: arm
+    21300002: hair_2
+    21300004: face
+    21300006: eye_1
+    21300008: eye_2
+    21300010: hair_3
+    21300012: hair_1
+    21300014: hair_4
+    21300016: arm_1
+    21300018: arm_2
+    21300020: neck
+    21300022: leg_1
+    21300024: leg_2
+    21300026: hips
+    21300028: dress
+    21300030: sleeve_1
+    21300032: sleeve_2
+    21300034: sleeve_1_back
+    21300036: sleeve_back_2
+    21300038: eye_lash_1
+    21300040: eye_lash_2
+    21300042: eye_ball_1
+    21300044: eye_ball_2
+    21300046: ribbon
+    21300048: ribbon_2
+    21300050: body_1
+    21300052: left_arm_1
+  serializedVersion: 2
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 1
+    linearTexture: 0
+    correctGamma: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: .25
+    normalMapFilter: 0
+  isReadable: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 0
+  cubemapConvolution: 0
+  cubemapConvolutionSteps: 8
+  cubemapConvolutionExponent: 1.5
+  seamlessCubemap: 0
+  textureFormat: -3
+  maxTextureSize: 2048
+  textureSettings:
+    filterMode: -1
+    aniso: 16
+    mipBias: -1
+    wrapMode: 1
+  nPOTScale: 0
+  lightmap: 0
+  rGBM: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: .5, y: .5}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spritePixelsToUnits: 100
+  alphaIsTransparency: 1
+  textureType: 8
+  buildTargetSettings: []
+  spriteSheet:
+    sprites:
+    - name: arm_1
+      rect:
+        serializedVersion: 2
+        x: 991.728699
+        y: 1508.97693
+        width: 217.485779
+        height: 195
+      alignment: 9
+      pivot: {x: .869949341, y: .951433599}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: hair_2
+      rect:
+        serializedVersion: 2
+        x: 723
+        y: 1362
+        width: 220
+        height: 427.239746
+      alignment: 9
+      pivot: {x: .395455092, y: 1.11540627}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: face
+      rect:
+        serializedVersion: 2
+        x: 1068.09839
+        y: 1775.78662
+        width: 225.852539
+        height: 202.871582
+      alignment: 9
+      pivot: {x: .50210464, y: .501368344}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: eye_1
+      rect:
+        serializedVersion: 2
+        x: 1414
+        y: 1896
+        width: 51
+        height: 68
+      alignment: 9
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: eye_2
+      rect:
+        serializedVersion: 2
+        x: 1509
+        y: 1892
+        width: 40
+        height: 65
+      alignment: 9
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: hair_3
+      rect:
+        serializedVersion: 2
+        x: 1608
+        y: 1810.26929
+        width: 62.2628174
+        height: 189.549438
+      alignment: 9
+      pivot: {x: .473798037, y: .502405703}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: hair_1
+      rect:
+        serializedVersion: 2
+        x: 68.7660446
+        y: 1357
+        width: 527.233948
+        height: 659.000122
+      alignment: 9
+      pivot: {x: .732377708, y: .726428986}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: hair_4
+      rect:
+        serializedVersion: 2
+        x: 57.3383369
+        y: 984.644226
+        width: 357.995697
+        height: 288.219299
+      alignment: 9
+      pivot: {x: .500457644, y: .500853956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: arm_2
+      rect:
+        serializedVersion: 2
+        x: 1215.29614
+        y: 1535
+        width: 212.703857
+        height: 194.734009
+      alignment: 9
+      pivot: {x: .25094837, y: .84739989}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: neck
+      rect:
+        serializedVersion: 2
+        x: 1144.84961
+        y: 1660.1239
+        width: 124.072144
+        height: 98.0266113
+      alignment: 9
+      pivot: {x: .625848711, y: .457795084}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: leg_1
+      rect:
+        serializedVersion: 2
+        x: 1089
+        y: 1136
+        width: 139
+        height: 327.021118
+      alignment: 9
+      pivot: {x: .573647082, y: .928179502}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: leg_2
+      rect:
+        serializedVersion: 2
+        x: 1223
+        y: 1164
+        width: 117.044434
+        height: 309.133423
+      alignment: 9
+      pivot: {x: .472584248, y: .887140393}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: hips
+      rect:
+        serializedVersion: 2
+        x: 1405.27576
+        y: 1325.90796
+        width: 227
+        height: 103
+      alignment: 9
+      pivot: {x: .513084114, y: .478115052}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: dress
+      rect:
+        serializedVersion: 2
+        x: 1740
+        y: 1104.42896
+        width: 248.031738
+        height: 333.571045
+      alignment: 9
+      pivot: {x: .512031257, y: .529335678}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: sleeve_1
+      rect:
+        serializedVersion: 2
+        x: 1487.72705
+        y: 1508.36353
+        width: 220.087158
+        height: 214.636475
+      alignment: 9
+      pivot: {x: .826186955, y: .789433777}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: sleeve_2
+      rect:
+        serializedVersion: 2
+        x: 1760
+        y: 1519.35901
+        width: 196.093628
+        height: 188.736328
+      alignment: 9
+      pivot: {x: .543994367, y: .541183531}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: sleeve_1_back
+      rect:
+        serializedVersion: 2
+        x: 1740
+        y: 1742.69849
+        width: 109.820923
+        height: 105.999146
+      alignment: 9
+      pivot: {x: .564555407, y: .521716595}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: sleeve_back_2
+      rect:
+        serializedVersion: 2
+        x: 1889
+        y: 1795
+        width: 81
+        height: 32
+      alignment: 9
+      pivot: {x: .657656074, y: .562496185}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: eye_lash_1
+      rect:
+        serializedVersion: 2
+        x: 1388
+        y: 1823
+        width: 82
+        height: 50
+      alignment: 9
+      pivot: {x: .530487776, y: .459999979}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: eye_lash_2
+      rect:
+        serializedVersion: 2
+        x: 1510
+        y: 1814
+        width: 54
+        height: 51
+      alignment: 9
+      pivot: {x: .490740746, y: .549019635}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: eye_ball_1
+      rect:
+        serializedVersion: 2
+        x: 1400
+        y: 1747
+        width: 79
+        height: 73
+      alignment: 9
+      pivot: {x: .481012672, y: .493150681}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: eye_ball_2
+      rect:
+        serializedVersion: 2
+        x: 1500.21948
+        y: 1743
+        width: 56.6585693
+        height: 64
+      alignment: 9
+      pivot: {x: .605036795, y: .4921875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: ribbon
+      rect:
+        serializedVersion: 2
+        x: 696.231262
+        y: 913.041687
+        width: 178
+        height: 122.917419
+      alignment: 9
+      pivot: {x: .484353393, y: .694250226}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: ribbon_2
+      rect:
+        serializedVersion: 2
+        x: 470
+        y: 1040
+        width: 290.280396
+        height: 181
+      alignment: 9
+      pivot: {x: .906146049, y: .165604904}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: body_1
+      rect:
+        serializedVersion: 2
+        x: 1160.39197
+        y: 587.964539
+        width: 365.432251
+        height: 321.934509
+      alignment: 9
+      pivot: {x: .740965545, y: .399081826}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: left_arm_1
+      rect:
+        serializedVersion: 2
+        x: 1573
+        y: 716
+        width: 199
+        height: 190
+      alignment: 9
+      pivot: {x: .738693476, y: .615789473}
+      border: {x: 0, y: 0, z: 0, w: 0}
+  spritePackingTag: uchan
+  userData: 97018622066673
+  assetBundleName: 
+  assetBundleVariant: 
