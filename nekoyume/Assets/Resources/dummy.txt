@@ -1,11 +1,11 @@
 {
     "status": [
         {
-            "type_": "zone",
+            "type": "zone",
             "id_": "zone_0"
         },
         {
-            "type_": "spawn",
+            "type": "spawn",
             "id_": 1,
             "class_": "swordman",
             "character_type": 1,
@@ -18,7 +18,7 @@
             "weapon": ""
         },
         {
-            "type_": "spawn",
+            "type": "spawn",
             "id_": 2,
             "class_": "mage",
             "character_type": 1,
@@ -31,7 +31,7 @@
             "weapon": ""
         },
         {
-            "type_": "spawn",
+            "type": "spawn",
             "id_": 3,
             "class_": "acolyte",
             "character_type": 1,
@@ -44,7 +44,7 @@
             "weapon": ""
         },
         {
-            "type_": "spawn",
+            "type": "spawn",
             "id_": 4,
             "class_": "slime",
             "character_type": 2,
@@ -57,7 +57,7 @@
             "weapon": ""
         },
         {
-            "type_": "spawn",
+            "type": "spawn",
             "id_": 5,
             "class_": "slime",
             "character_type": 2,
@@ -70,7 +70,7 @@
             "weapon": ""
         },
         {
-            "type_": "spawn",
+            "type": "spawn",
             "id_": 6,
             "class_": "griffin",
             "character_type": 2,
@@ -83,401 +83,366 @@
             "weapon": ""
         },
         {
-            "type_": "attack",
+            "type": "attack",
             "id_": 1,
             "target_id": 6,
-            "target_hp": 281,
-            "target_remain": 1
+            "target_hp": 281
         },
         {
-            "type_": "attack",
+            "type": "attack",
             "id_": 2,
             "target_id": 5,
-            "target_hp": 29,
-            "target_remain": 1
+            "target_hp": 29
         },
         {
-            "type_": "casting",
+            "type": "casting",
             "id_": 3,
             "tick_remain": 1
         },
         {
-            "type_": "attack",
+            "type": "attack",
             "id_": 4,
             "target_id": 1,
-            "target_hp": 157,
-            "target_remain": 1
+            "target_hp": 157
         },
         {
-            "type_": "attack",
+            "type": "attack",
             "id_": 5,
             "target_id": 2,
-            "target_hp": 97,
-            "target_remain": 1
+            "target_hp": 97
         },
         {
-            "type_": "attack",
+            "type": "attack",
             "id_": 6,
             "target_id": 1,
             "target_hp": 138,
-            "target_remain": 3
+            "target_remain": 2
         },
         {
-            "type_": "attack",
+            "type": "attack",
             "id_": 6,
             "target_id": 3,
             "target_hp": 81,
-            "target_remain": 2
+            "target_remain": 1
         },
         {
-            "type_": "attack",
+            "type": "attack",
             "id_": 6,
             "target_id": 2,
-            "target_hp": 78,
-            "target_remain": 1
+            "target_hp": 78
         },
         {
-            "type_": "attack",
+            "type": "attack",
             "id_": 1,
             "target_id": 4,
-            "target_hp": 21,
-            "target_remain": 1
+            "target_hp": 21
         },
         {
-            "type_": "casting",
+            "type": "casting",
             "id_": 2,
             "tick_remain": 2
         },
         {
-            "type_": "casting",
+            "type": "casting",
             "id_": 3,
             "tick_remain": 0
         },
         {
-            "type_": "attack",
+            "type": "attack",
             "id_": 4,
             "target_id": 3,
-            "target_hp": 78,
-            "target_remain": 1
+            "target_hp": 78
         },
         {
-            "type_": "attack",
+            "type": "attack",
             "id_": 5,
             "target_id": 2,
-            "target_hp": 75,
-            "target_remain": 1
+            "target_hp": 75
         },
         {
-            "type_": "attack",
+            "type": "attack",
             "id_": 6,
             "target_id": 1,
-            "target_hp": 119,
-            "target_remain": 3
+            "target_hp": 119
         },
         {
-            "type_": "attack",
+            "type": "attack",
             "id_": 6,
             "target_id": 2,
             "target_hp": 56,
-            "target_remain": 2
+            "target_remain": 1
         },
         {
-            "type_": "attack",
+            "type": "attack",
             "id_": 6,
             "target_id": 3,
-            "target_hp": 59,
-            "target_remain": 1
+            "target_hp": 59
         },
         {
-            "type_": "attack",
+            "type": "attack",
             "id_": 1,
             "target_id": 6,
-            "target_hp": 262,
-            "target_remain": 1
+            "target_hp": 262
         },
         {
-            "type_": "casting",
+            "type": "casting",
             "id_": 2,
             "tick_remain": 1
         },
         {
-            "type_": "heal",
+            "type": "heal",
             "id_": 3,
             "target_id": 3,
-            "target_hp": 75,
-            "target_remain": 1
+            "target_hp": 75
         },
         {
-            "type_": "attack",
+            "type": "attack",
             "id_": 4,
             "target_id": 2,
-            "target_hp": 53,
-            "target_remain": 1
+            "target_hp": 53
         },
         {
-            "type_": "attack",
+            "type": "attack",
             "id_": 5,
             "target_id": 3,
             "target_hp": 72,
-            "target_remain": 1
+            "target_remain": 0
         },
         {
-            "type_": "attack",
+            "type": "attack",
             "id_": 6,
             "target_id": 1,
-            "target_hp": 100,
-            "target_remain": 3
+            "target_hp": 100
         },
         {
-            "type_": "attack",
+            "type": "attack",
             "id_": 6,
             "target_id": 3,
             "target_hp": 53,
-            "target_remain": 2
+            "target_remain": 1
         },
         {
-            "type_": "attack",
+            "type": "attack",
             "id_": 6,
             "target_id": 2,
-            "target_hp": 34,
-            "target_remain": 1
+            "target_hp": 34
         },
         {
-            "type_": "attack",
+            "type": "attack",
             "id_": 1,
             "target_id": 5,
-            "target_hp": 10,
-            "target_remain": 1
+            "target_hp": 10
         },
         {
-            "type_": "casting",
+            "type": "casting",
             "id_": 2,
             "tick_remain": 0
         },
         {
-            "type_": "heal",
+            "type": "heal",
             "id_": 3,
             "target_id": 2,
-            "target_hp": 50,
-            "target_remain": 1
+            "target_hp": 50
         },
         {
-            "type_": "attack",
+            "type": "attack",
             "id_": 4,
             "target_id": 3,
-            "target_hp": 50,
-            "target_remain": 1
+            "target_hp": 50
         },
         {
-            "type_": "attack",
+            "type": "attack",
             "id_": 5,
             "target_id": 1,
-            "target_hp": 97,
-            "target_remain": 1
+            "target_hp": 97
         },
         {
-            "type_": "attack",
+            "type": "attack",
             "id_": 6,
             "target_id": 2,
             "target_hp": 31,
-            "target_remain": 3
+            "target_remain": 2
         },
         {
-            "type_": "attack",
+            "type": "attack",
             "id_": 6,
             "target_id": 1,
             "target_hp": 78,
-            "target_remain": 2
-        },
-        {
-            "type_": "attack",
-            "id_": 6,
-            "target_id": 3,
-            "target_hp": 31,
             "target_remain": 1
         },
         {
-            "type_": "taunt",
+            "type": "attack",
+            "id_": 6,
+            "target_id": 3,
+            "target_hp": 31
+        },
+        {
+            "type": "taunt",
             "id_": 1
         },
         {
-            "type_": "attack",
+            "type": "attack",
             "id_": 2,
             "target_id": 6,
-            "target_hp": 249,
-            "target_remain": 3
+            "target_hp": 249
         },
         {
-            "type_": "attack",
+            "type": "attack",
             "id_": 2,
             "target_id": 4,
             "target_hp": 8,
-            "target_remain": 2
-        },
-        {
-            "type_": "attack",
-            "id_": 2,
-            "target_id": 5,
-            "target_hp": -3,
             "target_remain": 1
         },
         {
-            "type_": "dead",
+            "type": "attack",
+            "id_": 2,
+            "target_id": 5,
+            "target_hp": -3
+        },
+        {
+            "type": "dead",
             "id_": 5
         },
         {
-            "type_": "get_exp",
+            "type": "get_exp",
             "id_": 2,
             "exp": 4
         },
         {
-            "type_": "heal",
+            "type": "heal",
             "id_": 3,
             "target_id": 2,
-            "target_hp": 47,
-            "target_remain": 1
+            "target_hp": 47
         },
         {
-            "type_": "attack",
+            "type": "attack",
             "id_": 4,
             "target_id": 2,
-            "target_hp": 44,
-            "target_remain": 1
+            "target_hp": 44
         },
         {
-            "type_": "attack",
+            "type": "attack",
             "id_": 6,
             "target_id": 3,
             "target_hp": 12,
-            "target_remain": 3
-        },
-        {
-            "type_": "attack",
-            "id_": 6,
-            "target_id": 1,
-            "target_hp": 59,
             "target_remain": 2
         },
         {
-            "type_": "attack",
+            "type": "attack",
+            "id_": 6,
+            "target_id": 1,
+            "target_hp": 59,
+            "target_remain": 1
+        },
+        {
+            "type": "attack",
             "id_": 6,
             "target_id": 2,
-            "target_hp": 25,
-            "target_remain": 1
+            "target_hp": 25
         },
         {
-            "type_": "attack",
+            "type": "attack",
             "id_": 1,
             "target_id": 4,
-            "target_hp": -11,
-            "target_remain": 1
+            "target_hp": -11
         },
         {
-            "type_": "dead",
+            "type": "dead",
             "id_": 4
         },
         {
-            "type_": "get_exp",
+            "type": "get_exp",
             "id_": 1,
             "exp": 4
         },
         {
-            "type_": "casting",
+            "type": "casting",
             "id_": 2,
             "tick_remain": 2
         },
         {
-            "type_": "attack",
+            "type": "attack",
             "id_": 3,
             "target_id": 6,
-            "target_hp": 238,
-            "target_remain": 1
+            "target_hp": 238
         },
         {
-            "type_": "attack",
+            "type": "attack",
             "id_": 6,
             "target_id": 3,
             "target_hp": -7,
-            "target_remain": 3
-        },
-        {
-            "type_": "dead",
-            "id_": 3
-        },
-        {
-            "type_": "attack",
-            "id_": 6,
-            "target_id": 1,
-            "target_hp": 40,
             "target_remain": 2
         },
         {
-            "type_": "attack",
+            "type": "dead",
+            "id_": 3
+        },
+        {
+            "type": "attack",
+            "id_": 6,
+            "target_id": 1,
+            "target_hp": 40,
+            "target_remain": 1
+        },
+        {
+            "type": "attack",
             "id_": 6,
             "target_id": 2,
-            "target_hp": 6,
-            "target_remain": 1
+            "target_hp": 6
         },
         {
-            "type_": "attack",
+            "type": "attack",
             "id_": 1,
             "target_id": 6,
-            "target_hp": 219,
-            "target_remain": 1
+            "target_hp": 219
         },
         {
-            "type_": "casting",
+            "type": "casting",
             "id_": 2,
             "tick_remain": 1
         },
         {
-            "type_": "attack",
+            "type": "attack",
             "id_": 6,
             "target_id": 1,
-            "target_hp": 21,
-            "target_remain": 2
+            "target_hp": 21
         },
         {
-            "type_": "attack",
+            "type": "attack",
             "id_": 6,
             "target_id": 2,
-            "target_hp": -13,
-            "target_remain": 1
+            "target_hp": -13
         },
         {
-            "type_": "dead",
+            "type": "dead",
             "id_": 2
         },
         {
-            "type_": "attack",
+            "type": "attack",
             "id_": 1,
             "target_id": 6,
-            "target_hp": 200,
-            "target_remain": 1
+            "target_hp": 200
         },
         {
-            "type_": "attack",
+            "type": "attack",
             "id_": 6,
             "target_id": 1,
-            "target_hp": 2,
-            "target_remain": 1
+            "target_hp": 2
         },
         {
-            "type_": "attack",
+            "type": "attack",
             "id_": 1,
             "target_id": 6,
-            "target_hp": 181,
-            "target_remain": 1
+            "target_hp": 181
         },
         {
-            "type_": "attack",
+            "type": "attack",
             "id_": 6,
             "target_id": 1,
-            "target_hp": -17,
-            "target_remain": 1
+            "target_hp": -17
         },
         {
-            "type_": "dead",
+            "type": "dead",
             "id_": 1
         }
     ]
