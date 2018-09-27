@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -58,6 +59,17 @@ public class Battle : MonoBehaviour
     public GameObject background;
     public Transform[] groups;
     public TextAsset dummyJson;
+
+    [DllImport("__Internal")]
+    private static extern void OnLoadUnity();
+
+    private void Start()
+    {
+        #if UNITY_EDITOR
+        #else
+        OnLoadUnity();
+        #endif
+    }
 
     private IEnumerator Simulation(string json)
     {
