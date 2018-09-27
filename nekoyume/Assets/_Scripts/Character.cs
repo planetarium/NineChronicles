@@ -8,15 +8,30 @@ using DG.Tweening;
 
 public class Character : MonoBehaviour
 {
-    public HpBar hpBar = null;
-    public HpBar castingBar = null;
+    public ProgressBar hpBar = null;
+    public ProgressBar castingBar = null;
     public int hp = 0;
     public int hpMax = 0;
     public float movePower = 1.0f;
 
+    public void Start()
+    {
+        GameObject res = Resources.Load<GameObject>("Prefab/ProgressBar");
+        GameObject canvas = GameObject.FindGameObjectWithTag("Canvas");
+
+        GameObject hpObj = Instantiate(res, canvas.transform);
+        hpObj.SetActive(false);
+        hpBar = hpObj.GetComponent<ProgressBar>();
+
+        GameObject castingObj = Instantiate(res, canvas.transform);
+        castingObj.SetActive(false);
+        castingBar = castingObj.GetComponent<ProgressBar>();
+        castingBar.bar.color = Color.blue;
+    }
+
     private void UpdateHp()
     {
-        var slider = hpBar.gameObject.GetComponent<Slider>();
+        Slider slider = hpBar.gameObject.GetComponent<Slider>();
         slider.value = (float)hp / (float)hpMax;
         hpBar.label.text = string.Format("{0}/{1}", hp, hpMax);
     }
