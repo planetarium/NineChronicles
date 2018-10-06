@@ -29,6 +29,12 @@ public class Character : MonoBehaviour
         castingBar.bar.color = Color.blue;
     }
 
+    public void Clear()
+    {
+        hpBar.gameObject.SetActive(false);
+        castingBar.gameObject.SetActive(false);
+    }
+
     private void UpdateHp()
     {
         Slider slider = hpBar.gameObject.GetComponent<Slider>();

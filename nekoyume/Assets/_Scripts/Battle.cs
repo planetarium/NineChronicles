@@ -58,10 +58,14 @@ public class Battle : MonoBehaviour
     public Dictionary<string, GameObject> characters = new Dictionary<string, GameObject>();
     public GameObject background;
     public Transform[] groups;
+    public GameObject homeCharacter;
     public TextAsset dummyJson;
 
     [DllImport("__Internal")]
     private static extern void OnLoadUnity();
+
+    [DllImport("__Internal")]
+    private static extern void OnMessage(string msg);
 
     private void Start()
     {
@@ -115,8 +119,11 @@ public class Battle : MonoBehaviour
         DOTween.Clear(true);
         StopAllCoroutines();
 
-        var bgrenderer = background.GetComponent<SpriteRenderer>();
-        bgrenderer.sprite = null;
+        var bgRenderer = background.GetComponent<SpriteRenderer>();
+        bgRenderer.sprite = null;
+
+        var homeCharacterRenderer = homeCharacter.GetComponent<SpriteRenderer>();
+        homeCharacterRenderer.sprite = null;
 
         foreach (Transform group in groups)
         {
@@ -126,6 +133,7 @@ public class Battle : MonoBehaviour
                 child.gameObject.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
 
                 var character = child.gameObject.GetComponent<Character>();
+                character.Clear();
                 character.hp = 0;
 
                 var characterRenderer = child.gameObject.GetComponent<SpriteRenderer>();
@@ -135,5 +143,16 @@ public class Battle : MonoBehaviour
                 sinScale.enabled = true;
             }
         }
+    }
+
+    public void Home(string avatar)
+    {
+        Clear();
+
+        var bgRenderer = background.GetComponent<SpriteRenderer>();
+        bgRenderer.sprite = Resources.Load<Sprite>("images/bg_room");
+
+        var homeCharacterRenderer = homeCharacter.GetComponent<SpriteRenderer>();
+        homeCharacterRenderer.sprite = Resources.Load<Sprite>(string.Format("images/{0}", avatar));
     }
 }
