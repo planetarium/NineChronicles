@@ -36,7 +36,7 @@ public class BattleStatus
     // exp
     public int exp = 0;
 
-    public Type GetType()
+    public Type GetStatusType()
     {
         string typestr = type.Split(new [] {"_"}, StringSplitOptions.RemoveEmptyEntries)
         .Select(s =>char.ToUpperInvariant(s[0]) + s.Substring(1, s.Length - 1))
@@ -80,7 +80,7 @@ public class Battle : MonoBehaviour
         var battleJson = JsonUtility.FromJson<BattleJson>(json);
         foreach (var battleStatus in battleJson.status)
         {
-            var statusType = battleStatus.GetType();
+            var statusType = battleStatus.GetStatusType();
             if (statusType != null)
             {
                 var status = (Status)System.Activator.CreateInstance(statusType);
@@ -119,11 +119,12 @@ public class Battle : MonoBehaviour
         DOTween.Clear(true);
         StopAllCoroutines();
 
-        var bgRenderer = background.GetComponent<SpriteRenderer>();
-        bgRenderer.sprite = null;
+        SetBackground("");
 
-        var homeCharacterRenderer = homeCharacter.GetComponent<SpriteRenderer>();
-        homeCharacterRenderer.sprite = null;
+        var bgScroller = background.GetComponent<BGScroller>();
+        bgScroller.scrollSpeed = 0.0f;
+
+        homeCharacter.SetActive(false);
 
         foreach (Transform group in groups)
         {
@@ -152,7 +153,37 @@ public class Battle : MonoBehaviour
         var bgRenderer = background.GetComponent<SpriteRenderer>();
         bgRenderer.sprite = Resources.Load<Sprite>("images/bg_room");
 
-        var homeCharacterRenderer = homeCharacter.GetComponent<SpriteRenderer>();
-        homeCharacterRenderer.sprite = Resources.Load<Sprite>(string.Format("images/{0}", avatar));
+        homeCharacter.SetActive(true);
+        var anim = homeCharacter.GetComponent<Animator>();
+        anim.Play("idle");
+    }
+
+    public void Walking(string avatar)
+    {
+        Clear();
+
+        SetBackground("zone_0", 2.0f);
+
+        homeCharacter.SetActive(true);
+        var anim = homeCharacter.GetComponent<Animator>();
+        anim.Play("walk");
+    }
+
+    public void Sleep(string avatar)
+    {
+        Clear();
+
+        SetBackground("bg_room");
+    }
+
+    public void SetBackground(string name, float scrollSpeed = 0.0f)
+    {
+        background.transform.position = Vector3.zero;
+        var bgRenderers = background.GetComponentsInChildren<SpriteRenderer>();
+        foreach (var bgRenderer in bgRenderers)
+            bgRenderer.sprite = Resources.Load<Sprite>(string.Format("images/{0}", name));
+
+        var bgScroller = background.GetComponent<BGScroller>();
+        bgScroller.scrollSpeed = scrollSpeed;
     }
 }
