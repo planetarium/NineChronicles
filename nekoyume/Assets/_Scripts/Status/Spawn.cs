@@ -16,7 +16,7 @@ public class Spawn : Status
                 battle.characters[status.id_] = child.gameObject;
 
                 var renderer = child.gameObject.GetComponent<SpriteRenderer>();
-                var sprite = Resources.Load<Sprite>(string.Format("images/{0}", status.class_));
+                var sprite = Resources.Load<Sprite>(string.Format("images/character_{0}", status.class_));
                 if (sprite == null)
                     sprite = Resources.Load<Sprite>("images/pet");
                 renderer.sprite = sprite;

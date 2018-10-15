@@ -17,9 +17,8 @@ public class Casting : Status
             myCharacter.castingBar.UpdatePosition(myObj, new Vector3(0.0f, -0.2f, 0.0f));
         }
         
-        var slider = myCharacter.castingBar.gameObject.GetComponent<Slider>();
-        slider.value = (float)status.tick_remain / (float)10;
-
+        //myCharacter.castingBar.SetValue((float)hp / (float)hpMax);
+        
         yield return null;
     }
 }

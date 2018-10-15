@@ -16,6 +16,9 @@ public class Attack : Status
         Character targetCharacter = targetObj.GetComponent<Character>();
         targetCharacter.hp = status.target_hp;
         targetCharacter.Hit();
+        #if !UNITY_EDITOR
+        Battle.OnSkill(status.name);
+        #endif
 
         if (status.target_remain > 0)
             yield break;

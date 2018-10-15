@@ -15,10 +15,12 @@ public class BattleStatus
     // common
     public string type = "";
     public string id_ = "";
+    public int time = 0;
+
+    public string name = "";
 
     // spawn
     public string class_ = "";
-    public string name = "";
     public int character_type = 0;
     public int level = 0;
     public int hp = 0;
@@ -62,15 +64,17 @@ public class Battle : MonoBehaviour
     public TextAsset dummyJson;
 
     [DllImport("__Internal")]
-    private static extern void OnLoadUnity();
+    public static extern void OnLoadUnity();
 
     [DllImport("__Internal")]
-    private static extern void OnMessage(string msg);
+    public static extern void OnMessage(string msg);
+
+    [DllImport("__Internal")]
+    public static extern void OnSkill(string name);
 
     private void Start()
     {
-        #if UNITY_EDITOR
-        #else
+        #if !UNITY_EDITOR
         OnLoadUnity();
         #endif
     }
@@ -90,6 +94,11 @@ public class Battle : MonoBehaviour
                 }
             }
         }
+
+        yield return new WaitForSeconds(1.0f);
+        #if !UNITY_EDITOR
+        OnMessage("end_battle");
+        #endif
     }
 
     public void Play(string json)

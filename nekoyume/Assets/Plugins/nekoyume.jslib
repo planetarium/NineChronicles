@@ -5,6 +5,10 @@ mergeInto(LibraryManager.library, {
   },
 
   OnMessage: function (msg) {
-    window.onMessage(msg)
+    window.onMessage(Pointer_stringify(msg))
+  },
+
+  OnSkill: function (name) {
+    window.onSkill(Pointer_stringify(name))
   }
 });

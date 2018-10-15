@@ -37,23 +37,21 @@ public class Character : MonoBehaviour
 
     private void UpdateHp()
     {
-        Slider slider = hpBar.gameObject.GetComponent<Slider>();
-        slider.value = (float)hp / (float)hpMax;
-        hpBar.label.text = string.Format("{0}/{1}", hp, hpMax);
+        hpBar.SetValue((float)hp / (float)hpMax);
+        hpBar.SetText(string.Format("{0}/{1}", hp, hpMax));
     }
 
     public void Spawn()
     {
         hpBar.gameObject.SetActive(true);
         hpBar.UpdatePosition(gameObject);
-        hpMax = hp;
 
         UpdateHp();
     }
 
     public bool IsDead()
     {
-        return hp == 0;
+        return hp <= 0;
     }
 
     public void Attack()
