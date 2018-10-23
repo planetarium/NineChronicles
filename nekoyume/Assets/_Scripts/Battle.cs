@@ -159,12 +159,15 @@ public class Battle : MonoBehaviour
     {
         Clear();
 
-        var bgRenderer = background.GetComponent<SpriteRenderer>();
-        bgRenderer.sprite = Resources.Load<Sprite>("images/bg_room");
+        SetBackground("bg_room");
 
         homeCharacter.SetActive(true);
-        var anim = homeCharacter.GetComponent<Animator>();
-        anim.Play("idle");
+        // var anim = homeCharacter.GetComponent<Animator>();
+        // anim.Play("idle");
+
+        var playerRenderer = homeCharacter.GetComponent<SpriteRenderer>();
+        if (playerRenderer != null)
+            playerRenderer.sprite = Resources.Load<Sprite>(string.Format("images/character_{0}", avatar));
     }
 
     public void Walking(string avatar)
@@ -174,8 +177,12 @@ public class Battle : MonoBehaviour
         SetBackground("zone_0", 2.0f);
 
         homeCharacter.SetActive(true);
-        var anim = homeCharacter.GetComponent<Animator>();
-        anim.Play("walk");
+        // var anim = homeCharacter.GetComponent<Animator>();
+        // anim.Play("walk");
+
+        var playerRenderer = homeCharacter.GetComponent<SpriteRenderer>();
+        if (playerRenderer != null)
+            playerRenderer.sprite = Resources.Load<Sprite>(string.Format("images/character_{0}", avatar));
     }
 
     public void Sleep(string avatar)
@@ -190,7 +197,13 @@ public class Battle : MonoBehaviour
         background.transform.position = Vector3.zero;
         var bgRenderers = background.GetComponentsInChildren<SpriteRenderer>();
         foreach (var bgRenderer in bgRenderers)
-            bgRenderer.sprite = Resources.Load<Sprite>(string.Format("images/{0}", name));
+        {
+            var sprite = Resources.Load<Sprite>(string.Format("images/{0}_{1}", name, bgRenderer.gameObject.name));
+            if (sprite != null)
+                bgRenderer.sprite = sprite;
+            else
+                bgRenderer.sprite = null;
+        }
 
         var bgScroller = background.GetComponent<BGScroller>();
         bgScroller.scrollSpeed = scrollSpeed;

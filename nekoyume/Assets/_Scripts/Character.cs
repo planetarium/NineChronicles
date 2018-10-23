@@ -67,8 +67,6 @@ public class Character : MonoBehaviour
 
     public void Hit()
     {
-        Effect.Show("hit_01", transform.position);
-
         const float duration = 0.1f;
 
         Vector3 fromPosition = transform.position;
@@ -83,13 +81,14 @@ public class Character : MonoBehaviour
         colorseq.Append(mat.DOColor(Color.red, duration));
         colorseq.Append(mat.DOColor(Color.white, duration));
 
+        var effectPos = transform.position + new Vector3(0.0f, renderer.sprite.rect.size.y / renderer.sprite.pixelsPerUnit * 0.2f);
+        Effect.Show("hit_01", effectPos);
+
         UpdateHp();
     }
 
     public void Heal()
     {
-        Effect.Show("impact_01", transform.position);
-
         const float duration = 0.1f;
 
         SpriteRenderer renderer = gameObject.GetComponent<SpriteRenderer>();
@@ -97,6 +96,9 @@ public class Character : MonoBehaviour
         Sequence colorseq = DOTween.Sequence();
         colorseq.Append(mat.DOColor(Color.yellow, duration));
         colorseq.Append(mat.DOColor(Color.white, duration));
+
+        var effectPos = transform.position + new Vector3(0.0f, renderer.sprite.rect.size.y / renderer.sprite.pixelsPerUnit * 0.2f);
+        Effect.Show("impact_01", effectPos);
 
         UpdateHp();
     }

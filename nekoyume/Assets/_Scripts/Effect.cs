@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class Effect : MonoBehaviour
 {
-    static private int DEFAULT_LAYER = 10;
+    static private int DEFAULT_LAYER = 15;
     static public EffectPool Pool = null;
 
     private SpriteRenderer renderer;

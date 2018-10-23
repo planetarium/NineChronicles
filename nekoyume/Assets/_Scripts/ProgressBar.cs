@@ -19,7 +19,7 @@ public class ProgressBar : MonoBehaviour
     {
 		SpriteRenderer renderer = target.GetComponent<SpriteRenderer>();
 		Vector3 targetPosition = target.transform.position
-		+ new Vector3(0.0f, renderer.sprite.rect.size.y / 160)
+		+ new Vector3(0.0f, renderer.sprite.rect.size.y / renderer.sprite.pixelsPerUnit)
 		+ offset;
 
 		// https://answers.unity.com/questions/799616/unity-46-beta-19-how-to-convert-from-world-space-t.html
@@ -52,12 +52,21 @@ public class ProgressBar : MonoBehaviour
 
 	public void SetValue(float value)
 	{
+		Slider slider = gameObject.GetComponent<Slider>();
+		if (slider == null)
+			return;
+
+		if (value <= 0.0f)
+			slider.fillRect.gameObject.SetActive(false);
+		else
+			slider.fillRect.gameObject.SetActive(true);
+
+		if (value > 1.0f)
+			value = 1.0f;
 		if (value < 0.1f)
 			value = 0.1f;
 
-		Slider slider = gameObject.GetComponent<Slider>();
-		if (slider != null)
-        	slider.value = value;
+		slider.value = value;
 
 		if (value < 0.35f)
 		{
