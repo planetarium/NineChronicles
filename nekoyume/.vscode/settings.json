@@ -1,4 +1,10 @@
 {
+    "csharp.format.enable": true,
+    
+    "files.encoding": "utf8",
+    "files.eol": "\n",
+    "files.autoGuessEncoding": true,
+
     "files.exclude":
     {
         "**/.DS_Store":true,
@@ -53,5 +59,4 @@
         "temp/":true,
         "Temp/":true
     },
-    "csharp.format.enable": true
 }
