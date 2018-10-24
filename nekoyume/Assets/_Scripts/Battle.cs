@@ -61,6 +61,7 @@ public class Battle : MonoBehaviour
     public GameObject background;
     public Transform[] groups;
     public GameObject homeCharacter;
+    public GameObject avatar;
     public TextAsset dummyJson;
 
     [DllImport("__Internal")]
@@ -134,6 +135,7 @@ public class Battle : MonoBehaviour
         bgScroller.scrollSpeed = 0.0f;
 
         homeCharacter.SetActive(false);
+        avatar.SetActive(false);
 
         foreach (Transform group in groups)
         {
@@ -148,6 +150,7 @@ public class Battle : MonoBehaviour
 
                 var characterRenderer = child.gameObject.GetComponent<SpriteRenderer>();
                 characterRenderer.sprite = null;
+                characterRenderer.color = new Color(255, 255, 255, 255);
 
                 var sinScale = child.gameObject.GetComponent<SinScale>();
                 sinScale.enabled = true;
@@ -155,34 +158,46 @@ public class Battle : MonoBehaviour
         }
     }
 
-    public void Home(string avatar)
+    public void Home(string playerClass)
     {
         Clear();
 
         SetBackground("bg_room");
 
-        homeCharacter.SetActive(true);
-        // var anim = homeCharacter.GetComponent<Animator>();
-        // anim.Play("idle");
-
-        var playerRenderer = homeCharacter.GetComponent<SpriteRenderer>();
-        if (playerRenderer != null)
-            playerRenderer.sprite = Resources.Load<Sprite>(string.Format("images/character_{0}", avatar));
+        if (playerClass == "swordman")
+        {
+            avatar.SetActive(true);
+            var anim = avatar.GetComponent<Animator>();
+            anim.Play("idle");
+        }
+        else
+        {
+            homeCharacter.SetActive(true);
+            var playerRenderer = homeCharacter.GetComponent<SpriteRenderer>();
+            if (playerRenderer != null)
+                playerRenderer.sprite = Resources.Load<Sprite>(string.Format("images/character_{0}", playerClass));
+        }
     }
 
-    public void Walking(string avatar)
+    public void Walking(string playerClass)
     {
         Clear();
 
         SetBackground("zone_0", 2.0f);
 
-        homeCharacter.SetActive(true);
-        // var anim = homeCharacter.GetComponent<Animator>();
-        // anim.Play("walk");
-
-        var playerRenderer = homeCharacter.GetComponent<SpriteRenderer>();
-        if (playerRenderer != null)
-            playerRenderer.sprite = Resources.Load<Sprite>(string.Format("images/character_{0}", avatar));
+        if (playerClass == "swordman")
+        {
+            avatar.SetActive(true);
+            var anim = avatar.GetComponent<Animator>();
+            anim.Play("walk");
+        }
+        else
+        {
+            homeCharacter.SetActive(true);
+            var playerRenderer = homeCharacter.GetComponent<SpriteRenderer>();
+            if (playerRenderer != null)
+                playerRenderer.sprite = Resources.Load<Sprite>(string.Format("images/character_{0}", playerClass));
+        }
     }
 
     public void Sleep(string avatar)

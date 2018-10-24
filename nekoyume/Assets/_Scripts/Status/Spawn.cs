@@ -1,6 +1,8 @@
 using System.Collections;
 using UnityEngine;
 
+using DG.Tweening;
+
 
 public class Spawn : Status
 {
@@ -20,6 +22,9 @@ public class Spawn : Status
                 if (sprite == null)
                     sprite = Resources.Load<Sprite>("images/pet");
                 renderer.sprite = sprite;
+                Material mat = renderer.material;
+                Sequence colorseq = DOTween.Sequence();
+                colorseq.Append(mat.DOColor(Color.white, 0.0f));
 
                 character.hp = status.hp;
                 character.hpMax = status.hp_max;
