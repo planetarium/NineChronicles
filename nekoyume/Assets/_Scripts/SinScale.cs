@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 
 public class SinScale : MonoBehaviour
@@ -14,7 +14,7 @@ public class SinScale : MonoBehaviour
     }
 
     private void Update()
-	{
+    {
         updateTime += Time.deltaTime * speed;
         Vector3 scale = transform.localScale;
         scale.y = 1.0f + (Mathf.Sin(updateTime) * power);
