@@ -1,9 +1,10 @@
 {
     "csharp.format.enable": true,
-    
+
     "files.encoding": "utf8",
     "files.eol": "\n",
     "files.autoGuessEncoding": true,
+    "files.insertFinalNewline": true,
 
     "files.exclude":
     {
