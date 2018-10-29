@@ -49,20 +49,22 @@ namespace Nekoyume.Network
                         continue;
                     }
 
-                    WWWForm form = new WWWForm();
-                    form.AddField("private_key", privateKey);
+                    List<IMultipartFormSection> formData = new List<IMultipartFormSection>();
+                    formData.Add(new MultipartFormDataSection("private_key", privateKey));
                     var members = req.GetType().GetMembers();
                     foreach (var member in members)
                     {
                         if (member.MemberType == System.Reflection.MemberTypes.Field)
                         {
                             System.Reflection.FieldInfo field = (System.Reflection.FieldInfo)member;
-                            form.AddField(member.Name, (string)field.GetValue(req));
+                            Debug.Log(member.Name);
+                            Debug.Log(field.GetValue(req));
+                            formData.Add(new MultipartFormDataSection(member.Name, (string)field.GetValue(req)));
                         }
                     }
-                    WWW w = new WWW(server + req.Route, form);
-                    yield return w;
-                    req.ProcessResponse(w.text);
+                    UnityWebRequest w = UnityWebRequest.Post(server + req.Route, formData);
+                    yield return w.SendWebRequest();
+                    req.ProcessResponse(w.downloadHandler.text);
                 }
             }
         }
