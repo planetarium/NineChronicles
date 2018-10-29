@@ -5,7 +5,6 @@ namespace Nekoyume.Network.Request
     [Route("in_progress")]
     public class InProgress : Base
     {
-        public string name = "";
         public int Count { get; set; }
         public Base Next
         {
