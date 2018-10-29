@@ -2,34 +2,26 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Game
+namespace Nekoyume.Game
 {
     public class Background : MonoBehaviour
     {
+        public Transform[] backgrounds;
+        private Transform cameraTransform;
+
         private void Start ()
         {
-            
+            cameraTransform = Camera.main.transform;
         }
 
-        public void Clear()
+        public void Update()
         {
-            // while (transform.childrenCount)
-            // {
-            //     transform.removeChild(0);
-            // }
-        }
-
-        public void Load(string filename, float width = 1136)
-        {
-            Clear();
-
-            Sprite sprite = Resources.Load<Sprite>(
-                string.Format("images/background_{0}", filename));
-            if (sprite != null)
+            for (int i = 0; i < backgrounds.Length; i++)
             {
-                //int num = Mathf.Floor(width / sprite.width);
-                //GameObject bg = new GameObject("bg", transform);
-                //bg.transform.position = new Vector3();
+                // TODO
+                var backgroundPos = backgrounds[i].position;
+                backgroundPos.x = cameraTransform.position.x;
+                backgrounds[i].position = backgroundPos;
             }
         }
     }
