@@ -49,22 +49,31 @@ namespace Nekoyume.Network
                         continue;
                     }
 
-                    List<IMultipartFormSection> formData = new List<IMultipartFormSection>();
-                    formData.Add(new MultipartFormDataSection("private_key", privateKey));
-                    var members = req.GetType().GetMembers();
-                    foreach (var member in members)
+                    if (req.Method == "post")
                     {
-                        if (member.MemberType == System.Reflection.MemberTypes.Field)
+                        List<IMultipartFormSection> formData = new List<IMultipartFormSection>();
+                        formData.Add(new MultipartFormDataSection("private_key", privateKey));
+                        var members = req.GetType().GetMembers();
+                        foreach (var member in members)
                         {
-                            System.Reflection.FieldInfo field = (System.Reflection.FieldInfo)member;
-                            Debug.Log(member.Name);
-                            Debug.Log(field.GetValue(req));
-                            formData.Add(new MultipartFormDataSection(member.Name, (string)field.GetValue(req)));
+                            if (member.MemberType == System.Reflection.MemberTypes.Field)
+                            {
+                                System.Reflection.FieldInfo field = (System.Reflection.FieldInfo)member;
+                                Debug.Log(member.Name);
+                                Debug.Log(field.GetValue(req));
+                                formData.Add(new MultipartFormDataSection(member.Name, (string)field.GetValue(req)));
+                            }
                         }
+                        UnityWebRequest w = UnityWebRequest.Post(server + req.Route, formData);
+                        yield return w.SendWebRequest();
+                        req.ProcessResponse(w.downloadHandler.text);
                     }
-                    UnityWebRequest w = UnityWebRequest.Post(server + req.Route, formData);
-                    yield return w.SendWebRequest();
-                    req.ProcessResponse(w.downloadHandler.text);
+                    else
+                    {
+                        UnityWebRequest w = UnityWebRequest.Get(server + req.Route);
+                        yield return w.SendWebRequest();
+                        req.ProcessResponse(w.downloadHandler.text);
+                    }
                 }
             }
         }
@@ -104,6 +113,10 @@ namespace Nekoyume.Network
             Push(new Request.SessionMoves() {
                 name = "hack_and_slash"
             });
+        }
+
+        public void CheckSum() {
+            Push(new Request.Checksum());
         }
     }
 }

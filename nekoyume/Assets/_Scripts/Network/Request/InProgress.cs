@@ -3,6 +3,7 @@ using UnityEngine;
 namespace Nekoyume.Network.Request
 {
     [Route("in_progress")]
+    [Method("post")]
     public class InProgress : Base
     {
         public int Count { get; set; }

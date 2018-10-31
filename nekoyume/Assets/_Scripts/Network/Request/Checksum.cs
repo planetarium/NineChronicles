@@ -2,17 +2,17 @@ using UnityEngine;
 
 namespace Nekoyume.Network.Request
 {
-    [Route("login")]
-    [Method("post")]
-    public class Login : Base
+    [Route("checksum")]
+    [Method("get")]
+    public class Checksum : Base
     {
-        public Login()
+        public Checksum()
         {
         }
 
         override public void ProcessResponse(string data)
         {
-            Debug.Log("Login: " + data);
+            Debug.Log("Checksum: " + data);
         }
     }
 }

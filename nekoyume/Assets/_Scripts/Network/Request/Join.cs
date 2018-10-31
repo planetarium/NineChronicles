@@ -3,6 +3,7 @@ using UnityEngine;
 namespace Nekoyume.Network.Request
 {
     [Route("join")]
+    [Method("post")]
     public class Join : Base
     {
         public string name = "";

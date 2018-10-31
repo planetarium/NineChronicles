@@ -3,6 +3,7 @@ using UnityEngine;
 namespace Nekoyume.Network.Request
 {
     [Route("last_status")]
+    [Method("post")]
     public class LastStatus : Base
     {
         public LastStatus()

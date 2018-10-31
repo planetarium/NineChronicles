@@ -11,6 +11,17 @@ namespace Nekoyume.Network.Request
         }
     }
 
+    [System.AttributeUsage(System.AttributeTargets.Class)]
+    public class Method : System.Attribute
+    {
+        public string name;
+
+        public Method(string name)
+        {
+            this.name = name;
+        }
+    }
+
     public class Base
     {
         public Base()
@@ -31,6 +42,23 @@ namespace Nekoyume.Network.Request
                     }
                 }
                 return "";
+            }
+        }
+
+        public string Method
+        {
+            get
+            {
+                System.Attribute[] attrs = System.Attribute.GetCustomAttributes(GetType());
+                foreach (System.Attribute attr in attrs)
+                {
+                    if (attr is Network.Request.Method)
+                    {
+                        Network.Request.Method method = (Network.Request.Method)attr;
+                        return method.name;
+                    }
+                }
+                return "get";
             }
         }
 
