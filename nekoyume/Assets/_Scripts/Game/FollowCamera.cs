@@ -1,5 +1,6 @@
 using UnityEngine;
 
+
 namespace Nekoyume.Game
 {
     public class FollowCamera : MonoBehaviour

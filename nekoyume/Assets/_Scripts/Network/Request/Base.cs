@@ -11,6 +11,7 @@ namespace Nekoyume.Network.Request
         }
     }
 
+
     [System.AttributeUsage(System.AttributeTargets.Class)]
     public class Method : System.Attribute
     {
@@ -22,8 +23,11 @@ namespace Nekoyume.Network.Request
         }
     }
 
+
     public class Base
     {
+        public System.Func<string, bool> ResponseCallback { get; set; }
+
         public Base()
         {
         }

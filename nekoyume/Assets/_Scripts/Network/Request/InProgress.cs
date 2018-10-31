@@ -1,5 +1,6 @@
 using UnityEngine;
 
+
 namespace Nekoyume.Network.Request
 {
     [Route("in_progress")]

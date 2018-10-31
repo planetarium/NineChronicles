@@ -1,5 +1,6 @@
 using UnityEngine;
 
+
 namespace Nekoyume.Network.Request
 {
     [Route("login")]
@@ -13,6 +14,10 @@ namespace Nekoyume.Network.Request
         override public void ProcessResponse(string data)
         {
             Debug.Log("Login: " + data);
+            if (ResponseCallback != null)
+            {
+                ResponseCallback(data);
+            }
         }
     }
 }

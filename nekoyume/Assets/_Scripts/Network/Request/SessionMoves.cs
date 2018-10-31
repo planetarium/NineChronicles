@@ -1,5 +1,6 @@
 using UnityEngine;
 
+
 namespace Nekoyume.Network.Request
 {
     [Route("session_moves")]
@@ -16,7 +17,9 @@ namespace Nekoyume.Network.Request
         {
             Debug.Log("SessionMoves: " + name);
             NetworkManager.Instance.First(new InProgress() {
-                Next = new LastStatus()
+                Next = new LastStatus() {
+                    ResponseCallback = this.ResponseCallback,
+                }
             });
         }
     }

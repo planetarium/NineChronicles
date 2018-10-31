@@ -1,9 +1,11 @@
 using UnityEngine;
 
+
 namespace Nekoyume.Game
 {
     public class Character : MonoBehaviour
     {
-        // TODO
+        public string id;
+        public int group;
     }
 }

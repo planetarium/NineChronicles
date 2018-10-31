@@ -1,10 +1,11 @@
 using UnityEngine;
 
+
 namespace Nekoyume.Network.Request
 {
     [Route("join")]
     [Method("post")]
-    public class Join : Base
+    public class Join : InProgress
     {
         public string name = "";
 
@@ -14,9 +15,10 @@ namespace Nekoyume.Network.Request
 
         override public void ProcessResponse(string data)
         {
-            Debug.Log("Join: " + data);
             NetworkManager.Instance.First(new InProgress() {
-                Next = new Login()
+                Next = new Login() {
+                    ResponseCallback = this.ResponseCallback,
+                }
             });
         }
     }

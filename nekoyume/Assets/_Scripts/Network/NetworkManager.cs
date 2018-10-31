@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
+
 namespace Nekoyume.Network
 {
     public class NetworkManager : MonoBehaviour
@@ -92,27 +93,6 @@ namespace Nekoyume.Network
         {
             var key = Planetarium.Crypto.Keys.PrivateKey.Generate();
             return System.BitConverter.ToString(key.Bytes).Replace("-", "").ToLower();
-        }
-
-        public void Login()
-        {
-            Push(new Request.Login());
-        }
-
-        public void Join(string name)
-        {
-            privateKey = GeneratePrivateKey();
-            PlayerPrefs.SetString("private_key", privateKey);
-            Push(new Request.Join() {
-                name = name
-            });
-        }
-
-        public void HackAndSlash()
-        {
-            Push(new Request.SessionMoves() {
-                name = "hack_and_slash"
-            });
         }
 
         public void CheckSum() {
