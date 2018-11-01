@@ -1,6 +1,5 @@
 using System.Collections;
 using Newtonsoft.Json.Linq;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,6 +10,7 @@ namespace Nekoyume.Game
     {
         public FollowCamera followCam = null;
         public GameObject background = null;
+        public GameObject joinModal;
         public Text txtMessage;
         public Button btnLogin;
         public Button btnMove;
@@ -24,6 +24,7 @@ namespace Nekoyume.Game
 
             btnMove.gameObject.SetActive(false);
             btnHome.gameObject.SetActive(false);
+            joinModal.gameObject.SetActive(false);
         }
 
         public void InitCamera()
@@ -67,10 +68,11 @@ namespace Nekoyume.Game
             {
                 networkInstance.privateKey = networkInstance.GeneratePrivateKey();
                 PlayerPrefs.SetString("private_key", networkInstance.privateKey);
-                networkInstance.Push(new Network.Request.Join() {
-                    name = name,
-                    ResponseCallback = OnLogin
-                });
+                joinModal.gameObject.SetActive(true);
+                //networkInstance.Push(new Network.Request.Join() {
+                //    name = name,
+                //    ResponseCallback = OnLogin
+                //});
             }
             else
             {
@@ -96,6 +98,7 @@ namespace Nekoyume.Game
             else
             {
                 Debug.Log(result.GetValue("message"));
+                joinModal.gameObject.SetActive(true);
                 return false;
             }
         }
@@ -138,6 +141,18 @@ namespace Nekoyume.Game
         public void Home()
         {
 
+        }
+
+        public void Join()
+        {
+            joinModal.gameObject.SetActive(false);
+            Network.NetworkManager networkInstance = Network.NetworkManager.Instance;
+            var nameField = joinModal.gameObject.GetComponentInChildren<InputField>();
+            networkInstance.Push(new Network.Request.Join()
+            {
+                name = nameField.text,
+                ResponseCallback = OnLogin
+            });
         }
     }
 }
