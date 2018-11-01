@@ -1,4 +1,6 @@
 using System.Collections;
+using Newtonsoft.Json.Linq;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -75,20 +77,27 @@ namespace Nekoyume.Game
                 networkInstance.Push(new Network.Request.Login() {
                     ResponseCallback = OnLogin
                 });
-                
             }
         }
 
         public bool OnLogin(string data)
         {
             Debug.Log(data);
+            JObject result = JObject.Parse(data);
+            if (result.GetValue("result").ToString() == "0")
+            {
+                btnMove.gameObject.SetActive(true);
+                LoadBackground("room");
+                var login = JsonUtility.FromJson<Network.Response.Login>(data);
+                zone = login.avatar.zone;
 
-            btnMove.gameObject.SetActive(true);
-            LoadBackground("room");
-            var login = JsonUtility.FromJson<Network.Response.Login>(data);
-            zone = login.avatar.zone;
-
-            return true;
+                return true;
+            }
+            else
+            {
+                Debug.Log(result.GetValue("message"));
+                return false;
+            }
         }
 
         public void Move()

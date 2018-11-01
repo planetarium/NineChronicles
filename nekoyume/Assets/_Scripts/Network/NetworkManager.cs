@@ -52,8 +52,10 @@ namespace Nekoyume.Network
 
                     if (req.Method == "post")
                     {
-                        List<IMultipartFormSection> formData = new List<IMultipartFormSection>();
-                        formData.Add(new MultipartFormDataSection("private_key", privateKey));
+                        List<IMultipartFormSection> formData = new List<IMultipartFormSection>
+                        {
+                            new MultipartFormDataSection("private_key", privateKey)
+                        };
                         var members = req.GetType().GetMembers();
                         foreach (var member in members)
                         {
@@ -62,7 +64,14 @@ namespace Nekoyume.Network
                                 System.Reflection.FieldInfo field = (System.Reflection.FieldInfo)member;
                                 Debug.Log(member.Name);
                                 Debug.Log(field.GetValue(req));
-                                formData.Add(new MultipartFormDataSection(member.Name, (string)field.GetValue(req)));
+                                try
+                                {
+                                    formData.Add(new MultipartFormDataSection(member.Name, (string)field.GetValue(req)));
+                                }
+                                catch (ArgumentException)
+                                {
+                                    Debug.Log(member.Name);
+                                }
                             }
                         }
                         UnityWebRequest w = UnityWebRequest.Post(server + req.Route, formData);
