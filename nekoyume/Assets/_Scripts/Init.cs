@@ -7,6 +7,12 @@ public class Init : MonoBehaviour {
 
     private string version;
 	// Use this for initialization
+
+    private void Awake()
+    {
+        Assets.SimpleLocalization.LocalizationManager.Read();
+    }
+
 	void Start () {
         version = PlayerPrefs.GetString("version", "");
         StartCoroutine(CheckVersion(version));
