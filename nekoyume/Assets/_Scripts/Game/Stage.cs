@@ -11,21 +11,12 @@ namespace Nekoyume.Game
         public FollowCamera followCam = null;
         public GameObject avatar;
         public GameObject background = null;
-        public GameObject joinModal;
-        public Text txtMessage;
-        public Button btnLogin;
-        public Button btnMove;
-        public Button btnHome;
 
         private string zone;
 
         public void Start()
         {
             InitCamera();
-
-            btnMove.gameObject.SetActive(false);
-            btnHome.gameObject.SetActive(false);
-            joinModal.gameObject.SetActive(false);
         }
 
         public void InitCamera()
@@ -60,40 +51,14 @@ namespace Nekoyume.Game
             followCam.transform.position = camPosition;
         }
 
-        public void Login()
-        {
-            btnLogin.gameObject.SetActive(false);
-            Network.NetworkManager networkInstance = Network.NetworkManager.Instance;
-
-            if (string.IsNullOrEmpty(networkInstance.privateKey))
-            {
-                networkInstance.privateKey = networkInstance.GeneratePrivateKey();
-                PlayerPrefs.SetString("private_key", networkInstance.privateKey);
-                joinModal.gameObject.SetActive(true);
-            }
-            else
-            {
-                networkInstance.Push(new Network.Request.Login() {
-                    ResponseCallback = OnLogin
-                });
-            }
-        }
-
         public void OnLogin(Network.Response.Login response)
         {
-            if (response.result == Network.ResultCode.OK)
-            {
-                btnMove.gameObject.SetActive(true);
-                LoadBackground("room");
-                zone = response.avatar.zone;
-                var character = avatar.GetComponent<Character>();
-                StartCoroutine(character.Load(response.avatar.class_));
-            }
-            else
-            {
-                Debug.Log(response.message);
-                joinModal.gameObject.SetActive(true);
-            }
+            LoadBackground("room");
+            zone = response.avatar.zone;
+            var character = avatar.GetComponent<Character>();
+            StartCoroutine(character.Load(response.avatar.class_));
+
+            UI.Widget.Create<UI.Move>().Show();
         }
 
         public void Move()
@@ -102,17 +67,10 @@ namespace Nekoyume.Game
             StartCoroutine(character.Walk());
             followCam.target = avatar.transform;
             LoadBackground(zone);
-            btnMove.gameObject.SetActive(false);
-            Network.NetworkManager networkInstance = Network.NetworkManager.Instance;
-            new Network.Request.SessionMoves() {
-                name = "hack_and_slash",
-                ResponseCallback = OnHackAndSlash
-            }.Send();
         }
 
         public void OnHackAndSlash(Network.Response.LastStatus response)
         {
-            btnHome.gameObject.SetActive(true);
             var character = avatar.GetComponent<Character>();
             StartCoroutine(character.Stop());
             StartCoroutine(ProcessStatus(response));
@@ -137,19 +95,6 @@ namespace Nekoyume.Game
         public void Home()
         {
 
-        }
-
-        public void Join()
-        {
-            joinModal.gameObject.SetActive(false);
-            Network.NetworkManager networkInstance = Network.NetworkManager.Instance;
-            networkInstance.privateKey = networkInstance.GeneratePrivateKey();
-            var nameField = joinModal.gameObject.GetComponentInChildren<InputField>();
-            networkInstance.Push(new Network.Request.Join()
-            {
-                name = nameField.text,
-                ResponseCallback = OnLogin
-            });
         }
     }
 }
