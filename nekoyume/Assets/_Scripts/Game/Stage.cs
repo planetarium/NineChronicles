@@ -1,5 +1,4 @@
 using System.Collections;
-using Newtonsoft.Json.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -56,8 +55,7 @@ namespace Nekoyume.Game
             LoadBackground("room");
             zone = response.avatar.zone;
             var character = avatar.GetComponent<Character>();
-            StartCoroutine(character.Load(response.avatar.class_));
-
+            StartCoroutine(character.Load(avatar, response.avatar.class_));
             UI.Widget.Create<UI.Move>().Show();
         }
 

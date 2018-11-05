@@ -16,16 +16,7 @@ namespace Nekoyume.Game.Status
             Character character = go.AddComponent<Character>();
             character.id = status.id_;
             character.group = status.character_type;
-
-            var renderer = go.AddComponent<SpriteRenderer>();
-            var sprite = Resources.Load<Sprite>(string.Format("images/character_{0}", status.class_));
-            if (sprite == null)
-                sprite = Resources.Load<Sprite>("images/pet");
-            renderer.sprite = sprite;
-            Material mat = renderer.material;
-            Sequence colorseq = DOTween.Sequence();
-            colorseq.Append(mat.DOColor(Color.white, 0.0f));
-
+            character._Load(go, status.class_);
             yield return null;
         }
     }

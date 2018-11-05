@@ -21,15 +21,9 @@ namespace Nekoyume.Game
             }
         }
 
-        public IEnumerator Load(string class_)
+        public IEnumerator Load(GameObject go, string class_)
         {
-            var render = transform.gameObject.AddComponent<SpriteRenderer>();
-            var sprite = Resources.Load<Sprite>(string.Format("images/character_{0}", class_));
-            render.sprite = sprite;
-            render.sortingOrder = 1;
-            Material mat = render.material;
-            Sequence colorseq = DOTween.Sequence();
-            colorseq.Append(mat.DOColor(Color.white, 0.0f));
+            _Load(go, class_);
             yield return null;
         }
 
@@ -38,6 +32,21 @@ namespace Nekoyume.Game
             StopCoroutine(Walk());
             yield return null;
         }
-    }
 
+        public void _Load(GameObject go, string class_)
+        {
+            Vector2 position = go.transform.position;
+            position.y = -1;
+            go.transform.position = position;
+            var render = go.AddComponent<SpriteRenderer>();
+            var sprite = Resources.Load<Sprite>(string.Format("images/character_{0}", class_));
+            if (sprite == null)
+                sprite = Resources.Load<Sprite>("images/pet");
+            render.sprite = sprite;
+            render.sortingOrder = 1;
+            Material mat = render.material;
+            Sequence colorseq = DOTween.Sequence();
+            colorseq.Append(mat.DOColor(Color.white, 0.0f));
+        }
+    }
 }
