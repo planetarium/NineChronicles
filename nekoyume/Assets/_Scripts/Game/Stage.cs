@@ -9,6 +9,7 @@ namespace Nekoyume.Game
     public class Stage : MonoBehaviour
     {
         public FollowCamera followCam = null;
+        public GameObject avatar;
         public GameObject background = null;
         public GameObject joinModal;
         public Text txtMessage;
@@ -69,10 +70,6 @@ namespace Nekoyume.Game
                 networkInstance.privateKey = networkInstance.GeneratePrivateKey();
                 PlayerPrefs.SetString("private_key", networkInstance.privateKey);
                 joinModal.gameObject.SetActive(true);
-                //networkInstance.Push(new Network.Request.Join() {
-                //    name = name,
-                //    ResponseCallback = OnLogin
-                //});
             }
             else
             {
@@ -92,7 +89,8 @@ namespace Nekoyume.Game
                 LoadBackground("room");
                 var login = JsonUtility.FromJson<Network.Response.Login>(data);
                 zone = login.avatar.zone;
-
+                var character = avatar.GetComponent<Character>();
+                StartCoroutine(character.Load(login.avatar.class_));
                 return true;
             }
             else
@@ -105,6 +103,9 @@ namespace Nekoyume.Game
 
         public void Move()
         {
+            var character = avatar.GetComponent<Character>();
+            StartCoroutine(character.Walk());
+            followCam.target = avatar.transform;
             LoadBackground(zone);
             btnMove.gameObject.SetActive(false);
             Network.NetworkManager networkInstance = Network.NetworkManager.Instance;
@@ -117,6 +118,8 @@ namespace Nekoyume.Game
         public bool OnHackAndSlash(string data)
         {
             btnHome.gameObject.SetActive(true);
+            var character = avatar.GetComponent<Character>();
+            StartCoroutine(character.Stop());
             StartCoroutine(ProcessStatus(data));
             return true;
         }
