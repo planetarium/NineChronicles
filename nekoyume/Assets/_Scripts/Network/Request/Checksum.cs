@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Nekoyume.Network.Request
@@ -10,9 +11,9 @@ namespace Nekoyume.Network.Request
         {
         }
 
-        override public void ProcessResponse(string data)
+        override public void ProcessResponse(Response.Base response)
         {
-            Debug.Log("Checksum: " + data);
+            Debug.Log("Checksum: " + response);
         }
     }
 }

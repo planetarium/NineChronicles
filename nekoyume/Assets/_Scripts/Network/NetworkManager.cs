@@ -76,36 +76,32 @@ namespace Nekoyume.Network
                         }
                         UnityWebRequest w = UnityWebRequest.Post(server + req.Route, formData);
                         yield return w.SendWebRequest();
-                        req.ProcessResponse(w.downloadHandler.text);
+                        req.DataHandle(w.downloadHandler.text);
                     }
                     else
                     {
                         UnityWebRequest w = UnityWebRequest.Get(server + req.Route);
                         yield return w.SendWebRequest();
-                        req.ProcessResponse(w.downloadHandler.text);
+                        req.DataHandle(w.downloadHandler.text);
                     }
                 }
             }
         }
 
-        public void Push(Request.Base msg)
+        public void Push(Request.Base request)
         {
-            requests.Add(msg);
+            requests.Add(request);
         }
 
-        public void First(Request.Base msg)
+        public void First(Request.Base request)
         {
-            requests.Insert(0, msg);
+            requests.Insert(0, request);
         }
 
         public string GeneratePrivateKey()
         {
             var key = Planetarium.Crypto.Keys.PrivateKey.Generate();
             return System.BitConverter.ToString(key.Bytes).Replace("-", "").ToLower();
-        }
-
-        public void CheckSum() {
-            Push(new Request.Checksum());
         }
     }
 }

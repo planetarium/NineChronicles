@@ -5,10 +5,10 @@ namespace Nekoyume.Network.Request
 {
     [Route("in_progress")]
     [Method("post")]
-    public class InProgress : Base
+    public class InProgress<TResponse> : Base<TResponse> where TResponse : Response.Base
     {
         public int Count { get; set; }
-        public Base Next
+        public Base<TResponse> Next
         {
             get; set;
         }
@@ -18,10 +18,9 @@ namespace Nekoyume.Network.Request
             Count = 0;
         }
 
-        override public void ProcessResponse(string data)
+        override public void ProcessResponse(TResponse response)
         {
-            var json = JsonUtility.FromJson<Response.Base>(data);
-            if (json.message == "true")
+            if (response.message == "true")
             {
                 Count++;
                 Debug.Log("InProgress ... " + Count.ToString());

@@ -5,18 +5,17 @@ namespace Nekoyume.Network.Request
 {
     [Route("last_status")]
     [Method("post")]
-    public class LastStatus : Base
+    public class LastStatus : Base<Response.LastStatus>
     {
         public LastStatus()
         {
         }
 
-        override public void ProcessResponse(string data)
+        override public void ProcessResponse(Response.LastStatus response)
         {
-            Debug.Log("LastStatus: " + data);
             if (ResponseCallback != null)
             {
-                ResponseCallback(data);
+                ResponseCallback(response);
             }
         }
     }

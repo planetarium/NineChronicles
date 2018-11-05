@@ -5,18 +5,17 @@ namespace Nekoyume.Network.Request
 {
     [Route("login")]
     [Method("post")]
-    public class Login : Base
+    public class Login : Base<Response.Login>
     {
         public Login()
         {
         }
 
-        override public void ProcessResponse(string data)
+        override public void ProcessResponse(Response.Login response)
         {
-            Debug.Log("Login: " + data);
             if (ResponseCallback != null)
             {
-                ResponseCallback(data);
+                ResponseCallback(response);
             }
         }
     }

@@ -5,7 +5,7 @@ namespace Nekoyume.Network.Request
 {
     [Route("session_moves")]
     [Method("post")]
-    public class SessionMoves : Base
+    public class SessionMoves : Base<Response.LastStatus>
     {
         public string name = "";
 
@@ -13,10 +13,9 @@ namespace Nekoyume.Network.Request
         {
         }
 
-        override public void ProcessResponse(string data)
+        override public void ProcessResponse(Response.Base data)
         {
-            Debug.Log("SessionMoves: " + name);
-            NetworkManager.Instance.First(new InProgress() {
+            NetworkManager.Instance.First(new InProgress<Response.LastStatus>() {
                 Next = new LastStatus() {
                     ResponseCallback = this.ResponseCallback,
                 }

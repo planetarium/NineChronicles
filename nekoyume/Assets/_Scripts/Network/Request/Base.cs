@@ -1,3 +1,6 @@
+using UnityEngine;
+
+
 namespace Nekoyume.Network.Request
 {
     [System.AttributeUsage(System.AttributeTargets.Class)]
@@ -23,10 +26,16 @@ namespace Nekoyume.Network.Request
         }
     }
 
+    public abstract class ABase
+    {
+        
+    }
+
 
     public class Base
     {
-        public System.Func<string, bool> ResponseCallback { get; set; }
+        public System.Action<Response.Base> ResponseCallback { get; set; }
+
 
         public Base()
         {
@@ -66,7 +75,40 @@ namespace Nekoyume.Network.Request
             }
         }
 
-        virtual public void ProcessResponse(string data)
+        public void Send()
+        {
+            NetworkManager.Instance.Push(this);
+        }
+
+        virtual public void DataHandle(string data)
+        {
+            Response.Base response = JsonUtility.FromJson<Response.Base>(data);
+            if (response.result == ResultCode.OK)
+            {
+                ProcessResponse(response);
+            }
+        }
+
+        virtual public void ProcessResponse(Response.Base response)
+        {
+        }
+    }
+
+    public class Base<TResponse> : Base where TResponse : Response.Base
+    {
+        public new System.Action<TResponse> ResponseCallback { get; set; }
+
+
+        override public void DataHandle(string data)
+        {
+            TResponse response = JsonUtility.FromJson<TResponse>(data);
+            if (response.result == ResultCode.OK)
+            {
+                ProcessResponse(response);
+            }
+        }
+
+        virtual public void ProcessResponse(TResponse response)
         {
         }
     }
