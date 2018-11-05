@@ -79,25 +79,20 @@ namespace Nekoyume.Game
             }
         }
 
-        public bool OnLogin(string data)
+        public void OnLogin(Network.Response.Login response)
         {
-            Debug.Log(data);
-            JObject result = JObject.Parse(data);
-            if (result.GetValue("result").ToString() == "0")
+            if (response.result == Network.ResultCode.OK)
             {
                 btnMove.gameObject.SetActive(true);
                 LoadBackground("room");
-                var login = JsonUtility.FromJson<Network.Response.Login>(data);
-                zone = login.avatar.zone;
+                zone = response.avatar.zone;
                 var character = avatar.GetComponent<Character>();
-                StartCoroutine(character.Load(login.avatar.class_));
-                return true;
+                StartCoroutine(character.Load(response.avatar.class_));
             }
             else
             {
-                Debug.Log(result.GetValue("message"));
+                Debug.Log(response.message);
                 joinModal.gameObject.SetActive(true);
-                return false;
             }
         }
 
@@ -109,24 +104,22 @@ namespace Nekoyume.Game
             LoadBackground(zone);
             btnMove.gameObject.SetActive(false);
             Network.NetworkManager networkInstance = Network.NetworkManager.Instance;
-            networkInstance.Push(new Network.Request.SessionMoves() {
+            new Network.Request.SessionMoves() {
                 name = "hack_and_slash",
                 ResponseCallback = OnHackAndSlash
-            });
+            }.Send();
         }
 
-        public bool OnHackAndSlash(string data)
+        public void OnHackAndSlash(Network.Response.LastStatus response)
         {
             btnHome.gameObject.SetActive(true);
             var character = avatar.GetComponent<Character>();
             StartCoroutine(character.Stop());
-            StartCoroutine(ProcessStatus(data));
-            return true;
+            StartCoroutine(ProcessStatus(response));
         }
 
-        private IEnumerator ProcessStatus(string data)
+        private IEnumerator ProcessStatus(Network.Response.LastStatus lastStatus)
         {
-            var lastStatus = JsonUtility.FromJson<Network.Response.LastStatus>(data);
             foreach (var battleStatus in lastStatus.status)
             {
                 var statusType = battleStatus.GetStatusType();
