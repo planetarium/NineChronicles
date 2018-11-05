@@ -143,6 +143,7 @@ namespace Nekoyume.Game
         {
             joinModal.gameObject.SetActive(false);
             Network.NetworkManager networkInstance = Network.NetworkManager.Instance;
+            networkInstance.privateKey = networkInstance.GeneratePrivateKey();
             var nameField = joinModal.gameObject.GetComponentInChildren<InputField>();
             networkInstance.Push(new Network.Request.Join()
             {

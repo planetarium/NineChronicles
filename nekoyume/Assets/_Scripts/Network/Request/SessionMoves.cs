@@ -13,7 +13,7 @@ namespace Nekoyume.Network.Request
         {
         }
 
-        override public void ProcessResponse(Response.Base data)
+        override public void ProcessResponse(Response.LastStatus data)
         {
             NetworkManager.Instance.First(new InProgress<Response.LastStatus>() {
                 Next = new LastStatus() {

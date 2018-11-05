@@ -83,10 +83,7 @@ namespace Nekoyume.Network.Request
         virtual public void DataHandle(string data)
         {
             Response.Base response = JsonUtility.FromJson<Response.Base>(data);
-            if (response.result == ResultCode.OK)
-            {
-                ProcessResponse(response);
-            }
+            ProcessResponse(response);
         }
 
         virtual public void ProcessResponse(Response.Base response)
@@ -94,7 +91,7 @@ namespace Nekoyume.Network.Request
         }
     }
 
-    public class Base<TResponse> : Base where TResponse : Response.Base
+    public class Base<TResponse> : Base
     {
         public new System.Action<TResponse> ResponseCallback { get; set; }
 
@@ -102,10 +99,7 @@ namespace Nekoyume.Network.Request
         override public void DataHandle(string data)
         {
             TResponse response = JsonUtility.FromJson<TResponse>(data);
-            if (response.result == ResultCode.OK)
-            {
-                ProcessResponse(response);
-            }
+            ProcessResponse(response);
         }
 
         virtual public void ProcessResponse(TResponse response)
