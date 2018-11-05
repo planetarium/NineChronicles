@@ -69,10 +69,6 @@ namespace Nekoyume.Game
                 networkInstance.privateKey = networkInstance.GeneratePrivateKey();
                 PlayerPrefs.SetString("private_key", networkInstance.privateKey);
                 joinModal.gameObject.SetActive(true);
-                //networkInstance.Push(new Network.Request.Join() {
-                //    name = name,
-                //    ResponseCallback = OnLogin
-                //});
             }
             else
             {
