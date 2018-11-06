@@ -8,7 +8,7 @@ namespace Nekoyume.Game.Status
 {
     public class Spawn : Base
     {
-        public override IEnumerator Execute(Stage stage,  Network.Response.BattleStatus status)
+        public override IEnumerator Execute(Stage stage,  Model.BattleStatus status)
         {
             GameObject go = new GameObject(status.name);
             go.transform.parent = stage.transform;

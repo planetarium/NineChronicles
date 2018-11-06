@@ -5,7 +5,7 @@ namespace Nekoyume.Game.Status
 {
     public class Base
     {
-        public virtual IEnumerator Execute(Stage stage,  Network.Response.BattleStatus status)
+        public virtual IEnumerator Execute(Stage stage,  Model.BattleStatus status)
         {
             // override
             yield return null;

@@ -3,7 +3,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 
 
-namespace Nekoyume.Network.Response
+namespace Nekoyume.Model
 {
     [System.Serializable]
     public class BattleStatus

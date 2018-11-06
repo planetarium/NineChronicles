@@ -1,4 +1,4 @@
-namespace Nekoyume.Network.Response
+namespace Nekoyume.Model
 {
     [System.Serializable]
     public class Avatar

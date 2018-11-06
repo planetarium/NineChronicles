@@ -8,7 +8,7 @@ namespace Nekoyume.Game.Status
 {
     public class Dead : Base
     {
-        public override IEnumerator Execute(Stage stage,  Network.Response.BattleStatus status)
+        public override IEnumerator Execute(Stage stage,  Model.BattleStatus status)
         {
             // TODO
 
