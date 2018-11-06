@@ -1,0 +1,14 @@
+id,cls,class_,unlock_lv,cast_time,cooltime,target_count,power
+attack,Attack,,0,0,2,1,100
+double_strike,Attack,swordman,1,0,2,2,100
+taunt,Taunt,swordman,3,0,4,1,100
+power_attack,Attack,swordman,5,0,3,1,150
+fireball,Spell,mage,1,1,1,1,120
+chain_lightning,Spell,mage,3,1,3,2,120
+firewall,Spell,mage,5,2,5,3,120
+heal,Heal,acolyte,1,1,2,1,110
+holy_shot,Spell,acolyte,3,1,1,1,100
+heal_2,Heal,acolyte,5,1,2,2,100
+charge_shot,Attack,archer,1,1,1,1,200
+double_shot,Attack,archer,3,0,2,2,120
+multi_shot,Attack,archer,5,0,3,3,120
