@@ -16,6 +16,7 @@ namespace Nekoyume.Game
         public void Start()
         {
             InitCamera();
+            LoadBackground("nest");
         }
 
         public void InitCamera()
