@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
+using Planetarium.Crypto.Keys;
+using Planetarium.Crypto.Extension;
 
 
 namespace Nekoyume.Network
@@ -23,6 +25,13 @@ namespace Nekoyume.Network
             DontDestroyOnLoad(gameObject);
             Instance = this;
             privateKey = PlayerPrefs.GetString("private_key", "");
+
+            if (string.IsNullOrEmpty(privateKey)) {
+                Debug.Log("private_key does not found. generating...");
+                privateKey = PrivateKey.Generate().Bytes.Hex();
+                PlayerPrefs.SetString("private_key", privateKey);
+                Debug.Log("Generated key is stored.");
+            }
         }
 
         private void Start ()
@@ -96,12 +105,6 @@ namespace Nekoyume.Network
         public void First(Request.Base request)
         {
             requests.Insert(0, request);
-        }
-
-        public string GeneratePrivateKey()
-        {
-            var key = Planetarium.Crypto.Keys.PrivateKey.Generate();
-            return System.BitConverter.ToString(key.Bytes).Replace("-", "").ToLower();
         }
     }
 }
