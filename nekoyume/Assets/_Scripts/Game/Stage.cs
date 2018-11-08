@@ -1,4 +1,7 @@
 using System.Collections;
+using System.Collections.Generic;
+using Nekoyume.Model;
+using Planetarium.Crypto.Keys;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -16,6 +19,13 @@ namespace Nekoyume.Game
         public void Start()
         {
             InitCamera();
+            var key = PrivateKey.Generate();
+            var user = new User(key);
+            var move = user.CreateNovice(new Dictionary<string, string>
+            {
+                {"name", "test"}
+            });
+            var avatar = user.Avatar(new List<Move.Move> { move });
             LoadBackground("nest");
         }
 
