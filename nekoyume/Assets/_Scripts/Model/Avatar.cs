@@ -1,3 +1,7 @@
+using System.Collections.Generic;
+using System.Linq;
+using Nekoyume.Move;
+
 namespace Nekoyume.Model
 {
     [System.Serializable]
@@ -18,5 +22,36 @@ namespace Nekoyume.Model
         public int luck;
         public string[] items;
         public string zone;
+        public byte[] user;
+        public bool dead
+        {
+            get
+            {
+                return hp <= 0;
+            }
+        }
+        public static Avatar Get(byte[] address, IEnumerable<Move.Move> moves)
+        {
+            if (moves == null)
+            {
+                throw new System.Exception();
+            }
+            var associatedMoves = moves.Where(m => m.UserAddress.SequenceEqual(address));
+            associatedMoves = associatedMoves.SkipWhile(m => !(m is CreateNovice));
+            var createMove = associatedMoves.FirstOrDefault() as CreateNovice;
+            if (createMove == null)
+            {
+                return null;
+            }
+
+            var avatar = createMove.Execute(null).Item1;
+
+            foreach (var move in associatedMoves.Skip(1))
+            {
+                avatar = move.Execute(avatar).Item1;
+            }
+
+            return avatar;
+        }
     }
 }
