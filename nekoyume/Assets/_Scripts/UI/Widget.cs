@@ -22,8 +22,19 @@ namespace Nekoyume.UI
             GameObject res = Resources.Load<GameObject>(resname);
             if (res != null)
             {
+                
                 GameObject go = GameObject.Instantiate(res, CanvasObj.transform);
-                return go.GetComponent<T>();
+                T t = go.GetComponent<T>();
+                if (t is Popup)
+                {
+                    go.transform.SetParent(CanvasObj.transform.Find("Popup"));
+                    go.SetActive(false);
+                }
+                else
+                {
+                    go.transform.SetParent(CanvasObj.transform.Find("Widget"));
+                }
+                return t;
             }
             return null;
         }
@@ -31,7 +42,6 @@ namespace Nekoyume.UI
 
         private void Awake()
         {
-            gameObject.SetActive(false);
         }
 
         virtual public void Show()
@@ -51,6 +61,14 @@ namespace Nekoyume.UI
         virtual public void Close()
         {
             gameObject.SetActive(false);
+        }
+    }
+
+    public class Popup : Widget
+    {
+        override public void Close()
+        {
+            Destroy(gameObject);
         }
     }
 }
