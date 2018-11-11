@@ -54,4 +54,13 @@ namespace Nekoyume.Model
             return avatar;
         }
     }
+
+    public enum CharacterClass
+    {
+        Novice,
+        Swordman,
+        Mage,
+        Archer,
+        Acolyte
+    }
 }

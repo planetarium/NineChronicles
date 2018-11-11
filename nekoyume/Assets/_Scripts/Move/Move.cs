@@ -137,7 +137,7 @@ namespace Nekoyume.Move
                     name = Details["name"],
                     user = UserAddress,
                     gold = 0,
-                    class_ = "novice",
+                    class_ = CharacterClass.Novice.ToString(),
                     level = 1,
                     zone = "zone_0",
                     strength = 10,
@@ -155,7 +155,27 @@ namespace Nekoyume.Move
     {
         public override Tuple<Avatar, Dictionary<string, string>> Execute(Avatar avatar)
         {
-            throw new NotImplementedException();
+            Dictionary<string, string> result = new Dictionary<string, string>
+            {
+                {"type", "first_class"},
+                {"result", "success"}
+            };
+            if (avatar == null)
+            {
+                avatar = Avatar.Get(UserAddress, null);
+            }
+            if (avatar.class_ != CharacterClass.Novice.ToString())
+            {
+                result["result"] = "failed";
+                result["message"] = "Already change class.";
+                return new Tuple<Avatar, Dictionary<string, string>>(
+                    avatar, result
+                );
+            }
+            avatar.class_ = Details["class"];
+            return new Tuple<Avatar, Dictionary<string, string>>(
+                avatar, result
+            );
         }
     }
 
