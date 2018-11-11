@@ -137,7 +137,7 @@ namespace Nekoyume.Move
                     name = Details["name"],
                     user = UserAddress,
                     gold = 0,
-                    class_ = ClassEnum.novice,
+                    class_ = CharacterClass.Novice.ToString(),
                     level = 1,
                     zone = "zone_0",
                     strength = 10,
@@ -164,7 +164,7 @@ namespace Nekoyume.Move
             {
                 avatar = Avatar.Get(UserAddress, null);
             }
-            if (avatar.class_ != ClassEnum.novice)
+            if (avatar.class_ != CharacterClass.Novice.ToString())
             {
                 result["result"] = "failed";
                 result["message"] = "Already change class.";

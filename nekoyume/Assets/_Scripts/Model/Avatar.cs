@@ -55,12 +55,12 @@ namespace Nekoyume.Model
         }
     }
 
-    public static class ClassEnum
+    public enum CharacterClass
     {
-        public static string novice = "novice";
-        public static string swordman = "swordman";
-        public static string mage = "mage";
-        public static string archer = "archer";
-        public static string acolyte = "acolyte";
+        Novice,
+        Swordman,
+        Mage,
+        Archer,
+        Acolyte
     }
 }

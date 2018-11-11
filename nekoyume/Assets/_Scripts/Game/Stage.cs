@@ -74,7 +74,7 @@ namespace Nekoyume.Game
                 {"name", "test"}
             });
             var _avatar = user.Avatar(new List<Move.Move> { move });
-            var jobChange = user.FirstClass(ClassEnum.swordman);
+            var jobChange = user.FirstClass(CharacterClass.Swordman.ToString());
             _avatar = user.Avatar(new List<Move.Move> { move, jobChange });
             var character = avatar.GetComponent<Character>();
             StartCoroutine(character.Load(avatar, _avatar.class_));
