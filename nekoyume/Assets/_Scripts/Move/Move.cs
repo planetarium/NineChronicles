@@ -137,7 +137,7 @@ namespace Nekoyume.Move
                     name = Details["name"],
                     user = UserAddress,
                     gold = 0,
-                    class_ = "novice",
+                    class_ = ClassEnum.novice,
                     level = 1,
                     zone = "zone_0",
                     strength = 10,
