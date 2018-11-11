@@ -15,17 +15,13 @@ namespace Nekoyume.Game
         public GameObject background = null;
 
         private string zone;
+        private User user;
 
         public void Start()
         {
             InitCamera();
             var key = PrivateKey.Generate();
-            var user = new User(key);
-            var move = user.CreateNovice(new Dictionary<string, string>
-            {
-                {"name", "test"}
-            });
-            var avatar = user.Avatar(new List<Move.Move> { move });
+            user = new User(key);
             LoadBackground("nest");
         }
 
@@ -67,6 +63,21 @@ namespace Nekoyume.Game
             zone = response.avatar.zone;
             var character = avatar.GetComponent<Character>();
             StartCoroutine(character.Load(avatar, response.avatar.class_));
+            UI.Widget.Create<UI.Move>().Show();
+        }
+
+        public void OnLogin()
+        {
+            LoadBackground("room");
+            var move = user.CreateNovice(new Dictionary<string, string>
+            {
+                {"name", "test"}
+            });
+            var _avatar = user.Avatar(new List<Move.Move> { move });
+            var jobChange = user.FirstClass(ClassEnum.swordman);
+            _avatar = user.Avatar(new List<Move.Move> { move, jobChange });
+            var character = avatar.GetComponent<Character>();
+            StartCoroutine(character.Load(avatar, _avatar.class_));
             UI.Widget.Create<UI.Move>().Show();
         }
 

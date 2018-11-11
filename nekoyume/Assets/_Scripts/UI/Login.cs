@@ -32,9 +32,9 @@ namespace Nekoyume.UI
         public void LoginClick()
         {
             btnLogin.SetActive(false);
-            new Network.Request.Login() {
-                ResponseCallback = OnLogin
-            }.Send();
+            GameObject stageObj = GameObject.FindGameObjectWithTag("Stage");
+            Game.Stage stage = stageObj.GetComponent<Game.Stage>();
+            stage.OnLogin();
         }
 
         public void OnLogin(Network.Response.Login response)

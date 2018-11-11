@@ -155,7 +155,27 @@ namespace Nekoyume.Move
     {
         public override Tuple<Avatar, Dictionary<string, string>> Execute(Avatar avatar)
         {
-            throw new NotImplementedException();
+            Dictionary<string, string> result = new Dictionary<string, string>
+            {
+                {"type", "first_class"},
+                {"result", "success"}
+            };
+            if (avatar == null)
+            {
+                avatar = Avatar.Get(UserAddress, null);
+            }
+            if (avatar.class_ != ClassEnum.novice)
+            {
+                result["result"] = "failed";
+                result["message"] = "Already change class.";
+                return new Tuple<Avatar, Dictionary<string, string>>(
+                    avatar, result
+                );
+            }
+            avatar.class_ = Details["class"];
+            return new Tuple<Avatar, Dictionary<string, string>>(
+                avatar, result
+            );
         }
     }
 
