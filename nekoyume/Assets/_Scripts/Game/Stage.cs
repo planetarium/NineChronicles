@@ -1,7 +1,13 @@
 using System.Collections;
+using System.Collections.Generic;
+using Nekoyume.Model;
+using Nekoyume.Network.Agent;
+using Nekoyume.Move;
+using Planetarium.Crypto.Extension;
+using Planetarium.Crypto.Keys;
 using UnityEngine;
 using UnityEngine.UI;
-
+using Newtonsoft.Json;
 
 namespace Nekoyume.Game
 {
@@ -11,12 +17,33 @@ namespace Nekoyume.Game
         public GameObject avatar;
         public GameObject background = null;
 
-        private string zone;
+        private Agent agent;
 
+        private string zone;
+        private User user;
+
+        public void Awake()
+        {
+            var serverUrl = "http://localhost:4000";
+            var privateKeyHex = PlayerPrefs.GetString("private_key", "");
+
+            PrivateKey privateKey = null;
+            if (string.IsNullOrEmpty(privateKeyHex))
+            {
+                privateKey = PrivateKey.Generate();
+            }
+            else
+            {
+                privateKey = PrivateKey.FromBytes(privateKeyHex.ParseHex());
+            }
+            agent = new Agent(serverUrl, privateKey);
+            user = new User(privateKey, agent);
+        }
         public void Start()
         {
             InitCamera();
             LoadBackground("nest");
+            StartCoroutine(agent.Run());
         }
 
         public void InitCamera()
@@ -60,6 +87,21 @@ namespace Nekoyume.Game
             UI.Widget.Create<UI.Move>().Show();
         }
 
+        public void OnLogin()
+        {
+            LoadBackground("room");
+            var move = user.CreateNovice(new Dictionary<string, string>
+            {
+                {"name", "test"}
+            });
+            var _avatar = user.Avatar;
+            var jobChange = user.FirstClass(CharacterClass.Swordman.ToString());
+            _avatar = user.Avatar;
+            var character = avatar.GetComponent<Character>();
+            StartCoroutine(character.Load(avatar, _avatar.class_));
+            UI.Widget.Create<UI.Move>().Show();
+        }
+
         public void Move()
         {
             var character = avatar.GetComponent<Character>();
@@ -94,6 +136,26 @@ namespace Nekoyume.Game
         public void Home()
         {
 
+        }
+
+        public void SendMove(Move.Move move)
+        {
+            agent.Send(move);
+        }
+
+        public void OnSleep()
+        {
+            var avatar = user.Avatar;
+            int hpMax = avatar.hp_max;
+            var move = user.Sleep();
+            var sleep = move.Execute(avatar);
+            avatar = sleep.Item1;
+            var result = sleep.Item2;
+            Debug.Assert(avatar.hp == hpMax);
+            if (result["result"] == "success")
+            {
+                LoadBackground("nest");
+            }
         }
     }
 }
