@@ -147,7 +147,14 @@ namespace Nekoyume.Move
     {
         public override Tuple<Avatar, Dictionary<string, string>> Execute(Avatar avatar)
         {
-            throw new NotImplementedException();
+            avatar.hp = avatar.hp_max;
+            return new Tuple<Avatar, Dictionary<string, string>>(
+                avatar, new Dictionary<string, string>
+                {
+                    {"type", "sleep"},
+                    {"result", "success"}
+                }
+            );
         }
     }
 
@@ -175,7 +182,8 @@ namespace Nekoyume.Move
                     dexterity = 8,
                     intelligence = 9,
                     constitution = 9,
-                    luck = 9
+                    luck = 9,
+                    hp_max = 10
                 }, result
             );
         }

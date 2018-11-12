@@ -57,8 +57,12 @@ namespace Nekoyume.Model
 
         public Sleep Sleep(DateTime? timestamp = null)
         {
-            var sleep = new Sleep();
-
+            var sleep = new Sleep
+            {
+                // TODO bencodex
+                Details = new Dictionary<string, string>
+                { }
+            };
             return ProcessMove(sleep, 0, timestamp);
         }
 
