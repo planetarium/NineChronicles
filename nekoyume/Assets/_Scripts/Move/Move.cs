@@ -132,11 +132,6 @@ namespace Nekoyume.Move
 
         public override Tuple<Avatar, Dictionary<string, string>> Execute(Avatar avatar)
         {
-            if (avatar == null)
-            {
-                // TODO require Moves
-                avatar = Avatar.Get(UserAddress, null);
-            }
             if (avatar.dead)
             {
                 // TODO Implement InvalidMoveException
@@ -197,10 +192,6 @@ namespace Nekoyume.Move
                 {"type", "first_class"},
                 {"result", "success"}
             };
-            if (avatar == null)
-            {
-                avatar = Avatar.Get(UserAddress, null);
-            }
             if (avatar.class_ != CharacterClass.Novice.ToString())
             {
                 result["result"] = "failed";

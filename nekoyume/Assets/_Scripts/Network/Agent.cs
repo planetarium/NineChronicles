@@ -18,7 +18,7 @@ namespace Nekoyume.Network.Agent
         public ResultCode result = ResultCode.ERROR;
         public List<Move.Move> moves;
     }
-    
+
     public class Agent
     {
         public event EventHandler<IAction> DidReceiveAction;
@@ -37,28 +37,30 @@ namespace Nekoyume.Network.Agent
             this.apiUrl = apiUrl;
             this.privateKey = privateKey;
             this.interval = interval;
+            moves = new List<Move.Move>();
         }
 
         void Flush()
         {
         }
 
-        public void Send(IAction action)
+        public void Send(Move.Move action)
         {
+            moves.Add(action);
         }
 
-        public IEnumerable<Move.Move> Moves 
+        public IEnumerable<Move.Move> Moves
         {
-            get 
+            get
             {
                 return moves;
             }
         }
 
-        public IEnumerator Run() 
+        public IEnumerator Run()
         {
             int? lastBlockOffset = null;
-            while(true)
+            while (true)
             {
                 yield return new WaitForSeconds(interval);
                 var url = string.Format(
@@ -67,7 +69,7 @@ namespace Nekoyume.Network.Agent
                 Debug.Log(privateKey.Bytes.Hex());
                 Debug.Log(url);
 
-                if (lastBlockOffset.HasValue) 
+                if (lastBlockOffset.HasValue)
                 {
                     url += string.Format("?block_offset={0}", lastBlockOffset);
                 }

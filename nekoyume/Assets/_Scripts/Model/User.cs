@@ -1,8 +1,10 @@
 using Nekoyume.Move;
+using Nekoyume.Network.Agent;
 using Planetarium.Crypto.Keys;
 using Planetarium.SDK.Address;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Nekoyume.Model
 {
@@ -17,6 +19,8 @@ namespace Nekoyume.Model
         }
         private readonly PrivateKey privateKey;
 
+        private readonly Agent agent;
+
         public byte[] Address
         {
             get
@@ -25,9 +29,10 @@ namespace Nekoyume.Model
             }
         }
 
-        public User(PrivateKey privateKey)
+        public User(PrivateKey privateKey, Agent agent)
         {
             this.privateKey = privateKey;
+            this.agent = agent;
         }
 
         public HackAndSlash HackAndSlash(string weapon = null, string armor = null, string food = null, DateTime? timestamp = null)
@@ -84,13 +89,37 @@ namespace Nekoyume.Model
             move.Tax = tax;
             move.Timestamp = (timestamp) ?? DateTime.UtcNow;
             move.Sign(privateKey);
+            agent.Send(move);
 
             return move;
         }
 
-        public Avatar Avatar(IEnumerable<Move.Move> moves)
+        public Avatar Avatar
         {
-            return Model.Avatar.Get(Address, moves);
+            get
+            {
+                // FIXME
+                if (agent.Moves == null)
+                {
+                    throw new System.Exception();
+                }
+                var associatedMoves = agent.Moves.Where(m => m.UserAddress.SequenceEqual(Address));
+                associatedMoves = associatedMoves.SkipWhile(m => !(m is CreateNovice));
+                var createNovice = associatedMoves.FirstOrDefault() as CreateNovice;
+                if (createNovice == null)
+                {
+                    return null;
+                }
+
+                var avatar = createNovice.Execute(null).Item1;
+
+                foreach (var move in associatedMoves.Skip(1))
+                {
+                    avatar = move.Execute(avatar).Item1;
+                }
+
+                return avatar;
+            }
         }
     }
 }
