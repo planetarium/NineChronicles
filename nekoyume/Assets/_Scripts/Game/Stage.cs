@@ -37,12 +37,11 @@ namespace Nekoyume.Game
                 privateKey = PrivateKey.FromBytes(privateKeyHex.ParseHex());
             }
             agent = new Agent(serverUrl, privateKey);
+            user = new User(privateKey, agent);
         }
         public void Start()
         {
             InitCamera();
-            var key = PrivateKey.Generate();
-            user = new User(key);
             LoadBackground("nest");
             StartCoroutine(agent.Run());
         }
