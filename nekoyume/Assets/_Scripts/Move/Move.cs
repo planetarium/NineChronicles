@@ -57,6 +57,8 @@ namespace Nekoyume.Move
         public int Tax { get; set; }
         public new DateTime Timestamp { get; set; }
 
+        public long BlockId { get; private set; }
+
         public override IDictionary<string, dynamic> PlainValue
         {
             get
@@ -117,6 +119,7 @@ namespace Nekoyume.Move
             move.Timestamp = DateTime.ParseExact(
                 plainValue["created_at"], TIMESTAMP_FORMAT, CultureInfo.InvariantCulture
             );
+            move.BlockId = plainValue["block"].ToObject<Dictionary<string, dynamic>>()["id"];
             return move;
         }
     }

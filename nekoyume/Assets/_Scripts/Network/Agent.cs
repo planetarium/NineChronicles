@@ -40,31 +40,28 @@ namespace Nekoyume.Network.Agent
             moves = new List<Move.Move>();
         }
 
-        void Flush()
-        {
-        }
-
         public void Send(Move.Move action)
         {
             moves.Add(action);
         }
 
-        public IEnumerable<Move.Move> Moves
-        {
-            get
-            {
-                return moves;
-            }
-        }
+        public IEnumerable<Move.Move> Moves => moves;
 
         public IEnumerator Run()
         {
-            int? lastBlockOffset = null;
+            long? lastBlockOffset = null;
+            var serializerSettings = new JsonSerializerSettings
+            {
+                Converters = new Newtonsoft.Json.JsonConverter[]{
+                        new Move.JSONConverter()
+                }
+            };
+
             while (true)
             {
                 yield return new WaitForSeconds(interval);
                 var url = string.Format(
-                    "{0}/users/0x{1}/moves/", apiUrl, privateKey.PublicKey.ToAddress().Hex()
+                    "{0}/users/0x{1}/moves/", apiUrl, privateKey.ToAddress().Hex()
                 );
 
                 if (lastBlockOffset.HasValue)
@@ -73,14 +70,17 @@ namespace Nekoyume.Network.Agent
                 }
                 var www = UnityWebRequest.Get(url);
                 yield return www.SendWebRequest();
-                var jsonPayload = www.downloadHandler.text;
-                var converters = new Newtonsoft.Json.JsonConverter[]{
-                    new Move.JSONConverter()
-                };
-                var response = JsonConvert.DeserializeObject<Response>(jsonPayload, new JsonSerializerSettings
+                if (!www.isNetworkError)
                 {
-                    Converters = converters
-                });
+                    var jsonPayload = www.downloadHandler.text;
+                    var response = JsonConvert.DeserializeObject<Response>(jsonPayload, serializerSettings);
+                    foreach (var m in response.moves)
+                    {
+                        DidReceiveAction?.Invoke(this, m);
+                        moves.Add(m);
+                        lastBlockOffset = m.BlockId;
+                    }
+                }
             }
         }
     }
