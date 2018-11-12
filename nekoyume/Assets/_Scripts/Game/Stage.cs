@@ -142,5 +142,20 @@ namespace Nekoyume.Game
         {
             agent.Send(move);
         }
+
+        public void OnSleep()
+        {
+            var avatar = user.Avatar;
+            int hpMax = avatar.hp_max;
+            var move = user.Sleep();
+            var sleep = move.Execute(avatar);
+            avatar = sleep.Item1;
+            var result = sleep.Item2;
+            Debug.Assert(avatar.hp == hpMax);
+            if (result["result"] == "success")
+            {
+                LoadBackground("nest");
+            }
+        }
     }
 }

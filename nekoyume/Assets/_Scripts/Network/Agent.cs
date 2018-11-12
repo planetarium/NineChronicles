@@ -66,8 +66,6 @@ namespace Nekoyume.Network.Agent
                 var url = string.Format(
                     "{0}/users/0x{1}/moves/", apiUrl, privateKey.PublicKey.ToAddress().Hex()
                 );
-                Debug.Log(privateKey.Bytes.Hex());
-                Debug.Log(url);
 
                 if (lastBlockOffset.HasValue)
                 {
@@ -83,7 +81,6 @@ namespace Nekoyume.Network.Agent
                 {
                     Converters = converters
                 });
-                Debug.Log(response);
             }
         }
     }

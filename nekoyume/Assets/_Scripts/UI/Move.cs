@@ -20,7 +20,8 @@ namespace Nekoyume.UI
             stage.Move();
 
             btnMove.gameObject.SetActive(false);
-            new Network.Request.SessionMoves() {
+            new Network.Request.SessionMoves()
+            {
                 name = "hack_and_slash",
                 ResponseCallback = OnHackAndSlash
             }.Send();
@@ -31,6 +32,13 @@ namespace Nekoyume.UI
             GameObject stageObj = GameObject.FindGameObjectWithTag("Stage");
             Game.Stage stage = stageObj.GetComponent<Game.Stage>();
             stage.OnHackAndSlash(response);
+        }
+
+        public void SleepClick()
+        {
+            GameObject stageObj = GameObject.FindGameObjectWithTag("Stage");
+            Game.Stage stage = stageObj.GetComponent<Game.Stage>();
+            stage.OnSleep();
         }
     }
 }
