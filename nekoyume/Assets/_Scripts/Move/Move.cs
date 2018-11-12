@@ -6,21 +6,39 @@ using Planetarium.SDK.Address;
 using Planetarium.SDK.Tx;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Reflection;
+using System.Runtime.Serialization;
 
 namespace Nekoyume.Move
 {
-    internal class Name : Attribute
+    internal class MoveName : Attribute
     {
         public string Value { get; private set; }
 
-        public Name(string value)
+        public MoveName(string value)
         {
             Value = value;
         }
+
+        public static string Extract(Type t)
+        {
+            foreach (var attr in t.GetCustomAttributes())
+            {
+                if (attr is MoveName)
+                {
+                    return (attr as MoveName).Value;
+                }
+            }
+            return null;
+        }
     }
-    public abstract class Move : BaseTransaction, IAction
+
+    public abstract class Move : BaseTransaction, IAction, ISerializable
     {
+        private static string TIMESTAMP_FORMAT = "yyyy-MM-dd HH:mm:ss.ffffff";
+
+        public new byte[] Creator => UserAddress;
         public byte[] UserAddress
         {
             get
@@ -33,14 +51,7 @@ namespace Nekoyume.Move
         {
             get
             {
-                foreach (var attr in GetType().GetCustomAttributes())
-                {
-                    if (attr is Name)
-                    {
-                        return (attr as Name).Value;
-                    }
-                }
-                return null;
+                return MoveName.Extract(GetType());
             }
         }
         public int Tax { get; set; }
@@ -55,7 +66,7 @@ namespace Nekoyume.Move
                     { "user_address", UserAddress.Hex() },
                     { "name", Name },
                     { "details", Details },
-                    { "created_at", Timestamp.ToString("yyyy-MM-dd HH:mm:ss.ffffff") },
+                    { "created_at", Timestamp.ToString(TIMESTAMP_FORMAT) },
                     { "tax", Tax }
                 };
             }
@@ -86,9 +97,32 @@ namespace Nekoyume.Move
         }
 
         public abstract Tuple<Avatar, Dictionary<string, string>> Execute(Avatar avatar);
+
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            foreach (var kv in PlainValue)
+            {
+                info.AddValue(kv.Key, kv.Value);
+            }
+            info.AddValue("signature", Signature.Hex());
+        }
+
+        public static Move FromPlainValue(IDictionary<string, dynamic> plainValue, Type type)
+        {
+            var move = Activator.CreateInstance(type) as Move;
+            move.PublicKey = PublicKey.FromBytes((plainValue["user_public_key"] as string).ParseHex());
+            move.Signature = (plainValue["signature"] as string).ParseHex();
+            move.Tax = (int)plainValue["tax"];
+            move.Details = plainValue["details"].ToObject<Dictionary<string, string>>();
+            move.Timestamp = DateTime.ParseExact(
+                plainValue["created_at"], TIMESTAMP_FORMAT, CultureInfo.InvariantCulture
+            );
+            return move;
+        }
     }
 
-    [Name("hack_and_slash")]
+    [Serializable]
+    [MoveName("hack_and_slash")]
     public class HackAndSlash : Move
     {
         public HackAndSlash(Dictionary<string, string> details)
@@ -112,7 +146,8 @@ namespace Nekoyume.Move
         }
     }
 
-    [Name("sleep")]
+    [Serializable]
+    [MoveName("sleep")]
     public class Sleep : Move
     {
         public override Tuple<Avatar, Dictionary<string, string>> Execute(Avatar avatar)
@@ -121,7 +156,8 @@ namespace Nekoyume.Move
         }
     }
 
-    [Name("create_novice")]
+    [Serializable]
+    [MoveName("create_novice")]
     public class CreateNovice : Move
     {
         public override Tuple<Avatar, Dictionary<string, string>> Execute(Avatar avatar)
@@ -150,7 +186,8 @@ namespace Nekoyume.Move
         }
     }
 
-    [Name("first_class")]
+    [Serializable]
+    [MoveName("first_class")]
     public class FirstClass : Move
     {
         public override Tuple<Avatar, Dictionary<string, string>> Execute(Avatar avatar)
@@ -179,7 +216,8 @@ namespace Nekoyume.Move
         }
     }
 
-    [Name("move_zone")]
+    [Serializable]
+    [MoveName("move_zone")]
     public class MoveZone : Move
     {
         public override Tuple<Avatar, Dictionary<string, string>> Execute(Avatar avatar)

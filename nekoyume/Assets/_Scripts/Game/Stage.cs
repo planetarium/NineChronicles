@@ -1,10 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using Nekoyume.Model;
+using Nekoyume.Network.Agent;
+using Nekoyume.Move;
+using Planetarium.Crypto.Extension;
 using Planetarium.Crypto.Keys;
 using UnityEngine;
 using UnityEngine.UI;
-
+using Newtonsoft.Json;
 
 namespace Nekoyume.Game
 {
@@ -14,15 +17,34 @@ namespace Nekoyume.Game
         public GameObject avatar;
         public GameObject background = null;
 
+        private Agent agent;
+
         private string zone;
         private User user;
 
+        public void Awake()
+        {
+            var serverUrl = "http://localhost:4000";
+            var privateKeyHex = PlayerPrefs.GetString("private_key", "");
+
+            PrivateKey privateKey = null;
+            if (string.IsNullOrEmpty(privateKeyHex))
+            {
+                privateKey = PrivateKey.Generate();
+            }
+            else
+            {
+                privateKey = PrivateKey.FromBytes(privateKeyHex.ParseHex());
+            }
+            agent = new Agent(serverUrl, privateKey);
+        }
         public void Start()
         {
             InitCamera();
             var key = PrivateKey.Generate();
             user = new User(key);
             LoadBackground("nest");
+            StartCoroutine(agent.Run());
         }
 
         public void InitCamera()
@@ -115,6 +137,11 @@ namespace Nekoyume.Game
         public void Home()
         {
 
+        }
+
+        public void SendMove(Move.Move move)
+        {
+            agent.Send(move);
         }
     }
 }
