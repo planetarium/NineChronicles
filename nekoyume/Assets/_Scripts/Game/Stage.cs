@@ -37,7 +37,7 @@ namespace Nekoyume.Game
                 privateKey = PrivateKey.FromBytes(privateKeyHex.ParseHex());
             }
             agent = new Agent(serverUrl, privateKey);
-            user = new User(privateKey, agent);
+            user = new User(agent);
         }
         public void Start()
         {

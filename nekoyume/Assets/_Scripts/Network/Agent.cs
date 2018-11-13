@@ -1,6 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Linq;
+using System.Text;
 using Nekoyume.Move;
 using Newtonsoft.Json;
 using Planetarium.Crypto.Extension;
@@ -21,11 +24,12 @@ namespace Nekoyume.Network.Agent
 
     public class Agent
     {
-        public event EventHandler<IAction> DidReceiveAction;
+        public event EventHandler<Move.Move> DidReceiveAction;
         private readonly string apiUrl;
         private readonly PrivateKey privateKey;
         private float interval;
-        private List<Move.Move> moves;
+        private OrderedDictionary moves;
+        public byte[] UserAddress => privateKey.ToAddress();
 
         public Agent(string apiUrl, PrivateKey privateKey, float interval = 1.0f)
         {
@@ -37,15 +41,16 @@ namespace Nekoyume.Network.Agent
             this.apiUrl = apiUrl;
             this.privateKey = privateKey;
             this.interval = interval;
-            moves = new List<Move.Move>();
+            this.moves = new OrderedDictionary();
         }
 
-        public void Send(Move.Move action)
+        public void Send(Move.Move move)
         {
-            moves.Add(action);
+            move.Sign(privateKey);
+            moves.Add(move.Id, move);
         }
 
-        public IEnumerable<Move.Move> Moves => moves;
+        public IEnumerable<Move.Move> Moves => moves.Values.Cast<Move.Move>();
 
         public IEnumerator Run()
         {

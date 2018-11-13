@@ -10,28 +10,10 @@ namespace Nekoyume.Model
 {
     public class User
     {
-        public PublicKey PublicKey
-        {
-            get
-            {
-                return privateKey.PublicKey;
-            }
-        }
-        private readonly PrivateKey privateKey;
-
         private readonly Agent agent;
 
-        public byte[] Address
+        public User(Agent agent)
         {
-            get
-            {
-                return PublicKey.ToAddress();
-            }
-        }
-
-        public User(PrivateKey privateKey, Agent agent)
-        {
-            this.privateKey = privateKey;
             this.agent = agent;
         }
 
@@ -92,9 +74,7 @@ namespace Nekoyume.Model
         {
             move.Tax = tax;
             move.Timestamp = (timestamp) ?? DateTime.UtcNow;
-            move.Sign(privateKey);
             agent.Send(move);
-
             return move;
         }
 
@@ -107,7 +87,7 @@ namespace Nekoyume.Model
                 {
                     throw new System.Exception();
                 }
-                var associatedMoves = agent.Moves.Where(m => m.UserAddress.SequenceEqual(Address));
+                var associatedMoves = agent.Moves.Where(m => m.UserAddress.SequenceEqual(agent.UserAddress));
                 associatedMoves = associatedMoves.SkipWhile(m => !(m is CreateNovice));
                 var createNovice = associatedMoves.FirstOrDefault() as CreateNovice;
                 if (createNovice == null)
