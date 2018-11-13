@@ -31,6 +31,7 @@ namespace Nekoyume.Game
             if (string.IsNullOrEmpty(privateKeyHex))
             {
                 privateKey = PrivateKey.Generate();
+                PlayerPrefs.SetString("private_key", privateKey.Bytes.Hex());
             }
             else
             {
