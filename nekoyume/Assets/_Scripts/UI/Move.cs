@@ -38,7 +38,7 @@ namespace Nekoyume.UI
         {
             GameObject stageObj = GameObject.FindGameObjectWithTag("Stage");
             Game.Stage stage = stageObj.GetComponent<Game.Stage>();
-            stage.OnSleep();
+            stage.User.Sleep();
         }
     }
 }

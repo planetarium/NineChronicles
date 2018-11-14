@@ -12,14 +12,42 @@ namespace Nekoyume.Model
     {
         private readonly Agent agent;
 
+        public event EventHandler<Model.Avatar> DidAvatarLoaded;
+        public event EventHandler<Model.Avatar> DidSleep;
 
         public Avatar Avatar { get; private set; }
 
         public User(Agent agent)
         {
             this.agent = agent;
+            this.agent.DidReceiveAction += OnDidReceiveAction;
         }
 
+        private void OnDidReceiveAction(object sender, Move.Move move)
+        {
+            if (Avatar == null)
+            {
+                var moves = agent.Moves.Where(
+                    m => m.UserAddress.SequenceEqual(agent.UserAddress)
+                );
+                Avatar = Avatar.FromMoves(moves);
+                if (Avatar != null)
+                {
+                    DidAvatarLoaded?.Invoke(this, Avatar);
+                }
+            }
+            var executed = move.Execute(Avatar);
+            Avatar = executed.Item1;
+
+            if (move is Sleep)
+            {
+                var result = executed.Item2;
+                if (result["result"] == "success")
+                {
+                    DidSleep?.Invoke(this, Avatar);
+                }
+            }
+        }
 
         public HackAndSlash HackAndSlash(string weapon = null, string armor = null, string food = null, DateTime? timestamp = null)
         {
