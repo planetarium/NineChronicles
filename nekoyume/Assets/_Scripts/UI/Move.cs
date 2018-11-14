@@ -37,8 +37,6 @@ namespace Nekoyume.UI
 
         public void SleepClick()
         {
-            GameObject stageObj = GameObject.FindGameObjectWithTag("Stage");
-            Game.Stage stage = stageObj.GetComponent<Game.Stage>();
             MoveManager.Instance.Sleep();
         }
     }
