@@ -18,48 +18,19 @@ namespace Nekoyume.Game
         public GameObject avatar;
         public GameObject background = null;
 
-        private Agent agent;
-
         private string zone;
-        public User User { get; private set; }
 
         public void Awake()
         {
-            var serverUrl = "http://localhost:4000";
-            var privateKeyHex = PlayerPrefs.GetString("private_key", "");
-
-            PrivateKey privateKey = null;
-            if (string.IsNullOrEmpty(privateKeyHex))
-            {
-                privateKey = PrivateKey.Generate();
-                PlayerPrefs.SetString("private_key", privateKey.Bytes.Hex());
-            }
-            else
-            {
-                privateKey = PrivateKey.FromBytes(privateKeyHex.ParseHex());
-            }
-            agent = new Agent(serverUrl, privateKey);
-            Debug.Log(string.Format("User Adress: 0x{0}", agent.UserAddress.Hex()));
-            User = new User(agent);
-            User.DidAvatarLoaded += OnAvatarLoaded;
-            User.DidSleep += OnSleep;
-        }
-
-        private void OnAvatarLoaded(object sender, Model.Avatar avatar)
-        {
-            LoadBackground("room");
-            zone = avatar.zone;
-            var character = this.avatar.GetComponent<Character>();
-            StartCoroutine(character.Load(this.avatar, avatar.class_));
-            UI.Widget.Create<UI.Move>().Show();
+            MoveManager.Instance.CreateAvatarRequried += OnCreateAvatarRequired;
+            MoveManager.Instance.DidAvatarLoaded += OnAvatarLoaded;
+            MoveManager.Instance.DidSleep += OnSleep;
         }
 
         public void Start()
         {
             InitCamera();
             LoadBackground("nest");
-            StartCoroutine(agent.Listen());
-            StartCoroutine(agent.SendAll());
         }
 
         public void InitCamera()
@@ -130,9 +101,25 @@ namespace Nekoyume.Game
 
         }
 
-        public void OnSleep(object sender, Model.Avatar avatar)
+        private void OnSleep(object sender, Model.Avatar avatar)
         {
             LoadBackground("nest");
+        }
+
+        private void OnAvatarLoaded(object sender, Model.Avatar avatar)
+        {
+            LoadBackground("room");
+            zone = avatar.zone;
+            var character = this.avatar.GetComponent<Character>();
+            StartCoroutine(character.Load(this.avatar, avatar.class_));
+            UI.Widget.Create<UI.Move>().Show();
+        }
+
+        private void OnCreateAvatarRequired(object sender, EventArgs e)
+        {
+            MoveManager.Instance.CreateNovice(new Dictionary<string, string> {
+                {"name", "tester"}
+            });
         }
     }
 }

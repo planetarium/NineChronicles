@@ -1,3 +1,4 @@
+using Nekoyume.Move;
 using UnityEngine;
 
 
@@ -38,7 +39,7 @@ namespace Nekoyume.UI
         {
             GameObject stageObj = GameObject.FindGameObjectWithTag("Stage");
             Game.Stage stage = stageObj.GetComponent<Game.Stage>();
-            stage.User.Sleep();
+            MoveManager.Instance.Sleep();
         }
     }
 }

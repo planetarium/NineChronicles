@@ -1,36 +1,73 @@
-using Nekoyume.Move;
+using Nekoyume.Model;
 using Nekoyume.Network.Agent;
+using Planetarium.Crypto.Extension;
 using Planetarium.Crypto.Keys;
 using Planetarium.SDK.Address;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
-namespace Nekoyume.Model
+namespace Nekoyume.Move
 {
-    public class User
+    public class MoveManager : MonoBehaviour
     {
-        private readonly Agent agent;
+        private Agent agent;
+        public static MoveManager Instance { get; private set; }
+
+        public string ServerUrl;
 
         public event EventHandler<Model.Avatar> DidAvatarLoaded;
         public event EventHandler<Model.Avatar> DidSleep;
 
-        public Avatar Avatar { get; private set; }
+        public Model.Avatar Avatar { get; private set; }
+        public event EventHandler CreateAvatarRequried;
 
-        public User(Agent agent)
+        private void Awake()
         {
-            this.agent = agent;
+            DontDestroyOnLoad(gameObject);
+            Instance = this;
+
+            PrivateKey privateKey = null;
+            var privateKeyHex = PlayerPrefs.GetString("private_key", "");
+
+            if (string.IsNullOrEmpty(privateKeyHex))
+            {
+                privateKey = PrivateKey.Generate();
+                PlayerPrefs.SetString("private_key", privateKey.Bytes.Hex());
+            }
+            else
+            {
+                privateKey = PrivateKey.FromBytes(privateKeyHex.ParseHex());
+            }
+
+            this.agent = new Agent(ServerUrl, privateKey);
             this.agent.DidReceiveAction += OnDidReceiveAction;
+
+            Debug.Log(string.Format("User Adress: 0x{0}", agent.UserAddress.Hex()));
         }
 
-        private void OnDidReceiveAction(object sender, Move.Move move)
+        public void StartSync()
+        {
+            StartCoroutine(agent.FetchMove(delegate (IEnumerable<Move> moves)
+            {
+                if (moves.FirstOrDefault() == null)
+                {
+                    CreateAvatarRequried?.Invoke(this, null);
+                }
+                StartCoroutine(agent.Sync());
+            }));
+        }
+
+        private void OnDidReceiveAction(object sender, Move move)
         {
             if (Avatar == null)
             {
                 var moves = agent.Moves.Where(
                     m => m.UserAddress.SequenceEqual(agent.UserAddress)
                 );
-                Avatar = Avatar.FromMoves(moves);
+                Avatar = Model.Avatar.FromMoves(moves);
                 if (Avatar != null)
                 {
                     DidAvatarLoaded?.Invoke(this, Avatar);
@@ -71,6 +108,11 @@ namespace Nekoyume.Model
             return ProcessMove(has, 0, timestamp);
         }
 
+        public IEnumerator Sync()
+        {
+            return agent.Sync();
+        }
+
         public Sleep Sleep(DateTime? timestamp = null)
         {
             var sleep = new Sleep
@@ -104,7 +146,7 @@ namespace Nekoyume.Model
             return ProcessMove(createNovice, 0, timestamp);
         }
 
-        private T ProcessMove<T>(T move, int tax, DateTime? timestamp) where T : Move.Move
+        private T ProcessMove<T>(T move, int tax, DateTime? timestamp) where T : Move
         {
             move.Tax = tax;
             move.Timestamp = (timestamp) ?? DateTime.UtcNow;
