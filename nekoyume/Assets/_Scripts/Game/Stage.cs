@@ -19,35 +19,17 @@ namespace Nekoyume.Game
         public GameObject background = null;
 
         private string zone;
-        public User User { get; private set; }
 
         public void Awake()
         {
-            var serverUrl = "http://localhost:4000";
-            var privateKeyHex = PlayerPrefs.GetString("private_key", "");
-
-            PrivateKey privateKey = null;
-            if (string.IsNullOrEmpty(privateKeyHex))
-            {
-                privateKey = PrivateKey.Generate();
-                PlayerPrefs.SetString("private_key", privateKey.Bytes.Hex());
-            }
-            else
-            {
-                privateKey = PrivateKey.FromBytes(privateKeyHex.ParseHex());
-            }
-            var agent = new Agent(serverUrl, privateKey);
-            Debug.Log(string.Format("User Adress: 0x{0}", agent.UserAddress.Hex()));
-            User = new User(agent);
-            User.DidAvatarLoaded += OnAvatarLoaded;
-            User.DidSleep += OnSleep;
+            MoveManager.Instance.DidAvatarLoaded += OnAvatarLoaded;
+            MoveManager.Instance.DidSleep += OnSleep;
         }
 
         public void Start()
         {
             InitCamera();
             LoadBackground("nest");
-            StartCoroutine(User.Sync());
         }
 
         public void InitCamera()

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Nekoyume.Model;
+using Nekoyume.Move;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 using UnityEngine.UI;
@@ -27,15 +28,7 @@ namespace Nekoyume.UI
         public void LoginClick()
         {
             btnLogin.SetActive(false);
-            GameObject stageObj = GameObject.FindGameObjectWithTag("Stage");
-            Game.Stage stage = stageObj.GetComponent<Game.Stage>();
-
-            // FIXME replace to input
-            stage.User.CreateNovice(new Dictionary<string, string>
-            {
-                {"name", "test"}
-            });
-            stage.User.FirstClass(CharacterClass.Swordman.ToString().ToLower());
+            MoveManager.Instance.StartSync();
         }
     }
 }
