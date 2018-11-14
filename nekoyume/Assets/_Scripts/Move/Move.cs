@@ -1,4 +1,3 @@
-using Nekoyume.Exception;
 using Nekoyume.Model;
 using Planetarium.Crypto.Extension;
 using Planetarium.Crypto.Keys;
