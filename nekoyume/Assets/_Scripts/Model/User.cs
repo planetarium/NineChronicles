@@ -12,10 +12,14 @@ namespace Nekoyume.Model
     {
         private readonly Agent agent;
 
+
+        public Avatar Avatar { get; private set; }
+
         public User(Agent agent)
         {
             this.agent = agent;
         }
+
 
         public HackAndSlash HackAndSlash(string weapon = null, string armor = null, string food = null, DateTime? timestamp = null)
         {
@@ -76,34 +80,6 @@ namespace Nekoyume.Model
             move.Timestamp = (timestamp) ?? DateTime.UtcNow;
             agent.Send(move);
             return move;
-        }
-
-        public Avatar Avatar
-        {
-            get
-            {
-                // FIXME
-                if (agent.Moves == null)
-                {
-                    throw new System.Exception();
-                }
-                var associatedMoves = agent.Moves.Where(m => m.UserAddress.SequenceEqual(agent.UserAddress));
-                associatedMoves = associatedMoves.SkipWhile(m => !(m is CreateNovice));
-                var createNovice = associatedMoves.FirstOrDefault() as CreateNovice;
-                if (createNovice == null)
-                {
-                    return null;
-                }
-
-                var avatar = createNovice.Execute(null).Item1;
-
-                foreach (var move in associatedMoves.Skip(1))
-                {
-                    avatar = move.Execute(avatar).Item1;
-                }
-
-                return avatar;
-            }
         }
     }
 }
