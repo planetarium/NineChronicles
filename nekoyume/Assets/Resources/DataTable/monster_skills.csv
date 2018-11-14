@@ -1,8 +1,2 @@
-id,cls,class_,unlock_lv,cast_time,cooltime,target_count,power
-monster_attack,Attack,monster,0,0,2,1,100
-slime_slow,Slow,monster,0,1,3,1,100
-monster_light_attack,Attack,monster,0,0,1,1,70
-monster_heavy_attack,Attack,monster,0,0,5,1,150
-monster_multi_attack,Attack,monster,0,0,3,5,90
-monster_ranged_attack,Attack,monster,0,0,2,1,100
-monster_magic_attack,Attack,monster,0,0,2,1,100
+id,cls,power,attack_type,elemental_type,cooltime,casting_time,target_count
+monster_attack,Attack,100,1,0,2,0,1
