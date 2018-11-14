@@ -22,6 +22,7 @@ namespace Nekoyume.Move
         public event EventHandler<Model.Avatar> DidSleep;
 
         public Model.Avatar Avatar { get; private set; }
+        public event EventHandler CreateAvatarRequried;
 
         private void Awake()
         {
@@ -49,7 +50,14 @@ namespace Nekoyume.Move
 
         public void StartSync()
         {
-            StartCoroutine(agent.Sync());
+            StartCoroutine(agent.FetchMove(delegate (IEnumerable<Move> moves)
+            {
+                if (moves.FirstOrDefault() == null)
+                {
+                    CreateAvatarRequried?.Invoke(this, null);
+                }
+                StartCoroutine(agent.Sync());
+            }));
         }
 
         private void OnDidReceiveAction(object sender, Move move)

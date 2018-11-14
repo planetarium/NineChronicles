@@ -22,6 +22,7 @@ namespace Nekoyume.Game
 
         public void Awake()
         {
+            MoveManager.Instance.CreateAvatarRequried += OnCreateAvatarRequired;
             MoveManager.Instance.DidAvatarLoaded += OnAvatarLoaded;
             MoveManager.Instance.DidSleep += OnSleep;
         }
@@ -112,6 +113,13 @@ namespace Nekoyume.Game
             var character = this.avatar.GetComponent<Character>();
             StartCoroutine(character.Load(this.avatar, avatar.class_));
             UI.Widget.Create<UI.Move>().Show();
+        }
+
+        private void OnCreateAvatarRequired(object sender, EventArgs e)
+        {
+            MoveManager.Instance.CreateNovice(new Dictionary<string, string> {
+                {"name", "tester"}
+            });
         }
     }
 }
