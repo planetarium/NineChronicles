@@ -1018,28 +1018,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TableId: 1cHqNuLs2gVXjwvEvGK-PhYqZ8eJbJOKq01FEPOlRobg
   Sheets:
-  - Name: exp
-    Id: 1125104456
-  - Name: item_drop
-    Id: 284881561
-  - Name: item_equips
-    Id: 764910945
-  - Name: items
-    Id: 1345886141
-  - Name: monster_appear
-    Id: 2086385162
-  - Name: monster_skills
-    Id: 6164447
-  - Name: monsters
-    Id: 2027724350
-  - Name: npc
-    Id: 1581312242
-  - Name: skills
-    Id: 314491149
   - Name: stats
     Id: 1597343045
-  - Name: zone
-    Id: 2005215714
+  - Name: skills
+    Id: 314491149
+  - Name: stage
+    Id: 1929477522
+  - Name: monster_appear
+    Id: 2086385162
+  - Name: monsters
+    Id: 2027724350
+  - Name: monster_skills
+    Id: 6164447
   SaveFolder: {fileID: 102900000, guid: 9172f5c8cf750504db7dfbdece5da86c, type: 3}
 --- !u!4 &1500514263
 Transform:
