@@ -102,7 +102,7 @@ namespace Nekoyume.Move
             base.Sign(privateKey);
         }
 
-        public abstract Tuple<Avatar, Dictionary<string, string>> Execute(Avatar avatar);
+        public abstract Context Execute(Context ctx);
 
         public static Move FromPlainValue(IDictionary<string, dynamic> plainValue, Type type)
         {
@@ -140,99 +140,93 @@ namespace Nekoyume.Move
             Details = details;
         }
 
-        public override Tuple<Avatar, Dictionary<string, string>> Execute(Avatar avatar)
+        public override Context Execute(Context ctx)
         {
-            if (avatar.dead)
+            if (ctx.avatar.dead)
             {
                 throw new InvalidMoveException();
             }
             // TODO client battle result
-            var result = "";
-            return new Tuple<Avatar, Dictionary<string, string>>(
-                avatar, new Dictionary<string, string>
-                {
-                    {"type", "hack_and_slash"},
-                    {"result", result}
-                }
-            );
+            var result = new Dictionary<string, string>
+            {
+                {"type", "hack_and_slash"},
+                {"result", "result"}
+            };
+            ctx.result = result;
+            return ctx;
         }
     }
 
     [MoveName("sleep")]
     public class Sleep : Move
     {
-        public override Tuple<Avatar, Dictionary<string, string>> Execute(Avatar avatar)
+        public override Context Execute(Context ctx)
         {
-            avatar.hp = avatar.hp_max;
-            return new Tuple<Avatar, Dictionary<string, string>>(
-                avatar, new Dictionary<string, string>
-                {
+            ctx.avatar.hp = ctx.avatar.hp_max;
+            ctx.result = new Dictionary<string, string>
+            {
                     {"type", "sleep"},
                     {"result", "success"}
-                }
-            );
+            };
+            return ctx;
         }
     }
 
     [MoveName("create_novice")]
     public class CreateNovice : Move
     {
-        public override Tuple<Avatar, Dictionary<string, string>> Execute(Avatar avatar)
+        public override Context Execute(Context ctx)
         {
             Dictionary<string, string> result = new Dictionary<string, string>
             {
                 {"type", "create_novice"},
                 {"result", "success"}
             };
-            return new Tuple<Avatar, Dictionary<string, string>>(
-                new Avatar
-                {
-                    name = Details["name"],
-                    user = UserAddress,
-                    gold = 0,
-                    class_ = CharacterClass.Novice.ToString(),
-                    level = 1,
-                    zone = "zone_0",
-                    strength = 10,
-                    dexterity = 8,
-                    intelligence = 9,
-                    constitution = 9,
-                    luck = 9,
-                    hp_max = 10
-                }, result
-            );
+            ctx.avatar = new Avatar
+            {
+                name = Details["name"],
+                user = UserAddress,
+                gold = 0,
+                class_ = CharacterClass.Novice.ToString(),
+                level = 1,
+                zone = "zone_0",
+                strength = 10,
+                dexterity = 8,
+                intelligence = 9,
+                constitution = 9,
+                luck = 9,
+                hp_max = 10
+            };
+            return ctx;
         }
     }
 
     [MoveName("first_class")]
     public class FirstClass : Move
     {
-        public override Tuple<Avatar, Dictionary<string, string>> Execute(Avatar avatar)
+        public override Context Execute(Context ctx)
         {
             Dictionary<string, string> result = new Dictionary<string, string>
             {
                 {"type", "first_class"},
                 {"result", "success"}
             };
-            if (avatar.class_ != CharacterClass.Novice.ToString())
+            ctx.result = result;
+            if (ctx.avatar.class_ != CharacterClass.Novice.ToString())
             {
-                result["result"] = "failed";
-                result["message"] = "Already change class.";
-                return new Tuple<Avatar, Dictionary<string, string>>(
-                    avatar, result
-                );
+                ctx.result["result"] = "failed";
+                ctx.result["message"] = "Already change class.";
+                return ctx;
             }
-            avatar.class_ = Details["class"];
-            return new Tuple<Avatar, Dictionary<string, string>>(
-                avatar, result
-            );
+            ctx.avatar.class_ = Details["class"];
+            return ctx;
         }
     }
 
     [MoveName("move_zone")]
     public class MoveZone : Move
     {
-        public override Tuple<Avatar, Dictionary<string, string>> Execute(Avatar avatar)
+        public override Context Execute(Context ctx)
         {
             throw new NotImplementedException();
         }
