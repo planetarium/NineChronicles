@@ -146,7 +146,15 @@ namespace Nekoyume.Move
             {
                 throw new InvalidMoveException();
             }
-            throw new NotImplementedException();
+            // TODO client battle result
+            var result = "";
+            return new Tuple<Avatar, Dictionary<string, string>>(
+                avatar, new Dictionary<string, string>
+                {
+                    {"type", "hack_and_slash"},
+                    {"result", result}
+                }
+            );
         }
     }
 
