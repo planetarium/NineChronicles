@@ -43,15 +43,6 @@ namespace Nekoyume.Game
             User.DidSleep += OnSleep;
         }
 
-        private void OnAvatarLoaded(object sender, Model.Avatar avatar)
-        {
-            LoadBackground("room");
-            zone = avatar.zone;
-            var character = this.avatar.GetComponent<Character>();
-            StartCoroutine(character.Load(this.avatar, avatar.class_));
-            UI.Widget.Create<UI.Move>().Show();
-        }
-
         public void Start()
         {
             InitCamera();
@@ -127,9 +118,18 @@ namespace Nekoyume.Game
 
         }
 
-        public void OnSleep(object sender, Model.Avatar avatar)
+        private void OnSleep(object sender, Model.Avatar avatar)
         {
             LoadBackground("nest");
+        }
+
+        private void OnAvatarLoaded(object sender, Model.Avatar avatar)
+        {
+            LoadBackground("room");
+            zone = avatar.zone;
+            var character = this.avatar.GetComponent<Character>();
+            StartCoroutine(character.Load(this.avatar, avatar.class_));
+            UI.Widget.Create<UI.Move>().Show();
         }
     }
 }
