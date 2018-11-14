@@ -24,6 +24,10 @@ namespace Nekoyume.Move
         public Model.Avatar Avatar { get; private set; }
         public event EventHandler CreateAvatarRequried;
 
+        private long? lastBlockId;
+
+        private static string LAST_BLOCK_ID_KEY = "last_block_id";
+
         private void Awake()
         {
             DontDestroyOnLoad(gameObject);
@@ -46,6 +50,11 @@ namespace Nekoyume.Move
             this.agent.DidReceiveAction += OnDidReceiveAction;
 
             Debug.Log(string.Format("User Adress: 0x{0}", agent.UserAddress.Hex()));
+
+            if (PlayerPrefs.HasKey(LAST_BLOCK_ID_KEY))
+            {
+                lastBlockId = long.Parse(PlayerPrefs.GetString(LAST_BLOCK_ID_KEY));
+            }
         }
 
         public void StartSync()
@@ -73,19 +82,25 @@ namespace Nekoyume.Move
                     DidAvatarLoaded?.Invoke(this, Avatar);
                 }
             }
-            var ctx = new Context();
-            ctx.avatar = Avatar;
-            var executed = move.Execute(ctx);
-            Avatar = executed.avatar;
 
-            if (move is Sleep)
+            if (lastBlockId.HasValue && move.BlockId > lastBlockId)
             {
-                var result = executed.result;
-                if (result["result"] == "success")
+                var ctx = new Context();
+                ctx.avatar = Avatar;
+                Context executed = move.Execute(ctx);
+                Avatar = executed.avatar;
+
+                if (move is Sleep)
                 {
-                    DidSleep?.Invoke(this, Avatar);
+                    var result = executed.result;
+                    if (result["result"] == "success")
+                    {
+                        DidSleep?.Invoke(this, Avatar);
+                    }
                 }
             }
+
+            PlayerPrefs.SetString(LAST_BLOCK_ID_KEY, move.BlockId.ToString());
         }
 
         public HackAndSlash HackAndSlash(string weapon = null, string armor = null, string food = null, DateTime? timestamp = null)
