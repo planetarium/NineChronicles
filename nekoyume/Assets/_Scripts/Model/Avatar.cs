@@ -39,11 +39,12 @@ namespace Nekoyume.Model
                 return null;
             }
 
-            var avatar = createNovice.Execute(null).Item1;
+            var ctx = new Context();
+            var avatar = createNovice.Execute(ctx).avatar;
 
             foreach (var move in moves.Skip(1))
             {
-                avatar = move.Execute(avatar).Item1;
+                avatar = move.Execute(ctx).avatar;
             }
 
             return avatar;

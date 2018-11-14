@@ -36,12 +36,14 @@ namespace Nekoyume.Model
                     DidAvatarLoaded?.Invoke(this, Avatar);
                 }
             }
-            var executed = move.Execute(Avatar);
-            Avatar = executed.Item1;
+            var ctx = new Context();
+            ctx.avatar = Avatar;
+            var executed = move.Execute(ctx);
+            Avatar = executed.avatar;
 
             if (move is Sleep)
             {
-                var result = executed.Item2;
+                var result = executed.result;
                 if (result["result"] == "success")
                 {
                     DidSleep?.Invoke(this, Avatar);
