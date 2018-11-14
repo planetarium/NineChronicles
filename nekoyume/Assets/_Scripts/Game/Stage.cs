@@ -18,8 +18,6 @@ namespace Nekoyume.Game
         public GameObject avatar;
         public GameObject background = null;
 
-        private Agent agent;
-
         private string zone;
         public User User { get; private set; }
 
@@ -38,7 +36,7 @@ namespace Nekoyume.Game
             {
                 privateKey = PrivateKey.FromBytes(privateKeyHex.ParseHex());
             }
-            agent = new Agent(serverUrl, privateKey);
+            var agent = new Agent(serverUrl, privateKey);
             Debug.Log(string.Format("User Adress: 0x{0}", agent.UserAddress.Hex()));
             User = new User(agent);
             User.DidAvatarLoaded += OnAvatarLoaded;
@@ -58,8 +56,7 @@ namespace Nekoyume.Game
         {
             InitCamera();
             LoadBackground("nest");
-            StartCoroutine(agent.Listen());
-            StartCoroutine(agent.SendAll());
+            StartCoroutine(User.Sync());
         }
 
         public void InitCamera()

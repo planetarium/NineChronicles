@@ -3,6 +3,7 @@ using Nekoyume.Network.Agent;
 using Planetarium.Crypto.Keys;
 using Planetarium.SDK.Address;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -69,6 +70,11 @@ namespace Nekoyume.Model
             var has = new HackAndSlash(details);
 
             return ProcessMove(has, 0, timestamp);
+        }
+
+        public IEnumerator Sync()
+        {
+            return agent.Sync();
         }
 
         public Sleep Sleep(DateTime? timestamp = null)

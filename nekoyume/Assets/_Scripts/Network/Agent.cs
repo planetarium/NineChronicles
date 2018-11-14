@@ -55,8 +55,9 @@ namespace Nekoyume.Network.Agent
 
         public IEnumerable<Move.Move> Moves => moves.Values.Cast<Move.Move>();
 
-        public IEnumerator SendAll()
+        public IEnumerator Sync()
         {
+            long? lastBlockOffset = null;
             while (true)
             {
                 yield return new WaitForSeconds(interval);
@@ -66,6 +67,25 @@ namespace Nekoyume.Network.Agent
                 foreach (var m in chunks)
                 {
                     yield return SendMove(m);
+                }
+                var url = string.Format("{0}/users/0x{1}/moves/", apiUrl, UserAddress.Hex());
+
+                if (lastBlockOffset.HasValue)
+                {
+                    url += string.Format("?block_offset={0}", lastBlockOffset);
+                }
+                var www = UnityWebRequest.Get(url);
+                yield return www.SendWebRequest();
+                if (!www.isNetworkError)
+                {
+                    var jsonPayload = www.downloadHandler.text;
+                    var response = JsonConvert.DeserializeObject<Response>(jsonPayload, moveJsonConverter);
+                    foreach (var move in response.moves)
+                    {
+                        moves[move.Id] = move;
+                        DidReceiveAction?.Invoke(this, move);
+                        lastBlockOffset = move.BlockId;
+                    }
                 }
             }
         }
@@ -86,37 +106,6 @@ namespace Nekoyume.Network.Agent
             {
                 // FIXME implement better retry logic.(e.g. jitter)
                 yield return SendMove(move);
-            }
-        }
-
-        public IEnumerator Listen()
-        {
-            long? lastBlockOffset = null;
-
-            while (true)
-            {
-                yield return new WaitForSeconds(interval);
-                var url = string.Format(
-                    "{0}/users/0x{1}/moves/", apiUrl, privateKey.ToAddress().Hex()
-                );
-
-                if (lastBlockOffset.HasValue)
-                {
-                    url += string.Format("?block_offset={0}", lastBlockOffset);
-                }
-                var www = UnityWebRequest.Get(url);
-                yield return www.SendWebRequest();
-                if (!www.isNetworkError)
-                {
-                    var jsonPayload = www.downloadHandler.text;
-                    var response = JsonConvert.DeserializeObject<Response>(jsonPayload, moveJsonConverter);
-                    foreach (var move in response.moves)
-                    {
-                        moves[move.Id] = move;
-                        DidReceiveAction?.Invoke(this, move);
-                        lastBlockOffset = move.BlockId;
-                    }
-                }
             }
         }
     }
