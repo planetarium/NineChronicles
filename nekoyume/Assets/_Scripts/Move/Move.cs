@@ -1,3 +1,4 @@
+using Nekoyume.Exception;
 using Nekoyume.Model;
 using Planetarium.Crypto.Extension;
 using Planetarium.Crypto.Keys;
@@ -143,8 +144,7 @@ namespace Nekoyume.Move
         {
             if (avatar.dead)
             {
-                // TODO Implement InvalidMoveException
-                throw new Exception();
+                throw new InvalidMoveException();
             }
             throw new NotImplementedException();
         }
