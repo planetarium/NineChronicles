@@ -11,7 +11,7 @@ namespace Nekoyume.Move
     {
         public override bool CanConvert(Type objectType)
         {
-            return objectType == typeof(Move);
+            return typeof(Move).IsAssignableFrom(objectType);
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
@@ -34,7 +34,16 @@ namespace Nekoyume.Move
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            throw new NotImplementedException();
+            var move = value as Move;
+            var jo = new JObject();
+            foreach (var kv in move.PlainValue)
+            {
+                jo.Add(kv.Key, JToken.FromObject(kv.Value));
+            }
+            jo.Add("signature", JToken.FromObject(move.Signature.Hex()));
+            jo.Add("id", JToken.FromObject(move.Id.Hex()));
+            jo.Add("user_public_key", move.PublicKey.Format(true).Hex());
+            jo.WriteTo(writer);
         }
     }
 }

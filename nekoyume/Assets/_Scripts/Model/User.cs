@@ -10,29 +10,43 @@ namespace Nekoyume.Model
 {
     public class User
     {
-        public PublicKey PublicKey
-        {
-            get
-            {
-                return privateKey.PublicKey;
-            }
-        }
-        private readonly PrivateKey privateKey;
-
         private readonly Agent agent;
 
-        public byte[] Address
+        public event EventHandler<Model.Avatar> DidAvatarLoaded;
+        public event EventHandler<Model.Avatar> DidSleep;
+
+        public Avatar Avatar { get; private set; }
+
+        public User(Agent agent)
         {
-            get
-            {
-                return PublicKey.ToAddress();
-            }
+            this.agent = agent;
+            this.agent.DidReceiveAction += OnDidReceiveAction;
         }
 
-        public User(PrivateKey privateKey, Agent agent)
+        private void OnDidReceiveAction(object sender, Move.Move move)
         {
-            this.privateKey = privateKey;
-            this.agent = agent;
+            if (Avatar == null)
+            {
+                var moves = agent.Moves.Where(
+                    m => m.UserAddress.SequenceEqual(agent.UserAddress)
+                );
+                Avatar = Avatar.FromMoves(moves);
+                if (Avatar != null)
+                {
+                    DidAvatarLoaded?.Invoke(this, Avatar);
+                }
+            }
+            var executed = move.Execute(Avatar);
+            Avatar = executed.Item1;
+
+            if (move is Sleep)
+            {
+                var result = executed.Item2;
+                if (result["result"] == "success")
+                {
+                    DidSleep?.Invoke(this, Avatar);
+                }
+            }
         }
 
         public HackAndSlash HackAndSlash(string weapon = null, string armor = null, string food = null, DateTime? timestamp = null)
@@ -92,38 +106,8 @@ namespace Nekoyume.Model
         {
             move.Tax = tax;
             move.Timestamp = (timestamp) ?? DateTime.UtcNow;
-            move.Sign(privateKey);
             agent.Send(move);
-
             return move;
-        }
-
-        public Avatar Avatar
-        {
-            get
-            {
-                // FIXME
-                if (agent.Moves == null)
-                {
-                    throw new System.Exception();
-                }
-                var associatedMoves = agent.Moves.Where(m => m.UserAddress.SequenceEqual(Address));
-                associatedMoves = associatedMoves.SkipWhile(m => !(m is CreateNovice));
-                var createNovice = associatedMoves.FirstOrDefault() as CreateNovice;
-                if (createNovice == null)
-                {
-                    return null;
-                }
-
-                var avatar = createNovice.Execute(null).Item1;
-
-                foreach (var move in associatedMoves.Skip(1))
-                {
-                    avatar = move.Execute(avatar).Item1;
-                }
-
-                return avatar;
-            }
         }
     }
 }

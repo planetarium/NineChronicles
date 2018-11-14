@@ -3,6 +3,7 @@ using Planetarium.Crypto.Extension;
 using Planetarium.Crypto.Keys;
 using Planetarium.SDK.Action;
 using Planetarium.SDK.Address;
+using Planetarium.SDK.Bencode;
 using Planetarium.SDK.Tx;
 using System;
 using System.Collections.Generic;
@@ -34,7 +35,7 @@ namespace Nekoyume.Move
         }
     }
 
-    public abstract class Move : BaseTransaction, IAction, ISerializable
+    public abstract class Move : BaseTransaction, IAction
     {
         private static string TIMESTAMP_FORMAT = "yyyy-MM-dd HH:mm:ss.ffffff";
 
@@ -57,7 +58,9 @@ namespace Nekoyume.Move
         public int Tax { get; set; }
         public new DateTime Timestamp { get; set; }
 
-        public long BlockId { get; private set; }
+        public long? BlockId { get; private set; }
+
+        public bool Confirmed => BlockId.HasValue;
 
         public override IDictionary<string, dynamic> PlainValue
         {
@@ -65,7 +68,7 @@ namespace Nekoyume.Move
             {
                 return new Dictionary<string, dynamic>
                 {
-                    { "user_address", UserAddress.Hex() },
+                    { "user_address", "0x" + UserAddress.Hex() },
                     { "name", Name },
                     { "details", Details },
                     { "created_at", Timestamp.ToString(TIMESTAMP_FORMAT) },
@@ -100,15 +103,6 @@ namespace Nekoyume.Move
 
         public abstract Tuple<Avatar, Dictionary<string, string>> Execute(Avatar avatar);
 
-        public void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            foreach (var kv in PlainValue)
-            {
-                info.AddValue(kv.Key, kv.Value);
-            }
-            info.AddValue("signature", Signature.Hex());
-        }
-
         public static Move FromPlainValue(IDictionary<string, dynamic> plainValue, Type type)
         {
             var move = Activator.CreateInstance(type) as Move;
@@ -122,9 +116,21 @@ namespace Nekoyume.Move
             move.BlockId = plainValue["block"].ToObject<Dictionary<string, dynamic>>()["id"];
             return move;
         }
+
+        public override byte[] Serialize(bool sign)
+        {
+            var values = PlainValue;
+
+            if (sign)
+            {
+                values["signature"] = Signature;
+                values["user_public_key"] = PublicKey.Format(true);
+            }
+
+            return values.ToBencoded();
+        }
     }
 
-    [Serializable]
     [MoveName("hack_and_slash")]
     public class HackAndSlash : Move
     {
@@ -144,7 +150,6 @@ namespace Nekoyume.Move
         }
     }
 
-    [Serializable]
     [MoveName("sleep")]
     public class Sleep : Move
     {
@@ -161,7 +166,6 @@ namespace Nekoyume.Move
         }
     }
 
-    [Serializable]
     [MoveName("create_novice")]
     public class CreateNovice : Move
     {
@@ -192,7 +196,6 @@ namespace Nekoyume.Move
         }
     }
 
-    [Serializable]
     [MoveName("first_class")]
     public class FirstClass : Move
     {
@@ -218,7 +221,6 @@ namespace Nekoyume.Move
         }
     }
 
-    [Serializable]
     [MoveName("move_zone")]
     public class MoveZone : Move
     {

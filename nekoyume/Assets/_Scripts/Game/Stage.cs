@@ -8,6 +8,7 @@ using Planetarium.Crypto.Keys;
 using UnityEngine;
 using UnityEngine.UI;
 using Newtonsoft.Json;
+using System;
 
 namespace Nekoyume.Game
 {
@@ -20,7 +21,7 @@ namespace Nekoyume.Game
         private Agent agent;
 
         private string zone;
-        private User user;
+        public User User { get; private set; }
 
         public void Awake()
         {
@@ -31,19 +32,34 @@ namespace Nekoyume.Game
             if (string.IsNullOrEmpty(privateKeyHex))
             {
                 privateKey = PrivateKey.Generate();
+                PlayerPrefs.SetString("private_key", privateKey.Bytes.Hex());
             }
             else
             {
                 privateKey = PrivateKey.FromBytes(privateKeyHex.ParseHex());
             }
             agent = new Agent(serverUrl, privateKey);
-            user = new User(privateKey, agent);
+            Debug.Log(string.Format("User Adress: 0x{0}", agent.UserAddress.Hex()));
+            User = new User(agent);
+            User.DidAvatarLoaded += OnAvatarLoaded;
+            User.DidSleep += OnSleep;
         }
+
+        private void OnAvatarLoaded(object sender, Model.Avatar avatar)
+        {
+            LoadBackground("room");
+            zone = avatar.zone;
+            var character = this.avatar.GetComponent<Character>();
+            StartCoroutine(character.Load(this.avatar, avatar.class_));
+            UI.Widget.Create<UI.Move>().Show();
+        }
+
         public void Start()
         {
             InitCamera();
             LoadBackground("nest");
-            StartCoroutine(agent.Run());
+            StartCoroutine(agent.Listen());
+            StartCoroutine(agent.SendAll());
         }
 
         public void InitCamera()
@@ -76,30 +92,6 @@ namespace Nekoyume.Game
             var camPosition = followCam.transform.position;
             camPosition.x = 0;
             followCam.transform.position = camPosition;
-        }
-
-        public void OnLogin(Network.Response.Login response)
-        {
-            LoadBackground("room");
-            zone = response.avatar.zone;
-            var character = avatar.GetComponent<Character>();
-            StartCoroutine(character.Load(avatar, response.avatar.class_));
-            UI.Widget.Create<UI.Move>().Show();
-        }
-
-        public void OnLogin()
-        {
-            LoadBackground("room");
-            var move = user.CreateNovice(new Dictionary<string, string>
-            {
-                {"name", "test"}
-            });
-            var _avatar = user.Avatar;
-            var jobChange = user.FirstClass(CharacterClass.Swordman.ToString());
-            _avatar = user.Avatar;
-            var character = avatar.GetComponent<Character>();
-            StartCoroutine(character.Load(avatar, _avatar.class_));
-            UI.Widget.Create<UI.Move>().Show();
         }
 
         public void Move()
@@ -138,24 +130,9 @@ namespace Nekoyume.Game
 
         }
 
-        public void SendMove(Move.Move move)
+        public void OnSleep(object sender, Model.Avatar avatar)
         {
-            agent.Send(move);
-        }
-
-        public void OnSleep()
-        {
-            var avatar = user.Avatar;
-            int hpMax = avatar.hp_max;
-            var move = user.Sleep();
-            var sleep = move.Execute(avatar);
-            avatar = sleep.Item1;
-            var result = sleep.Item2;
-            Debug.Assert(avatar.hp == hpMax);
-            if (result["result"] == "success")
-            {
-                LoadBackground("nest");
-            }
+            LoadBackground("nest");
         }
     }
 }

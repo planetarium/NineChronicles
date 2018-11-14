@@ -30,6 +30,24 @@ namespace Nekoyume.Model
                 return hp <= 0;
             }
         }
+
+        public static Avatar FromMoves(IEnumerable<Move.Move> moves)
+        {
+            var createNovice = moves.FirstOrDefault() as CreateNovice;
+            if (createNovice == null)
+            {
+                return null;
+            }
+
+            var avatar = createNovice.Execute(null).Item1;
+
+            foreach (var move in moves.Skip(1))
+            {
+                avatar = move.Execute(avatar).Item1;
+            }
+
+            return avatar;
+        }
     }
 
     public enum CharacterClass

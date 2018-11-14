@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using Nekoyume.Model;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 using UnityEngine.UI;
@@ -20,13 +22,6 @@ namespace Nekoyume.UI
 
         public void JoinClick()
         {
-            joinModal.SetActive(false);
-            var nameField = joinModal.GetComponentInChildren<InputField>();
-            new Network.Request.Join()
-            {
-                name = nameField.text,
-                ResponseCallback = OnLogin
-            }.Send();
         }
 
         public void LoginClick()
@@ -34,23 +29,13 @@ namespace Nekoyume.UI
             btnLogin.SetActive(false);
             GameObject stageObj = GameObject.FindGameObjectWithTag("Stage");
             Game.Stage stage = stageObj.GetComponent<Game.Stage>();
-            stage.OnLogin();
-        }
 
-        public void OnLogin(Network.Response.Login response)
-        {
-            GameObject stageObj = GameObject.FindGameObjectWithTag("Stage");
-            Game.Stage stage = stageObj.GetComponent<Game.Stage>();
-            if (response.result == Network.ResultCode.OK)
+            // FIXME replace to input
+            stage.User.CreateNovice(new Dictionary<string, string>
             {
-                stage.OnLogin(response);
-                Close();
-            }
-            else
-            {
-                Debug.Log(response.message);
-                joinModal.SetActive(true);
-            }
+                {"name", "test"}
+            });
+            stage.User.FirstClass(CharacterClass.Swordman.ToString().ToLower());
         }
     }
 }
