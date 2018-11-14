@@ -44,7 +44,8 @@ namespace Nekoyume.Game
         {
             InitCamera();
             LoadBackground("nest");
-            StartCoroutine(agent.Run());
+            StartCoroutine(agent.Listen());
+            StartCoroutine(agent.SendAll());
         }
 
         public void InitCamera()

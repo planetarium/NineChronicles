@@ -58,7 +58,9 @@ namespace Nekoyume.Move
         public int Tax { get; set; }
         public new DateTime Timestamp { get; set; }
 
-        public long BlockId { get; private set; }
+        public long? BlockId { get; private set; }
+
+        public bool Confirmed => BlockId.HasValue;
 
         public override IDictionary<string, dynamic> PlainValue
         {
