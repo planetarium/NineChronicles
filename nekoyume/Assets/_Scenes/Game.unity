@@ -289,7 +289,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 635c1889a04db7842a716e5650f5a66f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ServerUrl: http://localhost:4000/
+  ServerUrl: http://localhost:4000
 --- !u!4 &1003801138
 Transform:
   m_ObjectHideFlags: 0
