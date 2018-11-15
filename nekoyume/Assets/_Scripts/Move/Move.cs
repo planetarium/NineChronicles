@@ -183,7 +183,7 @@ namespace Nekoyume.Move
                 gold = 0,
                 class_ = CharacterClass.Novice.ToString(),
                 level = 1,
-                zone = "zone_0",
+                main_stage = 1,
                 strength = 10,
                 dexterity = 8,
                 intelligence = 9,

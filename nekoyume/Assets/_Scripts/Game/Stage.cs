@@ -1,40 +1,103 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Nekoyume.Move;
 using UnityEngine;
 
 namespace Nekoyume.Game
 {
+    public enum StageType
+    {
+        Room,
+        World,
+    }
+
     public class Stage : MonoBehaviour
     {
-        private FollowCamera followCam = null;
+        public int Id { get; private set; }
+        private ActionCamera actionCam = null;
+        private UI.Blind blind = null;
+        private UI.Move moveWidget = null;
         private GameObject background = null;
         private GameObject characters = null;
 
-        public void Awake()
+
+        private void Awake()
         {
-            MoveManager.Instance.CreateAvatarRequried += OnCreateAvatarRequired;
-            MoveManager.Instance.DidAvatarLoaded += OnAvatarLoaded;
-            MoveManager.Instance.DidSleep += OnSleep;
+            Event.OnStageEnter.AddListener(OnStageEnter);
         }
 
-        public void Start()
+        private void Start()
         {
             InitCamera();
+            InitUI();
             LoadBackground("nest");
         }
 
-        public void InitCamera()
+        private void InitCamera()
         {
-            followCam = Camera.main.gameObject.GetComponent<FollowCamera>();
-            if (followCam == null)
+            actionCam = Camera.main.gameObject.GetComponent<ActionCamera>();
+            if (actionCam == null)
             {
-                followCam = Camera.main.gameObject.AddComponent<FollowCamera>();
+                actionCam = Camera.main.gameObject.AddComponent<ActionCamera>();
             }
         }
 
-        public void LoadBackground(string prefabName)
+        private void InitUI()
+        {
+            blind = UI.Widget.Create<UI.Blind>();
+            moveWidget = UI.Widget.Create<UI.Move>();
+            moveWidget.Close();
+        }
+
+        private void OnRoomEnter(Model.Avatar avatar)
+        {
+            LoadBackground("room");
+            LoadCharacter(avatar.class_);
+        }
+
+        private void OnStageEnter(Model.Avatar avatar)
+        {
+            string stageType = PlayerPrefs.GetString(nameof(StageType), StageType.Room.ToString());
+            string method = $"{stageType}Entering";
+            StartCoroutine(method, avatar);
+        }
+
+        private IEnumerator RoomEntering(Model.Avatar avatar)
+        {
+            PlayerPrefs.SetString(nameof(StageType), StageType.Room.ToString());
+            Id = 0;
+            blind.Show();
+            blind.FadeIn(1.0f);
+            yield return new WaitForSeconds(1.0f);
+            moveWidget.Show();
+            LoadBackground("room");
+            LoadCharacter(avatar.class_);
+            blind.FadeOut(1.0f);
+            yield return new WaitForSeconds(1.0f);
+            blind.Close();
+            Event.OnStageStart.Invoke();
+        }
+
+        private IEnumerator WorldEntering(Model.Avatar avatar)
+        {
+            Data.Table.Stage data;
+            var tables = this.GetRootComponent<Data.Tables>();
+            if (tables.Stage.TryGetValue(avatar.main_stage, out data))
+            {
+                PlayerPrefs.SetString(nameof(StageType), StageType.World.ToString());
+                Id = avatar.main_stage;
+                blind.FadeIn(1.0f);
+                yield return new WaitForSeconds(1.0f);
+                moveWidget.Show();
+                LoadBackground(data.Background);
+                // TODO: Load characters
+                blind.FadeOut(1.0f);
+                yield return new WaitForSeconds(1.0f);
+                Event.OnStageStart.Invoke();
+            }
+        }
+
+        private void LoadBackground(string prefabName)
         {
             if (background != null)
             {
@@ -52,12 +115,12 @@ namespace Nekoyume.Game
                 background = Instantiate(prefab, transform);
                 background.name = prefabName;
             }
-            var camPosition = followCam.transform.position;
+            var camPosition = actionCam.transform.position;
             camPosition.x = 0;
-            followCam.transform.position = camPosition;
+            actionCam.transform.position = camPosition;
         }
 
-        private void LoadCharacter()
+        private void LoadCharacter(string avatarClass)
         {
             if (characters == null)
             {
@@ -66,7 +129,7 @@ namespace Nekoyume.Game
             }
             var go = Instantiate(Resources.Load<GameObject>("Prefab/Character"), characters.transform);
             var character = go.GetComponent<Character>();
-            character._Load(go, MoveManager.Instance.Avatar.class_);
+            character._Load(go, avatarClass);
         }
 
         private void LoadMonster(int monsterCode)
@@ -79,32 +142,6 @@ namespace Nekoyume.Game
             var go = Instantiate(Resources.Load<GameObject>("Prefab/Character"), characters.transform);
             var character = go.GetComponent<Character>();
             character._Load(go, monsterCode.ToString());
-        }
-
-        private void OnCreateAvatarRequired(object sender, EventArgs e)
-        {
-            MoveManager.Instance.CreateNovice(new Dictionary<string, string> {
-                {"name", "tester"}
-            });
-        }
-
-        private void OnAvatarLoaded(object sender, Model.Avatar avatar)
-        {
-            LoadBackground("room");
-            LoadCharacter();
-            LoadMonster(1001);
-            UI.Widget.Create<UI.Move>().Show();
-        }
-
-        private void OnSleep(object sender, Model.Avatar avatar)
-        {
-            Debug.Log("OnSleep");
-            LoadBackground("room");
-        }
-
-        private void OnHackAndSlash(object sender, Model.Avatar avatar)
-        {
-            LoadBackground("zone_0");
         }
     }
 }

@@ -6,11 +6,11 @@ namespace Nekoyume.Data
 {
     public class Tables : MonoBehaviour
     {
-        Table<Stats> Stats { get; set; }
-        Table<Skill> Skill { get; set; }
-        Table<Stage> Stage { get; set; }
-        Table<MonsterAppear> MonsterAppear { get; set; }
-        Table<Monster> Monster { get; set; }
+        public Table<Stats> Stats { get; private set; }
+        public Table<Skill> Skill { get; private set; }
+        public Table<Stage> Stage { get; private set; }
+        public Table<MonsterAppear> MonsterAppear { get; private set; }
+        public Table<Monster> Monster { get; private set; }
 
         private void Start()
         {

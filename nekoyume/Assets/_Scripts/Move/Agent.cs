@@ -17,7 +17,7 @@ namespace Nekoyume.Move
     [Serializable]
     internal class Response
     {
-        public ResultCode result = ResultCode.ERROR;
+        public ResultCode result = ResultCode.Error;
         public List<Move> moves;
     }
 

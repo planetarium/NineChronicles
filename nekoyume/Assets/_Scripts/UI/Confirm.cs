@@ -5,8 +5,8 @@ namespace Nekoyume.UI
 {
     public enum ConfirmResult : int
     {
-        YES,
-        NO,
+        Yes,
+        No,
     }
 
     public delegate void ConfirmDelegate(ConfirmResult result);
@@ -38,7 +38,7 @@ namespace Nekoyume.UI
         {
             if (CloseCallback != null)
             {
-                CloseCallback(ConfirmResult.YES);
+                CloseCallback(ConfirmResult.Yes);
             }
             base.Close();
         }
@@ -47,7 +47,7 @@ namespace Nekoyume.UI
         {
             if (CloseCallback != null)
             {
-                CloseCallback(ConfirmResult.NO);
+                CloseCallback(ConfirmResult.No);
             }
             base.Close();
         }
