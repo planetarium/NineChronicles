@@ -7,7 +7,9 @@ using Planetarium.SDK.Bencode;
 using Planetarium.SDK.Tx;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
 
@@ -15,7 +17,7 @@ namespace Nekoyume.Move
 {
     internal class MoveName : Attribute
     {
-        public string Value { get; private set; }
+        private string Value { get; set; }
 
         public MoveName(string value)
         {
@@ -24,76 +26,36 @@ namespace Nekoyume.Move
 
         public static string Extract(Type t)
         {
-            foreach (var attr in t.GetCustomAttributes())
-            {
-                if (attr is MoveName)
-                {
-                    return (attr as MoveName).Value;
-                }
-            }
-            return null;
+            return t.GetCustomAttributes().OfType<MoveName>().Select(attr => (attr as MoveName).Value).FirstOrDefault();
         }
     }
 
     public abstract class Move : BaseTransaction, IAction
     {
-        private static string TIMESTAMP_FORMAT = "yyyy-MM-dd HH:mm:ss.ffffff";
+        private const string TimestampFormat = "yyyy-MM-dd HH:mm:ss.ffffff";
 
         public new byte[] Creator => UserAddress;
-        public byte[] UserAddress
-        {
-            get
-            {
-                return PublicKey.ToAddress();
-            }
-        }
-        public Dictionary<string, string> Details { get; set; }
-        public string Name
-        {
-            get
-            {
-                return MoveName.Extract(GetType());
-            }
-        }
-        public int Tax { get; set; }
-        public new DateTime Timestamp { get; set; }
+        public new DateTime Timestamp { private get; set; }
+        public byte[] UserAddress => PublicKey.ToAddress();
+        public Dictionary<string, string> Details { protected get; set; }
+
+        private string Name => MoveName.Extract(GetType());
+        public int Tax { private get; set; }
 
         public long? BlockId { get; private set; }
 
         public bool Confirmed => BlockId.HasValue;
 
-        public override IDictionary<string, dynamic> PlainValue
+        public override IDictionary<string, dynamic> PlainValue => new Dictionary<string, dynamic>
         {
-            get
-            {
-                return new Dictionary<string, dynamic>
-                {
-                    { "user_address", "0x" + UserAddress.Hex() },
-                    { "name", Name },
-                    { "details", Details },
-                    { "created_at", Timestamp.ToString(TIMESTAMP_FORMAT) },
-                    { "tax", Tax }
-                };
-            }
-        }
+            { "user_address", "0x" + UserAddress.Hex() },
+            { "name", Name },
+            { "details", Details },
+            { "created_at", Timestamp.ToString(TimestampFormat) },
+            { "tax", Tax }
+        };
 
-        public bool Valid
-        {
-            get
-            {
-                if (Signature == null)
-                {
-                    return false;
-                }
-
-                if (!PublicKey.Verify(Serialize(false), Signature))
-                {
-                    return false;
-                }
-
-                return true;
-            }
-        }
+        public bool Valid => Signature != null && PublicKey.Verify(Serialize(false), Signature);
 
         public new void Sign(PrivateKey privateKey)
         {
@@ -106,12 +68,14 @@ namespace Nekoyume.Move
         public static Move FromPlainValue(IDictionary<string, dynamic> plainValue, Type type)
         {
             var move = Activator.CreateInstance(type) as Move;
+            Debug.Assert(move != null, nameof(move) + " != null");
+
             move.PublicKey = PublicKey.FromBytes((plainValue["user_public_key"] as string).ParseHex());
             move.Signature = (plainValue["signature"] as string).ParseHex();
             move.Tax = (int)plainValue["tax"];
             move.Details = plainValue["details"].ToObject<Dictionary<string, string>>();
             move.Timestamp = DateTime.ParseExact(
-                plainValue["created_at"], TIMESTAMP_FORMAT, CultureInfo.InvariantCulture
+                plainValue["created_at"], TimestampFormat, CultureInfo.InvariantCulture
             );
             move.BlockId = plainValue["block"].ToObject<Dictionary<string, dynamic>>()["id"];
             return move;
@@ -171,7 +135,7 @@ namespace Nekoyume.Move
     {
         public override Context Execute(Context ctx)
         {
-            Dictionary<string, string> result = new Dictionary<string, string>
+            var result = new Dictionary<string, string>
             {
                 {"type", "create_novice"},
                 {"result", "success"}
@@ -200,7 +164,7 @@ namespace Nekoyume.Move
     {
         public override Context Execute(Context ctx)
         {
-            Dictionary<string, string> result = new Dictionary<string, string>
+            var result = new Dictionary<string, string>
             {
                 {"type", "first_class"},
                 {"result", "success"}

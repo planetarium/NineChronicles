@@ -7,7 +7,7 @@ using Planetarium.Crypto.Extension;
 
 namespace Nekoyume.Move
 {
-    internal class JSONConverter : Newtonsoft.Json.JsonConverter
+    internal class JsonConverter : Newtonsoft.Json.JsonConverter
     {
         public override bool CanConvert(Type objectType)
         {
@@ -20,8 +20,7 @@ namespace Nekoyume.Move
             var name = jo["name"].Value<string>();
             var type = typeof(MoveName).Assembly
             .GetTypes()
-            .Where(t => t.IsDefined(typeof(MoveName), false) && MoveName.Extract(t) == name)
-            .FirstOrDefault();
+            .FirstOrDefault(t => t.IsDefined(typeof(MoveName), false) && MoveName.Extract(t) == name);
             Move move = null;
 
             if (type != null)
@@ -34,7 +33,7 @@ namespace Nekoyume.Move
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            var move = value as Move;
+            var move = (Move)value;
             var jo = new JObject();
             foreach (var kv in move.PlainValue)
             {
