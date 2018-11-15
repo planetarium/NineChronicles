@@ -16,7 +16,7 @@ public class Init : MonoBehaviour
     void Start()
     {
         version = PlayerPrefs.GetString("version", "");
-        StartCoroutine(CheckVersion(version));  
+        StartCoroutine(CheckVersion(version));
     }
 
     IEnumerator CheckVersion(string clientVersion)

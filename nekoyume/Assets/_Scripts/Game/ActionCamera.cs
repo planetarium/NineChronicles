@@ -3,16 +3,12 @@ using UnityEngine;
 
 namespace Nekoyume.Game
 {
-    public class FollowCamera : MonoBehaviour
+    public class ActionCamera : MonoBehaviour
     {
         public Transform target = null;
         public float followSpeedScale = 0.08f;
         public float targetRatioX = 0.3f;
         public int pixelPerUnit = 160;
-
-        public FollowCamera()
-        {
-        }
 
         public void Update()
         {

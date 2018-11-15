@@ -21,7 +21,7 @@ namespace Nekoyume.Model
         public int constitution;
         public int luck;
         public string[] items;
-        public string zone;
+        public int world_stage;
         public byte[] user;
         public bool dead
         {
