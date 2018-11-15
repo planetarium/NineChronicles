@@ -134,11 +134,6 @@ namespace Nekoyume.Move
     [MoveName("hack_and_slash")]
     public class HackAndSlash : Move
     {
-        public HackAndSlash(Dictionary<string, string> details)
-        {
-            Details = details;
-        }
-
         public override Context Execute(Context ctx)
         {
             if (ctx.avatar.dead)
