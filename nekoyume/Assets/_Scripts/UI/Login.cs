@@ -10,18 +10,7 @@ namespace Nekoyume.UI
 {
     public class Login : Widget
     {
-        public GameObject joinModal;
         public GameObject btnLogin;
-
-
-        private void Start()
-        {
-            joinModal.SetActive(false);
-        }
-
-        public void JoinClick()
-        {
-        }
 
         public void LoginClick()
         {
