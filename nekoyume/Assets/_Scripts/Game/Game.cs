@@ -20,6 +20,11 @@ namespace Nekoyume.Game
 
     public class Game : MonoBehaviour
     {
+        private void Awake()
+        {
+            Assets.SimpleLocalization.LocalizationManager.Read();
+        }
+
         private void Start()
         {
             MoveManager.Instance.CreateAvatarRequired += OnCreateAvatarRequired;
