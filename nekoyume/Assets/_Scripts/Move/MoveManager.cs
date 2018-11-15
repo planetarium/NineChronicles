@@ -19,11 +19,11 @@ namespace Nekoyume.Move
         public event EventHandler<Model.Avatar> DidSleep;
 
         public Model.Avatar Avatar { get; private set; }
-        public event EventHandler CreateAvatarRequried;
+        public event EventHandler CreateAvatarRequired;
 
         private long? lastBlockId;
 
-        private static string LAST_BLOCK_ID_KEY = "last_block_id";
+        private const string LastBlockIdKey = "last_block_id";
 
         private void Awake()
         {
@@ -46,11 +46,11 @@ namespace Nekoyume.Move
             this.agent = new Agent(ServerUrl, privateKey);
             this.agent.DidReceiveAction += OnDidReceiveAction;
 
-            Debug.Log(string.Format("User Adress: 0x{0}", agent.UserAddress.Hex()));
+            Debug.Log($"User Address: 0x{agent.UserAddress.Hex()}");
 
-            if (PlayerPrefs.HasKey(LAST_BLOCK_ID_KEY))
+            if (PlayerPrefs.HasKey(LastBlockIdKey))
             {
-                lastBlockId = long.Parse(PlayerPrefs.GetString(LAST_BLOCK_ID_KEY));
+                lastBlockId = long.Parse(PlayerPrefs.GetString(LastBlockIdKey));
             }
         }
 
@@ -60,7 +60,7 @@ namespace Nekoyume.Move
             {
                 if (moves.FirstOrDefault() == null)
                 {
-                    CreateAvatarRequried?.Invoke(this, null);
+                    CreateAvatarRequired?.Invoke(this, null);
                 }
                 StartCoroutine(agent.Sync());
             }));
@@ -82,8 +82,7 @@ namespace Nekoyume.Move
 
             if (lastBlockId.HasValue && move.BlockId > lastBlockId)
             {
-                var ctx = new Context();
-                ctx.avatar = Avatar;
+                var ctx = new Context {avatar = Avatar};
                 Context executed = move.Execute(ctx);
                 Avatar = executed.avatar;
 
@@ -97,7 +96,7 @@ namespace Nekoyume.Move
                 }
             }
 
-            PlayerPrefs.SetString(LAST_BLOCK_ID_KEY, move.BlockId.ToString());
+            PlayerPrefs.SetString(LastBlockIdKey, move.BlockId.ToString());
         }
 
         public HackAndSlash HackAndSlash(string weapon = null, string armor = null, string food = null, DateTime? timestamp = null)

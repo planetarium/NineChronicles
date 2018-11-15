@@ -35,7 +35,7 @@ namespace Nekoyume.Move
 
         private long? lastBlockOffset;
 
-        private static JsonConverter moveJsonConverter = new JSONConverter();
+        private static Newtonsoft.Json.JsonConverter moveJsonConverter = new JsonConverter();
         public Agent(string apiUrl, PrivateKey privateKey, float interval = 1.0f)
         {
             if (string.IsNullOrEmpty(apiUrl))
