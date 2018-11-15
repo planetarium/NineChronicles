@@ -14,7 +14,7 @@ namespace Nekoyume.Game
 
         public void Awake()
         {
-            MoveManager.Instance.CreateAvatarRequried += OnCreateAvatarRequired;
+            MoveManager.Instance.CreateAvatarRequired += OnCreateAvatarRequired;
             MoveManager.Instance.DidAvatarLoaded += OnAvatarLoaded;
             MoveManager.Instance.DidSleep += OnSleep;
         }
