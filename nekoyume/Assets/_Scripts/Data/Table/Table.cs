@@ -18,24 +18,22 @@ namespace Nekoyume.Data.Table
 
     public class Table<TRow> : Dictionary<string, TRow>, ITable where TRow : new()
     {
-        private Dictionary<string, TRow> dict = new Dictionary<string, TRow>();
-
         public TRow this[int key]
         {
             get
             {
-                return dict[key.ToString()];
+                return this[key.ToString()];
             }
         }
 
         public bool ContainsKey(int key)
         {
-            return dict.ContainsKey(key.ToString());
+            return ContainsKey(key.ToString());
         }
 
         public bool TryGetValue(int key, out TRow value)
         {
-            return dict.TryGetValue(key.ToString(), out value);
+            return TryGetValue(key.ToString(), out value);
         }
 
         public void Load(string text)
@@ -79,7 +77,7 @@ namespace Nekoyume.Data.Table
                     }
                     index++;
                 }
-                dict.Add(arr[0], row);
+                Add(arr[0], row);
             }
         }
     }
