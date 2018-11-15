@@ -69,6 +69,18 @@ namespace Nekoyume.Game
             character._Load(go, MoveManager.Instance.Avatar.class_);
         }
 
+        private void LoadMonster(int monsterCode)
+        {
+            if (characters == null)
+            {
+                characters = new GameObject("characters");
+                characters.transform.parent = transform;
+            }
+            var go = Instantiate(Resources.Load<GameObject>("Prefab/Character"), characters.transform);
+            var character = go.GetComponent<Character>();
+            character._Load(go, monsterCode.ToString());
+        }
+
         private void OnCreateAvatarRequired(object sender, EventArgs e)
         {
             MoveManager.Instance.CreateNovice(new Dictionary<string, string> {
@@ -80,6 +92,7 @@ namespace Nekoyume.Game
         {
             LoadBackground("room");
             LoadCharacter();
+            LoadMonster(1001);
             UI.Widget.Create<UI.Move>().Show();
         }
 
@@ -87,6 +100,11 @@ namespace Nekoyume.Game
         {
             Debug.Log("OnSleep");
             LoadBackground("room");
+        }
+
+        private void OnHackAndSlash(object sender, Model.Avatar avatar)
+        {
+            LoadBackground("zone_0");
         }
     }
 }
