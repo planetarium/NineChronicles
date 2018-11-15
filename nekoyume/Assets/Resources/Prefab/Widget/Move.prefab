@@ -251,7 +251,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 114788093735112750}
-        m_MethodName: HackAndSlashClick
+        m_MethodName: MoveClick
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

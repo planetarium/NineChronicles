@@ -14,6 +14,11 @@ namespace Nekoyume.UI
             btnHome.SetActive(false);
         }
 
+        public void MoveClick()
+        {
+            Game.Event.OnStageEnter.Invoke();
+        }
+
         public void SleepClick()
         {
             MoveManager.Instance.Sleep();

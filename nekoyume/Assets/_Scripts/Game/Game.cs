@@ -22,7 +22,7 @@ namespace Nekoyume.Game
     {
         private void Start()
         {
-            MoveManager.Instance.CreateAvatarRequried += OnCreateAvatarRequired;
+            MoveManager.Instance.CreateAvatarRequired += OnCreateAvatarRequired;
             MoveManager.Instance.DidAvatarLoaded += OnAvatarLoaded;
             MoveManager.Instance.DidSleep += OnSleep;
         }
@@ -36,17 +36,18 @@ namespace Nekoyume.Game
 
         private void OnAvatarLoaded(object sender, Model.Avatar avatar)
         {
-            Event.OnStageEnter.Invoke(avatar);
+            Event.OnUpdateAvatar.Invoke(avatar);
+            Event.OnRoomEnter.Invoke();
         }
 
         private void OnSleep(object sender, Model.Avatar avatar)
         {
-            Event.OnStageEnter.Invoke(avatar);
+            Event.OnUpdateAvatar.Invoke(avatar);
         }
 
         private void OnHackAndSlash(object sender, Model.Avatar avatar)
         {
-            Event.OnStageEnter.Invoke(avatar);
+            Event.OnUpdateAvatar.Invoke(avatar);
         }
     }
 }

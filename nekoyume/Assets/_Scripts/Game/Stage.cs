@@ -17,12 +17,15 @@ namespace Nekoyume.Game
         private ActionCamera actionCam = null;
         private UI.Blind blind = null;
         private UI.Move moveWidget = null;
+        private Model.Avatar avatar = null;
         private GameObject background = null;
         private GameObject characters = null;
 
 
         private void Awake()
         {
+            Event.OnUpdateAvatar.AddListener(OnUpdateAvatar);
+            Event.OnRoomEnter.AddListener(OnRoomEnter);
             Event.OnStageEnter.AddListener(OnStageEnter);
         }
 
@@ -49,22 +52,18 @@ namespace Nekoyume.Game
             moveWidget.Close();
         }
 
-        private void OnRoomEnter(Model.Avatar avatar)
+        private void OnUpdateAvatar(Model.Avatar avatar)
         {
-            LoadBackground("room");
-            LoadCharacter(avatar.class_);
+            this.avatar = avatar;
         }
 
-        private void OnStageEnter(Model.Avatar avatar)
+        private void OnRoomEnter()
         {
-            string stageType = PlayerPrefs.GetString(nameof(StageType), StageType.Room.ToString());
-            string method = $"{stageType}Entering";
-            StartCoroutine(method, avatar);
+            StartCoroutine(RoomEntering());
         }
 
-        private IEnumerator RoomEntering(Model.Avatar avatar)
+        private IEnumerator RoomEntering()
         {
-            PlayerPrefs.SetString(nameof(StageType), StageType.Room.ToString());
             Id = 0;
             blind.Show();
             blind.FadeIn(1.0f);
@@ -74,18 +73,23 @@ namespace Nekoyume.Game
             LoadCharacter(avatar.class_);
             blind.FadeOut(1.0f);
             yield return new WaitForSeconds(1.0f);
-            blind.Close();
+            blind.gameObject.SetActive(false);
             Event.OnStageStart.Invoke();
         }
 
-        private IEnumerator WorldEntering(Model.Avatar avatar)
+        private void OnStageEnter()
+        {
+            StartCoroutine(WorldEntering());
+        }
+
+        private IEnumerator WorldEntering()
         {
             Data.Table.Stage data;
             var tables = this.GetRootComponent<Data.Tables>();
-            if (tables.Stage.TryGetValue(avatar.main_stage, out data))
+            if (tables.Stage.TryGetValue(avatar.world_stage, out data))
             {
-                PlayerPrefs.SetString(nameof(StageType), StageType.World.ToString());
-                Id = avatar.main_stage;
+                Id = avatar.world_stage;
+                blind.Show();
                 blind.FadeIn(1.0f);
                 yield return new WaitForSeconds(1.0f);
                 moveWidget.Show();
@@ -93,6 +97,7 @@ namespace Nekoyume.Game
                 // TODO: Load characters
                 blind.FadeOut(1.0f);
                 yield return new WaitForSeconds(1.0f);
+                blind.gameObject.SetActive(false);
                 Event.OnStageStart.Invoke();
             }
         }
