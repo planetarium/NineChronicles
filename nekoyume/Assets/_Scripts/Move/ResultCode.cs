@@ -1,4 +1,4 @@
-namespace Nekoyume.Network
+namespace Nekoyume.Move
 {
     public enum ResultCode : int
     {

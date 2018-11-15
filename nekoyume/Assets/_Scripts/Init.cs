@@ -31,7 +31,6 @@ public class Init : MonoBehaviour
             {
                 PlayerPrefs.SetString("version", serverVersion);
             }
-            this.gameObject.SetActive(false);
         }
     }
 }

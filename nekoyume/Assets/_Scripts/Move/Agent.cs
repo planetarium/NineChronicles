@@ -8,35 +8,34 @@ using Nekoyume.Move;
 using Newtonsoft.Json;
 using Planetarium.Crypto.Extension;
 using Planetarium.Crypto.Keys;
-using Planetarium.SDK.Action;
 using Planetarium.SDK.Address;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace Nekoyume.Network.Agent
+namespace Nekoyume.Move
 {
     [Serializable]
     internal class Response
     {
         public ResultCode result = ResultCode.ERROR;
-        public List<Move.Move> moves;
+        public List<Move> moves;
     }
 
     public class Agent
     {
-        public event EventHandler<Move.Move> DidReceiveAction;
+        public event EventHandler<Move> DidReceiveAction;
         private readonly string apiUrl;
         private readonly PrivateKey privateKey;
         private float interval;
         private OrderedDictionary moves;
         public byte[] UserAddress => privateKey.ToAddress();
-        public List<Move.Move> requestedMoves;
+        public List<Move> requestedMoves;
 
-        public delegate void MoveFetched(IEnumerable<Move.Move> moves);
+        public delegate void MoveFetched(IEnumerable<Move> moves);
 
         private long? lastBlockOffset;
 
-        private static JsonConverter moveJsonConverter = new Move.JSONConverter();
+        private static JsonConverter moveJsonConverter = new JSONConverter();
         public Agent(string apiUrl, PrivateKey privateKey, float interval = 1.0f)
         {
             if (string.IsNullOrEmpty(apiUrl))
@@ -48,23 +47,23 @@ namespace Nekoyume.Network.Agent
             this.privateKey = privateKey;
             this.interval = interval;
             this.moves = new OrderedDictionary();
-            this.requestedMoves = new List<Move.Move>();
+            this.requestedMoves = new List<Move>();
         }
 
-        public void Send(Move.Move move)
+        public void Send(Move move)
         {
             move.Sign(privateKey);
             requestedMoves.Add(move);
         }
 
-        public IEnumerable<Move.Move> Moves => moves.Values.Cast<Move.Move>();
+        public IEnumerable<Move> Moves => moves.Values.Cast<Move>();
 
         public IEnumerator Sync()
         {
             while (true)
             {
                 yield return new WaitForSeconds(interval);
-                var chunks = new List<Move.Move>(requestedMoves);
+                var chunks = new List<Move>(requestedMoves);
                 requestedMoves.Clear();
 
                 foreach (var m in chunks)
@@ -72,7 +71,7 @@ namespace Nekoyume.Network.Agent
                     yield return SendMove(m);
                 }
 
-                yield return FetchMove(delegate (IEnumerable<Move.Move> fetched)
+                yield return FetchMove(delegate (IEnumerable<Move> fetched)
                 {
                     foreach (var move in fetched)
                     {
@@ -102,7 +101,7 @@ namespace Nekoyume.Network.Agent
             }
         }
 
-        private IEnumerator SendMove(Move.Move move)
+        private IEnumerator SendMove(Move move)
         {
             var serialized = JsonConvert.SerializeObject(move, moveJsonConverter);
             var url = string.Format("{0}/moves", apiUrl);

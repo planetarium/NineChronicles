@@ -16,9 +16,7 @@ namespace Nekoyume.UI
 
         private void Start()
         {
-            bool hasPrivateKey = !string.IsNullOrEmpty(Network.NetworkManager.Instance.privateKey);
-            joinModal.SetActive(!hasPrivateKey);
-            btnLogin.SetActive(hasPrivateKey);
+            joinModal.SetActive(false);
         }
 
         public void JoinClick()
@@ -27,8 +25,8 @@ namespace Nekoyume.UI
 
         public void LoginClick()
         {
-            btnLogin.SetActive(false);
             MoveManager.Instance.StartSync();
+            Close();
         }
     }
 }
