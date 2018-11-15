@@ -40,7 +40,7 @@ namespace Nekoyume.Game
             Vector2 position = go.transform.position;
             position.y = -1;
             go.transform.position = position;
-            var render = go.AddComponent<SpriteRenderer>();
+            var render = go.GetComponent<SpriteRenderer>();
             var sprite = Resources.Load<Sprite>(string.Format("images/character_{0}", class_));
             if (sprite == null)
                 sprite = Resources.Load<Sprite>("images/pet");
