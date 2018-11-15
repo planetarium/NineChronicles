@@ -115,7 +115,10 @@ namespace Nekoyume.Move
             {
                 details["food"] = food;
             }
-            var has = new HackAndSlash(details);
+            var has = new HackAndSlash
+            {
+                Details = details
+            };
 
             return ProcessMove(has, 0, timestamp);
         }

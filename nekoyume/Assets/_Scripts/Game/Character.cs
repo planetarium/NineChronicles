@@ -1,5 +1,6 @@
 using System.Collections;
 using DG.Tweening;
+using Nekoyume.Data.Table;
 using UnityEngine;
 
 
@@ -9,6 +10,7 @@ namespace Nekoyume.Game
     {
         public string id;
         public int group;
+        public Stats stats;
 
         public IEnumerator Walk()
         {

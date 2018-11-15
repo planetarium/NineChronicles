@@ -10,6 +10,7 @@ namespace Nekoyume.Game
     {
         private FollowCamera followCam = null;
         private GameObject background = null;
+        private GameObject characters = null;
 
         public void Awake()
         {
@@ -44,8 +45,8 @@ namespace Nekoyume.Game
                 Destroy(background);
                 background = null;
             }
-            string resName = string.Format("Prefab/Background/{0}", prefabName);
-            GameObject prefab = Resources.Load<GameObject>(resName);
+            var resName = $"Prefab/Background/{prefabName}";
+            var prefab = Resources.Load<GameObject>(resName);
             if (prefab != null)
             {
                 background = Instantiate(prefab, transform);
@@ -54,6 +55,30 @@ namespace Nekoyume.Game
             var camPosition = followCam.transform.position;
             camPosition.x = 0;
             followCam.transform.position = camPosition;
+        }
+
+        private void LoadCharacter()
+        {
+            if (characters == null)
+            {
+                characters = new GameObject("characters");
+                characters.transform.parent = transform;
+            }
+            var go = Instantiate(Resources.Load<GameObject>("Prefab/Character"), characters.transform);
+            var character = go.GetComponent<Character>();
+            character._Load(go, MoveManager.Instance.Avatar.class_);
+        }
+
+        private void LoadMonster(int monsterCode)
+        {
+            if (characters == null)
+            {
+                characters = new GameObject("characters");
+                characters.transform.parent = transform;
+            }
+            var go = Instantiate(Resources.Load<GameObject>("Prefab/Character"), characters.transform);
+            var character = go.GetComponent<Character>();
+            character._Load(go, monsterCode.ToString());
         }
 
         private void OnCreateAvatarRequired(object sender, EventArgs e)
@@ -66,12 +91,20 @@ namespace Nekoyume.Game
         private void OnAvatarLoaded(object sender, Model.Avatar avatar)
         {
             LoadBackground("room");
+            LoadCharacter();
+            LoadMonster(1001);
             UI.Widget.Create<UI.Move>().Show();
         }
 
         private void OnSleep(object sender, Model.Avatar avatar)
         {
+            Debug.Log("OnSleep");
             LoadBackground("room");
+        }
+
+        private void OnHackAndSlash(object sender, Model.Avatar avatar)
+        {
+            LoadBackground("zone_0");
         }
     }
 }
