@@ -15,11 +15,6 @@ namespace Nekoyume.Model
         public int exp_max;
         public int hp;
         public int hp_max;
-        public int strength;
-        public int dexterity;
-        public int intelligence;
-        public int constitution;
-        public int luck;
         public string[] items;
         public int world_stage;
         public byte[] user;

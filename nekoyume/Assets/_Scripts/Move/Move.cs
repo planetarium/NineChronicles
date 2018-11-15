@@ -148,11 +148,6 @@ namespace Nekoyume.Move
                 class_ = CharacterClass.Novice.ToString(),
                 level = 1,
                 world_stage = 1,
-                strength = 10,
-                dexterity = 8,
-                intelligence = 9,
-                constitution = 9,
-                luck = 9,
                 hp_max = 10
             };
             return ctx;

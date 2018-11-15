@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Avatar = Nekoyume.Model.Avatar;
 
 namespace Nekoyume.Game
 {
@@ -70,7 +71,7 @@ namespace Nekoyume.Game
             yield return new WaitForSeconds(1.0f);
             moveWidget.Show();
             LoadBackground("room");
-            LoadCharacter(avatar.class_);
+            LoadCharacter(avatar);
             blind.FadeOut(1.0f);
             yield return new WaitForSeconds(1.0f);
             blind.gameObject.SetActive(false);
@@ -125,7 +126,7 @@ namespace Nekoyume.Game
             actionCam.transform.position = camPosition;
         }
 
-        private void LoadCharacter(string avatarClass)
+        private void LoadCharacter(Avatar a)
         {
             if (characters == null)
             {
@@ -134,19 +135,7 @@ namespace Nekoyume.Game
             }
             var go = Instantiate(Resources.Load<GameObject>("Prefab/Character"), characters.transform);
             var character = go.GetComponent<Character>();
-            character._Load(go, avatarClass);
-        }
-
-        private void LoadMonster(int monsterCode)
-        {
-            if (characters == null)
-            {
-                characters = new GameObject("characters");
-                characters.transform.parent = transform;
-            }
-            var go = Instantiate(Resources.Load<GameObject>("Prefab/Character"), characters.transform);
-            var character = go.GetComponent<Character>();
-            character._Load(go, monsterCode.ToString());
+            character._Load(go, a);
         }
     }
 }

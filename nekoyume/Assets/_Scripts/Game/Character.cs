@@ -1,16 +1,16 @@
 using System.Collections;
 using DG.Tweening;
+using Nekoyume.Data;
 using Nekoyume.Data.Table;
 using UnityEngine;
+using Avatar = Nekoyume.Model.Avatar;
 
 
 namespace Nekoyume.Game
 {
     public class Character : MonoBehaviour
     {
-        public string id;
-        public int group;
-        public Stats stats;
+        public Stats Stats;
 
         public IEnumerator Walk()
         {
@@ -23,9 +23,9 @@ namespace Nekoyume.Game
             }
         }
 
-        public IEnumerator Load(GameObject go, string class_)
+        public IEnumerator Load(GameObject go,  Avatar avatar)
         {
-            _Load(go, class_);
+            _Load(go, avatar);
             yield return null;
         }
 
@@ -35,13 +35,13 @@ namespace Nekoyume.Game
             yield return null;
         }
 
-        public void _Load(GameObject go, string class_)
+        public void _Load(GameObject go, Avatar avatar)
         {
             Vector2 position = go.transform.position;
             position.y = -1;
             go.transform.position = position;
             var render = go.AddComponent<SpriteRenderer>();
-            var sprite = Resources.Load<Sprite>(string.Format("images/character_{0}", class_));
+            var sprite = Resources.Load<Sprite>($"images/character_{avatar.class_}");
             if (sprite == null)
                 sprite = Resources.Load<Sprite>("images/pet");
             render.sprite = sprite;
@@ -49,6 +49,9 @@ namespace Nekoyume.Game
             Material mat = render.material;
             Sequence colorseq = DOTween.Sequence();
             colorseq.Append(mat.DOColor(Color.white, 0.0f));
+            var tables = this.GetRootComponent<Tables>();
+            var statsTable = tables.Stats;
+            Stats = statsTable[avatar.level];
         }
     }
 }
