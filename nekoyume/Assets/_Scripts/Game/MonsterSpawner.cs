@@ -27,7 +27,8 @@ namespace Nekoyume.Game
             for (int i = 0; i < monsterCount; ++i)
             {
                 var character = _objectPool.Get<Character>();
-                character._Load(character.gameObject, "1001");
+                // FIXME: monster load
+                // character._Load(character.gameObject, "1001");
             }
         }
     }

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Avatar = Nekoyume.Model.Avatar;
 
 namespace Nekoyume.Game
 {
@@ -14,13 +15,13 @@ namespace Nekoyume.Game
     public class Stage : MonoBehaviour
     {
         public int Id { get; private set; }
-        private UI.Blind blind = null;
-        private UI.Move moveWidget = null;
-        private Model.Avatar avatar = null;
-        private GameObject background = null;
-        private ActionCamera actionCam = null;
-        private ObjectPool objectPool = null;
-        private MonsterSpawner monsterSpawner = null;
+        private UI.Blind _blind = null;
+        private UI.Move _moveWidget = null;
+        private Model.Avatar _avatar = null;
+        private GameObject _background = null;
+        private ActionCamera _actionCam = null;
+        private ObjectPool _objectPool = null;
+        private MonsterSpawner _monsterSpawner = null;
 
 
         private void Awake()
@@ -39,21 +40,21 @@ namespace Nekoyume.Game
 
         private void InitComponents()
         {
-            actionCam = Camera.main.gameObject.GetComponent<ActionCamera>();
-            objectPool = GetComponent<ObjectPool>();
-            monsterSpawner = GetComponent<MonsterSpawner>();
+            _actionCam = Camera.main.gameObject.GetComponent<ActionCamera>();
+            _objectPool = GetComponent<ObjectPool>();
+            _monsterSpawner = GetComponent<MonsterSpawner>();
         }
 
         private void InitUI()
         {
-            blind = UI.Widget.Create<UI.Blind>();
-            moveWidget = UI.Widget.Create<UI.Move>();
-            moveWidget.Close();
+            _blind = UI.Widget.Create<UI.Blind>();
+            _moveWidget = UI.Widget.Create<UI.Move>();
+            _moveWidget.Close();
         }
 
         private void OnUpdateAvatar(Model.Avatar avatar)
         {
-            this.avatar = avatar;
+            this._avatar = avatar;
         }
 
         private void OnRoomEnter()
@@ -64,18 +65,18 @@ namespace Nekoyume.Game
         private IEnumerator RoomEntering()
         {
             Id = 0;
-            blind.Show();
-            blind.FadeIn(1.0f);
+            _blind.Show();
+            _blind.FadeIn(1.0f);
             yield return new WaitForSeconds(1.0f);
-            moveWidget.Show();
+            _moveWidget.Show();
             LoadBackground("room");
 
-            var character = objectPool.Get<Character>();
-            character._Load(character.gameObject, avatar.class_);
+            var character = _objectPool.Get<Character>();
+            character._Load(_avatar);
 
-            blind.FadeOut(1.0f);
+            _blind.FadeOut(1.0f);
             yield return new WaitForSeconds(1.0f);
-            blind.gameObject.SetActive(false);
+            _blind.gameObject.SetActive(false);
             Event.OnStageStart.Invoke();
         }
 
@@ -88,51 +89,51 @@ namespace Nekoyume.Game
         {
             Data.Table.Stage data;
             var tables = this.GetRootComponent<Data.Tables>();
-            if (tables.Stage.TryGetValue(avatar.world_stage, out data))
+            if (tables.Stage.TryGetValue(_avatar.world_stage, out data))
             {
-                Id = avatar.world_stage;
+                Id = _avatar.world_stage;
 
-                blind.Show();
-                blind.FadeIn(1.0f);
+                _blind.Show();
+                _blind.FadeIn(1.0f);
                 yield return new WaitForSeconds(1.0f);
 
-                moveWidget.Show();
-                objectPool.ReleaseAll();
+                _moveWidget.Show();
+                _objectPool.ReleaseAll();
                 LoadBackground(data.Background);
 
-                var character = objectPool.Get<Character>();
-                character._Load(character.gameObject, avatar.class_);
+                var character = _objectPool.Get<Character>();
+                character._Load(_avatar);
 
-                blind.FadeOut(1.0f);
+                _blind.FadeOut(1.0f);
                 yield return new WaitForSeconds(1.0f);
-                blind.gameObject.SetActive(false);
+                _blind.gameObject.SetActive(false);
                 Event.OnStageStart.Invoke();
 
-                monsterSpawner.Play(Id, data.MonsterPower);
+                _monsterSpawner.Play(Id, data.MonsterPower);
             }
         }
 
         private void LoadBackground(string prefabName)
         {
-            if (background != null)
+            if (_background != null)
             {
-                if (background.name.Equals(prefabName))
+                if (_background.name.Equals(prefabName))
                 {
                     return;
                 }
-                Destroy(background);
-                background = null;
+                Destroy(_background);
+                _background = null;
             }
             var resName = $"Prefab/Background/{prefabName}";
             var prefab = Resources.Load<GameObject>(resName);
             if (prefab != null)
             {
-                background = Instantiate(prefab, transform);
-                background.name = prefabName;
+                _background = Instantiate(prefab, transform);
+                _background.name = prefabName;
             }
-            var camPosition = actionCam.transform.position;
+            var camPosition = _actionCam.transform.position;
             camPosition.x = 0;
-            actionCam.transform.position = camPosition;
+            _actionCam.transform.position = camPosition;
         }
     }
 }
