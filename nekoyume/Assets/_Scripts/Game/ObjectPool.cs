@@ -10,6 +10,7 @@ namespace Nekoyume.Game
     {
         public GameObject Prefab;
         public int InitCount;
+        public int AddCount;
     }
 
     public class ObjectPool : MonoBehaviour
@@ -24,21 +25,21 @@ namespace Nekoyume.Game
             foreach (var poolData in list)
             {
                 dicts.Add(poolData.Prefab.name, poolData);
-                Create(poolData);
+                Create(poolData.Prefab, poolData.InitCount);
             }
         }
 
-        public GameObject Create(PoolData data)
+        public GameObject Create(GameObject prefab, int count)
         {
             GameObject first = null;
-            for (int i = 0; i < data.InitCount; ++i)
+            for (int i = 0; i < count; ++i)
             {
-                GameObject go = Instantiate(data.Prefab, transform);
+                GameObject go = Instantiate(prefab, transform);
                 if (first == null)
                 {
                     first = go;
                 }
-                go.name = data.Prefab.name;
+                go.name = prefab.name;
                 go.SetActive(false);
                 List<GameObject> list;
                 if (!objects.TryGetValue(go.name, out list))
@@ -66,10 +67,10 @@ namespace Nekoyume.Game
                     return go.GetComponent<T>();
                 }
             }
-            PoolData data;
-            if (dicts.TryGetValue(name, out data))
+            PoolData poolData;
+            if (dicts.TryGetValue(name, out poolData))
             {
-                GameObject go = Create(dicts[name]);
+                GameObject go = Create(poolData.Prefab, poolData.AddCount);
                 go.SetActive(true);
                 return go.GetComponent<T>();
             }
