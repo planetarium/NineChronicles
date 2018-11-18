@@ -69,7 +69,9 @@ namespace Nekoyume.Game
             PoolData data;
             if (dicts.TryGetValue(name, out data))
             {
-                return Create(dicts[name]).GetComponent<T>();
+                GameObject go = Create(dicts[name]);
+                go.SetActive(true);
+                return go.GetComponent<T>();
             }
             return null;
         }
