@@ -10,19 +10,17 @@ namespace Nekoyume.Move
 {
     public class MoveManager : MonoBehaviour
     {
-        private Agent agent;
         public static MoveManager Instance { get; private set; }
 
         public string ServerUrl;
 
         public event EventHandler<Model.Avatar> DidAvatarLoaded;
         public event EventHandler<Model.Avatar> DidSleep;
-
-        public Model.Avatar Avatar { get; private set; }
         public event EventHandler CreateAvatarRequired;
-
+        
+        private Model.Avatar Avatar { get; set; }
+        private Agent agent;
         private long? lastBlockId;
-
         private const string LastBlockIdKey = "last_block_id";
 
         private void Awake()
@@ -44,7 +42,7 @@ namespace Nekoyume.Move
             }
 
             this.agent = new Agent(ServerUrl, privateKey);
-            this.agent.DidReceiveAction += OnDidReceiveAction;
+            this.agent.DidReceiveAction += OnDidReceiveMove;
 
             Debug.Log($"User Address: 0x{agent.UserAddress.Hex()}");
 
@@ -66,7 +64,7 @@ namespace Nekoyume.Move
             }));
         }
 
-        private void OnDidReceiveAction(object sender, Move move)
+        private void OnDidReceiveMove(object sender, Move move)
         {
             if (Avatar == null)
             {
@@ -82,21 +80,25 @@ namespace Nekoyume.Move
 
             if (lastBlockId.HasValue && move.BlockId > lastBlockId)
             {
-                var ctx = new Context {avatar = Avatar};
-                Context executed = move.Execute(ctx);
-                Avatar = executed.avatar;
-
-                if (move is Sleep)
-                {
-                    var result = executed.result;
-                    if (result["result"] == "success")
-                    {
-                        DidSleep?.Invoke(this, Avatar);
-                    }
-                }
+                ExecuteMove(move);
             }
 
             PlayerPrefs.SetString(LastBlockIdKey, move.BlockId.ToString());
+        }
+
+        private void ExecuteMove(Move move)
+        {
+            var ctx = new Context {avatar = Avatar};
+            Context executed = move.Execute(ctx);
+            Avatar = executed.avatar;
+            var result = executed.result;
+
+            if (result["result"] != "success") return;
+
+            if (move is Sleep)
+            {
+                DidSleep?.Invoke(this, Avatar);
+            }
         }
 
         public HackAndSlash HackAndSlash(string weapon = null, string armor = null, string food = null, DateTime? timestamp = null)

@@ -1,7 +1,6 @@
 using Nekoyume.Model;
 using Planetarium.Crypto.Extension;
 using Planetarium.Crypto.Keys;
-using Planetarium.SDK.Action;
 using Planetarium.SDK.Address;
 using Planetarium.SDK.Bencode;
 using Planetarium.SDK.Tx;
@@ -34,7 +33,7 @@ namespace Nekoyume.Move
         }
     }
 
-    public abstract class Move : BaseTransaction, IAction
+    public abstract class Move : BaseTransaction
     {
         private const string TimestampFormat = "yyyy-MM-dd HH:mm:ss.ffffff";
 

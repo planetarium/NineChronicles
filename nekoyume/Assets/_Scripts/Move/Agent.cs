@@ -26,16 +26,16 @@ namespace Nekoyume.Move
         public event EventHandler<Move> DidReceiveAction;
         private readonly string apiUrl;
         private readonly PrivateKey privateKey;
-        private float interval;
-        private OrderedDictionary moves;
+        private readonly float interval;
+        private readonly OrderedDictionary moves;
         public byte[] UserAddress => privateKey.ToAddress();
-        public List<Move> requestedMoves;
+        private readonly List<Move> requestedMoves;
 
         public delegate void MoveFetched(IEnumerable<Move> moves);
 
         private long? lastBlockOffset;
 
-        private static Newtonsoft.Json.JsonConverter moveJsonConverter = new JsonConverter();
+        private static readonly Newtonsoft.Json.JsonConverter moveJsonConverter = new JsonConverter();
         public Agent(string apiUrl, PrivateKey privateKey, float interval = 1.0f)
         {
             if (string.IsNullOrEmpty(apiUrl))
@@ -85,26 +85,31 @@ namespace Nekoyume.Move
 
         public IEnumerator FetchMove(MoveFetched callback)
         {
-            var url = string.Format("{0}/users/0x{1}/moves/", apiUrl, UserAddress.Hex());
+            var url = $"{apiUrl}/users/0x{UserAddress.Hex()}/moves/";
 
             if (lastBlockOffset.HasValue)
             {
-                url += string.Format("?block_offset={0}", lastBlockOffset);
+                url += $"?block_offset={lastBlockOffset}";
             }
             var www = UnityWebRequest.Get(url);
             yield return www.SendWebRequest();
+
             if (!www.isNetworkError)
             {
                 var jsonPayload = www.downloadHandler.text;
                 var response = JsonConvert.DeserializeObject<Response>(jsonPayload, moveJsonConverter);
                 callback(response.moves);
             }
+            else
+            {
+                // FIXME logging
+            }
         }
 
         private IEnumerator SendMove(Move move)
         {
             var serialized = JsonConvert.SerializeObject(move, moveJsonConverter);
-            var url = string.Format("{0}/moves", apiUrl);
+            var url = $"{apiUrl}/moves";
             var request = new UnityWebRequest(url, "POST");
             var payload = Encoding.UTF8.GetBytes(serialized);
 
