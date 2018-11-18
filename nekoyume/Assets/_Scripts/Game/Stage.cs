@@ -15,15 +15,15 @@ namespace Nekoyume.Game
     public class Stage : MonoBehaviour
     {
         public int Id { get; private set; }
-        private ActionCamera _actionCam = null;
         private Model.Avatar _avatar = null;
         private GameObject _background = null;
-        private GameObject _characters = null;
+        private ActionCamera _actionCam = null;
         private GameObject _stageManager = null;
 
-        public UI.Blind Blind { get; private set; } = null;
-
-        public UI.Move MoveWidget { get; private set; } = null;
+        public UI.Blind Blind { get; private set; }
+        public UI.Move MoveWidget { get; private set; }
+        public ObjectPool ObjectPool { get; private set; }
+        public MonsterSpawner MonsterSpawner { get; private set; }
 
         private void Awake()
         {
@@ -34,18 +34,16 @@ namespace Nekoyume.Game
 
         private void Start()
         {
-            InitCamera();
+            InitComponents();
             InitUI();
             LoadBackground("nest");
         }
 
-        private void InitCamera()
+        private void InitComponents()
         {
             _actionCam = Camera.main.gameObject.GetComponent<ActionCamera>();
-            if (_actionCam == null)
-            {
-                _actionCam = Camera.main.gameObject.AddComponent<ActionCamera>();
-            }
+            ObjectPool = GetComponent<ObjectPool>();
+            MonsterSpawner = GetComponent<MonsterSpawner>();
         }
 
         private void InitUI()
@@ -73,7 +71,8 @@ namespace Nekoyume.Game
             yield return new WaitForSeconds(1.0f);
             MoveWidget.Show();
             LoadBackground("room");
-            LoadCharacter(_avatar);
+            var character = ObjectPool.Get<Character>();
+            character._Load(_avatar);
             Blind.FadeOut(1.0f);
             yield return new WaitForSeconds(1.0f);
             Blind.gameObject.SetActive(false);
@@ -93,9 +92,8 @@ namespace Nekoyume.Game
                 _stageManager.transform.parent = transform;
                 _stageManager.AddComponent<StageManager>();
             }
-
             var manager = _stageManager.GetComponent<StageManager>();
-            StartCoroutine(manager.StartStage(_avatar.world_stage));
+            StartCoroutine(manager.StartStage(_avatar));
             Event.OnStageStart.Invoke();
             yield return null;
         }
@@ -121,19 +119,6 @@ namespace Nekoyume.Game
             var camPosition = _actionCam.transform.position;
             camPosition.x = 0;
             _actionCam.transform.position = camPosition;
-        }
-
-        private void LoadCharacter(Avatar a)
-        {
-            if (_characters == null)
-            {
-                _characters = new GameObject("characters");
-                _characters.transform.parent = transform;
-            }
-            var go = Instantiate(Resources.Load<GameObject>("Prefab/Character"), _characters.transform);
-            go.name = "Player";
-            var character = go.GetComponent<Character>();
-            character._Load(a);
         }
     }
 }
