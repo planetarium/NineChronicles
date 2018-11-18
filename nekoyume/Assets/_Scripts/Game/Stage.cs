@@ -135,7 +135,7 @@ namespace Nekoyume.Game
             }
             var go = Instantiate(Resources.Load<GameObject>("Prefab/Character"), _characters.transform);
             var character = go.GetComponent<Character>();
-            character._Load(go, a);
+            character._Load(a);
         }
     }
 }

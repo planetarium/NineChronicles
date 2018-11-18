@@ -23,9 +23,9 @@ namespace Nekoyume.Game
             }
         }
 
-        public IEnumerator Load(GameObject go,  Avatar avatar)
+        public IEnumerator Load(Avatar avatar)
         {
-            _Load(go, avatar);
+            _Load(avatar);
             yield return null;
         }
 
@@ -35,12 +35,12 @@ namespace Nekoyume.Game
             yield return null;
         }
 
-        public void _Load(GameObject go, Avatar avatar)
+        public void _Load(Avatar avatar)
         {
-            Vector2 position = go.transform.position;
+            Vector2 position = gameObject.transform.position;
             position.y = -1;
-            go.transform.position = position;
-            var render = go.AddComponent<SpriteRenderer>();
+            gameObject.transform.position = position;
+            var render = gameObject.AddComponent<SpriteRenderer>();
             var sprite = Resources.Load<Sprite>($"images/character_{avatar.class_}");
             if (sprite == null)
                 sprite = Resources.Load<Sprite>("images/pet");
