@@ -16,12 +16,14 @@ namespace Nekoyume.Game
     {
         public int Id { get; private set; }
         private ActionCamera _actionCam = null;
-        private UI.Blind _blind = null;
-        private UI.Move _moveWidget = null;
         private Model.Avatar _avatar = null;
         private GameObject _background = null;
         private GameObject _characters = null;
+        private GameObject _stageManager = null;
 
+        public UI.Blind Blind { get; private set; } = null;
+
+        public UI.Move MoveWidget { get; private set; } = null;
 
         private void Awake()
         {
@@ -48,9 +50,9 @@ namespace Nekoyume.Game
 
         private void InitUI()
         {
-            _blind = UI.Widget.Create<UI.Blind>();
-            _moveWidget = UI.Widget.Create<UI.Move>();
-            _moveWidget.Close();
+            Blind = UI.Widget.Create<UI.Blind>();
+            MoveWidget = UI.Widget.Create<UI.Move>();
+            MoveWidget.Close();
         }
 
         private void OnUpdateAvatar(Model.Avatar avatar)
@@ -66,15 +68,15 @@ namespace Nekoyume.Game
         private IEnumerator RoomEntering()
         {
             Id = 0;
-            _blind.Show();
-            _blind.FadeIn(1.0f);
+            Blind.Show();
+            Blind.FadeIn(1.0f);
             yield return new WaitForSeconds(1.0f);
-            _moveWidget.Show();
+            MoveWidget.Show();
             LoadBackground("room");
             LoadCharacter(_avatar);
-            _blind.FadeOut(1.0f);
+            Blind.FadeOut(1.0f);
             yield return new WaitForSeconds(1.0f);
-            _blind.gameObject.SetActive(false);
+            Blind.gameObject.SetActive(false);
             Event.OnStageStart.Invoke();
         }
 
@@ -85,25 +87,20 @@ namespace Nekoyume.Game
 
         private IEnumerator WorldEntering()
         {
-            Data.Table.Stage data;
-            var tables = this.GetRootComponent<Data.Tables>();
-            if (tables.Stage.TryGetValue(_avatar.world_stage, out data))
+            if (_stageManager == null)
             {
-                Id = _avatar.world_stage;
-                _blind.Show();
-                _blind.FadeIn(1.0f);
-                yield return new WaitForSeconds(1.0f);
-                _moveWidget.Show();
-                LoadBackground(data.Background);
-                // TODO: Load characters
-                _blind.FadeOut(1.0f);
-                yield return new WaitForSeconds(1.0f);
-                _blind.gameObject.SetActive(false);
-                Event.OnStageStart.Invoke();
+                _stageManager = new GameObject("StageManager");
+                _stageManager.transform.parent = transform;
+                _stageManager.AddComponent<StageManager>();
             }
+
+            var manager = _stageManager.GetComponent<StageManager>();
+            StartCoroutine(manager.StartStage(_avatar.world_stage));
+            Event.OnStageStart.Invoke();
+            yield return null;
         }
 
-        private void LoadBackground(string prefabName)
+        public void LoadBackground(string prefabName)
         {
             if (_background != null)
             {
@@ -134,6 +131,7 @@ namespace Nekoyume.Game
                 _characters.transform.parent = transform;
             }
             var go = Instantiate(Resources.Load<GameObject>("Prefab/Character"), _characters.transform);
+            go.name = "Player";
             var character = go.GetComponent<Character>();
             character._Load(a);
         }
