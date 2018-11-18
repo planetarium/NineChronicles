@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Avatar = Nekoyume.Model.Avatar;
 
 namespace Nekoyume.Game
 {
@@ -14,12 +15,12 @@ namespace Nekoyume.Game
     public class Stage : MonoBehaviour
     {
         public int Id { get; private set; }
-        private ActionCamera actionCam = null;
-        private UI.Blind blind = null;
-        private UI.Move moveWidget = null;
-        private Model.Avatar avatar = null;
-        private GameObject background = null;
-        private GameObject characters = null;
+        private ActionCamera _actionCam = null;
+        private UI.Blind _blind = null;
+        private UI.Move _moveWidget = null;
+        private Model.Avatar _avatar = null;
+        private GameObject _background = null;
+        private GameObject _characters = null;
 
 
         private void Awake()
@@ -38,23 +39,23 @@ namespace Nekoyume.Game
 
         private void InitCamera()
         {
-            actionCam = Camera.main.gameObject.GetComponent<ActionCamera>();
-            if (actionCam == null)
+            _actionCam = Camera.main.gameObject.GetComponent<ActionCamera>();
+            if (_actionCam == null)
             {
-                actionCam = Camera.main.gameObject.AddComponent<ActionCamera>();
+                _actionCam = Camera.main.gameObject.AddComponent<ActionCamera>();
             }
         }
 
         private void InitUI()
         {
-            blind = UI.Widget.Create<UI.Blind>();
-            moveWidget = UI.Widget.Create<UI.Move>();
-            moveWidget.Close();
+            _blind = UI.Widget.Create<UI.Blind>();
+            _moveWidget = UI.Widget.Create<UI.Move>();
+            _moveWidget.Close();
         }
 
         private void OnUpdateAvatar(Model.Avatar avatar)
         {
-            this.avatar = avatar;
+            this._avatar = avatar;
         }
 
         private void OnRoomEnter()
@@ -65,15 +66,15 @@ namespace Nekoyume.Game
         private IEnumerator RoomEntering()
         {
             Id = 0;
-            blind.Show();
-            blind.FadeIn(1.0f);
+            _blind.Show();
+            _blind.FadeIn(1.0f);
             yield return new WaitForSeconds(1.0f);
-            moveWidget.Show();
+            _moveWidget.Show();
             LoadBackground("room");
-            LoadCharacter(avatar.class_);
-            blind.FadeOut(1.0f);
+            LoadCharacter(_avatar);
+            _blind.FadeOut(1.0f);
             yield return new WaitForSeconds(1.0f);
-            blind.gameObject.SetActive(false);
+            _blind.gameObject.SetActive(false);
             Event.OnStageStart.Invoke();
         }
 
@@ -86,67 +87,55 @@ namespace Nekoyume.Game
         {
             Data.Table.Stage data;
             var tables = this.GetRootComponent<Data.Tables>();
-            if (tables.Stage.TryGetValue(avatar.world_stage, out data))
+            if (tables.Stage.TryGetValue(_avatar.world_stage, out data))
             {
-                Id = avatar.world_stage;
-                blind.Show();
-                blind.FadeIn(1.0f);
+                Id = _avatar.world_stage;
+                _blind.Show();
+                _blind.FadeIn(1.0f);
                 yield return new WaitForSeconds(1.0f);
-                moveWidget.Show();
+                _moveWidget.Show();
                 LoadBackground(data.Background);
                 // TODO: Load characters
-                blind.FadeOut(1.0f);
+                _blind.FadeOut(1.0f);
                 yield return new WaitForSeconds(1.0f);
-                blind.gameObject.SetActive(false);
+                _blind.gameObject.SetActive(false);
                 Event.OnStageStart.Invoke();
             }
         }
 
         private void LoadBackground(string prefabName)
         {
-            if (background != null)
+            if (_background != null)
             {
-                if (background.name.Equals(prefabName))
+                if (_background.name.Equals(prefabName))
                 {
                     return;
                 }
-                Destroy(background);
-                background = null;
+                Destroy(_background);
+                _background = null;
             }
             var resName = $"Prefab/Background/{prefabName}";
             var prefab = Resources.Load<GameObject>(resName);
             if (prefab != null)
             {
-                background = Instantiate(prefab, transform);
-                background.name = prefabName;
+                _background = Instantiate(prefab, transform);
+                _background.name = prefabName;
             }
-            var camPosition = actionCam.transform.position;
+            var camPosition = _actionCam.transform.position;
             camPosition.x = 0;
-            actionCam.transform.position = camPosition;
+            _actionCam.transform.position = camPosition;
         }
 
-        private void LoadCharacter(string avatarClass)
+        private void LoadCharacter(Avatar a)
         {
-            if (characters == null)
+            if (_characters == null)
             {
-                characters = new GameObject("characters");
-                characters.transform.parent = transform;
+                _characters = new GameObject("characters");
+                _characters.transform.parent = transform;
             }
-            var go = Instantiate(Resources.Load<GameObject>("Prefab/Character"), characters.transform);
+            var go = Instantiate(Resources.Load<GameObject>("Prefab/Character"), _characters.transform);
             var character = go.GetComponent<Character>();
-            character._Load(go, avatarClass);
-        }
-
-        private void LoadMonster(int monsterCode)
-        {
-            if (characters == null)
-            {
-                characters = new GameObject("characters");
-                characters.transform.parent = transform;
-            }
-            var go = Instantiate(Resources.Load<GameObject>("Prefab/Character"), characters.transform);
-            var character = go.GetComponent<Character>();
-            character._Load(go, monsterCode.ToString());
+            character._Load(a);
         }
     }
 }

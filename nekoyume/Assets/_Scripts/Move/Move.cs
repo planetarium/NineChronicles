@@ -7,11 +7,15 @@ using Planetarium.SDK.Bencode;
 using Planetarium.SDK.Tx;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
+using Nekoyume.Data;
+using Nekoyume.Data.Table;
+using UnityEngine;
+using Avatar = Nekoyume.Model.Avatar;
+using Debug = System.Diagnostics.Debug;
 
 namespace Nekoyume.Move
 {
@@ -120,7 +124,11 @@ namespace Nekoyume.Move
     {
         public override Context Execute(Context ctx)
         {
-            ctx.avatar.hp = ctx.avatar.hp_max;
+            var game = GameObject.Find("Game").gameObject;
+            var tables = game.GetComponent<Tables>();
+            var statsTable = tables.Stats;
+            var stats = statsTable[ctx.avatar.level];
+            ctx.avatar.hp = stats.Health;
             ctx.result = new Dictionary<string, string>
             {
                     {"type", "sleep"},
@@ -148,12 +156,6 @@ namespace Nekoyume.Move
                 class_ = CharacterClass.Novice.ToString(),
                 level = 1,
                 world_stage = 1,
-                strength = 10,
-                dexterity = 8,
-                intelligence = 9,
-                constitution = 9,
-                luck = 9,
-                hp_max = 10
             };
             return ctx;
         }

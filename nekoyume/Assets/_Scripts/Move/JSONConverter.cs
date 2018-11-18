@@ -27,7 +27,6 @@ namespace Nekoyume.Move
             {
                 move = Move.FromPlainValue(jo.ToObject<Dictionary<string, dynamic>>(), type);
             }
-
             return move;
         }
 
