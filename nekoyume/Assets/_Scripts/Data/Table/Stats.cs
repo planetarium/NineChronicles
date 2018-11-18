@@ -8,6 +8,5 @@ namespace Nekoyume.Data.Table
         public int Defense = 0;
         public int Health = 0;
         public int Mana = 0;
-        public int Resistance = 0;
     }
 }
