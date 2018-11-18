@@ -96,6 +96,16 @@ namespace Nekoyume.Move
 
             return values.ToBencoded();
         }
+
+        protected Context CreateContext(ContextStatus status = ContextStatus.Success, Avatar avatar = null)
+        {
+            return new Context
+            {
+                Status = status,
+                Type = Name,
+                Avatar = avatar
+            };
+        }
     }
 
     [MoveName("hack_and_slash")]
@@ -103,18 +113,14 @@ namespace Nekoyume.Move
     {
         public override Context Execute(Context ctx)
         {
-            if (ctx.avatar.dead)
+            if (ctx.Avatar.dead)
             {
                 throw new InvalidMoveException();
             }
             // TODO client battle result
-            var result = new Dictionary<string, string>
-            {
-                {"type", "hack_and_slash"},
-                {"result", "result"}
-            };
-            ctx.result = result;
-            return ctx;
+            return CreateContext(
+                ContextStatus.Success, ctx.Avatar
+            );
         }
     }
 
@@ -126,14 +132,12 @@ namespace Nekoyume.Move
             var game = GameObject.Find("Game").gameObject;
             var tables = game.GetComponent<Tables>();
             var statsTable = tables.Stats;
-            var stats = statsTable[ctx.avatar.level];
-            ctx.avatar.hp = stats.Health;
-            ctx.result = new Dictionary<string, string>
-            {
-                    {"type", "sleep"},
-                    {"result", "success"}
-            };
-            return ctx;
+            var stats = statsTable[ctx.Avatar.level];
+
+            var newCtx = CreateContext(avatar: ctx.Avatar);
+            newCtx.Avatar.hp = stats.Health;
+            
+            return newCtx;
         }
     }
 
@@ -142,21 +146,18 @@ namespace Nekoyume.Move
     {
         public override Context Execute(Context ctx)
         {
-            var result = new Dictionary<string, string>
-            {
-                {"type", "create_novice"},
-                {"result", "success"}
-            };
-            ctx.avatar = new Avatar
-            {
-                name = Details["name"],
-                user = UserAddress,
-                gold = 0,
-                class_ = CharacterClass.Novice.ToString(),
-                level = 1,
-                world_stage = 1,
-            };
-            return ctx;
+            return CreateContext(
+                ContextStatus.Success,
+                new Avatar
+                {
+                    name = Details["name"],
+                    user = UserAddress,
+                    gold = 0,
+                    class_ = CharacterClass.Novice.ToString(),
+                    level = 1,
+                    world_stage = 1,
+                }
+            );
         }
     }
 
@@ -165,20 +166,21 @@ namespace Nekoyume.Move
     {
         public override Context Execute(Context ctx)
         {
-            var result = new Dictionary<string, string>
+            var newCtx = new Context
             {
-                {"type", "first_class"},
-                {"result", "success"}
+                Type = "first_class"                
             };
-            ctx.result = result;
-            if (ctx.avatar.class_ != CharacterClass.Novice.ToString())
+
+            if (ctx.Avatar.class_ != CharacterClass.Novice.ToString())
             {
-                ctx.result["result"] = "failed";
-                ctx.result["message"] = "Already change class.";
-                return ctx;
+                newCtx.Status = ContextStatus.Failed;
+                newCtx.Message = "Already change class.";
+                return newCtx;
             }
-            ctx.avatar.class_ = Details["class"];
-            return ctx;
+
+            newCtx.Status = ContextStatus.Success;
+            newCtx.Avatar.class_ = Details["class_"];
+            return newCtx;
         }
     }
 

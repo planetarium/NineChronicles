@@ -88,12 +88,11 @@ namespace Nekoyume.Move
 
         private void ExecuteMove(Move move)
         {
-            var ctx = new Context {avatar = Avatar};
+            var ctx = new Context {Avatar = Avatar};
             Context executed = move.Execute(ctx);
-            Avatar = executed.avatar;
-            var result = executed.result;
-
-            if (result["result"] != "success") return;
+            if (executed.Status != ContextStatus.Success) return;
+            
+            Avatar = executed.Avatar;
 
             if (move is Sleep)
             {
