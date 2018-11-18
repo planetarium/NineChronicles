@@ -15,12 +15,13 @@ namespace Nekoyume.Game
     public class Stage : MonoBehaviour
     {
         public int Id { get; private set; }
-        private ActionCamera _actionCam = null;
         private UI.Blind _blind = null;
         private UI.Move _moveWidget = null;
         private Model.Avatar _avatar = null;
         private GameObject _background = null;
-        private GameObject _characters = null;
+        private ActionCamera _actionCam = null;
+        private ObjectPool _objectPool = null;
+        private MonsterSpawner _monsterSpawner = null;
 
 
         private void Awake()
@@ -32,18 +33,16 @@ namespace Nekoyume.Game
 
         private void Start()
         {
-            InitCamera();
+            InitComponents();
             InitUI();
             LoadBackground("nest");
         }
 
-        private void InitCamera()
+        private void InitComponents()
         {
             _actionCam = Camera.main.gameObject.GetComponent<ActionCamera>();
-            if (_actionCam == null)
-            {
-                _actionCam = Camera.main.gameObject.AddComponent<ActionCamera>();
-            }
+            _objectPool = GetComponent<ObjectPool>();
+            _monsterSpawner = GetComponent<MonsterSpawner>();
         }
 
         private void InitUI()
@@ -71,7 +70,10 @@ namespace Nekoyume.Game
             yield return new WaitForSeconds(1.0f);
             _moveWidget.Show();
             LoadBackground("room");
-            LoadCharacter(_avatar);
+
+            var character = _objectPool.Get<Character>();
+            character._Load(_avatar);
+
             _blind.FadeOut(1.0f);
             yield return new WaitForSeconds(1.0f);
             _blind.gameObject.SetActive(false);
@@ -90,16 +92,24 @@ namespace Nekoyume.Game
             if (tables.Stage.TryGetValue(_avatar.world_stage, out data))
             {
                 Id = _avatar.world_stage;
+
                 _blind.Show();
                 _blind.FadeIn(1.0f);
                 yield return new WaitForSeconds(1.0f);
+
                 _moveWidget.Show();
+                _objectPool.ReleaseAll();
                 LoadBackground(data.Background);
-                // TODO: Load characters
+
+                var character = _objectPool.Get<Character>();
+                character._Load(_avatar);
+
                 _blind.FadeOut(1.0f);
                 yield return new WaitForSeconds(1.0f);
                 _blind.gameObject.SetActive(false);
                 Event.OnStageStart.Invoke();
+
+                _monsterSpawner.Play(Id, data.MonsterPower);
             }
         }
 
@@ -124,18 +134,6 @@ namespace Nekoyume.Game
             var camPosition = _actionCam.transform.position;
             camPosition.x = 0;
             _actionCam.transform.position = camPosition;
-        }
-
-        private void LoadCharacter(Avatar a)
-        {
-            if (_characters == null)
-            {
-                _characters = new GameObject("characters");
-                _characters.transform.parent = transform;
-            }
-            var go = Instantiate(Resources.Load<GameObject>("Prefab/Character"), _characters.transform);
-            var character = go.GetComponent<Character>();
-            character._Load(a);
         }
     }
 }

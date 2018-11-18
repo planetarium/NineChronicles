@@ -40,7 +40,7 @@ namespace Nekoyume.Game
             Vector2 position = gameObject.transform.position;
             position.y = -1;
             gameObject.transform.position = position;
-            var render = gameObject.AddComponent<SpriteRenderer>();
+            var render = gameObject.GetComponent<SpriteRenderer>();
             var sprite = Resources.Load<Sprite>($"images/character_{avatar.class_}");
             if (sprite == null)
                 sprite = Resources.Load<Sprite>("images/pet");
