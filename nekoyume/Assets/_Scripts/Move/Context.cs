@@ -5,7 +5,9 @@ namespace Nekoyume.Move
 {
     public class Context
     {
-        public Avatar avatar;
-        public Dictionary<string, string> result;
+        public Avatar Avatar;
+        public string Message;
+        public string Type;
+        public ContextStatus Status;
     }
 }
