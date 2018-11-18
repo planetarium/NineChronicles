@@ -12,9 +12,7 @@ namespace Nekoyume.Model
         public int level;
         public int gold;
         public int exp;
-        public int exp_max;
         public int hp;
-        public int hp_max;
         public string[] items;
         public int world_stage;
         public byte[] user;
