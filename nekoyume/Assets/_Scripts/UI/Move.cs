@@ -1,5 +1,6 @@
 using Nekoyume.Move;
 using UnityEngine;
+using UnityEngine.UI;
 
 
 namespace Nekoyume.UI
@@ -7,21 +8,32 @@ namespace Nekoyume.UI
     public class Move : Widget
     {
         public GameObject btnMove;
-        public GameObject btnHome;
+        public GameObject btnSleep;
 
-        public void Start()
+        public void ShowRoom()
         {
-            btnHome.SetActive(false);
+            Show();
+            btnSleep.GetComponent<Button>().enabled = false;
+            btnMove.GetComponent<Button>().enabled = true;
+        }
+
+        public void ShowWorld()
+        {
+            Show();
+            btnSleep.GetComponent<Button>().enabled = true;
+            btnMove.GetComponent<Button>().enabled = false;
         }
 
         public void MoveClick()
         {
             Game.Event.OnStageEnter.Invoke();
+            Close();
         }
 
         public void SleepClick()
         {
             MoveManager.Instance.Sleep();
+            Close();
         }
     }
 }

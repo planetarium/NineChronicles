@@ -25,54 +25,46 @@ namespace Nekoyume.Game
             _game = this.GetRootComponent<Game>();
         }
 
-        public IEnumerator WorldEntering()
+        public IEnumerator WorldEntering(Stage stage)
         {
             _currentStage = _game.Avatar.world_stage;
             Data.Table.Stage data;
             var tables = this.GetRootComponent<Data.Tables>();
             if (tables.Stage.TryGetValue(_currentStage, out data))
             {
-                var gameScript = this.GetRootComponent<Game>();
-                var stage = GameObject.Find("Stage").GetComponent<Stage>();
-                var blind = gameScript.Blind;
-                stage.Id = _currentStage;
-                blind.Show();
-                blind.FadeIn(1.0f);
-                yield return new WaitForSeconds(1.0f);
+                var blind = UI.Widget.Find<UI.Blind>();
+                yield return StartCoroutine(blind.FadeIn(1.0f, $"STAGE {_currentStage}"));
 
-                var moveWidget = gameScript.MoveWidget;
-                moveWidget.Show();
+                UI.Widget.Find<UI.Move>().ShowWorld();
                 _objectPool.ReleaseAll();
+                stage.Id = _currentStage;
                 stage.LoadBackground(data.Background);
 
                 var character = _objectPool.Get<Character>();
                 character._Load(_game.Avatar);
-                
-                blind.FadeOut(1.0f);
-                yield return new WaitForSeconds(1.0f);
-                blind.gameObject.SetActive(false);
+
+                yield return new WaitForSeconds(2.0f);
+                yield return StartCoroutine(blind.FadeOut(1.0f));
 
                 Event.OnStageStart.Invoke();
                 _monsterSpawner.Play(_currentStage, data.MonsterPower);
             }
         }
 
-        public IEnumerator RoomEntering()
+        public IEnumerator RoomEntering(Stage stage)
         {
-            var stage = GameObject.Find("Stage").GetComponent<Stage>();
-            var blind = _game.Blind;
-            var moveWidget = _game.MoveWidget;
-            blind.Show();
-            blind.FadeIn(1.0f);
-            yield return new WaitForSeconds(1.0f);
-            moveWidget.Show();
+            var blind = UI.Widget.Find<UI.Blind>();
+            yield return StartCoroutine(blind.FadeIn(1.0f, "ROOM"));
+
+            UI.Widget.Find<UI.Move>().ShowRoom();
             stage.Id = 0;
             stage.LoadBackground("room");
             var character = _objectPool.Get<Character>();
             character._Load(_game.Avatar);
-            blind.FadeOut(1.0f);
-            yield return new WaitForSeconds(1.0f);
-            blind.gameObject.SetActive(false);
+
+            yield return new WaitForSeconds(2.0f);
+            yield return StartCoroutine(blind.FadeOut(1.0f));
+
             Event.OnStageStart.Invoke();
         }
     }

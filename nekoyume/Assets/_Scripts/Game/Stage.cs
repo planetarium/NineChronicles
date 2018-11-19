@@ -47,12 +47,12 @@ namespace Nekoyume.Game
 
         private void OnRoomEnter()
         {
-            StartCoroutine(_stageManager.RoomEntering());
+            StartCoroutine(_stageManager.RoomEntering(this));
         }
 
         private void OnStageEnter()
         {
-            StartCoroutine(_stageManager.WorldEntering());
+            StartCoroutine(_stageManager.WorldEntering(this));
         }
 
         public void LoadBackground(string prefabName)
