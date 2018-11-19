@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
-using Nekoyume.Move;
 using Newtonsoft.Json;
 using Planetarium.Crypto.Extension;
 using Planetarium.Crypto.Keys;
@@ -36,6 +35,7 @@ namespace Nekoyume.Move
         private long? lastBlockOffset;
 
         private static readonly Newtonsoft.Json.JsonConverter moveJsonConverter = new JsonConverter();
+
         public Agent(string apiUrl, PrivateKey privateKey, float interval = 1.0f)
         {
             if (string.IsNullOrEmpty(apiUrl))
@@ -71,7 +71,7 @@ namespace Nekoyume.Move
                     yield return SendMove(m);
                 }
 
-                yield return FetchMove(delegate (IEnumerable<Move> fetched)
+                yield return FetchMove(delegate(IEnumerable<Move> fetched)
                 {
                     foreach (var move in fetched)
                     {
@@ -91,6 +91,7 @@ namespace Nekoyume.Move
             {
                 url += $"?block_offset={lastBlockOffset}";
             }
+
             var www = UnityWebRequest.Get(url);
             yield return www.SendWebRequest();
 

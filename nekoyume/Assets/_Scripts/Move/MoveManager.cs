@@ -17,7 +17,7 @@ namespace Nekoyume.Move
         public event EventHandler<Model.Avatar> DidAvatarLoaded;
         public event EventHandler<Model.Avatar> DidSleep;
         public event EventHandler CreateAvatarRequired;
-        
+
         private Model.Avatar Avatar { get; set; }
         private Agent agent;
         private long? lastBlockId;
@@ -54,12 +54,13 @@ namespace Nekoyume.Move
 
         public void StartSync()
         {
-            StartCoroutine(agent.FetchMove(delegate (IEnumerable<Move> moves)
+            StartCoroutine(agent.FetchMove(delegate(IEnumerable<Move> moves)
             {
                 if (moves.FirstOrDefault() == null)
                 {
                     CreateAvatarRequired?.Invoke(this, null);
                 }
+
                 StartCoroutine(agent.Sync());
             }));
         }
@@ -91,7 +92,7 @@ namespace Nekoyume.Move
             var ctx = new Context {Avatar = Avatar};
             Context executed = move.Execute(ctx);
             if (executed.Status != ContextStatus.Success) return;
-            
+
             Avatar = executed.Avatar;
 
             if (move is Sleep)
@@ -100,21 +101,25 @@ namespace Nekoyume.Move
             }
         }
 
-        public HackAndSlash HackAndSlash(string weapon = null, string armor = null, string food = null, DateTime? timestamp = null)
+        public HackAndSlash HackAndSlash(string weapon = null, string armor = null, string food = null,
+            DateTime? timestamp = null)
         {
             var details = new Dictionary<string, string>();
             if (weapon != null)
             {
                 details["weapon"] = weapon;
             }
+
             if (armor != null)
             {
                 details["armor"] = armor;
             }
+
             if (food != null)
             {
                 details["food"] = food;
             }
+
             var has = new HackAndSlash
             {
                 Details = details
@@ -134,7 +139,7 @@ namespace Nekoyume.Move
             {
                 // TODO bencodex
                 Details = new Dictionary<string, string>
-                { }
+                    { }
             };
             return ProcessMove(sleep, 0, timestamp);
         }
@@ -145,7 +150,7 @@ namespace Nekoyume.Move
             {
                 Details = new Dictionary<string, string>
                 {
-                    { "class", class_ }
+                    {"class", class_}
                 }
             };
 
