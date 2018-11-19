@@ -36,7 +36,7 @@ namespace Nekoyume.Move
 
         private static readonly Newtonsoft.Json.JsonConverter moveJsonConverter = new JsonConverter();
 
-        public Agent(string apiUrl, PrivateKey privateKey, float interval = 1.0f)
+        public Agent(string apiUrl, PrivateKey privateKey, float interval = 1.0f, long? lastBlockOffset = null)
         {
             if (string.IsNullOrEmpty(apiUrl))
             {
@@ -48,6 +48,7 @@ namespace Nekoyume.Move
             this.interval = interval;
             this.moves = new OrderedDictionary();
             this.requestedMoves = new List<Move>();
+            this.lastBlockOffset = lastBlockOffset;
         }
 
         public void Send(Move move)

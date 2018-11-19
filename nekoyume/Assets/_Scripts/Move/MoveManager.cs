@@ -1,8 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Serialization.Formatters.Binary;
 using Planetarium.Crypto.Extension;
 using Planetarium.Crypto.Keys;
 using UnityEngine;
@@ -29,6 +31,13 @@ namespace Nekoyume.Move
         }
     }
 
+    [Serializable]
+    internal class SaveData
+    {
+        public Avatar Avatar;
+        public long? LastBlockId;
+    }
+
     public class MoveManager : MonoBehaviour
     {
         public static MoveManager Instance { get; private set; }
@@ -44,6 +53,8 @@ namespace Nekoyume.Move
         private long? lastBlockId;
         private const string LastBlockIdKey = "last_block_id";
         private HashSet<byte[]> _processedMoveIds;
+
+        private string _saveFilePath;
 
         private void Awake()
         {
@@ -63,7 +74,10 @@ namespace Nekoyume.Move
                 privateKey = PrivateKey.FromBytes(privateKeyHex.ParseHex());
             }
 
-            this.agent = new Agent(ServerUrl, privateKey);
+            _saveFilePath = Application.persistentDataPath + "/avatar.dat";
+            LoadStatus();
+
+            this.agent = new Agent(ServerUrl, privateKey, lastBlockOffset: lastBlockId);
             this.agent.DidReceiveAction += OnDidReceiveMove;
 
             Debug.Log($"User Address: 0x{agent.UserAddress.Hex()}");
@@ -78,6 +92,11 @@ namespace Nekoyume.Move
 
         public void StartSync()
         {
+            if (Avatar != null)
+            {
+                DidAvatarLoaded?.Invoke(this, Avatar);
+            }
+
             StartCoroutine(agent.FetchMove(delegate(IEnumerable<Move> moves)
             {
                 if (moves.FirstOrDefault() == null)
@@ -99,6 +118,7 @@ namespace Nekoyume.Move
                 Avatar = Avatar.FromMoves(moves);
                 if (Avatar != null)
                 {
+                    SaveStatus();
                     DidAvatarLoaded?.Invoke(this, Avatar);
                 }
             }
@@ -226,6 +246,33 @@ namespace Nekoyume.Move
             }
 
             return move;
+        }
+
+        private void LoadStatus()
+        {
+            if (!File.Exists(_saveFilePath)) return;
+
+            var formatter = new BinaryFormatter();
+            using (FileStream stream = File.Open(_saveFilePath, FileMode.Open))
+            {
+                var data = (SaveData) formatter.Deserialize(stream);
+                Avatar = data.Avatar;
+                lastBlockId = data.LastBlockId;
+            }
+        }
+
+        private void SaveStatus()
+        {
+            var data = new SaveData
+            {
+                Avatar = Avatar,
+                LastBlockId = lastBlockId
+            };
+            var formatter = new BinaryFormatter();
+            using (FileStream stream = File.Open(_saveFilePath, FileMode.OpenOrCreate))
+            {
+                formatter.Serialize(stream, data);
+            }
         }
     }
 }
