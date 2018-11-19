@@ -20,6 +20,11 @@ namespace Nekoyume.Game
 
     public class Game : MonoBehaviour
     {
+
+        public UI.Blind Blind;
+        public UI.Move MoveWidget;
+        public Model.Avatar Avatar;
+
         private void Awake()
         {
             Assets.SimpleLocalization.LocalizationManager.Read();
@@ -30,6 +35,14 @@ namespace Nekoyume.Game
             MoveManager.Instance.CreateAvatarRequired += OnCreateAvatarRequired;
             MoveManager.Instance.DidAvatarLoaded += OnAvatarLoaded;
             MoveManager.Instance.DidSleep += OnSleep;
+            InitUi();
+        }
+
+        private void InitUi()
+        {
+            Blind = UI.Widget.Create<UI.Blind>();
+            MoveWidget = UI.Widget.Create<UI.Move>();
+            MoveWidget.Close();
         }
 
         private void OnCreateAvatarRequired(object sender, EventArgs e)

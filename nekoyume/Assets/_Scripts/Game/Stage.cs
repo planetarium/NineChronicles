@@ -14,106 +14,48 @@ namespace Nekoyume.Game
 
     public class Stage : MonoBehaviour
     {
-        public int Id { get; private set; }
-        private UI.Blind _blind = null;
-        private UI.Move _moveWidget = null;
-        private Model.Avatar _avatar = null;
+        internal int Id;
         private GameObject _background = null;
         private ActionCamera _actionCam = null;
-        private ObjectPool _objectPool = null;
-        private MonsterSpawner _monsterSpawner = null;
-
+        private StageManager _stageManager = null;
+        private Game _game;
 
         private void Awake()
         {
             Event.OnUpdateAvatar.AddListener(OnUpdateAvatar);
             Event.OnRoomEnter.AddListener(OnRoomEnter);
             Event.OnStageEnter.AddListener(OnStageEnter);
+            _stageManager = gameObject.AddComponent<StageManager>();
+            _game = this.GetRootComponent<Game>();
         }
 
         private void Start()
         {
             InitComponents();
-            InitUI();
             LoadBackground("nest");
         }
 
         private void InitComponents()
         {
             _actionCam = Camera.main.gameObject.GetComponent<ActionCamera>();
-            _objectPool = GetComponent<ObjectPool>();
-            _monsterSpawner = GetComponent<MonsterSpawner>();
-        }
-
-        private void InitUI()
-        {
-            _blind = UI.Widget.Create<UI.Blind>();
-            _moveWidget = UI.Widget.Create<UI.Move>();
-            _moveWidget.Close();
         }
 
         private void OnUpdateAvatar(Model.Avatar avatar)
         {
-            this._avatar = avatar;
+            _game.Avatar = avatar;
         }
 
         private void OnRoomEnter()
         {
-            StartCoroutine(RoomEntering());
-        }
-
-        private IEnumerator RoomEntering()
-        {
-            Id = 0;
-            _blind.Show();
-            _blind.FadeIn(1.0f);
-            yield return new WaitForSeconds(1.0f);
-            _moveWidget.Show();
-            LoadBackground("room");
-
-            var character = _objectPool.Get<Character>();
-            character._Load(_avatar);
-
-            _blind.FadeOut(1.0f);
-            yield return new WaitForSeconds(1.0f);
-            _blind.gameObject.SetActive(false);
-            Event.OnStageStart.Invoke();
+            StartCoroutine(_stageManager.RoomEntering());
         }
 
         private void OnStageEnter()
         {
-            StartCoroutine(WorldEntering());
+            StartCoroutine(_stageManager.WorldEntering());
         }
 
-        private IEnumerator WorldEntering()
-        {
-            Data.Table.Stage data;
-            var tables = this.GetRootComponent<Data.Tables>();
-            if (tables.Stage.TryGetValue(_avatar.world_stage, out data))
-            {
-                Id = _avatar.world_stage;
-
-                _blind.Show();
-                _blind.FadeIn(1.0f);
-                yield return new WaitForSeconds(1.0f);
-
-                _moveWidget.Show();
-                _objectPool.ReleaseAll();
-                LoadBackground(data.Background);
-
-                var character = _objectPool.Get<Character>();
-                character._Load(_avatar);
-
-                _blind.FadeOut(1.0f);
-                yield return new WaitForSeconds(1.0f);
-                _blind.gameObject.SetActive(false);
-                Event.OnStageStart.Invoke();
-
-                _monsterSpawner.Play(Id, data.MonsterPower);
-            }
-        }
-
-        private void LoadBackground(string prefabName)
+        public void LoadBackground(string prefabName)
         {
             if (_background != null)
             {
