@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -6,25 +7,28 @@ using DG.Tweening;
 
 namespace Nekoyume.UI
 {
-    public class Blind : Popup
+    public class Blind : Widget
     {
-        public Image image;
-        public Text content;
-        public void Show(string text)
+        [SerializeField]
+        private Image _image;
+        [SerializeField]
+        private Text _content;
+
+        public IEnumerator FadeIn(float time, string text = "")
         {
-            content.text = text;
-            image.DOFade(0.0f, 0.0f);
-            base.Show();
+            Show();
+            _image.DOFade(0.0f, 0.0f);
+            _image.DOFade(1.0f, time);
+            yield return new WaitForSeconds(time);
+            _content.text = text;
         }
 
-        public void FadeIn(float time)
+        public IEnumerator FadeOut(float time)
         {
-            image.DOFade(1.0f, time);
-        }
-
-        public void FadeOut(float time)
-        {
-            image.DOFade(0.0f, time);
+            _content.text = "";
+            _image.DOFade(0.0f, time);
+            yield return new WaitForSeconds(time);
+            Close();
         }
     }
 }
