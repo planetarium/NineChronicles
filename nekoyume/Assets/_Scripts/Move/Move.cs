@@ -31,6 +31,10 @@ namespace Nekoyume.Move
         }
     }
 
+    internal class Preprocess : Attribute
+    {
+    }
+
     public abstract class Move : BaseTransaction
     {
         private const string TimestampFormat = "yyyy-MM-dd HH:mm:ss.ffffff";
@@ -124,6 +128,7 @@ namespace Nekoyume.Move
     }
 
     [MoveName("sleep")]
+    [Preprocess]
     public class Sleep : Move
     {
         public override Context Execute(Context ctx)

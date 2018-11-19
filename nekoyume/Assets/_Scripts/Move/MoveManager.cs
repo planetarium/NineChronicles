@@ -1,27 +1,49 @@
-using Planetarium.Crypto.Extension;
-using Planetarium.Crypto.Keys;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using Planetarium.Crypto.Extension;
+using Planetarium.Crypto.Keys;
 using UnityEngine;
+using Avatar = Nekoyume.Model.Avatar;
 
 namespace Nekoyume.Move
 {
+    internal class ByteArrayComparator : IEqualityComparer<byte[]>
+    {
+        public bool Equals(byte[] x, byte[] y)
+        {
+            if (x == null || y == null)
+            {
+                return x == y;
+            }
+
+            return x.SequenceEqual(y);
+        }
+
+        public int GetHashCode(byte[] bs)
+        {
+            var h = bs.Aggregate<byte, uint>(0, (current, b) => ((current << 23) | (current >> 9)) ^ b);
+            return unchecked((int) h);
+        }
+    }
+
     public class MoveManager : MonoBehaviour
     {
         public static MoveManager Instance { get; private set; }
 
         public string ServerUrl;
 
-        public event EventHandler<Model.Avatar> DidAvatarLoaded;
-        public event EventHandler<Model.Avatar> DidSleep;
+        public event EventHandler<Avatar> DidAvatarLoaded;
+        public event EventHandler<Avatar> DidSleep;
         public event EventHandler CreateAvatarRequired;
 
-        private Model.Avatar Avatar { get; set; }
+        private Avatar Avatar { get; set; }
         private Agent agent;
         private long? lastBlockId;
         private const string LastBlockIdKey = "last_block_id";
+        private HashSet<byte[]> _processedMoveIds;
 
         private void Awake()
         {
@@ -50,6 +72,8 @@ namespace Nekoyume.Move
             {
                 lastBlockId = long.Parse(PlayerPrefs.GetString(LastBlockIdKey));
             }
+
+            _processedMoveIds = new HashSet<byte[]>(new ByteArrayComparator());
         }
 
         public void StartSync()
@@ -72,19 +96,29 @@ namespace Nekoyume.Move
                 var moves = agent.Moves.Where(
                     m => m.UserAddress.SequenceEqual(agent.UserAddress)
                 );
-                Avatar = Model.Avatar.FromMoves(moves);
+                Avatar = Avatar.FromMoves(moves);
                 if (Avatar != null)
                 {
                     DidAvatarLoaded?.Invoke(this, Avatar);
                 }
             }
 
-            if (lastBlockId.HasValue && move.BlockId > lastBlockId)
+            if (ShouldExecute(move))
             {
                 ExecuteMove(move);
             }
 
+            if (_processedMoveIds.Contains(move.Id))
+            {
+                _processedMoveIds.Remove(move.Id);
+            }
+
             PlayerPrefs.SetString(LastBlockIdKey, move.BlockId.ToString());
+        }
+
+        private bool ShouldExecute(Move move)
+        {
+            return !_processedMoveIds.Contains(move.Id);
         }
 
         private void ExecuteMove(Move move)
@@ -95,6 +129,19 @@ namespace Nekoyume.Move
 
             Avatar = executed.Avatar;
 
+            if (ShouldNotify(move))
+            {
+                Notify(move);
+            }
+        }
+
+        private bool ShouldNotify(Move move)
+        {
+            return !move.Confirmed || lastBlockId.GetValueOrDefault(0) < move.BlockId;
+        }
+
+        private void Notify(Move move)
+        {
             if (move is Sleep)
             {
                 DidSleep?.Invoke(this, Avatar);
@@ -171,6 +218,13 @@ namespace Nekoyume.Move
             move.Tax = tax;
             move.Timestamp = (timestamp) ?? DateTime.UtcNow;
             agent.Send(move);
+
+            if (typeof(T).GetCustomAttribute<Preprocess>() != null)
+            {
+                ExecuteMove(move);
+                _processedMoveIds.Add(move.Id);
+            }
+
             return move;
         }
     }
