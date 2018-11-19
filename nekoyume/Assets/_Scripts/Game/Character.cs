@@ -1,9 +1,11 @@
 using System.Collections;
+using BTAI;
 using DG.Tweening;
 using Nekoyume.Data;
 using Nekoyume.Data.Table;
 using UnityEngine;
 using Avatar = Nekoyume.Model.Avatar;
+using Sequence = DG.Tweening.Sequence;
 
 
 namespace Nekoyume.Game
@@ -11,17 +13,9 @@ namespace Nekoyume.Game
     public class Character : MonoBehaviour
     {
         public Stats Stats;
+        public Root Root = BT.Root();
 
-        public IEnumerator Walk()
-        {
-            while (true)
-            {
-                Vector2 position = transform.position;
-                position.x += Time.deltaTime * 40 / 160;
-                transform.position = position;
-                yield return null;
-            }
-        }
+        public bool IsDead => Stats.Health <= 0;
 
         public IEnumerator Load(Avatar avatar)
         {
@@ -29,10 +23,17 @@ namespace Nekoyume.Game
             yield return null;
         }
 
-        public IEnumerator Stop()
+        private void Walk()
         {
-            StopCoroutine(Walk());
-            yield return null;
+            Vector2 position = transform.position;
+            position.x += Time.deltaTime * 40 / 160;
+            transform.position = position;
+        }
+
+        private void Update()
+        {
+            if (Root.Children().Count <= 0) return;
+            Root.Tick();
         }
 
         public void _Load(Avatar avatar)
@@ -52,6 +53,13 @@ namespace Nekoyume.Game
             var tables = this.GetRootComponent<Tables>();
             var statsTable = tables.Stats;
             Stats = statsTable[avatar.level];
+            var stage = GameObject.Find("Stage").GetComponent<Stage>();
+            if (stage.Id != 0)
+            {
+                Root.OpenBranch(
+                    BT.Call(Walk)
+                );
+            }
         }
     }
 }
