@@ -31,13 +31,14 @@ namespace Nekoyume.Game
             var tables = this.GetRootComponent<Data.Tables>();
             if (tables.Stage.TryGetValue(_currentStage, out data))
             {
+                var gameScript = this.GetRootComponent<Game>();
                 var stage = GameObject.Find("Stage").GetComponent<Stage>();
-                var blind = stage.Blind;
+                var blind = gameScript.Blind;
                 blind.Show();
                 blind.FadeIn(1.0f);
                 yield return new WaitForSeconds(1.0f);
 
-                var moveWidget = stage.MoveWidget;
+                var moveWidget = gameScript.MoveWidget;
                 moveWidget.Show();
                 ObjectPool.ReleaseAll();
                 stage.LoadBackground(data.Background);

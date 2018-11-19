@@ -15,13 +15,10 @@ namespace Nekoyume.Game
     public class Stage : MonoBehaviour
     {
         public int Id { get; private set; }
-        private Model.Avatar _avatar = null;
         private GameObject _background = null;
         private ActionCamera _actionCam = null;
         private StageManager _stageManager = null;
-
-        public UI.Blind Blind { get; private set; }
-        public UI.Move MoveWidget { get; private set; }
+        private Game _game;
 
         private void Awake()
         {
@@ -29,12 +26,12 @@ namespace Nekoyume.Game
             Event.OnRoomEnter.AddListener(OnRoomEnter);
             Event.OnStageEnter.AddListener(OnStageEnter);
             _stageManager = gameObject.AddComponent<StageManager>();
+            _game = this.GetRootComponent<Game>();
         }
 
         private void Start()
         {
             InitComponents();
-            InitUI();
             LoadBackground("nest");
         }
 
@@ -43,16 +40,9 @@ namespace Nekoyume.Game
             _actionCam = Camera.main.gameObject.GetComponent<ActionCamera>();
         }
 
-        private void InitUI()
-        {
-            Blind = UI.Widget.Create<UI.Blind>();
-            MoveWidget = UI.Widget.Create<UI.Move>();
-            MoveWidget.Close();
-        }
-
         private void OnUpdateAvatar(Model.Avatar avatar)
         {
-            this._avatar = avatar;
+            _game.Avatar = avatar;
         }
 
         private void OnRoomEnter()
@@ -62,17 +52,19 @@ namespace Nekoyume.Game
 
         private IEnumerator RoomEntering()
         {
+            var blind = _game.Blind;
+            var moveWidget = _game.MoveWidget;
             Id = 0;
-            Blind.Show();
-            Blind.FadeIn(1.0f);
+            blind.Show();
+            blind.FadeIn(1.0f);
             yield return new WaitForSeconds(1.0f);
-            MoveWidget.Show();
+            moveWidget.Show();
             LoadBackground("room");
             var character = _stageManager.ObjectPool.Get<Character>();
-            character._Load(_avatar);
-            Blind.FadeOut(1.0f);
+            character._Load(_game.Avatar);
+            blind.FadeOut(1.0f);
             yield return new WaitForSeconds(1.0f);
-            Blind.gameObject.SetActive(false);
+            blind.gameObject.SetActive(false);
             Event.OnStageStart.Invoke();
         }
 
@@ -83,7 +75,7 @@ namespace Nekoyume.Game
 
         private IEnumerator WorldEntering()
         {
-            StartCoroutine(_stageManager.StartStage(_avatar));
+            StartCoroutine(_stageManager.StartStage(_game.Avatar));
             Event.OnStageStart.Invoke();
             yield return null;
         }
