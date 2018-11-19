@@ -8,6 +8,22 @@ namespace Nekoyume.Game
     {
         private int _currentStage;
 
+        public ObjectPool ObjectPool { get; private set; }
+        private MonsterSpawner _monsterSpawner;
+
+        private void Awake()
+        {
+            ObjectPool = gameObject.AddComponent<ObjectPool>();
+            var character = new PoolData
+            {
+                Prefab = Resources.Load<GameObject>("Prefab/Character"),
+                AddCount = 5,
+                InitCount = 10
+            };
+            ObjectPool.list.Add(character);
+            _monsterSpawner = gameObject.AddComponent<MonsterSpawner>();
+        }
+
         public IEnumerator StartStage(Avatar avatar)
         {
             _currentStage = avatar.world_stage;
@@ -23,19 +39,17 @@ namespace Nekoyume.Game
 
                 var moveWidget = stage.MoveWidget;
                 moveWidget.Show();
-                var objectPool = stage.ObjectPool;
-                objectPool.ReleaseAll();
+                ObjectPool.ReleaseAll();
                 stage.LoadBackground(data.Background);
 
-                var character = objectPool.Get<Character>();
+                var character = ObjectPool.Get<Character>();
                 character._Load(avatar);
                 
                 blind.FadeOut(1.0f);
                 yield return new WaitForSeconds(1.0f);
                 blind.gameObject.SetActive(false);
 
-                var monsterSpawner = stage.MonsterSpawner;
-                monsterSpawner.Play(_currentStage, data.MonsterPower);
+                _monsterSpawner.Play(_currentStage, data.MonsterPower);
             }
 
             yield return null;

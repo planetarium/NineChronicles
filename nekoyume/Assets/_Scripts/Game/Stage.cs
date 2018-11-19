@@ -18,18 +18,17 @@ namespace Nekoyume.Game
         private Model.Avatar _avatar = null;
         private GameObject _background = null;
         private ActionCamera _actionCam = null;
-        private GameObject _stageManager = null;
+        private StageManager _stageManager = null;
 
         public UI.Blind Blind { get; private set; }
         public UI.Move MoveWidget { get; private set; }
-        public ObjectPool ObjectPool { get; private set; }
-        public MonsterSpawner MonsterSpawner { get; private set; }
 
         private void Awake()
         {
             Event.OnUpdateAvatar.AddListener(OnUpdateAvatar);
             Event.OnRoomEnter.AddListener(OnRoomEnter);
             Event.OnStageEnter.AddListener(OnStageEnter);
+            _stageManager = gameObject.AddComponent<StageManager>();
         }
 
         private void Start()
@@ -42,8 +41,6 @@ namespace Nekoyume.Game
         private void InitComponents()
         {
             _actionCam = Camera.main.gameObject.GetComponent<ActionCamera>();
-            ObjectPool = GetComponent<ObjectPool>();
-            MonsterSpawner = GetComponent<MonsterSpawner>();
         }
 
         private void InitUI()
@@ -71,7 +68,7 @@ namespace Nekoyume.Game
             yield return new WaitForSeconds(1.0f);
             MoveWidget.Show();
             LoadBackground("room");
-            var character = ObjectPool.Get<Character>();
+            var character = _stageManager.ObjectPool.Get<Character>();
             character._Load(_avatar);
             Blind.FadeOut(1.0f);
             yield return new WaitForSeconds(1.0f);
@@ -86,14 +83,7 @@ namespace Nekoyume.Game
 
         private IEnumerator WorldEntering()
         {
-            if (_stageManager == null)
-            {
-                _stageManager = new GameObject("StageManager");
-                _stageManager.transform.parent = transform;
-                _stageManager.AddComponent<StageManager>();
-            }
-            var manager = _stageManager.GetComponent<StageManager>();
-            StartCoroutine(manager.StartStage(_avatar));
+            StartCoroutine(_stageManager.StartStage(_avatar));
             Event.OnStageStart.Invoke();
             yield return null;
         }
