@@ -14,7 +14,7 @@ namespace Nekoyume.Game
 
     public class Stage : MonoBehaviour
     {
-        public int Id { get; private set; }
+        internal int Id;
         private GameObject _background = null;
         private ActionCamera _actionCam = null;
         private StageManager _stageManager = null;
@@ -47,37 +47,12 @@ namespace Nekoyume.Game
 
         private void OnRoomEnter()
         {
-            StartCoroutine(RoomEntering());
-        }
-
-        private IEnumerator RoomEntering()
-        {
-            var blind = _game.Blind;
-            var moveWidget = _game.MoveWidget;
-            Id = 0;
-            blind.Show();
-            blind.FadeIn(1.0f);
-            yield return new WaitForSeconds(1.0f);
-            moveWidget.Show();
-            LoadBackground("room");
-            var character = _stageManager.ObjectPool.Get<Character>();
-            character._Load(_game.Avatar);
-            blind.FadeOut(1.0f);
-            yield return new WaitForSeconds(1.0f);
-            blind.gameObject.SetActive(false);
-            Event.OnStageStart.Invoke();
+            StartCoroutine(_stageManager.RoomEntering());
         }
 
         private void OnStageEnter()
         {
-            StartCoroutine(WorldEntering());
-        }
-
-        private IEnumerator WorldEntering()
-        {
-            StartCoroutine(_stageManager.StartStage(_game.Avatar));
-            Event.OnStageStart.Invoke();
-            yield return null;
+            StartCoroutine(_stageManager.WorldEntering());
         }
 
         public void LoadBackground(string prefabName)
