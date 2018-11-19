@@ -74,7 +74,7 @@ namespace Nekoyume.Move
                 privateKey = PrivateKey.FromBytes(privateKeyHex.ParseHex());
             }
 
-            _saveFilePath = Application.persistentDataPath + "/avatar.dat";
+            _saveFilePath = Path.Combine(Application.persistentDataPath, "avatar.dat");
             LoadStatus();
 
             this.agent = new Agent(ServerUrl, privateKey, lastBlockOffset: lastBlockId);
