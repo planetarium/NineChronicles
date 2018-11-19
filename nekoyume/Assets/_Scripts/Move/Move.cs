@@ -1,17 +1,15 @@
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Reflection;
+using Nekoyume.Data;
 using Nekoyume.Model;
 using Planetarium.Crypto.Extension;
 using Planetarium.Crypto.Keys;
 using Planetarium.SDK.Address;
 using Planetarium.SDK.Bencode;
 using Planetarium.SDK.Tx;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.Serialization;
-using Nekoyume.Data;
-using Nekoyume.Data.Table;
 using UnityEngine;
 using Avatar = Nekoyume.Model.Avatar;
 using Debug = System.Diagnostics.Debug;
@@ -33,6 +31,10 @@ namespace Nekoyume.Move
         }
     }
 
+    internal class Preprocess : Attribute
+    {
+    }
+
     public abstract class Move : BaseTransaction
     {
         private const string TimestampFormat = "yyyy-MM-dd HH:mm:ss.ffffff";
@@ -51,11 +53,11 @@ namespace Nekoyume.Move
 
         public override IDictionary<string, dynamic> PlainValue => new Dictionary<string, dynamic>
         {
-            { "user_address", "0x" + UserAddress.Hex() },
-            { "name", Name },
-            { "details", Details },
-            { "created_at", Timestamp.ToString(TimestampFormat) },
-            { "tax", Tax }
+            {"user_address", "0x" + UserAddress.Hex()},
+            {"name", Name},
+            {"details", Details},
+            {"created_at", Timestamp.ToString(TimestampFormat)},
+            {"tax", Tax}
         };
 
         public bool Valid => Signature != null && PublicKey.Verify(Serialize(false), Signature);
@@ -75,7 +77,7 @@ namespace Nekoyume.Move
 
             move.PublicKey = PublicKey.FromBytes((plainValue["user_public_key"] as string).ParseHex());
             move.Signature = (plainValue["signature"] as string).ParseHex();
-            move.Tax = (int)plainValue["tax"];
+            move.Tax = (int) plainValue["tax"];
             move.Details = plainValue["details"].ToObject<Dictionary<string, string>>();
             move.Timestamp = DateTime.ParseExact(
                 plainValue["created_at"], TimestampFormat, CultureInfo.InvariantCulture
@@ -117,6 +119,7 @@ namespace Nekoyume.Move
             {
                 throw new InvalidMoveException();
             }
+
             // TODO client battle result
             return CreateContext(
                 ContextStatus.Success, ctx.Avatar
@@ -125,6 +128,7 @@ namespace Nekoyume.Move
     }
 
     [MoveName("sleep")]
+    [Preprocess]
     public class Sleep : Move
     {
         public override Context Execute(Context ctx)
@@ -136,7 +140,7 @@ namespace Nekoyume.Move
 
             var newCtx = CreateContext(avatar: ctx.Avatar);
             newCtx.Avatar.hp = stats.Health;
-            
+
             return newCtx;
         }
     }
@@ -168,7 +172,7 @@ namespace Nekoyume.Move
         {
             var newCtx = new Context
             {
-                Type = "first_class"                
+                Type = "first_class"
             };
 
             if (ctx.Avatar.class_ != CharacterClass.Novice.ToString())
