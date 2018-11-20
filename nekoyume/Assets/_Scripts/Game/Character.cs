@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using BTAI;
 using DG.Tweening;
@@ -17,9 +18,9 @@ namespace Nekoyume.Game
 
         public bool IsDead => Stats.Health <= 0;
 
-        public IEnumerator Load(Avatar avatar)
+        public IEnumerator Load(Avatar avatar, Stage stage)
         {
-            _Load(avatar);
+            _Load(avatar, stage);
             yield return null;
         }
 
@@ -36,7 +37,7 @@ namespace Nekoyume.Game
             Root.Tick();
         }
 
-        public void _Load(Avatar avatar)
+        public void _Load(Avatar avatar, Stage stage)
         {
             Vector2 position = gameObject.transform.position;
             position.y = -1;
@@ -53,7 +54,6 @@ namespace Nekoyume.Game
             var tables = this.GetRootComponent<Tables>();
             var statsTable = tables.Stats;
             Stats = statsTable[avatar.level];
-            var stage = GameObject.Find("Stage").GetComponent<Stage>();
             if (stage.Id != 0)
             {
                 Root.OpenBranch(
