@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Linq;
 using BTAI;
 using DG.Tweening;
 using Nekoyume.Data;
@@ -14,9 +15,9 @@ namespace Nekoyume.Game
     public class Character : MonoBehaviour
     {
         public Stats Stats;
-        public Root Root = BT.Root();
 
         public bool IsDead => Stats.Health <= 0;
+        private Root _root = new Root();
 
         public IEnumerator Load(Avatar avatar, Stage stage)
         {
@@ -31,15 +32,23 @@ namespace Nekoyume.Game
             transform.position = position;
         }
 
+        private bool ClearStage()
+        {
+            return transform.position.x > 3;
+        }
+
         private void Update()
         {
-            if (Root.Children().Count <= 0) return;
-            Root.Tick();
+            if (_root.Children().Any())
+            {
+                _root.Tick();
+            }
         }
 
         public void _Load(Avatar avatar, Stage stage)
         {
             Vector2 position = gameObject.transform.position;
+            position.x = 0;
             position.y = -1;
             gameObject.transform.position = position;
             var render = gameObject.GetComponent<SpriteRenderer>();
@@ -54,12 +63,14 @@ namespace Nekoyume.Game
             var tables = this.GetRootComponent<Tables>();
             var statsTable = tables.Stats;
             Stats = statsTable[avatar.level];
-            if (stage.Id != 0)
-            {
-                Root.OpenBranch(
+            _root.OpenBranch(
+                BT.If(() => stage.Id > 0).OpenBranch(
+                    BT.If(ClearStage).OpenBranch(
+                        BT.Call(stage.OnStageEnter)
+                    ),
                     BT.Call(Walk)
-                );
-            }
+                )
+            );
         }
     }
 }

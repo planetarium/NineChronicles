@@ -59,6 +59,7 @@ namespace Nekoyume.Game
             UI.Widget.Find<UI.Move>().ShowRoom();
             stage.Id = 0;
             stage.LoadBackground("room");
+            _objectPool.ReleaseAll();
             var character = _objectPool.Get<Character>();
             character._Load(_game.Avatar, stage);
 

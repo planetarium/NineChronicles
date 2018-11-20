@@ -2,13 +2,13 @@ using UnityEngine.Events;
 
 namespace Nekoyume.Game
 {
-    static public class Event
+    public static class Event
     {
         [System.Serializable]
         public class UpdateAvatar : UnityEvent<Model.Avatar> {}
-        static public UpdateAvatar OnUpdateAvatar = new UpdateAvatar();
-        static public UnityEvent OnRoomEnter = new UnityEvent();
-        static public UnityEvent OnStageEnter = new UnityEvent();
-        static public UnityEvent OnStageStart = new UnityEvent();
+        public static readonly UpdateAvatar OnUpdateAvatar = new UpdateAvatar();
+        public static readonly UnityEvent OnRoomEnter = new UnityEvent();
+        public static readonly UnityEvent OnStageEnter = new UnityEvent();
+        public static readonly UnityEvent OnStageStart = new UnityEvent();
     }
 }
