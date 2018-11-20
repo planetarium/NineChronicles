@@ -59,10 +59,6 @@ namespace Nekoyume.UI
             return null;
         }
 
-        private void Awake()
-        {
-        }
-
         virtual public void Show()
         {
             gameObject.SetActive(true);
@@ -80,6 +76,23 @@ namespace Nekoyume.UI
         virtual public void Close()
         {
             gameObject.SetActive(false);
+        }
+
+        virtual public bool IsActive()
+        {
+            return gameObject.activeSelf;
+        }
+
+        public void Toggle()
+        {
+            if (IsActive())
+            {
+                Close();
+            }
+            else
+            {
+                Show();
+            }
         }
     }
 

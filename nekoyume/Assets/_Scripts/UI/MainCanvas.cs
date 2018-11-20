@@ -19,6 +19,10 @@ namespace Nekoyume.UI
             Widget.Create<Login>(true);
             Widget.Create<Move>();
             Widget.Create<Blind>();
+
+#if DEBUG
+            Widget.Create<Neko>(true);
+#endif
         }
     }
 }
