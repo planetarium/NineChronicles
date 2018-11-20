@@ -50,7 +50,7 @@ namespace Nekoyume.Game
             StartCoroutine(_stageManager.RoomEntering(this));
         }
 
-        private void OnStageEnter()
+        public void OnStageEnter()
         {
             StartCoroutine(_stageManager.WorldEntering(this));
         }

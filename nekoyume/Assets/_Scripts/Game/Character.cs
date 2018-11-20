@@ -1,9 +1,13 @@
+using System;
 using System.Collections;
+using System.Linq;
+using BTAI;
 using DG.Tweening;
 using Nekoyume.Data;
 using Nekoyume.Data.Table;
 using UnityEngine;
 using Avatar = Nekoyume.Model.Avatar;
+using Sequence = DG.Tweening.Sequence;
 
 
 namespace Nekoyume.Game
@@ -12,32 +16,39 @@ namespace Nekoyume.Game
     {
         public Stats Stats;
 
-        public IEnumerator Walk()
+        public bool IsDead => Stats.Health <= 0;
+        private Root _root = new Root();
+
+        public IEnumerator Load(Avatar avatar, Stage stage)
         {
-            while (true)
+            _Load(avatar, stage);
+            yield return null;
+        }
+
+        private void Walk()
+        {
+            Vector2 position = transform.position;
+            position.x += Time.deltaTime * 40 / 160;
+            transform.position = position;
+        }
+
+        private bool ClearStage()
+        {
+            return transform.position.x > 3;
+        }
+
+        private void Update()
+        {
+            if (_root.Children().Any())
             {
-                Vector2 position = transform.position;
-                position.x += Time.deltaTime * 40 / 160;
-                transform.position = position;
-                yield return null;
+                _root.Tick();
             }
         }
 
-        public IEnumerator Load(Avatar avatar)
-        {
-            _Load(avatar);
-            yield return null;
-        }
-
-        public IEnumerator Stop()
-        {
-            StopCoroutine(Walk());
-            yield return null;
-        }
-
-        public void _Load(Avatar avatar)
+        public void _Load(Avatar avatar, Stage stage)
         {
             Vector2 position = gameObject.transform.position;
+            position.x = 0;
             position.y = -1;
             gameObject.transform.position = position;
             var render = gameObject.GetComponent<SpriteRenderer>();
@@ -52,6 +63,14 @@ namespace Nekoyume.Game
             var tables = this.GetRootComponent<Tables>();
             var statsTable = tables.Stats;
             Stats = statsTable[avatar.level];
+            _root.OpenBranch(
+                BT.If(() => stage.Id > 0).OpenBranch(
+                    BT.If(ClearStage).OpenBranch(
+                        BT.Call(stage.OnStageEnter)
+                    ),
+                    BT.Call(Walk)
+                )
+            );
         }
     }
 }
