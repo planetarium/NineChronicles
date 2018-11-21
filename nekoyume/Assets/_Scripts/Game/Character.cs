@@ -6,6 +6,8 @@ using DG.Tweening;
 using Nekoyume.Data;
 using Nekoyume.Data.Table;
 using UnityEngine;
+using UnityEngine.Serialization;
+using UnityEngine.XR.WSA.Input;
 using Avatar = Nekoyume.Model.Avatar;
 using Sequence = DG.Tweening.Sequence;
 
@@ -17,7 +19,7 @@ namespace Nekoyume.Game
         public Stats Stats;
 
         public bool IsDead => Stats.Health <= 0;
-        private Root _root = new Root();
+        public Root Root;
 
         public IEnumerator Load(Avatar avatar, Stage stage)
         {
@@ -25,7 +27,7 @@ namespace Nekoyume.Game
             yield return null;
         }
 
-        private void Walk()
+        protected virtual void Walk()
         {
             Vector2 position = transform.position;
             position.x += Time.deltaTime * 40 / 160;
@@ -39,20 +41,35 @@ namespace Nekoyume.Game
 
         private void Update()
         {
-            if (_root.Children().Any())
+            if (Root.Children().Any())
             {
-                _root.Tick();
+                Root.Tick();
             }
         }
 
         public void _Load(Avatar avatar, Stage stage)
         {
-            Vector2 position = gameObject.transform.position;
-            position.x = 0;
-            position.y = -1;
-            gameObject.transform.position = position;
+            SetPosition(0);
+            RenderLoad(avatar.class_);
+            var tables = this.GetRootComponent<Tables>();
+            var statsTable = tables.Stats;
+            Stats = statsTable[avatar.level];
+            Root = new Root();
+            Root.OpenBranch(
+                BT.If(() => stage.Id > 0).OpenBranch(
+                    BT.If(ClearStage).OpenBranch(
+                        BT.Call(stage.OnStageEnter),
+                        BT.Wait(1)
+                    ),
+                    BT.Call(Walk)
+                )
+            );
+        }
+
+        internal void RenderLoad(string id)
+        {
             var render = gameObject.GetComponent<SpriteRenderer>();
-            var sprite = Resources.Load<Sprite>($"images/character_{avatar.class_}");
+            var sprite = Resources.Load<Sprite>($"images/character_{id}");
             if (sprite == null)
                 sprite = Resources.Load<Sprite>("images/pet");
             render.sprite = sprite;
@@ -60,17 +77,15 @@ namespace Nekoyume.Game
             Material mat = render.material;
             Sequence colorseq = DOTween.Sequence();
             colorseq.Append(mat.DOColor(Color.white, 0.0f));
-            var tables = this.GetRootComponent<Tables>();
-            var statsTable = tables.Stats;
-            Stats = statsTable[avatar.level];
-            _root.OpenBranch(
-                BT.If(() => stage.Id > 0).OpenBranch(
-                    BT.If(ClearStage).OpenBranch(
-                        BT.Call(stage.OnStageEnter)
-                    ),
-                    BT.Call(Walk)
-                )
-            );
         }
+
+        internal void SetPosition(float x)
+        {
+            Vector2 position = gameObject.transform.position;
+            position.x = x;
+            position.y = -1;
+            gameObject.transform.position = position;
+        }
+        
     }
 }

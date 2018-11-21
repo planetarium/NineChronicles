@@ -17,10 +17,17 @@ namespace Nekoyume.Game
             var character = new PoolData
             {
                 Prefab = Resources.Load<GameObject>("Prefab/Character"),
-                AddCount = 5,
-                InitCount = 10
+                AddCount = 1,
+                InitCount = 5
             };
             _objectPool.list.Add(character);
+            var enemy = new PoolData
+            {
+                Prefab = Resources.Load<GameObject>("Prefab/Enemy"),
+                AddCount = 10,
+                InitCount = 5
+            };
+            _objectPool.list.Add(enemy);
             _monsterSpawner = gameObject.AddComponent<MonsterSpawner>();
             _game = this.GetRootComponent<Game>();
         }
