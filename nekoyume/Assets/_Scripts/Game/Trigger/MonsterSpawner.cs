@@ -1,4 +1,5 @@
 using DG.Tweening;
+using Nekoyume.Game.Character;
 using UnityEngine;
 
 
@@ -25,12 +26,13 @@ namespace Nekoyume.Game.Trigger
             {
                 Collider2D collider = GetComponent<Collider2D>();
                 collider.enabled = false;
-
-                SpawnWave();
+                var player = other.gameObject.GetComponent<Player>(); 
+                player.Walkable = false;
+                SpawnWave(player);
             }
         }
 
-        private void SpawnWave()
+        private void SpawnWave(Player player)
         {
             Factory.EnemyFactory factory = GetComponentInParent<Factory.EnemyFactory>();
             int monsterCount = 5;
@@ -40,6 +42,7 @@ namespace Nekoyume.Game.Trigger
 
                 go.transform.position = new Vector2(
                     transform.position.x + Random.Range(-0.1f, 0.1f), Random.Range(-0.7f, -1.3f));
+                player.Targets.Add(go);
             }
         }
     }
