@@ -756,7 +756,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   autoParallaxSize: 0
   parallaxSize: 9.3625
-  parallaxSpeed: -0.4
+  parallaxSpeed: 0.1
 --- !u!114 &114524619616502796
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -784,7 +784,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   autoParallaxSize: 0
   parallaxSize: 9.3625
-  parallaxSpeed: -0.1
+  parallaxSpeed: 0.2
 --- !u!114 &114636417826158798
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -798,7 +798,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   autoParallaxSize: 1
   parallaxSize: 0
-  parallaxSpeed: -1
+  parallaxSpeed: 0
 --- !u!212 &212054990550900058
 SpriteRenderer:
   m_ObjectHideFlags: 1
