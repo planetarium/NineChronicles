@@ -8,11 +8,13 @@ namespace Nekoyume.Game.Character
 {
     public class Base : MonoBehaviour
     {
-        public Root Root { get; set; }
-        public int HP { get; set; }
+        public Root Root;
+        public int HP = 0;
+        public int ATK = 0;
+        public int DEF = 0;
 
         public bool Walkable { get; set; } = false;
-        public bool Instage = false;
+        public bool InStage = false;
 
         protected float _walkSpeed = 0.0f;
 
