@@ -11,11 +11,12 @@ namespace Nekoyume.Game.Character
         public Root Root { get; set; }
         public int HP { get; set; }
 
-        protected bool Walkable { get; set; } = false;
+        public bool Walkable { get; set; } = false;
+        public bool Instage = false;
 
         protected float _walkSpeed = 0.0f;
 
-        protected virtual bool IsDead()
+        public virtual bool IsDead()
         {
             return false;
         }
@@ -29,10 +30,7 @@ namespace Nekoyume.Game.Character
 
         private void Update()
         {
-            if (Root != null)
-            {
-                Root.Tick();
-            }
+            Root?.Tick();
         }
     }
 }
