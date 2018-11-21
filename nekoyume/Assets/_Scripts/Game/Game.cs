@@ -1,7 +1,7 @@
-using UnityEngine;
 using Nekoyume.Move;
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Nekoyume.Game
 {
@@ -20,7 +20,7 @@ namespace Nekoyume.Game
 
     public class Game : MonoBehaviour
     {
-        public Model.Avatar Avatar;
+        public Model.Avatar Avatar { get; private set; }
 
         private void Awake()
         {
@@ -34,6 +34,11 @@ namespace Nekoyume.Game
             MoveManager.Instance.DidSleep += OnSleep;
         }
 
+        private void OnUpdateAvatar(Model.Avatar avatar)
+        {
+            Avatar = avatar;
+        }
+
         private void OnCreateAvatarRequired(object sender, EventArgs e)
         {
             MoveManager.Instance.CreateNovice(new Dictionary<string, string> {
@@ -43,18 +48,18 @@ namespace Nekoyume.Game
 
         private void OnAvatarLoaded(object sender, Model.Avatar avatar)
         {
-            Event.OnUpdateAvatar.Invoke(avatar);
+            Avatar = avatar;
             Event.OnRoomEnter.Invoke();
         }
 
         private void OnSleep(object sender, Model.Avatar avatar)
         {
-            Event.OnUpdateAvatar.Invoke(avatar);
+            Avatar = avatar;
         }
 
         private void OnHackAndSlash(object sender, Model.Avatar avatar)
         {
-            Event.OnUpdateAvatar.Invoke(avatar);
+            Avatar = avatar;
         }
     }
 }

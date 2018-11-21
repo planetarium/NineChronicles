@@ -1,32 +1,19 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Avatar = Nekoyume.Model.Avatar;
 
 namespace Nekoyume.Game
 {
-    public enum StageType
-    {
-        Room,
-        World,
-    }
-
     public class Stage : MonoBehaviour
     {
-        internal int Id;
+        public int Id;
         private GameObject _background = null;
         private ActionCamera _actionCam = null;
         private StageManager _stageManager = null;
-        private Game _game;
 
         private void Awake()
         {
-            Event.OnUpdateAvatar.AddListener(OnUpdateAvatar);
             Event.OnRoomEnter.AddListener(OnRoomEnter);
             Event.OnStageEnter.AddListener(OnStageEnter);
-            _stageManager = gameObject.AddComponent<StageManager>();
-            _game = this.GetRootComponent<Game>();
         }
 
         private void Start()
@@ -38,11 +25,7 @@ namespace Nekoyume.Game
         private void InitComponents()
         {
             _actionCam = Camera.main.gameObject.GetComponent<ActionCamera>();
-        }
-
-        private void OnUpdateAvatar(Model.Avatar avatar)
-        {
-            _game.Avatar = avatar;
+            _stageManager = gameObject.GetComponent<StageManager>();
         }
 
         private void OnRoomEnter()
