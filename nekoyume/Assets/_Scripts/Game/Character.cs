@@ -41,7 +41,7 @@ namespace Nekoyume.Game
 
         private void Update()
         {
-            if (Root.Children().Any())
+            if (Root != null && Root.Children().Any())
             {
                 Root.Tick();
             }

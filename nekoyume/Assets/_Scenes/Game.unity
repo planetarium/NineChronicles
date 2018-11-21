@@ -155,6 +155,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbf20e9ec90ac0044a286916433cc2bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Avatar:
+    name: 
+    class_: 
+    level: 0
+    gold: 0
+    exp: 0
+    hp: 0
+    items: []
+    world_stage: 0
+    user: 
 --- !u!114 &76869999
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -321,8 +331,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1333831683}
   - component: {fileID: 1333831682}
-  - component: {fileID: 1333831684}
-  - component: {fileID: 1333831685}
   m_Layer: 0
   m_Name: Stage
   m_TagString: Stage
@@ -354,32 +362,6 @@ Transform:
   m_Father: {fileID: 76869997}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1333831684
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1333831681}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3a35844bbaeff714a89b2c2d4be92a92, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  list:
-  - Prefab: {fileID: 1854334502348842, guid: 75283510b0acb4077a59c1856df7db2c, type: 2}
-    InitCount: 5
-    AddCount: 3
---- !u!114 &1333831685
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1333831681}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: df7f135108b12214e8b282f2cbe6c361, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1933286906
 GameObject:
   m_ObjectHideFlags: 0
