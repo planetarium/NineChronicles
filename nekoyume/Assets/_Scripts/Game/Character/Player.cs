@@ -1,12 +1,7 @@
-using System.Collections;
 using System.Linq;
 using Boo.Lang;
 using BTAI;
-using Nekoyume.Data.Table;
-using Nekoyume.Game.Trigger;
-using Org.BouncyCastle.Asn1.X509;
 using UnityEngine;
-using UnityEngine.XR.WSA.WebCam;
 
 namespace Nekoyume.Game.Character
 {
