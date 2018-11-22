@@ -28,7 +28,7 @@ namespace Nekoyume.Game
 
     public class Game : MonoBehaviour
     {
-        static public int PixelPerUnit = 160;
+        static public readonly int PixelPerUnit = 160;
 
         public Model.Avatar Avatar { get; private set; }
 
