@@ -80,8 +80,7 @@ namespace Nekoyume.Game.Character
             {
                 var enemy = target.GetComponent<Enemy>();
                 enemy.OnTargetDead();
-                var stage = GetComponentInParent<Stage>();
-                stage.OnRoomEnter();
+                Event.OnRoomEnter.Invoke();
             }
         }
     }
