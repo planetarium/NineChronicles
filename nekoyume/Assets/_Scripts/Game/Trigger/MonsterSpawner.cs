@@ -44,7 +44,7 @@ namespace Nekoyume.Game.Trigger
                     transform.position.x + Random.Range(-0.1f, 0.1f), Random.Range(-0.7f, -1.3f));
                 player.Targets.Add(go);
                 var enemy = go.GetComponent<Enemy>();
-                enemy.Target = player;
+                enemy.Targets.Add(player.gameObject);
             }
         }
     }

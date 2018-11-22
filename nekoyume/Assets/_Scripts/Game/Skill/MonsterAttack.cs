@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Nekoyume.Game.Skill
 {
-    public class Attack : Skill
+    public class MonsterAttack : Skill
     {
         override public bool Use()
         {
@@ -19,7 +19,7 @@ namespace Nekoyume.Game.Skill
 
             Character.Base owner = GetComponent<Character.Base>();
             var objectPool = GetComponentInParent<Util.ObjectPool>();
-            var damager = objectPool.Get<Trigger.Damager>(transform.TransformPoint(1.0f, 0.0f, 0.0f));
+            var damager = objectPool.Get<Trigger.Damager>(transform.TransformPoint(-1.0f, 0.0f, 0.0f));
             damager.Set(owner, damage, size, _data.TargetCount);
 
             return true;
