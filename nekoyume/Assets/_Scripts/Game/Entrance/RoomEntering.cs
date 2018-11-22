@@ -12,7 +12,7 @@ namespace Nekoyume.Game.Entrance
 
         private IEnumerator Act()
         {
-            var stage = GetComponentInParent<Stage>();
+            var stage = GetComponent<Stage>();
             var blind = UI.Widget.Find<UI.Blind>();
             yield return StartCoroutine(blind.FadeIn(1.0f, "ROOM"));
 
@@ -21,7 +21,7 @@ namespace Nekoyume.Game.Entrance
             stage.Id = 0;
             stage.LoadBackground("room");
 
-            var objectPool = GetComponent<ObjectPool>();
+            var objectPool = GetComponent<Util.ObjectPool>();
             objectPool.ReleaseAll();
 
             var playerFactory = GetComponent<Factory.PlayerFactory>();

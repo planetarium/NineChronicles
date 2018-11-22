@@ -16,7 +16,7 @@ namespace Nekoyume.Game.Factory
             if (!tables.Stats.TryGetValue(avatar.level, out statsData))
                 return null;
 
-            var objectPool = GetComponent<ObjectPool>();
+            var objectPool = GetComponent<Util.ObjectPool>();
             var player = objectPool.Get<Character.Player>();
             if (player == null)
                 return null;
