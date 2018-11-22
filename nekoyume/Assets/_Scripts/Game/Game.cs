@@ -16,10 +16,20 @@ namespace Nekoyume.Game
 
             return root.GetComponent<T>();
         }
+
+        public static T GetOrAddComponent<T>(this MonoBehaviour behaviour) where T : MonoBehaviour
+        {
+            T t = behaviour.GetComponent<T>();
+            if (t)
+                return t;
+            return behaviour.gameObject.AddComponent<T>();
+        }
     }
 
     public class Game : MonoBehaviour
     {
+        static public int PixelPerUnit = 160;
+
         public Model.Avatar Avatar { get; private set; }
 
         private void Awake()

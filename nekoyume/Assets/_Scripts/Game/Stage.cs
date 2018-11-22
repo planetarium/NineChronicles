@@ -6,9 +6,8 @@ namespace Nekoyume.Game
 {
     public class Stage : MonoBehaviour
     {
-        public int Id;
+        public int Id = 0;
         private GameObject _background = null;
-        private ActionCamera _actionCam = null;
 
         private void Awake()
         {
@@ -18,13 +17,7 @@ namespace Nekoyume.Game
 
         private void Start()
         {
-            InitComponents();
             LoadBackground("nest");
-        }
-
-        private void InitComponents()
-        {
-            _actionCam = Camera.main.gameObject.GetComponent<ActionCamera>();
         }
 
         private void OnRoomEnter()
@@ -55,9 +48,6 @@ namespace Nekoyume.Game
                 _background = Instantiate(prefab, transform);
                 _background.name = prefabName;
             }
-            var camPosition = _actionCam.transform.position;
-            camPosition.x = 0;
-            _actionCam.transform.position = camPosition;
         }
     }
 }
