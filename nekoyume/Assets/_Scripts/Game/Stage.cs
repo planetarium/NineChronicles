@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Nekoyume.Game.Entrance;
 using UnityEngine;
 
 namespace Nekoyume.Game
@@ -8,7 +9,6 @@ namespace Nekoyume.Game
         public int Id;
         private GameObject _background = null;
         private ActionCamera _actionCam = null;
-        private StageManager _stageManager = null;
 
         private void Awake()
         {
@@ -25,17 +25,16 @@ namespace Nekoyume.Game
         private void InitComponents()
         {
             _actionCam = Camera.main.gameObject.GetComponent<ActionCamera>();
-            _stageManager = gameObject.GetComponent<StageManager>();
         }
 
         private void OnRoomEnter()
         {
-            StartCoroutine(_stageManager.RoomEntering(this));
+            gameObject.AddComponent<RoomEntering>();
         }
 
         public void OnStageEnter()
         {
-            StartCoroutine(_stageManager.WorldEntering(this));
+            gameObject.AddComponent<WorldEntering>();
         }
 
         public void LoadBackground(string prefabName)
