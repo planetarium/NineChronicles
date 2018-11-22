@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Linq;
 using BTAI;
 using UnityEngine;
 
@@ -18,9 +16,19 @@ namespace Nekoyume.Game.Character
 
         protected float _walkSpeed = 0.0f;
 
-        public virtual bool IsDead()
+        public bool IsDead()
         {
-            return false;
+            return HP <= 0;
+        }
+
+        protected bool IsAlive()
+        {
+            return !IsDead();
+        }
+
+        protected bool CanWalk()
+        {
+            return Walkable;
         }
 
         protected virtual void Walk()
@@ -33,6 +41,17 @@ namespace Nekoyume.Game.Character
         private void Update()
         {
             Root?.Tick();
+        }
+
+        public void Attack(Enemy target)
+        {
+            int dmg = this.ATK - target.DEF;
+            target.OnDamage(dmg);
+        }
+
+        protected virtual bool HasTarget()
+        {
+            return false;
         }
     }
 }

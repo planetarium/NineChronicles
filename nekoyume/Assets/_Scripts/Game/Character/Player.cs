@@ -3,6 +3,7 @@ using Boo.Lang;
 using BTAI;
 using Nekoyume.Data.Table;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Nekoyume.Game.Character
 {
@@ -21,44 +22,50 @@ namespace Nekoyume.Game.Character
             _walkSpeed = 0.6f;
             Root = new Root();
             Root.OpenBranch(
-                BT.Condition(IsDead),
-                BT.If(() => InStage).OpenBranch(
-                    BT.If(HasTarget).OpenBranch(
-                        BT.Wait(0.5f),
-                        BT.Call(Slash)
-                    ),
-                    BT.If(() => !HasTarget()).OpenBranch(
-                        BT.If(() => Walkable).OpenBranch(
+                BT.While(IsAlive).OpenBranch(
+                    BT.Selector().OpenBranch(
+                        BT.If(CanWalk).OpenBranch(
                             BT.Call(Walk)
                         ),
-                        BT.Call(() =>
-                        {
-                            Walkable = true;
-                        })
+                        BT.If(HasTarget).OpenBranch(
+                            BT.Wait(0.5f),
+                            BT.Call(PlayerAttack)
+                        ),
+                        BT.If(WaveEnd).OpenBranch(
+                            BT.Call(MoveNext)
+                        )
                     )
                 )
             );
         }
 
-        public void Slash()
+        public void PlayerAttack()
         {
             var i = Random.Range(0, Targets.Count);
             var target = Targets[i];
             var enemy = target.GetComponent<Enemy>();
-            Debug.Log(enemy.HP);
-            int dmg = ATK - enemy.DEF;
-            Debug.Log(dmg);
-            enemy.HP -= dmg;
-            Debug.Log(enemy.HP);
-            if (!enemy.IsDead()) return;
-            Debug.Log("Kill!");
-            Targets.Remove(target);
-            target.SetActive(false);
+            Attack(enemy);
         }
 
-        private bool HasTarget()
+        protected override bool HasTarget()
         {
             return Targets.Any();
+        }
+
+        private bool WaveEnd()
+        {
+            return InStage && Targets.Count == 0;
+        }
+
+        private void MoveNext()
+        {
+            Walkable = true;
+        }
+
+        public void OnTargetDead(GameObject target)
+        {
+            Debug.Log("Kill!");
+            Targets.Remove(target);
         }
     }
 }

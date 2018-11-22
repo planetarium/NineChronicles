@@ -7,11 +7,7 @@ namespace Nekoyume.Game.Character
     public class Enemy : Base
     {
         public int RewardExp = 0;
-
-        public override bool IsDead()
-        {
-            return HP <= 0;
-        }
+        public Player Target;
 
         public void InitAI(Monster data)
         {
@@ -26,6 +22,22 @@ namespace Nekoyume.Game.Character
                     BT.Call(Walk)
                 )
             );
+        }
+
+        public void OnDamage(int dmg)
+        {
+            HP -= dmg;
+            Debug.Log($"Enemy HP: {HP}");
+            if (IsDead())
+            {
+                OnDead();
+            }
+        }
+
+        public void OnDead()
+        {
+            gameObject.SetActive(false);
+            Target.OnTargetDead(gameObject);
         }
     }
 }
