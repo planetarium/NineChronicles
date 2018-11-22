@@ -1,6 +1,6 @@
-using DG.Tweening;
 using Nekoyume.Game.Character;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 
 namespace Nekoyume.Game.Trigger
@@ -35,7 +35,7 @@ namespace Nekoyume.Game.Trigger
         private void SpawnWave(Player player)
         {
             Factory.EnemyFactory factory = GetComponentInParent<Factory.EnemyFactory>();
-            int monsterCount = 5;
+            int monsterCount = 2;
             for (int i = 0; i < monsterCount; ++i)
             {
                 GameObject go = factory.Create("1001");
@@ -43,6 +43,8 @@ namespace Nekoyume.Game.Trigger
                 go.transform.position = new Vector2(
                     transform.position.x + Random.Range(-0.1f, 0.1f), Random.Range(-0.7f, -1.3f));
                 player.Targets.Add(go);
+                var enemy = go.GetComponent<Enemy>();
+                enemy.Target = player;
             }
         }
     }

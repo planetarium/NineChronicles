@@ -12,7 +12,7 @@ namespace Nekoyume.Game.Entrance
 
         private IEnumerator Act()
         {
-            var stage = GetComponentInParent<Stage>();
+            var stage = GetComponent<Stage>();
             var game = this.GetRootComponent<Game>();
             int currentStage = game.Avatar.world_stage;
             Data.Table.Stage data;
@@ -27,7 +27,7 @@ namespace Nekoyume.Game.Entrance
                 stage.Id = currentStage;
                 stage.LoadBackground(data.Background);
 
-                var objectPool = GetComponent<ObjectPool>();
+                var objectPool = GetComponent<Util.ObjectPool>();
                 objectPool.ReleaseAll();
 
                 var playerFactory = GetComponent<Factory.PlayerFactory>();

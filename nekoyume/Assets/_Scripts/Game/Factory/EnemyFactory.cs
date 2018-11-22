@@ -13,12 +13,12 @@ namespace Nekoyume.Game.Factory
             if (!tables.Monster.TryGetValue(monsterId, out monsterData))
                 return null;
 
-            var objectPool = GetComponent<ObjectPool>();
+            var objectPool = GetComponent<Util.ObjectPool>();
             var enemy = objectPool.Get<Character.Enemy>();
             if (enemy == null)
                 return null;
 
-            enemy.InitAI();
+            enemy.InitAI(monsterData);
 
             // sprite
             var render = enemy.GetComponent<SpriteRenderer>();

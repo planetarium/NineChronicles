@@ -1,54 +1,88 @@
 using System.Linq;
 using Boo.Lang;
 using BTAI;
+using Nekoyume.Data.Table;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Nekoyume.Game.Character
 {
     public class Player : Base
     {
         public List<GameObject> Targets = new List<GameObject>();
+        public int MP = 0;
 
-        public void InitAI(Stage stage)
+        public void InitAI(Stage stage, Stats data)
         {
-            Walkable = Instage = stage.Id > 0;
+            HP = data.Health;
+            ATK = data.Attack;
+            DEF = data.Defense;
+            MP = data.Mana;
+            Walkable = InStage = stage.Id > 0;
             _walkSpeed = 0.6f;
             Root = new Root();
             Root.OpenBranch(
-                BT.Condition(IsDead),
-                BT.If(() => Instage).OpenBranch(
-                    BT.If(HasTarget).OpenBranch(
-                        BT.Wait(0.5f),
-                        BT.Call(Slash)
+                BT.Selector().OpenBranch(
+                    BT.If(() => InStage).OpenBranch(
+                        BT.If(IsAlive).OpenBranch(
+                            BT.Selector().OpenBranch(
+                                BT.If(CanWalk).OpenBranch(
+                                    BT.Call(Walk)
+                                ),
+                                BT.If(HasTarget).OpenBranch(
+                                    BT.Wait(0.5f),
+                                    BT.Call(PlayerAttack)
+                                ),
+                                BT.If(WaveEnd).OpenBranch(
+                                    BT.Call(MoveNext)
+                                )
+                            )
+                        )
                     ),
-                    BT.If(() => !HasTarget()).OpenBranch(
-                        BT.If(() => Walkable).OpenBranch(
-                            BT.Call(Walk)
-                        ),
-                        BT.Call(() =>
-                        {
-                            Walkable = true;
-                        })
-                    )
+                    BT.Terminate()
                 )
             );
         }
 
-        public void Slash()
+        public void PlayerAttack()
         {
             var i = Random.Range(0, Targets.Count);
             var target = Targets[i];
             var enemy = target.GetComponent<Enemy>();
-            enemy.HP -= 1;
-            if (!enemy.IsDead()) return;
-            Debug.Log("Kill!");
-            Targets.Remove(target);
-            target.SetActive(false);
+            Debug.Log("Player Attack");
+            Attack(enemy);
         }
 
-        private bool HasTarget()
+        protected override bool HasTarget()
         {
             return Targets.Any();
+        }
+
+        private bool WaveEnd()
+        {
+            return InStage && Targets.Count == 0;
+        }
+
+        private void MoveNext()
+        {
+            Walkable = true;
+        }
+
+        public void OnTargetDead(GameObject target)
+        {
+            Debug.Log("Kill!");
+            Targets.Remove(target);
+        }
+
+        protected override void OnDead()
+        {
+            foreach (var target in Targets)
+            {
+                var enemy = target.GetComponent<Enemy>();
+                enemy.OnTargetDead();
+                var stage = GetComponentInParent<Stage>();
+                stage.OnRoomEnter();
+            }
         }
     }
 }

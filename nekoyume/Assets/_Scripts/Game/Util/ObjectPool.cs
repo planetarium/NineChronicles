@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-namespace Nekoyume.Game
+namespace Nekoyume.Game.Util
 {
     [Serializable]
     public struct PoolData
@@ -54,6 +54,11 @@ namespace Nekoyume.Game
 
         public T Get<T>() where T : MonoBehaviour
         {
+            return Get<T>(Vector3.zero);
+        }
+
+        public T Get<T>(Vector3 position) where T : MonoBehaviour
+        {
             string name = typeof(T).Name;
             List<GameObject> list;
             if (objects.TryGetValue(name, out list))
@@ -63,6 +68,7 @@ namespace Nekoyume.Game
                     if (go.activeSelf)
                         continue;
 
+                    go.transform.position = position;
                     go.SetActive(true);
                     return go.GetComponent<T>();
                 }
@@ -71,6 +77,7 @@ namespace Nekoyume.Game
             if (dicts.TryGetValue(name, out poolData))
             {
                 GameObject go = Create(poolData.Prefab, poolData.AddCount);
+                go.transform.position = position;
                 go.SetActive(true);
                 return go.GetComponent<T>();
             }
