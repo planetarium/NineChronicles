@@ -1,5 +1,6 @@
 using BTAI;
 using UnityEngine;
+using Time = UnityEngine.Time;
 
 
 namespace Nekoyume.Game.Character
@@ -21,7 +22,7 @@ namespace Nekoyume.Game.Character
             return HP <= 0;
         }
 
-        protected bool IsAlive()
+        public bool IsAlive()
         {
             return !IsDead();
         }
@@ -43,15 +44,30 @@ namespace Nekoyume.Game.Character
             Root?.Tick();
         }
 
-        public void Attack(Enemy target)
+        public void Attack(Base target)
         {
             int dmg = this.ATK - target.DEF;
-            target.OnDamage(dmg);
+            OnDamage(target, dmg);
         }
 
         protected virtual bool HasTarget()
         {
             return false;
+        }
+
+        private static void OnDamage(Base target, int dmg)
+        {
+            target.HP -= dmg;
+            Debug.Log($"{target.name} HP: {target.HP}");
+            if (target.IsDead())
+            {
+                target.OnDead();
+            }
+        }
+
+        protected virtual void OnDead()
+        {
+            Debug.Log("Dead");
         }
     }
 }

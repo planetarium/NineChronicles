@@ -22,19 +22,24 @@ namespace Nekoyume.Game.Character
             _walkSpeed = 0.6f;
             Root = new Root();
             Root.OpenBranch(
-                BT.While(IsAlive).OpenBranch(
-                    BT.Selector().OpenBranch(
-                        BT.If(CanWalk).OpenBranch(
-                            BT.Call(Walk)
-                        ),
-                        BT.If(HasTarget).OpenBranch(
-                            BT.Wait(0.5f),
-                            BT.Call(PlayerAttack)
-                        ),
-                        BT.If(WaveEnd).OpenBranch(
-                            BT.Call(MoveNext)
+                BT.Selector().OpenBranch(
+                    BT.If(() => InStage).OpenBranch(
+                        BT.If(IsAlive).OpenBranch(
+                            BT.Selector().OpenBranch(
+                                BT.If(CanWalk).OpenBranch(
+                                    BT.Call(Walk)
+                                ),
+                                BT.If(HasTarget).OpenBranch(
+                                    BT.Wait(0.5f),
+                                    BT.Call(PlayerAttack)
+                                ),
+                                BT.If(WaveEnd).OpenBranch(
+                                    BT.Call(MoveNext)
+                                )
+                            )
                         )
-                    )
+                    ),
+                    BT.Terminate()
                 )
             );
         }
@@ -44,6 +49,7 @@ namespace Nekoyume.Game.Character
             var i = Random.Range(0, Targets.Count);
             var target = Targets[i];
             var enemy = target.GetComponent<Enemy>();
+            Debug.Log("Player Attack");
             Attack(enemy);
         }
 
@@ -66,6 +72,17 @@ namespace Nekoyume.Game.Character
         {
             Debug.Log("Kill!");
             Targets.Remove(target);
+        }
+
+        protected override void OnDead()
+        {
+            foreach (var target in Targets)
+            {
+                var enemy = target.GetComponent<Enemy>();
+                enemy.OnTargetDead();
+                var stage = GetComponentInParent<Stage>();
+                stage.OnRoomEnter();
+            }
         }
     }
 }

@@ -35,7 +35,7 @@ namespace Nekoyume.Game.Trigger
         private void SpawnWave(Player player)
         {
             Factory.EnemyFactory factory = GetComponentInParent<Factory.EnemyFactory>();
-            int monsterCount = 5;
+            int monsterCount = 2;
             for (int i = 0; i < monsterCount; ++i)
             {
                 GameObject go = factory.Create("1001");

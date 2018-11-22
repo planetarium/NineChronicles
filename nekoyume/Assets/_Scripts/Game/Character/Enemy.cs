@@ -16,28 +16,43 @@ namespace Nekoyume.Game.Character
             DEF = data.Defense;
             RewardExp = data.RewardExp;
             _walkSpeed = -0.6f;
-            Root = new BTAI.Root();
+            Root = new Root();
             Root.OpenBranch(
-                BT.If(() => Walkable).OpenBranch(
-                    BT.Call(Walk)
+                BT.Selector().OpenBranch(
+                    BT.If(CanWalk).OpenBranch(
+                        BT.Call(Walk)
+                    ),
+                    BT.If(HasTarget).OpenBranch(
+                        BT.If(IsAlive).OpenBranch(
+                            BT.Wait(0.5f),
+                            BT.Call(EnemyAttack)
+                        )
+                    ),
+                    BT.Terminate()
                 )
             );
         }
 
-        public void OnDamage(int dmg)
+        protected override bool HasTarget()
         {
-            HP -= dmg;
-            Debug.Log($"Enemy HP: {HP}");
-            if (IsDead())
-            {
-                OnDead();
-            }
+            return Target != null;
         }
 
-        public void OnDead()
+        private void EnemyAttack()
+        {
+            Debug.Log("Enemy Attack");
+            Attack(Target);
+        }
+
+        protected override void OnDead()
         {
             gameObject.SetActive(false);
             Target.OnTargetDead(gameObject);
+        }
+
+        public void OnTargetDead()
+        {
+            Target = null;
         }
     }
 }
