@@ -21,7 +21,7 @@ namespace Nekoyume.Game.Factory
             if (player == null)
                 return null;
 
-            player.InitAI(stage);
+            player.InitAI(stage, statsData);
 
             // sprite
             var render = player.GetComponent<SpriteRenderer>();

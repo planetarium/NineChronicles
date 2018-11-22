@@ -27,7 +27,7 @@ namespace Nekoyume.Game
             _actionCam = Camera.main.gameObject.GetComponent<ActionCamera>();
         }
 
-        private void OnRoomEnter()
+        public void OnRoomEnter()
         {
             gameObject.AddComponent<RoomEntering>();
         }
