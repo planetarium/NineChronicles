@@ -1,4 +1,5 @@
 using System.Collections;
+using Nekoyume.Move;
 using UnityEngine;
 
 namespace Nekoyume.Game.Entrance
@@ -13,8 +14,7 @@ namespace Nekoyume.Game.Entrance
         private IEnumerator Act()
         {
             var stage = GetComponent<Stage>();
-            var game = this.GetRootComponent<Game>();
-            int currentStage = game.Avatar.world_stage;
+            int currentStage = MoveManager.Instance.Avatar.world_stage;
             Data.Table.Stage data;
             var tables = this.GetRootComponent<Data.Tables>();
             if (tables.Stage.TryGetValue(currentStage, out data))

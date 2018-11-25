@@ -48,7 +48,7 @@ namespace Nekoyume.Move
         public event EventHandler<Avatar> DidSleep;
         public event EventHandler CreateAvatarRequired;
 
-        private Avatar Avatar { get; set; }
+        internal Avatar Avatar { get; set; }
         private Agent agent;
         private long? lastBlockId;
         private const string LastBlockIdKey = "last_block_id";

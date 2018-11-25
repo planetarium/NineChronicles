@@ -1,4 +1,5 @@
 using DG.Tweening;
+using Nekoyume.Move;
 using UnityEngine;
 
 
@@ -8,8 +9,7 @@ namespace Nekoyume.Game.Factory
     {
         public GameObject Create(Stage stage)
         {
-            var game = this.GetRootComponent<Game>();
-            var avatar = game.Avatar;
+            var avatar = MoveManager.Instance.Avatar;
 
             Data.Tables tables = this.GetRootComponent<Data.Tables>();
             Data.Table.Stats statsData;
