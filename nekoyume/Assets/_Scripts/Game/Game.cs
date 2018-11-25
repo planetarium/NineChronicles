@@ -42,11 +42,6 @@ namespace Nekoyume.Game
             MoveManager.Instance.DidSleep += OnSleep;
         }
 
-        private void OnUpdateAvatar(Model.Avatar avatar)
-        {
-            MoveManager.Instance.Avatar = avatar;
-        }
-
         private void OnCreateAvatarRequired(object sender, EventArgs e)
         {
             MoveManager.Instance.CreateNovice(new Dictionary<string, string> {
