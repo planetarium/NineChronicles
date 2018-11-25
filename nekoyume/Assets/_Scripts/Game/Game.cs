@@ -30,8 +30,6 @@ namespace Nekoyume.Game
     {
         static public readonly int PixelPerUnit = 160;
 
-        public Model.Avatar Avatar { get; private set; }
-
         private void Awake()
         {
             Assets.SimpleLocalization.LocalizationManager.Read();
@@ -44,11 +42,6 @@ namespace Nekoyume.Game
             MoveManager.Instance.DidSleep += OnSleep;
         }
 
-        private void OnUpdateAvatar(Model.Avatar avatar)
-        {
-            Avatar = avatar;
-        }
-
         private void OnCreateAvatarRequired(object sender, EventArgs e)
         {
             MoveManager.Instance.CreateNovice(new Dictionary<string, string> {
@@ -58,18 +51,12 @@ namespace Nekoyume.Game
 
         private void OnAvatarLoaded(object sender, Model.Avatar avatar)
         {
-            Avatar = avatar;
             Event.OnRoomEnter.Invoke();
         }
 
         private void OnSleep(object sender, Model.Avatar avatar)
         {
-            Avatar = avatar;
         }
 
-        private void OnHackAndSlash(object sender, Model.Avatar avatar)
-        {
-            Avatar = avatar;
-        }
     }
 }
