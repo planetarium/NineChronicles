@@ -7,7 +7,6 @@ namespace Nekoyume.Game.Character
     public class Enemy : Base
     {
         public int RewardExp = 0;
-        public Player Target;
 
         public void InitAI(Monster data)
         {
@@ -31,28 +30,22 @@ namespace Nekoyume.Game.Character
                     BT.Terminate()
                 )
             );
-        }
 
-        protected override bool HasTarget()
-        {
-            return Target != null;
+            _skills.Clear();
+            // TODO: select skill
+            var attack = this.GetOrAddComponent<Skill.MonsterAttack>();
+            if (attack.Init("attack"))
+            {
+                _skills.Add(attack);
+            }
         }
 
         private void EnemyAttack()
         {
-            Debug.Log("Enemy Attack");
-            Attack(Target);
-        }
-
-        protected override void OnDead()
-        {
-            gameObject.SetActive(false);
-            Target.OnTargetDead(gameObject);
-        }
-
-        public void OnTargetDead()
-        {
-            Target = null;
+            foreach (var skill in _skills)
+            {
+                skill.Use();
+            }
         }
     }
 }
