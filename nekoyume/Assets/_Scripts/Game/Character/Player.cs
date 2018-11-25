@@ -1,5 +1,4 @@
 using System.Linq;
-using Boo.Lang;
 using BTAI;
 using Nekoyume.Data.Table;
 using UnityEngine;
@@ -9,7 +8,6 @@ namespace Nekoyume.Game.Character
 {
     public class Player : Base
     {
-        public List<GameObject> Targets = new List<GameObject>();
         public int MP = 0;
 
         public void InitAI(Stage stage, Stats data)
@@ -42,46 +40,37 @@ namespace Nekoyume.Game.Character
                     BT.Terminate()
                 )
             );
+
+            _skills.Clear();
+            // TODO: select skill
+            var attack = this.GetOrAddComponent<Skill.Attack>();
+            if (attack.Init("attack"))
+            {
+                _skills.Add(attack);
+            }
         }
 
         public void PlayerAttack()
         {
-            var i = Random.Range(0, Targets.Count);
-            var target = Targets[i];
-            var enemy = target.GetComponent<Enemy>();
-            Debug.Log("Player Attack");
-            Attack(enemy);
-        }
-
-        protected override bool HasTarget()
-        {
-            return Targets.Any();
+            foreach (var skill in _skills)
+            {
+                skill.Use();
+            }
         }
 
         private bool WaveEnd()
         {
-            return InStage && Targets.Count == 0;
+            bool end = InStage && !HasTarget();
+            if (end)
+            {
+                Targets.Clear();
+            }
+            return end;
         }
 
         private void MoveNext()
         {
             Walkable = true;
-        }
-
-        public void OnTargetDead(GameObject target)
-        {
-            Debug.Log("Kill!");
-            Targets.Remove(target);
-        }
-
-        protected override void OnDead()
-        {
-            foreach (var target in Targets)
-            {
-                var enemy = target.GetComponent<Enemy>();
-                enemy.OnTargetDead();
-                Event.OnRoomEnter.Invoke();
-            }
         }
     }
 }

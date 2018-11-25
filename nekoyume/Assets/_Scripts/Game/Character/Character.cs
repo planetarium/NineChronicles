@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using BTAI;
 using UnityEngine;
 using Time = UnityEngine.Time;
@@ -7,6 +9,8 @@ namespace Nekoyume.Game.Character
 {
     public class Base : MonoBehaviour
     {
+        public List<GameObject> Targets = new List<GameObject>();
+
         public Root Root;
         public int HP = 0;
         public int ATK = 0;
@@ -16,6 +20,8 @@ namespace Nekoyume.Game.Character
         public bool InStage = false;
 
         protected float _walkSpeed = 0.0f;
+
+        protected List<Skill.Skill> _skills = new List<Skill.Skill>();
 
         public bool IsDead()
         {
@@ -52,6 +58,12 @@ namespace Nekoyume.Game.Character
 
         protected virtual bool HasTarget()
         {
+            foreach (var target in Targets)
+            {
+                Character.Base character = target.GetComponent<Character.Base>();
+                if (character.IsAlive())
+                    return true;
+            }
             return false;
         }
 
@@ -67,7 +79,19 @@ namespace Nekoyume.Game.Character
 
         protected virtual void OnDead()
         {
-            Debug.Log("Dead");
+            foreach (var target in Targets)
+            {
+                var character = target.GetComponent<Base>();
+                character.OnTargetDead(gameObject);
+            }
+            Targets.Clear();
+            gameObject.SetActive(false);
+        }
+
+        public void OnTargetDead(GameObject target)
+        {
+            Debug.Log($"Kill! ({target})");
+            //Targets.Remove(target);
         }
     }
 }

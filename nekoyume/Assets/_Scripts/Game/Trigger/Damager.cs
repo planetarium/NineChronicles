@@ -7,36 +7,53 @@ namespace Nekoyume.Game.Trigger
 {
     public class Damager : MonoBehaviour
     {
-        private Util.SpriteAnimator _anim;
+        private Character.Base _owner = null;
+        private int _damage = 0;
+        private float _size = 0.0f;
+        private int _targetCount = 0;
+        private List<GameObject> _hitObjects = new List<GameObject>();
 
-        public void Set(string targetTag, int damage, float size, int targetCount)
+        public void Update()
         {
-            var anim = GetComponent<Util.SpriteAnimator>();
-            anim.Play("hit_01");
-
-            var stage = gameObject.GetComponentInParent<Stage>();
-            Character.Base[] characters = stage.GetComponentsInChildren<Character.Base>();
-            foreach (var character in characters)
+            List<GameObject> targets = _owner.Targets;
+            int targetCount = _targetCount;
+            foreach (var go in targets)
             {
                 if (targetCount <= 0)
                     break;
 
-                Debug.DrawLine(transform.position, transform.TransformPoint(size, 0.0f, 0.0f), Color.green, 1.0f);
-                if (transform.position.x > character.transform.position.x
-                    || transform.position.x + size < character.transform.position.x)
+                if (_hitObjects.Contains(go))
                     continue;
 
-                // TODO: Use tag
-                if (character.name == targetTag)
-                {
-                    character.HP -= damage;
-                    if (character.HP < 0)
-                    {
-                        character.gameObject.SetActive(false);
-                    }
-                }
+                float halfSize = _size * 0.5f;
+                Debug.DrawLine(
+                    transform.TransformPoint(-halfSize, 0.0f, 0.0f), 
+                    transform.TransformPoint(halfSize, 0.0f, 0.0f), 
+                    Color.green, 1.0f);
+                if (transform.position.x - halfSize > go.transform.position.x
+                    || transform.position.x + halfSize < go.transform.position.x)
+                    continue;
+
+                var character = go.GetComponent<Character.Base>();
+                _owner.Attack(character);
+                
                 --targetCount;
+
+                _hitObjects.Add(go);
             }
+        }
+
+        public void Set(Character.Base owner, int damage, float size, int targetCount)
+        {
+            var anim = GetComponent<Util.SpriteAnimator>();
+            anim.Play("hit_01");
+
+            _owner = owner;
+            _damage = damage;
+            _size = size;
+            _targetCount = targetCount;
+
+            _hitObjects.Clear();
         }
     }
 }
