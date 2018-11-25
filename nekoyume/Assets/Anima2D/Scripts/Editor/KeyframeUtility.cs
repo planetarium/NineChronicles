@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿#pragma warning disable 0618
+using UnityEngine;
 using System.Collections;
 
 namespace Anima2D

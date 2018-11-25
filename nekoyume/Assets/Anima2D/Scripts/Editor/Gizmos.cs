@@ -14,7 +14,7 @@ namespace Anima2D
 
 		static Gizmos()
 		{
-			EditorApplication.hierarchyWindowChanged += HierarchyWindowChanged;
+			EditorApplication.hierarchyChanged += HierarchyWindowChanged;
 		}
 
 		static bool IsVisible(Bone2D bone)

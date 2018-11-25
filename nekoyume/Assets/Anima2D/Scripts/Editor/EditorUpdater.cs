@@ -25,7 +25,7 @@ namespace Anima2D
 		{
 			EditorApplication.update += Update;
 			SceneView.onSceneGUIDelegate += OnSceneGUI;
-			EditorApplication.hierarchyWindowChanged += HierarchyWindowChanged;
+			EditorApplication.hierarchyChanged += HierarchyWindowChanged;
 
 			Undo.undoRedoPerformed += UndoRedoPerformed;
 		}

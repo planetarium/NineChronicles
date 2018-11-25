@@ -15,7 +15,7 @@ namespace Anima2D
 		{
 			SceneView.onSceneGUIDelegate += OnSceneGUI;
 			EditorApplication.hierarchyWindowItemOnGUI += HierarchyWindowItemCallback;
-			EditorApplication.hierarchyWindowChanged += HierarchyWindowChanged;
+			EditorApplication.hierarchyChanged += HierarchyWindowChanged;
 		}
 
 		static SpriteMesh spriteMesh = null;
