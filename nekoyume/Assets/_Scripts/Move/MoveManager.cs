@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
+using Nekoyume.Game.Character;
 using Planetarium.Crypto.Extension;
 using Planetarium.Crypto.Keys;
 using UnityEngine;
@@ -168,24 +169,14 @@ namespace Nekoyume.Move
             }
         }
 
-        public HackAndSlash HackAndSlash(string weapon = null, string armor = null, string food = null,
+        public HackAndSlash HackAndSlash(Player player, int stage,
             DateTime? timestamp = null)
         {
-            var details = new Dictionary<string, string>();
-            if (weapon != null)
+            var details = new Dictionary<string, string>
             {
-                details["weapon"] = weapon;
-            }
-
-            if (armor != null)
-            {
-                details["armor"] = armor;
-            }
-
-            if (food != null)
-            {
-                details["food"] = food;
-            }
+                ["hp"] = player.HP.ToString(),
+                ["stage"] = stage.ToString()
+            };
 
             var has = new HackAndSlash
             {
@@ -238,7 +229,6 @@ namespace Nekoyume.Move
             move.Tax = tax;
             move.Timestamp = (timestamp) ?? DateTime.UtcNow;
             agent.Send(move);
-
             if (typeof(T).GetCustomAttribute<Preprocess>() != null)
             {
                 ExecuteMove(move);

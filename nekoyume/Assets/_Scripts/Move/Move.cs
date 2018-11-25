@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices.ComTypes;
 using Nekoyume.Data;
 using Nekoyume.Model;
 using Planetarium.Crypto.Extension;
@@ -111,19 +112,20 @@ namespace Nekoyume.Move
     }
 
     [MoveName("hack_and_slash")]
+    [Preprocess]
     public class HackAndSlash : Move
     {
         public override Context Execute(Context ctx)
         {
-            if (ctx.Avatar.dead)
-            {
-                throw new InvalidMoveException();
-            }
-
-            // TODO client battle result
-            return CreateContext(
-                ContextStatus.Success, ctx.Avatar
-            );
+            //FIXME RoomEntering 이 호출됐을때 아바타 hp가 0이라 오류가 발생함
+//            if (ctx.Avatar.dead)
+//            {
+//                throw new InvalidMoveException();
+//            }
+            var newCtx = CreateContext(avatar: ctx.Avatar);
+            newCtx.Avatar.hp = int.Parse(Details["hp"]);
+            newCtx.Avatar.world_stage = int.Parse(Details["stage"]);
+            return newCtx;
         }
     }
 
@@ -159,7 +161,7 @@ namespace Nekoyume.Move
                     gold = 0,
                     class_ = CharacterClass.Novice.ToString(),
                     level = 1,
-                    world_stage = 1,
+                    world_stage = 1
                 }
             );
         }
