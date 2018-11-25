@@ -16,6 +16,8 @@ namespace Nekoyume.Game.Character
         public int ATK = 0;
         public int DEF = 0;
 
+        public int Power = 100;
+
         public bool Walkable { get; set; } = false;
         public bool InStage = false;
 
@@ -50,9 +52,14 @@ namespace Nekoyume.Game.Character
             Root?.Tick();
         }
 
-        public void Attack(Base target)
+        public int CalcAtk()
         {
-            int dmg = this.ATK - target.DEF;
+            return Mathf.FloorToInt((float)this.ATK * (this.Power * 0.01f));
+        }
+
+        public void Attack(Base target, int damage)
+        {
+            int dmg = damage - target.DEF;
             OnDamage(target, dmg);
         }
 

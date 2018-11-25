@@ -7,12 +7,10 @@ namespace Nekoyume.Game.Trigger
 {
     public class MonsterSpawner : MonoBehaviour
     {
-        private int _stageId = 0;
         private int _monsterPower = 0;
 
-        public void SetData(int stageId, int monsterPower)
+        public void SetData(int monsterPower)
         {
-            _stageId = stageId;
             _monsterPower = monsterPower;
 
             Collider2D collider = GetComponent<Collider2D>();
@@ -44,6 +42,7 @@ namespace Nekoyume.Game.Trigger
                     transform.position.x + Random.Range(-0.1f, 0.1f), Random.Range(-0.7f, -1.3f));
                 player.Targets.Add(go);
                 var enemy = go.GetComponent<Enemy>();
+                enemy.Power = _monsterPower;
                 enemy.Targets.Add(player.gameObject);
             }
         }

@@ -35,7 +35,7 @@ namespace Nekoyume.Game.Trigger
                     continue;
 
                 var character = go.GetComponent<Character.Base>();
-                _owner.Attack(character);
+                _owner.Attack(character, _damage);
                 
                 --targetCount;
 

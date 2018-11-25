@@ -11,7 +11,6 @@ namespace Nekoyume
         public Text log;
 
         private Transform _modal;
-        private int _clickCount = 0;
         private float _updateTime = 0.0f;
 
         static void Log(string text)
