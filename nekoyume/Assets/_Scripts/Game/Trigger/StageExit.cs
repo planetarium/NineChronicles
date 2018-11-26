@@ -1,4 +1,4 @@
-using DG.Tweening;
+using System.Collections;
 using UnityEngine;
 
 
@@ -6,22 +6,20 @@ namespace Nekoyume.Game.Trigger
 {
     public class StageExit : MonoBehaviour
     {
-        public void SetEnable()
+        private void Awake()
         {
-            Collider2D collider = GetComponent<Collider2D>();
-            collider.enabled = true;
+            Event.OnStageClear.AddListener(OnStageClear);
         }
 
-        private void OnTriggerEnter2D(Collider2D other)
+        private void OnStageClear()
         {
-            if (other.gameObject.name == "Player")
-            {
-                Collider2D collider = GetComponent<Collider2D>();
-                collider.enabled = false;
+            StartCoroutine(WaitStageExit());
+        }
 
-                var stage = GetComponentInParent<Stage>();
-                stage.OnStageEnter();
-            }
+        private IEnumerator WaitStageExit()
+        {
+            yield return new WaitForSeconds(1.0f);
+            Event.OnStageEnter.Invoke();
         }
     }
 }

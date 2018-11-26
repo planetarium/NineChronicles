@@ -31,10 +31,8 @@ namespace Nekoyume.Game.Entrance
                 objectPool.ReleaseAll();
 
                 var playerFactory = GetComponent<Factory.PlayerFactory>();
-                GameObject player = playerFactory.Create(stage);
-
-                // position
-                player.transform.position = new Vector2(-1.0f, Random.Range(-0.7f, -1.3f));
+                GameObject player = playerFactory.Create(true);
+                player.transform.position = new Vector2(0.0f, -0.7f);
 
                 var cam = Camera.main.gameObject.GetComponent<ActionCamera>();
                 cam.target = player.transform;
@@ -42,9 +40,6 @@ namespace Nekoyume.Game.Entrance
                 var spawners = GetComponentsInChildren<Trigger.MonsterSpawner>();
                 foreach (var spawner in spawners)
                     spawner.SetData(data.MonsterPower);
-
-                var exit = GetComponentInChildren<Trigger.StageExit>();
-                exit.SetEnable();
 
                 yield return new WaitForSeconds(2.0f);
                 yield return StartCoroutine(blind.FadeOut(1.0f));

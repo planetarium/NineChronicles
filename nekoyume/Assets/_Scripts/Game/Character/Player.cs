@@ -1,8 +1,6 @@
 using System.Linq;
 using BTAI;
-using Nekoyume.Data.Table;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 namespace Nekoyume.Game.Character
 {
@@ -10,34 +8,18 @@ namespace Nekoyume.Game.Character
     {
         public int MP = 0;
 
-        public void InitAI(Stage stage, Stats data)
+        public void InitAI()
         {
-            HP = data.Health;
-            ATK = data.Attack;
-            DEF = data.Defense;
-            MP = data.Mana;
-            Walkable = InStage = stage.Id > 0;
-            _walkSpeed = 0.6f;
+            _walkSpeed = 1.0f;
             Root = new Root();
             Root.OpenBranch(
-                BT.Selector().OpenBranch(
-                    BT.If(() => InStage).OpenBranch(
-                        BT.If(IsAlive).OpenBranch(
-                            BT.Selector().OpenBranch(
-                                BT.If(CanWalk).OpenBranch(
-                                    BT.Call(Walk)
-                                ),
-                                BT.If(HasTarget).OpenBranch(
-                                    BT.Wait(0.5f),
-                                    BT.Call(PlayerAttack)
-                                ),
-                                BT.If(WaveEnd).OpenBranch(
-                                    BT.Call(MoveNext)
-                                )
-                            )
-                        )
-                    ),
-                    BT.Terminate()
+                BT.If(IsAlive).OpenBranch(
+                    BT.Selector().OpenBranch(
+                        BT.If(HasTargetInRange).OpenBranch(
+                            BT.Call(PlayerAttack)
+                        ),
+                        BT.Call(Walk)
+                    )
                 )
             );
 
@@ -50,27 +32,30 @@ namespace Nekoyume.Game.Character
             }
         }
 
+        public void InitStats(Data.Table.Stats statsData)
+        {
+            HP = statsData.Health;
+            ATK = statsData.Attack;
+            DEF = statsData.Defense;
+            MP = statsData.Mana;
+        }
+
         public void PlayerAttack()
         {
             foreach (var skill in _skills)
             {
-                skill.Use();
+                if (skill.Use())
+                {
+                    _anim.SetBool("Walk", false);
+                    _anim.SetTrigger("Attack");
+                }
             }
         }
 
-        private bool WaveEnd()
+        override protected void OnDead()
         {
-            bool end = InStage && !HasTarget();
-            if (end)
-            {
-                Targets.Clear();
-            }
-            return end;
-        }
-
-        private void MoveNext()
-        {
-            Walkable = true;
+            base.OnDead();
+            Event.OnPlayerDead.Invoke();
         }
     }
 }

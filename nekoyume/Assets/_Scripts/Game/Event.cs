@@ -10,5 +10,9 @@ namespace Nekoyume.Game
         public static readonly UnityEvent OnRoomEnter = new UnityEvent();
         public static readonly UnityEvent OnStageEnter = new UnityEvent();
         public static readonly UnityEvent OnStageStart = new UnityEvent();
+
+        public static readonly UnityEvent OnPlayerDead = new UnityEvent();
+        public static readonly UnityEvent OnEnemyDead = new UnityEvent();
+        public static readonly UnityEvent OnStageClear = new UnityEvent();
     }
 }

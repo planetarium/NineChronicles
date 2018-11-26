@@ -13,6 +13,7 @@ namespace Nekoyume.Game
         {
             Event.OnRoomEnter.AddListener(OnRoomEnter);
             Event.OnStageEnter.AddListener(OnStageEnter);
+            Event.OnPlayerDead.AddListener(OnPlayerDead);
         }
 
         private void Start()
@@ -25,9 +26,14 @@ namespace Nekoyume.Game
             gameObject.AddComponent<RoomEntering>();
         }
 
-        public void OnStageEnter()
+        private void OnStageEnter()
         {
             gameObject.AddComponent<WorldEntering>();
+        }
+
+        private void OnPlayerDead()
+        {
+            
         }
 
         public void LoadBackground(string prefabName)

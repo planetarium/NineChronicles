@@ -5,6 +5,11 @@ namespace Nekoyume.Game.Skill
 {
     public class MonsterAttack : Skill
     {
+        private void Awake()
+        {
+            _targetTag = Tag.Player;
+        }
+
         override public bool Use()
         {
             if (IsCooltime())
@@ -18,8 +23,8 @@ namespace Nekoyume.Game.Skill
             float size = (float)_data.Size / (float)Game.PixelPerUnit;
 
             var objectPool = GetComponentInParent<Util.ObjectPool>();
-            var damager = objectPool.Get<Trigger.Damager>(transform.TransformPoint(range, 0.0f, 0.0f));
-            damager.Set(owner, damage, size, _data.TargetCount);
+            var damager = objectPool.Get<Trigger.Damager>(transform.TransformPoint(-range, 0.0f, 0.0f));
+            damager.Set(_targetTag, damage, size, _data.TargetCount);
 
             return true;
         }
