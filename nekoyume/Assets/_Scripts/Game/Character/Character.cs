@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using BTAI;
+using Nekoyume.Move;
 using UnityEngine;
 using Time = UnityEngine.Time;
 
@@ -98,7 +99,12 @@ namespace Nekoyume.Game.Character
         public void OnTargetDead(GameObject target)
         {
             Debug.Log($"Kill! ({target})");
-            //Targets.Remove(target);
+            if (target.name == "Player")
+            {
+                var player = target.GetComponent<Player>();
+                var stage = GetComponentInParent<Stage>();
+                MoveManager.Instance.HackAndSlash(player, stage.Id);
+            }
         }
     }
 }
