@@ -24,6 +24,7 @@ namespace Nekoyume.Game.Factory
             if (initAI)
                 player.InitAI();
             player.InitStats(statsData);
+            if (!avatar.dead) player.HP = avatar.hp;
 
             // sprite
             // var render = player.GetComponent<SpriteRenderer>();

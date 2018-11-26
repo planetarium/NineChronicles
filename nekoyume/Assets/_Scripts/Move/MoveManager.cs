@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
 using Nekoyume.Game.Character;
+using Nekoyume.UI;
 using Planetarium.Crypto.Extension;
 using Planetarium.Crypto.Keys;
 using UnityEngine;
@@ -145,14 +146,25 @@ namespace Nekoyume.Move
         private void ExecuteMove(Move move)
         {
             var ctx = new Context {Avatar = Avatar};
-            Context executed = move.Execute(ctx);
-            if (executed.Status != ContextStatus.Success) return;
-
-            Avatar = executed.Avatar;
-
-            if (ShouldNotify(move))
+            try
             {
-                Notify(move);
+                Context executed = move.Execute(ctx);
+                if (executed.Status != ContextStatus.Success) return;
+
+                Avatar = executed.Avatar;
+
+                if (ShouldNotify(move))
+                {
+                    Notify(move);
+                }
+            }
+            catch (InvalidMoveException)
+            {
+                if (move.GetType() == typeof(HackAndSlash))
+                {
+                    Widget.Find<UI.Move>().btnMove.SetActive(false);
+                    Debug.Log("Avatar is Dead");
+                }
             }
         }
 
