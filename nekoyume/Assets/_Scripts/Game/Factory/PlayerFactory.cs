@@ -1,4 +1,3 @@
-using DG.Tweening;
 using Nekoyume.Move;
 using UnityEngine;
 
@@ -24,6 +23,7 @@ namespace Nekoyume.Game.Factory
             if (initAI)
                 player.InitAI();
             player.InitStats(statsData);
+            if (!avatar.dead && avatar.hp > 0) player.HP = avatar.hp;
 
             // sprite
             // var render = player.GetComponent<SpriteRenderer>();

@@ -1,6 +1,7 @@
 using System.Linq;
 using BTAI;
 using UnityEngine;
+using Avatar = Nekoyume.Model.Avatar;
 
 namespace Nekoyume.Game.Character
 {
@@ -52,9 +53,8 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        override protected void OnDead()
+        protected override void OnDead()
         {
-            base.OnDead();
             Event.OnPlayerDead.Invoke();
         }
     }
