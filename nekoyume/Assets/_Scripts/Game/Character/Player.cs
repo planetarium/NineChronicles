@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Nekoyume.Game.Character
 {
-    public class Player : Base
+    public class Player : CharacterBase
     {
         public int MP = 0;
 

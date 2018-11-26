@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Nekoyume.Game.Skill
 {
-    abstract public class Skill : MonoBehaviour
+    abstract public class SkillBase : MonoBehaviour
     {
         protected Data.Table.Skill _data = null;
         protected string _targetTag = "";
@@ -42,7 +42,7 @@ namespace Nekoyume.Game.Skill
         public bool IsTargetInRange()
         {
             var stage = GetComponentInParent<Stage>();
-            var characters = stage.GetComponentsInChildren<Character.Base>();
+            var characters = stage.GetComponentsInChildren<Character.CharacterBase>();
             foreach (var character in characters)
             {
                 if (character.gameObject.tag != _targetTag)
@@ -62,7 +62,7 @@ namespace Nekoyume.Game.Skill
         public GameObject GetNearestTarget(string tag)
         {
             var stage = GetComponentInParent<Stage>();
-            var characters = stage.GetComponentsInChildren<Character.Base>();
+            var characters = stage.GetComponentsInChildren<Character.CharacterBase>();
             GameObject nearest = null;
             float nearestDist = 9999.0f;
             foreach (var character in characters)
