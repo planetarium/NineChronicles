@@ -5,6 +5,11 @@ namespace Nekoyume.Game.Skill
 {
     public class Attack : Skill
     {
+        private void Awake()
+        {
+            _targetTag = Tag.Enemy;
+        }
+
         override public bool Use()
         {
             if (IsCooltime())
@@ -19,7 +24,7 @@ namespace Nekoyume.Game.Skill
 
             var objectPool = GetComponentInParent<Util.ObjectPool>();
             var damager = objectPool.Get<Trigger.Damager>(transform.TransformPoint(range, 0.0f, 0.0f));
-            damager.Set(owner, damage, size, _data.TargetCount);
+            damager.Set(_targetTag, damage, size, _data.TargetCount);
 
             return true;
         }

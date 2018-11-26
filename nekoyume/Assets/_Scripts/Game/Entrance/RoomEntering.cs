@@ -25,10 +25,8 @@ namespace Nekoyume.Game.Entrance
             objectPool.ReleaseAll();
 
             var playerFactory = GetComponent<Factory.PlayerFactory>();
-            GameObject player = playerFactory.Create(stage);
-
-            // position
-            player.transform.position = new Vector2(0.0f, -1.0f);
+            GameObject player = playerFactory.Create(false);
+            player.transform.position = new Vector2(0.0f, -0.7f);
 
             yield return new WaitForSeconds(2.0f);
             yield return StartCoroutine(blind.FadeOut(1.0f));

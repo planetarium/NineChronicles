@@ -6,8 +6,8 @@ namespace Nekoyume.Game.Skill
 {
     abstract public class Skill : MonoBehaviour
     {
-        public Data.Table.Skill _data;
-
+        protected Data.Table.Skill _data = null;
+        protected string _targetTag = "";
         protected float _cooltime = 0.0f;
 
         abstract public bool Use();
@@ -22,6 +22,7 @@ namespace Nekoyume.Game.Skill
             var tables = this.GetRootComponent<Data.Tables>();
             if (tables.Skill.TryGetValue(id, out _data))
             {
+                _cooltime = 0.0f;
                 return true;
             }
             Destroy(this);
@@ -38,17 +39,20 @@ namespace Nekoyume.Game.Skill
             return _cooltime > 0;
         }
 
-        public bool IsTargetInRange(string tag)
+        public bool IsTargetInRange()
         {
             var stage = GetComponentInParent<Stage>();
-            Character.Base[] characters = stage.GetComponentsInChildren<Character.Base>();
+            var characters = stage.GetComponentsInChildren<Character.Base>();
             foreach (var character in characters)
             {
-                if (character.tag != tag)
+                if (character.gameObject.tag != _targetTag)
+                    continue;
+
+                if (character.IsDead())
                     continue;
 
                 float range = (float)_data.Range / (float)Game.PixelPerUnit;
-                float dist = character.transform.position.x - transform.position.x;
+                float dist = Mathf.Abs(character.transform.position.x - transform.position.x);
                 if (range > dist)
                     return true;
             }
@@ -58,12 +62,15 @@ namespace Nekoyume.Game.Skill
         public GameObject GetNearestTarget(string tag)
         {
             var stage = GetComponentInParent<Stage>();
-            Character.Base[] characters = stage.GetComponentsInChildren<Character.Base>();
+            var characters = stage.GetComponentsInChildren<Character.Base>();
             GameObject nearest = null;
             float nearestDist = 9999.0f;
             foreach (var character in characters)
             {
-                if (character.tag != tag)
+                if (character.gameObject.tag != tag)
+                    continue;
+
+                if (character.IsDead())
                     continue;
 
                 float dist = character.transform.position.x - transform.position.x;

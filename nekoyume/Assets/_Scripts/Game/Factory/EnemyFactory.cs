@@ -18,7 +18,8 @@ namespace Nekoyume.Game.Factory
             if (enemy == null)
                 return null;
 
-            enemy.InitAI(monsterData);
+            enemy.InitAI();
+            enemy.InitStats(monsterData);
 
             // sprite
             var render = enemy.GetComponent<SpriteRenderer>();

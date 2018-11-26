@@ -10,8 +10,6 @@ namespace Nekoyume.Game.Character
 {
     public class Base : MonoBehaviour
     {
-        public List<GameObject> Targets = new List<GameObject>();
-
         public Root Root;
         public int HP = 0;
         public int ATK = 0;
@@ -19,12 +17,15 @@ namespace Nekoyume.Game.Character
 
         public int Power = 100;
 
-        public bool Walkable { get; set; } = false;
-        public bool InStage = false;
-
         protected float _walkSpeed = 0.0f;
+        protected Animator _anim = null;
 
         protected List<Skill.Skill> _skills = new List<Skill.Skill>();
+
+        private void Awake()
+        {
+            _anim = GetComponent<Animator>();
+        }
 
         public bool IsDead()
         {
@@ -38,11 +39,15 @@ namespace Nekoyume.Game.Character
 
         protected bool CanWalk()
         {
-            return Walkable;
+            return true;
         }
 
         protected virtual void Walk()
         {
+            if (_anim != null)
+            {
+                _anim.SetBool("Walk", true);
+            }
             Vector2 position = transform.position;
             position.x += Time.deltaTime * _walkSpeed;
             transform.position = position;
@@ -58,53 +63,31 @@ namespace Nekoyume.Game.Character
             return Mathf.FloorToInt((float)this.ATK * (this.Power * 0.01f));
         }
 
-        public void Attack(Base target, int damage)
+        protected bool HasTargetInRange()
         {
-            int dmg = damage - target.DEF;
-            OnDamage(target, dmg);
-        }
-
-        protected virtual bool HasTarget()
-        {
-            foreach (var target in Targets)
+            foreach (var skill in _skills)
             {
-                Character.Base character = target.GetComponent<Character.Base>();
-                if (character.IsAlive())
+                if (skill.IsTargetInRange())
+                {
                     return true;
+                }
             }
             return false;
         }
 
-        private static void OnDamage(Base target, int dmg)
+        public void OnDamage(int dmg)
         {
-            target.HP -= dmg;
-            Debug.Log($"{target.name} HP: {target.HP}");
-            if (target.IsDead())
+            HP -= dmg - DEF;
+            Debug.Log($"{name} HP: {HP}");
+            if (IsDead())
             {
-                target.OnDead();
+                OnDead();
             }
         }
 
         protected virtual void OnDead()
         {
-            foreach (var target in Targets)
-            {
-                var character = target.GetComponent<Base>();
-                character.OnTargetDead(gameObject);
-            }
-            Targets.Clear();
             gameObject.SetActive(false);
-        }
-
-        public void OnTargetDead(GameObject target)
-        {
-            Debug.Log($"Kill! ({target})");
-            if (target.name == "Player")
-            {
-                var player = target.GetComponent<Player>();
-                var stage = GetComponentInParent<Stage>();
-                MoveManager.Instance.HackAndSlash(player, stage.Id);
-            }
         }
     }
 }

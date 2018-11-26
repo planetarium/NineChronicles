@@ -8,36 +8,36 @@ namespace Nekoyume.Game.Character
     {
         public int RewardExp = 0;
 
-        public void InitAI(Monster data)
+        public void InitAI()
         {
-            HP = data.Health;
-            ATK = data.Attack;
-            DEF = data.Defense;
-            RewardExp = data.RewardExp;
-            _walkSpeed = -0.6f;
+            _walkSpeed = -1.0f;
             Root = new Root();
             Root.OpenBranch(
-                BT.Selector().OpenBranch(
-                    BT.If(CanWalk).OpenBranch(
-                        BT.Call(Walk)
-                    ),
-                    BT.If(HasTarget).OpenBranch(
-                        BT.If(IsAlive).OpenBranch(
-                            BT.Wait(0.5f),
+                BT.If(IsAlive).OpenBranch(
+                    BT.Selector().OpenBranch(
+                        BT.If(HasTargetInRange).OpenBranch(
                             BT.Call(EnemyAttack)
-                        )
-                    ),
-                    BT.Terminate()
+                        ),
+                        BT.Call(Walk)
+                    )
                 )
             );
 
             _skills.Clear();
             // TODO: select skill
             var attack = this.GetOrAddComponent<Skill.MonsterAttack>();
-            if (attack.Init("attack"))
+            if (attack.Init("monster_attack"))
             {
                 _skills.Add(attack);
             }
+        }
+
+        public void InitStats(Data.Table.Monster statsData)
+        {
+            HP = statsData.Health;
+            ATK = statsData.Attack;
+            DEF = statsData.Defense;
+            RewardExp = statsData.RewardExp;
         }
 
         private void EnemyAttack()
@@ -46,6 +46,12 @@ namespace Nekoyume.Game.Character
             {
                 skill.Use();
             }
+        }
+
+        override protected void OnDead()
+        {
+            base.OnDead();
+            Event.OnEnemyDead.Invoke();
         }
     }
 }

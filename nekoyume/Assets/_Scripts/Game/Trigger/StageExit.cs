@@ -1,3 +1,4 @@
+using System.Collections;
 using Nekoyume.Game.Character;
 using Nekoyume.Move;
 using UnityEngine;
@@ -7,25 +8,26 @@ namespace Nekoyume.Game.Trigger
 {
     public class StageExit : MonoBehaviour
     {
-        public void SetEnable()
+        private void Awake()
         {
-            Collider2D collider = GetComponent<Collider2D>();
-            collider.enabled = true;
+            Event.OnStageClear.AddListener(OnStageClear);
         }
 
-        private void OnTriggerEnter2D(Collider2D other)
+        private void OnStageClear()
         {
-            if (other.gameObject.name == "Player")
-            {
-                Collider2D collider = GetComponent<Collider2D>();
-                collider.enabled = false;
-                var player = other.gameObject.GetComponent<Player>();
-                var stage = GetComponentInParent<Stage>();
-                var id = 1;
-                if (stage.Id < 3) id = stage.Id + 1;
-                MoveManager.Instance.HackAndSlash(player, id);
-                stage.OnStageEnter();
-            }
+            StartCoroutine(WaitStageExit());
+        }
+
+        private IEnumerator WaitStageExit()
+        {
+            yield return new WaitForSeconds(1.0f);
+            Event.OnStageEnter.Invoke();
+
+            var stage = GetComponentInParent<Stage>();
+            var player = stage.GetComponentInChildren<Player>();
+            var id = 1;
+            if (stage.Id < 3) id = stage.Id + 1;
+            MoveManager.Instance.HackAndSlash(player, id);
         }
     }
 }

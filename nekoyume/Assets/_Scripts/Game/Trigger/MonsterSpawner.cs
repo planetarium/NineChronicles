@@ -7,43 +7,77 @@ namespace Nekoyume.Game.Trigger
 {
     public class MonsterSpawner : MonoBehaviour
     {
+        private Stage _stage;
+        private int _wave = 0;
         private int _monsterPower = 0;
 
-        public void SetData(int monsterPower)
+        private void Awake()
         {
-            _monsterPower = monsterPower;
-
-            Collider2D collider = GetComponent<Collider2D>();
-            collider.enabled = true;
+            Event.OnEnemyDead.AddListener(OnEnemyDead);
         }
 
-        private void OnTriggerEnter2D(Collider2D other)
+        private void Start()
         {
-            Debug.Log(other);
-            if (other.gameObject.name == "Player")
+            _stage = GetComponentInParent<Stage>();
+        }
+
+        private void OnEnemyDead()
+        {
+            if (IsClearWave())
             {
-                Collider2D collider = GetComponent<Collider2D>();
-                collider.enabled = false;
-                var player = other.gameObject.GetComponent<Player>(); 
-                player.Walkable = false;
-                SpawnWave(player);
+                if (!NextWave())
+                {
+                    Event.OnStageClear.Invoke();
+                }
             }
         }
 
-        private void SpawnWave(Player player)
+        public void SetData(int monsterPower)
+        {
+            _wave = 3;
+            _monsterPower = monsterPower;
+
+            NextWave();
+        }
+
+        private bool IsClearWave()
+        {
+            var characters = _stage.GetComponentsInChildren<Character.Base>();
+            foreach (var character in characters)
+            {
+                if (character.tag == Tag.Player)
+                    continue;
+
+                if (character.gameObject.activeSelf)
+                    return false;
+            }
+            return true;
+        }
+
+        private bool NextWave()
+        {
+            if (_wave <= 0)
+                return false;
+
+            _wave--;
+            SpawnWave();
+            return true;
+        }
+
+        private void SpawnWave()
         {
             Factory.EnemyFactory factory = GetComponentInParent<Factory.EnemyFactory>();
+            var player = _stage.GetComponentInChildren<Character.Player>();
             int monsterCount = 2;
             for (int i = 0; i < monsterCount; ++i)
             {
                 GameObject go = factory.Create("1001");
-
                 go.transform.position = new Vector2(
-                    transform.position.x + Random.Range(-0.1f, 0.1f), Random.Range(-0.7f, -1.3f));
-                player.Targets.Add(go);
+                    player.transform.position.x + 5.0f + Random.Range(-0.1f, 0.1f),
+                    Random.Range(-0.7f, -1.3f));
+
                 var enemy = go.GetComponent<Enemy>();
                 enemy.Power = _monsterPower;
-                enemy.Targets.Add(player.gameObject);
             }
         }
     }
