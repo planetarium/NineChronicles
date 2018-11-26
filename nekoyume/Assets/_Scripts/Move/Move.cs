@@ -3,15 +3,12 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices.ComTypes;
-using Nekoyume.Data;
 using Nekoyume.Model;
 using Planetarium.Crypto.Extension;
 using Planetarium.Crypto.Keys;
 using Planetarium.SDK.Address;
 using Planetarium.SDK.Bencode;
 using Planetarium.SDK.Tx;
-using UnityEngine;
 using Avatar = Nekoyume.Model.Avatar;
 using Debug = System.Diagnostics.Debug;
 
@@ -137,6 +134,11 @@ namespace Nekoyume.Move
         {
             var newCtx = CreateContext(avatar: ctx.Avatar);
             newCtx.Avatar.dead = false;
+            string data;
+            int hp;
+            Details.TryGetValue("hp", out data);
+            int.TryParse(data, out hp);
+            newCtx.Avatar.hp = hp;
             return newCtx;
         }
     }

@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
+using Nekoyume.Data.Table;
 using Nekoyume.Game.Character;
 using Nekoyume.UI;
 using Planetarium.Crypto.Extension;
@@ -146,25 +147,14 @@ namespace Nekoyume.Move
         private void ExecuteMove(Move move)
         {
             var ctx = new Context {Avatar = Avatar};
-            try
-            {
-                Context executed = move.Execute(ctx);
-                if (executed.Status != ContextStatus.Success) return;
+            Context executed = move.Execute(ctx);
+            if (executed.Status != ContextStatus.Success) return;
 
-                Avatar = executed.Avatar;
+            Avatar = executed.Avatar;
 
-                if (ShouldNotify(move))
-                {
-                    Notify(move);
-                }
-            }
-            catch (InvalidMoveException)
+            if (ShouldNotify(move))
             {
-                if (move.GetType() == typeof(HackAndSlash))
-                {
-                    Widget.Find<UI.Move>().btnMove.SetActive(false);
-                    Debug.Log("Avatar is Dead");
-                }
+                Notify(move);
             }
         }
 
@@ -204,13 +194,15 @@ namespace Nekoyume.Move
             return agent.Sync();
         }
 
-        public Sleep Sleep(DateTime? timestamp = null)
+        public Sleep Sleep(Stats statsData , DateTime? timestamp = null)
         {
             var sleep = new Sleep
             {
                 // TODO bencodex
                 Details = new Dictionary<string, string>
-                    { }
+                {
+                    ["hp"] = statsData.Health.ToString()
+                }
             };
             return ProcessMove(sleep, 0, timestamp);
         }

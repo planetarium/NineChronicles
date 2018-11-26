@@ -13,7 +13,7 @@ namespace Nekoyume.UI
         public void ShowRoom()
         {
             Show();
-            btnSleep.GetComponent<Button>().enabled = false;
+            btnSleep.GetComponent<Button>().enabled = true;
             btnMove.GetComponent<Button>().enabled = true;
         }
 
@@ -32,7 +32,7 @@ namespace Nekoyume.UI
 
         public void SleepClick()
         {
-            MoveManager.Instance.Sleep();
+            Game.Event.OnPlayerSleep.Invoke();
             Close();
         }
     }
