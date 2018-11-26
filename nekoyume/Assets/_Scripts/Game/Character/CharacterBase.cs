@@ -101,7 +101,7 @@ namespace Nekoyume.Game.Character
             return false;
         }
 
-        public void OnDamage(int dmg)
+        public virtual void OnDamage(int dmg)
         {
             HP -= dmg - DEF;
             Debug.Log($"{name} HP: {HP}");

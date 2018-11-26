@@ -1,5 +1,7 @@
 using BTAI;
+using DG.Tweening;
 using UnityEngine;
+
 
 namespace Nekoyume.Game.Character
 {
@@ -45,6 +47,20 @@ namespace Nekoyume.Game.Character
             RewardExp = statsData.RewardExp;
 
             Power = power;
+        }
+
+        public override void OnDamage(int dmg)
+        {
+            base.OnDamage(dmg);
+
+            SpriteRenderer renderer = gameObject.GetComponent<SpriteRenderer>();
+            if (renderer != null)
+            {
+                Material mat = renderer.material;
+                DG.Tweening.Sequence colorseq = DOTween.Sequence();
+                colorseq.Append(mat.DOColor(Color.red, 0.1f));
+                colorseq.Append(mat.DOColor(Color.white, 0.1f));
+            }
         }
 
         override protected void OnDead()
