@@ -31,6 +31,13 @@ namespace Nekoyume.Game.Entrance
             GameObject player = playerFactory.Create(false);
             player.transform.position = new Vector2(0.0f, -0.7f);
 
+            var cam = Camera.main.gameObject.GetComponent<ActionCamera>();
+            var camPos = cam.transform.position;
+            camPos.x = 0.0f;
+            camPos.y = 0.0f;
+            cam.transform.position = camPos;
+            cam.target = null;
+
             yield return new WaitForSeconds(2.0f);
             yield return StartCoroutine(blind.FadeOut(1.0f));
 
