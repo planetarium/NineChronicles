@@ -21,7 +21,7 @@ namespace Nekoyume.Game.Trigger
         public void Update()
         {
             int targetCount = _targetCount;
-            var characters = _stage.GetComponentsInChildren<Character.Base>();
+            var characters = _stage.GetComponentsInChildren<Character.CharacterBase>();
             foreach (var character in characters)
             {
                 if (targetCount <= 0)

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Nekoyume.Game.Character
 {
-    public class Enemy : Base
+    public class Enemy : CharacterBase
     {
         public int RewardExp = 0;
 

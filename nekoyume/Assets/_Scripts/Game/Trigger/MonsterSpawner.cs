@@ -42,7 +42,7 @@ namespace Nekoyume.Game.Trigger
 
         private bool IsClearWave()
         {
-            var characters = _stage.GetComponentsInChildren<Character.Base>();
+            var characters = _stage.GetComponentsInChildren<Character.CharacterBase>();
             foreach (var character in characters)
             {
                 if (character.tag == Tag.Player)

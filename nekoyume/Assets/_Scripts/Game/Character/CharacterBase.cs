@@ -8,7 +8,7 @@ using Time = UnityEngine.Time;
 
 namespace Nekoyume.Game.Character
 {
-    public class Base : MonoBehaviour
+    public class CharacterBase : MonoBehaviour
     {
         public Root Root;
         public int HP = 0;
@@ -20,7 +20,7 @@ namespace Nekoyume.Game.Character
         protected float _walkSpeed = 0.0f;
         protected Animator _anim = null;
 
-        protected List<Skill.Skill> _skills = new List<Skill.Skill>();
+        protected List<Skill.SkillBase> _skills = new List<Skill.SkillBase>();
 
         private void Awake()
         {
