@@ -124,7 +124,7 @@ namespace Nekoyume.Move
             var newCtx = CreateContext(avatar: ctx.Avatar);
             newCtx.Avatar.hp = int.Parse(Details["hp"]);
             newCtx.Avatar.world_stage = int.Parse(Details["stage"]);
-            newCtx.Avatar.dead = Details["dead"] == "true";
+            newCtx.Avatar.dead = Details["dead"].ToLower() == "true";
             return newCtx;
         }
     }
@@ -135,14 +135,8 @@ namespace Nekoyume.Move
     {
         public override Context Execute(Context ctx)
         {
-            var game = GameObject.Find("Game").gameObject;
-            var tables = game.GetComponent<Tables>();
-            var statsTable = tables.Stats;
-            var stats = statsTable[ctx.Avatar.level];
-
             var newCtx = CreateContext(avatar: ctx.Avatar);
-            newCtx.Avatar.hp = stats.Health;
-
+            newCtx.Avatar.dead = false;
             return newCtx;
         }
     }

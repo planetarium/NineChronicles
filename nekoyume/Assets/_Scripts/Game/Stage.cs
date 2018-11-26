@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using Nekoyume.Game.Character;
 using Nekoyume.Game.Entrance;
+using Nekoyume.Move;
 using UnityEngine;
 
 namespace Nekoyume.Game
@@ -33,7 +35,9 @@ namespace Nekoyume.Game
 
         private void OnPlayerDead()
         {
-            
+            var player = GetComponentInChildren<Player>();
+            MoveManager.Instance.HackAndSlash(player, Id);
+            player.gameObject.SetActive(false);
         }
 
         public void LoadBackground(string prefabName)
