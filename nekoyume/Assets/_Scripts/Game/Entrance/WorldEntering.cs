@@ -1,6 +1,7 @@
 using System.Collections;
 using Nekoyume.Move;
 using UnityEngine;
+using Avatar = Nekoyume.Model.Avatar;
 
 namespace Nekoyume.Game.Entrance
 {
@@ -14,10 +15,11 @@ namespace Nekoyume.Game.Entrance
         private IEnumerator Act()
         {
             var stage = GetComponent<Stage>();
-            int currentStage = MoveManager.Instance.Avatar.world_stage;
+            Avatar avatar = MoveManager.Instance.Avatar;
+            int currentStage = avatar.world_stage;
             Data.Table.Stage data;
             var tables = this.GetRootComponent<Data.Tables>();
-            if (tables.Stage.TryGetValue(currentStage, out data))
+            if (!avatar.dead && tables.Stage.TryGetValue(currentStage, out data))
             {
                 var blind = UI.Widget.Find<UI.Blind>();
                 yield return StartCoroutine(blind.FadeIn(1.0f, $"STAGE {currentStage}"));

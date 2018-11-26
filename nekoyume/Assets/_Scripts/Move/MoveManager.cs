@@ -5,7 +5,9 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
+using Nekoyume.Data.Table;
 using Nekoyume.Game.Character;
+using Nekoyume.UI;
 using Planetarium.Crypto.Extension;
 using Planetarium.Crypto.Keys;
 using UnityEngine;
@@ -192,13 +194,15 @@ namespace Nekoyume.Move
             return agent.Sync();
         }
 
-        public Sleep Sleep(DateTime? timestamp = null)
+        public Sleep Sleep(Stats statsData , DateTime? timestamp = null)
         {
             var sleep = new Sleep
             {
                 // TODO bencodex
                 Details = new Dictionary<string, string>
-                    { }
+                {
+                    ["hp"] = statsData.Health.ToString()
+                }
             };
             return ProcessMove(sleep, 0, timestamp);
         }

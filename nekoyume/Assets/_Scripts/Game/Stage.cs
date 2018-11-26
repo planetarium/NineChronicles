@@ -1,5 +1,6 @@
-using System.Collections.Generic;
+using Nekoyume.Game.Character;
 using Nekoyume.Game.Entrance;
+using Nekoyume.Move;
 using UnityEngine;
 
 namespace Nekoyume.Game
@@ -14,6 +15,7 @@ namespace Nekoyume.Game
             Event.OnRoomEnter.AddListener(OnRoomEnter);
             Event.OnStageEnter.AddListener(OnStageEnter);
             Event.OnPlayerDead.AddListener(OnPlayerDead);
+            Event.OnPlayerSleep.AddListener(OnPlayerSleep);
         }
 
         private void Start()
@@ -33,7 +35,9 @@ namespace Nekoyume.Game
 
         private void OnPlayerDead()
         {
-            
+            var player = GetComponentInChildren<Player>();
+            MoveManager.Instance.HackAndSlash(player, Id);
+            player.gameObject.SetActive(false);
         }
 
         public void LoadBackground(string prefabName)
@@ -54,6 +58,17 @@ namespace Nekoyume.Game
                 _background = Instantiate(prefab, transform);
                 _background.name = prefabName;
             }
+        }
+
+        private void OnPlayerSleep()
+        {
+            var tables = this.GetRootComponent<Data.Tables>();
+            Data.Table.Stats statsData;
+            if (tables.Stats.TryGetValue(MoveManager.Instance.Avatar.level, out statsData))
+            {
+                MoveManager.Instance.Sleep(statsData);
+            }
+            OnRoomEnter();
         }
     }
 }

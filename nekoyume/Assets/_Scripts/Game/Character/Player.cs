@@ -47,7 +47,6 @@ namespace Nekoyume.Game.Character
 
         override protected void OnDead()
         {
-            base.OnDead();
             Event.OnPlayerDead.Invoke();
         }
     }

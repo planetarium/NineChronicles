@@ -3,15 +3,12 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices.ComTypes;
-using Nekoyume.Data;
 using Nekoyume.Model;
 using Planetarium.Crypto.Extension;
 using Planetarium.Crypto.Keys;
 using Planetarium.SDK.Address;
 using Planetarium.SDK.Bencode;
 using Planetarium.SDK.Tx;
-using UnityEngine;
 using Avatar = Nekoyume.Model.Avatar;
 using Debug = System.Diagnostics.Debug;
 
@@ -124,7 +121,7 @@ namespace Nekoyume.Move
             var newCtx = CreateContext(avatar: ctx.Avatar);
             newCtx.Avatar.hp = int.Parse(Details["hp"]);
             newCtx.Avatar.world_stage = int.Parse(Details["stage"]);
-            newCtx.Avatar.dead = Details["dead"] == "true";
+            newCtx.Avatar.dead = Details["dead"].ToLower() == "true";
             return newCtx;
         }
     }
@@ -135,14 +132,13 @@ namespace Nekoyume.Move
     {
         public override Context Execute(Context ctx)
         {
-            var game = GameObject.Find("Game").gameObject;
-            var tables = game.GetComponent<Tables>();
-            var statsTable = tables.Stats;
-            var stats = statsTable[ctx.Avatar.level];
-
             var newCtx = CreateContext(avatar: ctx.Avatar);
-            newCtx.Avatar.hp = stats.Health;
-
+            newCtx.Avatar.dead = false;
+            string data;
+            int hp;
+            Details.TryGetValue("hp", out data);
+            int.TryParse(data, out hp);
+            newCtx.Avatar.hp = hp;
             return newCtx;
         }
     }
