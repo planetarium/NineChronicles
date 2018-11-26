@@ -1,5 +1,4 @@
 using BTAI;
-using Nekoyume.Data.Table;
 using UnityEngine;
 
 namespace Nekoyume.Game.Character
@@ -13,12 +12,18 @@ namespace Nekoyume.Game.Character
             _walkSpeed = -1.0f;
             Root = new Root();
             Root.OpenBranch(
-                BT.If(IsAlive).OpenBranch(
-                    BT.Selector().OpenBranch(
-                        BT.If(HasTargetInRange).OpenBranch(
-                            BT.Call(EnemyAttack)
-                        ),
-                        BT.Call(Walk)
+                BT.Selector().OpenBranch(
+                    BT.If(IsAlive).OpenBranch(
+                        BT.Selector().OpenBranch(
+                            BT.If(HasTargetInRange).OpenBranch(
+                                BT.Call(Attack)
+                            ),
+                            BT.Call(Walk)
+                        )
+                    ),
+                    BT.Sequence().OpenBranch(
+                        BT.Call(Die),
+                        BT.Terminate()
                     )
                 )
             );
@@ -32,20 +37,14 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        public void InitStats(Data.Table.Monster statsData)
+        public void InitStats(Data.Table.Monster statsData, int power)
         {
             HP = statsData.Health;
             ATK = statsData.Attack;
             DEF = statsData.Defense;
             RewardExp = statsData.RewardExp;
-        }
 
-        private void EnemyAttack()
-        {
-            foreach (var skill in _skills)
-            {
-                skill.Use();
-            }
+            Power = power;
         }
 
         override protected void OnDead()

@@ -1,9 +1,7 @@
+using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using BTAI;
-using Nekoyume.Move;
 using UnityEngine;
-using Time = UnityEngine.Time;
 
 
 namespace Nekoyume.Game.Character
@@ -37,20 +35,48 @@ namespace Nekoyume.Game.Character
             return !IsDead();
         }
 
-        protected bool CanWalk()
-        {
-            return true;
-        }
-
         protected virtual void Walk()
         {
             if (_anim != null)
             {
                 _anim.SetBool("Walk", true);
             }
+
             Vector2 position = transform.position;
             position.x += Time.deltaTime * _walkSpeed;
             transform.position = position;
+        }
+
+        protected void Attack()
+        {
+            foreach (var skill in _skills)
+            {
+                if (skill.Use())
+                {
+                    if (_anim != null)
+                    {
+                        _anim.SetTrigger("Attack");
+                        _anim.SetBool("Walk", false);
+                    }
+                }
+            }
+        }
+
+        protected void Die()
+        {
+            StartCoroutine(Dying());
+        }
+
+        protected IEnumerator Dying()
+        {
+            if (_anim != null)
+            {
+                _anim.SetTrigger("Die");
+            }
+
+            yield return new WaitForSeconds(1.0f);
+
+            OnDead();
         }
 
         private void Update()
@@ -79,14 +105,17 @@ namespace Nekoyume.Game.Character
         {
             HP -= dmg - DEF;
             Debug.Log($"{name} HP: {HP}");
-            if (IsDead())
-            {
-                OnDead();
-            }
         }
 
         protected virtual void OnDead()
         {
+            if (_anim != null)
+            {
+                _anim.ResetTrigger("Attack");
+                _anim.ResetTrigger("Die");
+                _anim.SetBool("Walk", false);
+            }
+
             gameObject.SetActive(false);
         }
     }

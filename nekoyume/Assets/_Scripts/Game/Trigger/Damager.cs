@@ -53,10 +53,10 @@ namespace Nekoyume.Game.Trigger
             }
         }
 
-        public void Set(string targetTag, int damage, float size, int targetCount)
+        public void Set(string ani, string targetTag, int damage, float size, int targetCount)
         {
             var anim = GetComponent<Util.SpriteAnimator>();
-            anim.Play("hit_01");
+            anim.Play(ani);
 
             _targetTag = targetTag;
             _damage = damage;

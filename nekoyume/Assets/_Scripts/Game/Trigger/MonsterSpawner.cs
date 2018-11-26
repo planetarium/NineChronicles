@@ -1,6 +1,4 @@
-using Nekoyume.Game.Character;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 
 namespace Nekoyume.Game.Trigger
@@ -71,13 +69,10 @@ namespace Nekoyume.Game.Trigger
             int monsterCount = 2;
             for (int i = 0; i < monsterCount; ++i)
             {
-                GameObject go = factory.Create("1001");
-                go.transform.position = new Vector2(
+                Vector2 pos = new Vector2(
                     player.transform.position.x + 5.0f + Random.Range(-0.1f, 0.1f),
                     Random.Range(-0.7f, -1.3f));
-
-                var enemy = go.GetComponent<Enemy>();
-                enemy.Power = _monsterPower;
+                GameObject go = factory.Create("1001", pos, _monsterPower);
             }
         }
     }

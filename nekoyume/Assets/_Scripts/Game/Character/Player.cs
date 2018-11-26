@@ -1,4 +1,3 @@
-using System.Linq;
 using BTAI;
 using UnityEngine;
 
@@ -13,12 +12,18 @@ namespace Nekoyume.Game.Character
             _walkSpeed = 1.0f;
             Root = new Root();
             Root.OpenBranch(
-                BT.If(IsAlive).OpenBranch(
-                    BT.Selector().OpenBranch(
-                        BT.If(HasTargetInRange).OpenBranch(
-                            BT.Call(PlayerAttack)
-                        ),
-                        BT.Call(Walk)
+                BT.Selector().OpenBranch(
+                    BT.If(IsAlive).OpenBranch(
+                        BT.Selector().OpenBranch(
+                            BT.If(HasTargetInRange).OpenBranch(
+                                BT.Call(Attack)
+                            ),
+                            BT.Call(Walk)
+                        )
+                    ),
+                    BT.Sequence().OpenBranch(
+                        BT.Call(Die),
+                        BT.Terminate()
                     )
                 )
             );
@@ -38,18 +43,6 @@ namespace Nekoyume.Game.Character
             ATK = statsData.Attack;
             DEF = statsData.Defense;
             MP = statsData.Mana;
-        }
-
-        public void PlayerAttack()
-        {
-            foreach (var skill in _skills)
-            {
-                if (skill.Use())
-                {
-                    _anim.SetBool("Walk", false);
-                    _anim.SetTrigger("Attack");
-                }
-            }
         }
 
         override protected void OnDead()

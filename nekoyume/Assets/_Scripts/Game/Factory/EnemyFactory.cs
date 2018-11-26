@@ -6,7 +6,7 @@ namespace Nekoyume.Game.Factory
 {
     public class EnemyFactory : MonoBehaviour
     {
-        public GameObject Create(string monsterId)
+        public GameObject Create(string monsterId, Vector2 position, int power)
         {
             Data.Tables tables = this.GetRootComponent<Data.Tables>();
             Data.Table.Monster monsterData;
@@ -14,12 +14,12 @@ namespace Nekoyume.Game.Factory
                 return null;
 
             var objectPool = GetComponent<Util.ObjectPool>();
-            var enemy = objectPool.Get<Character.Enemy>();
+            var enemy = objectPool.Get<Character.Enemy>(position);
             if (enemy == null)
                 return null;
 
             enemy.InitAI();
-            enemy.InitStats(monsterData);
+            enemy.InitStats(monsterData, power);
 
             // sprite
             var render = enemy.GetComponent<SpriteRenderer>();
@@ -27,9 +27,7 @@ namespace Nekoyume.Game.Factory
             if (sprite == null)
                 sprite = Resources.Load<Sprite>("images/pet");
             render.sprite = sprite;
-            Material mat = render.material;
-            Sequence colorseq = DOTween.Sequence();
-            colorseq.Append(mat.DOColor(Color.white, 0.0f));
+            render.sortingOrder = Mathf.FloorToInt(-position.y * 10.0f);
 
             return enemy.gameObject;
         }
