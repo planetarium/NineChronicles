@@ -117,14 +117,14 @@ namespace Nekoyume.Move
     {
         public override Context Execute(Context ctx)
         {
-            //FIXME RoomEntering 이 호출됐을때 아바타 hp가 0이라 오류가 발생함
-//            if (ctx.Avatar.dead)
-//            {
-//                throw new InvalidMoveException();
-//            }
+            if (ctx.Avatar.dead)
+            {
+                throw new InvalidMoveException();
+            }
             var newCtx = CreateContext(avatar: ctx.Avatar);
             newCtx.Avatar.hp = int.Parse(Details["hp"]);
             newCtx.Avatar.world_stage = int.Parse(Details["stage"]);
+            newCtx.Avatar.dead = Details["dead"] == "true";
             return newCtx;
         }
     }

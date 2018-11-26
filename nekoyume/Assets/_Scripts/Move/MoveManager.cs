@@ -175,7 +175,8 @@ namespace Nekoyume.Move
             var details = new Dictionary<string, string>
             {
                 ["hp"] = player.HP.ToString(),
-                ["stage"] = stage.ToString()
+                ["stage"] = stage.ToString(),
+                ["dead"] = player.IsDead().ToString()
             };
 
             var has = new HackAndSlash

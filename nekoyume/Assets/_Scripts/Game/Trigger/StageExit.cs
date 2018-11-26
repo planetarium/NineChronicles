@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using DG.Tweening;
 using Nekoyume.Game.Character;
 using Nekoyume.Move;
 using UnityEngine;
