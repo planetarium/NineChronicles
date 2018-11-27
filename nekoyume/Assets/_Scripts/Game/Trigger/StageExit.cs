@@ -20,6 +20,9 @@ namespace Nekoyume.Game.Trigger
 
         private IEnumerator WaitStageExit()
         {
+            var cam = Camera.main.gameObject.GetComponent<ActionCamera>();
+            cam.target = null;
+
             yield return new WaitForSeconds(1.0f);
             Event.OnStageEnter.Invoke();
 

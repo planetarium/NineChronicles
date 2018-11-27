@@ -12,6 +12,8 @@ namespace Nekoyume.Game.Character
         public void InitAI()
         {
             _walkSpeed = -1.0f;
+            _hpBarOffset.Set(-0.0f, -0.11f, 0.0f);
+
             Root = new Root();
             Root.OpenBranch(
                 BT.Selector().OpenBranch(
@@ -47,6 +49,8 @@ namespace Nekoyume.Game.Character
             RewardExp = statsData.RewardExp;
 
             Power = power;
+
+            _hpMax = HP;
         }
 
         public override void OnDamage(int dmg)
@@ -66,7 +70,7 @@ namespace Nekoyume.Game.Character
         override protected void OnDead()
         {
             base.OnDead();
-            Event.OnEnemyDead.Invoke();
+            Event.OnEnemyDead.Invoke(this);
         }
     }
 }

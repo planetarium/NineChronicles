@@ -1,4 +1,5 @@
 using System.Linq;
+using Nekoyume.Game.Character;
 using UnityEngine;
 
 
@@ -31,7 +32,7 @@ namespace Nekoyume.Game.Trigger
             _stage = GetComponentInParent<Stage>();
         }
 
-        private void OnEnemyDead()
+        private void OnEnemyDead(Enemy _)
         {
             if (IsClearWave())
             {

@@ -30,6 +30,7 @@ namespace Nekoyume.Game.Entrance
             var playerFactory = GetComponent<Factory.PlayerFactory>();
             GameObject player = playerFactory.Create(false);
             player.transform.position = new Vector2(0.0f, -0.7f);
+            player.GetComponent<Animator>()?.SetTrigger("Idle");
 
             var cam = Camera.main.gameObject.GetComponent<ActionCamera>();
             var camPos = cam.transform.position;
