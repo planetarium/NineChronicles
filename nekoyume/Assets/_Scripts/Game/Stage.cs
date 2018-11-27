@@ -37,7 +37,6 @@ namespace Nekoyume.Game
         {
             var player = GetComponentInChildren<Player>();
             MoveManager.Instance.HackAndSlash(player, Id);
-            player.gameObject.SetActive(false);
         }
 
         public void LoadBackground(string prefabName)

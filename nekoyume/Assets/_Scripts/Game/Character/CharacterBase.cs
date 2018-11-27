@@ -16,7 +16,10 @@ namespace Nekoyume.Game.Character
         public int Power = 100;
 
         protected float _walkSpeed = 0.0f;
+        protected int _hpMax = 0;
         protected Animator _anim = null;
+        protected UI.ProgressBar _hpBar = null;
+        public Vector3 _hpBarOffset = new Vector3();
 
         protected List<Skill.SkillBase> _skills = new List<Skill.SkillBase>();
 
@@ -82,6 +85,11 @@ namespace Nekoyume.Game.Character
         private void Update()
         {
             Root?.Tick();
+
+            if (_hpBar != null)
+            {
+                _hpBar.UpdatePosition(gameObject, _hpBarOffset);
+            }
         }
 
         public int CalcAtk()
@@ -101,10 +109,17 @@ namespace Nekoyume.Game.Character
             return false;
         }
 
-        public void OnDamage(int dmg)
+        public virtual void OnDamage(int dmg)
         {
             HP -= dmg - DEF;
             Debug.Log($"{name} HP: {HP}");
+
+            if (_hpBar == null)
+            {
+                _hpBar = UI.Widget.Create<UI.ProgressBar>(true);
+            }
+            _hpBar.SetText($"{HP} / {_hpMax}");
+            _hpBar.SetValue((float)HP / (float)_hpMax);
         }
 
         protected virtual void OnDead()
@@ -114,6 +129,12 @@ namespace Nekoyume.Game.Character
                 _anim.ResetTrigger("Attack");
                 _anim.ResetTrigger("Die");
                 _anim.SetBool("Walk", false);
+            }
+
+            if (_hpBar != null)
+            {
+                Destroy(_hpBar.gameObject);
+                _hpBar = null;
             }
 
             gameObject.SetActive(false);

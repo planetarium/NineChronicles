@@ -1,5 +1,7 @@
 using BTAI;
+using DG.Tweening;
 using UnityEngine;
+
 
 namespace Nekoyume.Game.Character
 {
@@ -10,6 +12,8 @@ namespace Nekoyume.Game.Character
         public void InitAI()
         {
             _walkSpeed = -1.0f;
+            _hpBarOffset.Set(-0.0f, -0.11f, 0.0f);
+
             Root = new Root();
             Root.OpenBranch(
                 BT.Selector().OpenBranch(
@@ -45,6 +49,22 @@ namespace Nekoyume.Game.Character
             RewardExp = statsData.RewardExp;
 
             Power = power;
+
+            _hpMax = HP;
+        }
+
+        public override void OnDamage(int dmg)
+        {
+            base.OnDamage(dmg);
+
+            SpriteRenderer renderer = gameObject.GetComponent<SpriteRenderer>();
+            if (renderer != null)
+            {
+                Material mat = renderer.material;
+                DG.Tweening.Sequence colorseq = DOTween.Sequence();
+                colorseq.Append(mat.DOColor(Color.red, 0.1f));
+                colorseq.Append(mat.DOColor(Color.white, 0.1f));
+            }
         }
 
         override protected void OnDead()

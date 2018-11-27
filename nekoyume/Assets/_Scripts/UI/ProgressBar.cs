@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
-    public class ProgressBar : MonoBehaviour
+    public class ProgressBar : HUD
     {
         public Sprite greenBar;
         public Sprite redBar;
@@ -19,18 +19,15 @@ namespace Nekoyume.UI
 
         public void UpdatePosition(GameObject target, Vector3 offset = new Vector3())
         {
-            SpriteRenderer renderer = target.GetComponent<SpriteRenderer>();
-            Vector3 targetPosition = target.transform.position
-            + new Vector3(0.0f, renderer.sprite.rect.size.y / renderer.sprite.pixelsPerUnit)
-            + offset;
+            Vector3 targetPosition = target.transform.position + offset;
 
             // https://answers.unity.com/questions/799616/unity-46-beta-19-how-to-convert-from-world-space-t.html
             float screenHeight = Screen.height * 0.5f;
             RectTransform canvasRect = transform.root.gameObject.GetComponent<RectTransform>();
             Vector2 viewportPosition = Camera.main.WorldToViewportPoint(targetPosition);
             Vector2 canvasPosition = new Vector2(
-                ((viewportPosition.x * canvasRect.sizeDelta.x) - (canvasRect.sizeDelta.x * 0.5f)),
-                ((viewportPosition.y * canvasRect.sizeDelta.y) - (canvasRect.sizeDelta.y * 0.5f)));
+                ((viewportPosition.x * canvasRect.sizeDelta.x)),
+                ((viewportPosition.y * canvasRect.sizeDelta.y)));
             if (canvasPosition.y > screenHeight)
             {
                 float margin = 50.0f;

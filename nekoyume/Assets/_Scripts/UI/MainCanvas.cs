@@ -8,6 +8,8 @@ namespace Nekoyume.UI
     {
         private void Awake()
         {
+            GameObject hudContainer = new GameObject("HUD");
+            hudContainer.transform.parent = transform;
             GameObject widgetContainer = new GameObject("Widget");
             widgetContainer.transform.parent = transform;
             GameObject popupContainer = new GameObject("Popup");

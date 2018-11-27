@@ -73,7 +73,7 @@ namespace Nekoyume.Game.Trigger
                 Vector2 pos = new Vector2(
                     player.transform.position.x + 5.0f + Random.Range(-0.1f, 0.1f),
                     Random.Range(-0.7f, -1.3f));
-                GameObject go = factory.Create("1001", pos, _monsterPower);
+                factory.Create("1001", pos, _monsterPower);
             }
         }
     }
