@@ -50,7 +50,7 @@ namespace Nekoyume.Game.Character
         override protected void OnDead()
         {
             base.OnDead();
-            Event.OnEnemyDead.Invoke();
+            Event.OnEnemyDead.Invoke(this);
         }
     }
 }

@@ -1,3 +1,4 @@
+using Nekoyume.Game.Character;
 using UnityEngine.Events;
 
 namespace Nekoyume.Game
@@ -12,7 +13,11 @@ namespace Nekoyume.Game
         public static readonly UnityEvent OnStageStart = new UnityEvent();
 
         public static readonly UnityEvent OnPlayerDead = new UnityEvent();
-        public static readonly UnityEvent OnEnemyDead = new UnityEvent();
+
+        public class EnemyDead : UnityEvent<Enemy>
+        {
+        }
+        public static readonly EnemyDead OnEnemyDead = new EnemyDead();
         public static readonly UnityEvent OnStageClear = new UnityEvent();
         public static readonly UnityEvent OnPlayerSleep = new UnityEvent();
     }
