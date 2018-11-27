@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Nekoyume.Data.Table;
 using UnityEngine;
 
 
@@ -10,6 +11,7 @@ namespace Nekoyume.Game.Trigger
         private Stage _stage = null;
         private bool _wait = false;
         private string _targetTag = "";
+        private AttackType _attackType = AttackType.Light;
         private int _damage = 0;
         private float _size = 0.0f;
         private int _targetCount = 0;
@@ -51,7 +53,7 @@ namespace Nekoyume.Game.Trigger
                     || transform.position.x + halfSize < character.transform.position.x)
                     continue;
 
-                character.OnDamage(_damage);
+                character.OnDamage(_attackType, _damage);
 
                 if (_knockBack != 0.0f)
                 {
@@ -65,11 +67,12 @@ namespace Nekoyume.Game.Trigger
             }
         }
 
-        public void Set(string ani, string targetTag, int damage, float size, int targetCount, float knockBack)
+        public void Set(string ani, string targetTag, AttackType attackType, int damage, float size, int targetCount, float knockBack)
         {
             _wait = true;
 
             _targetTag = targetTag;
+            _attackType = attackType;
             _damage = damage;
             _size = size;
             _targetCount = targetCount;

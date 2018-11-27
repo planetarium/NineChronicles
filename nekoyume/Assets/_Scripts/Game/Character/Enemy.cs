@@ -55,9 +55,9 @@ namespace Nekoyume.Game.Character
             _hpMax = HP;
         }
 
-        public override void OnDamage(int dmg)
+        public override void OnDamage(AttackType attackType, int dmg)
         {
-            base.OnDamage(dmg);
+            base.OnDamage(attackType, dmg);
 
             SpriteRenderer renderer = gameObject.GetComponent<SpriteRenderer>();
             if (renderer != null)
