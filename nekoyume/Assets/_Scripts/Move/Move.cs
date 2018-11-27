@@ -122,6 +122,8 @@ namespace Nekoyume.Move
             newCtx.Avatar.hp = int.Parse(Details["hp"]);
             newCtx.Avatar.world_stage = int.Parse(Details["stage"]);
             newCtx.Avatar.dead = Details["dead"].ToLower() == "true";
+            newCtx.Avatar.exp = int.Parse(Details["exp"]);
+            newCtx.Avatar.level = int.Parse(Details["level"]);
             return newCtx;
         }
     }
