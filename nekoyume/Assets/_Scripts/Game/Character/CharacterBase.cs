@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using BTAI;
+using Nekoyume.Data.Table;
+using Nekoyume.Game.Trigger;
 using UnityEngine;
 
 
@@ -14,6 +16,8 @@ namespace Nekoyume.Game.Character
         public int DEF = 0;
 
         public int Power = 100;
+
+        public virtual WeightType WeightType { get; protected set; } = WeightType.Small;
 
         protected float _walkSpeed = 0.0f;
         protected int _hpMax = 0;

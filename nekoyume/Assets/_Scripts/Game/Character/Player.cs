@@ -1,5 +1,7 @@
+using System;
 using BTAI;
 using Nekoyume.Data;
+using Nekoyume.Data.Table;
 using Nekoyume.Model;
 
 namespace Nekoyume.Game.Character
@@ -8,6 +10,12 @@ namespace Nekoyume.Game.Character
     {
         public int MP = 0;
         public int EXP = 0;
+
+        public override WeightType WeightType
+        {
+            get { return WeightType.Small; }
+            protected set { throw new NotImplementedException(); }
+        }
 
         private void Awake()
         {
