@@ -1,4 +1,4 @@
-id,attack_type,weight_type,attack,defense,health,resistance,skill_0,skill_1,skill_2,skill_3,reward_exp
-1001,0,0,5,2,10,,monster_attack,,,,1
-1002,0,1,6,3,13,,monster_attack,,,,1
-1003,1,2,8,6,20,,monster_attack,,,,2
+id,weight_type,attack,defense,health,resistance,skill_0,skill_1,skill_2,skill_3,reward_exp
+1001,0,5,2,10,,monster_attack,,,,1
+1002,1,6,3,13,,monster_attack,,,,1
+1003,2,8,6,20,,monster_attack,,,,2
