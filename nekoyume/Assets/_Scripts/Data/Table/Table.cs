@@ -59,7 +59,7 @@ namespace Nekoyume.Data.Table
                 {
                     string value = arr[index];
                     Type fieldType = fieldInfo.GetValue(row).GetType();
-                    if (fieldType == typeof(int))
+                    if (fieldType == typeof(int) || fieldType.IsEnum)
                     {
                         fieldInfo.SetValue(row, int.Parse(value));
                     }
