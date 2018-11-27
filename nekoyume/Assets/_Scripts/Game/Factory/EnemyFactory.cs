@@ -6,7 +6,7 @@ namespace Nekoyume.Game.Factory
 {
     public class EnemyFactory : MonoBehaviour
     {
-        public GameObject Create(string monsterId, Vector2 position, int power)
+        public GameObject Create(int monsterId, Vector2 position, int power)
         {
             Data.Tables tables = this.GetRootComponent<Data.Tables>();
             Data.Table.Monster monsterData;

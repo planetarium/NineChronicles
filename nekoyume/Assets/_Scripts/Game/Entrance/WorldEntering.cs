@@ -41,7 +41,7 @@ namespace Nekoyume.Game.Entrance
 
                 var spawners = GetComponentsInChildren<Trigger.MonsterSpawner>();
                 foreach (var spawner in spawners)
-                    spawner.SetData(data.MonsterPower);
+                    spawner.SetData(currentStage, data.MonsterPower);
 
                 yield return new WaitForSeconds(2.0f);
                 yield return StartCoroutine(blind.FadeOut(1.0f));
