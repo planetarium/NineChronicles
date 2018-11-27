@@ -54,7 +54,7 @@ namespace Nekoyume.Game.Character
             MP = statsData.Mana;
             EXP = avatar.exp;
 
-            _hpMax = HP;
+            _hpMax = statsData.Health;
         }
 
         protected override void OnDead()
