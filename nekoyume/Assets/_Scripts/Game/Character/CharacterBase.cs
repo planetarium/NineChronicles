@@ -19,13 +19,22 @@ namespace Nekoyume.Game.Character
         protected int _hpMax = 0;
         protected Animator _anim = null;
         protected UI.ProgressBar _hpBar = null;
-        public Vector3 _hpBarOffset = new Vector3();
+        protected Vector3 _hpBarOffset = new Vector3();
 
         protected List<Skill.SkillBase> _skills = new List<Skill.SkillBase>();
 
-        private void Awake()
+        private void Start()
         {
             _anim = GetComponent<Animator>();
+        }
+
+        private void OnDisable()
+        {
+            if (_hpBar != null)
+            {
+                Destroy(_hpBar.gameObject);
+                _hpBar = null;
+            }
         }
 
         public bool IsDead()
@@ -129,12 +138,6 @@ namespace Nekoyume.Game.Character
                 _anim.ResetTrigger("Attack");
                 _anim.ResetTrigger("Die");
                 _anim.SetBool("Walk", false);
-            }
-
-            if (_hpBar != null)
-            {
-                Destroy(_hpBar.gameObject);
-                _hpBar = null;
             }
 
             gameObject.SetActive(false);
