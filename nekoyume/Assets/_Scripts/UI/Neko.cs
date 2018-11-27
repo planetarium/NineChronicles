@@ -39,17 +39,17 @@ namespace Nekoyume
             _updateTime += Time.deltaTime;
         }
 
-        override public void Show()
+        public override void Show()
         {
             _modal.gameObject.SetActive(true);
         }
 
-        override public void Close()
+        public override void Close()
         {
             _modal.gameObject.SetActive(false);
         }
 
-        override public bool IsActive()
+        public override bool IsActive()
         {
             return _modal.gameObject.activeSelf;
         }
@@ -61,13 +61,22 @@ namespace Nekoyume
 #endif
         }
 
-        public void DeletePrivateKey()
+        public void CleanUpAvatar()
         {
-            const string prefsKey = "private_key";
-            string privateKey = PlayerPrefs.GetString(prefsKey, "");
-            PlayerPrefs.SetString(prefsKey, "");
-            PlayerPrefs.DeleteKey(prefsKey);
-            Neko.Log($"DeletePrivateKey: {privateKey}");
+            string[] keys = new []
+            {
+                "private_key",
+                "avatar",
+                "last_block_id"
+            };
+            foreach (var key in keys)
+            {
+                string k = PlayerPrefs.GetString(key, "");
+                PlayerPrefs.DeleteKey(key);
+                Neko.Log($"Delete {key}: {k}");
+            }
+            PlayerPrefs.Save();
+
         }
     }
 }

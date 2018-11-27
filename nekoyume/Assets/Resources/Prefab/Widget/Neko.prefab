@@ -127,7 +127,7 @@ GameObject:
   - component: {fileID: 114925402852407362}
   - component: {fileID: 114403705177513886}
   m_Layer: 5
-  m_Name: DeletePrivateKey
+  m_Name: CleanUpAvatar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -332,7 +332,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: DeletePrivateKey
+  m_Text: CleanUpAvatar
 --- !u!114 &114562412223567634
 MonoBehaviour:
   m_ObjectHideFlags: 1
