@@ -28,8 +28,7 @@ namespace Nekoyume.Game.Trigger
 
             var stage = GetComponentInParent<Stage>();
             var player = stage.GetComponentInChildren<Player>();
-            var id = 1;
-            if (stage.Id < 3) id = stage.Id + 1;
+            var id = stage.Id + 1;
             MoveManager.Instance.HackAndSlash(player, id);
         }
     }
