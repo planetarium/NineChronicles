@@ -30,6 +30,11 @@ namespace Nekoyume.UI
                     go.transform.SetParent(CanvasObj.transform.Find("Popup"));
                     go.SetActive(activate);
                 }
+                else if (twidget is HUD)
+                {
+                    go.transform.SetParent(CanvasObj.transform.Find("HUD"));
+                    go.SetActive(activate);
+                }
                 else
                 {
                     if (Dict.ContainsKey(t))
@@ -97,6 +102,14 @@ namespace Nekoyume.UI
     }
 
     public class Popup : Widget
+    {
+        override public void Close()
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    public class HUD : Widget
     {
         override public void Close()
         {

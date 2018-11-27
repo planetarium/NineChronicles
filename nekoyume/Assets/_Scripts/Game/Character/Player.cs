@@ -9,7 +9,9 @@ namespace Nekoyume.Game.Character
 
         public void InitAI()
         {
-            _walkSpeed = 1.0f;
+            _walkSpeed = 0.6f;
+            _hpBarOffset.Set(-0.22f, -0.61f, 0.0f);
+
             Root = new Root();
             Root.OpenBranch(
                 BT.Selector().OpenBranch(
@@ -43,6 +45,8 @@ namespace Nekoyume.Game.Character
             ATK = statsData.Attack;
             DEF = statsData.Defense;
             MP = statsData.Mana;
+
+            _hpMax = HP;
         }
 
         override protected void OnDead()
