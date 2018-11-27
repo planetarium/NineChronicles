@@ -47,7 +47,6 @@ namespace Nekoyume.Game.Character
         public void InitStats(Data.Table.Stats statsData, Avatar avatar)
         {
             HP = (!avatar.dead && avatar.hp > 0) ? avatar.hp : statsData.Health;
-            HP = statsData.Health;
             ATK = statsData.Attack;
             DEF = statsData.Defense;
             MP = statsData.Mana;
