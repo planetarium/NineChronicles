@@ -178,7 +178,9 @@ namespace Nekoyume.Move
             {
                 ["hp"] = player.HP.ToString(),
                 ["stage"] = stage.ToString(),
-                ["dead"] = player.IsDead().ToString()
+                ["dead"] = player.IsDead().ToString(),
+                ["exp"] = player.EXP.ToString(),
+                ["level"] = player.GetLevel()
             };
 
             var has = new HackAndSlash

@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEngine;
 using Nekoyume.Data.Table;
 
@@ -38,6 +39,14 @@ namespace Nekoyume.Data
             {
                 table.Load(file.text);
             }
+        }
+
+        public int GetLevel(int exp)
+        {
+            var q = Stats.Select(row => row.Value);
+            var enumerable = q as Stats[] ?? q.ToArray();
+            Stats data = enumerable.LastOrDefault(row => row.Exp <= exp) ?? Stats[1];
+            return data.Id;
         }
     }
 }
