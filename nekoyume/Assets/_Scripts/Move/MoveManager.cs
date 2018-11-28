@@ -209,18 +209,6 @@ namespace Nekoyume.Move
             return ProcessMove(sleep, 0, timestamp);
         }
 
-        public FirstClass FirstClass(string class_, DateTime? timestamp = null)
-        {
-            var firstClass = new FirstClass
-            {
-                Details = new Dictionary<string, string>
-                {
-                    {"class", class_}
-                }
-            };
-
-            return ProcessMove(firstClass, 0, timestamp);
-        }
 
         public CreateNovice CreateNovice(Dictionary<string, string> details, DateTime? timestamp = null)
         {
