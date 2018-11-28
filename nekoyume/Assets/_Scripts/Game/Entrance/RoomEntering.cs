@@ -1,5 +1,4 @@
 using System.Collections;
-using Nekoyume.UI;
 using UnityEngine;
 
 namespace Nekoyume.Game.Entrance
@@ -14,10 +13,10 @@ namespace Nekoyume.Game.Entrance
         private IEnumerator Act()
         {
             var stage = GetComponent<Stage>();
-            var blind = Widget.Find<Blind>();
+            var blind = UI.Widget.Find<UI.Blind>();
             yield return StartCoroutine(blind.FadeIn(1.0f, "ROOM"));
 
-            Widget.Find<UI.Move>().ShowRoom();
+            UI.Widget.Find<UI.Move>().ShowRoom();
 
             stage.Id = 0;
             stage.LoadBackground("room");
@@ -28,6 +27,8 @@ namespace Nekoyume.Game.Entrance
             var playerFactory = GetComponent<Factory.PlayerFactory>();
             GameObject player = playerFactory.Create(false);
             player.transform.position = new Vector2(0.0f, -0.7f);
+
+            UI.Widget.Find<UI.Status>().UpdatePlayer(player);
 
             var cam = Camera.main.gameObject.GetComponent<ActionCamera>();
             var camPos = cam.transform.position;

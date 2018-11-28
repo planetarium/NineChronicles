@@ -19,6 +19,7 @@ namespace Nekoyume.UI
         private void Start()
         {
             Widget.Create<Login>(true);
+            Widget.Create<Status>();
             Widget.Create<Move>();
             Widget.Create<Blind>();
 
