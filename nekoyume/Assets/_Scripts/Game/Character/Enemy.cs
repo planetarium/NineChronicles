@@ -52,7 +52,7 @@ namespace Nekoyume.Game.Character
                 if (string.IsNullOrEmpty(skillName)) continue;
                 if (attack.Init(skillName))
                 {
-                      _skills.Add(attack);
+                    _skills.Add(attack);
                 }
             }
         }
@@ -72,7 +72,18 @@ namespace Nekoyume.Game.Character
 
         public override void OnDamage(AttackType attackType, int dmg)
         {
-            base.OnDamage(attackType, dmg);
+            int clacDmg = CalcDamage(attackType, dmg);
+            if (clacDmg <= 0)
+                return;
+
+            HP -= clacDmg;
+
+            UI.PopupText.Show(
+                transform.TransformPoint(0.1f, 1.0f, 0.0f),
+                new Vector3(1.0f, 2.0f, 0.0f),
+                clacDmg.ToString(),
+                Color.yellow,
+                new Vector3(0.01f, -0.1f, 0.0f));
 
             SpriteRenderer renderer = gameObject.GetComponent<SpriteRenderer>();
             if (renderer != null)
@@ -82,6 +93,8 @@ namespace Nekoyume.Game.Character
                 colorseq.Append(mat.DOColor(Color.red, 0.1f));
                 colorseq.Append(mat.DOColor(Color.white, 0.1f));
             }
+
+            UpdateHpBar();
         }
 
         override protected void OnDead()

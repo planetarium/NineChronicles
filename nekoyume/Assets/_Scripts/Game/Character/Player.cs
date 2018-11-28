@@ -3,6 +3,8 @@ using BTAI;
 using Nekoyume.Data;
 using Nekoyume.Data.Table;
 using Nekoyume.Model;
+using UnityEngine;
+
 
 namespace Nekoyume.Game.Character
 {
@@ -60,7 +62,7 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        public void InitStats(Avatar avatar)
+        public void InitStats(Model.Avatar avatar)
         {
             EXP = avatar.exp;
             Level = avatar.level;
@@ -71,6 +73,23 @@ namespace Nekoyume.Game.Character
                 HP = avatar.hp;
         }
 
+        public override void OnDamage(AttackType attackType, int dmg)
+        {
+            int clacDmg = CalcDamage(attackType, dmg);
+            if (clacDmg <= 0)
+                return;
+
+            HP -= clacDmg;
+
+            UI.PopupText.Show(
+                transform.TransformPoint(UnityEngine.Random.Range(-0.6f, -0.4f), 1.0f, 0.0f),
+                new Vector3(0.0f, 2.0f, 0.0f),
+                clacDmg.ToString(),
+                Color.red,
+                new Vector3(-0.01f, -0.1f, 0.0f));
+
+            UpdateHpBar();
+        }
         protected override void OnDead()
         {
             Event.OnPlayerDead.Invoke();
@@ -109,7 +128,12 @@ namespace Nekoyume.Game.Character
 
             EXP -= EXPMax;
             Level++;
+
+            UI.PopupText.Show(transform.TransformPoint(-0.6f, 1.0f, 0.0f), new Vector3(0.0f, 2.0f, 0.0f), "LEVEL UP");
+
             CalcStats();
+
+            UpdateHpBar();
         }
     }
 }

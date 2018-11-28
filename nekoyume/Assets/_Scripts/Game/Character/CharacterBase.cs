@@ -114,6 +114,16 @@ namespace Nekoyume.Game.Character
             return Mathf.FloorToInt((ATK + UnityEngine.Random.Range(-r, r)) * (Power * 0.01f));
         }
 
+        public void UpdateHpBar()
+        {
+            if (_hpBar == null)
+            {
+                _hpBar = UI.Widget.Create<UI.ProgressBar>(true);
+            }
+            _hpBar.SetText($"{HP} / {_hpMax}");
+            _hpBar.SetValue((float)HP / (float)_hpMax);
+        }
+
         protected bool HasTargetInRange()
         {
             foreach (var skill in _skills)
@@ -147,7 +157,7 @@ namespace Nekoyume.Game.Character
             return factor;
         }
 
-        private int CalcDamage(AttackType attackType, int dmg)
+        protected int CalcDamage(AttackType attackType, int dmg)
         {
             const float attackDamageFactor = 0.5f;
             const float defenseDamageFactor = 0.25f;
@@ -159,14 +169,13 @@ namespace Nekoyume.Game.Character
 
         public virtual void OnDamage(AttackType attackType, int dmg)
         {
-            HP -= CalcDamage(attackType, dmg);
+            int clacDmg = CalcDamage(attackType, dmg);
+            if (clacDmg <= 0)
+                return;
 
-            if (_hpBar == null)
-            {
-                _hpBar = UI.Widget.Create<UI.ProgressBar>(true);
-            }
-            _hpBar.SetText($"{HP} / {_hpMax}");
-            _hpBar.SetValue((float)HP / (float)_hpMax);
+            HP -= clacDmg;
+
+            UpdateHpBar();
         }
 
         protected virtual void OnDead()
