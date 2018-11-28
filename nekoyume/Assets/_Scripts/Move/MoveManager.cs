@@ -7,7 +7,6 @@ using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Character;
-using Nekoyume.UI;
 using Planetarium.Crypto.Extension;
 using Planetarium.Crypto.Keys;
 using UnityEngine;
