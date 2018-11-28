@@ -17,7 +17,7 @@ namespace Nekoyume.Move
     internal class Response
     {
         public ResultCode result = ResultCode.Error;
-        public List<MoveBase> moves;
+        public List<MoveBase> moves = null;
     }
 
     public class Agent
