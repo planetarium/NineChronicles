@@ -1,3 +1,4 @@
+using System.Collections;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Entrance;
 using Nekoyume.Move;
@@ -19,9 +20,14 @@ namespace Nekoyume.Game
             Event.OnPlayerSleep.AddListener(OnPlayerSleep);
         }
 
-        private void Start()
+        private IEnumerator Start()
         {
             LoadBackground("nest");
+
+            yield return new WaitForEndOfFrame();
+            var playerFactory = GetComponent<Factory.PlayerFactory>();
+            GameObject player = playerFactory.Create(false);
+            player.transform.position = new Vector2(-0.8f, 0.46f);
         }
 
         private void OnRoomEnter()
