@@ -17,20 +17,20 @@ namespace Nekoyume.Move
     internal class Response
     {
         public ResultCode result = ResultCode.Error;
-        public List<Move> moves;
+        public List<MoveBase> moves;
     }
 
     public class Agent
     {
-        public event EventHandler<Move> DidReceiveAction;
+        public event EventHandler<MoveBase> DidReceiveAction;
         private readonly string apiUrl;
         private readonly PrivateKey privateKey;
         private readonly float interval;
         private readonly OrderedDictionary moves;
         public byte[] UserAddress => privateKey.ToAddress();
-        private readonly List<Move> requestedMoves;
+        private readonly List<MoveBase> requestedMoves;
 
-        public delegate void MoveFetched(IEnumerable<Move> moves);
+        public delegate void MoveFetched(IEnumerable<MoveBase> moves);
 
         private long? lastBlockOffset;
 
@@ -47,24 +47,24 @@ namespace Nekoyume.Move
             this.privateKey = privateKey;
             this.interval = interval;
             this.moves = new OrderedDictionary();
-            this.requestedMoves = new List<Move>();
+            this.requestedMoves = new List<MoveBase>();
             this.lastBlockOffset = lastBlockOffset;
         }
 
-        public void Send(Move move)
+        public void Send(MoveBase move)
         {
             move.Sign(privateKey);
             requestedMoves.Add(move);
         }
 
-        public IEnumerable<Move> Moves => moves.Values.Cast<Move>();
+        public IEnumerable<MoveBase> Moves => moves.Values.Cast<MoveBase>();
 
         public IEnumerator Sync()
         {
             while (true)
             {
                 yield return new WaitForSeconds(interval);
-                var chunks = new List<Move>(requestedMoves);
+                var chunks = new List<MoveBase>(requestedMoves);
                 requestedMoves.Clear();
 
                 foreach (var m in chunks)
@@ -72,7 +72,7 @@ namespace Nekoyume.Move
                     yield return SendMove(m);
                 }
 
-                yield return FetchMove(delegate(IEnumerable<Move> fetched)
+                yield return FetchMove(delegate(IEnumerable<MoveBase> fetched)
                 {
                     foreach (var move in fetched)
                     {
@@ -108,7 +108,7 @@ namespace Nekoyume.Move
             }
         }
 
-        private IEnumerator SendMove(Move move)
+        private IEnumerator SendMove(MoveBase move)
         {
             var serialized = JsonConvert.SerializeObject(move, moveJsonConverter);
             var url = $"{apiUrl}/moves";

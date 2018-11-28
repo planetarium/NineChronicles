@@ -18,7 +18,7 @@ namespace Nekoyume.Model
         public byte[] user;
         public bool dead = false;
 
-        public static Avatar FromMoves(IEnumerable<Move.Move> moves)
+        public static Avatar FromMoves(IEnumerable<MoveBase> moves)
         {
             var createNovice = moves.FirstOrDefault() as CreateNovice;
             if (createNovice == null)

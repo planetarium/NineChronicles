@@ -100,7 +100,7 @@ namespace Nekoyume.Move
                 DidAvatarLoaded?.Invoke(this, Avatar);
             }
 
-            StartCoroutine(agent.FetchMove(delegate(IEnumerable<Move> moves)
+            StartCoroutine(agent.FetchMove(delegate(IEnumerable<MoveBase> moves)
             {
                 if (moves.FirstOrDefault() == null)
                 {
@@ -111,7 +111,7 @@ namespace Nekoyume.Move
             }));
         }
 
-        private void OnDidReceiveMove(object sender, Move move)
+        private void OnDidReceiveMove(object sender, MoveBase move)
         {
             if (Avatar == null)
             {
@@ -139,12 +139,12 @@ namespace Nekoyume.Move
             PlayerPrefs.SetString(LastBlockIdKey, move.BlockId.ToString());
         }
 
-        private bool ShouldExecute(Move move)
+        private bool ShouldExecute(MoveBase move)
         {
             return !_processedMoveIds.Contains(move.Id);
         }
 
-        private void ExecuteMove(Move move)
+        private void ExecuteMove(MoveBase move)
         {
             var ctx = new Context {Avatar = Avatar};
             Context executed = move.Execute(ctx);
@@ -158,12 +158,12 @@ namespace Nekoyume.Move
             }
         }
 
-        private bool ShouldNotify(Move move)
+        private bool ShouldNotify(MoveBase move)
         {
             return !move.Confirmed || lastBlockId.GetValueOrDefault(0) < move.BlockId;
         }
 
-        private void Notify(Move move)
+        private void Notify(MoveBase move)
         {
             if (move is Sleep)
             {
@@ -231,7 +231,7 @@ namespace Nekoyume.Move
             return ProcessMove(createNovice, 0, timestamp);
         }
 
-        private T ProcessMove<T>(T move, int tax, DateTime? timestamp) where T : Move
+        private T ProcessMove<T>(T move, int tax, DateTime? timestamp) where T : MoveBase
         {
             move.Tax = tax;
             move.Timestamp = (timestamp) ?? DateTime.UtcNow;

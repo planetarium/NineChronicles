@@ -33,7 +33,7 @@ namespace Nekoyume.Move
     {
     }
 
-    public abstract class Move : BaseTransaction
+    public abstract class MoveBase : BaseTransaction
     {
         private const string TimestampFormat = "yyyy-MM-dd HH:mm:ss.ffffff";
 
@@ -68,9 +68,9 @@ namespace Nekoyume.Move
 
         public abstract Context Execute(Context ctx);
 
-        public static Move FromPlainValue(IDictionary<string, dynamic> plainValue, Type type)
+        public static MoveBase FromPlainValue(IDictionary<string, dynamic> plainValue, Type type)
         {
-            var move = Activator.CreateInstance(type) as Move;
+            var move = Activator.CreateInstance(type) as MoveBase;
             Debug.Assert(move != null, nameof(move) + " != null");
 
             move.PublicKey = PublicKey.FromBytes((plainValue["user_public_key"] as string).ParseHex());
@@ -110,7 +110,7 @@ namespace Nekoyume.Move
 
     [MoveName("hack_and_slash")]
     [Preprocess]
-    public class HackAndSlash : Move
+    public class HackAndSlash : MoveBase
     {
         public override Context Execute(Context ctx)
         {
@@ -130,7 +130,7 @@ namespace Nekoyume.Move
 
     [MoveName("sleep")]
     [Preprocess]
-    public class Sleep : Move
+    public class Sleep : MoveBase
     {
         public override Context Execute(Context ctx)
         {
@@ -146,7 +146,7 @@ namespace Nekoyume.Move
     }
 
     [MoveName("create_novice")]
-    public class CreateNovice : Move
+    public class CreateNovice : MoveBase
     {
         public override Context Execute(Context ctx)
         {
@@ -166,7 +166,7 @@ namespace Nekoyume.Move
     }
 
     [MoveName("first_class")]
-    public class FirstClass : Move
+    public class FirstClass : MoveBase
     {
         public override Context Execute(Context ctx)
         {
@@ -189,7 +189,7 @@ namespace Nekoyume.Move
     }
 
     [MoveName("move_zone")]
-    public class MoveZone : Move
+    public class MoveZone : MoveBase
     {
         public override Context Execute(Context ctx)
         {
