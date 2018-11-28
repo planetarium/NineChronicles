@@ -160,7 +160,6 @@ namespace Nekoyume.Game.Character
         public virtual void OnDamage(AttackType attackType, int dmg)
         {
             HP -= CalcDamage(attackType, dmg);
-            Debug.Log($"{name} HP: {HP}");
 
             if (_hpBar == null)
             {
