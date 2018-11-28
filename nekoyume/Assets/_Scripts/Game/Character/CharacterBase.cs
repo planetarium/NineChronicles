@@ -35,6 +35,8 @@ namespace Nekoyume.Game.Character
 
         private void OnDisable()
         {
+            _walkSpeed = 0.0f;
+            Root = null;
             if (_hpBar != null)
             {
                 Destroy(_hpBar.gameObject);
