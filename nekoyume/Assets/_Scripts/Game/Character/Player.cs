@@ -11,6 +11,8 @@ namespace Nekoyume.Game.Character
         public int MP = 0;
         public int EXP = 0;
 
+        public long EXPMax { get; private set; }
+
         public override WeightType WeightType
         {
             get { return WeightType.Small; }
@@ -63,6 +65,7 @@ namespace Nekoyume.Game.Character
             EXP = avatar.exp;
 
             _hpMax = statsData.Health;
+            EXPMax = statsData.Exp;
         }
 
         protected override void OnDead()
