@@ -9,7 +9,7 @@ namespace Nekoyume.Game.Character
     {
         public int RewardExp = 0;
 
-        public void InitAI()
+        public void InitAI(Data.Table.Monster statsData)
         {
             _walkSpeed = -1.0f;
             _hpBarOffset.Set(-0.0f, -0.11f, 0.0f);
@@ -31,13 +31,27 @@ namespace Nekoyume.Game.Character
                     )
                 )
             );
-
+            foreach (var skill in _skills)
+            {
+                Destroy(skill);
+            }
             _skills.Clear();
             // TODO: select skill
-            var attack = this.GetOrAddComponent<Skill.MonsterAttack>();
-            if (attack.Init("monster_attack"))
+            var skillNames = new[]
             {
-                _skills.Add(attack);
+                statsData.Skill_0,
+                statsData.Skill_1,
+                statsData.Skill_2,
+                statsData.Skill_3
+            };
+            foreach (var skillName in skillNames)
+            {
+                var attack = gameObject.AddComponent<Skill.MonsterAttack>();
+                if (string.IsNullOrEmpty(skillName)) continue;
+                if (attack.Init(skillName))
+                {
+                      _skills.Add(attack);
+                }
             }
         }
 
