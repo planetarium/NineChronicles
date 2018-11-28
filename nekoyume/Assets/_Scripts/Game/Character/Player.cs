@@ -9,7 +9,8 @@ namespace Nekoyume.Game.Character
     public class Player : CharacterBase
     {
         public int MP = 0;
-        public int EXP = 0;
+        public long EXP = 0;
+        public int Level = 0;
 
         public long EXPMax { get; private set; }
 
@@ -56,16 +57,15 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        public void InitStats(Data.Table.Stats statsData, Avatar avatar)
+        public void InitStats(Avatar avatar)
         {
-            HP = (!avatar.dead && avatar.hp > 0) ? avatar.hp : statsData.Health;
-            ATK = statsData.Attack;
-            DEF = statsData.Defense;
-            MP = statsData.Mana;
             EXP = avatar.exp;
+            Level = avatar.level;
 
-            _hpMax = statsData.Health;
-            EXPMax = statsData.Exp;
+            CalcStats();
+
+            if (!avatar.dead && avatar.hp > 0)
+                HP = avatar.hp;
         }
 
         protected override void OnDead()
@@ -73,15 +73,40 @@ namespace Nekoyume.Game.Character
             Event.OnPlayerDead.Invoke();
         }
 
+        private void CalcStats()
+        {
+            Data.Tables tables = this.GetRootComponent<Data.Tables>();
+            Data.Table.Stats statsData;
+            if (!tables.Stats.TryGetValue(Level, out statsData))
+                return;
+
+            HP = statsData.Health;
+            ATK = statsData.Attack;
+            DEF = statsData.Defense;
+            MP = statsData.Mana;
+
+            _hpMax = statsData.Health;
+            EXPMax = statsData.Exp;
+        }
+
         private void GetEXP(Enemy enemy)
         {
             EXP += enemy.RewardExp;
+
+            while (EXPMax <= EXP)
+            {
+                LevelUp();
+            }
         }
 
-        public string GetLevel()
+        private void LevelUp()
         {
-            var tables = this.GetRootComponent<Tables>();
-            return tables.GetLevel(EXP).ToString();
+            if (EXP < EXPMax)
+                return;
+
+            EXP -= EXPMax;
+            Level++;
+            CalcStats();
         }
     }
 }
