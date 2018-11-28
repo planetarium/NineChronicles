@@ -12,7 +12,6 @@ namespace Nekoyume.UI
 
         public Text Label;
 
-        private float _updateTime;
         private Vector3 _force;
         private Vector3 _addForce;
 
@@ -27,7 +26,6 @@ namespace Nekoyume.UI
             popupText.Label.text = text;
             popupText.Label.color = color;
 
-            float screenHeight = Screen.height * 0.5f;
             if (CanvasRect == null)
                 CanvasRect = popupText.transform.root.gameObject.GetComponent<RectTransform>();
             Vector2 viewportPosition = Camera.main.WorldToViewportPoint(position);
@@ -37,7 +35,6 @@ namespace Nekoyume.UI
             RectTransform rectTransform = popupText.GetComponent<RectTransform>();
             rectTransform.anchoredPosition = canvasPosition;
 
-            popupText._updateTime = 0.0f;
             popupText._force = force;
             popupText._addForce = addForce;
 
