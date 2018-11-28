@@ -26,7 +26,7 @@ namespace Nekoyume.Game
 
             yield return new WaitForEndOfFrame();
             var playerFactory = GetComponent<Factory.PlayerFactory>();
-            GameObject player = playerFactory.Create(false);
+            GameObject player = playerFactory.Create();
             player.transform.position = new Vector2(-0.8f, 0.46f);
         }
 

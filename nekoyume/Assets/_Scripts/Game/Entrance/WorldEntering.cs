@@ -15,6 +15,13 @@ namespace Nekoyume.Game.Entrance
         private IEnumerator Act()
         {
             var stage = GetComponent<Stage>();
+
+            var roomPlayer = stage.GetComponentInChildren<Character.Player>();
+            if (roomPlayer != null)
+            {
+                roomPlayer.WalkSpeed = 0.7f;
+            }
+
             Avatar avatar = MoveManager.Instance.Avatar;
             int currentStage = avatar.world_stage;
             Data.Table.Stage data;
@@ -33,8 +40,9 @@ namespace Nekoyume.Game.Entrance
                 objectPool.ReleaseAll();
 
                 var playerFactory = GetComponent<Factory.PlayerFactory>();
-                GameObject player = playerFactory.Create(true);
+                GameObject player = playerFactory.Create();
                 player.transform.position = new Vector2(0.0f, -0.7f);
+                player.GetComponent<Character.CharacterBase>().WalkSpeed = 0.6f;
 
                 UI.Widget.Find<UI.Status>().UpdatePlayer(player);
 
