@@ -1,5 +1,6 @@
 using BTAI;
 using DG.Tweening;
+using Nekoyume.Data.Table;
 using UnityEngine;
 
 
@@ -46,6 +47,7 @@ namespace Nekoyume.Game.Character
             HP = statsData.Health;
             ATK = statsData.Attack;
             DEF = statsData.Defense;
+            WeightType = statsData.WeightType;
             RewardExp = statsData.RewardExp;
 
             Power = power;
@@ -53,9 +55,9 @@ namespace Nekoyume.Game.Character
             _hpMax = HP;
         }
 
-        public override void OnDamage(int dmg)
+        public override void OnDamage(AttackType attackType, int dmg)
         {
-            base.OnDamage(dmg);
+            base.OnDamage(attackType, dmg);
 
             SpriteRenderer renderer = gameObject.GetComponent<SpriteRenderer>();
             if (renderer != null)

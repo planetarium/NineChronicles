@@ -3,7 +3,7 @@ namespace Nekoyume.Data.Table
     public class Monster : Row
     {
         public int Id = 0;
-        public int WeightType = 0;
+        public WeightType WeightType = WeightType.Small;
         public int Attack = 0;
         public int Defense = 0;
         public int Health = 0;

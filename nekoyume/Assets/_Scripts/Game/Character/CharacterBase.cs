@@ -1,6 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using BTAI;
+using Nekoyume.Data.Table;
+using Nekoyume.Game.Trigger;
 using UnityEngine;
 
 
@@ -14,6 +17,8 @@ namespace Nekoyume.Game.Character
         public int DEF = 0;
 
         public int Power = 100;
+
+        public virtual WeightType WeightType { get; protected set; } = WeightType.Small;
 
         protected float _walkSpeed = 0.0f;
         protected int _hpMax = 0;
@@ -118,9 +123,40 @@ namespace Nekoyume.Game.Character
             return false;
         }
 
-        public virtual void OnDamage(int dmg)
+        private float GetDamageFactor(AttackType attackType)
         {
-            HP -= dmg - DEF;
+            var damageFactorMap = new Dictionary<Tuple<AttackType, WeightType>, float>()
+            {
+                { new Tuple<AttackType, WeightType>(AttackType.Light, WeightType.Small), 1.25f },
+                { new Tuple<AttackType, WeightType>(AttackType.Light, WeightType.Medium), 1.5f },
+                { new Tuple<AttackType, WeightType>(AttackType.Light, WeightType.Large), 0.5f },
+                { new Tuple<AttackType, WeightType>(AttackType.Light, WeightType.Boss), 0.75f },
+                { new Tuple<AttackType, WeightType>(AttackType.Middle, WeightType.Small), 1.0f },
+                { new Tuple<AttackType, WeightType>(AttackType.Middle, WeightType.Medium), 1.0f },
+                { new Tuple<AttackType, WeightType>(AttackType.Middle, WeightType.Large), 1.25f },
+                { new Tuple<AttackType, WeightType>(AttackType.Middle, WeightType.Boss), 0.75f },
+                { new Tuple<AttackType, WeightType>(AttackType.Heavy, WeightType.Small), 0.75f },
+                { new Tuple<AttackType, WeightType>(AttackType.Heavy, WeightType.Medium), 1.25f },
+                { new Tuple<AttackType, WeightType>(AttackType.Heavy, WeightType.Large), 1.5f },
+                { new Tuple<AttackType, WeightType>(AttackType.Heavy, WeightType.Boss), 0.75f },
+            };
+            var factor = damageFactorMap[new Tuple<AttackType, WeightType>(attackType, WeightType)];
+            return factor;
+        }
+
+        private int CalcDamage(AttackType attackType, int dmg)
+        {
+            const float attackDamageFactor = 0.5f;
+            const float defenseDamageFactor = 0.25f;
+            return Mathf.FloorToInt(
+                (attackDamageFactor * dmg - defenseDamageFactor * DEF) *
+                GetDamageFactor(attackType)
+            );
+        }
+
+        public virtual void OnDamage(AttackType attackType, int dmg)
+        {
+            HP -= CalcDamage(attackType, dmg);
             Debug.Log($"{name} HP: {HP}");
 
             if (_hpBar == null)

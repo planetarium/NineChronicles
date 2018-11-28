@@ -24,7 +24,7 @@ namespace Nekoyume.Game.Skill
 
             var objectPool = GetComponentInParent<Util.ObjectPool>();
             var damager = objectPool.Get<Trigger.Damager>(transform.TransformPoint(range, 0.0f, 0.0f));
-            damager.Set("hit_01", _targetTag, damage, size, _data.TargetCount, 0.2f);
+            damager.Set("hit_01", _targetTag, _data.AttackType, damage, size, _data.TargetCount, 0.2f);
 
             return true;
         }

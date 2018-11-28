@@ -7,7 +7,7 @@ namespace Nekoyume.Data.Table
         public int Power = 0;
         public int Range = 0;
         public int Size = 0;
-        public int AttackType = 0;
+        public AttackType AttackType = AttackType.Light;
         public int ElementalType = 0;
         public int Cooltime = 0;
         public int CastingTime = 0;
