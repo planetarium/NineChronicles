@@ -219,6 +219,18 @@ namespace Nekoyume.Move
             return ProcessMove(createNovice, 0, timestamp);
         }
 
+        public MoveStage MoveStage(int stage, DateTime? timestamp = null)
+        {
+            var moveStage = new MoveStage
+            {
+                Details = new Dictionary<string, string>
+                {
+                    ["stage"] = stage.ToString()
+                }
+            };
+            return ProcessMove(moveStage, 0, timestamp);
+        }
+
         private T ProcessMove<T>(T move, int tax, DateTime? timestamp) where T : MoveBase
         {
             move.Tax = tax;
