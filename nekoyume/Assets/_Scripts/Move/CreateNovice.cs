@@ -12,11 +12,13 @@ namespace Nekoyume.Move
                 new Avatar
                 {
                     name = Details["name"],
-                    user = UserAddress,
-                    gold = 0,
                     class_ = CharacterClass.Novice.ToString(),
                     level = 1,
-                    world_stage = 1
+                    gold = 0,
+                    exp = 0,
+                    hp = 0,
+                    world_stage = 1,
+                    user = UserAddress
                 }
             );
         }
