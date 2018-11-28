@@ -110,7 +110,8 @@ namespace Nekoyume.Game.Character
 
         public int CalcAtk()
         {
-            return Mathf.FloorToInt((float)this.ATK * (this.Power * 0.01f));
+            var r = ATK * 0.1f;
+            return Mathf.FloorToInt((ATK + UnityEngine.Random.Range(-r, r)) * (Power * 0.01f));
         }
 
         protected bool HasTargetInRange()
