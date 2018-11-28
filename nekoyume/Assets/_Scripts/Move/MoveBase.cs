@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
-using Nekoyume.Model;
 using Planetarium.Crypto.Extension;
 using Planetarium.Crypto.Keys;
 using Planetarium.SDK.Address;
@@ -33,7 +32,7 @@ namespace Nekoyume.Move
     {
     }
 
-    public abstract class Move : BaseTransaction
+    public abstract class MoveBase : BaseTransaction
     {
         private const string TimestampFormat = "yyyy-MM-dd HH:mm:ss.ffffff";
 
@@ -68,9 +67,9 @@ namespace Nekoyume.Move
 
         public abstract Context Execute(Context ctx);
 
-        public static Move FromPlainValue(IDictionary<string, dynamic> plainValue, Type type)
+        public static MoveBase FromPlainValue(IDictionary<string, dynamic> plainValue, Type type)
         {
-            var move = Activator.CreateInstance(type) as Move;
+            var move = Activator.CreateInstance(type) as MoveBase;
             Debug.Assert(move != null, nameof(move) + " != null");
 
             move.PublicKey = PublicKey.FromBytes((plainValue["user_public_key"] as string).ParseHex());
@@ -105,95 +104,6 @@ namespace Nekoyume.Move
                 Type = Name,
                 Avatar = avatar
             };
-        }
-    }
-
-    [MoveName("hack_and_slash")]
-    [Preprocess]
-    public class HackAndSlash : Move
-    {
-        public override Context Execute(Context ctx)
-        {
-            if (ctx.Avatar.dead)
-            {
-                throw new InvalidMoveException();
-            }
-            var newCtx = CreateContext(avatar: ctx.Avatar);
-            newCtx.Avatar.hp = int.Parse(Details["hp"]);
-            newCtx.Avatar.world_stage = int.Parse(Details["stage"]);
-            newCtx.Avatar.dead = Details["dead"].ToLower() == "true";
-            newCtx.Avatar.exp = int.Parse(Details["exp"]);
-            newCtx.Avatar.level = int.Parse(Details["level"]);
-            return newCtx;
-        }
-    }
-
-    [MoveName("sleep")]
-    [Preprocess]
-    public class Sleep : Move
-    {
-        public override Context Execute(Context ctx)
-        {
-            var newCtx = CreateContext(avatar: ctx.Avatar);
-            newCtx.Avatar.dead = false;
-            string data;
-            int hp;
-            Details.TryGetValue("hp", out data);
-            int.TryParse(data, out hp);
-            newCtx.Avatar.hp = hp;
-            return newCtx;
-        }
-    }
-
-    [MoveName("create_novice")]
-    public class CreateNovice : Move
-    {
-        public override Context Execute(Context ctx)
-        {
-            return CreateContext(
-                ContextStatus.Success,
-                new Avatar
-                {
-                    name = Details["name"],
-                    user = UserAddress,
-                    gold = 0,
-                    class_ = CharacterClass.Novice.ToString(),
-                    level = 1,
-                    world_stage = 1
-                }
-            );
-        }
-    }
-
-    [MoveName("first_class")]
-    public class FirstClass : Move
-    {
-        public override Context Execute(Context ctx)
-        {
-            var newCtx = new Context
-            {
-                Type = "first_class"
-            };
-
-            if (ctx.Avatar.class_ != CharacterClass.Novice.ToString())
-            {
-                newCtx.Status = ContextStatus.Failed;
-                newCtx.Message = "Already change class.";
-                return newCtx;
-            }
-
-            newCtx.Status = ContextStatus.Success;
-            newCtx.Avatar.class_ = Details["class_"];
-            return newCtx;
-        }
-    }
-
-    [MoveName("move_zone")]
-    public class MoveZone : Move
-    {
-        public override Context Execute(Context ctx)
-        {
-            throw new NotImplementedException();
         }
     }
 }

@@ -35,5 +35,11 @@ namespace Nekoyume.UI
             Game.Event.OnPlayerSleep.Invoke();
             Close();
         }
+
+        public void MoveStageClick()
+        {
+            MoveManager.Instance.MoveStage(1);
+            Game.Event.OnStageEnter.Invoke();
+        }
     }
 }

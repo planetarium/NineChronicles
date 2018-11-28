@@ -11,7 +11,7 @@ namespace Nekoyume.Move
     {
         public override bool CanConvert(Type objectType)
         {
-            return typeof(Move).IsAssignableFrom(objectType);
+            return typeof(MoveBase).IsAssignableFrom(objectType);
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
@@ -21,18 +21,18 @@ namespace Nekoyume.Move
             var type = typeof(MoveName).Assembly
             .GetTypes()
             .FirstOrDefault(t => t.IsDefined(typeof(MoveName), false) && MoveName.Extract(t) == name);
-            Move move = null;
+            MoveBase move = null;
 
             if (type != null)
             {
-                move = Move.FromPlainValue(jo.ToObject<Dictionary<string, dynamic>>(), type);
+                move = MoveBase.FromPlainValue(jo.ToObject<Dictionary<string, dynamic>>(), type);
             }
             return move;
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            var move = (Move)value;
+            var move = (MoveBase)value;
             var jo = new JObject();
             foreach (var kv in move.PlainValue)
             {
