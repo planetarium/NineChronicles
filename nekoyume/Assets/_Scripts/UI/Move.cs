@@ -1,4 +1,5 @@
 using Nekoyume.Game;
+using Nekoyume.Game.Trigger;
 using Nekoyume.Move;
 using UnityEngine;
 using UnityEngine.UI;
@@ -38,7 +39,7 @@ namespace Nekoyume.UI
 
         public void SleepClick()
         {
-            Game.Event.OnPlayerSleep.Invoke();
+            this.GetRootComponent<Game.Game>().GetComponentInChildren<StageExit>().Sleep = true;
             Close();
         }
 
