@@ -59,11 +59,11 @@ namespace Nekoyume.Game.Character
 
         public void InitStats(Data.Table.Monster statsData, int power)
         {
-            HP = statsData.Health;
+            HP = Mathf.FloorToInt((float)statsData.Health * ((float)power * 0.01f));
             ATK = statsData.Attack;
-            DEF = statsData.Defense;
+            DEF = Mathf.FloorToInt((float)statsData.Defense * ((float)power * 0.01f));
             WeightType = statsData.WeightType;
-            RewardExp = statsData.RewardExp;
+            RewardExp = Mathf.FloorToInt((float)statsData.RewardExp * ((float)power * 0.01f));
 
             Power = power;
 
