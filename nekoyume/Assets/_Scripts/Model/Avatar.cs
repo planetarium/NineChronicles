@@ -11,7 +11,7 @@ namespace Nekoyume.Model
         public string class_;
         public int level;
         public int gold;
-        public int exp;
+        public long exp;
         public int hp;
         public string[] items;
         public int world_stage;

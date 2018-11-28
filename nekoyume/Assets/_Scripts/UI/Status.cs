@@ -13,9 +13,8 @@ namespace Nekoyume.UI
         public Text TextExp;
         public Slider ExpBar;
 
-        private int _pendingExp = 0;
-        private int _currentExp = 0;
-        private long _expMax = 0;
+        private string _avatarName = "";
+        private Game.Character.Player _player = null;
 
         private void Awake()
         {
@@ -24,7 +23,6 @@ namespace Nekoyume.UI
 
         private void OnEnemyDead(Game.Character.Enemy enemy)
         {
-            _pendingExp += enemy.RewardExp;
             UpdateExp();
         }
 
@@ -32,17 +30,15 @@ namespace Nekoyume.UI
         {
             Show();
 
-            _pendingExp = 0;
-
             Model.Avatar avatar = MoveManager.Instance.Avatar;
-            Game.Character.Player player = playerObj.GetComponent<Game.Character.Player>();
-            _currentExp = avatar.exp;
-            _expMax = player.EXPMax;
-
             if (avatar != null)
             {
-                TextLevelName.text = $"LV. {avatar.level} {avatar.name}";  
+                _avatarName = avatar.name;
                 TextStage.text = $"STAGE {avatar.world_stage}";
+            }
+            if (playerObj != null)
+            {
+                _player = playerObj.GetComponent<Game.Character.Player>();
             }
 
             UpdateExp();
@@ -50,13 +46,23 @@ namespace Nekoyume.UI
 
         private void UpdateExp()
         {
-            if (_pendingExp > 0)
+            if (_player != null)
             {
-                TextExp.text = $"{_currentExp} / {_expMax} + ({_pendingExp})";
-            }
-            else
-            {
-                TextExp.text = $"{_currentExp} / {_expMax}";
+                TextLevelName.text = $"LV. {_player.Level} {_avatarName}";  
+                TextExp.text = $"{_player.EXP} / {_player.EXPMax}";
+
+                float value = (float)_player.EXP / (float)_player.EXPMax;
+                if (value <= 0.0f)
+                    ExpBar.fillRect.gameObject.SetActive(false);
+                else
+                    ExpBar.fillRect.gameObject.SetActive(true);
+
+                if (value > 1.0f)
+                    value = 1.0f;
+                if (value < 0.1f)
+                    value = 0.1f;
+
+                ExpBar.value = value;
             }
         }
     }

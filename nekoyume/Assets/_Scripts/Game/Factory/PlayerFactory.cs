@@ -10,11 +10,6 @@ namespace Nekoyume.Game.Factory
         {
             var avatar = MoveManager.Instance.Avatar;
 
-            Data.Tables tables = this.GetRootComponent<Data.Tables>();
-            Data.Table.Stats statsData;
-            if (!tables.Stats.TryGetValue(avatar.level, out statsData))
-                return null;
-
             var objectPool = GetComponent<Util.ObjectPool>();
             var player = objectPool.Get<Character.Player>();
             if (player == null)
@@ -22,7 +17,7 @@ namespace Nekoyume.Game.Factory
 
             if (initAI)
                 player.InitAI();
-            player.InitStats(statsData, avatar);
+            player.InitStats(avatar);
 
             // sprite
             // var render = player.GetComponent<SpriteRenderer>();
