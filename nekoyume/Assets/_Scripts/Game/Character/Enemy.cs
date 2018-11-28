@@ -12,7 +12,8 @@ namespace Nekoyume.Game.Character
 
         public void InitAI(Data.Table.Monster statsData)
         {
-            _walkSpeed = -1.0f;
+            WalkSpeed = -1.0f;
+
             _hpBarOffset.Set(-0.0f, -0.11f, 0.0f);
 
             Root = new Root();

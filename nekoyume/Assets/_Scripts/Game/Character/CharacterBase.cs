@@ -19,8 +19,8 @@ namespace Nekoyume.Game.Character
         public int Power = 100;
 
         public virtual WeightType WeightType { get; protected set; } = WeightType.Small;
+        public float WalkSpeed = 0.0f;
 
-        protected float _walkSpeed = 0.0f;
         protected int _hpMax = 0;
         protected Animator _anim = null;
         protected UI.ProgressBar _hpBar = null;
@@ -35,7 +35,7 @@ namespace Nekoyume.Game.Character
 
         private void OnDisable()
         {
-            _walkSpeed = 0.0f;
+            WalkSpeed = 0.0f;
             Root = null;
             if (_hpBar != null)
             {
@@ -62,7 +62,7 @@ namespace Nekoyume.Game.Character
             }
 
             Vector2 position = transform.position;
-            position.x += Time.deltaTime * _walkSpeed;
+            position.x += Time.deltaTime * WalkSpeed;
             transform.position = position;
         }
 

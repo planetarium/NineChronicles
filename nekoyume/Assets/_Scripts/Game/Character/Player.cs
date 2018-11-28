@@ -27,7 +27,8 @@ namespace Nekoyume.Game.Character
 
         public void InitAI()
         {
-            _walkSpeed = 0.6f;
+            WalkSpeed = 0.0f;
+
             _hpBarOffset.Set(-0.22f, -0.61f, 0.0f);
 
             Root = new Root();
@@ -38,7 +39,9 @@ namespace Nekoyume.Game.Character
                             BT.If(HasTargetInRange).OpenBranch(
                                 BT.Call(Attack)
                             ),
-                            BT.Call(Walk)
+                            BT.If(() => WalkSpeed > 0.0f).OpenBranch(
+                                BT.Call(Walk)
+                            )
                         )
                     ),
                     BT.Sequence().OpenBranch(

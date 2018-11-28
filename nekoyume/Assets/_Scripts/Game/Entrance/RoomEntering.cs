@@ -25,8 +25,8 @@ namespace Nekoyume.Game.Entrance
             objectPool.ReleaseAll();
 
             var playerFactory = GetComponent<Factory.PlayerFactory>();
-            GameObject player = playerFactory.Create(false);
-            player.transform.position = new Vector2(0.0f, -0.7f);
+            GameObject player = playerFactory.Create();
+            player.transform.position = new Vector2(0.18f, -0.62f);
 
             UI.Widget.Find<UI.Status>().UpdatePlayer(player);
 
