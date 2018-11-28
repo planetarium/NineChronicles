@@ -15,6 +15,7 @@ namespace Nekoyume.Game
             Event.OnRoomEnter.AddListener(OnRoomEnter);
             Event.OnStageEnter.AddListener(OnStageEnter);
             Event.OnPlayerDead.AddListener(OnPlayerDead);
+            Event.OnPlayerDead.AddListener(OnPlayerSleep);
             Event.OnPlayerSleep.AddListener(OnPlayerSleep);
         }
 

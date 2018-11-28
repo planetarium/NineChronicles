@@ -1,3 +1,5 @@
+using Nekoyume.Game;
+using Nekoyume.Game.Trigger;
 using Nekoyume.Move;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,13 +17,18 @@ namespace Nekoyume.UI
             Show();
             btnSleep.GetComponent<Button>().enabled = true;
             btnMove.GetComponent<Button>().enabled = true;
+            Model.Avatar avatar = MoveManager.Instance.Avatar;
+            bool enabled = !avatar.dead;
+            btnMove.SetActive(enabled);
+            btnSleep.SetActive(false);
+
         }
 
         public void ShowWorld()
         {
             Show();
-            btnSleep.GetComponent<Button>().enabled = true;
-            btnMove.GetComponent<Button>().enabled = false;
+            btnMove.SetActive(false);
+            btnSleep.SetActive(true);
         }
 
         public void MoveClick()
@@ -32,7 +39,7 @@ namespace Nekoyume.UI
 
         public void SleepClick()
         {
-            Game.Event.OnPlayerSleep.Invoke();
+            this.GetRootComponent<Game.Game>().GetComponentInChildren<StageExit>().Sleep = true;
             Close();
         }
 

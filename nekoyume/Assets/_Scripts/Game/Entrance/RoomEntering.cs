@@ -1,8 +1,6 @@
 using System.Collections;
-using Nekoyume.Move;
 using Nekoyume.UI;
 using UnityEngine;
-using Avatar = Nekoyume.Model.Avatar;
 
 namespace Nekoyume.Game.Entrance
 {
@@ -42,10 +40,6 @@ namespace Nekoyume.Game.Entrance
             yield return StartCoroutine(blind.FadeOut(1.0f));
 
             Event.OnStageStart.Invoke();
-            Avatar avatar = MoveManager.Instance.Avatar;
-            bool enabled = !avatar.dead;
-            Widget.Find<UI.Move>().btnMove.SetActive(enabled);
-
             Destroy(this);
         }
     }

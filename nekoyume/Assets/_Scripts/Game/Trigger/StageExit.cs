@@ -8,6 +8,8 @@ namespace Nekoyume.Game.Trigger
 {
     public class StageExit : MonoBehaviour
     {
+        public bool Sleep;
+
         private void Awake()
         {
             Event.OnStageClear.AddListener(OnStageClear);
@@ -23,13 +25,17 @@ namespace Nekoyume.Game.Trigger
             var cam = Camera.main.gameObject.GetComponent<ActionCamera>();
             cam.target = null;
 
-            yield return new WaitForSeconds(1.0f);
-            Event.OnStageEnter.Invoke();
-
             var stage = GetComponentInParent<Stage>();
             var player = stage.GetComponentInChildren<Player>();
             var id = stage.Id + 1;
             MoveManager.Instance.HackAndSlash(player, id);
+
+            yield return new WaitForSeconds(1.0f);
+            if (Sleep)
+                Event.OnPlayerSleep.Invoke();
+            else
+                Event.OnStageEnter.Invoke();
+            Sleep = false;
         }
     }
 }
