@@ -18,10 +18,10 @@ namespace Nekoyume.UI
 
         private void Awake()
         {
-            Game.Event.OnEnemyDead.AddListener(OnEnemyDead);
+            Game.Event.OnUpdateStatus.AddListener(OnUpdateStatus);
         }
 
-        private void OnEnemyDead(Game.Character.Enemy enemy)
+        private void OnUpdateStatus()
         {
             UpdateExp();
         }

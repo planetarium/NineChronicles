@@ -119,6 +119,8 @@ namespace Nekoyume.Game.Character
             {
                 LevelUp();
             }
+
+            Event.OnUpdateStatus.Invoke();
         }
 
         private void LevelUp()
