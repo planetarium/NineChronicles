@@ -10,7 +10,10 @@ namespace Nekoyume.UI
     public class Move : Widget
     {
         public GameObject btnMove;
+        public GameObject btnStage1;
         public GameObject btnSleep;
+
+        public Text LabelInfo;
 
         public void ShowRoom()
         {
@@ -20,8 +23,9 @@ namespace Nekoyume.UI
             Model.Avatar avatar = MoveManager.Instance.Avatar;
             bool enabled = !avatar.dead;
             btnMove.SetActive(enabled);
+            btnStage1.SetActive(MoveManager.Instance.Avatar.world_stage > 1);
             btnSleep.SetActive(false);
-
+            LabelInfo.text = "";
         }
 
         public void ShowWorld()
@@ -29,6 +33,7 @@ namespace Nekoyume.UI
             Show();
             btnMove.SetActive(false);
             btnSleep.SetActive(true);
+            LabelInfo.text = "";
         }
 
         public void MoveClick()
@@ -39,8 +44,9 @@ namespace Nekoyume.UI
 
         public void SleepClick()
         {
+            LabelInfo.text = "Go Home Soon...";
             this.GetRootComponent<Game.Game>().GetComponentInChildren<StageExit>().Sleep = true;
-            Close();
+            btnSleep.SetActive(false);
         }
 
         public void MoveStageClick()
