@@ -6,7 +6,7 @@ namespace Nekoyume.Game.Factory
 {
     public class PlayerFactory : MonoBehaviour
     {
-        public GameObject Create(bool initAI)
+        public GameObject Create()
         {
             var avatar = MoveManager.Instance.Avatar;
 
@@ -15,8 +15,7 @@ namespace Nekoyume.Game.Factory
             if (player == null)
                 return null;
 
-            if (initAI)
-                player.InitAI();
+            player.InitAI();
             player.InitStats(avatar);
 
             // sprite
