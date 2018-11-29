@@ -150,6 +150,7 @@ namespace Nekoyume.Move
             if (executed.Status != ContextStatus.Success) return;
 
             Avatar = executed.Avatar;
+            SaveStatus();
 
             if (ShouldNotify(move))
             {
