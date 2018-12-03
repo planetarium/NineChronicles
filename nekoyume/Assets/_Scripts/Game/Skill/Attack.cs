@@ -10,7 +10,7 @@ namespace Nekoyume.Game.Skill
             _targetTag = Tag.Enemy;
         }
 
-        override public bool Use()
+        public override bool Use()
         {
             if (IsCooltime())
                 return false;
