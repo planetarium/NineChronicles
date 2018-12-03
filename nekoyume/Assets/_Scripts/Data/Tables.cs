@@ -36,6 +36,7 @@ namespace Nekoyume.Data
 
             ItemDrop = new Table<ItemDrop>();
             Load(ItemDrop, "DataTable/item_drop");
+            ItemDrop.CreateIndex("MonsterId");
 
             BoxDrop = new Table<BoxDrop>();
             Load(BoxDrop, "DataTable/box_drop");
