@@ -55,8 +55,8 @@ namespace Nekoyume.Game.Character
 
             _skills.Clear();
             // TODO: select skill
-            var attack = this.GetOrAddComponent<Skill.Attack>();
-            if (attack.Init("attack"))
+            var attack = this.GetOrAddComponent<Skill.RangedAttack>();
+            if (attack.Init("rangedAttack"))
             {
                 _skills.Add(attack);
             }

@@ -246,6 +246,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e35d8888697fe4940940dcc605c26678, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Sleep: 0
 --- !u!1 &937548770
 GameObject:
   m_ObjectHideFlags: 0
@@ -457,6 +458,9 @@ MonoBehaviour:
     InitCount: 5
     AddCount: 5
   - Prefab: {fileID: 1573157238050388, guid: 01b6fd766302df54e9c7882662fbf17c, type: 2}
+    InitCount: 10
+    AddCount: 10
+  - Prefab: {fileID: 1061327267968058, guid: 8f6bd9c1a97204ab1a3689c491af4feb, type: 2}
     InitCount: 10
     AddCount: 10
 --- !u!114 &1333831686

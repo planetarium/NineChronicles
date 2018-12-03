@@ -1,15 +1,9 @@
 using UnityEngine;
 
-
 namespace Nekoyume.Game.Skill
 {
-    public class Attack : SkillBase
+    public class RangedAttack : Attack
     {
-        private void Awake()
-        {
-            _targetTag = Tag.Enemy;
-        }
-
         public override bool Use()
         {
             if (IsCooltime())
@@ -23,10 +17,11 @@ namespace Nekoyume.Game.Skill
             float size = (float)_data.Size / (float)Game.PixelPerUnit;
 
             var objectPool = GetComponentInParent<Util.ObjectPool>();
-            var damager = objectPool.Get<Trigger.Damager>(transform.TransformPoint(range, 0.0f, 0.0f));
-            damager.Set("hit_01", _targetTag, _data.AttackType, damage, size, _data.TargetCount, 0.2f);
+            var damager = objectPool.Get<Trigger.Bullet>(transform.TransformPoint(0, 0.0f, 0.0f));
+            damager.Set("hit_02", _targetTag, _data.AttackType, damage, size, _data.TargetCount, 0.2f);
 
             return true;
         }
+
     }
 }
