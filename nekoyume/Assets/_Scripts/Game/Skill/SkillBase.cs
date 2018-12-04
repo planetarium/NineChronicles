@@ -88,5 +88,14 @@ namespace Nekoyume.Game.Skill
             }
             return nearest;
         }
+
+        public void Damager(Trigger.Damager damager, float range, string ani)
+        {
+            var owner = GetComponent<Character.CharacterBase>();
+            damager.transform.position = transform.TransformPoint(range, 0.0f, 0.0f);
+            int damage = Mathf.FloorToInt(owner.CalcAtk() * ((float)_data.Power * 0.01f));
+            float size = (float)_data.Size / (float)Game.PixelPerUnit;
+            damager.Set(ani, _targetTag, _data.AttackType, damage, size, _data.TargetCount, 0.2f);
+        }
     }
 }
