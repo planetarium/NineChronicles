@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using BTAI;
 using DG.Tweening;
 using Nekoyume.Data.Table;
@@ -8,10 +9,12 @@ namespace Nekoyume.Game.Character
 {
     public class Enemy : CharacterBase
     {
+        public int DataId = 0;
         public int RewardExp = 0;
 
         public void InitAI(Data.Table.Monster statsData)
         {
+            DataId = statsData.Id;
             WalkSpeed = -1.0f;
 
             _hpBarOffset.Set(-0.0f, -0.11f, 0.0f);
@@ -99,8 +102,33 @@ namespace Nekoyume.Game.Character
 
         override protected void OnDead()
         {
+            DropItem();
+
             base.OnDead();
             Event.OnEnemyDead.Invoke(this);
+        }
+
+        private void DropItem()
+        {
+            var selector = new Util.WeightedSelector<int>();
+            var tables = this.GetRootComponent<Data.Tables>();
+            foreach (var pair in tables.ItemDrop)
+            {
+                Data.Table.ItemDrop dropData = pair.Value;
+                if (DataId != dropData.MonsterId)
+                    continue;
+                
+                if (dropData.Weight <= 0)
+                    continue;
+
+                selector.Add(dropData.ItemId, dropData.Weight);
+            }
+
+            if (selector.Count <= 0)
+                return;
+
+            var dropItemFactory = GetComponentInParent<Factory.DropItemFactory>();
+            dropItemFactory.Create(selector.Select(), transform.position);
         }
     }
 }

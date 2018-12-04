@@ -405,6 +405,7 @@ GameObject:
   - component: {fileID: 1333831684}
   - component: {fileID: 1333831687}
   - component: {fileID: 1333831686}
+  - component: {fileID: 1333831685}
   m_Layer: 0
   m_Name: Stage
   m_TagString: Untagged
@@ -463,7 +464,10 @@ MonoBehaviour:
   - Prefab: {fileID: 1061327267968058, guid: 8f6bd9c1a97204ab1a3689c491af4feb, type: 2}
     InitCount: 10
     AddCount: 10
---- !u!114 &1333831686
+  - Prefab: {fileID: 1351238356012968, guid: 8900087d9918c134582786ed2d074325, type: 2}
+    InitCount: 1
+    AddCount: 1
+--- !u!114 &1333831685
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

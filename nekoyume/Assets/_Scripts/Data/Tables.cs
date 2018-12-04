@@ -12,6 +12,9 @@ namespace Nekoyume.Data
         public Table<Stage> Stage { get; private set; }
         public Table<MonsterAppear> MonsterAppear { get; private set; }
         public Table<Monster> Monster { get; private set; }
+        public Table<ItemDrop> ItemDrop { get; private set; }
+        public Table<BoxDrop> BoxDrop { get; private set; }
+        public Table<Item> Item { get; private set; }
 
         private void Start()
         {
@@ -30,6 +33,17 @@ namespace Nekoyume.Data
 
             Monster = new Table<Monster>();
             Load(Monster, "DataTable/monsters");
+
+            ItemDrop = new Table<ItemDrop>();
+            Load(ItemDrop, "DataTable/item_drop");
+
+            BoxDrop = new Table<BoxDrop>();
+            Load(BoxDrop, "DataTable/box_drop");
+
+            Item = new Table<Item>();
+            Load(Item, "DataTable/item");
+            Load(Item, "DataTable/item_equip");
+            Load(Item, "DataTable/item_box");
         }
 
         private void Load(ITable table, string filename)
