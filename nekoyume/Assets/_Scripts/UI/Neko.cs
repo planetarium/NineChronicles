@@ -75,6 +75,9 @@ namespace Nekoyume
                 PlayerPrefs.DeleteKey(key);
                 Neko.Log($"Delete {key}: {k}");
             }
+            string datPath = System.IO.Path.Combine(Application.persistentDataPath, "avatar.dat");
+            if (System.IO.File.Exists(datPath))
+                System.IO.File.Delete(datPath);
             PlayerPrefs.Save();
 
         }
