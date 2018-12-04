@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using BTAI;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Item;
+using Newtonsoft.Json;
 using UnityEngine;
 
 
@@ -112,6 +113,19 @@ namespace Nekoyume.Game.Character
 
             UpdateHpBar();
         }
+
+        public string SerializeItems()
+        {
+            var codes = new List<string>();
+            foreach (var item in Items)
+            {
+                codes.Add(item.Item.Data.Id.ToString());
+            }
+            Items.Clear();
+
+            return JsonConvert.SerializeObject(codes);
+        }
+
         protected override void OnDead()
         {
             Event.OnPlayerDead.Invoke();
