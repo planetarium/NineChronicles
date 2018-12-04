@@ -15,6 +15,7 @@ namespace Nekoyume.Game.Util
         private int _currentFrame = 0;
         private float _updateTime = 0.0f;
         private bool _playing = false;
+        public bool Repeat = false;
 
         private void Awake()
         {
@@ -54,15 +55,23 @@ namespace Nekoyume.Game.Util
             if (_sprites.Length > frame)
             {
                 _currentFrame = frame;
-                _renderer.sprite = _sprites[_currentFrame];
             }
             else
             {
                 _currentFrame = 0;
-                _renderer.sprite = null;
-                _playing = false;
-                gameObject.SetActive(false);
+                if (!Repeat)
+                {
+                    Destroy();
+                }
             }
+            _renderer.sprite = _sprites[_currentFrame];
+        }
+
+        public void Destroy()
+        {
+            _renderer.sprite = null;
+            _playing = false;
+            gameObject.SetActive(false);
         }
     }
 }

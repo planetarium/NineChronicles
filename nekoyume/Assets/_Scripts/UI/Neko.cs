@@ -12,10 +12,12 @@ namespace Nekoyume
 
         private Transform _modal;
         private float _updateTime = 0.0f;
+        private System.Text.StringBuilder _logString = new System.Text.StringBuilder();
 
         static void Log(string text)
         {
-            Instance.log.text += $"> {text}\n";
+            Instance._logString.Insert(0, $"> {text}\n");
+            Instance.log.text += Instance._logString.ToString();
         }
 
         private void Awake()
@@ -75,8 +77,34 @@ namespace Nekoyume
                 PlayerPrefs.DeleteKey(key);
                 Neko.Log($"Delete {key}: {k}");
             }
+            string datPath = System.IO.Path.Combine(Application.persistentDataPath, "avatar.dat");
+            if (System.IO.File.Exists(datPath))
+                System.IO.File.Delete(datPath);
             PlayerPrefs.Save();
+        }
 
+        private void LevelUp()
+        {
+            GameObject enemyObj = GameObject.Find("Enemy");
+            if (enemyObj == null)
+            {
+                Neko.Log("Need Enemy.");
+                return;
+            }
+            GameObject playerObj = GameObject.Find("Player");
+            if (playerObj != null)
+            {
+                var player = playerObj.GetComponent<Game.Character.Player>();
+                player.Level += 1;
+                Neko.Log($"Level Up to {player.Level}");
+            }
+            var enemy = enemyObj.GetComponent<Game.Character.Enemy>();
+            Game.Event.OnEnemyDead.Invoke(enemy);
+        }
+
+        private void SpeedUp()
+        {
+            Time.timeScale = 2.0f;
         }
     }
 }

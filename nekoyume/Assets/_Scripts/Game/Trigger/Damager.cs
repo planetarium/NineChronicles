@@ -14,9 +14,9 @@ namespace Nekoyume.Game.Trigger
         private AttackType _attackType = AttackType.Light;
         private int _damage = 0;
         private float _size = 0.0f;
-        private int _targetCount = 0;
+        protected int _targetCount = 0;
         private float _knockBack = 0.0f;
-        private List<GameObject> _hitObjects = new List<GameObject>();
+        protected readonly List<GameObject> _hitObjects = new List<GameObject>();
 
         public void Start()
         {

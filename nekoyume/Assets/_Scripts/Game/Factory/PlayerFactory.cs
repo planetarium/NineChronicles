@@ -9,6 +9,8 @@ namespace Nekoyume.Game.Factory
         public GameObject Create()
         {
             var avatar = MoveManager.Instance.Avatar;
+            if (avatar == null)
+                return null;
 
             var objectPool = GetComponent<Util.ObjectPool>();
             var player = objectPool.Get<Character.Player>();
