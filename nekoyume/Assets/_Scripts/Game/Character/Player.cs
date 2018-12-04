@@ -1,9 +1,7 @@
 using System;
 using System.Linq;
 using BTAI;
-using Nekoyume.Data;
 using Nekoyume.Data.Table;
-using Nekoyume.Model;
 using UnityEngine;
 
 

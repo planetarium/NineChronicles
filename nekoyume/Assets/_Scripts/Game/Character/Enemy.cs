@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Linq;
 using BTAI;
 using DG.Tweening;
@@ -13,7 +12,7 @@ namespace Nekoyume.Game.Character
         public int DataId = 0;
         public int RewardExp = 0;
 
-        public void InitAI(Data.Table.Monster statsData)
+        public void InitAI(Monster statsData)
         {
             DataId = statsData.Id;
             WalkSpeed = -1.0f;
@@ -67,7 +66,7 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        public void InitStats(Data.Table.Monster statsData, int power)
+        public void InitStats(Monster statsData, int power)
         {
             HP = Mathf.FloorToInt((float)statsData.Health * ((float)power * 0.01f));
             ATK = statsData.Attack;
@@ -107,7 +106,7 @@ namespace Nekoyume.Game.Character
             UpdateHpBar();
         }
 
-        override protected void OnDead()
+        protected override void OnDead()
         {
             DropItem();
 
@@ -121,7 +120,7 @@ namespace Nekoyume.Game.Character
             var tables = this.GetRootComponent<Data.Tables>();
             foreach (var pair in tables.ItemDrop)
             {
-                Data.Table.ItemDrop dropData = pair.Value;
+                ItemDrop dropData = pair.Value;
                 if (DataId != dropData.MonsterId)
                     continue;
                 
