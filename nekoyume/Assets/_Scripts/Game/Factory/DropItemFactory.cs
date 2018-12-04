@@ -16,8 +16,9 @@ namespace Nekoyume.Game.Factory
 
             var type = typeof(Item.ItemBase).Assembly
             .GetTypes()
-            .FirstOrDefault(t => t.IsDefined(typeof(Item.ItemBase), false) && itemData.Cls == name);
-            var item = System.Activator.CreateInstance(type) as Item.ItemBase;
+            .FirstOrDefault(t => itemData.Cls == t.Name);
+            var p = new object[] { itemData };
+            var item = System.Activator.CreateInstance(type, p) as Item.ItemBase;
             if (item == null)
                 return null;
 
@@ -31,10 +32,9 @@ namespace Nekoyume.Game.Factory
             // sprite
             var render = dropItem.GetComponent<SpriteRenderer>();
             var sprite = Resources.Load<Sprite>($"images/item_{itemId}");
-            if (sprite == null)
-                sprite = Resources.Load<Sprite>("images/pet");
-            render.sprite = sprite;
-            render.sortingOrder = Mathf.FloorToInt(-position.y * 10.0f);
+            if (sprite != null)
+                render.sprite = sprite;
+            render.sortingOrder = 0;
 
             return dropItem.gameObject;
         }

@@ -102,20 +102,22 @@ namespace Nekoyume.Game.Character
 
         override protected void OnDead()
         {
+            DropItem();
+
             base.OnDead();
             Event.OnEnemyDead.Invoke(this);
-
-            DropItem();
         }
 
         private void DropItem()
         {
             var selector = new Util.WeightedSelector<int>();
             var tables = this.GetRootComponent<Data.Tables>();
-            List<string> indexes = tables.ItemDrop.FindIndex("MonsterId", DataId);
-            foreach (string key in indexes)
+            foreach (var pair in tables.ItemDrop)
             {
-                Data.Table.ItemDrop dropData = tables.ItemDrop[key];
+                Data.Table.ItemDrop dropData = pair.Value;
+                if (DataId != dropData.MonsterId)
+                    continue;
+                
                 if (dropData.Weight <= 0)
                     continue;
 

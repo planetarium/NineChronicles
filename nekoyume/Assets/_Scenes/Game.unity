@@ -246,6 +246,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e35d8888697fe4940940dcc605c26678, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Sleep: 0
 --- !u!1 &937548770
 GameObject:
   m_ObjectHideFlags: 0
@@ -404,6 +405,7 @@ GameObject:
   - component: {fileID: 1333831684}
   - component: {fileID: 1333831687}
   - component: {fileID: 1333831686}
+  - component: {fileID: 1333831685}
   m_Layer: 0
   m_Name: Stage
   m_TagString: Untagged
@@ -459,6 +461,20 @@ MonoBehaviour:
   - Prefab: {fileID: 1573157238050388, guid: 01b6fd766302df54e9c7882662fbf17c, type: 2}
     InitCount: 10
     AddCount: 10
+  - Prefab: {fileID: 1351238356012968, guid: 8900087d9918c134582786ed2d074325, type: 2}
+    InitCount: 1
+    AddCount: 1
+--- !u!114 &1333831685
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1333831681}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d0667282e5a17745bd40609b1855b1e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &1333831686
 MonoBehaviour:
   m_ObjectHideFlags: 0
