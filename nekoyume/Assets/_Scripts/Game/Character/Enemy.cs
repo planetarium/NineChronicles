@@ -134,7 +134,11 @@ namespace Nekoyume.Game.Character
                 return;
 
             var dropItemFactory = GetComponentInParent<Factory.DropItemFactory>();
-            dropItemFactory.Create(selector.Select(), transform.position);
+            var dropItem = dropItemFactory.Create(selector.Select(), transform.position);
+            if (dropItem != null)
+            {
+                Event.OnGetItem.Invoke(dropItem.GetComponent<Item.DropItem>());
+            }
         }
     }
 }

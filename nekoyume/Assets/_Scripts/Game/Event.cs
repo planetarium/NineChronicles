@@ -22,5 +22,10 @@ namespace Nekoyume.Game
         public static readonly UnityEvent OnPlayerSleep = new UnityEvent();
 
         public static readonly UnityEvent OnUpdateStatus = new UnityEvent();
+
+        public class GetItem : UnityEvent<Item.DropItem>
+        {
+        }
+        public static readonly  GetItem OnGetItem = new GetItem();
     }
 }
