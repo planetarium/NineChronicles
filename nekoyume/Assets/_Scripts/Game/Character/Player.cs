@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using BTAI;
 using Nekoyume.Data;
 using Nekoyume.Data.Table;
@@ -53,12 +54,31 @@ namespace Nekoyume.Game.Character
                 )
             );
 
-            _skills.Clear();
-            // TODO: select skill
-            var attack = this.GetOrAddComponent<Skill.RangedAttack>();
-            if (attack.Init("rangedAttack"))
+            foreach (var skill in _skills)
             {
-                _skills.Add(attack);
+                Destroy(skill);
+            }
+            _skills.Clear();
+            var skillNames = new[]
+            {
+                "attack",
+                "rangedAttack"
+            };
+            var tables = this.GetRootComponent<Data.Tables>();
+            foreach (var skillName in skillNames)
+            {
+                Data.Table.Skill skillData;
+                if (tables.Skill.TryGetValue(skillName, out skillData))
+                {
+                    var skillType = typeof(Skill.SkillBase).Assembly
+                    .GetTypes()
+                    .FirstOrDefault(t => skillData.Cls == t.Name);
+                    var skill = gameObject.AddComponent(skillType) as Skill.SkillBase;
+                    if (skill.Init(skillData))
+                    {
+                        _skills.Add(skill);
+                    }
+                }
             }
         }
 

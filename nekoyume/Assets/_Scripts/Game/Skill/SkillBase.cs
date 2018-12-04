@@ -9,6 +9,7 @@ namespace Nekoyume.Game.Skill
         protected Data.Table.Skill _data = null;
         protected string _targetTag = "";
         protected float _cooltime = 0.0f;
+        protected float _knockBack = 0.0f;
 
         abstract public bool Use();
 
@@ -17,16 +18,16 @@ namespace Nekoyume.Game.Skill
             _cooltime -= Time.deltaTime;
         }
 
-        public bool Init(string id)
+        public bool Init(Data.Table.Skill data)
         {
-            var tables = this.GetRootComponent<Data.Tables>();
-            if (tables.Skill.TryGetValue(id, out _data))
+            if (data == null)
             {
-                _cooltime = 0.0f;
-                return true;
+                Destroy(this);
+                return false;
             }
-            Destroy(this);
-            return false;
+            _data = data;
+            _cooltime = 0.0f;
+            return true;
         }
 
         public List<GameObject> GetTargets()
@@ -89,13 +90,19 @@ namespace Nekoyume.Game.Skill
             return nearest;
         }
 
+        public void SetGlobalCooltime(float cooltime)
+        {
+            if (_cooltime < cooltime)
+                _cooltime = cooltime;
+        }
+
         public void Damager(Trigger.Damager damager, float range, string ani)
         {
             var owner = GetComponent<Character.CharacterBase>();
             damager.transform.position = transform.TransformPoint(range, 0.0f, 0.0f);
             int damage = Mathf.FloorToInt(owner.CalcAtk() * ((float)_data.Power * 0.01f));
             float size = (float)_data.Size / (float)Game.PixelPerUnit;
-            damager.Set(ani, _targetTag, _data.AttackType, damage, size, _data.TargetCount, 0.2f);
+            damager.Set(ani, _targetTag, _data.AttackType, damage, size, _data.TargetCount, _knockBack);
         }
     }
 }

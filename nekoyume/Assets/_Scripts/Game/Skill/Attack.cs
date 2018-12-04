@@ -13,6 +13,7 @@ namespace Nekoyume.Game.Skill
                 return false;
 
             _cooltime = (float)_data.Cooltime;
+            _knockBack = 0.2f;
 
             float range = (float)_data.Range / (float)Game.PixelPerUnit;
 
