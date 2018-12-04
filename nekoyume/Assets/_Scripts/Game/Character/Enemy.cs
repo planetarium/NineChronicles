@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using BTAI;
 using DG.Tweening;
 using Nekoyume.Data.Table;
@@ -41,7 +42,6 @@ namespace Nekoyume.Game.Character
                 Destroy(skill);
             }
             _skills.Clear();
-            // TODO: select skill
             var skillNames = new[]
             {
                 statsData.Skill_0,
@@ -49,13 +49,20 @@ namespace Nekoyume.Game.Character
                 statsData.Skill_2,
                 statsData.Skill_3
             };
+            var tables = this.GetRootComponent<Data.Tables>();
             foreach (var skillName in skillNames)
             {
-                var attack = gameObject.AddComponent<Skill.MonsterAttack>();
-                if (string.IsNullOrEmpty(skillName)) continue;
-                if (attack.Init(skillName))
+                Data.Table.Skill skillData;
+                if (tables.Skill.TryGetValue(skillName, out skillData))
                 {
-                    _skills.Add(attack);
+                    var skillType = typeof(Skill.SkillBase).Assembly
+                    .GetTypes()
+                    .FirstOrDefault(t => skillData.Cls == t.Name);
+                    var skill = gameObject.AddComponent(skillType) as Skill.SkillBase;
+                    if (skill.Init(skillData))
+                    {
+                        _skills.Add(skill);
+                    }
                 }
             }
         }

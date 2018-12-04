@@ -27,6 +27,7 @@ namespace Nekoyume.Game.Character
         protected Vector3 _hpBarOffset = new Vector3();
 
         protected List<Skill.SkillBase> _skills = new List<Skill.SkillBase>();
+        protected const float kSkillGlobalCooltime = 0.6f;
 
         private void Start()
         {
@@ -68,8 +69,16 @@ namespace Nekoyume.Game.Character
 
         protected void Attack()
         {
+            bool used = false;
             foreach (var skill in _skills)
             {
+                if (skill.IsCooltime()) continue;
+                if (!skill.IsTargetInRange()) continue;
+                if (used)
+                {
+                    skill.SetGlobalCooltime(kSkillGlobalCooltime);
+                    continue;
+                }
                 if (skill.Use())
                 {
                     if (_anim != null)
@@ -77,6 +86,8 @@ namespace Nekoyume.Game.Character
                         _anim.SetTrigger("Attack");
                         _anim.SetBool("Walk", false);
                     }
+                    used = true;
+                    continue;
                 }
             }
         }
@@ -101,7 +112,6 @@ namespace Nekoyume.Game.Character
         private void Update()
         {
             Root?.Tick();
-
             if (_hpBar != null)
             {
                 _hpBar.UpdatePosition(gameObject, _hpBarOffset);
