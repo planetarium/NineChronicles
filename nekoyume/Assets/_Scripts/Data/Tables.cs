@@ -1,6 +1,7 @@
 using System.Linq;
 using UnityEngine;
 using Nekoyume.Data.Table;
+using Nekoyume.Game.Item;
 
 
 namespace Nekoyume.Data
@@ -53,6 +54,21 @@ namespace Nekoyume.Data
             {
                 table.Load(file.text);
             }
+        }
+
+        public ItemBase GetItem(int itemId)
+        {
+            Item itemData;
+            if (!Item.TryGetValue(itemId, out itemData))
+                return null;
+            var type = typeof(ItemBase).Assembly
+                .GetTypes()
+                .FirstOrDefault(t => itemData.Cls == t.Name);
+            var p = new object[] { itemData };
+            if (type == null)
+                return null;
+            var item = System.Activator.CreateInstance(type, p) as ItemBase;
+            return item;
         }
     }
 }
