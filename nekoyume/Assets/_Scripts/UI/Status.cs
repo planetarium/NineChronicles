@@ -65,5 +65,10 @@ namespace Nekoyume.UI
                 ExpBar.value = value;
             }
         }
+
+        public void ToggleInventory()
+        {
+            Widget.Find<Inventory>().Toggle();
+        }
     }
 }
