@@ -130,20 +130,16 @@ namespace Nekoyume.Game.Character
 
         public override void OnDamage(AttackType attackType, int dmg)
         {
-            int clacDmg = CalcDamage(attackType, dmg);
-            if (clacDmg <= 0)
-                return;
+            base.OnDamage(attackType, dmg);
 
-            HP -= clacDmg;
+            int calcDmg = CalcDamage(attackType, dmg);
 
             PopupText.Show(
                 transform.TransformPoint(UnityEngine.Random.Range(-0.6f, -0.4f), 1.0f, 0.0f),
                 new Vector3(0.0f, 2.0f, 0.0f),
-                clacDmg.ToString(),
+                calcDmg.ToString(),
                 Color.red,
                 new Vector3(-0.01f, -0.1f, 0.0f));
-
-            UpdateHpBar();
         }
 
         public string SerializeItems()

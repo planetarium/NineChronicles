@@ -185,11 +185,11 @@ namespace Nekoyume.Game.Character
 
         public virtual void OnDamage(AttackType attackType, int dmg)
         {
-            int clacDmg = CalcDamage(attackType, dmg);
-            if (clacDmg <= 0)
+            int calcDmg = CalcDamage(attackType, dmg);
+            if (calcDmg <= 0)
                 return;
 
-            HP -= clacDmg;
+            HP -= calcDmg;
 
             UpdateHpBar();
         }

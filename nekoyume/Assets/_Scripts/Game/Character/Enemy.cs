@@ -81,16 +81,14 @@ namespace Nekoyume.Game.Character
 
         public override void OnDamage(AttackType attackType, int dmg)
         {
-            int clacDmg = CalcDamage(attackType, dmg);
-            if (clacDmg <= 0)
-                return;
+            base.OnDamage(attackType, dmg);
 
-            HP -= clacDmg;
+            int calcDmg = CalcDamage(attackType, dmg);
 
             UI.PopupText.Show(
                 transform.TransformPoint(0.1f, 1.0f, 0.0f),
                 new Vector3(1.0f, 2.0f, 0.0f),
-                clacDmg.ToString(),
+                calcDmg.ToString(),
                 Color.yellow,
                 new Vector3(0.01f, -0.1f, 0.0f));
 
@@ -102,8 +100,6 @@ namespace Nekoyume.Game.Character
                 colorseq.Append(mat.DOColor(Color.red, 0.1f));
                 colorseq.Append(mat.DOColor(Color.white, 0.1f));
             }
-
-            UpdateHpBar();
         }
 
         protected override void OnDead()
