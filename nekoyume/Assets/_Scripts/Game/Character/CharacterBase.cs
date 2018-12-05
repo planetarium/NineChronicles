@@ -67,7 +67,12 @@ namespace Nekoyume.Game.Character
             transform.position = position;
         }
 
-        protected void Attack()
+        protected virtual void Attack()
+        {
+            TryAttack();
+        }
+
+        protected virtual bool TryAttack()
         {
             bool used = false;
             foreach (var skill in _skills)
@@ -90,6 +95,7 @@ namespace Nekoyume.Game.Character
                     continue;
                 }
             }
+            return used;
         }
 
         protected void Die()

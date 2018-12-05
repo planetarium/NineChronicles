@@ -40,6 +40,11 @@ namespace Nekoyume.Game.Skill
             return _cooltime > 0;
         }
 
+        public float GetCooltime()
+        {
+            return _cooltime;
+        }
+
         public bool IsTargetInRange()
         {
             var stage = GetComponentInParent<Stage>();
