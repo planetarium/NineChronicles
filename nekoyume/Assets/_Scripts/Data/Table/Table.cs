@@ -75,6 +75,13 @@ namespace Nekoyume.Data.Table
                         else
                             fieldInfo.SetValue(row, long.Parse(value));
                     }
+                    else if (fieldType == typeof(float))
+                    {
+                        if (string.IsNullOrEmpty(value))
+                            fieldInfo.SetValue(row, 0.0f);
+                        else
+                            fieldInfo.SetValue(row, float.Parse(value));
+                    }
                     else if (fieldType == typeof(string))
                     {
                         fieldInfo.SetValue(row, value);
