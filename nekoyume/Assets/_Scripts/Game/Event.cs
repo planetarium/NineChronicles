@@ -27,5 +27,7 @@ namespace Nekoyume.Game
         {
         }
         public static readonly  GetItem OnGetItem = new GetItem();
+
+        public static readonly UnityEvent OnUseSkill = new UnityEvent();
     }
 }

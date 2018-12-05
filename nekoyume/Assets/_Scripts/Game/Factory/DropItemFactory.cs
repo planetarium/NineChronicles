@@ -27,7 +27,7 @@ namespace Nekoyume.Game.Factory
             if (dropItem == null)
                 return null;
 
-            dropItem.Item = item;
+            dropItem.Set(item);
 
             // sprite
             var render = dropItem.GetComponent<SpriteRenderer>();
