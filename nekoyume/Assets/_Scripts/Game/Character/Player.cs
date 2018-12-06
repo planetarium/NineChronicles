@@ -26,12 +26,12 @@ namespace Nekoyume.Game.Character
             protected set { throw new NotImplementedException(); }
         }
 
-        public Inventory Inventory;
+        public Item.Inventory Inventory;
         private void Awake()
         {
             Event.OnEnemyDead.AddListener(GetEXP);
             Event.OnGetItem.AddListener(PickUpItem);
-            Inventory = new Inventory();
+            Inventory = new Item.Inventory();
         }
 
         public void InitAI()
@@ -210,7 +210,7 @@ namespace Nekoyume.Game.Character
         {
             if (!string.IsNullOrEmpty(avatar.items))
             {
-                var items = JsonConvert.DeserializeObject<List<Inventory.InventoryItem>>(avatar.items);
+                var items = JsonConvert.DeserializeObject<List<Item.Inventory.InventoryItem>>(avatar.items);
                 Inventory.Set(items);
             }
         }

@@ -29,7 +29,9 @@ namespace Nekoyume.UI
 
         public override void Show()
         {
-            string[] items = MoveManager.Instance.Avatar.items;
+            // FIX ME : get item list
+            string itemsstr = MoveManager.Instance.Avatar.items;
+            string[] items = new string[] {};
 
             for (int i = 0; i < 40; ++i)
             {
