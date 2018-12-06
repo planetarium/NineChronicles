@@ -44,6 +44,7 @@ namespace Nekoyume.Game.Entrance
                 player.transform.position = new Vector2(0.0f, -0.7f);
                 player.GetComponent<Character.CharacterBase>().WalkSpeed = 0.6f;
 
+                UI.Widget.Find<UI.SkillController>().Show(player);
                 UI.Widget.Find<UI.Status>().UpdatePlayer(player);
 
                 var cam = Camera.main.gameObject.GetComponent<ActionCamera>();

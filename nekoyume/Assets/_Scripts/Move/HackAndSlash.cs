@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -23,9 +24,7 @@ namespace Nekoyume.Move
             Details.TryGetValue("items", out items);
             if (!string.IsNullOrEmpty(items))
             {
-                var ja = (JArray) JsonConvert.DeserializeObject(items);
-                var des = ja.ToObject<string[]>();
-                newCtx.Avatar.items = des;
+                newCtx.Avatar.items = items;
             }
             return newCtx;
         }

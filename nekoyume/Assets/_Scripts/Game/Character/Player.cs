@@ -1,12 +1,14 @@
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using BTAI;
+using Nekoyume.Data;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Item;
+using Nekoyume.Game.Skill;
+using Nekoyume.UI;
 using Newtonsoft.Json;
 using UnityEngine;
-
 
 namespace Nekoyume.Game.Character
 {
@@ -24,11 +26,12 @@ namespace Nekoyume.Game.Character
             protected set { throw new NotImplementedException(); }
         }
 
-        public List<DropItem> Items = new List<DropItem>();
+        public Item.Inventory Inventory;
         private void Awake()
         {
             Event.OnEnemyDead.AddListener(GetEXP);
             Event.OnGetItem.AddListener(PickUpItem);
+            Inventory = new Item.Inventory();
         }
 
         public void InitAI()
@@ -67,16 +70,16 @@ namespace Nekoyume.Game.Character
                 "attack",
                 "rangedAttack"
             };
-            var tables = this.GetRootComponent<Data.Tables>();
+            var tables = this.GetRootComponent<Tables>();
             foreach (var skillName in skillNames)
             {
                 Data.Table.Skill skillData;
                 if (tables.Skill.TryGetValue(skillName, out skillData))
                 {
-                    var skillType = typeof(Skill.SkillBase).Assembly
-                    .GetTypes()
-                    .FirstOrDefault(t => skillData.Cls == t.Name);
-                    var skill = gameObject.AddComponent(skillType) as Skill.SkillBase;
+                    var skillType = typeof(SkillBase).Assembly
+                        .GetTypes()
+                        .FirstOrDefault(t => skillData.Cls == t.Name);
+                    var skill = gameObject.AddComponent(skillType) as SkillBase;
                     if (skill.Init(skillData))
                     {
                         _skills.Add(skill);
@@ -91,9 +94,38 @@ namespace Nekoyume.Game.Character
             Level = avatar.level;
 
             CalcStats();
+            InitInventory(avatar);
 
             if (!avatar.dead && avatar.hp > 0)
                 HP = avatar.hp;
+        }
+
+        protected override void Attack()
+        {
+            bool used = TryAttack();
+            if (used)
+            {
+                Event.OnUseSkill.Invoke();
+            }
+        }
+
+        public bool UseSkill(Skill.SkillBase selectedSkill)
+        {
+            if (selectedSkill.IsCooltime()) return false;
+            if (!selectedSkill.Use())
+                return false;
+
+            if (_anim != null)
+            {
+                _anim.SetTrigger("Attack");
+                _anim.SetBool("Walk", false);
+            }
+            foreach (var skill in _skills)
+            {
+                skill.SetGlobalCooltime(kSkillGlobalCooltime);
+            }
+            Event.OnUseSkill.Invoke();
+            return true;
         }
 
         public override void OnDamage(AttackType attackType, int dmg)
@@ -104,7 +136,7 @@ namespace Nekoyume.Game.Character
 
             HP -= clacDmg;
 
-            UI.PopupText.Show(
+            PopupText.Show(
                 transform.TransformPoint(UnityEngine.Random.Range(-0.6f, -0.4f), 1.0f, 0.0f),
                 new Vector3(0.0f, 2.0f, 0.0f),
                 clacDmg.ToString(),
@@ -116,14 +148,9 @@ namespace Nekoyume.Game.Character
 
         public string SerializeItems()
         {
-            var codes = new List<string>();
-            foreach (var item in Items)
-            {
-                codes.Add(item.Item.Data.Id.ToString());
-            }
-            Items.Clear();
-
-            return JsonConvert.SerializeObject(codes);
+            var items = JsonConvert.SerializeObject(Inventory._items);
+            Inventory._items.Clear();
+            return items;
         }
 
         protected override void OnDead()
@@ -133,8 +160,8 @@ namespace Nekoyume.Game.Character
 
         private void CalcStats()
         {
-            Data.Tables tables = this.GetRootComponent<Data.Tables>();
-            Data.Table.Stats statsData;
+            Tables tables = this.GetRootComponent<Tables>();
+            Stats statsData;
             if (!tables.Stats.TryGetValue(Level, out statsData))
                 return;
 
@@ -167,7 +194,7 @@ namespace Nekoyume.Game.Character
             EXP -= EXPMax;
             Level++;
 
-            UI.PopupText.Show(transform.TransformPoint(-0.6f, 1.0f, 0.0f), new Vector3(0.0f, 2.0f, 0.0f), "LEVEL UP");
+            PopupText.Show(transform.TransformPoint(-0.6f, 1.0f, 0.0f), new Vector3(0.0f, 2.0f, 0.0f), "LEVEL UP");
 
             CalcStats();
 
@@ -176,7 +203,16 @@ namespace Nekoyume.Game.Character
 
         private void PickUpItem(DropItem item)
         {
-            Items.Add(item);
+            Inventory.Add(item.Item);
+        }
+
+        private void InitInventory(Model.Avatar avatar)
+        {
+            if (!string.IsNullOrEmpty(avatar.items))
+            {
+                var items = JsonConvert.DeserializeObject<List<Item.Inventory.InventoryItem>>(avatar.items);
+                Inventory.Set(items);
+            }
         }
     }
 }

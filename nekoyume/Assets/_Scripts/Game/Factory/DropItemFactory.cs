@@ -10,15 +10,7 @@ namespace Nekoyume.Game.Factory
         public GameObject Create(int itemId, Vector2 position)
         {
             Data.Tables tables = this.GetRootComponent<Data.Tables>();
-            Data.Table.Item itemData;
-            if (!tables.Item.TryGetValue(itemId, out itemData))
-                return null;
-
-            var type = typeof(Item.ItemBase).Assembly
-            .GetTypes()
-            .FirstOrDefault(t => itemData.Cls == t.Name);
-            var p = new object[] { itemData };
-            var item = System.Activator.CreateInstance(type, p) as Item.ItemBase;
+            Item.ItemBase item = tables.GetItem(itemId);
             if (item == null)
                 return null;
 
@@ -27,7 +19,7 @@ namespace Nekoyume.Game.Factory
             if (dropItem == null)
                 return null;
 
-            dropItem.Item = item;
+            dropItem.Set(item);
 
             // sprite
             var render = dropItem.GetComponent<SpriteRenderer>();
