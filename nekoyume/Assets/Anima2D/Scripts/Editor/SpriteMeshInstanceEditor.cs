@@ -263,6 +263,12 @@ namespace Anima2D
 				}
 			}
 
+			// [incl]
+			if (GUILayout.Button("Edit Sprite Mesh"))
+			{
+				SpriteMeshEditorWindow window = SpriteMeshEditorWindow.GetWindow();
+				window.UpdateFromSelection();
+			}
 		}
 
 		void UpdateSpriteMeshData()
