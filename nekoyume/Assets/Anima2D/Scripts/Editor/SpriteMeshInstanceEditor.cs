@@ -238,6 +238,15 @@ namespace Anima2D
 
 			EditorGUI.BeginChangeCheck();
 
+			if (GUILayout.Button("Left 1 Bone"))
+			{
+				for(int i = 1; i < m_BoneTransformsProperty.arraySize; ++i)
+				{
+					m_BoneTransformsProperty.GetArrayElementAtIndex(i).objectReferenceValue = null;
+				}
+				m_BoneTransformsProperty.arraySize = 1;
+			}
+
 			if(mBoneList != null)
 			{
 				mBoneList.DoLayoutList();
