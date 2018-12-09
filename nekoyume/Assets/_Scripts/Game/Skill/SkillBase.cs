@@ -11,8 +11,6 @@ namespace Nekoyume.Game.Skill
         protected float _cooltime = 0.0f;
         protected float _knockBack = 0.0f;
 
-        abstract public bool Use();
-
         private void Update()
         {
             _cooltime -= Time.deltaTime;
@@ -109,5 +107,17 @@ namespace Nekoyume.Game.Skill
             float size = (float)_data.Size / (float)Game.PixelPerUnit;
             damager.Set(ani, _targetTag, _data.AttackType, damage, size, _data.TargetCount, _knockBack);
         }
+
+        public bool Use()
+        {
+            if (IsCooltime())
+                return false;
+
+            _cooltime = (float)_data.Cooltime;
+
+            return _Use();
+        }
+
+        protected abstract bool _Use();
     }
 }

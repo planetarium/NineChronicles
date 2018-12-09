@@ -2,13 +2,8 @@ namespace Nekoyume.Game.Skill
 {
     public class RangedAttack : Attack
     {
-        public override bool Use()
+        protected override bool _Use()
         {
-            if (IsCooltime())
-                return false;
-
-            _cooltime = (float)_data.Cooltime;
-
             var objectPool = GetComponentInParent<Util.ObjectPool>();
             var damager = objectPool.Get<Trigger.Bullet>();
             Damager(damager, 0.0f, "hit_02");

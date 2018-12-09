@@ -77,7 +77,6 @@ namespace Nekoyume.Game.Character
             bool used = false;
             foreach (var skill in _skills)
             {
-                if (skill.IsCooltime()) continue;
                 if (!skill.IsTargetInRange()) continue;
                 if (used)
                 {
