@@ -48,6 +48,8 @@ namespace Nekoyume.Move
 
         public bool Confirmed => BlockId.HasValue;
 
+        public Action.Sleep Actions;
+
         public override IDictionary<string, dynamic> PlainValue => new Dictionary<string, dynamic>
         {
             {"user_address", "0x" + UserAddress.Hex()},

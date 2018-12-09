@@ -199,13 +199,11 @@ namespace Nekoyume.Move
 
         public Sleep Sleep(Stats statsData , DateTime? timestamp = null)
         {
+            var actions = new Action.Sleep(Avatar, statsData);
             var sleep = new Sleep
             {
-                // TODO bencodex
-                Details = new Dictionary<string, string>
-                {
-                    ["hp"] = statsData.Health.ToString()
-                }
+                Actions = actions,
+                Details = actions.ToDetails()
             };
             return ProcessMove(sleep, 0, timestamp);
         }
