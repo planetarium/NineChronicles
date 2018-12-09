@@ -97,6 +97,23 @@ namespace Nekoyume.Game.Character
             return used;
         }
 
+        public virtual bool UseSkill(Skill.SkillBase selectedSkill)
+        {
+            if (!selectedSkill.Use())
+                return false;
+
+            if (_anim != null)
+            {
+                _anim.SetTrigger("Attack");
+                _anim.SetBool("Walk", false);
+            }
+            foreach (var skill in _skills)
+            {
+                skill.SetGlobalCooltime(kSkillGlobalCooltime);
+            }
+            return true;
+        }
+
         protected void Die()
         {
             StartCoroutine(Dying());

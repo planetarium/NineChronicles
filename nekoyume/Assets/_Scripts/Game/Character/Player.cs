@@ -109,23 +109,12 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        public bool UseSkill(Skill.SkillBase selectedSkill)
+        public override bool UseSkill(SkillBase selectedSkill)
         {
-            if (selectedSkill.IsCooltime()) return false;
-            if (!selectedSkill.Use())
-                return false;
-
-            if (_anim != null)
-            {
-                _anim.SetTrigger("Attack");
-                _anim.SetBool("Walk", false);
-            }
-            foreach (var skill in _skills)
-            {
-                skill.SetGlobalCooltime(kSkillGlobalCooltime);
-            }
-            Event.OnUseSkill.Invoke();
-            return true;
+            bool used = base.UseSkill(selectedSkill);
+            if (used)
+                Event.OnUseSkill.Invoke();
+            return used;
         }
 
         public override void OnDamage(AttackType attackType, int dmg)
