@@ -8,12 +8,25 @@ namespace Nekoyume.Game.Skill
     {
         protected Data.Table.Skill _data = null;
         protected string _targetTag = "";
+        public bool Casting { get; private set; } = false;
+        public float CastingTime { get; private set; } = 0.0f;
+        public float CastingPercentage => Mathf.Max(1 - CastingTime / _data.CastingTime, 0);
+        public bool Casted { get; private set; } = false;
         protected float _cooltime = 0.0f;
         protected float _knockBack = 0.0f;
 
         private void Update()
         {
             _cooltime -= Time.deltaTime;
+            if (Casting)
+            {
+                CastingTime -= Time.deltaTime;
+                if (CastingTime <= 0)
+                {
+                    Casting = false;
+                    Casted = true;
+                }
+            }
         }
 
         public bool Init(Data.Table.Skill data)
@@ -108,11 +121,40 @@ namespace Nekoyume.Game.Skill
             damager.Set(ani, _targetTag, _data.AttackType, damage, size, _data.TargetCount, _knockBack);
         }
 
+        public bool Cast()
+        {
+            /*
+             * Returns true if casting is needed
+             */
+            if (Casted || Casting || IsCooltime())
+                return false;
+
+            if (_data.CastingTime <= 0)
+            {
+                Casted = true;
+                return false;
+            }
+
+            Casting = true;
+            CastingTime = _data.CastingTime;
+
+            return true;
+        }
+
+        public void CancelCast()
+        {
+            Casting = false;
+            _cooltime = _data.Cooltime;
+        }
+
         public bool Use()
         {
+            if (!Casted)
+                return false;
             if (IsCooltime())
                 return false;
 
+            Casted = false;
             _cooltime = (float)_data.Cooltime;
 
             return _Use();
