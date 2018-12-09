@@ -39,12 +39,19 @@ namespace Nekoyume.Game.Character
             WalkSpeed = 0.0f;
 
             _hpBarOffset.Set(-0.22f, -0.61f, 0.0f);
+            _castingBarOffset.Set(-0.22f, -0.83f, 0.0f);
 
             Root = new Root();
             Root.OpenBranch(
                 BT.Selector().OpenBranch(
                     BT.If(IsAlive).OpenBranch(
                         BT.Selector().OpenBranch(
+                            BT.If(() => Casting).OpenBranch(
+                                BT.Call(() => { })
+                            ),
+                            BT.If(() => CastedSkill != null).OpenBranch(
+                                BT.Call(() => UseSkill(CastedSkill))
+                            ),
                             BT.If(HasTargetInRange).OpenBranch(
                                 BT.Call(Attack)
                             ),
@@ -119,7 +126,10 @@ namespace Nekoyume.Game.Character
 
         public override void OnDamage(AttackType attackType, int dmg)
         {
+            bool casting = Casting;
             base.OnDamage(attackType, dmg);
+            if (casting && !Casting)
+                Event.OnUseSkill.Invoke();
 
             int calcDmg = CalcDamage(attackType, dmg);
 
