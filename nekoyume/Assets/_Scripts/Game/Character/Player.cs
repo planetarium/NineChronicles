@@ -20,6 +20,9 @@ namespace Nekoyume.Game.Character
 
         public long EXPMax { get; private set; }
 
+        private ProgressBar _mpBar = null;
+        private Vector3 _mpBarOffset = new Vector3();
+
         public override WeightType WeightType
         {
             get { return WeightType.Small; }
@@ -40,6 +43,7 @@ namespace Nekoyume.Game.Character
 
             _hpBarOffset.Set(-0.22f, -0.61f, 0.0f);
             _castingBarOffset.Set(-0.22f, -0.83f, 0.0f);
+            _mpBarOffset.Set(-0.22f, -0.66f, 0.0f);
 
             Root = new Root();
             Root.OpenBranch(
@@ -112,6 +116,7 @@ namespace Nekoyume.Game.Character
             bool used = TryAttack();
             if (used)
             {
+                UpdateMpBar();
                 Event.OnUseSkill.Invoke();
             }
         }
@@ -208,6 +213,35 @@ namespace Nekoyume.Game.Character
                 var items = JsonConvert.DeserializeObject<List<Item.Inventory.InventoryItem>>(avatar.items);
                 Inventory.Set(items);
             }
+        }
+
+        protected override void OnDisable()
+        {
+            base.OnDisable();
+            if (_mpBar != null)
+            {
+                Destroy(_mpBar.gameObject);
+                _mpBar = null;
+            }
+        }
+
+        private void Update()
+        {
+            base.Update();
+            if (_mpBar != null)
+            {
+                _mpBar.UpdatePosition(gameObject, _mpBarOffset);
+            }
+        }
+
+        public void UpdateMpBar()
+        {
+            if (_mpBar == null)
+            {
+                _mpBar = Widget.Create<ProgressBar>(true);
+                _mpBar.greenBar = Resources.Load<Sprite>("ui/UI_bar_01_blue");
+            }
+            _mpBar.SetValue((float)MP / (float)MP);
         }
     }
 }

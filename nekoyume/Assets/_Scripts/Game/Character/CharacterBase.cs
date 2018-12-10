@@ -39,7 +39,7 @@ namespace Nekoyume.Game.Character
             _anim = GetComponent<Animator>();
         }
 
-        private void OnDisable()
+        protected virtual void OnDisable()
         {
             WalkSpeed = 0.0f;
             Root = null;
@@ -163,7 +163,7 @@ namespace Nekoyume.Game.Character
             OnDead();
         }
 
-        private void Update()
+        protected  virtual void Update()
         {
             Root?.Tick();
             if (_hpBar != null)
