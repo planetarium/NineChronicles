@@ -39,12 +39,19 @@ namespace Nekoyume.Game.Character
             WalkSpeed = 0.0f;
 
             _hpBarOffset.Set(-0.22f, -0.61f, 0.0f);
+            _castingBarOffset.Set(-0.22f, -0.83f, 0.0f);
 
             Root = new Root();
             Root.OpenBranch(
                 BT.Selector().OpenBranch(
                     BT.If(IsAlive).OpenBranch(
                         BT.Selector().OpenBranch(
+                            BT.If(() => Casting).OpenBranch(
+                                BT.Call(() => { })
+                            ),
+                            BT.If(() => CastedSkill != null).OpenBranch(
+                                BT.Call(() => UseSkill(CastedSkill))
+                            ),
                             BT.If(HasTargetInRange).OpenBranch(
                                 BT.Call(Attack)
                             ),
@@ -109,41 +116,29 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        public bool UseSkill(Skill.SkillBase selectedSkill)
+        public override bool UseSkill(SkillBase selectedSkill)
         {
-            if (selectedSkill.IsCooltime()) return false;
-            if (!selectedSkill.Use())
-                return false;
-
-            if (_anim != null)
-            {
-                _anim.SetTrigger("Attack");
-                _anim.SetBool("Walk", false);
-            }
-            foreach (var skill in _skills)
-            {
-                skill.SetGlobalCooltime(kSkillGlobalCooltime);
-            }
-            Event.OnUseSkill.Invoke();
-            return true;
+            bool used = base.UseSkill(selectedSkill);
+            if (used)
+                Event.OnUseSkill.Invoke();
+            return used;
         }
 
         public override void OnDamage(AttackType attackType, int dmg)
         {
-            int clacDmg = CalcDamage(attackType, dmg);
-            if (clacDmg <= 0)
-                return;
+            bool casting = Casting;
+            base.OnDamage(attackType, dmg);
+            if (casting && !Casting)
+                Event.OnUseSkill.Invoke();
 
-            HP -= clacDmg;
+            int calcDmg = CalcDamage(attackType, dmg);
 
             PopupText.Show(
                 transform.TransformPoint(UnityEngine.Random.Range(-0.6f, -0.4f), 1.0f, 0.0f),
                 new Vector3(0.0f, 2.0f, 0.0f),
-                clacDmg.ToString(),
+                calcDmg.ToString(),
                 Color.red,
                 new Vector3(-0.01f, -0.1f, 0.0f));
-
-            UpdateHpBar();
         }
 
         public string SerializeItems()
