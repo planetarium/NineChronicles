@@ -90,37 +90,14 @@ namespace Nekoyume.Game.Character
             bool used = false;
             foreach (var skill in _skills)
             {
-                if (!skill.IsTargetInRange()) continue;
-                if (used)
-                {
-                    skill.SetGlobalCooltime(kSkillGlobalCooltime);
-                    continue;
-                }
-                if (skill.Cast())
-                {
-                    if (_anim != null)
-                    {
-                        // TODO: Casting Animation
-                        _anim.SetBool("Walk", false);
-                    }
-                    break;
-                }
-                if (skill.Use())
-                {
-                    if (_anim != null)
-                    {
-                        _anim.SetTrigger("Attack");
-                        _anim.SetBool("Walk", false);
-                    }
-                    used = true;
-                    continue;
-                }
+                used = UseSkill(skill);
             }
             return used;
         }
 
         public virtual bool UseSkill(Skill.SkillBase selectedSkill)
         {
+            if (!selectedSkill.IsTargetInRange()) return false;
             if (selectedSkill.Cast())
             {
                 if (_anim != null)
