@@ -9,7 +9,7 @@ namespace Nekoyume.Game.Skill
 
         protected override bool _Use()
         {
-            float range = (float)_data.Range / (float)Game.PixelPerUnit;
+            float range = (float)Data.Range / (float)Game.PixelPerUnit;
 
             var objectPool = GetComponentInParent<Util.ObjectPool>();
             var damager = objectPool.Get<Trigger.Damager>();

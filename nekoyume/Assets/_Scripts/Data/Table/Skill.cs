@@ -12,5 +12,6 @@ namespace Nekoyume.Data.Table
         public int Cooltime = 0;
         public int CastingTime = 0;
         public int TargetCount = 0;
+        public int Cost = 0;
     }
 }

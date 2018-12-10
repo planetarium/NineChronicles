@@ -17,6 +17,7 @@ namespace Nekoyume.Game.Character
         public int MP = 0;
         public long EXP = 0;
         public int Level = 0;
+        public int MPMax = 0;
 
         public long EXPMax { get; private set; }
 
@@ -113,20 +114,31 @@ namespace Nekoyume.Game.Character
 
         protected override void Attack()
         {
-            bool used = TryAttack();
-            if (used)
+            foreach (var skill in _skills)
             {
-                UpdateMpBar();
-                Event.OnUseSkill.Invoke();
+                UseSkill(skill);
             }
         }
 
         public override bool UseSkill(SkillBase selectedSkill)
         {
-            bool used = base.UseSkill(selectedSkill);
-            if (used)
-                Event.OnUseSkill.Invoke();
-            return used;
+            if (selectedSkill.IsCooltime()) return false;
+            if (!selectedSkill.Use())
+                return false;
+
+            if (_anim != null)
+            {
+                _anim.SetTrigger("Attack");
+                _anim.SetBool("Walk", false);
+            }
+            foreach (var skill in _skills)
+            {
+                skill.SetGlobalCooltime(kSkillGlobalCooltime);
+            }
+            MP -= selectedSkill.Data.Cost;
+            UpdateMpBar();
+            Event.OnUseSkill.Invoke();
+            return true;
         }
 
         public override void OnDamage(AttackType attackType, int dmg)
@@ -168,7 +180,7 @@ namespace Nekoyume.Game.Character
             HP = statsData.Health;
             ATK = statsData.Attack;
             DEF = statsData.Defense;
-            MP = statsData.Mana;
+            MP = MPMax = statsData.Mana;
 
             _hpMax = statsData.Health;
             EXPMax = statsData.Exp;
@@ -241,7 +253,7 @@ namespace Nekoyume.Game.Character
                 _mpBar = Widget.Create<ProgressBar>(true);
                 _mpBar.greenBar = Resources.Load<Sprite>("ui/UI_bar_01_blue");
             }
-            _mpBar.SetValue((float)MP / (float)MP);
+            _mpBar.SetValue((float)MP / (float)MPMax);
         }
     }
 }

@@ -1,3 +1,3 @@
-id,cls,power,range,size,attack_type,elemental_type,cooltime,casting_time,target_count
-attack,Attack,100,80,80,1,0,2,0,3
-rangedAttack,RangedAttack,100,320,80,1,0,2,0,1
+id,cls,power,range,size,attack_type,elemental_type,cooltime,casting_time,target_count,cost
+attack,Attack,100,80,80,1,0,2,0,3,0
+rangedAttack,RangedAttack,100,320,80,1,0,2,0,1,1
