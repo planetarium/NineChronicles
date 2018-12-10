@@ -11,7 +11,7 @@ namespace Nekoyume.Game.Skill
         {
             _knockBack = 0.2f;
 
-            float range = (float)_data.Range / (float)Game.PixelPerUnit;
+            float range = (float)Data.Range / (float)Game.PixelPerUnit;
 
             var objectPool = GetComponentInParent<Util.ObjectPool>();
             var damager = objectPool.Get<Trigger.Damager>();
