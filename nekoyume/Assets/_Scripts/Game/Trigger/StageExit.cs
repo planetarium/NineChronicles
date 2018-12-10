@@ -25,6 +25,8 @@ namespace Nekoyume.Game.Trigger
             var cam = Camera.main.gameObject.GetComponent<ActionCamera>();
             cam.target = null;
 
+            StageReward();
+
             var stage = GetComponentInParent<Stage>();
             var player = stage.GetComponentInChildren<Player>();
             var id = stage.Id + 1;
@@ -36,6 +38,35 @@ namespace Nekoyume.Game.Trigger
             else
                 Event.OnStageEnter.Invoke();
             Sleep = false;
+        }
+
+        private void StageReward()
+        {
+            var stage = GetComponentInParent<Stage>();
+            var selector = new Util.WeightedSelector<int>();
+            var tables = this.GetRootComponent<Data.Tables>();
+            foreach (var pair in tables.BoxDrop)
+            {
+                Data.Table.BoxDrop dropData = pair.Value;
+                if (stage.Id != dropData.StageId)
+                    continue;
+
+                if (dropData.Weight <= 0)
+                    continue;
+
+                selector.Add(dropData.BoxId, dropData.Weight);
+            }
+
+            if (selector.Count <= 0)
+                return;
+
+            var player = stage.GetComponentInChildren<Character.Player>();
+            var dropItemFactory = GetComponentInParent<Factory.DropItemFactory>();
+            var dropItem = dropItemFactory.Create(selector.Select(), player.transform.position);
+            if (dropItem != null)
+            {
+                Event.OnGetItem.Invoke(dropItem.GetComponent<Item.DropItem>());
+            }
         }
     }
 }
