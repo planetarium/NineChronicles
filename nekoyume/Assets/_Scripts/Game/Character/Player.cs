@@ -143,10 +143,9 @@ namespace Nekoyume.Game.Character
 
             PopupText.Show(
                 transform.TransformPoint(UnityEngine.Random.Range(-0.6f, -0.4f), 1.0f, 0.0f),
-                new Vector3(0.0f, 2.0f, 0.0f),
+                new Vector3(-0.02f, 0.02f, 0.0f),
                 calcDmg.ToString(),
-                Color.red,
-                new Vector3(-0.01f, -0.1f, 0.0f));
+                Color.red);
         }
 
         public string SerializeItems()

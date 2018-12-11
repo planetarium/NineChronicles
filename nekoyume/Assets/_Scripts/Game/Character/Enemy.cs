@@ -93,11 +93,10 @@ namespace Nekoyume.Game.Character
             int calcDmg = CalcDamage(attackType, dmg);
 
             UI.PopupText.Show(
-                transform.TransformPoint(0.1f, 1.0f, 0.0f),
-                new Vector3(1.0f, 2.0f, 0.0f),
+                transform.TransformPoint(0.12f, 0.5f, 0.0f),
+                new Vector3(0.06f, 0.05f, 0.0f),
                 calcDmg.ToString(),
-                Color.yellow,
-                new Vector3(0.01f, -0.1f, 0.0f));
+                Color.yellow);
 
             SpriteRenderer renderer = gameObject.GetComponent<SpriteRenderer>();
             if (renderer != null)
