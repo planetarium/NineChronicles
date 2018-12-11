@@ -87,12 +87,11 @@ namespace Nekoyume.Game.Character
             if (Casting)
                 return false;
             
-            bool used = false;
             foreach (var skill in _skills)
             {
-                used = UseSkill(skill);
+                if (UseSkill(skill)) return true;
             }
-            return used;
+            return false;
         }
 
         public virtual bool UseSkill(Skill.SkillBase selectedSkill)
