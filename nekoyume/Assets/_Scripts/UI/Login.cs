@@ -11,11 +11,13 @@ namespace Nekoyume.UI
     public class Login : Widget
     {
         public GameObject btnLogin;
+        public Text text;
 
         public void LoginClick()
         {
             MoveManager.Instance.StartSync();
-            Close();
+            btnLogin.SetActive(false);
+            text.text = "Connecting...";
         }
     }
 }
