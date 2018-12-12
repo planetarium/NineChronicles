@@ -46,6 +46,8 @@ namespace Nekoyume.Game.Skill
             return null;
         }
 
+        public bool NeedsCasting => Data.CastingTime > 0;
+
         public bool IsCooltime()
         {
             return _cooltime > 0;
