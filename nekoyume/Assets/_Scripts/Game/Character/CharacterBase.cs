@@ -36,6 +36,7 @@ namespace Nekoyume.Game.Character
 
         public bool Rooted => gameObject.GetComponent<CC.IRoot>() != null;
         public bool Silenced => gameObject.GetComponent<CC.ISilence>() != null;
+        public bool Stunned => gameObject.GetComponent<CC.IStun>() != null;
 
         private void Start()
         {
@@ -105,6 +106,7 @@ namespace Nekoyume.Game.Character
         public virtual bool UseSkill(Skill.SkillBase selectedSkill, bool checkRange = true)
         {
             if (checkRange && !selectedSkill.IsTargetInRange()) return false;
+            if (Stunned) return false;
             if (selectedSkill.NeedsCasting && Silenced) return false;
             if (selectedSkill.Cast())
             {
