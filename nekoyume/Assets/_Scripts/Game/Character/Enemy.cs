@@ -25,9 +25,7 @@ namespace Nekoyume.Game.Character
                 BT.Selector().OpenBranch(
                     BT.If(IsAlive).OpenBranch(
                         BT.Selector().OpenBranch(
-                            BT.If(() => Casting).OpenBranch(
-                                BT.Call(() => { })
-                            ),
+                            BT.Condition(() => Casting),
                             BT.If(() => CastedSkill != null).OpenBranch(
                                 BT.Call(() => UseSkill(CastedSkill, false))
                             ),
