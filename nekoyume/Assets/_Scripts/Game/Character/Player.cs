@@ -131,12 +131,17 @@ namespace Nekoyume.Game.Character
             return used;
         }
 
+        public override bool CancelCast()
+        {
+            bool canceled = base.CancelCast();
+            if (canceled)
+                Event.OnUseSkill.Invoke();
+            return canceled;
+        }
+
         public override void OnDamage(AttackType attackType, int dmg)
         {
-            bool casting = Casting;
             base.OnDamage(attackType, dmg);
-            if (casting && !Casting)
-                Event.OnUseSkill.Invoke();
 
             int calcDmg = CalcDamage(attackType, dmg);
 

@@ -122,6 +122,14 @@ namespace Nekoyume.Game.Character
             return true;
         }
 
+        public virtual bool CancelCast()
+        {
+            if (!Casting) return false;
+
+            CastingSkill.CancelCast();
+            return true;
+        }
+
         protected void Die()
         {
             StartCoroutine(Dying());
@@ -230,8 +238,7 @@ namespace Nekoyume.Game.Character
 
         public virtual void OnDamage(AttackType attackType, int dmg)
         {
-            if (Casting)
-                CastingSkill.CancelCast();
+            CancelCast();
 
             int calcDmg = CalcDamage(attackType, dmg);
             if (calcDmg <= 0)
