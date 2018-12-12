@@ -71,7 +71,7 @@ namespace Nekoyume.UI
             int index = _slots.IndexOf(slot);
             if (index >= 0)
             {
-                _player.UseSkill(_skills[index]);
+                _player.UseSkill(_skills[index], false);
             }
         }
     }
