@@ -94,9 +94,9 @@ namespace Nekoyume.Game.Character
             return false;
         }
 
-        public virtual bool UseSkill(Skill.SkillBase selectedSkill)
+        public virtual bool UseSkill(Skill.SkillBase selectedSkill, bool checkRange = true)
         {
-            if (!selectedSkill.IsTargetInRange()) return false;
+            if (checkRange && !selectedSkill.IsTargetInRange()) return false;
             if (selectedSkill.Cast())
             {
                 if (_anim != null)

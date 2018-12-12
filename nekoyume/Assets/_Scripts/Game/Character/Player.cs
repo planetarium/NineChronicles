@@ -120,9 +120,9 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        public override bool UseSkill(SkillBase selectedSkill)
+        public override bool UseSkill(SkillBase selectedSkill, bool checkRange = true)
         {
-            bool used = base.UseSkill(selectedSkill);
+            bool used = base.UseSkill(selectedSkill, checkRange);
             if (used)
             {
                 MP -= selectedSkill.Data.Cost;
