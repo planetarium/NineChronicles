@@ -9,8 +9,8 @@ namespace Nekoyume.Game.Skill
         public Data.Table.Skill Data = null;
         protected string _targetTag = "";
         public bool Casting { get; private set; } = false;
-        public float CastingTime { get; private set; } = 0.0f;
-        public float CastingPercentage => Mathf.Max(1 - CastingTime / Data.CastingTime, 0);
+        public float RemainingCastingTime { get; private set; } = 0.0f;
+        public float CastingPercentage => Mathf.Max(1 - RemainingCastingTime / Data.CastingTime, 0);
         public bool Casted { get; private set; } = false;
         protected float _cooltime = 0.0f;
         protected float _knockBack = 0.0f;
@@ -20,8 +20,8 @@ namespace Nekoyume.Game.Skill
             _cooltime -= Time.deltaTime;
             if (Casting)
             {
-                CastingTime -= Time.deltaTime;
-                if (CastingTime <= 0)
+                RemainingCastingTime -= Time.deltaTime;
+                if (RemainingCastingTime <= 0)
                 {
                     Casting = false;
                     Casted = true;
@@ -136,7 +136,7 @@ namespace Nekoyume.Game.Skill
             }
 
             Casting = true;
-            CastingTime = Data.CastingTime;
+            RemainingCastingTime = Data.CastingTime;
 
             return true;
         }
