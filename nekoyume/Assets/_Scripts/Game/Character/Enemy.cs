@@ -29,7 +29,7 @@ namespace Nekoyume.Game.Character
                                 BT.Call(() => { })
                             ),
                             BT.If(() => CastedSkill != null).OpenBranch(
-                                BT.Call(() => UseSkill(CastedSkill))
+                                BT.Call(() => UseSkill(CastedSkill, false))
                             ),
                             BT.If(HasTargetInRange).OpenBranch(
                                 BT.Call(Attack)
