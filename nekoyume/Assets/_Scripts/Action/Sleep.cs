@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using Nekoyume.Data.Table;
-using Nekoyume.Model;
 using Nekoyume.Move;
 
 namespace Nekoyume.Action
@@ -10,6 +8,7 @@ namespace Nekoyume.Action
         public override Context Execute(Context ctx)
         {
             ctx.Avatar.dead = false;
+            ctx.Avatar.CurrentHP = ctx.Avatar.hp;
             return ctx;
         }
 

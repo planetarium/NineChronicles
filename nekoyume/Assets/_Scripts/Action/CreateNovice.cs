@@ -24,6 +24,7 @@ namespace Nekoyume.Action
                 exp = 0,
                 hp = 0,
                 world_stage = 1,
+                CurrentHP = 0,
             };
             ctx.Status = ContextStatus.Success;
             return ctx;

@@ -108,8 +108,8 @@ namespace Nekoyume.Game.Character
             CalcStats();
             InitInventory(avatar);
 
-            if (!avatar.dead && avatar.hp > 0)
-                HP = avatar.hp;
+            if (!avatar.dead && avatar.CurrentHP > 0)
+                HP = avatar.CurrentHP;
         }
 
         protected override void Attack()

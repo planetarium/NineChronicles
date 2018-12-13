@@ -13,6 +13,7 @@ namespace Nekoyume.Model
         public int gold;
         public long exp;
         public int hp;
+        public int CurrentHP;
         public string items;
         public int world_stage;
         public bool dead = false;
