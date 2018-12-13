@@ -44,9 +44,7 @@ namespace Nekoyume.Game
 
         private void OnCreateAvatarRequired(object sender, EventArgs e)
         {
-            MoveManager.Instance.CreateNovice(new Dictionary<string, string> {
-                {"name", "tester"}
-            });
+            MoveManager.Instance.CreateNovice("tester");
         }
 
         private void OnAvatarLoaded(object sender, Model.Avatar avatar)

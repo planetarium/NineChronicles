@@ -209,11 +209,13 @@ namespace Nekoyume.Move
         }
 
 
-        public CreateNovice CreateNovice(Dictionary<string, string> details, DateTime? timestamp = null)
+        public CreateNovice CreateNovice(string name, DateTime? timestamp = null)
         {
+            var actions = new Action.CreateNovice(name, agent.UserAddress);
             var createNovice = new CreateNovice
             {
-                Details = details
+                Actions = actions,
+                Details = actions.ToDetails()
             };
             return ProcessMove(createNovice, 0, timestamp);
         }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using Nekoyume.Action;
 using Planetarium.Crypto.Extension;
 using Planetarium.Crypto.Keys;
 using Planetarium.SDK.Address;
@@ -48,7 +49,7 @@ namespace Nekoyume.Move
 
         public bool Confirmed => BlockId.HasValue;
 
-        public Action.Sleep Actions;
+        public ActionBase Actions;
 
         public override IDictionary<string, dynamic> PlainValue => new Dictionary<string, dynamic>
         {
@@ -77,6 +78,11 @@ namespace Nekoyume.Move
             move.PublicKey = PublicKey.FromBytes((plainValue["user_public_key"] as string).ParseHex());
             move.Signature = (plainValue["signature"] as string).ParseHex();
             move.Tax = (int) plainValue["tax"];
+            var details = plainValue["details"].ToObject<Dictionary<string, string>>();
+            if (move.Name == "create_novice")
+            {
+                move.Actions = new Action.CreateNovice(details["name"], move.UserAddress);
+            }
             move.Details = plainValue["details"].ToObject<Dictionary<string, string>>();
             move.Timestamp = DateTime.ParseExact(
                 plainValue["created_at"], TimestampFormat, CultureInfo.InvariantCulture
