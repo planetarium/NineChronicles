@@ -5,11 +5,7 @@ namespace Nekoyume.Move
     {
         public override Context Execute(Context ctx)
         {
-            var avatar = Actions.Execute();
-            return CreateContext(
-                ContextStatus.Success,
-                avatar
-            );
+            return Actions.Execute(ctx);
         }
     }
 }

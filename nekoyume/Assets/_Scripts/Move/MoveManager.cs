@@ -199,7 +199,7 @@ namespace Nekoyume.Move
 
         public Sleep Sleep(Stats statsData , DateTime? timestamp = null)
         {
-            var actions = new Action.Sleep(Avatar, statsData);
+            var actions = new Action.Sleep();
             var sleep = new Sleep
             {
                 Actions = actions,
@@ -209,9 +209,9 @@ namespace Nekoyume.Move
         }
 
 
-        public CreateNovice CreateNovice(string name, DateTime? timestamp = null)
+        public CreateNovice CreateNovice(string nickName, DateTime? timestamp = null)
         {
-            var actions = new Action.CreateNovice(name, agent.UserAddress);
+            var actions = new Action.CreateNovice(nickName);
             var createNovice = new CreateNovice
             {
                 Actions = actions,

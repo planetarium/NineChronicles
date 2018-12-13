@@ -1,22 +1,21 @@
 using System.Collections.Generic;
 using Nekoyume.Model;
+using Nekoyume.Move;
 
 namespace Nekoyume.Action
 {
     public class CreateNovice : ActionBase
     {
         private readonly string _name;
-        private readonly byte[] _userAddress;
 
-        public CreateNovice(string name, byte[] userAddress)
+        public CreateNovice(string name)
         {
             _name = name;
-            _userAddress = userAddress;
         }
 
-        public override Avatar Execute()
+        public override Context Execute(Context ctx)
         {
-            return new Avatar
+            ctx.Avatar = new Avatar
             {
                 name = _name,
                 class_ = CharacterClass.Novice.ToString(),
@@ -25,8 +24,9 @@ namespace Nekoyume.Action
                 exp = 0,
                 hp = 0,
                 world_stage = 1,
-                user = _userAddress
             };
+            ctx.Status = ContextStatus.Success;
+            return ctx;
         }
 
         public override Dictionary<string, string> ToDetails()

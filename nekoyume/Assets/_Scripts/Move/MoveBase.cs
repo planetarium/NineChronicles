@@ -81,7 +81,7 @@ namespace Nekoyume.Move
             var details = plainValue["details"].ToObject<Dictionary<string, string>>();
             if (move.Name == "create_novice")
             {
-                move.Actions = new Action.CreateNovice(details["name"], move.UserAddress);
+                move.Actions = new Action.CreateNovice(details["name"]);
             }
             move.Details = plainValue["details"].ToObject<Dictionary<string, string>>();
             move.Timestamp = DateTime.ParseExact(
