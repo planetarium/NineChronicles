@@ -52,6 +52,7 @@ namespace Nekoyume.Game
         private void OnAvatarLoaded(object sender, Model.Avatar avatar)
         {
             Event.OnRoomEnter.Invoke();
+            UI.Widget.Find<UI.Login>().Close();
         }
 
         private void OnSleep(object sender, Model.Avatar avatar)

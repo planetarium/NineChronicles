@@ -5,5 +5,6 @@ namespace Nekoyume.Data.Table
         public int Id = 0;
         public string Background = "";
         public int MonsterPower = 0;
+        public int bossId = 0;
     }
 }

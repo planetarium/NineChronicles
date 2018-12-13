@@ -28,6 +28,7 @@ namespace Nekoyume.Game.Entrance
             GameObject player = playerFactory.Create();
             player.transform.position = new Vector2(0.18f, -0.62f);
 
+            UI.Widget.Find<UI.SkillController>().Close();
             UI.Widget.Find<UI.Status>().UpdatePlayer(player);
 
             var cam = Camera.main.gameObject.GetComponent<ActionCamera>();

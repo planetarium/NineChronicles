@@ -7,15 +7,11 @@ namespace Nekoyume.Game.Skill
             _targetTag = Tag.Enemy;
         }
 
-        public override bool Use()
+        protected override bool _Use()
         {
-            if (IsCooltime())
-                return false;
-
-            _cooltime = (float)_data.Cooltime;
             _knockBack = 0.2f;
 
-            float range = (float)_data.Range / (float)Game.PixelPerUnit;
+            float range = (float)Data.Range / (float)Game.PixelPerUnit;
 
             var objectPool = GetComponentInParent<Util.ObjectPool>();
             var damager = objectPool.Get<Trigger.Damager>();

@@ -75,6 +75,13 @@ namespace Nekoyume.Data.Table
                         else
                             fieldInfo.SetValue(row, long.Parse(value));
                     }
+                    else if (fieldType == typeof(float))
+                    {
+                        if (string.IsNullOrEmpty(value))
+                            fieldInfo.SetValue(row, 0.0f);
+                        else
+                            fieldInfo.SetValue(row, float.Parse(value));
+                    }
                     else if (fieldType == typeof(string))
                     {
                         fieldInfo.SetValue(row, value);
@@ -87,42 +94,6 @@ namespace Nekoyume.Data.Table
                 }
                 Add(arr[0], row);
             }
-        }
-
-        public void CreateIndex(string propertyName)
-        {
-            if (null == Index)
-                Index = new Dictionary<string, Dictionary<object, List<string>>>();
-
-            if (!Index.ContainsKey(propertyName))
-                Index.Add(propertyName, new Dictionary<object, List<string>>());
-
-            System.Reflection.PropertyInfo prop = typeof(TRow).GetProperty(propertyName);
-            if (prop == null)
-                return;
-
-            System.Reflection.MethodInfo getMethod = prop.GetGetMethod();
-            if (getMethod == null)
-                return;
-
-            foreach (var pair in this)
-            {
-                var val = getMethod.Invoke(pair.Value, null);
-                if (null == val)
-                    continue;
-
-                if (Index[propertyName].ContainsKey(val) == false)
-                    Index[propertyName].Add(val, new List<string>());
-                if (Index[propertyName][val].Contains(pair.Key) == false)
-                    Index[propertyName][val].Add(pair.Key);
-            }
-        }
-
-        public List<string> FindIndex(string index, object find)
-        {
-            if (false == Index.ContainsKey(index))
-                return new List<string>();
-            return Index[index][find];
         }
     }
 }

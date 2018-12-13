@@ -25,16 +25,21 @@ namespace Nekoyume.Game.Character
         protected Animator _anim = null;
         protected UI.ProgressBar _hpBar = null;
         protected Vector3 _hpBarOffset = new Vector3();
+        protected UI.ProgressBar _castingBar = null;
+        protected Vector3 _castingBarOffset = new Vector3();
 
         protected List<Skill.SkillBase> _skills = new List<Skill.SkillBase>();
         protected const float kSkillGlobalCooltime = 0.6f;
+        protected bool Casting => CastingSkill != null;
+        protected Skill.SkillBase CastingSkill => _skills.Find(skill => skill.Casting);
+        protected Skill.SkillBase CastedSkill => _skills.Find(skill => skill.Casted);
 
         private void Start()
         {
             _anim = GetComponent<Animator>();
         }
 
-        private void OnDisable()
+        protected virtual void OnDisable()
         {
             WalkSpeed = 0.0f;
             Root = null;
@@ -42,6 +47,11 @@ namespace Nekoyume.Game.Character
             {
                 Destroy(_hpBar.gameObject);
                 _hpBar = null;
+            }
+            if (_castingBar != null)
+            {
+                Destroy(_castingBar.gameObject);
+                _castingBar = null;
             }
         }
 
@@ -74,28 +84,42 @@ namespace Nekoyume.Game.Character
 
         protected virtual bool TryAttack()
         {
-            bool used = false;
+            if (Casting)
+                return false;
+            
             foreach (var skill in _skills)
             {
-                if (skill.IsCooltime()) continue;
-                if (!skill.IsTargetInRange()) continue;
-                if (used)
-                {
-                    skill.SetGlobalCooltime(kSkillGlobalCooltime);
-                    continue;
-                }
-                if (skill.Use())
-                {
-                    if (_anim != null)
-                    {
-                        _anim.SetTrigger("Attack");
-                        _anim.SetBool("Walk", false);
-                    }
-                    used = true;
-                    continue;
-                }
+                if (UseSkill(skill)) return true;
             }
-            return used;
+            return false;
+        }
+
+        public virtual bool UseSkill(Skill.SkillBase selectedSkill, bool checkRange = true)
+        {
+            if (checkRange && !selectedSkill.IsTargetInRange()) return false;
+            if (selectedSkill.Cast())
+            {
+                if (_anim != null)
+                {
+                    // TODO: Casting Animation
+                    _anim.SetBool("Walk", false);
+                }
+                return false;
+            }
+
+            if (!selectedSkill.Use())
+                return false;
+
+            if (_anim != null)
+            {
+                _anim.SetTrigger("Attack");
+                _anim.SetBool("Walk", false);
+            }
+            foreach (var skill in _skills)
+            {
+                skill.SetGlobalCooltime(kSkillGlobalCooltime);
+            }
+            return true;
         }
 
         protected void Die()
@@ -115,12 +139,32 @@ namespace Nekoyume.Game.Character
             OnDead();
         }
 
-        private void Update()
+        protected  virtual void Update()
         {
             Root?.Tick();
             if (_hpBar != null)
             {
                 _hpBar.UpdatePosition(gameObject, _hpBarOffset);
+            }
+
+            if (Casting)
+            {
+                if (_castingBar == null)
+                {
+                    _castingBar = UI.Widget.Create<UI.ProgressBar>(true);
+                }
+                var castingBarOffset = _hpBar == null ? _hpBarOffset : _castingBarOffset;
+                _castingBar.UpdatePosition(gameObject, castingBarOffset);
+                _castingBar.SetText($"{Mathf.FloorToInt(CastingSkill.CastingPercentage * 100)}%");
+                _castingBar.SetValue(CastingSkill.CastingPercentage);
+            }
+            else
+            {
+                if (_castingBar != null)
+                {
+                    Destroy(_castingBar.gameObject);
+                    _castingBar = null;
+                }
             }
         }
 
@@ -185,11 +229,14 @@ namespace Nekoyume.Game.Character
 
         public virtual void OnDamage(AttackType attackType, int dmg)
         {
-            int clacDmg = CalcDamage(attackType, dmg);
-            if (clacDmg <= 0)
+            if (Casting)
+                CastingSkill.CancelCast();
+
+            int calcDmg = CalcDamage(attackType, dmg);
+            if (calcDmg <= 0)
                 return;
 
-            HP -= clacDmg;
+            HP -= calcDmg;
 
             UpdateHpBar();
         }

@@ -73,6 +73,10 @@ namespace Nekoyume.Game.Trigger
 
             _wave--;
             SpawnWave();
+            if (_wave == 0 && HasBoss())
+            {
+                SpawnBoss();
+            }
             return true;
         }
 
@@ -108,6 +112,24 @@ namespace Nekoyume.Game.Trigger
                 Data.Table.MonsterAppear appearData = selector.Select();
                 factory.Create(appearData.MonsterId, pos, _monsterPower);
             }
+        }
+
+        private bool HasBoss()
+        {
+            var tables = this.GetRootComponent<Data.Tables>();
+            var stageData = tables.Stage[_stageId];
+            return stageData.bossId > 0;
+        }
+
+        private void SpawnBoss()
+        {
+            var tables = this.GetRootComponent<Data.Tables>();
+            var stageData = tables.Stage[_stageId];
+
+            Factory.EnemyFactory factory = GetComponentInParent<Factory.EnemyFactory>();
+            var player = _stage.GetComponentInChildren<Character.Player>();
+            float offsetX = player.transform.position.x + 5.5f;
+            factory.Create(stageData.bossId, new Vector2(offsetX, -1.0f), _monsterPower);
         }
     }
 }

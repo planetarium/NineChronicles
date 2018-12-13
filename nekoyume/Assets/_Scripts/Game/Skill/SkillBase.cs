@@ -6,16 +6,27 @@ namespace Nekoyume.Game.Skill
 {
     abstract public class SkillBase : MonoBehaviour
     {
-        protected Data.Table.Skill _data = null;
+        public Data.Table.Skill Data = null;
         protected string _targetTag = "";
+        public bool Casting { get; private set; } = false;
+        public float CastingTime { get; private set; } = 0.0f;
+        public float CastingPercentage => Mathf.Max(1 - CastingTime / Data.CastingTime, 0);
+        public bool Casted { get; private set; } = false;
         protected float _cooltime = 0.0f;
         protected float _knockBack = 0.0f;
-
-        abstract public bool Use();
 
         private void Update()
         {
             _cooltime -= Time.deltaTime;
+            if (Casting)
+            {
+                CastingTime -= Time.deltaTime;
+                if (CastingTime <= 0)
+                {
+                    Casting = false;
+                    Casted = true;
+                }
+            }
         }
 
         public bool Init(Data.Table.Skill data)
@@ -25,7 +36,7 @@ namespace Nekoyume.Game.Skill
                 Destroy(this);
                 return false;
             }
-            _data = data;
+            Data = data;
             _cooltime = 0.0f;
             return true;
         }
@@ -57,7 +68,7 @@ namespace Nekoyume.Game.Skill
                 if (character.IsDead())
                     continue;
 
-                float range = (float)_data.Range / (float)Game.PixelPerUnit;
+                float range = (float)Data.Range / (float)Game.PixelPerUnit;
                 float dist = Mathf.Abs(character.transform.position.x - transform.position.x);
                 if (range > dist)
                     return true;
@@ -105,9 +116,50 @@ namespace Nekoyume.Game.Skill
         {
             var owner = GetComponent<Character.CharacterBase>();
             damager.transform.position = transform.TransformPoint(range, 0.0f, 0.0f);
-            int damage = Mathf.FloorToInt(owner.CalcAtk() * ((float)_data.Power * 0.01f));
-            float size = (float)_data.Size / (float)Game.PixelPerUnit;
-            damager.Set(ani, _targetTag, _data.AttackType, damage, size, _data.TargetCount, _knockBack);
+            int damage = Mathf.FloorToInt(owner.CalcAtk() * ((float)Data.Power * 0.01f));
+            float size = (float)Data.Size / (float)Game.PixelPerUnit;
+            damager.Set(ani, _targetTag, Data.AttackType, damage, size, Data.TargetCount, _knockBack);
         }
+
+        public bool Cast()
+        {
+            /*
+             * Returns true if casting is needed
+             */
+            if (Casted || Casting || IsCooltime())
+                return false;
+
+            if (Data.CastingTime <= 0)
+            {
+                Casted = true;
+                return false;
+            }
+
+            Casting = true;
+            CastingTime = Data.CastingTime;
+
+            return true;
+        }
+
+        public void CancelCast()
+        {
+            Casting = false;
+            _cooltime = Data.Cooltime;
+        }
+
+        public bool Use()
+        {
+            if (!Casted)
+                return false;
+            if (IsCooltime())
+                return false;
+
+            Casted = false;
+            _cooltime = (float)Data.Cooltime;
+
+            return _Use();
+        }
+
+        protected abstract bool _Use();
     }
 }

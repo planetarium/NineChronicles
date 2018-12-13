@@ -18,12 +18,19 @@ namespace Nekoyume.Game.Character
             WalkSpeed = -1.0f;
 
             _hpBarOffset.Set(-0.0f, -0.11f, 0.0f);
+            _castingBarOffset.Set(-0.0f, -0.33f, 0.0f);
 
             Root = new Root();
             Root.OpenBranch(
                 BT.Selector().OpenBranch(
                     BT.If(IsAlive).OpenBranch(
                         BT.Selector().OpenBranch(
+                            BT.If(() => Casting).OpenBranch(
+                                BT.Call(() => { })
+                            ),
+                            BT.If(() => CastedSkill != null).OpenBranch(
+                                BT.Call(() => UseSkill(CastedSkill, false))
+                            ),
                             BT.If(HasTargetInRange).OpenBranch(
                                 BT.Call(Attack)
                             ),
@@ -81,18 +88,15 @@ namespace Nekoyume.Game.Character
 
         public override void OnDamage(AttackType attackType, int dmg)
         {
-            int clacDmg = CalcDamage(attackType, dmg);
-            if (clacDmg <= 0)
-                return;
+            base.OnDamage(attackType, dmg);
 
-            HP -= clacDmg;
+            int calcDmg = CalcDamage(attackType, dmg);
 
             UI.PopupText.Show(
-                transform.TransformPoint(0.1f, 1.0f, 0.0f),
-                new Vector3(1.0f, 2.0f, 0.0f),
-                clacDmg.ToString(),
-                Color.yellow,
-                new Vector3(0.01f, -0.1f, 0.0f));
+                transform.TransformPoint(0.12f, 0.5f, 0.0f),
+                new Vector3(0.06f, 0.05f, 0.0f),
+                calcDmg.ToString(),
+                Color.yellow);
 
             SpriteRenderer renderer = gameObject.GetComponent<SpriteRenderer>();
             if (renderer != null)
@@ -102,8 +106,6 @@ namespace Nekoyume.Game.Character
                 colorseq.Append(mat.DOColor(Color.red, 0.1f));
                 colorseq.Append(mat.DOColor(Color.white, 0.1f));
             }
-
-            UpdateHpBar();
         }
 
         protected override void OnDead()

@@ -36,7 +36,7 @@ namespace Nekoyume.Move
 
         private static readonly Newtonsoft.Json.JsonConverter moveJsonConverter = new JsonConverter();
 
-        public Agent(string apiUrl, PrivateKey privateKey, float interval = 1.0f, long? lastBlockOffset = null)
+        public Agent(string apiUrl, PrivateKey privateKey, float interval = 3.0f, long? lastBlockOffset = null)
         {
             if (string.IsNullOrEmpty(apiUrl))
             {
