@@ -9,11 +9,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c10c0be6d28fe4d539c4a39822fe301c, type: 3}
-  m_Name: eyebrow
+  m_Name: sword_001
   m_EditorClassIdentifier: 
   m_ApiVersion: 4
-  m_Sprite: {fileID: 21300000, guid: 2f445c9fa763fbd47bbb3f993956251f, type: 3}
-  m_SharedMesh: {fileID: 43704172780355056}
+  m_Sprite: {fileID: 21300000, guid: a986178cf0e2e9a44a779ee18d1dfd8c, type: 3}
+  m_SharedMesh: {fileID: 43929423113230882}
   pivotPoint: {x: 0, y: 0}
   texVertices: []
   edges: []
@@ -21,38 +21,38 @@ MonoBehaviour:
   indices: 
   bindPoses: []
   m_SharedMaterials: []
---- !u!43 &43704172780355056
+--- !u!43 &43929423113230882
 Mesh:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: eyebrow
+  m_Name: sword_001
   serializedVersion: 9
   m_SubMeshes:
   - serializedVersion: 2
     firstByte: 0
-    indexCount: 6
+    indexCount: 18
     topology: 0
     baseVertex: 0
     firstVertex: 0
-    vertexCount: 4
+    vertexCount: 8
     localAABB:
-      m_Center: {x: 0, y: 0, z: 0}
-      m_Extent: {x: 0.185, y: 0.035, z: 0}
+      m_Center: {x: 0.60602206, y: -0.18051712, z: 0}
+      m_Extent: {x: 0.78000003, y: 0.29, z: 0}
   m_Shapes:
     vertices: []
     shapes: []
     channels: []
     fullWeights: []
   m_BindPose:
-  - e00: 0.3361119
-    e01: 0.94182223
+  - e00: 1.056672
+    e01: -0.44868523
     e02: 0
-    e03: 0.36598352
-    e10: -0.94182223
-    e11: 0.3361119
+    e03: 0.027334973
+    e10: 0.3908453
+    e11: 0.9204564
     e12: 0
-    e13: -0.10402521
+    e13: -0.0066867117
     e20: 0
     e21: 0
     e22: 1
@@ -68,10 +68,10 @@ Mesh:
   m_KeepVertices: 1
   m_KeepIndices: 1
   m_IndexFormat: 0
-  m_IndexBuffer: 000001000200020001000300
+  m_IndexBuffer: 070006000500040005000600030005000400000003000400010003000000020001000000
   m_VertexData:
     serializedVersion: 2
-    m_VertexCount: 4
+    m_VertexCount: 8
     m_Channels:
     - stream: 0
       offset: 0
@@ -129,8 +129,8 @@ Mesh:
       offset: 16
       format: 11
       dimension: 4
-    m_DataSize: 320
-    _typelessdata: a4703dbe295c0f3d000000000000000000000000000080bf0000803f0000000000000000000080bfa4703d3e295c0f3d000000000000000000000000000080bf0000803f0000000000000000000080bfa4703dbe295c0fbd000000000000000000000000000080bf0000803f0000000000000000000080bfa4703d3e295c0fbd000000000000000000000000000080bf0000803f0000000000000000000080bf000000000000803f0000803f0000803f00000000000000000000803f000000000000803f000000000000000000000000000000000000000000000000000000000000803f000000000000000000000000000000000000000000000000000000000000803f000000000000000000000000000000000000000000000000000000000000803f00000000000000000000000000000000000000000000000000000000
+    m_DataSize: 640
+    _typelessdata: 7d21903ff19f8fbe000000000000000000000000000080bf0000803f49db113100000000000080bf2c69b13f9fe7f0be000000000000000000000000000080bf0000803f052a6d3300000000000080bf2c69b13fbd6cdcbe000000000000000000000000000080bf0000803f0e3bcc3400000000000080bf0ff1673f9fe7f0be000000000000000000000000000080bf0000803fb851b8b100000000000080bfeaae9c3e8f38e03d000000000000000000000000000080bf0000803f3c753fb200000000000080bfec5982bbfb76b3be000000000000000000000000000080bf0000803f5a5a36b200000000000080bf4a2732be8f38e03d000000000000000000000000000080bf0000803f92b0d83100000000000080bf4a2732be48f525bd000000000000000000000000000080bf0000803f5150503400000000000080bf5655553f61b9a73e0000803f000000000000803fcb3d8d3d143b313f00000000d9899d3e0000803ff32ddf3db0dc533e000000000000803f0000000009cb3d3f0000803f000000000000000000000000000000000000000000000000000000000000803f000000000000000000000000000000000000000000000000000000000000803f000000000000000000000000000000000000000000000000000000000000803f000000000000000000000000000000000000000000000000000000000000803f000000000000000000000000000000000000000000000000000000000000803f000000000000000000000000000000000000000000000000000000000000803f000000000000000000000000000000000000000000000000000000000000803f00000000000000000000000000000000000000000000000000000000
   m_CompressedMesh:
     m_Vertices:
       m_NumItems: 0
@@ -184,15 +184,15 @@ Mesh:
       m_BitSize: 0
     m_UVInfo: 0
   m_LocalAABB:
-    m_Center: {x: 0, y: 0, z: 0}
-    m_Extent: {x: 0.185, y: 0.035, z: 0}
+    m_Center: {x: 0.60602206, y: -0.18051712, z: 0}
+    m_Extent: {x: 0.78000003, y: 0.29, z: 0}
   m_MeshUsageFlags: 0
   m_BakedConvexCollisionMesh: 
   m_BakedTriangleCollisionMesh: 
   m_MeshMetrics[0]: 1
   m_MeshMetrics[1]: 1
   m_MeshOptimized: 0
---- !u!114 &114761762999432654
+--- !u!114 &114117155034974668
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
@@ -201,14 +201,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9e715ea371f114f4a8d2584ad476634d, type: 3}
-  m_Name: eyebrow_Data
+  m_Name: sword_001_Data
   m_EditorClassIdentifier: 
-  m_PivotPoint: {x: 18.5, y: 3.5}
+  m_PivotPoint: {x: 17.3978, y: 47.051712}
   m_Vertices:
-  - {x: 0, y: 7}
-  - {x: 37, y: 7}
-  - {x: 0, y: 0}
-  - {x: 37, y: 0}
+  - {x: 130, y: 19}
+  - {x: 156, y: 0}
+  - {x: 156, y: 4}
+  - {x: 108, y: 0}
+  - {x: 48, y: 58}
+  - {x: 17, y: 12}
+  - {x: 0, y: 58}
+  - {x: 0, y: 43}
   m_BoneWeights:
   - weight0: 1
     weight1: 0
@@ -242,27 +246,67 @@ MonoBehaviour:
     boneIndex1: 0
     boneIndex2: 0
     boneIndex3: 0
+  - weight0: 1
+    weight1: 0
+    weight2: 0
+    weight3: 0
+    boneIndex0: 0
+    boneIndex1: 0
+    boneIndex2: 0
+    boneIndex3: 0
+  - weight0: 1
+    weight1: 0
+    weight2: 0
+    weight3: 0
+    boneIndex0: 0
+    boneIndex1: 0
+    boneIndex2: 0
+    boneIndex3: 0
+  - weight0: 1
+    weight1: 0
+    weight2: 0
+    weight3: 0
+    boneIndex0: 0
+    boneIndex1: 0
+    boneIndex2: 0
+    boneIndex3: 0
+  - weight0: 1
+    weight1: 0
+    weight2: 0
+    weight3: 0
+    boneIndex0: 0
+    boneIndex1: 0
+    boneIndex2: 0
+    boneIndex3: 0
   m_Edges:
+  - index1: 7
+    index2: 6
+  - index1: 4
+    index2: 6
+  - index1: 7
+    index2: 5
   - index1: 0
-    index2: 1
+    index2: 4
+  - index1: 3
+    index2: 5
+  - index1: 2
+    index2: 0
   - index1: 1
     index2: 3
-  - index1: 0
-    index2: 2
   - index1: 2
-    index2: 3
+    index2: 1
   m_Holes: []
-  m_Indices: 000000000100000002000000020000000100000003000000
+  m_Indices: 070000000600000005000000040000000500000006000000030000000500000004000000000000000300000004000000010000000300000000000000020000000100000000000000
   m_BindPoses:
   - bindPose:
-      e00: 0.3361119
-      e01: 0.94182223
+      e00: 1.056672
+      e01: -0.44868523
       e02: 0
-      e03: 0.36598352
-      e10: -0.94182223
-      e11: 0.3361119
+      e03: 0.027334973
+      e10: 0.3908453
+      e11: 0.9204564
       e12: 0
-      e13: -0.10402521
+      e13: -0.0066867117
       e20: 0
       e21: 0
       e22: 1
@@ -271,9 +315,9 @@ MonoBehaviour:
       e31: 0
       e32: 0
       e33: 1
-    boneLength: 0.6500004
-    path: face
-    name: face
+    boneLength: 0.64
+    path: body/face/soulder_L/arm_L/sword
+    name: sword
     color: {r: 1, g: 0, b: 0, a: 1}
     zOrder: 0
   m_Blendshapes: []
