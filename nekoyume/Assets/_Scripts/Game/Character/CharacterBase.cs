@@ -34,6 +34,8 @@ namespace Nekoyume.Game.Character
         protected Skill.SkillBase CastingSkill => _skills.Find(skill => skill.Casting);
         protected Skill.SkillBase CastedSkill => _skills.Find(skill => skill.Casted);
 
+        public bool Rooted => gameObject.GetComponent<CC.IRoot>() != null;
+
         private void Start()
         {
             _anim = GetComponent<Animator>();
@@ -67,6 +69,11 @@ namespace Nekoyume.Game.Character
 
         protected virtual void Walk()
         {
+            if (Rooted)
+            {
+                _anim.SetBool("Walk", false);
+                return;
+            }
             if (_anim != null)
             {
                 _anim.SetBool("Walk", true);
