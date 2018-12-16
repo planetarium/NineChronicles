@@ -79,9 +79,14 @@ namespace Nekoyume.Move
             move.Signature = (plainValue["signature"] as string).ParseHex();
             move.Tax = (int) plainValue["tax"];
             var details = plainValue["details"].ToObject<Dictionary<string, string>>();
-            if (move.Name == "create_novice")
+            switch (move.Name)
             {
-                move.Actions = new Action.CreateNovice(details["name"]);
+                case "create_novice":
+                    move.Actions = new Action.CreateNovice(details["name"]);
+                    break;
+                case "sleep":
+                    move.Actions = new Action.Sleep();
+                    break;
             }
             move.Details = plainValue["details"].ToObject<Dictionary<string, string>>();
             move.Timestamp = DateTime.ParseExact(
