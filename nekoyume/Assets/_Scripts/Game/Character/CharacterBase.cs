@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using BTAI;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Trigger;
@@ -69,6 +70,26 @@ namespace Nekoyume.Game.Character
             return !IsDead();
         }
 
+        protected float AttackSpeedMultiplier
+        {
+            get
+            {
+                var slows = GetComponents<CC.ISlow>();
+                var multiplierBySlow = slows.Select(slow => slow.AttackSpeedMultiplier).DefaultIfEmpty(1.0f).Min();
+                return multiplierBySlow;
+            }
+        }
+
+        protected float WalkSpeedMultiplier
+        {
+            get
+            {
+                var slows = GetComponents<CC.ISlow>();
+                var multiplierBySlow = slows.Select(slow => slow.WalkSpeedMultiplier).DefaultIfEmpty(1.0f).Min();
+                return multiplierBySlow;
+            }
+        }
+
         protected virtual void Walk()
         {
             if (Rooted)
@@ -82,7 +103,7 @@ namespace Nekoyume.Game.Character
             }
 
             Vector2 position = transform.position;
-            position.x += Time.deltaTime * WalkSpeed;
+            position.x += Time.deltaTime * WalkSpeed * WalkSpeedMultiplier;
             transform.position = position;
         }
 
@@ -118,7 +139,7 @@ namespace Nekoyume.Game.Character
                 return false;
             }
 
-            if (!selectedSkill.Use())
+            if (!selectedSkill.Use(selectedSkill.NeedsCasting ? 1.0f : AttackSpeedMultiplier))
                 return false;
 
             if (_anim != null)
