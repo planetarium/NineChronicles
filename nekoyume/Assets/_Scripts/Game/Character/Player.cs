@@ -38,6 +38,11 @@ namespace Nekoyume.Game.Character
             Inventory = new Item.Inventory();
         }
 
+        private void Start()
+        {
+            _anim = GetComponentInChildren<Animator>();
+        }
+
         public void InitAI()
         {
             WalkSpeed = 0.0f;

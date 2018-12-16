@@ -19,7 +19,7 @@ namespace Nekoyume.Game.Entrance
             var roomPlayer = stage.GetComponentInChildren<Character.Player>();
             if (roomPlayer != null)
             {
-                roomPlayer.WalkSpeed = 0.7f;
+                roomPlayer.WalkSpeed = 1.0f;
             }
 
             Avatar avatar = MoveManager.Instance.Avatar;
@@ -42,7 +42,7 @@ namespace Nekoyume.Game.Entrance
                 var playerFactory = GetComponent<Factory.PlayerFactory>();
                 GameObject player = playerFactory.Create();
                 player.transform.position = new Vector2(0.0f, -0.7f);
-                player.GetComponent<Character.CharacterBase>().WalkSpeed = 0.6f;
+                player.GetComponent<Character.CharacterBase>().WalkSpeed = 1.2f;
 
                 UI.Widget.Find<UI.SkillController>().Show(player);
                 UI.Widget.Find<UI.Status>().UpdatePlayer(player);

@@ -69,7 +69,7 @@ namespace Nekoyume.Game.Character
         {
             if (_anim != null)
             {
-                _anim.SetBool("Walk", true);
+                _anim.SetBool("Run", true);
             }
 
             Vector2 position = transform.position;
@@ -102,7 +102,7 @@ namespace Nekoyume.Game.Character
                 if (_anim != null)
                 {
                     // TODO: Casting Animation
-                    _anim.SetBool("Walk", false);
+                    _anim.SetBool("Run", false);
                 }
                 return false;
             }
@@ -113,7 +113,7 @@ namespace Nekoyume.Game.Character
             if (_anim != null)
             {
                 _anim.SetTrigger("Attack");
-                _anim.SetBool("Walk", false);
+                _anim.SetBool("Run", false);
             }
             foreach (var skill in _skills)
             {
@@ -247,7 +247,7 @@ namespace Nekoyume.Game.Character
             {
                 _anim.ResetTrigger("Attack");
                 _anim.ResetTrigger("Die");
-                _anim.SetBool("Walk", false);
+                _anim.SetBool("Run", false);
             }
 
             gameObject.SetActive(false);
