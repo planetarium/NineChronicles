@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Nekoyume.Data.Table;
+using Nekoyume.Game.Character;
 using UnityEngine;
 
 
@@ -15,7 +17,7 @@ namespace Nekoyume.Game.Trigger
         private int _damage = 0;
         private float _size = 0.0f;
         protected int _targetCount = 0;
-        private float _knockBack = 0.0f;
+        private Action<CharacterBase> _onDamage;
         protected readonly List<GameObject> _hitObjects = new List<GameObject>();
 
         public void Start()
@@ -55,11 +57,7 @@ namespace Nekoyume.Game.Trigger
 
                 character.OnDamage(_attackType, _damage);
 
-                if (_knockBack != 0.0f)
-                {
-                    var knockBack = character.gameObject.AddComponent<CC.KnockBack>();
-                    knockBack.Set(_knockBack);
-                }
+                _onDamage(character);
                 
                 --targetCount;
 
@@ -67,7 +65,7 @@ namespace Nekoyume.Game.Trigger
             }
         }
 
-        public void Set(string ani, string targetTag, AttackType attackType, int damage, float size, int targetCount, float knockBack)
+        public void Set(string ani, string targetTag, AttackType attackType, int damage, float size, int targetCount, Action<CharacterBase> onDamage)
         {
             _wait = true;
 
@@ -76,7 +74,7 @@ namespace Nekoyume.Game.Trigger
             _damage = damage;
             _size = size;
             _targetCount = targetCount;
-            _knockBack = knockBack;
+            _onDamage = onDamage;
 
             _hitObjects.Clear();
 

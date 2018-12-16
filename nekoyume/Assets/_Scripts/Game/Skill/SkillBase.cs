@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -120,7 +121,16 @@ namespace Nekoyume.Game.Skill
             damager.transform.position = transform.TransformPoint(range, 0.0f, 0.0f);
             int damage = Mathf.FloorToInt(owner.CalcAtk() * ((float)Data.Power * 0.01f));
             float size = (float)Data.Size / (float)Game.PixelPerUnit;
-            damager.Set(ani, _targetTag, Data.AttackType, damage, size, Data.TargetCount, _knockBack);
+            damager.Set(ani, _targetTag, Data.AttackType, damage, size, Data.TargetCount, OnDamage);
+        }
+
+        protected virtual void OnDamage(Character.CharacterBase character)
+        {
+            if (Math.Abs(_knockBack) > 0)
+            {
+                var knockBack = character.gameObject.AddComponent<CC.KnockBack>();
+                knockBack.Set(_knockBack);
+            }
         }
 
         public bool Cast()
