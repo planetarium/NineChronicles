@@ -43,7 +43,7 @@ namespace Nekoyume.Game.Character
             WalkSpeed = 0.0f;
 
             _hpBarOffset.Set(-0.22f, -0.61f, 0.0f);
-            _castingBarOffset.Set(-0.22f, -0.83f, 0.0f);
+            _castingBarOffset.Set(-0.22f, -0.85f, 0.0f);
             _mpBarOffset.Set(-0.22f, -0.66f, 0.0f);
 
             Root = new Root();
@@ -124,6 +124,7 @@ namespace Nekoyume.Game.Character
             if (used)
             {
                 MP -= selectedSkill.Data.Cost;
+                UpdateHpBar();
                 UpdateMpBar();
                 Event.OnUseSkill.Invoke();
             }

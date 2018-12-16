@@ -180,6 +180,7 @@ namespace Nekoyume.Game.Character
             {
                 _hpBar = UI.Widget.Create<UI.ProgressBar>(true);
             }
+            _hpBar.UpdatePosition(gameObject, _hpBarOffset);
             _hpBar.SetText($"{HP} / {_hpMax}");
             _hpBar.SetValue((float)HP / (float)_hpMax);
         }
