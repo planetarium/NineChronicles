@@ -147,7 +147,7 @@ namespace Nekoyume.Game.Skill
             _cooltime = Data.Cooltime;
         }
 
-        public bool Use()
+        public bool Use(float cooltimeMultiplier = 1.0f)
         {
             if (!Casted)
                 return false;
@@ -155,7 +155,7 @@ namespace Nekoyume.Game.Skill
                 return false;
 
             Casted = false;
-            _cooltime = (float)Data.Cooltime;
+            _cooltime = Data.Cooltime * cooltimeMultiplier;
 
             return _Use();
         }
