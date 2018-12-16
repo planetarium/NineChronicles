@@ -17,13 +17,11 @@ namespace Nekoyume.Action
         {
             ctx.Avatar = new Avatar
             {
-                name = _name,
-                class_ = CharacterClass.Novice.ToString(),
-                level = 1,
-                gold = 0,
-                exp = 0,
-                hp = 0,
-                world_stage = 1,
+                Name = _name,
+                Level = 1,
+                EXP = 0,
+                HPMax = 0,
+                WorldStage = 1,
                 CurrentHP = 0,
             };
             ctx.Status = ContextStatus.Success;

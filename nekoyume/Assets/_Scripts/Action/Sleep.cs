@@ -7,8 +7,8 @@ namespace Nekoyume.Action
     {
         public override Context Execute(Context ctx)
         {
-            ctx.Avatar.dead = false;
-            ctx.Avatar.CurrentHP = ctx.Avatar.hp;
+            ctx.Avatar.Dead = false;
+            ctx.Avatar.CurrentHP = ctx.Avatar.HPMax;
             return ctx;
         }
 

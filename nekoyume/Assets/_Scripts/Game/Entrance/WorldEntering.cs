@@ -23,10 +23,10 @@ namespace Nekoyume.Game.Entrance
             }
 
             Avatar avatar = MoveManager.Instance.Avatar;
-            int currentStage = avatar.world_stage;
+            int currentStage = avatar.WorldStage;
             Data.Table.Stage data;
             var tables = this.GetRootComponent<Data.Tables>();
-            if (!avatar.dead && tables.Stage.TryGetValue(currentStage, out data))
+            if (!avatar.Dead && tables.Stage.TryGetValue(currentStage, out data))
             {
                 var blind = UI.Widget.Find<UI.Blind>();
                 yield return StartCoroutine(blind.FadeIn(1.0f, $"STAGE {currentStage}"));

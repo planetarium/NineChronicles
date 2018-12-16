@@ -71,7 +71,7 @@ namespace Nekoyume.Game
         {
             var tables = this.GetRootComponent<Data.Tables>();
             Data.Table.Stats statsData;
-            if (tables.Stats.TryGetValue(MoveManager.Instance.Avatar.level, out statsData))
+            if (tables.Stats.TryGetValue(MoveManager.Instance.Avatar.Level, out statsData))
             {
                 MoveManager.Instance.Sleep(statsData);
             }

@@ -7,16 +7,14 @@ namespace Nekoyume.Model
     [System.Serializable]
     public class Avatar
     {
-        public string name;
-        public string class_;
-        public int level;
-        public int gold;
-        public long exp;
-        public int hp;
+        public string Name;
+        public int Level;
+        public long EXP;
+        public int HPMax;
         public int CurrentHP;
-        public string items;
-        public int world_stage;
-        public bool dead = false;
+        public string Items;
+        public int WorldStage;
+        public bool Dead = false;
 
         public static Avatar FromMoves(IEnumerable<MoveBase> moves)
         {
@@ -36,14 +34,5 @@ namespace Nekoyume.Model
 
             return avatar;
         }
-    }
-
-    public enum CharacterClass
-    {
-        Novice,
-        Swordman,
-        Mage,
-        Archer,
-        Acolyte
     }
 }
