@@ -202,7 +202,7 @@ namespace Nekoyume.Move
             var actions = new Action.Sleep();
             var sleep = new Sleep
             {
-                Actions = actions,
+                Actions = new[] {actions},
                 Details = actions.ToDetails()
             };
             return ProcessMove(sleep, 0, timestamp);
@@ -214,7 +214,7 @@ namespace Nekoyume.Move
             var actions = new Action.CreateNovice(nickName);
             var createNovice = new CreateNovice
             {
-                Actions = actions,
+                Actions = new[] {actions},
                 Details = actions.ToDetails()
             };
             return ProcessMove(createNovice, 0, timestamp);

@@ -49,7 +49,7 @@ namespace Nekoyume.Move
 
         public bool Confirmed => BlockId.HasValue;
 
-        public ActionBase Actions;
+        public IEnumerable<ActionBase> Actions;
 
         public override IDictionary<string, dynamic> PlainValue => new Dictionary<string, dynamic>
         {
@@ -82,10 +82,10 @@ namespace Nekoyume.Move
             switch (move.Name)
             {
                 case "create_novice":
-                    move.Actions = new Action.CreateNovice(details["name"]);
+                    move.Actions = new[] {new Action.CreateNovice(details["name"])};
                     break;
                 case "sleep":
-                    move.Actions = new Action.Sleep();
+                    move.Actions = new[] {new Action.Sleep()};
                     break;
             }
             move.Details = plainValue["details"].ToObject<Dictionary<string, string>>();

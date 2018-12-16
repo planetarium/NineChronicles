@@ -5,7 +5,13 @@ namespace Nekoyume.Move
     {
         public override Context Execute(Context ctx)
         {
-            return Actions.Execute(ctx);
+            var newCtx = CreateContext(avatar: ctx.Avatar);
+            foreach (var action in Actions)
+            {
+                newCtx = action.Execute(newCtx);
+            }
+
+            return newCtx;
         }
     }
 }
