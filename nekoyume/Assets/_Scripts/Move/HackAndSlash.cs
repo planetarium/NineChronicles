@@ -12,7 +12,7 @@ namespace Nekoyume.Move
             }
             var newCtx = CreateContext(avatar: ctx.Avatar);
             newCtx.Avatar.CurrentHP = int.Parse(Details["hp"]);
-            newCtx.Avatar.WorldStage = int.Parse(Details["stage"]);
+            newCtx.Avatar.WorldStage = int.Parse(Details["zone"]);
             newCtx.Avatar.Dead = Details["dead"].ToLower() == "true";
             newCtx.Avatar.EXP = int.Parse(Details["exp"]);
             newCtx.Avatar.Level = int.Parse(Details["level"]);

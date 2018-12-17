@@ -1,15 +1,13 @@
-using System;
-
 namespace Nekoyume.Move
 {
-    [MoveName("move_stage")]
+    [MoveName("move_zone")]
     [Preprocess]
-    public class MoveStage : MoveBase
+    public class MoveZone : MoveBase
     {
         public override Context Execute(Context ctx)
         {
             var newCtx = CreateContext(avatar: ctx.Avatar);
-            newCtx.Avatar.WorldStage = int.Parse(Details["stage"]);
+            newCtx.Avatar.WorldStage = int.Parse(Details["zone"]);
             return newCtx;
         }
     }
