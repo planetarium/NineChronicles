@@ -84,6 +84,18 @@ namespace Nekoyume.Game.Util
             return null;
         }
 
+        public bool Remove<T>(GameObject go)
+        {
+            string name = typeof(T).Name;
+            List<GameObject> list;
+            if (objects.TryGetValue(name, out list))
+            {
+                Destroy(go);
+                return list.Remove(go);
+            }
+            return false;
+        }
+
         public void ReleaseAll()
         {
             foreach (var pair in objects)
