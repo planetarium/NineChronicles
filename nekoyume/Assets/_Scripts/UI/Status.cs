@@ -33,8 +33,8 @@ namespace Nekoyume.UI
             Model.Avatar avatar = MoveManager.Instance.Avatar;
             if (avatar != null)
             {
-                _avatarName = avatar.name;
-                TextStage.text = $"STAGE {avatar.world_stage}";
+                _avatarName = avatar.Name;
+                TextStage.text = $"STAGE {avatar.WorldStage}";
             }
             if (playerObj != null)
             {

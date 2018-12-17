@@ -199,21 +199,23 @@ namespace Nekoyume.Move
 
         public Sleep Sleep(Stats statsData , DateTime? timestamp = null)
         {
-            var actions = new Action.Sleep(Avatar, statsData);
+            var actions = new Action.Sleep();
             var sleep = new Sleep
             {
-                Actions = actions,
+                Actions = new[] {actions},
                 Details = actions.ToDetails()
             };
             return ProcessMove(sleep, 0, timestamp);
         }
 
 
-        public CreateNovice CreateNovice(Dictionary<string, string> details, DateTime? timestamp = null)
+        public CreateNovice CreateNovice(string nickName, DateTime? timestamp = null)
         {
+            var actions = new Action.CreateNovice(nickName);
             var createNovice = new CreateNovice
             {
-                Details = details
+                Actions = new[] {actions},
+                Details = actions.ToDetails()
             };
             return ProcessMove(createNovice, 0, timestamp);
         }

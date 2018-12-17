@@ -32,7 +32,7 @@ namespace Nekoyume.UI
         public override void Show()
         {
             // FIX ME : get item list
-            string itemsstr = MoveManager.Instance.Avatar.items;
+            string itemsstr = MoveManager.Instance.Avatar.Items;
             List<Game.Item.Inventory.InventoryItem> items;
             try
             {

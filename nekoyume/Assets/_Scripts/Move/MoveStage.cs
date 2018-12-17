@@ -9,7 +9,7 @@ namespace Nekoyume.Move
         public override Context Execute(Context ctx)
         {
             var newCtx = CreateContext(avatar: ctx.Avatar);
-            newCtx.Avatar.world_stage = int.Parse(Details["stage"]);
+            newCtx.Avatar.WorldStage = int.Parse(Details["stage"]);
             return newCtx;
         }
     }

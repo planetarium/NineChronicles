@@ -21,9 +21,9 @@ namespace Nekoyume.UI
             btnSleep.GetComponent<Button>().enabled = true;
             btnMove.GetComponent<Button>().enabled = true;
             Model.Avatar avatar = MoveManager.Instance.Avatar;
-            bool enabled = !avatar.dead;
+            bool enabled = !avatar.Dead;
             btnMove.SetActive(enabled);
-            btnStage1.SetActive(MoveManager.Instance.Avatar.world_stage > 1);
+            btnStage1.SetActive(MoveManager.Instance.Avatar.WorldStage > 1);
             btnSleep.SetActive(false);
             LabelInfo.text = "";
         }

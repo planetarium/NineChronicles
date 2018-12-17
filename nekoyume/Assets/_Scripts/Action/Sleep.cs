@@ -1,33 +1,20 @@
 using System.Collections.Generic;
-using Nekoyume.Data.Table;
-using Nekoyume.Model;
+using Nekoyume.Move;
 
 namespace Nekoyume.Action
 {
     public class Sleep : ActionBase
     {
-        private readonly Avatar _avatar;
-        private readonly Stats _stats;
-
-        public Sleep(Avatar avatar, Stats statsData)
+        public override Context Execute(Context ctx)
         {
-            _avatar = avatar;
-            _stats = statsData;
-        }
-
-        public override Avatar Execute()
-        {
-            _avatar.dead = false;
-            _avatar.hp = _stats.Health;
-            return _avatar;
+            ctx.Avatar.Dead = false;
+            ctx.Avatar.CurrentHP = ctx.Avatar.HPMax;
+            return ctx;
         }
 
         public override Dictionary<string, string> ToDetails()
         {
-            return new Dictionary<string, string>
-            {
-                ["hp"] = _avatar.hp.ToString()
-            };
+            return new Dictionary<string, string>();
         }
     }
 }

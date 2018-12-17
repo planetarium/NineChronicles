@@ -7,8 +7,11 @@ namespace Nekoyume.Move
         public override Context Execute(Context ctx)
         {
             var newCtx = CreateContext(avatar: ctx.Avatar);
-            var avatar = Actions.Execute();
-            newCtx.Avatar = avatar;
+            foreach (var action in Actions)
+            {
+                newCtx = action.Execute(newCtx);
+            }
+
             return newCtx;
         }
     }

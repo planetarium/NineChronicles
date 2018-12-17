@@ -107,14 +107,14 @@ namespace Nekoyume.Game.Character
 
         public void InitStats(Model.Avatar avatar)
         {
-            EXP = avatar.exp;
-            Level = avatar.level;
+            EXP = avatar.EXP;
+            Level = avatar.Level;
 
             CalcStats();
             InitInventory(avatar);
 
-            if (!avatar.dead && avatar.hp > 0)
-                HP = avatar.hp;
+            if (!avatar.Dead && avatar.CurrentHP > 0)
+                HP = avatar.CurrentHP;
         }
 
         protected override void Attack()
@@ -215,9 +215,9 @@ namespace Nekoyume.Game.Character
 
         private void InitInventory(Model.Avatar avatar)
         {
-            if (!string.IsNullOrEmpty(avatar.items))
+            if (!string.IsNullOrEmpty(avatar.Items))
             {
-                var items = JsonConvert.DeserializeObject<List<Item.Inventory.InventoryItem>>(avatar.items);
+                var items = JsonConvert.DeserializeObject<List<Item.Inventory.InventoryItem>>(avatar.Items);
                 Inventory.Set(items);
             }
         }
