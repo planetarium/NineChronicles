@@ -177,7 +177,7 @@ namespace Nekoyume.Move
             var details = new Dictionary<string, string>
             {
                 ["hp"] = player.HP.ToString(),
-                ["stage"] = stage.ToString(),
+                ["zone"] = stage.ToString(),
                 ["dead"] = player.IsDead().ToString(),
                 ["exp"] = player.EXP.ToString(),
                 ["level"] = player.Level.ToString(),
@@ -220,16 +220,15 @@ namespace Nekoyume.Move
             return ProcessMove(createNovice, 0, timestamp);
         }
 
-        public MoveStage MoveStage(int stage, DateTime? timestamp = null)
+        public MoveZone MoveZone(int stage, DateTime? timestamp = null)
         {
-            var moveStage = new MoveStage
+            var action = new Action.MoveZone(stage);
+            var moveZone = new MoveZone
             {
-                Details = new Dictionary<string, string>
-                {
-                    ["stage"] = stage.ToString()
-                }
+                Actions = new[] {action},
+                Details = action.ToDetails()
             };
-            return ProcessMove(moveStage, 0, timestamp);
+            return ProcessMove(moveZone, 0, timestamp);
         }
 
         private T ProcessMove<T>(T move, int tax, DateTime? timestamp) where T : MoveBase
