@@ -101,7 +101,7 @@ namespace Nekoyume.Move
 
             StartCoroutine(agent.FetchMove(delegate(IEnumerable<MoveBase> moves)
             {
-                if (moves.FirstOrDefault() == null)
+                if (moves.FirstOrDefault() == null && Avatar == null)
                 {
                     CreateAvatarRequired?.Invoke(this, null);
                 }
