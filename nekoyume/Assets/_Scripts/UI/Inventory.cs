@@ -1,6 +1,7 @@
 using System;
 using Nekoyume.Move;
 using System.Collections.Generic;
+using Nekoyume.Game.Item;
 using Newtonsoft.Json;
 using UnityEngine;
 
@@ -27,6 +28,23 @@ namespace Nekoyume.UI
                 _slots.Add(slot);
             }
             _slotBase.SetActive(false);
+            Game.Event.OnUpdateEquipment.AddListener(UpdateEquipment);
+        }
+
+        private void UpdateEquipment(Equipment equipment)
+        {
+            foreach (var slot in _slots)
+            {
+                var item = slot.Item;
+                if (item != null && item.Cls == "Weapon")
+                {
+                    slot.LabelEquip.text = "";
+                    if (item.Id == equipment.Data.Id)
+                    {
+                        slot.LabelEquip.text = equipment.IsEquipped ? "E" : "";
+                    }
+                }
+            }
         }
 
         public override void Show()
@@ -48,7 +66,7 @@ namespace Nekoyume.UI
                 if (items != null && items.Count > i)
                 {
                     var inventoryItem = items[i];
-                    slot.Set(inventoryItem.Item.Data.Id.ToString(), inventoryItem.Count);
+                    slot.Set(inventoryItem.Item.Data, inventoryItem.Count);
                 }
                 else
                 {
@@ -58,5 +76,6 @@ namespace Nekoyume.UI
 
             base.Show();
         }
+
     }
 }

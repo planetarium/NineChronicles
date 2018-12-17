@@ -181,7 +181,8 @@ namespace Nekoyume.Move
                 ["dead"] = player.IsDead().ToString(),
                 ["exp"] = player.EXP.ToString(),
                 ["level"] = player.Level.ToString(),
-                ["items"] = player.SerializeItems()
+                ["items"] = player.SerializeItems(),
+                ["weapon"] = player.SerializeWeapon()
             };
 
             var has = new HackAndSlash
