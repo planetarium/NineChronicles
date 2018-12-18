@@ -29,7 +29,7 @@ namespace Nekoyume.Game.CC
         
         protected virtual bool DestroyOnEnd => true;
 
-        public void Set(float duration, float tickInterval = 1.0f)
+        protected void Set(float duration, float tickInterval = 1.0f)
         {
             Duration = duration;
             TickInterval = tickInterval;

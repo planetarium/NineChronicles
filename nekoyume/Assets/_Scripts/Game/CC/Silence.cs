@@ -9,6 +9,11 @@ namespace Nekoyume.Game.CC
 
     public class Silence : CCBase, ISilence
     {
+        public void Set(float duration)
+        {
+            base.Set(duration);
+        }
+
         protected override void OnBegin()
         {
             Owner.CancelCast();
