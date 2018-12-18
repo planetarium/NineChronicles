@@ -22,9 +22,6 @@ namespace Nekoyume.Game.Trigger
 
         private IEnumerator WaitStageExit()
         {
-            var cam = Camera.main.gameObject.GetComponent<ActionCamera>();
-            cam.target = null;
-
             StageReward();
 
             var stage = GetComponentInParent<Stage>();

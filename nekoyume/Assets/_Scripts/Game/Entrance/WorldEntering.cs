@@ -15,6 +15,7 @@ namespace Nekoyume.Game.Entrance
         private IEnumerator Act()
         {
             var stage = GetComponent<Stage>();
+            bool isRoom = stage.BackgroundName == "room";
 
             var roomPlayer = stage.GetComponentInChildren<Character.Player>();
             if (roomPlayer != null)
@@ -28,21 +29,31 @@ namespace Nekoyume.Game.Entrance
             var tables = this.GetRootComponent<Data.Tables>();
             if (!avatar.Dead && tables.Stage.TryGetValue(currentStage, out data))
             {
-                var blind = UI.Widget.Find<UI.Blind>();
-                yield return StartCoroutine(blind.FadeIn(1.0f, $"STAGE {currentStage}"));
+                if (isRoom)
+                {
+                    var blind = UI.Widget.Find<UI.Blind>();
+                    yield return StartCoroutine(blind.FadeIn(1.0f, $"STAGE {currentStage}"));
+                }
 
                 UI.Widget.Find<UI.Move>().ShowWorld();
 
                 stage.Id = currentStage;
-                stage.LoadBackground(data.Background);
+                if (isRoom)
+                {
+                    stage.LoadBackground(data.Background);
+                }
+                else
+                {
+                    stage.LoadBackground(data.Background, 3.0f);
+                }
 
-                var objectPool = GetComponent<Util.ObjectPool>();
-                objectPool.ReleaseAll();
-
-                var playerFactory = GetComponent<Factory.PlayerFactory>();
-                GameObject player = playerFactory.Create();
-                player.transform.position = new Vector2(0.0f, -0.7f);
-                player.GetComponent<Character.CharacterBase>().WalkSpeed = 1.2f;
+                Character.Player playerCharacter = GetComponentInChildren<Character.Player>();
+                playerCharacter.WalkSpeed = 1.2f;
+                if (isRoom)
+                {
+                    playerCharacter.transform.position = new Vector2(0.0f, -0.7f);
+                }
+                GameObject player = playerCharacter.gameObject;
 
                 UI.Widget.Find<UI.SkillController>().Show(player);
                 UI.Widget.Find<UI.Status>().UpdatePlayer(player);
@@ -55,7 +66,11 @@ namespace Nekoyume.Game.Entrance
                     spawner.SetData(currentStage, data.MonsterPower);
 
                 yield return new WaitForSeconds(2.0f);
-                yield return StartCoroutine(blind.FadeOut(1.0f));
+                if (isRoom)
+                {
+                    var blind = UI.Widget.Find<UI.Blind>();
+                    yield return StartCoroutine(blind.FadeOut(1.0f));
+                }
 
                 Event.OnStageStart.Invoke();
             }

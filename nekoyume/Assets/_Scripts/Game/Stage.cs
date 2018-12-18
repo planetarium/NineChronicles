@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Entrance;
@@ -47,7 +48,18 @@ namespace Nekoyume.Game
             MoveManager.Instance.HackAndSlash(player, Id);
         }
 
-        public void LoadBackground(string prefabName)
+        public string BackgroundName
+        {
+            get
+            {
+                if (_background == null)
+                    return "";
+
+                return _background.name;
+            }
+        }
+
+        public void LoadBackground(string prefabName, float fadeTime = 0.0f)
         {
             if (_background != null)
             {
@@ -55,7 +67,16 @@ namespace Nekoyume.Game
                 {
                     return;
                 }
-                Destroy(_background);
+                if (fadeTime > 0.0f)
+                {
+                    var sprites = _background.GetComponentsInChildren<SpriteRenderer>();
+                    foreach (var sprite in sprites)
+                    {
+                        sprite.sortingOrder += 1;
+                        sprite.DOFade(0.0f, fadeTime);
+                    }
+                }
+                Destroy(_background, fadeTime);
                 _background = null;
             }
             var resName = $"Prefab/Background/{prefabName}";
