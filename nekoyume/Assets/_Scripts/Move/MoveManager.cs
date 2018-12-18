@@ -7,8 +7,8 @@ using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Character;
-using Planetarium.Crypto.Extension;
-using Planetarium.Crypto.Keys;
+using Libplanet;
+using Libplanet.Crypto;
 using UnityEngine;
 using Avatar = Nekoyume.Model.Avatar;
 
@@ -69,11 +69,11 @@ namespace Nekoyume.Move
             if (string.IsNullOrEmpty(privateKeyHex))
             {
                 privateKey = PrivateKey.Generate();
-                PlayerPrefs.SetString("private_key", privateKey.Bytes.Hex());
+                PlayerPrefs.SetString("private_key", ByteUtil.Hex(privateKey.Bytes));
             }
             else
             {
-                privateKey = PrivateKey.FromBytes(privateKeyHex.ParseHex());
+                privateKey = new PrivateKey(ByteUtil.ParseHex(privateKeyHex));
             }
 
             _saveFilePath = Path.Combine(Application.persistentDataPath, "avatar.dat");
@@ -115,7 +115,7 @@ namespace Nekoyume.Move
             if (Avatar == null)
             {
                 var moves = agent.Moves.Where(
-                    m => m.UserAddress.SequenceEqual(agent.UserAddress)
+                    m => m.UserAddress.Equals(agent.UserAddress)
                 );
                 Avatar = Avatar.FromMoves(moves);
                 if (Avatar != null)
