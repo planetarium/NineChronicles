@@ -26,7 +26,7 @@ namespace Nekoyume.Game.Skill
         protected override void OnDamage(CharacterBase character)
         {
             base.OnDamage(character);
-            switch (new Random().Next(1, 6))
+            switch (new Random().Next(1, 21))
             {
                 case 1:
                     var dotDamager = character.gameObject.AddComponent<DotDamager>();
