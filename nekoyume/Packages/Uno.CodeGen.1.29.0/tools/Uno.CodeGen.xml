@@ -1,0 +1,983 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Uno.CodeGen</name>
+    </assembly>
+    <members>
+        <member name="P:Uno.RoslynHelpers.IIndentedStringBuilder.CurrentLevel">
+            <summary>
+            Gets the current indentation level
+            </summary>
+        </member>
+        <member name="M:Uno.RoslynHelpers.IIndentedStringBuilder.Append(System.String)">
+            <summary>
+            Appends text using the current indentation level
+            </summary>
+            <param name="text"></param>
+        </member>
+        <member name="M:Uno.RoslynHelpers.IIndentedStringBuilder.AppendFormat(System.IFormatProvider,System.String,System.Object[])">
+            <summary>
+            Appends formatted text using the current indentation level
+            </summary>
+        </member>
+        <member name="M:Uno.RoslynHelpers.IIndentedStringBuilder.AppendLine">
+            <summary>
+            Appends a line using the current indentation level 
+            </summary>
+        </member>
+        <member name="M:Uno.RoslynHelpers.IIndentedStringBuilder.AppendLine(System.String)">
+            <summary>
+            Writes the provided text and adds line using the current indentation level 
+            </summary>
+        </member>
+        <member name="M:Uno.RoslynHelpers.IIndentedStringBuilder.Block(System.Int32)">
+            <summary>
+            Creates an indentation block
+            </summary>
+            <param name="count">The indentation level of the new block.</param>
+            <returns>A disposable that will close the block</returns>
+        </member>
+        <member name="M:Uno.RoslynHelpers.IIndentedStringBuilder.Block(System.IFormatProvider,System.String,System.Object[])">
+            <summary>
+            Creates an indentation block, e.g. using a C# curly braces.
+            </summary>
+            <returns>A disposable that will close the block</returns>
+        </member>
+        <member name="M:Uno.RoslynHelpers.IIndentedStringBuilder.Indent(System.Int32)">
+            <summary>
+            Adds an indentation 
+            </summary>
+            <param name="count"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Uno.RoslynHelpers.IIndentedStringBuilder.ToString">
+            <summary>
+            Provides a string representing the complete builder.
+            </summary>
+        </member>
+        <member name="T:Uno.RoslynHelpers.IndentedStringBuilder">
+            <summary>
+            A C# code indented builder.
+            </summary>
+        </member>
+        <member name="T:Uno.RoslynHelpers.Helpers.ExtendedSyntaxType">
+            <summary>
+            Used to provided delegate predicates, wrapped as ExtendedSyntaxType objects, to facilitate the 
+            identification of more complex or composite syntax types that do not exist by default.
+            </summary>
+        </member>
+        <member name="F:Uno.RoslynHelpers.Helpers.ExtendedSyntaxType.BinaryExpressionSyntaxKinds">
+            <summary>
+            Provides all the potential syntax kinds that define binary expressions. Does not 
+            include the various member access expression ("a.b", "a?.b", "a->b") syntax kinds
+            </summary>
+        </member>
+        <member name="M:Uno.RoslynHelpers.Helpers.ExtendedSyntaxType.AsExtended``1">
+            <summary>
+            Returns the extended version of the given syntax node, so that it can be used in methods that require extended syntax types
+            </summary>
+            <typeparam name="T">The syntax node type</typeparam>
+            <returns>The extended syntax version of the given node</returns>
+        </member>
+        <member name="F:Uno.RoslynHelpers.Helpers.ExtendedSyntaxType.LoopStatementSyntax">
+            <summary>
+            Indicates if the given node is a loop (for, while, foreach, etc)
+            </summary>
+        </member>
+        <member name="F:Uno.RoslynHelpers.Helpers.ExtendedSyntaxType.Returned">
+            <summary>
+            Indicates if the given node is returned as part of a "return" statement
+            </summary>
+        </member>
+        <member name="F:Uno.RoslynHelpers.Helpers.ExtendedSyntaxType.ConditionalOrCoalesce">
+            <summary>
+            Indicates if the given node is a conditional expression or a binary expression defined with a coalesce (??) operator
+            </summary>
+        </member>
+        <member name="F:Uno.RoslynHelpers.Helpers.ExtendedSyntaxType.ReferenceBoundary">
+            <summary>
+            Indicates if the given node is a reference boundary, which is to say that it is either a statement, a lambda expression, 
+            or the condition of a conditional expression
+            </summary>
+        </member>
+        <member name="F:Uno.RoslynHelpers.Helpers.ExtendedSyntaxType.ConditionInConditionalExpression">
+            <summary>
+            Indicates if the given node is the condition of a conditional expression
+            </summary>
+        </member>
+        <member name="F:Uno.RoslynHelpers.Helpers.ExtendedSyntaxType.LambdaExpression">
+            <summary>
+            Indicates if the given node is a lambda expression
+            </summary>
+        </member>
+        <member name="F:Uno.RoslynHelpers.Helpers.ExtendedSyntaxType.AnonymousFunctionExpression">
+            <summary>
+            Indicates if the given node is an anonymous function (either a lambda or an anonymous method)
+            </summary>
+        </member>
+        <member name="F:Uno.RoslynHelpers.Helpers.ExtendedSyntaxType.SimplePredicate">
+            <summary>
+            Indicates if the given node is a predicate that results in different conditional execution 
+            paths when encountered (if statement, loop, binary operators, etc)
+            </summary>
+        </member>
+        <member name="M:Uno.RoslynHelpers.Helpers.ExtendedSyntaxType.IsReferenceBoundary(Microsoft.CodeAnalysis.SyntaxNode)">
+            <summary>
+            Returns true if a node is a 'boundary' in the sense that its ancestors have no direct reference to its descendants. (eg a StatementSyntax, 
+            a lambda expression, a ConditionalStatement that the node is on the far left-hand side of, etc.)
+            </summary>
+            <param name="node">The syntax node to check.</param>
+            <returns>True if the node is a boundary, false otherwise.</returns>
+        </member>
+        <member name="M:Uno.RoslynHelpers.Helpers.ExtendedSyntaxType.IsReturned(Microsoft.CodeAnalysis.SyntaxNode)">
+            <summary>
+            Indicates if this node is directly or conditionally returned in the context of its declaration (whether in a lambda or a declared method)
+            </summary>
+            <param name="node">The node to check</param>
+            <returns>Is the node is an active member of a return statement</returns>
+        </member>
+        <member name="M:Uno.RoslynHelpers.Helpers.ExtendedSyntaxType.CanTakeOptionalBlock(Microsoft.CodeAnalysis.SyntaxNode)">
+            <summary>
+            Indicates if the syntax node is a type that may optionally be followed by a BlockSyntax (curly brackets): if, else, loops, usings, lambdas...
+            </summary>
+            <param name="node"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Uno.RoslynHelpers.Helpers.SyntaxSymbolPairing`2">
+            <summary>
+            Used to pair a syntax node to a custom semantic representation of that node
+            </summary>
+            <typeparam name="TSyntax">The type of the syntax node</typeparam>
+            <typeparam name="TSymbol">The type of the symbol that is chosen as the semantic representation of the node</typeparam>
+        </member>
+        <member name="T:Uno.CompilationReferencesListingGenerator">
+            <summary>
+            Simple generator outputing a list of all references used to compile the project.
+            </summary>
+            <remarks>
+            Generates only one file containing only comments.
+            </remarks>
+        </member>
+        <member name="M:Uno.CompilationReferencesListingGenerator.Execute(Uno.SourceGeneration.SourceGeneratorContext)">
+            <inheritdoc />
+        </member>
+        <member name="T:Uno.EqualityGenerator">
+            <summary>
+            Responsible to generate equality members.
+            </summary>
+            <remarks>
+            The trigger for this generator is <see cref="T:Uno.GeneratedEqualityAttribute"/>.
+            </remarks>
+        </member>
+        <member name="M:Uno.EqualityGenerator.Execute(Uno.SourceGeneration.SourceGeneratorContext)">
+            <inheritdoc />
+        </member>
+        <member name="P:Uno.Helpers.SymbolNames.SymbolName">
+            <summary>
+            The name of the symbol, without any namespace, container type or generic decorations.
+            </summary>
+        </member>
+        <member name="P:Uno.Helpers.SymbolNames.GenericArguments">
+            <summary>
+            Generic arguments, if any.  Ex: `&lt;T1, T2&gt;`
+            </summary>
+            <remarks>
+            Empty if no generics
+            </remarks>
+        </member>
+        <member name="P:Uno.Helpers.SymbolNames.SymbolNameWithGenerics">
+            <summary>
+            SymbolName + GenericArguments, Ex: `MyType&lt;T1, T2&gt;`
+            </summary>
+        </member>
+        <member name="P:Uno.Helpers.SymbolNames.SymbolFoxXml">
+            <summary>
+            Same as SymbolNameWithGenerics but escaped for XML
+            </summary>
+        </member>
+        <member name="P:Uno.Helpers.SymbolNames.SymbolNameDefinition">
+            <summary>
+            Definition for symbol name, ex: `MyType&lt;,&gt;`
+            </summary>
+        </member>
+        <member name="P:Uno.Helpers.SymbolNames.SymbolFilename">
+            <summary>
+            Appropriate result filename for the type
+            </summary>
+        </member>
+        <member name="P:Uno.Helpers.SymbolNames.GenericConstraints">
+            <summary>
+            Generic constraints on the type, Ex: `where T1 : string`
+            </summary>
+            <remarks>
+            Empty if no generics or no constraints
+            </remarks>
+        </member>
+        <member name="T:Uno.ImmutableGenerator">
+            <summary>
+            Responsible for the code generation of immutable types.
+            </summary>
+            <remarks>
+            The trigger for this generator is <see cref="T:Uno.GeneratedImmutableAttribute"/>.
+            </remarks>
+        </member>
+        <member name="M:Uno.ImmutableGenerator.Execute(Uno.SourceGeneration.SourceGeneratorContext)">
+            <inheritdoc />
+        </member>
+        <member name="T:Uno.InjectableGenerator">
+            <summary>
+            Responsible for the code generation of injectable types.
+            </summary>
+            <remarks>
+            The trigger for this generator is <see cref="T:Uno.InjectAttribute"/>.
+            </remarks>
+        </member>
+        <member name="M:Uno.InjectableGenerator.Execute(Uno.SourceGeneration.SourceGeneratorContext)">
+            <inheritdoc />
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.MethodSymbolExtensions.IsSameSignatureAs(Microsoft.CodeAnalysis.IMethodSymbol,Microsoft.CodeAnalysis.IMethodSymbol,System.Boolean)">
+            <summary>
+            Check if two methods have the same signature, which means same name, return type and parameters
+            </summary>
+            <param name="current">The current method</param>
+            <param name="other">Another method</param>
+            <param name="considerNameForEquivalence">If true, the name of the methods will be used for the equality comparaison</param>
+            <returns>True if the methods have the same signature</returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.MethodSymbolExtensions.IsAsyncEquivalentOf(Microsoft.CodeAnalysis.IMethodSymbol,Microsoft.CodeAnalysis.IMethodSymbol,Microsoft.CodeAnalysis.Diagnostics.SyntaxNodeAnalysisContext,System.Boolean,System.Boolean)">
+            <summary>
+            Indicates if a candidate method is the async equivalent of another target method
+            </summary>
+            <param name="asyncCandidate">The potential method symbol that is the async equivalent of the target</param>
+            <param name="target">The target method</param>
+            <param name="context">The analysis context</param>
+            <param name="compareUsingTaskEquivalence">
+            If true, the comparison will include a check to see if the candidate has a matching Task as its return type
+            For example, Task&lt;int&gt; Foo() is the equivalent of int Foo()
+            </param>
+            <param name="needsToHaveAsyncKeyword">If true, a positive match will require the candidate method to be declared with the async keyword</param>
+            <returns>True if the candidate method is the async equivalent of the target method</returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.MethodSymbolExtensions.IsNamedMethodOnType(Microsoft.CodeAnalysis.IMethodSymbol,System.String,System.String,Microsoft.CodeAnalysis.Diagnostics.SyntaxNodeAnalysisContext,System.Boolean)">
+            <summary>
+            Indicates if the current method is of a given name and part of a given type
+            </summary>
+            <param name="methodSymbol">The current method symbol</param>
+            <param name="methodName">The name of the to check in the provided type</param>
+            <param name="typeName">The name of the type that the current method must be contained in</param>
+            <param name="context">The context</param>
+            <param name="matchUsingInheritance">If true, the comparison will involve checking if the method's containing type derives from the given type. 
+            If false, the comparison will compare the method's containing type and the given type directly for equality instead</param>
+            <returns>True if a method with the same name as the current method exists in the given type</returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.MethodSymbolExtensions.IsNamedMethodOnType``1(Microsoft.CodeAnalysis.IMethodSymbol,System.String,Microsoft.CodeAnalysis.Diagnostics.SyntaxNodeAnalysisContext,System.Boolean)">
+            <summary>
+            Indicates if the current method is of a given name and contained in a given type
+            </summary>
+            <typeparam name="TContainingType">The type that the current method must be contained in</typeparam>
+            <param name="methodSymbol">The current method symbol</param>
+            <param name="methodName">The name that the current moethod name must match</param>
+            <param name="context">The context</param>
+            <param name="matchUsingInheritance">If true, the comparison will involve checking if the method's containing type derives from the given type. 
+            If false, the comparison will compare the method's containing type and the given type directly for equality instead</param>
+            <returns>True if a method with the same name as the current method exists in the given type</returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.MethodSymbolExtensions.IsNamedMethodOnAnyOfTheseTypes(Microsoft.CodeAnalysis.IMethodSymbol,System.String,Microsoft.CodeAnalysis.Diagnostics.SyntaxNodeAnalysisContext,System.Boolean,System.String[])">
+            <summary>
+            Indicates if the current method is of a given name and contained in any of the given types
+            </summary>
+            <param name="methodSymbol">The current method symbol</param>
+            <param name="methodName">The name that the current moethod name must match</param>
+            <param name="context">The context</param>
+            <param name="matchUsingInheritance">If true, the types will be compared by checking if the method's containing type derives from any of the given types. 
+            If false, the types will be compared for equality instead</param>
+            <param name="typeNames">The name of the types in one of which the current method must be contained</param>
+            <returns>True if a method with the same name as the current method exists in the given type</returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.MethodSymbolExtensions.HasSimilarMethodDeclaredInType(Microsoft.CodeAnalysis.IMethodSymbol,Microsoft.CodeAnalysis.ITypeSymbol,Microsoft.CodeAnalysis.Diagnostics.SyntaxNodeAnalysisContext,System.Boolean)">
+            <summary>
+            Checks if a similar method is declared and accessible in a given type
+            </summary>
+            <param name="currentMethod">The method to check</param>
+            <param name="type">The type to check agaisnt</param>
+            <param name="context">The syntax analysis context</param>
+            <param name="considerNameForEquivalence">If true, the name of the methods will be used for the equality comparaison</param>
+            <returns>True if the method belongs to this </returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.MethodSymbolExtensions.HasSimilarMethodDeclaredInTypeOrAncestors(Microsoft.CodeAnalysis.IMethodSymbol,Microsoft.CodeAnalysis.ITypeSymbol,Microsoft.CodeAnalysis.Diagnostics.SyntaxNodeAnalysisContext,System.Boolean)">
+            <summary>
+            Checks if a similar method is declared and accessible in a given type or any of its ancestor
+            </summary>
+            <param name="currentMethod">The method to check</param>
+            <param name="type">The type to check agaisnt</param>
+            <param name="context">The syntax analysis context</param>
+            <param name="considerNameForEquivalence">If true, the name of the methods will be used for the equality comparaison</param>
+            <returns>True if the method belongs to this </returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.MethodSymbolExtensions.GetReducedFromOrSelf(Microsoft.CodeAnalysis.IMethodSymbol)">
+            <summary>
+            Returns the reduced version of this method or the method itself
+            </summary>
+            <param name="currentMethod">The method to check</param>
+            <returns>The method the current method was reduced from or the current method itself</returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.MethodSymbolExtensions.IsConstructorOrDestructor(Microsoft.CodeAnalysis.IMethodSymbol)">
+            <summary>
+            Indicates if the current method is a constructor (normal, static, shared) or a destructor
+            </summary>
+            <param name="currentMethod">The current method</param>
+            <returns>True if the current method is a constructor or a destructor</returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.MethodSymbolExtensions.IsDestructor(Microsoft.CodeAnalysis.IMethodSymbol)">
+            <summary>
+            Indicates if the current method is a constructor (normal, static, shared)
+            </summary>
+            <param name="currentMethod">The current method</param>
+            <returns>True if the current method is a constructor or a destructor</returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.MethodSymbolExtensions.IsConstructor(Microsoft.CodeAnalysis.IMethodSymbol)">
+            <summary>
+            Indicates if the current method is a destructor (normal, static, shared)
+            </summary>
+            <param name="currentMethod">The current method</param>
+            <returns>True if the current method is a constructor or a destructor</returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.MethodSymbolExtensions.IsDelegateInvocation(Microsoft.CodeAnalysis.IMethodSymbol)">
+            <summary>
+            Indicates if the method is a delegate invocation
+            </summary>
+            <param name="currentMethod">TThe current method</param>
+            <returns>True if the method is a delegate invocation</returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.MethodSymbolExtensions.IsLambdaOrDelegateDeclaration(Microsoft.CodeAnalysis.IMethodSymbol)">
+            <summary>
+            Indicates if the method if a lambda of an anonymous function declaration
+            </summary>
+            <param name="currentMethod"></param>
+            <returns>True if the method is a lambda or delegate declaration</returns>
+        </member>
+        <member name="T:Microsoft.CodeAnalysis.SymbolExtensions">
+            <summary>
+            Roslyn symbol extensions
+            </summary>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.SymbolExtensions.Is(Microsoft.CodeAnalysis.INamedTypeSymbol,System.String)">
+            <summary>
+            Determines if the symbol inherits from the specified type.
+            </summary>
+            <param name="symbol">The current symbol</param>
+            <param name="typeName">A potential base class.</param>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.SymbolExtensions.Is(Microsoft.CodeAnalysis.INamedTypeSymbol,Microsoft.CodeAnalysis.INamedTypeSymbol)">
+            <summary>
+            Determines if the symbol inherits from the specified type.
+            </summary>
+            <param name="symbol">The current symbol</param>
+            <param name="other">A potential base class.</param>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.SymbolExtensions.IsLocallyPublic(Microsoft.CodeAnalysis.ISymbol,Microsoft.CodeAnalysis.IModuleSymbol)">
+            <summary>
+            Returns true if the symbol can be accessed from the current module
+            </summary>
+            <param name="symbol"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.SymbolExtensions.EnumerableOf(Microsoft.CodeAnalysis.ITypeSymbol)">
+            <summary>
+            Returns the element type of the IEnumerable, if any.
+            </summary>
+            <param name="resolvedType"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.SymbolExtensions.GetAllAttributes(Microsoft.CodeAnalysis.ISymbol)">
+            <summary>
+            Return attributes on the current type and all its ancestors
+            </summary>
+            <param name="symbol"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.SymbolExtensions.GetAllProperties(Microsoft.CodeAnalysis.INamedTypeSymbol)">
+            <summary>
+            Return properties of the current type and all of its ancestors
+            </summary>
+            <param name="symbol"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.SymbolExtensions.GetAccessibilityAsCSharpCodeString(Microsoft.CodeAnalysis.ISymbol)">
+            <summary>
+            Converts declared accessibility on a symbol to a string usable in generated code.
+            </summary>
+            <param name="symbol">The symbol to get an accessibility string for.</param>
+            <returns>Accessibility in format "public", "protected internal", etc.</returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.SymbolExtensions.HasAttributes(Microsoft.CodeAnalysis.ISymbol,Microsoft.CodeAnalysis.INamedTypeSymbol[])">
+            <summary>
+            Returns a boolean value indicating whether the symbol is decorated with all the given attributes
+            </summary>
+            <param name="symbol">The extended symbol</param>
+            <param name="attributes">The given attributes</param>
+            <returns></returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.SyntaxNodeExtensions.GetSymbol(Microsoft.CodeAnalysis.SyntaxNode,Microsoft.CodeAnalysis.Diagnostics.SyntaxNodeAnalysisContext)">
+            <summary>
+            Returns the semantic symbol of the provided syntax node
+            </summary>
+            <param name="syntaxNode">The syntax node</param>
+            <param name="context">The syntax analysis context</param>
+            <returns>The symbol of the provided syntax node</returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.SyntaxNodeExtensions.GetSymbol(Microsoft.CodeAnalysis.SyntaxNode,Microsoft.CodeAnalysis.SemanticModel)">
+            <summary>
+            Returns the semantic symbol of the provided syntax node
+            </summary>
+            <param name="syntaxNode">The syntax node</param>
+            <param name="model">The syntax semantic model</param>
+            <returns>The symbol of the provided syntax node</returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.SyntaxNodeExtensions.GetDeclaredSymbol(Microsoft.CodeAnalysis.SyntaxNode,Microsoft.CodeAnalysis.SemanticModel)">
+            <summary>
+            Returns the semantic declared symbol of the provided syntax node as the provided symbol type
+            </summary>
+            <param name="syntaxNode">The syntax node</param>
+            <param name="model">The syntax semantic model</param>
+            <returns>The symbol of the provided syntax node</returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.SyntaxNodeExtensions.GetDeclaredSymbol(Microsoft.CodeAnalysis.SyntaxNode,Microsoft.CodeAnalysis.Diagnostics.SyntaxNodeAnalysisContext)">
+            <summary>
+            Returns the semantic declared symbol of the provided syntax node as the provided symbol type
+            </summary>
+            <param name="syntaxNode">The syntax node</param>
+            <param name="context">The syntax analysis context</param>
+            <returns>The symbol of the provided syntax node</returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.SyntaxNodeExtensions.GetSymbolOrDeclared(Microsoft.CodeAnalysis.SyntaxNode,Microsoft.CodeAnalysis.Diagnostics.SyntaxNodeAnalysisContext)">
+            <summary>
+            Returns the semantic symbol of the provided syntax node, or the declared symbol if the previous cast was invalid
+            </summary>
+            <param name="syntaxNode">The syntax node</param>
+            <param name="context">The syntax analysis context</param>
+            <returns>The symbol or declared symbol of the provided syntax node</returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.SyntaxNodeExtensions.GetSymbolOrDeclared(Microsoft.CodeAnalysis.SyntaxNode,Microsoft.CodeAnalysis.SemanticModel)">
+            <summary>
+            Returns the semantic symbol of the provided syntax node, or the declared symbol if the previous cast was invalid
+            </summary>
+            <param name="syntaxNode"></param>
+            <param name="semanticModel"></param>
+            <returns>The symbol or declared symbol of the provided syntax node</returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.SyntaxNodeExtensions.GetEnclosingSymbol(Microsoft.CodeAnalysis.SyntaxNode,Microsoft.CodeAnalysis.SemanticModel)">
+            <summary>
+            The the enclosing symbol for the current syntax node
+            </summary>
+            <param name="syntaxNode">The syntax node</param>
+            <param name="semanticModel">The current semantic model</param>
+            <returns></returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.SyntaxNodeExtensions.GetSymbolAs``1(Microsoft.CodeAnalysis.SyntaxNode,Microsoft.CodeAnalysis.SemanticModel)">
+            <summary>
+            Returns the semantic symbol of the provided syntax node
+            </summary>
+            <param name="syntaxNode">The syntax node</param>
+            <param name="model">The syntax semantic model</param>
+            <returns>The symbol of the provided syntax node</returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.SyntaxNodeExtensions.GetSymbolAs``1(Microsoft.CodeAnalysis.SyntaxNode,Microsoft.CodeAnalysis.Diagnostics.SyntaxNodeAnalysisContext)">
+            <summary>
+            Returns the semantic symbol of the provided syntax node
+            </summary>
+            <param name="syntaxNode">The syntax node</param>
+            <param name="context">The syntax analysis context</param>
+            <returns>The symbol of the provided syntax node</returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.SyntaxNodeExtensions.GetDeclaredSymbolAs``1(Microsoft.CodeAnalysis.SyntaxNode,Microsoft.CodeAnalysis.Diagnostics.SyntaxNodeAnalysisContext)">
+            <summary>
+            Returns the semantic declared symbol of the provided syntax node as the provided symbol type
+            </summary>
+            <param name="syntaxNode">The syntax node</param>
+            <param name="context">The syntax analysis context</param>
+            <returns>The symbol of the provided syntax node</returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.SyntaxNodeExtensions.GetDeclaredSymbolAs``1(Microsoft.CodeAnalysis.SyntaxNode,Microsoft.CodeAnalysis.SemanticModel)">
+            <summary>
+            Returns the semantic declared symbol of the provided syntax node as the provided symbol type
+            </summary>
+            <param name="syntaxNode">The syntax node</param>
+            <param name="model">The syntax analysis context</param>
+            <returns>The symbol of the provided syntax node</returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.SyntaxNodeExtensions.GetSymbolOrDeclaredAs``1(Microsoft.CodeAnalysis.SyntaxNode,Microsoft.CodeAnalysis.Diagnostics.SyntaxNodeAnalysisContext)">
+            <summary>
+            Returns the semantic symbol of the provided syntax node, or the declared symbol if the previous cast was invalid
+            </summary>
+            <param name="syntaxNode">The syntax node</param>
+            <param name="context">The syntax analysis context</param>
+            <returns>The symbol or declared symbol of the provided syntax node</returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.SyntaxNodeExtensions.GetSymbolOrDeclaredAs``1(Microsoft.CodeAnalysis.SyntaxNode,Microsoft.CodeAnalysis.SemanticModel)">
+            <summary>
+            Returns the semantic symbol of the provided syntax node, or the declared symbol if the previous cast was invalid
+            </summary>
+            <param name="syntaxNode">The syntax node</param>
+            <param name="model">The syntax semantic model</param>
+            <returns>The symbol or declared symbol of the provided syntax node</returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.SyntaxNodeExtensions.GetFirstAncestorWhere(Microsoft.CodeAnalysis.SyntaxNode,System.Func{Microsoft.CodeAnalysis.SyntaxNode,System.Boolean},System.Func{Microsoft.CodeAnalysis.SyntaxNode,System.Boolean})">
+            <summary>
+            Finds first ancestor node such that predicate is met, unless terminateAt is met first. Returns null if terminateAt is true or if no ancestor meets predicate.
+            </summary>
+            <param name="node">The child node to start from.</param>
+            <param name="predicate">The condition to return an ancestor.</param>
+            <param name="terminateAt">If this is true for any ancestor, the search will be terminated.</param>
+            <returns>The ancestor node that meets the predicate condition, or null if terminateAt is satisfied first or if no ancestor is found.</returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.SyntaxNodeExtensions.GetFirstAncestorOfType``1(Microsoft.CodeAnalysis.SyntaxNode,System.Func{Microsoft.CodeAnalysis.SyntaxNode,System.Boolean})">
+            <summary>
+            Finds first ancestor node of type T, unless terminateAt is satisfied first. Returns null if terminateAt is true or if no ancestor is of type T.
+            </summary>
+            <typeparam name="T">The SyntaxNode type of interest.</typeparam>
+            <param name="node">The child node to start from.</param>
+            <param name="terminateAt">If this is true for any ancestor, the search will be terminated.</param>
+            <returns>The first ancestor node of type T, or null if terminateAt is satisfied first or if no ancestor of type T is found.</returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.SyntaxNodeExtensions.GetReferringAncestorOfType``1(Microsoft.CodeAnalysis.SyntaxNode)">
+            <summary>
+            Get ancestor of a particular type which could 'refer to' node. This will return null if it encounters a 'boundary' (eg a StatementSyntax not of the
+            type of interest, a lambda expression, a ConditionalStatement that the node is on the left-hand side of, etc.), or if no ancestor of type T is found.
+            </summary>
+            <typeparam name="T">The SyntaxNode type of interest.</typeparam>
+            <param name="node">The child node to start from.</param>
+            <returns>The first ancestor node of type T, or null if a boundary node is encountered first or if no ancestor of type T is found.</returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.SyntaxNodeExtensions.IsNodeConditionInConditionalExpression(Microsoft.CodeAnalysis.SyntaxNode)">
+            <summary>
+            Returns true if a node is the condition in a conditional expression.
+            </summary>
+            <param name="node"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.SyntaxNodeExtensions.GetAsTypeSymbol(Microsoft.CodeAnalysis.SyntaxNode,Microsoft.CodeAnalysis.Diagnostics.SyntaxNodeAnalysisContext,System.Boolean)">
+            <summary>
+            Returns the the type symbol that this syntax node provides, if it has one (i.e InvocationSyntax -> invocation return type)
+            </summary>
+            <param name="syntaxNode">The syntax node</param>
+            <param name="context">The syntax analysis context</param>
+            <param name="useConvertedType">If true, the converted type (implicit conversion) is returned</param>
+            <returns>The type symbol that the syntax node represents</returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.SyntaxNodeExtensions.IsSyntaxOfType``1(Microsoft.CodeAnalysis.SyntaxNode)">
+            <summary>
+            Indicates if the current syntax node is of the trageted syntax type
+            </summary>
+            <typeparam name="TSymbolType"></typeparam>
+            <param name="current"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.SyntaxNodeExtensions.GetAsSyntaxOfType``1(Microsoft.CodeAnalysis.SyntaxNode)">
+            <summary>
+            Returns the syntax node safe-casted into a certain syntax type
+            </summary>
+            <typeparam name="TSymbolType">The syntax type the node should be cast to</typeparam>
+            <param name="current">The syntax node to convert</param>
+            <returns></returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.SyntaxNodeExtensions.LinkNodesToSymbols``2(System.Collections.Generic.IEnumerable{``0},System.Func{``0,``1},System.Nullable{Microsoft.CodeAnalysis.Diagnostics.SyntaxNodeAnalysisContext})">
+            <summary>
+            Links each syntax node to a specified semantic representation of that node. 
+            </summary>
+            <param name="syntaxNodes">The nodes to map to symbols</param>
+            <param name="syntaxToSymbol">Describes the transition from syntax to symbol applied to a node
+             to obtain the desired semantic representation of that node</param>
+            <param name="context">[Optionnal] The analysis context. Must be provided if the 
+            <see cref="P:Uno.RoslynHelpers.Helpers.SyntaxSymbolPairing`2.TypeSymbol"/> needs to be computed</param>
+            <returns>A self-contained pairing between the given syntax node and its equivalent semantic representation</returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.SyntaxNodeExtensions.IsReturned(Microsoft.CodeAnalysis.SyntaxNode)">
+            <summary>
+            Indicates if this node is directly or conditionally returned in the context of its declaration
+            </summary>
+            <param name="node">The node to check</param>
+            <returns>Is the node is an active member of a return statement</returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.SyntaxNodeExtensions.GetDeclaringIfStatement(Microsoft.CodeAnalysis.SyntaxNode)">
+            <summary>
+            Returns the nearest ancestor of type IfStatementSyntax where the syntax node is declared
+            </summary>
+            <param name="syntaxNode">The provided syntax node</param>
+            <returns>The nearest ancestor of type IfStatementSyntax where the syntax node is declared</returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.SyntaxNodeExtensions.GetDeclaringLoopStatement(Microsoft.CodeAnalysis.SyntaxNode)">
+            <summary>
+            Return the nearest ancestor of any of the four loop type (for, while, do-while, foreach) where the syntax node is declared
+            </summary>
+            <param name="syntaxNode">The provided syntax node</param>
+            <returns>The nearest ancestor of any of the four loop type (for, while, do-while, foreach) where the syntax node is declared</returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.SyntaxNodeExtensions.IsExtendedSyntaxOfType(Microsoft.CodeAnalysis.SyntaxNode,Uno.RoslynHelpers.Helpers.ExtendedSyntaxType)">
+            <summary>
+            Checks if the given node is a certain type of syntax. This type is actually one of the pre-defined check declared in ExtendedSyntaxType
+            </summary>
+            <param name="node">The current node</param>
+            <param name="extendedSyntaxType">The target extended syntax type to check the current node against</param>
+            <returns>True if the node matches the provided extended type</returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.SyntaxNodeExtensions.GetSurroundingMemberDeclarationSyntax(Microsoft.CodeAnalysis.SyntaxNode,System.Boolean)">
+            <summary>
+            Get the first ancestor which is a member declaration syntax 
+            </summary>
+            <param name="node">The current node</param>
+            <param name="includeSelf">If true, the current node will be considered when checking for MemberDeclarationSyntax ancestors</param>
+            <returns>The surrounding member declaration syntax</returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.SyntaxNodeExtensions.GetSurroundingMemberDeclarationSyntax``1(Microsoft.CodeAnalysis.SyntaxNode,System.Boolean,System.Boolean)">
+            <summary>
+            Get the first ancestor which is a member declaration syntax of the provided kind (class, method, namespace, etc) 
+            </summary>
+            <param name="node">The current node</param>
+            <param name="includeSelf">If true, the current node will be considered when checking for MemberDeclarationSyntax ancestors</param>
+            <param name="takeLast">If true, will grab the last surrounding declaration syntax of the given type. Useful to ignore of nested classes or namespaces</param>
+            <returns>The surrounding member declaration syntax</returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.SyntaxNodeExtensions.IsOneOfThoseExtendedSyntaxTypes(Microsoft.CodeAnalysis.SyntaxNode,Uno.RoslynHelpers.Helpers.ExtendedSyntaxType[])">
+            <summary>
+            Checks if the current syntax node matches any of the given extended syntax type definitions
+            </summary>
+            <param name="node">The current node</param>
+            <param name="extendedSyntaxTypes">The extended syntax types to match the current node agaisnt</param>
+            <returns>True if the current node is of any of of the given extended types</returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.SyntaxNodeExtensions.GetCyclomaticComplexityInfo(Microsoft.CodeAnalysis.SyntaxNode,Microsoft.CodeAnalysis.SemanticModel)">
+            <summary>
+            Gets info about cyclomatic complexity, counting the number of predicates within the scope of rootNode and within each nested function
+            (methods and anonymous functions). 
+            </summary>
+            <param name="rootNode">The SyntaxNode to measure cyclomatic complexity within</param>
+            <returns>A sequence of RegionInfo objects, each containing the region-defining node (either rootNode or a function-defining node)
+            and cyclomatic complexity values for the region. There will always be at least one RegionInfo returned for the rootNode,
+             plus one for each nested function.</returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.SyntaxNodeExtensions.GetAllFirstMatchingSubTreeRoots(Microsoft.CodeAnalysis.SyntaxNode,System.Func{Microsoft.CodeAnalysis.SyntaxNode,System.Boolean},System.Func{Microsoft.CodeAnalysis.SyntaxNode,System.Boolean},System.Boolean)">
+            <summary>
+            Descends the hierarchy of <see cref="!:root"/>'s descendants depth-first, looking for nodes that match <see cref="!:keepPredicate"/>. 
+            If an encountered node matches <see cref="!:keepPredicate"/>, it is returned, and its own descendants are ignored. 
+            If an encountered node matches <see cref="!:skipPredicate"/>, it and its descendants are ignored.
+            If <see cref="!:prioritizeSkip"/> is true, the skip predicate takes precedence over the keep predicate.
+            </summary>
+            <param name="root">The root syntax node to start the analysis at</param>
+            <param name="keepPredicate">The predicate used to indicate if a node should be retained or not.</param>
+            <param name="skipPredicate">The predicate used to indicate if a node (and its descendant) should be skipped or not.</param>
+            <param name="prioritizeSkip">If true, even a node that matches the keep predicate will not be retained if it also matches the skip predicate</param>
+            <returns>All the first occurences of the targeted nodes for each branch of the syntax tree under the given root</returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.SyntaxNodeExtensions.GetAllFirstMatchingSubTreeRootsOfType``1(Microsoft.CodeAnalysis.SyntaxNode,System.Func{Microsoft.CodeAnalysis.SyntaxNode,System.Boolean},System.Func{Microsoft.CodeAnalysis.SyntaxNode,System.Boolean},System.Boolean)">
+            <summary>
+            Descends the hierarchy of <see cref="!:root"/>'s descendants depth-first, looking for nodes that match <see cref="!:keepPredicate"/>. 
+            If an encountered node matches <see cref="!:keepPredicate"/>, it is returned, and its own descendants are ignored. 
+            If an encountered node matches <see cref="!:skipPredicate"/>, it and its descendants are ignored.
+            If <see cref="!:prioritizeSkip"/> is true, the skip predicate takes precedence over the keep predicate.
+            If no value is given for the <see cref="!:keepPredicate"/>, the predicate is assumed to be always 'true", and so any subtree root matching the 
+            given type will be returned (while its descendants are ignored)
+            </summary>
+            <param name="root">The root syntax node to start the analysis at</param>
+            <param name="keepPredicate">The predicate used to indicate if a node should be retained or not.</param>
+            <param name="skipPredicate">The predicate used to indicate if a node (and its descendant) should be skipped or not.</param>
+            <param name="prioritizeSkip">If true, even a node that matches the keep predicate will not be retained if it also matches the skip predicate</param>
+            <returns>All the first occurences of the targeted nodes for each branch of the syntax tree under the given root</returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.SyntaxNodeExtensions.IsInGeneratedCode(Microsoft.CodeAnalysis.SyntaxNode)">
+            <summary>
+            Returns true if the node appears to be in generated code.
+            </summary>
+            <param name="node"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.SyntaxNodeExtensions.IsFileNameForGeneratedCode(System.String)">
+            <summary>
+            Returns true if file name indicates that the code is generated.
+            https://github.com/dotnet/roslyn/blob/master/src/Workspaces/Core/Portable/GeneratedCodeRecognition/GeneratedCodeRecognitionServiceFactory.cs
+            </summary>
+            <param name="fileName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.TypeParameterSymbolExtensions.GetReflectedEffectiveBaseClassMethodInfo(Microsoft.CodeAnalysis.ITypeParameterSymbol)">
+            Uses reflection to obtain the EffectiveBaseClassNoUseSiteDiagnostics property and its value. 
+            http://source.roslyn.codeplex.com/#Microsoft.CodeAnalysis.CSharp/Symbols/TypeParameterSymbol.cs#275
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.TypeParameterSymbolExtensions.GetReflectedEffectiveInterfaceMethodInfo(Microsoft.CodeAnalysis.ITypeParameterSymbol)">
+            Uses reflection to obtain the EffectiveInterfacesNoUseSiteDiagnostics property and its value. 
+            http://source.roslyn.codeplex.com/#Microsoft.CodeAnalysis.CSharp/Symbols/TypeParameterSymbol.cs#300
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:Microsoft.CodeAnalysis.TypeParameterSymbolExtensions.HasEquivalentConstraintsTo(Microsoft.CodeAnalysis.ITypeParameterSymbol,Microsoft.CodeAnalysis.ITypeParameterSymbol)" -->
+        <!-- Badly formed XML comment ignored for member "M:Microsoft.CodeAnalysis.TypeParameterSymbolExtensions.GetAllEffectiveInterfaceConstraints(Microsoft.CodeAnalysis.ITypeParameterSymbol)" -->
+        <member name="M:Microsoft.CodeAnalysis.TypeParameterSymbolExtensions.TryGetAsConstrainedType(Microsoft.CodeAnalysis.ITypeParameterSymbol)">
+            <summary>
+            Attempts to resolve the constraints on the given type parameter symbol and obtain a concrete named type. 
+            If no such constraint can be resolved into a named type, null is returned
+            </summary>
+            <param name="current">The type parameter symbol to resolve as a constrained type</param>
+            <returns>The effective/constrained named type that has been resolved from the given type parameter symbol's constraint</returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.TypeSymbolExtensions.IsInterface(Microsoft.CodeAnalysis.ITypeSymbol)">
+            <summary>
+            Returns true is the underlying type is an interface
+            </summary>
+            <param name="symbol">The type symbol</param>
+            <returns>True if the type is an interface</returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.TypeSymbolExtensions.GetAllInterfacesIncludingThis(Microsoft.CodeAnalysis.ITypeSymbol)">
+            <summary>
+            Returns all the interfaces this type inherits from, including the type itself if it is an interface
+            </summary>
+            <param name="type">The type symbol</param>
+            <returns>All the interfaces this type inherits from, including itself</returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.TypeSymbolExtensions.EqualsType(Microsoft.CodeAnalysis.ITypeSymbol,Microsoft.CodeAnalysis.ITypeSymbol,System.Boolean)">
+            <summary>
+            Compares two type symbols for equality
+            </summary>
+            <param name="current">The current type symbol</param>
+            <param name="other">Another type sybol</param>
+            <param name="compareUsingSubstitutedType">If false, the comparison will use the original definitions of both symbols (in case one or both are generic types)</param>
+            <returns>If the symbols are equal</returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.TypeSymbolExtensions.IsEquivalentToType(Microsoft.CodeAnalysis.ITypeSymbol,Microsoft.CodeAnalysis.ITypeSymbol)">
+            <summary>
+            If both current and other are ITypeParameterSymbols, checks if their constraints are equivalent. Otherwise, returns the result of EqualsType.
+            </summary>
+            <param name="current"></param>
+            <param name="other"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.TypeSymbolExtensions.DerivesFromType(Microsoft.CodeAnalysis.ITypeSymbol,System.String,Microsoft.CodeAnalysis.Diagnostics.SyntaxNodeAnalysisContext)">
+            <summary>
+            Checks if the underlying type of the current type symbol derives from the type with the provided name  
+            </summary>
+            <param name="symbol">The current type symbol</param>
+            <param name="otherTypeFullName">The full name for the System.Type instance the current type symbol will be checked against for inheritance/implementation</param>
+            <param name="context">The analysis context</param>
+            <returns>If the underlying type of the current type symbol implements or inherits the target type</returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.TypeSymbolExtensions.DerivesFromType(Microsoft.CodeAnalysis.ITypeSymbol,Microsoft.CodeAnalysis.ITypeSymbol)">
+            <summary>
+            Checks if the underlying type of the current type symbol derives from the type with the provided name  
+            </summary>
+            <param name="symbol">The current type symbol</param>
+            <param name="otherTypeFullName">The full name for the System.Type instance the current type symbol will be checked against for inheritance/implementation</param>
+            <param name="context">The analysis context</param>
+            <returns>If the underlying type of the current type symbol implements or inherits the target type</returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.TypeSymbolExtensions.DerivesFromType(Microsoft.CodeAnalysis.ITypeSymbol,System.Type,Microsoft.CodeAnalysis.Diagnostics.SyntaxNodeAnalysisContext)">
+            <summary>
+            Checks if the underlying type of the current type symbol derives from the provided type
+            </summary>
+            <param name="symbol">The current type symbol</param>
+            <param name="otherType">The System.Type instance that the type symbol will be checked against for inheritance/implementation</param>
+            <param name="context">The analysis context</param>
+            <returns>If the underlying type of the current type symbol implements or inherits the target type</returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.TypeSymbolExtensions.DerivesFromAnyOfTheseTypes(Microsoft.CodeAnalysis.ITypeSymbol,Microsoft.CodeAnalysis.Diagnostics.SyntaxNodeAnalysisContext,System.String[])">
+            <summary>
+            Checks if the underlying type of the current type symbol derives from the provided type
+            </summary>
+            <param name="symbol">The current type symbol</param>
+            <param name="context">The analysis context</param>
+            <param name="typeNames">The type names from which the symbol could inherit</param>
+            <returns>If the underlying type of the current type symbol implements or inherits the target type</returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.TypeSymbolExtensions.DerivesFromType``1(Microsoft.CodeAnalysis.ITypeSymbol,Microsoft.CodeAnalysis.Diagnostics.SyntaxNodeAnalysisContext)">
+            <summary>
+            Checks if the underlying type of the current type symbol derives from the generic argument type
+            </summary>
+            <param name="symbol">The current type symbol</param>
+            <param name="context">The analysis context</param>
+            <returns>If the underlying type of the current type symbol implements or inherits the target type</returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.TypeSymbolExtensions.IsOfType(Microsoft.CodeAnalysis.ITypeSymbol,System.String,Microsoft.CodeAnalysis.Diagnostics.SyntaxNodeAnalysisContext,System.Boolean)">
+            <summary>
+            Checks if the underlying type of the current type symbol is the same as the type with the provided name  
+            </summary>
+            <param name="symbol">The current type symbol</param>
+            <param name="otherTypeFullName">The full name for the System.Type instance the current type symbol will be checked against for equality</param>
+            <param name="context">The analysis context</param>
+            <param name="compareUsingOriginalType">Determines if the comparison wil use the original definitions of both symbols (in case one or both are generic types)</param>
+            <returns>If the underlying type of the current type symbol is equal to the target type</returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.TypeSymbolExtensions.IsOfType(Microsoft.CodeAnalysis.ITypeSymbol,System.Type,Microsoft.CodeAnalysis.Diagnostics.SyntaxNodeAnalysisContext,System.Boolean)">
+            <summary>
+            Checks if the underlying type of the current type symbol is the same as the type with the provided type  
+            </summary>
+            <param name="symbol">The current type symbol</param>
+            <param name="otherType">The System.Type instance that the provided type symbol will be checked against for equality</param>
+            <param name="context">The analysis context</param>
+            <param name="compareUsingOriginalType">Determines if the comparison wil use the original definitions of both symbols (in case one or both are generic types)</param>
+            <returns>If the underlying type of the current type symbol is equal to the target type</returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.TypeSymbolExtensions.IsOfType``1(Microsoft.CodeAnalysis.ITypeSymbol,Microsoft.CodeAnalysis.Diagnostics.SyntaxNodeAnalysisContext,System.Boolean)">
+            <summary>
+            Checks if the underlying type of the current type symbol is the same as the type with the provided generic type
+            </summary>
+            <param name="symbol">The current type symbol</param>
+            <param name="context">The analysis context</param>
+            <param name="compareUsingOriginalType">Determines if the comparison wil use the original definitions of both symbols (in case one or both are generic types)</param>
+            <returns>If the underlying type of the current type symbol is equal to the target type</returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.TypeSymbolExtensions.IsOneOfTheseTypes(Microsoft.CodeAnalysis.ITypeSymbol,Microsoft.CodeAnalysis.Diagnostics.SyntaxNodeAnalysisContext,System.Boolean,System.String[])">
+            <summary>
+            Checks if one of the provided types matches the underlying type of the current type symbol
+            </summary>
+            <param name="symbol">The current type symbol</param>
+            <param name="context">The analysis context</param>
+            <param name="compareUsingOriginalType">Determines if the comparison wil use the original definitions of both symbols (in case one or both are generic types)</param>
+            <param name="otherTypeNames">The full names for the System.Type instances that the provided type symbol will be checked against for equality</param>
+            <returns>If the underlying type of the current type symbol is equal to one of the target types</returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.TypeSymbolExtensions.IsOneOfTheseTypes(Microsoft.CodeAnalysis.ITypeSymbol,Microsoft.CodeAnalysis.Diagnostics.SyntaxNodeAnalysisContext,System.String[])">
+            <summary>
+            Checks if one of the provided types matches the underlying type of the current type symbol. 
+            Uses the default comparison strategy, defined in <see cref="F:Microsoft.CodeAnalysis.TypeSymbolExtensions.DoDefaultCompareUsingSubstitutedType"/> 
+            </summary>
+            <param name="symbol">The current type symbol</param>
+            <param name="otherTypeNames">The full names for the System.Type instances that the provided type symbol will be checked against for equality</param>
+            <param name="context">The analysis context</param>
+            <returns>If the underlying type of the current type symbol is equal to one of the target types</returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.TypeSymbolExtensions.IsOneOfTheseTypes(Microsoft.CodeAnalysis.ITypeSymbol,Microsoft.CodeAnalysis.Diagnostics.SyntaxNodeAnalysisContext,System.Boolean,System.Type[])">
+            <summary>
+            Checks if one of the provided types matches the underlying type of the current type symbol
+            </summary>
+            <param name="symbol">The current type symbol</param>
+            <param name="compareUsingOriginalType">Determines if the comparison wil use the original definitions of both symbols (in case one or both are generic types)</param>
+            <param name="otherTypes">The  System.Type instances the current type symbol will be check against for equality</param>
+            <param name="context">The analysis context</param>
+            <returns>If the underlying type of the current type symbol is equal to one of the target types</returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.TypeSymbolExtensions.IsOneOfTheseTypes(Microsoft.CodeAnalysis.ITypeSymbol,Microsoft.CodeAnalysis.Diagnostics.SyntaxNodeAnalysisContext,System.Type[])">
+            <summary>
+            Checks if one of the provided types matches the underlying type of the current type symbol. 
+            Uses the default comparison strategy, defined in <see cref="F:Microsoft.CodeAnalysis.TypeSymbolExtensions.DoDefaultCompareUsingSubstitutedType"/> 
+            </summary>
+            <param name="symbol">The current type symbol</param>
+            <param name="otherTypes">The  System.Type instances the current type symbol will be check against for equality</param>
+            <param name="context">The analysis context</param>
+            <returns>If the underlying type of the current type symbol is equal to one of the target types</returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.TypeSymbolExtensions.IsVoid(Microsoft.CodeAnalysis.ITypeSymbol)">
+            <summary>
+            True if type symbol represents void
+            </summary>
+            <param name="symbol"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.TypeSymbolExtensions.IsSimpleType(Microsoft.CodeAnalysis.ITypeSymbol,Microsoft.CodeAnalysis.Diagnostics.SyntaxNodeAnalysisContext)">
+            <summary>
+            True if type symbol is a primitive, DateTime, or DateTimeOffset
+            </summary>
+            <param name="symbol"></param>
+            <param name="context"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.TypeSymbolExtensions.GetBaseTypesAndThis(Microsoft.CodeAnalysis.ITypeSymbol)">
+            <summary>
+            Return all the symbols for the base types present in the current type symbol's underlying type inheritance 
+            hierarchy, including the type from the symbol itself
+            </summary>
+            <param name="type">The type symbol to analyze</param>
+            <returns>The symbols for all the base type for the current type symbol's underlying type, including the current stype</returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.TypeSymbolExtensions.GetBaseTypes(Microsoft.CodeAnalysis.ITypeSymbol)">
+            <summary>
+            Return all the symbols for the base types present in the current type symbol's underlying type inheritance 
+            hierarchy
+            </summary>
+            <param name="type">The type symbol to analyze</param>
+            <returns>The symbols for all the base type for the current type symbol's underlying type</returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.TypeSymbolExtensions.GetContainingTypesAndThis(Microsoft.CodeAnalysis.ITypeSymbol)">
+            <summary>
+            Return the symbols representing all the classes in which the current type symbol's underlying type is contained,
+            including the class of the current symbol's underlying type
+            hierarchy
+            </summary>
+            <param name="type">The type symbol to analyze</param>
+            <returns>The symbols for all the classes in which the current type symbol's underlying type is contained, including the current type</returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.TypeSymbolExtensions.GetContainingTypes(Microsoft.CodeAnalysis.ITypeSymbol)">
+            <summary>
+            Return the symbols representing all the classes in which the current type symbol's underlying type is contained
+            hierarchy
+            </summary>
+            <param name="type">The type symbol to analyze</param>
+            <returns>The symbols for all the classes in which the current type symbol's underlying type is containede</returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.TypeSymbolExtensions.GetAllAppliedAttributes(Microsoft.CodeAnalysis.ITypeSymbol)">
+            <summary>
+            Return all the attributes applied to the current type, include the ones inherited from inheritance ancestors
+            </summary>
+            <param name="type">The type symbol to analyze</param>
+            <returns>All the attributes applied to the type, either directly or through inheritance ancestors that have those attributes</returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.TypeSymbolExtensions.GetAllAccessibleMethodsFromWithinType(Microsoft.CodeAnalysis.ITypeSymbol,Microsoft.CodeAnalysis.Diagnostics.SyntaxNodeAnalysisContext,System.Boolean,System.Boolean,System.String)">
+            <summary>
+            Returns an enumeration of the methods that are accessible from within a type, 
+            including protected and private methods. 
+            </summary>
+            <param name="type">The type to explore</param>
+            <param name="context">The analysis context</param>
+            <param name="visitHierarchy">If true, the returned methods will included the accessible (public and protected) methods this type inherits from</param>
+            <param name="includeObsoleteMethods">If true, this will include the methods marked as obsolete</param>
+            <param name="methodName">Only targets methods with this specific name (optionnal)</param>
+            <returns>The methods that are available from within the provided type (includes inherited methods if <see cref="!:visitHierarchy"/> is set to true)</returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.TypeSymbolExtensions.GetAllPubliclyAccessibleMethodsFromType(Microsoft.CodeAnalysis.ITypeSymbol,Microsoft.CodeAnalysis.Diagnostics.SyntaxNodeAnalysisContext,System.Boolean,System.Boolean,System.String)">
+            <summary>
+            Returns an enumeration of the methods that are publicly accessible for a given type
+            </summary>
+            <param name="type">The type to explore</param>
+            <param name="context">The analysis context</param>
+            <param name="visitHierarchy">If true, the returned methods will included the publicly accessible methods this type inherits from</param>
+            <param name="includeObsoleteMethods">If true, this will include the methods marked as obsolete</param>
+            <param name="methodName">Only targets methods with this specific name (optionnal)</param>
+            <returns>The methods that are publicly accessible for a given type (includes inherited methods if <see cref="!:visitHierarchy"/> is set to true)</returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.TypeSymbolExtensions.GetAllMethodsWithinType(Microsoft.CodeAnalysis.ITypeSymbol,Microsoft.CodeAnalysis.Diagnostics.SyntaxNodeAnalysisContext,System.Boolean,System.Boolean,System.String)">
+            <summary>
+            Returns am enmumeration of methods contained within a type
+            </summary>
+            <param name="currentType">The type to explore</param>
+            <param name="context">The analysis context</param>
+            <param name="visitHierarchy">If true, the returned methods will included the methods this type inherits from</param>
+            <param name="includeObsoleteMethods">If true, this will include the methods marked as obsolete</param>
+            <param name="methodName">Only targets methods with this specific name (optionnal)</param>
+            <returns>The methods from a given type (includes inherited methods if <see cref="!:visitHierarchy"/> is set to true)</returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.TypeSymbolExtensions.AreTypeSetsEquivalent(System.Collections.Generic.IEnumerable{Microsoft.CodeAnalysis.ITypeSymbol},System.Collections.Generic.IEnumerable{Microsoft.CodeAnalysis.ITypeSymbol})">
+            <summary>
+            Returns true if two sets of types are equivalent, ignoring order.
+            </summary>
+            <param name="current"></param>
+            <param name="other"></param>
+            <returns></returns>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:Microsoft.CodeAnalysis.TypeSymbolExtensions.IsTypeParameterOrGenericWithTypeParameterArguments(Microsoft.CodeAnalysis.ITypeSymbol)" -->
+        <member name="M:Microsoft.CodeAnalysis.TypeSymbolExtensions.GetUnderlyingTypeOrSelf(Microsoft.CodeAnalysis.ITypeSymbol,System.Boolean,System.Boolean)">
+            <summary>
+            Returns the given type as its most constrained/effective version according to its type and, possibly, its type constraints. 
+            If no constrained version of the type is found, the type itself is returned.
+            In the case of an array type, the method can also optionally provide the most constrained version of the array's underlying type
+            </summary>
+            <param name="typeSymbol">The type symbol which the method will attempt to resolve as a constrained/effective type</param>
+            <param name="getReducedArrayType">If true, the logic will apply on the underlying type of the array (i.e 'A' is the underlying array type of 'A[]') in the case the provided type is an <see cref="T:Microsoft.CodeAnalysis.IArrayTypeSymbol"/>. 
+            If false, the method will simply return the array type in the case where in the case the provided type is an <see cref="T:Microsoft.CodeAnalysis.IArrayTypeSymbol"/></param>
+            <param name="tryResolvingGenericConstraint">If true, the given symbol, under its original or potentially reduced form, will be processed in order 
+            to obtain a constrained type in the case where the symbol in question is a <see cref="T:Microsoft.CodeAnalysis.ITypeParameterSymbol"/></param>
+            <returns>The most constrained/effective version of the given symbol, or the symbol itself if no such constrained/effective type was found</returns>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.TypeSymbolExtensions.GetDisplayFriendlyName(Microsoft.CodeAnalysis.ITypeSymbol)">
+            <summary>
+            Return a more display friendly name for some of the named types with abbreviated or otherwise vague names
+            </summary>
+            <param name="current">The named type symbol to get the name from</param>
+            <returns>The display friendly version of the current type symbol if it exists, or simply its regular name if it does not</returns>
+        </member>
+    </members>
+</doc>
