@@ -268,10 +268,9 @@ namespace Nekoyume.Game.Character
             );
         }
 
-        public virtual void OnDamage(AttackType attackType, int dmg, bool cancelCast = true)
+        public virtual void OnDamage(AttackType attackType, int dmg)
         {
-            if (cancelCast)
-                CancelCast();
+            CancelCast();
 
             int calcDmg = CalcDamage(attackType, dmg);
             if (calcDmg <= 0)

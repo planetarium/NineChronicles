@@ -144,9 +144,9 @@ namespace Nekoyume.Game.Character
             return canceled;
         }
 
-        public override void OnDamage(AttackType attackType, int dmg, bool cancelCast = true)
+        public override void OnDamage(AttackType attackType, int dmg)
         {
-            base.OnDamage(attackType, dmg, cancelCast);
+            base.OnDamage(attackType, dmg);
 
             int calcDmg = CalcDamage(attackType, dmg);
 
