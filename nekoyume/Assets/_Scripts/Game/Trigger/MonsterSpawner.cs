@@ -129,7 +129,7 @@ namespace Nekoyume.Game.Trigger
             Factory.EnemyFactory factory = GetComponentInParent<Factory.EnemyFactory>();
             var player = _stage.GetComponentInChildren<Character.Player>();
             float offsetX = player.transform.position.x + 5.5f;
-            factory.Create(stageData.bossId, new Vector2(offsetX, -1.0f), _monsterPower);
+            factory.CreateBoss(stageData.bossId, new Vector2(offsetX, -1.0f), _monsterPower);
         }
     }
 }

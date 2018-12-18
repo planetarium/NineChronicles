@@ -27,6 +27,7 @@ namespace Nekoyume.Game.Character
         protected Vector3 _hpBarOffset = new Vector3();
         protected UI.ProgressBar _castingBar = null;
         protected Vector3 _castingBarOffset = new Vector3();
+        protected float _dyingTime = 1.0f;
 
         protected List<Skill.SkillBase> _skills = new List<Skill.SkillBase>();
         protected const float kSkillGlobalCooltime = 0.6f;
@@ -134,7 +135,7 @@ namespace Nekoyume.Game.Character
                 _anim.SetTrigger("Die");
             }
 
-            yield return new WaitForSeconds(1.0f);
+            yield return new WaitForSeconds(_dyingTime);
 
             OnDead();
         }
@@ -238,6 +239,11 @@ namespace Nekoyume.Game.Character
 
             HP -= calcDmg;
 
+            if (_anim != null)
+            {
+                _anim.SetTrigger("Hit");
+            }
+
             UpdateHpBar();
         }
 
@@ -247,6 +253,7 @@ namespace Nekoyume.Game.Character
             {
                 _anim.ResetTrigger("Attack");
                 _anim.ResetTrigger("Die");
+                _anim.ResetTrigger("Hit");
                 _anim.SetBool("Run", false);
             }
 
