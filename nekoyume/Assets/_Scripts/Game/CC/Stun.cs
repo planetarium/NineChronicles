@@ -9,6 +9,11 @@ namespace Nekoyume.Game.CC
 
     public class Stun : CCBase, IStun
     {
+        protected override void OnBegin()
+        {
+            Owner.CancelCast();
+        }
+
         protected override void OnTickBefore()
         {
             PopupText.Show(
