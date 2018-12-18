@@ -48,7 +48,7 @@ namespace Nekoyume.Game.Character
             WalkSpeed = 0.0f;
 
             _hpBarOffset.Set(-0.22f, -0.61f, 0.0f);
-            _castingBarOffset.Set(-0.22f, -0.83f, 0.0f);
+            _castingBarOffset.Set(-0.22f, -0.85f, 0.0f);
             _mpBarOffset.Set(-0.22f, -0.66f, 0.0f);
 
             Root = new Root();
@@ -56,9 +56,7 @@ namespace Nekoyume.Game.Character
                 BT.Selector().OpenBranch(
                     BT.If(IsAlive).OpenBranch(
                         BT.Selector().OpenBranch(
-                            BT.If(() => Casting).OpenBranch(
-                                BT.Call(() => { })
-                            ),
+                            BT.Condition(() => Casting),
                             BT.If(() => CastedSkill != null).OpenBranch(
                                 BT.Call(() => UseSkill(CastedSkill, false))
                             ),
@@ -131,18 +129,24 @@ namespace Nekoyume.Game.Character
             if (used)
             {
                 MP -= selectedSkill.Data.Cost;
+                UpdateHpBar();
                 UpdateMpBar();
                 Event.OnUseSkill.Invoke();
             }
             return used;
         }
 
-        public override void OnDamage(AttackType attackType, int dmg)
+        public override bool CancelCast()
         {
-            bool casting = Casting;
-            base.OnDamage(attackType, dmg);
-            if (casting && !Casting)
+            bool canceled = base.CancelCast();
+            if (canceled)
                 Event.OnUseSkill.Invoke();
+            return canceled;
+        }
+
+        public override void OnDamage(AttackType attackType, int dmg, bool cancelCast = true)
+        {
+            base.OnDamage(attackType, dmg, cancelCast);
 
             int calcDmg = CalcDamage(attackType, dmg);
 

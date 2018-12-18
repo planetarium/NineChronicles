@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using BTAI;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Trigger;
@@ -34,6 +35,10 @@ namespace Nekoyume.Game.Character
         protected Skill.SkillBase CastingSkill => _skills.Find(skill => skill.Casting);
         protected Skill.SkillBase CastedSkill => _skills.Find(skill => skill.Casted);
 
+        public bool Rooted => gameObject.GetComponent<CC.IRoot>() != null;
+        public bool Silenced => gameObject.GetComponent<CC.ISilence>() != null;
+        public bool Stunned => gameObject.GetComponent<CC.IStun>() != null;
+
         private void Start()
         {
             _anim = GetComponent<Animator>();
@@ -65,15 +70,40 @@ namespace Nekoyume.Game.Character
             return !IsDead();
         }
 
+        protected float AttackSpeedMultiplier
+        {
+            get
+            {
+                var slows = GetComponents<CC.ISlow>();
+                var multiplierBySlow = slows.Select(slow => slow.AttackSpeedMultiplier).DefaultIfEmpty(1.0f).Min();
+                return multiplierBySlow;
+            }
+        }
+
+        protected float WalkSpeedMultiplier
+        {
+            get
+            {
+                var slows = GetComponents<CC.ISlow>();
+                var multiplierBySlow = slows.Select(slow => slow.WalkSpeedMultiplier).DefaultIfEmpty(1.0f).Min();
+                return multiplierBySlow;
+            }
+        }
+
         protected virtual void Walk()
         {
+            if (Rooted)
+            {
+                _anim.SetBool("Walk", false);
+                return;
+            }
             if (_anim != null)
             {
                 _anim.SetBool("Run", true);
             }
 
             Vector2 position = transform.position;
-            position.x += Time.deltaTime * WalkSpeed;
+            position.x += Time.deltaTime * WalkSpeed * WalkSpeedMultiplier;
             transform.position = position;
         }
 
@@ -97,6 +127,8 @@ namespace Nekoyume.Game.Character
         public virtual bool UseSkill(Skill.SkillBase selectedSkill, bool checkRange = true)
         {
             if (checkRange && !selectedSkill.IsTargetInRange()) return false;
+            if (Stunned) return false;
+            if (selectedSkill.NeedsCasting && Silenced) return false;
             if (selectedSkill.Cast())
             {
                 if (_anim != null)
@@ -107,7 +139,7 @@ namespace Nekoyume.Game.Character
                 return false;
             }
 
-            if (!selectedSkill.Use())
+            if (!selectedSkill.Use(selectedSkill.NeedsCasting ? 1.0f : AttackSpeedMultiplier))
                 return false;
 
             if (_anim != null)
@@ -119,6 +151,14 @@ namespace Nekoyume.Game.Character
             {
                 skill.SetGlobalCooltime(kSkillGlobalCooltime);
             }
+            return true;
+        }
+
+        public virtual bool CancelCast()
+        {
+            if (!Casting) return false;
+
+            CastingSkill.CancelCast();
             return true;
         }
 
@@ -180,6 +220,7 @@ namespace Nekoyume.Game.Character
             {
                 _hpBar = UI.Widget.Create<UI.ProgressBar>(true);
             }
+            _hpBar.UpdatePosition(gameObject, _hpBarOffset);
             _hpBar.SetText($"{HP} / {_hpMax}");
             _hpBar.SetValue((float)HP / (float)_hpMax);
         }
@@ -227,10 +268,10 @@ namespace Nekoyume.Game.Character
             );
         }
 
-        public virtual void OnDamage(AttackType attackType, int dmg)
+        public virtual void OnDamage(AttackType attackType, int dmg, bool cancelCast = true)
         {
-            if (Casting)
-                CastingSkill.CancelCast();
+            if (cancelCast)
+                CancelCast();
 
             int calcDmg = CalcDamage(attackType, dmg);
             if (calcDmg <= 0)

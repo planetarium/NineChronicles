@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,8 +10,8 @@ namespace Nekoyume.Game.Skill
         public Data.Table.Skill Data = null;
         protected string _targetTag = "";
         public bool Casting { get; private set; } = false;
-        public float CastingTime { get; private set; } = 0.0f;
-        public float CastingPercentage => Mathf.Max(1 - CastingTime / Data.CastingTime, 0);
+        public float RemainingCastingTime { get; private set; } = 0.0f;
+        public float CastingPercentage => Mathf.Max(1 - RemainingCastingTime / Data.CastingTime, 0);
         public bool Casted { get; private set; } = false;
         protected float _cooltime = 0.0f;
         protected float _knockBack = 0.0f;
@@ -20,8 +21,8 @@ namespace Nekoyume.Game.Skill
             _cooltime -= Time.deltaTime;
             if (Casting)
             {
-                CastingTime -= Time.deltaTime;
-                if (CastingTime <= 0)
+                RemainingCastingTime -= Time.deltaTime;
+                if (RemainingCastingTime <= 0)
                 {
                     Casting = false;
                     Casted = true;
@@ -45,6 +46,8 @@ namespace Nekoyume.Game.Skill
         {
             return null;
         }
+
+        public bool NeedsCasting => Data.CastingTime > 0;
 
         public bool IsCooltime()
         {
@@ -118,7 +121,16 @@ namespace Nekoyume.Game.Skill
             damager.transform.position = transform.TransformPoint(range, 0.0f, 0.0f);
             int damage = Mathf.FloorToInt(owner.CalcAtk() * ((float)Data.Power * 0.01f));
             float size = (float)Data.Size / (float)Game.PixelPerUnit;
-            damager.Set(ani, _targetTag, Data.AttackType, damage, size, Data.TargetCount, _knockBack);
+            damager.Set(ani, _targetTag, Data.AttackType, damage, size, Data.TargetCount, OnDamage);
+        }
+
+        protected virtual void OnDamage(Character.CharacterBase character)
+        {
+            if (Math.Abs(_knockBack) > 0)
+            {
+                var knockBack = character.gameObject.AddComponent<CC.KnockBack>();
+                knockBack.Set(_knockBack);
+            }
         }
 
         public bool Cast()
@@ -136,7 +148,7 @@ namespace Nekoyume.Game.Skill
             }
 
             Casting = true;
-            CastingTime = Data.CastingTime;
+            RemainingCastingTime = Data.CastingTime;
 
             return true;
         }
@@ -147,7 +159,7 @@ namespace Nekoyume.Game.Skill
             _cooltime = Data.Cooltime;
         }
 
-        public bool Use()
+        public bool Use(float cooltimeMultiplier = 1.0f)
         {
             if (!Casted)
                 return false;
@@ -155,7 +167,7 @@ namespace Nekoyume.Game.Skill
                 return false;
 
             Casted = false;
-            _cooltime = (float)Data.Cooltime;
+            _cooltime = Data.Cooltime * cooltimeMultiplier;
 
             return _Use();
         }
