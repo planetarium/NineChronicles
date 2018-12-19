@@ -114,7 +114,7 @@ namespace Nekoyume.Game.Character
             Event.OnEnemyDead.Invoke(this);
         }
 
-        private void DropItem()
+        protected void DropItem()
         {
             var selector = new Util.WeightedSelector<int>();
             var tables = this.GetRootComponent<Data.Tables>();
