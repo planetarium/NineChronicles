@@ -2,7 +2,7 @@ namespace Nekoyume.Game.Item
 {
     public class Equipment : ItemUsable
     {
-        private bool _isEquipped = false;
+        public bool IsEquipped = false;
         private int _level = 0;
         private int _enchantCount = 0;
 
@@ -13,7 +13,7 @@ namespace Nekoyume.Game.Item
 
         public override bool Use()
         {
-            if (!_isEquipped)
+            if (!IsEquipped)
             {
                 return Equip();
             }
@@ -25,13 +25,13 @@ namespace Nekoyume.Game.Item
 
         public bool Equip()
         {
-            _isEquipped = true;
+            IsEquipped = true;
             return true;
         }
 
         public bool Unequip()
         {
-            _isEquipped = false;
+            IsEquipped = false;
             return true;
         }
 

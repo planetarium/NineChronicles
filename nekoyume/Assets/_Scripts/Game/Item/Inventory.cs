@@ -26,7 +26,7 @@ namespace Nekoyume.Game.Item
 
         public bool Add(ItemBase item)
         {
-            var i = _items.FindIndex(a => a.Item.Data.Equals(item.Data));
+            var i = _items.FindIndex(a => a.Item.Data.Id.Equals(item.Data.Id) && !item.Data.Cls.Contains("Weapon"));
             if (i < 0)
             {
                 _items.Add(new InventoryItem(item));
