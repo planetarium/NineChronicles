@@ -26,27 +26,27 @@ namespace Nekoyume.Game.Skill
         protected override void OnDamage(CharacterBase character)
         {
             base.OnDamage(character);
-            switch (new Random().Next(1, 6))
+            switch (new Random().Next(1, 21))
             {
                 case 1:
                     var dotDamager = character.gameObject.AddComponent<DotDamager>();
-                    dotDamager.Set(AttackType.Middle, 4, 3.0f);
+                    dotDamager.Set(attackType: AttackType.Middle, damagePerTick: 4, duration: 3.0f);
                     break;
                 case 2:
                     var silence = character.gameObject.AddComponent<Silence>();
-                    silence.Set(5.0f);
+                    silence.Set(duration: 5.0f);
                     break;
                 case 3:
                     var stun = character.gameObject.AddComponent<Stun>();
-                    stun.Set(2.0f);
+                    stun.Set(duration: 2.0f);
                     break;
                 case 4:
                     var airborne = character.gameObject.AddComponent<Airborne>();
-                    airborne.Set(2.0f);
+                    airborne.Set(duration: 2.0f);
                     break;
                 case 5:
                     var slow = character.gameObject.AddComponent<Slow>();
-                    slow.Set(2.0f, 0.1f, 3.0f);
+                    slow.Set(attackSpeedMultiplier: 2.0f, walkSpeedMultiplier: 0.1f, duration: 3.0f);
                     break;
             }
         }

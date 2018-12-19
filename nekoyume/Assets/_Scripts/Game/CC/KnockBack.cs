@@ -4,17 +4,26 @@ using UnityEngine;
 
 namespace Nekoyume.Game.CC
 {
-    public class KnockBack : MonoBehaviour
+    public interface IKnockBack : ICCBase
     {
-        public void Set(float power, float duration = 0.5f)
+        float Power { get; }
+    }
+
+    public class KnockBack : CCBase, IKnockBack
+    {
+        public float Power { get; private set; }
+
+        public new void Set(float power, float duration = 0.5f)
         {
-            Vector3 endPosition = transform.TransformPoint(power, 0.0f, 0.0f);
-            transform.DOJump(endPosition, 0.02f, 1, duration).onComplete = EndCallback;
+            Power = power;
+            base.Set(duration);
         }
 
-        private void EndCallback()
+        protected override void OnBegin()
         {
-            Destroy(this);
+            Owner.CancelCast();
+            Vector3 endPosition = transform.TransformPoint(Power, 0.0f, 0.0f);
+            transform.DOJump(endPosition, 0.02f, 1, Duration);
         }
     }
 }
