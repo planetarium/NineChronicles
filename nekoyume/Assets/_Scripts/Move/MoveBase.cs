@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using Nekoyume.Action;
+using Newtonsoft.Json.Linq;
 using Planetarium.Crypto.Extension;
 using Planetarium.Crypto.Keys;
 using Planetarium.SDK.Address;
@@ -51,7 +52,7 @@ namespace Nekoyume.Move
 
         public IEnumerable<ActionBase> Actions;
 
-        public override IDictionary<string, dynamic> PlainValue => new Dictionary<string, dynamic>
+        public override IDictionary<string, object> PlainValue => new Dictionary<string, object>
         {
             {"user_address", "0x" + UserAddress.Hex()},
             {"name", Name},
@@ -70,29 +71,29 @@ namespace Nekoyume.Move
 
         public abstract Context Execute(Context ctx);
 
-        public static MoveBase FromPlainValue(IDictionary<string, dynamic> plainValue, Type type)
+        public static MoveBase FromPlainValue(IDictionary<string, object> plainValue, Type type)
         {
             var move = Activator.CreateInstance(type) as MoveBase;
             Debug.Assert(move != null, nameof(move) + " != null");
 
             move.PublicKey = PublicKey.FromBytes((plainValue["user_public_key"] as string).ParseHex());
             move.Signature = (plainValue["signature"] as string).ParseHex();
-            move.Tax = (int) plainValue["tax"];
-            var details = plainValue["details"].ToObject<Dictionary<string, string>>();
+            move.Tax = Convert.ToInt32(plainValue["tax"]);
+            move.Details = ((JObject)plainValue["details"]).ToObject<Dictionary<string, string>>();
             switch (move.Name)
             {
                 case "create_novice":
-                    move.Actions = new[] {new Action.CreateNovice(details["name"])};
+                    move.Actions = new[] { new Action.CreateNovice(move.Details["name"]) };
                     break;
                 case "sleep":
-                    move.Actions = new[] {new Action.Sleep()};
+                    move.Actions = new[] { new Action.Sleep() };
                     break;
             }
-            move.Details = plainValue["details"].ToObject<Dictionary<string, string>>();
             move.Timestamp = DateTime.ParseExact(
-                plainValue["created_at"], TimestampFormat, CultureInfo.InvariantCulture
+                (string)plainValue["created_at"], TimestampFormat, CultureInfo.InvariantCulture
             );
-            move.BlockId = plainValue["block"].ToObject<Dictionary<string, dynamic>>()["id"];
+            var block = (JObject)plainValue["block"];
+            move.BlockId = (long)block.GetValue("id");
             return move;
         }
 
