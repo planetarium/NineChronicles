@@ -27,8 +27,13 @@ namespace Nekoyume.Game.Entrance
             {
                 objectPool.Remove<Character.Player>(worldPlayer.gameObject);
             }
-
             objectPool.ReleaseAll();
+
+            var boss = stage.GetComponentInChildren<Character.Boss.BossBase>();
+            if (boss != null)
+            {
+                Destroy(boss);
+            }
 
             var playerFactory = GetComponent<Factory.PlayerFactory>();
             GameObject player = playerFactory.Create();
