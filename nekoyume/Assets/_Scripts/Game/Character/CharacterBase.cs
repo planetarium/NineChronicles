@@ -279,7 +279,11 @@ namespace Nekoyume.Game.Character
 
             if (_anim != null)
             {
-                _anim.SetTrigger("Hit");
+                var info = _anim.GetCurrentAnimatorStateInfo(0);
+                if (info.IsName("idle") || info.IsName("run"))
+                {
+                    _anim.SetTrigger("Hit");
+                }
             }
 
             UpdateHpBar();
