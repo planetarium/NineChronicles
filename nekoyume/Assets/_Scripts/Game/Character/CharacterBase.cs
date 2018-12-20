@@ -20,7 +20,7 @@ namespace Nekoyume.Game.Character
         public int Power = 100;
 
         public virtual WeightType WeightType { get; protected set; } = WeightType.Small;
-        public float WalkSpeed = 0.0f;
+        public float RunSpeed = 0.0f;
 
         protected int _hpMax = 0;
         protected Animator _anim = null;
@@ -47,7 +47,7 @@ namespace Nekoyume.Game.Character
 
         protected virtual void OnDisable()
         {
-            WalkSpeed = 0.0f;
+            RunSpeed = 0.0f;
             Root = null;
             if (_hpBar != null)
             {
@@ -81,12 +81,12 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        protected float WalkSpeedMultiplier
+        protected float RunSpeedMultiplier
         {
             get
             {
                 var slows = GetComponents<CC.ISlow>();
-                var multiplierBySlow = slows.Select(slow => slow.WalkSpeedMultiplier).DefaultIfEmpty(1.0f).Min();
+                var multiplierBySlow = slows.Select(slow => slow.RunSpeedMultiplier).DefaultIfEmpty(1.0f).Min();
                 return multiplierBySlow;
             }
         }
@@ -95,7 +95,7 @@ namespace Nekoyume.Game.Character
         {
             if (Rooted)
             {
-                _anim.SetBool("Walk", false);
+                _anim.SetBool("Run", false);
                 return;
             }
             if (_anim != null)
@@ -104,7 +104,7 @@ namespace Nekoyume.Game.Character
             }
 
             Vector2 position = transform.position;
-            position.x += Time.deltaTime * WalkSpeed * WalkSpeedMultiplier;
+            position.x += Time.deltaTime * RunSpeed * RunSpeedMultiplier;
             transform.position = position;
         }
 
