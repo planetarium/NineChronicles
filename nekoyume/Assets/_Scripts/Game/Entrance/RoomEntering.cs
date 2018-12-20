@@ -32,7 +32,7 @@ namespace Nekoyume.Game.Entrance
             var boss = stage.GetComponentInChildren<Character.Boss.BossBase>();
             if (boss != null)
             {
-                Destroy(boss);
+                Destroy(boss.gameObject);
             }
 
             var playerFactory = GetComponent<Factory.PlayerFactory>();
