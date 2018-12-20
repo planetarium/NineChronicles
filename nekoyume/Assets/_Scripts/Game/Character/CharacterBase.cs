@@ -91,7 +91,7 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        protected virtual void Walk()
+        protected virtual void Run()
         {
             if (Rooted)
             {
