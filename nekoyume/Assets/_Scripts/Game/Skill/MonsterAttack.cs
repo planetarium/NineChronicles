@@ -46,7 +46,7 @@ namespace Nekoyume.Game.Skill
                     break;
                 case 5:
                     var slow = character.gameObject.AddComponent<Slow>();
-                    slow.Set(attackSpeedMultiplier: 2.0f, walkSpeedMultiplier: 0.1f, duration: 3.0f);
+                    slow.Set(attackSpeedMultiplier: 2.0f, runSpeedMultiplier: 0.1f, duration: 3.0f);
                     break;
             }
         }

@@ -6,18 +6,18 @@ namespace Nekoyume.Game.CC
     public interface ISlow : ICCBase
     {
         float AttackSpeedMultiplier { get; }
-        float WalkSpeedMultiplier { get; }
+        float RunSpeedMultiplier { get; }
     }
 
     public class Slow : CCBase, ISlow
     {
         public float AttackSpeedMultiplier { get; private set; }
-        public float WalkSpeedMultiplier { get; private set; }
+        public float RunSpeedMultiplier { get; private set; }
 
-        public void Set(float attackSpeedMultiplier, float walkSpeedMultiplier, float duration)
+        public void Set(float attackSpeedMultiplier, float runSpeedMultiplier, float duration)
         {
             AttackSpeedMultiplier = attackSpeedMultiplier;
-            WalkSpeedMultiplier = walkSpeedMultiplier;
+            RunSpeedMultiplier = runSpeedMultiplier;
             base.Set(duration);
         }
 

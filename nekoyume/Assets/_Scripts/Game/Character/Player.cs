@@ -48,7 +48,7 @@ namespace Nekoyume.Game.Character
 
         public void InitAI()
         {
-            WalkSpeed = 0.0f;
+            RunSpeed = 0.0f;
 
             _hpBarOffset.Set(-0.22f, -0.61f, 0.0f);
             _castingBarOffset.Set(-0.22f, -0.85f, 0.0f);
@@ -66,8 +66,8 @@ namespace Nekoyume.Game.Character
                             BT.If(HasTargetInRange).OpenBranch(
                                 BT.Call(Attack)
                             ),
-                            BT.If(() => WalkSpeed > 0.0f).OpenBranch(
-                                BT.Call(Walk)
+                            BT.If(() => RunSpeed > 0.0f).OpenBranch(
+                                BT.Call(Run)
                             )
                         )
                     ),
