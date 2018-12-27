@@ -1,8 +1,5 @@
-using System;
-using Nekoyume.Move;
 using System.Collections.Generic;
 using Nekoyume.Game.Item;
-using Newtonsoft.Json;
 using UnityEngine;
 
 
@@ -16,6 +13,7 @@ namespace Nekoyume.UI
         private GameObject _slotBase;
 
         private List<InventorySlot> _slots;
+        private Game.Character.Player _player;
 
         private void Awake()
         {
@@ -36,10 +34,10 @@ namespace Nekoyume.UI
             foreach (var slot in _slots)
             {
                 var item = slot.Item;
-                if (item != null && item.Cls == "Weapon")
+                if (item != null && item is Weapon)
                 {
                     slot.LabelEquip.text = "";
-                    if (item.Id == equipment.Data.Id)
+                    if (item == equipment)
                     {
                         slot.LabelEquip.text = equipment.IsEquipped ? "E" : "";
                     }
@@ -49,24 +47,21 @@ namespace Nekoyume.UI
 
         public override void Show()
         {
+            _player = FindObjectOfType<Game.Character.Player>();
             // FIX ME : get item list
-            string itemsstr = MoveManager.Instance.Avatar.Items;
-            List<Game.Item.Inventory.InventoryItem> items;
-            try
-            {
-                items = JsonConvert.DeserializeObject<List<Game.Item.Inventory.InventoryItem>>(itemsstr);
-            }
-            catch (ArgumentNullException)
-            {
-                items = null;
-            }
+            List<Game.Item.Inventory.InventoryItem> items = _player.Inventory._items;
             for (int i = 0; i < 40; ++i)
             {
                 InventorySlot slot = _slots[i];
                 if (items != null && items.Count > i)
                 {
                     var inventoryItem = items[i];
-                    slot.Set(inventoryItem.Item.Data, inventoryItem.Count);
+                    slot.Set(inventoryItem.Item, inventoryItem.Count);
+                    if (inventoryItem.Item is Weapon)
+                    {
+                        var weapon = (Weapon) inventoryItem.Item;
+                        slot.LabelEquip.text = weapon.IsEquipped ? "E" : "";
+                    }
                 }
                 else
                 {

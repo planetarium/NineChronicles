@@ -272,5 +272,11 @@ namespace Nekoyume.Move
                 formatter.Serialize(stream, data);
             }
         }
+
+        public void UpdateItems(string items)
+        {
+            Avatar.Items = items;
+            SaveStatus();
+        }
     }
 }

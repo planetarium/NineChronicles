@@ -1,4 +1,8 @@
+using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using UnityEngine;
 
 
 namespace Nekoyume.Game.Item
@@ -56,6 +60,30 @@ namespace Nekoyume.Game.Item
         public void Set(List<InventoryItem> items)
         {
             _items = items;
+        }
+    }
+
+    public class InventoryItemConverter : JsonConverter<Inventory.InventoryItem>
+    {
+        public override void WriteJson(JsonWriter writer, Inventory.InventoryItem value, JsonSerializer serializer)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Inventory.InventoryItem ReadJson(JsonReader reader, Type objectType,
+            Inventory.InventoryItem existingValue, bool hasExistingValue,
+            JsonSerializer serializer)
+        {
+            var jo = JObject.Load(reader);
+            var obj = jo["Item"].ToObject<ItemBase>();
+            var ii = new Inventory.InventoryItem(obj) {Count = jo["Count"].Value<int>()};
+            if (ii.Item is Weapon)
+            {
+                var weapon = (Weapon) ii.Item;
+                weapon.IsEquipped = jo["Item"]["IsEquipped"].Value<bool>();
+                Debug.Log(weapon.IsEquipped);
+            }
+            return ii;
         }
     }
 }

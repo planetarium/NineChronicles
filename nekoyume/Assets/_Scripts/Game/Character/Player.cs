@@ -9,6 +9,7 @@ using Nekoyume.Game.Skill;
 using Nekoyume.Move;
 using Nekoyume.UI;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace Nekoyume.Game.Character
@@ -162,7 +163,6 @@ namespace Nekoyume.Game.Character
         public string SerializeItems()
         {
             var items = JsonConvert.SerializeObject(Inventory._items);
-            Inventory._items.Clear();
             return items;
         }
 
@@ -221,18 +221,27 @@ namespace Nekoyume.Game.Character
         private void PickUpItem(DropItem item)
         {
             Inventory.Add(item.Item);
+            MoveManager.Instance.UpdateItems(SerializeItems());
         }
 
         private void InitInventory(Model.Avatar avatar)
         {
             if (!string.IsNullOrEmpty(avatar.Items))
             {
-                var items = JsonConvert.DeserializeObject<List<Item.Inventory.InventoryItem>>(avatar.Items);
-                Inventory.Set(items);
-                if (!string.IsNullOrEmpty(avatar.Weapon))
+                var des = JsonConvert.DeserializeObject<JArray>(avatar.Items);
+                var inventoryItems = new List<Item.Inventory.InventoryItem>();
+                for (var index = 0; index < des.ToArray().Length; index++)
                 {
-                    _weapon = JsonConvert.DeserializeObject<Weapon>(avatar.Weapon);
+                    var d = des.ToArray()[index];
+                    var inventoryItem = JsonConvert.DeserializeObject<Item.Inventory.InventoryItem>(d.ToString(),
+                        new InventoryItemConverter());
+                    inventoryItems.Add(inventoryItem);
+                    if (inventoryItem.Item is Weapon)
+                    {
+                        _weapon = (Weapon) inventoryItem.Item;
+                    }
                 }
+                Inventory.Set(inventoryItems);
             }
         }
 
@@ -267,13 +276,13 @@ namespace Nekoyume.Game.Character
 
         public void Equip(Equipment equipment)
         {
-            if (_weapon == null)
+            if (_weapon != equipment)
             {
+                _weapon?.Unequip();
                 _weapon = (Weapon) equipment;
             }
-
             // Equip or UnEquip
-            _weapon?.Use();
+            _weapon.Use();
             CalcStats();
             Event.OnUpdateEquipment.Invoke(_weapon);
             // TODO Implement Actions
