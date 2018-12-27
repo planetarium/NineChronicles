@@ -12,7 +12,7 @@ namespace Nekoyume.Game.Item
 
             public InventoryItem(ItemBase item)
             {
-                Item = item;
+                Item = ItemBase.ItemFactory(item.Data);
                 Count += 1;
             }
         }
