@@ -15,7 +15,7 @@ namespace Nekoyume.Game.Character
         public void InitAI(Monster statsData)
         {
             DataId = statsData.Id;
-            WalkSpeed = -1.0f;
+            RunSpeed = -1.0f;
 
             _hpBarOffset.Set(-0.0f, -0.11f, 0.0f);
             _castingBarOffset.Set(-0.0f, -0.33f, 0.0f);
@@ -32,7 +32,7 @@ namespace Nekoyume.Game.Character
                             BT.If(HasTargetInRange).OpenBranch(
                                 BT.Call(Attack)
                             ),
-                            BT.Call(Walk)
+                            BT.Call(Run)
                         )
                     ),
                     BT.Sequence().OpenBranch(
@@ -84,9 +84,9 @@ namespace Nekoyume.Game.Character
             _hpMax = HP;
         }
 
-        public override void OnDamage(AttackType attackType, int dmg, bool cancelCast = true)
+        public override void OnDamage(AttackType attackType, int dmg)
         {
-            base.OnDamage(attackType, dmg, cancelCast);
+            base.OnDamage(attackType, dmg);
 
             int calcDmg = CalcDamage(attackType, dmg);
 
@@ -114,7 +114,7 @@ namespace Nekoyume.Game.Character
             Event.OnEnemyDead.Invoke(this);
         }
 
-        private void DropItem()
+        protected void DropItem()
         {
             var selector = new Util.WeightedSelector<int>();
             var tables = this.GetRootComponent<Data.Tables>();

@@ -11,8 +11,12 @@ namespace Nekoyume.Game.CC
     {
         public void Set(float duration)
         {
-            Owner.CancelCast();
             base.Set(duration);
+        }
+
+        protected override void OnBegin()
+        {
+            Owner.CancelCast();
         }
 
         protected override void OnTickBefore()

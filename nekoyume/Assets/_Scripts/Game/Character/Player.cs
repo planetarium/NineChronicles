@@ -6,6 +6,7 @@ using Nekoyume.Data;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Skill;
+using Nekoyume.Move;
 using Nekoyume.UI;
 using Newtonsoft.Json;
 using UnityEngine;
@@ -23,6 +24,7 @@ namespace Nekoyume.Game.Character
 
         private ProgressBar _mpBar = null;
         private Vector3 _mpBarOffset = new Vector3();
+        public Weapon _weapon = null;
 
         public override WeightType WeightType
         {
@@ -35,6 +37,7 @@ namespace Nekoyume.Game.Character
         {
             Event.OnEnemyDead.AddListener(GetEXP);
             Event.OnGetItem.AddListener(PickUpItem);
+            Event.OnEquip.AddListener(Equip);
             Inventory = new Item.Inventory();
         }
 
@@ -45,7 +48,7 @@ namespace Nekoyume.Game.Character
 
         public void InitAI()
         {
-            WalkSpeed = 0.0f;
+            RunSpeed = 0.0f;
 
             _hpBarOffset.Set(-0.22f, -0.61f, 0.0f);
             _castingBarOffset.Set(-0.22f, -0.85f, 0.0f);
@@ -63,8 +66,8 @@ namespace Nekoyume.Game.Character
                             BT.If(HasTargetInRange).OpenBranch(
                                 BT.Call(Attack)
                             ),
-                            BT.If(() => WalkSpeed > 0.0f).OpenBranch(
-                                BT.Call(Walk)
+                            BT.If(() => RunSpeed > 0.0f).OpenBranch(
+                                BT.Call(Run)
                             )
                         )
                     ),
@@ -108,9 +111,8 @@ namespace Nekoyume.Game.Character
             EXP = avatar.EXP;
             Level = avatar.Level;
 
-            CalcStats();
             InitInventory(avatar);
-
+            CalcStats();
             if (!avatar.Dead && avatar.CurrentHP > 0)
                 HP = avatar.CurrentHP;
         }
@@ -144,9 +146,9 @@ namespace Nekoyume.Game.Character
             return canceled;
         }
 
-        public override void OnDamage(AttackType attackType, int dmg, bool cancelCast = true)
+        public override void OnDamage(AttackType attackType, int dmg)
         {
-            base.OnDamage(attackType, dmg, cancelCast);
+            base.OnDamage(attackType, dmg);
 
             int calcDmg = CalcDamage(attackType, dmg);
 
@@ -183,6 +185,10 @@ namespace Nekoyume.Game.Character
 
             _hpMax = statsData.Health;
             EXPMax = statsData.Exp;
+            if (_weapon?.IsEquipped == true)
+            {
+                ATK += _weapon.Data.Param_0;
+            }
         }
 
         private void GetEXP(Enemy enemy)
@@ -223,6 +229,10 @@ namespace Nekoyume.Game.Character
             {
                 var items = JsonConvert.DeserializeObject<List<Item.Inventory.InventoryItem>>(avatar.Items);
                 Inventory.Set(items);
+                if (!string.IsNullOrEmpty(avatar.Weapon))
+                {
+                    _weapon = JsonConvert.DeserializeObject<Weapon>(avatar.Weapon);
+                }
             }
         }
 
@@ -253,6 +263,26 @@ namespace Nekoyume.Game.Character
                 _mpBar.greenBar = Resources.Load<Sprite>("ui/UI_bar_01_blue");
             }
             _mpBar.SetValue((float)MP / (float)MPMax);
+        }
+
+        public void Equip(Equipment equipment)
+        {
+            if (_weapon == null)
+            {
+                _weapon = (Weapon) equipment;
+            }
+
+            // Equip or UnEquip
+            _weapon?.Use();
+            CalcStats();
+            Event.OnUpdateEquipment.Invoke(_weapon);
+            // TODO Implement Actions
+            MoveManager.Instance.Avatar.Weapon = SerializeWeapon();
+        }
+
+        public string SerializeWeapon()
+        {
+            return _weapon == null ? "" : JsonConvert.SerializeObject(_weapon);
         }
     }
 }

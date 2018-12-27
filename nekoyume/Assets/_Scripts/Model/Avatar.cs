@@ -15,6 +15,7 @@ namespace Nekoyume.Model
         public string Items;
         public int WorldStage;
         public bool Dead = false;
+        public string Weapon;
 
         public static Avatar FromMoves(IEnumerable<MoveBase> moves)
         {

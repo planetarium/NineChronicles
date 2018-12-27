@@ -36,7 +36,7 @@ namespace Nekoyume.Game.CC
 
         protected virtual void OnDamage()
         {
-            Owner.OnDamage(AttackType, DamagePerTick, false);
+            Owner.OnDamage(AttackType, DamagePerTick);
         }
     }
 }

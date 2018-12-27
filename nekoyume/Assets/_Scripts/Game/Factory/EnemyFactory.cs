@@ -31,5 +31,24 @@ namespace Nekoyume.Game.Factory
 
             return enemy.gameObject;
         }
+
+        public GameObject CreateBoss(int bossId, Vector2 position, int power)
+        {
+            Data.Tables tables = this.GetRootComponent<Data.Tables>();
+            Data.Table.Monster monsterData;
+            if (!tables.Monster.TryGetValue(bossId, out monsterData))
+                return null;
+
+            var res = Resources.Load<GameObject>($"Prefab/Character/Boss_{bossId}/Boss_{bossId}");
+            var bossObj = Instantiate(res, position, new Quaternion(), transform);
+            if (bossObj == null)
+                return null;
+
+            var boss = bossObj.GetComponent<Character.Boss.BossBase>();
+            boss.InitAI(monsterData);
+            boss.InitStats(monsterData, power);
+
+            return bossObj.gameObject;
+        }
     }
 }
