@@ -182,7 +182,6 @@ namespace Nekoyume.Move
                 ["exp"] = player.EXP.ToString(),
                 ["level"] = player.Level.ToString(),
                 ["items"] = player.SerializeItems(),
-                ["weapon"] = player.SerializeWeapon()
             };
 
             var has = new HackAndSlash

@@ -81,7 +81,6 @@ namespace Nekoyume.Game.Item
             {
                 var weapon = (Weapon) ii.Item;
                 weapon.IsEquipped = jo["Item"]["IsEquipped"].Value<bool>();
-                Debug.Log(weapon.IsEquipped);
             }
             return ii;
         }

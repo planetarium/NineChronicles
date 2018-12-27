@@ -286,12 +286,7 @@ namespace Nekoyume.Game.Character
             CalcStats();
             Event.OnUpdateEquipment.Invoke(_weapon);
             // TODO Implement Actions
-            MoveManager.Instance.Avatar.Weapon = SerializeWeapon();
-        }
-
-        public string SerializeWeapon()
-        {
-            return _weapon == null ? "" : JsonConvert.SerializeObject(_weapon);
+            MoveManager.Instance.UpdateItems(SerializeItems());
         }
     }
 }
