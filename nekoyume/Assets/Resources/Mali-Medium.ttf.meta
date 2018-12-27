@@ -11,8 +11,9 @@ TrueTypeFontImporter:
   fontName: Mali Medium
   fontNames:
   - Mali Medium
-  fallbackFontReferences: []
-  customCharacters: 1234567890/-
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: f6d6d9b64c6777d439f040bd011035f3, type: 3}
+  customCharacters: 
   fontRenderingMode: 0
   ascentCalculationMode: 1
   useLegacyBoundsCalculation: 0
