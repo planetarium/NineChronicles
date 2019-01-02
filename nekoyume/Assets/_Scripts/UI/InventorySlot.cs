@@ -1,4 +1,3 @@
-using Nekoyume.Data.Table;
 using Nekoyume.Game.Item;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,7 +11,7 @@ namespace Nekoyume.UI
         public Text LabelCount;
         public Text LabelEquip;
 
-        public Item Item;
+        public ItemBase Item;
 
         private void Awake()
         {
@@ -27,9 +26,9 @@ namespace Nekoyume.UI
             LabelEquip.text = "";
         }
 
-        public void Set(Item item, int count)
+        public void Set(ItemBase item, int count)
         {
-            var sprite = Resources.Load<Sprite>($"images/item_{item.Id}");
+            var sprite = Resources.Load<Sprite>($"images/item_{item.Data.Id}");
             Icon.sprite = sprite;
             Icon.gameObject.SetActive(true);
             Icon.SetNativeSize();
@@ -40,10 +39,9 @@ namespace Nekoyume.UI
 
         public void SlotClick()
         {
-            if (Item?.Cls == "Weapon")
+            if (Item != null && Item is Weapon)
             {
-                var weapon = new Weapon(Item);
-                Game.Event.OnEquip.Invoke(weapon);
+                Game.Event.OnEquip.Invoke((Equipment) Item);
             }
         }
     }

@@ -22,12 +22,6 @@ namespace Nekoyume.Move
             {
                 newCtx.Avatar.Items = items;
             }
-            string weapon;
-            Details.TryGetValue("weapon", out weapon);
-            if (!string.IsNullOrEmpty(weapon))
-            {
-                newCtx.Avatar.Weapon = weapon;
-            }
             return newCtx;
         }
     }
