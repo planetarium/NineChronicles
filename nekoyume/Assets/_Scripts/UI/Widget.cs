@@ -19,7 +19,7 @@ namespace Nekoyume.UI
             }
             Type t = typeof(T);
             string[] names = t.ToString().Split('.');
-            string resname = string.Format("Prefab/Widget/{0}", names[names.Length - 1]);
+            string resname = string.Format("Prefab/Widget/UI_{0}", names[names.Length - 1]);
             GameObject res = Resources.Load<GameObject>(resname);
             if (res != null)
             {
