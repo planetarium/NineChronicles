@@ -3,15 +3,55 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using System.Security.Cryptography;
 using Nekoyume.Action;
 using Newtonsoft.Json.Linq;
-using Planetarium.Crypto.Extension;
-using Planetarium.Crypto.Keys;
-using Planetarium.SDK.Address;
-using Planetarium.SDK.Bencode;
-using Planetarium.SDK.Tx;
+using Libplanet;
+using Libplanet.Crypto;
+using Libplanet.Tx;
 using Avatar = Nekoyume.Model.Avatar;
 using Debug = System.Diagnostics.Debug;
+using ShouldBeRemoved;
+
+// TODO: It should be removed when alternative is implemented
+public abstract class BaseTransaction
+{
+    public byte[] Id {
+        get
+        {
+            var serialized = Serialize(true);
+            using (var sha256 = SHA256.Create())
+            {
+                return sha256.ComputeHash(serialized);
+            }
+        }
+    }
+
+    public byte[] Creator { get; protected set; }
+
+    public PublicKey PublicKey { get; protected set; }
+
+    public DateTime Timestamp { get; protected set; }
+
+    public byte[] Signature { get; protected set; }
+
+    public abstract IDictionary<string, dynamic> PlainValue { get;  }
+
+    public virtual byte[] Serialize(bool sign)
+    {
+        var values = PlainValue;
+        if (sign)
+        {
+            values["signature"] = Signature;
+        }
+        return values.ToBencoded();
+    }
+
+    public void Sign(PrivateKey privateKey)
+    {
+        Signature = privateKey.Sign(Serialize(false));
+    }
+}
 
 namespace Nekoyume.Move
 {
@@ -38,9 +78,9 @@ namespace Nekoyume.Move
     {
         private const string TimestampFormat = "yyyy-MM-dd HH:mm:ss.ffffff";
 
-        public new byte[] Creator => UserAddress;
+        public new Address Creator => UserAddress;
         public new DateTime Timestamp { private get; set; }
-        public byte[] UserAddress => PublicKey.ToAddress();
+        public Address UserAddress => PublicKey.ToAddress();
         public Dictionary<string, string> Details { protected get; set; }
 
         private string Name => MoveName.Extract(GetType());
@@ -54,7 +94,7 @@ namespace Nekoyume.Move
 
         public override IDictionary<string, object> PlainValue => new Dictionary<string, object>
         {
-            {"user_address", "0x" + UserAddress.Hex()},
+            {"user_address", "0x" + UserAddress},
             {"name", Name},
             {"details", Details},
             {"created_at", Timestamp.ToString(TimestampFormat)},
@@ -76,8 +116,8 @@ namespace Nekoyume.Move
             var move = Activator.CreateInstance(type) as MoveBase;
             Debug.Assert(move != null, nameof(move) + " != null");
 
-            move.PublicKey = PublicKey.FromBytes((plainValue["user_public_key"] as string).ParseHex());
-            move.Signature = (plainValue["signature"] as string).ParseHex();
+            move.PublicKey = new PublicKey(ByteUtil.ParseHex((plainValue["user_public_key"] as string)));
+            move.Signature = ByteUtil.ParseHex((plainValue["signature"] as string));
             move.Tax = Convert.ToInt32(plainValue["tax"]);
             move.Details = ((JObject)plainValue["details"]).ToObject<Dictionary<string, string>>();
             switch (move.Name)

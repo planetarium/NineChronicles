@@ -5,9 +5,8 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
-using Planetarium.Crypto.Extension;
-using Planetarium.Crypto.Keys;
-using Planetarium.SDK.Address;
+using Libplanet;
+using Libplanet.Crypto;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -27,7 +26,7 @@ namespace Nekoyume.Move
         private readonly PrivateKey privateKey;
         private readonly float interval;
         private readonly OrderedDictionary moves;
-        public byte[] UserAddress => privateKey.ToAddress();
+        public Address UserAddress => privateKey.PublicKey.ToAddress();
         private readonly List<MoveBase> requestedMoves;
 
         public delegate void MoveFetched(IEnumerable<MoveBase> moves);

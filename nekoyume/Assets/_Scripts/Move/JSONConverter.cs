@@ -3,7 +3,8 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Linq;
 using System.Collections.Generic;
-using Planetarium.Crypto.Extension;
+using Libplanet;
+using Libplanet.Crypto;
 
 namespace Nekoyume.Move
 {
@@ -38,9 +39,9 @@ namespace Nekoyume.Move
             {
                 jo.Add(kv.Key, JToken.FromObject(kv.Value));
             }
-            jo.Add("signature", JToken.FromObject(move.Signature.Hex()));
-            jo.Add("id", JToken.FromObject(move.Id.Hex()));
-            jo.Add("user_public_key", move.PublicKey.Format(true).Hex());
+            jo.Add("signature", JToken.FromObject(ByteUtil.Hex(move.Signature)));
+            jo.Add("id", JToken.FromObject(ByteUtil.Hex(move.Id)));
+            jo.Add("user_public_key", ByteUtil.Hex(move.PublicKey.Format(true)));
             jo.WriteTo(writer);
         }
     }
