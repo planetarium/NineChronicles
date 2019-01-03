@@ -2,11 +2,15 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.IO;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
 using Libplanet;
 using Libplanet.Crypto;
+using Libplanet.Store;
+using Libplanet.Tx;
+using Nekoyume.Action;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -35,6 +39,8 @@ namespace Nekoyume.Move
 
         private static readonly Newtonsoft.Json.JsonConverter moveJsonConverter = new JsonConverter();
 
+        internal readonly Blockchain<ActionBase> blocks;
+
         public Agent(string apiUrl, PrivateKey privateKey, float interval = 3.0f, long? lastBlockOffset = null)
         {
             if (string.IsNullOrEmpty(apiUrl))
@@ -45,9 +51,12 @@ namespace Nekoyume.Move
             this.apiUrl = apiUrl;
             this.privateKey = privateKey;
             this.interval = interval;
-            this.moves = new OrderedDictionary();
-            this.requestedMoves = new List<MoveBase>();
+            moves = new OrderedDictionary();
+            requestedMoves = new List<MoveBase>();
             this.lastBlockOffset = lastBlockOffset;
+            var path = Path.Combine(Application.persistentDataPath, "planetarium");
+            Debug.Log(path);
+            blocks = new Blockchain<ActionBase>(new FileStore(path));
         }
 
         public void Send(MoveBase move)
@@ -124,6 +133,27 @@ namespace Nekoyume.Move
                 // FIXME implement better retry logic.(e.g. jitter)
                 yield return SendMove(move);
             }
+        }
+
+        public IEnumerator Mine()
+        {
+            while (true)
+            {
+                yield return new WaitForSeconds(interval);
+                yield return blocks.MineBlock(UserAddress);
+            }
+        }
+
+        public void StageTransaction(IEnumerable<ActionBase> actions)
+        {
+            Debug.Log("StageTransaction");
+            var tx = Transaction<ActionBase>.Make(
+                privateKey,
+                UserAddress,
+                new List<ActionBase>(),
+                DateTime.UtcNow
+            );
+            blocks.StageTransactions(new HashSet<Transaction<ActionBase>> { tx });
         }
     }
 }

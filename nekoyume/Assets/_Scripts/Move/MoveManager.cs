@@ -5,10 +5,14 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Threading;
+using System.Threading.Tasks;
+using BencodeNET.Torrents;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Character;
 using Libplanet;
 using Libplanet.Crypto;
+using Nekoyume.Action;
 using UnityEngine;
 using Avatar = Nekoyume.Model.Avatar;
 
@@ -90,6 +94,7 @@ namespace Nekoyume.Move
             }
 
             _processedMoveIds = new HashSet<byte[]>(new ByteArrayComparator());
+            StartMine();
         }
 
         public void StartSync()
@@ -217,6 +222,11 @@ namespace Nekoyume.Move
                 Actions = new[] {actions},
                 Details = actions.ToDetails()
             };
+//            var a = new List<ActionBase>
+//            {
+//                Action.CreateNovice(nickName)
+//            };
+//            agent.StageTransaction(a);
             return ProcessMove(createNovice, 0, timestamp);
         }
 
@@ -276,6 +286,11 @@ namespace Nekoyume.Move
         {
             Avatar.Items = items;
             SaveStatus();
+        }
+
+        private void StartMine()
+        {
+            StartCoroutine(agent.Mine());
         }
     }
 }
