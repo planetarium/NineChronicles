@@ -11,7 +11,7 @@ namespace Nekoyume.UI
         private static GameObject CanvasObj = null;
         private static Dictionary<Type, GameObject> Dict = new Dictionary<Type, GameObject>();
 
-        static public T Create<T>(bool activate = false) where T : Widget
+        public static T Create<T>(bool activate = false) where T : Widget
         {
             if (CanvasObj == null)
             {
@@ -19,7 +19,7 @@ namespace Nekoyume.UI
             }
             Type t = typeof(T);
             string[] names = t.ToString().Split('.');
-            string resname = string.Format("Prefab/Widget/{0}", names[names.Length - 1]);
+            string resname = $"Prefab/Widget/UI_{names[names.Length - 1]}";
             GameObject res = Resources.Load<GameObject>(resname);
             if (res != null)
             {
@@ -39,7 +39,7 @@ namespace Nekoyume.UI
                 {
                     if (Dict.ContainsKey(t))
                     {
-                        Debug.LogWarning($"Duplicated create widget: {t.ToString()}");
+                        Debug.LogWarning($"Duplicated create widget: {t}");
                         Destroy(go);
                         Dict[t].SetActive(activate);
                         return Dict[t].GetComponent<T>();
@@ -50,10 +50,11 @@ namespace Nekoyume.UI
                 }
                 return twidget;
             }
+            Debug.LogWarning(($"widget not exist: {t}"));
             return null;
         }
 
-        static public T Find<T>() where T : Widget
+        public static T Find<T>() where T : Widget
         {
             Type t = typeof(T);
             GameObject go;
@@ -64,12 +65,12 @@ namespace Nekoyume.UI
             return null;
         }
 
-        virtual public void Show()
+        public virtual void Show()
         {
             gameObject.SetActive(true);
         }
 
-        virtual public IEnumerator WaitForShow()
+        public virtual IEnumerator WaitForShow()
         {
             Show();
             while (gameObject.activeSelf)
@@ -78,12 +79,12 @@ namespace Nekoyume.UI
             }
         }
 
-        virtual public void Close()
+        public virtual void Close()
         {
             gameObject.SetActive(false);
         }
 
-        virtual public bool IsActive()
+        public virtual bool IsActive()
         {
             return gameObject.activeSelf;
         }
@@ -103,7 +104,7 @@ namespace Nekoyume.UI
 
     public class Popup : Widget
     {
-        override public void Close()
+        public override void Close()
         {
             Destroy(gameObject);
         }
@@ -111,7 +112,7 @@ namespace Nekoyume.UI
 
     public class HUD : Widget
     {
-        override public void Close()
+        public override void Close()
         {
             Destroy(gameObject);
         }
