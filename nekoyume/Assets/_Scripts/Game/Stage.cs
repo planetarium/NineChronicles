@@ -1,8 +1,8 @@
 using DG.Tweening;
 using System.Collections;
+using Nekoyume.Action;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Entrance;
-using Nekoyume.Move;
 using UnityEngine;
 
 namespace Nekoyume.Game
@@ -45,7 +45,7 @@ namespace Nekoyume.Game
         private void OnPlayerDead()
         {
             var player = GetComponentInChildren<Player>();
-            MoveManager.Instance.HackAndSlash(player, Id);
+            ActionManager.Instance.HackAndSlash(player, Id);
         }
 
         public string BackgroundName
@@ -92,9 +92,9 @@ namespace Nekoyume.Game
         {
             var tables = this.GetRootComponent<Data.Tables>();
             Data.Table.Stats statsData;
-            if (tables.Stats.TryGetValue(MoveManager.Instance.Avatar.Level, out statsData))
+            if (tables.Stats.TryGetValue(ActionManager.Instance.Avatar.Level, out statsData))
             {
-                MoveManager.Instance.Sleep(statsData);
+                ActionManager.Instance.Sleep(statsData);
             }
             OnRoomEnter();
         }

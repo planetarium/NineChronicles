@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using Nekoyume.Move;
+using Nekoyume.Action;
 
 namespace Nekoyume.Model
 {
@@ -16,7 +16,7 @@ namespace Nekoyume.Model
         public int WorldStage;
         public bool Dead = false;
 
-        public static Avatar FromMoves(IEnumerable<MoveBase> moves)
+        public static Avatar FromMoves(IEnumerable<ActionBase> moves)
         {
             var createNovice = moves.FirstOrDefault() as CreateNovice;
             if (createNovice == null)
@@ -24,14 +24,7 @@ namespace Nekoyume.Model
                 return null;
             }
 
-            var ctx = new Context();
-            var avatar = createNovice.Execute(ctx).Avatar;
-
-            foreach (var move in moves.Skip(1))
-            {
-                avatar = move.Execute(ctx).Avatar;
-            }
-
+            var avatar = new Avatar();
             return avatar;
         }
     }

@@ -1,6 +1,6 @@
-using Nekoyume.Move;
 using System;
 using System.Collections.Generic;
+using Nekoyume.Action;
 using UnityEngine;
 
 namespace Nekoyume.Game
@@ -37,14 +37,16 @@ namespace Nekoyume.Game
 
         private void Start()
         {
-            MoveManager.Instance.CreateAvatarRequired += OnCreateAvatarRequired;
-            MoveManager.Instance.DidAvatarLoaded += OnAvatarLoaded;
-            MoveManager.Instance.DidSleep += OnSleep;
+//            MoveManager.Instance.CreateAvatarRequired += OnCreateAvatarRequired;
+//            MoveManager.Instance.DidAvatarLoaded += OnAvatarLoaded;
+//            MoveManager.Instance.DidSleep += OnSleep;
+            ActionManager.Instance.CreateAvatarRequired += OnCreateAvatarRequired;
         }
 
         private void OnCreateAvatarRequired(object sender, EventArgs e)
         {
-            MoveManager.Instance.CreateNovice("tester");
+//            Move¸Manager.Instance.CreateNovice("tester");
+            ActionManager.Instance.CreateNovice("tester");
         }
 
         private void OnAvatarLoaded(object sender, Model.Avatar avatar)

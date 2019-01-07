@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Nekoyume.Move;
 
 namespace Nekoyume.Action
 {
@@ -10,12 +9,6 @@ namespace Nekoyume.Action
         public MoveZone(int stage)
         {
             _stage = stage;
-        }
-
-        public override Context Execute(Context ctx)
-        {
-            ctx.Avatar.WorldStage = _stage;
-            return ctx;
         }
 
         public override Dictionary<string, string> ToDetails()
