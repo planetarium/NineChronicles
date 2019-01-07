@@ -1,10 +1,11 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Action;
 
 namespace Nekoyume.Model
 {
-    [System.Serializable]
+    [Serializable]
     public class Avatar
     {
         public string Name;

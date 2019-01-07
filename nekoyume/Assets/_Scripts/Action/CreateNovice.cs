@@ -1,21 +1,21 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Text;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Model;
 
 namespace Nekoyume.Action
 {
+    [ActionType("create_novice")]
     public class CreateNovice : ActionBase
     {
-        private string _name;
-
-        public CreateNovice(string name)
-        {
-            _name = name;
-        }
-
+        private string _name = "tester";
+        // TODO use constructor
+        // Avoid MissingMethodException in Tx.ToAction
+//        public CreateNovice(string name)
+//        {
+//            _name = name;
+//        }
         public override Dictionary<string, string> ToDetails()
         {
             return new Dictionary<string, string>
@@ -26,7 +26,7 @@ namespace Nekoyume.Action
 
         public override void LoadPlainValue(IImmutableDictionary<string, object> plainValue)
         {
-            _name = Encoding.UTF8.GetString((byte[]) plainValue["name"]);
+            _name = (string) plainValue["name"];
         }
 
         public override AddressStateMap Execute(Address @from, Address to, AddressStateMap states)

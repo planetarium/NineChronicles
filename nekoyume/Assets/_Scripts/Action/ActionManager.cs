@@ -1,35 +1,31 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
-using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Threading;
 using Libplanet;
-using Libplanet.Action;
 using Libplanet.Crypto;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Character;
+using Newtonsoft.Json;
 using UnityEngine;
-using Avatar = Nekoyume.Model.Avatar;
 
 namespace Nekoyume.Action
 {
     [Serializable]
     internal class SaveData
     {
-        public Avatar Avatar;
+        public Model.Avatar Avatar;
         public long? LastBlockId;
     }
 
     public class ActionManager : MonoBehaviour
     {
         public static ActionManager Instance { get; private set; }
-        public event EventHandler<Avatar> DidAvatarLoaded;
-        public event EventHandler<Avatar> DidSleep;
+        public event EventHandler<Model.Avatar> DidAvatarLoaded;
+        public event EventHandler<Model.Avatar> DidSleep;
         public event EventHandler CreateAvatarRequired;
-        public Avatar Avatar { get; private set; }
+        public Model.Avatar Avatar { get; private set; }
 
         private Agent agent;
         private long? lastBlockId;
@@ -57,10 +53,20 @@ namespace Nekoyume.Action
             LoadStatus();
 
             agent = new Agent(privateKey);
+            agent.DidReceiveAction += ReceiveAction;
 
             Debug.Log($"User Address: 0x{agent.UserAddress.Hex()}");
 
-//            StartMine();
+        }
+
+        private void ReceiveAction(object sender, Model.Avatar e)
+        {
+            if (e != null && JsonConvert.SerializeObject(Avatar) != JsonConvert.SerializeObject(e))
+            {
+                Avatar = e;
+                SaveStatus();
+                DidAvatarLoaded?.Invoke(this, Avatar);
+            }
         }
 
         public void StartSync()
@@ -70,14 +76,15 @@ namespace Nekoyume.Action
                 DidAvatarLoaded?.Invoke(this, Avatar);
             }
 
-            Address address = agent.UserAddress;
-            AddressStateMap states = agent.blocks.GetStates(new[] {address});
-            var avatar = (Avatar) states.GetValueOrDefault(address);
+            var address = agent.UserAddress;
+            var states = agent.blocks.GetStates(new[] {address});
+            var avatar = (Model.Avatar) states.GetValueOrDefault(address);
             if (avatar == null)
             {
                 CreateAvatarRequired?.Invoke(this, null);
             }
-            Debug.Log(avatar);
+
+            StartCoroutine(agent.Sync());
         }
 
         public IEnumerator Sync()
@@ -87,21 +94,10 @@ namespace Nekoyume.Action
 
         public void CreateNovice(string nickName)
         {
-            var action = new CreateNovice(nickName);
+            var action = new CreateNovice();
             agent.StageTransaction(new ActionBase[] {action});
+            // TODO Delete StartMine when block.mine be async
             StartMine();
-            while (true)
-            {
-                var states = agent.blocks.GetStates(new[] {agent.UserAddress});
-                if (states != null)
-                {
-                    Debug.Log(states);
-                }
-                else
-                {
-                    Thread.Sleep(1000);
-                }
-            }
         }
 
         private void LoadStatus()

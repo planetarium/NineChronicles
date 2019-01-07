@@ -1,9 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Specialized;
+using System.Collections.Immutable;
 using System.IO;
-using System.Linq;
 using Libplanet;
 using Libplanet.Crypto;
 using Libplanet.Store;
@@ -14,7 +13,7 @@ namespace Nekoyume.Action
 {
     public class Agent
     {
-        public event EventHandler<ActionBase> DidReceiveAction;
+        public event EventHandler<Model.Avatar> DidReceiveAction;
         private readonly PrivateKey privateKey;
         private readonly float interval;
         public Address UserAddress => privateKey.PublicKey.ToAddress();
@@ -34,21 +33,26 @@ namespace Nekoyume.Action
             while (true)
             {
                 yield return new WaitForSeconds(interval);
+                var states = blocks.GetStates(new[] {UserAddress});
+                var avatar = (Model.Avatar) states.GetValueOrDefault(UserAddress);
+                if (avatar != null)
+                {
+                    DidReceiveAction?.Invoke(this, avatar);
+                }
 
-//                var states = blocks.GetStates(new[] {UserAddress});
                 yield return null;
             }
         }
 
         public IEnumerator Mine()
         {
+            // TODO Async
 //            while (true)
 //            {
 //                yield return new WaitForSeconds(interval);
 //                yield return blocks.MineBlock(UserAddress);
 //            }
             yield return blocks.MineBlock(UserAddress);
-
         }
 
         public void StageTransaction(IList<ActionBase> actions)
