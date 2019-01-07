@@ -52,7 +52,8 @@ namespace Nekoyume.Action
             _saveFilePath = Path.Combine(Application.persistentDataPath, "avatar.dat");
             LoadStatus();
 
-            agent = new Agent(privateKey);
+            var path = Path.Combine(Application.persistentDataPath, "planetarium");
+            agent = new Agent(privateKey, path);
             agent.DidReceiveAction += ReceiveAction;
 
             Debug.Log($"User Address: 0x{agent.UserAddress.Hex()}");

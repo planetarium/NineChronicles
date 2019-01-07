@@ -20,11 +20,10 @@ namespace Nekoyume.Action
 
         internal readonly Blockchain<ActionBase> blocks;
 
-        public Agent(PrivateKey privateKey, float interval = 3.0f)
+        public Agent(PrivateKey privateKey, string path, float interval = 3.0f)
         {
             this.privateKey = privateKey;
             this.interval = interval;
-            var path = Path.Combine(Application.persistentDataPath, "planetarium");
             blocks = new Blockchain<ActionBase>(new FileStore(path));
         }
 
