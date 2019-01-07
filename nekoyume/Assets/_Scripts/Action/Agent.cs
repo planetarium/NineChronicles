@@ -47,11 +47,6 @@ namespace Nekoyume.Action
         public IEnumerator Mine()
         {
             // TODO Async
-//            while (true)
-//            {
-//                yield return new WaitForSeconds(interval);
-//                yield return blocks.MineBlock(UserAddress);
-//            }
             yield return blocks.MineBlock(UserAddress);
         }
 

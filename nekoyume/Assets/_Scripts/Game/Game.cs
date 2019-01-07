@@ -38,16 +38,12 @@ namespace Nekoyume.Game
 
         private void Start()
         {
-//            MoveManager.Instance.CreateAvatarRequired += OnCreateAvatarRequired;
-//            MoveManager.Instance.DidAvatarLoaded += OnAvatarLoaded;
-//            MoveManager.Instance.DidSleep += OnSleep;
             ActionManager.Instance.CreateAvatarRequired += OnCreateAvatarRequired;
             ActionManager.Instance.DidAvatarLoaded += OnAvatarLoaded;
         }
 
         private void OnCreateAvatarRequired(object sender, EventArgs e)
         {
-//            Move¸Manager.Instance.CreateNovice("tester");
             ActionManager.Instance.CreateNovice("tester");
         }
 
