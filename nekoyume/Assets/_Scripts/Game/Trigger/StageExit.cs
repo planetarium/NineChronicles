@@ -28,8 +28,10 @@ namespace Nekoyume.Game.Trigger
             var player = stage.GetComponentInChildren<Player>();
             var id = stage.Id + 1;
             ActionManager.Instance.HackAndSlash(player, id);
-
-            yield return new WaitForSeconds(1.0f);
+            while (ActionManager.Instance.Avatar.WorldStage != id)
+            {
+                yield return new WaitForSeconds(1.0f);
+            }
             if (Sleep)
                 Event.OnPlayerSleep.Invoke();
             else

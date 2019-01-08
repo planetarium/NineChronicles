@@ -132,12 +132,21 @@ namespace Nekoyume.Action
 
         public void UpdateItems(string serializeItems)
         {
-            throw new NotImplementedException();
+            Avatar.Items = serializeItems;
+            SaveStatus();
         }
 
         public void HackAndSlash(Player player, int id)
         {
-            var action = new HackAndSlash();
+            var action = new HackAndSlash
+            {
+                hp = player.HP,
+                zone = id,
+                exp = player.EXP,
+                level = player.Level,
+                dead = player.IsDead(),
+                items = player.SerializeItems(),
+            };
             ProcessAction(action);
         }
 

@@ -1,6 +1,8 @@
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using Libplanet;
 using Libplanet.Action;
+using Nekoyume.Model;
 
 namespace Nekoyume.Action
 {
@@ -9,14 +11,17 @@ namespace Nekoyume.Action
     {
         public override void LoadPlainValue(IImmutableDictionary<string, object> plainValue)
         {
-            throw new System.NotImplementedException();
         }
 
         public override AddressStateMap Execute(Address @from, Address to, AddressStateMap states)
         {
-            throw new System.NotImplementedException();
+            var avatar = (Avatar) states.GetValueOrDefault(to);
+            avatar.Dead = false;
+            avatar.CurrentHP = avatar.HPMax;
+            return (AddressStateMap) states.SetItem(to, avatar);
         }
 
-        public override IImmutableDictionary<string, object> PlainValue { get; }
+        public override IImmutableDictionary<string, object> PlainValue =>
+            new Dictionary<string, object>().ToImmutableDictionary();
     }
 }
