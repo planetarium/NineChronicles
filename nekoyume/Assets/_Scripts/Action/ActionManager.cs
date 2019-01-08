@@ -7,7 +7,6 @@ using Libplanet;
 using Libplanet.Crypto;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Character;
-using Newtonsoft.Json;
 using UnityEngine;
 
 namespace Nekoyume.Action
@@ -61,12 +60,14 @@ namespace Nekoyume.Action
 
         private void ReceiveAction(object sender, Model.Avatar e)
         {
-            if (e != null && JsonConvert.SerializeObject(Avatar) != JsonConvert.SerializeObject(e))
+            Model.Avatar avatar = Avatar;
+            Avatar = e;
+            SaveStatus();
+            if (avatar == null)
             {
-                Avatar = e;
-                SaveStatus();
                 DidAvatarLoaded?.Invoke(this, Avatar);
             }
+
         }
 
         public void StartSync()
