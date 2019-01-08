@@ -16,14 +16,6 @@ namespace Nekoyume.Action
 //        {
 //            _name = name;
 //        }
-        public override Dictionary<string, string> ToDetails()
-        {
-            return new Dictionary<string, string>
-            {
-                ["name"] = _name
-            };
-        }
-
         public override void LoadPlainValue(IImmutableDictionary<string, object> plainValue)
         {
             _name = (string) plainValue["name"];

@@ -1,7 +1,11 @@
-using System.Collections.Generic;
+using System;
+using System.Collections.Immutable;
+using Libplanet;
+using Libplanet.Action;
 
 namespace Nekoyume.Action
 {
+    [ActionType("move_zone")]
     public class MoveZone : ActionBase
     {
         private readonly int _stage;
@@ -11,12 +15,16 @@ namespace Nekoyume.Action
             _stage = stage;
         }
 
-        public override Dictionary<string, string> ToDetails()
+        public override void LoadPlainValue(IImmutableDictionary<string, object> plainValue)
         {
-            return new Dictionary<string, string>
-            {
-                ["zone"] = _stage.ToString()
-            };
+            throw new NotImplementedException();
         }
+
+        public override AddressStateMap Execute(Address @from, Address to, AddressStateMap states)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override IImmutableDictionary<string, object> PlainValue { get; }
     }
 }
