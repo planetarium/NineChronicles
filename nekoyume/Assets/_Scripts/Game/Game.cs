@@ -52,10 +52,5 @@ namespace Nekoyume.Game
             Event.OnRoomEnter.Invoke();
             Widget.Find<Login>().Close();
         }
-
-        private void OnSleep(object sender, Model.Avatar avatar)
-        {
-        }
-
     }
 }

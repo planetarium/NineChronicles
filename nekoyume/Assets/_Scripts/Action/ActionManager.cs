@@ -23,7 +23,6 @@ namespace Nekoyume.Action
     {
         public static ActionManager Instance { get; private set; }
         public event EventHandler<Model.Avatar> DidAvatarLoaded;
-        public event EventHandler<Model.Avatar> DidSleep;
         public event EventHandler CreateAvatarRequired;
         public Model.Avatar Avatar { get; private set; }
 
