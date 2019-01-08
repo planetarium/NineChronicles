@@ -96,9 +96,7 @@ namespace Nekoyume.Action
         public void CreateNovice(string nickName)
         {
             var action = new CreateNovice();
-            agent.StageTransaction(new ActionBase[] {action});
-            // TODO Delete StartMine when block.mine be async
-            StartMine();
+            ProcessAction(action);
         }
 
         private void LoadStatus()
@@ -140,17 +138,27 @@ namespace Nekoyume.Action
 
         public void HackAndSlash(Player player, int id)
         {
-            throw new NotImplementedException();
+            var action = new HackAndSlash();
+            ProcessAction(action);
         }
 
         public void MoveZone(int i)
         {
-            throw new NotImplementedException();
+            var action = new MoveZone(i);
+            ProcessAction(action);
         }
 
         public void Sleep(Stats statsData)
         {
-            throw new NotImplementedException();
+            var action = new Sleep();
+            ProcessAction(action);
+        }
+
+        private void ProcessAction(ActionBase action)
+        {
+            agent.StageTransaction(new ActionBase[] {action});
+            // TODO Delete StartMine when block.mine be async
+            StartMine();
         }
     }
 }
