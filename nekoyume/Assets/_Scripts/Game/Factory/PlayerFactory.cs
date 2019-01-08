@@ -1,4 +1,4 @@
-using Nekoyume.Move;
+using Nekoyume.Action;
 using UnityEngine;
 
 
@@ -8,7 +8,7 @@ namespace Nekoyume.Game.Factory
     {
         public GameObject Create()
         {
-            var avatar = MoveManager.Instance.Avatar;
+            var avatar = ActionManager.Instance.Avatar;
             if (avatar == null)
                 return null;
 

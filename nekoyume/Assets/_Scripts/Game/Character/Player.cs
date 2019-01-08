@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using BTAI;
+using Nekoyume.Action;
 using Nekoyume.Data;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Skill;
-using Nekoyume.Move;
 using Nekoyume.UI;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -221,7 +221,7 @@ namespace Nekoyume.Game.Character
         private void PickUpItem(DropItem item)
         {
             Inventory.Add(item.Item);
-            MoveManager.Instance.UpdateItems(SerializeItems());
+            ActionManager.Instance.UpdateItems(SerializeItems());
         }
 
         private void InitInventory(Model.Avatar avatar)
@@ -286,7 +286,7 @@ namespace Nekoyume.Game.Character
             CalcStats();
             Event.OnUpdateEquipment.Invoke(_weapon);
             // TODO Implement Actions
-            MoveManager.Instance.UpdateItems(SerializeItems());
+            ActionManager.Instance.UpdateItems(SerializeItems());
         }
     }
 }

@@ -1,6 +1,6 @@
+using Nekoyume.Action;
 using Nekoyume.Game;
 using Nekoyume.Game.Trigger;
-using Nekoyume.Move;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -20,10 +20,10 @@ namespace Nekoyume.UI
             Show();
             btnSleep.GetComponent<Button>().enabled = true;
             btnMove.GetComponent<Button>().enabled = true;
-            Model.Avatar avatar = MoveManager.Instance.Avatar;
+            Model.Avatar avatar = ActionManager.Instance.Avatar;
             bool enabled = !avatar.Dead;
             btnMove.SetActive(enabled);
-            btnStage1.SetActive(MoveManager.Instance.Avatar.WorldStage > 1);
+            btnStage1.SetActive(ActionManager.Instance.Avatar.WorldStage > 1);
             btnSleep.SetActive(false);
             LabelInfo.text = "";
         }
@@ -51,7 +51,7 @@ namespace Nekoyume.UI
 
         public void MoveStageClick()
         {
-            MoveManager.Instance.MoveZone(1);
+            ActionManager.Instance.MoveZone(1);
             Game.Event.OnStageEnter.Invoke();
         }
     }

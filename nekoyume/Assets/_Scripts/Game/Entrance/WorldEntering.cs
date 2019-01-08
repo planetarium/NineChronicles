@@ -1,5 +1,5 @@
 using System.Collections;
-using Nekoyume.Move;
+using Nekoyume.Action;
 using UnityEngine;
 using Avatar = Nekoyume.Model.Avatar;
 
@@ -23,7 +23,7 @@ namespace Nekoyume.Game.Entrance
                 roomPlayer.RunSpeed = 1.0f;
             }
 
-            Avatar avatar = MoveManager.Instance.Avatar;
+            Avatar avatar = ActionManager.Instance.Avatar;
             int currentStage = avatar.WorldStage;
             Data.Table.Stage data;
             var tables = this.GetRootComponent<Data.Tables>();
