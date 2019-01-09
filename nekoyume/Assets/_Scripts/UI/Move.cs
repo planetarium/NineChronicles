@@ -51,7 +51,7 @@ namespace Nekoyume.UI
 
         public void MoveStageClick()
         {
-            ActionManager.Instance.MoveZone(1);
+            ActionManager.Instance.MoveStage(1);
             Game.Event.OnStageEnter.Invoke();
         }
     }

@@ -137,12 +137,12 @@ namespace Nekoyume.Action
             SaveStatus();
         }
 
-        public void HackAndSlash(Player player, int id)
+        public void HackAndSlash(Player player, int stage)
         {
             var action = new HackAndSlash
             {
                 hp = player.HP,
-                zone = id,
+                stage = stage,
                 exp = player.EXP,
                 level = player.Level,
                 dead = player.IsDead(),
@@ -151,9 +151,9 @@ namespace Nekoyume.Action
             ProcessAction(action);
         }
 
-        public void MoveZone(int i)
+        public void MoveStage(int stage)
         {
-            var action = new MoveZone(i);
+            var action = new MoveStage {stage = stage};
             ProcessAction(action);
         }
 

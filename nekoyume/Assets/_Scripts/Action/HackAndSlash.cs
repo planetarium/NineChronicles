@@ -12,7 +12,7 @@ namespace Nekoyume.Action
     public class HackAndSlash : ActionBase
     {
         public int hp;
-        public int zone;
+        public int stage;
         public long exp;
         public int level;
         public bool dead;
@@ -21,7 +21,7 @@ namespace Nekoyume.Action
         public override void LoadPlainValue(IImmutableDictionary<string, object> plainValue)
         {
             hp = int.Parse(plainValue["hp"].ToString());
-            zone = int.Parse(plainValue["zone"].ToString());
+            stage = int.Parse(plainValue["stage"].ToString());
             exp = long.Parse(plainValue["exp"].ToString());
             level = int.Parse(plainValue["level"].ToString());
             dead = (bool) plainValue["dead"];
@@ -37,7 +37,7 @@ namespace Nekoyume.Action
             }
 
             avatar.CurrentHP = hp;
-            avatar.WorldStage = zone;
+            avatar.WorldStage = stage;
             avatar.EXP = exp;
             avatar.Level = level;
             avatar.Dead = dead;
@@ -48,7 +48,7 @@ namespace Nekoyume.Action
         public override IImmutableDictionary<string, object> PlainValue => new Dictionary<string, object>
         {
             ["hp"] = hp,
-            ["zone"] = zone,
+            ["stage"] = stage,
             ["exp"] = exp,
             ["level"] = level,
             ["dead"] = dead,
