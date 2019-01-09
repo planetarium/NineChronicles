@@ -16,17 +16,5 @@ namespace Nekoyume.Model
         public string Items;
         public int WorldStage;
         public bool Dead = false;
-
-        public static Avatar FromMoves(IEnumerable<ActionBase> moves)
-        {
-            var createNovice = moves.FirstOrDefault() as CreateNovice;
-            if (createNovice == null)
-            {
-                return null;
-            }
-
-            var avatar = new Avatar();
-            return avatar;
-        }
     }
 }

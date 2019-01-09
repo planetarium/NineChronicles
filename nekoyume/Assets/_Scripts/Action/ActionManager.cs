@@ -15,7 +15,6 @@ namespace Nekoyume.Action
     internal class SaveData
     {
         public Model.Avatar Avatar;
-        public long? LastBlockId;
     }
 
     public class ActionManager : MonoBehaviour
@@ -26,7 +25,6 @@ namespace Nekoyume.Action
         public Model.Avatar Avatar { get; private set; }
 
         private Agent agent;
-        private long? lastBlockId;
         private string _saveFilePath;
 
         private void Awake()
@@ -108,7 +106,6 @@ namespace Nekoyume.Action
             {
                 var data = (SaveData) formatter.Deserialize(stream);
                 Avatar = data.Avatar;
-                lastBlockId = data.LastBlockId;
             }
         }
 
@@ -117,7 +114,6 @@ namespace Nekoyume.Action
             var data = new SaveData
             {
                 Avatar = Avatar,
-                LastBlockId = lastBlockId
             };
             var formatter = new BinaryFormatter();
             using (FileStream stream = File.Open(_saveFilePath, FileMode.OpenOrCreate))
