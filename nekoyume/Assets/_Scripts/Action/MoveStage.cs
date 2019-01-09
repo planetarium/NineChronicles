@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using Libplanet;
 using Libplanet.Action;
@@ -19,10 +20,13 @@ namespace Nekoyume.Action
         public override AddressStateMap Execute(Address @from, Address to, AddressStateMap states)
         {
             var avatar = (Avatar) states.GetValueOrDefault(to);
-            avatar.WorldStage
-            throw new NotImplementedException();
+            avatar.WorldStage = stage;
+            return (AddressStateMap) states.SetItem(to, avatar);
         }
 
-        public override IImmutableDictionary<string, object> PlainValue { get; }
+        public override IImmutableDictionary<string, object> PlainValue => new Dictionary<string, object>
+        {
+            ["stage"] = stage,
+        }.ToImmutableDictionary();
     }
 }

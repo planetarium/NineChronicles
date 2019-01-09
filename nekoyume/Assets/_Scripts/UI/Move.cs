@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Threading;
 using Nekoyume.Action;
 using Nekoyume.Game;
 using Nekoyume.Game.Trigger;
@@ -51,7 +53,16 @@ namespace Nekoyume.UI
 
         public void MoveStageClick()
         {
+            StartCoroutine(MoveStageAsync());
+        }
+
+        private IEnumerator MoveStageAsync()
+        {
             ActionManager.Instance.MoveStage(1);
+            while (ActionManager.Instance.Avatar.WorldStage != 1)
+            {
+                yield return new WaitForSeconds(1.0f);
+            }
             Game.Event.OnStageEnter.Invoke();
         }
     }
