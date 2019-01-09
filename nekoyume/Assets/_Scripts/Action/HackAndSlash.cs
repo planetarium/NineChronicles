@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Numerics;
@@ -20,10 +19,10 @@ namespace Nekoyume.Action
 
         public override void LoadPlainValue(IImmutableDictionary<string, object> plainValue)
         {
-            hp = int.Parse(plainValue["hp"].ToString());
-            stage = int.Parse(plainValue["stage"].ToString());
-            exp = long.Parse(plainValue["exp"].ToString());
-            level = int.Parse(plainValue["level"].ToString());
+            hp = (int) (BigInteger) plainValue["hp"];
+            stage = (int) (BigInteger) plainValue["stage"];
+            exp = (long) (BigInteger) plainValue["exp"];
+            level = (int) (BigInteger) plainValue["level"];
             dead = (bool) plainValue["dead"];
             items = (string) plainValue["items"];
         }
