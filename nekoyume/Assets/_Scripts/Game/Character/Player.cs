@@ -24,8 +24,22 @@ namespace Nekoyume.Game.Character
         public long EXPMax { get; private set; }
 
         private ProgressBar _mpBar = null;
-        private Vector3 _mpBarOffset = new Vector3();
         public Weapon _weapon = null;
+
+        protected override Vector3 _hpBarOffset => _castingBarOffset + new Vector3(0, 0.24f, 0.0f);
+        protected Vector3 _mpBarOffset => _castingBarOffset + new Vector3(0, 0.19f, 0.0f);
+
+        protected override Vector3 _castingBarOffset
+        {
+            get
+            {
+                var face = GetComponentsInChildren<Transform>().First(g => g.name == "face");
+                var faceRenderer = face.GetComponent<Renderer>();
+                var x = faceRenderer.bounds.min.x - transform.position.x + faceRenderer.bounds.size.x / 2;
+                var y = faceRenderer.bounds.max.y - transform.position.y;
+                return new Vector3(x, y, 0.0f);
+            }
+        }
 
         public override WeightType WeightType
         {
@@ -50,10 +64,6 @@ namespace Nekoyume.Game.Character
         public void InitAI()
         {
             RunSpeed = 0.0f;
-
-            _hpBarOffset.Set(-0.22f, -0.61f, 0.0f);
-            _castingBarOffset.Set(-0.22f, -0.85f, 0.0f);
-            _mpBarOffset.Set(-0.22f, -0.66f, 0.0f);
 
             Root = new Root();
             Root.OpenBranch(

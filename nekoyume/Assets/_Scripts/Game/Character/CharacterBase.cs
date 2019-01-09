@@ -25,9 +25,9 @@ namespace Nekoyume.Game.Character
         protected int _hpMax = 0;
         protected Animator _anim = null;
         protected UI.ProgressBar _hpBar = null;
-        protected Vector3 _hpBarOffset = new Vector3();
+        protected virtual Vector3 _hpBarOffset => new Vector3();
         protected UI.ProgressBar _castingBar = null;
-        protected Vector3 _castingBarOffset = new Vector3();
+        protected virtual Vector3 _castingBarOffset => new Vector3();
         protected float _dyingTime = 1.0f;
 
         protected List<Skill.SkillBase> _skills = new List<Skill.SkillBase>();
