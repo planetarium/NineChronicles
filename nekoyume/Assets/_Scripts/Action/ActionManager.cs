@@ -7,7 +7,6 @@ using Libplanet;
 using Libplanet.Crypto;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Character;
-using Newtonsoft.Json;
 using UnityEngine;
 
 namespace Nekoyume.Action
@@ -23,7 +22,6 @@ namespace Nekoyume.Action
     {
         public static ActionManager Instance { get; private set; }
         public event EventHandler<Model.Avatar> DidAvatarLoaded;
-        public event EventHandler<Model.Avatar> DidSleep;
         public event EventHandler CreateAvatarRequired;
         public Model.Avatar Avatar { get; private set; }
 
@@ -62,12 +60,14 @@ namespace Nekoyume.Action
 
         private void ReceiveAction(object sender, Model.Avatar e)
         {
-            if (e != null && JsonConvert.SerializeObject(Avatar) != JsonConvert.SerializeObject(e))
+            Model.Avatar avatar = Avatar;
+            Avatar = e;
+            SaveStatus();
+            if (avatar == null)
             {
-                Avatar = e;
-                SaveStatus();
                 DidAvatarLoaded?.Invoke(this, Avatar);
             }
+
         }
 
         public void StartSync()
@@ -96,9 +96,7 @@ namespace Nekoyume.Action
         public void CreateNovice(string nickName)
         {
             var action = new CreateNovice();
-            agent.StageTransaction(new ActionBase[] {action});
-            // TODO Delete StartMine when block.mine be async
-            StartMine();
+            ProcessAction(action);
         }
 
         private void LoadStatus()
@@ -135,22 +133,41 @@ namespace Nekoyume.Action
 
         public void UpdateItems(string serializeItems)
         {
-            throw new NotImplementedException();
+            Avatar.Items = serializeItems;
+            SaveStatus();
         }
 
-        public void HackAndSlash(Player player, int id)
+        public void HackAndSlash(Player player, int stage)
         {
-            throw new NotImplementedException();
+            var action = new HackAndSlash
+            {
+                hp = player.HP,
+                stage = stage,
+                exp = player.EXP,
+                level = player.Level,
+                dead = player.IsDead(),
+                items = player.SerializeItems(),
+            };
+            ProcessAction(action);
         }
 
-        public void MoveZone(int i)
+        public void MoveStage(int stage)
         {
-            throw new NotImplementedException();
+            var action = new MoveStage {stage = stage};
+            ProcessAction(action);
         }
 
         public void Sleep(Stats statsData)
         {
-            throw new NotImplementedException();
+            var action = new Sleep();
+            ProcessAction(action);
+        }
+
+        private void ProcessAction(ActionBase action)
+        {
+            agent.StageTransaction(new ActionBase[] {action});
+            // TODO Delete StartMine when block.mine be async
+            StartMine();
         }
     }
 }

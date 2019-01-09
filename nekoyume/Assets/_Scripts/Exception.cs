@@ -1,11 +1,13 @@
-public class InvalidMoveException : System.Exception
+using System;
+
+public class InvalidActionException : Exception
 {
-    public InvalidMoveException()
+    public InvalidActionException()
     { }
 
-    public InvalidMoveException(string message) : base(message)
+    public InvalidActionException(string message) : base(message)
     { }
 
-    public InvalidMoveException(string message, System.Exception inner) : base(message, inner)
+    public InvalidActionException(string message, Exception inner) : base(message, inner)
     { }
 }

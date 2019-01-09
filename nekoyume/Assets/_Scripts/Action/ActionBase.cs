@@ -7,22 +7,15 @@ namespace Nekoyume.Action
 {
     public abstract class ActionBase : IAction
     {
-        public abstract Dictionary<string, string> ToDetails();
-        public virtual void LoadPlainValue(IImmutableDictionary<string, object> plainValue)
-        {
-            throw new System.NotImplementedException();
-        }
+        public abstract void LoadPlainValue(IImmutableDictionary<string, object> plainValue);
 
-        public virtual ISet<Address> RequestStates(Address @from, Address to)
+        public ISet<Address> RequestStates(Address @from, Address to)
         {
             return new HashSet<Address> {from, to}.ToImmutableHashSet();
         }
 
-        public virtual AddressStateMap Execute(Address @from, Address to, AddressStateMap states)
-        {
-            throw new System.NotImplementedException();
-        }
+        public abstract AddressStateMap Execute(Address @from, Address to, AddressStateMap states);
 
-        public virtual IImmutableDictionary<string, object> PlainValue { get; }
+        public abstract IImmutableDictionary<string, object> PlainValue { get; }
     }
 }
