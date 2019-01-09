@@ -22,7 +22,7 @@ namespace Nekoyume.Game.Character
         public virtual WeightType WeightType { get; protected set; } = WeightType.Small;
         public float RunSpeed = 0.0f;
 
-        protected int _hpMax = 0;
+        public int HPMax { get; protected set; } = 0;
         protected Animator _anim = null;
         protected UI.ProgressBar _hpBar = null;
         protected virtual Vector3 _hpBarOffset => new Vector3();
@@ -222,8 +222,8 @@ namespace Nekoyume.Game.Character
                 _hpBar = UI.Widget.Create<UI.ProgressBar>(true);
             }
             _hpBar.UpdatePosition(gameObject, _hpBarOffset);
-            _hpBar.SetText($"{HP} / {_hpMax}");
-            _hpBar.SetValue((float)HP / (float)_hpMax);
+            _hpBar.SetText($"{HP} / {HPMax}");
+            _hpBar.SetValue((float)HP / (float)HPMax);
         }
 
         protected bool HasTargetInRange()

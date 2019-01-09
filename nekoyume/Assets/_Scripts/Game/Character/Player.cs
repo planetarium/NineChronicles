@@ -193,7 +193,7 @@ namespace Nekoyume.Game.Character
             DEF = statsData.Defense;
             MP = MPMax = statsData.Mana;
 
-            _hpMax = statsData.Health;
+            HPMax = statsData.Health;
             EXPMax = statsData.Exp;
             if (_weapon?.IsEquipped == true)
             {

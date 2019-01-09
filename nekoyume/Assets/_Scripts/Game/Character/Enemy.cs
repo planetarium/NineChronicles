@@ -91,7 +91,7 @@ namespace Nekoyume.Game.Character
 
             Power = power;
 
-            _hpMax = HP;
+            HPMax = HP;
         }
 
         public override void OnDamage(AttackType attackType, int dmg)
