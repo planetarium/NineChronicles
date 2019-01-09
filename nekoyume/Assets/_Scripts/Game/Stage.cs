@@ -90,11 +90,20 @@ namespace Nekoyume.Game
 
         private void OnPlayerSleep()
         {
+            StartCoroutine(SleepAsync());
+        }
+
+        private IEnumerator SleepAsync()
+        {
             var tables = this.GetRootComponent<Data.Tables>();
             Data.Table.Stats statsData;
             if (tables.Stats.TryGetValue(ActionManager.Instance.Avatar.Level, out statsData))
             {
                 ActionManager.Instance.Sleep(statsData);
+                while (ActionManager.Instance.Avatar.CurrentHP == ActionManager.Instance.Avatar.HPMax)
+                {
+                    yield return new WaitForSeconds(1.0f);
+                }
             }
             OnRoomEnter();
         }
