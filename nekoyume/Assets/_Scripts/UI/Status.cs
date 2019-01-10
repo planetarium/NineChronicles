@@ -1,5 +1,5 @@
 using System;
-using Nekoyume.Move;
+using Nekoyume.Action;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -30,7 +30,7 @@ namespace Nekoyume.UI
         {
             Show();
 
-            Model.Avatar avatar = MoveManager.Instance.Avatar;
+            Model.Avatar avatar = ActionManager.Instance.Avatar;
             if (avatar != null)
             {
                 _avatarName = avatar.Name;

@@ -1,10 +1,11 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Nekoyume.Move;
+using Nekoyume.Action;
 
 namespace Nekoyume.Model
 {
-    [System.Serializable]
+    [Serializable]
     public class Avatar
     {
         public string Name;
@@ -15,24 +16,5 @@ namespace Nekoyume.Model
         public string Items;
         public int WorldStage;
         public bool Dead = false;
-
-        public static Avatar FromMoves(IEnumerable<MoveBase> moves)
-        {
-            var createNovice = moves.FirstOrDefault() as CreateNovice;
-            if (createNovice == null)
-            {
-                return null;
-            }
-
-            var ctx = new Context();
-            var avatar = createNovice.Execute(ctx).Avatar;
-
-            foreach (var move in moves.Skip(1))
-            {
-                avatar = move.Execute(ctx).Avatar;
-            }
-
-            return avatar;
-        }
     }
 }

@@ -1,12 +1,21 @@
 using System.Collections.Generic;
-using Nekoyume.Move;
+using System.Collections.Immutable;
+using Libplanet;
+using Libplanet.Action;
 
 namespace Nekoyume.Action
 {
-    public abstract class ActionBase
+    public abstract class ActionBase : IAction
     {
-        public abstract Context Execute(Context ctx);
+        public abstract void LoadPlainValue(IImmutableDictionary<string, object> plainValue);
 
-        public abstract Dictionary<string, string> ToDetails();
+        public ISet<Address> RequestStates(Address @from, Address to)
+        {
+            return new HashSet<Address> {from, to}.ToImmutableHashSet();
+        }
+
+        public abstract AddressStateMap Execute(Address @from, Address to, AddressStateMap states);
+
+        public abstract IImmutableDictionary<string, object> PlainValue { get; }
     }
 }

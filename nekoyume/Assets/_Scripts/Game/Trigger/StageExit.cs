@@ -1,6 +1,6 @@
 using System.Collections;
+using Nekoyume.Action;
 using Nekoyume.Game.Character;
-using Nekoyume.Move;
 using UnityEngine;
 
 
@@ -27,9 +27,11 @@ namespace Nekoyume.Game.Trigger
             var stage = GetComponentInParent<Stage>();
             var player = stage.GetComponentInChildren<Player>();
             var id = stage.Id + 1;
-            MoveManager.Instance.HackAndSlash(player, id);
-
-            yield return new WaitForSeconds(1.0f);
+            ActionManager.Instance.HackAndSlash(player, id);
+            while (ActionManager.Instance.Avatar.WorldStage != id)
+            {
+                yield return new WaitForSeconds(1.0f);
+            }
             if (Sleep)
                 Event.OnPlayerSleep.Invoke();
             else
