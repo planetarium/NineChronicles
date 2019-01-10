@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using System.Threading.Tasks;
 using Libplanet;
 using Libplanet.Crypto;
@@ -18,6 +19,8 @@ namespace Nekoyume.Action
         private readonly PrivateKey privateKey;
         private readonly float interval;
         public Address UserAddress => privateKey.PublicKey.ToAddress();
+        public List<ActionBase> incompleteActions;
+
 
         internal readonly Blockchain<ActionBase> blocks;
 
@@ -26,6 +29,7 @@ namespace Nekoyume.Action
             this.privateKey = privateKey;
             this.interval = interval;
             blocks = new Blockchain<ActionBase>(new FileStore(path));
+            incompleteActions = new List<ActionBase>();
         }
         
         public IEnumerator Sync()
@@ -49,13 +53,28 @@ namespace Nekoyume.Action
         {
             while (true)
             {
+                var actions = incompleteActions.ToList();
+                if (actions.Count > 0)
+                {
+                    Debug.Assert(actions != incompleteActions);
+                }
+                StageTransaction(actions);
                 var task = Task.Run(() => blocks.MineBlock(UserAddress));
                 yield return new WaitUntil(() => task.IsCompleted);
+
+                if (actions.Count < incompleteActions.Count)
+                {
+                    incompleteActions = incompleteActions.Except(actions).ToList();
+                }
+                else
+                {
+                    incompleteActions.Clear();
+                }
                 Debug.Log($"created block index: {task.Result.Index}");
             }
         }
 
-        public void StageTransaction(IList<ActionBase> actions)
+        private void StageTransaction(IList<ActionBase> actions)
         {
             var tx = Transaction<ActionBase>.Make(
                 privateKey,
