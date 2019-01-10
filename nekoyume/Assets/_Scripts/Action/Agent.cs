@@ -2,18 +2,19 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.IO;
+using System.Threading.Tasks;
 using Libplanet;
 using Libplanet.Crypto;
 using Libplanet.Store;
 using Libplanet.Tx;
 using UnityEngine;
+using Avatar = Nekoyume.Model.Avatar;
 
 namespace Nekoyume.Action
 {
     public class Agent
     {
-        public event EventHandler<Model.Avatar> DidReceiveAction;
+        public event EventHandler<Avatar> DidReceiveAction;
         private readonly PrivateKey privateKey;
         private readonly float interval;
         public Address UserAddress => privateKey.PublicKey.ToAddress();
@@ -26,14 +27,15 @@ namespace Nekoyume.Action
             this.interval = interval;
             blocks = new Blockchain<ActionBase>(new FileStore(path));
         }
-
+        
         public IEnumerator Sync()
         {
             while (true)
             {
                 yield return new WaitForSeconds(interval);
-                var states = blocks.GetStates(new[] {UserAddress});
-                var avatar = (Model.Avatar) states.GetValueOrDefault(UserAddress);
+                var task = Task.Run(() => blocks.GetStates(new[] {UserAddress}));
+                yield return new WaitUntil(() => task.IsCompleted);
+                var avatar = (Avatar) task.Result.GetValueOrDefault(UserAddress);
                 if (avatar != null)
                 {
                     DidReceiveAction?.Invoke(this, avatar);
@@ -45,8 +47,12 @@ namespace Nekoyume.Action
 
         public IEnumerator Mine()
         {
-            // TODO Async
-            yield return blocks.MineBlock(UserAddress);
+            while (true)
+            {
+                var task = Task.Run(() => blocks.MineBlock(UserAddress));
+                yield return new WaitUntil(() => task.IsCompleted);
+                Debug.Log($"created block index: {task.Result.Index}");
+            }
         }
 
         public void StageTransaction(IList<ActionBase> actions)
