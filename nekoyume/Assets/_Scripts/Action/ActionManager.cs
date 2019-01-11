@@ -8,21 +8,22 @@ using Libplanet.Crypto;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Character;
 using UnityEngine;
+using Avatar = Nekoyume.Model.Avatar;
 
 namespace Nekoyume.Action
 {
     [Serializable]
     internal class SaveData
     {
-        public Model.Avatar Avatar;
+        public Avatar Avatar;
     }
 
     public class ActionManager : MonoBehaviour
     {
         public static ActionManager Instance { get; private set; }
-        public event EventHandler<Model.Avatar> DidAvatarLoaded;
+        public event EventHandler<Avatar> DidAvatarLoaded;
         public event EventHandler CreateAvatarRequired;
-        public Model.Avatar Avatar { get; private set; }
+        public Avatar Avatar { get; private set; }
 
         private Agent agent;
         private string _saveFilePath;
@@ -53,12 +54,12 @@ namespace Nekoyume.Action
             agent.DidReceiveAction += ReceiveAction;
 
             Debug.Log($"User Address: 0x{agent.UserAddress.Hex()}");
-
+            StartMine();
         }
 
-        private void ReceiveAction(object sender, Model.Avatar e)
+        private void ReceiveAction(object sender, Avatar e)
         {
-            Model.Avatar avatar = Avatar;
+            Avatar avatar = Avatar;
             Avatar = e;
             SaveStatus();
             if (avatar == null)
@@ -77,16 +78,16 @@ namespace Nekoyume.Action
 
             var address = agent.UserAddress;
             var states = agent.blocks.GetStates(new[] {address});
-            var avatar = (Model.Avatar) states.GetValueOrDefault(address);
+            var avatar = (Avatar) states.GetValueOrDefault(address);
             if (avatar == null)
             {
                 CreateAvatarRequired?.Invoke(this, null);
             }
 
-            StartCoroutine(agent.Sync());
+            StartCoroutine(Sync());
         }
 
-        public IEnumerator Sync()
+        private IEnumerator Sync()
         {
             return agent.Sync();
         }
@@ -161,9 +162,7 @@ namespace Nekoyume.Action
 
         private void ProcessAction(ActionBase action)
         {
-            agent.StageTransaction(new ActionBase[] {action});
-            // TODO Delete StartMine when block.mine be async
-            StartMine();
+            agent.queuedActions.Enqueue(action);
         }
     }
 }
