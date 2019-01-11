@@ -1,8 +1,8 @@
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
 using System.Threading.Tasks;
 using Libplanet;
 using Libplanet.Crypto;
@@ -19,7 +19,7 @@ namespace Nekoyume.Action
         private readonly PrivateKey privateKey;
         private readonly float interval;
         public Address UserAddress => privateKey.PublicKey.ToAddress();
-        public List<ActionBase> incompleteActions;
+        public readonly ConcurrentQueue<ActionBase> queuedActions;
 
 
         internal readonly Blockchain<ActionBase> blocks;
@@ -29,9 +29,9 @@ namespace Nekoyume.Action
             this.privateKey = privateKey;
             this.interval = interval;
             blocks = new Blockchain<ActionBase>(new FileStore(path));
-            incompleteActions = new List<ActionBase>();
+            queuedActions = new ConcurrentQueue<ActionBase>();
         }
-        
+
         public IEnumerator Sync()
         {
             while (true)
@@ -53,23 +53,19 @@ namespace Nekoyume.Action
         {
             while (true)
             {
-                var actions = incompleteActions.ToList();
-                if (actions.Count > 0)
+                var processedActions = new List<ActionBase>();
+                for (int i = 0; i < queuedActions.Count; i++)
                 {
-                    Debug.Assert(actions != incompleteActions);
+                    ActionBase action;
+                    queuedActions.TryDequeue(out action);
+                    if (action != null)
+                    {
+                        processedActions.Add(action);
+                    }
                 }
-                StageTransaction(actions);
+                StageTransaction(processedActions);
                 var task = Task.Run(() => blocks.MineBlock(UserAddress));
                 yield return new WaitUntil(() => task.IsCompleted);
-
-                if (actions.Count < incompleteActions.Count)
-                {
-                    incompleteActions = incompleteActions.Except(actions).ToList();
-                }
-                else
-                {
-                    incompleteActions.Clear();
-                }
                 Debug.Log($"created block index: {task.Result.Index}");
             }
         }

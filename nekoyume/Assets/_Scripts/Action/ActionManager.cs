@@ -162,7 +162,7 @@ namespace Nekoyume.Action
 
         private void ProcessAction(ActionBase action)
         {
-            agent.incompleteActions.Add(action);
+            agent.queuedActions.Enqueue(action);
         }
     }
 }
