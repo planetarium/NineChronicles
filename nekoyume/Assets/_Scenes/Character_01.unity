@@ -494,7 +494,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Length: 0.43696034
+  m_Length: 0.38041174
   m_Child: {fileID: 0}
   m_ChildTransform: {fileID: 1784231525}
   m_AttachedIK: {fileID: 0}
@@ -1903,7 +1903,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Length: 0.20733243
+  m_Length: 0.27999994
   m_Child: {fileID: 0}
   m_ChildTransform: {fileID: 2115067363}
   m_AttachedIK: {fileID: 0}
@@ -1949,7 +1949,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Length: 0.21400186
+  m_Length: 0.26792574
   m_Child: {fileID: 0}
   m_ChildTransform: {fileID: 503019925}
   m_AttachedIK: {fileID: 0}
@@ -2093,7 +2093,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Length: 0.43386108
+  m_Length: 0.37184694
   m_Child: {fileID: 0}
   m_ChildTransform: {fileID: 709422448}
   m_AttachedIK: {fileID: 0}
@@ -2139,7 +2139,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Length: 0.355892
+  m_Length: 0.37594083
   m_Child: {fileID: 0}
   m_ChildTransform: {fileID: 1256711321}
   m_AttachedIK: {fileID: 0}
@@ -2185,7 +2185,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Length: 0.50532573
+  m_Length: 0.50088584
   m_Child: {fileID: 0}
   m_ChildTransform: {fileID: 933110912}
   m_AttachedIK: {fileID: 0}
@@ -2555,7 +2555,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Length: 0.26761693
+  m_Length: 0.2676165
   m_Child: {fileID: 0}
   m_ChildTransform: {fileID: 1486554522}
   m_AttachedIK: {fileID: 0}
@@ -3283,7 +3283,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Length: 0.3937817
+  m_Length: 0.40000987
   m_Child: {fileID: 0}
   m_ChildTransform: {fileID: 12351679}
   m_AttachedIK: {fileID: 0}
@@ -3668,7 +3668,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Length: 0.5375895
+  m_Length: 0.5229696
   m_Child: {fileID: 0}
   m_ChildTransform: {fileID: 1081137575}
   m_AttachedIK: {fileID: 0}
@@ -3714,7 +3714,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Length: 0.41763985
+  m_Length: 0.42576626
   m_Child: {fileID: 0}
   m_ChildTransform: {fileID: 1817101629}
   m_AttachedIK: {fileID: 0}
@@ -3760,7 +3760,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Length: 0.08336398
+  m_Length: 0.18991202
   m_Child: {fileID: 0}
   m_ChildTransform: {fileID: 1349678851}
   m_AttachedIK: {fileID: 0}
@@ -4594,7 +4594,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Length: 0.44598913
+  m_Length: 0.43326145
   m_Child: {fileID: 0}
   m_ChildTransform: {fileID: 748835412}
   m_AttachedIK: {fileID: 0}
@@ -4643,7 +4643,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Length: 0.38851404
+  m_Length: 0.3885141
   m_Child: {fileID: 0}
   m_ChildTransform: {fileID: 789516049}
   m_AttachedIK: {fileID: 0}
@@ -4674,7 +4674,7 @@ Animator:
   m_GameObject: {fileID: 1903145350}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: b8396a103a4c7ec4fa386f0b6a9c83e2, type: 2}
+  m_Controller: {fileID: 9100000, guid: 2c3125c7ecbbe9d40a3a3c353aadd76f, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -4699,10 +4699,11 @@ MonoBehaviour:
   ATK: 0
   DEF: 0
   Power: 100
-  WalkSpeed: 0
+  RunSpeed: 0
   MP: 0
   EXP: 0
   Level: 0
+  MPMax: 0
 --- !u!4 &1903145353
 Transform:
   m_ObjectHideFlags: 0
@@ -5103,7 +5104,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Length: 0.39703283
+  m_Length: 0.3964792
   m_Child: {fileID: 0}
   m_ChildTransform: {fileID: 998122586}
   m_AttachedIK: {fileID: 0}
