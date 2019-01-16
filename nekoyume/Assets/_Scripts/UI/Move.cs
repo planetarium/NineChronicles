@@ -40,8 +40,8 @@ namespace Nekoyume.UI
 
         public void MoveClick()
         {
-            Game.Event.OnStageEnter.Invoke();
-            Close();
+            ActionManager.Instance.HackAndSlash();
+            btnMove.SetActive(false);
         }
 
         public void SleepClick()

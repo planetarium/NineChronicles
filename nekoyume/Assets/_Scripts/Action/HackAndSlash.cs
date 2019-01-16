@@ -10,21 +10,8 @@ namespace Nekoyume.Action
     [ActionType("hack_and_slash")]
     public class HackAndSlash : ActionBase
     {
-        public int hp;
-        public int stage;
-        public long exp;
-        public int level;
-        public bool dead;
-        public string items;
-
         public override void LoadPlainValue(IImmutableDictionary<string, object> plainValue)
         {
-            hp = (int) (BigInteger) plainValue["hp"];
-            stage = (int) (BigInteger) plainValue["stage"];
-            exp = (long) (BigInteger) plainValue["exp"];
-            level = (int) (BigInteger) plainValue["level"];
-            dead = (bool) plainValue["dead"];
-            items = (string) plainValue["items"];
         }
 
         public override AddressStateMap Execute(Address @from, Address to, AddressStateMap states)
@@ -35,23 +22,14 @@ namespace Nekoyume.Action
                 throw new InvalidActionException();
             }
 
-            avatar.CurrentHP = hp;
-            avatar.WorldStage = stage;
-            avatar.EXP = exp;
-            avatar.Level = level;
-            avatar.Dead = dead;
-            avatar.Items = items;
+            var simulator = new Simulator(0, avatar);
+            var player = simulator.Simulate();
+            avatar.Update(player);
             return (AddressStateMap) states.SetItem(to, avatar);
         }
 
         public override IImmutableDictionary<string, object> PlainValue => new Dictionary<string, object>
         {
-            ["hp"] = hp,
-            ["stage"] = stage,
-            ["exp"] = exp,
-            ["level"] = level,
-            ["dead"] = dead,
-            ["items"] = items,
         }.ToImmutableDictionary();
     }
 }

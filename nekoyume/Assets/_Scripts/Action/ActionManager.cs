@@ -136,15 +136,7 @@ namespace Nekoyume.Action
 
         public void HackAndSlash(Player player, int stage)
         {
-            var action = new HackAndSlash
-            {
-                hp = player.HP,
-                stage = stage,
-                exp = player.EXP,
-                level = player.Level,
-                dead = player.IsDead(),
-                items = player.SerializeItems(),
-            };
+            var action = new HackAndSlash();
             ProcessAction(action);
         }
 
@@ -163,6 +155,12 @@ namespace Nekoyume.Action
         private void ProcessAction(ActionBase action)
         {
             agent.queuedActions.Enqueue(action);
+        }
+
+        public void HackAndSlash()
+        {
+            var action = new HackAndSlash();
+            ProcessAction(action);
         }
     }
 }

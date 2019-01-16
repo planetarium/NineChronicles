@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using Nekoyume.Action;
 
 namespace Nekoyume.Model
 {
@@ -16,5 +13,16 @@ namespace Nekoyume.Model
         public string Items;
         public int WorldStage;
         public bool Dead = false;
+
+        public void Update(Player player)
+        {
+            Level = player.level;
+            EXP = player.exp;
+            HPMax = player.hpMax;
+            CurrentHP = player.hp;
+            Items = player.items;
+            WorldStage = player.stage;
+            Dead = player.isDead;
+        }
     }
 }
