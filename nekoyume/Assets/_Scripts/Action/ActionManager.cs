@@ -38,8 +38,8 @@ namespace Nekoyume.Action
 
             if (string.IsNullOrEmpty(privateKeyHex))
             {
-                privateKey = PrivateKey.Generate();
-                PlayerPrefs.SetString("private_key", ByteUtil.Hex(privateKey.Bytes));
+                privateKey = new PrivateKey();
+                PlayerPrefs.SetString("private_key", ByteUtil.Hex(privateKey.ByteArray));
             }
             else
             {
@@ -53,7 +53,7 @@ namespace Nekoyume.Action
             agent = new Agent(privateKey, path);
             agent.DidReceiveAction += ReceiveAction;
 
-            Debug.Log($"User Address: 0x{agent.UserAddress.Hex()}");
+            Debug.Log($"User Address: 0x{agent.UserAddress.ToHex()}");
             StartMine();
         }
 
