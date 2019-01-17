@@ -10,7 +10,6 @@ namespace Nekoyume.Model
         public long exp;
         public int stage;
         public string items;
-        public Avatar avatar;
 
         public Player(Avatar avatar)
         {
@@ -23,7 +22,6 @@ namespace Nekoyume.Model
             {
                 throw new InvalidActionException();
             }
-            this.avatar = avatar;
             name = avatar.Name;
             exp = avatar.EXP;
             level = avatar.Level;
@@ -32,6 +30,11 @@ namespace Nekoyume.Model
             hp = avatar.CurrentHP <= 0 ? data.Health : avatar.CurrentHP;
             atk = data.Attack;
             hpMax = data.Health;
+        }
+
+        public void GetExp(int exp)
+        {
+            this.exp += exp;
         }
     }
 }

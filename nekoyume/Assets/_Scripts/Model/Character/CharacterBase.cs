@@ -1,4 +1,5 @@
-using System;
+using System.Collections.Generic;
+using System.Linq;
 using BTAI;
 
 namespace Nekoyume.Model
@@ -9,7 +10,7 @@ namespace Nekoyume.Model
         public int hpMax;
         public int hp;
         public int atk;
-        public CharacterBase target;
+        public readonly List<CharacterBase> targets = new List<CharacterBase>();
 
         private Root root;
 
@@ -23,6 +24,7 @@ namespace Nekoyume.Model
                     )
                 ),
                 BT.Sequence().OpenBranch(
+                    BT.Call(Die),
                     BT.Terminate()
                 )
             );
@@ -34,12 +36,21 @@ namespace Nekoyume.Model
 
         private void Attack()
         {
-            target.hp -= atk;
+            var target = targets.FirstOrDefault(t => !t.isDead);
+            if (target != null) target.hp -= atk;
         }
 
         private bool isAlive()
         {
             return !isDead;
+        }
+
+        private void Die()
+        {
+            OnDead();
+        }
+        protected virtual void OnDead()
+        {
         }
     }
 }
