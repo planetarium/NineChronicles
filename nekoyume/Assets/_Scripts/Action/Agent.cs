@@ -39,10 +39,10 @@ namespace Nekoyume.Action
                 yield return new WaitForSeconds(interval);
                 var task = Task.Run(() => blocks.GetStates(new[] {UserAddress}));
                 yield return new WaitUntil(() => task.IsCompleted);
-                var avatar = (Avatar) task.Result.GetValueOrDefault(UserAddress);
-                if (avatar != null)
+                var ctx = (Context) task.Result.GetValueOrDefault(UserAddress);
+                if (ctx?.avatar != null)
                 {
-                    DidReceiveAction?.Invoke(this, avatar);
+                    DidReceiveAction?.Invoke(this, ctx.avatar);
                 }
 
                 yield return null;

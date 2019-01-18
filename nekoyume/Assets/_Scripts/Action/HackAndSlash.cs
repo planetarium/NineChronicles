@@ -15,16 +15,16 @@ namespace Nekoyume.Action
 
         public override AddressStateMap Execute(Address @from, Address to, AddressStateMap states)
         {
-            var avatar = (Avatar) states.GetValueOrDefault(to);
-            if (avatar.Dead)
+            var ctx = (Context) states.GetValueOrDefault(to);
+            if (ctx.avatar.Dead)
             {
                 throw new InvalidActionException();
             }
 
-            var simulator = new Simulator(0, avatar);
+            var simulator = new Simulator(0, ctx.avatar);
             var player = simulator.Simulate();
-            avatar.Update(player);
-            return (AddressStateMap) states.SetItem(to, avatar);
+            ctx.avatar.Update(player);
+            return (AddressStateMap) states.SetItem(to, ctx);
         }
 
         public override IImmutableDictionary<string, object> PlainValue => new Dictionary<string, object>

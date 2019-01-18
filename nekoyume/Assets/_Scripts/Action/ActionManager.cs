@@ -78,8 +78,8 @@ namespace Nekoyume.Action
 
             var address = agent.UserAddress;
             var states = agent.blocks.GetStates(new[] {address});
-            var avatar = (Avatar) states.GetValueOrDefault(address);
-            if (avatar == null)
+            var ctx = (Context) states.GetValueOrDefault(address);
+            if (ctx?.avatar == null)
             {
                 CreateAvatarRequired?.Invoke(this, null);
             }

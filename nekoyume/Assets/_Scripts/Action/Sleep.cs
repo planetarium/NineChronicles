@@ -15,10 +15,10 @@ namespace Nekoyume.Action
 
         public override AddressStateMap Execute(Address @from, Address to, AddressStateMap states)
         {
-            var avatar = (Avatar) states.GetValueOrDefault(to);
-            avatar.Dead = false;
-            avatar.CurrentHP = avatar.HPMax;
-            return (AddressStateMap) states.SetItem(to, avatar);
+            var ctx = (Context) states.GetValueOrDefault(to);
+            ctx.avatar.Dead = false;
+            ctx.avatar.CurrentHP = ctx.avatar.HPMax;
+            return (AddressStateMap) states.SetItem(to, ctx);
         }
 
         public override IImmutableDictionary<string, object> PlainValue =>
