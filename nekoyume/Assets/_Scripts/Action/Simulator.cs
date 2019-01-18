@@ -4,19 +4,20 @@ using System.Linq;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Util;
 using Nekoyume.Model;
+using Nekoyume.Model.BattleLog;
 using UnityEngine;
 
 namespace Nekoyume.Action
 {
     public class Simulator
     {
+        public readonly List<LogBase> logs;
+        public bool isLose = false;
         private readonly List<CharacterBase> characters;
         private readonly int _seed;
         private readonly int _stage;
         private int time = 0;
-        public string result;
-        private bool isWin = false;
-        private bool isLose = false;
+        private string result;
 
         public Simulator(int seed, Model.Avatar avatar)
         {
@@ -24,16 +25,20 @@ namespace Nekoyume.Action
             _seed = seed;
             _stage = avatar.WorldStage;
             characters = new List<CharacterBase>();
-            var player = new Player(avatar);
+            logs = new List<LogBase>();
+            var player = new Player(avatar, this);
             MonsterSpawn(player);
             Add(player);
         }
 
         public Player Simulate()
         {
+            var ss = new StartStage(_stage);
+            logs.Add(ss);
             foreach (var character in characters)
             {
-                //TODO spawn
+                var spawn = new Spawn(character);
+                logs.Add(spawn);
                 Debug.Log(character);
             }
 
@@ -51,10 +56,7 @@ namespace Nekoyume.Action
                     break;
                 }
 
-                isWin = !player.isDead && player.targets.All(t => t.isDead);
-                isLose = player.isDead;
-
-                if (isWin)
+                if (player.targets.Count == 0)
                 {
                     player.stage++;
 
@@ -70,6 +72,8 @@ namespace Nekoyume.Action
                     break;
                 }
             }
+            var log = new BattleResult(result);
+            logs.Add(log);
             return (Player) characters.First(c => c is Player);
         }
 

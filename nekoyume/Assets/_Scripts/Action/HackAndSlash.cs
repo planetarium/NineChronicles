@@ -24,6 +24,7 @@ namespace Nekoyume.Action
             var simulator = new Simulator(0, ctx.avatar);
             var player = simulator.Simulate();
             ctx.avatar.Update(player);
+            ctx.battleLog = simulator.logs;
             return (AddressStateMap) states.SetItem(to, ctx);
         }
 

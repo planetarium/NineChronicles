@@ -1,4 +1,6 @@
 using System.IO;
+using System.Linq;
+using Nekoyume.Action;
 using Nekoyume.Data.Table;
 
 namespace Nekoyume.Model
@@ -11,7 +13,7 @@ namespace Nekoyume.Model
         public int stage;
         public string items;
 
-        public Player(Avatar avatar)
+        public Player(Avatar avatar, Simulator simulator)
         {
             var stats = new Table<Stats>();
             var path = Path.Combine(Directory.GetCurrentDirectory(), "Assets/Resources/DataTable/stats.csv");
@@ -30,11 +32,19 @@ namespace Nekoyume.Model
             hp = avatar.CurrentHP <= 0 ? data.Health : avatar.CurrentHP;
             atk = data.Attack;
             hpMax = data.Health;
+            this.simulator = simulator;
         }
 
-        public void GetExp(int exp)
+        public void GetExp(Monster monster)
         {
-            this.exp += exp;
+            exp += monster.rewardExp;
+            targets.Remove(monster);
+        }
+
+        protected override void OnDead()
+        {
+            base.OnDead();
+            simulator.isLose = true;
         }
     }
 }

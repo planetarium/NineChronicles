@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using BTAI;
+using Nekoyume.Action;
+using Nekoyume.Model.BattleLog;
 
 namespace Nekoyume.Model
 {
@@ -11,6 +13,7 @@ namespace Nekoyume.Model
         public int hp;
         public int atk;
         public readonly List<CharacterBase> targets = new List<CharacterBase>();
+        public Simulator simulator;
 
         private Root root;
 
@@ -37,7 +40,13 @@ namespace Nekoyume.Model
         private void Attack()
         {
             var target = targets.FirstOrDefault(t => !t.isDead);
-            if (target != null) target.hp -= atk;
+            if (target != null)
+            {
+                target.hp -= atk;
+                var log = new Attack(this, target, atk);
+                simulator.logs.Add(log);
+            }
+
         }
 
         private bool isAlive()
@@ -51,6 +60,8 @@ namespace Nekoyume.Model
         }
         protected virtual void OnDead()
         {
+            var dead = new Dead(this);
+            simulator.logs.Add(dead);
         }
     }
 }
