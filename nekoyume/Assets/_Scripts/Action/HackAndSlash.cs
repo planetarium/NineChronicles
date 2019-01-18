@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Numerics;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Model;

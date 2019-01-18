@@ -14,9 +14,9 @@ namespace Nekoyume.Action
         private readonly int _seed;
         private readonly int _stage;
         private int time = 0;
-        private string result;
-        private bool isWin = true;
-        private bool isLose = true;
+        public string result;
+        private bool isWin = false;
+        private bool isLose = false;
 
         public Simulator(int seed, Model.Avatar avatar)
         {
@@ -37,6 +37,7 @@ namespace Nekoyume.Action
                 Debug.Log(character);
             }
 
+            var player = (Player) characters.First(c => c is Player);
             while (true)
             {
                 foreach (var character in characters)
@@ -50,28 +51,13 @@ namespace Nekoyume.Action
                     break;
                 }
 
-                foreach (var character in characters)
-                {
-                    if (character is Model.Monster)
-                    {
-                        if (!character.isDead)
-                        {
-                            isWin = false;
-                        }
-                    }
-                    if (character is Player)
-                    {
-                        if (!character.isDead)
-                        {
-                            var player = (Player) character;
-                            player.stage++;
-                            isLose = false;
-                        }
-                    }
-                }
+                isWin = !player.isDead && player.targets.All(t => t.isDead);
+                isLose = player.isDead;
 
                 if (isWin)
                 {
+                    player.stage++;
+
                     result = "win";
                     Debug.Log("win");
                     break;

@@ -21,11 +21,11 @@ namespace Nekoyume.Model
                 BT.Selector().OpenBranch(
                     BT.If(isAlive).OpenBranch(
                         BT.Call(Attack)
+                    ),
+                    BT.Sequence().OpenBranch(
+                        BT.Call(Die),
+                        BT.Terminate()
                     )
-                ),
-                BT.Sequence().OpenBranch(
-                    BT.Call(Die),
-                    BT.Terminate()
                 )
             );
         }
