@@ -47,7 +47,8 @@ namespace Nekoyume.Game
             if (parallaxSpeed != 0.0f)
             {
                 float deltaX = cameraTransform.position.x - lastCameraX;
-                transform.position += Vector3.right * (deltaX * parallaxSpeed);
+                float tempSpeedMultiplier = 3.0f; // Use temp value before adjusting in detail
+                transform.position += Vector3.right * (deltaX * parallaxSpeed * tempSpeedMultiplier);
                 lastCameraX = cameraTransform.position.x;
             }
 
