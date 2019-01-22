@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Threading;
 using BTAI;
 using Nekoyume.Action;
 
@@ -17,6 +20,7 @@ namespace Nekoyume.Model
         [NonSerialized] private Root root;
         [NonSerialized] public Simulator simulator;
         public bool isDead => hp <= 0;
+        public Guid id = Guid.NewGuid();
 
         public void InitAI()
         {
@@ -48,9 +52,11 @@ namespace Nekoyume.Model
                 var log = new BattleLog
                 {
                     type = BattleLog.LogType.Attack,
-                    character = this,
-                    target = target,
+                    character = Copy(this),
+                    target = Copy(target),
                     atk = atk,
+                    characterId = id,
+                    targetId = target.id,
                 };
                 simulator.logs.Add(log);
             }
@@ -71,9 +77,35 @@ namespace Nekoyume.Model
             var dead = new BattleLog
             {
                 type = BattleLog.LogType.Dead,
-                character = this,
+                character = Copy(this),
+                characterId = id,
             };
             simulator.logs.Add(dead);
         }
+
+        public void Spawn()
+        {
+            var spawn = new BattleLog
+            {
+                type = BattleLog.LogType.Spawn,
+                character = Copy(this),
+                characterId = id,
+            };
+            simulator.logs.Add(spawn);
+        }
+
+        public static T Copy<T>(T origin)
+        {
+            var formatter = new BinaryFormatter();
+            var stream = new MemoryStream();
+            using (stream)
+            {
+                formatter.Serialize(stream, origin);
+                stream.Seek(0, SeekOrigin.Begin);
+                return (T) formatter.Deserialize(stream);
+            }
+
+        }
+
     }
 }

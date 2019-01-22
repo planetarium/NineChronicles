@@ -40,12 +40,7 @@ namespace Nekoyume.Action
             logs.Add(ss);
             foreach (var character in characters)
             {
-                var spawn = new BattleLog
-                {
-                    type = BattleLog.LogType.Spawn,
-                    character = character
-                };
-                logs.Add(spawn);
+                character.Spawn();
                 Debug.Log(character);
             }
 

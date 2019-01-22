@@ -11,18 +11,18 @@ namespace Nekoyume.Model
         public int atk;
         public ResultType result;
         public int stage;
+        public Guid characterId;
+        public Guid targetId;
 
         public enum LogType
         {
             Attack,
             BattleResult,
-            Casting,
             Dead,
             GetItem,
             LevelUp,
             Spawn,
             StartStage,
-            Walk,
         }
 
         public enum ResultType
@@ -30,6 +30,5 @@ namespace Nekoyume.Model
             Win,
             Lose,
         }
-
     }
 }
