@@ -2,18 +2,20 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using Libplanet;
 using Libplanet.Action;
-using Nekoyume.Model;
 
 namespace Nekoyume.Action
 {
     [ActionType("hack_and_slash")]
     public class HackAndSlash : ActionBase
     {
+        public override IImmutableDictionary<string, object> PlainValue =>
+            new Dictionary<string, object>().ToImmutableDictionary();
+
         public override void LoadPlainValue(IImmutableDictionary<string, object> plainValue)
         {
         }
 
-        public override AddressStateMap Execute(Address @from, Address to, AddressStateMap states)
+        public override AddressStateMap Execute(Address from, Address to, AddressStateMap states)
         {
             var ctx = (Context) states.GetValueOrDefault(to);
             if (ctx.avatar.Dead)
@@ -27,9 +29,5 @@ namespace Nekoyume.Action
             ctx.battleLog = simulator.logs;
             return (AddressStateMap) states.SetItem(to, ctx);
         }
-
-        public override IImmutableDictionary<string, object> PlainValue => new Dictionary<string, object>
-        {
-        }.ToImmutableDictionary();
     }
 }

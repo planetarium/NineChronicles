@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using BTAI;
@@ -6,16 +7,17 @@ using Nekoyume.Model.BattleLog;
 
 namespace Nekoyume.Model
 {
+    [Serializable]
     public abstract class CharacterBase
     {
-        public bool isDead => hp <= 0;
-        public int hpMax;
-        public int hp;
-        public int atk;
         public readonly List<CharacterBase> targets = new List<CharacterBase>();
-        public Simulator simulator;
+        public int atk;
+        public int hp;
+        public int hpMax;
 
-        private Root root;
+        [NonSerialized] private Root root;
+        [NonSerialized] public Simulator simulator;
+        public bool isDead => hp <= 0;
 
         public void InitAI()
         {
@@ -32,6 +34,7 @@ namespace Nekoyume.Model
                 )
             );
         }
+
         public void Tick()
         {
             root.Tick();
@@ -46,7 +49,6 @@ namespace Nekoyume.Model
                 var log = new Attack(this, target, atk);
                 simulator.logs.Add(log);
             }
-
         }
 
         private bool isAlive()
@@ -58,6 +60,7 @@ namespace Nekoyume.Model
         {
             OnDead();
         }
+
         protected virtual void OnDead()
         {
             var dead = new Dead(this);

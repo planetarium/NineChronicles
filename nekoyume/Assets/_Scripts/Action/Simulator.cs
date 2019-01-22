@@ -11,13 +11,13 @@ namespace Nekoyume.Action
 {
     public class Simulator
     {
-        public readonly List<LogBase> logs;
-        public bool isLose = false;
-        private readonly List<CharacterBase> characters;
         private readonly int _seed;
         private readonly int _stage;
-        private int time = 0;
+        private readonly List<CharacterBase> characters;
+        public readonly List<LogBase> logs;
+        public bool isLose = false;
         private string result;
+        private int time;
 
         public Simulator(int seed, Model.Avatar avatar)
         {
@@ -45,10 +45,7 @@ namespace Nekoyume.Action
             var player = (Player) characters.First(c => c is Player);
             while (true)
             {
-                foreach (var character in characters)
-                {
-                    character.Tick();
-                }
+                foreach (var character in characters) character.Tick();
                 time++;
                 if (time >= 100)
                 {
@@ -72,6 +69,7 @@ namespace Nekoyume.Action
                     break;
                 }
             }
+
             var log = new BattleResult(result);
             logs.Add(log);
             return (Player) characters.First(c => c is Player);
@@ -99,16 +97,15 @@ namespace Nekoyume.Action
                     continue;
 
                 selector.Add(data, data.Weight);
-
             }
 
-            int monsterCount = 2;
+            var monsterCount = 2;
             var monsterTable = new Table<Data.Table.Monster>();
             var path2 = Path.Combine(Directory.GetCurrentDirectory(), "Assets/Resources/DataTable/monsters.csv");
             monsterTable.Load(File.ReadAllText(path2));
-            for (int i = 0; i < monsterCount; i++)
+            for (var i = 0; i < monsterCount; i++)
             {
-                MonsterAppear appearData = selector.Select();
+                var appearData = selector.Select();
                 Data.Table.Monster monsterData;
                 if (monsterTable.TryGetValue(appearData.MonsterId, out monsterData))
                 {

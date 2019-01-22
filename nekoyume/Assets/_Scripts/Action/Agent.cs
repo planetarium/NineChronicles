@@ -9,20 +9,15 @@ using Libplanet.Crypto;
 using Libplanet.Store;
 using Libplanet.Tx;
 using UnityEngine;
-using Avatar = Nekoyume.Model.Avatar;
 
 namespace Nekoyume.Action
 {
     public class Agent
     {
-        public event EventHandler<Avatar> DidReceiveAction;
-        private readonly PrivateKey privateKey;
-        private readonly float interval;
-        public Address UserAddress => privateKey.PublicKey.ToAddress();
-        public readonly ConcurrentQueue<ActionBase> queuedActions;
-
-
         internal readonly Blockchain<ActionBase> blocks;
+        private readonly float interval;
+        private readonly PrivateKey privateKey;
+        public readonly ConcurrentQueue<ActionBase> queuedActions;
 
         public Agent(PrivateKey privateKey, string path, float interval = 3.0f)
         {
@@ -31,6 +26,9 @@ namespace Nekoyume.Action
             blocks = new Blockchain<ActionBase>(new FileStore(path));
             queuedActions = new ConcurrentQueue<ActionBase>();
         }
+
+        public Address UserAddress => privateKey.PublicKey.ToAddress();
+        public event EventHandler<Context> DidReceiveAction;
 
         public IEnumerator Sync()
         {
@@ -42,7 +40,7 @@ namespace Nekoyume.Action
                 var ctx = (Context) task.Result.GetValueOrDefault(UserAddress);
                 if (ctx?.avatar != null)
                 {
-                    DidReceiveAction?.Invoke(this, ctx.avatar);
+                    DidReceiveAction?.Invoke(this, ctx);
                 }
 
                 yield return null;
@@ -54,7 +52,7 @@ namespace Nekoyume.Action
             while (true)
             {
                 var processedActions = new List<ActionBase>();
-                for (int i = 0; i < queuedActions.Count; i++)
+                for (var i = 0; i < queuedActions.Count; i++)
                 {
                     ActionBase action;
                     queuedActions.TryDequeue(out action);
@@ -63,6 +61,7 @@ namespace Nekoyume.Action
                         processedActions.Add(action);
                     }
                 }
+
                 StageTransaction(processedActions);
                 var task = Task.Run(() => blocks.MineBlock(UserAddress));
                 yield return new WaitUntil(() => task.IsCompleted);
@@ -78,7 +77,7 @@ namespace Nekoyume.Action
                 actions,
                 DateTime.UtcNow
             );
-            blocks.StageTransactions(new HashSet<Transaction<ActionBase>> { tx });
+            blocks.StageTransactions(new HashSet<Transaction<ActionBase>> {tx});
         }
     }
 }

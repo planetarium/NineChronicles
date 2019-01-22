@@ -1,17 +1,18 @@
+using System;
 using System.IO;
-using System.Linq;
 using Nekoyume.Action;
 using Nekoyume.Data.Table;
 
 namespace Nekoyume.Model
 {
+    [Serializable]
     public class Player : CharacterBase
     {
-        public string name;
-        public int level;
         public long exp;
-        public int stage;
         public string items;
+        public int level;
+        public string name;
+        public int stage;
 
         public Player(Avatar avatar, Simulator simulator)
         {

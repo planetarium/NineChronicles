@@ -1,8 +1,12 @@
+using System;
+
 namespace Nekoyume.Model
 {
+    [Serializable]
     public class Monster : CharacterBase
     {
         public int rewardExp;
+
         public Monster(Data.Table.Monster data, Player player)
         {
             hp = data.Health;

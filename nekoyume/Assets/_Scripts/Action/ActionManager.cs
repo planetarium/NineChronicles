@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -7,26 +8,27 @@ using Libplanet;
 using Libplanet.Crypto;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Character;
+using Nekoyume.Model.BattleLog;
 using UnityEngine;
-using Avatar = Nekoyume.Model.Avatar;
 
 namespace Nekoyume.Action
 {
     [Serializable]
     internal class SaveData
     {
-        public Avatar Avatar;
+        public Model.Avatar Avatar;
     }
 
     public class ActionManager : MonoBehaviour
     {
-        public static ActionManager Instance { get; private set; }
-        public event EventHandler<Avatar> DidAvatarLoaded;
-        public event EventHandler CreateAvatarRequired;
-        public Avatar Avatar { get; private set; }
+        private string _saveFilePath;
 
         private Agent agent;
-        private string _saveFilePath;
+        public List<LogBase> battleLog;
+        public static ActionManager Instance { get; private set; }
+        public Model.Avatar Avatar { get; private set; }
+        public event EventHandler<Model.Avatar> DidAvatarLoaded;
+        public event EventHandler CreateAvatarRequired;
 
         private void Awake()
         {
@@ -57,16 +59,16 @@ namespace Nekoyume.Action
             StartMine();
         }
 
-        private void ReceiveAction(object sender, Avatar e)
+        private void ReceiveAction(object sender, Context ctx)
         {
-            Avatar avatar = Avatar;
-            Avatar = e;
+            var avatar = Avatar;
+            Avatar = ctx.avatar;
             SaveStatus();
             if (avatar == null)
             {
                 DidAvatarLoaded?.Invoke(this, Avatar);
             }
-
+            battleLog = ctx.battleLog;
         }
 
         public void StartSync()

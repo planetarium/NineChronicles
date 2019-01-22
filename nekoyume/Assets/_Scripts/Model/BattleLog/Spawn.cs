@@ -5,12 +5,11 @@ namespace Nekoyume.Model.BattleLog
     [Serializable]
     public class Spawn : LogBase
     {
-        public string character;
+        public CharacterBase character;
 
-        public Spawn(CharacterBase charcater)
+        public Spawn(CharacterBase character)
         {
-            this.character = charcater.ToString();
+            this.character = character;
         }
-
     }
 }
