@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using BTAI;
 using Nekoyume.Action;
-using Nekoyume.Model.BattleLog;
 
 namespace Nekoyume.Model
 {
@@ -46,7 +45,13 @@ namespace Nekoyume.Model
             if (target != null)
             {
                 target.hp -= atk;
-                var log = new Attack(this, target, atk);
+                var log = new BattleLog
+                {
+                    type = BattleLog.LogType.Attack,
+                    character = this,
+                    target = target,
+                    atk = atk,
+                };
                 simulator.logs.Add(log);
             }
         }
@@ -63,7 +68,11 @@ namespace Nekoyume.Model
 
         protected virtual void OnDead()
         {
-            var dead = new Dead(this);
+            var dead = new BattleLog
+            {
+                type = BattleLog.LogType.Dead,
+                character = this,
+            };
             simulator.logs.Add(dead);
         }
     }

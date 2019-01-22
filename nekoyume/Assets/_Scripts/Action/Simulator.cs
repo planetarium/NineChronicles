@@ -4,7 +4,6 @@ using System.Linq;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Util;
 using Nekoyume.Model;
-using Nekoyume.Model.BattleLog;
 using UnityEngine;
 
 namespace Nekoyume.Action
@@ -14,9 +13,9 @@ namespace Nekoyume.Action
         private readonly int _seed;
         private readonly int _stage;
         private readonly List<CharacterBase> characters;
-        public readonly List<LogBase> logs;
+        public readonly List<BattleLog> logs;
         public bool isLose = false;
-        private string result;
+        private BattleLog.ResultType result;
         private int time;
 
         public Simulator(int seed, Model.Avatar avatar)
@@ -25,7 +24,7 @@ namespace Nekoyume.Action
             _seed = seed;
             _stage = avatar.WorldStage;
             characters = new List<CharacterBase>();
-            logs = new List<LogBase>();
+            logs = new List<BattleLog>();
             var player = new Player(avatar, this);
             MonsterSpawn(player);
             Add(player);
@@ -33,11 +32,19 @@ namespace Nekoyume.Action
 
         public Player Simulate()
         {
-            var ss = new StartStage(_stage);
+            var ss = new BattleLog
+            {
+                type = BattleLog.LogType.StartStage,
+                stage = _stage,
+            };
             logs.Add(ss);
             foreach (var character in characters)
             {
-                var spawn = new Spawn(character);
+                var spawn = new BattleLog
+                {
+                    type = BattleLog.LogType.Spawn,
+                    character = character
+                };
                 logs.Add(spawn);
                 Debug.Log(character);
             }
@@ -47,30 +54,29 @@ namespace Nekoyume.Action
             {
                 foreach (var character in characters) character.Tick();
                 time++;
-                if (time >= 100)
-                {
-                    result = "finish";
-                    break;
-                }
 
                 if (player.targets.Count == 0)
                 {
                     player.stage++;
 
-                    result = "win";
+                    result = BattleLog.ResultType.Win;
                     Debug.Log("win");
                     break;
                 }
 
                 if (isLose)
                 {
-                    result = "lose";
+                    result = BattleLog.ResultType.Lose;
                     Debug.Log("lose");
                     break;
                 }
             }
 
-            var log = new BattleResult(result);
+            var log = new BattleLog
+            {
+                type = BattleLog.LogType.BattleResult,
+                result = result
+            };
             logs.Add(log);
             return (Player) characters.First(c => c is Player);
         }

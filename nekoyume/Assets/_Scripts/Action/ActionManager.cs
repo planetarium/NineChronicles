@@ -7,8 +7,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using Libplanet;
 using Libplanet.Crypto;
 using Nekoyume.Data.Table;
-using Nekoyume.Game.Character;
-using Nekoyume.Model.BattleLog;
+using Nekoyume.Model;
 using UnityEngine;
 
 namespace Nekoyume.Action
@@ -24,7 +23,7 @@ namespace Nekoyume.Action
         private string _saveFilePath;
 
         private Agent agent;
-        public List<LogBase> battleLog;
+        public List<BattleLog> battleLog;
         public static ActionManager Instance { get; private set; }
         public Model.Avatar Avatar { get; private set; }
         public event EventHandler<Model.Avatar> DidAvatarLoaded;
@@ -136,7 +135,7 @@ namespace Nekoyume.Action
             SaveStatus();
         }
 
-        public void HackAndSlash(Player player, int stage)
+        public void HackAndSlash(Game.Character.Player player, int stage)
         {
             var action = new HackAndSlash();
             ProcessAction(action);
