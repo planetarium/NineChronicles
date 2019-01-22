@@ -8,17 +8,12 @@ namespace Nekoyume.Game.Factory
     {
         public GameObject Create()
         {
-            var avatar = ActionManager.Instance.Avatar;
-            if (avatar == null)
-                return null;
-
+            var log = ActionManager.Instance.battleLog;
             var objectPool = GetComponent<Util.ObjectPool>();
             var player = objectPool.Get<Character.Player>();
             if (player == null)
                 return null;
-
-            player.InitAI();
-            player.InitStats(avatar);
+            player.Init(log);
 
             // sprite
             // var render = player.GetComponent<SpriteRenderer>();

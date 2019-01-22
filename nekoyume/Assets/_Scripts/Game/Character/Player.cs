@@ -7,6 +7,7 @@ using Nekoyume.Data;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Skill;
+using Nekoyume.Model;
 using Nekoyume.UI;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -287,6 +288,17 @@ namespace Nekoyume.Game.Character
             Event.OnUpdateEquipment.Invoke(_weapon);
             // TODO Implement Actions
             ActionManager.Instance.UpdateItems(SerializeItems());
+        }
+
+        public void Init(List<BattleLog> log)
+        {
+            RunSpeed = 0.0f;
+
+            _hpBarOffset.Set(-0.22f, -0.61f, 0.0f);
+            _castingBarOffset.Set(-0.22f, -0.85f, 0.0f);
+            _mpBarOffset.Set(-0.22f, -0.66f, 0.0f);
+            log = log.FindAll(l => l.character is Model.Player);
+            var spawnLog = log.Find(l => l.type == BattleLog.LogType.Spawn);
         }
     }
 }

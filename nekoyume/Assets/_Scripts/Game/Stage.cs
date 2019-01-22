@@ -1,16 +1,30 @@
-using DG.Tweening;
 using System.Collections;
+using DG.Tweening;
 using Nekoyume.Action;
+using Nekoyume.Data;
+using Nekoyume.Data.Table;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Entrance;
+using Nekoyume.Game.Factory;
 using UnityEngine;
 
 namespace Nekoyume.Game
 {
     public class Stage : MonoBehaviour
     {
-        public int Id = 0;
-        private GameObject _background = null;
+        private GameObject _background;
+        public int Id;
+
+        public string BackgroundName
+        {
+            get
+            {
+                if (_background == null)
+                    return "";
+
+                return _background.name;
+            }
+        }
 
         private void Awake()
         {
@@ -26,8 +40,8 @@ namespace Nekoyume.Game
             LoadBackground("nest");
 
             yield return new WaitForEndOfFrame();
-            var playerFactory = GetComponent<Factory.PlayerFactory>();
-            GameObject player = playerFactory.Create();
+            var playerFactory = GetComponent<PlayerFactory>();
+            var player = playerFactory.Create();
             if (player != null)
                 player.transform.position = new Vector2(-0.8f, 0.46f);
         }
@@ -48,25 +62,11 @@ namespace Nekoyume.Game
             ActionManager.Instance.HackAndSlash(player, Id);
         }
 
-        public string BackgroundName
-        {
-            get
-            {
-                if (_background == null)
-                    return "";
-
-                return _background.name;
-            }
-        }
-
         public void LoadBackground(string prefabName, float fadeTime = 0.0f)
         {
             if (_background != null)
             {
-                if (_background.name.Equals(prefabName))
-                {
-                    return;
-                }
+                if (_background.name.Equals(prefabName)) return;
                 if (fadeTime > 0.0f)
                 {
                     var sprites = _background.GetComponentsInChildren<SpriteRenderer>();
@@ -76,9 +76,11 @@ namespace Nekoyume.Game
                         sprite.DOFade(0.0f, fadeTime);
                     }
                 }
+
                 Destroy(_background, fadeTime);
                 _background = null;
             }
+
             var resName = $"Prefab/Background/{prefabName}";
             var prefab = Resources.Load<GameObject>(resName);
             if (prefab != null)
@@ -95,16 +97,15 @@ namespace Nekoyume.Game
 
         private IEnumerator SleepAsync()
         {
-            var tables = this.GetRootComponent<Data.Tables>();
-            Data.Table.Stats statsData;
+            var tables = this.GetRootComponent<Tables>();
+            Stats statsData;
             if (tables.Stats.TryGetValue(ActionManager.Instance.Avatar.Level, out statsData))
             {
                 ActionManager.Instance.Sleep(statsData);
                 while (ActionManager.Instance.Avatar.CurrentHP == ActionManager.Instance.Avatar.HPMax)
-                {
                     yield return new WaitForSeconds(1.0f);
-                }
             }
+
             OnRoomEnter();
         }
     }

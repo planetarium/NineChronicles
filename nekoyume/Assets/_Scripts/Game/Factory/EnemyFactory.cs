@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using DG.Tweening;
+using Nekoyume.Model;
 using UnityEngine;
 
 
@@ -49,6 +51,26 @@ namespace Nekoyume.Game.Factory
             boss.InitStats(monsterData, power);
 
             return bossObj.gameObject;
+        }
+
+        public GameObject Create(Monster spawnCharacter, Vector2 position, List<BattleLog> log)
+        {
+            var objectPool = GetComponent<Util.ObjectPool>();
+            var enemy = objectPool.Get<Character.Enemy>(position);
+            if (enemy == null)
+                return null;
+
+            enemy.Init(spawnCharacter, log);
+
+            // sprite
+            var render = enemy.GetComponent<SpriteRenderer>();
+            var sprite = Resources.Load<Sprite>($"images/character_{spawnCharacter.data.Id}");
+            if (sprite == null)
+                sprite = Resources.Load<Sprite>("images/pet");
+            render.sprite = sprite;
+            render.sortingOrder = Mathf.FloorToInt(-position.y * 10.0f);
+
+            return enemy.gameObject;
         }
     }
 }
