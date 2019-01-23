@@ -1,4 +1,6 @@
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using DG.Tweening;
 using Nekoyume.Action;
 using Nekoyume.Data;
@@ -6,6 +8,8 @@ using Nekoyume.Data.Table;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Entrance;
 using Nekoyume.Game.Factory;
+using Nekoyume.Model;
+using Nekoyume.UI;
 using UnityEngine;
 
 namespace Nekoyume.Game
@@ -14,6 +18,7 @@ namespace Nekoyume.Game
     {
         private GameObject _background;
         public int Id;
+        private List<BattleLog> battleLog;
 
         public string BackgroundName
         {
@@ -33,6 +38,13 @@ namespace Nekoyume.Game
             Event.OnPlayerDead.AddListener(OnPlayerDead);
             Event.OnPlayerDead.AddListener(OnPlayerSleep);
             Event.OnPlayerSleep.AddListener(OnPlayerSleep);
+            Event.OnStageStart.AddListener(OnStageStart);
+        }
+
+        private void OnStageStart()
+        {
+            battleLog = ActionManager.Instance.battleLog?.ToList();
+            Play();
         }
 
         private IEnumerator Start()
@@ -58,7 +70,7 @@ namespace Nekoyume.Game
 
         private void OnPlayerDead()
         {
-            var player = GetComponentInChildren<Player>();
+            var player = GetComponentInChildren<Character.Player>();
             ActionManager.Instance.HackAndSlash(player, Id);
         }
 
@@ -107,6 +119,74 @@ namespace Nekoyume.Game
             }
 
             OnRoomEnter();
+        }
+
+        public void Play()
+        {
+            var isRoom = BackgroundName == "room";
+            var blind = Widget.Find<Blind>();
+            if (!blind.IsActive() && !isRoom && battleLog?.Count > 0)
+            {
+                StartCoroutine(PlayAsync());
+            }
+        }
+
+        private IEnumerator PlayAsync()
+        {
+            var player = GetComponentInChildren<Character.Player>();
+            var enemies = GetComponentsInChildren<Enemy>();
+            while (battleLog.Count > 0)
+            {
+                var action = battleLog[0];
+                battleLog.Remove(action);
+                switch (action.type)
+                {
+                    case BattleLog.LogType.Attack:
+                        if (action.character is Model.Player)
+                        {
+                            player._anim.SetTrigger("Attack");
+                            player._anim.SetBool("Run", false);
+                            var enemy = enemies.First(e => e.id == action.targetId);
+                            enemy._anim.SetTrigger("Hit");
+                            Debug.Log("Player attack");
+                        }
+                        else
+                        {
+                            foreach (var enemy in enemies)
+                            {
+                                if (enemy.id == action.characterId)
+                                {
+                                    enemy._anim.SetTrigger("Attack");
+                                    enemy._anim.SetBool("Run", false);
+                                    player._anim.SetTrigger("Hit");
+                                    break;
+                                }
+                            }
+                            Debug.Log("Monster Attack");
+                        }
+                        yield return new WaitForSeconds(1.0f);
+                        break;
+                    case BattleLog.LogType.Dead:
+                        if (action.character is Model.Player)
+                        {
+                            player._anim.SetTrigger("Die");
+                        }
+                        else
+                        {
+                            var enemy = enemies.First(e => e.id == action.characterId);
+                            enemy._anim.SetTrigger("Die");
+                        }
+                        yield return new WaitForSeconds(1.0f);
+                        break;
+                    case BattleLog.LogType.BattleResult:
+                        var blind = Widget.Find<Blind>();
+                        StartCoroutine(blind.FadeIn(1.0f, action.result.ToString()));
+                        OnRoomEnter();
+                        break;
+                    default:
+                        continue;
+                }
+            }
         }
     }
 }

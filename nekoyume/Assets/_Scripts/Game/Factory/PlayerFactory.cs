@@ -13,7 +13,11 @@ namespace Nekoyume.Game.Factory
             var player = objectPool.Get<Character.Player>();
             if (player == null)
                 return null;
-            player.Init(log);
+            player.InitStats(ActionManager.Instance.Avatar);
+            if (log != null)
+            {
+                player.Init(log);
+            }
 
             // sprite
             // var render = player.GetComponent<SpriteRenderer>();

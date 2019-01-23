@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Action;
 using Nekoyume.Data;
@@ -11,6 +12,7 @@ namespace Nekoyume.Game.Entrance
 {
     public class WorldEntering : MonoBehaviour
     {
+        private List<BattleLog> battleLog;
         private void Start()
         {
             StartCoroutine(Act());
@@ -27,7 +29,7 @@ namespace Nekoyume.Game.Entrance
                 roomPlayer.RunSpeed = 1.0f;
             }
 
-            var battleLog = ActionManager.Instance.battleLog;
+            battleLog = ActionManager.Instance.battleLog;
             var startStage = battleLog.Find(l => l.type == BattleLog.LogType.StartStage);
             var currentStage = startStage.stage;
             Data.Table.Stage data;
@@ -55,6 +57,7 @@ namespace Nekoyume.Game.Entrance
                     playerCharacter.transform.position = new Vector2(0.0f, -0.7f);
                 }
                 var player = playerCharacter.gameObject;
+                playerCharacter.Init(ActionManager.Instance.battleLog);
 
                 Widget.Find<SkillController>().Show(player);
                 Widget.Find<Status>().UpdatePlayer(player);
