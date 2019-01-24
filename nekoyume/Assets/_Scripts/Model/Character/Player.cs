@@ -46,7 +46,7 @@ namespace Nekoyume.Model
         private void CalcStats()
         {
             var stats = new Table<Stats>();
-            var path = Path.Combine(Directory.GetCurrentDirectory(), "Assets/Resources/DataTable/stats.csv");
+            var path = Path.Combine(Directory.GetCurrentDirectory(), Simulator.StatsPath);
             stats.Load(File.ReadAllText(path));
             Stats data;
             stats.TryGetValue(level, out data);

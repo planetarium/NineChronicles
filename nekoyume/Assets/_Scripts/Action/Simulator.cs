@@ -10,6 +10,10 @@ namespace Nekoyume.Action
 {
     public class Simulator
     {
+        private readonly string dirPath;
+        private const string kAppearPath = "Assets/Resources/DataTable/monster_appear.csv";
+        private const string kMonstersPath = "Assets/Resources/DataTable/monsters.csv";
+        internal const string StatsPath = "Assets/Resources/DataTable/stats.csv";
         private readonly int _seed;
         private readonly int _stage;
         private readonly List<CharacterBase> characters;
@@ -82,8 +86,8 @@ namespace Nekoyume.Action
         {
             var selector = new WeightedSelector<MonsterAppear>();
             var appear = new Table<MonsterAppear>();
-            var path = Path.Combine(Directory.GetCurrentDirectory(), "Assets/Resources/DataTable/monster_appear.csv");
-            appear.Load(File.ReadAllText(path));
+            var appearPath = Path.Combine(Directory.GetCurrentDirectory(), kAppearPath);
+            appear.Load(File.ReadAllText(appearPath));
             foreach (var pair in appear)
             {
                 var data = pair.Value;
@@ -98,8 +102,8 @@ namespace Nekoyume.Action
 
             var monsterCount = 2;
             var monsterTable = new Table<Data.Table.Monster>();
-            var path2 = Path.Combine(Directory.GetCurrentDirectory(), "Assets/Resources/DataTable/monsters.csv");
-            monsterTable.Load(File.ReadAllText(path2));
+            var monsterPath = Path.Combine(Directory.GetCurrentDirectory(), kMonstersPath);
+            monsterTable.Load(File.ReadAllText(monsterPath));
             for (var i = 0; i < monsterCount; i++)
             {
                 var appearData = selector.Select();
