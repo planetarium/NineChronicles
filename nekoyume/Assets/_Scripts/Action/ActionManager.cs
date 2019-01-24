@@ -135,12 +135,6 @@ namespace Nekoyume.Action
             SaveStatus();
         }
 
-        public void HackAndSlash(Game.Character.Player player, int stage)
-        {
-            var action = new HackAndSlash();
-            ProcessAction(action);
-        }
-
         public void MoveStage(int stage)
         {
             var action = new MoveStage {stage = stage};

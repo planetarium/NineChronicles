@@ -13,30 +13,6 @@ namespace Nekoyume.Game.Trigger
     {
         public bool Sleep;
 
-        private void Awake()
-        {
-            Event.OnStageClear.AddListener(OnStageClear);
-        }
-
-        private void OnStageClear()
-        {
-            StartCoroutine(WaitStageExit());
-        }
-
-        private IEnumerator WaitStageExit()
-        {
-            StageReward();
-
-            var stage = GetComponentInParent<Stage>();
-            var player = stage.GetComponentInChildren<Player>();
-            var id = stage.Id + 1;
-            ActionManager.Instance.HackAndSlash(player, id);
-            while (ActionManager.Instance.Avatar.WorldStage != id) yield return new WaitForSeconds(1.0f);
-            if (Sleep)
-                Event.OnPlayerSleep.Invoke();
-            Sleep = false;
-        }
-
         private void StageReward()
         {
             var stage = GetComponentInParent<Stage>();

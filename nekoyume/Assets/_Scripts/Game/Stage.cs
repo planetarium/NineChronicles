@@ -68,8 +68,6 @@ namespace Nekoyume.Game
 
         private void OnPlayerDead()
         {
-            var player = GetComponentInChildren<Character.Player>();
-            ActionManager.Instance.HackAndSlash(player, Id);
         }
 
         public void LoadBackground(string prefabName, float fadeTime = 0.0f)
