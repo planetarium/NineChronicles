@@ -95,7 +95,7 @@ namespace Nekoyume.Game.Trigger
             var factory = GetComponentInParent<EnemyFactory>();
             var player = _stage.GetComponentInChildren<Character.Player>();
             var offsetX = player.transform.position.x + 1.0f;
-            var randIndex = Enumerable.Range(0, _spawnPoints.Length / 2).ToArray()
+            var randIndex = Enumerable.Range(0, _spawnPoints.Length / 2)
                 .OrderBy(n => Guid.NewGuid()).ToArray();
             var spawns = _battleLog.MonsterSpawns();
             for (int i = 0; i < spawns.Count; i++)
