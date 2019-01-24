@@ -47,13 +47,12 @@ namespace Nekoyume.UI
         private IEnumerator MoveAsync()
         {
             btnMove.SetActive(false);
-            var currentLog = ActionManager.Instance.battleLog;
             var currentAvatar = ActionManager.Instance.Avatar;
             ActionManager.Instance.HackAndSlash();
-            while (
-                JsonConvert.SerializeObject(currentAvatar) == JsonConvert.SerializeObject(ActionManager.Instance.Avatar)
-            )
+            while (currentAvatar.Equals(ActionManager.Instance.Avatar))
+            {
                 yield return new WaitForSeconds(1.0f);
+            }
             Game.Event.OnStageEnter.Invoke();
         }
 
