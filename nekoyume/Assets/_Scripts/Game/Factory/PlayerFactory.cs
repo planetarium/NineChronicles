@@ -16,7 +16,7 @@ namespace Nekoyume.Game.Factory
             player.InitStats(ActionManager.Instance.Avatar);
             if (log != null)
             {
-                player.Init(log);
+                player.Init();
             }
 
             // sprite

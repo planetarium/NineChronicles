@@ -53,14 +53,14 @@ namespace Nekoyume.Game.Factory
             return bossObj.gameObject;
         }
 
-        public GameObject Create(Monster spawnCharacter, Vector2 position, List<BattleLog> log)
+        public GameObject Create(Monster spawnCharacter, Vector2 position)
         {
             var objectPool = GetComponent<Util.ObjectPool>();
             var enemy = objectPool.Get<Character.Enemy>(position);
             if (enemy == null)
                 return null;
 
-            enemy.Init(spawnCharacter, log);
+            enemy.Init(spawnCharacter);
 
             // sprite
             var render = enemy.GetComponent<SpriteRenderer>();
