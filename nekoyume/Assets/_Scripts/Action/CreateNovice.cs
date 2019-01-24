@@ -23,7 +23,7 @@ namespace Nekoyume.Action
 
         public override AddressStateMap Execute(Address @from, Address to, AddressStateMap states)
         {
-            var result = states.GetValueOrDefault(to) ?? new Avatar
+            var avatar = new Avatar
             {
                 Name = _name,
                 Level = 1,
@@ -32,7 +32,8 @@ namespace Nekoyume.Action
                 WorldStage = 1,
                 CurrentHP = 0,
             };
-            return (AddressStateMap) states.SetItem(to, result);
+            var ctx = new Context(avatar);
+            return (AddressStateMap) states.SetItem(to, ctx);
         }
         public override IImmutableDictionary<string, object> PlainValue => new Dictionary<string, object>()
         {

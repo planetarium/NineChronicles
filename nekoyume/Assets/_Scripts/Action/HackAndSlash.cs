@@ -1,57 +1,33 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Numerics;
 using Libplanet;
 using Libplanet.Action;
-using Nekoyume.Model;
 
 namespace Nekoyume.Action
 {
     [ActionType("hack_and_slash")]
     public class HackAndSlash : ActionBase
     {
-        public int hp;
-        public int stage;
-        public long exp;
-        public int level;
-        public bool dead;
-        public string items;
+        public override IImmutableDictionary<string, object> PlainValue =>
+            new Dictionary<string, object>().ToImmutableDictionary();
 
         public override void LoadPlainValue(IImmutableDictionary<string, object> plainValue)
         {
-            hp = (int) (BigInteger) plainValue["hp"];
-            stage = (int) (BigInteger) plainValue["stage"];
-            exp = (long) (BigInteger) plainValue["exp"];
-            level = (int) (BigInteger) plainValue["level"];
-            dead = (bool) plainValue["dead"];
-            items = (string) plainValue["items"];
         }
 
-        public override AddressStateMap Execute(Address @from, Address to, AddressStateMap states)
+        public override AddressStateMap Execute(Address from, Address to, AddressStateMap states)
         {
-            var avatar = (Avatar) states.GetValueOrDefault(to);
-            if (avatar.Dead)
+            var ctx = (Context) states.GetValueOrDefault(to);
+            if (ctx.avatar.Dead)
             {
                 throw new InvalidActionException();
             }
 
-            avatar.CurrentHP = hp;
-            avatar.WorldStage = stage;
-            avatar.EXP = exp;
-            avatar.Level = level;
-            avatar.Dead = dead;
-            avatar.Items = items;
-            return (AddressStateMap) states.SetItem(to, avatar);
+            var simulator = new Simulator(0, ctx.avatar);
+            var player = simulator.Simulate();
+            ctx.avatar.Update(player);
+            ctx.battleLog = simulator.log;
+            return (AddressStateMap) states.SetItem(to, ctx);
         }
-
-        public override IImmutableDictionary<string, object> PlainValue => new Dictionary<string, object>
-        {
-            ["hp"] = hp,
-            ["stage"] = stage,
-            ["exp"] = exp,
-            ["level"] = level,
-            ["dead"] = dead,
-            ["items"] = items,
-        }.ToImmutableDictionary();
     }
 }
