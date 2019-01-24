@@ -1,6 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using DG.Tweening;
 using Nekoyume.Action;
 using Nekoyume.Data;
@@ -18,7 +16,7 @@ namespace Nekoyume.Game
     {
         private GameObject _background;
         public int Id;
-        private List<BattleLog> battleLog;
+        private BattleLog battleLog;
 
         public string BackgroundName
         {
@@ -43,7 +41,7 @@ namespace Nekoyume.Game
 
         private void OnStageStart()
         {
-            battleLog = ActionManager.Instance.battleLog?.ToList();
+            battleLog = ActionManager.Instance.battleLog;
             Play();
         }
 
@@ -135,56 +133,11 @@ namespace Nekoyume.Game
         {
             var player = GetComponentInChildren<Character.Player>();
             var enemies = GetComponentsInChildren<Enemy>();
-            while (battleLog.Count > 0)
+            foreach (EventBase e in battleLog)
             {
-                var action = battleLog[0];
-                battleLog.Remove(action);
-                switch (action.type)
                 {
-                    case BattleLog.LogType.Attack:
-                        if (action.character is Model.Player)
-                        {
-                            player._anim.SetTrigger("Attack");
-                            player._anim.SetBool("Run", false);
-                            var enemy = enemies.First(e => e.id == action.targetId);
-                            enemy._anim.SetTrigger("Hit");
-                            Debug.Log("Player attack");
-                        }
-                        else
-                        {
-                            foreach (var enemy in enemies)
-                            {
-                                if (enemy.id == action.characterId)
-                                {
-                                    enemy._anim.SetTrigger("Attack");
-                                    enemy._anim.SetBool("Run", false);
-                                    player._anim.SetTrigger("Hit");
-                                    break;
-                                }
-                            }
-                            Debug.Log("Monster Attack");
-                        }
-                        yield return new WaitForSeconds(1.0f);
-                        break;
-                    case BattleLog.LogType.Dead:
-                        if (action.character is Model.Player)
-                        {
-                            player._anim.SetTrigger("Die");
-                        }
-                        else
-                        {
-                            var enemy = enemies.First(e => e.id == action.characterId);
-                            enemy._anim.SetTrigger("Die");
-                        }
-                        yield return new WaitForSeconds(1.0f);
-                        break;
-                    case BattleLog.LogType.BattleResult:
-                        var blind = Widget.Find<Blind>();
-                        StartCoroutine(blind.FadeIn(1.0f, action.result.ToString()));
-                        OnRoomEnter();
-                        break;
-                    default:
-                        continue;
+                    e.Execute(player, enemies);
+                    yield return  new WaitForSeconds(1.0f);
                 }
             }
         }

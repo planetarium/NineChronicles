@@ -13,10 +13,9 @@ namespace Nekoyume.Action
         private readonly int _seed;
         private readonly int _stage;
         private readonly List<CharacterBase> characters;
-        public readonly List<BattleLog> logs;
+        public readonly BattleLog log;
         public bool isLose = false;
-        private BattleLog.ResultType result;
-        private int time;
+        public BattleResult.Result result;
 
         public Simulator(int seed, Model.Avatar avatar)
         {
@@ -24,7 +23,7 @@ namespace Nekoyume.Action
             _seed = seed;
             _stage = avatar.WorldStage;
             characters = new List<CharacterBase>();
-            logs = new List<BattleLog>();
+            log = new BattleLog();
             var player = new Player(avatar, this);
             MonsterSpawn(player);
             Add(player);
@@ -32,12 +31,11 @@ namespace Nekoyume.Action
 
         public Player Simulate()
         {
-            var ss = new BattleLog
+            var ss = new StartStage
             {
-                type = BattleLog.LogType.StartStage,
                 stage = _stage,
             };
-            logs.Add(ss);
+            log.Add(ss);
             foreach (var character in characters)
             {
                 character.Spawn();
@@ -48,31 +46,29 @@ namespace Nekoyume.Action
             while (true)
             {
                 foreach (var character in characters) character.Tick();
-                time++;
 
                 if (player.targets.Count == 0)
                 {
                     player.stage++;
 
-                    result = BattleLog.ResultType.Win;
+                    result = BattleResult.Result.Win;
                     Debug.Log("win");
                     break;
                 }
 
                 if (isLose)
                 {
-                    result = BattleLog.ResultType.Lose;
+                    result = BattleResult.Result.Lose;
                     Debug.Log("lose");
                     break;
                 }
             }
 
-            var log = new BattleLog
+            var br = new BattleResult
             {
-                type = BattleLog.LogType.BattleResult,
                 result = result
             };
-            logs.Add(log);
+            log.Add(br);
             return (Player) characters.First(c => c is Player);
         }
 

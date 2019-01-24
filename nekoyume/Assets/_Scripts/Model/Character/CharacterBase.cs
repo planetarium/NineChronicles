@@ -49,16 +49,15 @@ namespace Nekoyume.Model
             if (target != null)
             {
                 target.hp -= atk;
-                var log = new BattleLog
+                var attack = new Attack
                 {
-                    type = BattleLog.LogType.Attack,
                     character = Copy(this),
                     target = Copy(target),
                     atk = atk,
                     characterId = id,
                     targetId = target.id,
                 };
-                simulator.logs.Add(log);
+                simulator.log.Add(attack);
             }
         }
 
@@ -74,24 +73,22 @@ namespace Nekoyume.Model
 
         protected virtual void OnDead()
         {
-            var dead = new BattleLog
+            var dead = new Dead
             {
-                type = BattleLog.LogType.Dead,
                 character = Copy(this),
                 characterId = id,
             };
-            simulator.logs.Add(dead);
+            simulator.log.Add(dead);
         }
 
         public void Spawn()
         {
-            var spawn = new BattleLog
+            var spawn = new Spawn
             {
-                type = BattleLog.LogType.Spawn,
                 character = Copy(this),
                 characterId = id,
             };
-            simulator.logs.Add(spawn);
+            simulator.log.Add(spawn);
         }
 
         public static T Copy<T>(T origin)

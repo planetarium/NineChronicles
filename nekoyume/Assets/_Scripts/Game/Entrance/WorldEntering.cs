@@ -12,7 +12,7 @@ namespace Nekoyume.Game.Entrance
 {
     public class WorldEntering : MonoBehaviour
     {
-        private List<BattleLog> battleLog;
+        private BattleLog battleLog;
         private void Start()
         {
             StartCoroutine(Act());
@@ -30,7 +30,7 @@ namespace Nekoyume.Game.Entrance
             }
 
             battleLog = ActionManager.Instance.battleLog;
-            var startStage = battleLog.Find(l => l.type == BattleLog.LogType.StartStage);
+            var startStage = battleLog.StartStage();
             var currentStage = startStage.stage;
             Data.Table.Stage data;
             var tables = this.GetRootComponent<Tables>();
@@ -57,7 +57,7 @@ namespace Nekoyume.Game.Entrance
                     playerCharacter.transform.position = new Vector2(0.0f, -0.7f);
                 }
                 var player = playerCharacter.gameObject;
-                playerCharacter.Init(ActionManager.Instance.battleLog);
+                playerCharacter.Init();
 
                 Widget.Find<SkillController>().Show(player);
                 Widget.Find<Status>().UpdatePlayer(player);

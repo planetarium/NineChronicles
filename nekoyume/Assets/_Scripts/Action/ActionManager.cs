@@ -23,7 +23,7 @@ namespace Nekoyume.Action
         private string _saveFilePath;
 
         private Agent agent;
-        public List<BattleLog> battleLog;
+        public BattleLog battleLog;
         public static ActionManager Instance { get; private set; }
         public Model.Avatar Avatar { get; private set; }
         public event EventHandler<Model.Avatar> DidAvatarLoaded;

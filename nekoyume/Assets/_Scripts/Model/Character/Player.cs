@@ -70,12 +70,11 @@ namespace Nekoyume.Model
 
             CalcStats();
 
-            var levelUp = new BattleLog
+            var levelUp = new LevelUp
             {
-                type = BattleLog.LogType.LevelUp,
                 character = Copy(this),
             };
-            simulator.logs.Add(levelUp);
+            simulator.log.Add(levelUp);
         }
     }
 }

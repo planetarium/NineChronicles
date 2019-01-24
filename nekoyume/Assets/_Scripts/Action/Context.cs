@@ -8,9 +8,9 @@ namespace Nekoyume.Action
     public class Context
     {
         public Avatar avatar;
-        public List<BattleLog> battleLog;
+        public BattleLog battleLog;
 
-        public Context(Avatar avatar, List<BattleLog> logs = null)
+        public Context(Avatar avatar, BattleLog logs = null)
         {
             this.avatar = avatar;
             battleLog = logs;
