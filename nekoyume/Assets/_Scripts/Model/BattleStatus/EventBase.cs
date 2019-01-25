@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Nekoyume.Game;
 using Nekoyume.Game.Character;
 
 namespace Nekoyume.Model
@@ -12,6 +13,6 @@ namespace Nekoyume.Model
         public Guid characterId;
         public Guid targetId;
 
-        public abstract void Execute(Game.Character.Player player, IEnumerable<Enemy> enemies);
+        public abstract void Execute(Stage stage);
     }
 }

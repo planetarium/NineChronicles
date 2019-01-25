@@ -1,11 +1,12 @@
 using System.Collections;
+using System.Linq;
 using DG.Tweening;
 using Nekoyume.Action;
 using Nekoyume.Data;
 using Nekoyume.Data.Table;
-using Nekoyume.Game.Character;
 using Nekoyume.Game.Entrance;
 using Nekoyume.Game.Factory;
+using Nekoyume.Game.Trigger;
 using Nekoyume.Model;
 using Nekoyume.UI;
 using UnityEngine;
@@ -32,7 +33,6 @@ namespace Nekoyume.Game
         private void Awake()
         {
             Event.OnRoomEnter.AddListener(OnRoomEnter);
-            Event.OnStageEnter.AddListener(OnStageEnter);
             Event.OnPlayerDead.AddListener(OnPlayerDead);
             Event.OnPlayerDead.AddListener(OnPlayerSleep);
             Event.OnPlayerSleep.AddListener(OnPlayerSleep);
@@ -59,11 +59,6 @@ namespace Nekoyume.Game
         private void OnRoomEnter()
         {
             gameObject.AddComponent<RoomEntering>();
-        }
-
-        private void OnStageEnter()
-        {
-            gameObject.AddComponent<WorldEntering>();
         }
 
         private void OnPlayerDead()
@@ -119,9 +114,7 @@ namespace Nekoyume.Game
 
         public void Play()
         {
-            var isRoom = BackgroundName == "room";
-            var blind = Widget.Find<Blind>();
-            if (!blind.IsActive() && !isRoom && battleLog?.Count > 0)
+            if (battleLog?.Count > 0)
             {
                 StartCoroutine(PlayAsync());
             }
@@ -129,15 +122,70 @@ namespace Nekoyume.Game
 
         private IEnumerator PlayAsync()
         {
-            var player = GetComponentInChildren<Character.Player>();
-            var enemies = GetComponentsInChildren<Enemy>();
             foreach (EventBase e in battleLog)
             {
                 {
-                    e.Execute(player, enemies);
-                    yield return  new WaitForSeconds(1.0f);
+                    e.Execute(this);
+                    yield return new WaitForSeconds(1.0f);
                 }
             }
+        }
+
+        public void StageEnter(int stage)
+        {
+            StartCoroutine(StageEnterAsync(stage));
+        }
+
+        private IEnumerator StageEnterAsync(int stage)
+        {
+            var roomPlayer = GetComponentInChildren<Character.Player>();
+            if (roomPlayer != null)
+            {
+                roomPlayer.RunSpeed = 1.0f;
+            }
+
+            Data.Table.Stage data;
+            var tables = this.GetRootComponent<Tables>();
+            if (tables.Stage.TryGetValue(stage, out data))
+            {
+                var blind = Widget.Find<Blind>();
+                yield return StartCoroutine(blind.FadeIn(1.0f, $"STAGE {stage}"));
+                Widget.Find<Move>().ShowWorld();
+
+                LoadBackground(data.Background, 3.0f);
+
+                yield return new WaitForSeconds(2.0f);
+                yield return StartCoroutine(blind.FadeOut(1.0f));
+            }
+        }
+
+        public void StageEnd(BattleResult.Result result)
+        {
+            StartCoroutine(StageEndAsync(result));
+        }
+
+        private IEnumerator StageEndAsync(BattleResult.Result result)
+        {
+            var blind = Widget.Find<Blind>();
+            yield return blind.FadeIn(1.0f, result.ToString());
+            yield return new WaitForSeconds(2.0f);
+            Event.OnRoomEnter.Invoke();
+        }
+
+        public void SpawnPlayer()
+        {
+            var playerCharacter = GetComponentInChildren<Character.Player>();
+            playerCharacter.RunSpeed = 1.2f;
+            var player = playerCharacter.gameObject;
+            playerCharacter.Init();
+            var cam = Camera.main.gameObject.GetComponent<ActionCamera>();
+            cam.target = player.transform;
+        }
+
+        public void SpawnMonster(Model.Monster monster)
+        {
+            var spawner = GetComponentsInChildren<MonsterSpawner>().First();
+            spawner.SetData(Id, monster);
         }
     }
 }

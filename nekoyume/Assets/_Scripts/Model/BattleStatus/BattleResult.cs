@@ -17,11 +17,9 @@ namespace Nekoyume.Model
             Lose
         }
 
-        public override void Execute(Game.Character.Player player, IEnumerable<Enemy> enemies)
+        public override void Execute(Stage stage)
         {
-            var blind = Widget.Find<Blind>();
-            Task.Run(() => blind.FadeIn(1.0f, result.ToString()));
-            Event.OnRoomEnter.Invoke();
+            stage.StageEnd(result);
         }
     }
 }

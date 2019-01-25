@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Nekoyume.Game;
 using Nekoyume.Game.Character;
 
 namespace Nekoyume.Model
@@ -9,8 +10,9 @@ namespace Nekoyume.Model
     {
         public int stage;
 
-        public override void Execute(Game.Character.Player player, IEnumerable<Enemy> enemies)
+        public override void Execute(Stage stage)
         {
+            stage.StageEnter(this.stage);
         }
     }
 }

@@ -148,16 +148,14 @@ namespace Nekoyume.Game.Character
             return canceled;
         }
 
-        public override void OnDamage(AttackType attackType, int dmg)
+        public override void OnDamage(int dmg)
         {
-            base.OnDamage(attackType, dmg);
-
-            int calcDmg = CalcDamage(attackType, dmg);
+            base.OnDamage(dmg);
 
             PopupText.Show(
                 transform.TransformPoint(UnityEngine.Random.Range(-0.6f, -0.4f), 1.0f, 0.0f),
                 new Vector3(-0.02f, 0.02f, 0.0f),
-                calcDmg.ToString(),
+                dmg.ToString(),
                 Color.red);
         }
 

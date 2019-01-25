@@ -16,17 +16,6 @@ namespace Nekoyume.Model
             events.Add(e);
         }
 
-        public StartStage StartStage()
-        {
-            var startStage = events.Find(e => e is StartStage);
-            return (StartStage) startStage;
-        }
-
-        public List<Spawn> MonsterSpawns()
-        {
-            return events.OfType<Spawn>().Where(e => e.character is Monster).ToList();
-        }
-
         public IEnumerator<EventBase> GetEnumerator()
         {
             return events.GetEnumerator();
