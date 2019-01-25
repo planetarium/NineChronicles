@@ -80,11 +80,6 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        private void Update()
-        {
-
-        }
-
         public void InitStats(Data.Table.Monster statsData, int power)
         {
             HP = Mathf.FloorToInt((float)statsData.Health * ((float)power * 0.01f));

@@ -51,8 +51,6 @@ namespace Nekoyume.Game.Entrance
 
             yield return new WaitForSeconds(2.0f);
             yield return StartCoroutine(blind.FadeOut(1.0f));
-
-            Event.OnStageStart.Invoke();
             Destroy(this);
         }
     }
