@@ -9,22 +9,9 @@ namespace Nekoyume.Model
     [Serializable]
     public class Dead : EventBase
     {
-        public override void Execute(Stage stage)
+        public override void Execute(IStage stage)
         {
-            if (character is Player)
-            {
-                var player = stage.GetComponentInChildren<Game.Character.Player>();
-                player.Die();
-            }
-            else
-            {
-                var enemies = stage.GetComponentsInChildren<Enemy>();
-                var enemy = enemies.FirstOrDefault(e => e.id == characterId);
-                if (enemy != null)
-                {
-                    enemy.Die();
-                }
-            }
+            stage.Dead(character);
         }
     }
 }

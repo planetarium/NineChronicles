@@ -10,7 +10,7 @@ namespace Nekoyume.Model
     {
         public int stage;
 
-        public override void Execute(Stage stage)
+        public override void Execute(IStage stage)
         {
             stage.StageEnter(this.stage);
         }

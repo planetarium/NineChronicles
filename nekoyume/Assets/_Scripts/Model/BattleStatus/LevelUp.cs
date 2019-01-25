@@ -8,7 +8,7 @@ namespace Nekoyume.Model
     [Serializable]
     public class LevelUp : EventBase
     {
-        public override void Execute(Stage stage)
+        public override void Execute(IStage stage)
         {
         }
     }

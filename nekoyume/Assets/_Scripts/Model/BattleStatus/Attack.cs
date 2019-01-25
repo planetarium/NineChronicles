@@ -10,27 +10,10 @@ namespace Nekoyume.Model
     {
         public int atk;
 
-        public override void Execute(Stage stage)
+        public override void Execute(IStage stage)
         {
-            Game.Character.CharacterBase attacker;
-            Game.Character.CharacterBase defender;
-            var player = stage.GetComponentInChildren<Game.Character.Player>();
-            var enemies = stage.GetComponentsInChildren<Enemy>();
-            if (character is Player)
-            {
-                attacker = player;
-                defender = enemies.OfType<Enemy>().FirstOrDefault(e => e.id == targetId);
-            }
-            else
-            {
-                attacker = enemies.OfType<Enemy>().FirstOrDefault(e => e.id == characterId);
-                defender = player;
-            }
+            stage.Attack(atk, character, target);
 
-            if (attacker != null && defender != null)
-            {
-                attacker.Attack(atk, defender);
-            }
         }
     }
 }

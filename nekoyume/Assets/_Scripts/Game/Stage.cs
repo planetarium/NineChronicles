@@ -4,6 +4,7 @@ using DG.Tweening;
 using Nekoyume.Action;
 using Nekoyume.Data;
 using Nekoyume.Data.Table;
+using Nekoyume.Game.Character;
 using Nekoyume.Game.Entrance;
 using Nekoyume.Game.Factory;
 using Nekoyume.Game.Trigger;
@@ -13,7 +14,7 @@ using UnityEngine;
 
 namespace Nekoyume.Game
 {
-    public class Stage : MonoBehaviour
+    public class Stage : MonoBehaviour, IStage
     {
         private GameObject _background;
         public int Id;
@@ -186,6 +187,47 @@ namespace Nekoyume.Game
         {
             var spawner = GetComponentsInChildren<MonsterSpawner>().First();
             spawner.SetData(Id, monster);
+        }
+
+        public void Dead(Model.CharacterBase character)
+        {
+            if (character is Model.Player)
+            {
+                var player = GetComponentInChildren<Character.Player>();
+                player.Die();
+            }
+            else
+            {
+                var enemies = GetComponentsInChildren<Enemy>();
+                var enemy = enemies.FirstOrDefault(e => e.id == character.id);
+                if (enemy != null)
+                {
+                    enemy.Die();
+                }
+            }
+        }
+
+        public void Attack(int atk, Model.CharacterBase character, Model.CharacterBase target)
+        {
+            Character.CharacterBase attacker;
+            Character.CharacterBase defender;
+            var player = GetComponentInChildren<Character.Player>();
+            var enemies = GetComponentsInChildren<Enemy>();
+            if (character is Model.Player)
+            {
+                attacker = player;
+                defender = enemies.OfType<Enemy>().FirstOrDefault(e => e.id == target.id);
+            }
+            else
+            {
+                attacker = enemies.OfType<Enemy>().FirstOrDefault(e => e.id == character.id);
+                defender = player;
+            }
+
+            if (attacker != null && defender != null)
+            {
+                attacker.Attack(atk, defender);
+            }
         }
     }
 }

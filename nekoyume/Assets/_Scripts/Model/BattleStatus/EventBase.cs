@@ -13,6 +13,6 @@ namespace Nekoyume.Model
         public Guid characterId;
         public Guid targetId;
 
-        public abstract void Execute(Stage stage);
+        public abstract void Execute(IStage stage);
     }
 }

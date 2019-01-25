@@ -17,7 +17,7 @@ namespace Nekoyume.Model
             Lose
         }
 
-        public override void Execute(Stage stage)
+        public override void Execute(IStage stage)
         {
             stage.StageEnd(result);
         }

@@ -15,7 +15,7 @@ namespace Nekoyume.Model
     [Serializable]
     public class Spawn : EventBase
     {
-        public override void Execute(Stage stage)
+        public override void Execute(IStage stage)
         {
             if (character is Player)
             {
