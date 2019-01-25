@@ -144,7 +144,7 @@ namespace Nekoyume.Game.Character
             var dropItem = dropItemFactory.Create(selector.Select(), transform.position);
             if (dropItem != null)
             {
-                Event.OnGetItem.Invoke(dropItem.GetComponent<DropItem>());
+                Event.OnGetItem.Invoke(dropItem.GetComponent<Item.DropItem>());
             }
         }
 
@@ -166,6 +166,13 @@ namespace Nekoyume.Game.Character
             RewardExp = data.RewardExp;
             Power = 0;
             _hpMax = HP;
+        }
+
+        public void DropItem(ItemBase item)
+        {
+            var dropItemFactory = GetComponentInParent<DropItemFactory>();
+            dropItemFactory.Create(item.Data.Id, transform.position);
+            gameObject.SetActive(false);
         }
     }
 }

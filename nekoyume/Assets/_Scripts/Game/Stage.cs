@@ -7,6 +7,7 @@ using Nekoyume.Data.Table;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Entrance;
 using Nekoyume.Game.Factory;
+using Nekoyume.Game.Item;
 using Nekoyume.Game.Trigger;
 using Nekoyume.Model;
 using Nekoyume.UI;
@@ -216,17 +217,27 @@ namespace Nekoyume.Game
             if (character is Model.Player)
             {
                 attacker = player;
-                defender = enemies.OfType<Enemy>().FirstOrDefault(e => e.id == target.id);
+                defender = enemies.FirstOrDefault(e => e.id == target.id);
             }
             else
             {
-                attacker = enemies.OfType<Enemy>().FirstOrDefault(e => e.id == character.id);
+                attacker = enemies.FirstOrDefault(e => e.id == character.id);
                 defender = player;
             }
 
             if (attacker != null && defender != null)
             {
                 attacker.Attack(atk, defender);
+            }
+        }
+
+        public void DropItem(Model.Monster character)
+        {
+            var enemies = GetComponentsInChildren<Enemy>();
+            var enemy = enemies.FirstOrDefault(e => e.id == character.id);
+            if (enemy != null)
+            {
+                enemy.DropItem(character.item);
             }
         }
     }

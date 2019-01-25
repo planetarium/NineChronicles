@@ -167,6 +167,7 @@ namespace Nekoyume.Game.Character
 
         protected override void OnDead()
         {
+            gameObject.SetActive(false);
             Event.OnPlayerDead.Invoke();
         }
 
@@ -217,7 +218,7 @@ namespace Nekoyume.Game.Character
             UpdateHpBar();
         }
 
-        private void PickUpItem(DropItem item)
+        private void PickUpItem(Item.DropItem item)
         {
             Inventory.Add(item.Item);
             ActionManager.Instance.UpdateItems(SerializeItems());

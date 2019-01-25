@@ -1,3 +1,5 @@
+using Nekoyume.Game.Item;
+
 namespace Nekoyume.Model
 {
     public interface IStage
@@ -8,5 +10,6 @@ namespace Nekoyume.Model
         void StageEnd(BattleResult.Result result);
         void Dead(CharacterBase character);
         void Attack(int atk, CharacterBase character, CharacterBase target);
+        void DropItem(Monster character);
     }
 }
