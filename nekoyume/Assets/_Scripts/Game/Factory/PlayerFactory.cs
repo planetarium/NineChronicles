@@ -9,12 +9,15 @@ namespace Nekoyume.Game.Factory
         public GameObject Create()
         {
             var log = ActionManager.Instance.battleLog;
+            var avatar = ActionManager.Instance.Avatar;
+            if (avatar == null)
+                return null;
             var objectPool = GetComponent<Util.ObjectPool>();
             var player = objectPool.Get<Character.Player>();
             if (player == null)
                 return null;
-            player.InitStats(ActionManager.Instance.Avatar);
-            if (log != null)
+            player.InitStats(avatar);
+            if (log?.Count > 0)
             {
                 player.Init();
             }
