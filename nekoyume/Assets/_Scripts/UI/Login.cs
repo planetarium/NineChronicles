@@ -11,6 +11,7 @@ namespace Nekoyume.UI
 
         public void LoginClick()
         {
+            ActionManager.Instance.Init(0);
             ActionManager.Instance.StartSync();
             btnLogin.SetActive(false);
             text.text = "Connecting...";
