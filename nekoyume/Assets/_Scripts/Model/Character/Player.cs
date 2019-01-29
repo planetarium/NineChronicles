@@ -35,14 +35,9 @@ namespace Nekoyume.Model
             inventory = new Inventory();
             if (!string.IsNullOrEmpty(avatar.Items))
             {
-                var des = JsonConvert.DeserializeObject<JArray>(avatar.Items);
-                var inventoryItems = new List<Inventory.InventoryItem>();
-                for (var index = 0; index < des.ToArray().Length; index++)
+                var inventoryItems = JsonConvert.DeserializeObject<List<Inventory.InventoryItem>>(avatar.Items);
+                foreach (var inventoryItem in inventoryItems)
                 {
-                    var d = des.ToArray()[index];
-                    var inventoryItem = JsonConvert.DeserializeObject<Inventory.InventoryItem>(d.ToString(),
-                        new InventoryItemConverter());
-                    inventoryItems.Add(inventoryItem);
                     if (inventoryItem.Item is Weapon)
                     {
                         weapon = (Weapon) inventoryItem.Item;

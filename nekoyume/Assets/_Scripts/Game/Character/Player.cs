@@ -228,14 +228,9 @@ namespace Nekoyume.Game.Character
         {
             if (!string.IsNullOrEmpty(avatar.Items))
             {
-                var des = JsonConvert.DeserializeObject<JArray>(avatar.Items);
-                var inventoryItems = new List<Item.Inventory.InventoryItem>();
-                for (var index = 0; index < des.ToArray().Length; index++)
+                var inventoryItems = JsonConvert.DeserializeObject<List<Item.Inventory.InventoryItem>>(avatar.Items);
+                foreach (var inventoryItem in inventoryItems)
                 {
-                    var d = des.ToArray()[index];
-                    var inventoryItem = JsonConvert.DeserializeObject<Item.Inventory.InventoryItem>(d.ToString(),
-                        new InventoryItemConverter());
-                    inventoryItems.Add(inventoryItem);
                     if (inventoryItem.Item is Weapon)
                     {
                         _weapon = (Weapon) inventoryItem.Item;
