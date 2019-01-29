@@ -2,6 +2,7 @@ using System;
 
 namespace Nekoyume.Game.Item
 {
+    [Serializable]
     public class ItemBase
     {
         public Data.Table.Item Data { get; private set; }

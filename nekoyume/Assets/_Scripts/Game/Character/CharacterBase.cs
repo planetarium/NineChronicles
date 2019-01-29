@@ -164,7 +164,7 @@ namespace Nekoyume.Game.Character
             return true;
         }
 
-        protected void Die()
+        public void Die()
         {
             StartCoroutine(Dying());
         }
@@ -270,13 +270,12 @@ namespace Nekoyume.Game.Character
             );
         }
 
-        public virtual void OnDamage(AttackType attackType, int dmg)
+        public virtual void OnDamage(int dmg)
         {
-            int calcDmg = CalcDamage(attackType, dmg);
-            if (calcDmg <= 0)
+            if (dmg <= 0)
                 return;
 
-            HP -= calcDmg;
+            HP -= dmg;
 
             if (_anim != null)
             {
@@ -299,8 +298,6 @@ namespace Nekoyume.Game.Character
                 _anim.ResetTrigger("Hit");
                 _anim.SetBool("Run", false);
             }
-
-            gameObject.SetActive(false);
         }
 
         public void Attack(int atk, CharacterBase target)
@@ -313,13 +310,8 @@ namespace Nekoyume.Game.Character
 
             if (target != null)
             {
-                target._anim.SetTrigger("Hit");
+                target.OnDamage(atk);
             }
-        }
-
-        public void Dead()
-        {
-            OnDead();
         }
     }
 }

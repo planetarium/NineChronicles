@@ -1,4 +1,6 @@
 using System;
+using Nekoyume.Action;
+using Nekoyume.Game.Item;
 
 namespace Nekoyume.Model
 {
@@ -7,8 +9,9 @@ namespace Nekoyume.Model
     {
         public int rewardExp;
         public Data.Table.Monster data;
+        public ItemBase item;
 
-        public Monster(Data.Table.Monster data, Player player)
+        public Monster(Data.Table.Monster data, Player player, ItemBase item)
         {
             hp = data.Health;
             atk = data.Attack;
@@ -16,6 +19,10 @@ namespace Nekoyume.Model
             targets.Add(player);
             simulator = player.simulator;
             this.data = data;
+            if (item != null)
+            {
+                this.item = item;
+            }
         }
 
         protected override void OnDead()
@@ -23,6 +30,16 @@ namespace Nekoyume.Model
             base.OnDead();
             var player = (Player) targets[0];
             player.GetExp(this);
+            if (item != null)
+            {
+                var dropItem = new DropItem
+                {
+                    character = Copy(this),
+                    characterId = id,
+                };
+                simulator.log.Add(dropItem);
+                player.GetItem(item);
+            }
         }
     }
 }

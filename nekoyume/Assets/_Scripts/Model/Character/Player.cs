@@ -1,7 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Nekoyume.Action;
 using Nekoyume.Data.Table;
+using Nekoyume.Game.Item;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Nekoyume.Model
 {
@@ -14,6 +19,10 @@ namespace Nekoyume.Model
         public int level;
         public string name;
         public int stage;
+        public Weapon weapon;
+        [NonSerialized]
+        public Inventory inventory;
+        public string Items => JsonConvert.SerializeObject(inventory._items);
 
         public Player(Avatar avatar, Simulator simulator)
         {
@@ -23,6 +32,19 @@ namespace Nekoyume.Model
             stage = avatar.WorldStage;
             items = avatar.Items;
             this.simulator = simulator;
+            inventory = new Inventory();
+            if (!string.IsNullOrEmpty(avatar.Items))
+            {
+                var inventoryItems = JsonConvert.DeserializeObject<List<Inventory.InventoryItem>>(avatar.Items);
+                foreach (var inventoryItem in inventoryItems)
+                {
+                    if (inventoryItem.Item is Weapon)
+                    {
+                        weapon = (Weapon) inventoryItem.Item;
+                    }
+                }
+                inventory.Set(inventoryItems);
+            }
             CalcStats();
         }
 
@@ -75,6 +97,11 @@ namespace Nekoyume.Model
                 character = Copy(this),
             };
             simulator.log.Add(levelUp);
+        }
+
+        public void GetItem(ItemBase item)
+        {
+            inventory.Add(item);
         }
     }
 }

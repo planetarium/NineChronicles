@@ -53,7 +53,7 @@ namespace Nekoyume.UI
             {
                 yield return new WaitForSeconds(1.0f);
             }
-            Game.Event.OnStageEnter.Invoke();
+            Game.Event.OnStageStart.Invoke();
         }
 
         public void SleepClick()

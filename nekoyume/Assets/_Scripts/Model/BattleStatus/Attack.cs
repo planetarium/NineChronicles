@@ -1,6 +1,6 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.Game;
 using Nekoyume.Game.Character;
 
 namespace Nekoyume.Model
@@ -10,25 +10,10 @@ namespace Nekoyume.Model
     {
         public int atk;
 
-        public override void Execute(Game.Character.Player player, IEnumerable<Enemy> enemies)
+        public override void Execute(IStage stage)
         {
-            Game.Character.CharacterBase attacker;
-            Game.Character.CharacterBase defender;
-            if (character is Player)
-            {
-                attacker = player;
-                defender = enemies.OfType<Enemy>().FirstOrDefault(e => e.id == targetId);
-            }
-            else
-            {
-                attacker = enemies.OfType<Enemy>().FirstOrDefault(e => e.id == characterId);
-                defender = player;
-            }
+            stage.Attack(atk, character, target);
 
-            if (attacker != null && defender != null)
-            {
-                attacker.Attack(atk, defender);
-            }
         }
     }
 }

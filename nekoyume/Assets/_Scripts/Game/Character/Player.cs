@@ -148,16 +148,14 @@ namespace Nekoyume.Game.Character
             return canceled;
         }
 
-        public override void OnDamage(AttackType attackType, int dmg)
+        public override void OnDamage(int dmg)
         {
-            base.OnDamage(attackType, dmg);
-
-            int calcDmg = CalcDamage(attackType, dmg);
+            base.OnDamage(dmg);
 
             PopupText.Show(
                 transform.TransformPoint(UnityEngine.Random.Range(-0.6f, -0.4f), 1.0f, 0.0f),
                 new Vector3(-0.02f, 0.02f, 0.0f),
-                calcDmg.ToString(),
+                dmg.ToString(),
                 Color.red);
         }
 
@@ -169,6 +167,7 @@ namespace Nekoyume.Game.Character
 
         protected override void OnDead()
         {
+            gameObject.SetActive(false);
             Event.OnPlayerDead.Invoke();
         }
 
@@ -219,7 +218,7 @@ namespace Nekoyume.Game.Character
             UpdateHpBar();
         }
 
-        private void PickUpItem(DropItem item)
+        private void PickUpItem(Item.DropItem item)
         {
             Inventory.Add(item.Item);
             ActionManager.Instance.UpdateItems(SerializeItems());
@@ -229,14 +228,9 @@ namespace Nekoyume.Game.Character
         {
             if (!string.IsNullOrEmpty(avatar.Items))
             {
-                var des = JsonConvert.DeserializeObject<JArray>(avatar.Items);
-                var inventoryItems = new List<Item.Inventory.InventoryItem>();
-                for (var index = 0; index < des.ToArray().Length; index++)
+                var inventoryItems = JsonConvert.DeserializeObject<List<Item.Inventory.InventoryItem>>(avatar.Items);
+                foreach (var inventoryItem in inventoryItems)
                 {
-                    var d = des.ToArray()[index];
-                    var inventoryItem = JsonConvert.DeserializeObject<Item.Inventory.InventoryItem>(d.ToString(),
-                        new InventoryItemConverter());
-                    inventoryItems.Add(inventoryItem);
                     if (inventoryItem.Item is Weapon)
                     {
                         _weapon = (Weapon) inventoryItem.Item;

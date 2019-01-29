@@ -1,5 +1,8 @@
+using System;
+
 namespace Nekoyume.Game.Item
 {
+    [Serializable]
     public class Equipment : ItemUsable
     {
         public bool IsEquipped = false;

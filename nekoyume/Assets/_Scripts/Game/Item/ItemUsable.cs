@@ -1,5 +1,8 @@
+using System;
+
 namespace Nekoyume.Game.Item
 {
+    [Serializable]
     public class ItemUsable : ItemBase
     {
         public ItemUsable(Data.Table.Item data)

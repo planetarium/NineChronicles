@@ -24,7 +24,7 @@ namespace Nekoyume.Game.Trigger
             {0.9f, -1.2f}
         };
 
-        private BattleLog _battleLog;
+        private Monster _monster;
         private int _monsterPower;
 
         private Stage _stage;
@@ -48,10 +48,10 @@ namespace Nekoyume.Game.Trigger
                     Event.OnStageClear.Invoke();
         }
 
-        public void SetData(int stageId, BattleLog battleLog)
+        public void SetData(int stageId, Monster monster)
         {
             _stageId = stageId;
-            _battleLog = battleLog;
+            _monster = monster;
             SpawnWave();
         }
 
@@ -97,15 +97,12 @@ namespace Nekoyume.Game.Trigger
             var offsetX = player.transform.position.x + 1.0f;
             var randIndex = Enumerable.Range(0, _spawnPoints.Length / 2)
                 .OrderBy(n => Guid.NewGuid()).ToArray();
-            var spawns = _battleLog.MonsterSpawns();
-            for (int i = 0; i < spawns.Count; i++)
             {
-                var spawn = spawns[i];
-                var r = randIndex[i];
+                var r = randIndex[0];
                 var pos = new Vector2(
                     _spawnPoints[r, 0] + offsetX,
                     _spawnPoints[r, 1]);
-                factory.Create(spawn.character as Monster, pos);
+                factory.Create(_monster, pos);
             }
         }
 

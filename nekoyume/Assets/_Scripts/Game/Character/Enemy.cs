@@ -80,11 +80,6 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        private void Update()
-        {
-
-        }
-
         public void InitStats(Data.Table.Monster statsData, int power)
         {
             HP = Mathf.FloorToInt((float)statsData.Health * ((float)power * 0.01f));
@@ -98,16 +93,14 @@ namespace Nekoyume.Game.Character
             _hpMax = HP;
         }
 
-        public override void OnDamage(AttackType attackType, int dmg)
+        public override void OnDamage(int dmg)
         {
-            base.OnDamage(attackType, dmg);
-
-            int calcDmg = CalcDamage(attackType, dmg);
+            base.OnDamage(dmg);
 
             PopupText.Show(
                 transform.TransformPoint(0.12f, 0.5f, 0.0f),
                 new Vector3(0.06f, 0.05f, 0.0f),
-                calcDmg.ToString(),
+                dmg.ToString(),
                 Color.yellow);
 
             SpriteRenderer renderer = gameObject.GetComponent<SpriteRenderer>();
@@ -151,7 +144,7 @@ namespace Nekoyume.Game.Character
             var dropItem = dropItemFactory.Create(selector.Select(), transform.position);
             if (dropItem != null)
             {
-                Event.OnGetItem.Invoke(dropItem.GetComponent<DropItem>());
+                Event.OnGetItem.Invoke(dropItem.GetComponent<Item.DropItem>());
             }
         }
 
@@ -173,6 +166,13 @@ namespace Nekoyume.Game.Character
             RewardExp = data.RewardExp;
             Power = 0;
             _hpMax = HP;
+        }
+
+        public void DropItem(ItemBase item)
+        {
+            var dropItemFactory = GetComponentInParent<DropItemFactory>();
+            dropItemFactory.Create(item.Data.Id, transform.position);
+            gameObject.SetActive(false);
         }
     }
 }
