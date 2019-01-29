@@ -33,29 +33,6 @@ namespace Nekoyume.Action
         {
             DontDestroyOnLoad(gameObject);
             Instance = this;
-
-            PrivateKey privateKey = null;
-            var privateKeyHex = PlayerPrefs.GetString("private_key", "");
-
-            if (string.IsNullOrEmpty(privateKeyHex))
-            {
-                privateKey = new PrivateKey();
-                PlayerPrefs.SetString("private_key", ByteUtil.Hex(privateKey.ByteArray));
-            }
-            else
-            {
-                privateKey = new PrivateKey(ByteUtil.ParseHex(privateKeyHex));
-            }
-
-            _saveFilePath = Path.Combine(Application.persistentDataPath, "avatar.dat");
-            LoadStatus();
-
-            var path = Path.Combine(Application.persistentDataPath, "planetarium");
-            agent = new Agent(privateKey, path);
-            agent.DidReceiveAction += ReceiveAction;
-
-            Debug.Log($"User Address: 0x{agent.UserAddress.ToHex()}");
-            StartMine();
         }
 
         private void ReceiveAction(object sender, Context ctx)
@@ -156,6 +133,32 @@ namespace Nekoyume.Action
         {
             var action = new HackAndSlash();
             ProcessAction(action);
+        }
+
+        public void Init(int index)
+        {
+            PrivateKey privateKey = null;
+            var privateKeyHex = PlayerPrefs.GetString($"private_key_{index}", "");
+
+            if (string.IsNullOrEmpty(privateKeyHex))
+            {
+                privateKey = new PrivateKey();
+                PlayerPrefs.SetString("private_key", ByteUtil.Hex(privateKey.ByteArray));
+            }
+            else
+            {
+                privateKey = new PrivateKey(ByteUtil.ParseHex(privateKeyHex));
+            }
+
+            _saveFilePath = Path.Combine(Application.persistentDataPath, $"avatar_{index}.dat");
+            LoadStatus();
+
+            var path = Path.Combine(Application.persistentDataPath, "planetarium");
+            agent = new Agent(privateKey, path);
+            agent.DidReceiveAction += ReceiveAction;
+
+            Debug.Log($"User Address: 0x{agent.UserAddress.ToHex()}");
+            StartMine();
         }
     }
 }
