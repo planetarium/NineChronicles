@@ -1,5 +1,8 @@
+using System;
+
 namespace Nekoyume.Data.Table
 {
+    [Serializable]
     public class Item : Row
     {
         public int Id = 0;

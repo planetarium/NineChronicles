@@ -1,72 +1,50 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using Libplanet;
 using Libplanet.Crypto;
 using Nekoyume.Data.Table;
-using Nekoyume.Game.Character;
+using Nekoyume.Model;
 using UnityEngine;
-using Avatar = Nekoyume.Model.Avatar;
 
 namespace Nekoyume.Action
 {
     [Serializable]
     internal class SaveData
     {
-        public Avatar Avatar;
+        public Model.Avatar Avatar;
     }
 
     public class ActionManager : MonoBehaviour
     {
-        public static ActionManager Instance { get; private set; }
-        public event EventHandler<Avatar> DidAvatarLoaded;
-        public event EventHandler CreateAvatarRequired;
-        public Avatar Avatar { get; private set; }
+        private string _saveFilePath;
 
         private Agent agent;
-        private string _saveFilePath;
+        public BattleLog battleLog;
+        public static ActionManager Instance { get; private set; }
+        public Model.Avatar Avatar { get; private set; }
+        public event EventHandler<Model.Avatar> DidAvatarLoaded;
+        public event EventHandler CreateAvatarRequired;
 
         private void Awake()
         {
             DontDestroyOnLoad(gameObject);
             Instance = this;
-
-            PrivateKey privateKey = null;
-            var privateKeyHex = PlayerPrefs.GetString("private_key", "");
-
-            if (string.IsNullOrEmpty(privateKeyHex))
-            {
-                privateKey = PrivateKey.Generate();
-                PlayerPrefs.SetString("private_key", ByteUtil.Hex(privateKey.Bytes));
-            }
-            else
-            {
-                privateKey = new PrivateKey(ByteUtil.ParseHex(privateKeyHex));
-            }
-
-            _saveFilePath = Path.Combine(Application.persistentDataPath, "avatar.dat");
-            LoadStatus();
-
-            var path = Path.Combine(Application.persistentDataPath, "planetarium");
-            agent = new Agent(privateKey, path);
-            agent.DidReceiveAction += ReceiveAction;
-
-            Debug.Log($"User Address: 0x{agent.UserAddress.Hex()}");
-            StartMine();
         }
 
-        private void ReceiveAction(object sender, Avatar e)
+        private void ReceiveAction(object sender, Context ctx)
         {
-            Avatar avatar = Avatar;
-            Avatar = e;
+            var avatar = Avatar;
+            Avatar = ctx.avatar;
             SaveStatus();
             if (avatar == null)
             {
                 DidAvatarLoaded?.Invoke(this, Avatar);
             }
-
+            battleLog = ctx.battleLog;
         }
 
         public void StartSync()
@@ -78,8 +56,8 @@ namespace Nekoyume.Action
 
             var address = agent.UserAddress;
             var states = agent.blocks.GetStates(new[] {address});
-            var avatar = (Avatar) states.GetValueOrDefault(address);
-            if (avatar == null)
+            var ctx = (Context) states.GetValueOrDefault(address);
+            if (ctx?.avatar == null)
             {
                 CreateAvatarRequired?.Invoke(this, null);
             }
@@ -134,20 +112,6 @@ namespace Nekoyume.Action
             SaveStatus();
         }
 
-        public void HackAndSlash(Player player, int stage)
-        {
-            var action = new HackAndSlash
-            {
-                hp = player.HP,
-                stage = stage,
-                exp = player.EXP,
-                level = player.Level,
-                dead = player.IsDead(),
-                items = player.SerializeItems(),
-            };
-            ProcessAction(action);
-        }
-
         public void MoveStage(int stage)
         {
             var action = new MoveStage {stage = stage};
@@ -163,6 +127,38 @@ namespace Nekoyume.Action
         private void ProcessAction(ActionBase action)
         {
             agent.queuedActions.Enqueue(action);
+        }
+
+        public void HackAndSlash()
+        {
+            var action = new HackAndSlash();
+            ProcessAction(action);
+        }
+
+        public void Init(int index)
+        {
+            PrivateKey privateKey = null;
+            var privateKeyHex = PlayerPrefs.GetString($"private_key_{index}", "");
+
+            if (string.IsNullOrEmpty(privateKeyHex))
+            {
+                privateKey = new PrivateKey();
+                PlayerPrefs.SetString("private_key", ByteUtil.Hex(privateKey.ByteArray));
+            }
+            else
+            {
+                privateKey = new PrivateKey(ByteUtil.ParseHex(privateKeyHex));
+            }
+
+            _saveFilePath = Path.Combine(Application.persistentDataPath, $"avatar_{index}.dat");
+            LoadStatus();
+
+            var path = Path.Combine(Application.persistentDataPath, "planetarium");
+            agent = new Agent(privateKey, path);
+            agent.DidReceiveAction += ReceiveAction;
+
+            Debug.Log($"User Address: 0x{agent.UserAddress.ToHex()}");
+            StartMine();
         }
     }
 }

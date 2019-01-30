@@ -5,6 +5,7 @@ using System.Reflection;
 
 namespace Nekoyume.Data.Table
 {
+    [Serializable]
     public class Row
     {
     }
