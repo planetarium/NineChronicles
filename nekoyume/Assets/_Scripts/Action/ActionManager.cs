@@ -71,7 +71,10 @@ namespace Nekoyume.Action
 
         public void CreateNovice(string nickName)
         {
-            var action = new CreateNovice();
+            var action = new CreateNovice
+            {
+                name = nickName
+            };
             ProcessAction(action);
         }
 
@@ -137,12 +140,13 @@ namespace Nekoyume.Action
         public void Init(int index)
         {
             PrivateKey privateKey = null;
-            var privateKeyHex = PlayerPrefs.GetString($"private_key_{index}", "");
+            var key = $"private_key_{index}";
+            var privateKeyHex = PlayerPrefs.GetString(key, "");
 
             if (string.IsNullOrEmpty(privateKeyHex))
             {
                 privateKey = new PrivateKey();
-                PlayerPrefs.SetString("private_key", ByteUtil.Hex(privateKey.ByteArray));
+                PlayerPrefs.SetString(key, ByteUtil.Hex(privateKey.ByteArray));
             }
             else
             {
