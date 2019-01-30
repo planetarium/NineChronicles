@@ -14,10 +14,7 @@ namespace Nekoyume.Action
         private readonly string dirPath;
         private const string kAppearPath = "Assets/Resources/DataTable/monster_appear.csv";
         private const string kMonstersPath = "Assets/Resources/DataTable/monsters.csv";
-        private const string kItemPath = "Assets/Resources/DataTable/item.csv";
-        private const string kItemBoxPath = "Assets/Resources/DataTable/item_box.csv";
         private const string kItemDropPath = "Assets/Resources/DataTable/item_drop.csv";
-        private const string kItemEquipPath = "Assets/Resources/DataTable/item_equip.csv";
         internal const string StatsPath = "Assets/Resources/DataTable/stats.csv";
         private readonly int _seed;
         private readonly int _stage;
@@ -110,12 +107,7 @@ namespace Nekoyume.Action
             var monsterPath = Path.Combine(Directory.GetCurrentDirectory(), kMonstersPath);
             monsterTable.Load(File.ReadAllText(monsterPath));
 
-            var itemTable = new Table<Item>();
-            foreach (var path in new []{kItemPath, kItemBoxPath, kItemEquipPath})
-            {
-                var itemPath = Path.Combine(Directory.GetCurrentDirectory(), path);
-                itemTable.Load(File.ReadAllText(itemPath));
-            }
+            var itemTable = Agent.ItemTable();
             var itemSelector = new WeightedSelector<int>();
             var dropTable = new Table<ItemDrop>();
             dropTable.Load(File.ReadAllText(kItemDropPath));
