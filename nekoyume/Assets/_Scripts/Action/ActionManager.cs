@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -159,6 +158,18 @@ namespace Nekoyume.Action
 
             Debug.Log($"User Address: 0x{agent.UserAddress.ToHex()}");
             StartMine();
+        }
+
+        public void Combination()
+        {
+            var action = new Combination
+            {
+                material_1 = 101001,
+                material_2 = 101001,
+                material_3 = 101001,
+                result = 301001,
+            };
+            ProcessAction(action);
         }
     }
 }

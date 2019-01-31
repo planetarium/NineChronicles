@@ -3,11 +3,13 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.IO;
 using System.Threading.Tasks;
 using Libplanet;
 using Libplanet.Crypto;
 using Libplanet.Store;
 using Libplanet.Tx;
+using Nekoyume.Data.Table;
 using UnityEngine;
 
 namespace Nekoyume.Action
@@ -18,6 +20,9 @@ namespace Nekoyume.Action
         private readonly float interval;
         private readonly PrivateKey privateKey;
         public readonly ConcurrentQueue<ActionBase> queuedActions;
+        private const string kItemBoxPath = "Assets/Resources/DataTable/item_box.csv";
+        private const string kItemEquipPath = "Assets/Resources/DataTable/item_equip.csv";
+        private const string kItemPath = "Assets/Resources/DataTable/item.csv";
 
         public Agent(PrivateKey privateKey, string path, float interval = 3.0f)
         {
@@ -78,6 +83,18 @@ namespace Nekoyume.Action
                 DateTime.UtcNow
             );
             blocks.StageTransactions(new HashSet<Transaction<ActionBase>> {tx});
+        }
+
+        public static Table<Item> ItemTable()
+        {
+            var itemTable = new Table<Item>();
+            foreach (var path in new []{kItemPath, kItemBoxPath, kItemEquipPath})
+            {
+                var itemPath = Path.Combine(Directory.GetCurrentDirectory(), path);
+                itemTable.Load(File.ReadAllText(itemPath));
+            }
+
+            return itemTable;
         }
     }
 }

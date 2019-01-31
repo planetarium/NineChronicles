@@ -1,10 +1,7 @@
 using System.Collections;
-using System.Linq;
 using Nekoyume.Action;
 using Nekoyume.Game;
 using Nekoyume.Game.Trigger;
-using Nekoyume.Model;
-using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,6 +12,7 @@ namespace Nekoyume.UI
         public GameObject btnMove;
         public GameObject btnSleep;
         public GameObject btnStage1;
+        public GameObject btnCombine;
 
         public Text LabelInfo;
 
@@ -36,6 +34,8 @@ namespace Nekoyume.UI
             Show();
             btnMove.SetActive(false);
             btnSleep.SetActive(true);
+            btnCombine.SetActive(false);
+
             LabelInfo.text = "";
         }
 
@@ -53,6 +53,7 @@ namespace Nekoyume.UI
             {
                 yield return new WaitForSeconds(1.0f);
             }
+
             Game.Event.OnStageStart.Invoke();
         }
 
@@ -72,6 +73,24 @@ namespace Nekoyume.UI
         {
             ActionManager.Instance.MoveStage(1);
             while (ActionManager.Instance.Avatar.WorldStage != 1) yield return new WaitForSeconds(1.0f);
+        }
+
+        public void CombineClick()
+        {
+            StartCoroutine(CombineAsync());
+        }
+
+        private IEnumerator CombineAsync()
+        {
+            btnCombine.SetActive(false);
+            var items = ActionManager.Instance.Avatar.Items;
+            ActionManager.Instance.Combination();
+            while (items != ActionManager.Instance.Avatar.Items)
+            {
+                yield return new WaitForSeconds(1.0f);
+            }
+
+            btnCombine.SetActive(true);
         }
     }
 }

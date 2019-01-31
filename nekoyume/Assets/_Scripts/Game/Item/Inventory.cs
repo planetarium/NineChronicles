@@ -21,23 +21,23 @@ namespace Nekoyume.Game.Item
             }
         }
 
-        public List<InventoryItem> _items;
+        public List<InventoryItem> items;
 
         public Inventory()
         {
-            _items = new List<InventoryItem> {Capacity = 40};
+            items = new List<InventoryItem> {Capacity = 40};
         }
 
         public bool Add(ItemBase item)
         {
-            var i = _items.FindIndex(a => a.Item.Data.Id.Equals(item.Data.Id) && !item.Data.Cls.Contains("Weapon"));
+            var i = items.FindIndex(a => a.Item.Data.Id.Equals(item.Data.Id) && !item.Data.Cls.Contains("Weapon"));
             if (i < 0)
             {
-                _items.Add(new InventoryItem(item));
+                items.Add(new InventoryItem(item));
             }
             else
             {
-                _items[i].Count += 1;
+                items[i].Count += 1;
             }
             return true;
         }
@@ -59,7 +59,7 @@ namespace Nekoyume.Game.Item
 
         public void Set(List<InventoryItem> items)
         {
-            _items = items;
+            this.items = items;
         }
     }
 

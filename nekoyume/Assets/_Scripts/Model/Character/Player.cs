@@ -21,10 +21,10 @@ namespace Nekoyume.Model
         public int stage;
         public Weapon weapon;
         [NonSerialized]
-        public Inventory inventory;
-        public string Items => JsonConvert.SerializeObject(inventory._items);
+        public readonly Inventory inventory;
+        public string Items => JsonConvert.SerializeObject(inventory.items);
 
-        public Player(Avatar avatar, Simulator simulator)
+        public Player(Avatar avatar, Simulator simulator = null)
         {
             name = avatar.Name;
             exp = avatar.EXP;

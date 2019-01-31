@@ -161,7 +161,7 @@ namespace Nekoyume.Game.Character
 
         public string SerializeItems()
         {
-            var items = JsonConvert.SerializeObject(Inventory._items);
+            var items = JsonConvert.SerializeObject(Inventory.items);
             return items;
         }
 
