@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -20,6 +21,7 @@ namespace Nekoyume.Action
     public class ActionManager : MonoBehaviour
     {
         private string _saveFilePath;
+        public List<Model.Avatar> Avatars { get; private set; }
 
         private Agent agent;
         public BattleLog battleLog;
@@ -32,6 +34,26 @@ namespace Nekoyume.Action
         {
             DontDestroyOnLoad(gameObject);
             Instance = this;
+            PreloadAvatar();
+        }
+
+        private void PreloadAvatar()
+        {
+            Avatars = new List<Model.Avatar>();
+            foreach (var index in new[]{0, 1, 2})
+            {
+                var path = Path.Combine(Application.persistentDataPath, $"avatar_{index}.dat");
+                if (File.Exists(path))
+                {
+                    var formatter = new BinaryFormatter();
+                    using (FileStream stream = File.Open(path, FileMode.Open))
+                    {
+                        var data = (SaveData) formatter.Deserialize(stream);
+                        Avatars.Add(data.Avatar);
+                    }
+                }
+
+            }
         }
 
         private void ReceiveAction(object sender, Context ctx)
