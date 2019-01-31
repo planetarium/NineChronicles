@@ -9,23 +9,17 @@ namespace Nekoyume.Action
     [ActionType("create_novice")]
     public class CreateNovice : ActionBase
     {
-        private string _name = "tester";
-        // TODO use constructor
-        // Avoid MissingMethodException in Tx.ToAction
-//        public CreateNovice(string name)
-//        {
-//            _name = name;
-//        }
+        public string name;
         public override void LoadPlainValue(IImmutableDictionary<string, object> plainValue)
         {
-            _name = (string) plainValue["name"];
+            name = (string) plainValue["name"];
         }
 
         public override AddressStateMap Execute(Address @from, Address to, AddressStateMap states)
         {
             var avatar = new Avatar
             {
-                Name = _name,
+                Name = name,
                 Level = 1,
                 EXP = 0,
                 HPMax = 0,
@@ -37,7 +31,7 @@ namespace Nekoyume.Action
         }
         public override IImmutableDictionary<string, object> PlainValue => new Dictionary<string, object>()
         {
-            ["name"] = _name,
+            ["name"] = name,
         }.ToImmutableDictionary();
     }
 }

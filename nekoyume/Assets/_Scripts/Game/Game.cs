@@ -1,6 +1,8 @@
 using System;
+using System.Collections;
 using Assets.SimpleLocalization;
 using Nekoyume.Action;
+using Nekoyume.Game.Factory;
 using Nekoyume.UI;
 using UnityEngine;
 
@@ -44,7 +46,15 @@ namespace Nekoyume.Game
 
         private void OnCreateAvatarRequired(object sender, EventArgs e)
         {
-            ActionManager.Instance.CreateNovice("tester");
+            StartCoroutine(CreateAvatarAsync());
+        }
+
+        private IEnumerator CreateAvatarAsync()
+        {
+            yield return new WaitForEndOfFrame();
+            var objectPool = GetComponentInChildren<Util.ObjectPool>();
+            var player = objectPool.Get<Character.Player>();
+            player.transform.position = new Vector2(-0.8f, 0.46f);
         }
 
         private void OnAvatarLoaded(object sender, Model.Avatar avatar)

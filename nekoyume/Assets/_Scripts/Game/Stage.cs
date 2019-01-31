@@ -47,15 +47,9 @@ namespace Nekoyume.Game
             Play();
         }
 
-        private IEnumerator Start()
+        private void Start()
         {
             LoadBackground("nest");
-
-            yield return new WaitForEndOfFrame();
-            var playerFactory = GetComponent<PlayerFactory>();
-            var player = playerFactory.Create();
-            if (player != null)
-                player.transform.position = new Vector2(-0.8f, 0.46f);
         }
 
         private void OnRoomEnter()
