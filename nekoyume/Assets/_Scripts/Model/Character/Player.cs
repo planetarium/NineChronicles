@@ -22,7 +22,7 @@ namespace Nekoyume.Model
         public Weapon weapon;
         [NonSerialized]
         public readonly Inventory inventory;
-        public string Items => JsonConvert.SerializeObject(inventory._items);
+        public string Items => JsonConvert.SerializeObject(inventory.items);
 
         public Player(Avatar avatar, Simulator simulator = null)
         {
