@@ -12,23 +12,14 @@ namespace Nekoyume.UI
         public GameObject btnLogin;
         public GameObject modal;
         public InputField nameField;
-        public GameObject slot1;
-        public GameObject slot2;
-        public GameObject slot3;
-        private List<GameObject> slots => new List<GameObject>
-        {
-            slot1,
-            slot2,
-            slot3,
-        };
+        public GameObject[] slots;
         public Text text;
 
         private void Awake()
         {
             btnLogin.SetActive(false);
-            modal.SetActive(false);
             nameField.gameObject.SetActive(false);
-            for (int i = 0; i < slots.Count; i++)
+            for (int i = 0; i < slots.Length; i++)
             {
                 var slot = slots[i];
                 var bg = slot.GetComponent<Image>();
@@ -48,7 +39,6 @@ namespace Nekoyume.UI
                     button.gameObject.SetActive(false);
                 }
             }
-            modal.SetActive(true);
         }
 
         public void LoginClick()
@@ -71,11 +61,12 @@ namespace Nekoyume.UI
         }
         public void DeleteSlot(int index)
         {
-            var key = $"private_key_{index}";
-            string k = PlayerPrefs.GetString(key, "");
-            PlayerPrefs.DeleteKey(key);
-            Debug.Log($"Delete {key}: {k}");
-            string datPath = System.IO.Path.Combine(Application.persistentDataPath, $"avatar_{index}.dat");
+            var prefsKey = string.Format(ActionManager.PrivateKeyFormat, index);
+            string privateKey = PlayerPrefs.GetString(prefsKey, "");
+            PlayerPrefs.DeleteKey(prefsKey);
+            Debug.Log($"Delete {prefsKey}: {privateKey}");
+            var fileName = string.Format(ActionManager.AvatarFileFormat, index);
+            string datPath = System.IO.Path.Combine(Application.persistentDataPath, fileName);
             if (System.IO.File.Exists(datPath))
                 System.IO.File.Delete(datPath);
             PlayerPrefs.Save();

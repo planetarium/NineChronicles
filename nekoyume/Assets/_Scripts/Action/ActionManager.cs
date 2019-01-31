@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
+using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using Libplanet;
 using Libplanet.Crypto;
@@ -29,6 +30,8 @@ namespace Nekoyume.Action
         public Model.Avatar Avatar { get; private set; }
         public event EventHandler<Model.Avatar> DidAvatarLoaded;
         public event EventHandler CreateAvatarRequired;
+        public const string PrivateKeyFormat = "private_key_{0}";
+        public const string AvatarFileFormat = "avatar_{0}.dat";
 
         private void Awake()
         {
@@ -40,19 +43,15 @@ namespace Nekoyume.Action
         private void PreloadAvatar()
         {
             Avatars = new List<Model.Avatar>();
-            foreach (var index in new[]{0, 1, 2})
+            foreach (var index in Enumerable.Range(0, 3))
             {
-                var path = Path.Combine(Application.persistentDataPath, $"avatar_{index}.dat");
-                if (File.Exists(path))
+                var fileName = string.Format(AvatarFileFormat, index);
+                var path = Path.Combine(Application.persistentDataPath, fileName);
+                var avatar = LoadStatus(path);
+                if (avatar != null)
                 {
-                    var formatter = new BinaryFormatter();
-                    using (FileStream stream = File.Open(path, FileMode.Open))
-                    {
-                        var data = (SaveData) formatter.Deserialize(stream);
-                        Avatars.Add(data.Avatar);
-                    }
+                    Avatars.Add(avatar);
                 }
-
             }
         }
 
@@ -100,16 +99,18 @@ namespace Nekoyume.Action
             ProcessAction(action);
         }
 
-        private void LoadStatus()
+        private Model.Avatar LoadStatus(string path)
         {
-            if (!File.Exists(_saveFilePath)) return;
-
-            var formatter = new BinaryFormatter();
-            using (FileStream stream = File.Open(_saveFilePath, FileMode.Open))
+            if (File.Exists(path))
             {
-                var data = (SaveData) formatter.Deserialize(stream);
-                Avatar = data.Avatar;
+                var formatter = new BinaryFormatter();
+                using (FileStream stream = File.Open(path, FileMode.Open))
+                {
+                    var data = (SaveData) formatter.Deserialize(stream);
+                    return data.Avatar;
+                }
             }
+            return null;
         }
 
         private void SaveStatus()
@@ -162,7 +163,7 @@ namespace Nekoyume.Action
         public void Init(int index)
         {
             PrivateKey privateKey = null;
-            var key = $"private_key_{index}";
+            var key = string.Format(PrivateKeyFormat, index);
             var privateKeyHex = PlayerPrefs.GetString(key, "");
 
             if (string.IsNullOrEmpty(privateKeyHex))
@@ -175,8 +176,9 @@ namespace Nekoyume.Action
                 privateKey = new PrivateKey(ByteUtil.ParseHex(privateKeyHex));
             }
 
-            _saveFilePath = Path.Combine(Application.persistentDataPath, $"avatar_{index}.dat");
-            LoadStatus();
+            var fileName = string.Format(AvatarFileFormat, index);
+            _saveFilePath = Path.Combine(Application.persistentDataPath, fileName);
+            Avatar = LoadStatus(_saveFilePath);
 
             var path = Path.Combine(Application.persistentDataPath, "planetarium");
             agent = new Agent(privateKey, path);
