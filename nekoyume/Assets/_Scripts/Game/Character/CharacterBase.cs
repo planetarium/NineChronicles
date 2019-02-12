@@ -23,12 +23,12 @@ namespace Nekoyume.Game.Character
         public virtual WeightType WeightType { get; protected set; } = WeightType.Small;
         public float RunSpeed = 0.0f;
 
-        protected int _hpMax = 0;
+        public int HPMax { get; protected set; } = 0;
         protected internal Animator _anim = null;
         protected ProgressBar _hpBar = null;
-        protected Vector3 _hpBarOffset = new Vector3();
+        protected virtual Vector3 _hpBarOffset => new Vector3();
         protected ProgressBar _castingBar = null;
-        protected Vector3 _castingBarOffset = new Vector3();
+        protected virtual Vector3 _castingBarOffset => new Vector3();
         protected float _dyingTime = 1.0f;
 
         protected List<SkillBase> _skills = new List<SkillBase>();

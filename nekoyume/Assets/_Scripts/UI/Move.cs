@@ -27,6 +27,7 @@ namespace Nekoyume.UI
             btnStage1.SetActive(ActionManager.Instance.Avatar.WorldStage > 1);
             btnSleep.SetActive(false);
             LabelInfo.text = "";
+            btnCombine.SetActive(true);
         }
 
         public void ShowWorld()
@@ -47,6 +48,7 @@ namespace Nekoyume.UI
         private IEnumerator MoveAsync()
         {
             btnMove.SetActive(false);
+            btnCombine.SetActive(false);
             var currentAvatar = ActionManager.Instance.Avatar;
             ActionManager.Instance.HackAndSlash();
             while (currentAvatar.Equals(ActionManager.Instance.Avatar))
