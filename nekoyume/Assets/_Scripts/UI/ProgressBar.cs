@@ -22,7 +22,7 @@ namespace Nekoyume.UI
             Vector3 targetPosition = target.transform.position + offset;
 
             // https://answers.unity.com/questions/799616/unity-46-beta-19-how-to-convert-from-world-space-t.html
-            float screenHeight = Screen.height * 0.5f;
+            float screenHeight = Screen.height;
             RectTransform canvasRect = transform.root.gameObject.GetComponent<RectTransform>();
             Vector2 viewportPosition = Camera.main.WorldToViewportPoint(targetPosition);
             Vector2 canvasPosition = new Vector2(

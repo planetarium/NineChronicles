@@ -21,13 +21,23 @@ namespace Nekoyume.Game.Character
         public int RewardExp = 0;
         public Guid id;
 
+        protected override Vector3 _hpBarOffset => _castingBarOffset + new Vector3(0, 0 + 0.22f, 0.0f);
+
+        protected override Vector3 _castingBarOffset
+        {
+            get
+            {
+                var spriteRenderer = GetComponentInChildren<Renderer>();
+                var x = spriteRenderer.bounds.min.x - transform.position.x + spriteRenderer.bounds.size.x / 2;
+                var y = spriteRenderer.bounds.max.y - transform.position.y;
+                return new Vector3(x, y, 0.0f);
+            }
+        }
+
         public void InitAI(Data.Table.Monster statsData)
         {
             DataId = statsData.Id;
             RunSpeed = -1.0f;
-
-            _hpBarOffset.Set(-0.0f, -0.11f, 0.0f);
-            _castingBarOffset.Set(-0.0f, -0.33f, 0.0f);
 
             Root = new Root();
             Root.OpenBranch(
@@ -90,7 +100,7 @@ namespace Nekoyume.Game.Character
 
             Power = power;
 
-            _hpMax = HP;
+            HPMax = HP;
         }
 
         public override void OnDamage(int dmg)

@@ -10,7 +10,9 @@ namespace Nekoyume.UI
     {
         public Text TextLevelName;
         public Text TextStage;
+        public Text TextHP;
         public Text TextExp;
+        public Slider HPBar;
         public Slider ExpBar;
 
         private string _avatarName = "";
@@ -49,20 +51,18 @@ namespace Nekoyume.UI
             if (_player != null)
             {
                 TextLevelName.text = $"LV. {_player.Level} {_avatarName}";  
-                TextExp.text = $"{_player.EXP} / {_player.EXPMax}";
+                TextHP.text = $"{_player.HP}/{_player.HPMax}";
+                TextExp.text = $"{_player.EXP}/{_player.EXPMax}";
 
-                float value = (float)_player.EXP / (float)_player.EXPMax;
-                if (value <= 0.0f)
-                    ExpBar.fillRect.gameObject.SetActive(false);
-                else
-                    ExpBar.fillRect.gameObject.SetActive(true);
+                float hpValue = _player.HP / (float) _player.HPMax;
+                HPBar.fillRect.gameObject.SetActive(hpValue > 0.0f);
+                hpValue = Mathf.Min(Mathf.Max(hpValue, 0.1f), 1.0f);
+                HPBar.value = hpValue;
 
-                if (value > 1.0f)
-                    value = 1.0f;
-                if (value < 0.1f)
-                    value = 0.1f;
-
-                ExpBar.value = value;
+                float expValue = _player.EXP / (float) _player.EXPMax;
+                ExpBar.fillRect.gameObject.SetActive(expValue > 0.0f);
+                expValue = Mathf.Min(Mathf.Max(expValue, 0.1f), 1.0f);
+                ExpBar.value = expValue;
             }
         }
 
