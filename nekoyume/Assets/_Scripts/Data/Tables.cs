@@ -15,6 +15,7 @@ namespace Nekoyume.Data
         public Table<ItemDrop> ItemDrop { get; private set; }
         public Table<BoxDrop> BoxDrop { get; private set; }
         public Table<Item> Item { get; private set; }
+        public Table<Recipe> Recipe { get; private set; }
 
         private void Start()
         {
@@ -44,6 +45,9 @@ namespace Nekoyume.Data
             Load(Item, "DataTable/item");
             Load(Item, "DataTable/item_equip");
             Load(Item, "DataTable/item_box");
+
+            Recipe = new Table<Recipe>();
+            Load(Recipe, "DataTable/recipe");
         }
 
         private void Load(ITable table, string filename)

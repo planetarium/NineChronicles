@@ -1,19 +1,18 @@
 using System.Collections;
-using System.Threading;
 using Nekoyume.Action;
 using Nekoyume.Game;
 using Nekoyume.Game.Trigger;
 using UnityEngine;
 using UnityEngine.UI;
 
-
 namespace Nekoyume.UI
 {
     public class Move : Widget
     {
         public GameObject btnMove;
-        public GameObject btnStage1;
         public GameObject btnSleep;
+        public GameObject btnStage1;
+        public GameObject btnCombine;
 
         public Text LabelInfo;
 
@@ -22,8 +21,8 @@ namespace Nekoyume.UI
             Show();
             btnSleep.GetComponent<Button>().enabled = true;
             btnMove.GetComponent<Button>().enabled = true;
-            Model.Avatar avatar = ActionManager.Instance.Avatar;
-            bool enabled = !avatar.Dead;
+            var avatar = ActionManager.Instance.Avatar;
+            var enabled = !avatar.Dead;
             btnMove.SetActive(enabled);
             btnStage1.SetActive(ActionManager.Instance.Avatar.WorldStage > 1);
             btnSleep.SetActive(false);
@@ -35,13 +34,27 @@ namespace Nekoyume.UI
             Show();
             btnMove.SetActive(false);
             btnSleep.SetActive(true);
+            btnCombine.SetActive(false);
+
             LabelInfo.text = "";
         }
 
         public void MoveClick()
         {
-            Game.Event.OnStageEnter.Invoke();
-            Close();
+            StartCoroutine(MoveAsync());
+        }
+
+        private IEnumerator MoveAsync()
+        {
+            btnMove.SetActive(false);
+            var currentAvatar = ActionManager.Instance.Avatar;
+            ActionManager.Instance.HackAndSlash();
+            while (currentAvatar.Equals(ActionManager.Instance.Avatar))
+            {
+                yield return new WaitForSeconds(1.0f);
+            }
+
+            Game.Event.OnStageStart.Invoke();
         }
 
         public void SleepClick()
@@ -59,11 +72,25 @@ namespace Nekoyume.UI
         private IEnumerator MoveStageAsync()
         {
             ActionManager.Instance.MoveStage(1);
-            while (ActionManager.Instance.Avatar.WorldStage != 1)
+            while (ActionManager.Instance.Avatar.WorldStage != 1) yield return new WaitForSeconds(1.0f);
+        }
+
+        public void CombineClick()
+        {
+            StartCoroutine(CombineAsync());
+        }
+
+        private IEnumerator CombineAsync()
+        {
+            btnCombine.SetActive(false);
+            var items = ActionManager.Instance.Avatar.Items;
+            ActionManager.Instance.Combination();
+            while (items != ActionManager.Instance.Avatar.Items)
             {
                 yield return new WaitForSeconds(1.0f);
             }
-            Game.Event.OnStageEnter.Invoke();
+
+            btnCombine.SetActive(true);
         }
     }
 }

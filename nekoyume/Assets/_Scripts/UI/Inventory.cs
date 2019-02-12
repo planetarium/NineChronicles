@@ -49,7 +49,7 @@ namespace Nekoyume.UI
         {
             _player = FindObjectOfType<Game.Character.Player>();
             // FIX ME : get item list
-            List<Game.Item.Inventory.InventoryItem> items = _player.Inventory._items;
+            List<Game.Item.Inventory.InventoryItem> items = _player.Inventory.items;
             for (int i = 0; i < 40; ++i)
             {
                 InventorySlot slot = _slots[i];

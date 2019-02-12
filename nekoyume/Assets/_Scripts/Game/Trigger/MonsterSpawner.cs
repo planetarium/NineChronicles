@@ -1,17 +1,18 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.Data;
 using Nekoyume.Game.Character;
+using Nekoyume.Game.Factory;
+using Nekoyume.Model;
 using UnityEngine;
-
 
 namespace Nekoyume.Game.Trigger
 {
     public class MonsterSpawner : MonoBehaviour
     {
-        private Stage _stage;
-        private int _stageId;
-        private int _wave = 0;
-        private int _monsterPower = 0;
-        private float[,] _spawnPoints = new [,] {
+        private readonly float[,] _spawnPoints =
+        {
             {0.0f, -0.8f},
             {0.1f, -1.0f},
             {0.2f, -1.2f},
@@ -20,7 +21,15 @@ namespace Nekoyume.Game.Trigger
             {0.4f, -1.4f},
             {0.9f, -0.7f},
             {0.8f, -1.0f},
-            {0.9f, -1.2f}};
+            {0.9f, -1.2f}
+        };
+
+        private Monster _monster;
+        private int _monsterPower;
+
+        private Stage _stage;
+        private int _stageId;
+        private int _wave;
 
         private void Awake()
         {
@@ -35,12 +44,15 @@ namespace Nekoyume.Game.Trigger
         private void OnEnemyDead(Enemy _)
         {
             if (IsClearWave())
-            {
                 if (!NextWave())
-                {
                     Event.OnStageClear.Invoke();
-                }
-            }
+        }
+
+        public void SetData(int stageId, Monster monster)
+        {
+            _stageId = stageId;
+            _monster = monster;
+            SpawnWave();
         }
 
         public void SetData(int stageId, int monsterPower)
@@ -63,6 +75,7 @@ namespace Nekoyume.Game.Trigger
                 if (character.gameObject.activeSelf)
                     return false;
             }
+
             return true;
         }
 
@@ -73,62 +86,41 @@ namespace Nekoyume.Game.Trigger
 
             _wave--;
             SpawnWave();
-            if (_wave == 0 && HasBoss())
-            {
-                SpawnBoss();
-            }
+            if (_wave == 0 && HasBoss()) SpawnBoss();
             return true;
         }
 
         private void SpawnWave()
         {
-            var selector = new Util.WeightedSelector<Data.Table.MonsterAppear>();
-            var tables = this.GetRootComponent<Data.Tables>();
-            foreach (var appearPair in tables.MonsterAppear)
-            {
-                Data.Table.MonsterAppear appearData = appearPair.Value;
-                if (_stageId > appearData.StageMax)
-                    continue;
-
-                if (appearData.Weight <= 0)
-                    continue;
-
-                selector.Add(appearData, appearData.Weight);
-            }
-
-            Factory.EnemyFactory factory = GetComponentInParent<Factory.EnemyFactory>();
+            var factory = GetComponentInParent<EnemyFactory>();
             var player = _stage.GetComponentInChildren<Character.Player>();
-            float offsetX = player.transform.position.x + 5.5f;
-            int[] randIndex = Enumerable.Range(0, _spawnPoints.Length / 2).ToArray()
-                                        .OrderBy(n => System.Guid.NewGuid()).ToArray();
-            int monsterCount = 2;
-            for (int i = 0; i < monsterCount; ++i)
+            var offsetX = player.transform.position.x + 1.0f;
+            var randIndex = Enumerable.Range(0, _spawnPoints.Length / 2)
+                .OrderBy(n => Guid.NewGuid()).ToArray();
             {
-                int r = randIndex[i];
-                Vector2 pos = new Vector2(
+                var r = randIndex[0];
+                var pos = new Vector2(
                     _spawnPoints[r, 0] + offsetX,
                     _spawnPoints[r, 1]);
-
-                Data.Table.MonsterAppear appearData = selector.Select();
-                factory.Create(appearData.MonsterId, pos, _monsterPower);
+                factory.Create(_monster, pos);
             }
         }
 
         private bool HasBoss()
         {
-            var tables = this.GetRootComponent<Data.Tables>();
+            var tables = this.GetRootComponent<Tables>();
             var stageData = tables.Stage[_stageId];
             return stageData.bossId > 0;
         }
 
         private void SpawnBoss()
         {
-            var tables = this.GetRootComponent<Data.Tables>();
+            var tables = this.GetRootComponent<Tables>();
             var stageData = tables.Stage[_stageId];
 
-            Factory.EnemyFactory factory = GetComponentInParent<Factory.EnemyFactory>();
+            var factory = GetComponentInParent<EnemyFactory>();
             var player = _stage.GetComponentInChildren<Character.Player>();
-            float offsetX = player.transform.position.x + 5.5f;
+            var offsetX = player.transform.position.x + 5.5f;
             factory.CreateBoss(stageData.bossId, new Vector2(offsetX, -1.0f), _monsterPower);
         }
     }

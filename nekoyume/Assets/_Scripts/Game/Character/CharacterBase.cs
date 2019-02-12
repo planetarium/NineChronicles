@@ -4,9 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using BTAI;
 using Nekoyume.Data.Table;
-using Nekoyume.Game.Trigger;
+using Nekoyume.Game.CC;
+using Nekoyume.Game.Skill;
+using Nekoyume.UI;
 using UnityEngine;
-
 
 namespace Nekoyume.Game.Character
 {
@@ -22,23 +23,23 @@ namespace Nekoyume.Game.Character
         public virtual WeightType WeightType { get; protected set; } = WeightType.Small;
         public float RunSpeed = 0.0f;
 
-        public int HPMax { get; protected set; } = 0;
-        protected Animator _anim = null;
-        protected UI.ProgressBar _hpBar = null;
-        protected virtual Vector3 _hpBarOffset => new Vector3();
-        protected UI.ProgressBar _castingBar = null;
-        protected virtual Vector3 _castingBarOffset => new Vector3();
+        protected int _hpMax = 0;
+        protected internal Animator _anim = null;
+        protected ProgressBar _hpBar = null;
+        protected Vector3 _hpBarOffset = new Vector3();
+        protected ProgressBar _castingBar = null;
+        protected Vector3 _castingBarOffset = new Vector3();
         protected float _dyingTime = 1.0f;
 
-        protected List<Skill.SkillBase> _skills = new List<Skill.SkillBase>();
+        protected List<SkillBase> _skills = new List<SkillBase>();
         protected const float kSkillGlobalCooltime = 0.6f;
         protected bool Casting => CastingSkill != null;
-        protected Skill.SkillBase CastingSkill => _skills.Find(skill => skill.Casting);
-        protected Skill.SkillBase CastedSkill => _skills.Find(skill => skill.Casted);
+        protected SkillBase CastingSkill => _skills.Find(skill => skill.Casting);
+        protected SkillBase CastedSkill => _skills.Find(skill => skill.Casted);
 
-        public bool Rooted => gameObject.GetComponent<CC.IRoot>() != null;
-        public bool Silenced => gameObject.GetComponent<CC.ISilence>() != null;
-        public bool Stunned => gameObject.GetComponent<CC.IStun>() != null;
+        public bool Rooted => gameObject.GetComponent<IRoot>() != null;
+        public bool Silenced => gameObject.GetComponent<ISilence>() != null;
+        public bool Stunned => gameObject.GetComponent<IStun>() != null;
 
         private void Start()
         {
@@ -75,7 +76,7 @@ namespace Nekoyume.Game.Character
         {
             get
             {
-                var slows = GetComponents<CC.ISlow>();
+                var slows = GetComponents<ISlow>();
                 var multiplierBySlow = slows.Select(slow => slow.AttackSpeedMultiplier).DefaultIfEmpty(1.0f).Min();
                 return multiplierBySlow;
             }
@@ -85,7 +86,7 @@ namespace Nekoyume.Game.Character
         {
             get
             {
-                var slows = GetComponents<CC.ISlow>();
+                var slows = GetComponents<ISlow>();
                 var multiplierBySlow = slows.Select(slow => slow.RunSpeedMultiplier).DefaultIfEmpty(1.0f).Min();
                 return multiplierBySlow;
             }
@@ -125,7 +126,7 @@ namespace Nekoyume.Game.Character
             return false;
         }
 
-        public virtual bool UseSkill(Skill.SkillBase selectedSkill, bool checkRange = true)
+        public virtual bool UseSkill(SkillBase selectedSkill, bool checkRange = true)
         {
             if (checkRange && !selectedSkill.IsTargetInRange()) return false;
             if (Stunned) return false;
@@ -163,7 +164,7 @@ namespace Nekoyume.Game.Character
             return true;
         }
 
-        protected void Die()
+        public void Die()
         {
             StartCoroutine(Dying());
         }
@@ -192,7 +193,7 @@ namespace Nekoyume.Game.Character
             {
                 if (_castingBar == null)
                 {
-                    _castingBar = UI.Widget.Create<UI.ProgressBar>(true);
+                    _castingBar = Widget.Create<ProgressBar>(true);
                 }
                 var castingBarOffset = _hpBar == null ? _hpBarOffset : _castingBarOffset;
                 _castingBar.UpdatePosition(gameObject, castingBarOffset);
@@ -219,7 +220,7 @@ namespace Nekoyume.Game.Character
         {
             if (_hpBar == null)
             {
-                _hpBar = UI.Widget.Create<UI.ProgressBar>(true);
+                _hpBar = Widget.Create<ProgressBar>(true);
             }
             _hpBar.UpdatePosition(gameObject, _hpBarOffset);
             _hpBar.SetText($"{HP} / {HPMax}");
@@ -269,13 +270,12 @@ namespace Nekoyume.Game.Character
             );
         }
 
-        public virtual void OnDamage(AttackType attackType, int dmg)
+        public virtual void OnDamage(int dmg)
         {
-            int calcDmg = CalcDamage(attackType, dmg);
-            if (calcDmg <= 0)
+            if (dmg <= 0)
                 return;
 
-            HP -= calcDmg;
+            HP -= dmg;
 
             if (_anim != null)
             {
@@ -298,8 +298,20 @@ namespace Nekoyume.Game.Character
                 _anim.ResetTrigger("Hit");
                 _anim.SetBool("Run", false);
             }
+        }
 
-            gameObject.SetActive(false);
+        public void Attack(int atk, CharacterBase target)
+        {
+            if (_anim != null)
+            {
+                _anim.SetTrigger("Attack");
+                _anim.SetBool("Run", false);
+            }
+
+            if (target != null)
+            {
+                target.OnDamage(atk);
+            }
         }
     }
 }

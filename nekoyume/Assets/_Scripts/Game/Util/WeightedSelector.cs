@@ -41,7 +41,9 @@ namespace Nekoyume.Game.Util
             {
                 sum += _weights[i];
             }
-            int rnd = Random.Range(0, sum);
+
+            var random = new System.Random();
+            int rnd = random.Next(0, sum);
             int idx = -1;
             for (i = 0; i < len; ++i)
             {

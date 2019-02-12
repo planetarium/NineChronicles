@@ -7,6 +7,7 @@ using Nekoyume.Data;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Skill;
+using Nekoyume.Model;
 using Nekoyume.UI;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -157,27 +158,26 @@ namespace Nekoyume.Game.Character
             return canceled;
         }
 
-        public override void OnDamage(AttackType attackType, int dmg)
+        public override void OnDamage(int dmg)
         {
-            base.OnDamage(attackType, dmg);
-
-            int calcDmg = CalcDamage(attackType, dmg);
+            base.OnDamage(dmg);
 
             PopupText.Show(
                 transform.TransformPoint(UnityEngine.Random.Range(-0.6f, -0.4f), 1.0f, 0.0f),
                 new Vector3(-0.02f, 0.02f, 0.0f),
-                calcDmg.ToString(),
+                dmg.ToString(),
                 Color.red);
         }
 
         public string SerializeItems()
         {
-            var items = JsonConvert.SerializeObject(Inventory._items);
+            var items = JsonConvert.SerializeObject(Inventory.items);
             return items;
         }
 
         protected override void OnDead()
         {
+            gameObject.SetActive(false);
             Event.OnPlayerDead.Invoke();
         }
 
@@ -228,7 +228,7 @@ namespace Nekoyume.Game.Character
             UpdateHpBar();
         }
 
-        private void PickUpItem(DropItem item)
+        private void PickUpItem(Item.DropItem item)
         {
             Inventory.Add(item.Item);
             ActionManager.Instance.UpdateItems(SerializeItems());
@@ -238,14 +238,9 @@ namespace Nekoyume.Game.Character
         {
             if (!string.IsNullOrEmpty(avatar.Items))
             {
-                var des = JsonConvert.DeserializeObject<JArray>(avatar.Items);
-                var inventoryItems = new List<Item.Inventory.InventoryItem>();
-                for (var index = 0; index < des.ToArray().Length; index++)
+                var inventoryItems = JsonConvert.DeserializeObject<List<Item.Inventory.InventoryItem>>(avatar.Items);
+                foreach (var inventoryItem in inventoryItems)
                 {
-                    var d = des.ToArray()[index];
-                    var inventoryItem = JsonConvert.DeserializeObject<Item.Inventory.InventoryItem>(d.ToString(),
-                        new InventoryItemConverter());
-                    inventoryItems.Add(inventoryItem);
                     if (inventoryItem.Item is Weapon)
                     {
                         _weapon = (Weapon) inventoryItem.Item;
@@ -297,6 +292,15 @@ namespace Nekoyume.Game.Character
             Event.OnUpdateEquipment.Invoke(_weapon);
             // TODO Implement Actions
             ActionManager.Instance.UpdateItems(SerializeItems());
+        }
+
+        public void Init()
+        {
+            RunSpeed = 0.0f;
+
+            _hpBarOffset.Set(-0.22f, -0.61f, 0.0f);
+            _castingBarOffset.Set(-0.22f, -0.85f, 0.0f);
+            _mpBarOffset.Set(-0.22f, -0.66f, 0.0f);
         }
     }
 }

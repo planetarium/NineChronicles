@@ -1,8 +1,11 @@
 using System.Collections;
 using Nekoyume.Action;
+using Nekoyume.Data;
 using Nekoyume.Game.Character;
+using Nekoyume.Game.Factory;
+using Nekoyume.Game.Item;
+using Nekoyume.Game.Util;
 using UnityEngine;
-
 
 namespace Nekoyume.Game.Trigger
 {
@@ -10,43 +13,14 @@ namespace Nekoyume.Game.Trigger
     {
         public bool Sleep;
 
-        private void Awake()
-        {
-            Event.OnStageClear.AddListener(OnStageClear);
-        }
-
-        private void OnStageClear()
-        {
-            StartCoroutine(WaitStageExit());
-        }
-
-        private IEnumerator WaitStageExit()
-        {
-            StageReward();
-
-            var stage = GetComponentInParent<Stage>();
-            var player = stage.GetComponentInChildren<Player>();
-            var id = stage.Id + 1;
-            ActionManager.Instance.HackAndSlash(player, id);
-            while (ActionManager.Instance.Avatar.WorldStage != id)
-            {
-                yield return new WaitForSeconds(1.0f);
-            }
-            if (Sleep)
-                Event.OnPlayerSleep.Invoke();
-            else
-                Event.OnStageEnter.Invoke();
-            Sleep = false;
-        }
-
         private void StageReward()
         {
             var stage = GetComponentInParent<Stage>();
-            var selector = new Util.WeightedSelector<int>();
-            var tables = this.GetRootComponent<Data.Tables>();
+            var selector = new WeightedSelector<int>();
+            var tables = this.GetRootComponent<Tables>();
             foreach (var pair in tables.BoxDrop)
             {
-                Data.Table.BoxDrop dropData = pair.Value;
+                var dropData = pair.Value;
                 if (stage.Id != dropData.StageId)
                     continue;
 
@@ -59,13 +33,10 @@ namespace Nekoyume.Game.Trigger
             if (selector.Count <= 0)
                 return;
 
-            var player = stage.GetComponentInChildren<Character.Player>();
-            var dropItemFactory = GetComponentInParent<Factory.DropItemFactory>();
+            var player = stage.GetComponentInChildren<Player>();
+            var dropItemFactory = GetComponentInParent<DropItemFactory>();
             var dropItem = dropItemFactory.Create(selector.Select(), player.transform.position);
-            if (dropItem != null)
-            {
-                Event.OnGetItem.Invoke(dropItem.GetComponent<Item.DropItem>());
-            }
+            if (dropItem != null) Event.OnGetItem.Invoke(dropItem.GetComponent<DropItem>());
         }
     }
 }

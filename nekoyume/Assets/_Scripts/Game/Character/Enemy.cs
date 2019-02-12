@@ -1,9 +1,17 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using BTAI;
 using DG.Tweening;
+using Nekoyume.Data;
 using Nekoyume.Data.Table;
+using Nekoyume.Game.Factory;
+using Nekoyume.Game.Item;
+using Nekoyume.Game.Skill;
+using Nekoyume.Game.Util;
+using Nekoyume.Model;
+using Nekoyume.UI;
 using UnityEngine;
-
 
 namespace Nekoyume.Game.Character
 {
@@ -11,6 +19,7 @@ namespace Nekoyume.Game.Character
     {
         public int DataId = 0;
         public int RewardExp = 0;
+        public Guid id;
 
         protected override Vector3 _hpBarOffset => _castingBarOffset + new Vector3(0, 0 + 0.22f, 0.0f);
 
@@ -25,7 +34,7 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        public void InitAI(Monster statsData)
+        public void InitAI(Data.Table.Monster statsData)
         {
             DataId = statsData.Id;
             RunSpeed = -1.0f;
@@ -63,16 +72,16 @@ namespace Nekoyume.Game.Character
                 statsData.Skill_2,
                 statsData.Skill_3
             };
-            var tables = this.GetRootComponent<Data.Tables>();
+            var tables = this.GetRootComponent<Tables>();
             foreach (var skillName in skillNames)
             {
                 Data.Table.Skill skillData;
                 if (tables.Skill.TryGetValue(skillName, out skillData))
                 {
-                    var skillType = typeof(Skill.SkillBase).Assembly
-                    .GetTypes()
-                    .FirstOrDefault(t => skillData.Cls == t.Name);
-                    var skill = gameObject.AddComponent(skillType) as Skill.SkillBase;
+                    var skillType = typeof(SkillBase).Assembly
+                        .GetTypes()
+                        .FirstOrDefault(t => skillData.Cls == t.Name);
+                    var skill = gameObject.AddComponent(skillType) as SkillBase;
                     if (skill.Init(skillData))
                     {
                         _skills.Add(skill);
@@ -81,7 +90,7 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        public void InitStats(Monster statsData, int power)
+        public void InitStats(Data.Table.Monster statsData, int power)
         {
             HP = Mathf.FloorToInt((float)statsData.Health * ((float)power * 0.01f));
             ATK = statsData.Attack;
@@ -94,16 +103,14 @@ namespace Nekoyume.Game.Character
             HPMax = HP;
         }
 
-        public override void OnDamage(AttackType attackType, int dmg)
+        public override void OnDamage(int dmg)
         {
-            base.OnDamage(attackType, dmg);
+            base.OnDamage(dmg);
 
-            int calcDmg = CalcDamage(attackType, dmg);
-
-            UI.PopupText.Show(
+            PopupText.Show(
                 transform.TransformPoint(0.12f, 0.5f, 0.0f),
                 new Vector3(0.06f, 0.05f, 0.0f),
-                calcDmg.ToString(),
+                dmg.ToString(),
                 Color.yellow);
 
             SpriteRenderer renderer = gameObject.GetComponent<SpriteRenderer>();
@@ -126,8 +133,8 @@ namespace Nekoyume.Game.Character
 
         protected void DropItem()
         {
-            var selector = new Util.WeightedSelector<int>();
-            var tables = this.GetRootComponent<Data.Tables>();
+            var selector = new WeightedSelector<int>();
+            var tables = this.GetRootComponent<Tables>();
             foreach (var pair in tables.ItemDrop)
             {
                 ItemDrop dropData = pair.Value;
@@ -143,12 +150,39 @@ namespace Nekoyume.Game.Character
             if (selector.Count <= 0)
                 return;
 
-            var dropItemFactory = GetComponentInParent<Factory.DropItemFactory>();
+            var dropItemFactory = GetComponentInParent<DropItemFactory>();
             var dropItem = dropItemFactory.Create(selector.Select(), transform.position);
             if (dropItem != null)
             {
                 Event.OnGetItem.Invoke(dropItem.GetComponent<Item.DropItem>());
             }
+        }
+
+        public void Init(Model.Monster spawnCharacter)
+        {
+            RunSpeed = -1.0f;
+            _hpBarOffset.Set(-0.0f, -0.11f, 0.0f);
+            _castingBarOffset.Set(-0.0f, -0.33f, 0.0f);
+            InitStats(spawnCharacter.data);
+            id = spawnCharacter.id;
+        }
+
+        private void InitStats(Data.Table.Monster data)
+        {
+            HP = data.Health;
+            ATK = data.Attack;
+            DEF = data.Defense;
+            WeightType = data.WeightType;
+            RewardExp = data.RewardExp;
+            Power = 0;
+            _hpMax = HP;
+        }
+
+        public void DropItem(ItemBase item)
+        {
+            var dropItemFactory = GetComponentInParent<DropItemFactory>();
+            dropItemFactory.Create(item.Data.Id, transform.position);
+            gameObject.SetActive(false);
         }
     }
 }

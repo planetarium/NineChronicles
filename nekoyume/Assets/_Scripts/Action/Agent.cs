@@ -3,26 +3,26 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.IO;
 using System.Threading.Tasks;
 using Libplanet;
 using Libplanet.Crypto;
 using Libplanet.Store;
 using Libplanet.Tx;
+using Nekoyume.Data.Table;
 using UnityEngine;
-using Avatar = Nekoyume.Model.Avatar;
 
 namespace Nekoyume.Action
 {
     public class Agent
     {
-        public event EventHandler<Avatar> DidReceiveAction;
-        private readonly PrivateKey privateKey;
-        private readonly float interval;
-        public Address UserAddress => privateKey.PublicKey.ToAddress();
-        public readonly ConcurrentQueue<ActionBase> queuedActions;
-
-
         internal readonly Blockchain<ActionBase> blocks;
+        private readonly float interval;
+        private readonly PrivateKey privateKey;
+        public readonly ConcurrentQueue<ActionBase> queuedActions;
+        private const string kItemBoxPath = "Assets/Resources/DataTable/item_box.csv";
+        private const string kItemEquipPath = "Assets/Resources/DataTable/item_equip.csv";
+        private const string kItemPath = "Assets/Resources/DataTable/item.csv";
 
         public Agent(PrivateKey privateKey, string path, float interval = 3.0f)
         {
@@ -32,6 +32,9 @@ namespace Nekoyume.Action
             queuedActions = new ConcurrentQueue<ActionBase>();
         }
 
+        public Address UserAddress => privateKey.PublicKey.ToAddress();
+        public event EventHandler<Context> DidReceiveAction;
+
         public IEnumerator Sync()
         {
             while (true)
@@ -39,10 +42,10 @@ namespace Nekoyume.Action
                 yield return new WaitForSeconds(interval);
                 var task = Task.Run(() => blocks.GetStates(new[] {UserAddress}));
                 yield return new WaitUntil(() => task.IsCompleted);
-                var avatar = (Avatar) task.Result.GetValueOrDefault(UserAddress);
-                if (avatar != null)
+                var ctx = (Context) task.Result.GetValueOrDefault(UserAddress);
+                if (ctx?.avatar != null)
                 {
-                    DidReceiveAction?.Invoke(this, avatar);
+                    DidReceiveAction?.Invoke(this, ctx);
                 }
 
                 yield return null;
@@ -54,7 +57,7 @@ namespace Nekoyume.Action
             while (true)
             {
                 var processedActions = new List<ActionBase>();
-                for (int i = 0; i < queuedActions.Count; i++)
+                for (var i = 0; i < queuedActions.Count; i++)
                 {
                     ActionBase action;
                     queuedActions.TryDequeue(out action);
@@ -63,6 +66,7 @@ namespace Nekoyume.Action
                         processedActions.Add(action);
                     }
                 }
+
                 StageTransaction(processedActions);
                 var task = Task.Run(() => blocks.MineBlock(UserAddress));
                 yield return new WaitUntil(() => task.IsCompleted);
@@ -78,7 +82,19 @@ namespace Nekoyume.Action
                 actions,
                 DateTime.UtcNow
             );
-            blocks.StageTransactions(new HashSet<Transaction<ActionBase>> { tx });
+            blocks.StageTransactions(new HashSet<Transaction<ActionBase>> {tx});
+        }
+
+        public static Table<Item> ItemTable()
+        {
+            var itemTable = new Table<Item>();
+            foreach (var path in new []{kItemPath, kItemBoxPath, kItemEquipPath})
+            {
+                var itemPath = Path.Combine(Directory.GetCurrentDirectory(), path);
+                itemTable.Load(File.ReadAllText(itemPath));
+            }
+
+            return itemTable;
         }
     }
 }
