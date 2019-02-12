@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using BTAI;
 using DG.Tweening;
@@ -9,7 +8,6 @@ using Nekoyume.Game.Factory;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Skill;
 using Nekoyume.Game.Util;
-using Nekoyume.Model;
 using Nekoyume.UI;
 using UnityEngine;
 
@@ -34,7 +32,7 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        public void InitAI(Data.Table.Monster statsData)
+        public void InitAI(Monster statsData)
         {
             DataId = statsData.Id;
             RunSpeed = -1.0f;
@@ -90,7 +88,7 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        public void InitStats(Data.Table.Monster statsData, int power)
+        public void InitStats(Monster statsData, int power)
         {
             HP = Mathf.FloorToInt((float)statsData.Health * ((float)power * 0.01f));
             ATK = statsData.Attack;
@@ -154,7 +152,7 @@ namespace Nekoyume.Game.Character
             var dropItem = dropItemFactory.Create(selector.Select(), transform.position);
             if (dropItem != null)
             {
-                Event.OnGetItem.Invoke(dropItem.GetComponent<Item.DropItem>());
+                Event.OnGetItem.Invoke(dropItem.GetComponent<DropItem>());
             }
         }
 
@@ -167,7 +165,7 @@ namespace Nekoyume.Game.Character
             id = spawnCharacter.id;
         }
 
-        private void InitStats(Data.Table.Monster data)
+        private void InitStats(Monster data)
         {
             HP = data.Health;
             ATK = data.Attack;
@@ -175,7 +173,7 @@ namespace Nekoyume.Game.Character
             WeightType = data.WeightType;
             RewardExp = data.RewardExp;
             Power = 0;
-            _hpMax = HP;
+            HPMax = HP;
         }
 
         public void DropItem(ItemBase item)
