@@ -21,6 +21,7 @@ namespace Nekoyume.UI
         public Text text;
         public Text levelInfo;
         public GameObject statusDetail;
+        public GameObject character;
         private int _selectedIndex;
         private Model.Avatar _avatar;
 
@@ -77,7 +78,12 @@ namespace Nekoyume.UI
                 btnDelete.SetActive(false);
                 nameField.gameObject.SetActive(true);
                 nameField.text = "";
-
+                var image = character.GetComponent<Image>();
+                var sprite = Resources.Load<Sprite>($"avatar/character_02");
+                if (sprite != null)
+                {
+                    image.sprite = sprite;
+                }
             }
             var game = GameObject.Find("Game");
             Tables tables = game.GetComponent<Tables>();
