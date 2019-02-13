@@ -17,8 +17,10 @@ namespace Nekoyume.Action
             stage = int.Parse(plainValue["stage"].ToString());
         }
 
-        public override AddressStateMap Execute(Address @from, Address to, AddressStateMap states)
+        public override AddressStateMap Execute(IActionContext actionCtx)
         {
+            var states = actionCtx.PreviousStates;
+            var to = actionCtx.To;
             var ctx = (Context) states.GetValueOrDefault(to);
             ctx.avatar.WorldStage = stage;
             return (AddressStateMap) states.SetItem(to, ctx);

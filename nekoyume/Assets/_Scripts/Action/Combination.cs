@@ -27,8 +27,10 @@ namespace Nekoyume.Action
             result = int.Parse(plainValue["result"].ToString());
         }
 
-        public override AddressStateMap Execute(Address @from, Address to, AddressStateMap states)
+        public override AddressStateMap Execute(IActionContext actionCtx)
         {
+            var to = actionCtx.To;
+            var states = actionCtx.PreviousStates;
             var ctx = (Context) states.GetValueOrDefault(to);
             var player = new Player(ctx.avatar);
             var materials = new List<int>
