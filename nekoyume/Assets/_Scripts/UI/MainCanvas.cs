@@ -24,6 +24,8 @@ namespace Nekoyume.UI
             Widget.Create<SkillController>();
             Widget.Create<Move>();
             Widget.Create<Blind>();
+            Widget.Create<LoginDetail>();
+            Widget.Create<StatusDetail>();
 
 #if DEBUG
             Widget.Create<Neko>(true);

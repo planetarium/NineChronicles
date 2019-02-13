@@ -22,14 +22,20 @@ namespace Nekoyume.Action
     public class ActionManager : MonoBehaviour
     {
         private string _saveFilePath;
-        public List<Model.Avatar> Avatars { get; private set; }
+        public List<Model.Avatar> Avatars
+        {
+            get
+            {
+                return Enumerable.Range(0, 3).Select(index => string.Format(AvatarFileFormat, index)).Select(fileName => Path.Combine(Application.persistentDataPath, fileName)).Select(path => LoadStatus(path)).Where(avatar => avatar != null).ToList();
+            }
+        }
+
 
         private Agent agent;
         public BattleLog battleLog;
         public static ActionManager Instance { get; private set; }
         public Model.Avatar Avatar { get; private set; }
         public event EventHandler<Model.Avatar> DidAvatarLoaded;
-        public event EventHandler CreateAvatarRequired;
         public const string PrivateKeyFormat = "private_key_{0}";
         public const string AvatarFileFormat = "avatar_{0}.dat";
 
@@ -37,22 +43,6 @@ namespace Nekoyume.Action
         {
             DontDestroyOnLoad(gameObject);
             Instance = this;
-            PreloadAvatar();
-        }
-
-        private void PreloadAvatar()
-        {
-            Avatars = new List<Model.Avatar>();
-            foreach (var index in Enumerable.Range(0, 3))
-            {
-                var fileName = string.Format(AvatarFileFormat, index);
-                var path = Path.Combine(Application.persistentDataPath, fileName);
-                var avatar = LoadStatus(path);
-                if (avatar != null)
-                {
-                    Avatars.Add(avatar);
-                }
-            }
         }
 
         private void ReceiveAction(object sender, Context ctx)
@@ -72,14 +62,6 @@ namespace Nekoyume.Action
             if (Avatar != null)
             {
                 DidAvatarLoaded?.Invoke(this, Avatar);
-            }
-
-            var address = agent.UserAddress;
-            var states = agent.blocks.GetStates(new[] {address});
-            var ctx = (Context) states.GetValueOrDefault(address);
-            if (ctx?.avatar == null)
-            {
-                CreateAvatarRequired?.Invoke(this, null);
             }
 
             StartCoroutine(Sync());
