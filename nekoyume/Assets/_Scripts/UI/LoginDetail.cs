@@ -64,13 +64,11 @@ namespace Nekoyume.UI
         private void Init(int index)
         {
             _selectedIndex = index;
+            int level = 1;
             try
             {
                 _avatar = ActionManager.Instance.Avatars[_selectedIndex];
-                var btnText = btnLogin.GetComponentInChildren<Text>();
-                btnText.text = "게임 시작";
-                btnDelete.SetActive(true);
-                nameField.gameObject.SetActive(false);
+                level = _avatar.Level;
             }
             catch (ArgumentException)
             {
@@ -84,11 +82,14 @@ namespace Nekoyume.UI
                 {
                     image.sprite = sprite;
                 }
+                var btnText = btnLogin.GetComponentInChildren<Text>();
+                btnText.text = "캐릭터 생성";
+                btnDelete.SetActive(true);
+                nameField.gameObject.SetActive(false);
             }
             var game = GameObject.Find("Game");
             Tables tables = game.GetComponent<Tables>();
             Stats statsData;
-            int level = _avatar?.Level ?? 1;
             levelInfo.text = $"LV. {level} {_avatar?.Name}";
             if (!tables.Stats.TryGetValue(level, out statsData))
                 return;
@@ -96,7 +97,7 @@ namespace Nekoyume.UI
             int hp = statsData.Health;
             int hpMax = hp;
             long exp = 0;
-            if (_avatar?.Level > 1)
+            if (level > 1)
             {
                 hp = _avatar.CurrentHP;
                 exp = _avatar.EXP;
@@ -104,15 +105,15 @@ namespace Nekoyume.UI
             }
             textHp.text = $"{hp}/{hpMax}";
             textExp.text = $"{exp}/{statsData.Exp}";
-            float hpValue = hp / (float) hpMax;
-            hpBar.fillRect.gameObject.SetActive(hpValue > 0.0f);
-            hpValue = Mathf.Min(Mathf.Max(hpValue, 0.1f), 1.0f);
-            hpBar.value = hpValue;
+            float hpPercentage = hp / (float) hpMax;
+            hpBar.fillRect.gameObject.SetActive(hpPercentage > 0.0f);
+            hpPercentage = Mathf.Min(Mathf.Max(hpPercentage, 0.1f), 1.0f);
+            hpBar.value = hpPercentage;
 
-            float expValue = exp / (float) statsData.Exp;
-            expBar.fillRect.gameObject.SetActive(expValue > 0.0f);
-            expValue = Mathf.Min(Mathf.Max(expValue, 0.1f), 1.0f);
-            expBar.value = expValue;
+            float expPercentage = exp / (float) statsData.Exp;
+            expBar.fillRect.gameObject.SetActive(expPercentage > 0.0f);
+            expPercentage = Mathf.Min(Mathf.Max(expPercentage, 0.1f), 1.0f);
+            expBar.value = expPercentage;
 
             var statusDetailScript = statusDetail.GetComponent<StatusDetail>();
             statusDetailScript.Init(statsData);
