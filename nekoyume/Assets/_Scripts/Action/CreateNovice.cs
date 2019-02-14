@@ -15,7 +15,7 @@ namespace Nekoyume.Action
             name = (string) plainValue["name"];
         }
 
-        public override AddressStateMap Execute(Address @from, Address to, AddressStateMap states)
+        public override AddressStateMap Execute(IActionContext actionCtx)
         {
             var avatar = new Avatar
             {
@@ -26,6 +26,8 @@ namespace Nekoyume.Action
                 WorldStage = 1,
                 CurrentHP = 0,
             };
+            var states = actionCtx.PreviousStates;
+            var to = actionCtx.To;
             var ctx = new Context(avatar);
             return (AddressStateMap) states.SetItem(to, ctx);
         }

@@ -15,8 +15,10 @@ namespace Nekoyume.Action
         {
         }
 
-        public override AddressStateMap Execute(Address from, Address to, AddressStateMap states)
+        public override AddressStateMap Execute(IActionContext actionCtx)
         {
+            var states = actionCtx.PreviousStates;
+            var to = actionCtx.To;
             var ctx = (Context) states.GetValueOrDefault(to);
             if (ctx.avatar.Dead)
             {

@@ -9,12 +9,12 @@ namespace Nekoyume.Action
     {
         public abstract void LoadPlainValue(IImmutableDictionary<string, object> plainValue);
 
-        public ISet<Address> RequestStates(Address @from, Address to)
+        public IImmutableSet<Address> RequestStates(Address @from, Address to)
         {
             return new HashSet<Address> {from, to}.ToImmutableHashSet();
         }
 
-        public abstract AddressStateMap Execute(Address @from, Address to, AddressStateMap states);
+        public abstract AddressStateMap Execute(IActionContext ctx);
 
         public abstract IImmutableDictionary<string, object> PlainValue { get; }
     }
