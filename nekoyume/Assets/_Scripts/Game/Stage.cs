@@ -36,8 +36,6 @@ namespace Nekoyume.Game
         {
             Event.OnRoomEnter.AddListener(OnRoomEnter);
             Event.OnPlayerDead.AddListener(OnPlayerDead);
-            Event.OnPlayerDead.AddListener(OnPlayerSleep);
-            Event.OnPlayerSleep.AddListener(OnPlayerSleep);
             Event.OnStageStart.AddListener(OnStageStart);
         }
 
@@ -87,25 +85,6 @@ namespace Nekoyume.Game
                 _background = Instantiate(prefab, transform);
                 _background.name = prefabName;
             }
-        }
-
-        private void OnPlayerSleep()
-        {
-            StartCoroutine(SleepAsync());
-        }
-
-        private IEnumerator SleepAsync()
-        {
-            var tables = this.GetRootComponent<Tables>();
-            Stats statsData;
-            if (tables.Stats.TryGetValue(ActionManager.Instance.Avatar.Level, out statsData))
-            {
-                ActionManager.Instance.Sleep(statsData);
-                while (ActionManager.Instance.Avatar.CurrentHP == ActionManager.Instance.Avatar.HPMax)
-                    yield return new WaitForSeconds(1.0f);
-            }
-
-            OnRoomEnter();
         }
 
         public void Play()
