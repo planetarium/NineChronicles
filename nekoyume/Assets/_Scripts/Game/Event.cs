@@ -8,7 +8,6 @@ namespace Nekoyume.Game
     {
         public static readonly UnityEvent OnRoomEnter = new UnityEvent();
         public static readonly UnityEvent OnStageStart = new UnityEvent();
-
         public static readonly UnityEvent OnPlayerDead = new UnityEvent();
 
         public class EnemyDead : UnityEvent<Enemy>
@@ -32,5 +31,10 @@ namespace Nekoyume.Game
         }
         public static readonly Equip OnEquip = new Equip();
         public static readonly Equip OnUpdateEquipment = new Equip();
+
+        public class LoginDetail : UnityEvent<int>
+        {
+        }
+        public static readonly LoginDetail OnLoginDetail = new LoginDetail();
     }
 }
