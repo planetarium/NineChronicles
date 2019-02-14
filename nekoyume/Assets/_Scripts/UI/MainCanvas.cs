@@ -28,7 +28,7 @@ namespace Nekoyume.UI
             Widget.Create<StatusDetail>();
 
 #if DEBUG
-            Widget.Create<Neko>(true);
+            Widget.Create<Cheat>(true);
 #endif
         }
     }
