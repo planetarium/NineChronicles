@@ -11,8 +11,6 @@ namespace Nekoyume.Game.Trigger
 {
     public class StageExit : MonoBehaviour
     {
-        public bool Sleep;
-
         private void StageReward()
         {
             var stage = GetComponentInParent<Stage>();
