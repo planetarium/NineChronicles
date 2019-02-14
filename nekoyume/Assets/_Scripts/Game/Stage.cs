@@ -146,7 +146,7 @@ namespace Nekoyume.Game
             {
                 var blind = Widget.Find<Blind>();
                 yield return StartCoroutine(blind.FadeIn(1.0f, $"STAGE {stage}"));
-                Widget.Find<Move>().ShowWorld();
+                Widget.Find<Menu>().ShowWorld();
 
                 LoadBackground(data.Background, 3.0f);
 
