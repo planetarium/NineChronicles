@@ -69,6 +69,8 @@ namespace Nekoyume.UI
             {
                 _avatar = ActionManager.Instance.Avatars[_selectedIndex];
                 level = _avatar.Level;
+                nameField.gameObject.SetActive(false);
+                btnDelete.SetActive(true);
             }
             catch (ArgumentException)
             {
@@ -84,8 +86,6 @@ namespace Nekoyume.UI
                 }
                 var btnText = btnLogin.GetComponentInChildren<Text>();
                 btnText.text = "캐릭터 생성";
-                btnDelete.SetActive(true);
-                nameField.gameObject.SetActive(false);
             }
             var game = GameObject.Find("Game");
             Tables tables = game.GetComponent<Tables>();
