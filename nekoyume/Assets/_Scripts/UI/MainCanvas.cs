@@ -1,6 +1,4 @@
-using System.Collections;
 using UnityEngine;
-
 
 namespace Nekoyume.UI
 {
@@ -26,6 +24,7 @@ namespace Nekoyume.UI
             Widget.Create<Blind>();
             Widget.Create<LoginDetail>();
             Widget.Create<StatusDetail>();
+            Widget.Create<Shop>();
 
 #if DEBUG
             Widget.Create<Cheat>(true);

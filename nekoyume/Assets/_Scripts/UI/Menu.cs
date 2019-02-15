@@ -1,7 +1,5 @@
 using System.Collections;
 using Nekoyume.Action;
-using Nekoyume.Game;
-using Nekoyume.Game.Trigger;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,6 +9,7 @@ namespace Nekoyume.UI
     {
         public GameObject btnQuest;
         public GameObject btnCombine;
+        public GameObject btnShop;
 
         public Text LabelInfo;
 
@@ -69,6 +68,11 @@ namespace Nekoyume.UI
             }
 
             btnCombine.SetActive(true);
+        }
+
+        public void ShopClick()
+        {
+            Find<Shop>().Toggle();
         }
     }
 }
