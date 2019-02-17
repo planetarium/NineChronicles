@@ -11,6 +11,8 @@ namespace Nekoyume.UI
         private static GameObject CanvasObj = null;
         private static Dictionary<Type, GameObject> Dict = new Dictionary<Type, GameObject>();
 
+        private Animator _animator;
+
         public static T Create<T>(bool activate = false) where T : Widget
         {
             if (CanvasObj == null)
@@ -65,9 +67,19 @@ namespace Nekoyume.UI
             return null;
         }
 
+        private void Awake()
+        {
+            _animator = GetComponent<Animator>();
+        }
+
         public virtual void Show()
         {
             gameObject.SetActive(true);
+            
+            if (_animator)
+            {
+                _animator.Play("Show");
+            }
         }
 
         public virtual IEnumerator WaitForShow()
@@ -82,6 +94,11 @@ namespace Nekoyume.UI
         public virtual void Close()
         {
             gameObject.SetActive(false);
+
+            if (_animator)
+            {
+                _animator.Play("Close");
+            }
         }
 
         public virtual bool IsActive()

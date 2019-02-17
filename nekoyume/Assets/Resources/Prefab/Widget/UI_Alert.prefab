@@ -56,8 +56,9 @@ GameObject:
   - component: {fileID: 224898616830980190}
   - component: {fileID: 222668420831161334}
   - component: {fileID: 114044233015433846}
+  - component: {fileID: 95256010546860014}
   m_Layer: 5
-  m_Name: Alert
+  m_Name: UI_Alert
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -98,6 +99,24 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!95 &95256010546860014
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1907849136098932}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 22100000, guid: 0cd5d2c86a44744489151e7b78facb01, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!114 &114041173701327468
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -123,6 +142,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf00fc6e054c1c74e88e2321a73a3e02, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  IsShowAni: 0
   content: {fileID: 114240972812031658}
   labelOK: {fileID: 114678270254923368}
 --- !u!114 &114114542661090790

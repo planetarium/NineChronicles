@@ -49,7 +49,7 @@ namespace Nekoyume.UI
 
         public void DeleteClick()
         {
-            deletePopUp.SetActive(true);
+            deletePopUp.GetComponent<Widget>().Show();
             deletePopUp.transform.SetAsLastSibling();
         }
 
@@ -131,7 +131,7 @@ namespace Nekoyume.UI
             if (File.Exists(datPath))
                 File.Delete(datPath);
             PlayerPrefs.Save();
-            deletePopUp.gameObject.SetActive(false);
+            deletePopUp.GetComponent<Widget>().Close();
             Init(_selectedIndex);
         }
     }
