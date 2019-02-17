@@ -36,8 +36,6 @@ namespace Nekoyume.Game
         {
             Event.OnRoomEnter.AddListener(OnRoomEnter);
             Event.OnPlayerDead.AddListener(OnPlayerDead);
-            Event.OnPlayerDead.AddListener(OnPlayerSleep);
-            Event.OnPlayerSleep.AddListener(OnPlayerSleep);
             Event.OnStageStart.AddListener(OnStageStart);
         }
 
@@ -89,25 +87,6 @@ namespace Nekoyume.Game
             }
         }
 
-        private void OnPlayerSleep()
-        {
-            StartCoroutine(SleepAsync());
-        }
-
-        private IEnumerator SleepAsync()
-        {
-            var tables = this.GetRootComponent<Tables>();
-            Stats statsData;
-            if (tables.Stats.TryGetValue(ActionManager.Instance.Avatar.Level, out statsData))
-            {
-                ActionManager.Instance.Sleep(statsData);
-                while (ActionManager.Instance.Avatar.CurrentHP == ActionManager.Instance.Avatar.HPMax)
-                    yield return new WaitForSeconds(1.0f);
-            }
-
-            OnRoomEnter();
-        }
-
         public void Play()
         {
             if (battleLog?.Count > 0)
@@ -146,7 +125,7 @@ namespace Nekoyume.Game
             {
                 var blind = Widget.Find<Blind>();
                 yield return StartCoroutine(blind.FadeIn(1.0f, $"STAGE {stage}"));
-                Widget.Find<Move>().ShowWorld();
+                Widget.Find<Menu>().ShowWorld();
 
                 LoadBackground(data.Background, 3.0f);
 

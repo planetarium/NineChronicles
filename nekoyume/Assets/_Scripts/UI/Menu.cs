@@ -7,11 +7,9 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
-    public class Move : Widget
+    public class Menu : Widget
     {
-        public GameObject btnMove;
-        public GameObject btnSleep;
-        public GameObject btnStage1;
+        public GameObject btnQuest;
         public GameObject btnCombine;
 
         public Text LabelInfo;
@@ -19,13 +17,10 @@ namespace Nekoyume.UI
         public void ShowRoom()
         {
             Show();
-            btnSleep.GetComponent<Button>().enabled = true;
-            btnMove.GetComponent<Button>().enabled = true;
+            btnQuest.GetComponent<Button>().enabled = true;
             var avatar = ActionManager.Instance.Avatar;
             var enabled = !avatar.Dead;
-            btnMove.SetActive(enabled);
-            btnStage1.SetActive(ActionManager.Instance.Avatar.WorldStage > 1);
-            btnSleep.SetActive(false);
+            btnQuest.SetActive(enabled);
             LabelInfo.text = "";
             btnCombine.SetActive(true);
         }
@@ -33,21 +28,20 @@ namespace Nekoyume.UI
         public void ShowWorld()
         {
             Show();
-            btnMove.SetActive(false);
-            btnSleep.SetActive(true);
+            btnQuest.SetActive(false);
             btnCombine.SetActive(false);
 
             LabelInfo.text = "";
         }
 
-        public void MoveClick()
+        public void QuestClick()
         {
-            StartCoroutine(MoveAsync());
+            StartCoroutine(QuestAsync());
         }
 
-        private IEnumerator MoveAsync()
+        private IEnumerator QuestAsync()
         {
-            btnMove.SetActive(false);
+            btnQuest.SetActive(false);
             btnCombine.SetActive(false);
             var currentAvatar = ActionManager.Instance.Avatar;
             ActionManager.Instance.HackAndSlash();
@@ -57,24 +51,6 @@ namespace Nekoyume.UI
             }
 
             Game.Event.OnStageStart.Invoke();
-        }
-
-        public void SleepClick()
-        {
-            LabelInfo.text = "Go Home Soon...";
-            this.GetRootComponent<Game.Game>().GetComponentInChildren<StageExit>().Sleep = true;
-            btnSleep.SetActive(false);
-        }
-
-        public void MoveStageClick()
-        {
-            StartCoroutine(MoveStageAsync());
-        }
-
-        private IEnumerator MoveStageAsync()
-        {
-            ActionManager.Instance.MoveStage(1);
-            while (ActionManager.Instance.Avatar.WorldStage != 1) yield return new WaitForSeconds(1.0f);
         }
 
         public void CombineClick()

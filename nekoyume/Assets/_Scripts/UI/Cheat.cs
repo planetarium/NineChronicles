@@ -4,9 +4,9 @@ using UnityEngine.UI;
 
 namespace Nekoyume
 {
-    public class Neko : UI.Widget
+    public class Cheat : UI.Widget
     {
-        static private Neko Instance;
+        static private Cheat Instance;
 
         public Text log;
 
@@ -63,32 +63,12 @@ namespace Nekoyume
 #endif
         }
 
-        public void CleanUpAvatar()
-        {
-            string[] keys = new []
-            {
-                "private_key",
-                "avatar",
-                "last_block_id"
-            };
-            foreach (var key in keys)
-            {
-                string k = PlayerPrefs.GetString(key, "");
-                PlayerPrefs.DeleteKey(key);
-                Neko.Log($"Delete {key}: {k}");
-            }
-            string datPath = System.IO.Path.Combine(Application.persistentDataPath, "avatar.dat");
-            if (System.IO.File.Exists(datPath))
-                System.IO.File.Delete(datPath);
-            PlayerPrefs.Save();
-        }
-
         private void LevelUp()
         {
             GameObject enemyObj = GameObject.Find("Enemy");
             if (enemyObj == null)
             {
-                Neko.Log("Need Enemy.");
+                Cheat.Log("Need Enemy.");
                 return;
             }
             GameObject playerObj = GameObject.Find("Player");
@@ -96,7 +76,7 @@ namespace Nekoyume
             {
                 var player = playerObj.GetComponent<Game.Character.Player>();
                 player.Level += 1;
-                Neko.Log($"Level Up to {player.Level}");
+                Cheat.Log($"Level Up to {player.Level}");
             }
             var enemy = enemyObj.GetComponent<Game.Character.Enemy>();
             Game.Event.OnEnemyDead.Invoke(enemy);

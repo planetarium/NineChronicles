@@ -16,7 +16,7 @@ namespace Nekoyume.Game.Entrance
             var blind = UI.Widget.Find<UI.Blind>();
             yield return StartCoroutine(blind.FadeIn(1.0f, "ROOM"));
 
-            UI.Widget.Find<UI.Move>().ShowRoom();
+            UI.Widget.Find<UI.Menu>().ShowRoom();
 
             stage.Id = 0;
             stage.LoadBackground("room");

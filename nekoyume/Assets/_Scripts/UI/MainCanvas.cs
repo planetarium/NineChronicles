@@ -22,13 +22,13 @@ namespace Nekoyume.UI
             Widget.Create<Status>();
             Widget.Create<Inventory>();
             Widget.Create<SkillController>();
-            Widget.Create<Move>();
+            Widget.Create<Menu>();
             Widget.Create<Blind>();
             Widget.Create<LoginDetail>();
             Widget.Create<StatusDetail>();
 
 #if DEBUG
-            Widget.Create<Neko>(true);
+            Widget.Create<Cheat>(true);
 #endif
         }
     }

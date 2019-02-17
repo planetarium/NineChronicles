@@ -119,18 +119,6 @@ namespace Nekoyume.Action
             SaveStatus();
         }
 
-        public void MoveStage(int stage)
-        {
-            var action = new MoveStage {stage = stage};
-            ProcessAction(action);
-        }
-
-        public void Sleep(Stats statsData)
-        {
-            var action = new Sleep();
-            ProcessAction(action);
-        }
-
         private void ProcessAction(ActionBase action)
         {
             agent.queuedActions.Enqueue(action);
