@@ -11,7 +11,7 @@ namespace Nekoyume.UI
     {
         public GameObject btnQuest;
         public GameObject btnCombine;
-
+        public GameObject btnShop;
         public Text LabelInfo;
 
         public void ShowRoom()
@@ -69,6 +69,11 @@ namespace Nekoyume.UI
             }
 
             btnCombine.SetActive(true);
+        }
+
+        public void ShopClick()
+        {
+            Find<Shop>().Toggle();
         }
     }
 }
