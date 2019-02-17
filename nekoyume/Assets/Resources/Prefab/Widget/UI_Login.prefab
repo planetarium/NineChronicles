@@ -384,6 +384,7 @@ GameObject:
   - component: {fileID: 222856080338782448}
   - component: {fileID: 114652665026355558}
   - component: {fileID: 114587319779942540}
+  - component: {fileID: 95315943906553726}
   m_Layer: 5
   m_Name: UI_Login
   m_TagString: Untagged
@@ -477,6 +478,24 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 0
+--- !u!95 &95315943906553726
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1761942237471258}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 22100000, guid: df456a59a00ffc046a8b920ed2efca66, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!114 &114005234766644390
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1101,15 +1120,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9a0772cbcf544a7cb32a9cc4e7715e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  btnLogin: {fileID: 1537671095798930}
-  modal: {fileID: 1672910612345414}
-  nameField: {fileID: 114954635042375256}
   slots:
   - {fileID: 1871409625623706}
   - {fileID: 1622757225004670}
   - {fileID: 1369716196573772}
-  deletePopUp: {fileID: 0}
-  text: {fileID: 114365114015627960}
 --- !u!114 &114595800239706916
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2205,7 +2219,7 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1420428970722698}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -2261,7 +2275,7 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1736017596652886}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -2316,7 +2330,7 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1366363503010256}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
