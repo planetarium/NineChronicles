@@ -6,6 +6,8 @@ using System.Collections.Immutable;
 using System.IO;
 using System.Threading.Tasks;
 using Libplanet;
+using Libplanet.Blockchain;
+using Libplanet.Blockchain.Policies;
 using Libplanet.Crypto;
 using Libplanet.Store;
 using Libplanet.Tx;
@@ -16,7 +18,7 @@ namespace Nekoyume.Action
 {
     public class Agent
     {
-        internal readonly Blockchain<ActionBase> blocks;
+        internal readonly BlockChain<ActionBase> blocks;
         private readonly float interval;
         private readonly PrivateKey privateKey;
         public readonly ConcurrentQueue<ActionBase> queuedActions;
@@ -28,7 +30,9 @@ namespace Nekoyume.Action
         {
             this.privateKey = privateKey;
             this.interval = interval;
-            blocks = new Blockchain<ActionBase>(new FileStore(path));
+            blocks = new BlockChain<ActionBase>(
+                new BlockPolicy<ActionBase>(TimeSpan.FromMilliseconds(500)),
+                new FileStore(path));
             queuedActions = new ConcurrentQueue<ActionBase>();
         }
 
