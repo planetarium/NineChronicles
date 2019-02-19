@@ -18,7 +18,6 @@ namespace Nekoyume.UI
         public Text textExp;
         public Slider hpBar;
         public Slider expBar;
-        public Text text;
         public Text levelInfo;
         public GameObject statusDetail;
         public GameObject character;
@@ -37,7 +36,6 @@ namespace Nekoyume.UI
         {
             btnLogin.SetActive(false);
             nameField.gameObject.SetActive(false);
-            text.text = "Connecting...";
             ActionManager.Instance.Init(_selectedIndex);
             if (_avatar == null)
             {
