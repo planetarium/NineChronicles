@@ -16,8 +16,8 @@ namespace Nekoyume.UI
             headerSell.SetActive(false);
             headerBuy.SetActive(true);
             panelSell.SetActive(false);
-            GetComponent<Buy>().Init();
             panelBuy.SetActive(true);
+            GetComponent<Buy>().Init();
         }
 
         public void SellClick()
@@ -26,6 +26,7 @@ namespace Nekoyume.UI
             headerSell.SetActive(true);
             panelBuy.SetActive(false);
             panelSell.SetActive(true);
+            GetComponent<Sell>().Init();
         }
     }
 }

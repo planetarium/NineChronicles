@@ -4,11 +4,10 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
-    public class Buy : Widget
+    public class Sell : Widget
     {
         public GameObject btnConfirm;
         public ScrollRect cart;
-        public Button sword;
         public List<CartItem> items;
         public Text totalPrice;
         public GameObject itemBase;
@@ -16,21 +15,8 @@ namespace Nekoyume.UI
         private void Awake()
         {
             items = new List<CartItem>();
+            Game.Event.OnSlotClick.AddListener(SlotClick);
             Init();
-        }
-
-        public void SwordClick()
-        {
-            GameObject newItem = Instantiate(itemBase, cart.content);
-            CartItem item = newItem.GetComponent<CartItem>();
-            var itemInfo = sword.GetComponent<Item>();
-            item.itemName.text = itemInfo.itemName.text;
-            item.price.text = itemInfo.price.text;
-            item.info.text = itemInfo.info.text;
-            item.icon.sprite = sword.GetComponent<Image>().sprite;
-            item.gameObject.SetActive(true);
-            items.Add(item);
-            CalcTotalPrice();
         }
 
         public void CalcTotalPrice()
@@ -58,7 +44,24 @@ namespace Nekoyume.UI
                 Destroy(child.gameObject);
             }
             CalcTotalPrice();
+            GetComponentInChildren<Inventory>()?.Show();
         }
 
+        public void SlotClick(InventorySlot slot)
+        {
+            if (gameObject.active)
+            {
+                GameObject newItem = Instantiate(itemBase, cart.content);
+                CartItem item = newItem.GetComponent<CartItem>();
+                var itemInfo = slot.Item;
+                item.itemName.text = itemInfo.Data.Id.ToString();
+                item.price.text = "1";
+                item.info.text = "info";
+                item.icon.sprite = slot.Icon.sprite;
+                item.gameObject.SetActive(true);
+                items.Add(item);
+                CalcTotalPrice();
+            }
+        }
     }
 }
