@@ -1,5 +1,7 @@
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Item;
+using Nekoyume.UI;
+using UnityEditor;
 using UnityEngine.Events;
 
 namespace Nekoyume.Game
@@ -35,5 +37,10 @@ namespace Nekoyume.Game
         {
         }
         public static readonly LoginDetail OnLoginDetail = new LoginDetail();
+
+        public class SlotClick : UnityEvent<InventorySlot>
+        {
+        }
+        public static readonly  SlotClick OnSlotClick = new SlotClick();
     }
 }

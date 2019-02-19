@@ -49,23 +49,26 @@ namespace Nekoyume.UI
         {
             _player = FindObjectOfType<Game.Character.Player>();
             // FIX ME : get item list
-            List<Game.Item.Inventory.InventoryItem> items = _player.Inventory.items;
-            for (int i = 0; i < 40; ++i)
+            if (_player != null)
             {
-                InventorySlot slot = _slots[i];
-                if (items != null && items.Count > i)
+                List<Game.Item.Inventory.InventoryItem> items = _player.Inventory.items;
+                for (int i = 0; i < 40; ++i)
                 {
-                    var inventoryItem = items[i];
-                    slot.Set(inventoryItem.Item, inventoryItem.Count);
-                    if (inventoryItem.Item is Weapon)
+                    InventorySlot slot = _slots[i];
+                    if (items != null && items.Count > i)
                     {
-                        var weapon = (Weapon) inventoryItem.Item;
-                        slot.LabelEquip.text = weapon.IsEquipped ? "E" : "";
+                        var inventoryItem = items[i];
+                        slot.Set(inventoryItem.Item, inventoryItem.Count);
+                        if (inventoryItem.Item is Weapon)
+                        {
+                            var weapon = (Weapon) inventoryItem.Item;
+                            slot.LabelEquip.text = weapon.IsEquipped ? "E" : "";
+                        }
                     }
-                }
-                else
-                {
-                    slot.Clear();
+                    else
+                    {
+                        slot.Clear();
+                    }
                 }
             }
 

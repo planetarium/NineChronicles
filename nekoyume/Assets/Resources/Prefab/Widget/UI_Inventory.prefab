@@ -21,8 +21,8 @@ GameObject:
   - component: {fileID: 224573283780673356}
   - component: {fileID: 222585880001986406}
   - component: {fileID: 114223166192120310}
-  - component: {fileID: 114551352541558478}
   - component: {fileID: 114266483077673600}
+  - component: {fileID: 114449375499434734}
   m_Layer: 5
   m_Name: Slot
   m_TagString: Untagged
@@ -481,12 +481,12 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 11500000, guid: c47d78de653113546a24a2da3c7f4a71, type: 3}
-        m_MethodName: 
+      - m_Target: {fileID: 114449375499434734}
+        m_MethodName: SlotClick
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -581,6 +581,20 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
+--- !u!114 &114449375499434734
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1023510796185250}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c47d78de653113546a24a2da3c7f4a71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Icon: {fileID: 114667796884943568}
+  LabelCount: {fileID: 114200781161916388}
+  LabelEquip: {fileID: 114530992452928384}
 --- !u!114 &114530992452928384
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -614,20 +628,6 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: 
---- !u!114 &114551352541558478
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1023510796185250}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c47d78de653113546a24a2da3c7f4a71, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Icon: {fileID: 114667796884943568}
-  LabelCount: {fileID: 114200781161916388}
-  LabelEquip: {fileID: 114530992452928384}
 --- !u!114 &114567796964249284
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -810,6 +810,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _grid: {fileID: 224037331173783672}
   _slotBase: {fileID: 1023510796185250}
+  _slots: []
 --- !u!114 &114752204969573980
 MonoBehaviour:
   m_ObjectHideFlags: 1
