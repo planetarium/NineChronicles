@@ -10,8 +10,8 @@ namespace Nekoyume.UI
 
         public void Init(Stats stats)
         {
-            textAtk.text = stats.Attack.ToString();
-            textDef.text = stats.Defense.ToString();
+//            textAtk.text = stats.Attack.ToString();
+//            textDef.text = stats.Defense.ToString();
         }
     }
 }
