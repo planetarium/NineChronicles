@@ -2063,6 +2063,7 @@ GameObject:
   - component: {fileID: 224731393388694598}
   - component: {fileID: 222966600485503490}
   - component: {fileID: 114654465173052528}
+  - component: {fileID: 114853014092169746}
   m_Layer: 5
   m_Name: Stats (1)
   m_TagString: Untagged
@@ -5307,13 +5308,12 @@ MonoBehaviour:
   btnDelete: {fileID: 1848334817412594}
   nameField: {fileID: 114617036401837486}
   deletePopUp: {fileID: 1693338862031442}
-  textHp: {fileID: 0}
-  textExp: {fileID: 0}
-  hpBar: {fileID: 0}
-  expBar: {fileID: 0}
-  text: {fileID: 0}
+  textHp: {fileID: 114216088172467656}
+  textExp: {fileID: 114593795997963876}
+  hpBar: {fileID: 114137309324291428}
+  expBar: {fileID: 114884640881170626}
   levelInfo: {fileID: 114424455165027218}
-  statusDetail: {fileID: 0}
+  statusDetail: {fileID: 1893080078080618}
   character: {fileID: 1957870316800336}
 --- !u!114 &114593795997963876
 MonoBehaviour:
@@ -6633,6 +6633,19 @@ MonoBehaviour:
   m_EffectColor: {r: 0, g: 0, b: 0, a: 0.5}
   m_EffectDistance: {x: 0, y: -1}
   m_UseGraphicAlpha: 1
+--- !u!114 &114853014092169746
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1893080078080618}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3cc3fdbf55a40f6a4e21d492ccdbdff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  textAtk: {fileID: 0}
+  textDef: {fileID: 0}
 --- !u!114 &114854319804462628
 MonoBehaviour:
   m_ObjectHideFlags: 1

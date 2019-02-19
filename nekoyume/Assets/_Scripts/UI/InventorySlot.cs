@@ -13,12 +13,6 @@ namespace Nekoyume.UI
 
         public ItemBase Item;
 
-        private void Awake()
-        {
-            var button = GetComponent<Button>();
-            button.onClick.AddListener(SlotClick);
-        }
-
         public void Clear()
         {
             Icon.gameObject.SetActive(false);
@@ -39,10 +33,7 @@ namespace Nekoyume.UI
 
         public void SlotClick()
         {
-            if (Item != null && Item is Weapon)
-            {
-                Game.Event.OnEquip.Invoke((Equipment) Item);
-            }
+            Game.Event.OnSlotClick.Invoke(this);
         }
     }
 }

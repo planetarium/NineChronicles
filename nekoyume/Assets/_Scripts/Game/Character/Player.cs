@@ -7,10 +7,8 @@ using Nekoyume.Data;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Skill;
-using Nekoyume.Model;
 using Nekoyume.UI;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace Nekoyume.Game.Character
@@ -49,10 +47,12 @@ namespace Nekoyume.Game.Character
         }
 
         public Item.Inventory Inventory;
+
         private void Awake()
         {
             Event.OnEnemyDead.AddListener(GetEXP);
             Event.OnGetItem.AddListener(PickUpItem);
+            Event.OnSlotClick.AddListener(SlotClick);
             Event.OnEquip.AddListener(Equip);
             Inventory = new Item.Inventory();
         }
@@ -94,6 +94,7 @@ namespace Nekoyume.Game.Character
             {
                 Destroy(skill);
             }
+
             _skills.Clear();
             var skillNames = new[]
             {
@@ -147,6 +148,7 @@ namespace Nekoyume.Game.Character
                 UpdateMpBar();
                 Event.OnUseSkill.Invoke();
             }
+
             return used;
         }
 
@@ -228,7 +230,7 @@ namespace Nekoyume.Game.Character
             UpdateHpBar();
         }
 
-        private void PickUpItem(Item.DropItem item)
+        private void PickUpItem(DropItem item)
         {
             Inventory.Add(item.Item);
             ActionManager.Instance.UpdateItems(SerializeItems());
@@ -246,6 +248,7 @@ namespace Nekoyume.Game.Character
                         _weapon = (Weapon) inventoryItem.Item;
                     }
                 }
+
                 Inventory.Set(inventoryItems);
             }
         }
@@ -276,7 +279,8 @@ namespace Nekoyume.Game.Character
                 _mpBar = Widget.Create<ProgressBar>(true);
                 _mpBar.greenBar = Resources.Load<Sprite>("ui/UI_bar_01_blue");
             }
-            _mpBar.SetValue((float)MP / (float)MPMax);
+
+            _mpBar.SetValue((float) MP / (float) MPMax);
         }
 
         public void Equip(Equipment equipment)
@@ -286,6 +290,7 @@ namespace Nekoyume.Game.Character
                 _weapon?.Unequip();
                 _weapon = (Weapon) equipment;
             }
+
             // Equip or UnEquip
             _weapon.Use();
             CalcStats();
@@ -301,6 +306,15 @@ namespace Nekoyume.Game.Character
             _hpBarOffset.Set(-0.22f, -0.61f, 0.0f);
             _castingBarOffset.Set(-0.22f, -0.85f, 0.0f);
             _mpBarOffset.Set(-0.22f, -0.66f, 0.0f);
+        }
+
+        public void SlotClick(InventorySlot slot)
+        {
+            var item = slot.Item as Weapon;
+            if (item != null)
+            {
+                Event.OnEquip.Invoke(item);
+            }
         }
     }
 }
