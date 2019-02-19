@@ -19,7 +19,7 @@ namespace Nekoyume.UI
         {
             _slots = new List<InventorySlot>();
             _slotBase.SetActive(true);
-            for (int i = 0; i < 40; ++i)
+            for (int i = 0; i < 42; ++i)
             {
                 GameObject newSlot = Instantiate(_slotBase, _grid);
                 InventorySlot slot = newSlot.GetComponent<InventorySlot>();
