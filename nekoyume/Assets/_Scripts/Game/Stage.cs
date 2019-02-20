@@ -86,8 +86,11 @@ namespace Nekoyume.Game
             foreach (EventBase e in log)
             {
                 {
-                    e.Execute(this);
-                    yield return new WaitForSeconds(1.0f);
+                    if (!e.skip)
+                    {
+                        e.Execute(this);
+                        yield return new WaitForSeconds(1.0f);
+                    }
                 }
             }
         }
