@@ -120,17 +120,9 @@ namespace Nekoyume.Game
             }
         }
 
-        public void StageEnd(BattleResult.Result result)
+        public void StageEnd(Model.BattleResult.Result result)
         {
-            StartCoroutine(StageEndAsync(result));
-        }
-
-        private IEnumerator StageEndAsync(BattleResult.Result result)
-        {
-            var blind = Widget.Find<Blind>();
-            yield return blind.FadeIn(1.0f, result.ToString());
-            yield return new WaitForSeconds(2.0f);
-            Event.OnRoomEnter.Invoke();
+            Widget.Find<UI.BattleResult>().Show(result);
         }
 
         public void SpawnPlayer()
@@ -197,6 +189,7 @@ namespace Nekoyume.Game
             if (enemy != null)
             {
                 enemy.DropItem(character.item);
+                Widget.Find<UI.BattleResult>().Add(character.item);
             }
         }
     }

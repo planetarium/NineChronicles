@@ -1,20 +1,24 @@
+using System.Linq;
+using System.Text;
 using Nekoyume.Action;
 using Nekoyume.Game;
+using Nekoyume.Game.Character;
+using Nekoyume.UI;
 using UnityEngine;
 using UnityEngine.UI;
 
-
 namespace Nekoyume
 {
-    public class Cheat : UI.Widget
+    public class Cheat : Widget
     {
         private static Cheat Instance;
 
         public Text log;
+        public Model.BattleResult.Result result;
 
         private Transform _modal;
         private float _updateTime = 0.0f;
-        private System.Text.StringBuilder _logString = new System.Text.StringBuilder();
+        private StringBuilder _logString = new StringBuilder();
 
         static void Log(string text)
         {
@@ -70,17 +74,17 @@ namespace Nekoyume
             GameObject enemyObj = GameObject.Find("Enemy");
             if (enemyObj == null)
             {
-                Cheat.Log("Need Enemy.");
+                Log("Need Enemy.");
                 return;
             }
             GameObject playerObj = GameObject.Find("Player");
             if (playerObj != null)
             {
-                var player = playerObj.GetComponent<Game.Character.Player>();
+                var player = playerObj.GetComponent<Player>();
                 player.Level += 1;
-                Cheat.Log($"Level Up to {player.Level}");
+                Log($"Level Up to {player.Level}");
             }
-            var enemy = enemyObj.GetComponent<Game.Character.Enemy>();
+            var enemy = enemyObj.GetComponent<Enemy>();
             Game.Event.OnEnemyDead.Invoke(enemy);
         }
 
@@ -91,9 +95,12 @@ namespace Nekoyume
 
         private void DummyBattle()
         {
+            Find<BattleResult>()?.Close();
             GameObject stage = GameObject.Find("Stage");
             var simulator = new Simulator(0, ActionManager.Instance.Avatar);
             simulator.Simulate();
+            var battleResult = simulator.log.events.OfType<Model.BattleResult>().First();
+            battleResult.result = result;
             stage.GetComponent<Stage>().Play(simulator.log);
         }
     }
