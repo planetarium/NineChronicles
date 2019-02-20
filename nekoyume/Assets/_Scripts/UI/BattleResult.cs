@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Nekoyume.Action;
 using Nekoyume.Game.Item;
+using Nekoyume.Model;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,7 +10,7 @@ namespace Nekoyume.UI
 {
     public class BattleResult : Widget
     {
-        public Model.BattleResult.Result result;
+        public BattleLog.Result result;
         public Image header;
         public Text submitText;
         public Text title;
@@ -47,11 +48,11 @@ namespace Nekoyume.UI
             Close();
         }
 
-        public void Show(Model.BattleResult.Result battleResult)
+        public void Show(BattleLog.Result battleResult)
         {
             result = battleResult;
             Sprite sprite;
-            if (result == Model.BattleResult.Result.Win)
+            if (result == BattleLog.Result.Win)
             {
                 submitText.text = "다음 퀘스트";
                 sprite = Resources.Load<Sprite>($"ui/UI_01");

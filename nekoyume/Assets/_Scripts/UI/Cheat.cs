@@ -3,6 +3,7 @@ using System.Text;
 using Nekoyume.Action;
 using Nekoyume.Game;
 using Nekoyume.Game.Character;
+using Nekoyume.Model;
 using Nekoyume.UI;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,7 +15,7 @@ namespace Nekoyume
         private static Cheat Instance;
 
         public Text log;
-        public Model.BattleResult.Result result;
+        public BattleLog.Result result;
 
         private Transform _modal;
         private float _updateTime = 0.0f;
@@ -80,7 +81,7 @@ namespace Nekoyume
             GameObject playerObj = GameObject.Find("Player");
             if (playerObj != null)
             {
-                var player = playerObj.GetComponent<Player>();
+                var player = playerObj.GetComponent<Game.Character.Player>();
                 player.Level += 1;
                 Log($"Level Up to {player.Level}");
             }
@@ -99,9 +100,8 @@ namespace Nekoyume
             GameObject stage = GameObject.Find("Stage");
             var simulator = new Simulator(0, ActionManager.Instance.Avatar);
             simulator.Simulate();
-            var battleResult = simulator.log.events.OfType<Model.BattleResult>().First();
-            battleResult.result = result;
-            stage.GetComponent<Stage>().Play(simulator.log);
+            simulator.Log.result = result;
+            stage.GetComponent<Stage>().Play(simulator.Log);
         }
     }
 }

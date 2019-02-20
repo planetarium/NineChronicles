@@ -37,7 +37,7 @@ namespace Nekoyume.Model
                     character = Copy(this),
                     characterId = id,
                 };
-                simulator.log.Add(dropItem);
+                simulator.Log.Add(dropItem);
                 player.GetItem(item);
             }
         }

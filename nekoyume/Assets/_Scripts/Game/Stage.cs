@@ -15,8 +15,8 @@ namespace Nekoyume.Game
     public class Stage : MonoBehaviour, IStage
     {
         private GameObject _background;
-        public int Id;
-        private BattleLog battleLog;
+        public int id;
+        private BattleLog _battleLog;
 
         private void Awake()
         {
@@ -27,8 +27,8 @@ namespace Nekoyume.Game
 
         private void OnStageStart()
         {
-            battleLog = ActionManager.Instance.battleLog;
-            Play(battleLog);
+            _battleLog = ActionManager.Instance.battleLog;
+            Play(_battleLog);
         }
 
         private void Start()
@@ -83,6 +83,7 @@ namespace Nekoyume.Game
 
         private IEnumerator PlayAsync(BattleLog log)
         {
+            StageEnter(log.stage);
             foreach (EventBase e in log)
             {
                 {
@@ -93,6 +94,7 @@ namespace Nekoyume.Game
                     }
                 }
             }
+            StageEnd(log.result);
         }
 
         public void StageEnter(int stage)
@@ -123,9 +125,9 @@ namespace Nekoyume.Game
             }
         }
 
-        public void StageEnd(Model.BattleResult.Result result)
+        public void StageEnd(BattleLog.Result result)
         {
-            Widget.Find<UI.BattleResult>().Show(result);
+            Widget.Find<BattleResult>().Show(result);
         }
 
         public void SpawnPlayer()
@@ -141,7 +143,7 @@ namespace Nekoyume.Game
         public void SpawnMonster(Monster monster)
         {
             var spawner = GetComponentsInChildren<MonsterSpawner>().First();
-            spawner.SetData(Id, monster);
+            spawner.SetData(id, monster);
         }
 
         public void Dead(Model.CharacterBase character)
