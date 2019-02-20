@@ -1,3 +1,5 @@
+using Nekoyume.Action;
+using Nekoyume.Game;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -6,7 +8,7 @@ namespace Nekoyume
 {
     public class Cheat : UI.Widget
     {
-        static private Cheat Instance;
+        private static Cheat Instance;
 
         public Text log;
 
@@ -85,6 +87,14 @@ namespace Nekoyume
         private void SpeedUp()
         {
             Time.timeScale = 2.0f;
+        }
+
+        private void DummyBattle()
+        {
+            GameObject stage = GameObject.Find("Stage");
+            var simulator = new Simulator(0, ActionManager.Instance.Avatar);
+            simulator.Simulate();
+            stage.GetComponent<Stage>().Play(simulator.log);
         }
     }
 }
