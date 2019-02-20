@@ -298,6 +298,7 @@ namespace Nekoyume.Game.Character
                 _anim.ResetTrigger("Hit");
                 _anim.SetBool("Run", false);
             }
+            gameObject.SetActive(false);
         }
 
         public void Attack(int atk, CharacterBase target)

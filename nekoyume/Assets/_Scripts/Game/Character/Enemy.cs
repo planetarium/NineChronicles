@@ -18,6 +18,7 @@ namespace Nekoyume.Game.Character
         public int DataId = 0;
         public int RewardExp = 0;
         public Guid id;
+        public ItemBase item;
 
         protected override Vector3 _hpBarOffset => _castingBarOffset + new Vector3(0, 0 + 0.22f, 0.0f);
 
@@ -119,40 +120,27 @@ namespace Nekoyume.Game.Character
                 colorseq.Append(mat.DOColor(Color.red, 0.1f));
                 colorseq.Append(mat.DOColor(Color.white, 0.1f));
             }
+
+            if (HP <= 0)
+            {
+                Die();
+            }
         }
 
         protected override void OnDead()
         {
             DropItem();
-
             base.OnDead();
-            Event.OnEnemyDead.Invoke(this);
         }
 
         protected void DropItem()
         {
-            var selector = new WeightedSelector<int>();
-            var tables = this.GetRootComponent<Tables>();
-            foreach (var pair in tables.ItemDrop)
+            if (item != null)
             {
-                ItemDrop dropData = pair.Value;
-                if (DataId != dropData.MonsterId)
-                    continue;
-                
-                if (dropData.Weight <= 0)
-                    continue;
-
-                selector.Add(dropData.ItemId, dropData.Weight);
-            }
-
-            if (selector.Count <= 0)
-                return;
-
-            var dropItemFactory = GetComponentInParent<DropItemFactory>();
-            var dropItem = dropItemFactory.Create(selector.Select(), transform.position);
-            if (dropItem != null)
-            {
-                Event.OnGetItem.Invoke(dropItem.GetComponent<DropItem>());
+                var dropItemFactory = GetComponentInParent<DropItemFactory>();
+                dropItemFactory.Create(item.Data.Id, transform.position);
+                gameObject.SetActive(false);
+                Widget.Find<UI.BattleResult>().Add(item);
             }
         }
 
@@ -163,6 +151,7 @@ namespace Nekoyume.Game.Character
             _castingBarOffset.Set(-0.0f, -0.33f, 0.0f);
             InitStats(spawnCharacter.data);
             id = spawnCharacter.id;
+            item = spawnCharacter.item;
         }
 
         private void InitStats(Monster data)
@@ -174,13 +163,6 @@ namespace Nekoyume.Game.Character
             RewardExp = data.RewardExp;
             Power = 0;
             HPMax = HP;
-        }
-
-        public void DropItem(ItemBase item)
-        {
-            var dropItemFactory = GetComponentInParent<DropItemFactory>();
-            dropItemFactory.Create(item.Data.Id, transform.position);
-            gameObject.SetActive(false);
         }
     }
 }

@@ -146,20 +146,6 @@ namespace Nekoyume.Game
 
         public void Dead(Model.CharacterBase character)
         {
-            if (character is Model.Player)
-            {
-                var player = GetComponentInChildren<Character.Player>();
-                player.Die();
-            }
-            else
-            {
-                var enemies = GetComponentsInChildren<Enemy>();
-                var enemy = enemies.FirstOrDefault(e => e.id == character.id);
-                if (enemy != null)
-                {
-                    enemy.Die();
-                }
-            }
         }
 
         public void Attack(int atk, Model.CharacterBase character, Model.CharacterBase target)
@@ -187,13 +173,6 @@ namespace Nekoyume.Game
 
         public void DropItem(Monster character)
         {
-            var enemies = GetComponentsInChildren<Enemy>();
-            var enemy = enemies.FirstOrDefault(e => e.id == character.id);
-            if (enemy != null)
-            {
-                enemy.DropItem(character.item);
-                Widget.Find<UI.BattleResult>().Add(character.item);
-            }
         }
     }
 }
