@@ -3,11 +3,8 @@ using System.Linq;
 using DG.Tweening;
 using Nekoyume.Action;
 using Nekoyume.Data;
-using Nekoyume.Data.Table;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Entrance;
-using Nekoyume.Game.Factory;
-using Nekoyume.Game.Item;
 using Nekoyume.Game.Trigger;
 using Nekoyume.Model;
 using Nekoyume.UI;
@@ -21,17 +18,6 @@ namespace Nekoyume.Game
         public int Id;
         private BattleLog battleLog;
 
-        public string BackgroundName
-        {
-            get
-            {
-                if (_background == null)
-                    return "";
-
-                return _background.name;
-            }
-        }
-
         private void Awake()
         {
             Event.OnRoomEnter.AddListener(OnRoomEnter);
@@ -42,7 +28,7 @@ namespace Nekoyume.Game
         private void OnStageStart()
         {
             battleLog = ActionManager.Instance.battleLog;
-            Play();
+            Play(battleLog);
         }
 
         private void Start()
@@ -87,17 +73,17 @@ namespace Nekoyume.Game
             }
         }
 
-        public void Play()
+        public void Play(BattleLog log)
         {
-            if (battleLog?.Count > 0)
+            if (log?.Count > 0)
             {
-                StartCoroutine(PlayAsync());
+                StartCoroutine(PlayAsync(log));
             }
         }
 
-        private IEnumerator PlayAsync()
+        private IEnumerator PlayAsync(BattleLog log)
         {
-            foreach (EventBase e in battleLog)
+            foreach (EventBase e in log)
             {
                 {
                     e.Execute(this);
@@ -157,7 +143,7 @@ namespace Nekoyume.Game
             cam.target = player.transform;
         }
 
-        public void SpawnMonster(Model.Monster monster)
+        public void SpawnMonster(Monster monster)
         {
             var spawner = GetComponentsInChildren<MonsterSpawner>().First();
             spawner.SetData(Id, monster);
@@ -204,7 +190,7 @@ namespace Nekoyume.Game
             }
         }
 
-        public void DropItem(Model.Monster character)
+        public void DropItem(Monster character)
         {
             var enemies = GetComponentsInChildren<Enemy>();
             var enemy = enemies.FirstOrDefault(e => e.id == character.id);
