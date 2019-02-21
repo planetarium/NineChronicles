@@ -1497,8 +1497,11 @@ MonoBehaviour:
   cart: {fileID: 114593173202431658}
   sword: {fileID: 114381248309533238}
   items: []
+  shopItems: []
   totalPrice: {fileID: 114475853157609074}
   itemBase: {fileID: 1084418394320948}
+  sellItemBase: {fileID: 1553735414932666}
+  grid: {fileID: 224325956812485680}
 --- !u!114 &114076083877850660
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3942,7 +3945,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 114996233042885718}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 114083347570939508}
+        m_MethodName: ConfirmClick
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &114781808524156118
@@ -4164,6 +4178,9 @@ MonoBehaviour:
   itemName: {fileID: 114800915070184408}
   info: {fileID: 114223106266963530}
   price: {fileID: 114125717051802480}
+  icon: {fileID: 114291657218661376}
+  item:
+    reserved: 0
 --- !u!114 &114819961357141416
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4196,7 +4213,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\uD310\uB9E4\uD569\uB2C8\uB2E4."
+  m_Text: "\uAD6C\uB9E4\uD569\uB2C8\uB2E4."
 --- !u!114 &114820585137308824
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4308,6 +4325,7 @@ MonoBehaviour:
   panelSell: {fileID: 1605515122930566}
   headerBuy: {fileID: 1931849324911286}
   headerSell: {fileID: 1855562416837638}
+  stage: {fileID: 0}
 --- !u!114 &114836031962424788
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4464,6 +4482,8 @@ MonoBehaviour:
   itemName: {fileID: 114836031962424788}
   info: {fileID: 114801702809032048}
   price: {fileID: 114905085167759842}
+  item:
+    reserved: 0
 --- !u!114 &114895950939429308
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4640,6 +4660,8 @@ MonoBehaviour:
   Icon: {fileID: 114416414545870128}
   LabelCount: {fileID: 114356255340188778}
   LabelEquip: {fileID: 114777545106020270}
+  Item:
+    reserved: 0
 --- !u!114 &114975077729949422
 MonoBehaviour:
   m_ObjectHideFlags: 1

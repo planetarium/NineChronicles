@@ -1,4 +1,8 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using Nekoyume.Action;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -16,7 +20,6 @@ namespace Nekoyume.UI
         {
             items = new List<CartItem>();
             Game.Event.OnSlotClick.AddListener(SlotClick);
-            Init();
         }
 
         public void CalcTotalPrice()
@@ -33,18 +36,19 @@ namespace Nekoyume.UI
 
         public void ConfirmClick()
         {
-            Debug.Log(totalPrice);
+            StartCoroutine(SellAsync());
         }
 
-        public void Init()
+        public IEnumerator SellAsync()
         {
-            items.Clear();
-            foreach (Transform child in cart.content.transform)
+            var sellItems = items.Select(i => i.item).ToList();
+            var currentAvatar = ActionManager.Instance.Avatar;
+            ActionManager.Instance.Sell(sellItems, Convert.ToInt64(totalPrice.text));
+            while (currentAvatar.Equals(ActionManager.Instance.Avatar))
             {
-                Destroy(child.gameObject);
+                yield return new WaitForSeconds(1.0f);
             }
-            CalcTotalPrice();
-            GetComponentInChildren<Inventory>()?.Show();
+            Debug.Log("Sell");
         }
 
         public void SlotClick(InventorySlot slot)
@@ -52,16 +56,35 @@ namespace Nekoyume.UI
             if (gameObject.active)
             {
                 GameObject newItem = Instantiate(itemBase, cart.content);
-                CartItem item = newItem.GetComponent<CartItem>();
+                CartItem cartItem = newItem.GetComponent<CartItem>();
                 var itemInfo = slot.Item;
-                item.itemName.text = itemInfo.Data.Id.ToString();
-                item.price.text = "1";
-                item.info.text = "info";
-                item.icon.sprite = slot.Icon.sprite;
-                item.gameObject.SetActive(true);
-                items.Add(item);
+                cartItem.itemName.text = itemInfo.Data.Id.ToString();
+                cartItem.price.text = "1";
+                cartItem.info.text = "info";
+                cartItem.icon.sprite = slot.Icon.sprite;
+                cartItem.gameObject.SetActive(true);
+                cartItem.item = itemInfo;
+                items.Add(cartItem);
                 CalcTotalPrice();
             }
+        }
+
+        public override void Show()
+        {
+            GetComponentInChildren<Inventory>()?.Show();
+            CalcTotalPrice();
+            base.Show();
+        }
+
+        public override void Close()
+        {
+            items.Clear();
+            foreach (Transform child in cart.content.transform)
+            {
+                Destroy(child.gameObject);
+            }
+            CalcTotalPrice();
+            base.Close();
         }
     }
 }

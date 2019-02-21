@@ -224,6 +224,8 @@ MonoBehaviour:
   Icon: {fileID: 114646760519971096}
   LabelCount: {fileID: 114666753651825956}
   LabelEquip: {fileID: 114179626317826640}
+  Item:
+    reserved: 0
 --- !u!114 &114620167362422768
 MonoBehaviour:
   m_ObjectHideFlags: 1

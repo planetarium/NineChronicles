@@ -12,6 +12,7 @@ using Libplanet.Crypto;
 using Libplanet.Store;
 using Libplanet.Tx;
 using Nekoyume.Data.Table;
+using Nekoyume.Game;
 using UnityEngine;
 
 namespace Nekoyume.Action
@@ -37,7 +38,10 @@ namespace Nekoyume.Action
         }
 
         public Address UserAddress => privateKey.PublicKey.ToAddress();
+        public Address ShopAddress => ActionManager.shopAddress;
+
         public event EventHandler<Context> DidReceiveAction;
+        public event EventHandler<Shop> UpdateShop;
 
         public IEnumerator Sync()
         {
@@ -51,8 +55,23 @@ namespace Nekoyume.Action
                 {
                     DidReceiveAction?.Invoke(this, ctx);
                 }
-
+                var shop = (Shop) task.Result.GetValueOrDefault(ShopAddress);
                 yield return null;
+            }
+        }
+
+        public IEnumerator SyncShop()
+        {
+            while (true)
+            {
+                yield return new WaitForSeconds(interval);
+                var task = Task.Run(() => blocks.GetStates(new[] {ShopAddress}));
+                yield return new WaitUntil(() => task.IsCompleted);
+                var shop = (Shop) task.Result.GetValueOrDefault(ShopAddress);
+                if (shop != null)
+                {
+                    UpdateShop?.Invoke(this, shop);
+                }
             }
         }
 

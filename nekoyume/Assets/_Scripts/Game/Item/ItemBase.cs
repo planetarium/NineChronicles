@@ -5,7 +5,26 @@ namespace Nekoyume.Game.Item
     [Serializable]
     public class ItemBase
     {
+        protected bool Equals(ItemBase other)
+        {
+            return Equals(Data, other.Data);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((ItemBase) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return (Data != null ? Data.GetHashCode() : 0);
+        }
+
         public Data.Table.Item Data { get; private set; }
+        public bool reserved = false;
 
         public ItemBase(Data.Table.Item data)
         {

@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using Nekoyume.Action;
+using Nekoyume.Game.Item;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,13 +12,16 @@ namespace Nekoyume.UI
         public ScrollRect cart;
         public Button sword;
         public List<CartItem> items;
+        public List<Item> shopItems;
         public Text totalPrice;
         public GameObject itemBase;
+        public GameObject sellItemBase;
+        public Transform grid;
 
         private void Awake()
         {
             items = new List<CartItem>();
-            Init();
+            shopItems = new List<Item>();
         }
 
         public void SwordClick()
@@ -50,7 +55,29 @@ namespace Nekoyume.UI
             Debug.Log(totalPrice);
         }
 
-        public void Init()
+        public override void Show()
+        {
+            foreach (var pair in ActionManager.Instance.shop.Items)
+            {
+                foreach (ItemBase itemInfo in pair.Value)
+                {
+                    GameObject newItem = Instantiate(sellItemBase, grid);
+                    Item item = newItem.GetComponent<Item>();
+                    item.itemName.text = itemInfo.Data.Id.ToString();
+                    item.price.text = "1";
+                    item.info.text = "info";
+                    var sprite = Resources.Load<Sprite>($"images/item_{itemInfo.Data.Id}");
+                    item.icon.sprite = sprite;
+                    item.gameObject.SetActive(true);
+                    shopItems.Add(item);
+                }
+            }
+
+            CalcTotalPrice();
+            base.Show();
+        }
+
+        public override void Close()
         {
             items.Clear();
             foreach (Transform child in cart.content.transform)
@@ -58,7 +85,7 @@ namespace Nekoyume.UI
                 Destroy(child.gameObject);
             }
             CalcTotalPrice();
+            base.Close();
         }
-
     }
 }
