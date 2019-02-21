@@ -41,6 +41,7 @@ namespace Nekoyume.UI
 
         public IEnumerator SellAsync()
         {
+            btnConfirm.SetActive(false);
             var sellItems = items.Select(i => i.item).ToList();
             var currentAvatar = ActionManager.Instance.Avatar;
             ActionManager.Instance.Sell(sellItems, Convert.ToInt64(totalPrice.text));
@@ -49,6 +50,7 @@ namespace Nekoyume.UI
                 yield return new WaitForSeconds(1.0f);
             }
             Debug.Log("Sell");
+            btnConfirm.SetActive(true);
         }
 
         public void SlotClick(InventorySlot slot)
