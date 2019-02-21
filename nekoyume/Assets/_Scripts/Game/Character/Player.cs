@@ -169,6 +169,11 @@ namespace Nekoyume.Game.Character
                 new Vector3(-0.02f, 0.02f, 0.0f),
                 dmg.ToString(),
                 Color.red);
+
+            if (HP <= 0)
+            {
+                Die();
+            }
         }
 
         public string SerializeItems()

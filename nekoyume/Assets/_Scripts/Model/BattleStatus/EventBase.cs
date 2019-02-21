@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using Nekoyume.Game;
-using Nekoyume.Game.Character;
 
 namespace Nekoyume.Model
 {
@@ -12,6 +9,7 @@ namespace Nekoyume.Model
         public CharacterBase target;
         public Guid characterId;
         public Guid targetId;
+        public abstract bool skip { get; }
 
         public abstract void Execute(IStage stage);
     }

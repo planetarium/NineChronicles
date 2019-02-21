@@ -57,7 +57,7 @@ namespace Nekoyume.Model
                     characterId = id,
                     targetId = target.id,
                 };
-                simulator.log.Add(attack);
+                simulator.Log.Add(attack);
             }
         }
 
@@ -78,7 +78,7 @@ namespace Nekoyume.Model
                 character = Copy(this),
                 characterId = id,
             };
-            simulator.log.Add(dead);
+            simulator.Log.Add(dead);
         }
 
         public void Spawn()
@@ -88,7 +88,7 @@ namespace Nekoyume.Model
                 character = Copy(this),
                 characterId = id,
             };
-            simulator.log.Add(spawn);
+            simulator.Log.Add(spawn);
         }
 
         public static T Copy<T>(T origin)

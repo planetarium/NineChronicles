@@ -19,7 +19,7 @@ namespace Nekoyume.Game.Trigger
             foreach (var pair in tables.BoxDrop)
             {
                 var dropData = pair.Value;
-                if (stage.Id != dropData.StageId)
+                if (stage.id != dropData.StageId)
                     continue;
 
                 if (dropData.Weight <= 0)

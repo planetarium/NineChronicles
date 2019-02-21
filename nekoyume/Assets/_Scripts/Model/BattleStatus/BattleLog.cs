@@ -1,15 +1,22 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Nekoyume.Model
 {
     [Serializable]
     public class BattleLog : IEnumerable<EventBase>
     {
+        public enum Result
+        {
+            Win,
+            Lose
+        }
+
         public List<EventBase> events = new List<EventBase>();
         public int Count => events.Count;
+        public int stage;
+        public Result result;
 
         public void Add(EventBase e)
         {

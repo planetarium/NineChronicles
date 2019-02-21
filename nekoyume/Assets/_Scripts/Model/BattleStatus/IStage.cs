@@ -7,7 +7,7 @@ namespace Nekoyume.Model
         void SpawnPlayer();
         void SpawnMonster(Monster character);
         void StageEnter(int stage);
-        void StageEnd(BattleResult.Result result);
+        void StageEnd(BattleLog.Result result);
         void Dead(CharacterBase character);
         void Attack(int atk, CharacterBase character, CharacterBase target);
         void DropItem(Monster character);

@@ -11,17 +11,16 @@ namespace Nekoyume.Action
 {
     public class Simulator
     {
-        private readonly string dirPath;
-        private const string kAppearPath = "Assets/Resources/DataTable/monster_appear.csv";
-        private const string kMonstersPath = "Assets/Resources/DataTable/monsters.csv";
-        private const string kItemDropPath = "Assets/Resources/DataTable/item_drop.csv";
+        private const string KAppearPath = "Assets/Resources/DataTable/monster_appear.csv";
+        private const string KMonstersPath = "Assets/Resources/DataTable/monsters.csv";
+        private const string KItemDropPath = "Assets/Resources/DataTable/item_drop.csv";
         internal const string StatsPath = "Assets/Resources/DataTable/stats.csv";
         private readonly int _seed;
         private readonly int _stage;
         private readonly List<CharacterBase> characters;
-        public readonly BattleLog log;
+        public readonly BattleLog Log;
         public bool isLose = false;
-        public BattleResult.Result result;
+        private BattleLog.Result _result;
 
         public Simulator(int seed, Model.Avatar avatar)
         {
@@ -29,7 +28,7 @@ namespace Nekoyume.Action
             _seed = seed;
             _stage = avatar.WorldStage;
             characters = new List<CharacterBase>();
-            log = new BattleLog();
+            Log = new BattleLog();
             var player = new Player(avatar, this);
             MonsterSpawn(player);
             Add(player);
@@ -37,11 +36,7 @@ namespace Nekoyume.Action
 
         public Player Simulate()
         {
-            var ss = new StartStage
-            {
-                stage = _stage,
-            };
-            log.Add(ss);
+            Log.stage = _stage;
             foreach (var character in characters)
             {
                 character.Spawn();
@@ -57,24 +52,20 @@ namespace Nekoyume.Action
                 {
                     player.stage++;
 
-                    result = BattleResult.Result.Win;
+                    _result = BattleLog.Result.Win;
                     Debug.Log("win");
                     break;
                 }
 
                 if (isLose)
                 {
-                    result = BattleResult.Result.Lose;
+                    _result = BattleLog.Result.Lose;
                     Debug.Log("lose");
                     break;
                 }
             }
 
-            var br = new BattleResult
-            {
-                result = result
-            };
-            log.Add(br);
+            Log.result = _result;
             return (Player) characters.First(c => c is Player);
         }
 
@@ -88,7 +79,7 @@ namespace Nekoyume.Action
         {
             var selector = new WeightedSelector<MonsterAppear>();
             var appear = new Table<MonsterAppear>();
-            var appearPath = Path.Combine(Directory.GetCurrentDirectory(), kAppearPath);
+            var appearPath = Path.Combine(Directory.GetCurrentDirectory(), KAppearPath);
             appear.Load(File.ReadAllText(appearPath));
             foreach (var pair in appear)
             {
@@ -104,13 +95,13 @@ namespace Nekoyume.Action
 
             var monsterCount = 2;
             var monsterTable = new Table<Data.Table.Monster>();
-            var monsterPath = Path.Combine(Directory.GetCurrentDirectory(), kMonstersPath);
+            var monsterPath = Path.Combine(Directory.GetCurrentDirectory(), KMonstersPath);
             monsterTable.Load(File.ReadAllText(monsterPath));
 
             var itemTable = Agent.ItemTable();
             var itemSelector = new WeightedSelector<int>();
             var dropTable = new Table<ItemDrop>();
-            dropTable.Load(File.ReadAllText(kItemDropPath));
+            dropTable.Load(File.ReadAllText(KItemDropPath));
 
             for (var i = 0; i < monsterCount; i++)
             {

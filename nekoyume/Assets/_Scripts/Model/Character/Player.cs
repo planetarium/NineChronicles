@@ -96,7 +96,7 @@ namespace Nekoyume.Model
             {
                 character = Copy(this),
             };
-            simulator.log.Add(levelUp);
+            simulator.Log.Add(levelUp);
         }
 
         public void GetItem(ItemBase item)

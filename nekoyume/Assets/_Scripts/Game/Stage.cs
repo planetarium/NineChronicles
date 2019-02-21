@@ -15,8 +15,8 @@ namespace Nekoyume.Game
     public class Stage : MonoBehaviour, IStage
     {
         private GameObject _background;
-        public int Id;
-        private BattleLog battleLog;
+        public int id;
+        private BattleLog _battleLog;
 
         private void Awake()
         {
@@ -27,8 +27,8 @@ namespace Nekoyume.Game
 
         private void OnStageStart()
         {
-            battleLog = ActionManager.Instance.battleLog;
-            Play(battleLog);
+            _battleLog = ActionManager.Instance.battleLog;
+            Play(_battleLog);
         }
 
         private void Start()
@@ -83,13 +83,18 @@ namespace Nekoyume.Game
 
         private IEnumerator PlayAsync(BattleLog log)
         {
+            StageEnter(log.stage);
             foreach (EventBase e in log)
             {
                 {
-                    e.Execute(this);
-                    yield return new WaitForSeconds(1.0f);
+                    if (!e.skip)
+                    {
+                        e.Execute(this);
+                        yield return new WaitForSeconds(1.0f);
+                    }
                 }
             }
+            StageEnd(log.result);
         }
 
         public void StageEnter(int stage)
@@ -120,17 +125,9 @@ namespace Nekoyume.Game
             }
         }
 
-        public void StageEnd(BattleResult.Result result)
+        public void StageEnd(BattleLog.Result result)
         {
-            StartCoroutine(StageEndAsync(result));
-        }
-
-        private IEnumerator StageEndAsync(BattleResult.Result result)
-        {
-            var blind = Widget.Find<Blind>();
-            yield return blind.FadeIn(1.0f, result.ToString());
-            yield return new WaitForSeconds(2.0f);
-            Event.OnRoomEnter.Invoke();
+            Widget.Find<BattleResult>().Show(result);
         }
 
         public void SpawnPlayer()
@@ -146,25 +143,11 @@ namespace Nekoyume.Game
         public void SpawnMonster(Monster monster)
         {
             var spawner = GetComponentsInChildren<MonsterSpawner>().First();
-            spawner.SetData(Id, monster);
+            spawner.SetData(id, monster);
         }
 
         public void Dead(Model.CharacterBase character)
         {
-            if (character is Model.Player)
-            {
-                var player = GetComponentInChildren<Character.Player>();
-                player.Die();
-            }
-            else
-            {
-                var enemies = GetComponentsInChildren<Enemy>();
-                var enemy = enemies.FirstOrDefault(e => e.id == character.id);
-                if (enemy != null)
-                {
-                    enemy.Die();
-                }
-            }
         }
 
         public void Attack(int atk, Model.CharacterBase character, Model.CharacterBase target)
@@ -192,12 +175,6 @@ namespace Nekoyume.Game
 
         public void DropItem(Monster character)
         {
-            var enemies = GetComponentsInChildren<Enemy>();
-            var enemy = enemies.FirstOrDefault(e => e.id == character.id);
-            if (enemy != null)
-            {
-                enemy.DropItem(character.item);
-            }
         }
     }
 }

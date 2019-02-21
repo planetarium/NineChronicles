@@ -10,6 +10,8 @@ namespace Nekoyume.Model
     {
         public int atk;
 
+        public override bool skip => false;
+
         public override void Execute(IStage stage)
         {
             stage.Attack(atk, character, target);
