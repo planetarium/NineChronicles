@@ -22,7 +22,6 @@ namespace Nekoyume.UI
             var enabled = !avatar.Dead;
             btnQuest.SetActive(enabled);
             LabelInfo.text = "";
-            btnCombine.SetActive(true);
         }
 
         public void ShowWorld()
