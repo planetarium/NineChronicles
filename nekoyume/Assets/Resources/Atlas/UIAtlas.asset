@@ -34,12 +34,12 @@ MonoBehaviour:
     targetSprite: {fileID: 21300012, guid: 9cd0e3f4009da634e9bc284a2d5d82d2, type: 3}
   - source: {fileID: 21300000, guid: bd2a9c88dcd9d429b8b3addabbbbb75b, type: 3}
     targetSprite: {fileID: 21300014, guid: 9cd0e3f4009da634e9bc284a2d5d82d2, type: 3}
+  - source: {fileID: 21300000, guid: 506f3350c97afee409bf1d52099a09fa, type: 3}
+    targetSprite: {fileID: 21300020, guid: 9cd0e3f4009da634e9bc284a2d5d82d2, type: 3}
   - source: {fileID: 21300000, guid: 7f32f9c641ab56242a326c7ca6b33ba3, type: 3}
     targetSprite: {fileID: 21300016, guid: 9cd0e3f4009da634e9bc284a2d5d82d2, type: 3}
   - source: {fileID: 21300000, guid: 38f152fbe93480f479c8d8d6f02e7d3f, type: 3}
     targetSprite: {fileID: 21300018, guid: 9cd0e3f4009da634e9bc284a2d5d82d2, type: 3}
-  - source: {fileID: 21300000, guid: 506f3350c97afee409bf1d52099a09fa, type: 3}
-    targetSprite: {fileID: 21300020, guid: 9cd0e3f4009da634e9bc284a2d5d82d2, type: 3}
   - source: {fileID: 21300000, guid: 886daf4be8281894482dbef2bff6e1f8, type: 3}
     targetSprite: {fileID: 21300022, guid: 9cd0e3f4009da634e9bc284a2d5d82d2, type: 3}
   - source: {fileID: 21300000, guid: 410936538585ebe4581724f17b290673, type: 3}
@@ -50,10 +50,10 @@ MonoBehaviour:
     targetSprite: {fileID: 21300028, guid: 9cd0e3f4009da634e9bc284a2d5d82d2, type: 3}
   - source: {fileID: 21300000, guid: 9bdd85abf5fa849988077c8c485ee0bb, type: 3}
     targetSprite: {fileID: 21300030, guid: 9cd0e3f4009da634e9bc284a2d5d82d2, type: 3}
-  - source: {fileID: 21300000, guid: 407980548f97ce7489210a13f7bc0fc1, type: 3}
-    targetSprite: {fileID: 21300032, guid: 9cd0e3f4009da634e9bc284a2d5d82d2, type: 3}
   - source: {fileID: 21300000, guid: 0680de78f71e9a042aee974aa278b528, type: 3}
     targetSprite: {fileID: 21300034, guid: 9cd0e3f4009da634e9bc284a2d5d82d2, type: 3}
+  - source: {fileID: 21300000, guid: 407980548f97ce7489210a13f7bc0fc1, type: 3}
+    targetSprite: {fileID: 21300032, guid: 9cd0e3f4009da634e9bc284a2d5d82d2, type: 3}
   - source: {fileID: 21300000, guid: 5c78e13701932bc4cb7acc39d68f0102, type: 3}
     targetSprite: {fileID: 21300036, guid: 9cd0e3f4009da634e9bc284a2d5d82d2, type: 3}
   - source: {fileID: 21300000, guid: ee7d26cafb86b4077b82ddf0f2e05bf6, type: 3}
@@ -70,6 +70,8 @@ MonoBehaviour:
     targetSprite: {fileID: 21300048, guid: 9cd0e3f4009da634e9bc284a2d5d82d2, type: 3}
   - source: {fileID: 21300000, guid: d6e44296ad6b8004c832822e6bc8bff2, type: 3}
     targetSprite: {fileID: 21300062, guid: 9cd0e3f4009da634e9bc284a2d5d82d2, type: 3}
+  - source: {fileID: 21300000, guid: 944194855e6391d48a634469517f4b53, type: 3}
+    targetSprite: {fileID: 21300066, guid: 9cd0e3f4009da634e9bc284a2d5d82d2, type: 3}
   - source: {fileID: 21300000, guid: 3ba6d1689b33c3847801450da9445e30, type: 3}
     targetSprite: {fileID: 21300050, guid: 9cd0e3f4009da634e9bc284a2d5d82d2, type: 3}
   - source: {fileID: 21300000, guid: 52d66508027f740f0843704bd3996b6f, type: 3}
@@ -82,4 +84,14 @@ MonoBehaviour:
     targetSprite: {fileID: 21300058, guid: 9cd0e3f4009da634e9bc284a2d5d82d2, type: 3}
   - source: {fileID: 21300000, guid: 2cd20c5fa80f24807917d8fd90849131, type: 3}
     targetSprite: {fileID: 21300060, guid: 9cd0e3f4009da634e9bc284a2d5d82d2, type: 3}
-  m_PendingActions: []
+  m_PendingActions:
+  - actionType: 0
+    resource: {fileID: 21300000, guid: 44f317d0df36bb54d82683fe84aa74f1, type: 3}
+    spriteInfo:
+      source: {fileID: 0}
+      targetSprite: {fileID: 0}
+  - actionType: 0
+    resource: {fileID: 21300000, guid: 6bf78f84bdcddd24cbb4f798d6041c04, type: 3}
+    spriteInfo:
+      source: {fileID: 0}
+      targetSprite: {fileID: 0}
