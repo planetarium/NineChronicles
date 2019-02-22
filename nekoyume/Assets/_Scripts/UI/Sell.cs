@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -44,7 +43,7 @@ namespace Nekoyume.UI
             btnConfirm.SetActive(false);
             var sellItems = items.Select(i => i.item).ToList();
             var currentAvatar = ActionManager.Instance.Avatar;
-            ActionManager.Instance.Sell(sellItems, Convert.ToInt64(totalPrice.text));
+            ActionManager.Instance.Sell(sellItems, decimal.Parse(totalPrice.text));
             while (currentAvatar.Equals(ActionManager.Instance.Avatar))
             {
                 yield return new WaitForSeconds(1.0f);

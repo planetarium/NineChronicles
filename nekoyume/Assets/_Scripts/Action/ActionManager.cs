@@ -179,7 +179,7 @@ namespace Nekoyume.Action
             ProcessAction(action);
         }
 
-        public void Sell(List<ItemBase> items, long price)
+        public void Sell(List<ItemBase> items, decimal price)
         {
             var action = new Sell
             {

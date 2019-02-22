@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Globalization;
 using System.Linq;
 using Libplanet;
 using Libplanet.Action;
@@ -14,12 +15,12 @@ namespace Nekoyume.Action
     public class Sell : ActionBase
     {
         public List<ItemBase> Items;
-        public long Price;
+        public decimal Price;
 
         public override void LoadPlainValue(IImmutableDictionary<string, object> plainValue)
         {
             Items = JsonConvert.DeserializeObject<List<ItemBase>>(plainValue["items"].ToString());
-            Price = int.Parse(plainValue["price"].ToString());
+            Price = decimal.Parse(plainValue["price"].ToString());
         }
 
         public override AddressStateMap Execute(IActionContext actionCtx)
@@ -51,7 +52,7 @@ namespace Nekoyume.Action
         public override IImmutableDictionary<string, object> PlainValue => new Dictionary<string, object>
         {
             ["items"] = JsonConvert.SerializeObject(Items),
-            ["price"] = Price,
+            ["price"] = Price.ToString(CultureInfo.InvariantCulture),
         }.ToImmutableDictionary();
     }
 }
