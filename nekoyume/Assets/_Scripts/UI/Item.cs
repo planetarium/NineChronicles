@@ -1,3 +1,4 @@
+using Libplanet;
 using Nekoyume.Game.Item;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -13,6 +14,7 @@ namespace Nekoyume.UI
         public Text price;
         public Image icon;
         public ItemBase item;
+        public Address seller;
 
         public void OnPointerEnter(PointerEventData eventData)
         {

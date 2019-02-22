@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Libplanet;
 using Nekoyume.Action;
 using Nekoyume.Game.Item;
 using UnityEngine;
@@ -68,6 +69,7 @@ namespace Nekoyume.UI
                     item.info.text = "info";
                     var sprite = Resources.Load<Sprite>($"images/item_{itemInfo.Data.Id}");
                     item.icon.sprite = sprite;
+                    item.seller = new Address(pair.Key);
                     item.gameObject.SetActive(true);
                     shopItems.Add(item);
                 }
