@@ -1,13 +1,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using Libplanet;
 using Libplanet.Crypto;
-using Nekoyume.Data.Table;
+using Nekoyume.Game;
+using Nekoyume.Game.Item;
 using Nekoyume.Model;
 using UnityEngine;
 
@@ -38,6 +38,8 @@ namespace Nekoyume.Action
         public event EventHandler<Model.Avatar> DidAvatarLoaded;
         public const string PrivateKeyFormat = "private_key_{0}";
         public const string AvatarFileFormat = "avatar_{0}.dat";
+        public static Address shopAddress => default(Address);
+        public Shop shop;
 
         private void Awake()
         {
@@ -64,6 +66,7 @@ namespace Nekoyume.Action
                 DidAvatarLoaded?.Invoke(this, Avatar);
             }
 
+            StartCoroutine(agent.SyncShop());
             StartCoroutine(Sync());
         }
 
@@ -153,9 +156,15 @@ namespace Nekoyume.Action
             var path = Path.Combine(Application.persistentDataPath, "planetarium");
             agent = new Agent(privateKey, path);
             agent.DidReceiveAction += ReceiveAction;
+            agent.UpdateShop += UpdateShop;
 
             Debug.Log($"User Address: 0x{agent.UserAddress.ToHex()}");
             StartMine();
+        }
+
+        private void UpdateShop(object sender, Shop newShop)
+        {
+            shop = newShop;
         }
 
         public void Combination()
@@ -166,6 +175,16 @@ namespace Nekoyume.Action
                 material_2 = 101001,
                 material_3 = 101001,
                 result = 301001,
+            };
+            ProcessAction(action);
+        }
+
+        public void Sell(List<ItemBase> items, decimal price)
+        {
+            var action = new Sell
+            {
+                Items = items,
+                Price = price,
             };
             ProcessAction(action);
         }
