@@ -27,13 +27,14 @@ namespace Nekoyume.Action
         private const string kItemEquipPath = "Assets/Resources/DataTable/item_equip.csv";
         private const string kItemPath = "Assets/Resources/DataTable/item.csv";
 
-        public Agent(PrivateKey privateKey, string path, float interval = 3.0f)
+        public Agent(PrivateKey privateKey, string path, Guid chainId, float interval = 3.0f)
         {
             this.privateKey = privateKey;
             this.interval = interval;
             blocks = new BlockChain<ActionBase>(
                 new BlockPolicy<ActionBase>(TimeSpan.FromMilliseconds(500)),
-                new FileStore(path));
+                new FileStore(path),
+                chainId);
             queuedActions = new ConcurrentQueue<ActionBase>();
         }
 
