@@ -38,6 +38,7 @@ namespace Nekoyume.Action
         public event EventHandler<Model.Avatar> DidAvatarLoaded;
         public const string PrivateKeyFormat = "private_key_{0}";
         public const string AvatarFileFormat = "avatar_{0}.dat";
+        public const string ChainIdKey = "chain_id";
         public static Address shopAddress => default(Address);
         public Shop shop;
 
@@ -147,6 +148,18 @@ namespace Nekoyume.Action
             else
             {
                 privateKey = new PrivateKey(ByteUtil.ParseHex(privateKeyHex));
+            }            
+
+            Guid chainId;
+            var chainIdStr = PlayerPrefs.GetString(ChainIdKey, "");
+            if (string.IsNullOrEmpty(chainIdStr))
+            {
+                chainId = Guid.NewGuid();
+                PlayerPrefs.SetString(ChainIdKey, chainId.ToString());
+            }
+            else 
+            {
+                chainId = Guid.Parse(chainIdStr);
             }
 
             var fileName = string.Format(AvatarFileFormat, index);
@@ -154,7 +167,7 @@ namespace Nekoyume.Action
             Avatar = LoadStatus(_saveFilePath);
 
             var path = Path.Combine(Application.persistentDataPath, "planetarium");
-            agent = new Agent(privateKey, path);
+            agent = new Agent(privateKey, path, chainId);
             agent.DidReceiveAction += ReceiveAction;
             agent.UpdateShop += UpdateShop;
 
