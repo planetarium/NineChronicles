@@ -11,7 +11,8 @@ namespace Nekoyume.UI
         private static GameObject CanvasObj = null;
         private static Dictionary<Type, GameObject> Dict = new Dictionary<Type, GameObject>();
 
-        private Animator _animator;
+        private Animator _animator = null;
+        private Material _glass = null;
 
         public static T Create<T>(bool activate = false) where T : Widget
         {
@@ -67,9 +68,19 @@ namespace Nekoyume.UI
             return null;
         }
 
-        private void Awake()
+        private void Start()
         {
             _animator = GetComponent<Animator>();
+            
+            for (int i = 0; i < transform.childCount; ++i)
+            {
+                Transform child = transform.GetChild(i);
+                var image = child.GetComponent<UnityEngine.UI.Image>();
+                if (image && image.material && image.material.name == "Glass")
+                {
+                    _glass = image.material;
+                }
+            }
         }
 
         public virtual void Show()
@@ -80,6 +91,10 @@ namespace Nekoyume.UI
             {
                 _animator.Play("Show");
             }
+            if (_glass)
+            {
+                StartCoroutine(Blur());
+            }
         }
 
         public virtual IEnumerator WaitForShow()
@@ -88,6 +103,29 @@ namespace Nekoyume.UI
             while (gameObject.activeSelf)
             {
                 yield return null;
+            }
+        }
+
+        public virtual IEnumerator Blur()
+        {
+            if (!_glass)
+            {
+                yield break;
+            }
+
+            _glass.SetFloat("_Radius", 0.0f);
+            float time = 0.0f;
+            while (true)
+            {
+                float radius = Mathf.Lerp(0.0f, 10.0f, time);
+                time += Time.deltaTime;
+                yield return null;
+                _glass.SetFloat("_Radius", radius);
+                if (time > 1.0f)
+                    break;
+
+                if (!gameObject.activeInHierarchy)
+                    break;
             }
         }
 
