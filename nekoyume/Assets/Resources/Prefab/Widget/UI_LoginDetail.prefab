@@ -95,6 +95,7 @@ GameObject:
   - component: {fileID: 224509267792846312}
   - component: {fileID: 222676570873672008}
   - component: {fileID: 114133049527643090}
+  - component: {fileID: 225708743581614492}
   m_Layer: 5
   m_Name: LUK
   m_TagString: Untagged
@@ -305,6 +306,7 @@ GameObject:
   - component: {fileID: 224120961903549860}
   - component: {fileID: 222312861609790672}
   - component: {fileID: 114246401496932200}
+  - component: {fileID: 225443211082212846}
   m_Layer: 5
   m_Name: DEX
   m_TagString: Untagged
@@ -340,6 +342,7 @@ GameObject:
   - component: {fileID: 222083986354954454}
   - component: {fileID: 114186507193306120}
   - component: {fileID: 114586975932311630}
+  - component: {fileID: 95374830036940920}
   m_Layer: 5
   m_Name: UI_LoginDetail
   m_TagString: Untagged
@@ -443,6 +446,7 @@ GameObject:
   - component: {fileID: 224501524833025778}
   - component: {fileID: 222512081925951900}
   - component: {fileID: 114112825086843384}
+  - component: {fileID: 225493163536676530}
   m_Layer: 5
   m_Name: CON
   m_TagString: Untagged
@@ -629,6 +633,7 @@ GameObject:
   - component: {fileID: 224299934939439534}
   - component: {fileID: 222913209033358918}
   - component: {fileID: 114412261252268634}
+  - component: {fileID: 225389850945214240}
   m_Layer: 5
   m_Name: INT
   m_TagString: Untagged
@@ -1794,6 +1799,7 @@ GameObject:
   - component: {fileID: 224176156104655776}
   - component: {fileID: 222331443322504746}
   - component: {fileID: 114210259773524866}
+  - component: {fileID: 225033216975915500}
   m_Layer: 5
   m_Name: STR
   m_TagString: Untagged
@@ -2295,6 +2301,24 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!95 &95374830036940920
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1155592218046724}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 22100000, guid: 44c5407e62b5bd94282cdf3a7e8cdeba, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!95 &95831248236404086
 Animator:
   serializedVersion: 3
@@ -7022,7 +7046,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1973499818608872}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: -2095666955, guid: f70555f144d8491a825f0804e09c671c, type: 3}
   m_Name: 
@@ -10642,3 +10666,58 @@ RectTransform:
   m_AnchoredPosition: {x: 104, y: -95.2}
   m_SizeDelta: {x: 208, y: 40}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!225 &225033216975915500
+CanvasGroup:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1766527929525558}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
+--- !u!225 &225389850945214240
+CanvasGroup:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1280713962045824}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
+--- !u!225 &225443211082212846
+CanvasGroup:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1137692738552350}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
+--- !u!225 &225493163536676530
+CanvasGroup:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1203609347381494}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
+--- !u!225 &225708743581614492
+CanvasGroup:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1023017606566444}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
