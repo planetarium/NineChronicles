@@ -56,7 +56,6 @@ namespace Nekoyume.Action
                 {
                     DidReceiveAction?.Invoke(this, ctx);
                 }
-                var shop = (Shop) task.Result.GetValueOrDefault(ShopAddress);
                 yield return null;
             }
         }
