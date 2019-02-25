@@ -2,13 +2,12 @@ using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using UnityEngine;
-
 
 namespace Nekoyume.Game.Item
 {
     public class Inventory
     {
+        [Serializable]
         public class InventoryItem
         {
             public ItemBase Item;

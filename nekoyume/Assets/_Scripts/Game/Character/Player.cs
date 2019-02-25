@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using BTAI;
 using Nekoyume.Action;
@@ -8,7 +7,6 @@ using Nekoyume.Data.Table;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Skill;
 using Nekoyume.UI;
-using Newtonsoft.Json;
 using UnityEngine;
 
 namespace Nekoyume.Game.Character
@@ -176,12 +174,6 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        public string SerializeItems()
-        {
-            var items = JsonConvert.SerializeObject(Inventory.items);
-            return items;
-        }
-
         protected override void OnDead()
         {
             gameObject.SetActive(false);
@@ -238,14 +230,14 @@ namespace Nekoyume.Game.Character
         private void PickUpItem(DropItem item)
         {
             Inventory.Add(item.Item);
-            ActionManager.Instance.UpdateItems(SerializeItems());
+            ActionManager.Instance.UpdateItems(Inventory.items);
         }
 
         private void InitInventory(Model.Avatar avatar)
         {
-            if (!string.IsNullOrEmpty(avatar.Items))
+            var inventoryItems = avatar.Items;
+            if (inventoryItems != null)
             {
-                var inventoryItems = JsonConvert.DeserializeObject<List<Item.Inventory.InventoryItem>>(avatar.Items);
                 foreach (var inventoryItem in inventoryItems)
                 {
                     if (inventoryItem.Item is Weapon)
@@ -256,6 +248,21 @@ namespace Nekoyume.Game.Character
 
                 Inventory.Set(inventoryItems);
             }
+
+            //
+//            if (!string.IsNullOrEmpty(avatar.Items))
+//            {
+//                var inventoryItems = JsonConvert.DeserializeObject<List<Item.Inventory.InventoryItem>>(avatar.Items);
+//                foreach (var inventoryItem in inventoryItems)
+//                {
+//                    if (inventoryItem.Item is Weapon)
+//                    {
+//                        _weapon = (Weapon) inventoryItem.Item;
+//                    }
+//                }
+//
+//                Inventory.Set(inventoryItems);
+//            }
         }
 
         protected override void OnDisable()
@@ -301,7 +308,7 @@ namespace Nekoyume.Game.Character
             CalcStats();
             Event.OnUpdateEquipment.Invoke(_weapon);
             // TODO Implement Actions
-            ActionManager.Instance.UpdateItems(SerializeItems());
+            ActionManager.Instance.UpdateItems(Inventory.items);
         }
 
         public void Init()

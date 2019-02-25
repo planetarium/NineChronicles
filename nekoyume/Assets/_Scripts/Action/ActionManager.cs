@@ -117,9 +117,9 @@ namespace Nekoyume.Action
             StartCoroutine(agent.Mine());
         }
 
-        public void UpdateItems(string serializeItems)
+        public void UpdateItems(List<Inventory.InventoryItem> items)
         {
-            Avatar.Items = serializeItems;
+            Avatar.Items = items;
             SaveStatus();
         }
 
