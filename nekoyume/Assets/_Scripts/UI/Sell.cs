@@ -14,6 +14,7 @@ namespace Nekoyume.UI
         public List<CartItem> items;
         public Text totalPrice;
         public GameObject itemBase;
+        public GameObject itemInfo;
 
         private void Awake()
         {
@@ -54,19 +55,16 @@ namespace Nekoyume.UI
 
         public void SlotClick(InventorySlot slot)
         {
-            if (gameObject.active)
+            if (gameObject.active && slot.Item != null)
             {
-                GameObject newItem = Instantiate(itemBase, cart.content);
-                CartItem cartItem = newItem.GetComponent<CartItem>();
-                var itemInfo = slot.Item;
-                cartItem.itemName.text = itemInfo.Data.Id.ToString();
-                cartItem.price.text = "1";
+                var slotItem = slot.Item;
+                var cartItem = itemInfo.GetComponent<CartItem>();
+                cartItem.itemName.text = slotItem.Data.Id.ToString();
                 cartItem.info.text = "info";
+                cartItem.price.text = "1";
                 cartItem.icon.sprite = slot.Icon.sprite;
-                cartItem.gameObject.SetActive(true);
-                cartItem.item = itemInfo;
-                items.Add(cartItem);
-                CalcTotalPrice();
+                cartItem.item = slotItem;
+                itemInfo.GetComponent<Widget>().Show();
             }
         }
 
@@ -85,7 +83,23 @@ namespace Nekoyume.UI
                 Destroy(child.gameObject);
             }
             CalcTotalPrice();
+            itemInfo.GetComponent<Widget>().Close();
             base.Close();
+        }
+
+        public void SellClick(GameObject sender)
+        {
+            GameObject newItem = Instantiate(itemBase, cart.content);
+            var cartItem = newItem.GetComponent<CartItem>();
+            var item = sender.GetComponent<CartItem>();
+            cartItem.itemName.text = item.itemName.text;
+            cartItem.price.text = item.price.text;
+            cartItem.info.text = item.info.text;
+            cartItem.icon.sprite = item.icon.sprite;
+            cartItem.gameObject.SetActive(true);
+            cartItem.item = item.item;
+            items.Add(cartItem);
+            CalcTotalPrice();
         }
     }
 }

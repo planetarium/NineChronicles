@@ -27,6 +27,19 @@ namespace Nekoyume.UI
             }
             _slotBase.SetActive(false);
             Game.Event.OnUpdateEquipment.AddListener(UpdateEquipment);
+            Game.Event.OnSlotClick.AddListener(ToggleSlot);
+        }
+
+        private void ToggleSlot(InventorySlot selected)
+        {
+            foreach (var slot in _slots)
+            {
+                if (slot != selected && slot.outLine != null)
+                {
+                    slot.toggled = false;
+                    slot.outLine.SetActive(false);
+                }
+            }
         }
 
         private void UpdateEquipment(Equipment equipment)
