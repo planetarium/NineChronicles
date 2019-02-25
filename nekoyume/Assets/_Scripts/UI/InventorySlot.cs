@@ -10,6 +10,8 @@ namespace Nekoyume.UI
         public Image Icon;
         public Text LabelCount;
         public Text LabelEquip;
+        public bool toggled;
+        public GameObject outLine;
 
         public ItemBase Item;
 
@@ -29,10 +31,14 @@ namespace Nekoyume.UI
             LabelCount.text = count.ToString();
             LabelEquip.text = "";
             Item = item;
+            toggled = false;
+            outLine.SetActive(toggled);
         }
 
         public void SlotClick()
         {
+            toggled = !toggled;
+            outLine.SetActive(toggled);
             Game.Event.OnSlotClick.Invoke(this);
         }
     }
