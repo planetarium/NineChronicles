@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using Nekoyume.Action;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Item;
@@ -65,9 +64,7 @@ namespace Nekoyume.Model
 
         private void CalcStats()
         {
-            var stats = new Table<Stats>();
-            var path = Path.Combine(Directory.GetCurrentDirectory(), Simulator.StatsPath);
-            stats.Load(File.ReadAllText(path));
+            var stats = ActionManager.Instance.tables.Stats;
             Stats data;
             stats.TryGetValue(level, out data);
             if (data == null)
