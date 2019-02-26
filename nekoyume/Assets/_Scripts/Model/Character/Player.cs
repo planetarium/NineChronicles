@@ -1,12 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using Nekoyume.Action;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Item;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace Nekoyume.Model
 {
@@ -22,7 +18,7 @@ namespace Nekoyume.Model
         public Weapon weapon;
         [NonSerialized]
         public readonly Inventory inventory;
-        public string Items => JsonConvert.SerializeObject(inventory.items);
+        public List<Inventory.InventoryItem> Items => inventory.items;
 
         public Player(Avatar avatar, Simulator simulator = null)
         {
@@ -30,12 +26,11 @@ namespace Nekoyume.Model
             exp = avatar.EXP;
             level = avatar.Level;
             stage = avatar.WorldStage;
-            items = avatar.Items;
             this.simulator = simulator;
             inventory = new Inventory();
-            if (!string.IsNullOrEmpty(avatar.Items))
+            var inventoryItems = avatar.Items;
+            if (inventoryItems != null)
             {
-                var inventoryItems = JsonConvert.DeserializeObject<List<Inventory.InventoryItem>>(avatar.Items);
                 foreach (var inventoryItem in inventoryItems)
                 {
                     if (inventoryItem.Item is Weapon)
@@ -43,8 +38,10 @@ namespace Nekoyume.Model
                         weapon = (Weapon) inventoryItem.Item;
                     }
                 }
+
                 inventory.Set(inventoryItems);
             }
+
             CalcStats();
         }
 
@@ -67,9 +64,7 @@ namespace Nekoyume.Model
 
         private void CalcStats()
         {
-            var stats = new Table<Stats>();
-            var path = Path.Combine(Directory.GetCurrentDirectory(), Simulator.StatsPath);
-            stats.Load(File.ReadAllText(path));
+            var stats = ActionManager.Instance.tables.Stats;
             Stats data;
             stats.TryGetValue(level, out data);
             if (data == null)

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using Libplanet;
 using Libplanet.Crypto;
+using Nekoyume.Data;
 using Nekoyume.Game;
 using Nekoyume.Game.Item;
 using Nekoyume.Model;
@@ -41,11 +42,13 @@ namespace Nekoyume.Action
         public const string ChainIdKey = "chain_id";
         public static Address shopAddress => default(Address);
         public Shop shop;
+        public Tables tables;
 
         private void Awake()
         {
             DontDestroyOnLoad(gameObject);
             Instance = this;
+            tables = GameObject.Find("Game").GetComponent<Tables>();
         }
 
         private void ReceiveAction(object sender, Context ctx)
@@ -117,9 +120,9 @@ namespace Nekoyume.Action
             StartCoroutine(agent.Mine());
         }
 
-        public void UpdateItems(string serializeItems)
+        public void UpdateItems(List<Inventory.InventoryItem> items)
         {
-            Avatar.Items = serializeItems;
+            Avatar.Items = items;
             SaveStatus();
         }
 
