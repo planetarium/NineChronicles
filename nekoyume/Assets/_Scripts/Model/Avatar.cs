@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using Nekoyume.Game.Item;
 using Org.BouncyCastle.Asn1.Esf;
 
 namespace Nekoyume.Model
@@ -40,7 +42,7 @@ namespace Nekoyume.Model
         public long EXP;
         public int HPMax;
         public int CurrentHP;
-        public string Items;
+        public List<Inventory.InventoryItem> Items;
         public int WorldStage;
         public bool Dead = false;
 
