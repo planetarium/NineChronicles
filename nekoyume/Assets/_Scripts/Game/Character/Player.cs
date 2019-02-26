@@ -248,21 +248,6 @@ namespace Nekoyume.Game.Character
 
                 Inventory.Set(inventoryItems);
             }
-
-            //
-//            if (!string.IsNullOrEmpty(avatar.Items))
-//            {
-//                var inventoryItems = JsonConvert.DeserializeObject<List<Item.Inventory.InventoryItem>>(avatar.Items);
-//                foreach (var inventoryItem in inventoryItems)
-//                {
-//                    if (inventoryItem.Item is Weapon)
-//                    {
-//                        _weapon = (Weapon) inventoryItem.Item;
-//                    }
-//                }
-//
-//                Inventory.Set(inventoryItems);
-//            }
         }
 
         protected override void OnDisable()
