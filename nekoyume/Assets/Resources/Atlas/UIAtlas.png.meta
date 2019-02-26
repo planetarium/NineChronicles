@@ -49,6 +49,7 @@ TextureImporter:
     21300088: UI_main_icon_inventory
     21300090: UI_critical_02
     21300092: UI_critical_01
+    21300094: UI_bg_man
     2186277476908879412: ImportLogs
   externalObjects: {}
   serializedVersion: 6
@@ -157,7 +158,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 1efd6293e9965fe47a28349baf57d111
+      spriteID: 617b6d647f2b6414f8b1dd67d1912258
       vertices: []
       indices: 
       edges: []
@@ -177,7 +178,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 23b85996c7413c04dbb0be4a19d38507
+      spriteID: 676f395438ad2894f9f6af5cf6ca9cd6
       vertices: []
       indices: 
       edges: []
@@ -197,7 +198,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 43fd79810a277274882ae5e0de9be043
+      spriteID: 0c6cf5683de49f3409b68ade89e814de
       vertices: []
       indices: 
       edges: []
@@ -217,7 +218,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 0ac1212b225774d4a805ed5096b9ab01
+      spriteID: 31b53a73ef0d966479b7c2d494540966
       vertices: []
       indices: 
       edges: []
@@ -237,7 +238,27 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 145350f1c693d2f4a870bd35ff43ec02
+      spriteID: 571272cf1110c1440865a477f5ab05d6
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: UI_bg_man
+      rect:
+        serializedVersion: 2
+        x: 866
+        y: 273
+        width: 83
+        height: 183
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 28245b633e2bc2f42b31e57dfad7bed2
       vertices: []
       indices: 
       edges: []
@@ -246,8 +267,8 @@ TextureImporter:
       name: icon_fight
       rect:
         serializedVersion: 2
-        x: 866
-        y: 273
+        x: 0
+        y: 224
         width: 105
         height: 106
       alignment: 9
@@ -257,7 +278,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 81d73aef212d3c64983b13088010d531
+      spriteID: 3f9cfc8039b51ac4e9de2105912292ee
       vertices: []
       indices: 
       edges: []
@@ -266,8 +287,8 @@ TextureImporter:
       name: UI_box_bg
       rect:
         serializedVersion: 2
-        x: 0
-        y: 380
+        x: 106
+        y: 224
         width: 80
         height: 80
       alignment: 9
@@ -277,7 +298,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 9ef51f91dfe7d1446b4b0e0d2aa6730d
+      spriteID: 9c5c6eb0c43be0b41b4887a66182eb1f
       vertices: []
       indices: 
       edges: []
@@ -287,7 +308,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 461
+        y: 457
         width: 152
         height: 41
       alignment: 9
@@ -297,7 +318,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 4ee2a105c4ffd3241854714c951f9757
+      spriteID: ad947bf8628b4ba4aaeb173e6dc8d80b
       vertices: []
       indices: 
       edges: []
@@ -306,8 +327,8 @@ TextureImporter:
       name: UI_icon_item_bg_05
       rect:
         serializedVersion: 2
-        x: 81
-        y: 380
+        x: 950
+        y: 273
         width: 66
         height: 63
       alignment: 9
@@ -317,7 +338,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 1618f152de83aa74b8bacbcf5f54d376
+      spriteID: 61a6b412e03e57d4eb065e9c246390ac
       vertices: []
       indices: 
       edges: []
@@ -326,8 +347,8 @@ TextureImporter:
       name: UI_icon_item_bg_03
       rect:
         serializedVersion: 2
-        x: 148
-        y: 380
+        x: 950
+        y: 337
         width: 66
         height: 63
       alignment: 9
@@ -337,7 +358,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: ffeac3123b07dfc49baefb5ce459bf31
+      spriteID: 565570caad01a1349a6513809995a23d
       vertices: []
       indices: 
       edges: []
@@ -346,8 +367,8 @@ TextureImporter:
       name: UI_icon_item_bg_04
       rect:
         serializedVersion: 2
-        x: 153
-        y: 444
+        x: 950
+        y: 401
         width: 66
         height: 63
       alignment: 9
@@ -357,7 +378,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 77240da9b0ace244f83d5605621747fd
+      spriteID: 20256dd7523dc614d9a91f38dae43dfa
       vertices: []
       indices: 
       edges: []
@@ -366,8 +387,8 @@ TextureImporter:
       name: UI_icon_item_bg_01
       rect:
         serializedVersion: 2
-        x: 215
-        y: 380
+        x: 187
+        y: 224
         width: 66
         height: 63
       alignment: 9
@@ -377,7 +398,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 5231e830cd70c824594fc22ae884c7bd
+      spriteID: b2af24f517db8b8449c7d4da425aadab
       vertices: []
       indices: 
       edges: []
@@ -386,8 +407,8 @@ TextureImporter:
       name: UI_icon_item_bg_02
       rect:
         serializedVersion: 2
-        x: 220
-        y: 444
+        x: 254
+        y: 224
         width: 66
         height: 63
       alignment: 9
@@ -397,7 +418,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 894327fd5f6b0df4293dc5abdbe6607e
+      spriteID: 5e43a11c3d859d94b874e3ee606161f1
       vertices: []
       indices: 
       edges: []
@@ -406,8 +427,8 @@ TextureImporter:
       name: UI_icon_item_bg_06
       rect:
         serializedVersion: 2
-        x: 282
-        y: 380
+        x: 321
+        y: 224
         width: 66
         height: 63
       alignment: 9
@@ -417,7 +438,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 79bbc8ac0a66eca4c92850eff0e84147
+      spriteID: dadfcf59b79a2c64f9bbc2502f10f31e
       vertices: []
       indices: 
       edges: []
@@ -426,8 +447,8 @@ TextureImporter:
       name: UI_critical_02
       rect:
         serializedVersion: 2
-        x: 349
-        y: 224
+        x: 153
+        y: 465
         width: 128
         height: 32
       alignment: 9
@@ -437,7 +458,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 02835331636ed464e9aae1c1ee7c458c
+      spriteID: 3af896b8f2daf374aa92a7e2b045dd94
       vertices: []
       indices: 
       edges: []
@@ -446,8 +467,8 @@ TextureImporter:
       name: UI_critical_01
       rect:
         serializedVersion: 2
-        x: 287
-        y: 444
+        x: 282
+        y: 465
         width: 119
         height: 33
       alignment: 9
@@ -457,7 +478,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 69790fb83614eed4486ce6827900b5ed
+      spriteID: c516993e085749347ac517062c2b5cf0
       vertices: []
       indices: 
       edges: []
@@ -466,8 +487,8 @@ TextureImporter:
       name: UI_icon_item_green
       rect:
         serializedVersion: 2
-        x: 349
-        y: 380
+        x: 388
+        y: 224
         width: 53
         height: 53
       alignment: 9
@@ -477,7 +498,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 3a49a1e0506c59b4dac5c2cce2091301
+      spriteID: b41406fa442a08f499b851ab40706ef9
       vertices: []
       indices: 
       edges: []
@@ -486,8 +507,8 @@ TextureImporter:
       name: UI_icon_item_yellow
       rect:
         serializedVersion: 2
-        x: 403
-        y: 380
+        x: 442
+        y: 224
         width: 53
         height: 53
       alignment: 9
@@ -497,7 +518,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 440990e5711dc5a4eb1fb09fb2db337f
+      spriteID: 5d91b4e586992294893486c7b20df6e7
       vertices: []
       indices: 
       edges: []
@@ -506,8 +527,8 @@ TextureImporter:
       name: UI_icon_item_blue
       rect:
         serializedVersion: 2
-        x: 407
-        y: 434
+        x: 402
+        y: 457
         width: 53
         height: 53
       alignment: 9
@@ -517,7 +538,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 0e5943a43b1ce5f459cf7264275ed59f
+      spriteID: 53fbd52755b56e4408b1734b3d1e9b35
       vertices: []
       indices: 
       edges: []
@@ -526,8 +547,8 @@ TextureImporter:
       name: item_frame
       rect:
         serializedVersion: 2
-        x: 457
-        y: 380
+        x: 456
+        y: 457
         width: 52
         height: 50
       alignment: 9
@@ -537,7 +558,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: a947b907e40759542b7484e4380c6fbc
+      spriteID: 700ca4ea20b5f4d41acc06d721f554ec
       vertices: []
       indices: 
       edges: []
@@ -546,8 +567,8 @@ TextureImporter:
       name: UI_main_icon_equip
       rect:
         serializedVersion: 2
-        x: 972
-        y: 273
+        x: 509
+        y: 465
         width: 45
         height: 45
       alignment: 9
@@ -557,7 +578,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 559716f7e2381e7458309e0f73f3858d
+      spriteID: e8949cfb9a488ed4facebf6424482ff7
       vertices: []
       indices: 
       edges: []
@@ -566,8 +587,8 @@ TextureImporter:
       name: UI_main_icon_inventory
       rect:
         serializedVersion: 2
-        x: 972
-        y: 319
+        x: 555
+        y: 457
         width: 45
         height: 39
       alignment: 9
@@ -577,7 +598,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 86f77d5cae2066345936d31066ed61ba
+      spriteID: 5cc4ea60a8c14614a9e2e48ec20161b6
       vertices: []
       indices: 
       edges: []
@@ -586,8 +607,8 @@ TextureImporter:
       name: UI_bg_chat_02
       rect:
         serializedVersion: 2
-        x: 972
-        y: 359
+        x: 509
+        y: 252
         width: 32
         height: 53
       alignment: 9
@@ -597,7 +618,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 8975d4860e8e297479577fa378247f8b
+      spriteID: 5842153b62e87f5499c9715580462559
       vertices: []
       indices: 
       edges: []
@@ -606,8 +627,8 @@ TextureImporter:
       name: icon_coin
       rect:
         serializedVersion: 2
-        x: 478
-        y: 252
+        x: 509
+        y: 306
         width: 40
         height: 42
       alignment: 9
@@ -617,7 +638,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 101238f50e6539b46af9c8c7cf44cd3c
+      spriteID: 7297e692c14f5b34c833c69c2abad04e
       vertices: []
       indices: 
       edges: []
@@ -626,8 +647,8 @@ TextureImporter:
       name: UI_black_bg
       rect:
         serializedVersion: 2
-        x: 287
-        y: 488
+        x: 0
+        y: 499
         width: 205
         height: 8
       alignment: 9
@@ -637,7 +658,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 26a494477e6662c4c84f7661ecf9b4ab
+      spriteID: 23e016c2ae658054b8867b2c4bafaf1d
       vertices: []
       indices: 
       edges: []
@@ -646,8 +667,8 @@ TextureImporter:
       name: UI_bg_chat
       rect:
         serializedVersion: 2
-        x: 461
-        y: 431
+        x: 509
+        y: 349
         width: 34
         height: 38
       alignment: 9
@@ -657,7 +678,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 90e8ff798a8e2064cb350996d89c3aaa
+      spriteID: 2e32401f443c53b4ba1f54aa792decca
       vertices: []
       indices: 
       edges: []
@@ -666,8 +687,8 @@ TextureImporter:
       name: UI_icon_select
       rect:
         serializedVersion: 2
-        x: 493
-        y: 470
+        x: 509
+        y: 388
         width: 35
         height: 35
       alignment: 9
@@ -677,7 +698,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 35546ea212f09c84c87f99881d66d157
+      spriteID: d71430938ac5840488561d808a694ece
       vertices: []
       indices: 
       edges: []
@@ -686,8 +707,8 @@ TextureImporter:
       name: button_black_01
       rect:
         serializedVersion: 2
-        x: 496
-        y: 431
+        x: 509
+        y: 424
         width: 32
         height: 34
       alignment: 9
@@ -697,7 +718,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 8bd6507636f762741ab8fe335b6396f5
+      spriteID: 519f12c9f01735942bdc53849252539a
       vertices: []
       indices: 
       edges: []
@@ -706,8 +727,8 @@ TextureImporter:
       name: UI_box_01
       rect:
         serializedVersion: 2
-        x: 510
-        y: 380
+        x: 542
+        y: 252
         width: 32
         height: 32
       alignment: 0
@@ -717,7 +738,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 1802353a913ca8248bf3c2ec094ac794
+      spriteID: 09d7d0fa80b1cc945a4cbaea706bcb24
       vertices: []
       indices: 
       edges: []
@@ -726,8 +747,8 @@ TextureImporter:
       name: button_blue_plus
       rect:
         serializedVersion: 2
-        x: 519
-        y: 252
+        x: 542
+        y: 424
         width: 28
         height: 28
       alignment: 9
@@ -737,7 +758,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: d0595e92c4aa9424795a69546a95a962
+      spriteID: c03f3b8f5a64c0f44879d2bd09453027
       vertices: []
       indices: 
       edges: []
@@ -746,8 +767,8 @@ TextureImporter:
       name: button_blue_minus
       rect:
         serializedVersion: 2
-        x: 519
-        y: 281
+        x: 544
+        y: 349
         width: 28
         height: 28
       alignment: 9
@@ -757,7 +778,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: f6dd8d27fb4778946b241d80c3a69d28
+      spriteID: 07d215ccaff37ea4cac691ece90288b3
       vertices: []
       indices: 
       edges: []
@@ -766,8 +787,8 @@ TextureImporter:
       name: button_black_close
       rect:
         serializedVersion: 2
-        x: 0
-        y: 295
+        x: 550
+        y: 285
         width: 26
         height: 29
       alignment: 9
@@ -777,47 +798,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: d7883ee94f6ce1b4caaf409864420468
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: button_black_03
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 257
-        width: 26
-        height: 26
-      alignment: 9
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 8, y: 8, z: 8, w: 8}
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: e18dcd98953db254bbb2d0c107ae4fac
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: button_black_02
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 224
-        width: 26
-        height: 26
-      alignment: 9
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 8, y: 8, z: 8, w: 8}
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: f3d2a752386982f40ab48b5eb4e54772
+      spriteID: 80fa4f9abfbcca946910e28f386041de
       vertices: []
       indices: 
       edges: []
@@ -826,8 +807,8 @@ TextureImporter:
       name: button_blue_02
       rect:
         serializedVersion: 2
-        x: 27
-        y: 295
+        x: 575
+        y: 252
         width: 26
         height: 26
       alignment: 9
@@ -837,7 +818,47 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: d34c8976f87b49940a6f986285d9c48e
+      spriteID: ee110d095f4557f4e8f00ac95b0e586c
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: button_black_03
+      rect:
+        serializedVersion: 2
+        x: 550
+        y: 315
+        width: 26
+        height: 26
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 8, y: 8, z: 8, w: 8}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bac3e0b3f9d57f444bd988d8a1f186f5
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: button_black_02
+      rect:
+        serializedVersion: 2
+        x: 545
+        y: 378
+        width: 26
+        height: 26
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 8, y: 8, z: 8, w: 8}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c6d00bdc6ae0c0a4bab4cd89c0d7af5d
       vertices: []
       indices: 
       edges: []
@@ -846,8 +867,8 @@ TextureImporter:
       name: UI_icon_yellow
       rect:
         serializedVersion: 2
-        x: 478
-        y: 224
+        x: 998
+        y: 0
         width: 20
         height: 20
       alignment: 9
@@ -857,7 +878,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 4109d811ecdb9b244bed2cc102d825f3
+      spriteID: b7e1e5034e93e384b8841961f1d08880
       vertices: []
       indices: 
       edges: []
@@ -866,8 +887,8 @@ TextureImporter:
       name: UI_bar_01_red
       rect:
         serializedVersion: 2
-        x: 461
-        y: 470
+        x: 998
+        y: 21
         width: 22
         height: 14
       alignment: 9
@@ -877,7 +898,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 0af485ed8381c58418984afce912735f
+      spriteID: 89e9f750060ca0441b6ce4b4edaf2689
       vertices: []
       indices: 
       edges: []
@@ -886,8 +907,8 @@ TextureImporter:
       name: UI_bar_01_green
       rect:
         serializedVersion: 2
-        x: 81
-        y: 444
+        x: 998
+        y: 36
         width: 22
         height: 14
       alignment: 9
@@ -897,7 +918,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 056ff484616a7b747a5a077da1e58651
+      spriteID: 2d0f83f7325c3e746b99a20358e5b62c
       vertices: []
       indices: 
       edges: []
@@ -906,8 +927,8 @@ TextureImporter:
       name: UI_bar_01_blue
       rect:
         serializedVersion: 2
-        x: 104
-        y: 444
+        x: 998
+        y: 51
         width: 22
         height: 14
       alignment: 9
@@ -917,7 +938,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 3a7af8221377bad449eb312ccd8e050c
+      spriteID: 8a6b35c5d3bc7e946ba63b74ddcd0508
       vertices: []
       indices: 
       edges: []
@@ -926,8 +947,8 @@ TextureImporter:
       name: UI_icon_item_bg_close
       rect:
         serializedVersion: 2
-        x: 1005
-        y: 359
+        x: 998
+        y: 66
         width: 17
         height: 17
       alignment: 9
@@ -937,7 +958,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: c057efb28787d9c42aba7f6c9d12bf25
+      spriteID: c8c09978bfca0ec4eb6e9b4f85870476
       vertices: []
       indices: 
       edges: []
@@ -946,8 +967,8 @@ TextureImporter:
       name: UI_bar_01_bg
       rect:
         serializedVersion: 2
-        x: 127
-        y: 444
+        x: 206
+        y: 498
         width: 20
         height: 13
       alignment: 9
@@ -957,7 +978,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 9d402eaa876f2c44a8f3f646491b7347
+      spriteID: 4e05cbb3a7ad78b448b1ecaf5cc8f969
       vertices: []
       indices: 
       edges: []
@@ -966,8 +987,8 @@ TextureImporter:
       name: UI_line_02
       rect:
         serializedVersion: 2
-        x: 0
-        y: 251
+        x: 542
+        y: 453
         width: 258
         height: 1
       alignment: 9
@@ -977,7 +998,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: a0b45d309b69f0d44bf29f5e5268929d
+      spriteID: f727ce66e822f6e47980852f0da4c0e4
       vertices: []
       indices: 
       edges: []
@@ -986,8 +1007,8 @@ TextureImporter:
       name: UI_scroll_bg
       rect:
         serializedVersion: 2
-        x: 1018
-        y: 0
+        x: 1016
+        y: 66
         width: 4
         height: 31
       alignment: 9
@@ -997,7 +1018,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: cf08401db64900f41970049ce69a42e7
+      spriteID: 8b168c6089ea36a48bdf045ff718d84b
       vertices: []
       indices: 
       edges: []
@@ -1006,8 +1027,8 @@ TextureImporter:
       name: UI_scroll_bar
       rect:
         serializedVersion: 2
-        x: 484
-        y: 470
+        x: 542
+        y: 285
         width: 6
         height: 14
       alignment: 9
@@ -1017,7 +1038,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 306e85433d6a8bc4f9b0c23c752222a6
+      spriteID: c9b534c70a5692140ada6d507660bc20
       vertices: []
       indices: 
       edges: []
