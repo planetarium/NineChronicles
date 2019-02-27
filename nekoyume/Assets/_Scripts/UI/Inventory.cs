@@ -23,6 +23,7 @@ namespace Nekoyume.UI
             {
                 GameObject newSlot = Instantiate(_slotBase, _grid);
                 InventorySlot slot = newSlot.GetComponent<InventorySlot>();
+                slot.Item = null;
                 _slots.Add(slot);
             }
             _slotBase.SetActive(false);
