@@ -1,7 +1,7 @@
 using System.Collections.Generic;
+using Nekoyume.Game.Character;
 using Nekoyume.Game.Item;
 using UnityEngine;
-
 
 namespace Nekoyume.UI
 {
@@ -13,7 +13,7 @@ namespace Nekoyume.UI
         private GameObject _slotBase;
 
         private List<InventorySlot> _slots;
-        private Game.Character.Player _player;
+        private Player _player;
 
         private void Awake()
         {
@@ -60,7 +60,7 @@ namespace Nekoyume.UI
 
         public override void Show()
         {
-            _player = FindObjectOfType<Game.Character.Player>();
+            _player = FindObjectOfType<Player>();
             // FIX ME : get item list
             if (_player != null)
             {

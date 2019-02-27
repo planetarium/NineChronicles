@@ -1,7 +1,5 @@
 using System.Collections;
 using Nekoyume.Action;
-using Nekoyume.Game;
-using Nekoyume.Game.Trigger;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -35,21 +33,7 @@ namespace Nekoyume.UI
 
         public void QuestClick()
         {
-            StartCoroutine(QuestAsync());
-        }
-
-        private IEnumerator QuestAsync()
-        {
-            btnQuest.SetActive(false);
-            btnCombine.SetActive(false);
-            var currentAvatar = ActionManager.Instance.Avatar;
-            ActionManager.Instance.HackAndSlash();
-            while (currentAvatar.Equals(ActionManager.Instance.Avatar))
-            {
-                yield return new WaitForSeconds(1.0f);
-            }
-
-            Game.Event.OnStageStart.Invoke();
+            Find<QuestPreparation>().Toggle();
         }
 
         public void CombineClick()
