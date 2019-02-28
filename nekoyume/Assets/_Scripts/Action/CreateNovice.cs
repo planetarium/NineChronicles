@@ -31,10 +31,13 @@ namespace Nekoyume.Action
                 Items = new List<Inventory.InventoryItem>(),
             };
             var table = ActionManager.Instance.tables.Item;
-            Item itemData;
-            table.TryGetValue(301001, out itemData);
-            var weapon = ItemBase.ItemFactory(itemData);
-            avatar.Items.Add(new Inventory.InventoryItem(weapon));
+            foreach (var id_ in new []{301001, 303001, 304001, 305001, 306001, 307001})
+            {
+                Item itemData;
+                table.TryGetValue(id_, out itemData);
+                var equipment = ItemBase.ItemFactory(itemData);
+                avatar.Items.Add(new Inventory.InventoryItem(equipment));
+            }
             var states = actionCtx.PreviousStates;
             var to = actionCtx.To;
             var ctx = new Context(avatar);
