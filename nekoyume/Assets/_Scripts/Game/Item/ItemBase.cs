@@ -31,10 +31,16 @@ namespace Nekoyume.Game.Item
             Data = data;
         }
 
-        private enum ItemType
+        public enum ItemType
         {
             ItemBase,
-            Weapon
+            Weapon,
+            RangedWeapon,
+            Armor,
+            Belt,
+            Necklace,
+            Ring,
+            Helm,
         }
 
         public static ItemBase ItemFactory(Data.Table.Item itemData)
@@ -46,6 +52,18 @@ namespace Nekoyume.Game.Item
                     return new ItemBase(itemData);
                 case ItemType.Weapon:
                     return new Weapon(itemData);
+                case ItemType.RangedWeapon:
+                    return new RangedWeapon(itemData);
+                case ItemType.Armor:
+                    return new Armor(itemData);
+                case ItemType.Belt:
+                    return new Belt(itemData);
+                case ItemType.Necklace:
+                    return new Necklace(itemData);
+                case ItemType.Ring:
+                    return new Ring(itemData);
+                case ItemType.Helm:
+                    return new Helm(itemData);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);
             }
