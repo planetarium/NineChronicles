@@ -14,6 +14,7 @@ namespace Nekoyume.Model
     {
         public readonly List<CharacterBase> targets = new List<CharacterBase>();
         public int atk;
+        public int def;
         public int hp;
         public int hpMax;
 
@@ -48,12 +49,13 @@ namespace Nekoyume.Model
             var target = targets.FirstOrDefault(t => !t.isDead);
             if (target != null)
             {
-                target.hp -= atk;
+                var dmg = atk - target.def;
+                target.hp -= dmg;
                 var attack = new Attack
                 {
                     character = Copy(this),
                     target = Copy(target),
-                    atk = atk,
+                    atk = dmg,
                     characterId = id,
                     targetId = target.id,
                 };

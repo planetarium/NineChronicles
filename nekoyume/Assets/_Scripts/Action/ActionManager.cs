@@ -27,7 +27,9 @@ namespace Nekoyume.Action
         {
             get
             {
-                return Enumerable.Range(0, 3).Select(index => string.Format(AvatarFileFormat, index)).Select(fileName => Path.Combine(Application.persistentDataPath, fileName)).Select(path => LoadStatus(path)).Where(avatar => avatar != null).ToList();
+                return Enumerable.Range(0, 3).Select(index => string.Format(AvatarFileFormat, index))
+                    .Select(fileName => Path.Combine(Application.persistentDataPath, fileName))
+                    .Select(path => LoadStatus(path)).Where(avatar => avatar != null).ToList();
             }
         }
 
@@ -201,6 +203,15 @@ namespace Nekoyume.Action
             {
                 Items = items,
                 Price = price,
+            };
+            ProcessAction(action);
+        }
+
+        public void Equip(List<Inventory.InventoryItem> items)
+        {
+            var action = new Equip
+            {
+                items = items,
             };
             ProcessAction(action);
         }

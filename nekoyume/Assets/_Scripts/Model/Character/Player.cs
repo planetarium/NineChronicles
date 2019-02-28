@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Nekoyume.Action;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Item;
@@ -16,6 +17,12 @@ namespace Nekoyume.Model
         public string name;
         public int stage;
         public Weapon weapon;
+        public Armor armor;
+        public Belt belt;
+        public Necklace necklace;
+        public Ring ring;
+        public Helm helm;
+
         [NonSerialized]
         public readonly Inventory inventory;
         public List<Inventory.InventoryItem> Items => inventory.items;
@@ -31,14 +38,7 @@ namespace Nekoyume.Model
             var inventoryItems = avatar.Items;
             if (inventoryItems != null)
             {
-                foreach (var inventoryItem in inventoryItems)
-                {
-                    if (inventoryItem.Item is Weapon)
-                    {
-                        weapon = (Weapon) inventoryItem.Item;
-                    }
-                }
-
+                Equip(inventoryItems);
                 inventory.Set(inventoryItems);
             }
 
@@ -75,7 +75,14 @@ namespace Nekoyume.Model
             atk = data.Attack;
             hpMax = data.Health;
             expMax = data.Exp;
-
+            if (weapon?.IsEquipped == true)
+            {
+                atk += weapon.Data.Param_0;
+            }
+            if (armor?.IsEquipped == true)
+            {
+                def += armor.Data.Param_0;
+            }
         }
         private void LevelUp()
         {
@@ -97,6 +104,40 @@ namespace Nekoyume.Model
         public void GetItem(ItemBase item)
         {
             inventory.Add(item);
+        }
+
+        public void Equip(List<Inventory.InventoryItem> items)
+        {
+            var equipments = items.Select(i => i.Item).OfType<Equipment>().Where(e => e.IsEquipped);
+            foreach (var equipment in equipments)
+            {
+                switch ((ItemBase.ItemType) Enum.Parse(typeof(ItemBase.ItemType), equipment.Data.Cls))
+                {
+                    case ItemBase.ItemType.Weapon:
+                        weapon = equipment as Weapon;
+                        break;
+                    case ItemBase.ItemType.RangedWeapon:
+                        weapon = equipment as RangedWeapon;
+                        break;
+                    case ItemBase.ItemType.Armor:
+                        armor = equipment as Armor;
+                        break;
+                    case ItemBase.ItemType.Belt:
+                        belt = equipment as Belt;
+                        break;
+                    case ItemBase.ItemType.Necklace:
+                        necklace = equipment as Necklace;
+                        break;
+                    case ItemBase.ItemType.Ring:
+                        ring = equipment as Ring;
+                        break;
+                    case ItemBase.ItemType.Helm:
+                        helm = equipment as Helm;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
         }
     }
 }

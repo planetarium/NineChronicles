@@ -1,9 +1,9 @@
+using System;
 using System.Collections;
 using Nekoyume.Action;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Item;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 namespace Nekoyume.UI
 {
@@ -13,6 +13,7 @@ namespace Nekoyume.UI
         public GameObject[] usableSlots;
         public GameObject[] equipSlots;
         public GameObject btnEquip;
+        public GameObject btnQuest;
         public GameObject inventory;
         private InventorySlot selectedSlot;
         private Player _player;
@@ -29,7 +30,8 @@ namespace Nekoyume.UI
 
         private IEnumerator QuestAsync()
         {
-            Close();
+            btnQuest.SetActive(false);
+            ActionManager.Instance.Equip(_player.Inventory.items);
             var currentAvatar = ActionManager.Instance.Avatar;
             ActionManager.Instance.HackAndSlash();
             while (currentAvatar.Equals(ActionManager.Instance.Avatar))
@@ -43,19 +45,27 @@ namespace Nekoyume.UI
         public override void Show()
         {
             _player = FindObjectOfType<Player>();
+            _player.gameObject.transform.position = new Vector2(1.8f, -0.4f);
             inventory.GetComponent<Inventory>().Show();
-            if (_player._weapon != null)
+            foreach (var equipment in _player.equipments)
             {
-                var slot = equipSlots[4].GetComponent<EquipSlot>();
-                var sprite = Resources.Load<Sprite>($"images/item_{_player._weapon.Data.Id}");
-                slot.icon.sprite = sprite;
-                slot.item = _player._weapon;
+                var type = (ItemBase.ItemType) Enum.Parse(typeof(ItemBase.ItemType), equipment.Data.Cls);
+                foreach (var slot in equipSlots)
+                {
+                    var es = slot.GetComponent<EquipSlot>();
+                    if (es.type == type)
+                    {
+                        es.Set(_player, equipment);
+                    }
+                }
             }
+            btnQuest.SetActive(false);
             base.Show();
         }
 
         public override void Close()
         {
+            _player.gameObject.transform.position = new Vector2(-2.4f, -1.3f);
             inventory.GetComponent<Inventory>().Close();
             itemInfo.GetComponent<Widget>().Close();
             base.Close();
@@ -71,29 +81,39 @@ namespace Nekoyume.UI
                 cartItem.icon.sprite = slot.Icon.sprite;
                 cartItem.item = slotItem;
                 btnEquip.SetActive(slotItem is ItemUsable);
-                itemInfo.GetComponent<Widget>().Toggle();
             }
 
+            if (selectedSlot != slot)
+            {
+                itemInfo.GetComponent<Widget>().Show();
+            }
+            else
+            {
+                itemInfo.GetComponent<Widget>().Toggle();
+            }
             selectedSlot = slot;
         }
 
         public void EquipClick()
         {
             var item = itemInfo.GetComponent<CartItem>();
-            if (item.item is Weapon)
+            var type = (ItemBase.ItemType) Enum.Parse(typeof(ItemBase.ItemType), item.item.Data.Cls);
+            foreach (var slot in equipSlots)
             {
-                var slot = equipSlots[4].GetComponent<EquipSlot>();
-                slot.Equip(item);
+                var es = slot.GetComponent<EquipSlot>();
+                if (es.type == type)
+                {
+                    es.Equip(_player, item);
+                }
             }
-            _player.Equip((Weapon) item.item);
         }
 
         public void UnEquip(GameObject sender)
         {
-            if (_player._weapon != null)
+            if (_player.weapon != null)
             {
                 var slot = sender.GetComponent<EquipSlot>();
-                slot.UnEquip();
+                slot.UnEquip(_player);
             }
         }
 

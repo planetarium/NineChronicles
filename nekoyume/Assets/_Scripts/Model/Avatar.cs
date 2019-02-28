@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 using Nekoyume.Game.Item;
-using Org.BouncyCastle.Asn1.Esf;
 
 namespace Nekoyume.Model
 {
@@ -10,7 +11,7 @@ namespace Nekoyume.Model
     {
         protected bool Equals(Avatar other)
         {
-            return string.Equals(Name, other.Name) && Level == other.Level && EXP == other.EXP && HPMax == other.HPMax && CurrentHP == other.CurrentHP && string.Equals(Items, other.Items) && WorldStage == other.WorldStage && Dead == other.Dead;
+            return string.Equals(Name, other.Name) && Level == other.Level && EXP == other.EXP && HPMax == other.HPMax && CurrentHP == other.CurrentHP && Equals(Items, other.Items) && WorldStage == other.WorldStage && Dead == other.Dead;
         }
 
         public override bool Equals(object obj)

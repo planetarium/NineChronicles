@@ -10,7 +10,9 @@ namespace Nekoyume.UI
     {
         public GameObject button;
         public Image icon;
-        public ItemBase item;
+        public Equipment item;
+        public ItemBase.ItemType type;
+
 
         public void OnPointerEnter(PointerEventData eventData)
         {
@@ -22,18 +24,27 @@ namespace Nekoyume.UI
             button.gameObject.SetActive(false);
         }
 
-        public void Equip(CartItem selected)
+        public void Equip(Player player, CartItem selected)
         {
             icon.sprite = selected.icon.sprite;
             icon.gameObject.SetActive(true);
-            item = selected.item;
+            item = (Equipment) selected.item;
+            player.Equip(item);
         }
-        public void UnEquip()
+        public void UnEquip(Player player)
         {
             icon.gameObject.SetActive(false);
-            var _player = FindObjectOfType<Player>();
-            _player.Equip((Equipment) item);
+            player.Equip(item);
+        }
+
+        public void Set(Player player, Equipment equipment)
+        {
+            var sprite = Resources.Load<Sprite>($"images/item_{equipment.Data.Id}");
+            if (sprite == null)
+                sprite = Resources.Load<Sprite>("images/item_301001");
+            icon.sprite = sprite;
+            icon.gameObject.SetActive(true);
+            item = equipment;
         }
     }
 }
-
