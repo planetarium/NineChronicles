@@ -109,6 +109,7 @@ namespace Nekoyume.Game
             if (roomPlayer != null)
             {
                 roomPlayer.RunSpeed = 1.0f;
+                roomPlayer.gameObject.transform.position = new Vector2(-2.4f, -0.62f);
             }
 
             Data.Table.Stage data;
