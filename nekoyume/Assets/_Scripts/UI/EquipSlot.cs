@@ -31,7 +31,7 @@ namespace Nekoyume.UI
             item = (Equipment) selected.item;
             player.Equip(item);
         }
-        public void UnEquip(Player player)
+        public void Unequip(Player player)
         {
             icon.gameObject.SetActive(false);
             player.Equip(item);

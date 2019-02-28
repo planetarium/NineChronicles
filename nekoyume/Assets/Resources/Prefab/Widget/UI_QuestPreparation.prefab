@@ -2336,12 +2336,12 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_MethodName: SlotClick
-        m_Mode: 1
+      - m_Target: {fileID: 114856585205500432}
+        m_MethodName: Unequip
+        m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_ObjectArgument: {fileID: 1293203201429774}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -2478,12 +2478,12 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_MethodName: SlotClick
-        m_Mode: 1
+      - m_Target: {fileID: 114856585205500432}
+        m_MethodName: Unequip
+        m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_ObjectArgument: {fileID: 1559576762678442}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -2599,7 +2599,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 114856585205500432}
-        m_MethodName: UnEquip
+        m_MethodName: Unequip
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 1904208748734276}
@@ -3754,7 +3754,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 114856585205500432}
-        m_MethodName: UnEquip
+        m_MethodName: Unequip
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 1591487043816734}
@@ -3822,12 +3822,12 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_MethodName: SlotClick
-        m_Mode: 1
+      - m_Target: {fileID: 114856585205500432}
+        m_MethodName: Unequip
+        m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_ObjectArgument: {fileID: 1474776894402752}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -3930,7 +3930,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 114856585205500432}
-        m_MethodName: UnEquip
+        m_MethodName: Unequip
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 1435607511529054}
@@ -4804,7 +4804,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 114856585205500432}
-        m_MethodName: UnEquip
+        m_MethodName: Unequip
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 1386307175806852}
@@ -4878,12 +4878,12 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_MethodName: SlotClick
-        m_Mode: 1
+      - m_Target: {fileID: 114856585205500432}
+        m_MethodName: Unequip
+        m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_ObjectArgument: {fileID: 1824789686048560}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -5351,7 +5351,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 114856585205500432}
-        m_MethodName: UnEquip
+        m_MethodName: Unequip
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 1053444114446616}
@@ -5989,12 +5989,12 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_MethodName: SlotClick
-        m_Mode: 1
+      - m_Target: {fileID: 114856585205500432}
+        m_MethodName: Unequip
+        m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_ObjectArgument: {fileID: 1563536889029582}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -6137,7 +6137,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 114856585205500432}
-        m_MethodName: UnEquip
+        m_MethodName: Unequip
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 1818915644472016}

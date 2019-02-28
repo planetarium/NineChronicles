@@ -108,12 +108,12 @@ namespace Nekoyume.UI
             }
         }
 
-        public void UnEquip(GameObject sender)
+        public void Unequip(GameObject sender)
         {
             if (_player.weapon != null)
             {
                 var slot = sender.GetComponent<EquipSlot>();
-                slot.UnEquip(_player);
+                slot.Unequip(_player);
             }
         }
 
