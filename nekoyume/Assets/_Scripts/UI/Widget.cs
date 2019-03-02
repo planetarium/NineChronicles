@@ -68,28 +68,31 @@ namespace Nekoyume.UI
             return null;
         }
 
-        private void Start()
+        private bool FindGlassMaterial(GameObject go)
         {
-            _animator = GetComponent<Animator>();
-            
-            for (int i = 0; i < transform.childCount; ++i)
+            var image = go.GetComponent<UnityEngine.UI.Image>();
+            if (image && image.material && image.material.name == "Glass")
             {
-                Transform child = transform.GetChild(i);
-                var image = child.GetComponent<UnityEngine.UI.Image>();
-                if (image && image.material && image.material.name == "Glass")
-                {
-                    _glass = image.material;
-                }
+                _glass = image.material;
+                return true;
             }
+            return false;
         }
 
         public virtual void Show()
         {
             gameObject.SetActive(true);
-            
+            if (!_animator)
+            {
+                _animator = GetComponent<Animator>();
+            }
             if (_animator)
             {
                 _animator.Play("Show");
+            }
+            if (!_glass)
+            {
+                FindGlassMaterial(gameObject);
             }
             if (_glass)
             {
@@ -117,7 +120,7 @@ namespace Nekoyume.UI
             float time = 0.0f;
             while (true)
             {
-                float radius = Mathf.Lerp(0.0f, 10.0f, time);
+                float radius = Mathf.Lerp(0.0f, 6.0f, time);
                 time += Time.deltaTime;
                 yield return null;
                 _glass.SetFloat("_Radius", radius);

@@ -11,12 +11,13 @@ namespace Nekoyume.UI
     public class BattleResult : Widget
     {
         public BattleLog.Result result;
-        public Image header;
+        public Image headerWin;
+        public Image headerLose;
         public Text submitText;
         public Text title;
         public GameObject slotBase;
         public Transform grid;
-        public Image image;
+        public Image imageLose;
         private List<InventorySlot> _slots;
 
         private void Awake()
@@ -51,24 +52,25 @@ namespace Nekoyume.UI
         public void Show(BattleLog.Result battleResult)
         {
             result = battleResult;
-            Sprite sprite;
+            headerWin.gameObject.SetActive(false);
+            headerLose.gameObject.SetActive(false);
+
             if (result == BattleLog.Result.Win)
             {
                 submitText.text = "다음 퀘스트";
-                sprite = Resources.Load<Sprite>($"ui/UI_01");
+                headerWin.gameObject.SetActive(true);
                 title.text = "획득한 아이템";
                 grid.gameObject.SetActive(true);
-                image.gameObject.SetActive(false);
+                imageLose.gameObject.SetActive(false);
             }
             else
             {
                 submitText.text = "재도전";
-                sprite = Resources.Load<Sprite>($"ui/UI_02");
+                headerLose.gameObject.SetActive(true);
                 title.text = "";
                 grid.gameObject.SetActive(false);
-                image.gameObject.SetActive(true);
+                imageLose.gameObject.SetActive(true);
             }
-            header.sprite = sprite;
             base.Show();
         }
 
