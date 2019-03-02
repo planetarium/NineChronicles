@@ -1,13 +1,14 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Game;
 using Nekoyume.Game.Item;
 using Nekoyume.Model;
-using Newtonsoft.Json;
 
 namespace Nekoyume.Action
 {
@@ -19,7 +20,7 @@ namespace Nekoyume.Action
 
         public override void LoadPlainValue(IImmutableDictionary<string, object> plainValue)
         {
-            Items = JsonConvert.DeserializeObject<List<ItemBase>>(plainValue["items"].ToString());
+            Items = ByteSerializer.Deserialize<List<ItemBase>>((byte[])plainValue["items"]);
             Price = decimal.Parse(plainValue["price"].ToString());
         }
 
@@ -51,7 +52,7 @@ namespace Nekoyume.Action
 
         public override IImmutableDictionary<string, object> PlainValue => new Dictionary<string, object>
         {
-            ["items"] = JsonConvert.SerializeObject(Items),
+            ["items"] = ByteSerializer.Serialize(Items),
             ["price"] = Price.ToString(CultureInfo.InvariantCulture),
         }.ToImmutableDictionary();
     }

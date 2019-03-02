@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Item;
@@ -11,10 +10,6 @@ namespace Nekoyume.Action
 {
     public class Simulator
     {
-        private const string KAppearPath = "Assets/Resources/DataTable/monster_appear.csv";
-        private const string KMonstersPath = "Assets/Resources/DataTable/monsters.csv";
-        private const string KItemDropPath = "Assets/Resources/DataTable/item_drop.csv";
-        internal const string StatsPath = "Assets/Resources/DataTable/stats.csv";
         private readonly int _seed;
         private readonly int _stage;
         private readonly List<CharacterBase> characters;
@@ -78,9 +73,8 @@ namespace Nekoyume.Action
         private void MonsterSpawn(Player player)
         {
             var selector = new WeightedSelector<MonsterAppear>();
-            var appear = new Table<MonsterAppear>();
-            var appearPath = Path.Combine(Directory.GetCurrentDirectory(), KAppearPath);
-            appear.Load(File.ReadAllText(appearPath));
+            var tables = ActionManager.Instance.tables;
+            var appear = tables.MonsterAppear;
             foreach (var pair in appear)
             {
                 var data = pair.Value;
@@ -94,14 +88,11 @@ namespace Nekoyume.Action
             }
 
             var monsterCount = 2;
-            var monsterTable = new Table<Data.Table.Monster>();
-            var monsterPath = Path.Combine(Directory.GetCurrentDirectory(), KMonstersPath);
-            monsterTable.Load(File.ReadAllText(monsterPath));
+            var monsterTable = tables.Monster;
 
-            var itemTable = Agent.ItemTable();
             var itemSelector = new WeightedSelector<int>();
-            var dropTable = new Table<ItemDrop>();
-            dropTable.Load(File.ReadAllText(KItemDropPath));
+            var dropTable = tables.ItemDrop;
+            var itemTable = tables.Item;
 
             for (var i = 0; i < monsterCount; i++)
             {

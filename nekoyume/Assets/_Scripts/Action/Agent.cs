@@ -23,6 +23,7 @@ namespace Nekoyume.Action
         private readonly float interval;
         private readonly PrivateKey privateKey;
         public readonly ConcurrentQueue<ActionBase> queuedActions;
+
         private const string kItemBoxPath = "Assets/Resources/DataTable/item_box.csv";
         private const string kItemEquipPath = "Assets/Resources/DataTable/item_equip.csv";
         private const string kItemPath = "Assets/Resources/DataTable/item.csv";
