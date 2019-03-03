@@ -13,5 +13,14 @@ namespace Nekoyume.UI
 //            textAtk.text = stats.Attack.ToString();
 //            textDef.text = stats.Defense.ToString();
         }
+
+        public void CloseClick()
+        {
+            var status = Widget.Find<Status>();
+            if (status)
+            {
+                status.BtnStatus.group.SetAllTogglesOff();
+            }
+        }
     }
 }

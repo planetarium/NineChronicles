@@ -134,6 +134,11 @@ namespace Nekoyume.UI
 
         public virtual void Close()
         {
+            if (!gameObject.activeSelf)
+            {
+                return;
+            }
+
             // TODO : wait close animation
             if (_animator)
             {

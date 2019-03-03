@@ -88,5 +88,14 @@ namespace Nekoyume.UI
             base.Show();
         }
 
+        public void CloseClick()
+        {
+            var status = Widget.Find<Status>();
+            if (status)
+            {
+                status.BtnInventory.group.SetAllTogglesOff();
+            }
+        }
+
     }
 }
