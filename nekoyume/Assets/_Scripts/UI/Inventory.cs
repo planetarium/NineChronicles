@@ -53,7 +53,7 @@ namespace Nekoyume.UI
                     slot.LabelEquip.text = "";
                     if (item == equipment)
                     {
-                        slot.LabelEquip.text = equipment.IsEquipped ? "E" : "";
+                        slot.LabelEquip.text = equipment.equipped ? "E" : "";
                     }
                 }
             }
@@ -76,7 +76,7 @@ namespace Nekoyume.UI
                         if (inventoryItem.Item is Weapon)
                         {
                             var weapon = (Weapon) inventoryItem.Item;
-                            slot.LabelEquip.text = weapon.IsEquipped ? "E" : "";
+                            slot.LabelEquip.text = weapon.equipped ? "E" : "";
                         }
                     }
                     else

@@ -75,11 +75,11 @@ namespace Nekoyume.Model
             atk = data.Attack;
             hpMax = data.Health;
             expMax = data.Exp;
-            if (weapon?.IsEquipped == true)
+            if (weapon?.equipped == true)
             {
                 atk += weapon.Data.Param_0;
             }
-            if (armor?.IsEquipped == true)
+            if (armor?.equipped == true)
             {
                 def += armor.Data.Param_0;
             }
@@ -108,7 +108,7 @@ namespace Nekoyume.Model
 
         public void Equip(List<Inventory.InventoryItem> items)
         {
-            var equipments = items.Select(i => i.Item).OfType<Equipment>().Where(e => e.IsEquipped);
+            var equipments = items.Select(i => i.Item).OfType<Equipment>().Where(e => e.equipped);
             foreach (var equipment in equipments)
             {
                 switch ((ItemBase.ItemType) Enum.Parse(typeof(ItemBase.ItemType), equipment.Data.Cls))

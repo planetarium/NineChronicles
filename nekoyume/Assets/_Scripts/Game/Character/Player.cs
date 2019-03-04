@@ -29,7 +29,7 @@ namespace Nekoyume.Game.Character
         public Ring ring;
         public Helm helm;
         public List<Equipment> equipments =>
-            Inventory.items.Select(i => i.Item).OfType<Equipment>().Where(e => e.IsEquipped).ToList();
+            Inventory.items.Select(i => i.Item).OfType<Equipment>().Where(e => e.equipped).ToList();
 
         protected override Vector3 _hpBarOffset => _castingBarOffset + new Vector3(0, 0.24f, 0.0f);
         protected Vector3 _mpBarOffset => _castingBarOffset + new Vector3(0, 0.19f, 0.0f);
@@ -200,12 +200,12 @@ namespace Nekoyume.Game.Character
 
             HPMax = statsData.Health;
             EXPMax = statsData.Exp;
-            if (weapon?.IsEquipped == true)
+            if (weapon?.equipped == true)
             {
                 ATK += weapon.Data.Param_0;
             }
 
-            if (armor?.IsEquipped == true)
+            if (armor?.equipped == true)
             {
                 DEF += armor.Data.Param_0;
             }
