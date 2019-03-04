@@ -31,6 +31,7 @@ namespace Nekoyume.Action
                 Items = new List<Inventory.InventoryItem>(),
             };
             var table = ActionManager.Instance.tables.Item;
+            // equipments id from item_equip.csv
             foreach (var id_ in new []{301001, 303001, 304001, 305001, 306001, 307001})
             {
                 Item itemData;
