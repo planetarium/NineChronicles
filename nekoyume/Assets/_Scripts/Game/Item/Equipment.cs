@@ -5,7 +5,7 @@ namespace Nekoyume.Game.Item
     [Serializable]
     public class Equipment : ItemUsable
     {
-        public bool IsEquipped = false;
+        public bool equipped = false;
         private int _level = 0;
         private int _enchantCount = 0;
 
@@ -16,7 +16,7 @@ namespace Nekoyume.Game.Item
 
         public override bool Use()
         {
-            if (!IsEquipped)
+            if (!equipped)
             {
                 return Equip();
             }
@@ -28,13 +28,13 @@ namespace Nekoyume.Game.Item
 
         public bool Equip()
         {
-            IsEquipped = true;
+            equipped = true;
             return true;
         }
 
         public bool Unequip()
         {
-            IsEquipped = false;
+            equipped = false;
             return true;
         }
 

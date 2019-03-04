@@ -1,17 +1,26 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using Libplanet.Action;
+using Nekoyume.Game.Item;
 
 namespace Nekoyume.Action
 {
     [ActionType("hack_and_slash")]
     public class HackAndSlash : ActionBase
     {
+        public List<Equipment> Equipments;
+
         public override IImmutableDictionary<string, object> PlainValue =>
-            new Dictionary<string, object>().ToImmutableDictionary();
+            new Dictionary<string, object>
+            {
+                ["equipments"] = ByteSerializer.Serialize(Equipments),
+            }.ToImmutableDictionary();
+
 
         public override void LoadPlainValue(IImmutableDictionary<string, object> plainValue)
         {
+            Equipments = ByteSerializer.Deserialize<List<Equipment>>((byte[]) plainValue["equipments"]);
         }
 
         public override AddressStateMap Execute(IActionContext actionCtx)
@@ -23,7 +32,27 @@ namespace Nekoyume.Action
             {
                 throw new InvalidActionException();
             }
+            var current = ctx.avatar.Items.Select(i => i.Item).OfType<Equipment>().ToArray();
+            if (Equipments.Count > 0)
+            {
+                foreach (var equipment in Equipments)
+                {
+                    if (!current.Contains(equipment))
+                    {
+                        throw new InvalidActionException();
+                    }
 
+                    var equip = current.First(e => e.Data.Id == equipment.Data.Id);
+                    equip.equipped = equipment.equipped;
+                }
+            }
+            else
+            {
+                foreach (var equipment in current)
+                {
+                    equipment.Unequip();
+                }
+            }
             var simulator = new Simulator(0, ctx.avatar);
             var player = simulator.Simulate();
             ctx.avatar.Update(player);

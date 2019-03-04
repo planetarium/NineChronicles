@@ -1,7 +1,7 @@
 using System.Collections.Generic;
+using Nekoyume.Game.Character;
 using Nekoyume.Game.Item;
 using UnityEngine;
-
 
 namespace Nekoyume.UI
 {
@@ -13,7 +13,7 @@ namespace Nekoyume.UI
         private GameObject _slotBase;
 
         private List<InventorySlot> _slots;
-        private Game.Character.Player _player;
+        private Player _player;
 
         private void Awake()
         {
@@ -23,6 +23,7 @@ namespace Nekoyume.UI
             {
                 GameObject newSlot = Instantiate(_slotBase, _grid);
                 InventorySlot slot = newSlot.GetComponent<InventorySlot>();
+                slot.Item = null;
                 _slots.Add(slot);
             }
             _slotBase.SetActive(false);
@@ -52,7 +53,7 @@ namespace Nekoyume.UI
                     slot.LabelEquip.text = "";
                     if (item == equipment)
                     {
-                        slot.LabelEquip.text = equipment.IsEquipped ? "E" : "";
+                        slot.LabelEquip.text = equipment.equipped ? "E" : "";
                     }
                 }
             }
@@ -60,7 +61,7 @@ namespace Nekoyume.UI
 
         public override void Show()
         {
-            _player = FindObjectOfType<Game.Character.Player>();
+            _player = FindObjectOfType<Player>();
             // FIX ME : get item list
             if (_player != null)
             {
@@ -75,7 +76,7 @@ namespace Nekoyume.UI
                         if (inventoryItem.Item is Weapon)
                         {
                             var weapon = (Weapon) inventoryItem.Item;
-                            slot.LabelEquip.text = weapon.IsEquipped ? "E" : "";
+                            slot.LabelEquip.text = weapon.equipped ? "E" : "";
                         }
                     }
                     else

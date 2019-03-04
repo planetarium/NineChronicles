@@ -5147,8 +5147,10 @@ MonoBehaviour:
   hpBar: {fileID: 114137309324291428}
   expBar: {fileID: 114884640881170626}
   levelInfo: {fileID: 114424455165027218}
+  nameInfo: {fileID: 114145491821562392}
   statusDetail: {fileID: 1893080078080618}
   character: {fileID: 1957870316800336}
+  profileImage: {fileID: 1458067296177390}
 --- !u!114 &114593795997963876
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -5390,7 +5392,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 114580374367410676}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 114586975932311630}
+        m_MethodName: DeleteCharacter
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &114640263327101948

@@ -27,6 +27,7 @@ namespace Nekoyume.Game
 
         private void OnStageStart()
         {
+            Widget.Find<QuestPreparation>().Close();
             _battleLog = ActionManager.Instance.battleLog;
             Play(_battleLog);
         }
@@ -108,6 +109,7 @@ namespace Nekoyume.Game
             if (roomPlayer != null)
             {
                 roomPlayer.RunSpeed = 1.0f;
+                roomPlayer.gameObject.transform.position = new Vector2(-2.4f, -0.62f);
             }
 
             Data.Table.Stage data;

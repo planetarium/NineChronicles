@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using BTAI;
 using Nekoyume.Action;
@@ -21,7 +22,14 @@ namespace Nekoyume.Game.Character
         public long EXPMax { get; private set; }
 
         private ProgressBar _mpBar = null;
-        public Weapon _weapon = null;
+        public Weapon weapon = null;
+        public Armor armor;
+        public Belt belt;
+        public Necklace necklace;
+        public Ring ring;
+        public Helm helm;
+        public List<Equipment> equipments =>
+            Inventory.items.Select(i => i.Item).OfType<Equipment>().Where(e => e.equipped).ToList();
 
         protected override Vector3 _hpBarOffset => _castingBarOffset + new Vector3(0, 0.24f, 0.0f);
         protected Vector3 _mpBarOffset => _castingBarOffset + new Vector3(0, 0.19f, 0.0f);
@@ -50,8 +58,6 @@ namespace Nekoyume.Game.Character
         {
             Event.OnEnemyDead.AddListener(GetEXP);
             Event.OnGetItem.AddListener(PickUpItem);
-            Event.OnSlotClick.AddListener(SlotClick);
-            Event.OnEquip.AddListener(Equip);
             Inventory = new Item.Inventory();
         }
 
@@ -194,9 +200,14 @@ namespace Nekoyume.Game.Character
 
             HPMax = statsData.Health;
             EXPMax = statsData.Exp;
-            if (_weapon?.IsEquipped == true)
+            if (weapon?.equipped == true)
             {
-                ATK += _weapon.Data.Param_0;
+                ATK += weapon.Data.Param_0;
+            }
+
+            if (armor?.equipped == true)
+            {
+                DEF += armor.Data.Param_0;
             }
         }
 
@@ -242,7 +253,7 @@ namespace Nekoyume.Game.Character
                 {
                     if (inventoryItem.Item is Weapon)
                     {
-                        _weapon = (Weapon) inventoryItem.Item;
+                        weapon = (Weapon) inventoryItem.Item;
                     }
                 }
 
@@ -280,20 +291,60 @@ namespace Nekoyume.Game.Character
             _mpBar.SetValue((float) MP / (float) MPMax);
         }
 
-        public void Equip(Equipment equipment)
+        public void Equip(Weapon equipment)
         {
-            if (_weapon != equipment)
+            if (weapon != equipment)
             {
-                _weapon?.Unequip();
-                _weapon = (Weapon) equipment;
+                weapon?.Unequip();
+                weapon = equipment;
+            }
+        }
+
+        public void Equip(Armor equipment)
+        {
+            if (armor != equipment)
+            {
+                armor?.Unequip();
+                armor = equipment;
+            }
+        }
+
+        public void Equip(Belt equipment)
+        {
+            if (belt != equipment)
+            {
+                belt?.Unequip();
+                belt = equipment;
             }
 
-            // Equip or UnEquip
-            _weapon.Use();
-            CalcStats();
-            Event.OnUpdateEquipment.Invoke(_weapon);
-            // TODO Implement Actions
-            ActionManager.Instance.UpdateItems(Inventory.items);
+        }
+
+        public void Equip(Necklace equipment)
+        {
+            if (necklace != equipment)
+            {
+                necklace?.Unequip();
+                necklace = equipment;
+            }
+
+        }
+
+        public void Equip(Ring equipment)
+        {
+            if (ring != equipment)
+            {
+                ring?.Unequip();
+                ring = equipment;
+            }
+        }
+
+        public void Equip(Helm equipment)
+        {
+            if (helm != equipment)
+            {
+                helm?.Unequip();
+                helm = equipment;
+            }
         }
 
         public void Init()
@@ -305,13 +356,35 @@ namespace Nekoyume.Game.Character
             _mpBarOffset.Set(-0.22f, -0.66f, 0.0f);
         }
 
-        public void SlotClick(InventorySlot slot)
+        public void Equip(Equipment equipment)
         {
-            var item = slot.Item as Weapon;
-            if (item != null)
+            if (equipment is Weapon)
             {
-                Event.OnEquip.Invoke(item);
+                Equip((Weapon) equipment);
             }
+            else if (equipment is Armor)
+            {
+                Equip((Armor) equipment);
+            }
+            else if (equipment is Belt)
+            {
+                Equip((Belt) equipment);
+            }
+            else if (equipment is Necklace)
+            {
+                Equip((Necklace) equipment);
+            }
+            else if (equipment is Ring)
+            {
+                Equip((Ring) equipment);
+            }
+            else if (equipment is Helm)
+            {
+                Equip((Helm) equipment);
+            }
+            equipment.Use();
+            CalcStats();
+            Event.OnUpdateEquipment.Invoke(equipment);
         }
     }
 }

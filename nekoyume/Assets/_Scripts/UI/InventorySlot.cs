@@ -25,6 +25,8 @@ namespace Nekoyume.UI
         public void Set(ItemBase item, int count)
         {
             var sprite = Resources.Load<Sprite>($"images/item_{item.Data.Id}");
+            if (sprite == null)
+                sprite = Resources.Load<Sprite>("images/item_301001");
             Icon.sprite = sprite;
             Icon.gameObject.SetActive(true);
             Icon.SetNativeSize();

@@ -27,7 +27,9 @@ namespace Nekoyume.Action
         {
             get
             {
-                return Enumerable.Range(0, 3).Select(index => string.Format(AvatarFileFormat, index)).Select(fileName => Path.Combine(Application.persistentDataPath, fileName)).Select(path => LoadStatus(path)).Where(avatar => avatar != null).ToList();
+                return Enumerable.Range(0, 3).Select(index => string.Format(AvatarFileFormat, index))
+                    .Select(fileName => Path.Combine(Application.persistentDataPath, fileName))
+                    .Select(path => LoadStatus(path)).Where(avatar => avatar != null).ToList();
             }
         }
 
@@ -131,9 +133,12 @@ namespace Nekoyume.Action
             agent.queuedActions.Enqueue(action);
         }
 
-        public void HackAndSlash()
+        public void HackAndSlash(List<Equipment> equipments)
         {
-            var action = new HackAndSlash();
+            var action = new HackAndSlash
+            {
+                Equipments = equipments,
+            };
             ProcessAction(action);
         }
 

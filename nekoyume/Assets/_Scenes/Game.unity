@@ -236,6 +236,7 @@ MonoBehaviour:
   battleLog:
     stage: 0
     result: 0
+  tables: {fileID: 0}
 --- !u!4 &526952094
 Transform:
   m_ObjectHideFlags: 0

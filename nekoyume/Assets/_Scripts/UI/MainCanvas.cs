@@ -26,6 +26,7 @@ namespace Nekoyume.UI
             Widget.Create<StatusDetail>();
             Widget.Create<Shop>();
             Widget.Create<BattleResult>();
+            Widget.Create<QuestPreparation>();
 #if DEBUG
             Widget.Create<Cheat>(true);
 #endif

@@ -19,8 +19,10 @@ namespace Nekoyume.UI
         public Slider hpBar;
         public Slider expBar;
         public Text levelInfo;
+        public Text nameInfo;
         public GameObject statusDetail;
         public GameObject character;
+        public GameObject profileImage;
         private int _selectedIndex;
         private Model.Avatar _avatar;
 
@@ -63,18 +65,16 @@ namespace Nekoyume.UI
         {
             _selectedIndex = index;
             int level = 1;
+            var active = true;
             try
             {
                 _avatar = ActionManager.Instance.Avatars[_selectedIndex];
                 level = _avatar.Level;
-                nameField.gameObject.SetActive(false);
-                btnDelete.SetActive(true);
             }
             catch (ArgumentException)
             {
+                active = false;
                 _avatar = null;
-                btnDelete.SetActive(false);
-                nameField.gameObject.SetActive(true);
                 nameField.text = "";
                 var image = character.GetComponent<Image>();
                 var sprite = Resources.Load<Sprite>($"avatar/character_02");
@@ -85,10 +85,14 @@ namespace Nekoyume.UI
                 var btnText = btnLogin.GetComponentInChildren<Text>();
                 btnText.text = "캐릭터 생성";
             }
+            nameField.gameObject.SetActive(!active);
+            btnDelete.SetActive(active);
+            profileImage.SetActive(active);
             var game = GameObject.Find("Game");
             Tables tables = game.GetComponent<Tables>();
             Stats statsData;
-            levelInfo.text = $"LV. {level} {_avatar?.Name}";
+            levelInfo.text = $"LV. {level}";
+            nameInfo.text = $"{_avatar?.Name}";
             if (!tables.Stats.TryGetValue(level, out statsData))
                 return;
 
