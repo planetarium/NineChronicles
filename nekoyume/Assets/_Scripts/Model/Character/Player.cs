@@ -23,7 +23,6 @@ namespace Nekoyume.Model
         public Ring ring;
         public Helm helm;
 
-        [NonSerialized]
         public readonly Inventory inventory;
         public List<Inventory.InventoryItem> Items => inventory.items;
 

@@ -130,8 +130,6 @@ namespace Nekoyume.Game.Character
 
             InitInventory(avatar);
             CalcStats();
-            if (!avatar.Dead && avatar.CurrentHP > 0)
-                HP = avatar.CurrentHP;
         }
 
         protected override void Attack()
@@ -174,6 +172,7 @@ namespace Nekoyume.Game.Character
                 dmg.ToString(),
                 Color.red);
 
+            Event.OnUpdateStatus.Invoke();
             if (HP <= 0)
             {
                 Die();
@@ -347,8 +346,9 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        public void Init()
+        public void Init(Model.Player character)
         {
+            InitStats(character);
             RunSpeed = 0.0f;
 
             _hpBarOffset.Set(-0.22f, -0.61f, 0.0f);
@@ -386,5 +386,19 @@ namespace Nekoyume.Game.Character
             CalcStats();
             Event.OnUpdateEquipment.Invoke(equipment);
         }
+
+        public void InitStats(Model.Player character)
+        {
+            EXP = character.exp;
+            Level = character.level;
+
+            CalcStats();
+            Inventory = character.inventory;
+            foreach (var equipment in equipments)
+            {
+                Equip(equipment);
+            }
+        }
+
     }
 }

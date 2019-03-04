@@ -1,6 +1,7 @@
 using Nekoyume.Action;
+using Nekoyume.Game.Character;
+using Nekoyume.Game.Util;
 using UnityEngine;
-
 
 namespace Nekoyume.Game.Factory
 {
@@ -12,25 +13,11 @@ namespace Nekoyume.Game.Factory
             var avatar = ActionManager.Instance.Avatar;
             if (avatar == null)
                 return null;
-            var objectPool = GetComponent<Util.ObjectPool>();
-            var player = objectPool.Get<Character.Player>();
+            var objectPool = GetComponent<ObjectPool>();
+            var player = objectPool.Get<Player>();
             if (player == null)
                 return null;
             player.InitStats(avatar);
-            if (log?.Count > 0)
-            {
-                player.Init();
-            }
-
-            // sprite
-            // var render = player.GetComponent<SpriteRenderer>();
-            // var sprite = Resources.Load<Sprite>($"images/character_{avatar.class_}");
-            // if (sprite == null)
-            //     sprite = Resources.Load<Sprite>("images/pet");
-            // render.sprite = sprite;
-            // Material mat = render.material;
-            // Sequence colorseq = DOTween.Sequence();
-            // colorseq.Append(mat.DOColor(Color.white, 0.0f));
 
             return player.gameObject;
         }

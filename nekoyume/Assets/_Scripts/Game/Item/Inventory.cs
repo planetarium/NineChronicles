@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace Nekoyume.Game.Item
 {
+    [Serializable]
     public class Inventory
     {
         [Serializable]

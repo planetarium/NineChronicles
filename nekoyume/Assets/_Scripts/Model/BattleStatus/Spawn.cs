@@ -1,14 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Nekoyume.Action;
-using Nekoyume.Game;
-using Nekoyume.Game.Character;
-using Nekoyume.Game.Trigger;
-using Nekoyume.UI;
-using UnityEngine;
 
 namespace Nekoyume.Model
 {
@@ -21,7 +11,7 @@ namespace Nekoyume.Model
         {
             if (character is Player)
             {
-                stage.SpawnPlayer();
+                stage.SpawnPlayer((Player)character);
             }
             else if (character is Monster)
             {
