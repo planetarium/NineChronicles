@@ -31,11 +31,8 @@ namespace Nekoyume.UI
         private IEnumerator QuestAsync()
         {
             btnQuest.SetActive(false);
-            ActionManager.Instance.Equip(_player.Inventory.items);
-            var currentAvatar = ActionManager.Instance.Avatar;
-            ActionManager.Instance.HackAndSlash();
-            while (currentAvatar.Equals(ActionManager.Instance.Avatar))
             var currentId = ActionManager.Instance.battleLog.id;
+            ActionManager.Instance.HackAndSlash(_player.equipments);
             while (currentId == ActionManager.Instance.battleLog.id)
             {
                 yield return new WaitForSeconds(1.0f);

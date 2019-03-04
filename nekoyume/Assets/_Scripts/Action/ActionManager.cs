@@ -133,9 +133,12 @@ namespace Nekoyume.Action
             agent.queuedActions.Enqueue(action);
         }
 
-        public void HackAndSlash()
+        public void HackAndSlash(List<Equipment> equipments)
         {
-            var action = new HackAndSlash();
+            var action = new HackAndSlash
+            {
+                Equipments = equipments,
+            };
             ProcessAction(action);
         }
 
@@ -203,15 +206,6 @@ namespace Nekoyume.Action
             {
                 Items = items,
                 Price = price,
-            };
-            ProcessAction(action);
-        }
-
-        public void Equip(List<Inventory.InventoryItem> items)
-        {
-            var action = new Equip
-            {
-                items = items,
             };
             ProcessAction(action);
         }

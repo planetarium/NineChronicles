@@ -385,8 +385,6 @@ namespace Nekoyume.Game.Character
             equipment.Use();
             CalcStats();
             Event.OnUpdateEquipment.Invoke(equipment);
-            // TODO Implement Actions
-            ActionManager.Instance.UpdateItems(Inventory.items);
         }
     }
 }

@@ -32,7 +32,8 @@ namespace Nekoyume.UI
         private IEnumerator SubmitAsync()
         {
             var currentAvatar = ActionManager.Instance.Avatar;
-            ActionManager.Instance.HackAndSlash();
+            var player = FindObjectOfType<Game.Character.Player>();
+            ActionManager.Instance.HackAndSlash(player.equipments);
             while (currentAvatar.Equals(ActionManager.Instance.Avatar))
             {
                 yield return new WaitForSeconds(1.0f);
