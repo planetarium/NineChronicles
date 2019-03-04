@@ -14,6 +14,8 @@ namespace Nekoyume.UI
         public Text TextExp;
         public Slider HPBar;
         public Slider ExpBar;
+        public Toggle BtnStatus;
+        public Toggle BtnInventory;
 
         private string _avatarName = "";
         private Game.Character.Player _player = null;
@@ -68,7 +70,14 @@ namespace Nekoyume.UI
 
         public void ToggleInventory()
         {
+            Widget.Find<StatusDetail>().Close();
             Widget.Find<Inventory>().Toggle();
+        }
+
+        public void ToggleStatus()
+        {
+            Widget.Find<Inventory>().Close();
+            Widget.Find<StatusDetail>().Toggle();
         }
     }
 }

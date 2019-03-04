@@ -15,7 +15,7 @@ namespace Nekoyume
         private static Cheat Instance;
 
         public Text log;
-        public BattleLog.Result result;
+        public Button BtnOpen;
 
         private Transform _modal;
         private float _updateTime = 0.0f;
@@ -51,11 +51,14 @@ namespace Nekoyume
         public override void Show()
         {
             _modal.gameObject.SetActive(true);
+            BtnOpen.gameObject.SetActive(false);
+            base.Show();
         }
 
         public override void Close()
         {
             _modal.gameObject.SetActive(false);
+            BtnOpen.gameObject.SetActive(true);
         }
 
         public override bool IsActive()
@@ -92,16 +95,29 @@ namespace Nekoyume
         private void SpeedUp()
         {
             Time.timeScale = 2.0f;
+            Log($"Speed Up to {Time.timeScale}");
         }
 
-        private void DummyBattle()
+        private void DummyBattleWin()
         {
             Find<BattleResult>()?.Close();
             GameObject stage = GameObject.Find("Stage");
             var simulator = new Simulator(0, ActionManager.Instance.Avatar);
             simulator.Simulate();
-            simulator.Log.result = result;
+            simulator.Log.result = BattleLog.Result.Win;
             stage.GetComponent<Stage>().Play(simulator.Log);
+            Close();
+        }
+
+        private void DummyBattleLose()
+        {
+            Find<BattleResult>()?.Close();
+            GameObject stage = GameObject.Find("Stage");
+            var simulator = new Simulator(0, ActionManager.Instance.Avatar);
+            simulator.Simulate();
+            simulator.Log.result = BattleLog.Result.Lose;
+            stage.GetComponent<Stage>().Play(simulator.Log);
+            Close();
         }
     }
 }
