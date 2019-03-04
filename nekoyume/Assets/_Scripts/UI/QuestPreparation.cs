@@ -31,9 +31,9 @@ namespace Nekoyume.UI
         private IEnumerator QuestAsync()
         {
             btnQuest.SetActive(false);
-            var currentId = ActionManager.Instance.battleLog.id;
+            var currentId = ActionManager.Instance.battleLog?.id;
             ActionManager.Instance.HackAndSlash(_player.equipments);
-            while (currentId == ActionManager.Instance.battleLog.id)
+            while (currentId == ActionManager.Instance.battleLog?.id)
             {
                 yield return new WaitForSeconds(1.0f);
             }
