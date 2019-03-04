@@ -35,6 +35,8 @@ namespace Nekoyume.UI
             var currentAvatar = ActionManager.Instance.Avatar;
             ActionManager.Instance.HackAndSlash();
             while (currentAvatar.Equals(ActionManager.Instance.Avatar))
+            var currentId = ActionManager.Instance.battleLog.id;
+            while (currentId == ActionManager.Instance.battleLog.id)
             {
                 yield return new WaitForSeconds(1.0f);
             }
@@ -59,7 +61,7 @@ namespace Nekoyume.UI
                     }
                 }
             }
-            btnQuest.SetActive(false);
+            btnQuest.SetActive(true);
             base.Show();
         }
 

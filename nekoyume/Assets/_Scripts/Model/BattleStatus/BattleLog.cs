@@ -7,6 +7,7 @@ namespace Nekoyume.Model
     [Serializable]
     public class BattleLog : IEnumerable<EventBase>
     {
+        public Guid id = Guid.NewGuid();
         public enum Result
         {
             Win,
