@@ -135,9 +135,13 @@ namespace Nekoyume.Model
                         helm = equipment as Helm;
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException();
+                        throw new InvalidEquipmentException();
                 }
             }
         }
+    }
+
+    public class InvalidEquipmentException : Exception
+    {
     }
 }
