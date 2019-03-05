@@ -4,7 +4,7 @@ namespace Nekoyume.Model
 {
     public interface IStage
     {
-        void SpawnPlayer();
+        void SpawnPlayer(Player character);
         void SpawnMonster(Monster character);
         void StageEnter(int stage);
         void StageEnd(BattleLog.Result result);

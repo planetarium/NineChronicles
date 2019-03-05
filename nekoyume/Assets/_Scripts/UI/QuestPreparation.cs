@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using Nekoyume.Action;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Item;
@@ -32,7 +33,17 @@ namespace Nekoyume.UI
         {
             btnQuest.SetActive(false);
             var currentId = ActionManager.Instance.battleLog?.id;
-            ActionManager.Instance.HackAndSlash(_player.equipments);
+            var equipments = new List<Equipment>();
+            foreach (var slot in equipSlots)
+            {
+                var es = slot.GetComponent<EquipSlot>();
+                if (es.item.Data != null)
+                {
+                    equipments.Add(es.item);
+                }
+            }
+
+            ActionManager.Instance.HackAndSlash(equipments);
             while (currentId == ActionManager.Instance.battleLog?.id)
             {
                 yield return new WaitForSeconds(1.0f);
@@ -54,7 +65,7 @@ namespace Nekoyume.UI
                     var es = slot.GetComponent<EquipSlot>();
                     if (es.type == type)
                     {
-                        es.Set(_player, equipment);
+                        es.Set(equipment);
                     }
                 }
             }
@@ -102,18 +113,15 @@ namespace Nekoyume.UI
                 var es = slot.GetComponent<EquipSlot>();
                 if (es.type == type)
                 {
-                    es.Equip(_player, item);
+                    es.Equip(item);
                 }
             }
         }
 
         public void Unequip(GameObject sender)
         {
-            if (_player.weapon != null)
-            {
-                var slot = sender.GetComponent<EquipSlot>();
-                slot.Unequip(_player);
-            }
+            var slot = sender.GetComponent<EquipSlot>();
+            slot.Unequip();
         }
 
         public void CloseInfo()

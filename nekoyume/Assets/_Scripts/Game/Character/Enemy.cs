@@ -7,7 +7,6 @@ using Nekoyume.Data.Table;
 using Nekoyume.Game.Factory;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Skill;
-using Nekoyume.Game.Util;
 using Nekoyume.UI;
 using UnityEngine;
 
@@ -129,6 +128,7 @@ namespace Nekoyume.Game.Character
 
         protected override void OnDead()
         {
+            Event.OnEnemyDead.Invoke(this);
             DropItem();
             base.OnDead();
         }
@@ -140,7 +140,7 @@ namespace Nekoyume.Game.Character
                 var dropItemFactory = GetComponentInParent<DropItemFactory>();
                 dropItemFactory.Create(item.Data.Id, transform.position);
                 gameObject.SetActive(false);
-                Widget.Find<UI.BattleResult>().Add(item);
+                Widget.Find<BattleResult>().Add(item);
             }
         }
 

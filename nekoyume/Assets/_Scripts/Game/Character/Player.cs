@@ -22,14 +22,10 @@ namespace Nekoyume.Game.Character
         public long EXPMax { get; private set; }
 
         private ProgressBar _mpBar = null;
-        public Weapon weapon = null;
-        public Armor armor;
-        public Belt belt;
-        public Necklace necklace;
-        public Ring ring;
-        public Helm helm;
         public List<Equipment> equipments =>
             Inventory.items.Select(i => i.Item).OfType<Equipment>().Where(e => e.equipped).ToList();
+
+        public Model.Player model;
 
         protected override Vector3 _hpBarOffset => _castingBarOffset + new Vector3(0, 0.24f, 0.0f);
         protected Vector3 _mpBarOffset => _castingBarOffset + new Vector3(0, 0.19f, 0.0f);
@@ -123,17 +119,6 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        public void InitStats(Model.Avatar avatar)
-        {
-            EXP = avatar.EXP;
-            Level = avatar.Level;
-
-            InitInventory(avatar);
-            CalcStats();
-            if (!avatar.Dead && avatar.CurrentHP > 0)
-                HP = avatar.CurrentHP;
-        }
-
         protected override void Attack()
         {
             foreach (var skill in _skills)
@@ -174,6 +159,7 @@ namespace Nekoyume.Game.Character
                 dmg.ToString(),
                 Color.red);
 
+            Event.OnUpdateStatus.Invoke();
             if (HP <= 0)
             {
                 Die();
@@ -184,31 +170,6 @@ namespace Nekoyume.Game.Character
         {
             gameObject.SetActive(false);
             Event.OnPlayerDead.Invoke();
-        }
-
-        private void CalcStats()
-        {
-            Tables tables = this.GetRootComponent<Tables>();
-            Stats statsData;
-            if (!tables.Stats.TryGetValue(Level, out statsData))
-                return;
-
-            HP = statsData.Health;
-            ATK = statsData.Attack;
-            DEF = statsData.Defense;
-            MP = MPMax = statsData.Mana;
-
-            HPMax = statsData.Health;
-            EXPMax = statsData.Exp;
-            if (weapon?.equipped == true)
-            {
-                ATK += weapon.Data.Param_0;
-            }
-
-            if (armor?.equipped == true)
-            {
-                DEF += armor.Data.Param_0;
-            }
         }
 
         private void GetEXP(Enemy enemy)
@@ -233,7 +194,8 @@ namespace Nekoyume.Game.Character
 
             PopupText.Show(transform.TransformPoint(-0.6f, 1.0f, 0.0f), new Vector3(0.0f, 2.0f, 0.0f), "LEVEL UP");
 
-            CalcStats();
+            model.CalcStats(Level);
+            InitStats(model);
 
             UpdateHpBar();
         }
@@ -242,23 +204,6 @@ namespace Nekoyume.Game.Character
         {
             Inventory.Add(item.Item);
             ActionManager.Instance.UpdateItems(Inventory.items);
-        }
-
-        private void InitInventory(Model.Avatar avatar)
-        {
-            var inventoryItems = avatar.Items;
-            if (inventoryItems != null)
-            {
-                foreach (var inventoryItem in inventoryItems)
-                {
-                    if (inventoryItem.Item is Weapon)
-                    {
-                        weapon = (Weapon) inventoryItem.Item;
-                    }
-                }
-
-                Inventory.Set(inventoryItems);
-            }
         }
 
         protected override void OnDisable()
@@ -291,64 +236,10 @@ namespace Nekoyume.Game.Character
             _mpBar.SetValue((float) MP / (float) MPMax);
         }
 
-        public void Equip(Weapon equipment)
+        public void Init(Model.Player character)
         {
-            if (weapon != equipment)
-            {
-                weapon?.Unequip();
-                weapon = equipment;
-            }
-        }
-
-        public void Equip(Armor equipment)
-        {
-            if (armor != equipment)
-            {
-                armor?.Unequip();
-                armor = equipment;
-            }
-        }
-
-        public void Equip(Belt equipment)
-        {
-            if (belt != equipment)
-            {
-                belt?.Unequip();
-                belt = equipment;
-            }
-
-        }
-
-        public void Equip(Necklace equipment)
-        {
-            if (necklace != equipment)
-            {
-                necklace?.Unequip();
-                necklace = equipment;
-            }
-
-        }
-
-        public void Equip(Ring equipment)
-        {
-            if (ring != equipment)
-            {
-                ring?.Unequip();
-                ring = equipment;
-            }
-        }
-
-        public void Equip(Helm equipment)
-        {
-            if (helm != equipment)
-            {
-                helm?.Unequip();
-                helm = equipment;
-            }
-        }
-
-        public void Init()
-        {
+            model = character;
+            InitStats(character);
             RunSpeed = 0.0f;
 
             _hpBarOffset.Set(-0.22f, -0.61f, 0.0f);
@@ -356,35 +247,16 @@ namespace Nekoyume.Game.Character
             _mpBarOffset.Set(-0.22f, -0.66f, 0.0f);
         }
 
-        public void Equip(Equipment equipment)
+        private void InitStats(Model.Player character)
         {
-            if (equipment is Weapon)
-            {
-                Equip((Weapon) equipment);
-            }
-            else if (equipment is Armor)
-            {
-                Equip((Armor) equipment);
-            }
-            else if (equipment is Belt)
-            {
-                Equip((Belt) equipment);
-            }
-            else if (equipment is Necklace)
-            {
-                Equip((Necklace) equipment);
-            }
-            else if (equipment is Ring)
-            {
-                Equip((Ring) equipment);
-            }
-            else if (equipment is Helm)
-            {
-                Equip((Helm) equipment);
-            }
-            equipment.Use();
-            CalcStats();
-            Event.OnUpdateEquipment.Invoke(equipment);
+            HP = character.hp;
+            HPMax = character.hpMax;
+            ATK = character.atk;
+            DEF = character.def;
+            EXP = character.exp;
+            Level = character.level;
+            EXPMax = character.expMax;
+            Inventory = character.inventory;
         }
     }
 }

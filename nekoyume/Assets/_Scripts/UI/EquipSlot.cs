@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
-    public class EquipSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+    public class EquipSlot : MonoBehaviour
     {
         public GameObject button;
         public Image icon;
@@ -14,30 +14,22 @@ namespace Nekoyume.UI
         public ItemBase.ItemType type;
 
 
-        public void OnPointerEnter(PointerEventData eventData)
-        {
-            button.gameObject.SetActive(true);
-        }
 
-        public void OnPointerExit(PointerEventData eventData)
-        {
-            button.gameObject.SetActive(false);
-        }
-
-        public void Equip(Player player, CartItem selected)
+        public void Equip(CartItem selected)
         {
             icon.sprite = selected.icon.sprite;
             icon.gameObject.SetActive(true);
             item = (Equipment) selected.item;
-            player.Equip(item);
+            button.gameObject.SetActive(true);
         }
-        public void Unequip(Player player)
+        public void Unequip()
         {
             icon.gameObject.SetActive(false);
-            player.Equip(item);
+            item = null;
+            button.gameObject.SetActive(false);
         }
 
-        public void Set(Player player, Equipment equipment)
+        public void Set(Equipment equipment)
         {
             var sprite = Resources.Load<Sprite>($"images/item_{equipment.Data.Id}");
             if (sprite == null)
@@ -45,6 +37,7 @@ namespace Nekoyume.UI
             icon.sprite = sprite;
             icon.gameObject.SetActive(true);
             item = equipment;
+            button.gameObject.SetActive(true);
         }
     }
 }

@@ -132,14 +132,15 @@ namespace Nekoyume.Game
             Widget.Find<BattleResult>().Show(result);
         }
 
-        public void SpawnPlayer()
+        public void SpawnPlayer(Model.Player character)
         {
             var playerCharacter = GetComponentInChildren<Character.Player>();
             playerCharacter.RunSpeed = 1.2f;
             var player = playerCharacter.gameObject;
-            playerCharacter.Init();
+            playerCharacter.Init(character);
             var cam = Camera.main.gameObject.GetComponent<ActionCamera>();
             cam.target = player.transform;
+            Widget.Find<Status>().UpdatePlayer(player);
         }
 
         public void SpawnMonster(Monster monster)

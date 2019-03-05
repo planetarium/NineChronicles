@@ -9,7 +9,9 @@ namespace Nekoyume.Model
     {
         protected bool Equals(Avatar other)
         {
-            return string.Equals(Name, other.Name) && Level == other.Level && EXP == other.EXP && HPMax == other.HPMax && CurrentHP == other.CurrentHP && Equals(Items, other.Items) && WorldStage == other.WorldStage && Dead == other.Dead;
+            return string.Equals(Name, other.Name) && Level == other.Level && EXP == other.EXP &&
+                   HPMax == other.HPMax && CurrentHP == other.CurrentHP && Equals(Items, other.Items) &&
+                   WorldStage == other.WorldStage;
         }
 
         public override bool Equals(object obj)
@@ -31,7 +33,6 @@ namespace Nekoyume.Model
                 hashCode = (hashCode * 397) ^ CurrentHP;
                 hashCode = (hashCode * 397) ^ (Items != null ? Items.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ WorldStage;
-                hashCode = (hashCode * 397) ^ Dead.GetHashCode();
                 return hashCode;
             }
         }
@@ -43,17 +44,20 @@ namespace Nekoyume.Model
         public int CurrentHP;
         public List<Inventory.InventoryItem> Items;
         public int WorldStage;
-        public bool Dead = false;
 
         public void Update(Player player)
         {
             Level = player.level;
             EXP = player.exp;
             HPMax = player.hpMax;
-            CurrentHP = player.hp;
+            CurrentHP = HPMax;
             Items = player.Items;
             WorldStage = player.stage;
-            Dead = player.isDead;
+        }
+
+        public Player ToPlayer()
+        {
+            return new Player(this);
         }
     }
 }
