@@ -33,10 +33,17 @@ namespace Nekoyume.UI
                     slotText.text = $"LV.{avatar.Level} {avatar.Name}";
                     button.gameObject.SetActive(false);
                 }
-                catch (ArgumentOutOfRangeException)
+                catch (Exception e)
                 {
-                    slotText.text = "캐릭터를 생성하세요.";
-                    button.gameObject.SetActive(true);
+                    if (e is ArgumentOutOfRangeException || e is NullReferenceException)
+                    {
+                        slotText.text = "캐릭터를 생성하세요.";
+                        button.gameObject.SetActive(true);
+                    }
+                    else
+                    {
+                        throw;
+                    }
                 }
             }
         }

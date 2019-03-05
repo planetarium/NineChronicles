@@ -29,7 +29,7 @@ namespace Nekoyume.Action
             {
                 return Enumerable.Range(0, 3).Select(index => string.Format(AvatarFileFormat, index))
                     .Select(fileName => Path.Combine(Application.persistentDataPath, fileName))
-                    .Select(path => LoadStatus(path)).Where(avatar => avatar != null).ToList();
+                    .Select(path => LoadStatus(path)).ToList();
             }
         }
 

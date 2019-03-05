@@ -71,19 +71,26 @@ namespace Nekoyume.UI
                 _avatar = ActionManager.Instance.Avatars[_selectedIndex];
                 level = _avatar.Level;
             }
-            catch (ArgumentException)
+            catch (Exception e)
             {
-                active = false;
-                _avatar = null;
-                nameField.text = "";
-                var image = character.GetComponent<Image>();
-                var sprite = Resources.Load<Sprite>($"avatar/character_02");
-                if (sprite != null)
+                if (e is ArgumentOutOfRangeException || e is NullReferenceException)
                 {
-                    image.sprite = sprite;
+                    active = false;
+                    _avatar = null;
+                    nameField.text = "";
+                    var image = character.GetComponent<Image>();
+                    var sprite = Resources.Load<Sprite>($"avatar/character_02");
+                    if (sprite != null)
+                    {
+                        image.sprite = sprite;
+                    }
+                    var btnText = btnLogin.GetComponentInChildren<Text>();
+                    btnText.text = "캐릭터 생성";
                 }
-                var btnText = btnLogin.GetComponentInChildren<Text>();
-                btnText.text = "캐릭터 생성";
+                else
+                {
+                    throw;
+                }
             }
             nameField.gameObject.SetActive(!active);
             btnDelete.SetActive(active);
