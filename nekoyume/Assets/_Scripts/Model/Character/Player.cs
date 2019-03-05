@@ -54,7 +54,7 @@ namespace Nekoyume.Model
         protected override void OnDead()
         {
             base.OnDead();
-            simulator.isLose = true;
+            simulator.Lose = true;
         }
 
         public void CalcStats(int lv)

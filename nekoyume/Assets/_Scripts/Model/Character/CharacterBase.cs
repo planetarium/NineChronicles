@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Threading;
 using BTAI;
 using Nekoyume.Action;
 
@@ -85,6 +84,7 @@ namespace Nekoyume.Model
 
         public void Spawn()
         {
+            InitAI();
             var spawn = new Spawn
             {
                 character = Copy(this),
