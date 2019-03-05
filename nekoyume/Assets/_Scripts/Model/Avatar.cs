@@ -54,5 +54,10 @@ namespace Nekoyume.Model
             Items = player.Items;
             WorldStage = player.stage;
         }
+
+        public Player ToPlayer()
+        {
+            return new Player(this);
+        }
     }
 }

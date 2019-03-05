@@ -12,9 +12,7 @@ namespace Nekoyume.Model
     {
         public long exp;
         public long expMax;
-        public string items;
         public int level;
-        public string name;
         public int stage;
         public Weapon weapon;
         public Armor armor;
@@ -28,7 +26,6 @@ namespace Nekoyume.Model
 
         public Player(Avatar avatar, Simulator simulator = null)
         {
-            name = avatar.Name;
             exp = avatar.EXP;
             level = avatar.Level;
             stage = avatar.WorldStage;
@@ -41,7 +38,7 @@ namespace Nekoyume.Model
                 inventory.Set(inventoryItems);
             }
 
-            CalcStats();
+            CalcStats(level);
         }
 
         public void GetExp(Monster monster)
@@ -60,12 +57,11 @@ namespace Nekoyume.Model
             simulator.isLose = true;
         }
 
-
-        private void CalcStats()
+        public void CalcStats(int lv)
         {
             var stats = ActionManager.Instance.tables.Stats;
             Stats data;
-            stats.TryGetValue(level, out data);
+            stats.TryGetValue(lv, out data);
             if (data == null)
             {
                 throw new InvalidActionException();
@@ -91,7 +87,7 @@ namespace Nekoyume.Model
             exp -= expMax;
             level++;
 
-            CalcStats();
+            CalcStats(level);
 
             var levelUp = new LevelUp
             {

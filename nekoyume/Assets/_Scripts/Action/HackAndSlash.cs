@@ -39,7 +39,7 @@ namespace Nekoyume.Action
                     }
 
                     var equip = current.First(e => e.Data.Id == equipment.Data.Id);
-                    equip.equipped = equipment.equipped;
+                    equip.Equip();
                 }
             }
             else

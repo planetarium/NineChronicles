@@ -17,7 +17,7 @@ namespace Nekoyume.Game.Factory
             var player = objectPool.Get<Player>();
             if (player == null)
                 return null;
-            player.InitStats(avatar);
+            player.Init(avatar.ToPlayer());
 
             return player.gameObject;
         }
