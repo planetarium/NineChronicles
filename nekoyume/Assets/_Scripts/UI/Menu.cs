@@ -16,9 +16,6 @@ namespace Nekoyume.UI
         {
             Show();
             btnQuest.GetComponent<Button>().enabled = true;
-            var avatar = ActionManager.Instance.Avatar;
-            var enabled = !avatar.Dead;
-            btnQuest.SetActive(enabled);
             LabelInfo.text = "";
         }
 

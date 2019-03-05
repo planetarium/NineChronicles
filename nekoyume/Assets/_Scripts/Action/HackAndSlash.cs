@@ -28,10 +28,6 @@ namespace Nekoyume.Action
             var states = actionCtx.PreviousStates;
             var to = actionCtx.To;
             var ctx = (Context) states.GetValueOrDefault(to);
-            if (ctx.avatar.Dead)
-            {
-                throw new InvalidActionException();
-            }
             var current = ctx.avatar.Items.Select(i => i.Item).OfType<Equipment>().ToArray();
             if (Equipments.Count > 0)
             {
