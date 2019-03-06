@@ -5,6 +5,7 @@ using Nekoyume.Action;
 using Nekoyume.Data;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Entrance;
+using Nekoyume.Game.Factory;
 using Nekoyume.Game.Trigger;
 using Nekoyume.Model;
 using Nekoyume.UI;
@@ -129,12 +130,19 @@ namespace Nekoyume.Game
 
         public void StageEnd(BattleLog.Result result)
         {
+            var objectPool = GetComponent<Util.ObjectPool>();
+            objectPool.ReleaseAll();
             Widget.Find<BattleResult>().Show(result);
         }
 
         public void SpawnPlayer(Model.Player character)
         {
             var playerCharacter = GetComponentInChildren<Character.Player>();
+            if (playerCharacter == null)
+            {
+                var factory = GetComponent<PlayerFactory>();
+                playerCharacter = factory.Create().GetComponent<Character.Player>();
+            }
             playerCharacter.RunSpeed = 1.2f;
             var player = playerCharacter.gameObject;
             playerCharacter.Init(character);
