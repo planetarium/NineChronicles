@@ -153,11 +153,11 @@ namespace Nekoyume.Game.Character
         {
             base.OnDamage(dmg);
 
-            PopupText.Show(
+            DamageText.Show(
                 transform.TransformPoint(UnityEngine.Random.Range(-0.6f, -0.4f), 1.0f, 0.0f),
                 new Vector3(-0.02f, 0.02f, 0.0f),
-                dmg.ToString(),
-                Color.red);
+                dmg.ToString()
+            );
 
             Event.OnUpdateStatus.Invoke();
             if (HP <= 0)

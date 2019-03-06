@@ -105,11 +105,11 @@ namespace Nekoyume.Game.Character
         {
             base.OnDamage(dmg);
 
-            PopupText.Show(
+            DamageText.Show(
                 transform.TransformPoint(0.12f, 0.5f, 0.0f),
                 new Vector3(0.06f, 0.05f, 0.0f),
-                dmg.ToString(),
-                Color.yellow);
+                dmg.ToString()
+            );
 
             SpriteRenderer renderer = gameObject.GetComponent<SpriteRenderer>();
             if (renderer != null)
