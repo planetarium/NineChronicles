@@ -15,6 +15,7 @@ namespace Nekoyume.UI
         public Text totalPrice;
         public GameObject itemBase;
         public GameObject itemInfo;
+        private InventorySlot _selectedSlot;
 
         private void Awake()
         {
@@ -64,7 +65,15 @@ namespace Nekoyume.UI
                 cartItem.price.text = "1";
                 cartItem.icon.sprite = slot.Icon.sprite;
                 cartItem.item = slotItem;
-                itemInfo.GetComponent<Widget>().Show();
+                if (_selectedSlot != slot)
+                {
+                    itemInfo.GetComponent<Widget>().Show();
+                }
+                else
+                {
+                    itemInfo.GetComponent<Widget>().Toggle();
+                }
+                _selectedSlot = slot;
             }
         }
 
@@ -100,6 +109,12 @@ namespace Nekoyume.UI
             cartItem.item = item.item;
             items.Add(cartItem);
             CalcTotalPrice();
+        }
+
+        public void CloseInfo()
+        {
+            _selectedSlot.SlotClick();
+            _selectedSlot = null;
         }
     }
 }

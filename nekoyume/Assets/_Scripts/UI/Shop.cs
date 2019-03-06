@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Nekoyume.Game;
 using UnityEngine;
 
@@ -48,6 +49,23 @@ namespace Nekoyume.UI
         {
             stage.LoadBackground("room");
             base.Close();
+        }
+        public void RemoveItem(GameObject o)
+        {
+            var item = o.GetComponent<CartItem>();
+            if (panelBuy.activeSelf)
+            {
+                var buy = GetComponent<Buy>();
+                buy.items.Remove(item);
+                buy.CalcTotalPrice();
+            }
+            else
+            {
+                var sell = GetComponent<Sell>();
+                sell.items.Remove(item);
+                sell.CalcTotalPrice();
+            }
+            Destroy(o);
         }
     }
 }
