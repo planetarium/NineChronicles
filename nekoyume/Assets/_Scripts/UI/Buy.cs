@@ -89,5 +89,13 @@ namespace Nekoyume.UI
             CalcTotalPrice();
             base.Close();
         }
+
+        public void RemoveItem(GameObject o)
+        {
+            var item = o.GetComponent<CartItem>();
+            items.Remove(item);
+            Destroy(o);
+            CalcTotalPrice();
+        }
     }
 }
