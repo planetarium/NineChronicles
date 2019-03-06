@@ -48,7 +48,7 @@ namespace Nekoyume.Model
             var target = targets.FirstOrDefault(t => !t.isDead);
             if (target != null)
             {
-                var dmg = atk - target.def;
+                var dmg = Math.Max(atk - target.def, 1);
                 target.hp -= dmg;
                 var attack = new Attack
                 {
