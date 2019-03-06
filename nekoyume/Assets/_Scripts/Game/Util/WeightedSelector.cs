@@ -60,8 +60,9 @@ namespace Nekoyume.Game.Util
                 _values.RemoveAt(idx);
                 _weights.RemoveAt(idx);
             }
-
-            return _values[idx];
+            if (idx >= 0)
+                return _values[idx];
+            return default(T);
         }
 
         public T Pop()

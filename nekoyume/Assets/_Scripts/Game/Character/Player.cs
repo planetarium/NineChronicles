@@ -190,11 +190,11 @@ namespace Nekoyume.Game.Character
                 return;
 
             EXP -= EXPMax;
-            Level++;
+            model.level++;
 
             PopupText.Show(transform.TransformPoint(-0.6f, 1.0f, 0.0f), new Vector3(0.0f, 2.0f, 0.0f), "LEVEL UP");
 
-            model.CalcStats(Level);
+            model.CalcStats(model.level);
             InitStats(model);
 
             UpdateHpBar();

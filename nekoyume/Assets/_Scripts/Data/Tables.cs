@@ -16,6 +16,7 @@ namespace Nekoyume.Data
         public Table<BoxDrop> BoxDrop { get; private set; }
         public Table<Item> Item { get; private set; }
         public Table<Recipe> Recipe { get; private set; }
+        public Table<MonsterWave> MonsterWave { get; private set; }
 
         private void Start()
         {
@@ -48,6 +49,9 @@ namespace Nekoyume.Data
 
             Recipe = new Table<Recipe>();
             Load(Recipe, "DataTable/recipe");
+            MonsterWave = new Table<MonsterWave>();
+            Load(MonsterWave, "DataTable/monster_wave");
+
         }
 
         private void Load(ITable table, string filename)

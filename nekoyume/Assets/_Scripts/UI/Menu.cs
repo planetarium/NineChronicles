@@ -15,7 +15,7 @@ namespace Nekoyume.UI
         public void ShowRoom()
         {
             Show();
-            btnQuest.GetComponent<Button>().enabled = true;
+            btnQuest.SetActive(true);
             LabelInfo.text = "";
         }
 

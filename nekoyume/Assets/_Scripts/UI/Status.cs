@@ -1,8 +1,6 @@
-using System;
-using Nekoyume.Action;
+using Nekoyume.Game.Character;
 using UnityEngine;
 using UnityEngine.UI;
-
 
 namespace Nekoyume.UI
 {
@@ -18,7 +16,7 @@ namespace Nekoyume.UI
         public Toggle BtnInventory;
 
         private string _avatarName = "";
-        private Game.Character.Player _player = null;
+        private Player _player = null;
 
         private void Awake()
         {
@@ -34,15 +32,10 @@ namespace Nekoyume.UI
         {
             Show();
 
-            Model.Avatar avatar = ActionManager.Instance.Avatar;
-            if (avatar != null)
-            {
-                _avatarName = avatar.Name;
-                TextStage.text = $"STAGE {avatar.WorldStage}";
-            }
             if (playerObj != null)
             {
-                _player = playerObj.GetComponent<Game.Character.Player>();
+                _player = playerObj.GetComponent<Player>();
+                TextStage.text = $"STAGE {_player.model.stage}";
             }
 
             UpdateExp();
@@ -70,14 +63,14 @@ namespace Nekoyume.UI
 
         public void ToggleInventory()
         {
-            Widget.Find<StatusDetail>().Close();
-            Widget.Find<Inventory>().Toggle();
+            Find<StatusDetail>().Close();
+            Find<Inventory>().Toggle();
         }
 
         public void ToggleStatus()
         {
-            Widget.Find<Inventory>().Close();
-            Widget.Find<StatusDetail>().Toggle();
+            Find<Inventory>().Close();
+            Find<StatusDetail>().Toggle();
         }
     }
 }
