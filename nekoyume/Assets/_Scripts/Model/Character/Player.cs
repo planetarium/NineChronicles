@@ -68,6 +68,7 @@ namespace Nekoyume.Model
             }
             hp = data.Health;
             atk = data.Attack;
+            def = data.Defense;
             hpMax = data.Health;
             expMax = data.Exp;
             if (weapon?.equipped == true)
