@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Nekoyume.Action;
+using Nekoyume.Game.Factory;
 using Nekoyume.Game.Item;
 using Nekoyume.Model;
 using UnityEngine;
@@ -33,6 +34,11 @@ namespace Nekoyume.UI
         private IEnumerator SubmitAsync()
         {
             var player = FindObjectOfType<Game.Character.Player>();
+            if (player == null)
+            {
+                var factory = GameObject.Find("Stage").GetComponent<PlayerFactory>();
+                player = factory.Create().GetComponent<Game.Character.Player>();
+            }
             var currentId = ActionManager.Instance.battleLog?.id;
             ActionManager.Instance.HackAndSlash(player.equipments);
             while (currentId == ActionManager.Instance.battleLog?.id)
