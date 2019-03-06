@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Nekoyume.Action;
+using Nekoyume.Game;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Item;
 using UnityEngine;
@@ -18,10 +19,12 @@ namespace Nekoyume.UI
         public GameObject inventory;
         private InventorySlot selectedSlot;
         private Player _player;
+        public Stage stage;
 
         private void Awake()
         {
             Game.Event.OnSlotClick.AddListener(SlotClick);
+            stage = GameObject.Find("Stage").GetComponent<Stage>();
         }
 
         public void QuestClick()
@@ -54,6 +57,7 @@ namespace Nekoyume.UI
 
         public override void Show()
         {
+            stage.LoadBackground("dungeon");
             _player = FindObjectOfType<Player>();
             _player.gameObject.transform.position = new Vector2(1.8f, -0.4f);
             inventory.GetComponent<Inventory>().Show();
@@ -75,6 +79,7 @@ namespace Nekoyume.UI
 
         public override void Close()
         {
+            stage.LoadBackground("room");
             _player.gameObject.transform.position = new Vector2(-2.4f, -1.3f);
             inventory.GetComponent<Inventory>().Close();
             itemInfo.GetComponent<Widget>().Close();
