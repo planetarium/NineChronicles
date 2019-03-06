@@ -14,12 +14,13 @@ namespace Nekoyume.UI
 
         private List<InventorySlot> _slots;
         private Player _player;
+        private const int maxSlot = 42;
 
         private void Awake()
         {
             _slots = new List<InventorySlot>();
             _slotBase.SetActive(true);
-            for (int i = 0; i < 42; ++i)
+            for (int i = 0; i < maxSlot; ++i)
             {
                 GameObject newSlot = Instantiate(_slotBase, _grid);
                 InventorySlot slot = newSlot.GetComponent<InventorySlot>();
@@ -66,7 +67,7 @@ namespace Nekoyume.UI
             if (_player != null)
             {
                 List<Game.Item.Inventory.InventoryItem> items = _player.Inventory.items;
-                for (int i = 0; i < 40; ++i)
+                for (int i = 0; i < maxSlot; ++i)
                 {
                     InventorySlot slot = _slots[i];
                     if (items != null && items.Count > i)
@@ -91,7 +92,7 @@ namespace Nekoyume.UI
 
         public void CloseClick()
         {
-            var status = Widget.Find<Status>();
+            var status = Find<Status>();
             if (status)
             {
                 status.BtnInventory.group.SetAllTogglesOff();
