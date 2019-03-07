@@ -11,5 +11,6 @@ namespace Nekoyume.UI
         public Text info;
         public Text price;
         public ItemBase item;
+        public Text flavour;
     }
 }

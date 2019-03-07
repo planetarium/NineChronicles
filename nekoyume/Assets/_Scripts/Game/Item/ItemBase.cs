@@ -68,5 +68,10 @@ namespace Nekoyume.Game.Item
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);
             }
         }
+
+        public virtual string ToItemInfo()
+        {
+            return "";
+        }
     }
 }

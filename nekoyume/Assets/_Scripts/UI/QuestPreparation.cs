@@ -91,8 +91,9 @@ namespace Nekoyume.UI
             {
                 var slotItem = slot.Item;
                 var cartItem = itemInfo.GetComponent<CartItem>();
-                cartItem.itemName.text = slotItem.Data.Id.ToString();
-                cartItem.info.text = "info";
+                cartItem.itemName.text = slotItem.Data.Name;
+                cartItem.info.text = slotItem.ToItemInfo();
+                cartItem.flavour.text = slotItem.Data.Flavour;
                 cartItem.icon.sprite = slot.Icon.sprite;
                 cartItem.item = slotItem;
                 btnEquip.SetActive(slotItem is ItemUsable);

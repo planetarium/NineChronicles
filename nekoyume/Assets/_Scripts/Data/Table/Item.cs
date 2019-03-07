@@ -37,5 +37,7 @@ namespace Nekoyume.Data.Table
         public int Param_0 = 0;
         public int Param_1 = 0;
         public int Param_2 = 0;
+        public string Name = "";
+        public string Flavour = "";
     }
 }

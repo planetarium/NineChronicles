@@ -1,12 +1,12 @@
-id,cls,param_0,param_1,param_2
-301001,Weapon,10,0,0
-301002,Weapon,20,0,0
-301003,Weapon,30,0,0
-302001,RangedWeapon,10,0,0
-302002,RangedWeapon,20,0,0
-302003,RangedWeapon,30,0,0
-303001,Armor,1,0,0
-304001,Belt,1,0,0
-305001,Necklace,0,0,0
-306001,Ring,0,0,0
-307001,Helm,1,0,03
+id,cls,param_0,param_1,param_2,name,flavour
+301001,Weapon,10,0,0,단검,고요의 숲에 사는 작은 고블린 몬스터가 보급형으로 사용하던 검이다.
+301002,Weapon,20,0,0,,
+301003,Weapon,30,0,0,,
+302001,RangedWeapon,10,0,0,,
+302002,RangedWeapon,20,0,0,,
+302003,RangedWeapon,30,0,0,,
+303001,Armor,1,0,0,천옷,방어구
+304001,Belt,1,0,0,장식띠,벨트
+305001,Necklace,0,0,0,목걸이,네클리스
+306001,Ring,0,0,0,반지,링
+307001,Helm,1,0,3,투구,헬름
