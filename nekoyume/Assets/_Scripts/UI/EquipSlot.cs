@@ -20,13 +20,19 @@ namespace Nekoyume.UI
             icon.sprite = selected.icon.sprite;
             icon.gameObject.SetActive(true);
             item = (Equipment) selected.item;
-            button.gameObject.SetActive(true);
+            if (button != null)
+            {
+                button.gameObject.SetActive(true);
+            }
         }
         public void Unequip()
         {
             icon.gameObject.SetActive(false);
             item = null;
-            button.gameObject.SetActive(false);
+            if (button != null)
+            {
+                button.gameObject.SetActive(false);
+            }
         }
 
         public void Set(Equipment equipment)
@@ -37,7 +43,10 @@ namespace Nekoyume.UI
             icon.sprite = sprite;
             icon.gameObject.SetActive(true);
             item = equipment;
-            button.gameObject.SetActive(true);
+            if (button != null)
+            {
+                button.gameObject.SetActive(true);
+            }
         }
     }
 }

@@ -40,7 +40,7 @@ namespace Nekoyume.UI
             foreach (var slot in equipSlots)
             {
                 var es = slot.GetComponent<EquipSlot>();
-                if (es.item.Data != null)
+                if (es.item?.Data != null)
                 {
                     equipments.Add(es.item);
                 }
