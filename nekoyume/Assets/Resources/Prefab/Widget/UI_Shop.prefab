@@ -109,15 +109,15 @@ GameObject:
   m_Component:
   - component: {fileID: 224556554517253466}
   - component: {fileID: 222040529404239702}
-  - component: {fileID: 114879432118574612}
   - component: {fileID: 114036413266274168}
+  - component: {fileID: 114713920426298774}
   m_Layer: 5
   m_Name: ItemInfo
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &1087366887560336
 GameObject:
   m_ObjectHideFlags: 1
@@ -1011,9 +1011,9 @@ GameObject:
   - component: {fileID: 224086955258341006}
   - component: {fileID: 222334399839721812}
   - component: {fileID: 114001887097536720}
-  - component: {fileID: 114106308231424500}
+  - component: {fileID: 114327988266721166}
   m_Layer: 5
-  m_Name: UI_CartItem
+  m_Name: SelectedItem
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1989,23 +1989,6 @@ MonoBehaviour:
   m_EffectColor: {r: 0, g: 0, b: 0, a: 0.5}
   m_EffectDistance: {x: 1, y: -1}
   m_UseGraphicAlpha: 1
---- !u!114 &114106308231424500
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1699730440993036}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b35cae9e78e24355b20bbd9a21b4c9f2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  icon: {fileID: 114209493142546936}
-  itemName: {fileID: 114931956347720306}
-  info: {fileID: 114474044316418534}
-  price: {fileID: 114882862267503932}
-  item:
-    reserved: 0
 --- !u!114 &114109359833808222
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2888,6 +2871,24 @@ MonoBehaviour:
   m_EffectColor: {r: 0, g: 0, b: 0, a: 0.5}
   m_EffectDistance: {x: 1, y: -1}
   m_UseGraphicAlpha: 1
+--- !u!114 &114327988266721166
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1699730440993036}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df9ae027f0cf4674f938205ce90dfd3d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  icon: {fileID: 114209493142546936}
+  itemName: {fileID: 114931956347720306}
+  info: {fileID: 114474044316418534}
+  price: {fileID: 114882862267503932}
+  item:
+    reserved: 0
+  flavour: {fileID: 0}
 --- !u!114 &114333431021907660
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4215,6 +4216,24 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
+--- !u!114 &114713920426298774
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1084418394320948}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df9ae027f0cf4674f938205ce90dfd3d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  icon: {fileID: 114192188576002956}
+  itemName: {fileID: 114836031962424788}
+  info: {fileID: 114801702809032048}
+  price: {fileID: 114247201545966960}
+  item:
+    reserved: 0
+  flavour: {fileID: 114735594990742034}
 --- !u!114 &114714097710395062
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -5244,23 +5263,6 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
---- !u!114 &114879432118574612
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1084418394320948}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b35cae9e78e24355b20bbd9a21b4c9f2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  icon: {fileID: 114192188576002956}
-  itemName: {fileID: 114836031962424788}
-  info: {fileID: 114801702809032048}
-  price: {fileID: 114247201545966960}
-  item:
-    reserved: 0
 --- !u!114 &114882862267503932
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -11,7 +11,7 @@ namespace Nekoyume.UI
     {
         public GameObject btnConfirm;
         public ScrollRect cart;
-        public List<CartItem> items;
+        public List<SelectedItem> items;
         public Text totalPrice;
         public GameObject itemBase;
         public GameObject itemInfo;
@@ -19,7 +19,7 @@ namespace Nekoyume.UI
 
         private void Awake()
         {
-            items = new List<CartItem>();
+            items = new List<SelectedItem>();
             Game.Event.OnSlotClick.AddListener(SlotClick);
         }
 
@@ -59,7 +59,7 @@ namespace Nekoyume.UI
             if (gameObject.active && slot.Item != null)
             {
                 var slotItem = slot.Item;
-                var cartItem = itemInfo.GetComponent<CartItem>();
+                var cartItem = itemInfo.GetComponent<SelectedItem>();
                 cartItem.itemName.text = slotItem.Data.Id.ToString();
                 cartItem.info.text = "info";
                 cartItem.price.text = "1";
@@ -99,8 +99,8 @@ namespace Nekoyume.UI
         public void SellClick(GameObject sender)
         {
             GameObject newItem = Instantiate(itemBase, cart.content);
-            var cartItem = newItem.GetComponent<CartItem>();
-            var item = sender.GetComponent<CartItem>();
+            var cartItem = newItem.GetComponent<SelectedItem>();
+            var item = sender.GetComponent<SelectedItem>();
             cartItem.itemName.text = item.itemName.text;
             cartItem.price.text = item.price.text;
             cartItem.info.text = item.info.text;

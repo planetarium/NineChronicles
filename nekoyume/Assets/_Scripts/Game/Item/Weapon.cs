@@ -10,5 +10,10 @@ namespace Nekoyume.Game.Item
         {
             
         }
+
+        public override string ToItemInfo()
+        {
+            return $"공격력 +{Data.Param_0}";
+        }
     }
 }

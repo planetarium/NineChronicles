@@ -52,7 +52,7 @@ namespace Nekoyume.UI
         }
         public void RemoveItem(GameObject o)
         {
-            var item = o.GetComponent<CartItem>();
+            var item = o.GetComponent<SelectedItem>();
             if (panelBuy.activeSelf)
             {
                 var buy = GetComponent<Buy>();

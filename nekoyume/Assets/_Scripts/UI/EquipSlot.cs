@@ -15,7 +15,7 @@ namespace Nekoyume.UI
 
 
 
-        public void Equip(CartItem selected)
+        public void Equip(SelectedItem selected)
         {
             icon.sprite = selected.icon.sprite;
             icon.gameObject.SetActive(true);
