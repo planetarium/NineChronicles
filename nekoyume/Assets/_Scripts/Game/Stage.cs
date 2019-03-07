@@ -106,13 +106,6 @@ namespace Nekoyume.Game
 
         private IEnumerator StageEnterAsync(int stage)
         {
-            var roomPlayer = GetComponentInChildren<Character.Player>();
-            if (roomPlayer != null)
-            {
-                roomPlayer.RunSpeed = 1.0f;
-                roomPlayer.gameObject.transform.position = new Vector2(-2.4f, -0.62f);
-            }
-
             Data.Table.Stage data;
             var tables = this.GetRootComponent<Tables>();
             if (tables.Stage.TryGetValue(stage, out data))
@@ -122,6 +115,13 @@ namespace Nekoyume.Game
                 Widget.Find<Menu>().ShowWorld();
 
                 LoadBackground(data.Background, 3.0f);
+
+                var roomPlayer = GetComponentInChildren<Character.Player>();
+                if (roomPlayer != null)
+                {
+                    roomPlayer.RunSpeed = 1.0f;
+                    roomPlayer.gameObject.transform.position = new Vector2(-2.4f, -0.62f);
+                }
 
                 yield return new WaitForSeconds(2.0f);
                 yield return StartCoroutine(blind.FadeOut(1.0f));
