@@ -1150,8 +1150,8 @@ GameObject:
   m_Component:
   - component: {fileID: 224766733370147738}
   - component: {fileID: 222665973561363220}
-  - component: {fileID: 114306034003179920}
   - component: {fileID: 114154731307812880}
+  - component: {fileID: 114758025263029224}
   m_Layer: 5
   m_Name: ItemInfo
   m_TagString: Untagged
@@ -2881,24 +2881,6 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
---- !u!114 &114306034003179920
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1667030390402908}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b35cae9e78e24355b20bbd9a21b4c9f2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  icon: {fileID: 114049537031191772}
-  itemName: {fileID: 114833058647565842}
-  info: {fileID: 114008677702755886}
-  price: {fileID: 0}
-  item:
-    reserved: 0
-  flavour: {fileID: 114250778672609756}
 --- !u!114 &114306498356214022
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4887,6 +4869,24 @@ MonoBehaviour:
   m_Spacing: {x: 200, y: 40}
   m_Constraint: 2
   m_ConstraintCount: 3
+--- !u!114 &114758025263029224
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1667030390402908}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df9ae027f0cf4674f938205ce90dfd3d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  icon: {fileID: 114049537031191772}
+  itemName: {fileID: 114833058647565842}
+  info: {fileID: 114008677702755886}
+  price: {fileID: 0}
+  item:
+    reserved: 0
+  flavour: {fileID: 114250778672609756}
 --- !u!114 &114765732393755164
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -12,7 +12,7 @@ namespace Nekoyume.UI
         public GameObject btnConfirm;
         public ScrollRect cart;
         public Button sword;
-        public List<CartItem> items;
+        public List<SelectedItem> items;
         public List<Item> shopItems;
         public Text totalPrice;
         public GameObject itemBase;
@@ -21,14 +21,14 @@ namespace Nekoyume.UI
 
         private void Awake()
         {
-            items = new List<CartItem>();
+            items = new List<SelectedItem>();
             shopItems = new List<Item>();
         }
 
         public void SwordClick()
         {
             GameObject newItem = Instantiate(itemBase, cart.content);
-            CartItem item = newItem.GetComponent<CartItem>();
+            SelectedItem item = newItem.GetComponent<SelectedItem>();
             var itemInfo = sword.GetComponent<Item>();
             item.itemName.text = itemInfo.itemName.text;
             item.price.text = itemInfo.price.text;

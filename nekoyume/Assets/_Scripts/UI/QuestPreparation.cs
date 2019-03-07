@@ -90,7 +90,7 @@ namespace Nekoyume.UI
             if (gameObject.activeSelf && slot.Item != null)
             {
                 var slotItem = slot.Item;
-                var cartItem = itemInfo.GetComponent<CartItem>();
+                var cartItem = itemInfo.GetComponent<SelectedItem>();
                 cartItem.itemName.text = slotItem.Data.Name;
                 cartItem.info.text = slotItem.ToItemInfo();
                 cartItem.flavour.text = slotItem.Data.Flavour;
@@ -112,7 +112,7 @@ namespace Nekoyume.UI
 
         public void EquipClick()
         {
-            var item = itemInfo.GetComponent<CartItem>();
+            var item = itemInfo.GetComponent<SelectedItem>();
             var type = (ItemBase.ItemType) Enum.Parse(typeof(ItemBase.ItemType), item.item.Data.Cls);
             foreach (var slot in equipSlots)
             {
