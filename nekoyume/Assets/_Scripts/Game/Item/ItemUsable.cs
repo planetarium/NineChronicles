@@ -15,5 +15,10 @@ namespace Nekoyume.Game.Item
         {
             return false;
         }
+
+        public override string ToItemInfo()
+        {
+            return "";
+        }
     }
 }

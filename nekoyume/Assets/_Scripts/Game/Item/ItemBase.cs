@@ -3,7 +3,7 @@ using System;
 namespace Nekoyume.Game.Item
 {
     [Serializable]
-    public class ItemBase
+    public abstract class ItemBase
     {
         protected bool Equals(ItemBase other)
         {
@@ -33,7 +33,7 @@ namespace Nekoyume.Game.Item
 
         public enum ItemType
         {
-            ItemBase,
+            Material,
             Weapon,
             RangedWeapon,
             Armor,
@@ -48,8 +48,8 @@ namespace Nekoyume.Game.Item
             var type = (ItemType) Enum.Parse(typeof(ItemType), itemData.Cls);
             switch (type)
             {
-                case ItemType.ItemBase:
-                    return new ItemBase(itemData);
+                case ItemType.Material:
+                    return new Material(itemData);
                 case ItemType.Weapon:
                     return new Weapon(itemData);
                 case ItemType.RangedWeapon:
@@ -69,9 +69,6 @@ namespace Nekoyume.Game.Item
             }
         }
 
-        public virtual string ToItemInfo()
-        {
-            return "";
-        }
+        public abstract string ToItemInfo();
     }
 }

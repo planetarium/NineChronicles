@@ -114,7 +114,7 @@ namespace Nekoyume.Game.Character
             SpriteRenderer renderer = gameObject.GetComponent<SpriteRenderer>();
             if (renderer != null)
             {
-                Material mat = renderer.material;
+                UnityEngine.Material mat = renderer.material;
                 DG.Tweening.Sequence colorseq = DOTween.Sequence();
                 colorseq.Append(mat.DOColor(Color.red, 0.1f));
                 colorseq.Append(mat.DOColor(Color.white, 0.1f));
