@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Anima2D;
 using BTAI;
 using Nekoyume.Action;
 using Nekoyume.Data;
@@ -18,6 +19,7 @@ namespace Nekoyume.Game.Character
         public long EXP = 0;
         public int Level = 0;
         public int MPMax = 0;
+        [SerializeField] private SpriteMeshInstance _weapon;
 
         public long EXPMax { get; private set; }
 
@@ -239,6 +241,7 @@ namespace Nekoyume.Game.Character
         public void Init(Model.Player character)
         {
             model = character;
+            UpdateWeapon(model.weapon);
             InitStats(character);
             RunSpeed = 0.0f;
 
@@ -257,6 +260,12 @@ namespace Nekoyume.Game.Character
             Level = character.level;
             EXPMax = character.expMax;
             Inventory = character.inventory;
+        }
+
+        public void UpdateWeapon(Weapon weapon)
+        {
+            var mesh = Resources.Load<SpriteMesh>($"avatar/character_01/item_{weapon?.Data.Id}");
+            _weapon.spriteMesh = mesh;
         }
     }
 }
