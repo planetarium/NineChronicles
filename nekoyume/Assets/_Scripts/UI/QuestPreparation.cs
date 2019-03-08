@@ -121,6 +121,11 @@ namespace Nekoyume.UI
                 {
                     es.Equip(item);
                 }
+
+                if (type == ItemBase.ItemType.Weapon)
+                {
+                    _player.UpdateWeapon((Weapon)item.item);
+                }
             }
         }
 
@@ -128,6 +133,11 @@ namespace Nekoyume.UI
         {
             var slot = sender.GetComponent<EquipSlot>();
             slot.Unequip();
+            if (slot.type == ItemBase.ItemType.Weapon)
+            {
+                _player.UpdateWeapon((Weapon)slot.item);
+            }
+
         }
 
         public void CloseInfo()
