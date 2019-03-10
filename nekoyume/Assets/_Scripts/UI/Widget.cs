@@ -121,7 +121,7 @@ namespace Nekoyume.UI
             while (true)
             {
                 float radius = Mathf.Lerp(0.0f, 6.0f, time);
-                time += Time.deltaTime;
+                time += Time.deltaTime * 2.0f;
                 yield return null;
                 _glass.SetFloat("_Radius", radius);
                 if (time > 1.0f)
