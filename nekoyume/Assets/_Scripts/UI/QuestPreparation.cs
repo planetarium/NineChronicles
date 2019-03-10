@@ -83,6 +83,8 @@ namespace Nekoyume.UI
             _player.gameObject.transform.position = new Vector2(-2.4f, -1.3f);
             inventory.GetComponent<Inventory>().Close();
             itemInfo.GetComponent<Widget>().Close();
+            Find<Menu>().Show();
+            Find<Status>()?.Show();
             base.Close();
         }
         public void SlotClick(InventorySlot slot)

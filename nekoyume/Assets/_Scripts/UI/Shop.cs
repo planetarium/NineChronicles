@@ -12,6 +12,8 @@ namespace Nekoyume.UI
         public GameObject headerSell;
         public Stage stage;
 
+        private Game.Character.Player _player;
+
         private void Awake()
         {
             stage = GameObject.Find("Stage").GetComponent<Stage>();
@@ -41,13 +43,20 @@ namespace Nekoyume.UI
 
         public override void Show()
         {
+            _player = FindObjectOfType<Game.Character.Player>();
+            _player?.gameObject.SetActive(false);
+
             BuyClick();
             base.Show();
         }
 
         public override void Close()
         {
+            _player?.gameObject.SetActive(true);
+
             stage.LoadBackground("room");
+            Find<Status>()?.Show();
+            Find<Menu>()?.Show();
             base.Close();
         }
         public void RemoveItem(GameObject o)
