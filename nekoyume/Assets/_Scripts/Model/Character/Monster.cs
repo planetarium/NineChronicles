@@ -18,7 +18,7 @@ namespace Nekoyume.Model
             def = data.Defense;
             rewardExp = data.RewardExp;
             targets.Add(player);
-            simulator = player.simulator;
+            Simulator = player.Simulator;
             this.data = data;
             if (item != null)
             {
@@ -38,7 +38,7 @@ namespace Nekoyume.Model
                     character = Copy(this),
                     characterId = id,
                 };
-                simulator.Log.Add(dropItem);
+                Simulator.Log.Add(dropItem);
                 player.GetItem(item);
             }
         }

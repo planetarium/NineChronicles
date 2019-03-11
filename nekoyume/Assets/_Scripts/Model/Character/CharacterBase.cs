@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using BTAI;
 using Nekoyume.Action;
+using UnityEngine;
 
 namespace Nekoyume.Model
 {
@@ -18,8 +19,8 @@ namespace Nekoyume.Model
         public int hpMax;
 
         [NonSerialized] private Root root;
-        [NonSerialized] public Simulator simulator;
-        public bool isDead => hp <= 0;
+        [NonSerialized] public Simulator Simulator;
+        private bool isDead => hp <= 0;
         public Guid id = Guid.NewGuid();
 
         public void InitAI()
@@ -27,13 +28,10 @@ namespace Nekoyume.Model
             root = new Root();
             root.OpenBranch(
                 BT.Selector().OpenBranch(
-                    BT.If(isAlive).OpenBranch(
+                    BT.If(IsAlive).OpenBranch(
                         BT.Call(Attack)
                     ),
-                    BT.Sequence().OpenBranch(
-                        BT.Call(Die),
-                        BT.Terminate()
-                    )
+                    BT.Terminate()
                 )
             );
         }
@@ -49,7 +47,6 @@ namespace Nekoyume.Model
             if (target != null)
             {
                 var dmg = Math.Max(atk - target.def, 1);
-                target.hp -= dmg;
                 var attack = new Attack
                 {
                     character = Copy(this),
@@ -58,12 +55,17 @@ namespace Nekoyume.Model
                     characterId = id,
                     targetId = target.id,
                 };
-                simulator.Log.Add(attack);
+                Simulator.Log.Add(attack);
+                target.OnDamage(dmg);
             }
         }
 
-        private bool isAlive()
+        private bool IsAlive()
         {
+            if (isDead)
+            {
+                Debug.Log(this);
+            }
             return !isDead;
         }
 
@@ -79,7 +81,7 @@ namespace Nekoyume.Model
                 character = Copy(this),
                 characterId = id,
             };
-            simulator.Log.Add(dead);
+            Simulator.Log.Add(dead);
         }
 
         public void Spawn()
@@ -90,7 +92,7 @@ namespace Nekoyume.Model
                 character = Copy(this),
                 characterId = id,
             };
-            simulator.Log.Add(spawn);
+            Simulator.Log.Add(spawn);
         }
 
         public static T Copy<T>(T origin)
@@ -106,5 +108,13 @@ namespace Nekoyume.Model
 
         }
 
+        protected void OnDamage(int dmg)
+        {
+            hp -= dmg;
+            if (isDead)
+            {
+                Die();
+            }
+        }
     }
 }
