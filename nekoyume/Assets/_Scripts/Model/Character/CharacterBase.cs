@@ -62,10 +62,6 @@ namespace Nekoyume.Model
 
         private bool IsAlive()
         {
-            if (isDead)
-            {
-                Debug.Log(this);
-            }
             return !isDead;
         }
 
