@@ -10,27 +10,38 @@ namespace Nekoyume.UI
         public GameObject btnQuest;
         public GameObject btnCombine;
         public GameObject btnShop;
+        public GameObject btnTemple;
         public Text LabelInfo;
+        
+        public void ShowButtons(bool value)
+        {
+            btnQuest.SetActive(value);
+            btnCombine.SetActive(false);
+            btnShop.SetActive(value);
+            btnTemple.SetActive(value);
+        }
 
         public void ShowRoom()
         {
             Show();
-            btnQuest.SetActive(true);
+            ShowButtons(true);
+
             LabelInfo.text = "";
         }
 
         public void ShowWorld()
         {
             Show();
-            btnQuest.SetActive(false);
-            btnCombine.SetActive(false);
+            ShowButtons(false);
 
             LabelInfo.text = "";
         }
 
         public void QuestClick()
         {
-            Find<QuestPreparation>().Toggle();
+            Find<QuestPreparation>()?.Show();
+            Find<Status>()?.Close();
+            Close();
         }
 
         public void CombineClick()
@@ -53,7 +64,9 @@ namespace Nekoyume.UI
 
         public void ShopClick()
         {
-            Find<Shop>().Toggle();
+            Find<Shop>().Show();
+            Find<Status>()?.Close();
+            Close();
         }
     }
 }

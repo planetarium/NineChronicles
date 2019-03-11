@@ -2115,6 +2115,7 @@ GameObject:
   - component: {fileID: 224162354084223238}
   - component: {fileID: 222334558256287532}
   - component: {fileID: 114900679975590174}
+  - component: {fileID: 114795967843295268}
   m_Layer: 5
   m_Name: BgEffect
   m_TagString: Untagged
@@ -6057,6 +6058,21 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: "\uBCF4\uC2A4\uC5D0\uAC8C \uCD94\uAC00 \uB370\uBBF8\uC9C0 +50%"
+--- !u!114 &114795967843295268
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1923258037435200}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea01e3caa21d0264cab5f5afa838df19, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Duration: 2
+  TweenType: 4
+  BeginValue: 0
+  EndValue: 1
 --- !u!114 &114796158517595922
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -6381,6 +6397,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   textAtk: {fileID: 0}
   textDef: {fileID: 0}
+  equipSlots: []
 --- !u!114 &114854319804462628
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -9932,7 +9949,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -78, y: -34}
+  m_AnchoredPosition: {x: -34.2, y: -34}
   m_SizeDelta: {x: 50, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224782229993583594
