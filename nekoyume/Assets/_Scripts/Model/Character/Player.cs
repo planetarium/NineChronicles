@@ -29,7 +29,7 @@ namespace Nekoyume.Model
             exp = avatar.EXP;
             level = avatar.Level;
             stage = avatar.WorldStage;
-            this.simulator = simulator;
+            Simulator = simulator;
             inventory = new Inventory();
             var inventoryItems = avatar.Items;
             if (inventoryItems != null)
@@ -49,12 +49,13 @@ namespace Nekoyume.Model
                 LevelUp();
             }
             targets.Remove(monster);
+            Simulator.Characters.Remove(monster);
         }
 
         protected override void OnDead()
         {
             base.OnDead();
-            simulator.Lose = true;
+            Simulator.Lose = true;
         }
 
         public void CalcStats(int lv)
@@ -94,7 +95,7 @@ namespace Nekoyume.Model
             {
                 character = Copy(this),
             };
-            simulator.Log.Add(levelUp);
+            Simulator.Log.Add(levelUp);
         }
 
         public void GetItem(ItemBase item)

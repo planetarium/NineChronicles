@@ -1,5 +1,5 @@
-using System;
 using System.Collections.Generic;
+using System.Linq;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Util;
@@ -18,6 +18,7 @@ namespace Nekoyume.Action
         private readonly Player _player;
         private BattleLog.Result _result;
         private int _totalWave;
+        public List<CharacterBase> Characters;
 
         public Simulator(int seed, Model.Avatar avatar)
         {
@@ -36,15 +37,16 @@ namespace Nekoyume.Action
             _player.Spawn();
             foreach (var wave in waves)
             {
-                var characters = new List<CharacterBase> {_player};
+                Characters = new List<CharacterBase> {_player};
                 foreach (var monster in wave)
                 {
                     _player.targets.Add(monster);
-                    characters.Add(monster);
+                    Characters.Add(monster);
                     monster.Spawn();
                 }
                 while (true)
                 {
+                    var characters = Characters.ToList();
                     foreach (var character in characters) character.Tick();
 
                     if (_player.targets.Count == 0)
