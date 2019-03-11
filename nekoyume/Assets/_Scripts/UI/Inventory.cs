@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Nekoyume.Game.Character;
+using Nekoyume.Action;
 using Nekoyume.Game.Item;
 using UnityEngine;
 
@@ -13,7 +13,6 @@ namespace Nekoyume.UI
         private GameObject _slotBase;
 
         private List<InventorySlot> _slots;
-        private Player _player;
         private const int maxSlot = 42;
 
         private void Awake()
@@ -62,28 +61,23 @@ namespace Nekoyume.UI
 
         public override void Show()
         {
-            _player = FindObjectOfType<Player>();
-            // FIX ME : get item list
-            if (_player != null)
+            List<Game.Item.Inventory.InventoryItem> items = ActionManager.Instance.Avatar.Items;
+            for (int i = 0; i < maxSlot; ++i)
             {
-                List<Game.Item.Inventory.InventoryItem> items = _player.Inventory.items;
-                for (int i = 0; i < maxSlot; ++i)
+                InventorySlot slot = _slots[i];
+                if (items != null && items.Count > i)
                 {
-                    InventorySlot slot = _slots[i];
-                    if (items != null && items.Count > i)
+                    var inventoryItem = items[i];
+                    slot.Set(inventoryItem.Item, inventoryItem.Count);
+                    if (inventoryItem.Item is Weapon)
                     {
-                        var inventoryItem = items[i];
-                        slot.Set(inventoryItem.Item, inventoryItem.Count);
-                        if (inventoryItem.Item is Weapon)
-                        {
-                            var weapon = (Weapon) inventoryItem.Item;
-                            slot.LabelEquip.text = weapon.equipped ? "E" : "";
-                        }
+                        var weapon = (Weapon) inventoryItem.Item;
+                        slot.LabelEquip.text = weapon.equipped ? "E" : "";
                     }
-                    else
-                    {
-                        slot.Clear();
-                    }
+                }
+                else
+                {
+                    slot.Clear();
                 }
             }
 
