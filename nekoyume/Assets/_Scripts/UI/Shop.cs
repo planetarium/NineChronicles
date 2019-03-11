@@ -44,7 +44,10 @@ namespace Nekoyume.UI
         public override void Show()
         {
             _player = FindObjectOfType<Game.Character.Player>();
-            _player?.gameObject.SetActive(false);
+            if (_player != null)
+            {
+                _player.gameObject.SetActive(false);
+            }
 
             BuyClick();
             base.Show();
@@ -52,7 +55,10 @@ namespace Nekoyume.UI
 
         public override void Close()
         {
-            _player?.gameObject.SetActive(true);
+            if (_player != null)
+            {
+                _player.gameObject.SetActive(true);
+            }
 
             stage.LoadBackground("room");
             Find<Status>()?.Show();
