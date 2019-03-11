@@ -15,6 +15,7 @@ namespace Nekoyume.Model
         {
             hp = data.Health;
             atk = data.Attack;
+            def = data.Defense;
             rewardExp = data.RewardExp;
             targets.Add(player);
             simulator = player.simulator;
