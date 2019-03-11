@@ -1828,8 +1828,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 114224193342774946}
-        m_MethodName: CloseClick
+      - m_Target: {fileID: 114829591625443232}
+        m_MethodName: Close
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
