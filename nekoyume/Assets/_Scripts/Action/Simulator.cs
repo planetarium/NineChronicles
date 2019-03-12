@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Libplanet.Action;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Util;
@@ -10,7 +11,7 @@ namespace Nekoyume.Action
 {
     public class Simulator
     {
-        private readonly int _seed;
+        public readonly IRandom Random;
         private readonly int _stage;
         private readonly List<List<Model.Monster>> waves;
         public readonly BattleLog Log;
@@ -20,10 +21,9 @@ namespace Nekoyume.Action
         private int _totalWave;
         public List<CharacterBase> Characters;
 
-        public Simulator(int seed, Model.Avatar avatar)
+        public Simulator(IRandom random, Model.Avatar avatar)
         {
-            //TODO generate random using seed
-            _seed = seed;
+            Random = random;
             _stage = avatar.WorldStage;
             Log = new BattleLog();
             waves = new List<List<Model.Monster>>();
@@ -113,7 +113,7 @@ namespace Nekoyume.Action
             var monsterTable = tables.Monster;
             var dropTable = tables.ItemDrop;
             var itemTable = tables.Item;
-            var itemSelector = new WeightedSelector<int>();
+            var itemSelector = new WeightedSelector<int>(Random);
 
             Data.Table.Monster monsterData;
             if (!monsterTable.TryGetValue(monsterId, out monsterData))

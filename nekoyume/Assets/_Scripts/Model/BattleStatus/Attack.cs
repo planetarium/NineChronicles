@@ -9,12 +9,13 @@ namespace Nekoyume.Model
     public class Attack : EventBase
     {
         public int atk;
+        public bool critical;
 
         public override bool skip => false;
 
         public override void Execute(IStage stage)
         {
-            stage.Attack(atk, character, target);
+            stage.Attack(atk, character, target, critical);
 
         }
     }

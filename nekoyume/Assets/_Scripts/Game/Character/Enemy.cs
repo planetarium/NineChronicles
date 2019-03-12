@@ -101,15 +101,14 @@ namespace Nekoyume.Game.Character
             HPMax = HP;
         }
 
-        public override void OnDamage(int dmg)
+        public override void OnDamage(int dmg, bool critical)
         {
-            base.OnDamage(dmg);
+            base.OnDamage(dmg, critical);
 
-            DamageText.Show(
-                transform.TransformPoint(0.12f, 0.5f, 0.0f),
-                new Vector3(0.06f, 0.05f, 0.0f),
-                dmg.ToString()
-            );
+            var position = transform.TransformPoint(0.12f, 0.5f, 0.0f);
+            var force = new Vector3(0.06f, 0.05f, 0.0f);
+            var txt = dmg.ToString();
+            PopUpDmg(position, force, txt, critical);
 
             SpriteRenderer renderer = gameObject.GetComponent<SpriteRenderer>();
             if (renderer != null)
