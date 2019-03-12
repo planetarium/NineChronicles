@@ -1,5 +1,5 @@
-using System.Linq;
 using System.Text;
+using Libplanet.Action;
 using Nekoyume.Action;
 using Nekoyume.Game;
 using Nekoyume.Game.Character;
@@ -21,6 +21,34 @@ namespace Nekoyume
         private float _updateTime = 0.0f;
         private StringBuilder _logString = new StringBuilder();
 
+
+        private class DebugRandom : IRandom
+        {
+            public int Next()
+            {
+                return new System.Random().Next();
+            }
+
+            public int Next(int maxValue)
+            {
+                return new System.Random().Next(maxValue);
+            }
+
+            public int Next(int minValue, int maxValue)
+            {
+                return new System.Random().Next(minValue, maxValue);
+            }
+
+            public void NextBytes(byte[] buffer)
+            {
+                new System.Random().NextBytes(buffer);
+            }
+
+            public double NextDouble()
+            {
+                return new System.Random().NextDouble();
+            }
+        }
         static void Log(string text)
         {
             Instance._logString.Insert(0, $"> {text}\n");
@@ -102,7 +130,7 @@ namespace Nekoyume
         {
             Find<BattleResult>()?.Close();
             GameObject stage = GameObject.Find("Stage");
-            var simulator = new Simulator(0, ActionManager.Instance.Avatar);
+            var simulator = new Simulator(new DebugRandom(), ActionManager.Instance.Avatar);
             simulator.Simulate();
             simulator.Log.result = BattleLog.Result.Win;
             stage.GetComponent<Stage>().Play(simulator.Log);
@@ -113,7 +141,7 @@ namespace Nekoyume
         {
             Find<BattleResult>()?.Close();
             GameObject stage = GameObject.Find("Stage");
-            var simulator = new Simulator(0, ActionManager.Instance.Avatar);
+            var simulator = new Simulator(new DebugRandom(), ActionManager.Instance.Avatar);
             simulator.Simulate();
             simulator.Log.result = BattleLog.Result.Lose;
             stage.GetComponent<Stage>().Play(simulator.Log);

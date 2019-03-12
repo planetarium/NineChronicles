@@ -1,35 +1,27 @@
-using System.Linq;
 using System.Collections.Generic;
-using UnityEngine;
+using Libplanet.Action;
 
 namespace Nekoyume.Game.Util
 {
     public class WeightedSelector<T>
     {
-        private List<T> _values;
-        private List<int> _weights;
-        private int _totalWeights;
+        private readonly List<T> _values;
+        private readonly List<int> _weights;
+        private readonly IRandom _random;
 
-        public int Count
-        {
-            get
-            {
-                return _values.Count;
-            }
-        }
+        public int Count => _values.Count;
 
-        public WeightedSelector()
+        public WeightedSelector(IRandom random)
         {
             _values = new List<T>();
             _weights = new List<int>();
-            _totalWeights = 0;
+            _random = random;
         }
 
         public void Add(T item, int weight)
         {
             _values.Add(item);
             _weights.Add(weight);
-            _totalWeights += weight;
         }
 
         public T Select(bool pop = false)
@@ -42,8 +34,7 @@ namespace Nekoyume.Game.Util
                 sum += _weights[i];
             }
 
-            var random = new System.Random();
-            int rnd = random.Next(0, sum);
+            int rnd = _random.Next(0, sum);
             int idx = -1;
             for (i = 0; i < len; ++i)
             {
