@@ -11,11 +11,11 @@ namespace Nekoyume.Game.Util
 
         public int Count => _values.Count;
 
-        public WeightedSelector(IRandom seed)
+        public WeightedSelector(IRandom random)
         {
             _values = new List<T>();
             _weights = new List<int>();
-            _random = seed;
+            _random = random;
         }
 
         public void Add(T item, int weight)
