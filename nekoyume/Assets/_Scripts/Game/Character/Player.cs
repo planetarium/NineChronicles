@@ -263,7 +263,7 @@ namespace Nekoyume.Game.Character
 
         public void UpdateWeapon(Weapon weapon)
         {
-            var mesh = Resources.Load<SpriteMesh>($"avatar/character_01/item_{weapon?.Data.Id}");
+            var mesh = Resources.Load<SpriteMesh>($"avatar/character_0003/item_{weapon?.Data.Id}");
             _weapon.spriteMesh = mesh;
         }
     }
