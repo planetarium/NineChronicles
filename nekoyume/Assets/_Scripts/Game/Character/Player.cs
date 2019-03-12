@@ -151,15 +151,14 @@ namespace Nekoyume.Game.Character
             return canceled;
         }
 
-        public override void OnDamage(int dmg)
+        public override void OnDamage(int dmg, bool critical)
         {
-            base.OnDamage(dmg);
+            base.OnDamage(dmg, critical);
 
-            DamageText.Show(
-                transform.TransformPoint(UnityEngine.Random.Range(-0.6f, -0.4f), 1.0f, 0.0f),
-                new Vector3(-0.02f, 0.02f, 0.0f),
-                dmg.ToString()
-            );
+            var position = transform.TransformPoint(UnityEngine.Random.Range(-0.6f, -0.4f), 1.0f, 0.0f);
+            var force = new Vector3(-0.02f, 0.02f, 0.0f);
+            var txt = dmg.ToString();
+            PopUpDmg(position, force, txt, critical);
 
             Event.OnUpdateStatus.Invoke();
             if (HP <= 0)

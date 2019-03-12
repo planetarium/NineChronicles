@@ -5,7 +5,6 @@ using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using BTAI;
 using Nekoyume.Action;
-using UnityEngine;
 
 namespace Nekoyume.Model
 {
@@ -17,16 +16,17 @@ namespace Nekoyume.Model
         public int def;
         public int hp;
         public int hpMax;
+        private const float CriticalChance = 50.0f;
 
-        [NonSerialized] private Root root;
+        [NonSerialized] private Root _root;
         [NonSerialized] public Simulator Simulator;
         private bool isDead => hp <= 0;
         public Guid id = Guid.NewGuid();
 
-        public void InitAI()
+        private void InitAI()
         {
-            root = new Root();
-            root.OpenBranch(
+            _root = new Root();
+            _root.OpenBranch(
                 BT.Selector().OpenBranch(
                     BT.If(IsAlive).OpenBranch(
                         BT.Call(Attack)
@@ -38,7 +38,7 @@ namespace Nekoyume.Model
 
         public void Tick()
         {
-            root.Tick();
+            _root.Tick();
         }
 
         private void Attack()
@@ -46,18 +46,34 @@ namespace Nekoyume.Model
             var target = targets.FirstOrDefault(t => !t.isDead);
             if (target != null)
             {
-                var dmg = Math.Max(atk - target.def, 1);
-                var attack = new Attack
-                {
-                    character = Copy(this),
-                    target = Copy(target),
-                    atk = dmg,
-                    characterId = id,
-                    targetId = target.id,
-                };
-                Simulator.Log.Add(attack);
-                target.OnDamage(dmg);
+                CalcDmg(atk, target);
             }
+        }
+
+        private void CalcDmg(int i, CharacterBase target)
+        {
+            int dmg = i;
+            bool critical = false;
+            var chance = Simulator.Seed.Next(100);
+            {
+                if (chance < CriticalChance)
+                {
+                    dmg = Convert.ToInt32(dmg * 1.5);
+                    critical = true;
+                }
+            }
+            dmg = Math.Max(dmg - target.def, 1);
+            var attack = new Attack
+            {
+                character = Copy(this),
+                target = Copy(target),
+                atk = dmg,
+                characterId = id,
+                targetId = target.id,
+                critical = critical,
+            };
+            Simulator.Log.Add(attack);
+            target.OnDamage(dmg);
         }
 
         private bool IsAlive()
@@ -91,7 +107,7 @@ namespace Nekoyume.Model
             Simulator.Log.Add(spawn);
         }
 
-        public static T Copy<T>(T origin)
+        protected static T Copy<T>(T origin)
         {
             var formatter = new BinaryFormatter();
             var stream = new MemoryStream();
@@ -104,7 +120,7 @@ namespace Nekoyume.Model
 
         }
 
-        protected void OnDamage(int dmg)
+        private void OnDamage(int dmg)
         {
             hp -= dmg;
             if (isDead)

@@ -270,7 +270,7 @@ namespace Nekoyume.Game.Character
             );
         }
 
-        public virtual void OnDamage(int dmg)
+        public virtual void OnDamage(int dmg, bool critical)
         {
             if (dmg <= 0)
                 return;
@@ -301,7 +301,7 @@ namespace Nekoyume.Game.Character
             gameObject.SetActive(false);
         }
 
-        public void Attack(int atk, CharacterBase target)
+        public void Attack(int atk, CharacterBase target, bool critical)
         {
             if (_anim != null)
             {
@@ -311,7 +311,19 @@ namespace Nekoyume.Game.Character
 
             if (target != null)
             {
-                target.OnDamage(atk);
+                target.OnDamage(atk, critical);
+            }
+        }
+
+        public void PopUpDmg(Vector3 position, Vector3 force, string dmg, bool critical)
+        {
+            if (critical)
+            {
+                CriticalText.Show(position, force, dmg);
+            }
+            else
+            {
+                DamageText.Show(position, force, dmg);
             }
         }
     }
