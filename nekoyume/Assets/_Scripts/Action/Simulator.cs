@@ -11,7 +11,7 @@ namespace Nekoyume.Action
 {
     public class Simulator
     {
-        private readonly IRandom _random;
+        public readonly IRandom Random;
         private readonly int _stage;
         private readonly List<List<Model.Monster>> waves;
         public readonly BattleLog Log;
@@ -23,7 +23,7 @@ namespace Nekoyume.Action
 
         public Simulator(IRandom random, Model.Avatar avatar)
         {
-            _random = random;
+            Random = random;
             _stage = avatar.WorldStage;
             Log = new BattleLog();
             waves = new List<List<Model.Monster>>();
@@ -113,7 +113,7 @@ namespace Nekoyume.Action
             var monsterTable = tables.Monster;
             var dropTable = tables.ItemDrop;
             var itemTable = tables.Item;
-            var itemSelector = new WeightedSelector<int>(_random);
+            var itemSelector = new WeightedSelector<int>(Random);
 
             Data.Table.Monster monsterData;
             if (!monsterTable.TryGetValue(monsterId, out monsterData))

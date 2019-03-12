@@ -161,7 +161,7 @@ namespace Nekoyume.Game
         {
         }
 
-        public void Attack(int atk, Model.CharacterBase character, Model.CharacterBase target)
+        public void Attack(int atk, Model.CharacterBase character, Model.CharacterBase target, bool critical)
         {
             Character.CharacterBase attacker;
             Character.CharacterBase defender;
@@ -180,7 +180,7 @@ namespace Nekoyume.Game
 
             if (attacker != null && defender != null)
             {
-                attacker.Attack(atk, defender);
+                attacker.Attack(atk, defender, critical);
             }
         }
 
