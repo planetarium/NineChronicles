@@ -49,7 +49,8 @@ namespace Nekoyume.Action
                     equipment.Unequip();
                 }
             }
-            var simulator = new Simulator(0, ctx.avatar);
+
+            var simulator = new Simulator(actionCtx.Random, ctx.avatar);
             var player = simulator.Simulate();
             ctx.avatar.Update(player);
             ctx.battleLog = simulator.Log;
