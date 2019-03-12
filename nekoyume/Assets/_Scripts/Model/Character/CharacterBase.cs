@@ -17,6 +17,7 @@ namespace Nekoyume.Model
         public int hp;
         public int hpMax;
         private const float CriticalChance = 50.0f;
+        private const float CriticalMultiplier = 1.5f;
 
         [NonSerialized] private Root _root;
         [NonSerialized] public Simulator Simulator;
@@ -46,34 +47,36 @@ namespace Nekoyume.Model
             var target = targets.FirstOrDefault(t => !t.isDead);
             if (target != null)
             {
-                CalcDmg(atk, target);
+                var critical = IsCritical();
+                var dmg = CalcDmg(target, critical);
+                var attack = new Attack
+                {
+                    character = Copy(this),
+                    target = Copy(target),
+                    atk = dmg,
+                    characterId = id,
+                    targetId = target.id,
+                    critical = critical,
+                };
+                Simulator.Log.Add(attack);
+                target.OnDamage(dmg);
             }
         }
 
-        private void CalcDmg(int i, CharacterBase target)
+        private bool IsCritical()
         {
-            int dmg = i;
-            bool critical = false;
-            var chance = Simulator.Seed.Next(100);
+            var chance = Simulator.Random.Next(100);
+            return chance < CriticalChance;
+        }
+
+        private int CalcDmg(CharacterBase target, bool critical)
+        {
+            int dmg = atk;
+            if (critical)
             {
-                if (chance < CriticalChance)
-                {
-                    dmg = Convert.ToInt32(dmg * 1.5);
-                    critical = true;
-                }
+                dmg = Convert.ToInt32(dmg * CriticalMultiplier);
             }
-            dmg = Math.Max(dmg - target.def, 1);
-            var attack = new Attack
-            {
-                character = Copy(this),
-                target = Copy(target),
-                atk = dmg,
-                characterId = id,
-                targetId = target.id,
-                critical = critical,
-            };
-            Simulator.Log.Add(attack);
-            target.OnDamage(dmg);
+            return Math.Max(dmg - target.def, 1);
         }
 
         private bool IsAlive()
