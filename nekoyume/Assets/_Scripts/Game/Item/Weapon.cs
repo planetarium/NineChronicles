@@ -1,4 +1,5 @@
 using System;
+using Nekoyume.Model;
 
 namespace Nekoyume.Game.Item
 {
@@ -14,6 +15,11 @@ namespace Nekoyume.Game.Item
         public override string ToItemInfo()
         {
             return $"공격력 +{Data.Param_0}";
+        }
+
+        public override void UpdatePlayer(Player player)
+        {
+            player.atk += Data.Param_0;
         }
     }
 }

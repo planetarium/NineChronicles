@@ -20,6 +20,7 @@ namespace Nekoyume.Model
         public Necklace necklace;
         public Ring ring;
         public Helm helm;
+        public SetItem set;
 
         public readonly Inventory inventory;
         public List<Inventory.InventoryItem> Items => inventory.items;
@@ -72,14 +73,8 @@ namespace Nekoyume.Model
             def = data.Defense;
             hpMax = data.Health;
             expMax = data.Exp;
-            if (weapon?.equipped == true)
-            {
-                atk += weapon.Data.Param_0;
-            }
-            if (armor?.equipped == true)
-            {
-                def += armor.Data.Param_0;
-            }
+            var equipments = Items.Select(i => i.Item).OfType<Equipment>().Where(e => e.equipped);
+            foreach (var equipment in equipments) equipment.UpdatePlayer(this);
         }
         private void LevelUp()
         {
@@ -130,6 +125,9 @@ namespace Nekoyume.Model
                         break;
                     case ItemBase.ItemType.Helm:
                         helm = equipment as Helm;
+                        break;
+                    case ItemBase.ItemType.Set:
+                        set = equipment as SetItem;
                         break;
                     default:
                         throw new InvalidEquipmentException();

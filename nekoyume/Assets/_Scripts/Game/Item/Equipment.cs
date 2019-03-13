@@ -1,9 +1,10 @@
 using System;
+using Nekoyume.Model;
 
 namespace Nekoyume.Game.Item
 {
     [Serializable]
-    public class Equipment : ItemUsable
+    public abstract class Equipment : ItemUsable
     {
         public bool equipped = false;
         private int _level = 0;
@@ -49,5 +50,7 @@ namespace Nekoyume.Game.Item
             _level++;
             return true;
         }
+
+        public abstract void UpdatePlayer(Player player);
     }
 }
