@@ -35,7 +35,7 @@ namespace Nekoyume.UI
                     button.gameObject.SetActive(false);
                     if (characterImage)
                     {
-                        characterImage.sprite = Resources.Load<Sprite>("avatar/character_01/character_01");
+                        characterImage.sprite = Resources.Load<Sprite>("avatar/character_0003/character_01");
                         characterImage.SetNativeSize();
                     }
                 }
