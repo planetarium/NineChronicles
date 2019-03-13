@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Item;
@@ -13,6 +14,7 @@ namespace Nekoyume.UI
         public Text textDef;
         public GameObject[] equipSlots;
         private Player _player;
+        public Text textOption;
 
 
         public void Init(Stats stats)
@@ -32,6 +34,7 @@ namespace Nekoyume.UI
 
         public override void Show()
         {
+            var builder = new StringBuilder();
             _player = FindObjectOfType<Player>();
             foreach (var equipment in _player.equipments)
             {
@@ -44,7 +47,10 @@ namespace Nekoyume.UI
                         es.Set(equipment);
                     }
                 }
+                builder.AppendLine($"{equipment.ToItemInfo()}");
             }
+
+            textOption.text = builder.ToString();
             base.Show();
         }
     }
