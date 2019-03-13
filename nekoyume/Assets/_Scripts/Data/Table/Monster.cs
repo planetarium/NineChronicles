@@ -11,10 +11,10 @@ namespace Nekoyume.Data.Table
         public int Defense = 0;
         public int Health = 0;
         public string Resistance = "";
-        public string Skill_0 = "";
-        public string Skill_1 = "";
-        public string Skill_2 = "";
-        public string Skill_3 = "";
+        public string skill0 = "";
+        public string skill1 = "";
+        public string skill2 = "";
+        public string skill3 = "";
         public int RewardExp = 0;
     }
 }

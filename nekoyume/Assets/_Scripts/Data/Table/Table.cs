@@ -50,7 +50,7 @@ namespace Nekoyume.Data.Table
             {
                 if (lines.IndexOf(line) == 0)
                 {
-                    header = line.Split(',').ToList();
+                    header = line.Trim().Split(',').ToList();
                     continue;
                 }
                 if (string.IsNullOrEmpty(line))
@@ -66,14 +66,19 @@ namespace Nekoyume.Data.Table
                     string key;
                     try
                     {
-                        key = header[index];
+                        key = header[index].Replace("_", string.Empty);
                     }
                     catch (ArgumentOutOfRangeException)
                     {
                         Debug.Log($"Header not found: {fieldInfo.Name}");
                         continue;
                     }
-                    if (!key.Equals(fieldInfo.Name, StringComparison.OrdinalIgnoreCase)) continue;
+
+                    if (!key.Equals(fieldInfo.Name, StringComparison.OrdinalIgnoreCase))
+                    {
+                        Debug.Log($"Key not found: {fieldInfo.Name}");
+                        continue;
+                    }
                     string value = arr[index];
                     Type fieldType = fieldInfo.GetValue(row).GetType();
                     if (fieldType == typeof(int) || fieldType.IsEnum)

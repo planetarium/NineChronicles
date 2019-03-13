@@ -14,12 +14,12 @@ namespace Nekoyume.Game.Item
 
         public override string ToItemInfo()
         {
-            return $"공격력 +{Data.Param_0}";
+            return $"공격력 +{Data.param0}";
         }
 
         public override void UpdatePlayer(Player player)
         {
-            player.atk += Data.Param_0;
+            player.atk += Data.param0;
         }
     }
 }

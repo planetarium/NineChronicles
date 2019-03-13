@@ -14,15 +14,15 @@ namespace Nekoyume.Game.Item
         public override string ToItemInfo()
         {
             return new StringBuilder()
-                .AppendLine($"공격력 +{Data.Param_0}")
-                .AppendLine($"방어력 +{Data.Param_1}")
+                .AppendLine($"공격력 +{Data.param0}")
+                .AppendLine($"방어력 +{Data.param1}")
                 .ToString();
         }
 
         public override void UpdatePlayer(Player player)
         {
-            player.atk += Data.Param_0;
-            player.def += Data.Param_1;
+            player.atk += Data.param0;
+            player.def += Data.param1;
         }
     }
 }

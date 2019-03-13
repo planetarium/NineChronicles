@@ -7,8 +7,8 @@ namespace Nekoyume.Data.Table
     {
         protected bool Equals(Item other)
         {
-            return Id == other.Id && string.Equals(Cls, other.Cls) && Param_0 == other.Param_0 &&
-                   Param_1 == other.Param_1 && Param_2 == other.Param_2;
+            return Id == other.Id && string.Equals(Cls, other.Cls) && param0 == other.param0 &&
+                   param1 == other.param1 && param2 == other.param2;
         }
 
         public override bool Equals(object obj)
@@ -25,18 +25,18 @@ namespace Nekoyume.Data.Table
             {
                 var hashCode = Id;
                 hashCode = (hashCode * 397) ^ (Cls != null ? Cls.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ Param_0;
-                hashCode = (hashCode * 397) ^ Param_1;
-                hashCode = (hashCode * 397) ^ Param_2;
+                hashCode = (hashCode * 397) ^ param0;
+                hashCode = (hashCode * 397) ^ param1;
+                hashCode = (hashCode * 397) ^ param2;
                 return hashCode;
             }
         }
 
         public int Id = 0;
         public string Cls = "";
-        public int Param_0 = 0;
-        public int Param_1 = 0;
-        public int Param_2 = 0;
+        public int param0 = 0;
+        public int param1 = 0;
+        public int param2 = 0;
         public int Synergy = 0;
         public string Name = "";
         public string Flavour = "";
