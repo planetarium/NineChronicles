@@ -41,6 +41,7 @@ namespace Nekoyume.Game.Item
             Necklace,
             Ring,
             Helm,
+            Set,
         }
 
         public static ItemBase ItemFactory(Data.Table.Item itemData)
@@ -64,6 +65,8 @@ namespace Nekoyume.Game.Item
                     return new Ring(itemData);
                 case ItemType.Helm:
                     return new Helm(itemData);
+                case ItemType.Set:
+                    return new SetItem(itemData);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);
             }
