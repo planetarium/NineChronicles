@@ -5,15 +5,15 @@ namespace Nekoyume.Data.Table
     public class Recipe : Row
     {
         public int Id;
-        public int Material_1;
-        public int Material_2;
-        public int Material_3;
+        public int Material1;
+        public int Material2;
+        public int Material3;
 
         public List<int> Materials => new List<int>
         {
-            Material_1,
-            Material_2,
-            Material_3
+            Material1,
+            Material2,
+            Material3
         };
     }
 }

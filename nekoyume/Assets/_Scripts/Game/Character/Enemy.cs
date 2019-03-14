@@ -65,10 +65,10 @@ namespace Nekoyume.Game.Character
             _skills.Clear();
             var skillNames = new[]
             {
-                statsData.Skill_0,
-                statsData.Skill_1,
-                statsData.Skill_2,
-                statsData.Skill_3
+                statsData.skill0,
+                statsData.skill1,
+                statsData.skill2,
+                statsData.skill3
             };
             var tables = this.GetRootComponent<Tables>();
             foreach (var skillName in skillNames)
