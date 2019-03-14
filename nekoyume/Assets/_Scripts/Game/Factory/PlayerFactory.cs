@@ -9,7 +9,7 @@ namespace Nekoyume.Game.Factory
     {
         public GameObject Create()
         {
-            var log = ActionManager.Instance.battleLog;
+//            var log = ActionManager.Instance.battleLog;
             var avatar = ActionManager.Instance.Avatar;
             if (avatar == null)
                 return null;
