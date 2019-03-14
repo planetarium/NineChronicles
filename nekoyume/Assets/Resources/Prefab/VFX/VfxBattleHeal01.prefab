@@ -21,8 +21,9 @@ GameObject:
   - component: {fileID: 4815672167156434}
   - component: {fileID: 198748990015511626}
   - component: {fileID: 199520775856533684}
+  - component: {fileID: 114114711471428684}
   m_Layer: 0
-  m_Name: NY_battle_heal_01
+  m_Name: VfxBattleHeal01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -134,6 +135,17 @@ Transform:
   m_Father: {fileID: 4815672167156434}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114114711471428684
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1056061149771412}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27f23b816a07440096a8617056d958e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!198 &198352197491741168
 ParticleSystem:
   m_ObjectHideFlags: 1
