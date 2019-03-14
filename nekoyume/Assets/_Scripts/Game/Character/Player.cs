@@ -242,7 +242,6 @@ namespace Nekoyume.Game.Character
             model = character;
             UpdateWeapon(model.weapon);
             InitStats(character);
-            RunSpeed = 0.0f;
 
             _hpBarOffset.Set(-0.22f, -0.61f, 0.0f);
             _castingBarOffset.Set(-0.22f, -0.85f, 0.0f);

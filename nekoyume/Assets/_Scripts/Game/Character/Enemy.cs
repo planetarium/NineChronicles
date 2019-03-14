@@ -145,12 +145,12 @@ namespace Nekoyume.Game.Character
 
         public void Init(Model.Monster spawnCharacter)
         {
-            RunSpeed = -1.0f;
             _hpBarOffset.Set(-0.0f, -0.11f, 0.0f);
             _castingBarOffset.Set(-0.0f, -0.33f, 0.0f);
             InitStats(spawnCharacter.data);
             id = spawnCharacter.id;
             item = spawnCharacter.item;
+            SetRun(-1.0f);
         }
 
         private void InitStats(Monster data)

@@ -40,6 +40,7 @@ namespace Nekoyume.Game.Character
         public bool Rooted => gameObject.GetComponent<IRoot>() != null;
         public bool Silenced => gameObject.GetComponent<ISilence>() != null;
         public bool Stunned => gameObject.GetComponent<IStun>() != null;
+        private const float Range = 1.6f;
 
         private void Start()
         {
@@ -303,6 +304,13 @@ namespace Nekoyume.Game.Character
 
         public void Attack(int atk, CharacterBase target, bool critical)
         {
+            StartCoroutine(AttackAsync(atk, target, critical));
+        }
+
+        private IEnumerator AttackAsync(int atk, CharacterBase target, bool critical)
+        {
+            yield return new WaitUntil(() => InRange(target.gameObject));
+            RunSpeed = 0.0f;
             if (_anim != null)
             {
                 _anim.SetTrigger("Attack");
@@ -325,6 +333,24 @@ namespace Nekoyume.Game.Character
             {
                 DamageText.Show(position, force, dmg);
             }
+        }
+
+        public void SetRun(float speed)
+        {
+            RunSpeed = speed;
+            Root = new Root();
+            Root.OpenBranch(
+                BT.Selector().OpenBranch(
+                    BT.If(() => !RunSpeed.Equals(0.0f)).OpenBranch(
+                        BT.Call(Run)
+                    )
+                )
+            );
+        }
+
+        private bool InRange(GameObject target)
+        {
+            return Range > Mathf.Abs(gameObject.transform.position.x - target.transform.position.x);
         }
     }
 }
