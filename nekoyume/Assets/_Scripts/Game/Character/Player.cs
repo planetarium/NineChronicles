@@ -240,7 +240,7 @@ namespace Nekoyume.Game.Character
         public void Init(Model.Player character)
         {
             model = character;
-            UpdateWeapon(model.weapon);
+            UpdateSet(model.set);
             InitStats(character);
 
             _hpBarOffset.Set(-0.22f, -0.61f, 0.0f);
@@ -260,9 +260,22 @@ namespace Nekoyume.Game.Character
             Inventory = character.inventory;
         }
 
-        public void UpdateWeapon(Weapon weapon)
+        public void UpdateSet(SetItem item)
         {
-            var mesh = Resources.Load<SpriteMesh>($"avatar/character_0003/item_{weapon?.Data.Id}");
+            var id = 0;
+            switch (item?.Data.Id)
+            {
+                case 308001:
+                    id = 301001;
+                    break;
+                case 308002:
+                    id = 301002;
+                    break;
+                case 308003:
+                    id = 301003;
+                    break;
+            }
+            var mesh = Resources.Load<SpriteMesh>($"avatar/character_0003/item_{id}");
             _weapon.spriteMesh = mesh;
         }
     }
