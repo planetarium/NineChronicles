@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
 using System.Reflection;
+using UnityEngine;
 
 
 namespace Nekoyume.Data.Table
@@ -41,13 +44,14 @@ namespace Nekoyume.Data.Table
 
         public void Load(string text)
         {
-            bool header = false;
-            string[] lines = text.Split('\n');
+            var header = new List<string>();
+
+            var lines = text.Split('\n').ToImmutableArray();
             foreach (string line in lines)
             {
-                if (!header)
+                if (lines.IndexOf(line) == 0)
                 {
-                    header = true;
+                    header = line.Trim().Split(',').ToList();
                     continue;
                 }
                 if (string.IsNullOrEmpty(line))
@@ -60,6 +64,22 @@ namespace Nekoyume.Data.Table
                 FieldInfo[] fieldInfos = row.GetType().GetFields();
                 foreach (FieldInfo fieldInfo in fieldInfos)
                 {
+                    string key;
+                    try
+                    {
+                        key = header[index].Replace("_", string.Empty);
+                    }
+                    catch (ArgumentOutOfRangeException)
+                    {
+                        Debug.Log($"Header not found: {fieldInfo.Name}");
+                        continue;
+                    }
+
+                    if (!key.Equals(fieldInfo.Name, StringComparison.OrdinalIgnoreCase))
+                    {
+                        Debug.Log($"Key not found: {fieldInfo.Name}");
+                        continue;
+                    }
                     string value = arr[index];
                     Type fieldType = fieldInfo.GetValue(row).GetType();
                     if (fieldType == typeof(int) || fieldType.IsEnum)
