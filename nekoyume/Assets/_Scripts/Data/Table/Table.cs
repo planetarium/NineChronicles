@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
-using Uno.Extensions.Specialized;
 
 
 namespace Nekoyume.Data.Table
@@ -44,8 +44,9 @@ namespace Nekoyume.Data.Table
 
         public void Load(string text)
         {
-            List<string> header = new List<string>();
-            string[] lines = text.Split('\n');
+            var header = new List<string>();
+
+            var lines = text.Split('\n').ToImmutableArray();
             foreach (string line in lines)
             {
                 if (lines.IndexOf(line) == 0)
