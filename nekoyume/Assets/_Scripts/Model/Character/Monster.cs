@@ -17,6 +17,7 @@ namespace Nekoyume.Model
             atk = data.Attack;
             def = data.Defense;
             rewardExp = data.RewardExp;
+            criticalChance = data.critical;
             targets.Add(player);
             Simulator = player.Simulator;
             this.data = data;

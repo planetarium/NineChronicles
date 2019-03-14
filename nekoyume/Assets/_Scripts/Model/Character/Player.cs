@@ -73,6 +73,7 @@ namespace Nekoyume.Model
             def = data.Defense;
             hpMax = data.Health;
             expMax = data.Exp;
+            criticalChance = data.critical;
             var equipments = Items.Select(i => i.Item).OfType<Equipment>().Where(e => e.equipped);
             foreach (var equipment in equipments) equipment.UpdatePlayer(this);
         }

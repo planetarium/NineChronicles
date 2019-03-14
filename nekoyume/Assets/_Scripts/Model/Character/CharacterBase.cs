@@ -16,7 +16,7 @@ namespace Nekoyume.Model
         public int def;
         public int hp;
         public int hpMax;
-        private const float CriticalChance = 0.5f;
+        public float criticalChance;
         private const float CriticalMultiplier = 1.5f;
 
         [NonSerialized] private Root _root;
@@ -66,7 +66,7 @@ namespace Nekoyume.Model
         private bool IsCritical()
         {
             var chance = Simulator.Random.NextDouble();
-            return chance < CriticalChance;
+            return chance < criticalChance;
         }
 
         private int CalcDmg(CharacterBase target, bool critical)
