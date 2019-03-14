@@ -16,5 +16,6 @@ namespace Nekoyume.Data.Table
         public string skill2 = "";
         public string skill3 = "";
         public int RewardExp = 0;
+        public float critical;
     }
 }
