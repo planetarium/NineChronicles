@@ -11,13 +11,7 @@ namespace Nekoyume.Game.Item
         {
         }
 
-        public override string ToItemInfo()
-        {
-            return new StringBuilder()
-                .AppendLine($"공격력 +{Data.param0}")
-                .AppendLine($"방어력 +{Data.param1}")
-                .ToString();
-        }
+        public override string ToItemInfo() => $"공격력 +{Data.param0}\n방어력 +{Data.param1}";
 
         public override void UpdatePlayer(Player player)
         {
