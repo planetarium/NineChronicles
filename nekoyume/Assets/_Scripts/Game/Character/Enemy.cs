@@ -150,7 +150,7 @@ namespace Nekoyume.Game.Character
             InitStats(spawnCharacter.data);
             id = spawnCharacter.id;
             item = spawnCharacter.item;
-            SetRun(-1.0f);
+            StartRun();
         }
 
         private void InitStats(Monster data)
@@ -162,6 +162,17 @@ namespace Nekoyume.Game.Character
             RewardExp = data.RewardExp;
             Power = 0;
             HPMax = HP;
+        }
+
+        private void Awake()
+        {
+            _targetTag = Tag.Player;
+        }
+
+        public override void StartRun()
+        {
+            base.StartRun();
+            RunSpeed = -1.0f;
         }
     }
 }

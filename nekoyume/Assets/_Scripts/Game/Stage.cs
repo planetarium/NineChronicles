@@ -145,7 +145,7 @@ namespace Nekoyume.Game
             }
             var player = playerCharacter.gameObject;
             playerCharacter.Init(character);
-            playerCharacter.SetRun(1.0f);
+            playerCharacter.StartRun();
             var cam = Camera.main.gameObject.GetComponent<ActionCamera>();
             cam.target = player.transform;
             Widget.Find<Status>().UpdatePlayer(player);
@@ -159,7 +159,7 @@ namespace Nekoyume.Game
                 var factory = GetComponent<PlayerFactory>();
                 playerCharacter = factory.Create().GetComponent<Character.Player>();
             }
-            playerCharacter.SetRun(1.0f);
+            playerCharacter.StartRun();
             var spawner = GetComponentsInChildren<MonsterSpawner>().First();
             spawner.SetData(id, monster);
         }

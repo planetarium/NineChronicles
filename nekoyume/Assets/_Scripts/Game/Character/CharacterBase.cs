@@ -41,6 +41,7 @@ namespace Nekoyume.Game.Character
         public bool Silenced => gameObject.GetComponent<ISilence>() != null;
         public bool Stunned => gameObject.GetComponent<IStun>() != null;
         private const float Range = 1.6f;
+        protected string _targetTag = "";
 
         private void Start()
         {
@@ -309,7 +310,7 @@ namespace Nekoyume.Game.Character
 
         private IEnumerator AttackAsync(int atk, CharacterBase target, bool critical)
         {
-            yield return new WaitUntil(() => InRange(target.gameObject));
+            yield return new WaitUntil(TargetInRange);
             RunSpeed = 0.0f;
             if (_anim != null)
             {
@@ -335,22 +336,50 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        public void SetRun(float speed)
+        private void InitBT()
         {
-            RunSpeed = speed;
             Root = new Root();
             Root.OpenBranch(
                 BT.Selector().OpenBranch(
-                    BT.If(() => !RunSpeed.Equals(0.0f)).OpenBranch(
+                    BT.If(TargetInRange).OpenBranch(
+                        BT.Call(StopRun)
+                    ),
+                    BT.If(CanRun).OpenBranch(
                         BT.Call(Run)
-                    )
+                    ),
+                    BT.Call(StartRun)
                 )
             );
         }
 
-        private bool InRange(GameObject target)
+        public virtual void StartRun()
         {
-            return Range > Mathf.Abs(gameObject.transform.position.x - target.transform.position.x);
+            RunSpeed = 1.0f;
+            if (Root == null)
+            {
+                InitBT();
+            }
+        }
+
+        private bool TargetInRange()
+        {
+            var stage = GetComponentInParent<Stage>();
+            var characters = stage.GetComponentsInChildren<CharacterBase>();
+            return characters
+                .Where(character => character.gameObject.CompareTag(_targetTag))
+                .Select(character =>
+                    Range > Mathf.Abs(character.transform.position.x - gameObject.transform.position.x))
+                .FirstOrDefault();
+        }
+
+        private bool CanRun()
+        {
+            return !RunSpeed.Equals(0.0f);
+        }
+
+        private void StopRun()
+        {
+            RunSpeed = 0f;
         }
     }
 }
