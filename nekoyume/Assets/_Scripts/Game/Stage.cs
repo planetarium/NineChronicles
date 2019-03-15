@@ -112,19 +112,19 @@ namespace Nekoyume.Game
             {
                 var blind = Widget.Find<Blind>();
                 yield return StartCoroutine(blind.FadeIn(1.0f, $"STAGE {stage}"));
-                Widget.Find<Menu>().ShowWorld();
 
                 LoadBackground(data.Background, 3.0f);
+                Widget.Find<Menu>().ShowWorld();
 
+                yield return new WaitForSeconds(2.0f);
                 var roomPlayer = GetComponentInChildren<Character.Player>();
                 if (roomPlayer != null)
                 {
                     roomPlayer.RunSpeed = 1.0f;
                     roomPlayer.gameObject.transform.position = new Vector2(-2.4f, -0.62f);
                 }
-
-                yield return new WaitForSeconds(2.0f);
                 yield return StartCoroutine(blind.FadeOut(1.0f));
+
             }
         }
 
