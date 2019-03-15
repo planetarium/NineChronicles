@@ -26,10 +26,7 @@ namespace Nekoyume
     /// 
     public static class Debug
     {
-        public static bool isDebugBuild
-        {
-            get { return UnityEngine.Debug.isDebugBuild; }
-        }
+        public static bool isDebugBuild => UnityEngine.Debug.isDebugBuild;
 
         [System.Diagnostics.Conditional("UNITY_EDITOR")]
         public static void Log(object message)

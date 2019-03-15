@@ -1,14 +1,13 @@
 using System.Collections;
-using System.Text;
 using UnityEngine;
 
-namespace Nekoyume.Game.VFX
+namespace Nekoyume.Game.Vfx
 {
     [RequireComponent(typeof(ParticleSystem))]
     public abstract class VfxBase : MonoBehaviour
     {
-        private const string StringVFX = "VFX";
-        
+        private const string StringVfx = "Vfx";
+
         private ParticleSystem[] _particles = null;
         private int _particlesLength = 0;
         private ParticleSystem _particlesRoot = null;
@@ -25,13 +24,13 @@ namespace Nekoyume.Game.VFX
                 return;
             }
 
-            for (int i = 0; i < _particlesLength; i++)
+            for (var i = 0; i < _particlesLength; i++)
             {
-                _particles[i].gameObject.layer = LayerMask.NameToLayer(StringVFX);
+                _particles[i].gameObject.layer = LayerMask.NameToLayer(StringVfx);
                 var r = _particles[i].GetComponent<Renderer>();
                 if (r)
                 {
-                    r.sortingLayerName = StringVFX;
+                    r.sortingLayerName = StringVfx;
                 }
             }
 
@@ -50,7 +49,7 @@ namespace Nekoyume.Game.VFX
                 return;
             }
 
-            StartCoroutine(nameof(PlayAndAutoInactiveAsync));
+            StartCoroutine(PlayAndAutoInactiveAsync());
         }
 
         private IEnumerator PlayAndAutoInactiveAsync()

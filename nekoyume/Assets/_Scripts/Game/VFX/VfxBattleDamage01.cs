@@ -1,4 +1,4 @@
-namespace Nekoyume.Game.VFX
+namespace Nekoyume.Game.Vfx
 {
     public class VfxBattleDamage01 : VfxBase
     {

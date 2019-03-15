@@ -9,7 +9,7 @@ using Nekoyume.Data.Table;
 using Nekoyume.Game.Factory;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Skill;
-using Nekoyume.Game.VFX;
+using Nekoyume.Game.Vfx;
 using Nekoyume.UI;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -163,22 +163,6 @@ namespace Nekoyume.Game.Character
             var force = new Vector3(-0.02f, 0.02f, 0.0f);
             var txt = dmg.ToString();
             PopUpDmg(position, force, txt, critical);
-            
-            // 회복 이펙트 테스트를 위해 70%의 확률로 피격 이펙트를 생성하고, 30%의 확률로 회복 이펙트를 생성한다.
-            if (Random.value < 0.7f)
-            {
-                var pos = transform.position;
-                pos.x -= 0.2f;
-                pos.y += 0.32f;
-                VfxFactory.instance.Create<VfxBattleDamage01>(pos).Play();
-            }
-            else
-            {
-                var pos = transform.position;
-                pos.x -= 0.2f;
-                pos.y += 0.32f;
-                VfxFactory.instance.Create<VfxBattleHeal01>(pos).Play();
-            }
 
             Event.OnUpdateStatus.Invoke();
             if (HP <= 0)
@@ -198,6 +182,18 @@ namespace Nekoyume.Game.Character
             base.PopUpDmg(position, force, dmg, critical);
 
             // 피격 이펙트 발동.
+            // 회복 이펙트 테스트를 위해 70%의 확률로 피격 이펙트를 생성하고, 30%의 확률로 회복 이펙트를 생성한다.
+            var pos = transform.position;
+            pos.x -= 0.2f;
+            pos.y += 0.32f;
+            if (Random.value < 0.7f)
+            {
+                VfxFactory.instance.Create<VfxBattleDamage01>(pos).Play();
+            }
+            else
+            {
+                VfxFactory.instance.Create<VfxBattleHeal01>(pos).Play();
+            }
         }
 
         private void GetEXP(Enemy enemy)
