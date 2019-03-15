@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Action;
 using Nekoyume.Data.Table;
+using Nekoyume.Game;
 using Nekoyume.Game.Item;
 
 namespace Nekoyume.Model
@@ -39,6 +40,9 @@ namespace Nekoyume.Model
                 inventory.Set(inventoryItems);
             }
 
+            var elemental = set?.Data.elemental ?? Data.Table.Elemental.ElementalType.Normal;
+            atkElement = Game.Elemental.Create(elemental);
+            defElement = Game.Elemental.Create(elemental);
             CalcStats(level);
         }
 

@@ -1,5 +1,6 @@
 using System;
 using Nekoyume.Action;
+using Nekoyume.Game;
 using Nekoyume.Game.Item;
 
 namespace Nekoyume.Model
@@ -25,6 +26,7 @@ namespace Nekoyume.Model
             {
                 this.item = item;
             }
+            defElement = Elemental.Create(data.Resistance);
         }
 
         protected override void OnDead()

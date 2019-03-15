@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using BTAI;
 using Nekoyume.Action;
+using Nekoyume.Game;
 
 namespace Nekoyume.Model
 {
@@ -18,6 +19,11 @@ namespace Nekoyume.Model
         public int hpMax;
         public float criticalChance;
         private const float CriticalMultiplier = 1.5f;
+
+        protected Elemental atkElement { get; set; } =
+            Elemental.Create(Data.Table.Elemental.ElementalType.Normal);
+        protected Elemental defElement { get; set; } =
+            Elemental.Create(Data.Table.Elemental.ElementalType.Normal);
 
         [NonSerialized] private Root _root;
         [NonSerialized] public Simulator Simulator;
@@ -71,7 +77,7 @@ namespace Nekoyume.Model
 
         private int CalcDmg(CharacterBase target, bool critical)
         {
-            int dmg = atk;
+            int dmg = atkElement.Calculate(atk, target.defElement);
             if (critical)
             {
                 dmg = Convert.ToInt32(dmg * CriticalMultiplier);

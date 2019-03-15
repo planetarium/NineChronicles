@@ -17,6 +17,7 @@ namespace Nekoyume.Data
         public Table<Item> Item { get; private set; }
         public Table<Recipe> Recipe { get; private set; }
         public Table<MonsterWave> MonsterWave { get; private set; }
+        public Table<Elemental> Elemental { get; private set; }
 
         private void Start()
         {
@@ -51,6 +52,8 @@ namespace Nekoyume.Data
             Load(Recipe, "DataTable/recipe");
             MonsterWave = new Table<MonsterWave>();
             Load(MonsterWave, "DataTable/monster_wave");
+            Elemental = new Table<Elemental>();
+            Load(Elemental, "DataTable/elemental");
 
         }
 
