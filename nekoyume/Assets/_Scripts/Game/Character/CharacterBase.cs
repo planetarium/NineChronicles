@@ -374,7 +374,7 @@ namespace Nekoyume.Game.Character
 
         private bool CanRun()
         {
-            return !RunSpeed.Equals(0.0f);
+            return !(Mathf.Approximately(RunSpeed, 0f));
         }
 
         private void StopRun()
