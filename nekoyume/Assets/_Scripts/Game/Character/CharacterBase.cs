@@ -315,7 +315,7 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        public void PopUpDmg(Vector3 position, Vector3 force, string dmg, bool critical)
+        protected virtual void PopUpDmg(Vector3 position, Vector3 force, string dmg, bool critical)
         {
             if (critical)
             {

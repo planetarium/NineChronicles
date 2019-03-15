@@ -6,10 +6,13 @@ using BTAI;
 using Nekoyume.Action;
 using Nekoyume.Data;
 using Nekoyume.Data.Table;
+using Nekoyume.Game.Factory;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Skill;
+using Nekoyume.Game.Vfx;
 using Nekoyume.UI;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Nekoyume.Game.Character
 {
@@ -24,6 +27,7 @@ namespace Nekoyume.Game.Character
         public long EXPMax { get; private set; }
 
         private ProgressBar _mpBar = null;
+
         public List<Equipment> equipments =>
             Inventory.items.Select(i => i.Item).OfType<Equipment>().Where(e => e.equipped).ToList();
 
@@ -173,6 +177,25 @@ namespace Nekoyume.Game.Character
             Event.OnPlayerDead.Invoke();
         }
 
+        protected override void PopUpDmg(Vector3 position, Vector3 force, string dmg, bool critical)
+        {
+            base.PopUpDmg(position, force, dmg, critical);
+
+            // 피격 이펙트 발동.
+            // 회복 이펙트 테스트를 위해 70%의 확률로 피격 이펙트를 생성하고, 30%의 확률로 회복 이펙트를 생성한다.
+            var pos = transform.position;
+            pos.x -= 0.2f;
+            pos.y += 0.32f;
+            if (Random.value < 0.7f)
+            {
+                VfxFactory.instance.Create<VfxBattleDamage01>(pos).Play();
+            }
+            else
+            {
+                VfxFactory.instance.Create<VfxBattleHeal01>(pos).Play();
+            }
+        }
+
         private void GetEXP(Enemy enemy)
         {
             EXP += enemy.RewardExp;
@@ -217,7 +240,7 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        private void Update()
+        protected override void Update()
         {
             base.Update();
             if (_mpBar != null)
