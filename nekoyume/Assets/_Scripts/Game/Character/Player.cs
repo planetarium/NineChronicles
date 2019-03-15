@@ -263,21 +263,14 @@ namespace Nekoyume.Game.Character
 
         public void UpdateSet(SetItem item)
         {
-            var id = 0;
-            switch (item?.Data.Id)
+            var itemId = item?.Data.Id ?? 0;
+            int id;
+            // TODO Change Players mesh instead of weapon only.
+            if (SetItem.WeaponMap.TryGetValue(itemId, out id))
             {
-                case 308001:
-                    id = 301001;
-                    break;
-                case 308002:
-                    id = 301002;
-                    break;
-                case 308003:
-                    id = 301003;
-                    break;
+                var mesh = Resources.Load<SpriteMesh>($"avatar/character_0003/item_{id}");
+                _weapon.spriteMesh = mesh;
             }
-            var mesh = Resources.Load<SpriteMesh>($"avatar/character_0003/item_{id}");
-            _weapon.spriteMesh = mesh;
         }
     }
 }
