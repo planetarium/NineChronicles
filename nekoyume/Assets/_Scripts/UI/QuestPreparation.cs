@@ -6,6 +6,7 @@ using Nekoyume.Game;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Item;
 using UnityEngine;
+using UnityEngine.Analytics;
 
 namespace Nekoyume.UI
 {
@@ -124,9 +125,9 @@ namespace Nekoyume.UI
                     es.Equip(item);
                 }
 
-                if (type == ItemBase.ItemType.Weapon)
+                if (type == ItemBase.ItemType.Set)
                 {
-                    _player.UpdateWeapon((Weapon)item.item);
+                    _player.UpdateSet((SetItem)item.item);
                 }
             }
         }
@@ -135,9 +136,9 @@ namespace Nekoyume.UI
         {
             var slot = sender.GetComponent<EquipSlot>();
             slot.Unequip();
-            if (slot.type == ItemBase.ItemType.Weapon)
+            if (slot.type == ItemBase.ItemType.Set)
             {
-                _player.UpdateWeapon((Weapon)slot.item);
+                _player.UpdateSet((SetItem)slot.item);
             }
 
         }

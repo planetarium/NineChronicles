@@ -61,6 +61,7 @@ namespace Nekoyume.Game.Character
             Event.OnEnemyDead.AddListener(GetEXP);
             Event.OnGetItem.AddListener(PickUpItem);
             Inventory = new Item.Inventory();
+            _targetTag = Tag.Enemy;
         }
 
         private void Start()
@@ -263,9 +264,8 @@ namespace Nekoyume.Game.Character
         public void Init(Model.Player character)
         {
             model = character;
-            UpdateWeapon(model.weapon);
+            UpdateSet(model.set);
             InitStats(character);
-            RunSpeed = 0.0f;
 
             _hpBarOffset.Set(-0.22f, -0.61f, 0.0f);
             _castingBarOffset.Set(-0.22f, -0.85f, 0.0f);
@@ -284,10 +284,16 @@ namespace Nekoyume.Game.Character
             Inventory = character.inventory;
         }
 
-        public void UpdateWeapon(Weapon weapon)
+        public void UpdateSet(SetItem item)
         {
-            var mesh = Resources.Load<SpriteMesh>($"avatar/character_0003/item_{weapon?.Data.Id}");
-            _weapon.spriteMesh = mesh;
+            var itemId = item?.Data.Id ?? 0;
+            int id;
+            // TODO Change Players mesh instead of weapon only.
+            if (SetItem.WeaponMap.TryGetValue(itemId, out id))
+            {
+                var mesh = Resources.Load<SpriteMesh>($"avatar/character_0003/item_{id}");
+                _weapon.spriteMesh = mesh;
+            }
         }
     }
 }
