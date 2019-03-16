@@ -56,7 +56,7 @@ namespace Nekoyume.UI
 
         public void SlotClick(InventorySlot slot)
         {
-            if (gameObject.active && slot.Item != null)
+            if (gameObject.activeSelf && slot.Item != null)
             {
                 var slotItem = slot.Item;
                 var cartItem = itemInfo.GetComponent<SelectedItem>();

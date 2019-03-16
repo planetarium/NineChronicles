@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Text;
 using Nekoyume.Model;
 
@@ -18,5 +19,13 @@ namespace Nekoyume.Game.Item
             player.atk += Data.param0;
             player.def += Data.param1;
         }
+
+        public static Dictionary<int, int> WeaponMap =>
+            new Dictionary<int, int>
+            {
+                [308001] = 301001,
+                [308002] = 301002,
+                [308003] = 301003,
+            };
     }
 }

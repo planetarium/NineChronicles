@@ -112,19 +112,19 @@ namespace Nekoyume.Game
             {
                 var blind = Widget.Find<Blind>();
                 yield return StartCoroutine(blind.FadeIn(1.0f, $"STAGE {stage}"));
-                Widget.Find<Menu>().ShowWorld();
 
                 LoadBackground(data.Background, 3.0f);
+                Widget.Find<Menu>().ShowWorld();
 
+                yield return new WaitForSeconds(2.0f);
                 var roomPlayer = GetComponentInChildren<Character.Player>();
                 if (roomPlayer != null)
                 {
                     roomPlayer.RunSpeed = 1.0f;
                     roomPlayer.gameObject.transform.position = new Vector2(-2.4f, -0.62f);
                 }
-
-                yield return new WaitForSeconds(2.0f);
                 yield return StartCoroutine(blind.FadeOut(1.0f));
+
             }
         }
 
@@ -143,9 +143,9 @@ namespace Nekoyume.Game
                 var factory = GetComponent<PlayerFactory>();
                 playerCharacter = factory.Create().GetComponent<Character.Player>();
             }
-            playerCharacter.RunSpeed = 1.2f;
             var player = playerCharacter.gameObject;
             playerCharacter.Init(character);
+            playerCharacter.StartRun();
             var cam = Camera.main.gameObject.GetComponent<ActionCamera>();
             cam.target = player.transform;
             Widget.Find<Status>().UpdatePlayer(player);
@@ -153,6 +153,13 @@ namespace Nekoyume.Game
 
         public void SpawnMonster(Monster monster)
         {
+            var playerCharacter = GetComponentInChildren<Character.Player>();
+            if (playerCharacter == null)
+            {
+                var factory = GetComponent<PlayerFactory>();
+                playerCharacter = factory.Create().GetComponent<Character.Player>();
+            }
+            playerCharacter.StartRun();
             var spawner = GetComponentsInChildren<MonsterSpawner>().First();
             spawner.SetData(id, monster);
         }

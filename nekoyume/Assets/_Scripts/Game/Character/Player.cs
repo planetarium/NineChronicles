@@ -6,10 +6,13 @@ using BTAI;
 using Nekoyume.Action;
 using Nekoyume.Data;
 using Nekoyume.Data.Table;
+using Nekoyume.Game.Factory;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Skill;
+using Nekoyume.Game.Vfx;
 using Nekoyume.UI;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Nekoyume.Game.Character
 {
@@ -24,6 +27,7 @@ namespace Nekoyume.Game.Character
         public long EXPMax { get; private set; }
 
         private ProgressBar _mpBar = null;
+
         public List<Equipment> equipments =>
             Inventory.items.Select(i => i.Item).OfType<Equipment>().Where(e => e.equipped).ToList();
 
@@ -57,6 +61,7 @@ namespace Nekoyume.Game.Character
             Event.OnEnemyDead.AddListener(GetEXP);
             Event.OnGetItem.AddListener(PickUpItem);
             Inventory = new Item.Inventory();
+            _targetTag = Tag.Enemy;
         }
 
         private void Start()
@@ -173,6 +178,25 @@ namespace Nekoyume.Game.Character
             Event.OnPlayerDead.Invoke();
         }
 
+        protected override void PopUpDmg(Vector3 position, Vector3 force, string dmg, bool critical)
+        {
+            base.PopUpDmg(position, force, dmg, critical);
+
+            // 피격 이펙트 발동.
+            // 회복 이펙트 테스트를 위해 70%의 확률로 피격 이펙트를 생성하고, 30%의 확률로 회복 이펙트를 생성한다.
+            var pos = transform.position;
+            pos.x -= 0.2f;
+            pos.y += 0.32f;
+            if (Random.value < 0.7f)
+            {
+                VfxFactory.instance.Create<VfxBattleDamage01>(pos).Play();
+            }
+            else
+            {
+                VfxFactory.instance.Create<VfxBattleHeal01>(pos).Play();
+            }
+        }
+
         private void GetEXP(Enemy enemy)
         {
             EXP += enemy.RewardExp;
@@ -217,7 +241,7 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        private void Update()
+        protected override void Update()
         {
             base.Update();
             if (_mpBar != null)
@@ -240,9 +264,8 @@ namespace Nekoyume.Game.Character
         public void Init(Model.Player character)
         {
             model = character;
-            UpdateWeapon(model.weapon);
+            UpdateSet(model.set);
             InitStats(character);
-            RunSpeed = 0.0f;
 
             _hpBarOffset.Set(-0.22f, -0.61f, 0.0f);
             _castingBarOffset.Set(-0.22f, -0.85f, 0.0f);
@@ -261,10 +284,16 @@ namespace Nekoyume.Game.Character
             Inventory = character.inventory;
         }
 
-        public void UpdateWeapon(Weapon weapon)
+        public void UpdateSet(SetItem item)
         {
-            var mesh = Resources.Load<SpriteMesh>($"avatar/character_0003/item_{weapon?.Data.Id}");
-            _weapon.spriteMesh = mesh;
+            var itemId = item?.Data.Id ?? 0;
+            int id;
+            // TODO Change Players mesh instead of weapon only.
+            if (SetItem.WeaponMap.TryGetValue(itemId, out id))
+            {
+                var mesh = Resources.Load<SpriteMesh>($"avatar/character_0003/item_{id}");
+                _weapon.spriteMesh = mesh;
+            }
         }
     }
 }
