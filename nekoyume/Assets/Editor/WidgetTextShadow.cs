@@ -39,10 +39,13 @@ namespace NekoyumeEditor
                 if (text.gameObject.transform.parent)
                 {
                     var parentImage = text.gameObject.transform.parent.GetComponent<Image>();
-                    bool isBlue = parentImage.sprite.name.ToLower().Contains("blue");
-                    if (isBlue)
+                    if (parentImage)
                     {
-                        effectColor = blueColor;
+                        bool isBlue = parentImage.sprite.name.ToLower().Contains("blue");
+                        if (isBlue)
+                        {
+                            effectColor = blueColor;
+                        }
                     }
                 }
 
