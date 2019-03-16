@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System;
 using System.IO;
 using Nekoyume.Action;
@@ -117,12 +118,14 @@ namespace Nekoyume.UI
             float hpPercentage = hp / (float) hpMax;
             hpBar.fillRect.gameObject.SetActive(hpPercentage > 0.0f);
             hpPercentage = Mathf.Min(Mathf.Max(hpPercentage, 0.1f), 1.0f);
-            hpBar.value = hpPercentage;
+            hpBar.value = 0.0f;// hpPercentage;
+            hpBar.DOValue(hpPercentage, 2.0f).SetEase(Ease.OutCubic);
 
             float expPercentage = exp / (float) statsData.Exp;
             expBar.fillRect.gameObject.SetActive(expPercentage > 0.0f);
             expPercentage = Mathf.Min(Mathf.Max(expPercentage, 0.1f), 1.0f);
-            expBar.value = expPercentage;
+            expBar.value = 0.0f;// expPercentage;
+            expBar.DOValue(expPercentage, 3.0f).SetEase(Ease.OutCubic);
 
             var statusDetailScript = statusDetail.GetComponent<StatusDetail>();
             statusDetailScript.Init(statsData);
