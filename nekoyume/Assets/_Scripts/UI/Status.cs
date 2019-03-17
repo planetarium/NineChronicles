@@ -20,7 +20,19 @@ namespace Nekoyume.UI
 
         private void Awake()
         {
+            Game.Event.OnRoomEnter.AddListener(OnRoomEnter);
+            Game.Event.OnStageStart.AddListener(OnStageStart);
             Game.Event.OnUpdateStatus.AddListener(OnUpdateStatus);
+        }
+
+        private void OnRoomEnter()
+        {
+            TextStage.gameObject.SetActive(false);
+        }
+
+        private void OnStageStart()
+        {
+            TextStage.gameObject.SetActive(true);
         }
 
         private void OnUpdateStatus()
