@@ -38,6 +38,7 @@ namespace Nekoyume.Data.Table
         public int param1 = 0;
         public int param2 = 0;
         public int Synergy = 0;
+        public Elemental.ElementalType elemental;
         public string Name = "";
         public string Flavour = "";
     }

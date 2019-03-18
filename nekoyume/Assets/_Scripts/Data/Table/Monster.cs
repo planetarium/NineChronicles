@@ -10,7 +10,7 @@ namespace Nekoyume.Data.Table
         public int Attack = 0;
         public int Defense = 0;
         public int Health = 0;
-        public string Resistance = "";
+        public Elemental.ElementalType Resistance;
         public string skill0 = "";
         public string skill1 = "";
         public string skill2 = "";
