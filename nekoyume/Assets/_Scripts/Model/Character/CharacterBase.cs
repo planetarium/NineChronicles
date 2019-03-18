@@ -77,7 +77,7 @@ namespace Nekoyume.Model
 
         private int CalcDmg(CharacterBase target, bool critical)
         {
-            int dmg = atkElement.Calculate(atk, target.defElement);
+            int dmg = atkElement.CalculateDmg(atk, target.defElement);
             if (critical)
             {
                 dmg = Convert.ToInt32(dmg * CriticalMultiplier);

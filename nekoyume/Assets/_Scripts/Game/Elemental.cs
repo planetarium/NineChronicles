@@ -24,10 +24,10 @@ namespace Nekoyume.Game
             throw new InvalidElementalException();
         }
 
-        private class InvalidElementalException : Exception
+        public class InvalidElementalException : Exception
         {}
 
-        public int Calculate(int i, Elemental t)
+        public int CalculateDmg(int dmg, Elemental t)
         {
             var multiplier = 1.0f;
             if (Data.strong == t.Data.id)
@@ -39,7 +39,7 @@ namespace Nekoyume.Game
                 multiplier -= Data.multiply;
             }
 
-            return Convert.ToInt32(i * multiplier);
+            return Convert.ToInt32(dmg * multiplier);
         }
     }
 }
