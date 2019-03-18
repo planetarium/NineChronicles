@@ -8,12 +8,14 @@ using System.Threading.Tasks;
 using Libplanet;
 using Libplanet.Blockchain;
 using Libplanet.Blockchain.Policies;
+using Libplanet.Blocks;
 using Libplanet.Crypto;
 using Libplanet.Store;
 using Libplanet.Tx;
 using Nekoyume.Data.Table;
 using Nekoyume.Game;
 using UnityEngine;
+using Uno.Extensions;
 
 namespace Nekoyume.Action
 {
@@ -30,10 +32,14 @@ namespace Nekoyume.Action
 
         public Agent(PrivateKey privateKey, string path, Guid chainId, float interval = 3.0f)
         {
+            IBlockPolicy<ActionBase> policy = new BlockPolicy<ActionBase>(TimeSpan.FromMilliseconds(500));
+# if DEBUG
+            policy = new DebugPolicy();
+#endif
             this.privateKey = privateKey;
             this.interval = interval;
             blocks = new BlockChain<ActionBase>(
-                new BlockPolicy<ActionBase>(TimeSpan.FromMilliseconds(500)),
+                policy,
                 new FileStore(path),
                 chainId);
             queuedActions = new ConcurrentQueue<ActionBase>();
@@ -119,6 +125,19 @@ namespace Nekoyume.Action
             }
 
             return itemTable;
+        }
+
+        private class DebugPolicy : IBlockPolicy<ActionBase>
+        {
+            public InvalidBlockException ValidateBlocks(IEnumerable<Block<ActionBase>> blocks, DateTimeOffset currentTime)
+            {
+                return null;
+            }
+
+            public int GetNextBlockDifficulty(IEnumerable<Block<ActionBase>> blocks)
+            {
+                return blocks.Empty() ? 0 : 1;
+            }
         }
     }
 }
