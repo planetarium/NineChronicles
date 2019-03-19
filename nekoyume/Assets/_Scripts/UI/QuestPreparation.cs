@@ -35,6 +35,12 @@ namespace Nekoyume.UI
 
         private IEnumerator QuestAsync()
         {
+            var w = Find<LoadingScreen>();
+            if (w != null)
+            {
+                w.Show();
+            }
+            
             btnQuest.SetActive(false);
             var currentId = ActionManager.Instance.battleLog?.id;
             var equipments = new List<Equipment>();
@@ -50,10 +56,15 @@ namespace Nekoyume.UI
             ActionManager.Instance.HackAndSlash(equipments);
             while (currentId == ActionManager.Instance.battleLog?.id)
             {
-                yield return new WaitForSeconds(1.0f);
+                yield return null;
             }
 
             Game.Event.OnStageStart.Invoke();
+            
+            if (w != null)
+            {
+                w.Close();
+            }
         }
 
         public override void Show()

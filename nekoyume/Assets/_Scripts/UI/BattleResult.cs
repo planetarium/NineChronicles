@@ -32,6 +32,12 @@ namespace Nekoyume.UI
 
         private IEnumerator SubmitAsync()
         {
+            var w = Find<LoadingScreen>();
+            if (w != null)
+            {
+                w.Show();   
+            }
+            
             var player = FindObjectOfType<Game.Character.Player>();
             if (player == null)
             {
@@ -48,6 +54,10 @@ namespace Nekoyume.UI
             Game.Event.OnStageStart.Invoke();
             Close();
 
+            if (w != null)
+            {
+                w.Close();   
+            }
         }
         public void BackClick()
         {
