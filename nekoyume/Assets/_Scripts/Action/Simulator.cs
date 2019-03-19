@@ -20,6 +20,8 @@ namespace Nekoyume.Action
         private BattleLog.Result _result;
         private int _totalWave;
         public List<CharacterBase> Characters;
+        private readonly HashSet<int> _dropIds;
+        private const int DropCapacity = 3;
 
         public Simulator(IRandom random, Model.Avatar avatar)
         {
@@ -28,6 +30,7 @@ namespace Nekoyume.Action
             Log = new BattleLog();
             waves = new List<List<Model.Monster>>();
             _player = new Player(avatar, this);
+            _dropIds = new HashSet<int>();
             SetWave();
         }
 
@@ -137,7 +140,15 @@ namespace Nekoyume.Action
             Item itemData;
             if (itemSelector.Count > 0 && itemTable.TryGetValue(itemId, out itemData))
             {
-                item = ItemBase.ItemFactory(itemData);
+                if (_dropIds.Count < DropCapacity)
+                {
+                    _dropIds.Add(itemId);
+                }
+
+                if (_dropIds.Contains(itemId))
+                {
+                    item = ItemBase.ItemFactory(itemData);
+                }
             }
             return new Model.Monster(monsterData, _player, item);
         }

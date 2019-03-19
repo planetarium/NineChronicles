@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Nekoyume.Action;
@@ -12,13 +13,11 @@ namespace Nekoyume.UI
     public class BattleResult : Widget
     {
         public BattleLog.Result result;
-        public Image headerWin;
-        public Image headerLose;
         public Text submitText;
+        public Text header;
         public Text title;
         public GameObject slotBase;
         public Transform grid;
-        public Image imageLose;
         private List<InventorySlot> _slots;
 
         private void Awake()
@@ -59,24 +58,20 @@ namespace Nekoyume.UI
         public void Show(BattleLog.Result battleResult)
         {
             result = battleResult;
-            headerWin.gameObject.SetActive(false);
-            headerLose.gameObject.SetActive(false);
 
             if (result == BattleLog.Result.Win)
             {
                 submitText.text = "다음 퀘스트";
-                headerWin.gameObject.SetActive(true);
+                header.text = "승리";
                 title.text = "획득한 아이템";
                 grid.gameObject.SetActive(true);
-                imageLose.gameObject.SetActive(false);
             }
             else
             {
                 submitText.text = "재도전";
-                headerLose.gameObject.SetActive(true);
-                title.text = "";
+                title.text = "재도전 하시겠습니까?";
+                header.text = "실패";
                 grid.gameObject.SetActive(false);
-                imageLose.gameObject.SetActive(true);
             }
             base.Show();
         }
@@ -93,12 +88,22 @@ namespace Nekoyume.UI
 
         public void Add(ItemBase characterItem)
         {
-            slotBase.SetActive(true);
-            GameObject newSlot = Instantiate(slotBase, grid);
-            InventorySlot slot = newSlot.GetComponent<InventorySlot>();
-            slot.Set(characterItem, 1);
-            _slots.Add(slot);
-            slotBase.SetActive(false);
+            var i = _slots.FindIndex(
+                a => a.Item.Data.Id.Equals(characterItem.Data.Id)
+            );
+            if (i < 0)
+            {
+                slotBase.SetActive(true);
+                GameObject newSlot = Instantiate(slotBase, grid);
+                InventorySlot slot = newSlot.GetComponent<InventorySlot>();
+                slot.Set(characterItem, 1);
+                _slots.Add(slot);
+                slotBase.SetActive(false);
+            }
+            else
+            {
+                _slots[i].LabelCount.text = (Convert.ToInt32(_slots[i].LabelCount.text) + 1).ToString();
+            }
         }
     }
 }
