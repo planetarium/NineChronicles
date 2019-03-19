@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Nekoyume.Action;
@@ -93,12 +94,22 @@ namespace Nekoyume.UI
 
         public void Add(ItemBase characterItem)
         {
-            slotBase.SetActive(true);
-            GameObject newSlot = Instantiate(slotBase, grid);
-            InventorySlot slot = newSlot.GetComponent<InventorySlot>();
-            slot.Set(characterItem, 1);
-            _slots.Add(slot);
-            slotBase.SetActive(false);
+            var i = _slots.FindIndex(
+                a => a.Item.Data.Id.Equals(characterItem.Data.Id)
+            );
+            if (i < 0)
+            {
+                slotBase.SetActive(true);
+                GameObject newSlot = Instantiate(slotBase, grid);
+                InventorySlot slot = newSlot.GetComponent<InventorySlot>();
+                slot.Set(characterItem, 1);
+                _slots.Add(slot);
+                slotBase.SetActive(false);
+            }
+            else
+            {
+                _slots[i].LabelCount.text = (Convert.ToInt32(_slots[i].LabelCount.text) + 1).ToString();
+            }
         }
     }
 }
