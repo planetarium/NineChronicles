@@ -172,7 +172,7 @@ namespace Nekoyume.Game.Character
         public override void StartRun()
         {
             base.StartRun();
-            RunSpeed = -1.0f;
+            RunSpeed = 0.0f;
         }
     }
 }

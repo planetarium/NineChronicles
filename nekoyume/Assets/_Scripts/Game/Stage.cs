@@ -89,6 +89,13 @@ namespace Nekoyume.Game
 
         private IEnumerator PlayAsync(BattleLog log)
         {
+            var roomPlayer = GetComponentInChildren<Character.Player>();
+            if (roomPlayer != null)
+            {
+                roomPlayer.RunSpeed = 0.0f;
+                roomPlayer.gameObject.transform.position = new Vector2(-2.4f, -0.62f);
+            }
+
             StageEnter(log.stage);
             foreach (EventBase e in log)
             {
@@ -96,6 +103,10 @@ namespace Nekoyume.Game
                     if (!e.skip)
                     {
                         e.Execute(this);
+                        if (!(e is Attack))
+                        {
+                            roomPlayer.StartRun();
+                        }
                         yield return new WaitForSeconds(1.0f);
                     }
                 }
@@ -120,13 +131,7 @@ namespace Nekoyume.Game
                 LoadBackground(data.Background, 3.0f);
                 Widget.Find<Menu>().ShowWorld();
 
-                yield return new WaitForSeconds(2.0f);
-                var roomPlayer = GetComponentInChildren<Character.Player>();
-                if (roomPlayer != null)
-                {
-                    roomPlayer.RunSpeed = 1.0f;
-                    roomPlayer.gameObject.transform.position = new Vector2(-2.4f, -0.62f);
-                }
+                yield return new WaitForSeconds(1.5f);
                 yield return StartCoroutine(blind.FadeOut(1.0f));
 
             }
