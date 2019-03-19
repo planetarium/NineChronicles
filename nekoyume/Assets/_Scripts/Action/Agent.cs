@@ -46,7 +46,7 @@ namespace Nekoyume.Action
             queuedActions = new ConcurrentQueue<ActionBase>();
             
             #if BLOCK_LOG_USE
-            FileHelper.WriteAllText($"Block.log", "");
+            FileHelper.WriteAllText("Block.log", "");
             #endif
         }
 
