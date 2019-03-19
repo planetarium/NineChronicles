@@ -73,7 +73,7 @@ namespace Nekoyume.UI
         public void CreateClick()
         {
             var w = Find<LoadingScreen>();
-            if (w != null)
+            if (!ReferenceEquals(w, null))
             {
                 w.Show();   
             }
@@ -175,7 +175,7 @@ namespace Nekoyume.UI
         private void OnDidAvatarLoaded(object sender, Model.Avatar a)
         {
             var w = Find<LoadingScreen>();
-            if (w != null)
+            if (!ReferenceEquals(w, null))
             {
                 w.Close();
             }

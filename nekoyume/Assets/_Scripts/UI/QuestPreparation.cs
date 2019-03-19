@@ -36,7 +36,7 @@ namespace Nekoyume.UI
         private IEnumerator QuestAsync()
         {
             var w = Find<LoadingScreen>();
-            if (w != null)
+            if (!ReferenceEquals(w, null))
             {
                 w.Show();
             }
@@ -61,7 +61,7 @@ namespace Nekoyume.UI
 
             Game.Event.OnStageStart.Invoke();
             
-            if (w != null)
+            if (!ReferenceEquals(w, null))
             {
                 w.Close();
             }
