@@ -25,10 +25,11 @@ namespace Nekoyume.UI
 
             RectTransform rectTransform = popupText.GetComponent<RectTransform>();
             rectTransform.anchoredPosition = CalcCanvasPosition(position);
+            rectTransform.localScale = Vector3.one * 0.7f;
             var pos =  CalcCanvasPosition(position + force);
-            rectTransform.DOJumpAnchorPos(pos, 30.0f, 1, 1.0f).SetEase(Ease.OutCirc);
-            popupText.label.DOFade(0.0f, 2.0f).SetEase(Ease.InCubic);
-            popupText.shadow.DOFade(0.0f, 2.0f).SetEase(Ease.InCubic);
+            rectTransform.DOMove(pos, 0.3f).SetEase(Ease.OutElastic);
+            rectTransform.DOScale(Vector3.one * 1.2f, 0.3f).SetEase(Ease.OutElastic);
+            
             Destroy(popupText.gameObject, 0.8f);
 
             return popupText;

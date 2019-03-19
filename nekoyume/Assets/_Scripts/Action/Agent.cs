@@ -14,6 +14,7 @@ using Libplanet.Store;
 using Libplanet.Tx;
 using Nekoyume.Data.Table;
 using Nekoyume.Game;
+using Nekoyume.Helper;
 using UnityEngine;
 using Uno.Extensions;
 
@@ -43,6 +44,10 @@ namespace Nekoyume.Action
                 new FileStore(path),
                 chainId);
             queuedActions = new ConcurrentQueue<ActionBase>();
+            
+            #if BLOCK_LOG_USE
+            FileHelper.WriteAllText("Block.log", "");
+            #endif
         }
 
         public Address UserAddress => privateKey.PublicKey.ToAddress();
@@ -101,6 +106,10 @@ namespace Nekoyume.Action
                 var task = Task.Run(() => blocks.MineBlock(UserAddress));
                 yield return new WaitUntil(() => task.IsCompleted);
                 Debug.Log($"created block index: {task.Result.Index}");
+                
+                #if BLOCK_LOG_USE
+                FileHelper.AppendAllText("Block.log", task.Result.ToVerboseString());
+                #endif
             }
         }
 
