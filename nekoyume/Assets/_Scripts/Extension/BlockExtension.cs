@@ -6,7 +6,6 @@ using Libplanet.Blocks;
 using Libplanet.Tx;
 using Nekoyume.Action;
 using Nekoyume.Game.Item;
-using UnityEngine;
 
 namespace Nekoyume
 {
@@ -65,7 +64,8 @@ namespace Nekoyume
 
         public static string ToVerboseString(this ActionBase a, string linePrefix = "")
         {
-            var sb = new StringBuilder($"{linePrefix}- ActionBase\n");
+            var t = a.GetType();
+            var sb = new StringBuilder($"{linePrefix}- {t.Name} : ActionBase\n");
 
             using (var e = a.PlainValue.GetEnumerator())
             {
@@ -77,6 +77,11 @@ namespace Nekoyume
                     {
                         case "equipments":
                             var list = ByteSerializer.Deserialize<List<Equipment>>((byte[]) ec.Value);
+                            if (list == null)
+                            {
+                                sb.Append($"{linePrefix}{space}{key} : Deserialize failed.\n");
+                                break;
+                            }
                             sb.Append($"{linePrefix}{space}{key} ({list.Count})\n");
                             sb.Append(list.ToVerboseString($"{linePrefix}{space}{space}"));
                             break;
