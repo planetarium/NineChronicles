@@ -160,7 +160,7 @@ namespace Nekoyume.Game.Character
         {
             base.OnDamage(dmg, critical);
 
-            var position = transform.TransformPoint(-0.1f, 1.2f, 0.0f);
+            var position = transform.TransformPoint(-0.1f, 0.6f, 0.0f);
             var force = new Vector3(-0.02f, 0.4f);
             var txt = dmg.ToString();
             PopUpDmg(position, force, txt, critical);
