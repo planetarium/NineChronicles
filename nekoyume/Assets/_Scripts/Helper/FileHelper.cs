@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Nekoyume.Helper
 {
-    public class FileHelper
+    public static class FileHelper
     {
 //        public static void Save(string fileName, string data)
 //        {

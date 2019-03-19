@@ -108,7 +108,7 @@ namespace Nekoyume.Action
                 Debug.Log($"created block index: {task.Result.Index}");
                 
                 #if BLOCK_LOG_USE
-                FileHelper.AppendAllText($"Block.log", task.Result.ToVerboseString());
+                FileHelper.AppendAllText("Block.log", task.Result.ToVerboseString());
                 #endif
             }
         }
