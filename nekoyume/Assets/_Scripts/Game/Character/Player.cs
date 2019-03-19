@@ -160,8 +160,8 @@ namespace Nekoyume.Game.Character
         {
             base.OnDamage(dmg, critical);
 
-            var position = transform.TransformPoint(UnityEngine.Random.Range(-0.6f, -0.4f), 1.0f, 0.0f);
-            var force = new Vector3(-0.02f, 0.02f, 0.0f);
+            var position = transform.TransformPoint(-0.1f, 1.2f, 0.0f);
+            var force = new Vector3(-0.02f, 0.4f);
             var txt = dmg.ToString();
             PopUpDmg(position, force, txt, critical);
 
@@ -187,14 +187,7 @@ namespace Nekoyume.Game.Character
             var pos = transform.position;
             pos.x -= 0.2f;
             pos.y += 0.32f;
-            if (Random.value < 0.7f)
-            {
-                VfxFactory.instance.Create<VfxBattleDamage01>(pos).Play();
-            }
-            else
-            {
-                VfxFactory.instance.Create<VfxBattleHeal01>(pos).Play();
-            }
+            VfxFactory.instance.Create<VfxBattleDamage01>(pos).Play();
         }
 
         private void GetEXP(Enemy enemy)
