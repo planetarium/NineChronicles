@@ -7,6 +7,7 @@ using Nekoyume.Game.Item;
 using Nekoyume.Model;
 using UnityEngine;
 using UnityEngine.UI;
+using Object = System.Object;
 
 namespace Nekoyume.UI
 {
@@ -32,6 +33,12 @@ namespace Nekoyume.UI
 
         private IEnumerator SubmitAsync()
         {
+            var w = Find<LoadingScreen>();
+            if (!ReferenceEquals(w, null))
+            {
+                w.Show();   
+            }
+            
             var player = FindObjectOfType<Game.Character.Player>();
             if (player == null)
             {
@@ -48,6 +55,10 @@ namespace Nekoyume.UI
             Game.Event.OnStageStart.Invoke();
             Close();
 
+            if (!ReferenceEquals(w, null))
+            {
+                w.Close();
+            }
         }
         public void BackClick()
         {

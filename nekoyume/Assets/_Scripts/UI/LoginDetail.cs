@@ -38,6 +38,16 @@ namespace Nekoyume.UI
             Game.Event.OnLoginDetail.AddListener(Init);
         }
 
+        private void OnEnable()
+        {
+            ActionManager.Instance.DidAvatarLoaded += OnDidAvatarLoaded;
+        }
+
+        private void OnDisable()
+        {
+            ActionManager.Instance.DidAvatarLoaded -= OnDidAvatarLoaded;
+        }
+
         public void LoginClick()
         {
             btnLogin.SetActive(false);
@@ -62,6 +72,12 @@ namespace Nekoyume.UI
 
         public void CreateClick()
         {
+            var w = Find<LoadingScreen>();
+            if (!ReferenceEquals(w, null))
+            {
+                w.Show();   
+            }
+            
             btnCreate.SetActive(false);
             ActionManager.Instance.Init(_selectedIndex);
             var nickName = nameField.text;
@@ -154,6 +170,15 @@ namespace Nekoyume.UI
             PlayerPrefs.Save();
             deletePopUp.GetComponent<Widget>().Close();
             Init(_selectedIndex);
+        }
+
+        private void OnDidAvatarLoaded(object sender, Model.Avatar a)
+        {
+            var w = Find<LoadingScreen>();
+            if (!ReferenceEquals(w, null))
+            {
+                w.Close();
+            }
         }
     }
 }
