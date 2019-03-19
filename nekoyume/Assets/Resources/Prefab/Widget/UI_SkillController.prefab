@@ -23,7 +23,7 @@ GameObject:
   - component: {fileID: 114784461502719916}
   - component: {fileID: 114241078309634832}
   m_Layer: 5
-  m_Name: SkillController
+  m_Name: UI_SkillController
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -97,6 +97,8 @@ MonoBehaviour:
   Icon: {fileID: 114729922370563082}
   LabelCount: {fileID: 0}
   LabelEquip: {fileID: 0}
+  toggled: 0
+  outLine: {fileID: 0}
 --- !u!114 &114241078309634832
 MonoBehaviour:
   m_ObjectHideFlags: 1

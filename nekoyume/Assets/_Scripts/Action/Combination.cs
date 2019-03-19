@@ -27,11 +27,10 @@ namespace Nekoyume.Action
             result = int.Parse(plainValue["result"].ToString());
         }
 
-        public override AddressStateMap Execute(IActionContext actionCtx)
+        public override IAccountStateDelta Execute(IActionContext actionCtx)
         {
-            var to = actionCtx.To;
             var states = actionCtx.PreviousStates;
-            var ctx = (Context) states.GetValueOrDefault(to);
+            var ctx = (Context) states.GetState(actionCtx.Signer) ?? CreateNovice.CreateContext("dummy");
             var player = new Player(ctx.avatar);
             var materials = new List<int>
             {
@@ -71,7 +70,7 @@ namespace Nekoyume.Action
                     player.inventory.Add(combined);
                 }
                 ctx.avatar.Update(player);
-                return (AddressStateMap) states.SetItem(to, ctx);
+                return states.SetState(actionCtx.Signer, ctx);
             }
             throw new InvalidActionException();
         }
