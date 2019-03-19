@@ -13,6 +13,7 @@ namespace Nekoyume.UI
     {
         public GameObject btnLogin;
         public GameObject btnDelete;
+        public GameObject btnCreate;
         public InputField nameField;
         public GameObject deletePopUp;
         public Text textHp;
@@ -24,6 +25,8 @@ namespace Nekoyume.UI
         public GameObject statusDetail;
         public GameObject character;
         public GameObject profileImage;
+        public GameObject menuSelect;
+        public GameObject menuCreate;
         private int _selectedIndex;
         private Model.Avatar _avatar;
 
@@ -40,11 +43,6 @@ namespace Nekoyume.UI
             btnLogin.SetActive(false);
             nameField.gameObject.SetActive(false);
             ActionManager.Instance.Init(_selectedIndex);
-            if (_avatar == null)
-            {
-                var nickName = nameField.text;
-                ActionManager.Instance.CreateNovice(nickName);
-            }
             ActionManager.Instance.StartSync();
         }
 
@@ -62,11 +60,21 @@ namespace Nekoyume.UI
             login.Show();
         }
 
+        public void CreateClick()
+        {
+            btnCreate.SetActive(false);
+            ActionManager.Instance.Init(_selectedIndex);
+            var nickName = nameField.text;
+            ActionManager.Instance.CreateNovice(nickName);
+            ActionManager.Instance.StartSync();
+        }
+
         private void Init(int index)
         {
             _selectedIndex = index;
             int level = 1;
             var active = true;
+            var imagePath = "character_0003/character_01";
             try
             {
                 _avatar = ActionManager.Instance.Avatars[_selectedIndex];
@@ -79,14 +87,7 @@ namespace Nekoyume.UI
                     active = false;
                     _avatar = null;
                     nameField.text = "";
-                    var image = character.GetComponent<Image>();
-                    var sprite = Resources.Load<Sprite>($"avatar/character_02");
-                    if (sprite != null)
-                    {
-                        image.sprite = sprite;
-                    }
-                    var btnText = btnLogin.GetComponentInChildren<Text>();
-                    btnText.text = "캐릭터 생성";
+                    imagePath = "character_02";
                 }
                 else
                 {
@@ -129,6 +130,14 @@ namespace Nekoyume.UI
 
             var statusDetailScript = statusDetail.GetComponent<StatusDetail>();
             statusDetailScript.Init(statsData);
+            menuCreate.SetActive(!active);
+            menuSelect.SetActive(active);
+            var image = character.GetComponent<Image>();
+            var sprite = Resources.Load<Sprite>($"avatar/{imagePath}");
+            if (sprite != null)
+            {
+                image.sprite = sprite;
+            }            
             Show();
         }
 
