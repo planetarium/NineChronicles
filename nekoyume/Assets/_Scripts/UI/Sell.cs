@@ -64,6 +64,7 @@ namespace Nekoyume.UI
                 cartItem.info.text = "info";
                 cartItem.price.text = "1";
                 cartItem.icon.sprite = slot.Icon.sprite;
+                cartItem.icon.SetNativeSize();
                 cartItem.item = slotItem;
                 if (_selectedSlot != slot)
                 {

@@ -109,6 +109,7 @@ namespace Nekoyume.UI
                 cartItem.info.text = slotItem.ToItemInfo();
                 cartItem.flavour.text = slotItem.Data.Flavour;
                 cartItem.icon.sprite = slot.Icon.sprite;
+                cartItem.icon.SetNativeSize();
                 cartItem.item = slotItem;
                 btnEquip.SetActive(slotItem is ItemUsable);
             }
