@@ -19,6 +19,7 @@ namespace Nekoyume.UI
         {
             icon.sprite = selected.icon.sprite;
             icon.gameObject.SetActive(true);
+            icon.SetNativeSize();
             item = (Equipment) selected.item;
             if (button != null)
             {
@@ -42,6 +43,7 @@ namespace Nekoyume.UI
                 sprite = Resources.Load<Sprite>("images/item_301001");
             icon.sprite = sprite;
             icon.gameObject.SetActive(true);
+            icon.SetNativeSize();
             item = equipment;
             if (button != null)
             {
