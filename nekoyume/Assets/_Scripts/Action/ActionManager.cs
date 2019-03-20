@@ -46,6 +46,9 @@ namespace Nekoyume.Action
         public Shop shop;
         public Tables tables;
 
+        private IEnumerator _miner;
+        private IEnumerator _txProcessor;
+
         private void Awake()
         {
             DontDestroyOnLoad(gameObject);
@@ -117,11 +120,6 @@ namespace Nekoyume.Action
             }
         }
 
-        private void StartMine()
-        {
-            StartCoroutine(agent.Mine());
-        }
-
         public void UpdateItems(List<Inventory.InventoryItem> items)
         {
             Avatar.Items = items;
@@ -179,8 +177,13 @@ namespace Nekoyume.Action
             agent.DidReceiveAction += ReceiveAction;
             agent.UpdateShop += UpdateShop;
 
+            _miner = agent.Mine();
+            _txProcessor = agent.ProcessTx();
+
+            StartCoroutine(_miner);
+            StartCoroutine(_txProcessor);
+
             Debug.Log($"User Address: 0x{agent.UserAddress.ToHex()}");
-            StartMine();
         }
 
         private void UpdateShop(object sender, Shop newShop)

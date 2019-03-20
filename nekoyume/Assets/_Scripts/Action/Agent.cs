@@ -87,39 +87,42 @@ namespace Nekoyume.Action
             }
         }
 
+        public IEnumerator ProcessTx() 
+        {
+            var actions = new List<ActionBase>();
+
+            while (true)
+            {
+                ActionBase action;
+                while (queuedActions.TryDequeue(out action))
+                {
+                    actions.Add(action);
+                }
+                
+                if (actions.Count > 0)
+                {
+                    StageTransaction(actions);
+                    actions.Clear();
+                }
+
+                yield return new WaitForSeconds(interval);
+            }
+        }
+
         public IEnumerator Mine()
         {
             while (true)
             {
-                var processedActions = new List<ActionBase>();
-                for (var i = 0; i < queuedActions.Count; i++)
+                var task = Task.Run(() =>
                 {
-                    ActionBase action;
-                    queuedActions.TryDequeue(out action);
-                    if (action != null)
-                    {
-                        processedActions.Add(action);
-                    }
-                }
-
-                if (processedActions.Count > 0)
-                {
-                    var task = Task.Run(() =>
-                    {
-                        StageTransaction(processedActions);
-                        return blocks.MineBlock(UserAddress);
-                    });
-                    yield return new WaitUntil(() => task.IsCompleted);
-                    Debug.Log($"created block index: {task.Result.Index}");
+                    return blocks.MineBlock(UserAddress);
+                });
+                yield return new WaitUntil(() => task.IsCompleted);
+                Debug.Log($"created block index: {task.Result.Index}");
 
 #if BLOCK_LOG_USE
-                    FileHelper.AppendAllText("Block.log", task.Result.ToVerboseString());
+                FileHelper.AppendAllText("Block.log", task.Result.ToVerboseString());
 #endif
-                }
-                else
-                {
-                    yield return new WaitForSeconds(interval);
-                }
             }
         }
 
