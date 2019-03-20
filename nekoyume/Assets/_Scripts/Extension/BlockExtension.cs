@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Libplanet;
 using Libplanet.Blocks;
 using Libplanet.Tx;
 using Nekoyume.Action;
@@ -40,10 +41,9 @@ namespace Nekoyume
         public static string ToVerboseString(this Transaction<ActionBase> t, string linePrefix = "")
         {
             var sb = new StringBuilder($"{linePrefix}- Transaction<ActionBase> | {t.Id} | {t.Timestamp.ToString()}\n");
-            sb.Append($"{linePrefix}{space}Sender : {t.Sender.ToString()}\n");
-            sb.Append($"{linePrefix}{space}PublicKey : {Convert.ToBase64String(t.PublicKey.Format(false))}\n");
-            sb.Append($"{linePrefix}{space}Recipient : {t.Recipient.ToString()}\n");
-            sb.Append($"{linePrefix}{space}Signature : {Convert.ToBase64String(t.Signature)}\n");
+            sb.Append($"{linePrefix}{space}Signer: {t.Signer.ToString()}\n");
+            sb.Append($"{linePrefix}{space}PublicKey: {ByteUtil.Hex(t.PublicKey.Format(true))}\n");
+            sb.Append($"{linePrefix}{space}Signature: {ByteUtil.Hex(t.Signature)}\n");
             sb.Append($"{linePrefix}{space}Actions ({t.Actions.Count})\n");
             using (var ae = t.Actions.GetEnumerator())
             {
