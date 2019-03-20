@@ -18,7 +18,14 @@ namespace Nekoyume.Action
             name = (string) plainValue["name"];
         }
 
-        public override AddressStateMap Execute(IActionContext actionCtx)
+        public static Context CreateContext(string name)
+        {
+            Avatar avatar = CreateAvatar(name);
+            var ctx = new Context(avatar);
+            return ctx;
+        }
+
+        public static Avatar CreateAvatar(string name)
         {
             var avatar = new Avatar
             {
@@ -32,18 +39,24 @@ namespace Nekoyume.Action
             };
             var table = ActionManager.Instance.tables.Item;
             // equipments id from item_equip.csv
-            foreach (var id in new []{304001, 304002, 304003, 308001, 308002, 308003})
+            foreach (var id in new[] {304001, 304002, 304003, 308001, 308002, 308003})
             {
                 Item itemData;
                 table.TryGetValue(id, out itemData);
                 var equipment = ItemBase.ItemFactory(itemData);
                 avatar.Items.Add(new Inventory.InventoryItem(equipment));
             }
-            var states = actionCtx.PreviousStates;
-            var to = actionCtx.To;
-            var ctx = new Context(avatar);
-            return (AddressStateMap) states.SetItem(to, ctx);
+
+            return avatar;
         }
+
+        public override IAccountStateDelta Execute(IActionContext actionCtx)
+        {
+            IAccountStateDelta states = actionCtx.PreviousStates;
+            Context ctx = CreateContext(name);
+            return states.SetState(actionCtx.Signer, ctx);
+        }
+
         public override IImmutableDictionary<string, object> PlainValue => new Dictionary<string, object>()
         {
             ["name"] = name,

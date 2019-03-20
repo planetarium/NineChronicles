@@ -23,11 +23,10 @@ namespace Nekoyume.Action
             Equipments = ByteSerializer.Deserialize<List<Equipment>>((byte[]) plainValue["equipments"]);
         }
 
-        public override AddressStateMap Execute(IActionContext actionCtx)
+        public override IAccountStateDelta Execute(IActionContext actionCtx)
         {
             var states = actionCtx.PreviousStates;
-            var to = actionCtx.To;
-            var ctx = (Context) states.GetValueOrDefault(to);
+            var ctx = (Context) states.GetState(actionCtx.Signer) ?? CreateNovice.CreateContext("dummy");
             var current = ctx.avatar.Items.Select(i => i.Item).OfType<Equipment>().ToArray();
             if (Equipments.Count > 0)
             {
@@ -54,7 +53,7 @@ namespace Nekoyume.Action
             var player = simulator.Simulate();
             ctx.avatar.Update(player);
             ctx.battleLog = simulator.Log;
-            return (AddressStateMap) states.SetItem(to, ctx);
+            return states.SetState(actionCtx.Signer, ctx);
         }
     }
 }

@@ -115,11 +115,10 @@ namespace Nekoyume.Action
 
         private void StageTransaction(IList<ActionBase> actions)
         {
-            var tx = Transaction<ActionBase>.Make(
+            var tx = Transaction<ActionBase>.Create(
                 privateKey,
-                UserAddress,
                 actions,
-                DateTime.UtcNow
+                timestamp: DateTime.UtcNow
             );
             blocks.StageTransactions(new HashSet<Transaction<ActionBase>> {tx});
         }
