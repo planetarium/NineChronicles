@@ -16,7 +16,7 @@ namespace Nekoyume.UI
         public void ShowButtons(bool value)
         {
             btnQuest.SetActive(value);
-            btnCombine.SetActive(false);
+            btnCombine.SetActive(value);
             btnShop.SetActive(value);
             btnTemple.SetActive(value);
         }
@@ -65,6 +65,13 @@ namespace Nekoyume.UI
         public void ShopClick()
         {
             Find<Shop>().Show();
+            Find<Status>()?.Close();
+            Close();
+        }
+
+        public void CombinationClick()
+        {
+            Find<Combination>()?.Show();
             Find<Status>()?.Close();
             Close();
         }

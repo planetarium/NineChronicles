@@ -28,6 +28,7 @@ namespace Nekoyume.UI
             Widget.Create<BattleResult>();
             Widget.Create<QuestPreparation>();
             Widget.Create<LoadingScreen>();
+            Widget.Create<Combination>();
 #if DEBUG
             Widget.Create<Cheat>(true);
 #endif

@@ -45,9 +45,9 @@ namespace Nekoyume.Action
                 chainId);
             queuedActions = new ConcurrentQueue<ActionBase>();
             
-            #if BLOCK_LOG_USE
+#if BLOCK_LOG_USE
             FileHelper.WriteAllText("Block.log", "");
-            #endif
+#endif
         }
 
         public Address UserAddress => privateKey.PublicKey.ToAddress();
@@ -102,14 +102,24 @@ namespace Nekoyume.Action
                     }
                 }
 
-                StageTransaction(processedActions);
-                var task = Task.Run(() => blocks.MineBlock(UserAddress));
-                yield return new WaitUntil(() => task.IsCompleted);
-                Debug.Log($"created block index: {task.Result.Index}");
-                
-                #if BLOCK_LOG_USE
-                FileHelper.AppendAllText("Block.log", task.Result.ToVerboseString());
-                #endif
+                if (processedActions.Count > 0)
+                {
+                    var task = Task.Run(() =>
+                    {
+                        StageTransaction(processedActions);
+                        return blocks.MineBlock(UserAddress);
+                    });
+                    yield return new WaitUntil(() => task.IsCompleted);
+                    Debug.Log($"created block index: {task.Result.Index}");
+
+#if BLOCK_LOG_USE
+                    FileHelper.AppendAllText("Block.log", task.Result.ToVerboseString());
+#endif
+                }
+                else
+                {
+                    yield return new WaitForSeconds(interval);
+                }
             }
         }
 
