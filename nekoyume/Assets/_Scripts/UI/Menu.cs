@@ -71,7 +71,7 @@ namespace Nekoyume.UI
 
         public void CombinationClick()
         {
-            Find<Combination>().Show();
+            Find<Combination>()?.Show();
             Find<Status>()?.Close();
             Close();
         }
