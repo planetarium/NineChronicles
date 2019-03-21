@@ -55,6 +55,7 @@ namespace Nekoyume.Game.Character
         }
 
         public Item.Inventory Inventory;
+        private float _range = 1.2f;
 
         private void Awake()
         {
@@ -288,5 +289,8 @@ namespace Nekoyume.Game.Character
                 _weapon.spriteMesh = mesh;
             }
         }
+
+        public bool TargetInRange(CharacterBase target) =>
+            _range > Mathf.Abs(gameObject.transform.position.x - target.transform.position.x);
     }
 }

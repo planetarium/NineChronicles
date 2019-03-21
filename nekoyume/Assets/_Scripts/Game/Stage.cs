@@ -87,6 +87,8 @@ namespace Nekoyume.Game
             }
         }
 
+        private bool _currentEventFinished;
+
         private IEnumerator PlayAsync(BattleLog log)
         {
             var roomPlayer = GetComponentInChildren<Character.Player>();
@@ -100,14 +102,11 @@ namespace Nekoyume.Game
             foreach (EventBase e in log)
             {
                 {
+                    yield return new WaitUntil(() => _currentEventFinished);
                     if (!e.skip)
                     {
+                        _currentEventFinished = false;
                         e.Execute(this);
-                        if (!(e is Attack))
-                        {
-                            roomPlayer.StartRun();
-                        }
-                        yield return new WaitForSeconds(1.0f);
                     }
                 }
             }
@@ -133,7 +132,7 @@ namespace Nekoyume.Game
 
                 yield return new WaitForSeconds(1.5f);
                 yield return StartCoroutine(blind.FadeOut(1.0f));
-
+                _currentEventFinished = true;
             }
         }
 
@@ -145,6 +144,11 @@ namespace Nekoyume.Game
         }
 
         public void SpawnPlayer(Model.Player character)
+        {
+            StartCoroutine(CoSpawnPlayer(character));
+        }
+
+        private IEnumerator CoSpawnPlayer(Model.Player character)
         {
             var playerCharacter = GetComponentInChildren<Character.Player>();
             if (playerCharacter == null)
@@ -158,9 +162,16 @@ namespace Nekoyume.Game
             var cam = Camera.main.gameObject.GetComponent<ActionCamera>();
             cam.target = player.transform;
             Widget.Find<Status>().UpdatePlayer(player);
+            yield return null;
+            _currentEventFinished = true;
         }
 
         public void SpawnMonster(Monster monster)
+        {
+            StartCoroutine(CoSpawnMonster(monster));
+        }
+
+        private IEnumerator CoSpawnMonster(Monster monster)
         {
             var playerCharacter = GetComponentInChildren<Character.Player>();
             if (playerCharacter == null)
@@ -171,6 +182,8 @@ namespace Nekoyume.Game
             playerCharacter.StartRun();
             var spawner = GetComponentsInChildren<MonsterSpawner>().First();
             spawner.SetData(id, monster);
+            _currentEventFinished = true;
+            yield return null;
         }
 
         public void Dead(Model.CharacterBase character)
@@ -178,6 +191,11 @@ namespace Nekoyume.Game
         }
 
         public void Attack(int atk, Model.CharacterBase character, Model.CharacterBase target, bool critical)
+        {
+            StartCoroutine(CoAttack(atk, character, target, critical));
+        }
+
+        private IEnumerator CoAttack(int atk, Model.CharacterBase character, Model.CharacterBase target, bool critical)
         {
             Character.CharacterBase attacker;
             Character.CharacterBase defender;
@@ -187,6 +205,12 @@ namespace Nekoyume.Game
             {
                 attacker = player;
                 defender = enemies.FirstOrDefault(e => e.id == target.id);
+                if (!player.TargetInRange(defender))
+                {
+                    attacker.StartRun();
+                }
+
+                yield return new WaitUntil(() => player.TargetInRange(defender));
             }
             else
             {
@@ -196,8 +220,12 @@ namespace Nekoyume.Game
 
             if (attacker != null && defender != null)
             {
+                yield return new WaitForEndOfFrame();
                 attacker.Attack(atk, defender, critical);
             }
+
+            yield return new WaitForSeconds(1.0f);
+            _currentEventFinished = true;
         }
 
         public void DropItem(Monster character)
