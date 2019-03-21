@@ -1,3 +1,4 @@
+using Nekoyume.Action;
 using Nekoyume.Game.Character;
 using UnityEngine;
 using UnityEngine.UI;
@@ -57,7 +58,8 @@ namespace Nekoyume.UI
         {
             if (_player != null)
             {
-                TextLevelName.text = $"LV. {_player.Level} {_avatarName}";  
+                _avatarName = ActionManager.Instance.Avatar.Name;
+                TextLevelName.text = $"LV. {_player.Level} {_avatarName}";
                 TextHP.text = $"{_player.HP}/{_player.HPMax}";
                 TextExp.text = $"{_player.EXP}/{_player.EXPMax}";
 
