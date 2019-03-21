@@ -48,6 +48,8 @@ namespace Nekoyume.Action
 
         private IEnumerator _miner;
         private IEnumerator _txProcessor;
+        private IEnumerator _avatarUpdator;
+        private IEnumerator _shopUpdator;
 
         private void Awake()
         {
@@ -75,13 +77,8 @@ namespace Nekoyume.Action
                 DidAvatarLoaded?.Invoke(this, Avatar);
             }
 
-            StartCoroutine(agent.SyncShop());
-            StartCoroutine(Sync());
-        }
-
-        private IEnumerator Sync()
-        {
-            return agent.Sync();
+            StartCoroutine(_avatarUpdator);
+            StartCoroutine(_shopUpdator);
         }
 
         public void CreateNovice(string nickName)
@@ -177,8 +174,10 @@ namespace Nekoyume.Action
             agent.DidReceiveAction += ReceiveAction;
             agent.UpdateShop += UpdateShop;
 
-            _miner = agent.Mine();
-            _txProcessor = agent.ProcessTx();
+            _miner = agent.CoMiner();
+            _txProcessor = agent.CoTxProcessor();
+            _avatarUpdator = agent.CoAvatarUpdator();
+            _shopUpdator = agent.CoShopUpdator();
 
             StartCoroutine(_miner);
             StartCoroutine(_txProcessor);
