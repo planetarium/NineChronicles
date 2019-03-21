@@ -106,8 +106,12 @@ namespace Nekoyume.Action
                 
                 if (actions.Count > 0)
                 {
-                    StageActions(actions);
-                    actions.Clear();
+                    var task = Task.Run(() => 
+                    {
+                        StageActions(actions);
+                        actions.Clear();
+                    });
+                    yield return new WaitUntil(() => task.IsCompleted);
                 }
             }
         }
