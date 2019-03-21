@@ -47,6 +47,7 @@ namespace Nekoyume.UI
         private void OnDisable()
         {
             _sequence?.Kill();
+            _sequence = null;
         }
 
         // ~Mono
