@@ -23,7 +23,6 @@ namespace Nekoyume.Action
     public class Agent
     {
         internal readonly BlockChain<ActionBase> blocks;
-        private readonly float interval;
         private readonly PrivateKey privateKey;
         public readonly ConcurrentQueue<ActionBase> queuedActions;
 
@@ -31,14 +30,19 @@ namespace Nekoyume.Action
         private const string kItemEquipPath = "Assets/Resources/DataTable/item_equip.csv";
         private const string kItemPath = "Assets/Resources/DataTable/item.csv";
 
-        public Agent(PrivateKey privateKey, string path, Guid chainId, float interval = 3.0f)
+        private const float AvatarUpdateInterval = 3.0f;
+
+        private const float ShopUpdateInterval = 3.0f;
+
+        private const float TxProcessInterval = 3.0f;
+
+        public Agent(PrivateKey privateKey, string path, Guid chainId)
         {
             IBlockPolicy<ActionBase> policy = new BlockPolicy<ActionBase>(TimeSpan.FromMilliseconds(500));
 # if DEBUG
             policy = new DebugPolicy();
 #endif
             this.privateKey = privateKey;
-            this.interval = interval;
             blocks = new BlockChain<ActionBase>(
                 policy,
                 new FileStore(path),
@@ -56,11 +60,11 @@ namespace Nekoyume.Action
         public event EventHandler<Context> DidReceiveAction;
         public event EventHandler<Shop> UpdateShop;
 
-        public IEnumerator Sync()
+        public IEnumerator CoAvatarUpdator()
         {
             while (true)
             {
-                yield return new WaitForSeconds(interval);
+                yield return new WaitForSeconds(AvatarUpdateInterval);
                 var task = Task.Run(() => blocks.GetStates(new[] {UserAddress}));
                 yield return new WaitUntil(() => task.IsCompleted);
                 var ctx = (Context) task.Result.GetValueOrDefault(UserAddress);
@@ -72,11 +76,11 @@ namespace Nekoyume.Action
             }
         }
 
-        public IEnumerator SyncShop()
+        public IEnumerator CoShopUpdator()
         {
             while (true)
             {
-                yield return new WaitForSeconds(interval);
+                yield return new WaitForSeconds(ShopUpdateInterval);
                 var task = Task.Run(() => blocks.GetStates(new[] {ShopAddress}));
                 yield return new WaitUntil(() => task.IsCompleted);
                 var shop = (Shop) task.Result.GetValueOrDefault(ShopAddress);
@@ -87,43 +91,49 @@ namespace Nekoyume.Action
             }
         }
 
-        public IEnumerator Mine()
+        public IEnumerator CoTxProcessor() 
         {
+            var actions = new List<ActionBase>();
+
             while (true)
             {
-                var processedActions = new List<ActionBase>();
-                for (var i = 0; i < queuedActions.Count; i++)
+                yield return new WaitForSeconds(TxProcessInterval);
+                ActionBase action;
+                while (queuedActions.TryDequeue(out action))
                 {
-                    ActionBase action;
-                    queuedActions.TryDequeue(out action);
-                    if (action != null)
-                    {
-                        processedActions.Add(action);
-                    }
+                    actions.Add(action);
                 }
-
-                if (processedActions.Count > 0)
+                
+                if (actions.Count > 0)
                 {
-                    var task = Task.Run(() =>
+                    var task = Task.Run(() => 
                     {
-                        StageTransaction(processedActions);
-                        return blocks.MineBlock(UserAddress);
+                        StageActions(actions);
+                        actions.Clear();
                     });
                     yield return new WaitUntil(() => task.IsCompleted);
-                    Debug.Log($"created block index: {task.Result.Index}");
-
-#if BLOCK_LOG_USE
-                    FileHelper.AppendAllText("Block.log", task.Result.ToVerboseString());
-#endif
-                }
-                else
-                {
-                    yield return new WaitForSeconds(interval);
                 }
             }
         }
 
-        private void StageTransaction(IList<ActionBase> actions)
+        public IEnumerator CoMiner()
+        {
+            while (true)
+            {
+                var task = Task.Run(() =>
+                {
+                    return blocks.MineBlock(UserAddress);
+                });
+                yield return new WaitUntil(() => task.IsCompleted);
+                Debug.Log($"created block index: {task.Result.Index}");
+
+#if BLOCK_LOG_USE
+                FileHelper.AppendAllText("Block.log", task.Result.ToVerboseString());
+#endif
+            }
+        }
+
+        private void StageActions(IList<ActionBase> actions)
         {
             var tx = Transaction<ActionBase>.Create(
                 privateKey,
