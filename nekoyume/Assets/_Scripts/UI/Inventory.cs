@@ -106,8 +106,7 @@ namespace Nekoyume.UI
                     break;
                 }
 
-                var type = slot.Item.Data.Cls.ToEnumItemType();
-                if (targetTypes.Contains(type))
+                if (targetTypes.Contains(slot.Item.Data.Cls.ToEnumItemType()))
                 {
                     slot.SetAlpha(DisableAlpha);
                 }
