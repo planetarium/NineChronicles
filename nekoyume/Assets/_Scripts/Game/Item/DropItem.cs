@@ -16,6 +16,7 @@ namespace Nekoyume.Game.Item
         private const float DurationToGet = 1f;
         private const int SortOrder = 2000;
 
+        private static readonly Vector3 DefaultScale = Vector3.one * 0.625f;
         private static readonly float DelayAfterDrop = Mathf.Max(DurationToFade, DurationToDrop) + 0.8f;
         private static readonly Vector3 DropAmount = new Vector3(-0.1f, 0f);
         private static readonly Vector3 GetPosition = new Vector3(-2.99f, -1.84f);
@@ -25,7 +26,7 @@ namespace Nekoyume.Game.Item
         public ItemBase Item { get; private set; }
 
         private SpriteRenderer _renderer = null;
-        
+
         private Tweener _tweenerFade = null;
         private Sequence _sequenceDrop = null;
         private Sequence _sequenceGet = null;
@@ -41,7 +42,7 @@ namespace Nekoyume.Game.Item
 
             _renderer = GetComponent<SpriteRenderer>();
 
-            transform.localScale = Vector3.one * 0.625f;
+            transform.localScale = DefaultScale;
         }
 
         private void OnDisable()
