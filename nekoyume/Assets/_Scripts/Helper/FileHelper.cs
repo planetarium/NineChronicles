@@ -9,13 +9,13 @@ namespace Nekoyume.Helper
         public static void WriteAllText(string fileName, string text)
         {
             var path = Path.Combine(Application.persistentDataPath, fileName);
-            File.WriteAllText(Path.Combine(Application.persistentDataPath, fileName), text);
+            File.WriteAllText(path, text);
         }
         
         public static void AppendAllText(string fileName, string text)
         {
             var path = Path.Combine(Application.persistentDataPath, fileName);
-            File.AppendAllText(Path.Combine(Application.persistentDataPath, fileName), text);
+            File.AppendAllText(path, text);
         }
     }
 }

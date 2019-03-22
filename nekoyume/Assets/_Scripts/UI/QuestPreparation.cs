@@ -22,10 +22,14 @@ namespace Nekoyume.UI
         private Player _player;
         public Stage stage;
 
+        private Inventory _inventory = null;
+
         private void Awake()
         {
             Game.Event.OnSlotClick.AddListener(SlotClick);
             stage = GameObject.Find("Stage").GetComponent<Stage>();
+
+            _inventory = inventory.GetComponent<Inventory>();
         }
 
         public void QuestClick()
@@ -72,10 +76,11 @@ namespace Nekoyume.UI
             stage.LoadBackground("dungeon");
             _player = FindObjectOfType<Player>();
             _player.gameObject.transform.position = new Vector2(1.8f, -0.4f);
-            inventory.GetComponent<Inventory>().Show();
+            _inventory.Show();
+            _inventory.SetItemTypesToDisable(ItemBase.ItemType.Material);
             foreach (var equipment in _player.equipments)
             {
-                var type = (ItemBase.ItemType) Enum.Parse(typeof(ItemBase.ItemType), equipment.Data.Cls);
+                var type = equipment.Data.Cls.ToEnumItemType();
                 foreach (var slot in equipSlots)
                 {
                     var es = slot.GetComponent<EquipSlot>();
@@ -93,7 +98,7 @@ namespace Nekoyume.UI
         {
             stage.LoadBackground("room");
             _player.gameObject.transform.position = new Vector2(-2.4f, -1.3f);
-            inventory.GetComponent<Inventory>().Close();
+            _inventory.Close();
             itemInfo.GetComponent<Widget>().Close();
             Find<Menu>().Show();
             Find<Status>()?.Show();
@@ -128,7 +133,7 @@ namespace Nekoyume.UI
         public void EquipClick()
         {
             var item = itemInfo.GetComponent<SelectedItem>();
-            var type = (ItemBase.ItemType) Enum.Parse(typeof(ItemBase.ItemType), item.item.Data.Cls);
+            var type = item.item.Data.Cls.ToEnumItemType();
             foreach (var slot in equipSlots)
             {
                 var es = slot.GetComponent<EquipSlot>();
