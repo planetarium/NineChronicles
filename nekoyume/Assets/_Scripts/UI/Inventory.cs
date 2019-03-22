@@ -1,16 +1,19 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using Nekoyume.Action;
 using Nekoyume.Game.Item;
 using UnityEngine;
+using Uno.Extensions;
 
 namespace Nekoyume.UI
 {
     public class Inventory : Widget
     {
-        [SerializeField]
-        private Transform _grid;
-        [SerializeField]
-        private GameObject _slotBase;
+        private const float DisableAlpha = 0.3f;
+
+        [SerializeField] private Transform _grid;
+        [SerializeField] private GameObject _slotBase;
 
         private List<InventorySlot> _slots;
         private const int maxSlot = 42;
@@ -26,6 +29,7 @@ namespace Nekoyume.UI
                 slot.Item = null;
                 _slots.Add(slot);
             }
+
             _slotBase.SetActive(false);
             Game.Event.OnUpdateEquipment.AddListener(UpdateEquipment);
             Game.Event.OnSlotClick.AddListener(ToggleSlot);
@@ -65,6 +69,7 @@ namespace Nekoyume.UI
             for (int i = 0; i < maxSlot; ++i)
             {
                 InventorySlot slot = _slots[i];
+                slot.SetAlpha(1f);
                 if (items != null && items.Count > i)
                 {
                     var inventoryItem = items[i];
@@ -93,5 +98,22 @@ namespace Nekoyume.UI
             }
         }
 
+        public void SetItemTypesToDisable(params ItemBase.ItemType[] targetTypes)
+        {
+            for (int i = 0; i < maxSlot; i++)
+            {
+                var slot = _slots[i];
+                if (slot.Item == null)
+                {
+                    break;
+                }
+
+                var type = slot.Item.Data.Cls.ToEnumItemType();
+                if (targetTypes.Contains(type))
+                {
+                    slot.SetAlpha(DisableAlpha);
+                }
+            }
+        }
     }
 }

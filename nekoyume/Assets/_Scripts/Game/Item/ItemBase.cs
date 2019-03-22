@@ -33,6 +33,7 @@ namespace Nekoyume.Game.Item
 
         public enum ItemType
         {
+            None = -1,
             Material,
             Weapon,
             RangedWeapon,
@@ -46,7 +47,7 @@ namespace Nekoyume.Game.Item
 
         public static ItemBase ItemFactory(Data.Table.Item itemData)
         {
-            var type = (ItemType) Enum.Parse(typeof(ItemType), itemData.Cls);
+            var type = itemData.Cls.ToEnumItemType();
             switch (type)
             {
                 case ItemType.Material:

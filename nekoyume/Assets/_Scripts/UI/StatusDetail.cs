@@ -38,7 +38,7 @@ namespace Nekoyume.UI
             _player = FindObjectOfType<Player>();
             foreach (var equipment in _player.equipments)
             {
-                var type = (ItemBase.ItemType) Enum.Parse(typeof(ItemBase.ItemType), equipment.Data.Cls);
+                var type = equipment.Data.Cls.ToEnumItemType();
                 foreach (var slot in equipSlots)
                 {
                     var es = slot.GetComponent<EquipSlot>();

@@ -7,6 +7,8 @@ namespace Nekoyume.UI
 {
     public class InventorySlot : MonoBehaviour
     {
+        private static Sprite _defaultSprite = null;
+
         public Image Icon;
         public Text LabelCount;
         public Text LabelEquip;
@@ -14,6 +16,15 @@ namespace Nekoyume.UI
         public GameObject outLine;
 
         public ItemBase Item;
+        
+        // Mono
+
+        private void Awake()
+        {
+            _defaultSprite = Resources.Load<Sprite>("images/item_301001");
+        }
+
+        // ~Mono
 
         public void Clear()
         {
@@ -24,15 +35,20 @@ namespace Nekoyume.UI
 
         public void Set(ItemBase item, int count)
         {
+            Item = item;
+
             var sprite = Resources.Load<Sprite>($"images/item_{item.Data.Id}");
             if (sprite == null)
-                sprite = Resources.Load<Sprite>("images/item_301001");
+            {
+                sprite = _defaultSprite;
+            }
+
             Icon.sprite = sprite;
-            Icon.gameObject.SetActive(true);
             Icon.SetNativeSize();
+            Icon.gameObject.SetActive(true);
+
             LabelCount.text = count.ToString();
             LabelEquip.text = "";
-            Item = item;
             toggled = false;
             outLine.SetActive(toggled);
         }
@@ -42,6 +58,13 @@ namespace Nekoyume.UI
             toggled = !toggled;
             outLine.SetActive(toggled);
             Game.Event.OnSlotClick.Invoke(this);
+        }
+
+        public void SetAlpha(float alpha)
+        {
+            var color = Icon.color;
+            color.a = alpha;
+            Icon.color = color;
         }
     }
 }
