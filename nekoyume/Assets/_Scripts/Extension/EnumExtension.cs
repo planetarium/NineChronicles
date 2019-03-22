@@ -9,7 +9,9 @@ namespace Nekoyume
         
         public static ItemBase.ItemType ToEnumItemType(this string s)
         {
-            return (ItemBase.ItemType) Enum.Parse(TypeOfItemType, s);
+            ItemBase.ItemType result;
+            Enum.TryParse(s, out result);
+            return result;
         }
     }
 }
