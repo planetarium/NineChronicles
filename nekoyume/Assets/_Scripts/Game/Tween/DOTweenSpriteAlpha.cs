@@ -2,9 +2,9 @@
 using UnityEngine.UI;
 using DG.Tweening;
 
-namespace Nekoyume.UI.Tween
+namespace Nekoyume.Game.Tween
 {
-    public class DOTweenImageAlpha : MonoBehaviour
+    public class DOTweenSpriteAlpha : MonoBehaviour
     {
         public enum TweenType : int
         {
@@ -20,45 +20,46 @@ namespace Nekoyume.UI.Tween
         public float BeginValue = 0.0f;
         public float EndValue = 1.0f;
 
-        private Image _image;
+        private SpriteRenderer _sprite;
 
         public void Start()
         {
-            _image = GetComponent<Image>();
-            Invoke($"Play{TweenType_.ToString()}", 0.0f);
+            _sprite = GetComponent<SpriteRenderer>();
+            if (_sprite)
+                Invoke($"Play{TweenType_.ToString()}", 0.0f);
         }
 
         private void PlayForward()
         {
-            _image.DOFade(BeginValue, 0.0f);
+            _sprite.DOFade(BeginValue, 0.0f);
             if (TweenType.Yoyo == TweenType_)
             {
-                _image.DOFade(EndValue, Duration).onComplete = PlayReverse;
+                _sprite.DOFade(EndValue, Duration).onComplete = PlayReverse;
             }
             else if (TweenType.Refeat == TweenType_)
             {
-                _image.DOFade(EndValue, Duration).onComplete = PlayForward;
+                _sprite.DOFade(EndValue, Duration).onComplete = PlayForward;
             }
             else if (TweenType.PingPong == TweenType_)
             {
-                _image.DOFade(EndValue, Duration).onComplete = PlayReverse;
+                _sprite.DOFade(EndValue, Duration).onComplete = PlayReverse;
             }
             else
             {
-                _image.DOFade(EndValue, Duration);
+                _sprite.DOFade(EndValue, Duration);
             }
         }
-        
+
         private void PlayReverse()
         {
-            _image.DOFade(EndValue, 0.0f);
+            _sprite.DOFade(EndValue, 0.0f);
             if (TweenType.PingPong == TweenType_)
             {
-                _image.DOFade(BeginValue, Duration).onComplete = PlayForward;
+                _sprite.DOFade(BeginValue, Duration).onComplete = PlayForward;
             }
             else
             {
-                _image.DOFade(BeginValue, Duration);
+                _sprite.DOFade(BeginValue, Duration);
             }
         }
 

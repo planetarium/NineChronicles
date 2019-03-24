@@ -64,6 +64,7 @@ namespace Nekoyume.UI
 
         public void BackClick()
         {
+            Game.Event.OnNestEnter.Invoke();
             var login = Find<Login>();
             Close();
             login.Init();

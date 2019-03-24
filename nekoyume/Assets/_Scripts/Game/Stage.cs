@@ -21,6 +21,8 @@ namespace Nekoyume.Game
 
         private void Awake()
         {
+            Event.OnNestEnter.AddListener(OnNestEnter);
+            Event.OnLoginDetail.AddListener(OnLoginDetail);
             Event.OnRoomEnter.AddListener(OnRoomEnter);
             Event.OnPlayerDead.AddListener(OnPlayerDead);
             Event.OnStageStart.AddListener(OnStageStart);
@@ -39,7 +41,22 @@ namespace Nekoyume.Game
 
         private void Start()
         {
-            LoadBackground("nest");
+            OnNestEnter();
+        }
+
+        private void OnNestEnter()
+        {
+            gameObject.AddComponent<NestEntering>();
+        }
+
+        private void OnLoginDetail(int index)
+        {
+            var objectpool = GetComponent<Util.ObjectPool>();
+            var players = GetComponentsInChildren<Character.Player>(true);
+            foreach (var player in players)
+            {
+                objectpool.Remove<Character.Player>(player.gameObject);
+            }
         }
 
         private void OnRoomEnter()
