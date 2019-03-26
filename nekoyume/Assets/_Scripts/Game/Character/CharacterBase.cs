@@ -42,6 +42,7 @@ namespace Nekoyume.Game.Character
         public bool Stunned => gameObject.GetComponent<IStun>() != null;
         private const float Range = 1.6f;
         protected string _targetTag = "";
+        public bool attackEnd { get; private set; }
 
         private void Start()
         {
@@ -303,14 +304,16 @@ namespace Nekoyume.Game.Character
             gameObject.SetActive(false);
         }
 
-        public void Attack(int atk, CharacterBase target, bool critical)
+        public IEnumerator CoAttack(int atk, CharacterBase target, bool critical)
         {
+            attackEnd = false;
             RunSpeed = 0.0f;
             if (_anim != null)
             {
                 _anim.SetTrigger("Attack");
                 _anim.SetBool("Run", false);
             }
+            yield return new WaitUntil(() => attackEnd);
 
             if (target != null)
             {
@@ -354,6 +357,11 @@ namespace Nekoyume.Game.Character
         private bool CanRun()
         {
             return !(Mathf.Approximately(RunSpeed, 0f));
+        }
+
+        protected void AttackEnd()
+        {
+            attackEnd = true;
         }
     }
 }

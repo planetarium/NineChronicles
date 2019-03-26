@@ -75,6 +75,8 @@ MonoBehaviour:
   ATK: 0
   DEF: 0
   Power: 100
+  RunSpeed: 0
+  DataId: 0
   RewardExp: 0
 --- !u!212 &212960525140282936
 SpriteRenderer:
