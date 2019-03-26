@@ -15,6 +15,7 @@ namespace Nekoyume.Game.Item
         private const float DurationToGet = 1f;
         private const int SortOrder = 2000;
         private const float DistanceForInactive = 0.3f;
+        private const float MultiplyForLerpSpeed = 2f;
 
         private static readonly Vector3 DefaultScale = Vector3.one * 0.625f;
         private static readonly float DelayAfterDrop = Mathf.Max(DurationToFade, DurationToDrop) + 0.8f;
@@ -44,8 +45,6 @@ namespace Nekoyume.Game.Item
                     throw new NotFoundComponentException("Not found `Camera` component with `Camera.main`.");
                 }
             }
-
-            UpdateInventoryPosition();
 
             _renderer = GetComponent<SpriteRenderer>();
 
@@ -98,7 +97,7 @@ namespace Nekoyume.Game.Item
             while (true)
             {
                 UpdateInventoryPosition();
-                pos = Vector3.Lerp(transform.position, _inventoryPosition, Time.deltaTime * 2f);
+                pos = Vector3.Lerp(transform.position, _inventoryPosition, Time.deltaTime * MultiplyForLerpSpeed);
                 transform.position = pos;
 
                 if ((_inventoryPosition - pos).magnitude < DistanceForInactive)

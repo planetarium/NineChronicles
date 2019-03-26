@@ -173,12 +173,6 @@ namespace Nekoyume.UI
             }
         }
 
-        public void CloseInfo()
-        {
-            _selectedSlot.SlotClick();
-            _selectedSlot = null;
-        }
-
         private void SetActiveButtonEquip(bool isActive)
         {
             buttonSellImage.enabled = isActive;
