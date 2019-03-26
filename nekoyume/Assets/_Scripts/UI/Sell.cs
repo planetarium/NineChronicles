@@ -20,8 +20,6 @@ namespace Nekoyume.UI
         public Image buttonSellImage = null;
         public Text buttonSellText = null;
 
-        private InventorySlot _selectedSlot = null;
-
         // Mono
 
         private void Awake()
@@ -88,7 +86,6 @@ namespace Nekoyume.UI
                 return;
             }
 
-            _selectedSlot = slot;
             itemInfoSelectedItem.SetItem(slot.Item);
             itemInfoSelectedItem.SetIcon(slot.Icon.sprite);
             SetActiveButtonSell(true);
