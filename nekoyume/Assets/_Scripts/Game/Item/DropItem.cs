@@ -1,8 +1,7 @@
-using System;
 using DG.Tweening;
 using System.Collections;
+using Nekoyume.UI;
 using UnityEngine;
-
 
 namespace Nekoyume.Game.Item
 {
@@ -15,13 +14,16 @@ namespace Nekoyume.Game.Item
         private const float DurationToDrop = 0.7f;
         private const float DurationToGet = 1f;
         private const int SortOrder = 2000;
+        private const float DistanceForInactive = 0.3f;
+        private const float MultiplyForLerpSpeed = 2f;
 
         private static readonly Vector3 DefaultScale = Vector3.one * 0.625f;
         private static readonly float DelayAfterDrop = Mathf.Max(DurationToFade, DurationToDrop) + 0.8f;
         private static readonly Vector3 DropAmount = new Vector3(-0.1f, 0f);
-        private static readonly Vector3 GetPosition = new Vector3(-2.99f, -1.84f);
 
         private static Camera _cam = null;
+        private static Status _status = null;
+        private static Vector3 _inventoryPosition = Vector3.zero;
 
         public ItemBase Item { get; private set; }
 
@@ -38,11 +40,22 @@ namespace Nekoyume.Game.Item
             if (ReferenceEquals(_cam, null))
             {
                 _cam = Camera.main;
+                if (ReferenceEquals(_cam, null))
+                {
+                    throw new NotFoundComponentException("Not found `Camera` component with `Camera.main`.");
+                }
             }
 
             _renderer = GetComponent<SpriteRenderer>();
 
             transform.localScale = DefaultScale;
+        }
+
+        private void OnEnable()
+        {
+            _status = Widget.Find<Status>();
+
+            UpdateInventoryPosition();
         }
 
         private void OnDisable()
@@ -73,7 +86,6 @@ namespace Nekoyume.Game.Item
         private IEnumerator CoPlay()
         {
             var pos = transform.position;
-            var endPos = _cam.transform.TransformPoint(GetPosition);
             var color = _renderer.color;
             color.a = BeginningAlphaOfFade;
             _renderer.color = color;
@@ -82,10 +94,37 @@ namespace Nekoyume.Game.Item
             _tweenerFade = _renderer.DOFade(1f, DurationToFade);
             _sequenceDrop = transform.DOJump(pos + DropAmount, DropJumpPower, 1, DurationToDrop);
             yield return new WaitForSeconds(DelayAfterDrop);
-            _sequenceGet = transform.DOJump(endPos, 1f, 1, DurationToGet);
-            yield return new WaitForSeconds(DurationToGet);
+            while (true)
+            {
+                UpdateInventoryPosition();
+                pos = Vector3.Lerp(transform.position, _inventoryPosition, Time.deltaTime * MultiplyForLerpSpeed);
+                transform.position = pos;
+
+                if ((_inventoryPosition - pos).magnitude < DistanceForInactive)
+                {
+                    break;
+                }
+                else
+                {
+                    yield return null;
+                }
+            }
 
             gameObject.SetActive(false);
+        }
+
+        private void UpdateInventoryPosition()
+        {
+            if (ReferenceEquals(_cam, null) ||
+                ReferenceEquals(_status, null))
+            {
+                _inventoryPosition = new Vector3(-2.99f, -1.84f);
+            }
+            else
+            {
+                _inventoryPosition = _cam.ScreenToWorldPoint(_status.BtnInventory.transform.position);
+                _inventoryPosition.z = transform.position.z;
+            }
         }
     }
 }

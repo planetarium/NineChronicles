@@ -7,30 +7,52 @@ using Nekoyume.Game.Character;
 using Nekoyume.Game.Item;
 using UnityEngine;
 using UnityEngine.Analytics;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
     public class QuestPreparation : Widget
     {
-        public GameObject itemInfo;
+        public Widget itemInfoWidget = null;
+        public SelectedItem itemInfoSelectedItem = null;
+
+        public Image buttonSellImage = null;
+        public Text buttonSellText = null;
+
         public GameObject[] usableSlots;
         public GameObject[] equipSlots;
-        public GameObject btnEquip;
         public GameObject btnQuest;
         public GameObject inventory;
-        private InventorySlot selectedSlot;
-        private Player _player;
+
         public Stage stage;
 
+        private Player _player = null;
         private Inventory _inventory = null;
+        private InventorySlot _selectedSlot = null;
+
+        // Mono
 
         private void Awake()
         {
-            Game.Event.OnSlotClick.AddListener(SlotClick);
             stage = GameObject.Find("Stage").GetComponent<Stage>();
 
             _inventory = inventory.GetComponent<Inventory>();
         }
+
+        private void OnEnable()
+        {
+            itemInfoSelectedItem.Clear();
+            SetActiveButtonEquip(false);
+
+            Game.Event.OnSlotClick.AddListener(SlotClick);
+        }
+
+        private void OnDisable()
+        {
+            Game.Event.OnSlotClick.RemoveListener(SlotClick);
+        }
+
+        // ~Mono
 
         public void QuestClick()
         {
@@ -44,7 +66,7 @@ namespace Nekoyume.UI
             {
                 loadingScreen.Show();
             }
-            
+
             btnQuest.SetActive(false);
             var currentId = ActionManager.Instance.battleLog?.id;
             var equipments = new List<Equipment>();
@@ -64,7 +86,7 @@ namespace Nekoyume.UI
             }
 
             Game.Event.OnStageStart.Invoke();
-            
+
             if (!ReferenceEquals(loadingScreen, null))
             {
                 loadingScreen.Close();
@@ -90,6 +112,7 @@ namespace Nekoyume.UI
                     }
                 }
             }
+
             btnQuest.SetActive(true);
             base.Show();
         }
@@ -99,52 +122,43 @@ namespace Nekoyume.UI
             stage.LoadBackground("room");
             _player.gameObject.transform.position = new Vector2(-2.4f, -1.3f);
             _inventory.Close();
-            itemInfo.GetComponent<Widget>().Close();
+            itemInfoWidget.Close();
             Find<Menu>().Show();
             Find<Status>()?.Show();
             base.Close();
         }
-        public void SlotClick(InventorySlot slot)
+
+        private void SlotClick(InventorySlot slot, bool toggled)
         {
-            if (gameObject.activeSelf && slot.Item != null)
+            if (ReferenceEquals(slot, null) ||
+                ReferenceEquals(slot.Item, null) ||
+                !toggled)
             {
-                var slotItem = slot.Item;
-                var cartItem = itemInfo.GetComponent<SelectedItem>();
-                cartItem.itemName.text = slotItem.Data.Name;
-                cartItem.info.text = slotItem.ToItemInfo();
-                cartItem.flavour.text = slotItem.Data.Flavour;
-                cartItem.icon.sprite = slot.Icon.sprite;
-                cartItem.icon.SetNativeSize();
-                cartItem.item = slotItem;
-                btnEquip.SetActive(slotItem is ItemUsable);
+                itemInfoSelectedItem.Clear();
+                SetActiveButtonEquip(false);
+                return;
             }
 
-            if (selectedSlot != slot)
-            {
-                itemInfo.GetComponent<Widget>().Show();
-            }
-            else
-            {
-                itemInfo.GetComponent<Widget>().Toggle();
-            }
-            selectedSlot = slot;
+            _selectedSlot = slot;
+            itemInfoSelectedItem.SetItem(slot.Item);
+            itemInfoSelectedItem.SetIcon(slot.Icon.sprite);
+            SetActiveButtonEquip(slot.Item is ItemUsable);
         }
 
         public void EquipClick()
         {
-            var item = itemInfo.GetComponent<SelectedItem>();
-            var type = item.item.Data.Cls.ToEnumItemType();
+            var type = itemInfoSelectedItem.item.Data.Cls.ToEnumItemType();
             foreach (var slot in equipSlots)
             {
                 var es = slot.GetComponent<EquipSlot>();
                 if (es.type == type)
                 {
-                    es.Equip(item);
+                    es.Equip(itemInfoSelectedItem);
                 }
 
                 if (type == ItemBase.ItemType.Set)
                 {
-                    _player.UpdateSet((SetItem)item.item);
+                    _player.UpdateSet((SetItem) itemInfoSelectedItem.item);
                 }
             }
         }
@@ -155,15 +169,14 @@ namespace Nekoyume.UI
             slot.Unequip();
             if (slot.type == ItemBase.ItemType.Set)
             {
-                _player.UpdateSet((SetItem)slot.item);
+                _player.UpdateSet((SetItem) slot.item);
             }
-
         }
 
-        public void CloseInfo()
+        private void SetActiveButtonEquip(bool isActive)
         {
-            selectedSlot.SlotClick();
-            selectedSlot = null;
+            buttonSellImage.enabled = isActive;
+            buttonSellText.enabled = isActive;
         }
     }
 }

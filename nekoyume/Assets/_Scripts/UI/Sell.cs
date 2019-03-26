@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Action;
+using Nekoyume.Game.Item;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -14,14 +15,32 @@ namespace Nekoyume.UI
         public List<SelectedItem> items;
         public Text totalPrice;
         public GameObject itemBase;
-        public GameObject itemInfo;
-        private InventorySlot _selectedSlot;
+        public Widget itemInfoWidget = null;
+        public SelectedItem itemInfoSelectedItem = null;
+        public Image buttonSellImage = null;
+        public Text buttonSellText = null;
+
+        // Mono
 
         private void Awake()
         {
             items = new List<SelectedItem>();
+        }
+
+        private void OnEnable()
+        {
+            itemInfoSelectedItem.Clear();
+            SetActiveButtonSell(false);
+
             Game.Event.OnSlotClick.AddListener(SlotClick);
         }
+
+        private void OnDisable()
+        {
+            Game.Event.OnSlotClick.RemoveListener(SlotClick);
+        }
+
+        // ~Mono
 
         public void CalcTotalPrice()
         {
@@ -32,6 +51,7 @@ namespace Nekoyume.UI
                 int.TryParse(item.price.text, out price);
                 total += price;
             }
+
             totalPrice.text = total.ToString();
         }
 
@@ -50,37 +70,31 @@ namespace Nekoyume.UI
             {
                 yield return new WaitForSeconds(1.0f);
             }
+
             Debug.Log("Sell");
             btnConfirm.SetActive(true);
         }
 
-        public void SlotClick(InventorySlot slot)
+        private void SlotClick(InventorySlot slot, bool toggled)
         {
-            if (gameObject.activeSelf && slot.Item != null)
+            if (ReferenceEquals(slot, null) ||
+                ReferenceEquals(slot.Item, null) ||
+                !toggled)
             {
-                var slotItem = slot.Item;
-                var cartItem = itemInfo.GetComponent<SelectedItem>();
-                cartItem.itemName.text = slotItem.Data.Id.ToString();
-                cartItem.info.text = "info";
-                cartItem.price.text = "1";
-                cartItem.icon.sprite = slot.Icon.sprite;
-                cartItem.icon.SetNativeSize();
-                cartItem.item = slotItem;
-                if (_selectedSlot != slot)
-                {
-                    itemInfo.GetComponent<Widget>().Show();
-                }
-                else
-                {
-                    itemInfo.GetComponent<Widget>().Toggle();
-                }
-                _selectedSlot = slot;
+                itemInfoSelectedItem.Clear();
+                SetActiveButtonSell(false);
+                return;
             }
+
+            itemInfoSelectedItem.SetItem(slot.Item);
+            itemInfoSelectedItem.SetIcon(slot.Icon.sprite);
+            SetActiveButtonSell(true);
         }
 
         public override void Show()
         {
             GetComponentInChildren<Inventory>()?.Show();
+            itemInfoWidget.Show();
             CalcTotalPrice();
             base.Show();
         }
@@ -92,8 +106,9 @@ namespace Nekoyume.UI
             {
                 Destroy(child.gameObject);
             }
+
             CalcTotalPrice();
-            itemInfo.GetComponent<Widget>().Close();
+            itemInfoWidget.Close();
             base.Close();
         }
 
@@ -112,10 +127,10 @@ namespace Nekoyume.UI
             CalcTotalPrice();
         }
 
-        public void CloseInfo()
+        private void SetActiveButtonSell(bool isActive)
         {
-            _selectedSlot.SlotClick();
-            _selectedSlot = null;
+            buttonSellImage.enabled = isActive;
+            buttonSellText.enabled = isActive;
         }
     }
 }
