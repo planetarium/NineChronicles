@@ -143,28 +143,6 @@ namespace Nekoyume.UI
             itemInfoSelectedItem.SetItem(slot.Item);
             itemInfoSelectedItem.SetIcon(slot.Icon.sprite);
             SetActiveButtonEquip(slot.Item is ItemUsable);
-//            if (gameObject.activeSelf && slot.Item != null)
-//            {
-//                var slotItem = slot.Item;
-//                
-//                itemInfoSelectedItem.itemName.text = slotItem.Data.Name;
-//                itemInfoSelectedItem.info.text = slotItem.ToItemInfo();
-//                itemInfoSelectedItem.flavour.text = slotItem.Data.Flavour;
-//                itemInfoSelectedItem.icon.sprite = slot.Icon.sprite;
-//                itemInfoSelectedItem.icon.SetNativeSize();
-//                itemInfoSelectedItem.item = slotItem;
-//                SetActiveButtonEquip(slotItem is ItemUsable);
-//            }
-//
-//            if (selectedSlot != slot)
-//            {
-//                itemInfoWidget.Show();
-//            }
-//            else
-//            {
-//                itemInfoWidget.Toggle();
-//            }
-//            selectedSlot = slot;
         }
 
         public void EquipClick()

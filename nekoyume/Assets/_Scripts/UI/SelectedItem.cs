@@ -15,9 +15,9 @@ namespace Nekoyume.UI
 
         public ItemBase item;
 
-        // Mono
-
         private bool _considerPrice = false;
+        
+        // Mono
 
         private void Awake()
         {
