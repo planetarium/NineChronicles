@@ -2,8 +2,6 @@ using DG.Tweening;
 using System.Collections;
 using Nekoyume.UI;
 using UnityEngine;
-using Uno;
-
 
 namespace Nekoyume.Game.Item
 {
@@ -43,7 +41,7 @@ namespace Nekoyume.Game.Item
                 _cam = Camera.main;
                 if (ReferenceEquals(_cam, null))
                 {
-                    throw new NotFoundException("Not found `Camera` component with `Camera.main`.");
+                    throw new NotFoundComponentException("Not found `Camera` component with `Camera.main`.");
                 }
             }
 
