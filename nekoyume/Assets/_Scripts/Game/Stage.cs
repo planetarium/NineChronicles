@@ -18,6 +18,7 @@ namespace Nekoyume.Game
         private GameObject _background;
         public int id;
         private BattleLog _battleLog;
+        private const float AttackDelay = 0.3f;
 
         private void Awake()
         {
@@ -237,11 +238,10 @@ namespace Nekoyume.Game
 
             if (attacker != null && defender != null)
             {
-                yield return new WaitForEndOfFrame();
-                attacker.Attack(atk, defender, critical);
-            }
+                yield return StartCoroutine(attacker.CoAttack(atk, defender, critical));
 
-            yield return new WaitForSeconds(1.0f);
+            }
+            yield return new WaitForSeconds(AttackDelay);
             _currentEventFinished = true;
         }
 

@@ -61,6 +61,7 @@ namespace Nekoyume.Game.Character
         {
             Event.OnEnemyDead.AddListener(GetEXP);
             Event.OnGetItem.AddListener(PickUpItem);
+            Event.OnAttackEnd.AddListener(AttackEnd);
             Inventory = new Item.Inventory();
             _targetTag = Tag.Enemy;
         }
