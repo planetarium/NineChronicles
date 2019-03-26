@@ -68,6 +68,7 @@ namespace Nekoyume.UI
             }
 
             btnQuest.SetActive(false);
+            _player.StartRun();
             var currentId = ActionManager.Instance.battleLog?.id;
             var equipments = new List<Equipment>();
             foreach (var slot in equipSlots)

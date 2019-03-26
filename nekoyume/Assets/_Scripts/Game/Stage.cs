@@ -7,6 +7,7 @@ using Nekoyume.Game.Character;
 using Nekoyume.Game.Entrance;
 using Nekoyume.Game.Factory;
 using Nekoyume.Game.Trigger;
+using Nekoyume.Game.Util;
 using Nekoyume.Model;
 using Nekoyume.UI;
 using UnityEngine;
@@ -19,6 +20,8 @@ namespace Nekoyume.Game
         public int id;
         private BattleLog _battleLog;
         private const float AttackDelay = 0.3f;
+        public GameObject dummy;
+        public float LoadingSpeed = 2.0f;
 
         private void Awake()
         {
@@ -52,7 +55,7 @@ namespace Nekoyume.Game
 
         private void OnLoginDetail(int index)
         {
-            var objectpool = GetComponent<Util.ObjectPool>();
+            var objectpool = GetComponent<ObjectPool>();
             var players = GetComponentsInChildren<Character.Player>(true);
             foreach (var player in players)
             {
@@ -112,10 +115,8 @@ namespace Nekoyume.Game
             var roomPlayer = GetComponentInChildren<Character.Player>();
             if (roomPlayer != null)
             {
-                roomPlayer.RunSpeed = 0.0f;
-                roomPlayer.gameObject.transform.position = new Vector2(-2.4f, -0.62f);
+                roomPlayer.StartRun();
             }
-
             StageEnter(log.stage);
             foreach (EventBase e in log)
             {
@@ -142,8 +143,14 @@ namespace Nekoyume.Game
             var tables = this.GetRootComponent<Tables>();
             if (tables.Stage.TryGetValue(stage, out data))
             {
+                var roomPlayer = GetComponentInChildren<Character.Player>();
+                if (roomPlayer != null)
+                {
+                    roomPlayer.RunSpeed = 0.0f;
+                    roomPlayer.gameObject.transform.position = roomPlayer.StageStartPosition;
+                }
                 var blind = Widget.Find<Blind>();
-                yield return StartCoroutine(blind.FadeIn(1.0f, $"STAGE {stage}"));
+                yield return StartCoroutine(blind.FadeIn(1.0f, $"STA;;;GE {stage}"));
 
                 LoadBackground(data.Background, 3.0f);
                 Widget.Find<Menu>().ShowWorld();
@@ -151,12 +158,13 @@ namespace Nekoyume.Game
                 yield return new WaitForSeconds(1.5f);
                 yield return StartCoroutine(blind.FadeOut(1.0f));
                 _currentEventFinished = true;
+                roomPlayer.StartRun();
             }
         }
 
         public void StageEnd(BattleLog.Result result)
         {
-            var objectPool = GetComponent<Util.ObjectPool>();
+            var objectPool = GetComponent<ObjectPool>();
             objectPool.ReleaseAll();
             Widget.Find<BattleResult>().Show(result);
         }
@@ -177,10 +185,28 @@ namespace Nekoyume.Game
             var player = playerCharacter.gameObject;
             playerCharacter.Init(character);
             playerCharacter.StartRun();
+            playerCharacter.RunSpeed *= LoadingSpeed;
             var cam = Camera.main.gameObject.GetComponent<ActionCamera>();
+            var status = Widget.Find<Status>();
+            // dummy for stage background moving.
+            dummy.transform.position = new Vector2(0, 0);
+            while (true)
+            {
+                var pos = Camera.main.ScreenToWorldPoint(status.transform.position);
+                Vector2 position = dummy.transform.position;
+                position.x += Time.deltaTime * playerCharacter.Speed;
+                dummy.transform.position = position;
+                cam.target = dummy.transform;
+                Debug.Log(position.x);
+                if (pos.x <= player.transform.position.x)
+                {
+                    playerCharacter.StartRun();
+                    break;
+                }
+                yield return new WaitForEndOfFrame();
+            }
             cam.target = player.transform;
-            Widget.Find<Status>().UpdatePlayer(player);
-            yield return null;
+            status.UpdatePlayer(player);
             _currentEventFinished = true;
         }
 

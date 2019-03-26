@@ -7,7 +7,6 @@ using Nekoyume.Game.Item;
 using Nekoyume.Model;
 using UnityEngine;
 using UnityEngine.UI;
-using Object = System.Object;
 
 namespace Nekoyume.UI
 {
@@ -44,6 +43,7 @@ namespace Nekoyume.UI
             {
                 var factory = GameObject.Find("Stage").GetComponent<PlayerFactory>();
                 player = factory.Create().GetComponent<Game.Character.Player>();
+                player.transform.position = player.StageStartPosition;
             }
             var currentId = ActionManager.Instance.battleLog?.id;
             ActionManager.Instance.HackAndSlash(player.equipments);

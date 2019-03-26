@@ -12,7 +12,6 @@ using Nekoyume.Game.Skill;
 using Nekoyume.Game.Vfx;
 using Nekoyume.UI;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 namespace Nekoyume.Game.Character
 {
@@ -23,6 +22,7 @@ namespace Nekoyume.Game.Character
         public int Level = 0;
         public int MPMax = 0;
         [SerializeField] private SpriteMeshInstance _weapon;
+        public Vector2 StageStartPosition => new Vector2(-6.0f, -0.62f);
 
         public long EXPMax { get; private set; }
 
@@ -65,6 +65,8 @@ namespace Nekoyume.Game.Character
             Inventory = new Item.Inventory();
             _targetTag = Tag.Enemy;
         }
+
+        public override float Speed => 1.0f;
 
         private void Start()
         {

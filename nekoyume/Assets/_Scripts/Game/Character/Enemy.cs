@@ -32,6 +32,8 @@ namespace Nekoyume.Game.Character
             }
         }
 
+        public override float Speed => 0.0f;
+
         public void InitAI(Monster statsData)
         {
             DataId = statsData.Id;
@@ -169,10 +171,5 @@ namespace Nekoyume.Game.Character
             _targetTag = Tag.Player;
         }
 
-        public override void StartRun()
-        {
-            base.StartRun();
-            RunSpeed = 0.0f;
-        }
     }
 }
