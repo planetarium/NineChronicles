@@ -22,8 +22,6 @@ namespace Nekoyume.Game.Character
         public int Level = 0;
         public int MPMax = 0;
         [SerializeField] private SpriteMeshInstance _weapon;
-        public Vector2 StageStartPosition => new Vector2(-6.0f, -0.62f);
-
         public long EXPMax { get; private set; }
 
         private ProgressBar _mpBar = null;

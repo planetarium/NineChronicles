@@ -21,7 +21,11 @@ namespace Nekoyume.Game
         private BattleLog _battleLog;
         private const float AttackDelay = 0.3f;
         public GameObject dummy;
-        public float LoadingSpeed = 2.0f;
+        public float loadingSpeed = 2.0f;
+        private readonly Vector2 _stageStartPosition = new Vector2(-6.0f, -0.62f);
+        public readonly Vector2 QuestPreparationPosition = new Vector2(1.8f, -0.4f);
+        public readonly Vector2 RoomPosition = new Vector2(-2.4f, -1.3f);
+
 
         private void Awake()
         {
@@ -112,11 +116,7 @@ namespace Nekoyume.Game
 
         private IEnumerator PlayAsync(BattleLog log)
         {
-            var roomPlayer = GetComponentInChildren<Character.Player>();
-            if (roomPlayer != null)
-            {
-                roomPlayer.StartRun();
-            }
+            GetPlayer(_stageStartPosition);
             StageEnter(log.stage);
             foreach (EventBase e in log)
             {
@@ -143,14 +143,9 @@ namespace Nekoyume.Game
             var tables = this.GetRootComponent<Tables>();
             if (tables.Stage.TryGetValue(stage, out data))
             {
-                var roomPlayer = GetComponentInChildren<Character.Player>();
-                if (roomPlayer != null)
-                {
-                    roomPlayer.RunSpeed = 0.0f;
-                    roomPlayer.gameObject.transform.position = roomPlayer.StageStartPosition;
-                }
+                var roomPlayer = ReadyPlayer();
                 var blind = Widget.Find<Blind>();
-                yield return StartCoroutine(blind.FadeIn(1.0f, $"STA;;;GE {stage}"));
+                yield return StartCoroutine(blind.FadeIn(1.0f, $"STAGE {stage}"));
 
                 LoadBackground(data.Background, 3.0f);
                 Widget.Find<Menu>().ShowWorld();
@@ -164,9 +159,38 @@ namespace Nekoyume.Game
 
         public void StageEnd(BattleLog.Result result)
         {
-            var objectPool = GetComponent<ObjectPool>();
-            objectPool.ReleaseAll();
             Widget.Find<BattleResult>().Show(result);
+            if (result == BattleLog.Result.Win)
+            {
+                StartCoroutine(CoSlideBg());
+            }
+            else
+            {
+                var pool = GetComponent<ObjectPool>();
+                pool.ReleaseAll();
+            }
+        }
+
+        private IEnumerator CoSlideBg()
+        {
+            var roomPlayer = RunPlayer();
+            dummy.transform.position = roomPlayer.transform.position;
+            var cam = Camera.main.GetComponent<ActionCamera>();
+            while (Widget.Find<BattleResult>().IsActive())
+            {
+                UpdateDummyPos(roomPlayer, cam);
+                yield return new WaitForEndOfFrame();
+            }
+            var pool = GetComponent<ObjectPool>();
+            pool.ReleaseAll();
+        }
+
+        private void UpdateDummyPos(Character.Player player, ActionCamera cam)
+        {
+            Vector2 position = dummy.transform.position;
+            position.x += Time.deltaTime * player.Speed;
+            dummy.transform.position = position;
+            cam.target = dummy.transform;
         }
 
         public void SpawnPlayer(Model.Player character)
@@ -176,28 +200,17 @@ namespace Nekoyume.Game
 
         private IEnumerator CoSpawnPlayer(Model.Player character)
         {
-            var playerCharacter = GetComponentInChildren<Character.Player>();
-            if (playerCharacter == null)
-            {
-                var factory = GetComponent<PlayerFactory>();
-                playerCharacter = factory.Create().GetComponent<Character.Player>();
-            }
-            var player = playerCharacter.gameObject;
+            var playerCharacter = RunPlayer();
             playerCharacter.Init(character);
-            playerCharacter.StartRun();
-            playerCharacter.RunSpeed *= LoadingSpeed;
-            var cam = Camera.main.gameObject.GetComponent<ActionCamera>();
+            var player = playerCharacter.gameObject;
+            var cam = Camera.main.GetComponent<ActionCamera>();
             var status = Widget.Find<Status>();
             // dummy for stage background moving.
             dummy.transform.position = new Vector2(0, 0);
             while (true)
             {
                 var pos = Camera.main.ScreenToWorldPoint(status.transform.position);
-                Vector2 position = dummy.transform.position;
-                position.x += Time.deltaTime * playerCharacter.Speed;
-                dummy.transform.position = position;
-                cam.target = dummy.transform;
-                Debug.Log(position.x);
+                UpdateDummyPos(playerCharacter, cam);
                 if (pos.x <= player.transform.position.x)
                 {
                     playerCharacter.StartRun();
@@ -217,12 +230,7 @@ namespace Nekoyume.Game
 
         private IEnumerator CoSpawnMonster(Monster monster)
         {
-            var playerCharacter = GetComponentInChildren<Character.Player>();
-            if (playerCharacter == null)
-            {
-                var factory = GetComponent<PlayerFactory>();
-                playerCharacter = factory.Create().GetComponent<Character.Player>();
-            }
+            var playerCharacter = GetPlayer();
             playerCharacter.StartRun();
             var spawner = GetComponentsInChildren<MonsterSpawner>().First();
             spawner.SetData(id, monster);
@@ -243,7 +251,7 @@ namespace Nekoyume.Game
         {
             Character.CharacterBase attacker;
             Character.CharacterBase defender;
-            var player = GetComponentInChildren<Character.Player>();
+            var player = GetPlayer();
             var enemies = GetComponentsInChildren<Enemy>();
             if (character is Model.Player)
             {
@@ -273,6 +281,49 @@ namespace Nekoyume.Game
 
         public void DropItem(Monster character)
         {
+        }
+
+        public Character.Player GetPlayer()
+        {
+            var player = GetComponentInChildren<Character.Player>();
+            if (ReferenceEquals(player, null))
+            {
+                var factory = GetComponent<PlayerFactory>();
+                player = factory.Create().GetComponent<Character.Player>();
+
+                if (ReferenceEquals(player, null))
+                {
+                    throw new NotFoundComponentException("Not found `Character.Player` component.");
+                }
+            }
+
+            return player;
+        }
+
+        public Character.Player GetPlayer(Vector2 position)
+        {
+            var player = GetPlayer();
+            player.transform.position = position;
+            return player;
+        }
+
+        private Character.Player RunPlayer()
+        {
+            var player = GetPlayer();
+            var transform1 = player.transform;
+            var position = transform1.position;
+            position.y = _stageStartPosition.y;
+            transform1.position = position;
+            player.StartRun();
+            player.RunSpeed *= loadingSpeed;
+            return player;
+        }
+
+        public Character.Player ReadyPlayer()
+        {
+            var player = GetPlayer(_stageStartPosition);
+            player.RunSpeed = 0.0f;
+            return player;
         }
     }
 }

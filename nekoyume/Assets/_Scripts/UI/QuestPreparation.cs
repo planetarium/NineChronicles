@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using Nekoyume.Action;
@@ -6,7 +5,6 @@ using Nekoyume.Game;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Item;
 using UnityEngine;
-using UnityEngine.Analytics;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
@@ -97,8 +95,7 @@ namespace Nekoyume.UI
         public override void Show()
         {
             stage.LoadBackground("dungeon");
-            _player = FindObjectOfType<Player>();
-            _player.gameObject.transform.position = new Vector2(1.8f, -0.4f);
+            _player = stage.GetPlayer(stage.QuestPreparationPosition);
             _inventory.Show();
             _inventory.SetItemTypesToDisable(ItemBase.ItemType.Material);
             foreach (var equipment in _player.equipments)
@@ -121,7 +118,7 @@ namespace Nekoyume.UI
         public override void Close()
         {
             stage.LoadBackground("room");
-            _player.gameObject.transform.position = new Vector2(-2.4f, -1.3f);
+            _player = stage.GetPlayer(stage.RoomPosition);
             _inventory.Close();
             itemInfoWidget.Close();
             Find<Menu>().Show();
