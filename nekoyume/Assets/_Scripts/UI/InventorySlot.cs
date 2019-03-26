@@ -57,7 +57,7 @@ namespace Nekoyume.UI
         {
             toggled = !toggled;
             outLine.SetActive(toggled);
-            Game.Event.OnSlotClick.Invoke(this);
+            Game.Event.OnSlotClick.Invoke(this, toggled);
         }
 
         public void SetAlpha(float alpha)

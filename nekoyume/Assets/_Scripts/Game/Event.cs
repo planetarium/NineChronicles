@@ -39,7 +39,7 @@ namespace Nekoyume.Game
         }
         public static readonly LoginDetail OnLoginDetail = new LoginDetail();
 
-        public class SlotClick : UnityEvent<InventorySlot>
+        public class SlotClick : UnityEvent<InventorySlot, bool>
         {
         }
         public static readonly  SlotClick OnSlotClick = new SlotClick();

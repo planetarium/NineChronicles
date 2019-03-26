@@ -33,7 +33,7 @@ namespace Nekoyume.UI
             Game.Event.OnSlotClick.AddListener(ToggleSlot);
         }
 
-        private void ToggleSlot(InventorySlot selected)
+        private void ToggleSlot(InventorySlot selected, bool toggled)
         {
             foreach (var slot in _slots)
             {
