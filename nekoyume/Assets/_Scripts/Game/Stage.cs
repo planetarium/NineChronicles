@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Linq;
 using DG.Tweening;
@@ -20,15 +21,57 @@ namespace Nekoyume.Game
         public int id;
         private BattleLog _battleLog;
         private const float AttackDelay = 0.3f;
-        public GameObject dummy;
+        // dummy for stage background moving.
+        [SerializeField]
+        private GameObject dummy;
         public float loadingSpeed = 2.0f;
         private readonly Vector2 _stageStartPosition = new Vector2(-6.0f, -0.62f);
         public readonly Vector2 QuestPreparationPosition = new Vector2(1.8f, -0.4f);
         public readonly Vector2 RoomPosition = new Vector2(-2.4f, -1.3f);
-
+        private bool _currentEventFinished;
+        private PlayerFactory _factory;
+        private MonsterSpawner _spawner;
+        private Camera _camera;
+        private ActionCamera _cam;
+        private ObjectPool _objectPool;
 
         private void Awake()
         {
+            _camera = Camera.main;
+            if (ReferenceEquals(_camera, null))
+            {
+                throw new NullReferenceException("`Camera.main` can't be null.");
+            }
+
+            _cam = _camera.GetComponent<ActionCamera>();
+            if (ReferenceEquals(_cam, null))
+            {
+                throw new NotFoundComponentException("Not found `ActionCamera`.");
+            }
+
+            _factory = GetComponent<PlayerFactory>();
+            if (ReferenceEquals(_factory, null))
+            {
+                throw new NotFoundComponentException("Not found `PlayerFactory`.");
+            }
+
+            _objectPool = GetComponent<ObjectPool>();
+            if (ReferenceEquals(_objectPool, null))
+            {
+                throw new NotFoundComponentException("Not found `ObjectPool`.");
+            }
+
+            _spawner = GetComponentInChildren<MonsterSpawner>();
+            if (ReferenceEquals(_spawner, null))
+            {
+                throw new NotFoundComponentException("Not found `MonsterSpawner`.");
+            }
+
+            if (ReferenceEquals(dummy, null))
+            {
+                throw new NullReferenceException("`Dummy` can't be null.");
+            }
+
             Event.OnNestEnter.AddListener(OnNestEnter);
             Event.OnLoginDetail.AddListener(OnLoginDetail);
             Event.OnRoomEnter.AddListener(OnRoomEnter);
@@ -59,11 +102,10 @@ namespace Nekoyume.Game
 
         private void OnLoginDetail(int index)
         {
-            var objectpool = GetComponent<ObjectPool>();
             var players = GetComponentsInChildren<Character.Player>(true);
             foreach (var player in players)
             {
-                objectpool.Remove<Character.Player>(player.gameObject);
+                _objectPool.Remove<Character.Player>(player.gameObject);
             }
         }
 
@@ -78,7 +120,7 @@ namespace Nekoyume.Game
 
         public void LoadBackground(string prefabName, float fadeTime = 0.0f)
         {
-            if (_background != null)
+            if (!(ReferenceEquals(_background, null)))
             {
                 if (_background.name.Equals(prefabName)) return;
                 if (fadeTime > 0.0f)
@@ -97,11 +139,9 @@ namespace Nekoyume.Game
 
             var resName = $"Prefab/Background/{prefabName}";
             var prefab = Resources.Load<GameObject>(resName);
-            if (prefab != null)
-            {
-                _background = Instantiate(prefab, transform);
-                _background.name = prefabName;
-            }
+            if (ReferenceEquals(prefab, null)) return;
+            _background = Instantiate(prefab, transform);
+            _background.name = prefabName;
         }
 
         public void Play(BattleLog log)
@@ -111,8 +151,6 @@ namespace Nekoyume.Game
                 StartCoroutine(PlayAsync(log));
             }
         }
-
-        private bool _currentEventFinished;
 
         private IEnumerator PlayAsync(BattleLog log)
         {
@@ -166,8 +204,7 @@ namespace Nekoyume.Game
             }
             else
             {
-                var pool = GetComponent<ObjectPool>();
-                pool.ReleaseAll();
+                _objectPool.ReleaseAll();
             }
         }
 
@@ -175,18 +212,17 @@ namespace Nekoyume.Game
         {
             var roomPlayer = RunPlayer();
             dummy.transform.position = roomPlayer.transform.position;
-            var cam = Camera.main.GetComponent<ActionCamera>();
             while (Widget.Find<BattleResult>().IsActive())
             {
-                UpdateDummyPos(roomPlayer, cam);
+                UpdateDummyPosition(roomPlayer, _cam);
                 yield return new WaitForEndOfFrame();
             }
-            var pool = GetComponent<ObjectPool>();
-            pool.ReleaseAll();
+            _objectPool.ReleaseAll();
         }
 
-        private void UpdateDummyPos(Character.Player player, ActionCamera cam)
+        private void UpdateDummyPosition(Character.Player player, ActionCamera cam)
         {
+            if (ReferenceEquals(cam, null)) throw new NotFoundComponentException("Not found `ActionCamera` component.");
             Vector2 position = dummy.transform.position;
             position.x += Time.deltaTime * player.Speed;
             dummy.transform.position = position;
@@ -203,14 +239,12 @@ namespace Nekoyume.Game
             var playerCharacter = RunPlayer();
             playerCharacter.Init(character);
             var player = playerCharacter.gameObject;
-            var cam = Camera.main.GetComponent<ActionCamera>();
             var status = Widget.Find<Status>();
-            // dummy for stage background moving.
             dummy.transform.position = new Vector2(0, 0);
             while (true)
             {
-                var pos = Camera.main.ScreenToWorldPoint(status.transform.position);
-                UpdateDummyPos(playerCharacter, cam);
+                var pos = _camera.ScreenToWorldPoint(status.transform.position);
+                UpdateDummyPosition(playerCharacter, _cam);
                 if (pos.x <= player.transform.position.x)
                 {
                     playerCharacter.StartRun();
@@ -218,7 +252,7 @@ namespace Nekoyume.Game
                 }
                 yield return new WaitForEndOfFrame();
             }
-            cam.target = player.transform;
+            _cam.target = player.transform;
             status.UpdatePlayer(player);
             _currentEventFinished = true;
         }
@@ -232,8 +266,7 @@ namespace Nekoyume.Game
         {
             var playerCharacter = GetPlayer();
             playerCharacter.StartRun();
-            var spawner = GetComponentsInChildren<MonsterSpawner>().First();
-            spawner.SetData(id, monster);
+            _spawner.SetData(id, monster);
             _currentEventFinished = true;
             yield return null;
         }
@@ -288,8 +321,8 @@ namespace Nekoyume.Game
             var player = GetComponentInChildren<Character.Player>();
             if (ReferenceEquals(player, null))
             {
-                var factory = GetComponent<PlayerFactory>();
-                player = factory.Create().GetComponent<Character.Player>();
+                var go = _factory.Create();
+                player = go.GetComponent<Character.Player>();
 
                 if (ReferenceEquals(player, null))
                 {
@@ -310,10 +343,10 @@ namespace Nekoyume.Game
         private Character.Player RunPlayer()
         {
             var player = GetPlayer();
-            var transform1 = player.transform;
-            var position = transform1.position;
+            var playerTransform = player.transform;
+            var position = playerTransform.position;
             position.y = _stageStartPosition.y;
-            transform1.position = position;
+            playerTransform.position = position;
             player.StartRun();
             player.RunSpeed *= loadingSpeed;
             return player;
