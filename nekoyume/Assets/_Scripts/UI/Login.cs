@@ -7,26 +7,33 @@ namespace Nekoyume.UI
 {
     public class Login : Widget
     {
+        public bool ready = false;
         public GameObject[] slots;
 
         private void Awake()
         {
-            Init();
+            Show();
         }
 
         public void SlotClick(int index)
         {
+            if (!ready)
+                return;
+
             Game.Event.OnLoginDetail.Invoke(index);
             gameObject.SetActive(false);
         }
 
-        public void Init()
+        public override void Show()
         {
+            base.Show();
+
             for (int i = 0; i < slots.Length; i++)
             {
                 var slot = slots[i];
                 var slotText = slot.GetComponentInChildren<Text>();
                 var button = slot.transform.Find("Character").Find("Button");
+                button.gameObject.SetActive(true);
                 try
                 {
                     var avatar = ActionManager.Instance.Avatars[i];
