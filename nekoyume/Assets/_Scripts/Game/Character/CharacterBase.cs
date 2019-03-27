@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace Nekoyume.Game.Character
 {
-    public class CharacterBase : MonoBehaviour
+    public abstract class CharacterBase : MonoBehaviour
     {
         public Root Root;
         public int HP = 0;
@@ -43,6 +43,8 @@ namespace Nekoyume.Game.Character
         private const float Range = 1.6f;
         protected string _targetTag = "";
         public bool attackEnd { get; private set; }
+
+        public abstract float Speed { get; }
 
         private void Start()
         {
@@ -345,9 +347,9 @@ namespace Nekoyume.Game.Character
             );
         }
 
-        public virtual void StartRun()
+        public void StartRun()
         {
-            RunSpeed = 1.0f;
+            RunSpeed = Speed;
             if (Root == null)
             {
                 InitBT();
