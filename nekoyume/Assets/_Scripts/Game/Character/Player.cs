@@ -58,7 +58,6 @@ namespace Nekoyume.Game.Character
         private void Awake()
         {
             Event.OnEnemyDead.AddListener(GetEXP);
-            Event.OnGetItem.AddListener(PickUpItem);
             Event.OnAttackEnd.AddListener(AttackEnd);
             Inventory = new Item.Inventory();
             _targetTag = Tag.Enemy;
@@ -218,12 +217,6 @@ namespace Nekoyume.Game.Character
             InitStats(model);
 
             UpdateHpBar();
-        }
-
-        private void PickUpItem(DropItem item)
-        {
-            Inventory.Add(item.Item);
-            ActionManager.Instance.UpdateItems(Inventory.items);
         }
 
         protected override void OnDisable()

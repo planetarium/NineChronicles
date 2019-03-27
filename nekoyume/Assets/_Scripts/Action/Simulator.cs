@@ -150,7 +150,7 @@ namespace Nekoyume.Action
                     item = ItemBase.ItemFactory(itemData);
                 }
             }
-            return new Model.Monster(monsterData, _player, item);
+            return new Model.Monster(monsterData, _player);
         }
     }
 }

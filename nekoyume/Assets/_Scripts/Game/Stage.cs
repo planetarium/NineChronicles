@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
 using Nekoyume.Action;
@@ -7,6 +8,7 @@ using Nekoyume.Data;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Entrance;
 using Nekoyume.Game.Factory;
+using Nekoyume.Game.Item;
 using Nekoyume.Game.Trigger;
 using Nekoyume.Game.Util;
 using Nekoyume.Model;
@@ -312,8 +314,9 @@ namespace Nekoyume.Game
             _currentEventFinished = true;
         }
 
-        public void DropItem(Monster character)
+        public void DropBox(List<ItemBase> items)
         {
+            throw new NotImplementedException();
         }
 
         public Character.Player GetPlayer()
