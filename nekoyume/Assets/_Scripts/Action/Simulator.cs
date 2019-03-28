@@ -44,6 +44,7 @@ namespace Nekoyume.Action
             foreach (var wave in waves)
             {
                 Characters = new List<CharacterBase> {_player};
+                int lastWave = _totalWave - 1;
                 foreach (var monster in wave)
                 {
                     _player.targets.Add(monster);
@@ -57,27 +58,15 @@ namespace Nekoyume.Action
 
                     if (_player.targets.Count == 0)
                     {
+                        var index = Math.Min(waves.IndexOf(wave), lastWave);
+                        var items = waveRewards[index];
+                        var dropBox = new DropBox
+                        {
+                            items = items
+                        };
+                        Log.Add(dropBox);
 
-                        var index = waves.IndexOf(wave);
-                        try
-                        {
-                            var items = waveRewards[index];
-                            var dropBox = new DropBox
-                            {
-                                items = items
-                            };
-                            Log.Add(dropBox);
-                        }
-                        catch (IndexOutOfRangeException e)
-                        {
-                            // ignored
-                        }
-                        catch (ArgumentOutOfRangeException e)
-                        {
-                            // ignored
-                        }
-
-                        if (index == _totalWave - 1)
+                        if (index == lastWave)
                         {
                             _player.stage++;
                             _result = BattleLog.Result.Win;
