@@ -156,7 +156,7 @@ namespace Nekoyume.Game
         private IEnumerator PlayAsync(BattleLog log)
         {
             GetPlayer(_stageStartPosition);
-            yield return StartCoroutine(StageEnterAsync(log.stage));
+            yield return StartCoroutine(CoStageEnter(log.stage));
             foreach (EventBase e in log)
             {
                 {
@@ -166,13 +166,13 @@ namespace Nekoyume.Game
             yield return StartCoroutine(CoStageEnd(log.result));
         }
 
-        private IEnumerator StageEnterAsync(int stage)
+        private IEnumerator CoStageEnter(int stage)
         {
             Data.Table.Stage data;
             var tables = this.GetRootComponent<Tables>();
             if (tables.Stage.TryGetValue(stage, out data))
             {
-                var roomPlayer = ReadyPlayer();
+                ReadyPlayer();
                 var blind = Widget.Find<Blind>();
                 yield return StartCoroutine(blind.FadeIn(1.0f, $"STAGE {stage}"));
 
@@ -181,7 +181,6 @@ namespace Nekoyume.Game
 
                 yield return new WaitForSeconds(1.5f);
                 yield return StartCoroutine(blind.FadeOut(1.0f));
-                roomPlayer.StartRun();
             }
         }
 
@@ -223,24 +222,28 @@ namespace Nekoyume.Game
 
         public IEnumerator CoSpawnPlayer(Model.Player character)
         {
-            var playerCharacter = RunPlayer();
+            var status = Widget.Find<Status>();
+            var pos = _camera.ScreenToWorldPoint(status.transform.position);
+            var playerPos = _stageStartPosition;
+            var playerCharacter = RunPlayer(playerPos);
+            playerPos.x = pos.x - 6.0f;
+            playerCharacter.transform.position = playerPos;
             playerCharacter.Init(character);
             var player = playerCharacter.gameObject;
-            var status = Widget.Find<Status>();
-            dummy.transform.position = new Vector2(0, 0);
+            status.UpdatePlayer(player);
+            _cam.target = player.transform;
             while (true)
             {
-                var pos = _camera.ScreenToWorldPoint(status.transform.position);
-                UpdateDummyPosition(playerCharacter, _cam);
+                Debug.Log($"pos: {pos.x}");
+                Debug.Log($"player: {player.transform.position.x}");
                 if (pos.x <= player.transform.position.x)
                 {
-                    playerCharacter.StartRun();
                     break;
                 }
+
                 yield return new WaitForEndOfFrame();
             }
-            _cam.target = player.transform;
-            status.UpdatePlayer(player);
+            yield return null;
         }
 
         public IEnumerator CoSpawnMonster(Monster monster)
@@ -324,12 +327,15 @@ namespace Nekoyume.Game
         private Character.Player RunPlayer()
         {
             var player = GetPlayer();
-            var playerTransform = player.transform;
-            var position = playerTransform.position;
-            position.y = _stageStartPosition.y;
-            playerTransform.position = position;
             player.StartRun();
             player.RunSpeed *= loadingSpeed;
+            return player;
+        }
+
+        private Character.Player RunPlayer(Vector2 position)
+        {
+            var player = RunPlayer();
+            player.transform.position = position;
             return player;
         }
 
