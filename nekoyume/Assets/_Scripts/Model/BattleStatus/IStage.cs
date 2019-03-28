@@ -1,13 +1,15 @@
+using System.Collections;
+using System.Collections.Generic;
+using Nekoyume.Game.Item;
+
 namespace Nekoyume.Model
 {
     public interface IStage
     {
-        void SpawnPlayer(Player character);
-        void SpawnMonster(Monster character);
-        void StageEnter(int stage);
-        void StageEnd(BattleLog.Result result);
-        void Dead(CharacterBase character);
-        void Attack(int atk, CharacterBase character, CharacterBase target, bool critical);
-        void DropItem(Monster character);
+        IEnumerator CoSpawnPlayer(Player character);
+        IEnumerator CoSpawnMonster(Monster character);
+        IEnumerator CoAttack(int atk, CharacterBase character, CharacterBase target, bool critical);
+        IEnumerator CoDropBox(List<ItemBase> items);
+        IEnumerator CoGetReward(List<ItemBase> rewards);
     }
 }

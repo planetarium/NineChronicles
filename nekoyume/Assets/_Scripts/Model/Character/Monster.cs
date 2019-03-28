@@ -10,9 +10,8 @@ namespace Nekoyume.Model
     {
         public int rewardExp;
         public Data.Table.Monster data;
-        public ItemBase item;
 
-        public Monster(Data.Table.Monster data, Player player, ItemBase item)
+        public Monster(Data.Table.Monster data, Player player)
         {
             hp = data.Health;
             atk = data.Attack;
@@ -22,10 +21,6 @@ namespace Nekoyume.Model
             targets.Add(player);
             Simulator = player.Simulator;
             this.data = data;
-            if (item != null)
-            {
-                this.item = item;
-            }
             defElement = Elemental.Create(data.Resistance);
         }
 
@@ -34,16 +29,6 @@ namespace Nekoyume.Model
             base.OnDead();
             var player = (Player) targets[0];
             player.GetExp(this);
-            if (item != null)
-            {
-                var dropItem = new DropItem
-                {
-                    character = Copy(this),
-                    characterId = id,
-                };
-                Simulator.Log.Add(dropItem);
-                player.GetItem(item);
-            }
         }
     }
 }

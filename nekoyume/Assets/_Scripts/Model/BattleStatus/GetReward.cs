@@ -1,18 +1,17 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using Nekoyume.Game;
-using Nekoyume.Game.Character;
+using Nekoyume.Game.Item;
 
 namespace Nekoyume.Model
 {
     [Serializable]
-    public class Dead : EventBase
+    public class GetReward : EventBase
     {
+        public List<ItemBase> rewards;
         public override IEnumerator CoExecute(IStage stage)
         {
-            yield return null;
+            yield return stage.CoGetReward(rewards);
         }
     }
 }

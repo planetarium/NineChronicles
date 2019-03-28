@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
 using Nekoyume.Action;
@@ -7,6 +8,7 @@ using Nekoyume.Data;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Entrance;
 using Nekoyume.Game.Factory;
+using Nekoyume.Game.Item;
 using Nekoyume.Game.Trigger;
 using Nekoyume.Game.Util;
 using Nekoyume.Model;
@@ -28,7 +30,6 @@ namespace Nekoyume.Game
         private readonly Vector2 _stageStartPosition = new Vector2(-6.0f, -0.62f);
         public readonly Vector2 QuestPreparationPosition = new Vector2(1.8f, -0.4f);
         public readonly Vector2 RoomPosition = new Vector2(-2.4f, -1.3f);
-        private bool _currentEventFinished;
         private PlayerFactory _factory;
         private MonsterSpawner _spawner;
         private Camera _camera;
@@ -176,33 +177,23 @@ namespace Nekoyume.Game
         private IEnumerator PlayAsync(BattleLog log)
         {
             GetPlayer(_stageStartPosition);
-            StageEnter(log.stage);
+            yield return StartCoroutine(CoStageEnter(log.stage));
             foreach (EventBase e in log)
             {
                 {
-                    yield return new WaitUntil(() => _currentEventFinished);
-                    if (!e.skip)
-                    {
-                        _currentEventFinished = false;
-                        e.Execute(this);
-                    }
+                    yield return StartCoroutine(e.CoExecute(this));
                 }
             }
-            StageEnd(log.result);
+            yield return StartCoroutine(CoStageEnd(log.result));
         }
 
-        public void StageEnter(int stage)
-        {
-            StartCoroutine(StageEnterAsync(stage));
-        }
-
-        private IEnumerator StageEnterAsync(int stage)
+        private IEnumerator CoStageEnter(int stage)
         {
             Data.Table.Stage data;
             var tables = this.GetRootComponent<Tables>();
             if (tables.Stage.TryGetValue(stage, out data))
             {
-                var roomPlayer = ReadyPlayer();
+                ReadyPlayer();
                 var blind = Widget.Find<Blind>();
                 yield return StartCoroutine(blind.FadeIn(1.0f, $"STAGE {stage}"));
 
@@ -211,12 +202,10 @@ namespace Nekoyume.Game
 
                 yield return new WaitForSeconds(1.5f);
                 yield return StartCoroutine(blind.FadeOut(1.0f));
-                _currentEventFinished = true;
-                roomPlayer.StartRun();
             }
         }
 
-        public void StageEnd(BattleLog.Result result)
+        public IEnumerator CoStageEnd(BattleLog.Result result)
         {
             Widget.Find<BattleResult>().Show(result);
             if (result == BattleLog.Result.Win)
@@ -227,6 +216,8 @@ namespace Nekoyume.Game
             {
                 _objectPool.ReleaseAll();
             }
+
+            yield return null;
         }
 
         private IEnumerator CoSlideBg()
@@ -250,58 +241,41 @@ namespace Nekoyume.Game
             cam.target = dummy.transform;
         }
 
-        public void SpawnPlayer(Model.Player character)
+        public IEnumerator CoSpawnPlayer(Model.Player character)
         {
-            StartCoroutine(CoSpawnPlayer(character));
-        }
-
-        private IEnumerator CoSpawnPlayer(Model.Player character)
-        {
-            var playerCharacter = RunPlayer();
+            var status = Widget.Find<Status>();
+            var pos = _camera.ScreenToWorldPoint(status.transform.position);
+            var playerPos = _stageStartPosition;
+            var playerCharacter = RunPlayer(playerPos);
+            playerPos.x = pos.x - 6.0f;
+            playerCharacter.transform.position = playerPos;
             playerCharacter.Init(character);
             var player = playerCharacter.gameObject;
-            var status = Widget.Find<Status>();
-            dummy.transform.position = new Vector2(0, 0);
+            status.UpdatePlayer(player);
+            _cam.target = player.transform;
             while (true)
             {
-                var pos = _camera.ScreenToWorldPoint(status.transform.position);
-                UpdateDummyPosition(playerCharacter, _cam);
+                Debug.Log($"pos: {pos.x}");
+                Debug.Log($"player: {player.transform.position.x}");
                 if (pos.x <= player.transform.position.x)
                 {
-                    playerCharacter.StartRun();
                     break;
                 }
+
                 yield return new WaitForEndOfFrame();
             }
-            _cam.target = player.transform;
-            status.UpdatePlayer(player);
-            _currentEventFinished = true;
+            yield return null;
         }
 
-        public void SpawnMonster(Monster monster)
-        {
-            StartCoroutine(CoSpawnMonster(monster));
-        }
-
-        private IEnumerator CoSpawnMonster(Monster monster)
+        public IEnumerator CoSpawnMonster(Monster monster)
         {
             var playerCharacter = GetPlayer();
             playerCharacter.StartRun();
             _spawner.SetData(id, monster);
-            _currentEventFinished = true;
             yield return null;
         }
 
-        public void Dead(Model.CharacterBase character)
-        {
-        }
-
-        public void Attack(int atk, Model.CharacterBase character, Model.CharacterBase target, bool critical)
-        {
-            StartCoroutine(CoAttack(atk, character, target, critical));
-        }
-
-        private IEnumerator CoAttack(int atk, Model.CharacterBase character, Model.CharacterBase target, bool critical)
+        public IEnumerator CoAttack(int atk, Model.CharacterBase character, Model.CharacterBase target, bool critical)
         {
             Character.CharacterBase attacker;
             Character.CharacterBase defender;
@@ -330,11 +304,32 @@ namespace Nekoyume.Game
 
             }
             yield return new WaitForSeconds(AttackDelay);
-            _currentEventFinished = true;
         }
 
-        public void DropItem(Monster character)
+        public IEnumerator CoDropBox(List<ItemBase> items)
         {
+            var dropItemFactory = GetComponent<DropItemFactory>();
+            var player = GetPlayer();
+            var position = player.transform.position;
+            position.x += 1.0f;
+            for (var index = 0; index < items.Count; index++)
+            {
+                var item = items[index];
+                position.y += index * 0.2f;
+                dropItemFactory.Create(item.Data.Id, position);
+            }
+
+            yield return null;
+        }
+
+        public IEnumerator CoGetReward(List<ItemBase> rewards)
+        {
+            foreach (var item in rewards)
+            {
+                Widget.Find<BattleResult>().Add(item);
+            }
+
+            yield return null;
         }
 
         public Character.Player GetPlayer()
@@ -364,12 +359,15 @@ namespace Nekoyume.Game
         private Character.Player RunPlayer()
         {
             var player = GetPlayer();
-            var playerTransform = player.transform;
-            var position = playerTransform.position;
-            position.y = _stageStartPosition.y;
-            playerTransform.position = position;
             player.StartRun();
             player.RunSpeed *= loadingSpeed;
+            return player;
+        }
+
+        private Character.Player RunPlayer(Vector2 position)
+        {
+            var player = RunPlayer();
+            player.transform.position = position;
             return player;
         }
 
