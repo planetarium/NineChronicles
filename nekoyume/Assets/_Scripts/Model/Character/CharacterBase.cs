@@ -60,8 +60,6 @@ namespace Nekoyume.Model
                     character = Copy(this),
                     target = Copy(target),
                     atk = dmg,
-                    characterId = id,
-                    targetId = target.id,
                     critical = critical,
                 };
                 Simulator.Log.Add(attack);
@@ -100,7 +98,6 @@ namespace Nekoyume.Model
             var dead = new Dead
             {
                 character = Copy(this),
-                characterId = id,
             };
             Simulator.Log.Add(dead);
         }
@@ -111,7 +108,6 @@ namespace Nekoyume.Model
             var spawn = new Spawn
             {
                 character = Copy(this),
-                characterId = id,
             };
             Simulator.Log.Add(spawn);
         }

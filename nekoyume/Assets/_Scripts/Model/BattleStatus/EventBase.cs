@@ -8,8 +8,6 @@ namespace Nekoyume.Model
     {
         public CharacterBase character;
         public CharacterBase target;
-        public Guid characterId;
-        public Guid targetId;
 
         public abstract IEnumerator CoExecute(IStage stage);
     }
