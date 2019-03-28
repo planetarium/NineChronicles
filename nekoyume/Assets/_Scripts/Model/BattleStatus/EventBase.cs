@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 
 namespace Nekoyume.Model
 {
@@ -9,8 +10,7 @@ namespace Nekoyume.Model
         public CharacterBase target;
         public Guid characterId;
         public Guid targetId;
-        public abstract bool skip { get; }
 
-        public abstract void Execute(IStage stage);
+        public abstract IEnumerator CoExecute(IStage stage);
     }
 }

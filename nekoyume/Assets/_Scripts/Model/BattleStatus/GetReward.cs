@@ -6,13 +6,12 @@ using Nekoyume.Game.Item;
 namespace Nekoyume.Model
 {
     [Serializable]
-    public class DropBox : EventBase
+    public class GetReward : EventBase
     {
-        public List<ItemBase> items;
-
+        public List<ItemBase> rewards;
         public override IEnumerator CoExecute(IStage stage)
         {
-            yield return stage.CoDropBox(items);
+            yield return stage.CoGetReward(rewards);
         }
     }
 }
