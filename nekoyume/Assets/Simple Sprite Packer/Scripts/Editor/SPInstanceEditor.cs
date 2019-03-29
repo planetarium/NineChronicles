@@ -526,7 +526,7 @@ namespace SimpleSpritePackerEditor
 				return;
 			
 			// Create the sprite packer instance
-			SPInstance asset = ScriptableObject.CreateInstance("SPInstance") as SPInstance;
+			SPInstance asset = ScriptableObject.CreateInstance<SPInstance>();
 			AssetDatabase.CreateAsset(asset, AssetDatabase.GenerateUniqueAssetPath(assetPath));
 			AssetDatabase.Refresh();
 			
