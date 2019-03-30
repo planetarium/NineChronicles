@@ -3,13 +3,17 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Text.RegularExpressions;
 using Libplanet;
 using Libplanet.Crypto;
+using Libplanet.Net;
 using Nekoyume.Data;
 using Nekoyume.Game;
 using Nekoyume.Game.Item;
 using Nekoyume.Model;
+using NetMQ;
 using UnityEngine;
 
 namespace Nekoyume.Action
@@ -41,6 +45,8 @@ namespace Nekoyume.Action
         public event EventHandler<Model.Avatar> DidAvatarLoaded;
         public const string PrivateKeyFormat = "private_key_{0}";
         public const string AvatarFileFormat = "avatar_{0}.dat";
+        public const string PeersFileName = "peers.dat";
+        public const string IceServersFileName = "ice_servers.dat";
         public const string ChainIdKey = "chain_id";
         public static Address shopAddress => default(Address);
         public Shop shop;
@@ -50,6 +56,7 @@ namespace Nekoyume.Action
         private IEnumerator _txProcessor;
         private IEnumerator _avatarUpdator;
         private IEnumerator _shopUpdator;
+        private IEnumerator _swarmRunner;
 
         private void Awake()
         {
@@ -169,8 +176,11 @@ namespace Nekoyume.Action
             _saveFilePath = Path.Combine(Application.persistentDataPath, fileName);
             Avatar = LoadStatus(_saveFilePath);
 
-            var path = Path.Combine(Application.persistentDataPath, "planetarium");
-            agent = new Agent(privateKey, path, chainId);
+            var storePath = Path.Combine(Application.persistentDataPath, "planetarium");
+            var peers = LoadPeers();
+            var iceServers = LoadIceServers();
+
+            agent = new Agent(privateKey, storePath, chainId, peers, iceServers);
             agent.DidReceiveAction += ReceiveAction;
             agent.UpdateShop += UpdateShop;
 
@@ -178,9 +188,11 @@ namespace Nekoyume.Action
             _txProcessor = agent.CoTxProcessor();
             _avatarUpdator = agent.CoAvatarUpdator();
             _shopUpdator = agent.CoShopUpdator();
+            _swarmRunner = agent.CoSwarmRunner();
 
             StartCoroutine(_miner);
             StartCoroutine(_txProcessor);
+            StartCoroutine(_swarmRunner);
 
             Debug.Log($"User Address: 0x{agent.UserAddress.ToHex()}");
         }
@@ -210,6 +222,63 @@ namespace Nekoyume.Action
                 Price = price,
             };
             ProcessAction(action);
+        }
+        
+        public void OnDestroy() 
+        {
+            agent?.Dispose();
+            NetMQConfig.Cleanup(false);
+        }
+
+        private IEnumerable<IceServer> LoadIceServers()
+        {
+            foreach (string line in LoadConfigLines(IceServersFileName)) 
+            {
+                var uri = new Uri(line);
+                string[] userInfo = uri.UserInfo.Split(':');
+
+                yield return new IceServer(new[] {uri}, userInfo[0], userInfo[1]);
+            }
+        }
+
+        private IEnumerable<Peer> LoadPeers()
+        {
+            foreach (string line in LoadConfigLines(PeersFileName))
+            {
+                string[] tokens = line.Split('@');
+                var pubKey = new PublicKey(ByteUtil.ParseHex(tokens[0]));
+                string host = tokens[1].Split(':')[0];
+                int port = int.Parse(tokens[1].Split(':')[1]);
+
+                yield return new Peer(pubKey, new DnsEndPoint(host, port));
+            }
+        }
+
+
+        private IEnumerable<string> LoadConfigLines(string fileName)
+        {
+            string userPath = Path.Combine(
+                Application.persistentDataPath,
+                fileName
+            );
+            string content;
+            
+            if (File.Exists(userPath))
+            {
+                content = File.ReadAllText(userPath);
+            }
+            else 
+            {
+                content = Resources.Load<TextAsset>($"Config/{fileName}").text;
+            }
+
+            foreach (var line in Regex.Split(content, "\n|\r|\r\n"))
+            {
+                if (!string.IsNullOrEmpty(line.Trim()))
+                {
+                    yield return line;
+                }
+            }
         }
     }
 }
