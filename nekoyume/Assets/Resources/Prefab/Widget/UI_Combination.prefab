@@ -1936,10 +1936,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df9ae027f0cf4674f938205ce90dfd3d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  icon: {fileID: 114424958633895318}
   itemName: {fileID: 114700603546506092}
-  info: {fileID: 114932833861230744}
+  priceIcon: {fileID: 0}
   price: {fileID: 0}
+  icon: {fileID: 114424958633895318}
+  info: {fileID: 114932833861230744}
   flavour: {fileID: 114400109935774506}
 --- !u!114 &114216474583888366
 MonoBehaviour:
@@ -1987,7 +1988,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: 768d722a2a2b842c3a275f2b4e800313, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 13c20223a583a49af99921d45b030646, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
