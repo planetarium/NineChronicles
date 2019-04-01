@@ -18,7 +18,9 @@ using Libplanet.Tx;
 using Nekoyume.Data.Table;
 using Nekoyume.Game;
 using Nekoyume.Helper;
+using Nekoyume.Serilog;
 using NetMQ;
+using Serilog;
 using UnityEngine;
 using Uno.Extensions;
 
@@ -45,6 +47,10 @@ namespace Nekoyume.Action
         static Agent() 
         {
             AsyncIO.ForceDotNet.Force();
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Verbose()
+                .WriteTo.Sink(new UnityDebugSink())
+                .CreateLogger();
         }
 
         public Agent(
@@ -66,7 +72,6 @@ namespace Nekoyume.Action
                 new FileStore(path),
                 chainId);
             queuedActions = new ConcurrentQueue<ActionBase>();
-            
 #if BLOCK_LOG_USE
             FileHelper.WriteAllText("Block.log", "");
 #endif
