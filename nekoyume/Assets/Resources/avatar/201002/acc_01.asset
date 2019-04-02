@@ -13,7 +13,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_ApiVersion: 4
   m_Sprite: {fileID: 21300000, guid: ffac6d8302abf594eaaa9bcfac2278e1, type: 3}
-  m_SharedMesh: {fileID: 43043659243482584}
+  m_SharedMesh: {fileID: 43465812490478826}
   pivotPoint: {x: 0, y: 0}
   texVertices: []
   edges: []
@@ -21,7 +21,7 @@ MonoBehaviour:
   indices: 
   bindPoses: []
   m_SharedMaterials: []
---- !u!43 &43043659243482584
+--- !u!43 &43465812490478826
 Mesh:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
@@ -45,17 +45,17 @@ Mesh:
     channels: []
     fullWeights: []
   m_BindPose:
-  - e00: 1.3904475
-    e01: 1.727038
+  - e00: 1.3904715
+    e01: 1.7270405
     e02: 0
-    e03: 0.84545577
-    e10: -2.2128534
-    e11: 1.7747116
+    e03: 0.8454589
+    e10: -2.2128584
+    e11: 1.7747222
     e12: 0
-    e13: -0.1919064
+    e13: -0.19189958
     e20: 0
     e21: 0
-    e22: 2.8416648
+    e22: 2.8416355
     e23: 0
     e30: 0
     e31: 0
@@ -192,7 +192,7 @@ Mesh:
   m_MeshMetrics[0]: 1
   m_MeshMetrics[1]: 1
   m_MeshOptimized: 0
---- !u!114 &114941235679139844
+--- !u!114 &114434892727739682
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
@@ -299,17 +299,17 @@ MonoBehaviour:
   m_Indices: 070000000600000004000000050000000400000006000000030000000400000005000000010000000400000003000000000000000100000003000000020000000100000000000000
   m_BindPoses:
   - bindPose:
-      e00: 1.3904475
-      e01: 1.727038
+      e00: 1.3904715
+      e01: 1.7270405
       e02: 0
-      e03: 0.84545577
-      e10: -2.2128534
-      e11: 1.7747116
+      e03: 0.8454589
+      e10: -2.2128584
+      e11: 1.7747222
       e12: 0
-      e13: -0.1919064
+      e13: -0.19189958
       e20: 0
       e21: 0
-      e22: 2.8416648
+      e22: 2.8416355
       e23: 0
       e30: 0
       e31: 0
