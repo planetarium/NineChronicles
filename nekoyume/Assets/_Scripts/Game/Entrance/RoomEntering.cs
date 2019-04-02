@@ -37,7 +37,7 @@ namespace Nekoyume.Game.Entrance
 
             var playerFactory = GetComponent<Factory.PlayerFactory>();
             GameObject player = playerFactory.Create();
-            player.transform.position = new Vector2(-2.47f, -1.37f);
+            player.transform.position = stage.RoomPosition;
 
             UI.Widget.Find<UI.SkillController>().Close();
             UI.Widget.Find<UI.Status>().UpdatePlayer(player);

@@ -24,11 +24,11 @@ namespace Nekoyume.Game.Entrance
             
             for (int i = 0; i < Action.ActionManager.Instance.Avatars.Count; ++i)
             {
-                var beginPos = new Vector3(-2.0f + i * 2.22f, -2.0f, 0.0f);
-                var endPos = new Vector3(-2.0f + i * 2.22f, -0.4f, 0.0f);
+                var beginPos = new Vector3(-2.2f + i * 2.22f, -2.6f, 0.0f);
+                var endPos = new Vector3(-2.2f + i * 2.22f, -0.88f, 0.0f);
                 var placeRes = Resources.Load<GameObject>("Prefab/PlayerPlace");
                 if (i % 2 == 0)
-                    endPos.y = -0.66f;
+                    endPos.y = -1.1f;
                 var avatar = Action.ActionManager.Instance.Avatars[i];
                 var player = objectPool.Get<Character.Player>();
                 player.transform.position = beginPos;

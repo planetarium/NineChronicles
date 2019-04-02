@@ -27,9 +27,9 @@ namespace Nekoyume.Game
         [SerializeField]
         private GameObject dummy;
         public float loadingSpeed = 2.0f;
-        private readonly Vector2 _stageStartPosition = new Vector2(-6.0f, -0.62f);
-        public readonly Vector2 QuestPreparationPosition = new Vector2(1.8f, -0.4f);
-        public readonly Vector2 RoomPosition = new Vector2(-2.4f, -1.3f);
+        private readonly Vector2 _stageStartPosition = new Vector2(-6.0f, -1.2f);
+        public readonly Vector2 QuestPreparationPosition = new Vector2(1.65f, -1.3f);
+        public readonly Vector2 RoomPosition = new Vector2(-2.66f, -1.85f);
         private PlayerFactory _factory;
         private MonsterSpawner _spawner;
         private Camera _camera;
@@ -111,7 +111,7 @@ namespace Nekoyume.Game
                 if (index == i)
                 {
                     playerObject.transform.DOScale(1.1f, 2.0f).SetDelay(0.2f);
-                    playerObject.transform.DOMove(new Vector3(-1.0f, -0.28f), 2.4f).SetDelay(0.2f);
+                    playerObject.transform.DOMove(new Vector3(-1.25f, -0.7f), 2.4f).SetDelay(0.2f);
                     if (anim && !anim.gameObject.activeSelf)
                     {
                         anim.gameObject.SetActive(true);
