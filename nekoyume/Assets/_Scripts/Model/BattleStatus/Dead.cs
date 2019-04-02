@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Game;
@@ -9,12 +10,9 @@ namespace Nekoyume.Model
     [Serializable]
     public class Dead : EventBase
     {
-
-        public override bool skip => true;
-
-        public override void Execute(IStage stage)
+        public override IEnumerator CoExecute(IStage stage)
         {
-            stage.Dead(character);
+            yield return null;
         }
     }
 }

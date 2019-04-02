@@ -2,12 +2,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Nekoyume.Action;
-using Nekoyume.Game.Factory;
+using Nekoyume.Game;
 using Nekoyume.Game.Item;
 using Nekoyume.Model;
 using UnityEngine;
 using UnityEngine.UI;
-using Object = System.Object;
 
 namespace Nekoyume.UI
 {
@@ -20,10 +19,12 @@ namespace Nekoyume.UI
         public GameObject slotBase;
         public Transform grid;
         private List<InventorySlot> _slots;
+        private Stage _stage;
 
         private void Awake()
         {
             _slots = new List<InventorySlot>();
+            _stage = GameObject.Find("Stage").GetComponent<Stage>();
         }
 
         public void SubmitClick()
@@ -38,18 +39,17 @@ namespace Nekoyume.UI
             {
                 w.Show();   
             }
-            
-            var player = FindObjectOfType<Game.Character.Player>();
-            if (player == null)
-            {
-                var factory = GameObject.Find("Stage").GetComponent<PlayerFactory>();
-                player = factory.Create().GetComponent<Game.Character.Player>();
-            }
+
+            // Reset camera focus
+            var cam = Camera.main.GetComponent<ActionCamera>();
+            cam.target = null;
+
+            var player = _stage.ReadyPlayer();
             var currentId = ActionManager.Instance.battleLog?.id;
             ActionManager.Instance.HackAndSlash(player.equipments);
             while (currentId == ActionManager.Instance.battleLog?.id)
             {
-                yield return new WaitForSeconds(1.0f);
+                yield return null;
             }
 
             Game.Event.OnStageStart.Invoke();

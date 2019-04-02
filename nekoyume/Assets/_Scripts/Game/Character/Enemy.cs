@@ -17,7 +17,6 @@ namespace Nekoyume.Game.Character
         public int DataId = 0;
         public int RewardExp = 0;
         public Guid id;
-        public ItemBase item;
 
         protected override Vector3 _hpBarOffset => _castingBarOffset + new Vector3(0, 0 + 0.22f, 0.0f);
 
@@ -31,6 +30,8 @@ namespace Nekoyume.Game.Character
                 return new Vector3(x, y, 0.0f);
             }
         }
+
+        public override float Speed => 0.0f;
 
         public void InitAI(Monster statsData)
         {
@@ -128,19 +129,7 @@ namespace Nekoyume.Game.Character
         protected override void OnDead()
         {
             Event.OnEnemyDead.Invoke(this);
-            DropItem();
             base.OnDead();
-        }
-
-        protected void DropItem()
-        {
-            if (item != null)
-            {
-                var dropItemFactory = GetComponentInParent<DropItemFactory>();
-                dropItemFactory.Create(item.Data.Id, transform.position);
-                gameObject.SetActive(false);
-                Widget.Find<BattleResult>().Add(item);
-            }
         }
 
         public void Init(Model.Monster spawnCharacter)
@@ -149,7 +138,6 @@ namespace Nekoyume.Game.Character
             _castingBarOffset.Set(-0.0f, -0.33f, 0.0f);
             InitStats(spawnCharacter.data);
             id = spawnCharacter.id;
-            item = spawnCharacter.item;
             StartRun();
         }
 
@@ -169,10 +157,5 @@ namespace Nekoyume.Game.Character
             _targetTag = Tag.Player;
         }
 
-        public override void StartRun()
-        {
-            base.StartRun();
-            RunSpeed = 0.0f;
-        }
     }
 }

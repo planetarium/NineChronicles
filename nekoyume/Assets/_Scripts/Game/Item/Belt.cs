@@ -24,6 +24,7 @@ namespace Nekoyume.Game.Item
             }
 
             player.hp += additionalHP;
+            player.hpMax += additionalHP;
         }
 
     }

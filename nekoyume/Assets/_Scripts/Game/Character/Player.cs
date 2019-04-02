@@ -12,7 +12,6 @@ using Nekoyume.Game.Skill;
 using Nekoyume.Game.Vfx;
 using Nekoyume.UI;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 namespace Nekoyume.Game.Character
 {
@@ -23,7 +22,6 @@ namespace Nekoyume.Game.Character
         public int Level = 0;
         public int MPMax = 0;
         [SerializeField] private SpriteMeshInstance _weapon;
-
         public long EXPMax { get; private set; }
 
         private ProgressBar _mpBar = null;
@@ -60,11 +58,12 @@ namespace Nekoyume.Game.Character
         private void Awake()
         {
             Event.OnEnemyDead.AddListener(GetEXP);
-            Event.OnGetItem.AddListener(PickUpItem);
             Event.OnAttackEnd.AddListener(AttackEnd);
             Inventory = new Item.Inventory();
             _targetTag = Tag.Enemy;
         }
+
+        public override float Speed => 1.0f;
 
         private void Start()
         {
@@ -218,12 +217,6 @@ namespace Nekoyume.Game.Character
             InitStats(model);
 
             UpdateHpBar();
-        }
-
-        private void PickUpItem(DropItem item)
-        {
-            Inventory.Add(item.Item);
-            ActionManager.Instance.UpdateItems(Inventory.items);
         }
 
         protected override void OnDisable()

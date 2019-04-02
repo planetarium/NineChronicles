@@ -67,7 +67,6 @@ namespace Nekoyume.UI
             Game.Event.OnNestEnter.Invoke();
             var login = Find<Login>();
             Close();
-            login.Init();
             login.Show();
         }
 
@@ -149,12 +148,12 @@ namespace Nekoyume.UI
             statusDetailScript.Init(statsData);
             menuCreate.SetActive(!active);
             menuSelect.SetActive(active);
-            var image = character.GetComponent<Image>();
-            var sprite = Resources.Load<Sprite>($"avatar/{imagePath}");
-            if (sprite != null)
-            {
-                image.sprite = sprite;
-            }            
+            //var image = character.GetComponent<Image>();
+            //var sprite = Resources.Load<Sprite>($"avatar/{imagePath}");
+            //if (sprite != null)
+            //{
+            //    image.sprite = sprite;
+            //}
             Show();
         }
 

@@ -11,7 +11,14 @@ namespace Nekoyume.Game.Entrance
             var stage = GetComponent<Stage>();
             stage.LoadBackground("nest");
 
+            UI.Widget.Find<UI.Login>().ready = false;
+
             var objectPool = GetComponent<Util.ObjectPool>();
+            var clearPlayers = GetComponentsInChildren<Character.Player>(true);
+            foreach (var clearPlayer in clearPlayers)
+            {
+                objectPool.Remove<Character.Player>(clearPlayer.gameObject);
+            }
 
             yield return null;
             
@@ -49,6 +56,9 @@ namespace Nekoyume.Game.Entrance
             cam.transform.position = camPos;
 
             yield return new WaitForSeconds(1.0f);
+
+            UI.Widget.Find<UI.Login>().ready = true;
+
             Destroy(this);
         }
     }

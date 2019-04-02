@@ -39,7 +39,7 @@ namespace Nekoyume.Action
         public Agent(PrivateKey privateKey, string path, Guid chainId)
         {
             IBlockPolicy<ActionBase> policy = new BlockPolicy<ActionBase>(TimeSpan.FromMilliseconds(500));
-# if DEBUG
+# if UNITY_EDITOR
             policy = new DebugPolicy();
 #endif
             this.privateKey = privateKey;

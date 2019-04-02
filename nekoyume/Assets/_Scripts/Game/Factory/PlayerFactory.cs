@@ -1,3 +1,4 @@
+using System;
 using Nekoyume.Action;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Util;
@@ -10,12 +11,18 @@ namespace Nekoyume.Game.Factory
         public GameObject Create()
         {
             var avatar = ActionManager.Instance.Avatar;
-            if (avatar == null)
-                return null;
+            if (ReferenceEquals(avatar, null))
+            {
+                throw new ArgumentNullException("`Model.Avatar` can't be null.");
+            }
+
             var objectPool = GetComponent<ObjectPool>();
             var player = objectPool.Get<Player>();
-            if (player == null)
-                return null;
+            if (ReferenceEquals(player, null))
+            {
+                throw new NotFoundComponentException<Player>();
+            }
+
             player.Init(avatar.ToPlayer());
 
             return player.gameObject;
