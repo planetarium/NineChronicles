@@ -19,15 +19,15 @@ namespace Nekoyume.Data.Table
 
         public Dictionary<int, int> Monsters => new Dictionary<int, int>
         {
-            [1001] = Monster1,
-            [1002] = Monster2,
-            [1003] = Monster3,
-            [1004] = Monster4,
-            [1005] = Monster5,
-            [1101] = Monster6,
-            [1102] = Monster7,
-            [1103] = Monster8,
-            [1104] = Monster9,
+            [201001] = Monster1,
+            [201002] = Monster2,
+            [201003] = Monster3,
+            [201004] = Monster4,
+            [201005] = Monster5,
+            [202001] = Monster6,
+            [202002] = Monster7,
+            [202003] = Monster8,
+            [202004] = Monster9,
         };
     }
 }
