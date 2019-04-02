@@ -107,5 +107,37 @@ namespace Nekoyume.Game.Util
                 }
             }
         }
+
+        public GameObject Get(string objName, Vector3 position)
+        {
+            List<GameObject> list;
+            if (objects.TryGetValue(objName, out list))
+            {
+                foreach (GameObject go in list)
+                {
+                    if (go.activeSelf)
+                        continue;
+
+                    go.transform.position = position;
+                    go.SetActive(true);
+                    return go;
+                }
+            }
+            PoolData poolData;
+            if (dicts.TryGetValue(objName, out poolData))
+            {
+                GameObject go = Create(poolData.Prefab, poolData.AddCount);
+                go.transform.position = position;
+                go.SetActive(true);
+                return go;
+            }
+            throw new NullReferenceException($"Set `{objName}` first in ObjectPool.");
+
+        }
+
+        public GameObject Get(string objName)
+        {
+            return Get(objName, Vector3.zero);
+        }
     }
 }
