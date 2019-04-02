@@ -28,7 +28,7 @@ namespace Nekoyume.UI
         public GameObject menuSelect;
         public GameObject menuCreate;
         private int _selectedIndex;
-        private Model.Avatar _avatar;
+        private Nekoyume.Model.Avatar _avatar;
 
         private void Awake()
         {
@@ -173,7 +173,7 @@ namespace Nekoyume.UI
             Init(_selectedIndex);
         }
 
-        private void OnDidAvatarLoaded(object sender, Model.Avatar a)
+        private void OnDidAvatarLoaded(object sender, Nekoyume.Model.Avatar a)
         {
             var w = Find<LoadingScreen>();
             if (!ReferenceEquals(w, null))

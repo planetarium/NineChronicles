@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 public class InvalidActionException : Exception
 {
@@ -15,9 +16,70 @@ public class InvalidActionException : Exception
     }
 }
 
-public class NotFoundComponentException : Exception
+public class FailedToInstantiateGameObjectException : Exception
 {
-    public NotFoundComponentException()
+    private const string MessageDefault = "Failed to instantiate a `GameObject`.";
+    private const string MessageFormat = "Failed to instantiate a `GameObject` by prefab named `{0}`.";
+    
+    public FailedToInstantiateGameObjectException() : base(MessageDefault)
+    {
+        
+    }
+    
+    public FailedToInstantiateGameObjectException(string name) : base(string.Format(MessageFormat, name))
+    {
+    }
+
+    public FailedToInstantiateGameObjectException(string name, Exception inner) : base(string.Format(MessageFormat, name), inner)
+    {
+    }
+}
+
+public class FailedToLoadResourceException<T> : Exception
+{
+    private const string MessageFormat0 = "Failed to load resource. type : `{0}`.";
+    private const string MessageFormat1 = "Failed to load resource. type : `{0}`, path : `{1}`.";
+
+    private static readonly string TypeName = typeof(T).Name;
+    
+    public FailedToLoadResourceException() : base(string.Format(MessageFormat0, TypeName))
+    {
+    }
+
+    public FailedToLoadResourceException(string path) : base(string.Format(MessageFormat1, TypeName, path))
+    {
+    }
+
+    public FailedToLoadResourceException(string path, Exception inner) : base(string.Format(MessageFormat1, TypeName, path), inner)
+    {
+    }
+}
+
+public class NotFoundGameObjectException : Exception
+{
+    private const string MessageDefault = "Not found `GameObject`.";
+    private const string MessageFormat = "Not found `GameObject` named `{0}`.";
+
+    public NotFoundGameObjectException() : base(MessageDefault)
+    {
+    }
+
+    public NotFoundGameObjectException(string name) : base(string.Format(MessageFormat, name))
+    {
+    }
+
+    public NotFoundGameObjectException(string name, Exception inner) : base(string.Format(MessageFormat, name), inner)
+    {
+    }
+}
+
+public class NotFoundComponentException<T> : Exception where T : Component
+{
+    private const string MessageFormat = "Not found `{0}` component.";
+
+    private static readonly string TypeName = typeof(T).Name;
+    
+    public NotFoundComponentException() : this(string.Format(MessageFormat, TypeName))
     {
     }
 
@@ -28,4 +90,9 @@ public class NotFoundComponentException : Exception
     public NotFoundComponentException(string message, Exception inner) : base(message, inner)
     {
     }
+}
+
+public class SerializeFieldNullException : Exception
+{
+    
 }

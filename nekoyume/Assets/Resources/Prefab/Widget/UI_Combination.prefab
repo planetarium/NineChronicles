@@ -1936,10 +1936,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df9ae027f0cf4674f938205ce90dfd3d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  icon: {fileID: 114424958633895318}
   itemName: {fileID: 114700603546506092}
-  info: {fileID: 114932833861230744}
+  priceIcon: {fileID: 0}
   price: {fileID: 0}
+  icon: {fileID: 114424958633895318}
+  info: {fileID: 114932833861230744}
   flavour: {fileID: 114400109935774506}
 --- !u!114 &114216474583888366
 MonoBehaviour:

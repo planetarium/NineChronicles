@@ -33,7 +33,7 @@ namespace Nekoyume.Game.Item
         private Sequence _sequenceDrop = null;
         private Sequence _sequenceGet = null;
 
-        // Mono
+        #region Mono
 
         private void Awake()
         {
@@ -42,7 +42,7 @@ namespace Nekoyume.Game.Item
                 _cam = Camera.main;
                 if (ReferenceEquals(_cam, null))
                 {
-                    throw new NotFoundComponentException("Not found `Camera` component with `Camera.main`.");
+                    throw new NotFoundComponentException<Camera>();
                 }
             }
 
@@ -68,7 +68,7 @@ namespace Nekoyume.Game.Item
             _sequenceGet = null;
         }
 
-        // ~Mono
+        #endregion
 
         public void Set(ItemBase item)
         {
