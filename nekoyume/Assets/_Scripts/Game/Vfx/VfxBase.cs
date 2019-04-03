@@ -13,7 +13,7 @@ namespace Nekoyume.Game.Vfx
         private ParticleSystem _particlesRoot = null;
         private float _particlesDuration = 0f;
 
-        // Mono
+        #region Mono
 
         private void Awake()
         {
@@ -39,7 +39,7 @@ namespace Nekoyume.Game.Vfx
             _particlesDuration = _particlesRoot.main.duration;
         }
 
-        // ~Mono
+        #endregion
 
         public void Play()
         {

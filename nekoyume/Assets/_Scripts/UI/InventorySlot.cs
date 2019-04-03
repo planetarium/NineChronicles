@@ -16,15 +16,15 @@ namespace Nekoyume.UI
         public GameObject outLine;
 
         public ItemBase Item;
-        
-        // Mono
+
+        #region Mono
 
         private void Awake()
         {
             _defaultSprite = Resources.Load<Sprite>("images/item_301001");
         }
 
-        // ~Mono
+        #endregion
 
         public void Clear()
         {

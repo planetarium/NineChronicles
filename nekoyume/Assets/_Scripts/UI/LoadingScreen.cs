@@ -13,7 +13,7 @@ namespace Nekoyume.UI
 
         private float _alphaToBeginning = 0.5f;
 
-        // Mono
+        #region Mono
 
         private void Awake()
         {
@@ -50,6 +50,6 @@ namespace Nekoyume.UI
             _sequence = null;
         }
 
-        // ~Mono
+        #endregion
     }
 }

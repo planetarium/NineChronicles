@@ -17,7 +17,7 @@ namespace Nekoyume.UI
 
         private bool _considerPrice = false;
         
-        // Mono
+        #region Mono
 
         private void Awake()
         {
@@ -32,7 +32,7 @@ namespace Nekoyume.UI
             }
         }
 
-        // ~Mono
+        #endregion
 
         public void SetItem(ItemBase itemBase)
         {
