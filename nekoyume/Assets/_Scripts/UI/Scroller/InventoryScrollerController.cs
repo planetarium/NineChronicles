@@ -78,19 +78,5 @@ namespace Nekoyume.UI.Scroller
             _dataList = dataList;
             scroller.ReloadData();
         }
-
-//        public void SetItemToCoveredAndDimmed(int id, bool isCover, bool isDim)
-//        {
-//            for (int i = _dataList.Count - 1; i >= 0; i--)
-//            {
-//                var d = _dataList[i];
-//                if (d.Item.Data.Id == id)
-//                {
-//                    d.Covered.Value = isCover;
-//                    d.Dimmed.Value = isDim;
-//                    break;
-//                }
-//            }
-//        }
     }
 }
