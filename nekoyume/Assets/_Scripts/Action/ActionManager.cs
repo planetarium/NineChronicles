@@ -198,15 +198,21 @@ namespace Nekoyume.Action
             agent.DidReceiveAction += ReceiveAction;
             agent.UpdateShop += UpdateShop;
 
-            _miner = agent.CoMiner();
             _txProcessor = agent.CoTxProcessor();
             _avatarUpdator = agent.CoAvatarUpdator();
             _shopUpdator = agent.CoShopUpdator();
             _swarmRunner = agent.CoSwarmRunner();
 
-            StartCoroutine(_miner);
             StartCoroutine(_txProcessor);
             StartCoroutine(_swarmRunner);
+
+            bool runMiner = string.IsNullOrEmpty(GetCommandLineOption("--no-miner"));
+
+            if (runMiner)
+            {
+                _miner = agent.CoMiner();
+                StartCoroutine(_miner);
+            }
 
             Debug.Log($"User Address: 0x{agent.UserAddress.ToHex()}");
         }
