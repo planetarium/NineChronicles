@@ -62,8 +62,7 @@ namespace Nekoyume.Game.Factory
                 throw new NotFoundComponentException("Not found `ObjectPool`.");
             }
 
-            var go = objectPool.Get("Enemy", position);
-            var animator = objectPool.Get(spawnCharacter.data.Id.ToString());
+            var go = objectPool.Get("Enemy", position, true);
             var enemy = animator.GetComponent<Enemy>();
             if (ReferenceEquals(enemy, null))
             {
