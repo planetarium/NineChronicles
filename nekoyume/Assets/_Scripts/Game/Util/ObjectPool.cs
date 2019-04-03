@@ -124,14 +124,8 @@ namespace Nekoyume.Game.Util
                     return go;
                 }
             }
+            return create ? Create(objName, position) : null;
 
-            if (create)
-            {
-                var go = Create(objName, position);
-                return go;
-            }
-
-            return null;
         }
 
         public GameObject Get(string objName, bool create)
