@@ -109,7 +109,7 @@ namespace Nekoyume.Game.Util
             }
         }
 
-        public GameObject Get(string objName, Vector3 position, bool create)
+        public GameObject Get(string objName, bool create, Vector3 position = default(Vector3))
         {
             List<GameObject> gameObjects;
             if (objects.TryGetValue(objName, out gameObjects))
@@ -126,11 +126,6 @@ namespace Nekoyume.Game.Util
             }
             return create ? Create(objName, position) : null;
 
-        }
-
-        public GameObject Get(string objName, bool create)
-        {
-            return Get(objName, Vector3.zero, create);
         }
 
         public GameObject Create(string objName, Vector3 position)
