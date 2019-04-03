@@ -11,17 +11,16 @@ namespace Nekoyume.UI
     {
         private const string CountStringFormat = "총 {0}개";
 
+        public Text titleText;
+        public Text countText;
+        public Button minusButton;
+        public Button plusButton;
+        public Button cancelButton;
+        public Button okButton;
+        public SimpleCountableItemView itemView;
+        
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
-
         private Model.SelectItemCountPopup<Model.Inventory.Item> _data;
-
-        [SerializeField] public Text titleText;
-        [SerializeField] public Text countText;
-        [SerializeField] public Button minusButton;
-        [SerializeField] public Button plusButton;
-        [SerializeField] public Button cancelButton;
-        [SerializeField] public Button okButton;
-        [SerializeField] public SimpleCountableItemView itemView;
 
         #region Mono
 

@@ -8,12 +8,11 @@ namespace Nekoyume.UI.ItemView
 {
     public class InventoryItemView : CountableItemView<Model.Inventory.Item>
     {
-        [SerializeField] public Image coverImage;
-        [SerializeField] public Image selectionImage;
-        [SerializeField] public Button button;
+        public Image coverImage;
+        public Image selectionImage;
+        public Button button;
 
         private readonly List<IDisposable> _dataDisposables = new List<IDisposable>();
-        
         private IDisposable _buttonOnClickDisposable;
 
         #region Mono

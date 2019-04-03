@@ -63,8 +63,7 @@ namespace Nekoyume.UI.Model
         public void Dispose()
         {
             Items.DisposeAll();
-            SelectedItem.Dispose();
-            SelectedItem.Value.Dispose();
+            SelectedItem.DisposeAll();
         }
 
         private void SubscribeOnClick(Item item)

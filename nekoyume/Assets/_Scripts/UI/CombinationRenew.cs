@@ -16,13 +16,13 @@ namespace Nekoyume.UI
     {
         private Model.Combination _data;
 
-        [SerializeField] public InventoryRenew inventoryRenew;
-        [SerializeField] public ButtonedItemInfo selectedItemInfo;
-        [SerializeField] public CombinationStagedItemView[] stagedItems;
-        [SerializeField] public Button combinationButton;
-        [SerializeField] public Image combinationButtonImage;
-        [SerializeField] public Text combinationButtonText;
-        [SerializeField] public Button closeButton;
+        public InventoryRenew inventoryRenew;
+        public ButtonedItemInfo selectedItemInfo;
+        public CombinationStagedItemView[] stagedItems;
+        public Button combinationButton;
+        public Image combinationButtonImage;
+        public Text combinationButtonText;
+        public Button closeButton;
 
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
@@ -102,6 +102,7 @@ namespace Nekoyume.UI
             _data.Popup.Value.OnClickClose.Subscribe(OnDataPopupOnClickClose);
             _data.StagedItems.ObserveAdd().Subscribe(OnDataStagedItemsAdd);
             _data.StagedItems.ObserveRemove().Subscribe(OnDataStagedItemsRemove);
+            _data.ReadyForCombination.Subscribe(SetActiveCombinationButton);
 
             inventoryRenew.SetData(_data.Inventory.Value);
             inventoryRenew.Show();
@@ -164,7 +165,8 @@ namespace Nekoyume.UI
             if (e.Index >= stagedItems.Length)
             {
                 _data.StagedItems.RemoveAt(e.Index);
-                throw new Exception("예상보다 많은 아이템이 스테이징 되고 있습니다.");
+                throw new AddOutOfSpecificRangeException<CollectionAddEvent<CountEditableItem<Model.Inventory.Item>>>(
+                    stagedItems.Length);
             }
 
             stagedItems[e.Index].SetData(e.Value);
@@ -190,6 +192,22 @@ namespace Nekoyume.UI
                 {
                     item.Clear();
                 }
+            }
+        }
+
+        private void SetActiveCombinationButton(bool isActive)
+        {
+            if (isActive)
+            {
+                combinationButton.enabled = true;
+                combinationButtonImage.sprite = Resources.Load<Sprite>("ui/button_blue_02");
+                combinationButtonText.text = "ON";
+            }
+            else
+            {
+                combinationButton.enabled = false;
+                combinationButtonImage.sprite = Resources.Load<Sprite>("ui/button_black_01");
+                combinationButtonText.text = "OFF";
             }
         }
     }

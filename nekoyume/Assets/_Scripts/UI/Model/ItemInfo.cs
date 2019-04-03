@@ -13,8 +13,7 @@ namespace Nekoyume.UI.Model
 
         public void Dispose()
         {
-            Item.Dispose();
-            Item.Value.Dispose();
+            Item.DisposeAll();
             ButtonEnabled.Dispose();
             ButtonText.Dispose();
             

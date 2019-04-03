@@ -32,7 +32,7 @@ namespace Nekoyume.UI.Model
             ReadyForCombination = StagedItems
                 .ObserveCountChanged()
                 .Select(count => count >= 2)
-                .ToReactiveProperty();
+                .ToReactiveProperty(false);
 
             Inventory.Value = new Inventory(items, MaterialString);
             SelectedItemInfo.Value = new ItemInfo();
@@ -48,10 +48,8 @@ namespace Nekoyume.UI.Model
 
         public void Dispose()
         {
-            Inventory.Dispose();
-            Inventory.Value.Dispose();
-            SelectedItemInfo.Dispose();
-            SelectedItemInfo.Value.Dispose();
+            Inventory.DisposeAll();
+            SelectedItemInfo.DisposeAll();
             StagedItems.DisposeAll();
         }
 

@@ -7,7 +7,7 @@ namespace Nekoyume.UI.ItemView
     {
         private const string CountTextFormat = "x{0}";
         
-        [SerializeField] public TextMeshProUGUI countText = null;
+        public TextMeshProUGUI countText = null;
 
         protected int Count
         {

@@ -9,14 +9,13 @@ namespace Nekoyume.UI.ItemView
     public class CountEditableItemView<T> : CountableItemView<Game.Item.Inventory.InventoryItem>
         where T : Model.Inventory.Item
     {
+        public Button closeButton;
+        public Image closeImage;
+        public Button editButton;
+        public Image editImage;
+        public Text editText;
+
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
-
-        [SerializeField] public Button closeButton;
-        [SerializeField] public Image closeImage;
-        [SerializeField] public Button editButton;
-        [SerializeField] public Image editImage;
-        [SerializeField] public Text editText;
-
         private Model.CountEditableItem<T> _data;
 
         #region Mono

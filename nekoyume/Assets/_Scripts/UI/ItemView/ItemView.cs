@@ -10,9 +10,9 @@ namespace Nekoyume.UI.ItemView
 
         private static Sprite _defaultSprite;
 
-        protected T Data;
+        public Image iconImage;
 
-        [SerializeField] public Image iconImage;
+        protected T Data;
 
         protected virtual void Awake()
         {

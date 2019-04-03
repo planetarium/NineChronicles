@@ -5,7 +5,7 @@ namespace Nekoyume.UI
 {
     public class InventoryRenew : Widget
     {
-        [SerializeField] public InventoryScrollerController scrollerController;
+        public InventoryScrollerController scrollerController;
 
         #region Mono
 

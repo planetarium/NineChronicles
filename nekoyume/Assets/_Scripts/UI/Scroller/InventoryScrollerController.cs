@@ -6,10 +6,9 @@ namespace Nekoyume.UI.Scroller
 {
     public class InventoryScrollerController : MonoBehaviour, IEnhancedScrollerDelegate
     {
-
-        [SerializeField] public EnhancedScroller scroller;
-        [SerializeField] public InventoryCellView cellViewPrefab;
-        [SerializeField] public int numberOfInnerItemPerCell = 1;
+        public EnhancedScroller scroller;
+        public InventoryCellView cellViewPrefab;
+        public int numberOfInnerItemPerCell = 1;
 
         /// <summary>
         /// `_scroller.Delegate`를 할당할 때, `_scroller` 내부에서 `_reloadData = true`가 된다.
@@ -18,7 +17,6 @@ namespace Nekoyume.UI.Scroller
         /// 그 상황을 피하기 위해서 빈 리스트를 할당한다.
         /// </summary>
         private ReactiveCollection<Model.Inventory.Item> _dataList = new ReactiveCollection<Model.Inventory.Item>();
-
         private float _cellViewHeight = 100f;
 
         #region Mono

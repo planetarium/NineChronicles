@@ -96,3 +96,24 @@ public class SerializeFieldNullException : Exception
 {
     
 }
+
+public class AddOutOfSpecificRangeException<T> : Exception
+{
+    private const string MessageFormat0 = "Add out of specific range. type : `{0}`.";
+    private const string MessageFormat1 = "Add out of specific range. type : `{0}`, specific range : `{1}`";
+
+    private static readonly string TypeName = typeof(T).Name;
+
+    public AddOutOfSpecificRangeException() : base(string.Format(MessageFormat0, TypeName))
+    {
+    }
+
+    public AddOutOfSpecificRangeException(int specificRange) : base(string.Format(MessageFormat1, TypeName,
+        specificRange))
+    {
+    }
+
+    public AddOutOfSpecificRangeException(string message, Exception inner) : base(message, inner)
+    {
+    }
+}

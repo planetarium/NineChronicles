@@ -8,7 +8,7 @@ namespace Nekoyume.UI.Scroller
     [RequireComponent(typeof(RectTransform))]
     public class InventoryCellView : EnhancedScrollerCellView
     {
-        [SerializeField] public InventoryItemView[] items;
+        public InventoryItemView[] items;
         
         public void SetData(ReactiveCollection<Model.Inventory.Item> dataList, int firstIndex)
         {

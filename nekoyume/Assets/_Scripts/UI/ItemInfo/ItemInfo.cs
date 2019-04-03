@@ -9,10 +9,10 @@ namespace Nekoyume.UI.ItemInfo
 {
     public class ItemInfo : MonoBehaviour
     {
-        [SerializeField] public Text nameText;
-        [SerializeField] public Text infoText;
-        [SerializeField] public Text descriptionText;
-        [SerializeField] public SimpleCountableItemView itemView;
+        public Text nameText;
+        public Text infoText;
+        public Text descriptionText;
+        public SimpleCountableItemView itemView;
 
         protected Model.ItemInfo _data;
         
@@ -67,12 +67,6 @@ namespace Nekoyume.UI.ItemInfo
             infoText.text = item.Item.ToItemInfo();
             descriptionText.text = item.Item.Data.Flavour;
             itemView.SetData(item);
-            
-//            if (_considerPrice)
-//            {
-//                priceIcon.enabled = false;
-//                price.text = "";
-//            }
         }
         
         public virtual void Clear()

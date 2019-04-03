@@ -8,8 +8,8 @@ namespace Nekoyume.UI.ItemInfo
 {
     public class ButtonedItemInfo : ItemInfo
     {
-        [SerializeField] public Button button;
-        [SerializeField] public Text buttonText;
+        public Button button;
+        public Text buttonText;
         
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
