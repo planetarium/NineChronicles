@@ -8,5 +8,10 @@ namespace Nekoyume.Game.Character
         {
             Event.OnAttackEnd.Invoke();
         }
+
+        public void HitEnd()
+        {
+            Event.OnHitEnd.Invoke();
+        }
     }
 }
