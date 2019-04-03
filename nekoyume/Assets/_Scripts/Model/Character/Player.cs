@@ -142,6 +142,15 @@ namespace Nekoyume.Model
                 }
             }
         }
+        public void Spawn()
+        {
+            InitAI();
+            var spawn = new SpawnPlayer
+            {
+                character = Copy(this),
+            };
+            Simulator.Log.Add(spawn);
+        }
     }
 
     public class InvalidEquipmentException : Exception
