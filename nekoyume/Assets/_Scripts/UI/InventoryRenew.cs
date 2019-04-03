@@ -5,8 +5,6 @@ namespace Nekoyume.UI
 {
     public class InventoryRenew : Widget
     {
-        private Model.Inventory _data;
-        
         [SerializeField] public InventoryScrollerController scrollerController;
 
         #region Mono
@@ -23,7 +21,6 @@ namespace Nekoyume.UI
         
         public void SetData(Model.Inventory data)
         {
-            _data = data;
             scrollerController.SetData(data.Items);
         }
     }

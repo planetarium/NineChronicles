@@ -20,6 +20,8 @@ namespace Nekoyume.UI
         [SerializeField] public ButtonedItemInfo selectedItemInfo;
         [SerializeField] public CombinationStagedItemView[] stagedItems;
         [SerializeField] public Button combinationButton;
+        [SerializeField] public Image combinationButtonImage;
+        [SerializeField] public Text combinationButtonText;
         [SerializeField] public Button closeButton;
 
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
@@ -36,6 +38,8 @@ namespace Nekoyume.UI
             if (ReferenceEquals(inventoryRenew, null) ||
                 ReferenceEquals(selectedItemInfo, null) ||
                 ReferenceEquals(combinationButton, null) ||
+                ReferenceEquals(combinationButtonImage, null) ||
+                ReferenceEquals(combinationButtonText, null) ||
                 ReferenceEquals(closeButton, null))
             {
                 throw new SerializeFieldNullException();

@@ -2088,6 +2088,7 @@ MonoBehaviour:
   countText: {fileID: 114286534859782822}
   coverImage: {fileID: 114260692291343158}
   selectionImage: {fileID: 114288799716709262}
+  button: {fileID: 0}
 --- !u!114 &114032959825117176
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2764,6 +2765,7 @@ MonoBehaviour:
   countText: {fileID: 114571020396275920}
   coverImage: {fileID: 114522734025910638}
   selectionImage: {fileID: 114801773832403974}
+  button: {fileID: 0}
 --- !u!114 &114185176891769154
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4180,6 +4182,7 @@ MonoBehaviour:
   countText: {fileID: 114213361566632730}
   coverImage: {fileID: 114070767063564270}
   selectionImage: {fileID: 114059228266307864}
+  button: {fileID: 0}
 --- !u!114 &114344403085798436
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -5458,6 +5461,8 @@ MonoBehaviour:
   - {fileID: 114229899921661416}
   - {fileID: 114377894295615930}
   combinationButton: {fileID: 114847425125702140}
+  combinationButtonImage: {fileID: 114185176891769154}
+  combinationButtonText: {fileID: 114286197654352630}
   closeButton: {fileID: 114011821723084054}
 --- !u!114 &114623665959270364
 MonoBehaviour:
@@ -5849,6 +5854,7 @@ MonoBehaviour:
   countText: {fileID: 114518122120511160}
   coverImage: {fileID: 114189650999096164}
   selectionImage: {fileID: 114623876794069504}
+  button: {fileID: 0}
 --- !u!114 &114717775086138688
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -5864,6 +5870,7 @@ MonoBehaviour:
   countText: {fileID: 114256312418217640}
   coverImage: {fileID: 114500332946608208}
   selectionImage: {fileID: 114762253519606944}
+  button: {fileID: 0}
 --- !u!114 &114724315431459896
 MonoBehaviour:
   m_ObjectHideFlags: 1

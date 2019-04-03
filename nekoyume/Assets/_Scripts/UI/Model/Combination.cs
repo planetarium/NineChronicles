@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using Nekoyume.Game.Item;
 using UniRx;
-using Uno.Disposables;
-using Uno.Extensions;
 
 namespace Nekoyume.UI.Model
 {
@@ -21,6 +19,8 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveCollection<CountEditableItem<Inventory.Item>> StagedItems =
             new ReactiveCollection<CountEditableItem<Inventory.Item>>();
 
+        public readonly IReadOnlyReactiveProperty<bool> ReadyForCombination = null;
+        
         public int stagedItemsLimit;
 
         public bool IsStagedItemsFulled => StagedItems.Count >= stagedItemsLimit;
@@ -28,6 +28,11 @@ namespace Nekoyume.UI.Model
         public Combination(List<Game.Item.Inventory.InventoryItem> items, int stagedItemsLimit)
         {
             this.stagedItemsLimit = stagedItemsLimit;
+
+            ReadyForCombination = StagedItems
+                .ObserveCountChanged()
+                .Select(count => count >= 2)
+                .ToReactiveProperty();
 
             Inventory.Value = new Inventory(items, MaterialString);
             SelectedItemInfo.Value = new ItemInfo();
