@@ -3832,7 +3832,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.z
-    path: sprite/shadow
+    path: body/acc_01
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -3842,7 +3842,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.y
-    path: sprite/shadow
+    path: body/acc_01
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -3852,7 +3852,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.x
-    path: sprite/shadow
+    path: body/acc_01
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -3892,7 +3892,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.x
-    path: body/acc_01
+    path: sprite/shadow
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -3902,7 +3902,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.y
-    path: body/acc_01
+    path: sprite/shadow
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -3912,10 +3912,17 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.z
-    path: body/acc_01
+    path: sprite/shadow
     classID: 4
     script: {fileID: 0}
   m_HasGenericRootTransform: 1
   m_HasMotionFloatCurves: 0
   m_GenerateMotionCurves: 0
-  m_Events: []
+  m_Events:
+  - time: 0.51666665
+    functionName: AttackEnd
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0

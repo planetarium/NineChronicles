@@ -36,7 +36,7 @@ namespace Nekoyume.Game.CC
 
         protected virtual void OnDamage()
         {
-            Owner.OnDamage(DamagePerTick, false);
+            StartCoroutine(Owner.CoProcessDamage(DamagePerTick, false));
         }
     }
 }

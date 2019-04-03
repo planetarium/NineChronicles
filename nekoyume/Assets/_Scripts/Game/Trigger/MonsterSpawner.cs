@@ -13,11 +13,9 @@ namespace Nekoyume.Game.Trigger
     {
         private readonly float[,] _spawnPoints =
         {
-            {0.9f, -0.8f},
-            {0.8f, -1.4f},
-            {0.9f, -0.7f},
-            {0.8f, -1.0f},
-            {0.9f, -1.2f}
+            {0.9f, 0f},
+            {0.8f, 0.3f},
+            {0.9f, -0.3f},
         };
 
         private Monster _monster;

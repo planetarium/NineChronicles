@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Linq;
 using BTAI;
 using DG.Tweening;
@@ -102,9 +103,9 @@ namespace Nekoyume.Game.Character
             HPMax = HP;
         }
 
-        public override void OnDamage(int dmg, bool critical)
+        public override IEnumerator CoProcessDamage(int dmg, bool critical)
         {
-            base.OnDamage(dmg, critical);
+            yield return StartCoroutine(base.CoProcessDamage(dmg, critical));
 
             var position = transform.TransformPoint(0.1f, 0.8f, 0.0f);
             var force = new Vector3(0.02f, 0.4f);
