@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using DG.Tweening;
 using Nekoyume.Game.Character;
 using Nekoyume.Model;
+using UniRx.Toolkit;
 using UnityEngine;
 
 
@@ -59,7 +60,7 @@ namespace Nekoyume.Game.Factory
             var objectPool = GetComponent<Util.ObjectPool>();
             if (ReferenceEquals(objectPool, null))
             {
-                throw new NotFoundComponentException("Not found `ObjectPool`.");
+                throw new NotFoundComponentException<Util.ObjectPool>();
             }
 
             var go = objectPool.Get("Enemy", true, position);
@@ -70,7 +71,7 @@ namespace Nekoyume.Game.Factory
             var enemy = animator.GetComponent<Enemy>();
             if (ReferenceEquals(enemy, null))
             {
-                throw new NotFoundComponentException("Not found `Enemy`.");
+                throw new NotFoundComponentException<Enemy>();
             }
             enemy.Init(spawnCharacter);
             return go;
