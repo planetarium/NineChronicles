@@ -234,7 +234,7 @@ namespace Nekoyume.Game
 
         private void UpdateDummyPosition(Character.Player player, ActionCamera cam)
         {
-            if (ReferenceEquals(cam, null)) throw new ArgumentNullException();
+            if (ReferenceEquals(cam, null)) throw new ArgumentNullException(nameof(cam));
             Vector2 position = dummy.transform.position;
             position.x += Time.deltaTime * player.Speed;
             dummy.transform.position = position;
