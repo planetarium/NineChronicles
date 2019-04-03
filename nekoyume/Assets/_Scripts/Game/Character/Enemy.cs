@@ -103,9 +103,9 @@ namespace Nekoyume.Game.Character
             HPMax = HP;
         }
 
-        public override IEnumerator CoOnDamage(int dmg, bool critical)
+        public override IEnumerator CoProcessDamage(int dmg, bool critical)
         {
-            yield return StartCoroutine(base.CoOnDamage(dmg, critical));
+            yield return StartCoroutine(base.CoProcessDamage(dmg, critical));
 
             var position = transform.TransformPoint(0.1f, 0.8f, 0.0f);
             var force = new Vector3(0.02f, 0.4f);

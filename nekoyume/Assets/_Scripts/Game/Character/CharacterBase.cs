@@ -275,7 +275,7 @@ namespace Nekoyume.Game.Character
             );
         }
 
-        public virtual IEnumerator CoOnDamage(int dmg, bool critical)
+        public virtual IEnumerator CoProcessDamage(int dmg, bool critical)
         {
             if (dmg <= 0)
                 yield break;
@@ -317,7 +317,7 @@ namespace Nekoyume.Game.Character
 
             if (target != null)
             {
-                StartCoroutine(target.CoOnDamage(atk, critical));
+                StartCoroutine(target.CoProcessDamage(atk, critical));
             }
         }
 

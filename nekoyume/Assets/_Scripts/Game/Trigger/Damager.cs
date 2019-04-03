@@ -55,7 +55,7 @@ namespace Nekoyume.Game.Trigger
                     || transform.position.x + halfSize < character.transform.position.x)
                     continue;
 
-                character.CoOnDamage(_damage, false);
+                StartCoroutine(character.CoProcessDamage(_damage, false));
 
                 _onDamage(character);
                 
