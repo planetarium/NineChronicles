@@ -180,7 +180,21 @@ namespace Nekoyume.Action
             var peers = LoadPeers();
             var iceServers = LoadIceServers();
 
-            agent = new Agent(privateKey, storePath, chainId, peers, iceServers);
+            string host = GetCommandLineOption("host");
+            int portStr;
+            int? port = int.TryParse(GetCommandLineOption("port"), out portStr) 
+                ? (int?)portStr 
+                : null;
+
+            agent = new Agent(
+                privateKey, 
+                storePath, 
+                chainId, 
+                peers, 
+                iceServers,
+                host,
+                port
+            );
             agent.DidReceiveAction += ReceiveAction;
             agent.UpdateShop += UpdateShop;
 
@@ -195,6 +209,20 @@ namespace Nekoyume.Action
             StartCoroutine(_swarmRunner);
 
             Debug.Log($"User Address: 0x{agent.UserAddress.ToHex()}");
+        }
+
+        private string GetCommandLineOption(string name)
+        {
+            string[] args = Environment.GetCommandLineArgs();
+            for (var i = 0; i < args.Length; i++)
+            {
+                if (args[i] == $"--{name}") 
+                {
+                    return args[i+1];
+                }
+            }
+            
+            return null;
         }
 
         private void UpdateShop(object sender, Shop newShop)
