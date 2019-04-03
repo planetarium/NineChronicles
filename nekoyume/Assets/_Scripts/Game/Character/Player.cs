@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Anima2D;
@@ -59,6 +60,7 @@ namespace Nekoyume.Game.Character
         {
             Event.OnEnemyDead.AddListener(GetEXP);
             Event.OnAttackEnd.AddListener(AttackEnd);
+            Event.OnHitEnd.AddListener(HitEnd);
             Inventory = new Item.Inventory();
             _targetTag = Tag.Enemy;
         }
@@ -157,9 +159,9 @@ namespace Nekoyume.Game.Character
             return canceled;
         }
 
-        public override void OnDamage(int dmg, bool critical)
+        public override IEnumerator CoProcessDamage(int dmg, bool critical)
         {
-            base.OnDamage(dmg, critical);
+            yield return StartCoroutine(base.CoProcessDamage(dmg, critical));
 
             var position = transform.TransformPoint(-0.1f, 0.6f, 0.0f);
             var force = new Vector3(-0.02f, 0.4f);

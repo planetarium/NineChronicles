@@ -47,25 +47,25 @@ namespace Nekoyume.Game
             _cam = _camera.GetComponent<ActionCamera>();
             if (ReferenceEquals(_cam, null))
             {
-                throw new NotFoundComponentException("Not found `ActionCamera`.");
+                throw new NotFoundComponentException<ActionCamera>();
             }
 
             _factory = GetComponent<PlayerFactory>();
             if (ReferenceEquals(_factory, null))
             {
-                throw new NotFoundComponentException("Not found `PlayerFactory`.");
+                throw new NotFoundComponentException<PlayerFactory>();
             }
 
             _objectPool = GetComponent<ObjectPool>();
             if (ReferenceEquals(_objectPool, null))
             {
-                throw new NotFoundComponentException("Not found `ObjectPool`.");
+                throw new NotFoundComponentException<ObjectPool>();
             }
 
             _spawner = GetComponentInChildren<MonsterSpawner>();
             if (ReferenceEquals(_spawner, null))
             {
-                throw new NotFoundComponentException("Not found `MonsterSpawner`.");
+                throw new NotFoundComponentException<MonsterSpawner>();
             }
 
             if (ReferenceEquals(dummy, null))
@@ -234,7 +234,7 @@ namespace Nekoyume.Game
 
         private void UpdateDummyPosition(Character.Player player, ActionCamera cam)
         {
-            if (ReferenceEquals(cam, null)) throw new NotFoundComponentException("Not found `ActionCamera` component.");
+            if (ReferenceEquals(cam, null)) throw new ArgumentNullException(nameof(cam));
             Vector2 position = dummy.transform.position;
             position.x += Time.deltaTime * player.Speed;
             dummy.transform.position = position;
@@ -342,7 +342,7 @@ namespace Nekoyume.Game
 
                 if (ReferenceEquals(player, null))
                 {
-                    throw new NotFoundComponentException("Not found `Character.Player` component.");
+                    throw new NotFoundComponentException<Character.Player>();
                 }
             }
 

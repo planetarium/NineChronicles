@@ -20,7 +20,7 @@ namespace Nekoyume.Game.Factory
             var player = objectPool.Get<Player>();
             if (ReferenceEquals(player, null))
             {
-                throw new NotFoundComponentException("`ObjectPool` has no component `Character.Player`.");
+                throw new NotFoundComponentException<Player>();
             }
 
             player.Init(avatar.ToPlayer());

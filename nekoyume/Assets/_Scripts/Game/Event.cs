@@ -45,5 +45,7 @@ namespace Nekoyume.Game
         public static readonly  SlotClick OnSlotClick = new SlotClick();
 
         public static readonly UnityEvent OnAttackEnd = new UnityEvent();
+
+        public static readonly UnityEvent OnHitEnd = new UnityEvent();
     }
 }

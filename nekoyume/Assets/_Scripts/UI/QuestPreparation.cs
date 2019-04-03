@@ -26,9 +26,8 @@ namespace Nekoyume.UI
 
         private Player _player = null;
         private Inventory _inventory = null;
-        private InventorySlot _selectedSlot = null;
 
-        // Mono
+        #region Mono
 
         private void Awake()
         {
@@ -50,7 +49,7 @@ namespace Nekoyume.UI
             Game.Event.OnSlotClick.RemoveListener(SlotClick);
         }
 
-        // ~Mono
+        #endregion
 
         public void QuestClick()
         {
@@ -137,7 +136,6 @@ namespace Nekoyume.UI
                 return;
             }
 
-            _selectedSlot = slot;
             itemInfoSelectedItem.SetItem(slot.Item);
             itemInfoSelectedItem.SetIcon(slot.Icon.sprite);
             SetActiveButtonEquip(slot.Item is ItemUsable);

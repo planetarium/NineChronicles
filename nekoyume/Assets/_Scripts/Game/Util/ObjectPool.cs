@@ -25,11 +25,11 @@ namespace Nekoyume.Game.Util
             foreach (var poolData in list)
             {
                 dicts.Add(poolData.Prefab.name, poolData);
-                Create(poolData.Prefab, poolData.InitCount);
+                Add(poolData.Prefab, poolData.InitCount);
             }
         }
 
-        public GameObject Create(GameObject prefab, int count)
+        private GameObject Add(GameObject prefab, int count)
         {
             GameObject first = null;
             for (int i = 0; i < count; ++i)
@@ -49,6 +49,7 @@ namespace Nekoyume.Game.Util
                 }
                 list.Add(go);
             }
+
             return first;
         }
 
@@ -76,7 +77,7 @@ namespace Nekoyume.Game.Util
             PoolData poolData;
             if (dicts.TryGetValue(name, out poolData))
             {
-                GameObject go = Create(poolData.Prefab, poolData.AddCount);
+                GameObject go = Add(poolData.Prefab, poolData.AddCount);
                 go.transform.position = position;
                 go.SetActive(true);
                 return go.GetComponent<T>();
@@ -106,6 +107,38 @@ namespace Nekoyume.Game.Util
                     go.SetActive(false);
                 }
             }
+        }
+
+        public GameObject Get(string objName, bool create, Vector3 position = default(Vector3))
+        {
+            List<GameObject> gameObjects;
+            if (objects.TryGetValue(objName, out gameObjects))
+            {
+                foreach (var go in gameObjects)
+                {
+                    if (go.activeSelf)
+                        continue;
+
+                    go.transform.position = position;
+                    go.SetActive(true);
+                    return go;
+                }
+            }
+            return create ? Create(objName, position) : null;
+
+        }
+
+        public GameObject Create(string objName, Vector3 position)
+        {
+            PoolData poolData;
+            if (dicts.TryGetValue(objName, out poolData))
+            {
+                GameObject go = Add(poolData.Prefab, poolData.AddCount);
+                go.transform.position = position;
+                go.SetActive(true);
+                return go;
+            }
+            throw new NullReferenceException($"Set `{objName}` first in ObjectPool.");
         }
     }
 }

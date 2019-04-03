@@ -20,7 +20,7 @@ namespace Nekoyume.UI
         public Image buttonSellImage = null;
         public Text buttonSellText = null;
 
-        // Mono
+        #region Mono
 
         private void Awake()
         {
@@ -40,7 +40,7 @@ namespace Nekoyume.UI
             Game.Event.OnSlotClick.RemoveListener(SlotClick);
         }
 
-        // ~Mono
+        #endregion
 
         public void CalcTotalPrice()
         {

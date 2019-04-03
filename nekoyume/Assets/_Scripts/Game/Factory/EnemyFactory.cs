@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using DG.Tweening;
+using Nekoyume.Game.Character;
 using Nekoyume.Model;
+using UniRx.Toolkit;
 using UnityEngine;
 
 
@@ -56,21 +58,23 @@ namespace Nekoyume.Game.Factory
         public GameObject Create(Monster spawnCharacter, Vector2 position)
         {
             var objectPool = GetComponent<Util.ObjectPool>();
-            var enemy = objectPool.Get<Character.Enemy>(position);
-            if (enemy == null)
-                return null;
+            if (ReferenceEquals(objectPool, null))
+            {
+                throw new NotFoundComponentException<Util.ObjectPool>();
+            }
 
+            var go = objectPool.Get("Enemy", true, position);
+            //FIXME 애니메이터 재사용시 기존 투명도가 유지되는 문제가 있음.
+//            var animator = objectPool.Get(spawnCharacter.data.Id.ToString(), true);
+            var origin = Resources.Load<GameObject>($"Prefab/{spawnCharacter.data.Id}");
+            var animator = Instantiate(origin, go.transform);
+            var enemy = animator.GetComponent<Enemy>();
+            if (ReferenceEquals(enemy, null))
+            {
+                throw new NotFoundComponentException<Enemy>();
+            }
             enemy.Init(spawnCharacter);
-
-            // sprite
-            var render = enemy.GetComponent<SpriteRenderer>();
-            var sprite = Resources.Load<Sprite>($"images/character_{spawnCharacter.data.Id}");
-            if (sprite == null)
-                sprite = Resources.Load<Sprite>("images/pet");
-            render.sprite = sprite;
-            render.sortingOrder = Mathf.FloorToInt(-position.y * 10.0f);
-
-            return enemy.gameObject;
+            return go;
         }
     }
 }

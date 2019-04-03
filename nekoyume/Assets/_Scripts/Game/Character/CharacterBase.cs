@@ -43,7 +43,7 @@ namespace Nekoyume.Game.Character
         private const float Range = 1.6f;
         protected string _targetTag = "";
         public bool attackEnd { get; private set; }
-
+        public bool hitEnd { get; private set; }
         public abstract float Speed { get; }
 
         private void Start()
@@ -275,20 +275,18 @@ namespace Nekoyume.Game.Character
             );
         }
 
-        public virtual void OnDamage(int dmg, bool critical)
+        public virtual IEnumerator CoProcessDamage(int dmg, bool critical)
         {
             if (dmg <= 0)
-                return;
+                yield break;
 
             HP -= dmg;
 
             if (_anim != null)
             {
-                var info = _anim.GetCurrentAnimatorStateInfo(0);
-                if (info.IsName("idle") || info.IsName("run"))
-                {
-                    _anim.SetTrigger("Hit");
-                }
+                hitEnd = false;
+                _anim.SetTrigger("Hit");
+                yield return new WaitUntil(() => hitEnd);
             }
 
             UpdateHpBar();
@@ -319,7 +317,7 @@ namespace Nekoyume.Game.Character
 
             if (target != null)
             {
-                target.OnDamage(atk, critical);
+                StartCoroutine(target.CoProcessDamage(atk, critical));
             }
         }
 
@@ -364,6 +362,11 @@ namespace Nekoyume.Game.Character
         protected void AttackEnd()
         {
             attackEnd = true;
+        }
+
+        protected void HitEnd()
+        {
+            hitEnd = true;
         }
     }
 }
