@@ -41,6 +41,7 @@ namespace Nekoyume.Action
         private const float ShopUpdateInterval = 3.0f;
 
         private const float TxProcessInterval = 3.0f;
+        private static readonly TimeSpan SwarmDialTimeout = TimeSpan.FromMilliseconds(1000);
 
         private readonly Swarm swarm;
 
@@ -59,8 +60,8 @@ namespace Nekoyume.Action
             Guid chainId,
             IEnumerable<Peer> peers,
             IEnumerable<IceServer> iceServers,
-            string host = null, 
-            int? port = null)
+            string host, 
+            int? port)
         {
             IBlockPolicy<ActionBase> policy = new BlockPolicy<ActionBase>(TimeSpan.FromMilliseconds(500));
 # if UNITY_EDITOR
@@ -78,7 +79,7 @@ namespace Nekoyume.Action
 
             swarm = new Swarm(
                 privateKey,
-                millisecondsDialTimeout: 1000,
+                dialTimeout: SwarmDialTimeout,
                 host: host, 
                 listenPort: port, 
                 iceServers: iceServers);

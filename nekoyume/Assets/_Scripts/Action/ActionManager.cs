@@ -187,13 +187,13 @@ namespace Nekoyume.Action
                 : null;
 
             agent = new Agent(
-                privateKey, 
-                storePath, 
-                chainId, 
-                peers, 
-                iceServers,
-                host,
-                port
+                privateKey: privateKey, 
+                path: storePath, 
+                chainId: chainId, 
+                peers: peers, 
+                iceServers: iceServers,
+                host: host,
+                port: port
             );
             agent.DidReceiveAction += ReceiveAction;
             agent.UpdateShop += UpdateShop;
