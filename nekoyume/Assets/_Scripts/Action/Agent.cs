@@ -4,23 +4,29 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
+using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using Libplanet;
 using Libplanet.Blockchain;
 using Libplanet.Blockchain.Policies;
 using Libplanet.Blocks;
 using Libplanet.Crypto;
+using Libplanet.Net;
 using Libplanet.Store;
 using Libplanet.Tx;
 using Nekoyume.Data.Table;
 using Nekoyume.Game;
 using Nekoyume.Helper;
+using Nekoyume.Serilog;
+using NetMQ;
+using Serilog;
 using UnityEngine;
 using Uno.Extensions;
 
 namespace Nekoyume.Action
 {
-    public class Agent
+    public class Agent : IDisposable
     {
         internal readonly BlockChain<ActionBase> blocks;
         private readonly PrivateKey privateKey;
@@ -35,8 +41,27 @@ namespace Nekoyume.Action
         private const float ShopUpdateInterval = 3.0f;
 
         private const float TxProcessInterval = 3.0f;
+        private static readonly TimeSpan SwarmDialTimeout = TimeSpan.FromMilliseconds(1000);
 
-        public Agent(PrivateKey privateKey, string path, Guid chainId)
+        private readonly Swarm swarm;
+
+        static Agent() 
+        {
+            AsyncIO.ForceDotNet.Force();
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Verbose()
+                .WriteTo.Sink(new UnityDebugSink())
+                .CreateLogger();
+        }
+
+        public Agent(
+            PrivateKey privateKey,
+            string path,
+            Guid chainId,
+            IEnumerable<Peer> peers,
+            IEnumerable<IceServer> iceServers,
+            string host, 
+            int? port)
         {
             IBlockPolicy<ActionBase> policy = new BlockPolicy<ActionBase>(TimeSpan.FromMilliseconds(500));
 # if UNITY_EDITOR
@@ -48,10 +73,21 @@ namespace Nekoyume.Action
                 new FileStore(path),
                 chainId);
             queuedActions = new ConcurrentQueue<ActionBase>();
-            
 #if BLOCK_LOG_USE
             FileHelper.WriteAllText("Block.log", "");
 #endif
+
+            swarm = new Swarm(
+                privateKey,
+                dialTimeout: SwarmDialTimeout,
+                host: host, 
+                listenPort: port, 
+                iceServers: iceServers);
+
+            foreach(var peer in peers) 
+            {
+                swarm.Add(peer);
+            }
         }
 
         public Address UserAddress => privateKey.PublicKey.ToAddress();
@@ -60,6 +96,15 @@ namespace Nekoyume.Action
         public event EventHandler<Context> DidReceiveAction;
         public event EventHandler<Shop> UpdateShop;
 
+        public IEnumerator CoSwarmRunner()
+        {
+            Task task = Task.Run(async () => 
+            {
+                await swarm.StartAsync(blocks);
+            });
+
+            yield return new WaitUntil(() => task.IsCompleted);
+        }
         public IEnumerator CoAvatarUpdator()
         {
             while (true)
@@ -120,9 +165,11 @@ namespace Nekoyume.Action
         {
             while (true)
             {
-                var task = Task.Run(() =>
+                var task = Task.Run(async () => 
                 {
-                    return blocks.MineBlock(UserAddress);
+                    var block = blocks.MineBlock(UserAddress);
+                    await swarm.BroadcastBlocksAsync(new[] { block });
+                    return block;
                 });
                 yield return new WaitUntil(() => task.IsCompleted);
                 Debug.Log($"created block index: {task.Result.Index}");
@@ -141,6 +188,7 @@ namespace Nekoyume.Action
                 timestamp: DateTime.UtcNow
             );
             blocks.StageTransactions(new HashSet<Transaction<ActionBase>> {tx});
+            swarm.BroadcastTxsAsync(new[] { tx }).Wait();
         }
 
         public static Table<Item> ItemTable()
@@ -153,6 +201,10 @@ namespace Nekoyume.Action
             }
 
             return itemTable;
+        }
+        public void Dispose()
+        {
+            swarm?.Dispose();
         }
 
         private class DebugPolicy : IBlockPolicy<ActionBase>
