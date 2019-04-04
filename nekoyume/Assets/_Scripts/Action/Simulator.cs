@@ -133,17 +133,17 @@ namespace Nekoyume.Action
             }
         }
 
-        private Model.Monster SpawnMonster(int monsterId)
+        private Monster SpawnMonster(int monsterId)
         {
             var tables = ActionManager.Instance.tables;
-            var monsterTable = tables.Monster;
+            var monsterTable = tables.Character;
 
-            Data.Table.Monster monsterData;
-            if (!monsterTable.TryGetValue(monsterId, out monsterData))
+            Character characterData;
+            if (!monsterTable.TryGetValue(monsterId, out characterData))
             {
                 Debug.Log(monsterId);
             }
-            return new Model.Monster(monsterData, Player);
+            return new Monster(characterData, Player);
         }
 
         private ItemBase GetItem(int monsterId)

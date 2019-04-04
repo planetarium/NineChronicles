@@ -12,8 +12,8 @@ namespace Nekoyume.Game.Factory
         public GameObject Create(int monsterId, Vector2 position, int power)
         {
             Tables tables = this.GetRootComponent<Tables>();
-            Data.Table.Monster monsterData;
-            if (!tables.Monster.TryGetValue(monsterId, out monsterData))
+            Data.Table.Character characterData;
+            if (!tables.Character.TryGetValue(monsterId, out characterData))
                 return null;
 
             var objectPool = GetComponent<ObjectPool>();
@@ -21,8 +21,8 @@ namespace Nekoyume.Game.Factory
             if (enemy == null)
                 return null;
 
-            enemy.InitAI(monsterData);
-            enemy.InitStats(monsterData, power);
+            enemy.InitAI(characterData);
+            enemy.InitStats(characterData, power);
 
             // sprite
             var render = enemy.GetComponent<SpriteRenderer>();
@@ -38,8 +38,8 @@ namespace Nekoyume.Game.Factory
         public GameObject CreateBoss(int bossId, Vector2 position, int power)
         {
             Tables tables = this.GetRootComponent<Tables>();
-            Data.Table.Monster monsterData;
-            if (!tables.Monster.TryGetValue(bossId, out monsterData))
+            Data.Table.Character characterData;
+            if (!tables.Character.TryGetValue(bossId, out characterData))
                 return null;
 
             var res = Resources.Load<GameObject>($"Prefab/Character/Boss_{bossId}/Boss_{bossId}");
@@ -48,8 +48,8 @@ namespace Nekoyume.Game.Factory
                 return null;
 
             var boss = bossObj.GetComponent<BossBase>();
-            boss.InitAI(monsterData);
-            boss.InitStats(monsterData, power);
+            boss.InitAI(characterData);
+            boss.InitStats(characterData, power);
 
             return bossObj.gameObject;
         }

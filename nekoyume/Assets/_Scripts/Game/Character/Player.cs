@@ -195,7 +195,7 @@ namespace Nekoyume.Game.Character
 
         private void GetEXP(Enemy enemy)
         {
-            EXP += enemy.RewardExp;
+            EXP += 0;
 
             while (EXPMax <= EXP)
             {

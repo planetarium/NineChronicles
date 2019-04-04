@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 
@@ -81,6 +82,7 @@ namespace Nekoyume.Data.Table
                         continue;
                     }
                     string value = arr[index];
+                    // 필드 기본값이 설정되지 않으면 NullReferenceException이 발생함.
                     Type fieldType = fieldInfo.GetValue(row).GetType();
                     if (fieldType == typeof(int) || fieldType.IsEnum)
                     {
@@ -106,6 +108,10 @@ namespace Nekoyume.Data.Table
                     else if (fieldType == typeof(string))
                     {
                         fieldInfo.SetValue(row, value);
+                    }
+                    else if (fieldType == typeof(bool))
+                    {
+                        fieldInfo.SetValue(row, int.Parse(value) == 1);
                     }
                     else
                     {

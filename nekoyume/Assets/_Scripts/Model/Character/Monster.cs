@@ -8,20 +8,18 @@ namespace Nekoyume.Model
     [Serializable]
     public class Monster : CharacterBase
     {
-        public int rewardExp;
-        public Data.Table.Monster data;
+        public Data.Table.Character data;
 
-        public Monster(Data.Table.Monster data, Player player)
+        public Monster(Data.Table.Character data, Player player)
         {
-            hp = data.Health;
-            atk = data.Attack;
-            def = data.Defense;
-            rewardExp = data.RewardExp;
-            criticalChance = data.critical;
+            hp = data.hp;
+            atk = data.damage;
+            def = data.defense;
+            criticalChance = data.luck;
             targets.Add(player);
             Simulator = player.Simulator;
             this.data = data;
-            defElement = Elemental.Create(data.Resistance);
+            defElement = Elemental.Create(data.elemental);
         }
 
         protected override void OnDead()

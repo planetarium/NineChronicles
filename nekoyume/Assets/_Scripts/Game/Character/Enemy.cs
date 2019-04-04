@@ -16,7 +16,6 @@ namespace Nekoyume.Game.Character
     public class Enemy : CharacterBase
     {
         public int DataId = 0;
-        public int RewardExp = 0;
         public Guid id;
 
         protected override Vector3 _hpBarOffset => _castingBarOffset + new Vector3(0, 0 + 0.22f, 0.0f);
@@ -34,7 +33,7 @@ namespace Nekoyume.Game.Character
 
         public override float Speed => 0.0f;
 
-        public void InitAI(Monster statsData)
+        public void InitAI(Data.Table.Character statsData)
         {
             DataId = statsData.Id;
             RunSpeed = -1.0f;
@@ -90,13 +89,11 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        public void InitStats(Monster statsData, int power)
+        public void InitStats(Data.Table.Character statsData, int power)
         {
-            HP = Mathf.FloorToInt((float)statsData.Health * ((float)power * 0.01f));
-            ATK = statsData.Attack;
-            DEF = Mathf.FloorToInt((float)statsData.Defense * ((float)power * 0.01f));
-            WeightType = statsData.WeightType;
-            RewardExp = Mathf.FloorToInt((float)statsData.RewardExp * ((float)power * 0.01f));
+            HP = Mathf.FloorToInt((float)statsData.hp * ((float)power * 0.01f));
+            ATK = statsData.damage;
+            DEF = Mathf.FloorToInt((float)statsData.defense * ((float)power * 0.01f));
 
             Power = power;
 
@@ -142,13 +139,11 @@ namespace Nekoyume.Game.Character
             StartRun();
         }
 
-        private void InitStats(Monster data)
+        private void InitStats(Data.Table.Character data)
         {
-            HP = data.Health;
-            ATK = data.Attack;
-            DEF = data.Defense;
-            WeightType = data.WeightType;
-            RewardExp = data.RewardExp;
+            HP = data.hp;
+            ATK = data.damage;
+            DEF = data.defense;
             Power = 0;
             HPMax = HP;
         }

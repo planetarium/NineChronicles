@@ -48,7 +48,7 @@ namespace Nekoyume.Model
 
         public void GetExp(Monster monster)
         {
-            exp += monster.rewardExp;
+            exp += 0;
             while (expMax <= exp)
             {
                 LevelUp();

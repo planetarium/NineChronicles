@@ -11,7 +11,7 @@ namespace Nekoyume.Data
         public Table<Skill> Skill { get; private set; }
         public Table<Stage> Stage { get; private set; }
         public Table<MonsterAppear> MonsterAppear { get; private set; }
-        public Table<Monster> Monster { get; private set; }
+        public Table<Character> Character { get; private set; }
         public Table<ItemDrop> ItemDrop { get; private set; }
         public Table<BoxDrop> BoxDrop { get; private set; }
         public Table<Item> Item { get; private set; }
@@ -23,35 +23,35 @@ namespace Nekoyume.Data
         {
             Stats = new Table<Stats>();
             Load(Stats, "DataTable/stats");
+//
+//            Skill = new Table<Skill>();
+//            Load(Skill, "DataTable/skills");
+//            Load(Skill, "DataTable/monster_skills");
 
-            Skill = new Table<Skill>();
-            Load(Skill, "DataTable/skills");
-            Load(Skill, "DataTable/monster_skills");
+//            Stage = new Table<Stage>();
+//            Load(Stage, "DataTable/stage");
+//
+//            MonsterAppear = new Table<MonsterAppear>();
+//            Load(MonsterAppear, "DataTable/monster_appear");
 
-            Stage = new Table<Stage>();
-            Load(Stage, "DataTable/stage");
+            Character = new Table<Character>();
+            Load(Character, "DataTable/character");
 
-            MonsterAppear = new Table<MonsterAppear>();
-            Load(MonsterAppear, "DataTable/monster_appear");
-
-            Monster = new Table<Monster>();
-            Load(Monster, "DataTable/monsters");
-
-            ItemDrop = new Table<ItemDrop>();
-            Load(ItemDrop, "DataTable/item_drop");
-
-            BoxDrop = new Table<BoxDrop>();
-            Load(BoxDrop, "DataTable/box_drop");
-
-            Item = new Table<Item>();
-            Load(Item, "DataTable/item");
-            Load(Item, "DataTable/item_equip");
-            Load(Item, "DataTable/item_box");
-
-            Recipe = new Table<Recipe>();
-            Load(Recipe, "DataTable/recipe");
-            MonsterWave = new Table<MonsterWave>();
-            Load(MonsterWave, "DataTable/monster_wave");
+//            ItemDrop = new Table<ItemDrop>();
+//            Load(ItemDrop, "DataTable/item_drop");
+//
+//            BoxDrop = new Table<BoxDrop>();
+//            Load(BoxDrop, "DataTable/box_drop");
+//
+//            Item = new Table<Item>();
+//            Load(Item, "DataTable/item");
+//            Load(Item, "DataTable/item_equip");
+//            Load(Item, "DataTable/item_box");
+//
+//            Recipe = new Table<Recipe>();
+//            Load(Recipe, "DataTable/recipe");
+//            MonsterWave = new Table<MonsterWave>();
+//            Load(MonsterWave, "DataTable/monster_wave");
             Elemental = new Table<Elemental>();
             Load(Elemental, "DataTable/elemental");
 
