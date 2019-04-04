@@ -37,7 +37,7 @@ namespace Nekoyume.UI
         {
             Item = item;
 
-            var sprite = Resources.Load<Sprite>($"images/item_{item.Data.Id}");
+            var sprite = Resources.Load<Sprite>($"images/item_{item.Data.id}");
             if (sprite == null)
             {
                 sprite = _defaultSprite;

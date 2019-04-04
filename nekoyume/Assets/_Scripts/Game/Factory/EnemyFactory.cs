@@ -65,7 +65,7 @@ namespace Nekoyume.Game.Factory
             var go = objectPool.Get("Enemy", true, position);
             //FIXME 애니메이터 재사용시 기존 투명도가 유지되는 문제가 있음.
 //            var animator = objectPool.Get(spawnCharacter.data.Id.ToString(), true);
-            var origin = Resources.Load<GameObject>($"Prefab/{spawnCharacter.data.Id}");
+            var origin = Resources.Load<GameObject>($"Prefab/{spawnCharacter.data.id}");
             var animator = Instantiate(origin, go.transform);
             var enemy = animator.GetComponent<Enemy>();
             if (ReferenceEquals(enemy, null))

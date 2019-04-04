@@ -316,7 +316,7 @@ namespace Nekoyume.Game
             {
                 var item = items[index];
                 position.y += index * 0.2f;
-                dropItemFactory.Create(item.Data.Id, position);
+                dropItemFactory.Create(item.Data.id, position);
             }
 
             yield return null;

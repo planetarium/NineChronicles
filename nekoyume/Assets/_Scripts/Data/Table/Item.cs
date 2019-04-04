@@ -7,7 +7,7 @@ namespace Nekoyume.Data.Table
     {
         protected bool Equals(Item other)
         {
-            return Id == other.Id && string.Equals(Cls, other.Cls) && param0 == other.param0 &&
+            return id == other.id && string.Equals(cls, other.cls) && param0 == other.param0 &&
                    param1 == other.param1 && param2 == other.param2;
         }
 
@@ -23,8 +23,8 @@ namespace Nekoyume.Data.Table
         {
             unchecked
             {
-                var hashCode = Id;
-                hashCode = (hashCode * 397) ^ (Cls != null ? Cls.GetHashCode() : 0);
+                var hashCode = id;
+                hashCode = (hashCode * 397) ^ (cls != null ? cls.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ param0;
                 hashCode = (hashCode * 397) ^ param1;
                 hashCode = (hashCode * 397) ^ param2;
@@ -32,14 +32,14 @@ namespace Nekoyume.Data.Table
             }
         }
 
-        public int Id = 0;
-        public string Cls = "";
+        public int id = 0;
+        public string cls = "";
         public int param0 = 0;
         public int param1 = 0;
         public int param2 = 0;
         public int Synergy = 0;
         public Elemental.ElementalType elemental;
-        public string Name = "";
-        public string Flavour = "";
+        public string name = "";
+        public string description = "";
     }
 }

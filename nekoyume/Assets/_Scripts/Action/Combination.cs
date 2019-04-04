@@ -38,7 +38,7 @@ namespace Nekoyume.Action
                 material_2,
                 material_3
             };
-            var items = player.inventory.items.Select(i => i.Item.Data.Id);
+            var items = player.inventory.items.Select(i => i.Item.Data.id);
             bool owned = materials.All(material => items.Contains(material));
             if (!owned)
             {
@@ -56,7 +56,7 @@ namespace Nekoyume.Action
                 foreach (var material in materials)
                 {
                     var inventoryItem =
-                        player.inventory.items.FirstOrDefault(i => i.Item.Data.Id == material && i.Count >= 1);
+                        player.inventory.items.FirstOrDefault(i => i.Item.Data.id == material && i.Count >= 1);
                     if (inventoryItem == null)
                     {
                         throw new InvalidActionException();

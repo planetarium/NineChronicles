@@ -113,7 +113,7 @@ namespace Nekoyume.Action
                     {
                         var monster = SpawnMonster(monsterId);
                         wave.Add(monster);
-                        var item = GetItem(monster.data.Id);
+                        var item = GetItem(monster.data.id);
                         if (!ReferenceEquals(item, null))
                         {
                             items.Add(item);

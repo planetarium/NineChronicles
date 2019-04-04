@@ -64,10 +64,10 @@ namespace Nekoyume.UI
                 {
                     GameObject newItem = Instantiate(sellItemBase, grid);
                     Item item = newItem.GetComponent<Item>();
-                    item.itemName.text = itemInfo.Data.Id.ToString();
+                    item.itemName.text = itemInfo.Data.id.ToString();
                     item.price.text = "1";
                     item.info.text = "info";
-                    var sprite = Resources.Load<Sprite>($"images/item_{itemInfo.Data.Id}");
+                    var sprite = Resources.Load<Sprite>($"images/item_{itemInfo.Data.id}");
                     item.icon.sprite = sprite;
                     item.seller = new Address(pair.Key);
                     item.gameObject.SetActive(true);

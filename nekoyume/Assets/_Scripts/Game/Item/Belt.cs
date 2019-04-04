@@ -18,7 +18,7 @@ namespace Nekoyume.Game.Item
         public override void UpdatePlayer(Player player)
         {
             var additionalHP = Data.param0;
-            if (player.set?.Data.Id == Data.Synergy)
+            if (player.set?.Data.id == Data.Synergy)
             {
                 additionalHP *= SynergyMultiplier;
             }

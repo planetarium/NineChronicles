@@ -111,7 +111,7 @@ namespace Nekoyume.Model
             var equipments = items.Select(i => i.Item).OfType<Equipment>().Where(e => e.equipped);
             foreach (var equipment in equipments)
             {
-                switch (equipment.Data.Cls.ToEnumItemType())
+                switch (equipment.Data.cls.ToEnumItemType())
                 {
                     case ItemBase.ItemType.Weapon:
                         weapon = equipment as Weapon;

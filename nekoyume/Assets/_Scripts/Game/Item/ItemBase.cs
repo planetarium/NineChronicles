@@ -47,7 +47,7 @@ namespace Nekoyume.Game.Item
 
         public static ItemBase ItemFactory(Data.Table.Item itemData)
         {
-            var type = itemData.Cls.ToEnumItemType();
+            var type = itemData.cls.ToEnumItemType();
             switch (type)
             {
                 case ItemType.Material:

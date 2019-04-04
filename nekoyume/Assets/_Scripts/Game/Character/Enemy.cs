@@ -35,7 +35,7 @@ namespace Nekoyume.Game.Character
 
         public void InitAI(Data.Table.Character statsData)
         {
-            DataId = statsData.Id;
+            DataId = statsData.id;
             RunSpeed = -1.0f;
 
             Root = new Root();

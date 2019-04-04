@@ -276,7 +276,7 @@ namespace Nekoyume.Game.Character
 
         public void UpdateSet(SetItem item)
         {
-            var itemId = item?.Data.Id ?? 0;
+            var itemId = item?.Data.id ?? 0;
             int id;
             // TODO Change Players mesh instead of weapon only.
             if (SetItem.WeaponMap.TryGetValue(itemId, out id))

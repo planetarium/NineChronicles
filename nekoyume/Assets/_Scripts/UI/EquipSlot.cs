@@ -38,7 +38,7 @@ namespace Nekoyume.UI
 
         public void Set(Equipment equipment)
         {
-            var sprite = Resources.Load<Sprite>($"images/item_{equipment.Data.Id}");
+            var sprite = Resources.Load<Sprite>($"images/item_{equipment.Data.id}");
             if (sprite == null)
                 sprite = Resources.Load<Sprite>("images/item_301001");
             icon.sprite = sprite;

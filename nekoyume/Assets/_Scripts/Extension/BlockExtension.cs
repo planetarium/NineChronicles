@@ -102,7 +102,7 @@ namespace Nekoyume
             for (int i = 0; i < length; i++)
             {
                 var e = equipments[i];
-                sb.Append($"{linePrefix}- {e.Data.Id} | {e.Data.Name} | {e.ToItemInfo().Replace("\n", ", ")}\n");
+                sb.Append($"{linePrefix}- {e.Data.id} | {e.Data.name} | {e.ToItemInfo().Replace("\n", ", ")}\n");
             }
             
             return sb.ToString();

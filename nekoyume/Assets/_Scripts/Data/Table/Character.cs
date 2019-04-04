@@ -5,7 +5,7 @@ namespace Nekoyume.Data.Table
     [Serializable]
     public class Character : Row
     {
-        public int Id = 0;
+        public int id = 0;
         public string characterName = "";
         public string characterInfo = "";
         public string characterResource = "";
