@@ -19,6 +19,7 @@ namespace Nekoyume.Game.Trigger
         private Stage _stage;
         private int _stageId;
         private int _wave;
+        private const float SpawnOffset = 2.8f;
 
         private void Awake()
         {
@@ -127,9 +128,17 @@ namespace Nekoyume.Game.Trigger
                 var monster = monsters[index];
                 var factory = GetComponentInParent<EnemyFactory>();
                 var player = _stage.GetComponentInChildren<Character.Player>();
-                var offsetX = player.transform.position.x + 2.8f;
+                var offsetX = player.transform.position.x + SpawnOffset;
                 {
-                    var point = _spawnPoints[index];
+                    Vector3 point;
+                    try
+                    {
+                        point = _spawnPoints[index];
+                    }
+                    catch (IndexOutOfRangeException)
+                    {
+                        throw new InvalidWaveException();
+                    }
                     var pos = new Vector2(
                         point.x + offsetX,
                         point.y);
@@ -137,5 +146,8 @@ namespace Nekoyume.Game.Trigger
                 }
             }
         }
+
+        public class InvalidWaveException: Exception
+        {}
     }
 }

@@ -17,7 +17,7 @@ namespace Nekoyume.Action
         private readonly List<MonsterWave> _waves;
         public readonly BattleLog Log;
         public bool Lose = false;
-        internal readonly Player Player;
+        public readonly Player Player;
         private BattleLog.Result _result;
         private int _totalWave;
         public List<CharacterBase> Characters;

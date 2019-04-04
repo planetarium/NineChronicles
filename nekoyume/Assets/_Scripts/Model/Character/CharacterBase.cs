@@ -30,7 +30,7 @@ namespace Nekoyume.Model
         private bool isDead => hp <= 0;
         public Guid id = Guid.NewGuid();
 
-        internal void InitAI()
+        public void InitAI()
         {
             _root = new Root();
             _root.OpenBranch(
