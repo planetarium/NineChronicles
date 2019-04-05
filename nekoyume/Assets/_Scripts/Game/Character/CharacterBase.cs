@@ -317,7 +317,7 @@ namespace Nekoyume.Game.Character
 
             if (target != null)
             {
-                StartCoroutine(target.CoProcessDamage(atk, critical));
+                yield return StartCoroutine(target.CoProcessDamage(atk, critical));
             }
         }
 

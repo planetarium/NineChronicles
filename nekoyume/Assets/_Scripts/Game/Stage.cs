@@ -332,6 +332,14 @@ namespace Nekoyume.Game
             yield return null;
         }
 
+        public IEnumerator CoSpawnWave(List<Monster> monsters)
+        {
+            var playerCharacter = GetPlayer();
+            playerCharacter.StartRun();
+            _spawner.SetData(id, monsters);
+            yield return null;
+        }
+
         public Character.Player GetPlayer()
         {
             var player = GetComponentInChildren<Character.Player>();

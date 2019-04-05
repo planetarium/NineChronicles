@@ -11,12 +11,7 @@ namespace Nekoyume.Game.Trigger
 {
     public class MonsterSpawner : MonoBehaviour
     {
-        private readonly float[,] _spawnPoints =
-        {
-            {0.9f, 0f},
-            {0.8f, 0.3f},
-            {0.9f, -0.3f},
-        };
+        [SerializeField] private Vector3[] _spawnPoints;
 
         private Monster _monster;
         private int _monsterPower;
@@ -24,6 +19,7 @@ namespace Nekoyume.Game.Trigger
         private Stage _stage;
         private int _stageId;
         private int _wave;
+        private const float SpawnOffset = 2.8f;
 
         private void Awake()
         {
@@ -94,8 +90,8 @@ namespace Nekoyume.Game.Trigger
             {
                 var r = randIndex[0];
                 var pos = new Vector2(
-                    _spawnPoints[r, 0] + offsetX,
-                    _spawnPoints[r, 1]);
+                    _spawnPoints[r].x + offsetX,
+                    _spawnPoints[r].y);
                 factory.Create(_monster, pos);
             }
         }
@@ -117,5 +113,41 @@ namespace Nekoyume.Game.Trigger
             var offsetX = player.transform.position.x + 5.5f;
             factory.CreateBoss(stageData.bossId, new Vector2(offsetX, -1.0f), _monsterPower);
         }
+
+
+        public void SetData(int stageId, List<Monster> monsters)
+        {
+            _stageId = stageId;
+            SpawnWave(monsters);
+        }
+
+        private void SpawnWave(List<Monster> monsters)
+        {
+            for (var index = 0; index < monsters.Count; index++)
+            {
+                var monster = monsters[index];
+                var factory = GetComponentInParent<EnemyFactory>();
+                var player = _stage.GetComponentInChildren<Character.Player>();
+                var offsetX = player.transform.position.x + SpawnOffset;
+                {
+                    Vector3 point;
+                    try
+                    {
+                        point = _spawnPoints[index];
+                    }
+                    catch (IndexOutOfRangeException)
+                    {
+                        throw new InvalidWaveException();
+                    }
+                    var pos = new Vector2(
+                        point.x + offsetX,
+                        point.y);
+                    factory.Create(monster, pos);
+                }
+            }
+        }
+
+        public class InvalidWaveException: Exception
+        {}
     }
 }

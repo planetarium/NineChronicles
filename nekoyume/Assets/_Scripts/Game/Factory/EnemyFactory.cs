@@ -1,10 +1,9 @@
-using System.Collections.Generic;
-using DG.Tweening;
+using Nekoyume.Data;
 using Nekoyume.Game.Character;
+using Nekoyume.Game.Character.Boss;
+using Nekoyume.Game.Util;
 using Nekoyume.Model;
-using UniRx.Toolkit;
 using UnityEngine;
-
 
 namespace Nekoyume.Game.Factory
 {
@@ -12,13 +11,13 @@ namespace Nekoyume.Game.Factory
     {
         public GameObject Create(int monsterId, Vector2 position, int power)
         {
-            Data.Tables tables = this.GetRootComponent<Data.Tables>();
+            Tables tables = this.GetRootComponent<Tables>();
             Data.Table.Monster monsterData;
             if (!tables.Monster.TryGetValue(monsterId, out monsterData))
                 return null;
 
-            var objectPool = GetComponent<Util.ObjectPool>();
-            var enemy = objectPool.Get<Character.Enemy>(position);
+            var objectPool = GetComponent<ObjectPool>();
+            var enemy = objectPool.Get<Enemy>(position);
             if (enemy == null)
                 return null;
 
@@ -38,7 +37,7 @@ namespace Nekoyume.Game.Factory
 
         public GameObject CreateBoss(int bossId, Vector2 position, int power)
         {
-            Data.Tables tables = this.GetRootComponent<Data.Tables>();
+            Tables tables = this.GetRootComponent<Tables>();
             Data.Table.Monster monsterData;
             if (!tables.Monster.TryGetValue(bossId, out monsterData))
                 return null;
@@ -48,7 +47,7 @@ namespace Nekoyume.Game.Factory
             if (bossObj == null)
                 return null;
 
-            var boss = bossObj.GetComponent<Character.Boss.BossBase>();
+            var boss = bossObj.GetComponent<BossBase>();
             boss.InitAI(monsterData);
             boss.InitStats(monsterData, power);
 
@@ -57,10 +56,10 @@ namespace Nekoyume.Game.Factory
 
         public GameObject Create(Monster spawnCharacter, Vector2 position)
         {
-            var objectPool = GetComponent<Util.ObjectPool>();
+            var objectPool = GetComponent<ObjectPool>();
             if (ReferenceEquals(objectPool, null))
             {
-                throw new NotFoundComponentException<Util.ObjectPool>();
+                throw new NotFoundComponentException<ObjectPool>();
             }
 
             var go = objectPool.Get("Enemy", true, position);
