@@ -19,6 +19,7 @@ namespace Nekoyume.Data
         public Table<Elemental> Elemental { get; private set; }
         public Table<ItemEquipment> ItemEquipment { get; private set; }
         public Table<Background> Background { get; private set; }
+        public Table<StageReward> StageReward { get; private set; }
 
         private void Start()
         {
@@ -60,6 +61,9 @@ namespace Nekoyume.Data
 
             Background = new Table<Background>();
             Load(Background, "DataTable/background");
+
+            StageReward = new Table<StageReward>();
+            Load(StageReward, "DataTable/stage_reward");
         }
 
         private void Load(ITable table, string filename)
