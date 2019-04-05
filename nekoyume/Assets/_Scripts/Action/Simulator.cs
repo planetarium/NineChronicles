@@ -70,9 +70,11 @@ namespace Nekoyume.Action
                         {
                             _player.stage++;
                             _result = BattleLog.Result.Win;
+                            var rewards = waveRewards.SelectMany(i => i).ToList();
+                            _player.GetRewards(rewards);
                             var getReward = new GetReward
                             {
-                                rewards = waveRewards.SelectMany(i => i).ToList()
+                                rewards = rewards,
                             };
                             Log.Add(getReward);
                             Debug.Log("win");
