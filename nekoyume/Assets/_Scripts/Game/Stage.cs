@@ -189,15 +189,15 @@ namespace Nekoyume.Game
 
         private IEnumerator CoStageEnter(int stage)
         {
-            Data.Table.Stage data;
+            Data.Table.Background data;
             var tables = this.GetRootComponent<Tables>();
-            if (tables.Stage.TryGetValue(stage, out data))
+            if (tables.Background.TryGetValue(stage, out data))
             {
                 ReadyPlayer();
                 var blind = Widget.Find<Blind>();
                 yield return StartCoroutine(blind.FadeIn(1.0f, $"STAGE {stage}"));
 
-                LoadBackground(data.Background, 3.0f);
+                LoadBackground(data.background, 3.0f);
                 Widget.Find<Menu>().ShowWorld();
 
                 yield return new WaitForSeconds(1.5f);

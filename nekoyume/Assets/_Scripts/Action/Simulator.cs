@@ -97,40 +97,75 @@ namespace Nekoyume.Action
         private void SetWave()
         {
             var tables = ActionManager.Instance.tables;
-            var waveTable = tables.MonsterWave;
-            var stageData = waveTable[_stage];
-            _totalWave = stageData.Wave;
-            for (var w = 0; w < _totalWave; w++)
+            var stageTable = tables.Stage;
+            var waves = new List<Stage>();
+            foreach (var row in stageTable)
             {
-                var wave = new MonsterWave();
-                var items = new List<ItemBase>();
-                foreach (var waveData in stageData.Monsters)
+                if (row.Value.stage == _stage)
                 {
-                    var monsterId = waveData.Key;
-                    var count = waveData.Value;
-                    if (count <= 0) continue;
-                    for (var i = 0; i < count; i++)
-                    {
-                        var monster = SpawnMonster(monsterId);
-                        wave.Add(monster);
-                        var item = GetItem(monster.data.id);
-                        if (!ReferenceEquals(item, null))
-                        {
-                            items.Add(item);
-                        }
-                    }
+                    waves.Add(row.Value);
                 }
-                _waves.Add(wave);
-                _waveRewards.Add(items);
+
+            }
+            _totalWave = waves.Count;
+            foreach (var w in waves)
+            {
+                var items = new List<ItemBase>();
+                foreach (var monsterData in w.Monsters())
+                {
+                    var wave = SpawnWave(monsterData);
+                    _waves.Add(wave);
+                }
+            }
+//            for (var w = 0; w < _totalWave; w++)
+//            {
+//                var wave = new MonsterWave();
+//                var items = new List<ItemBase>();
+//                foreach (var waveData in stageData.Monsters)
+//                {
+//                    var monsterId = waveData.Key;
+//                    var count = waveData.Value;
+//                    if (count <= 0) continue;
+//                    for (var i = 0; i < count; i++)
+//                    {
+//                        var monster = SpawnMonster(monsterId);
+//                        wave.Add(monster);
+//                        var item = GetItem(monster.data.id);
+//                        if (!ReferenceEquals(item, null))
+//                        {
+//                            items.Add(item);
+//                        }
+//                    }
+//                }
+//                _waves.Add(wave);
+//                _waveRewards.Add(items);
+//            }
+
+//            if (stageData.BossId > 0)
+//            {
+//                var boss = SpawnMonster(stageData.BossId);
+//                var bossWave = new MonsterWave();
+//                bossWave.Add(boss);
+//                _waves.Add(bossWave);
+//            }
+        }
+
+        private MonsterWave SpawnWave(Stage.MonsterData monsterData)
+        {
+            var wave = new MonsterWave();
+            var tables = ActionManager.Instance.tables;
+            var monsterTable = tables.Character;
+            for (int i = 0; i < monsterData.count; i++)
+            {
+                Character characterData;
+                if (!monsterTable.TryGetValue(monsterData.id, out characterData))
+                {
+                    Debug.Log(monsterData.id);
+                }
+                wave.Add(new Monster(characterData, Player));
             }
 
-            if (stageData.BossId > 0)
-            {
-                var boss = SpawnMonster(stageData.BossId);
-                var bossWave = new MonsterWave();
-                bossWave.Add(boss);
-                _waves.Add(bossWave);
-            }
+            return wave;
         }
 
         private Monster SpawnMonster(int monsterId)

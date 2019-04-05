@@ -18,6 +18,7 @@ namespace Nekoyume.Data
         public Table<MonsterWave> MonsterWave { get; private set; }
         public Table<Elemental> Elemental { get; private set; }
         public Table<ItemEquipment> ItemEquipment { get; private set; }
+        public Table<Background> Background { get; private set; }
 
         private void Start()
         {
@@ -28,9 +29,9 @@ namespace Nekoyume.Data
 //            Load(Skill, "DataTable/skills");
 //            Load(Skill, "DataTable/monster_skills");
 
-//            Stage = new Table<Stage>();
-//            Load(Stage, "DataTable/stage");
-//
+            Stage = new Table<Stage>();
+            Load(Stage, "DataTable/stage");
+
 //            MonsterAppear = new Table<MonsterAppear>();
 //            Load(MonsterAppear, "DataTable/monster_appear");
 
@@ -57,6 +58,8 @@ namespace Nekoyume.Data
             Elemental = new Table<Elemental>();
             Load(Elemental, "DataTable/elemental");
 
+            Background = new Table<Background>();
+            Load(Background, "DataTable/background");
         }
 
         private void Load(ITable table, string filename)
