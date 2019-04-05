@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using UnityEngine;
+using Uno.Extensions;
 
 
 namespace Nekoyume.Data.Table
@@ -53,6 +54,7 @@ namespace Nekoyume.Data.Table
                 if (lines.IndexOf(line) == 0)
                 {
                     header = line.Trim().Split(',').ToList();
+                    header = header.ConvertAll(k => k.ToLower().Replace("_", string.Empty));
                     continue;
                 }
                 if (string.IsNullOrEmpty(line))
@@ -61,29 +63,35 @@ namespace Nekoyume.Data.Table
                 }
                 string[] arr = line.Trim().Split(',');
                 TRow row = new TRow();
-                int index = 0;
                 FieldInfo[] fieldInfos = row.GetType().GetFields();
                 foreach (FieldInfo fieldInfo in fieldInfos)
                 {
-                    string key;
-                    try
+                    var fieldName = fieldInfo.Name;
+                    int index = header.FindIndex(i => i == fieldName.ToLower());
+                    if (index == -1)
                     {
-                        key = header[index].Replace("_", string.Empty);
-                    }
-                    catch (ArgumentOutOfRangeException)
-                    {
-                        Debug.Log($"Header not found: {fieldInfo.Name}");
+                        Debug.Log($"Header not found: {fieldName}");
                         continue;
                     }
 
-                    if (!key.Equals(fieldInfo.Name, StringComparison.OrdinalIgnoreCase))
-                    {
-                        Debug.Log($"Key not found: {fieldInfo.Name}");
-                        continue;
-                    }
+//                    string key = header[index];
+//                    if (!key.Equals(fieldInfo.Name, StringComparison.OrdinalIgnoreCase))
+//                    {
+//                        Debug.Log($"Key not found: {fieldInfo.Name}");
+//                        continue;
+//                    }
                     string value = arr[index];
                     // 필드 기본값이 설정되지 않으면 NullReferenceException이 발생함.
-                    Type fieldType = fieldInfo.GetValue(row).GetType();
+                    Type fieldType;
+                    try
+                    {
+                        fieldType = fieldInfo.GetValue(row).GetType();
+                    }
+                    catch (NullReferenceException)
+                    {
+                        Debug.Log($"Set {value} first.");
+                        continue;
+                    }
                     if (fieldType == typeof(int) || fieldType.IsEnum)
                     {
                         if (string.IsNullOrEmpty(value))

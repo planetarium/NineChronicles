@@ -1,10 +1,15 @@
 using System;
+using UnityEngine;
 
 namespace Nekoyume.Game.Item
 {
     [Serializable]
     public abstract class ItemBase
     {
+        private const string ItemPath = "images/item/{0}";
+        private const string EquipmentPath = "images/equipment/{0}";
+        private const int DefaultId = 101000;
+
         protected bool Equals(ItemBase other)
         {
             return Equals(Data, other.Data);
@@ -33,7 +38,6 @@ namespace Nekoyume.Game.Item
 
         public enum ItemType
         {
-            None = -1,
             Material,
             Weapon,
             RangedWeapon,
@@ -43,6 +47,8 @@ namespace Nekoyume.Game.Item
             Ring,
             Helm,
             Set,
+            Food,
+            Shoes,
         }
 
         public static ItemBase ItemFactory(Data.Table.Item itemData)
@@ -68,11 +74,20 @@ namespace Nekoyume.Game.Item
                     return new Helm(itemData);
                 case ItemType.Set:
                     return new SetItem(itemData);
+                case ItemType.Food:
+                    return new Food(itemData);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);
             }
         }
 
         public abstract string ToItemInfo();
+
+        public static Sprite GetSprite(ItemBase item = null)
+        {
+            var path = item is ItemUsable ? EquipmentPath : ItemPath;
+            var id = item?.Data.id ?? DefaultId;
+            return Resources.Load<Sprite>(string.Format(path, id));
+        }
     }
 }

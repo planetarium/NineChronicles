@@ -1,5 +1,6 @@
 using System.Linq;
 using DG.Tweening;
+using Nekoyume.Game.Item;
 using UnityEngine;
 
 
@@ -23,9 +24,8 @@ namespace Nekoyume.Game.Factory
 
             // sprite
             var render = dropItem.GetComponent<SpriteRenderer>();
-            var sprite = Resources.Load<Sprite>($"images/item_{itemId}");
-            if (sprite != null)
-                render.sprite = sprite;
+            var sprite = ItemBase.GetSprite(item);
+            render.sprite = sprite;
             render.sortingOrder = 0;
 
             return dropItem.gameObject;

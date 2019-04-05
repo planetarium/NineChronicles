@@ -1,7 +1,6 @@
-using UnityEngine;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Item;
-
+using UnityEngine;
 
 namespace Nekoyume.Data
 {
@@ -18,6 +17,7 @@ namespace Nekoyume.Data
         public Table<Recipe> Recipe { get; private set; }
         public Table<MonsterWave> MonsterWave { get; private set; }
         public Table<Elemental> Elemental { get; private set; }
+        public Table<ItemEquipment> ItemEquipment { get; private set; }
 
         private void Start()
         {
@@ -43,9 +43,11 @@ namespace Nekoyume.Data
 //            BoxDrop = new Table<BoxDrop>();
 //            Load(BoxDrop, "DataTable/box_drop");
 //
-//            Item = new Table<Item>();
-//            Load(Item, "DataTable/item");
-//            Load(Item, "DataTable/item_equip");
+            Item = new Table<Item>();
+            Load(Item, "DataTable/item");
+            ItemEquipment = new Table<ItemEquipment>();
+            Load(ItemEquipment, "DataTable/item_equip");
+
 //            Load(Item, "DataTable/item_box");
 //
 //            Recipe = new Table<Recipe>();

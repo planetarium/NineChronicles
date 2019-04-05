@@ -40,9 +40,9 @@ namespace Nekoyume.Model
                 inventory.Set(inventoryItems);
             }
 
-            var elemental = set?.Data.elemental ?? Data.Table.Elemental.ElementalType.Normal;
-            atkElement = Game.Elemental.Create(elemental);
-            defElement = Game.Elemental.Create(elemental);
+//            var elemental = set?.Data.elemental ?? Data.Table.Elemental.ElementalType.Normal;
+//            atkElement = Game.Elemental.Create(elemental);
+//            defElement = Game.Elemental.Create(elemental);
             CalcStats(level);
         }
 

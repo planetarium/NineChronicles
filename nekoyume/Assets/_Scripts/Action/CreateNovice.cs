@@ -37,15 +37,17 @@ namespace Nekoyume.Action
                 CurrentHP = 0,
                 Items = new List<Inventory.InventoryItem>(),
             };
-//            var table = ActionManager.Instance.tables.Item;
-//            // equipments id from item_equip.csv
-//            foreach (var id in new[] {304001, 304002, 304003, 308001, 308002, 308003})
-//            {
-//                Item itemData;
-//                table.TryGetValue(id, out itemData);
-//                var equipment = ItemBase.ItemFactory(itemData);
-//                avatar.Items.Add(new Inventory.InventoryItem(equipment));
-//            }
+            // equipments id from item_equip.csv
+            var table = ActionManager.Instance.tables.ItemEquipment;
+            foreach (var id in new[] {101000, 101001, 101002, 102000, 102001, 102002, 201000})
+            {
+                ItemEquipment itemData;
+                if (table.TryGetValue(id, out itemData))
+                {
+                    var equipment = ItemBase.ItemFactory(itemData);
+                    avatar.Items.Add(new Inventory.InventoryItem(equipment));
+                }
+            }
 
             return avatar;
         }

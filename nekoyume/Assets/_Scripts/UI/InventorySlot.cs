@@ -2,7 +2,6 @@ using Nekoyume.Game.Item;
 using UnityEngine;
 using UnityEngine.UI;
 
-
 namespace Nekoyume.UI
 {
     public class InventorySlot : MonoBehaviour
@@ -17,11 +16,14 @@ namespace Nekoyume.UI
 
         public ItemBase Item;
 
+        private string _itemDir;
+        private string _equipDir;
+
         #region Mono
 
         private void Awake()
         {
-            _defaultSprite = Resources.Load<Sprite>("images/item_301001");
+            _defaultSprite = ItemBase.GetSprite();
         }
 
         #endregion
@@ -36,14 +38,7 @@ namespace Nekoyume.UI
         public void Set(ItemBase item, int count)
         {
             Item = item;
-
-            var sprite = Resources.Load<Sprite>($"images/item_{item.Data.id}");
-            if (sprite == null)
-            {
-                sprite = _defaultSprite;
-            }
-
-            Icon.sprite = sprite;
+            Icon.sprite = ItemBase.GetSprite(item);
             Icon.SetNativeSize();
             Icon.gameObject.SetActive(true);
 

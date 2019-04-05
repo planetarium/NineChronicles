@@ -12,12 +12,12 @@ namespace Nekoyume.Game.Item
         {
         }
 
-        public override string ToItemInfo() => $"공격력 +{Data.param0}\n방어력 +{Data.param1}";
+//        public override string ToItemInfo() => $"공격력 +{Data.param0}\n방어력 +{Data.param1}";
 
         public override void UpdatePlayer(Player player)
         {
-            player.atk += Data.param0;
-            player.def += Data.param1;
+//            player.atk += Data.param0;
+//            player.def += Data.param1;
         }
 
         public static Dictionary<int, int> WeaponMap =>
