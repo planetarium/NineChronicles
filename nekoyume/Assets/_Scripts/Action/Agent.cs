@@ -8,6 +8,7 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Libplanet;
+using Libplanet.Action;
 using Libplanet.Blockchain;
 using Libplanet.Blockchain.Policies;
 using Libplanet.Blocks;
@@ -28,9 +29,9 @@ namespace Nekoyume.Action
 {
     public class Agent : IDisposable
     {
-        internal readonly BlockChain<ActionBase> blocks;
+        internal readonly BlockChain<PolymorphicAction<ActionBase>> blocks;
         private readonly PrivateKey privateKey;
-        public readonly ConcurrentQueue<ActionBase> queuedActions;
+        public readonly ConcurrentQueue<PolymorphicAction<ActionBase>> queuedActions;
 
         private const string kItemBoxPath = "Assets/Resources/DataTable/item_box.csv";
         private const string kItemEquipPath = "Assets/Resources/DataTable/item_equip.csv";
@@ -63,22 +64,23 @@ namespace Nekoyume.Action
             string host, 
             int? port)
         {
-            IBlockPolicy<ActionBase> policy = new BlockPolicy<ActionBase>(TimeSpan.FromMilliseconds(500));
+            IBlockPolicy<PolymorphicAction<ActionBase>> policy = new BlockPolicy<PolymorphicAction<ActionBase>>(TimeSpan.FromMilliseconds(500));
 # if UNITY_EDITOR
             policy = new DebugPolicy();
 #endif
             this.privateKey = privateKey;
-            blocks = new BlockChain<ActionBase>(
+            blocks = new BlockChain<PolymorphicAction<ActionBase>>(
                 policy,
                 new FileStore(path),
                 chainId);
-            queuedActions = new ConcurrentQueue<ActionBase>();
+            queuedActions = new ConcurrentQueue<PolymorphicAction<ActionBase>>();
 #if BLOCK_LOG_USE
             FileHelper.WriteAllText("Block.log", "");
 #endif
 
             swarm = new Swarm(
                 privateKey,
+                appProtocolVersion: 1,
                 dialTimeout: SwarmDialTimeout,
                 host: host, 
                 listenPort: port, 
@@ -138,12 +140,12 @@ namespace Nekoyume.Action
 
         public IEnumerator CoTxProcessor() 
         {
-            var actions = new List<ActionBase>();
+            var actions = new List<PolymorphicAction<ActionBase>>();
 
             while (true)
             {
                 yield return new WaitForSeconds(TxProcessInterval);
-                ActionBase action;
+                PolymorphicAction<ActionBase> action;
                 while (queuedActions.TryDequeue(out action))
                 {
                     actions.Add(action);
@@ -180,14 +182,14 @@ namespace Nekoyume.Action
             }
         }
 
-        private void StageActions(IList<ActionBase> actions)
+        private void StageActions(IList<PolymorphicAction<ActionBase>> actions)
         {
-            var tx = Transaction<ActionBase>.Create(
+            var tx = Transaction<PolymorphicAction<ActionBase>>.Create(
                 privateKey,
                 actions,
                 timestamp: DateTime.UtcNow
             );
-            blocks.StageTransactions(new HashSet<Transaction<ActionBase>> {tx});
+            blocks.StageTransactions(new HashSet<Transaction<PolymorphicAction<ActionBase>>> {tx});
             swarm.BroadcastTxsAsync(new[] { tx }).Wait();
         }
 
@@ -207,14 +209,14 @@ namespace Nekoyume.Action
             swarm?.Dispose();
         }
 
-        private class DebugPolicy : IBlockPolicy<ActionBase>
+        private class DebugPolicy : IBlockPolicy<PolymorphicAction<ActionBase>>
         {
-            public InvalidBlockException ValidateBlocks(IEnumerable<Block<ActionBase>> blocks, DateTimeOffset currentTime)
+            public InvalidBlockException ValidateBlocks(IEnumerable<Block<PolymorphicAction<ActionBase>>> blocks, DateTimeOffset currentTime)
             {
                 return null;
             }
 
-            public int GetNextBlockDifficulty(IEnumerable<Block<ActionBase>> blocks)
+            public int GetNextBlockDifficulty(IEnumerable<Block<PolymorphicAction<ActionBase>>> blocks)
             {
                 return blocks.Empty() ? 0 : 1;
             }
