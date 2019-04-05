@@ -162,23 +162,10 @@ namespace Nekoyume.Action
                 {
                     Debug.Log(monsterData.id);
                 }
-                wave.Add(new Monster(characterData, Player));
+                wave.Add(new Monster(characterData, monsterData.level, Player));
             }
 
             return wave;
-        }
-
-        private Monster SpawnMonster(int monsterId)
-        {
-            var tables = ActionManager.Instance.tables;
-            var monsterTable = tables.Character;
-
-            Character characterData;
-            if (!monsterTable.TryGetValue(monsterId, out characterData))
-            {
-                Debug.Log(monsterId);
-            }
-            return new Monster(characterData, Player);
         }
 
         private ItemBase GetItem(int monsterId)

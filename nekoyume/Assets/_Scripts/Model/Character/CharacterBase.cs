@@ -19,6 +19,7 @@ namespace Nekoyume.Model
         public int hpMax;
         public float criticalChance;
         private const float CriticalMultiplier = 1.5f;
+        public int level;
 
         protected Elemental atkElement { get; set; } =
             Elemental.Create(Data.Table.Elemental.ElementalType.Normal);

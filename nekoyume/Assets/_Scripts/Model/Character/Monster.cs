@@ -1,7 +1,9 @@
 using System;
+using System.Runtime.CompilerServices;
 using Nekoyume.Action;
-using Nekoyume.Game;
+using Nekoyume.Data.Table;
 using Nekoyume.Game.Item;
+using Nekoyume.Game.Trigger;
 
 namespace Nekoyume.Model
 {
@@ -10,7 +12,7 @@ namespace Nekoyume.Model
     {
         public Data.Table.Character data;
 
-        public Monster(Data.Table.Character data, Player player)
+        public Monster(Character data, int monsterLevel, Player player)
         {
             hp = data.hp;
             atk = data.damage;
@@ -19,7 +21,14 @@ namespace Nekoyume.Model
             targets.Add(player);
             Simulator = player.Simulator;
             this.data = data;
-            defElement = Elemental.Create(data.elemental);
+            level = monsterLevel;
+            if (monsterLevel > 1)
+            {
+                hp += data.lvHp * monsterLevel;
+                atk += data.lvDamage * monsterLevel;
+                def += data.lvDefense * monsterLevel;
+            }
+            defElement = Game.Elemental.Create(data.elemental);
         }
 
         protected override void OnDead()
