@@ -6,7 +6,7 @@ namespace Nekoyume.Data
 {
     public class Tables : MonoBehaviour
     {
-        public Table<Stats> Stats { get; private set; }
+        public Table<Level> Level { get; private set; }
         public Table<Skill> Skill { get; private set; }
         public Table<Stage> Stage { get; private set; }
         public Table<MonsterAppear> MonsterAppear { get; private set; }
@@ -22,8 +22,8 @@ namespace Nekoyume.Data
 
         private void Start()
         {
-            Stats = new Table<Stats>();
-            Load(Stats, "DataTable/stats");
+            Level = new Table<Level>();
+            Load(Level, "DataTable/level");
 //
 //            Skill = new Table<Skill>();
 //            Load(Skill, "DataTable/skills");

@@ -17,7 +17,7 @@ namespace Nekoyume.UI
         public Text textOption;
 
 
-        public void Init(Stats stats)
+        public void Init(Level level)
         {
 //            textAtk.text = stats.Attack.ToString();
 //            textDef.text = stats.Defense.ToString();

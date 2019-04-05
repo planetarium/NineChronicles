@@ -26,5 +26,35 @@ namespace Nekoyume.Data.Table
         public string skill1 = "";
         public string skill2 = "";
         public string skill3 = "";
+
+        public class Stats
+        {
+            public int HP;
+            public int Damage;
+            public int Defense;
+            public float Luck;
+        }
+
+        public Stats GetStats(int level)
+        {
+            var HP = hp;
+            var dmg = damage;
+            var def = defense;
+            var lck = luck;
+            if (level > 1)
+            {
+                HP += lvHp * level;
+                dmg += lvDamage * level;
+                def += lvDefense * level;
+                lck += lvLuck * level;
+            }
+            return new Stats
+            {
+                HP = HP,
+                Damage = dmg,
+                Defense = def,
+                Luck = lck,
+            };
+        }
     }
 }

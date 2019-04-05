@@ -1,33 +1,24 @@
 using System;
-using System.Runtime.CompilerServices;
-using Nekoyume.Action;
 using Nekoyume.Data.Table;
-using Nekoyume.Game.Item;
-using Nekoyume.Game.Trigger;
 
 namespace Nekoyume.Model
 {
     [Serializable]
     public class Monster : CharacterBase
     {
-        public Data.Table.Character data;
+        public Character data;
 
         public Monster(Character data, int monsterLevel, Player player)
         {
-            hp = data.hp;
-            atk = data.damage;
-            def = data.defense;
-            criticalChance = data.luck;
+            var stats = data.GetStats(monsterLevel);
+            hp = stats.HP;
+            atk = stats.Damage;
+            def = stats.Defense;
+            criticalChance = stats.Luck;
             targets.Add(player);
             Simulator = player.Simulator;
             this.data = data;
             level = monsterLevel;
-            if (monsterLevel > 1)
-            {
-                hp += data.lvHp * monsterLevel;
-                atk += data.lvDamage * monsterLevel;
-                def += data.lvDefense * monsterLevel;
-            }
             defElement = Game.Elemental.Create(data.elemental);
         }
 

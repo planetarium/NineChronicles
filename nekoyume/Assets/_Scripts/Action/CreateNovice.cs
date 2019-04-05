@@ -13,6 +13,7 @@ namespace Nekoyume.Action
     public class CreateNovice : ActionBase
     {
         public string name;
+        public const int DefaultId = 100010;
         public override void LoadPlainValue(IImmutableDictionary<string, object> plainValue)
         {
             name = (string) plainValue["name"];
@@ -36,6 +37,7 @@ namespace Nekoyume.Action
                 WorldStage = 1,
                 CurrentHP = 0,
                 Items = new List<Inventory.InventoryItem>(),
+                id = DefaultId,
             };
             // equipments id from item_equip.csv
             var table = ActionManager.Instance.tables.ItemEquipment;

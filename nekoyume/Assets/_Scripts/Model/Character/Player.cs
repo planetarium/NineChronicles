@@ -13,7 +13,6 @@ namespace Nekoyume.Model
     {
         public long exp;
         public long expMax;
-        public int level;
         public int stage;
         public Weapon weapon;
         public Armor armor;
@@ -22,6 +21,7 @@ namespace Nekoyume.Model
         public Ring ring;
         public Helm helm;
         public SetItem set;
+        public int job;
 
         public readonly Inventory inventory;
         public List<Inventory.InventoryItem> Items => inventory.items;
@@ -32,6 +32,7 @@ namespace Nekoyume.Model
             level = avatar.Level;
             stage = avatar.WorldStage;
             Simulator = simulator;
+            job = avatar.id;
             inventory = new Inventory();
             var inventoryItems = avatar.Items;
             if (inventoryItems != null)
@@ -65,19 +66,29 @@ namespace Nekoyume.Model
 
         public void CalcStats(int lv)
         {
-            var stats = ActionManager.Instance.tables.Stats;
-            Stats data;
-            stats.TryGetValue(lv, out data);
+            var stats = ActionManager.Instance.tables.Character;
+            var levelTable = ActionManager.Instance.tables.Level;
+            Character data;
+            stats.TryGetValue(job, out data);
             if (data == null)
             {
                 throw new InvalidActionException();
             }
-            hp = data.Health;
-            atk = data.Attack;
-            def = data.Defense;
-            hpMax = data.Health;
-            expMax = data.Exp;
-            criticalChance = data.critical;
+
+            Level expData;
+            levelTable.TryGetValue(lv, out expData);
+            if (expData == null)
+            {
+                throw new InvalidActionException();
+            }
+
+            var statsData = data.GetStats(lv);
+            hp = statsData.HP;
+            atk = statsData.Damage;
+            def = statsData.Defense;
+            hpMax = statsData.HP;
+            expMax = expData.expNeed;
+            criticalChance = statsData.Luck;
             var equipments = Items.Select(i => i.Item).OfType<Equipment>().Where(e => e.equipped);
             foreach (var equipment in equipments) equipment.UpdatePlayer(this);
         }
