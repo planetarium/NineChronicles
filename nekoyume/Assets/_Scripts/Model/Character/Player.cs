@@ -98,9 +98,12 @@ namespace Nekoyume.Model
             Simulator.Log.Add(levelUp);
         }
 
-        public void GetItem(ItemBase item)
+        public void GetRewards(List<ItemBase> items)
         {
-            inventory.Add(item);
+            foreach (var item in items)
+            {
+                inventory.Add(item);
+            }
         }
 
         public void Equip(List<Inventory.InventoryItem> items)
