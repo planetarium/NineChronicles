@@ -303,7 +303,8 @@ namespace Nekoyume.Action
             }
             else 
             {
-                content = Resources.Load<TextAsset>($"Config/{fileName}").text;
+                string assetName = Path.GetFileNameWithoutExtension(fileName);
+                content = Resources.Load<TextAsset>($"Config/{assetName}").text;
             }
 
             foreach (var line in Regex.Split(content, "\n|\r|\r\n"))
