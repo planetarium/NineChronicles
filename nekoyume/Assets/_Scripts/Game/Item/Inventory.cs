@@ -35,8 +35,8 @@ namespace Nekoyume.Game.Item
         public bool Add(ItemBase item)
         {
             var i = items.FindIndex(
-                a => a.Item.Data.id.Equals(item.Data.id)
-                     && !item.Data.cls.Contains("Weapon")
+                a => a.Item.Equals(item)
+                     && !(item is Equipment)
                      && !item.reserved
             );
             if (i < 0)
