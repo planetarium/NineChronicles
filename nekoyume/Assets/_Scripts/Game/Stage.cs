@@ -308,15 +308,13 @@ namespace Nekoyume.Game
 
         public IEnumerator CoDropBox(List<ItemBase> items)
         {
-            var dropItemFactory = GetComponent<DropItemFactory>();
-            var player = GetPlayer();
-            var position = player.transform.position;
-            position.x += 1.0f;
-            for (var index = 0; index < items.Count; index++)
+            if (items.Count > 0)
             {
-                var item = items[index];
-                position.y += index * 0.2f;
-                dropItemFactory.Create(item.Data.id, position);
+                var dropItemFactory = GetComponent<DropItemFactory>();
+                var player = GetPlayer();
+                var position = player.transform.position;
+                position.x += 1.0f;
+                yield return StartCoroutine(dropItemFactory.CoCreate(items, position));
             }
 
             yield return null;

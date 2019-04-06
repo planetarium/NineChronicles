@@ -1,32 +1,49 @@
+using System.Collections;
+using System.Collections.Generic;
+using Nekoyume.Data;
 using Nekoyume.Game.Item;
+using Nekoyume.Game.Util;
 using UnityEngine;
-
 
 namespace Nekoyume.Game.Factory
 {
     public class DropItemFactory : MonoBehaviour
     {
-        public GameObject Create(int itemId, Vector2 position)
+        private ItemBase _box;
+        private Tables _tables;
+        private const int BoxId = 100000;
+
+        private void Start()
         {
-            Data.Tables tables = this.GetRootComponent<Data.Tables>();
-            Item.ItemBase item = tables.GetItem(itemId);
-            if (item == null)
-                return null;
+            _tables = this.GetRootComponent<Tables>();
+            _box = _tables.GetItem(BoxId);
+        }
+        public IEnumerator CoCreate(List<ItemBase> items, Vector3 position)
+        {
+            Tables tables = this.GetRootComponent<Tables>();
+            for (int i = 0; i < items.Count; i++)
+            {
+                var item = items[i];
+                ItemBase exist = tables.GetItem(item.Data.id);
+                if (exist == null)
+                {
+                    items.Remove(item);
+                }
+            }
 
-            var objectPool = GetComponent<Util.ObjectPool>();
-            var dropItem = objectPool.Get<Item.DropItem>(position);
+            var objectPool = GetComponent<ObjectPool>();
+            var dropItem = objectPool.Get<DropItem>(position);
             if (dropItem == null)
-                return null;
+                yield break;
 
-            dropItem.Set(item);
 
             // sprite
             var render = dropItem.GetComponent<SpriteRenderer>();
-            var sprite = ItemBase.GetSprite(item);
+            var sprite = ItemBase.GetSprite(_box);
             render.sprite = sprite;
             render.sortingOrder = 0;
 
-            return dropItem.gameObject;
+            yield return dropItem.CoSet(items);
         }
     }
 }
