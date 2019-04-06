@@ -11,7 +11,9 @@ TrueTypeFontImporter:
   fontName: Mali Medium
   fontNames:
   - Mali Medium
+  - Poor Story
   fallbackFontReferences:
+  - {fileID: 12800000, guid: 1da5c5563106ea94ba1e2114308b9c16, type: 3}
   - {fileID: 12800000, guid: 91faef6adb74249fc94ad9ebde227b1e, type: 3}
   customCharacters: 
   fontRenderingMode: 0
