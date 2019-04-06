@@ -92,6 +92,7 @@ namespace Nekoyume.Game.Item
         }
     }
 
+    [Serializable]
     public class StatsMap
     {
         public string Key;
