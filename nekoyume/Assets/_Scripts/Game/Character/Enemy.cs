@@ -1,14 +1,8 @@
 using System;
 using System.Collections;
-using System.Linq;
 using BTAI;
 using DG.Tweening;
 using Nekoyume.Data;
-using Nekoyume.Data.Table;
-using Nekoyume.Game.Factory;
-using Nekoyume.Game.Item;
-using Nekoyume.Game.Skill;
-using Nekoyume.UI;
 using UnityEngine;
 
 namespace Nekoyume.Game.Character
@@ -33,61 +27,6 @@ namespace Nekoyume.Game.Character
 
         public override float Speed => 0.0f;
 
-        public void InitAI(Data.Table.Character statsData)
-        {
-            DataId = statsData.id;
-            RunSpeed = -1.0f;
-
-            Root = new Root();
-            Root.OpenBranch(
-                BT.Selector().OpenBranch(
-                    BT.If(IsAlive).OpenBranch(
-                        BT.Selector().OpenBranch(
-                            BT.Condition(() => Casting),
-                            BT.If(() => CastedSkill != null).OpenBranch(
-                                BT.Call(() => UseSkill(CastedSkill, false))
-                            ),
-                            BT.If(HasTargetInRange).OpenBranch(
-                                BT.Call(Attack)
-                            ),
-                            BT.Call(Run)
-                        )
-                    ),
-                    BT.Sequence().OpenBranch(
-                        BT.Call(Die),
-                        BT.Terminate()
-                    )
-                )
-            );
-            foreach (var skill in _skills)
-            {
-                Destroy(skill);
-            }
-            _skills.Clear();
-            var skillNames = new[]
-            {
-                statsData.skill0,
-                statsData.skill1,
-                statsData.skill2,
-                statsData.skill3
-            };
-            var tables = this.GetRootComponent<Tables>();
-            foreach (var skillName in skillNames)
-            {
-                Data.Table.Skill skillData;
-                if (tables.Skill.TryGetValue(skillName, out skillData))
-                {
-                    var skillType = typeof(SkillBase).Assembly
-                        .GetTypes()
-                        .FirstOrDefault(t => skillData.Cls == t.Name);
-                    var skill = gameObject.AddComponent(skillType) as SkillBase;
-                    if (skill.Init(skillData))
-                    {
-                        _skills.Add(skill);
-                    }
-                }
-            }
-        }
 
         public void InitStats(Data.Table.Character statsData, int power)
         {

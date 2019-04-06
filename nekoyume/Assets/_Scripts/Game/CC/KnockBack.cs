@@ -21,7 +21,6 @@ namespace Nekoyume.Game.CC
 
         protected override void OnBegin()
         {
-            Owner.CancelCast();
             Vector3 endPosition = transform.TransformPoint(Power, 0.0f, 0.0f);
             transform.DOJump(endPosition, 0.02f, 1, Duration);
         }

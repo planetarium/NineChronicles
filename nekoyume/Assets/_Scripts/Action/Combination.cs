@@ -18,7 +18,6 @@ namespace Nekoyume.Action
         public int material_2;
         public int material_3;
         public int result;
-        private const string kRecipePath = "Assets/Resources/DataTable/recipe.csv";
         public override void LoadPlainValue(IImmutableDictionary<string, object> plainValue)
         {
             material_1 = int.Parse(plainValue["material_1"].ToString());
@@ -44,11 +43,10 @@ namespace Nekoyume.Action
             {
                 throw new InvalidActionException();
             }
-            var recipe = new Table<Recipe>();
-            var recipePath = Path.Combine(Directory.GetCurrentDirectory(), kRecipePath);
-            recipe.Load(File.ReadAllText(recipePath));
 
-            var itemTable = Agent.ItemTable();
+            var tables = ActionManager.Instance.tables;
+            var recipe = tables.Recipe;
+            var itemTable = tables.Item;
 
             Recipe r;
             if (recipe.TryGetValue(result, out r))

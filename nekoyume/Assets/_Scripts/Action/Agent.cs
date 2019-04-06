@@ -32,10 +32,6 @@ namespace Nekoyume.Action
         private readonly PrivateKey privateKey;
         public readonly ConcurrentQueue<ActionBase> queuedActions;
 
-        private const string kItemBoxPath = "Assets/Resources/DataTable/item_box.csv";
-        private const string kItemEquipPath = "Assets/Resources/DataTable/item_equip.csv";
-        private const string kItemPath = "Assets/Resources/DataTable/item.csv";
-
         private const float AvatarUpdateInterval = 3.0f;
 
         private const float ShopUpdateInterval = 3.0f;
@@ -191,17 +187,6 @@ namespace Nekoyume.Action
             swarm.BroadcastTxsAsync(new[] { tx }).Wait();
         }
 
-        public static Table<Item> ItemTable()
-        {
-            var itemTable = new Table<Item>();
-            foreach (var path in new []{kItemPath, kItemBoxPath, kItemEquipPath})
-            {
-                var itemPath = Path.Combine(Directory.GetCurrentDirectory(), path);
-                itemTable.Load(File.ReadAllText(itemPath));
-            }
-
-            return itemTable;
-        }
         public void Dispose()
         {
             swarm?.Dispose();

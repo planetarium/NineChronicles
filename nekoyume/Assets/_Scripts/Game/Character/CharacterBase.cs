@@ -5,7 +5,6 @@ using System.Linq;
 using BTAI;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.CC;
-using Nekoyume.Game.Skill;
 using Nekoyume.UI;
 using UnityEngine;
 
@@ -31,11 +30,7 @@ namespace Nekoyume.Game.Character
         protected virtual Vector3 _castingBarOffset => new Vector3();
         protected float _dyingTime = 1.0f;
 
-        protected List<SkillBase> _skills = new List<SkillBase>();
         protected const float kSkillGlobalCooltime = 0.6f;
-        protected bool Casting => CastingSkill != null;
-        protected SkillBase CastingSkill => _skills.Find(skill => skill.Casting);
-        protected SkillBase CastedSkill => _skills.Find(skill => skill.Casted);
 
         public bool Rooted => gameObject.GetComponent<IRoot>() != null;
         public bool Silenced => gameObject.GetComponent<ISilence>() != null;
@@ -114,61 +109,6 @@ namespace Nekoyume.Game.Character
             transform.position = position;
         }
 
-        protected virtual void Attack()
-        {
-            TryAttack();
-        }
-
-        protected virtual bool TryAttack()
-        {
-            if (Casting)
-                return false;
-            
-            foreach (var skill in _skills)
-            {
-                if (UseSkill(skill)) return true;
-            }
-            return false;
-        }
-
-        public virtual bool UseSkill(SkillBase selectedSkill, bool checkRange = true)
-        {
-            if (checkRange && !selectedSkill.IsTargetInRange()) return false;
-            if (Stunned) return false;
-            if (selectedSkill.NeedsCasting && Silenced) return false;
-            if (selectedSkill.Cast())
-            {
-                if (_anim != null)
-                {
-                    // TODO: Casting Animation
-                    _anim.SetBool("Run", false);
-                }
-                return false;
-            }
-
-            if (!selectedSkill.Use(selectedSkill.NeedsCasting ? 1.0f : AttackSpeedMultiplier))
-                return false;
-
-            if (_anim != null)
-            {
-                _anim.SetTrigger("Attack");
-                _anim.SetBool("Run", false);
-            }
-            foreach (var skill in _skills)
-            {
-                skill.SetGlobalCooltime(kSkillGlobalCooltime);
-            }
-            return true;
-        }
-
-        public virtual bool CancelCast()
-        {
-            if (!Casting) return false;
-
-            CastingSkill.CancelCast();
-            return true;
-        }
-
         public void Die()
         {
             StartCoroutine(Dying());
@@ -193,26 +133,6 @@ namespace Nekoyume.Game.Character
             {
                 _hpBar.UpdatePosition(gameObject, _hpBarOffset);
             }
-
-            if (Casting)
-            {
-                if (_castingBar == null)
-                {
-                    _castingBar = Widget.Create<ProgressBar>(true);
-                }
-                var castingBarOffset = _hpBar == null ? _hpBarOffset : _castingBarOffset;
-                _castingBar.UpdatePosition(gameObject, castingBarOffset);
-                _castingBar.SetText($"{Mathf.FloorToInt(CastingSkill.CastingPercentage * 100)}%");
-                _castingBar.SetValue(CastingSkill.CastingPercentage);
-            }
-            else
-            {
-                if (_castingBar != null)
-                {
-                    Destroy(_castingBar.gameObject);
-                    _castingBar = null;
-                }
-            }
         }
 
         public int CalcAtk()
@@ -230,18 +150,6 @@ namespace Nekoyume.Game.Character
             _hpBar.UpdatePosition(gameObject, _hpBarOffset);
             _hpBar.SetText($"{HP} / {HPMax}");
             _hpBar.SetValue((float)HP / (float)HPMax);
-        }
-
-        protected bool HasTargetInRange()
-        {
-            foreach (var skill in _skills)
-            {
-                if (skill.IsTargetInRange())
-                {
-                    return true;
-                }
-            }
-            return false;
         }
 
         private float GetDamageFactor(AttackType attackType)

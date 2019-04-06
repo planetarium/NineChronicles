@@ -3,13 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Anima2D;
-using BTAI;
-using Nekoyume.Action;
-using Nekoyume.Data;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Factory;
 using Nekoyume.Game.Item;
-using Nekoyume.Game.Skill;
 using Nekoyume.Game.Vfx;
 using Nekoyume.UI;
 using UnityEngine;
@@ -70,93 +66,6 @@ namespace Nekoyume.Game.Character
         private void Start()
         {
             _anim = GetComponentInChildren<Animator>();
-        }
-
-        public void InitAI()
-        {
-            RunSpeed = 0.0f;
-
-            Root = new Root();
-            Root.OpenBranch(
-                BT.Selector().OpenBranch(
-                    BT.If(IsAlive).OpenBranch(
-                        BT.Selector().OpenBranch(
-                            BT.Condition(() => Casting),
-                            BT.If(() => CastedSkill != null).OpenBranch(
-                                BT.Call(() => UseSkill(CastedSkill, false))
-                            ),
-                            BT.If(HasTargetInRange).OpenBranch(
-                                BT.Call(Attack)
-                            ),
-                            BT.If(() => RunSpeed > 0.0f).OpenBranch(
-                                BT.Call(Run)
-                            )
-                        )
-                    ),
-                    BT.Sequence().OpenBranch(
-                        BT.Call(Die),
-                        BT.Terminate()
-                    )
-                )
-            );
-
-            foreach (var skill in _skills)
-            {
-                Destroy(skill);
-            }
-
-            _skills.Clear();
-            var skillNames = new[]
-            {
-                "attack",
-                "rangedAttack"
-            };
-            var tables = this.GetRootComponent<Tables>();
-            foreach (var skillName in skillNames)
-            {
-                Data.Table.Skill skillData;
-                if (tables.Skill.TryGetValue(skillName, out skillData))
-                {
-                    var skillType = typeof(SkillBase).Assembly
-                        .GetTypes()
-                        .FirstOrDefault(t => skillData.Cls == t.Name);
-                    var skill = gameObject.AddComponent(skillType) as SkillBase;
-                    if (skill.Init(skillData))
-                    {
-                        _skills.Add(skill);
-                    }
-                }
-            }
-        }
-
-        protected override void Attack()
-        {
-            foreach (var skill in _skills)
-            {
-                UseSkill(skill);
-            }
-        }
-
-        public override bool UseSkill(SkillBase selectedSkill, bool checkRange = true)
-        {
-            bool used = base.UseSkill(selectedSkill, checkRange);
-            if (used)
-            {
-                MP -= selectedSkill.Data.Cost;
-                UpdateHpBar();
-                UpdateMpBar();
-                Event.OnUseSkill.Invoke();
-            }
-
-            return used;
-        }
-
-        public override bool CancelCast()
-        {
-            bool canceled = base.CancelCast();
-            if (canceled)
-                Event.OnUseSkill.Invoke();
-            return canceled;
         }
 
         public override IEnumerator CoProcessDamage(int dmg, bool critical)
