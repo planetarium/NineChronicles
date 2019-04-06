@@ -146,6 +146,8 @@ namespace Nekoyume.Model
                         break;
                     case ItemBase.ItemType.Set:
                         set = equipment as SetItem;
+                        atkElement = Game.Elemental.Create((Elemental.ElementalType) equipment?.equipData.elemental);
+                        defElement = Game.Elemental.Create((Elemental.ElementalType) equipment?.equipData.elemental);
                         break;
                     default:
                         throw new InvalidEquipmentException();
