@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using System.Linq;
+using Libplanet.Crypto;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Item;
 using UnityEngine;
@@ -15,6 +18,7 @@ namespace Nekoyume.Data
         public Table<ItemEquipment> ItemEquipment { get; private set; }
         public Table<Background> Background { get; private set; }
         public Table<StageReward> StageReward { get; private set; }
+        public Table<SetEffect> SetEffect { get; private set; }
 
         private void Start()
         {
@@ -42,6 +46,9 @@ namespace Nekoyume.Data
 
             StageReward = new Table<StageReward>();
             Load(StageReward, "DataTable/stage_reward");
+            SetEffect = new Table<SetEffect>();
+            Load(SetEffect, "DataTable/set_effect");
+
         }
 
         private void Load(ITable table, string filename)
@@ -60,6 +67,20 @@ namespace Nekoyume.Data
                 return null;
             var item = ItemBase.ItemFactory(itemData);
             return item;
+        }
+
+        public SetEffect.SetEffectMap[] GetSetEffect(int id, int count)
+        {
+            var effects = new List<SetEffect.SetEffectMap>();
+            foreach (var row in SetEffect)
+            {
+                if (row.Value.setId == id)
+                {
+                    effects.Add(row.Value.ToSetEffectMap());
+                }
+            }
+
+            return effects.Take(count).ToArray();
         }
     }
 }

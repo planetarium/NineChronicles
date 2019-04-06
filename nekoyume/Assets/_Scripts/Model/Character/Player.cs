@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Action;
+using Nekoyume.Data;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Item;
 
@@ -67,6 +68,7 @@ namespace Nekoyume.Model
         {
             var stats = ActionManager.Instance.tables.Character;
             var levelTable = ActionManager.Instance.tables.Level;
+            var setTable = ActionManager.Instance.tables.SetEffect;
             Character data;
             stats.TryGetValue(job, out data);
             if (data == null)
@@ -89,7 +91,28 @@ namespace Nekoyume.Model
             expMax = expData.expNeed;
             criticalChance = statsData.Luck;
             var equipments = Items.Select(i => i.Item).OfType<Equipment>().Where(e => e.equipped);
-            foreach (var equipment in equipments) equipment.UpdatePlayer(this);
+            var setMap = new Dictionary<int, int>();
+            foreach (var equipment in equipments)
+            {
+                var key = equipment.equipData.setId;
+                int count;
+                if (!setMap.TryGetValue(key, out count))
+                {
+                    setMap[key] = 0;
+                }
+
+                setMap[key] += 1;
+                equipment.UpdatePlayer(this);
+            }
+
+            foreach (var pair in setMap)
+            {
+                var effect = ActionManager.Instance.tables.GetSetEffect(pair.Key, pair.Value);
+                foreach (var e in effect)
+                {
+                    e.UpdatePlayer(this);
+                }
+            }
         }
         private void LevelUp()
         {

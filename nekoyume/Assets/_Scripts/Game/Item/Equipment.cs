@@ -86,36 +86,39 @@ namespace Nekoyume.Game.Item
         public override string ToItemInfo()
         {
             var infos = _stats
-                .Select(stat => stat.GetItemInfo())
+                .Select(stat => stat.GetInformation())
                 .Where(info => !string.IsNullOrEmpty(info));
             return string.Join(Environment.NewLine, infos);
         }
     }
 
     [Serializable]
-    public class StatsMap
+    public class StatsMap : IStatsMap
     {
         public string Key;
-        public int Value;
+        public float Value;
 
         public void UpdatePlayer(Player player)
         {
             switch (Key)
             {
                 case "damage":
-                    player.atk += Value;
+                    player.atk += (int)Value;
                     break;
                 case "defense":
-                    player.def += Value;
+                    player.def += (int)Value;
                     break;
                 case "health":
-                    player.hp += Value;
-                    player.hpMax += Value;
+                    player.hp += (int)Value;
+                    player.hpMax += (int)Value;
+                    break;
+                case "luck":
+                    player.criticalChance += Value;
                     break;
             }
         }
 
-        public string GetItemInfo()
+        public string GetInformation()
         {
             switch (Key)
             {
@@ -125,9 +128,17 @@ namespace Nekoyume.Game.Item
                     return $"방어력 +{Value}";
                 case "health":
                     return $"체력 +{Value}";
+                case "luck":
+                    return $"행운 +{Value}";
                 default:
                     return "";
             }
         }
+    }
+
+    public interface IStatsMap
+    {
+        void UpdatePlayer(Player player);
+        string GetInformation();
     }
 }
