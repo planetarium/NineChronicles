@@ -59,16 +59,17 @@ namespace Nekoyume.Game.Character
         {
             _hpBarOffset.Set(-0.0f, -0.11f, 0.0f);
             _castingBarOffset.Set(-0.0f, -0.33f, 0.0f);
-            InitStats(spawnCharacter.data);
+            InitStats(spawnCharacter);
             id = spawnCharacter.id;
             StartRun();
         }
 
-        private void InitStats(Data.Table.Character data)
+        private void InitStats(Model.Monster character)
         {
-            HP = data.hp;
-            ATK = data.damage;
-            DEF = data.defense;
+            var stats = character.data.GetStats(character.level);
+            HP = stats.HP;
+            ATK = stats.Damage;
+            DEF = stats.Defense;
             Power = 0;
             HPMax = HP;
         }
