@@ -8,11 +8,13 @@ namespace Nekoyume.Action
     {
         public Avatar avatar;
         public BattleLog battleLog;
+        public int gold;
 
-        public Context(Avatar avatar, BattleLog logs = null)
+        public Context(Avatar avatar, BattleLog logs = null, int gold = 0)
         {
             this.avatar = avatar;
             battleLog = logs;
+            gold = gold;
         }
     }
 }
