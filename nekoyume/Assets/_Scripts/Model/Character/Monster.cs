@@ -26,7 +26,7 @@ namespace Nekoyume.Model
         {
             base.OnDead();
             var player = (Player) targets[0];
-            player.GetExp(this);
+            player.RemoveTarget(this);
         }
     }
 }

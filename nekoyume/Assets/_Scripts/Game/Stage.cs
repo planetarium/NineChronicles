@@ -338,6 +338,12 @@ namespace Nekoyume.Game
             yield return null;
         }
 
+        public IEnumerator CoGetExp(long exp)
+        {
+            var player = GetPlayer();
+            yield return StartCoroutine(player.CoGetExp(exp));
+        }
+
         public Character.Player GetPlayer()
         {
             var player = GetComponentInChildren<Character.Player>();

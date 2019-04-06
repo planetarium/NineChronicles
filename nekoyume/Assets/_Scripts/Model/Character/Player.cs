@@ -41,19 +41,11 @@ namespace Nekoyume.Model
                 inventory.Set(inventoryItems);
             }
 
-//            var elemental = set?.Data.elemental ?? Data.Table.Elemental.ElementalType.Normal;
-//            atkElement = Game.Elemental.Create(elemental);
-//            defElement = Game.Elemental.Create(elemental);
             CalcStats(level);
         }
 
-        public void GetExp(Monster monster)
+        public void RemoveTarget(Monster monster)
         {
-            exp += 0;
-            while (expMax <= exp)
-            {
-                LevelUp();
-            }
             targets.Remove(monster);
             Simulator.Characters.Remove(monster);
         }
@@ -124,7 +116,7 @@ namespace Nekoyume.Model
 
             CalcStats(level);
 
-            var levelUp = new LevelUp
+            var levelUp = new GetExp
             {
                 character = Copy(this),
             };

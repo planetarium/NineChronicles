@@ -197,5 +197,17 @@ namespace Nekoyume.Game.Character
 
         public bool TargetInRange(CharacterBase target) =>
             _range > Mathf.Abs(gameObject.transform.position.x - target.transform.position.x);
+
+        public IEnumerator CoGetExp(long exp)
+        {
+            EXP += exp;
+            while (EXPMax <= EXP)
+            {
+                LevelUp();
+            }
+            Event.OnUpdateStatus.Invoke();
+
+            yield break;
+        }
     }
 }

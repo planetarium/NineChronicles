@@ -52,6 +52,11 @@ namespace Nekoyume.Action
                     {
                         var index = Math.Min(_waves.IndexOf(wave), lastWave);
                         var items = _waveRewards[index];
+                        var getExp = new GetExp
+                        {
+                            exp = wave.exp,
+                        };
+                        Log.Add(getExp);
                         var dropBox = new DropBox
                         {
                             items = items
@@ -107,18 +112,18 @@ namespace Nekoyume.Action
             _totalWave = waves.Count;
             foreach (var w in waves)
             {
-                var wave = SpawnWave(w.Monsters());
+                var wave = SpawnWave(w);
                 _waves.Add(wave);
                 GetReward(w.reward);
             }
         }
 
-        private MonsterWave SpawnWave(List<Stage.MonsterData> monsters)
+        private MonsterWave SpawnWave(Stage stage)
         {
             var wave = new MonsterWave();
             var tables = ActionManager.Instance.tables;
             var monsterTable = tables.Character;
-            foreach (var monsterData in monsters)
+            foreach (var monsterData in stage.Monsters())
             {
                 for (int i = 0; i < monsterData.count; i++)
                 {
@@ -129,6 +134,8 @@ namespace Nekoyume.Action
                     }
                     wave.Add(new Monster(characterData, monsterData.level, Player));
                 }
+
+                wave.exp = stage.exp;
             }
 
             return wave;
