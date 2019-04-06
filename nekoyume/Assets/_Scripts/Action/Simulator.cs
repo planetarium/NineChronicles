@@ -21,10 +21,8 @@ namespace Nekoyume.Action
         private BattleLog.Result _result;
         private int _totalWave;
         public List<CharacterBase> Characters;
-        private readonly HashSet<int> _dropIds;
         private readonly List<List<ItemBase>> _waveRewards;
-        private const int DropCapacity = 3;
-
+        
         public Simulator(IRandom random, Model.Avatar avatar)
         {
             Random = random;
@@ -32,7 +30,6 @@ namespace Nekoyume.Action
             Log = new BattleLog();
             _waves = new List<MonsterWave>();
             Player = new Player(avatar, this);
-            _dropIds = new HashSet<int>();
             _waveRewards = new List<List<ItemBase>>();
             SetWave();
         }
@@ -98,7 +95,6 @@ namespace Nekoyume.Action
         {
             var tables = ActionManager.Instance.tables;
             var stageTable = tables.Stage;
-            var rewardTable = tables.StageReward;
             var waves = new List<Stage>();
             foreach (var row in stageTable)
             {
@@ -111,19 +107,18 @@ namespace Nekoyume.Action
             _totalWave = waves.Count;
             foreach (var w in waves)
             {
-                var items = new List<ItemBase>();
                 var wave = SpawnWave(w.Monsters());
                 _waves.Add(wave);
                 GetReward(w.reward);
             }
         }
 
-        private MonsterWave SpawnWave(List<Stage.MonsterData> monsterDatas)
+        private MonsterWave SpawnWave(List<Stage.MonsterData> monsters)
         {
             var wave = new MonsterWave();
             var tables = ActionManager.Instance.tables;
             var monsterTable = tables.Character;
-            foreach (var monsterData in monsterDatas)
+            foreach (var monsterData in monsters)
             {
                 for (int i = 0; i < monsterData.count; i++)
                 {

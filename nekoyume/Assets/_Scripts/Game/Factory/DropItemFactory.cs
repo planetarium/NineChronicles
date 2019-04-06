@@ -1,5 +1,3 @@
-using System.Linq;
-using DG.Tweening;
 using Nekoyume.Game.Item;
 using UnityEngine;
 

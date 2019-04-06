@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Reflection;
-using Org.BouncyCastle.Asn1;
 using UnityEngine;
 
 namespace Nekoyume.Data.Table
@@ -72,12 +71,6 @@ namespace Nekoyume.Data.Table
                         continue;
                     }
 
-//                    string key = header[index];
-//                    if (!key.Equals(fieldInfo.Name, StringComparison.OrdinalIgnoreCase))
-//                    {
-//                        Debug.Log($"Key not found: {fieldInfo.Name}");
-//                        continue;
-//                    }
                     string value = arr[index];
                     // 필드 기본값이 설정되지 않으면 NullReferenceException이 발생함.
                     Type fieldType;

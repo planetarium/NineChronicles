@@ -1,6 +1,4 @@
-using Nekoyume.Data;
 using Nekoyume.Game.Character;
-using Nekoyume.Game.Character.Boss;
 using Nekoyume.Game.Util;
 using Nekoyume.Model;
 using UnityEngine;

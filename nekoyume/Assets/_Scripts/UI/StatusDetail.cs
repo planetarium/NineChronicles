@@ -1,8 +1,6 @@
-using System;
 using System.Text;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Character;
-using Nekoyume.Game.Item;
 using UnityEngine;
 using UnityEngine.UI;
 

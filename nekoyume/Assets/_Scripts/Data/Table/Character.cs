@@ -37,20 +37,20 @@ namespace Nekoyume.Data.Table
 
         public Stats GetStats(int level)
         {
-            var HP = hp;
+            var statsHp = hp;
             var dmg = damage;
             var def = defense;
             var lck = luck;
             if (level > 1)
             {
-                HP += lvHp * level;
+                statsHp += lvHp * level;
                 dmg += lvDamage * level;
                 def += lvDefense * level;
                 lck += lvLuck * level;
             }
             return new Stats
             {
-                HP = HP,
+                HP = statsHp,
                 Damage = dmg,
                 Defense = def,
                 Luck = lck,

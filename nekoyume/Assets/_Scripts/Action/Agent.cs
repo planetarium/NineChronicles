@@ -3,10 +3,8 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.IO;
-using System.Net;
-using System.Threading;
 using System.Threading.Tasks;
+using AsyncIO;
 using Libplanet;
 using Libplanet.Blockchain;
 using Libplanet.Blockchain.Policies;
@@ -15,11 +13,9 @@ using Libplanet.Crypto;
 using Libplanet.Net;
 using Libplanet.Store;
 using Libplanet.Tx;
-using Nekoyume.Data.Table;
 using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.Serilog;
-using NetMQ;
 using Serilog;
 using UnityEngine;
 using Uno.Extensions;
@@ -43,7 +39,7 @@ namespace Nekoyume.Action
 
         static Agent() 
         {
-            AsyncIO.ForceDotNet.Force();
+            ForceDotNet.Force();
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
                 .WriteTo.Sink(new UnityDebugSink())

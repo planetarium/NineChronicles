@@ -1,4 +1,3 @@
-using System.Collections;
 using Nekoyume.Data.Table;
 using Nekoyume.UI;
 using UnityEngine;

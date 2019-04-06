@@ -1,7 +1,6 @@
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Item;
 using Nekoyume.UI;
-using UnityEditor;
 using UnityEngine.Events;
 
 namespace Nekoyume.Game

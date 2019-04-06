@@ -1,5 +1,4 @@
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
 
 namespace Nekoyume.Helper

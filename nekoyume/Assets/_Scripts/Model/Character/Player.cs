@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Action;
 using Nekoyume.Data.Table;
-using Nekoyume.Game;
 using Nekoyume.Game.Item;
 
 namespace Nekoyume.Model

@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Nekoyume.Data;
-using Nekoyume.Game.Character;
 using Nekoyume.Game.Factory;
 using Nekoyume.Model;
 using UnityEngine;
