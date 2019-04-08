@@ -194,14 +194,14 @@ namespace Nekoyume.Game
             if (tables.Background.TryGetValue(stage, out data))
             {
                 ReadyPlayer();
-                var blind = Widget.Find<Blind>();
-                yield return StartCoroutine(blind.FadeIn(1.0f, $"STAGE {stage}"));
+                var loadingScreen = Widget.Find<LoadingScreen>();
+                loadingScreen.Show();
 
                 LoadBackground(data.background, 3.0f);
                 Widget.Find<Menu>().ShowWorld();
 
                 yield return new WaitForSeconds(1.5f);
-                yield return StartCoroutine(blind.FadeOut(1.0f));
+                loadingScreen.Close();
             }
         }
 

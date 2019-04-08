@@ -13,8 +13,8 @@ namespace Nekoyume.Game.Entrance
         private IEnumerator Act()
         {
             var stage = GetComponent<Stage>();
-            var blind = UI.Widget.Find<UI.Blind>();
-            yield return StartCoroutine(blind.FadeIn(1.0f, "ROOM"));
+            var loadingScreen = UI.Widget.Find<UI.LoadingScreen>();
+            loadingScreen.Show();
 
             UI.Widget.Find<UI.Menu>().ShowRoom();
 
@@ -49,7 +49,7 @@ namespace Nekoyume.Game.Entrance
             cam.target = null;
 
             yield return new WaitForSeconds(2.0f);
-            yield return StartCoroutine(blind.FadeOut(1.0f));
+            loadingScreen.Close();
             Destroy(this);
         }
     }
