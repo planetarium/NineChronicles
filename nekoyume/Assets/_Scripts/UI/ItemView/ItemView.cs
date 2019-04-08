@@ -37,7 +37,7 @@ namespace Nekoyume.UI.ItemView
 
             Data = data;
             
-            var path = $"images/item_{data.Item.Data.Id}";
+            var path = $"images/item_{data.Item.Data.id}";
             var sprite = Resources.Load<Sprite>(path);
             if (ReferenceEquals(sprite, null))
             {

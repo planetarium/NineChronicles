@@ -1,5 +1,4 @@
 using Nekoyume.UI.Scroller;
-using UnityEngine;
 
 namespace Nekoyume.UI
 {

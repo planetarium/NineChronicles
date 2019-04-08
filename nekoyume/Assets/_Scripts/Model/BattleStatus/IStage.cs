@@ -11,5 +11,6 @@ namespace Nekoyume.Model
         IEnumerator CoDropBox(List<ItemBase> items);
         IEnumerator CoGetReward(List<ItemBase> rewards);
         IEnumerator CoSpawnWave(List<Monster> monsters);
+        IEnumerator CoGetExp(long exp);
     }
 }

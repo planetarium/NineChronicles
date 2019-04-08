@@ -1,8 +1,6 @@
-using System.Collections;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
-
 
 namespace Nekoyume.UI
 {
@@ -22,7 +20,7 @@ namespace Nekoyume.UI
 
         public static PopupText Show(Vector3 position, Vector3 force, string text, Color color)
         {
-            var popupText = UI.Widget.Create<UI.PopupText>(true);
+            var popupText = Create<PopupText>(true);
             popupText.Label.text = text;
             popupText.Label.color = color;
 

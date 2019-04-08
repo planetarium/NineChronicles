@@ -100,7 +100,7 @@ namespace Nekoyume.UI
         public void Add(ItemBase characterItem)
         {
             var i = _slots.FindIndex(
-                a => a.Item.Data.Id.Equals(characterItem.Data.Id)
+                a => a.Item.Data.id.Equals(characterItem.Data.id)
             );
             if (i < 0)
             {

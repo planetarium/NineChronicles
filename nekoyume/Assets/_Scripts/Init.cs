@@ -1,8 +1,7 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
+using Assets.SimpleLocalization;
 using UnityEngine;
 using UnityEngine.Networking;
-
 
 public class Init : MonoBehaviour
 {
@@ -10,7 +9,7 @@ public class Init : MonoBehaviour
 
     private void Awake()
     {
-        Assets.SimpleLocalization.LocalizationManager.Read();
+        LocalizationManager.Read();
     }
 
     void Start()

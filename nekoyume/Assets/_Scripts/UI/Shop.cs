@@ -1,5 +1,5 @@
-using System.Collections.Generic;
 using Nekoyume.Game;
+using Nekoyume.Game.Character;
 using UnityEngine;
 
 namespace Nekoyume.UI
@@ -12,7 +12,7 @@ namespace Nekoyume.UI
         public GameObject headerSell;
         public Stage stage;
 
-        private Game.Character.Player _player;
+        private Player _player;
 
         private void Awake()
         {
@@ -43,7 +43,7 @@ namespace Nekoyume.UI
 
         public override void Show()
         {
-            _player = FindObjectOfType<Game.Character.Player>();
+            _player = FindObjectOfType<Player>();
             if (_player != null)
             {
                 _player.gameObject.SetActive(false);

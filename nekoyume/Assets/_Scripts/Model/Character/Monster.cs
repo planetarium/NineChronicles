@@ -1,34 +1,32 @@
 using System;
-using Nekoyume.Action;
-using Nekoyume.Game;
-using Nekoyume.Game.Item;
+using Nekoyume.Data.Table;
 
 namespace Nekoyume.Model
 {
     [Serializable]
     public class Monster : CharacterBase
     {
-        public int rewardExp;
-        public Data.Table.Monster data;
+        public Character data;
 
-        public Monster(Data.Table.Monster data, Player player)
+        public Monster(Character data, int monsterLevel, Player player)
         {
-            hp = data.Health;
-            atk = data.Attack;
-            def = data.Defense;
-            rewardExp = data.RewardExp;
-            criticalChance = data.critical;
+            var stats = data.GetStats(monsterLevel);
+            hp = stats.HP;
+            atk = stats.Damage;
+            def = stats.Defense;
+            criticalChance = stats.Luck;
             targets.Add(player);
             Simulator = player.Simulator;
             this.data = data;
-            defElement = Elemental.Create(data.Resistance);
+            level = monsterLevel;
+            defElement = Game.Elemental.Create(data.elemental);
         }
 
         protected override void OnDead()
         {
             base.OnDead();
             var player = (Player) targets[0];
-            player.GetExp(this);
+            player.RemoveTarget(this);
         }
     }
 }

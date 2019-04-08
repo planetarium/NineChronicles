@@ -1,5 +1,6 @@
 using DG.Tweening;
 using System.Collections;
+using System.Collections.Generic;
 using Nekoyume.UI;
 using UnityEngine;
 
@@ -26,6 +27,7 @@ namespace Nekoyume.Game.Item
         private static Vector3 _inventoryPosition = Vector3.zero;
 
         public ItemBase Item { get; private set; }
+        public List<ItemBase> Items { get; private set; }
 
         private SpriteRenderer _renderer = null;
 
@@ -70,17 +72,17 @@ namespace Nekoyume.Game.Item
 
         #endregion
 
-        public void Set(ItemBase item)
+        public IEnumerator CoSet(List<ItemBase> items)
         {
             if (ReferenceEquals(_cam, null))
             {
                 gameObject.SetActive(false);
-                return;
+                yield break;
             }
 
-            Item = item;
+            Items = items;
 
-            StartCoroutine(CoPlay());
+            yield return StartCoroutine(CoPlay());
         }
 
         private IEnumerator CoPlay()

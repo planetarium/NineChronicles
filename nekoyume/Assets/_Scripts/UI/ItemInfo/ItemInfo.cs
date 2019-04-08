@@ -63,9 +63,9 @@ namespace Nekoyume.UI.ItemInfo
             }
             
             var item = _data.Item.Value;
-            nameText.text = item.Item.Data.Name;
+            nameText.text = item.Item.Data.name;
             infoText.text = item.Item.ToItemInfo();
-            descriptionText.text = item.Item.Data.Flavour;
+            descriptionText.text = item.Item.Data.description;
             itemView.SetData(item);
         }
         
