@@ -80,7 +80,7 @@ namespace Nekoyume.Model
             atk = statsData.Damage;
             def = statsData.Defense;
             hpMax = statsData.HP;
-            expMax = expData.expNeed;
+            expMax = expData.exp + expData.expNeed;
             criticalChance = statsData.Luck;
             var equipments = Items.Select(i => i.Item).OfType<Equipment>().Where(e => e.equipped);
             var setMap = new Dictionary<int, int>();
