@@ -106,8 +106,17 @@ namespace Nekoyume.Model
                 }
             }
         }
-        private void LevelUp()
+        public void GetExp(long waveExp)
         {
+            exp += waveExp;
+
+            var levelUp = new GetExp
+            {
+                exp = waveExp,
+                character = Copy(this),
+            };
+            Simulator.Log.Add(levelUp);
+
             if (exp < expMax)
                 return;
 
@@ -116,11 +125,6 @@ namespace Nekoyume.Model
 
             CalcStats(level);
 
-            var levelUp = new GetExp
-            {
-                character = Copy(this),
-            };
-            Simulator.Log.Add(levelUp);
         }
 
         public void GetRewards(List<ItemBase> items)

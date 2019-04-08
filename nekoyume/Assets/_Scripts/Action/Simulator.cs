@@ -52,11 +52,8 @@ namespace Nekoyume.Action
                     {
                         var index = Math.Min(_waves.IndexOf(wave), lastWave);
                         var items = _waveRewards[index];
-                        var getExp = new GetExp
-                        {
-                            exp = wave.exp,
-                        };
-                        Log.Add(getExp);
+                        Player.GetExp(wave.exp);
+
                         var dropBox = new DropBox
                         {
                             items = items
