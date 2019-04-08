@@ -189,15 +189,15 @@ namespace Nekoyume.Game
 
         private IEnumerator CoStageEnter(int stage)
         {
-            Data.Table.Stage data;
+            Data.Table.Background data;
             var tables = this.GetRootComponent<Tables>();
-            if (tables.Stage.TryGetValue(stage, out data))
+            if (tables.Background.TryGetValue(stage, out data))
             {
                 ReadyPlayer();
                 var blind = Widget.Find<Blind>();
                 yield return StartCoroutine(blind.FadeIn(1.0f, $"STAGE {stage}"));
 
-                LoadBackground(data.Background, 3.0f);
+                LoadBackground(data.background, 3.0f);
                 Widget.Find<Menu>().ShowWorld();
 
                 yield return new WaitForSeconds(1.5f);
@@ -308,15 +308,13 @@ namespace Nekoyume.Game
 
         public IEnumerator CoDropBox(List<ItemBase> items)
         {
-            var dropItemFactory = GetComponent<DropItemFactory>();
-            var player = GetPlayer();
-            var position = player.transform.position;
-            position.x += 1.0f;
-            for (var index = 0; index < items.Count; index++)
+            if (items.Count > 0)
             {
-                var item = items[index];
-                position.y += index * 0.2f;
-                dropItemFactory.Create(item.Data.Id, position);
+                var dropItemFactory = GetComponent<DropItemFactory>();
+                var player = GetPlayer();
+                var position = player.transform.position;
+                position.x += 1.0f;
+                yield return StartCoroutine(dropItemFactory.CoCreate(items, position));
             }
 
             yield return null;
@@ -338,6 +336,12 @@ namespace Nekoyume.Game
             playerCharacter.StartRun();
             _spawner.SetData(id, monsters);
             yield return null;
+        }
+
+        public IEnumerator CoGetExp(long exp)
+        {
+            var player = GetPlayer();
+            yield return StartCoroutine(player.CoGetExp(exp));
         }
 
         public Character.Player GetPlayer()

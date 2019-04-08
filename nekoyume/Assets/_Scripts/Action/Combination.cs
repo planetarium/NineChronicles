@@ -1,9 +1,6 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.IO;
 using System.Linq;
-using Bencodex.Types;
-using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Item;
@@ -18,7 +15,6 @@ namespace Nekoyume.Action
         public int material_2;
         public int material_3;
         public int result;
-        private const string kRecipePath = "Assets/Resources/DataTable/recipe.csv";
         public override void LoadPlainValue(IImmutableDictionary<string, object> plainValue)
         {
             material_1 = int.Parse(plainValue["material_1"].ToString());
@@ -38,17 +34,16 @@ namespace Nekoyume.Action
                 material_2,
                 material_3
             };
-            var items = player.inventory.items.Select(i => i.Item.Data.Id);
+            var items = player.inventory.items.Select(i => i.Item.Data.id);
             bool owned = materials.All(material => items.Contains(material));
             if (!owned)
             {
                 throw new InvalidActionException();
             }
-            var recipe = new Table<Recipe>();
-            var recipePath = Path.Combine(Directory.GetCurrentDirectory(), kRecipePath);
-            recipe.Load(File.ReadAllText(recipePath));
 
-            var itemTable = Agent.ItemTable();
+            var tables = ActionManager.Instance.tables;
+            var recipe = tables.Recipe;
+            var itemTable = tables.Item;
 
             Recipe r;
             if (recipe.TryGetValue(result, out r))
@@ -56,7 +51,7 @@ namespace Nekoyume.Action
                 foreach (var material in materials)
                 {
                     var inventoryItem =
-                        player.inventory.items.FirstOrDefault(i => i.Item.Data.Id == material && i.Count >= 1);
+                        player.inventory.items.FirstOrDefault(i => i.Item.Data.id == material && i.Count >= 1);
                     if (inventoryItem == null)
                     {
                         throw new InvalidActionException();

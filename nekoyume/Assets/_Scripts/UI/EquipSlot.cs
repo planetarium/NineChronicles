@@ -1,7 +1,5 @@
-using Nekoyume.Game.Character;
 using Nekoyume.Game.Item;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
@@ -38,9 +36,7 @@ namespace Nekoyume.UI
 
         public void Set(Equipment equipment)
         {
-            var sprite = Resources.Load<Sprite>($"images/item_{equipment.Data.Id}");
-            if (sprite == null)
-                sprite = Resources.Load<Sprite>("images/item_301001");
+            var sprite = ItemBase.GetSprite(equipment);
             icon.sprite = sprite;
             icon.gameObject.SetActive(true);
             icon.SetNativeSize();

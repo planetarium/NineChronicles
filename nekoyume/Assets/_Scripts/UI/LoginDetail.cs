@@ -115,14 +115,19 @@ namespace Nekoyume.UI
             profileImage.SetActive(active);
             var game = GameObject.Find("Game");
             Tables tables = game.GetComponent<Tables>();
-            Stats statsData;
+            Level levelData;
+            Character characterData;
             levelInfo.text = $"LV. {level}";
             nameInfo.text = $"{_avatar?.Name}";
-            if (!tables.Stats.TryGetValue(level, out statsData))
+            if (!tables.Character.TryGetValue(CreateNovice.DefaultId, out characterData))
                 return;
 
-            int hp = statsData.Health;
-            int hpMax = hp;
+            if (!tables.Level.TryGetValue(level, out levelData))
+                return;
+
+            var stats = characterData.GetStats(level);
+            int hp = stats.HP;
+            int hpMax = stats.HP;
             long exp = 0;
             if (level > 1)
             {
@@ -131,29 +136,23 @@ namespace Nekoyume.UI
                 hpMax = _avatar.HPMax;
             }
             textHp.text = $"{hp}/{hpMax}";
-            textExp.text = $"{exp}/{statsData.Exp}";
+            textExp.text = $"{exp}/{levelData.expNeed}";
             float hpPercentage = hp / (float) hpMax;
             hpBar.fillRect.gameObject.SetActive(hpPercentage > 0.0f);
             hpPercentage = Mathf.Min(Mathf.Max(hpPercentage, 0.1f), 1.0f);
             hpBar.value = 0.0f;// hpPercentage;
             hpBar.DOValue(hpPercentage, 2.0f).SetEase(Ease.OutCubic);
 
-            float expPercentage = exp / (float) statsData.Exp;
+            float expPercentage = exp / (float) levelData.exp;
             expBar.fillRect.gameObject.SetActive(expPercentage > 0.0f);
             expPercentage = Mathf.Min(Mathf.Max(expPercentage, 0.1f), 1.0f);
             expBar.value = 0.0f;// expPercentage;
             expBar.DOValue(expPercentage, 3.0f).SetEase(Ease.OutCubic);
 
             var statusDetailScript = statusDetail.GetComponent<StatusDetail>();
-            statusDetailScript.Init(statsData);
+            statusDetailScript.Init(levelData);
             menuCreate.SetActive(!active);
             menuSelect.SetActive(active);
-            //var image = character.GetComponent<Image>();
-            //var sprite = Resources.Load<Sprite>($"avatar/{imagePath}");
-            //if (sprite != null)
-            //{
-            //    image.sprite = sprite;
-            //}
             Show();
         }
 

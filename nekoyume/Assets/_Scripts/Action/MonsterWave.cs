@@ -6,6 +6,7 @@ namespace Nekoyume.Action
     public class MonsterWave
     {
         public readonly List<Monster> monsters = new List<Monster>();
+        public long exp;
 
 
         public void Add(Monster monster)

@@ -1,7 +1,5 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using Bencodex.Types;
-using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Item;
@@ -13,6 +11,7 @@ namespace Nekoyume.Action
     public class CreateNovice : ActionBase
     {
         public string name;
+        public const int DefaultId = 100010;
         public override void LoadPlainValue(IImmutableDictionary<string, object> plainValue)
         {
             name = (string) plainValue["name"];
@@ -36,15 +35,18 @@ namespace Nekoyume.Action
                 WorldStage = 1,
                 CurrentHP = 0,
                 Items = new List<Inventory.InventoryItem>(),
+                id = DefaultId,
             };
-            var table = ActionManager.Instance.tables.Item;
             // equipments id from item_equip.csv
-            foreach (var id in new[] {304001, 304002, 304003, 308001, 308002, 308003})
+            var table = ActionManager.Instance.tables.ItemEquipment;
+            foreach (var id in new[] {101000, 101001, 101002, 102000, 102001, 102002, 201000})
             {
-                Item itemData;
-                table.TryGetValue(id, out itemData);
-                var equipment = ItemBase.ItemFactory(itemData);
-                avatar.Items.Add(new Inventory.InventoryItem(equipment));
+                ItemEquipment itemData;
+                if (table.TryGetValue(id, out itemData))
+                {
+                    var equipment = ItemBase.ItemFactory(itemData);
+                    avatar.Items.Add(new Inventory.InventoryItem(equipment));
+                }
             }
 
             return avatar;

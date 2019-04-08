@@ -1,5 +1,4 @@
 using TMPro;
-using UnityEngine;
 
 namespace Nekoyume.UI.ItemView
 {

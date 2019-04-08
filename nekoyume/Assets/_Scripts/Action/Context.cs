@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using Nekoyume.Model;
 
 namespace Nekoyume.Action

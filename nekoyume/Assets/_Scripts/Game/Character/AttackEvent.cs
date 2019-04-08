@@ -13,5 +13,10 @@ namespace Nekoyume.Game.Character
         {
             Event.OnHitEnd.Invoke();
         }
+
+        public void DieEnd()
+        {
+            Event.OnDieEnd.Invoke();
+        }
     }
 }

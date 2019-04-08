@@ -16,7 +16,6 @@ namespace Nekoyume.Game.CC
 
         protected override void OnBegin()
         {
-            Owner.CancelCast();
         }
 
         protected override void OnTickBefore()

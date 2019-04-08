@@ -44,6 +44,7 @@ namespace Nekoyume.Model
         public int CurrentHP;
         public List<Inventory.InventoryItem> Items;
         public int WorldStage;
+        public int id;
 
         public void Update(Player player)
         {
@@ -53,6 +54,7 @@ namespace Nekoyume.Model
             CurrentHP = HPMax;
             Items = player.Items;
             WorldStage = player.stage;
+            id = player.job;
         }
 
         public Player ToPlayer()

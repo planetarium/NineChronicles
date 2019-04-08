@@ -99,7 +99,7 @@ namespace Nekoyume.UI
             _inventory.SetItemTypesToDisable(ItemBase.ItemType.Material);
             foreach (var equipment in _player.equipments)
             {
-                var type = equipment.Data.Cls.ToEnumItemType();
+                var type = equipment.Data.cls.ToEnumItemType();
                 foreach (var slot in equipSlots)
                 {
                     var es = slot.GetComponent<EquipSlot>();
@@ -143,7 +143,7 @@ namespace Nekoyume.UI
 
         public void EquipClick()
         {
-            var type = itemInfoSelectedItem.item.Data.Cls.ToEnumItemType();
+            var type = itemInfoSelectedItem.item.Data.cls.ToEnumItemType();
             foreach (var slot in equipSlots)
             {
                 var es = slot.GetComponent<EquipSlot>();

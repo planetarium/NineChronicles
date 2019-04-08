@@ -94,7 +94,7 @@ namespace Nekoyume.UI.Model
             
             foreach (var stagedItem in StagedItems)
             {
-                if (stagedItem.Item.Value.Item.Data.Id == data.Item.Value.Item.Data.Id)
+                if (stagedItem.Item.Value.Item.Data.id == data.Item.Value.Item.Data.id)
                 {
                     stagedItem.Count.Value = data.Count.Value;
                     Popup.Value.Item.Value = null;
@@ -150,7 +150,7 @@ namespace Nekoyume.UI.Model
         {
             var data = e.Value;
 
-            if (SelectedItemInfo.Value.Item.Value.Item.Data.Id == data.Item.Value.Item.Data.Id)
+            if (SelectedItemInfo.Value.Item.Value.Item.Data.id == data.Item.Value.Item.Data.id)
             {
                 SelectedItemInfo.Value.ButtonEnabled.Value = true;
             }

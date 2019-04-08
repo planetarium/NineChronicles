@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Nekoyume.UI.ItemView;
 using UniRx;
-using UnityEngine;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI

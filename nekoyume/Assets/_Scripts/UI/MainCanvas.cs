@@ -19,7 +19,6 @@ namespace Nekoyume.UI
             Widget.Create<Login>(true);
             Widget.Create<Status>();
             Widget.Create<Inventory>();
-            Widget.Create<SkillController>();
             Widget.Create<Menu>();
             Widget.Create<Blind>();
             Widget.Create<LoginDetail>();

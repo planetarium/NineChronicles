@@ -3,10 +3,8 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.IO;
-using System.Net;
-using System.Threading;
 using System.Threading.Tasks;
+using AsyncIO;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Blockchain;
@@ -16,11 +14,9 @@ using Libplanet.Crypto;
 using Libplanet.Net;
 using Libplanet.Store;
 using Libplanet.Tx;
-using Nekoyume.Data.Table;
 using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.Serilog;
-using NetMQ;
 using Serilog;
 using UnityEngine;
 using Uno.Extensions;
@@ -33,10 +29,6 @@ namespace Nekoyume.Action
         private readonly PrivateKey privateKey;
         public readonly ConcurrentQueue<PolymorphicAction<ActionBase>> queuedActions;
 
-        private const string kItemBoxPath = "Assets/Resources/DataTable/item_box.csv";
-        private const string kItemEquipPath = "Assets/Resources/DataTable/item_equip.csv";
-        private const string kItemPath = "Assets/Resources/DataTable/item.csv";
-
         private const float AvatarUpdateInterval = 3.0f;
 
         private const float ShopUpdateInterval = 3.0f;
@@ -48,7 +40,7 @@ namespace Nekoyume.Action
 
         static Agent() 
         {
-            AsyncIO.ForceDotNet.Force();
+            ForceDotNet.Force();
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
                 .WriteTo.Sink(new UnityDebugSink())
@@ -193,17 +185,6 @@ namespace Nekoyume.Action
             swarm.BroadcastTxsAsync(new[] { tx }).Wait();
         }
 
-        public static Table<Item> ItemTable()
-        {
-            var itemTable = new Table<Item>();
-            foreach (var path in new []{kItemPath, kItemBoxPath, kItemEquipPath})
-            {
-                var itemPath = Path.Combine(Directory.GetCurrentDirectory(), path);
-                itemTable.Load(File.ReadAllText(itemPath));
-            }
-
-            return itemTable;
-        }
         public void Dispose()
         {
             swarm?.Dispose();

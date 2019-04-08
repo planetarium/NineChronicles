@@ -37,7 +37,7 @@ namespace Nekoyume.UI
         public void SetItem(ItemBase itemBase)
         {
             item = itemBase;
-            itemName.text = itemBase.Data.Id.ToString();
+            itemName.text = itemBase.Data.id.ToString();
             info.text = itemBase.ToItemInfo();
 
             if (_considerPrice)
