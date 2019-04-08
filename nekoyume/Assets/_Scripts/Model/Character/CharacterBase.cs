@@ -77,11 +77,13 @@ namespace Nekoyume.Model
         private int CalcDmg(CharacterBase target, bool critical)
         {
             int dmg = atkElement.CalculateDmg(atk, target.defElement);
+            dmg = Math.Max(dmg - target.def, 1);
             if (critical)
             {
                 dmg = Convert.ToInt32(dmg * CriticalMultiplier);
             }
-            return Math.Max(dmg - target.def, 1);
+
+            return dmg;
         }
 
         private bool IsAlive()

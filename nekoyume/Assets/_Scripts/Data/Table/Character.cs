@@ -43,10 +43,11 @@ namespace Nekoyume.Data.Table
             var lck = luck;
             if (level > 1)
             {
-                statsHp += lvHp * level;
-                dmg += lvDamage * level;
-                def += lvDefense * level;
-                lck += lvLuck * level;
+                var multiplier = level - 1;
+                statsHp += lvHp * multiplier;
+                dmg += lvDamage * multiplier;
+                def += lvDefense * multiplier;
+                lck += lvLuck * multiplier;
             }
             return new Stats
             {
