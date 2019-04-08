@@ -156,7 +156,7 @@ namespace Nekoyume.Action
                         continue;
                     }
                     itemSelector.Add(r.id, r.ratio);
-                    var itemId = itemSelector.Select();
+                    var itemId = itemSelector.Pop();
                     Item itemData;
                     if (itemTable.TryGetValue(itemId, out itemData))
                     {
