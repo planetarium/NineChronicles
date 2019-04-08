@@ -57,6 +57,7 @@ namespace Nekoyume.Game.Character
             Event.OnEnemyDead.AddListener(GetEXP);
             Event.OnAttackEnd.AddListener(AttackEnd);
             Event.OnHitEnd.AddListener(HitEnd);
+            Event.OnDieEnd.AddListener(DieEnd);
             Inventory = new Item.Inventory();
             _targetTag = Tag.Enemy;
         }
@@ -80,7 +81,7 @@ namespace Nekoyume.Game.Character
             Event.OnUpdateStatus.Invoke();
             if (HP <= 0)
             {
-                Die();
+                StartCoroutine(Dying());
             }
         }
 

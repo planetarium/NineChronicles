@@ -2700,9 +2700,9 @@ MonoBehaviour:
     hp: 0
     hpMax: 0
     criticalChance: 0
+    level: 0
     exp: 0
     expMax: 0
-    level: 0
     stage: 0
     weapon:
       reserved: 0
@@ -2725,6 +2725,7 @@ MonoBehaviour:
     set:
       reserved: 0
       equipped: 0
+    job: 0
   Inventory:
     items: []
 --- !u!114 &114438488181313956

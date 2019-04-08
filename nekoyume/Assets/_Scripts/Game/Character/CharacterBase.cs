@@ -39,6 +39,7 @@ namespace Nekoyume.Game.Character
         protected string _targetTag = "";
         public bool attackEnd { get; private set; }
         public bool hitEnd { get; private set; }
+        public bool dieEnd { get; private set; }
         public abstract float Speed { get; }
 
         private void Start()
@@ -118,10 +119,10 @@ namespace Nekoyume.Game.Character
         {
             if (_anim != null)
             {
+                dieEnd = false;
                 _anim.SetTrigger("Die");
+                yield return new WaitUntil(() => dieEnd);
             }
-
-            yield return new WaitForSeconds(_dyingTime);
 
             OnDead();
         }
@@ -275,6 +276,11 @@ namespace Nekoyume.Game.Character
         protected void HitEnd()
         {
             hitEnd = true;
+        }
+
+        protected void DieEnd()
+        {
+            dieEnd = true;
         }
     }
 }

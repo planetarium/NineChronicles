@@ -46,5 +46,6 @@ namespace Nekoyume.Game
         public static readonly UnityEvent OnAttackEnd = new UnityEvent();
 
         public static readonly UnityEvent OnHitEnd = new UnityEvent();
+        public static readonly UnityEvent OnDieEnd = new UnityEvent();
     }
 }

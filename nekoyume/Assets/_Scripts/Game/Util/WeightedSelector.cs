@@ -41,13 +41,18 @@ namespace Nekoyume.Game.Util
                 rnd -= _weights[i];
             }
 
-            if (pop)
-            {
-                _values.RemoveAt(idx);
-                _weights.RemoveAt(idx);
-            }
             if (idx >= 0)
-                return _values[idx];
+            {
+                T value = _values[i];
+                if (pop)
+                {
+                    _values.RemoveAt(idx);
+                    _weights.RemoveAt(idx);
+                }
+
+                return value;
+            }
+
             return default(T);
         }
 
