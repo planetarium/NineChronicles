@@ -39,12 +39,15 @@ namespace Nekoyume.Action
             };
             var table = ActionManager.Instance.tables.Item;
             // equipments id from item_equip.csv
-            foreach (var id in new[] {304001, 304002, 304003, 308001, 308002, 308003})
+            foreach (var id in new[] {304001, 304002, 304003, 308001, 308002, 308003, 101001})
             {
                 Item itemData;
                 table.TryGetValue(id, out itemData);
                 var equipment = ItemBase.ItemFactory(itemData);
-                avatar.Items.Add(new Inventory.InventoryItem(equipment));
+
+                avatar.Items.Add(id == 101001
+                    ? new Inventory.InventoryItem(equipment, 30)
+                    : new Inventory.InventoryItem(equipment));
             }
 
             return avatar;

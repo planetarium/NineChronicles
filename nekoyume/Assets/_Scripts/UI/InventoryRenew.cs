@@ -1,12 +1,11 @@
 using Nekoyume.UI.Scroller;
-using UnityEngine;
 
 namespace Nekoyume.UI
 {
     public class InventoryRenew : Widget
     {
         public InventoryScrollerController scrollerController;
-
+        
         #region Mono
 
         private void Awake()

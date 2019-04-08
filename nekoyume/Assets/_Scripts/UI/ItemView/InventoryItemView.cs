@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using UniRx;
-using UnityEngine;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI.ItemView
@@ -57,10 +56,12 @@ namespace Nekoyume.UI.ItemView
             base.SetData(data);
             
             _dataDisposables.ForEach(d => d.Dispose());
-            
+
             Data.Covered.Subscribe(SetCover).AddTo(_dataDisposables);
             Data.Dimmed.Subscribe(SetDim).AddTo(_dataDisposables);
             Data.Selected.Subscribe(SetSelect).AddTo(_dataDisposables);
+
+            Data.OnCountChanged.Subscribe(SetCount).AddTo(_dataDisposables);
             
             coverImage.enabled = Data.Covered.Value;
             selectionImage.enabled = Data.Selected.Value;
@@ -86,7 +87,11 @@ namespace Nekoyume.UI.ItemView
         }
 
         #endregion
-        
+
+        private void SetCount(int count)
+        {
+            Count = count;
+        }
         private void SetCover(bool isCover)
         {
             coverImage.enabled = isCover;

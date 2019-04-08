@@ -1,4 +1,6 @@
-﻿using EnhancedUI.EnhancedScroller;
+﻿using System;
+using System.Collections.Generic;
+using EnhancedUI.EnhancedScroller;
 using UniRx;
 using UnityEngine;
 
@@ -18,6 +20,8 @@ namespace Nekoyume.UI.Scroller
         /// </summary>
         private ReactiveCollection<Model.Inventory.Item> _dataList = new ReactiveCollection<Model.Inventory.Item>();
         private float _cellViewHeight = 100f;
+        
+        private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
         #region Mono
 
@@ -68,13 +72,28 @@ namespace Nekoyume.UI.Scroller
 
         public void SetData(ReactiveCollection<Model.Inventory.Item> dataList)
         {
+            _disposables.ForEach(d => d.Dispose());
+            
             if (ReferenceEquals(dataList, null))
             {
                 dataList = new ReactiveCollection<Model.Inventory.Item>();
             }
 
             _dataList = dataList;
+            _dataList.ObserveAdd().Subscribe(OnDataAdd).AddTo(_disposables);
+            _dataList.ObserveRemove().Subscribe(OnDataRemove).AddTo(_disposables);
+            
             scroller.ReloadData();
+        }
+
+        private void OnDataAdd(CollectionAddEvent<Model.Inventory.Item> e)
+        {
+            scroller.ReloadData(scroller.ScrollPosition);
+        }
+
+        private void OnDataRemove(CollectionRemoveEvent<Model.Inventory.Item> e)
+        {
+            scroller.ReloadData(scroller.ScrollPosition);
         }
     }
 }

@@ -45,7 +45,7 @@ namespace Nekoyume.Action
 
         private readonly Swarm swarm;
 
-        static Agent() 
+        static Agent()
         {
             AsyncIO.ForceDotNet.Force();
             Log.Logger = new LoggerConfiguration()
@@ -60,7 +60,7 @@ namespace Nekoyume.Action
             Guid chainId,
             IEnumerable<Peer> peers,
             IEnumerable<IceServer> iceServers,
-            string host, 
+            string host,
             int? port)
         {
             IBlockPolicy<ActionBase> policy = new BlockPolicy<ActionBase>(TimeSpan.FromMilliseconds(500));
@@ -80,11 +80,11 @@ namespace Nekoyume.Action
             swarm = new Swarm(
                 privateKey,
                 dialTimeout: SwarmDialTimeout,
-                host: host, 
-                listenPort: port, 
+                host: host,
+                listenPort: port,
                 iceServers: iceServers);
 
-            foreach(var peer in peers) 
+            foreach (var peer in peers)
             {
                 swarm.Add(peer);
             }
@@ -98,13 +98,11 @@ namespace Nekoyume.Action
 
         public IEnumerator CoSwarmRunner()
         {
-            Task task = Task.Run(async () => 
-            {
-                await swarm.StartAsync(blocks);
-            });
+            Task task = Task.Run(async () => { await swarm.StartAsync(blocks); });
 
             yield return new WaitUntil(() => task.IsCompleted);
         }
+
         public IEnumerator CoAvatarUpdator()
         {
             while (true)
@@ -117,6 +115,7 @@ namespace Nekoyume.Action
                 {
                     DidReceiveAction?.Invoke(this, ctx);
                 }
+
                 yield return null;
             }
         }
@@ -136,7 +135,7 @@ namespace Nekoyume.Action
             }
         }
 
-        public IEnumerator CoTxProcessor() 
+        public IEnumerator CoTxProcessor()
         {
             var actions = new List<ActionBase>();
 
@@ -148,13 +147,21 @@ namespace Nekoyume.Action
                 {
                     actions.Add(action);
                 }
-                
+
                 if (actions.Count > 0)
                 {
-                    var task = Task.Run(() => 
+                    var task = Task.Run(() =>
                     {
-                        StageActions(actions);
-                        actions.Clear();
+                        try
+                        {
+                            StageActions(actions);
+                            actions.Clear();
+                        }
+                        catch (Exception e)
+                        {
+                            Debug.LogError($"{e}\n{e.StackTrace}");
+                            throw;
+                        }
                     });
                     yield return new WaitUntil(() => task.IsCompleted);
                 }
@@ -165,10 +172,10 @@ namespace Nekoyume.Action
         {
             while (true)
             {
-                var task = Task.Run(async () => 
+                var task = Task.Run(async () =>
                 {
                     var block = blocks.MineBlock(UserAddress);
-                    await swarm.BroadcastBlocksAsync(new[] { block });
+                    await swarm.BroadcastBlocksAsync(new[] {block});
                     return block;
                 });
                 yield return new WaitUntil(() => task.IsCompleted);
@@ -188,13 +195,13 @@ namespace Nekoyume.Action
                 timestamp: DateTime.UtcNow
             );
             blocks.StageTransactions(new HashSet<Transaction<ActionBase>> {tx});
-            swarm.BroadcastTxsAsync(new[] { tx }).Wait();
+            swarm.BroadcastTxsAsync(new[] {tx}).Wait();
         }
 
         public static Table<Item> ItemTable()
         {
             var itemTable = new Table<Item>();
-            foreach (var path in new []{kItemPath, kItemBoxPath, kItemEquipPath})
+            foreach (var path in new[] {kItemPath, kItemBoxPath, kItemEquipPath})
             {
                 var itemPath = Path.Combine(Directory.GetCurrentDirectory(), path);
                 itemTable.Load(File.ReadAllText(itemPath));
@@ -202,6 +209,7 @@ namespace Nekoyume.Action
 
             return itemTable;
         }
+
         public void Dispose()
         {
             swarm?.Dispose();
@@ -209,7 +217,8 @@ namespace Nekoyume.Action
 
         private class DebugPolicy : IBlockPolicy<ActionBase>
         {
-            public InvalidBlockException ValidateBlocks(IEnumerable<Block<ActionBase>> blocks, DateTimeOffset currentTime)
+            public InvalidBlockException ValidateBlocks(IEnumerable<Block<ActionBase>> blocks,
+                DateTimeOffset currentTime)
             {
                 return null;
             }
