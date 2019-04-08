@@ -45,7 +45,7 @@ namespace Nekoyume.Game.Character
 
             if (HP <= 0)
             {
-                Die();
+                StartCoroutine(Dying());
             }
         }
 
