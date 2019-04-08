@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using UniRx;
-using Uno.Extensions;
 
 namespace Nekoyume
 {
@@ -21,7 +20,13 @@ namespace Nekoyume
         
         public static void DisposeAll<T>(this ReactiveCollection<T> collection) where T : IDisposable
         {
-            collection.ForEach(obj => obj.Dispose());
+            using (var e = collection.GetEnumerator())
+            {
+                while (e.MoveNext())
+                {
+                    e.Current?.Dispose();
+                }
+            }
             collection.Dispose();
         }
     }
