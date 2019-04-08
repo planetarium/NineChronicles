@@ -14,6 +14,7 @@ namespace Nekoyume.UI.Model
             public readonly ReactiveProperty<bool> Selected = new ReactiveProperty<bool>(false);
 
             public readonly Subject<Item> OnClick = new Subject<Item>();
+            public readonly Subject<int> OnCountChanged = new Subject<int>();
 
             public Item(Game.Item.Inventory.InventoryItem item) : base(item)
             {
@@ -26,6 +27,12 @@ namespace Nekoyume.UI.Model
                 Selected.Dispose();
 
                 OnClick.Dispose();
+                OnCountChanged.Dispose();
+            }
+
+            public void RaiseCountChanged()
+            {
+                OnCountChanged.OnNext(Count);
             }
         }
 
@@ -47,6 +54,8 @@ namespace Nekoyume.UI.Model
                 added.Value.Dimmed.Value = !ignoreDimmedTypes.Contains(added.Value.Item.Data.cls);
                 added.Value.OnClick.Subscribe(SubscribeOnClick);
             });
+
+            Items.ObserveRemove().Subscribe(removed => removed.Value.Dispose());
 
             SelectedItem.Subscribe(item =>
             {

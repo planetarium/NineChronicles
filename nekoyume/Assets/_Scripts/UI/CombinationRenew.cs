@@ -1,14 +1,18 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 using Nekoyume.Action;
-using Nekoyume.Game;
+using Nekoyume.Data.Table;
 using Nekoyume.Game.Character;
+using Nekoyume.Game.Item;
 using Nekoyume.UI.ItemInfo;
 using Nekoyume.UI.ItemView;
 using Nekoyume.UI.Model;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
+using Stage = Nekoyume.Game.Stage;
 
 namespace Nekoyume.UI
 {
@@ -29,7 +33,9 @@ namespace Nekoyume.UI
         private Stage _stage;
         private Player _player;
 
-        private SelectItemCountPopup _popup;
+        private SelectItemCountPopup _selectItemCountPopup;
+        private CombinationResultPopup _resultPopup;
+        private LoadingScreen _loadingScreen;
 
         #region Mono
 
@@ -46,7 +52,7 @@ namespace Nekoyume.UI
             }
 
             combinationButton.OnClickAsObservable()
-                .Subscribe(_ => { Debug.Log("조합 시작!!"); })
+                .Subscribe(_ => _data.OnClickCombination.OnNext(_data))
                 .AddTo(_disposables);
 
             closeButton.OnClickAsObservable()
@@ -78,10 +84,22 @@ namespace Nekoyume.UI
 
         public override void Show()
         {
-            _popup = Find<SelectItemCountPopup>();
-            if (ReferenceEquals(_popup, null))
+            _selectItemCountPopup = Find<SelectItemCountPopup>();
+            if (ReferenceEquals(_selectItemCountPopup, null))
             {
                 throw new NotFoundComponentException<SelectItemCountPopup>();
+            }
+
+            _resultPopup = Find<CombinationResultPopup>();
+            if (ReferenceEquals(_resultPopup, null))
+            {
+                throw new NotFoundComponentException<CombinationResultPopup>();
+            }
+
+            _loadingScreen = Find<LoadingScreen>();
+            if (ReferenceEquals(_loadingScreen, null))
+            {
+                throw new NotFoundComponentException<LoadingScreen>();
             }
 
             base.Show();
@@ -96,24 +114,21 @@ namespace Nekoyume.UI
 
             _player.gameObject.SetActive(false);
 
-            _data = new Model.Combination(ActionManager.Instance.Avatar.Items, 5);
+            _data = new Model.Combination(ActionManager.Instance.Avatar.Items, stagedItems.Length);
             _data.SelectedItemInfo.Value.Item.Subscribe(OnDataSelectedItemInfoItem);
-            _data.Popup.Value.Item.Subscribe(OnDataPopupItem);
-            _data.Popup.Value.OnClickClose.Subscribe(OnDataPopupOnClickClose);
+            _data.SelectItemCountPopup.Value.Item.Subscribe(OnDataPopupItem);
+            _data.SelectItemCountPopup.Value.OnClickClose.Subscribe(OnDataPopupOnClickClose);
             _data.StagedItems.ObserveAdd().Subscribe(OnDataStagedItemsAdd);
             _data.StagedItems.ObserveRemove().Subscribe(OnDataStagedItemsRemove);
+            _data.StagedItems.ObserveReplace().Subscribe(OnDataStagedItemsReplace);
             _data.ReadyForCombination.Subscribe(SetActiveCombinationButton);
+            _data.OnClickCombination.Subscribe(RequestCombination);
+            _data.ResultPopup.Subscribe(SubscribeResultPopup);
 
             inventoryRenew.SetData(_data.Inventory.Value);
             inventoryRenew.Show();
             selectedItemInfo.SetData(_data.SelectedItemInfo.Value);
-
-            var count = stagedItems.Length;
-            for (int i = 0; i < count; i++)
-            {
-                var item = stagedItems[i];
-                item.Clear();
-            }
+            UpdateStagedItems();
         }
 
         public override void Close()
@@ -147,17 +162,17 @@ namespace Nekoyume.UI
         {
             if (ReferenceEquals(data, null))
             {
-                _popup.Close();
+                _selectItemCountPopup.Close();
                 return;
             }
 
-            _popup.Pop(_data.Popup.Value);
+            _selectItemCountPopup.Pop(_data.SelectItemCountPopup.Value);
         }
 
-        private void OnDataPopupOnClickClose(Model.SelectItemCountPopup<Model.Inventory.Item> data)
+        private void OnDataPopupOnClickClose(SelectItemCountPopup<Model.Inventory.Item> data)
         {
-            _data.Popup.Value.Item.Value = null;
-            _popup.Close();
+            _data.SelectItemCountPopup.Value.Item.Value = null;
+            _selectItemCountPopup.Close();
         }
 
         private void OnDataStagedItemsAdd(CollectionAddEvent<CountEditableItem<Model.Inventory.Item>> e)
@@ -195,19 +210,102 @@ namespace Nekoyume.UI
             }
         }
 
+        private void OnDataStagedItemsReplace(CollectionReplaceEvent<CountEditableItem<Model.Inventory.Item>> e)
+        {
+            if (ReferenceEquals(e.NewValue, null))
+            {
+                UpdateStagedItems();
+            }
+        }
+
         private void SetActiveCombinationButton(bool isActive)
         {
             if (isActive)
             {
                 combinationButton.enabled = true;
                 combinationButtonImage.sprite = Resources.Load<Sprite>("ui/button_blue_02");
-                combinationButtonText.text = "ON";
             }
             else
             {
                 combinationButton.enabled = false;
                 combinationButtonImage.sprite = Resources.Load<Sprite>("ui/button_black_01");
-                combinationButtonText.text = "OFF";
+            }
+        }
+
+        private IDisposable _combinationDisposable;
+
+        private void RequestCombination(Model.Combination data)
+        {
+            _loadingScreen.Show();
+            _combinationDisposable = Action.CombinationRenew.EndOfExecuteSubject.ObserveOnMainThread().Subscribe(ResponseCombination);
+            ActionManager.Instance.Combination(_data.StagedItems.ToList());
+        }
+
+        /// <summary>
+        /// 결과를 직접 받아서 데이타에 넣어주는 방법 보다는,
+        /// 네트워크 결과를 핸들링하는 곳에 핸들링 인터페이스를 구현한 데이타 모델을 등록하는 방법이 좋겠다. 
+        /// </summary>
+        private void ResponseCombination(Action.CombinationRenew action)
+        {
+            _combinationDisposable.Dispose();
+            
+            var result = action.Result;
+            if (result.ErrorCode == ActionBase.ErrorCode.Success)
+            {
+                ItemEquipment itemData;
+                if (!ActionManager.Instance.tables.ItemEquipment.TryGetValue(result.Item.Id, out itemData))
+                {
+                    _loadingScreen.Close();
+                    throw new InvalidActionException("`CombinationRenew` action's `Result` is invalid.");
+                }
+
+                var itemModel = new Model.Inventory.Item(
+                    new Game.Item.Inventory.InventoryItem(new Equipment(itemData), action.Result.Item.Count));
+
+                _data.ResultPopup.Value = new CombinationResultPopup<Model.Inventory.Item>()
+                {
+                    IsSuccess = true,
+                    ResultItem = itemModel,
+                    MaterialItems = _data.StagedItems
+                };
+            }
+            else
+            {
+                _data.ResultPopup.Value = new CombinationResultPopup<Model.Inventory.Item>()
+                {
+                    IsSuccess = false,
+                    MaterialItems = _data.StagedItems
+                };
+            }
+        }
+
+        private void SubscribeResultPopup(CombinationResultPopup<Model.Inventory.Item> data)
+        {
+            if (ReferenceEquals(data, null))
+            {
+                _resultPopup.Close();
+            }
+            else
+            {
+                _loadingScreen.Close();
+                _resultPopup.Pop(_data.ResultPopup.Value);
+            }
+        }
+
+        private void UpdateStagedItems(int startIndex = 0)
+        {
+            var dataCount = _data.StagedItems.Count;
+            for (var i = startIndex; i < stagedItems.Length; i++)
+            {
+                var item = stagedItems[i];
+                if (i < dataCount)
+                {
+                    item.SetData(_data.StagedItems[i]);
+                }
+                else
+                {
+                    item.Clear();
+                }
             }
         }
     }

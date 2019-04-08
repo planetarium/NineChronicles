@@ -247,6 +247,13 @@ namespace Nekoyume.Action
             };
             ProcessAction(action);
         }
+        
+        public void Combination(List<UI.Model.CountEditableItem<UI.Model.Inventory.Item>> materials)
+        {
+            var action = new CombinationRenew();
+            materials.ForEach(m => action.Materials.Add(new CombinationRenew.ItemModel(m)));
+            ProcessAction(action);
+        }
 
         public void Sell(List<ItemBase> items, decimal price)
         {

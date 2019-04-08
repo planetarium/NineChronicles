@@ -1,3 +1,4 @@
+using Nekoyume.Game.Item;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,19 +9,12 @@ namespace Nekoyume.UI.ItemView
         protected static readonly Color DefaultColor = Color.white;
         protected static readonly Color DimColor = new Color(1f, 1f, 1f, 0.3f);
 
-        private static Sprite _defaultSprite;
-
         public Image iconImage;
 
         protected T Data;
 
         protected virtual void Awake()
         {
-            if (ReferenceEquals(_defaultSprite, null))
-            {
-                _defaultSprite = Resources.Load<Sprite>("images/item_301001");
-            }
-
             if (ReferenceEquals(iconImage, null))
             {
                 throw new SerializeFieldNullException();
@@ -37,11 +31,10 @@ namespace Nekoyume.UI.ItemView
 
             Data = data;
             
-            var path = $"images/item_{data.Item.Data.id}";
-            var sprite = Resources.Load<Sprite>(path);
+            var sprite = ItemBase.GetSprite(Data.Item);
             if (ReferenceEquals(sprite, null))
             {
-                throw new FailedToLoadResourceException<Sprite>(path);
+                throw new FailedToLoadResourceException<Sprite>();
             }
 
             iconImage.sprite = sprite;

@@ -38,7 +38,7 @@ namespace Nekoyume.Action
 
         private readonly Swarm swarm;
 
-        static Agent() 
+        static Agent()
         {
             ForceDotNet.Force();
             Log.Logger = new LoggerConfiguration()
@@ -53,7 +53,7 @@ namespace Nekoyume.Action
             Guid chainId,
             IEnumerable<Peer> peers,
             IEnumerable<IceServer> iceServers,
-            string host, 
+            string host,
             int? port)
         {
             IBlockPolicy<PolymorphicAction<ActionBase>> policy = new BlockPolicy<PolymorphicAction<ActionBase>>(TimeSpan.FromMilliseconds(500));
@@ -74,11 +74,11 @@ namespace Nekoyume.Action
                 privateKey,
                 appProtocolVersion: 1,
                 dialTimeout: SwarmDialTimeout,
-                host: host, 
-                listenPort: port, 
+                host: host,
+                listenPort: port,
                 iceServers: iceServers);
 
-            foreach(var peer in peers) 
+            foreach (var peer in peers)
             {
                 swarm.Add(peer);
             }
@@ -92,13 +92,11 @@ namespace Nekoyume.Action
 
         public IEnumerator CoSwarmRunner()
         {
-            Task task = Task.Run(async () => 
-            {
-                await swarm.StartAsync(blocks);
-            });
+            Task task = Task.Run(async () => { await swarm.StartAsync(blocks); });
 
             yield return new WaitUntil(() => task.IsCompleted);
         }
+
         public IEnumerator CoAvatarUpdator()
         {
             while (true)
@@ -111,6 +109,7 @@ namespace Nekoyume.Action
                 {
                     DidReceiveAction?.Invoke(this, ctx);
                 }
+
                 yield return null;
             }
         }
@@ -130,7 +129,7 @@ namespace Nekoyume.Action
             }
         }
 
-        public IEnumerator CoTxProcessor() 
+        public IEnumerator CoTxProcessor()
         {
             var actions = new List<PolymorphicAction<ActionBase>>();
 
@@ -142,13 +141,21 @@ namespace Nekoyume.Action
                 {
                     actions.Add(action);
                 }
-                
+
                 if (actions.Count > 0)
                 {
-                    var task = Task.Run(() => 
+                    var task = Task.Run(() =>
                     {
-                        StageActions(actions);
-                        actions.Clear();
+                        try
+                        {
+                            StageActions(actions);
+                            actions.Clear();
+                        }
+                        catch (Exception e)
+                        {
+                            Debug.LogError($"{e}\n{e.StackTrace}");
+                            throw;
+                        }
                     });
                     yield return new WaitUntil(() => task.IsCompleted);
                 }
@@ -159,10 +166,10 @@ namespace Nekoyume.Action
         {
             while (true)
             {
-                var task = Task.Run(async () => 
+                var task = Task.Run(async () =>
                 {
                     var block = blocks.MineBlock(UserAddress);
-                    await swarm.BroadcastBlocksAsync(new[] { block });
+                    await swarm.BroadcastBlocksAsync(new[] {block});
                     return block;
                 });
                 yield return new WaitUntil(() => task.IsCompleted);

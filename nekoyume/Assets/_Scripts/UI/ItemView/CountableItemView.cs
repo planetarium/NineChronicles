@@ -62,7 +62,7 @@ namespace Nekoyume.UI.ItemView
 
         #endregion
 
-        protected void SetData(T data, int count)
+        public void SetData(T data, int count)
         {
             if (ReferenceEquals(data, null))
             {

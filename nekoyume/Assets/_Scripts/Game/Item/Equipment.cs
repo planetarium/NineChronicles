@@ -6,7 +6,7 @@ using Nekoyume.Model;
 namespace Nekoyume.Game.Item
 {
     [Serializable]
-    public abstract class Equipment : ItemUsable
+    public class Equipment : ItemUsable
     {
         public bool equipped = false;
         private int _level = 0;

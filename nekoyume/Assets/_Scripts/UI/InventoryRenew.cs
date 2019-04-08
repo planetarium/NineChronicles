@@ -5,7 +5,7 @@ namespace Nekoyume.UI
     public class InventoryRenew : Widget
     {
         public InventoryScrollerController scrollerController;
-
+        
         #region Mono
 
         private void Awake()

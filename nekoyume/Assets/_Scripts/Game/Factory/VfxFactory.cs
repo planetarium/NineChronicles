@@ -13,7 +13,10 @@ namespace Nekoyume.Game.Factory
             base.Awake();
 
             _pool = FindObjectOfType<ObjectPool>();
-            Debug.Log(_pool);
+            if (ReferenceEquals(_pool, null))
+            {
+                throw new NotFoundComponentException<ObjectPool>();
+            }
         }
 
         public T Create<T>(Vector3 position) where T : VfxBase
