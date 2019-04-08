@@ -37,7 +37,7 @@ namespace Nekoyume.Action
                         throw new InvalidActionException();
                     }
 
-                    var equip = current.First(e => e.Data.Id == equipment.Data.Id);
+                    var equip = current.First(e => e.Data.id == equipment.Data.id);
                     equip.Equip();
                 }
             }

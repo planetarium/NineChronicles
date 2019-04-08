@@ -19,6 +19,7 @@ namespace Nekoyume.Model
         public int hpMax;
         public float criticalChance;
         private const float CriticalMultiplier = 1.5f;
+        public int level;
 
         protected Elemental atkElement { get; set; } =
             Elemental.Create(Data.Table.Elemental.ElementalType.Normal);
@@ -30,7 +31,7 @@ namespace Nekoyume.Model
         private bool isDead => hp <= 0;
         public Guid id = Guid.NewGuid();
 
-        private void InitAI()
+        public void InitAI()
         {
             _root = new Root();
             _root.OpenBranch(
@@ -100,16 +101,6 @@ namespace Nekoyume.Model
                 character = Copy(this),
             };
             Simulator.Log.Add(dead);
-        }
-
-        public void Spawn()
-        {
-            InitAI();
-            var spawn = new Spawn
-            {
-                character = Copy(this),
-            };
-            Simulator.Log.Add(spawn);
         }
 
         protected static T Copy<T>(T origin)

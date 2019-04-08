@@ -207,6 +207,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df7f135108b12214e8b282f2cbe6c361, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _spawnPoints:
+  - {x: 1.4, y: 0.3, z: 0}
+  - {x: 1.7, y: -0.3, z: 0}
+  - {x: 2.8, y: 0.3, z: 0}
+  - {x: 2.6, y: -0.4, z: 0}
+  - {x: 3.6, y: 0, z: 0}
 --- !u!1 &282372974
 GameObject:
   m_ObjectHideFlags: 0

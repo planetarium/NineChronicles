@@ -121,7 +121,7 @@ GameObject:
   - component: {fileID: 114721714256227474}
   m_Layer: 0
   m_Name: 201001
-  m_TagString: Player
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -406,7 +406,6 @@ MonoBehaviour:
   Power: 100
   RunSpeed: 0
   DataId: 0
-  RewardExp: 0
 --- !u!114 &114811356059538578
 MonoBehaviour:
   m_ObjectHideFlags: 1

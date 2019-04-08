@@ -1,7 +1,6 @@
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Item;
 using Nekoyume.UI;
-using UnityEditor;
 using UnityEngine.Events;
 
 namespace Nekoyume.Game
@@ -47,5 +46,6 @@ namespace Nekoyume.Game
         public static readonly UnityEvent OnAttackEnd = new UnityEvent();
 
         public static readonly UnityEvent OnHitEnd = new UnityEvent();
+        public static readonly UnityEvent OnDieEnd = new UnityEvent();
     }
 }

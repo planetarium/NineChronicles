@@ -44,14 +44,14 @@ namespace Nekoyume.UI.Model
             items.ForEach(item =>
             {
                 var obj = new Item(item);
-                obj.Dimmed.Value = !ignoreDimmedTypes.Contains(obj.Item.Data.Cls);
+                obj.Dimmed.Value = !ignoreDimmedTypes.Contains(obj.Item.Data.cls);
                 obj.OnClick.Subscribe(SubscribeOnClick);
                 Items.Add(obj);
             });
 
             Items.ObserveAdd().Subscribe(added =>
             {
-                added.Value.Dimmed.Value = !ignoreDimmedTypes.Contains(added.Value.Item.Data.Cls);
+                added.Value.Dimmed.Value = !ignoreDimmedTypes.Contains(added.Value.Item.Data.cls);
                 added.Value.OnClick.Subscribe(SubscribeOnClick);
             });
 

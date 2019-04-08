@@ -1,8 +1,6 @@
-using System;
 using System.Text;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Character;
-using Nekoyume.Game.Item;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,7 +15,7 @@ namespace Nekoyume.UI
         public Text textOption;
 
 
-        public void Init(Stats stats)
+        public void Init(Level level)
         {
 //            textAtk.text = stats.Attack.ToString();
 //            textDef.text = stats.Defense.ToString();
@@ -38,7 +36,7 @@ namespace Nekoyume.UI
             _player = FindObjectOfType<Player>();
             foreach (var equipment in _player.equipments)
             {
-                var type = equipment.Data.Cls.ToEnumItemType();
+                var type = equipment.Data.cls.ToEnumItemType();
                 foreach (var slot in equipSlots)
                 {
                     var es = slot.GetComponent<EquipSlot>();

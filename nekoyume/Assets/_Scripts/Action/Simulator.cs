@@ -14,52 +14,46 @@ namespace Nekoyume.Action
     {
         public readonly IRandom Random;
         private readonly int _stage;
-        private readonly List<List<Model.Monster>> waves;
+        private readonly List<MonsterWave> _waves;
         public readonly BattleLog Log;
         public bool Lose = false;
-        private readonly Player _player;
+        public readonly Player Player;
         private BattleLog.Result _result;
         private int _totalWave;
         public List<CharacterBase> Characters;
-        private readonly HashSet<int> _dropIds;
-        private readonly List<List<ItemBase>> waveRewards;
-        private const int DropCapacity = 3;
-
+        private readonly List<List<ItemBase>> _waveRewards;
+        
         public Simulator(IRandom random, Model.Avatar avatar)
         {
             Random = random;
             _stage = avatar.WorldStage;
             Log = new BattleLog();
-            waves = new List<List<Model.Monster>>();
-            _player = new Player(avatar, this);
-            _dropIds = new HashSet<int>();
-            waveRewards = new List<List<ItemBase>>();
+            _waves = new List<MonsterWave>();
+            Player = new Player(avatar, this);
+            _waveRewards = new List<List<ItemBase>>();
             SetWave();
         }
 
         public Player Simulate()
         {
             Log.stage = _stage;
-            _player.Spawn();
-            foreach (var wave in waves)
+            Player.Spawn();
+            foreach (var wave in _waves)
             {
-                Characters = new List<CharacterBase> {_player};
+                Characters = new List<CharacterBase> {Player};
                 int lastWave = _totalWave - 1;
-                foreach (var monster in wave)
-                {
-                    _player.targets.Add(monster);
-                    Characters.Add(monster);
-                    monster.Spawn();
-                }
+                wave.Spawn(this);
                 while (true)
                 {
                     var characters = Characters.ToList();
                     foreach (var character in characters) character.Tick();
 
-                    if (_player.targets.Count == 0)
+                    if (Player.targets.Count == 0)
                     {
-                        var index = Math.Min(waves.IndexOf(wave), lastWave);
-                        var items = waveRewards[index];
+                        var index = Math.Min(_waves.IndexOf(wave), lastWave);
+                        var items = _waveRewards[index];
+                        Player.GetExp(wave.exp);
+
                         var dropBox = new DropBox
                         {
                             items = items
@@ -68,10 +62,10 @@ namespace Nekoyume.Action
 
                         if (index == lastWave)
                         {
-                            _player.stage++;
+                            Player.stage++;
                             _result = BattleLog.Result.Win;
-                            var rewards = waveRewards.SelectMany(i => i).ToList();
-                            _player.GetRewards(rewards);
+                            var rewards = _waveRewards.SelectMany(i => i).ToList();
+                            Player.GetRewards(rewards);
                             var getReward = new GetReward
                             {
                                 rewards = rewards,
@@ -96,94 +90,86 @@ namespace Nekoyume.Action
             }
 
             Log.result = _result;
-            return _player;
+            return Player;
         }
 
         private void SetWave()
         {
             var tables = ActionManager.Instance.tables;
-            var waveTable = tables.MonsterWave;
-            var stageData = waveTable[_stage];
-            _totalWave = stageData.Wave;
-            for (var wave = 0; wave < _totalWave; wave++)
+            var stageTable = tables.Stage;
+            var waves = new List<Stage>();
+            foreach (var row in stageTable)
             {
-                var monsters = new List<Model.Monster>();
-                var items = new List<ItemBase>();
-                foreach (var waveData in stageData.Monsters)
+                if (row.Value.stage == _stage)
                 {
-                    var monsterId = waveData.Key;
-                    var count = waveData.Value;
-                    if (count <= 0) continue;
-                    for (var i = 0; i < count; i++)
+                    waves.Add(row.Value);
+                }
+
+            }
+            _totalWave = waves.Count;
+            foreach (var w in waves)
+            {
+                var wave = SpawnWave(w);
+                _waves.Add(wave);
+                GetReward(w.reward);
+            }
+        }
+
+        private MonsterWave SpawnWave(Stage stage)
+        {
+            var wave = new MonsterWave();
+            var tables = ActionManager.Instance.tables;
+            var monsterTable = tables.Character;
+            foreach (var monsterData in stage.Monsters())
+            {
+                for (int i = 0; i < monsterData.count; i++)
+                {
+                    Character characterData;
+                    if (!monsterTable.TryGetValue(monsterData.id, out characterData))
                     {
-                        var monster = SpawnMonster(monsterId);
-                        monsters.Add(monster);
-                        var item = GetItem(monster.data.Id);
-                        if (!ReferenceEquals(item, null))
+                        Debug.Log(monsterData.id);
+                    }
+                    wave.Add(new Monster(characterData, monsterData.level, Player));
+                }
+
+                wave.exp = stage.exp;
+            }
+
+            return wave;
+        }
+
+        private void GetReward(int id)
+        {
+            var tables = ActionManager.Instance.tables;
+            var rewardTable = tables.StageReward;
+            var itemTable = tables.Item;
+            var itemSelector = new WeightedSelector<int>(Random);
+            StageReward reward;
+            var items = new List<ItemBase>();
+            if (rewardTable.TryGetValue(id, out reward))
+            {
+                var rewards = reward.Rewards();
+                foreach (var r in rewards)
+                {
+                    if (r.ratio <= 0f)
+                    {
+                        continue;
+                    }
+                    itemSelector.Add(r.id, r.ratio);
+                    var itemId = itemSelector.Pop();
+                    Item itemData;
+                    if (itemTable.TryGetValue(itemId, out itemData))
+                    {
+                        var count = Random.Next(r.range[0], r.range[1]);
+                        for (int i = 0; i < count; i++)
                         {
+                            var item = ItemBase.ItemFactory(itemData);
                             items.Add(item);
                         }
                     }
                 }
-                waves.Add(monsters);
-                waveRewards.Add(items);
             }
-
-            if (stageData.BossId > 0)
-            {
-                var boss = SpawnMonster(stageData.BossId);
-                waves.Add(new List<Model.Monster>{boss});
-            }
-        }
-
-        private Model.Monster SpawnMonster(int monsterId)
-        {
-            var tables = ActionManager.Instance.tables;
-            var monsterTable = tables.Monster;
-
-            Data.Table.Monster monsterData;
-            if (!monsterTable.TryGetValue(monsterId, out monsterData))
-            {
-                Debug.Log(monsterId);
-            }
-            return new Model.Monster(monsterData, _player);
-        }
-
-        private ItemBase GetItem(int monsterId)
-        {
-            var tables = ActionManager.Instance.tables;
-            var dropTable = tables.ItemDrop;
-            var itemTable = tables.Item;
-            var itemSelector = new WeightedSelector<int>(Random);
-            foreach (var pair in dropTable)
-            {
-                ItemDrop dropData = pair.Value;
-                if (monsterId != dropData.MonsterId)
-                    continue;
-
-                if (dropData.Weight <= 0)
-                    continue;
-
-                itemSelector.Add(dropData.ItemId, dropData.Weight);
-            }
-
-            var itemId = itemSelector.Select();
-            Item itemData;
-            if (itemSelector.Count > 0 && itemTable.TryGetValue(itemId, out itemData))
-            {
-                if (_dropIds.Count < DropCapacity)
-                {
-                    _dropIds.Add(itemId);
-                }
-
-                if (_dropIds.Contains(itemId))
-                {
-                    var item = ItemBase.ItemFactory(itemData);
-                    return item;
-                }
-            }
-
-            return null;
+            _waveRewards.Add(items);
         }
     }
 }

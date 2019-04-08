@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Action;
+using Nekoyume.Data;
 using Nekoyume.Data.Table;
-using Nekoyume.Game;
 using Nekoyume.Game.Item;
 
 namespace Nekoyume.Model
@@ -13,7 +13,6 @@ namespace Nekoyume.Model
     {
         public long exp;
         public long expMax;
-        public int level;
         public int stage;
         public Weapon weapon;
         public Armor armor;
@@ -22,6 +21,7 @@ namespace Nekoyume.Model
         public Ring ring;
         public Helm helm;
         public SetItem set;
+        public int job;
 
         public readonly Inventory inventory;
         public List<Inventory.InventoryItem> Items => inventory.items;
@@ -32,6 +32,7 @@ namespace Nekoyume.Model
             level = avatar.Level;
             stage = avatar.WorldStage;
             Simulator = simulator;
+            job = avatar.id;
             inventory = new Inventory();
             var inventoryItems = avatar.Items;
             if (inventoryItems != null)
@@ -40,19 +41,11 @@ namespace Nekoyume.Model
                 inventory.Set(inventoryItems);
             }
 
-            var elemental = set?.Data.elemental ?? Data.Table.Elemental.ElementalType.Normal;
-            atkElement = Game.Elemental.Create(elemental);
-            defElement = Game.Elemental.Create(elemental);
             CalcStats(level);
         }
 
-        public void GetExp(Monster monster)
+        public void RemoveTarget(Monster monster)
         {
-            exp += monster.rewardExp;
-            while (expMax <= exp)
-            {
-                LevelUp();
-            }
             targets.Remove(monster);
             Simulator.Characters.Remove(monster);
         }
@@ -65,24 +58,65 @@ namespace Nekoyume.Model
 
         public void CalcStats(int lv)
         {
-            var stats = ActionManager.Instance.tables.Stats;
-            Stats data;
-            stats.TryGetValue(lv, out data);
+            var stats = ActionManager.Instance.tables.Character;
+            var levelTable = ActionManager.Instance.tables.Level;
+            var setTable = ActionManager.Instance.tables.SetEffect;
+            Character data;
+            stats.TryGetValue(job, out data);
             if (data == null)
             {
                 throw new InvalidActionException();
             }
-            hp = data.Health;
-            atk = data.Attack;
-            def = data.Defense;
-            hpMax = data.Health;
-            expMax = data.Exp;
-            criticalChance = data.critical;
+
+            Level expData;
+            levelTable.TryGetValue(lv, out expData);
+            if (expData == null)
+            {
+                throw new InvalidActionException();
+            }
+
+            var statsData = data.GetStats(lv);
+            hp = statsData.HP;
+            atk = statsData.Damage;
+            def = statsData.Defense;
+            hpMax = statsData.HP;
+            expMax = expData.exp + expData.expNeed;
+            criticalChance = statsData.Luck;
             var equipments = Items.Select(i => i.Item).OfType<Equipment>().Where(e => e.equipped);
-            foreach (var equipment in equipments) equipment.UpdatePlayer(this);
+            var setMap = new Dictionary<int, int>();
+            foreach (var equipment in equipments)
+            {
+                var key = equipment.equipData.setId;
+                int count;
+                if (!setMap.TryGetValue(key, out count))
+                {
+                    setMap[key] = 0;
+                }
+
+                setMap[key] += 1;
+                equipment.UpdatePlayer(this);
+            }
+
+            foreach (var pair in setMap)
+            {
+                var effect = ActionManager.Instance.tables.GetSetEffect(pair.Key, pair.Value);
+                foreach (var e in effect)
+                {
+                    e.UpdatePlayer(this);
+                }
+            }
         }
-        private void LevelUp()
+        public void GetExp(long waveExp)
         {
+            exp += waveExp;
+
+            var levelUp = new GetExp
+            {
+                exp = waveExp,
+                character = Copy(this),
+            };
+            Simulator.Log.Add(levelUp);
+
             if (exp < expMax)
                 return;
 
@@ -91,11 +125,6 @@ namespace Nekoyume.Model
 
             CalcStats(level);
 
-            var levelUp = new LevelUp
-            {
-                character = Copy(this),
-            };
-            Simulator.Log.Add(levelUp);
         }
 
         public void GetRewards(List<ItemBase> items)
@@ -111,7 +140,7 @@ namespace Nekoyume.Model
             var equipments = items.Select(i => i.Item).OfType<Equipment>().Where(e => e.equipped);
             foreach (var equipment in equipments)
             {
-                switch (equipment.Data.Cls.ToEnumItemType())
+                switch (equipment.Data.cls.ToEnumItemType())
                 {
                     case ItemBase.ItemType.Weapon:
                         weapon = equipment as Weapon;
@@ -136,11 +165,22 @@ namespace Nekoyume.Model
                         break;
                     case ItemBase.ItemType.Set:
                         set = equipment as SetItem;
+                        atkElement = Game.Elemental.Create((Elemental.ElementalType) equipment?.equipData.elemental);
+                        defElement = Game.Elemental.Create((Elemental.ElementalType) equipment?.equipData.elemental);
                         break;
                     default:
                         throw new InvalidEquipmentException();
                 }
             }
+        }
+        public void Spawn()
+        {
+            InitAI();
+            var spawn = new SpawnPlayer
+            {
+                character = Copy(this),
+            };
+            Simulator.Log.Add(spawn);
         }
     }
 

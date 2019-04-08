@@ -1,8 +1,8 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Libplanet;
+using Libplanet.Action;
 using Libplanet.Blocks;
 using Libplanet.Tx;
 using Nekoyume.Action;
@@ -14,7 +14,7 @@ namespace Nekoyume
     {
         const string space = "  ";
 
-        public static string ToVerboseString(this Block<ActionBase> b, string linePrefix = "")
+        public static string ToVerboseString(this Block<PolymorphicAction<ActionBase>> b, string linePrefix = "")
         {
             var sb = new StringBuilder($"{linePrefix}- Block<ActionBase> | {b.Index} | {b.Timestamp.ToString()}\n");
             sb.Append($"{linePrefix}{space}Hash : {b.Hash.ToString()}\n");
@@ -38,7 +38,7 @@ namespace Nekoyume
             return sb.ToString();
         }
 
-        public static string ToVerboseString(this Transaction<ActionBase> t, string linePrefix = "")
+        public static string ToVerboseString(this Transaction<PolymorphicAction<ActionBase>> t, string linePrefix = "")
         {
             var sb = new StringBuilder($"{linePrefix}- Transaction<ActionBase> | {t.Id} | {t.Timestamp.ToString()}\n");
             sb.Append($"{linePrefix}{space}Signer: {t.Signer.ToString()}\n");
@@ -62,7 +62,7 @@ namespace Nekoyume
             return sb.ToString();
         }
 
-        public static string ToVerboseString(this ActionBase a, string linePrefix = "")
+        public static string ToVerboseString(this PolymorphicAction<ActionBase> a, string linePrefix = "")
         {
             var t = a.GetType();
             var sb = new StringBuilder($"{linePrefix}- {t.Name} : ActionBase\n");
@@ -102,7 +102,7 @@ namespace Nekoyume
             for (int i = 0; i < length; i++)
             {
                 var e = equipments[i];
-                sb.Append($"{linePrefix}- {e.Data.Id} | {e.Data.Name} | {e.ToItemInfo().Replace("\n", ", ")}\n");
+                sb.Append($"{linePrefix}- {e.Data.id} | {e.Data.name} | {e.ToItemInfo().Replace("\n", ", ")}\n");
             }
             
             return sb.ToString();

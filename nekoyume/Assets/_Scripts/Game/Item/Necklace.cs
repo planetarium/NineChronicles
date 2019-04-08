@@ -1,5 +1,4 @@
 using System;
-using Nekoyume.Model;
 
 namespace Nekoyume.Game.Item
 {
@@ -10,9 +9,5 @@ namespace Nekoyume.Game.Item
         {
         }
 
-        public override void UpdatePlayer(Player player)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

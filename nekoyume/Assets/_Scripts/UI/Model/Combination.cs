@@ -100,7 +100,7 @@ namespace Nekoyume.UI.Model
 
             foreach (var stagedItem in StagedItems)
             {
-                if (stagedItem.Item.Value.Item.Data.Id != data.Item.Value.Item.Data.Id)
+                if (stagedItem.Item.Value.Item.Data.id != data.Item.Value.Item.Data.id)
                 {
                     continue;
                 }
@@ -200,7 +200,7 @@ namespace Nekoyume.UI.Model
 
         private void SetStaged(Inventory.Item item, bool isStaged)
         {
-            if (SelectedItemInfo.Value.Item.Value.Item.Data.Id == item.Item.Data.Id)
+            if (SelectedItemInfo.Value.Item.Value.Item.Data.id == item.Item.Data.id)
             {
                 SelectedItemInfo.Value.ButtonEnabled.Value = !isStaged;
             }
@@ -229,7 +229,7 @@ namespace Nekoyume.UI.Model
                         while (e2.MoveNext())
                         {
                             if (ReferenceEquals(e2.Current, null) ||
-                                e2.Current.Item.Data.Id != stagedItem.Item.Value.Item.Data.Id)
+                                e2.Current.Item.Data.id != stagedItem.Item.Value.Item.Data.id)
                             {
                                 continue;
                             }
@@ -261,7 +261,7 @@ namespace Nekoyume.UI.Model
                 while (e.MoveNext())
                 {
                     if (ReferenceEquals(e.Current, null) ||
-                        e.Current.Item.Data.Id != item.Item.Data.Id)
+                        e.Current.Item.Data.id != item.Item.Data.id)
                     {
                         continue;
                     }

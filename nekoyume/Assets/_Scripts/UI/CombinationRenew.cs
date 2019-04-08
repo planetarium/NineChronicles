@@ -3,14 +3,16 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Nekoyume.Action;
-using Nekoyume.Game;
+using Nekoyume.Data.Table;
 using Nekoyume.Game.Character;
+using Nekoyume.Game.Item;
 using Nekoyume.UI.ItemInfo;
 using Nekoyume.UI.ItemView;
 using Nekoyume.UI.Model;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
+using Stage = Nekoyume.Game.Stage;
 
 namespace Nekoyume.UI
 {
@@ -250,15 +252,15 @@ namespace Nekoyume.UI
             var result = action.Result;
             if (result.ErrorCode == ActionBase.ErrorCode.Success)
             {
-                var itemData = ActionManager.Instance.tables.GetItem(result.Item.Id);
-                if (ReferenceEquals(itemData, null))
+                ItemEquipment itemData;
+                if (!ActionManager.Instance.tables.ItemEquipment.TryGetValue(result.Item.Id, out itemData))
                 {
                     _loadingScreen.Close();
                     throw new InvalidActionException("`CombinationRenew` action's `Result` is invalid.");
                 }
-                
+
                 var itemModel = new Model.Inventory.Item(
-                    new Game.Item.Inventory.InventoryItem(itemData, action.Result.Item.Count));
+                    new Game.Item.Inventory.InventoryItem(new Equipment(itemData), action.Result.Item.Count));
 
                 _data.ResultPopup.Value = new CombinationResultPopup<Model.Inventory.Item>()
                 {

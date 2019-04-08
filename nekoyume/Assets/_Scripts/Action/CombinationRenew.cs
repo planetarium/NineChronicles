@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using Libplanet;
 using Libplanet.Action;
+using Nekoyume.Data;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Item;
 using Nekoyume.Model;
@@ -30,7 +31,7 @@ namespace Nekoyume.Action
 
             public ItemModel(UI.Model.CountEditableItem<UI.Model.Inventory.Item> item)
             {
-                Id = item.Item.Value.Item.Data.Id;
+                Id = item.Item.Value.Item.Data.id;
                 Count = item.Count.Value;
                 Debug.Log($"ItemModel | Id:{Id}, Count:{Count}");
             }
@@ -95,7 +96,7 @@ namespace Nekoyume.Action
                 try
                 {
                     var inventoryItem =
-                        ctx.avatar.Items.First(item => item.Item.Data.Id == m.Id && item.Count >= m.Count);
+                        ctx.avatar.Items.First(item => item.Item.Data.id == m.Id && item.Count >= m.Count);
                     pairs.Add(new ItemModelInventoryItemPair(m, inventoryItem));
                 }
                 catch (Exception e)
@@ -131,7 +132,7 @@ namespace Nekoyume.Action
             }
 
             // 제거가 잘 됐는지 로그 찍기.
-            ctx.avatar.Items.ForEach(item => Debug.Log($"제거 전 // Id:{item.Item.Data.Id}, Count:{item.Count}"));
+            ctx.avatar.Items.ForEach(item => Debug.Log($"제거 전 // Id:{item.Item.Data.id}, Count:{item.Count}"));
             
             // 사용한 재료를 인벤토리에서 제거.
             pairs.ForEach(pair =>
@@ -145,7 +146,7 @@ namespace Nekoyume.Action
             });
             
             // 제거가 잘 됐는지 로그 찍기.
-            ctx.avatar.Items.ForEach(item => Debug.Log($"제거 후 // Id:{item.Item.Data.Id}, Count:{item.Count}"));
+            ctx.avatar.Items.ForEach(item => Debug.Log($"제거 후 // Id:{item.Item.Data.id}, Count:{item.Count}"));
 
             // 뽀각!!
             if (ReferenceEquals(resultItem, null) ||
@@ -162,13 +163,13 @@ namespace Nekoyume.Action
             
             // 조합 결과 획득.
             {
-                var itemTable = Agent.ItemTable();
-                Item itemData;
+                var itemTable = ActionManager.Instance.tables.ItemEquipment;
+                ItemEquipment itemData;
                 if (itemTable.TryGetValue(resultItem.Id, out itemData))
                 {
                     try
                     {
-                        var inventoryItem = ctx.avatar.Items.First(item => item.Item.Data.Id == resultItem.Id);
+                        var inventoryItem = ctx.avatar.Items.First(item => item.Item.Data.id == resultItem.Id);
                         inventoryItem.Count += resultCount;
                     }
                     catch (Exception e)
@@ -190,7 +191,7 @@ namespace Nekoyume.Action
             }
             
             // 획득이 잘 됐는지 로그 찍기.
-            ctx.avatar.Items.ForEach(item => Debug.Log($"획득 후 // Id:{item.Item.Data.Id}, Count:{item.Count}"));
+            ctx.avatar.Items.ForEach(item => Debug.Log($"획득 후 // Id:{item.Item.Data.id}, Count:{item.Count}"));
 
             Result = new ResultModel()
             {
