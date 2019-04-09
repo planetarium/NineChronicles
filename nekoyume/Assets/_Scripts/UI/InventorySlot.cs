@@ -1,3 +1,4 @@
+using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
 using UnityEngine;
 using UnityEngine.UI;
@@ -6,8 +7,6 @@ namespace Nekoyume.UI
 {
     public class InventorySlot : MonoBehaviour
     {
-        private static Sprite _defaultSprite = null;
-
         public Image Icon;
         public Text LabelCount;
         public Text LabelEquip;
@@ -18,15 +17,6 @@ namespace Nekoyume.UI
 
         private string _itemDir;
         private string _equipDir;
-
-        #region Mono
-
-        private void Awake()
-        {
-            _defaultSprite = ItemBase.GetSprite();
-        }
-
-        #endregion
 
         public void Clear()
         {
@@ -53,6 +43,7 @@ namespace Nekoyume.UI
             toggled = !toggled;
             outLine.SetActive(toggled);
             Game.Event.OnSlotClick.Invoke(this, toggled);
+            AudioController.PlaySelect();
         }
 
         public void SetAlpha(float alpha)

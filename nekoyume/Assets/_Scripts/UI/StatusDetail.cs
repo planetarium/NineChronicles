@@ -1,6 +1,7 @@
 using System.Text;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Character;
+using Nekoyume.Game.Controller;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -28,6 +29,7 @@ namespace Nekoyume.UI
             {
                 status.BtnStatus.group.SetAllTogglesOff();
             }
+            AudioController.PlayClick();
         }
 
         public override void Show()

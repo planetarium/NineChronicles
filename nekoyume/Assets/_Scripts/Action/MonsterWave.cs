@@ -6,6 +6,7 @@ namespace Nekoyume.Action
     public class MonsterWave
     {
         public readonly List<Monster> monsters = new List<Monster>();
+        public bool isBoss;
         public long exp;
 
 
@@ -26,6 +27,7 @@ namespace Nekoyume.Action
             var spawnWave = new SpawnWave
             {
                 monsters = monsters,
+                isBoss = isBoss
             };
             simulator.Log.Add(spawnWave);
         }

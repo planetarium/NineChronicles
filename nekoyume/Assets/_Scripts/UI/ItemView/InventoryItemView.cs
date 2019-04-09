@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Nekoyume.Game.Controller;
 using UniRx;
 using UnityEngine.UI;
 
@@ -32,6 +33,7 @@ namespace Nekoyume.UI.ItemView
                 .Subscribe(_ =>
                 {
                     Data.OnClick.OnNext(Data);
+                    AudioController.PlaySelect();
                 });
         }
 

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Action;
+using Nekoyume.Game.Controller;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -57,6 +58,7 @@ namespace Nekoyume.UI
         public void ConfirmClick()
         {
             StartCoroutine(SellAsync());
+            AudioController.PlayClick();
         }
 
         public IEnumerator SellAsync()
@@ -88,6 +90,7 @@ namespace Nekoyume.UI
             itemInfoSelectedItem.SetItem(slot.Item);
             itemInfoSelectedItem.SetIcon(slot.Icon.sprite);
             SetActiveButtonSell(true);
+            AudioController.PlaySelect();
         }
 
         public override void Show()
@@ -124,6 +127,7 @@ namespace Nekoyume.UI
             cartItem.item = item.item;
             items.Add(cartItem);
             CalcTotalPrice();
+            AudioController.PlayClick();
         }
 
         private void SetActiveButtonSell(bool isActive)

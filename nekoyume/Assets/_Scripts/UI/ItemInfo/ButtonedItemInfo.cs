@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Nekoyume.Game.Controller;
 using UniRx;
 using UnityEngine.UI;
 
@@ -50,7 +51,11 @@ namespace Nekoyume.UI.ItemInfo
             _data.ButtonText.Subscribe(SetButtonText).AddTo(_disposables);
 
             button.OnClickAsObservable()
-                .Subscribe(_ => { _data.OnClick.OnNext(_data); })
+                .Subscribe(_ =>
+                {
+                    _data.OnClick.OnNext(_data);
+                    AudioController.PlayClick();
+                })
                 .AddTo(_disposables);
 
             UpdateView();

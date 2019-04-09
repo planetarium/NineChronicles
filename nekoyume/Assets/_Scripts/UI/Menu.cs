@@ -1,5 +1,6 @@
 using System.Collections;
 using Nekoyume.Action;
+using Nekoyume.Game.Controller;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -27,6 +28,8 @@ namespace Nekoyume.UI
             ShowButtons(true);
 
             LabelInfo.text = "";
+            
+            AudioController.instance.PlayMusic(AudioController.MusicCode.Main);
         }
 
         public void ShowWorld()
@@ -42,11 +45,13 @@ namespace Nekoyume.UI
             Find<QuestPreparation>()?.Show();
             Find<Status>()?.Close();
             Close();
+            AudioController.PlayClick();
         }
 
         public void CombineClick()
         {
             StartCoroutine(CombineAsync());
+            AudioController.PlayClick();
         }
 
         private IEnumerator CombineAsync()
@@ -67,6 +72,7 @@ namespace Nekoyume.UI
             Find<Shop>().Show();
             Find<Status>()?.Close();
             Close();
+            AudioController.PlayClick();
         }
 
         public void CombinationClick()
@@ -74,6 +80,7 @@ namespace Nekoyume.UI
             Find<CombinationRenew>()?.Show();
             Find<Status>()?.Close();
             Close();
+            AudioController.PlayClick();
         }
     }
 }

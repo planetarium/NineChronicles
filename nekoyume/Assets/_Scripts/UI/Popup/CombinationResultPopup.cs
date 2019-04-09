@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Nekoyume.Data.Table;
+using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
 using Nekoyume.UI.ItemView;
 using Nekoyume.UI.Model;
@@ -63,7 +64,11 @@ namespace Nekoyume.UI
             _data = data;
 
             okButton.OnClickAsObservable()
-                .Subscribe(_ => { _data.OnClickSubmit.OnNext(_data); })
+                .Subscribe(_ =>
+                {
+                    _data.OnClickSubmit.OnNext(_data);
+                    AudioController.PlayClick();
+                })
                 .AddTo(_disposables);
             
             UpdateView();

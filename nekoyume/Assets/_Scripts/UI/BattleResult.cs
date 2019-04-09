@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Nekoyume.Action;
 using Nekoyume.Game;
+using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
 using Nekoyume.Model;
 using UnityEngine;
@@ -30,6 +31,7 @@ namespace Nekoyume.UI
         public void SubmitClick()
         {
             StartCoroutine(SubmitAsync());
+            AudioController.PlayClick();
         }
 
         private IEnumerator SubmitAsync()
@@ -64,6 +66,7 @@ namespace Nekoyume.UI
         {
             Game.Event.OnRoomEnter.Invoke();
             Close();
+            AudioController.PlayClick();
         }
 
         public void Show(BattleLog.Result battleResult)
@@ -76,6 +79,8 @@ namespace Nekoyume.UI
                 header.text = "승리";
                 title.text = "획득한 아이템";
                 grid.gameObject.SetActive(true);
+                
+                AudioController.instance.PlayMusic(AudioController.MusicCode.Win);
             }
             else
             {
@@ -83,6 +88,8 @@ namespace Nekoyume.UI
                 title.text = "재도전 하시겠습니까?";
                 header.text = "실패";
                 grid.gameObject.SetActive(false);
+                
+                AudioController.instance.PlayMusic(AudioController.MusicCode.Lose);
             }
             base.Show();
         }
@@ -95,6 +102,8 @@ namespace Nekoyume.UI
                 Destroy(child.gameObject);
             }
             base.Close();
+            
+            AudioController.instance.StopMusic();
         }
 
         public void Add(ItemBase characterItem)

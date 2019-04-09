@@ -117,3 +117,18 @@ public class AddOutOfSpecificRangeException<T> : Exception
     {
     }
 }
+
+public class FiniteStateMachineException : Exception
+{
+    public FiniteStateMachineException()
+    {
+    }
+
+    public FiniteStateMachineException(string message) : base(message)
+    {
+    }
+
+    public FiniteStateMachineException(string message, Exception inner) : base(message, inner)
+    {
+    }
+}

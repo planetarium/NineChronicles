@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Nekoyume.Game.Controller;
 using Nekoyume.UI.ItemView;
 using UniRx;
 using UnityEngine.UI;
@@ -70,19 +71,35 @@ namespace Nekoyume.UI
                 .AddTo(_disposables);
 
             minusButton.OnClickAsObservable()
-                .Subscribe(_ => { _data.OnClickMinus.OnNext(_data); })
+                .Subscribe(_ =>
+                {
+                    _data.OnClickMinus.OnNext(_data);
+                    AudioController.PlayClick();
+                })
                 .AddTo(_disposables);
 
             plusButton.OnClickAsObservable()
-                .Subscribe(_ => { _data.OnClickPlus.OnNext(_data); })
+                .Subscribe(_ =>
+                {
+                    _data.OnClickPlus.OnNext(_data);
+                    AudioController.PlayClick();
+                })
                 .AddTo(_disposables);
 
             cancelButton.OnClickAsObservable()
-                .Subscribe(_ => { _data.OnClickClose.OnNext(_data); })
+                .Subscribe(_ =>
+                {
+                    _data.OnClickClose.OnNext(_data);
+                    AudioController.PlayClick();
+                })
                 .AddTo(_disposables);
 
             okButton.OnClickAsObservable()
-                .Subscribe(_ => { _data.OnClickSubmit.OnNext(_data); })
+                .Subscribe(_ =>
+                {
+                    _data.OnClickSubmit.OnNext(_data);
+                    AudioController.PlayClick();
+                })
                 .AddTo(_disposables);
             
             SetCount(_data.Count.Value);
