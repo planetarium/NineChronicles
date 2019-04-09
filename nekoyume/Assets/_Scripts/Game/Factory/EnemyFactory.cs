@@ -16,6 +16,11 @@ namespace Nekoyume.Game.Factory
             }
 
             var go = objectPool.Get("Enemy", true, position);
+            var prevAnim = go.GetComponentInChildren<Animator>(true);
+            if (prevAnim)
+            {
+                Destroy(prevAnim.gameObject);
+            }
             //FIXME 애니메이터 재사용시 기존 투명도가 유지되는 문제가 있음.
 //            var animator = objectPool.Get(spawnCharacter.data.Id.ToString(), true);
             var origin = Resources.Load<GameObject>($"Prefab/{spawnCharacter.data.id}");
