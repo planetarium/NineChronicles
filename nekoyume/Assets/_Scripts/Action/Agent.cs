@@ -38,7 +38,9 @@ namespace Nekoyume.Action
 
         private readonly Swarm swarm;
 
-        static Agent()
+        private const int rewardAmount = 1;
+
+        static Agent() 
         {
             ForceDotNet.Force();
             Log.Logger = new LoggerConfiguration()
@@ -168,6 +170,15 @@ namespace Nekoyume.Action
             {
                 var task = Task.Run(async () =>
                 {
+                    var tx = Transaction<PolymorphicAction<ActionBase>>.Create(
+                        privateKey,
+                        new List<PolymorphicAction<ActionBase>>()
+                        {
+                            new RewardGold() { Gold = rewardAmount }
+                        },
+                        timestamp: DateTime.UtcNow
+                    );
+                    blocks.StageTransactions(new HashSet<Transaction<PolymorphicAction<ActionBase>>> {tx});
                     var block = blocks.MineBlock(UserAddress);
                     await swarm.BroadcastBlocksAsync(new[] {block});
                     return block;
