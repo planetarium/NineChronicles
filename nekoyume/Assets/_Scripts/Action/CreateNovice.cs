@@ -37,16 +37,14 @@ namespace Nekoyume.Action
                 Items = new List<Inventory.InventoryItem>(),
                 id = DefaultId,
             };
-            // equipments id from item_equip.csv
+
+            // FIXME 모든 아이템을 처음에 세팅하는 개발용 코드입니다.
+            // 릴리즈 할땐 지워야 합니다.
             var table = ActionManager.Instance.tables.ItemEquipment;
-            foreach (var id in new[] {101000, 101001, 101002, 102000, 102001, 102002, 201000})
+            foreach (ItemEquipment itemData in table.Values)
             {
-                ItemEquipment itemData;
-                if (table.TryGetValue(id, out itemData))
-                {
-                    var equipment = ItemBase.ItemFactory(itemData);
-                    avatar.Items.Add(new Inventory.InventoryItem(equipment));
-                }
+                var equipment = ItemBase.ItemFactory(itemData);
+                avatar.Items.Add(new Inventory.InventoryItem(equipment));
             }
 
             return avatar;
