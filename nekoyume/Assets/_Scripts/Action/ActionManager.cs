@@ -278,7 +278,12 @@ namespace Nekoyume.Action
         
         public void OnDestroy() 
         {
-            agent?.Dispose();
+            if (agent != null)
+            {
+                PlayerPrefs.SetString(ChainIdKey, agent.ChainId.ToString());
+                agent.Dispose();
+            }
+            
             NetMQConfig.Cleanup(false);
         }
 
