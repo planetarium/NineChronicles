@@ -12,6 +12,7 @@ namespace Nekoyume.Model
     {
         public long exp;
         public long expMax;
+        public long expNeed;
         public int stage;
         public Weapon weapon;
         public Armor armor;
@@ -81,6 +82,7 @@ namespace Nekoyume.Model
             hpMax = statsData.HP;
             expMax = expData.exp + expData.expNeed;
             criticalChance = statsData.Luck;
+            expNeed = expData.expNeed;
             var equipments = Items.Select(i => i.Item).OfType<Equipment>().Where(e => e.equipped);
             var setMap = new Dictionary<int, int>();
             foreach (var equipment in equipments)

@@ -129,7 +129,7 @@ namespace Nekoyume.UI
 
             //percentage
             var hpPercentage = hp / (float) hpMax;
-            var expPercentage = exp / (float) expMax;
+            var expPercentage = player.expNeed / (float) expMax;
 
             foreach (
                 var tuple in new[]
