@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Action;
-using Nekoyume.Data;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Item;
 
@@ -106,23 +105,24 @@ namespace Nekoyume.Model
                 }
             }
         }
-        public void GetExp(long waveExp)
+        public void GetExp(long waveExp, bool log = false)
         {
             exp += waveExp;
 
-            var levelUp = new GetExp
+            if (log)
             {
-                exp = waveExp,
-                character = Copy(this),
-            };
-            Simulator.Log.Add(levelUp);
+                var getExp = new GetExp
+                {
+                    exp = waveExp,
+                    character = Copy(this),
+                };
+                Simulator.Log.Add(getExp);
+            }
 
             if (exp < expMax)
                 return;
 
-            exp -= expMax;
-            level++;
-
+            LevelUp();
             CalcStats(level);
 
         }
@@ -181,6 +181,21 @@ namespace Nekoyume.Model
                 character = Copy(this),
             };
             Simulator.Log.Add(spawn);
+        }
+
+        private void LevelUp()
+        {
+            var levelTable = ActionManager.Instance.tables.Level;
+            Level expData;
+            var row = levelTable.First(r => r.Value.exp + r.Value.expNeed > exp);
+            levelTable.TryGetValue(row.Key, out expData);
+            if (expData == null)
+            {
+                throw new InvalidActionException();
+            }
+
+            level = expData.level;
+
         }
     }
 

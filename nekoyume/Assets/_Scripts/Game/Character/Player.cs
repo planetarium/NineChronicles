@@ -54,7 +54,6 @@ namespace Nekoyume.Game.Character
 
         private void Awake()
         {
-            Event.OnEnemyDead.AddListener(GetEXP);
             Event.OnAttackEnd.AddListener(AttackEnd);
             Event.OnHitEnd.AddListener(HitEnd);
             Event.OnDieEnd.AddListener(DieEnd);
@@ -101,34 +100,6 @@ namespace Nekoyume.Game.Character
             pos.x -= 0.2f;
             pos.y += 0.32f;
             VfxFactory.instance.Create<VfxBattleDamage01>(pos).Play();
-        }
-
-        private void GetEXP(Enemy enemy)
-        {
-            EXP += 0;
-
-            while (EXPMax <= EXP)
-            {
-                LevelUp();
-            }
-
-            Event.OnUpdateStatus.Invoke();
-        }
-
-        private void LevelUp()
-        {
-            if (EXP < EXPMax)
-                return;
-
-            EXP -= EXPMax;
-            model.level++;
-
-            PopupText.Show(transform.TransformPoint(-0.6f, 1.0f, 0.0f), new Vector3(0.0f, 2.0f, 0.0f), "LEVEL UP");
-
-            model.CalcStats(model.level);
-            InitStats(model);
-
-            UpdateHpBar();
         }
 
         protected override void OnDisable()
@@ -201,14 +172,31 @@ namespace Nekoyume.Game.Character
 
         public IEnumerator CoGetExp(long exp)
         {
-            EXP += exp;
-            while (EXPMax <= EXP)
+            if (exp > 0)
             {
-                LevelUp();
-            }
-            Event.OnUpdateStatus.Invoke();
+                PopupText.Show(
+                    transform.TransformPoint(-0.6f, 1.0f,0.0f),
+                    new Vector3(0.0f,2.0f,0.0f),
+                    $"+{exp}"
+                );
+                var level = model.level;
+                model.GetExp(exp);
 
-            yield break;
+                if (model.level != level)
+                {
+                    yield return new WaitForSeconds(0.3f);
+                    PopupText.Show(
+                        transform.TransformPoint(-0.6f, 1.0f,0.0f),
+                        new Vector3(0.0f,2.0f,0.0f),
+                        "LEVEL UP"
+                    );
+                    InitStats(model);
+
+                    UpdateHpBar();
+
+                }
+                Event.OnUpdateStatus.Invoke();
+            }
         }
     }
 }
