@@ -76,13 +76,14 @@ namespace Nekoyume.Model
             }
 
             var statsData = data.GetStats(lv);
-            hp = statsData.HP;
+            currentHP = statsData.HP;
             atk = statsData.Damage;
             def = statsData.Defense;
-            hpMax = statsData.HP;
+            hp = statsData.HP;
             expMax = expData.exp + expData.expNeed;
-            criticalChance = statsData.Luck;
             expNeed = expData.expNeed;
+
+            luck = statsData.Luck;
             var equipments = Items.Select(i => i.Item).OfType<Equipment>().Where(e => e.equipped);
             var setMap = new Dictionary<int, int>();
             foreach (var equipment in equipments)
@@ -197,7 +198,48 @@ namespace Nekoyume.Model
             }
 
             level = expData.level;
+        }
 
+        public float GetAdditionalStatus(string key)
+        {
+            var stats = ActionManager.Instance.tables.Character;
+            var levelTable = ActionManager.Instance.tables.Level;
+            Character data;
+            stats.TryGetValue(job, out data);
+            if (data == null)
+            {
+                throw new InvalidActionException();
+            }
+
+            Level expData;
+            levelTable.TryGetValue(level, out expData);
+            if (expData == null)
+            {
+                throw new InvalidActionException();
+            }
+
+            var statsData = data.GetStats(level);
+
+            float value;
+            switch (key)
+            {
+                case "atk":
+                    value = atk - statsData.Damage;
+                    break;
+                case "def":
+                    value = def - statsData.Defense;
+                    break;
+                case "hp":
+                    value = hp - statsData.HP;
+                    break;
+                case "luck":
+                    value = (luck - statsData.Luck) * 100;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            return value;
         }
     }
 

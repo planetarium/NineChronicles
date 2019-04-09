@@ -27,6 +27,8 @@ namespace Nekoyume.UI
         public GameObject profileImage;
         public GameObject menuSelect;
         public GameObject menuCreate;
+        public GameObject statusInfo;
+        public GameObject grid;
         private int _selectedIndex;
         private Nekoyume.Model.Avatar _avatar;
 
@@ -66,9 +68,9 @@ namespace Nekoyume.UI
 
         public void BackClick()
         {
+            Close();
             Game.Event.OnNestEnter.Invoke();
             var login = Find<Login>();
-            Close();
             login.Show();
             AudioController.PlayClick();
         }
@@ -118,8 +120,8 @@ namespace Nekoyume.UI
 
         private void SetInformation(Player player)
         {
-            var hp = player.hp;
-            var hpMax = player.hp;
+            var hp = player.currentHP;
+            var hpMax = player.currentHP;
             var exp = player.exp;
             var expMax = player.expMax;
 
@@ -146,10 +148,38 @@ namespace Nekoyume.UI
                 slide.value = 0.0f;
                 slide.DOValue(percentage, 2.0f).SetEase(Ease.OutCubic);
             }
+
+            var fields = player.GetType().GetFields();
+            foreach (var field in fields)
+            {
+                if (field.IsDefined(typeof(InformationFieldAttribute), true))
+                {
+                    GameObject row = Instantiate(statusInfo, grid.transform);
+                    var info = row.GetComponent<StatusInfo>();
+                    info.Set(field.Name, field.GetValue(player), player.GetAdditionalStatus(field.Name));
+                }
+            }
+
+        }
+
+        public override void Close()
+        {
+            Clear();
+            base.Close();
+        }
+
+        private void Clear()
+        {
+            foreach (Transform child in grid.transform)
+            {
+                Destroy(child.gameObject);
+            }
+            deletePopUp.GetComponent<Widget>().Close();
         }
 
         public void DeleteCharacter()
         {
+            // Delete key, avatar
             var prefsKey = string.Format(ActionManager.PrivateKeyFormat, _selectedIndex);
             string privateKey = PlayerPrefs.GetString(prefsKey, "");
             PlayerPrefs.DeleteKey(prefsKey);
@@ -159,7 +189,8 @@ namespace Nekoyume.UI
             if (File.Exists(datPath))
                 File.Delete(datPath);
             PlayerPrefs.Save();
-            deletePopUp.GetComponent<Widget>().Close();
+
+            Clear();
             Init(_selectedIndex);
         }
 
