@@ -1,9 +1,11 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Action;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Item;
+using UnityEngine;
 
 namespace Nekoyume.Model
 {
@@ -25,6 +27,8 @@ namespace Nekoyume.Model
 
         public readonly Inventory inventory;
         public List<Inventory.InventoryItem> Items => inventory.items;
+        public List<Equipment> Equipments =>
+            inventory.items.Select(i => i.Item).OfType<Equipment>().Where(e => e.equipped).ToList();
 
         public Player(Avatar avatar, Simulator simulator = null)
         {
@@ -84,9 +88,8 @@ namespace Nekoyume.Model
             expNeed = expData.expNeed;
 
             luck = statsData.Luck;
-            var equipments = Items.Select(i => i.Item).OfType<Equipment>().Where(e => e.equipped);
             var setMap = new Dictionary<int, int>();
-            foreach (var equipment in equipments)
+            foreach (var equipment in Equipments)
             {
                 var key = equipment.equipData.setId;
                 int count;
@@ -240,6 +243,24 @@ namespace Nekoyume.Model
             }
 
             return value;
+        }
+
+        public IEnumerable<string> GetOptions()
+        {
+            if (set != null)
+            {
+                var aStrong = atkElement.Data.strong;
+                var aWeak = atkElement.Data.weak;
+                var dStrong = defElement.Data.strong;
+                var dWeak = defElement.Data.weak;
+                var aMultiply = atkElement.Data.multiply * 100;
+                var dMultiply = defElement.Data.multiply * 100;
+                yield return $"{Elemental.GetValue(aStrong)} 공격 +{aMultiply}%";
+                yield return $"{Elemental.GetValue(aWeak)} 공격 -{aMultiply}%";
+                yield return $"{Elemental.GetValue(dStrong)} 방어 -{dMultiply}%";
+                yield return $"{Elemental.GetValue(dWeak)} 방어 +{dMultiply}%";
+            }
+            yield return "";
         }
     }
 

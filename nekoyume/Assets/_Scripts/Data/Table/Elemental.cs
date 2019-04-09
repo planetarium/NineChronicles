@@ -23,5 +23,24 @@ namespace Nekoyume.Data.Table
         public ElementalType strong;
         public ElementalType weak;
         public float multiply = 0.0f;
+
+        public static string GetValue(ElementalType type)
+        {
+            switch (type)
+            {
+                case ElementalType.Normal:
+                    return "무속성";
+                case ElementalType.Fire:
+                    return "불속성";
+                case ElementalType.Land:
+                    return "땅속성";
+                case ElementalType.Water:
+                    return "물속성";
+                case ElementalType.Wind:
+                    return "바람속성";
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
+            }
+        }
     }
 }

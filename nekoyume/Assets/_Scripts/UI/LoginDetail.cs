@@ -29,6 +29,8 @@ namespace Nekoyume.UI
         public GameObject menuCreate;
         public GameObject statusInfo;
         public GameObject grid;
+        public GameObject optionGrid;
+        public GameObject optionRow;
         private int _selectedIndex;
         private Nekoyume.Model.Avatar _avatar;
 
@@ -149,6 +151,7 @@ namespace Nekoyume.UI
                 slide.DOValue(percentage, 2.0f).SetEase(Ease.OutCubic);
             }
 
+            // status info
             var fields = player.GetType().GetFields();
             foreach (var field in fields)
             {
@@ -160,6 +163,14 @@ namespace Nekoyume.UI
                 }
             }
 
+            //option info
+            foreach (var option in player.GetOptions())
+            {
+                GameObject row = Instantiate(optionRow, optionGrid.transform);
+                var text = row.GetComponent<Text>();
+                text.text = option;
+                row.SetActive(true);
+            }
         }
 
         public override void Close()
@@ -174,12 +185,18 @@ namespace Nekoyume.UI
             {
                 Destroy(child.gameObject);
             }
+
+            foreach (Transform child in optionGrid.transform)
+            {
+                Destroy(child.gameObject);
+            }
+
             deletePopUp.GetComponent<Widget>().Close();
         }
 
         public void DeleteCharacter()
         {
-            // Delete key, avatar
+// Delete key, avatar
             var prefsKey = string.Format(ActionManager.PrivateKeyFormat, _selectedIndex);
             string privateKey = PlayerPrefs.GetString(prefsKey, "");
             PlayerPrefs.DeleteKey(prefsKey);
