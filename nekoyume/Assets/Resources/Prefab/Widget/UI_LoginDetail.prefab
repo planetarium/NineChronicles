@@ -226,7 +226,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &1156957171240696
 GameObject:
   m_ObjectHideFlags: 1
@@ -842,7 +842,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 224901986549232294}
-  - component: {fileID: 114214459868125912}
+  - component: {fileID: 114975273896341190}
   m_Layer: 5
   m_Name: Grid
   m_TagString: Untagged
@@ -2526,29 +2526,6 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: 
---- !u!114 &114214459868125912
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1515673424433102}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -2095666955, guid: f70555f144d8491a825f0804e09c671c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Padding:
-    m_Left: 0
-    m_Right: 0
-    m_Top: 0
-    m_Bottom: 0
-  m_ChildAlignment: 0
-  m_StartCorner: 0
-  m_StartAxis: 0
-  m_CellSize: {x: 240, y: 40}
-  m_Spacing: {x: 0, y: -2.4}
-  m_Constraint: 0
-  m_ConstraintCount: 2
 --- !u!114 &114216088172467656
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4980,6 +4957,9 @@ MonoBehaviour:
   textDef: {fileID: 0}
   equipSlots: []
   textOption: {fileID: 0}
+  group: {fileID: 0}
+  statusInfo: {fileID: 0}
+  OptionGroup: {fileID: 0}
 --- !u!114 &114862879727991656
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -5268,9 +5248,9 @@ MonoBehaviour:
   m_StartCorner: 0
   m_StartAxis: 0
   m_CellSize: {x: 220, y: 23.6}
-  m_Spacing: {x: 0, y: -2.4}
-  m_Constraint: 0
-  m_ConstraintCount: 2
+  m_Spacing: {x: 0, y: 0}
+  m_Constraint: 1
+  m_ConstraintCount: 1
 --- !u!114 &114924905550937988
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -5388,6 +5368,28 @@ MonoBehaviour:
   m_EffectColor: {r: 0, g: 0, b: 0, a: 1}
   m_EffectDistance: {x: 0, y: -1}
   m_UseGraphicAlpha: 1
+--- !u!114 &114975273896341190
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1515673424433102}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1297475563, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Padding:
+    m_Left: 0
+    m_Right: 0
+    m_Top: 0
+    m_Bottom: 0
+  m_ChildAlignment: 0
+  m_Spacing: 2.4
+  m_ChildForceExpandWidth: 1
+  m_ChildForceExpandHeight: 1
+  m_ChildControlWidth: 1
+  m_ChildControlHeight: 1
 --- !u!114 &114977741375529800
 MonoBehaviour:
   m_ObjectHideFlags: 1

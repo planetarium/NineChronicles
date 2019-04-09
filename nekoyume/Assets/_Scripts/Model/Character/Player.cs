@@ -1,11 +1,9 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Action;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Item;
-using UnityEngine;
 
 namespace Nekoyume.Model
 {
@@ -260,7 +258,6 @@ namespace Nekoyume.Model
                 yield return $"{Elemental.GetValue(dStrong)} 방어 -{dMultiply}%";
                 yield return $"{Elemental.GetValue(dWeak)} 방어 +{dMultiply}%";
             }
-            yield return "";
         }
     }
 
