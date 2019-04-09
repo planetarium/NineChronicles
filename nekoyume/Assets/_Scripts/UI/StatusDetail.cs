@@ -54,6 +54,21 @@ namespace Nekoyume.UI
         {
             _player = FindObjectOfType<Game.Character.Player>();
             var player = _player.model;
+
+            // equip slot
+            foreach (var equipment in _player.equipments)
+            {
+                var type = equipment.equipData.cls.ToEnumItemType();
+                foreach (var slot in equipSlots)
+                {
+                    var es = slot.GetComponent<EquipSlot>();
+                    if (es.type == type)
+                    {
+                        es.Set(equipment);
+                    }
+                }
+            }
+
             // status info
             var fields = player.GetType().GetFields();
             foreach (var field in fields)
