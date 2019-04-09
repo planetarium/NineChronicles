@@ -206,9 +206,7 @@ namespace Nekoyume.Action
             StartCoroutine(_txProcessor);
             StartCoroutine(_swarmRunner);
 
-            bool runMiner = string.IsNullOrEmpty(GetCommandLineOption("--no-miner"));
-
-            if (runMiner)
+            if (!HasCommandLineSwitch("no-miner"))
             {
                 _miner = agent.CoMiner();
                 StartCoroutine(_miner);
@@ -229,6 +227,19 @@ namespace Nekoyume.Action
             }
             
             return null;
+        }
+
+        private bool HasCommandLineSwitch(string name)
+        {
+            foreach (string arg in Environment.GetCommandLineArgs())
+            {
+                if (arg == $"--{name}") 
+                {
+                    return true;
+                }
+            }
+            
+            return false;
         }
 
         private void UpdateShop(object sender, Shop newShop)
