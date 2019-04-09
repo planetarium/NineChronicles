@@ -76,6 +76,8 @@ namespace Nekoyume.Game.Item
                     return new SetItem(itemData);
                 case ItemType.Food:
                     return new Food(itemData);
+                case ItemType.Shoes:
+                    return new Shoes(itemData);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);
             }
