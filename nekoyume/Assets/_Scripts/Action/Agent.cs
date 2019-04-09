@@ -89,6 +89,8 @@ namespace Nekoyume.Action
         public Address UserAddress => privateKey.PublicKey.ToAddress();
         public Address ShopAddress => ActionManager.shopAddress;
 
+        public Guid ChainId => blocks.Id;
+
         public event EventHandler<Context> DidReceiveAction;
         public event EventHandler<Shop> UpdateShop;
 
