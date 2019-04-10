@@ -282,5 +282,10 @@ namespace Nekoyume.Game.Character
         {
             dieEnd = true;
         }
+
+        protected void DummyEvent()
+        {
+            Debug.Log("DummyEvent for avoid Animator exception.");
+        }
     }
 }
