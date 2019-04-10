@@ -2119,6 +2119,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   button: {fileID: 1308876293380552}
   icon: {fileID: 114229889905564512}
+  item:
+    reserved: 0
+    equipped: 0
   type: 1
 --- !u!114 &114108853354325080
 MonoBehaviour:
@@ -2853,6 +2856,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   button: {fileID: 1213393228136880}
   icon: {fileID: 114140374920085466}
+  item:
+    reserved: 0
+    equipped: 0
   type: 5
 --- !u!114 &114250778672609756
 MonoBehaviour:
@@ -4012,6 +4018,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   button: {fileID: 1884178361045740}
   icon: {fileID: 114688556689353584}
+  item:
+    reserved: 0
+    equipped: 0
   type: 0
 --- !u!114 &114556263348262734
 MonoBehaviour:
@@ -4081,6 +4090,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   button: {fileID: 1228854892702718}
   icon: {fileID: 114650127754207304}
+  item:
+    reserved: 0
+    equipped: 0
   type: 0
 --- !u!114 &114586916123826132
 MonoBehaviour:
@@ -4270,6 +4282,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   button: {fileID: 1114941938006540}
   icon: {fileID: 114917891670713986}
+  item:
+    reserved: 0
+    equipped: 0
   type: 8
 --- !u!114 &114614844750266186
 MonoBehaviour:
@@ -4361,6 +4376,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   button: {fileID: 1798129623763276}
   icon: {fileID: 114617141828049550}
+  item:
+    reserved: 0
+    equipped: 0
   type: 4
 --- !u!114 &114623971770294864
 MonoBehaviour:
@@ -4375,6 +4393,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   button: {fileID: 1577613907961746}
   icon: {fileID: 114986572137101238}
+  item:
+    reserved: 0
+    equipped: 0
   type: 0
 --- !u!114 &114632743116072858
 MonoBehaviour:
@@ -4664,6 +4685,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   button: {fileID: 1248267887344670}
   icon: {fileID: 114712403560936916}
+  item:
+    reserved: 0
+    equipped: 0
   type: 7
 --- !u!114 &114696970789506374
 MonoBehaviour:
@@ -5083,6 +5107,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   button: {fileID: 1597223757264018}
   icon: {fileID: 114151070390975008}
+  item:
+    reserved: 0
+    equipped: 0
   type: 0
 --- !u!114 &114784436846778046
 MonoBehaviour:
@@ -5151,6 +5178,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   button: {fileID: 1990585457785734}
   icon: {fileID: 114055130343658312}
+  item:
+    reserved: 0
+    equipped: 0
   type: 6
 --- !u!114 &114799886617532506
 MonoBehaviour:
@@ -5433,6 +5463,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   button: {fileID: 1523758151469910}
   icon: {fileID: 114698456501944118}
+  item:
+    reserved: 0
+    equipped: 0
   type: 0
 --- !u!114 &114886806806124792
 MonoBehaviour:
@@ -8175,7 +8208,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -62}
+  m_AnchoredPosition: {x: 0, y: -72}
   m_SizeDelta: {x: 0, y: 50}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!224 &224830093642002486
