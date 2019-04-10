@@ -24,7 +24,7 @@ namespace Nekoyume.Data.Table
         public ElementalType weak;
         public float multiply = 0.0f;
 
-        public static string GetValue(ElementalType type)
+        public static string GetDescription(ElementalType type)
         {
             switch (type)
             {
@@ -39,7 +39,7 @@ namespace Nekoyume.Data.Table
                 case ElementalType.Wind:
                     return "바람속성";
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
+                    throw new Game.Elemental.InvalidElementalException();
             }
         }
     }

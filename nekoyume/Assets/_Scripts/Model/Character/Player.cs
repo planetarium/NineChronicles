@@ -209,14 +209,14 @@ namespace Nekoyume.Model
             stats.TryGetValue(job, out data);
             if (data == null)
             {
-                throw new InvalidActionException();
+                throw new KeyNotFoundException($"invalid character id: `{job}`.");
             }
 
             Level expData;
             levelTable.TryGetValue(level, out expData);
             if (expData == null)
             {
-                throw new InvalidActionException();
+                throw new KeyNotFoundException("invalid character level.");
             }
 
             var statsData = data.GetStats(level);
@@ -237,7 +237,7 @@ namespace Nekoyume.Model
                     value = (luck - statsData.Luck) * 100;
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    throw new InvalidCastException($"invalid status key: `{key}`.");
             }
 
             return value;
@@ -253,10 +253,10 @@ namespace Nekoyume.Model
                 var dWeak = defElement.Data.weak;
                 var aMultiply = atkElement.Data.multiply * 100;
                 var dMultiply = defElement.Data.multiply * 100;
-                yield return $"{Elemental.GetValue(aStrong)} 공격 +{aMultiply}%";
-                yield return $"{Elemental.GetValue(aWeak)} 공격 -{aMultiply}%";
-                yield return $"{Elemental.GetValue(dStrong)} 방어 -{dMultiply}%";
-                yield return $"{Elemental.GetValue(dWeak)} 방어 +{dMultiply}%";
+                yield return $"{Elemental.GetDescription(aStrong)} 공격 +{aMultiply}%";
+                yield return $"{Elemental.GetDescription(aWeak)} 공격 -{aMultiply}%";
+                yield return $"{Elemental.GetDescription(dStrong)} 방어 -{dMultiply}%";
+                yield return $"{Elemental.GetDescription(dWeak)} 방어 +{dMultiply}%";
             }
         }
     }
