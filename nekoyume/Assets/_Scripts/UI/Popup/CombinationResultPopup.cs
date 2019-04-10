@@ -49,6 +49,8 @@ namespace Nekoyume.UI
 
             SetData(data);
             base.Show();
+            
+            AudioController.PlayPopup();
         }
 
         private void SetData(CombinationResultPopup<Model.Inventory.Item> data)
@@ -87,12 +89,16 @@ namespace Nekoyume.UI
                 resultItemDescriptionText.text = item.ToItemInfo();
                 resultItem.SetActive(true);
                 materialText.text = "조합에 사용된 아이템";
+
+                AudioController.instance.PlaySfx(AudioController.SfxCode.Success);
             }
             else
             {
                 titleText.text = "조합 실패";
                 resultItem.SetActive(false);
                 materialText.text = "소모된 아이템";
+                
+                AudioController.instance.PlaySfx(AudioController.SfxCode.Failed);
             }
 
             using (var e = _data.MaterialItems.GetEnumerator())

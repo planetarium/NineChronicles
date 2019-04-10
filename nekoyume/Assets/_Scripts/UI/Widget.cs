@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Nekoyume.Game.Controller;
 using UnityEngine;
 
 
@@ -116,12 +117,12 @@ namespace Nekoyume.UI
                 yield break;
             }
 
-            _glass.SetFloat("_Radius", 0.0f);
+            _glass.SetFloat("_Radius", 0f);
             float time = 0.0f;
             while (true)
             {
-                float radius = Mathf.Lerp(0.0f, 6.0f, time);
-                time += Time.deltaTime * 2.0f;
+                float radius = Mathf.Lerp(0f, 6f, time);
+                time += Time.deltaTime * 2f;
                 yield return null;
                 _glass.SetFloat("_Radius", radius);
                 if (time > 1.0f)
@@ -130,6 +131,8 @@ namespace Nekoyume.UI
                 if (!gameObject.activeInHierarchy)
                     break;
             }
+            
+            _glass.SetFloat("_Radius", 6f);
         }
 
         public virtual void Close()
@@ -168,6 +171,12 @@ namespace Nekoyume.UI
 
     public class Popup : Widget
     {
+        public override void Show()
+        {
+            base.Show();
+            AudioController.PlayPopup();
+        }
+
         public override void Close()
         {
             Destroy(gameObject);

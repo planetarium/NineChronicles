@@ -154,6 +154,7 @@ namespace Nekoyume.UI
                 if (es.type == type)
                 {
                     es.Equip(itemInfoSelectedItem);
+                    AudioController.instance.PlaySfx(AudioController.SfxCode.Equipment);
                 }
 
                 if (type == ItemBase.ItemType.Set)
@@ -161,7 +162,10 @@ namespace Nekoyume.UI
                     _player.UpdateSet((SetItem) itemInfoSelectedItem.item);
                 }
             }
-            AudioController.PlayClick();
+            
+            // Fix me.
+            // 소모 아이템을 장착할 때는 아래 코드를 사용해서 소리를 적용해주세요.
+            // AudioController.instance.PlaySfx(AudioController.SfxCode.ChainMail1);
         }
 
         public void Unequip(GameObject sender)

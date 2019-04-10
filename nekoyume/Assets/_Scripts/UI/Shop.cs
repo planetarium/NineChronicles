@@ -41,7 +41,7 @@ namespace Nekoyume.UI
             panelSell.SetActive(true);
             GetComponent<Buy>().Close();
             GetComponent<Sell>().Show();
-            AudioController.PlayClick();
+            AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
         }
 
         public override void Show()

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Nekoyume.Action;
 using UnityEditor;
 using UnityEngine;
 using UniRx;
@@ -25,7 +26,7 @@ namespace Nekoyume.Game.Controller
             public const string Win = "bgm_win";
             public const string Lose = "bgm_lose";
         }
-        
+
         public struct SfxCode
         {
             public const string Select = "sfx_select";
@@ -60,6 +61,7 @@ namespace Nekoyume.Game.Controller
 
         private readonly Dictionary<string, Stack<AudioSource>> _musicPool =
             new Dictionary<string, Stack<AudioSource>>();
+
         private readonly Dictionary<string, Stack<AudioSource>> _sfxPool =
             new Dictionary<string, Stack<AudioSource>>();
 
@@ -68,8 +70,9 @@ namespace Nekoyume.Game.Controller
         private readonly Dictionary<string, List<AudioSource>> _sfxPlaylist =
             new Dictionary<string, List<AudioSource>>();
 
-        private readonly Dictionary<string, List<AudioSource>> _shouldRemoveSfx = new Dictionary<string, List<AudioSource>>();
-        
+        private readonly Dictionary<string, List<AudioSource>> _shouldRemoveSfx =
+            new Dictionary<string, List<AudioSource>>();
+
         #region Mono
 
         protected override void Awake()
@@ -77,10 +80,14 @@ namespace Nekoyume.Game.Controller
             base.Awake();
 
             state = State.None;
+
+            // Fix me.
+            // 너무 짤랑 거려서 게임을 못하겠어요.
+            // RewardGold.RewardGoldMyselfSubject.ObserveOnMainThread().Subscribe(_ => PlaySfx(SfxCode.Cash)).AddTo(this);
         }
 
         private void Update()
-        {   
+        {
             foreach (var pair in _sfxPlaylist)
             {
                 foreach (var sfx in pair.Value)
@@ -94,7 +101,7 @@ namespace Nekoyume.Game.Controller
                     {
                         _shouldRemoveSfx.Add(pair.Key, new List<AudioSource>());
                     }
-                    
+
                     _shouldRemoveSfx[pair.Key].Add(sfx);
                 }
             }
@@ -112,13 +119,13 @@ namespace Nekoyume.Game.Controller
                     }
                 }
             }
-            
+
             _shouldRemoveSfx.Clear();
         }
 
         #endregion
 
-        public IEnumerator CoInitialize()
+        public void Initialize()
         {
             if (state != State.None)
             {
@@ -127,46 +134,24 @@ namespace Nekoyume.Game.Controller
 
             state = State.InInitializing;
 
-            yield return StartCoroutine(CoInitializeInternal("Assets/Resources/Audio/Music/Prefabs", _musicPrefabs));
-            yield return StartCoroutine(CoInitializeInternal("Assets/Resources/Audio/Sfx/Prefabs", _sfxPrefabs));
+            InitializeInternal("Audio/Music/Prefabs", _musicPrefabs);
+            InitializeInternal("Audio/Sfx/Prefabs", _sfxPrefabs);
 
             state = State.Idle;
         }
 
-        private IEnumerator CoInitializeInternal(string folderPath, IDictionary<string, AudioSource> collection)
+        private void InitializeInternal(string folderPath, IDictionary<string, AudioSource> collection)
         {
-            var assets = AssetDatabase.FindAssets("t: GameObject", new[] {folderPath});
-
+            var assets = Resources.LoadAll<GameObject>(folderPath);
             foreach (var asset in assets)
             {
-                var path = AssetDatabase.GUIDToAssetPath(asset).Replace("Assets/Resources/", "");
-                path = path.Substring(0, path.Length - 7);
-                var loadOperator = Resources.LoadAsync<GameObject>(path);
-                while (!loadOperator.isDone)
+                var audioSource = asset.GetComponent<AudioSource>();
+                if (ReferenceEquals(audioSource, null))
                 {
-                    yield return null;
+                    throw new NotFoundComponentException<AudioSource>();
                 }
 
-                try
-                {
-                    var assetName = Path.GetFileNameWithoutExtension(path);
-                    var go = loadOperator.asset as GameObject;
-                    if (ReferenceEquals(go, null))
-                    {
-                        throw new InvalidCastException();
-                    }
-                    var audioSource = go.GetComponent<AudioSource>();
-                    if (ReferenceEquals(audioSource, null))
-                    {
-                        throw new NotFoundComponentException<AudioSource>();
-                    }
-
-                    collection.Add(assetName, audioSource);
-                }
-                catch
-                {
-                    throw new FailedToLoadResourceException<AudioSource>(path);
-                }
+                collection.Add(asset.name, audioSource);
             }
         }
 
@@ -190,7 +175,7 @@ namespace Nekoyume.Game.Controller
             Push(_musicPlaylist, audioName, audioSource);
             StartCoroutine(CoFadeIn(audioSource, fadeIn));
         }
-        
+
         public void PlaySfx(string audioName)
         {
             if (state != State.Idle)
@@ -230,12 +215,12 @@ namespace Nekoyume.Game.Controller
                 foreach (var audioSource in stack.Value)
                 {
                     audioSource.Stop();
-                    Push(_sfxPool, stack.Key, audioSource);        
+                    Push(_sfxPool, stack.Key, audioSource);
                 }
-                
+
                 stack.Value.Clear();
             }
-            
+
             _sfxPlaylist.Clear();
         }
 
@@ -272,7 +257,7 @@ namespace Nekoyume.Game.Controller
 
             return stack.Count > 0 ? stack.Pop() : Instantiate(audioName, _musicPrefabs);
         }
-        
+
         private AudioSource PopFromSfxPool(string audioName)
         {
             if (!_sfxPool.ContainsKey(audioName))
@@ -296,7 +281,7 @@ namespace Nekoyume.Game.Controller
                 collection.Add(audioName, audioSource);
             }
         }
-        
+
         private void Push(IDictionary<string, List<AudioSource>> collection, string audioName, AudioSource audioSource)
         {
             if (collection.ContainsKey(audioName))
@@ -371,10 +356,20 @@ namespace Nekoyume.Game.Controller
         {
             instance.PlaySfx(SfxCode.Click);
         }
-        
+
         public static void PlaySelect()
         {
             instance.PlaySfx(SfxCode.Select);
+        }
+
+        public static void PlayCancel()
+        {
+            instance.PlaySfx(SfxCode.Cancel);
+        }
+
+        public static void PlayPopup()
+        {
+            instance.PlaySfx(SfxCode.Popup);
         }
 
         #endregion
