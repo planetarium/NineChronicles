@@ -11,10 +11,10 @@ namespace Nekoyume.Model
         public Monster(Character data, int monsterLevel, Player player)
         {
             var stats = data.GetStats(monsterLevel);
-            hp = stats.HP;
+            currentHP = stats.HP;
             atk = stats.Damage;
             def = stats.Defense;
-            criticalChance = stats.Luck;
+            luck = stats.Luck;
             targets.Add(player);
             Simulator = player.Simulator;
             this.data = data;

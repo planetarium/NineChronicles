@@ -2,12 +2,15 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using UnityEngine;
 using Libplanet.Action;
+using UniRx;
 
 namespace Nekoyume.Action
 {
     [ActionType("reward_gold")]
     public class RewardGold : ActionBase
     {
+        public static readonly Subject<int> RewardGoldMyselfSubject = new Subject<int>();
+        
         public int Gold;
 
         public override void LoadPlainValue(IImmutableDictionary<string, object> plainValue)
@@ -23,6 +26,12 @@ namespace Nekoyume.Action
 
             ctx.gold += Gold;
             Debug.Log($"Created reward for {actionCtx.BlockIndex},  Total Gold {ctx.gold}");
+
+            if (!actionCtx.Rehearsal &&
+                actionCtx.Miner.Equals(ActionManager.Instance.userAddress))
+            {
+                RewardGoldMyselfSubject.OnNext(Gold);
+            }
 
             return states.SetState(actionCtx.Miner, ctx);
         }

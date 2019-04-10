@@ -17,20 +17,24 @@ namespace Nekoyume.UI
         private void Start()
         {
             Widget.Create<Login>(true);
-            Widget.Create<Status>();
-            Widget.Create<Inventory>();
-            Widget.Create<Menu>();
-            Widget.Create<Blind>();
             Widget.Create<LoginDetail>();
-            Widget.Create<StatusDetail>();
+            Widget.Create<Menu>();
+            Widget.Create<Status>();
+            Widget.Create<Blind>();
             Widget.Create<Shop>();
-            Widget.Create<BattleResult>();
             Widget.Create<QuestPreparation>();
             Widget.Create<CombinationRenew>();
+            
+            // 모듈류.
+            Widget.Create<StatusDetail>();
+            Widget.Create<BattleResult>();
+            Widget.Create<Inventory>();
 
+            // 팝업류.
             Widget.Create<SelectItemCountPopup>();
             Widget.Create<CombinationResultPopup>();
             
+            // 로딩창류.
             Widget.Create<LoadingScreen>();
 #if DEBUG
             Widget.Create<Cheat>(true);

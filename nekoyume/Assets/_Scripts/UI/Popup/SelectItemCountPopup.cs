@@ -54,6 +54,8 @@ namespace Nekoyume.UI
 
             SetData(data);
             base.Show();
+            
+            AudioController.PlayPopup();
         }
 
         public void SetData(Model.SelectItemCountPopup<Model.Inventory.Item> data)
@@ -90,7 +92,7 @@ namespace Nekoyume.UI
                 .Subscribe(_ =>
                 {
                     _data.OnClickClose.OnNext(_data);
-                    AudioController.PlayClick();
+                    AudioController.PlayCancel();
                 })
                 .AddTo(_disposables);
 

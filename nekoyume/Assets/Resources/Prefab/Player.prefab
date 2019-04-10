@@ -2697,12 +2697,13 @@ MonoBehaviour:
   model:
     atk: 0
     def: 0
+    currentHP: 0
     hp: 0
-    hpMax: 0
-    criticalChance: 0
+    luck: 0
     level: 0
     exp: 0
     expMax: 0
+    expNeed: 0
     stage: 0
     weapon:
       reserved: 0

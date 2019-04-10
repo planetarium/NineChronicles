@@ -1,10 +1,9 @@
-using DG.Tweening;
 using System;
 using System.IO;
+using DG.Tweening;
 using Nekoyume.Action;
-using Nekoyume.Data;
-using Nekoyume.Data.Table;
 using Nekoyume.Game.Controller;
+using Nekoyume.Model;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -28,6 +27,10 @@ namespace Nekoyume.UI
         public GameObject profileImage;
         public GameObject menuSelect;
         public GameObject menuCreate;
+        public GameObject statusInfo;
+        public GameObject grid;
+        public GameObject optionGrid;
+        public GameObject optionRow;
         private int _selectedIndex;
         private Nekoyume.Model.Avatar _avatar;
 
@@ -67,9 +70,9 @@ namespace Nekoyume.UI
 
         public void BackClick()
         {
+            Close();
             Game.Event.OnNestEnter.Invoke();
             var login = Find<Login>();
-            Close();
             login.Show();
             AudioController.PlayClick();
         }
@@ -93,76 +96,107 @@ namespace Nekoyume.UI
         private void Init(int index)
         {
             _selectedIndex = index;
-            int level = 1;
             var active = true;
-            var imagePath = "character_0003/character_01";
-            try
+            _avatar = ActionManager.Instance.Avatars[_selectedIndex];
+            if (ReferenceEquals(_avatar, null))
             {
-                _avatar = ActionManager.Instance.Avatars[_selectedIndex];
-                level = _avatar.Level;
+                active = false;
+                _avatar = CreateNovice.CreateAvatar("");
+                nameField.text = "";
             }
-            catch (Exception e)
-            {
-                if (e is ArgumentOutOfRangeException || e is NullReferenceException)
-                {
-                    active = false;
-                    _avatar = null;
-                    nameField.text = "";
-                    imagePath = "character_02";
-                }
-                else
-                {
-                    throw;
-                }
-            }
+
+            // create new or login
             nameField.gameObject.SetActive(!active);
             btnDelete.SetActive(active);
             profileImage.SetActive(active);
-            var game = GameObject.Find("Game");
-            Tables tables = game.GetComponent<Tables>();
-            Level levelData;
-            Character characterData;
-            levelInfo.text = $"LV. {level}";
-            nameInfo.text = $"{_avatar?.Name}";
-            if (!tables.Character.TryGetValue(CreateNovice.DefaultId, out characterData))
-                return;
 
-            if (!tables.Level.TryGetValue(level, out levelData))
-                return;
+            var player = _avatar.ToPlayer();
+            levelInfo.text = $"LV. {player.level}";
+            nameInfo.text = $"{_avatar.Name}";
 
-            var stats = characterData.GetStats(level);
-            int hp = stats.HP;
-            int hpMax = stats.HP;
-            long exp = 0;
-            if (level > 1)
-            {
-                hp = _avatar.CurrentHP;
-                exp = _avatar.EXP;
-                hpMax = _avatar.HPMax;
-            }
-            textHp.text = $"{hp}/{hpMax}";
-            textExp.text = $"{exp}/{levelData.expNeed}";
-            float hpPercentage = hp / (float) hpMax;
-            hpBar.fillRect.gameObject.SetActive(hpPercentage > 0.0f);
-            hpPercentage = Mathf.Min(Mathf.Max(hpPercentage, 0.1f), 1.0f);
-            hpBar.value = 0.0f;// hpPercentage;
-            hpBar.DOValue(hpPercentage, 2.0f).SetEase(Ease.OutCubic);
-
-            float expPercentage = exp / (float) levelData.exp;
-            expBar.fillRect.gameObject.SetActive(expPercentage > 0.0f);
-            expPercentage = Mathf.Min(Mathf.Max(expPercentage, 0.1f), 1.0f);
-            expBar.value = 0.0f;// expPercentage;
-            expBar.DOValue(expPercentage, 3.0f).SetEase(Ease.OutCubic);
-
-            var statusDetailScript = statusDetail.GetComponent<StatusDetail>();
-            statusDetailScript.Init(levelData);
+            SetInformation(player);
             menuCreate.SetActive(!active);
             menuSelect.SetActive(active);
             Show();
         }
 
+        private void SetInformation(Player player)
+        {
+            var hp = player.currentHP;
+            var hpMax = player.currentHP;
+            var exp = player.exp;
+            var expMax = player.expMax;
+
+            //hp, exp
+            textHp.text = $"{hp}/{hpMax}";
+            textExp.text = $"{exp}/{expMax}";
+
+            //percentage
+            var hpPercentage = hp / (float) hpMax;
+            var expPercentage = player.expNeed / (float) expMax;
+
+            foreach (
+                var tuple in new[]
+                {
+                    new Tuple<Slider, float>(hpBar, hpPercentage),
+                    new Tuple<Slider, float>(expBar, expPercentage)
+                }
+            )
+            {
+                var slide = tuple.Item1;
+                var percentage = tuple.Item2;
+                slide.fillRect.gameObject.SetActive(percentage > 0.0f);
+                percentage = Mathf.Min(Mathf.Max(percentage, 0.1f), 1.0f);
+                slide.value = 0.0f;
+                slide.DOValue(percentage, 2.0f).SetEase(Ease.OutCubic);
+            }
+
+            // status info
+            var fields = player.GetType().GetFields();
+            foreach (var field in fields)
+            {
+                if (field.IsDefined(typeof(InformationFieldAttribute), true))
+                {
+                    GameObject row = Instantiate(statusInfo, grid.transform);
+                    var info = row.GetComponent<StatusInfo>();
+                    info.Set(field.Name, field.GetValue(player), player.GetAdditionalStatus(field.Name));
+                }
+            }
+
+            //option info
+            foreach (var option in player.GetOptions())
+            {
+                GameObject row = Instantiate(optionRow, optionGrid.transform);
+                var text = row.GetComponent<Text>();
+                text.text = option;
+                row.SetActive(true);
+            }
+        }
+
+        public override void Close()
+        {
+            Clear();
+            base.Close();
+        }
+
+        private void Clear()
+        {
+            foreach (Transform child in grid.transform)
+            {
+                Destroy(child.gameObject);
+            }
+
+            foreach (Transform child in optionGrid.transform)
+            {
+                Destroy(child.gameObject);
+            }
+
+            deletePopUp.GetComponent<Widget>().Close();
+        }
+
         public void DeleteCharacter()
         {
+// Delete key, avatar
             var prefsKey = string.Format(ActionManager.PrivateKeyFormat, _selectedIndex);
             string privateKey = PlayerPrefs.GetString(prefsKey, "");
             PlayerPrefs.DeleteKey(prefsKey);
@@ -172,7 +206,8 @@ namespace Nekoyume.UI
             if (File.Exists(datPath))
                 File.Delete(datPath);
             PlayerPrefs.Save();
-            deletePopUp.GetComponent<Widget>().Close();
+
+            Clear();
             Init(_selectedIndex);
         }
 

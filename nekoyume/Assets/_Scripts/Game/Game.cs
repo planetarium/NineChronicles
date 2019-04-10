@@ -34,7 +34,7 @@ namespace Nekoyume.Game
         private void Awake()
         {
             LocalizationManager.Read();
-            StartCoroutine(AudioController.instance.CoInitialize());
+            AudioController.instance.Initialize();
         }
 
         private void Start()

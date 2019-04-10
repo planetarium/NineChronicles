@@ -14,7 +14,7 @@ namespace Nekoyume.Action
         {
             this.avatar = avatar;
             battleLog = logs;
-            gold = gold;
+            this.gold = gold;
         }
     }
 }
