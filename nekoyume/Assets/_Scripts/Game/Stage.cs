@@ -177,6 +177,7 @@ namespace Nekoyume.Game
 
         private IEnumerator PlayAsync(BattleLog log)
         {
+            _objectPool.ReleaseAll();
             GetPlayer(_stageStartPosition);
             yield return StartCoroutine(CoStageEnter(log.stage));
             foreach (EventBase e in log)
@@ -243,7 +244,6 @@ namespace Nekoyume.Game
                 UpdateDummyPosition(roomPlayer, _cam);
                 yield return new WaitForEndOfFrame();
             }
-            _objectPool.ReleaseAll();
         }
 
         private void UpdateDummyPosition(Character.Player player, ActionCamera cam)
