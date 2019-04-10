@@ -51,6 +51,16 @@ namespace Nekoyume.UI
 
         private void OnDisable()
         {
+            foreach (var slot in usableSlots)
+            {
+                slot.Unequip();
+            }
+
+            foreach (var slot in equipSlots)
+            {
+                var es = slot.GetComponent<EquipSlot>();
+                es.Unequip();
+            }
             Game.Event.OnSlotClick.RemoveListener(SlotClick);
         }
 
@@ -115,6 +125,7 @@ namespace Nekoyume.UI
                     }
                 }
             }
+            itemInfoWidget.Show();
 
             btnQuest.SetActive(true);
             base.Show();
