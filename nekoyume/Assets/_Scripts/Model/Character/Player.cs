@@ -12,6 +12,7 @@ namespace Nekoyume.Model
     {
         public long exp;
         public long expMax;
+        public long expNeed;
         public int stage;
         public Weapon weapon;
         public Armor armor;
@@ -24,6 +25,8 @@ namespace Nekoyume.Model
 
         public readonly Inventory inventory;
         public List<Inventory.InventoryItem> Items => inventory.items;
+        public List<Equipment> Equipments =>
+            inventory.items.Select(i => i.Item).OfType<Equipment>().Where(e => e.equipped).ToList();
 
         public Player(Avatar avatar, Simulator simulator = null)
         {
@@ -75,15 +78,16 @@ namespace Nekoyume.Model
             }
 
             var statsData = data.GetStats(lv);
-            hp = statsData.HP;
+            currentHP = statsData.HP;
             atk = statsData.Damage;
             def = statsData.Defense;
-            hpMax = statsData.HP;
+            hp = statsData.HP;
             expMax = expData.exp + expData.expNeed;
-            criticalChance = statsData.Luck;
-            var equipments = Items.Select(i => i.Item).OfType<Equipment>().Where(e => e.equipped);
+            expNeed = expData.expNeed;
+
+            luck = statsData.Luck;
             var setMap = new Dictionary<int, int>();
-            foreach (var equipment in equipments)
+            foreach (var equipment in Equipments)
             {
                 var key = equipment.equipData.setId;
                 int count;
@@ -195,7 +199,65 @@ namespace Nekoyume.Model
             }
 
             level = expData.level;
+        }
 
+        public float GetAdditionalStatus(string key)
+        {
+            var stats = ActionManager.Instance.tables.Character;
+            var levelTable = ActionManager.Instance.tables.Level;
+            Character data;
+            stats.TryGetValue(job, out data);
+            if (data == null)
+            {
+                throw new KeyNotFoundException($"invalid character id: `{job}`.");
+            }
+
+            Level expData;
+            levelTable.TryGetValue(level, out expData);
+            if (expData == null)
+            {
+                throw new KeyNotFoundException("invalid character level.");
+            }
+
+            var statsData = data.GetStats(level);
+
+            float value;
+            switch (key)
+            {
+                case "atk":
+                    value = atk - statsData.Damage;
+                    break;
+                case "def":
+                    value = def - statsData.Defense;
+                    break;
+                case "hp":
+                    value = hp - statsData.HP;
+                    break;
+                case "luck":
+                    value = (luck - statsData.Luck) * 100;
+                    break;
+                default:
+                    throw new InvalidCastException($"invalid status key: `{key}`.");
+            }
+
+            return value;
+        }
+
+        public IEnumerable<string> GetOptions()
+        {
+            if (set != null)
+            {
+                var aStrong = atkElement.Data.strong;
+                var aWeak = atkElement.Data.weak;
+                var dStrong = defElement.Data.strong;
+                var dWeak = defElement.Data.weak;
+                var aMultiply = atkElement.Data.multiply * 100;
+                var dMultiply = defElement.Data.multiply * 100;
+                yield return $"{Elemental.GetDescription(aStrong)} 공격 +{aMultiply}%";
+                yield return $"{Elemental.GetDescription(aWeak)} 공격 -{aMultiply}%";
+                yield return $"{Elemental.GetDescription(dStrong)} 방어 -{dMultiply}%";
+                yield return $"{Elemental.GetDescription(dWeak)} 방어 +{dMultiply}%";
+            }
         }
     }
 

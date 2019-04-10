@@ -50,7 +50,7 @@ namespace Nekoyume.Model
         {
             Level = player.level;
             EXP = player.exp;
-            HPMax = player.hpMax;
+            HPMax = player.hp;
             CurrentHP = HPMax;
             Items = player.Items;
             WorldStage = player.stage;
