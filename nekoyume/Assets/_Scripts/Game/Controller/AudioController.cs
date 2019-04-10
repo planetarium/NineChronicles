@@ -76,7 +76,7 @@ namespace Nekoyume.Game.Controller
         {
             base.Awake();
 
-            this.ComponentFieldsNotNullTest();
+            state = State.None;
         }
 
         private void Update()
