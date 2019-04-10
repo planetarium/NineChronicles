@@ -93,7 +93,16 @@ namespace Nekoyume.UI
                 }
             }
 
-            ActionManager.Instance.HackAndSlash(equipments);
+            var foods = new List<Food>();
+            foreach (var slot in usableSlots)
+            {
+                if (slot.item?.Data != null)
+                {
+                    foods.Add((Food)slot.item);
+                }
+            }
+
+            ActionManager.Instance.HackAndSlash(equipments, foods);
             while (currentId == ActionManager.Instance.battleLog?.id)
             {
                 yield return null;
