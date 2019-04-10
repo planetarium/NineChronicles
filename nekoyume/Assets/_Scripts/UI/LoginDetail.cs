@@ -5,7 +5,6 @@ using Nekoyume.Action;
 using Nekoyume.Data;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Controller;
-using Nekoyume.Game.Factory;
 using UnityEngine;
 using UnityEngine.UI;
 

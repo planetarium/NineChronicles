@@ -1,7 +1,6 @@
 using Assets.SimpleLocalization;
 using Nekoyume.Action;
 using Nekoyume.Game.Controller;
-using Nekoyume.Game.Factory;
 using Nekoyume.UI;
 using UnityEngine;
 
