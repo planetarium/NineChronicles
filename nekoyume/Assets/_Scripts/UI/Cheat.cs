@@ -1,8 +1,10 @@
+using System.Collections.Generic;
 using System.Text;
 using Libplanet.Action;
 using Nekoyume.Action;
 using Nekoyume.Game;
 using Nekoyume.Game.Character;
+using Nekoyume.Game.Item;
 using Nekoyume.Model;
 using Nekoyume.UI;
 using UnityEngine;
@@ -130,7 +132,7 @@ namespace Nekoyume
         {
             Find<BattleResult>()?.Close();
             GameObject stage = GameObject.Find("Stage");
-            var simulator = new Simulator(new DebugRandom(), ActionManager.Instance.Avatar);
+            var simulator = new Simulator(new DebugRandom(), ActionManager.Instance.Avatar, new List<Food>());
             simulator.Simulate();
             simulator.Log.result = BattleLog.Result.Win;
             stage.GetComponent<Stage>().Play(simulator.Log);
@@ -141,7 +143,7 @@ namespace Nekoyume
         {
             Find<BattleResult>()?.Close();
             GameObject stage = GameObject.Find("Stage");
-            var simulator = new Simulator(new DebugRandom(), ActionManager.Instance.Avatar);
+            var simulator = new Simulator(new DebugRandom(), ActionManager.Instance.Avatar, new List<Food>());
             simulator.Simulate();
             simulator.Log.result = BattleLog.Result.Lose;
             stage.GetComponent<Stage>().Play(simulator.Log);

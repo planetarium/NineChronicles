@@ -62,6 +62,7 @@ namespace Nekoyume.Action
 
         private void Awake()
         {
+            Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
             DontDestroyOnLoad(gameObject);
             Instance = this;
             tables = GameObject.Find("Game").GetComponent<Tables>();

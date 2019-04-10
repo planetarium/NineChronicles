@@ -29,7 +29,16 @@ namespace Nekoyume.Action
         public override IAccountStateDelta Execute(IActionContext actionCtx)
         {
             var states = actionCtx.PreviousStates;
-            var ctx = (Context) states.GetState(actionCtx.Signer) ?? CreateNovice.CreateContext("dummy");
+            var ctx = (Context) states.GetState(actionCtx.Signer);
+            if (actionCtx.Rehearsal)
+            {
+                if (ctx == null)
+                {
+                    ctx = CreateNovice.CreateContext("dummy");
+                }
+
+                return states.SetState(actionCtx.Signer, ctx);
+            }
             var items = ctx.avatar.Items.Select(i => i.Item).ToArray();
             var currentEquipments = items.OfType<Equipment>().ToArray();
             if (Equipments.Count > 0)
@@ -65,7 +74,7 @@ namespace Nekoyume.Action
                 }
             }
 
-            var simulator = new Simulator(actionCtx.Random, ctx.avatar);
+            var simulator = new Simulator(actionCtx.Random, ctx.avatar, Foods);
             var player = simulator.Simulate();
             ctx.avatar.Update(player);
             ctx.battleLog = simulator.Log;
