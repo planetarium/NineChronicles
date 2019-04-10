@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Libplanet;
 using Nekoyume.Action;
+using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
 using UnityEngine;
 using UnityEngine.UI;
@@ -37,6 +38,7 @@ namespace Nekoyume.UI
             item.gameObject.SetActive(true);
             items.Add(item);
             CalcTotalPrice();
+            AudioController.PlayClick();
         }
 
         public void CalcTotalPrice()
@@ -54,6 +56,7 @@ namespace Nekoyume.UI
         public void ConfirmClick()
         {
             Debug.Log(totalPrice);
+            AudioController.PlayClick();
         }
 
         public override void Show()

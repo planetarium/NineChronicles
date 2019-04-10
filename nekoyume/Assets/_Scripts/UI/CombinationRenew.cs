@@ -5,6 +5,7 @@ using System.Linq;
 using Nekoyume.Action;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Character;
+using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
 using Nekoyume.UI.ItemInfo;
 using Nekoyume.UI.ItemView;
@@ -52,11 +53,19 @@ namespace Nekoyume.UI
             }
 
             combinationButton.OnClickAsObservable()
-                .Subscribe(_ => _data.OnClickCombination.OnNext(_data))
+                .Subscribe(_ =>
+                {
+                    _data.OnClickCombination.OnNext(_data);
+                    AudioController.PlayClick();
+                })
                 .AddTo(_disposables);
 
             closeButton.OnClickAsObservable()
-                .Subscribe(_ => Close())
+                .Subscribe(_ =>
+                {
+                    Close();
+                    AudioController.PlayClick();
+                })
                 .AddTo(_disposables);
         }
 
@@ -129,6 +138,8 @@ namespace Nekoyume.UI
             inventoryRenew.Show();
             selectedItemInfo.SetData(_data.SelectedItemInfo.Value);
             UpdateStagedItems();
+            
+            AudioController.instance.PlayMusic(AudioController.MusicCode.Combination);
         }
 
         public override void Close()
@@ -142,6 +153,8 @@ namespace Nekoyume.UI
             Find<Menu>()?.Show();
 
             base.Close();
+            
+            AudioController.instance.PlayMusic(AudioController.MusicCode.Main);
         }
 
         private void OnDataSelectedItemInfoItem(Model.Inventory.Item data)

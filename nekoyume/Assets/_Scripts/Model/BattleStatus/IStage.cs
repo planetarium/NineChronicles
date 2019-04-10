@@ -10,7 +10,7 @@ namespace Nekoyume.Model
         IEnumerator CoAttack(int atk, CharacterBase character, CharacterBase target, bool critical);
         IEnumerator CoDropBox(List<ItemBase> items);
         IEnumerator CoGetReward(List<ItemBase> rewards);
-        IEnumerator CoSpawnWave(List<Monster> monsters);
+        IEnumerator CoSpawnWave(List<Monster> monsters, bool isBoss);
         IEnumerator CoGetExp(long exp);
     }
 }

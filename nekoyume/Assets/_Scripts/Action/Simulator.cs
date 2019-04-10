@@ -130,6 +130,7 @@ namespace Nekoyume.Action
                         Debug.Log(monsterData.id);
                     }
                     wave.Add(new Monster(characterData, monsterData.level, Player));
+                    wave.isBoss = stage.isBoss;
                 }
 
                 wave.exp = stage.exp;

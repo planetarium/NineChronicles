@@ -1,5 +1,7 @@
 using System;
+using System.Collections;
 using Nekoyume.Action;
+using Nekoyume.Game.Controller;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -22,6 +24,7 @@ namespace Nekoyume.UI
 
             Game.Event.OnLoginDetail.Invoke(index);
             gameObject.SetActive(false);
+            AudioController.PlayClick();
         }
 
         public override void Show()
@@ -56,6 +59,18 @@ namespace Nekoyume.UI
                     }
                 }
             }
+
+            StartCoroutine(CoPlayMusic());
+        }
+
+        private IEnumerator CoPlayMusic()
+        {
+            while (AudioController.instance.state != AudioController.State.Idle)
+            {
+                yield return null;
+            }
+            
+            AudioController.instance.PlayMusic(AudioController.MusicCode.SelectCharacter);
         }
     }
 }

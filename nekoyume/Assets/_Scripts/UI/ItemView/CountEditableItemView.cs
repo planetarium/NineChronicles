@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Nekoyume.Game.Controller;
 using UniRx;
 using UnityEngine.UI;
 
@@ -86,11 +87,13 @@ namespace Nekoyume.UI.ItemView
         private void OnClickCloseButton(Unit u)
         {
             _data?.OnClose.OnNext(_data);
+            AudioController.PlayClick();
         }
 
         private void OnClickEditButton(Unit u)
         {
             _data?.OnEdit.OnNext(_data);
+            AudioController.PlayClick();
         }
     }
 }

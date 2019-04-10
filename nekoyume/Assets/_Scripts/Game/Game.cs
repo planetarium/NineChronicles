@@ -1,5 +1,6 @@
 using Assets.SimpleLocalization;
 using Nekoyume.Action;
+using Nekoyume.Game.Controller;
 using Nekoyume.UI;
 using UnityEngine;
 
@@ -33,6 +34,7 @@ namespace Nekoyume.Game
         private void Awake()
         {
             LocalizationManager.Read();
+            StartCoroutine(AudioController.instance.CoInitialize());
         }
 
         private void Start()

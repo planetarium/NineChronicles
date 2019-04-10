@@ -99,7 +99,7 @@ namespace Nekoyume.Action
                         ctx.avatar.Items.First(item => item.Item.Data.id == m.Id && item.Count >= m.Count);
                     pairs.Add(new ItemModelInventoryItemPair(m, inventoryItem));
                 }
-                catch (Exception e)
+                catch (InvalidOperationException)
                 {
                     Result = new ResultModel() {ErrorCode = ErrorCode.Fail};
                     EndOfExecuteSubject.OnNext(this);
@@ -172,7 +172,7 @@ namespace Nekoyume.Action
                         var inventoryItem = ctx.avatar.Items.First(item => item.Item.Data.id == resultItem.Id);
                         inventoryItem.Count += resultCount;
                     }
-                    catch (Exception e)
+                    catch (InvalidOperationException)
                     {
                         var itemBase = ItemBase.ItemFactory(itemData);
                         ctx.avatar.Items.Add(new Inventory.InventoryItem(itemBase, 1));   

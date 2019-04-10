@@ -4,7 +4,7 @@ namespace Nekoyume
 {
     public class MonoSingleton<T> : MonoBehaviour where T : MonoSingleton<T>
     {
-        private static T _instance = null;
+        private static T _instance;
 
         public static T instance
         {
@@ -17,7 +17,7 @@ namespace Nekoyume
                     return null;
                 }
 
-                lock (_lock)
+                lock (Lock)
                 {
                     if (_instance != null) return _instance;
 
@@ -43,8 +43,10 @@ namespace Nekoyume
             }
         }
 
-        private static object _lock = new object();
+        private static readonly object Lock = new object();
         private static bool _applicationIsQuitting = false;
+
+        #region Mono
 
         protected virtual void Awake()
         {
@@ -58,7 +60,7 @@ namespace Nekoyume
             }
             else
             {
-                Debug.Log($"{typeof(T).ToString()} already exist!");
+                Debug.Log($"{typeof(T)} already exist!");
 
                 Destroy(gameObject);
             }
@@ -80,5 +82,7 @@ namespace Nekoyume
         {
             _applicationIsQuitting = true;
         }
+
+        #endregion
     }
 }

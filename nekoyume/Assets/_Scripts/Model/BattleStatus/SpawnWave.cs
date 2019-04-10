@@ -8,9 +8,10 @@ namespace Nekoyume.Model
     public class SpawnWave : EventBase
     {
         public List<Monster> monsters;
+        public bool isBoss;
         public override IEnumerator CoExecute(IStage stage)
         {
-            yield return stage.CoSpawnWave(monsters);
+            yield return stage.CoSpawnWave(monsters, isBoss);
         }
     }
 }

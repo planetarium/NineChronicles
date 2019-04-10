@@ -1,3 +1,4 @@
+using Nekoyume.Game.Controller;
 using UnityEngine.UI;
 
 
@@ -41,6 +42,7 @@ namespace Nekoyume.UI
                 CloseCallback(ConfirmResult.Yes);
             }
             base.Close();
+            AudioController.PlayClick();
         }
 
         public void No()
@@ -50,6 +52,7 @@ namespace Nekoyume.UI
                 CloseCallback(ConfirmResult.No);
             }
             base.Close();
+            AudioController.PlayClick();
         }
     }
 }

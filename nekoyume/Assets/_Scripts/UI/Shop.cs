@@ -1,5 +1,6 @@
 using Nekoyume.Game;
 using Nekoyume.Game.Character;
+using Nekoyume.Game.Controller;
 using UnityEngine;
 
 namespace Nekoyume.UI
@@ -28,6 +29,7 @@ namespace Nekoyume.UI
             panelBuy.SetActive(true);
             GetComponent<Sell>().Close();
             GetComponent<Buy>().Show();
+            AudioController.PlayClick();
         }
 
         public void SellClick()
@@ -39,6 +41,7 @@ namespace Nekoyume.UI
             panelSell.SetActive(true);
             GetComponent<Buy>().Close();
             GetComponent<Sell>().Show();
+            AudioController.PlayClick();
         }
 
         public override void Show()
@@ -64,6 +67,7 @@ namespace Nekoyume.UI
             Find<Status>()?.Show();
             Find<Menu>()?.Show();
             base.Close();
+            AudioController.PlayClick();
         }
         public void RemoveItem(GameObject o)
         {

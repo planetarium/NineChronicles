@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Nekoyume.Action;
 using Nekoyume.Game;
 using Nekoyume.Game.Character;
+using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
 using UnityEngine;
 using UnityEngine.UI;
@@ -54,6 +55,7 @@ namespace Nekoyume.UI
         public void QuestClick()
         {
             StartCoroutine(QuestAsync());
+            AudioController.PlayClick();
         }
 
         private IEnumerator QuestAsync()
@@ -123,6 +125,7 @@ namespace Nekoyume.UI
             Find<Menu>().Show();
             Find<Status>()?.Show();
             base.Close();
+            AudioController.PlayClick();
         }
 
         private void SlotClick(InventorySlot slot, bool toggled)
@@ -139,6 +142,7 @@ namespace Nekoyume.UI
             itemInfoSelectedItem.SetItem(slot.Item);
             itemInfoSelectedItem.SetIcon(slot.Icon.sprite);
             SetActiveButtonEquip(slot.Item is ItemUsable);
+            AudioController.PlaySelect();
         }
 
         public void EquipClick()
@@ -157,6 +161,7 @@ namespace Nekoyume.UI
                     _player.UpdateSet((SetItem) itemInfoSelectedItem.item);
                 }
             }
+            AudioController.PlayClick();
         }
 
         public void Unequip(GameObject sender)
@@ -167,6 +172,7 @@ namespace Nekoyume.UI
             {
                 _player.UpdateSet((SetItem) slot.item);
             }
+            AudioController.PlaySelect();
         }
 
         private void SetActiveButtonEquip(bool isActive)

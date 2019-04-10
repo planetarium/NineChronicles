@@ -6,6 +6,7 @@ using DG.Tweening;
 using Nekoyume.Action;
 using Nekoyume.Data;
 using Nekoyume.Game.Character;
+using Nekoyume.Game.Controller;
 using Nekoyume.Game.Entrance;
 using Nekoyume.Game.Factory;
 using Nekoyume.Game.Item;
@@ -200,6 +201,19 @@ namespace Nekoyume.Game
                 LoadBackground(data.background, 3.0f);
                 Widget.Find<Menu>().ShowWorld();
 
+                switch (data.background)
+                {
+                    case "zone_0_0":
+                        AudioController.instance.PlayMusic(AudioController.MusicCode.StageGreen);
+                        break;
+                    case "zone_0_1":
+                        AudioController.instance.PlayMusic(AudioController.MusicCode.StageOrange);
+                        break;
+                    case "zone_0_2":
+                        AudioController.instance.PlayMusic(AudioController.MusicCode.StageBlue);
+                        break;
+                }
+                
                 yield return new WaitForSeconds(1.5f);
                 loadingScreen.Close();
             }
@@ -330,12 +344,18 @@ namespace Nekoyume.Game
             yield return null;
         }
 
-        public IEnumerator CoSpawnWave(List<Monster> monsters)
+        public IEnumerator CoSpawnWave(List<Monster> monsters, bool isBoss)
         {
             var playerCharacter = GetPlayer();
             playerCharacter.StartRun();
             _spawner.SetData(id, monsters);
-            yield return null;
+
+            if (isBoss)
+            {
+                AudioController.instance.PlayMusic(AudioController.MusicCode.Boss1);
+            }
+            
+            yield break;
         }
 
         public IEnumerator CoGetExp(long exp)

@@ -4,6 +4,7 @@ using System.IO;
 using Nekoyume.Action;
 using Nekoyume.Data;
 using Nekoyume.Data.Table;
+using Nekoyume.Game.Controller;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -54,12 +55,14 @@ namespace Nekoyume.UI
             nameField.gameObject.SetActive(false);
             ActionManager.Instance.Init(_selectedIndex);
             ActionManager.Instance.StartSync();
+            AudioController.PlayClick();
         }
 
         public void DeleteClick()
         {
             deletePopUp.GetComponent<Widget>().Show();
             deletePopUp.transform.SetAsLastSibling();
+            AudioController.PlayClick();
         }
 
         public void BackClick()
@@ -68,6 +71,7 @@ namespace Nekoyume.UI
             var login = Find<Login>();
             Close();
             login.Show();
+            AudioController.PlayClick();
         }
 
         public void CreateClick()
@@ -83,6 +87,7 @@ namespace Nekoyume.UI
             var nickName = nameField.text;
             ActionManager.Instance.CreateNovice(nickName);
             ActionManager.Instance.StartSync();
+            AudioController.PlayClick();
         }
 
         private void Init(int index)
