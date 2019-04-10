@@ -281,14 +281,6 @@ namespace Nekoyume.Game
             yield return null;
         }
 
-        public IEnumerator CoSpawnMonster(Monster monster)
-        {
-            var playerCharacter = GetPlayer();
-            playerCharacter.StartRun();
-            _spawner.SetData(id, monster);
-            yield return null;
-        }
-
         public IEnumerator CoAttack(int atk, Model.CharacterBase character, Model.CharacterBase target, bool critical)
         {
             Character.CharacterBase attacker;
