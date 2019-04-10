@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Nekoyume.Game.Controller;
 using UnityEngine;
 
 
@@ -168,6 +169,12 @@ namespace Nekoyume.UI
 
     public class Popup : Widget
     {
+        public override void Show()
+        {
+            base.Show();
+            AudioController.PlayPopup();
+        }
+
         public override void Close()
         {
             Destroy(gameObject);

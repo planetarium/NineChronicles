@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Anima2D;
 using Nekoyume.Data.Table;
+using Nekoyume.Game.Controller;
 using Nekoyume.Game.Factory;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Vfx;
@@ -193,7 +194,8 @@ namespace Nekoyume.Game.Character
                     InitStats(model);
 
                     UpdateHpBar();
-
+                    
+                    AudioController.instance.PlaySfx(AudioController.SfxCode.LevelUp);
                 }
                 Event.OnUpdateStatus.Invoke();
             }

@@ -54,7 +54,7 @@ namespace Nekoyume.UI.ItemInfo
                 .Subscribe(_ =>
                 {
                     _data.OnClick.OnNext(_data);
-                    AudioController.PlayClick();
+                    AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
                 })
                 .AddTo(_disposables);
 

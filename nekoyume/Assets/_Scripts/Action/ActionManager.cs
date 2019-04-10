@@ -58,6 +58,8 @@ namespace Nekoyume.Action
         private IEnumerator _shopUpdator;
         private IEnumerator _swarmRunner;
 
+        public Address userAddress => agent.UserAddress;
+
         private void Awake()
         {
             DontDestroyOnLoad(gameObject);
