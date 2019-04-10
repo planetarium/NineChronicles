@@ -146,8 +146,8 @@ namespace Nekoyume.Game.Character
 
         private void InitStats(Model.Player character)
         {
-            HP = character.hp;
-            HPMax = character.hpMax;
+            HP = character.currentHP;
+            HPMax = character.hp;
             ATK = character.atk;
             DEF = character.def;
             EXP = character.exp;

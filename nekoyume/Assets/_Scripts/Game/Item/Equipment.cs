@@ -90,6 +90,7 @@ namespace Nekoyume.Game.Item
                 .Where(info => !string.IsNullOrEmpty(info));
             return string.Join(Environment.NewLine, infos);
         }
+
     }
 
     [Serializable]
@@ -109,11 +110,11 @@ namespace Nekoyume.Game.Item
                     player.def += (int)Value;
                     break;
                 case "health":
+                    player.currentHP += (int)Value;
                     player.hp += (int)Value;
-                    player.hpMax += (int)Value;
                     break;
                 case "luck":
-                    player.criticalChance += Value;
+                    player.luck += Value;
                     break;
             }
         }

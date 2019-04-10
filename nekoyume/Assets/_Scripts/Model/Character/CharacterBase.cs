@@ -13,11 +13,15 @@ namespace Nekoyume.Model
     public abstract class CharacterBase
     {
         public readonly List<CharacterBase> targets = new List<CharacterBase>();
+        [InformationField]
         public int atk;
+        [InformationField]
         public int def;
+        public int currentHP;
+        [InformationField]
         public int hp;
-        public int hpMax;
-        public float criticalChance;
+        [InformationField]
+        public float luck;
         private const float CriticalMultiplier = 1.5f;
         public int level;
 
@@ -28,7 +32,7 @@ namespace Nekoyume.Model
 
         [NonSerialized] private Root _root;
         [NonSerialized] public Simulator Simulator;
-        private bool isDead => hp <= 0;
+        private bool isDead => currentHP <= 0;
         public Guid id = Guid.NewGuid();
 
         public void InitAI()
@@ -71,7 +75,7 @@ namespace Nekoyume.Model
         private bool IsCritical()
         {
             var chance = Simulator.Random.NextDouble();
-            return chance < criticalChance;
+            return chance < luck;
         }
 
         private int CalcDmg(CharacterBase target, bool critical)
@@ -120,11 +124,15 @@ namespace Nekoyume.Model
 
         private void OnDamage(int dmg)
         {
-            hp -= dmg;
+            currentHP -= dmg;
             if (isDead)
             {
                 Die();
             }
         }
+    }
+
+    public class InformationFieldAttribute : Attribute
+    {
     }
 }

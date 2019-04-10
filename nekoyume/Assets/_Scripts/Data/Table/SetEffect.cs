@@ -46,11 +46,11 @@ namespace Nekoyume.Data.Table
                         player.def += (int)Value;
                         break;
                     case "health":
+                        player.currentHP += (int)Value;
                         player.hp += (int)Value;
-                        player.hpMax += (int)Value;
                         break;
                     case "luck":
-                        player.criticalChance += Value;
+                        player.luck += Value;
                         break;
                 }
             }
