@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Nekoyume.Action;
 using Nekoyume.Game;
 using Nekoyume.Game.Character;
@@ -14,11 +16,12 @@ namespace Nekoyume.UI
     {
         public Widget itemInfoWidget = null;
         public SelectedItem itemInfoSelectedItem = null;
+        public int selectedItemCount;
 
         public Image buttonSellImage = null;
         public Text buttonSellText = null;
 
-        public GameObject[] usableSlots;
+        public EquipSlot[] usableSlots;
         public GameObject[] equipSlots;
         public GameObject btnQuest;
         public GameObject inventory;
@@ -40,6 +43,7 @@ namespace Nekoyume.UI
         private void OnEnable()
         {
             itemInfoSelectedItem.Clear();
+            selectedItemCount = 0;
             SetActiveButtonEquip(false);
 
             Game.Event.OnSlotClick.AddListener(SlotClick);
@@ -75,7 +79,7 @@ namespace Nekoyume.UI
                 var es = slot.GetComponent<EquipSlot>();
                 if (es.item?.Data != null)
                 {
-                    equipments.Add(es.item);
+                    equipments.Add((Equipment)es.item);
                 }
             }
 
@@ -141,6 +145,7 @@ namespace Nekoyume.UI
 
             itemInfoSelectedItem.SetItem(slot.Item);
             itemInfoSelectedItem.SetIcon(slot.Icon.sprite);
+            selectedItemCount = Convert.ToInt32(slot.LabelCount.text);
             SetActiveButtonEquip(slot.Item is ItemUsable);
             AudioController.PlaySelect();
         }
@@ -148,18 +153,38 @@ namespace Nekoyume.UI
         public void EquipClick()
         {
             var type = itemInfoSelectedItem.item.Data.cls.ToEnumItemType();
-            foreach (var slot in equipSlots)
+            if (type == ItemBase.ItemType.Food)
             {
-                var es = slot.GetComponent<EquipSlot>();
-                if (es.type == type)
+                var count = usableSlots
+                    .Select(s => s.item)
+                    .OfType<Food>()
+                    .Count(f => f.Equals(itemInfoSelectedItem.item));
+                if (count < selectedItemCount)
                 {
-                    es.Equip(itemInfoSelectedItem);
+                    var slot = usableSlots.FirstOrDefault(s => s.item?.Data == null);
+                    if (slot == null)
+                    {
+                        slot = usableSlots[0];
+                    }
+                    slot.Equip(itemInfoSelectedItem);
                     AudioController.instance.PlaySfx(AudioController.SfxCode.Equipment);
                 }
-
-                if (type == ItemBase.ItemType.Set)
+            }
+            else
+            {
+                foreach (var slot in equipSlots)
                 {
-                    _player.UpdateSet((SetItem) itemInfoSelectedItem.item);
+                    var es = slot.GetComponent<EquipSlot>();
+                    if (es.type == type)
+                    {
+                        es.Equip(itemInfoSelectedItem);
+                        AudioController.instance.PlaySfx(AudioController.SfxCode.Equipment);
+                    }
+
+                    if (type == ItemBase.ItemType.Set)
+                    {
+                        _player.UpdateSet((SetItem) itemInfoSelectedItem.item);
+                    }
                 }
             }
             

@@ -8,7 +8,7 @@ namespace Nekoyume.UI
     {
         public GameObject button;
         public Image icon;
-        public Equipment item;
+        public ItemBase item;
         public ItemBase.ItemType type;
 
 
@@ -18,7 +18,7 @@ namespace Nekoyume.UI
             icon.sprite = selected.icon.sprite;
             icon.gameObject.SetActive(true);
             icon.SetNativeSize();
-            item = (Equipment) selected.item;
+            item = selected.item;
             if (button != null)
             {
                 button.gameObject.SetActive(true);
