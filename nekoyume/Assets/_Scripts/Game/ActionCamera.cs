@@ -13,7 +13,7 @@ namespace Nekoyume.Game
         private enum State
         {
             Idle,
-            Chase,
+            ChaseX,
             Shake,
         }
 
@@ -51,7 +51,7 @@ namespace Nekoyume.Game
             _transform = transform;
             _fsm = new Fsm<State>(this);
             _fsm.RegisterStateCoroutine(State.Idle, CoIdle);
-            _fsm.RegisterStateCoroutine(State.Chase, CoChaseX);
+            _fsm.RegisterStateCoroutine(State.ChaseX, CoChaseX);
             _fsm.RegisterStateCoroutine(State.Shake, CoShake);
             _fsm.Run(State.Idle);
         }
@@ -87,7 +87,7 @@ namespace Nekoyume.Game
             {
                 if (!ReferenceEquals(_target, null))
                 {
-                    _fsm.next = State.Chase;
+                    _fsm.next = State.ChaseX;
                     break;
                 }
                 
@@ -137,13 +137,13 @@ namespace Nekoyume.Game
 
             if (!ReferenceEquals(_target, null))
             {
-                _fsm.next = State.Chase;
+                _fsm.next = State.ChaseX;
             }
             else if (!ReferenceEquals(_targetTemp, null))
             {
                 _target = _targetTemp;
                 _targetTemp = null;
-                _fsm.next = State.Chase;
+                _fsm.next = State.ChaseX;
             }
             else
             {
