@@ -229,6 +229,21 @@ Prefab:
       propertyPath: m_RootOrder
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 137133572453548926, guid: 4055787e128c59f499541eb9a98f58ab,
+        type: 2}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 137424088741592848, guid: 4055787e128c59f499541eb9a98f58ab,
+        type: 2}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 137477631519284908, guid: 4055787e128c59f499541eb9a98f58ab,
+        type: 2}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 137680063488416602, guid: 4055787e128c59f499541eb9a98f58ab,
         type: 2}
       propertyPath: m_Mesh
