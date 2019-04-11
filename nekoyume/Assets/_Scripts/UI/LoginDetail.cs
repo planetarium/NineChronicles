@@ -40,6 +40,7 @@ namespace Nekoyume.UI
             btnDelete.SetActive(false);
             nameField.gameObject.SetActive(false);
             Game.Event.OnLoginDetail.AddListener(Init);
+            ActionManager.Instance.InitAgent();
         }
 
         private void OnEnable()
@@ -56,7 +57,7 @@ namespace Nekoyume.UI
         {
             btnLogin.SetActive(false);
             nameField.gameObject.SetActive(false);
-            ActionManager.Instance.Init(_selectedIndex);
+            ActionManager.Instance.InitAvatar(_selectedIndex);
             ActionManager.Instance.StartSync();
             AudioController.PlayClick();
         }
@@ -86,7 +87,7 @@ namespace Nekoyume.UI
             }
             
             btnCreate.SetActive(false);
-            ActionManager.Instance.Init(_selectedIndex);
+            ActionManager.Instance.InitAvatar(_selectedIndex);
             var nickName = nameField.text;
             ActionManager.Instance.CreateNovice(nickName);
             ActionManager.Instance.StartSync();
