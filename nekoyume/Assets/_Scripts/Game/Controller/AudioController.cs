@@ -56,7 +56,7 @@ namespace Nekoyume.Game.Controller
         }
 
         public State state { get; private set; }
-        
+
         protected override bool ShouldRename => true;
 
         private readonly Dictionary<string, AudioSource> _musicPrefabs = new Dictionary<string, AudioSource>();
@@ -68,9 +68,13 @@ namespace Nekoyume.Game.Controller
         private readonly Dictionary<string, Stack<AudioSource>> _sfxPool =
             new Dictionary<string, Stack<AudioSource>>();
 
-        private readonly Dictionary<string, AudioSource> _musicPlaylist = new Dictionary<string, AudioSource>();
+        private readonly Dictionary<string, List<AudioSource>> _musicPlaylist =
+            new Dictionary<string, List<AudioSource>>();
 
         private readonly Dictionary<string, List<AudioSource>> _sfxPlaylist =
+            new Dictionary<string, List<AudioSource>>();
+
+        private readonly Dictionary<string, List<AudioSource>> _shouldRemoveMusic =
             new Dictionary<string, List<AudioSource>>();
 
         private readonly Dictionary<string, List<AudioSource>> _shouldRemoveSfx =
@@ -91,42 +95,90 @@ namespace Nekoyume.Game.Controller
 
         private void Update()
         {
-            foreach (var pair in _sfxPlaylist)
+//            foreach (var pair in _sfxPlaylist)
+//            {
+//                foreach (var sfx in pair.Value)
+//                {
+//                    if (sfx.isPlaying)
+//                    {
+//                        continue;
+//                    }
+//
+//                    if (!_shouldRemoveSfx.ContainsKey(pair.Key))
+//                    {
+//                        _shouldRemoveSfx.Add(pair.Key, new List<AudioSource>());
+//                    }
+//
+//                    _shouldRemoveSfx[pair.Key].Add(sfx);
+//                }
+//            }
+//
+//            foreach (var pair in _shouldRemoveSfx)
+//            {
+//                foreach (var sfx in pair.Value)
+//                {
+//                    _sfxPlaylist[pair.Key].Remove(sfx);
+//                    Push(_sfxPool, pair.Key, sfx);
+//
+//                    if (_sfxPlaylist[pair.Key].Count == 0)
+//                    {
+//                        _sfxPlaylist.Remove(pair.Key);
+//                    }
+//                }
+//            }
+//
+//            _shouldRemoveSfx.Clear();
+
+            if (Input.GetKeyDown(KeyCode.Space))
             {
-                foreach (var sfx in pair.Value)
+                PlayMusic(MusicCode.Main);
+            }
+
+            CheckPlaying(_musicPool, _musicPlaylist, _shouldRemoveMusic);
+            CheckPlaying(_sfxPool, _sfxPlaylist, _shouldRemoveSfx);
+        }
+
+        private void CheckPlaying<T1, T2>(T1 pool, T2 playList, T2 shouldRemove)
+            where T1 : IDictionary<string, Stack<AudioSource>> where T2 : IDictionary<string, List<AudioSource>>
+        {
+            foreach (var pair in playList)
+            {
+                foreach (var audioSource in pair.Value)
                 {
-                    if (sfx.isPlaying)
+                    if (audioSource.isPlaying)
                     {
                         continue;
                     }
 
-                    if (!_shouldRemoveSfx.ContainsKey(pair.Key))
+                    if (!shouldRemove.ContainsKey(pair.Key))
                     {
-                        _shouldRemoveSfx.Add(pair.Key, new List<AudioSource>());
+                        shouldRemove.Add(pair.Key, new List<AudioSource>());
                     }
 
-                    _shouldRemoveSfx[pair.Key].Add(sfx);
+                    shouldRemove[pair.Key].Add(audioSource);
                 }
             }
 
-            foreach (var pair in _shouldRemoveSfx)
+            foreach (var pair in shouldRemove)
             {
-                foreach (var sfx in pair.Value)
+                foreach (var audioSource in pair.Value)
                 {
-                    _sfxPlaylist[pair.Key].Remove(sfx);
-                    Push(_sfxPool, pair.Key, sfx);
+                    playList[pair.Key].Remove(audioSource);
+                    Push(pool, pair.Key, audioSource);
 
-                    if (_sfxPlaylist[pair.Key].Count == 0)
+                    if (playList[pair.Key].Count == 0)
                     {
-                        _sfxPlaylist.Remove(pair.Key);
+                        playList.Remove(pair.Key);
                     }
                 }
             }
 
-            _shouldRemoveSfx.Clear();
+            shouldRemove.Clear();
         }
 
         #endregion
+
+        #region Initialize
 
         public void Initialize()
         {
@@ -157,6 +209,8 @@ namespace Nekoyume.Game.Controller
                 collection.Add(asset.name, audioSource);
             }
         }
+        
+        #endregion
 
         #region Play
 
@@ -172,7 +226,7 @@ namespace Nekoyume.Game.Controller
                 throw new ArgumentNullException();
             }
 
-            StopMusic(fadeIn);
+            StopMusicAll(fadeIn);
 
             var audioSource = PopFromMusicPool(audioName);
             Push(_musicPlaylist, audioName, audioSource);
@@ -196,43 +250,31 @@ namespace Nekoyume.Game.Controller
             audioSource.Play();
         }
 
-        public void StopMusic(float fadeOut = 1f)
+        public void StopMusicAll(float fadeOut = 1f)
         {
             if (state != State.Idle)
             {
                 throw new FsmException("Not initialized.");
             }
 
-            if (_musicPlaylist.Count <= 0)
+            foreach (var pair in _musicPlaylist)
             {
-                return;
+                foreach (var audioSource in pair.Value)
+                {
+                    StartCoroutine(CoFadeOut(audioSource, fadeOut));
+                }
             }
-
-            StartCoroutine(CoStopMusic(fadeOut));
         }
 
-        public void StopSfx()
+        public void StopSfxAll()
         {
             foreach (var stack in _sfxPlaylist)
             {
                 foreach (var audioSource in stack.Value)
                 {
                     audioSource.Stop();
-                    Push(_sfxPool, stack.Key, audioSource);
                 }
-
-                stack.Value.Clear();
             }
-
-            _sfxPlaylist.Clear();
-        }
-
-        private IEnumerator CoStopMusic(float fadeOut)
-        {
-            var music = _musicPlaylist.First();
-            _musicPlaylist.Clear();
-            yield return StartCoroutine(CoFadeOut(music.Value, fadeOut));
-            Push(_musicPool, music.Key, music.Value);
         }
 
         #endregion
@@ -273,19 +315,7 @@ namespace Nekoyume.Game.Controller
             return stack.Count > 0 ? stack.Pop() : Instantiate(audioName, _sfxPrefabs);
         }
 
-        private void Push(IDictionary<string, AudioSource> collection, string audioName, AudioSource audioSource)
-        {
-            if (collection.ContainsKey(audioName))
-            {
-                collection[audioName] = audioSource;
-            }
-            else
-            {
-                collection.Add(audioName, audioSource);
-            }
-        }
-
-        private void Push(IDictionary<string, List<AudioSource>> collection, string audioName, AudioSource audioSource)
+        private static void Push(IDictionary<string, List<AudioSource>> collection, string audioName, AudioSource audioSource)
         {
             if (collection.ContainsKey(audioName))
             {
@@ -298,7 +328,7 @@ namespace Nekoyume.Game.Controller
             }
         }
 
-        private void Push(IDictionary<string, Stack<AudioSource>> collection, string audioName, AudioSource audioSource)
+        private static void Push(IDictionary<string, Stack<AudioSource>> collection, string audioName, AudioSource audioSource)
         {
             if (collection.ContainsKey(audioName))
             {
@@ -316,7 +346,7 @@ namespace Nekoyume.Game.Controller
 
         #region Fade
 
-        private IEnumerator CoFadeIn(AudioSource audioSource, float duration)
+        private static IEnumerator CoFadeIn(AudioSource audioSource, float duration)
         {
             var volume = audioSource.volume;
             audioSource.volume = 0f;
@@ -334,7 +364,7 @@ namespace Nekoyume.Game.Controller
             audioSource.volume = volume;
         }
 
-        private IEnumerator CoFadeOut(AudioSource audioSource, float duration)
+        private static IEnumerator CoFadeOut(AudioSource audioSource, float duration)
         {
             var volume = audioSource.volume;
 

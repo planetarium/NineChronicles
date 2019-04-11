@@ -101,7 +101,7 @@ namespace Nekoyume.UI
             }
             base.Close();
             
-            AudioController.instance.StopMusic();
+            AudioController.instance.StopMusicAll();
         }
 
         public void Add(ItemBase characterItem)
