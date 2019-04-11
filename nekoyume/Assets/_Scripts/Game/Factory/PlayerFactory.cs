@@ -8,9 +8,8 @@ namespace Nekoyume.Game.Factory
 {
     public class PlayerFactory : MonoBehaviour
     {
-        public GameObject Create()
+        public GameObject Create(Model.Avatar avatar)
         {
-            var avatar = ActionManager.Instance.Avatar;
             if (ReferenceEquals(avatar, null))
             {
                 throw new ArgumentNullException("`Model.Avatar` can't be null.");

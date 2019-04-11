@@ -354,7 +354,7 @@ namespace Nekoyume.Game
             var player = GetComponentInChildren<Character.Player>();
             if (ReferenceEquals(player, null))
             {
-                var go = _factory.Create();
+                var go = _factory.Create(ActionManager.Instance.Avatar);
                 player = go.GetComponent<Character.Player>();
 
                 if (ReferenceEquals(player, null))
