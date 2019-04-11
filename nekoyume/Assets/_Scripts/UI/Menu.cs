@@ -48,25 +48,6 @@ namespace Nekoyume.UI
             AudioController.PlayClick();
         }
 
-        public void CombineClick()
-        {
-            StartCoroutine(CombineAsync());
-            AudioController.PlayClick();
-        }
-
-        private IEnumerator CombineAsync()
-        {
-            btnCombine.SetActive(false);
-            var items = ActionManager.Instance.Avatar.Items;
-            ActionManager.Instance.Combination();
-            while (items != ActionManager.Instance.Avatar.Items)
-            {
-                yield return new WaitForSeconds(1.0f);
-            }
-
-            btnCombine.SetActive(true);
-        }
-
         public void ShopClick()
         {
             Find<Shop>().Show();
@@ -77,7 +58,7 @@ namespace Nekoyume.UI
 
         public void CombinationClick()
         {
-            Find<CombinationRenew>()?.Show();
+            Find<Combination>()?.Show();
             Find<Status>()?.Close();
             Close();
             AudioController.PlayClick();

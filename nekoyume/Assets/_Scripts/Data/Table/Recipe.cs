@@ -13,7 +13,7 @@ namespace Nekoyume.Data.Table
         public int Material4;
         public int Material5;
 
-        public bool IsMatch(List<CombinationRenew.ItemModel> materials)
+        public bool IsMatch(List<Combination.ItemModel> materials)
         {
             var dic = GetRecipe();
 
@@ -26,10 +26,10 @@ namespace Nekoyume.Data.Table
             for (var i = 0; i < mCount; i++)
             {
                 var m = materials[i];
-                if (dic.ContainsKey(m.Id) &&
-                    dic[m.Id] <= m.Count)
+                if (dic.ContainsKey(m.id) &&
+                    dic[m.id] <= m.count)
                 {
-                    dic.Remove(m.Id);
+                    dic.Remove(m.id);
                 }
                 else
                 {
@@ -40,7 +40,7 @@ namespace Nekoyume.Data.Table
             return dic.Count == 0;
         }
 
-        public int CalculateCount(List<CombinationRenew.ItemModel> materials)
+        public int CalculateCount(List<Combination.ItemModel> materials)
         {
 
             var dic = GetRecipe();
@@ -50,9 +50,9 @@ namespace Nekoyume.Data.Table
             for (var i = 0; i < mCount; i++)
             {
                 var m = materials[i];
-                if (dic.ContainsKey(m.Id))
+                if (dic.ContainsKey(m.id))
                 {
-                    var count = Mathf.FloorToInt((float)m.Count / dic[m.Id]);
+                    var count = Mathf.FloorToInt((float)m.count / dic[m.id]);
                     result = i == 0 ? count : Mathf.Min(result, count);
                 }
                 else
