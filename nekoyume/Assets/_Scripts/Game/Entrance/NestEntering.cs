@@ -9,10 +9,12 @@ namespace Nekoyume.Game.Entrance
 {
     public class NestEntering : MonoBehaviour
     {
+        private Stage _stage;
+
         private IEnumerator Start()
         {
-            var stage = GetComponent<Stage>();
-            stage.LoadBackground("nest");
+            _stage = GetComponent<Stage>();
+            _stage.LoadBackground("nest");
 
             UI.Widget.Find<UI.Login>().ready = false;
 
@@ -22,6 +24,8 @@ namespace Nekoyume.Game.Entrance
             {
                 objectPool.Remove<Player>(clearPlayer.gameObject);
             }
+
+            _stage.selectedPlayer = null;
 
             yield return null;
             

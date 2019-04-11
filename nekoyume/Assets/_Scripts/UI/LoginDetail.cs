@@ -2,7 +2,9 @@ using System;
 using System.IO;
 using DG.Tweening;
 using Nekoyume.Action;
+using Nekoyume.Game;
 using Nekoyume.Game.Controller;
+using Nekoyume.Game.Item;
 using Nekoyume.Model;
 using UnityEngine;
 using UnityEngine.UI;
@@ -196,7 +198,7 @@ namespace Nekoyume.UI
 
         public void DeleteCharacter()
         {
-// Delete key, avatar
+            //Delete key, avatar
             var prefsKey = string.Format(ActionManager.PrivateKeyFormat, _selectedIndex);
             string privateKey = PlayerPrefs.GetString(prefsKey, "");
             PlayerPrefs.DeleteKey(prefsKey);
@@ -208,6 +210,13 @@ namespace Nekoyume.UI
             PlayerPrefs.Save();
 
             Clear();
+
+            //Reset player
+            var go = GameObject.Find("Stage");
+            var stage = go.GetComponent<Stage>();
+            var player = stage.selectedPlayer;
+            player.Init(new Player());
+
             Init(_selectedIndex);
         }
 
