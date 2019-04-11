@@ -53,10 +53,7 @@ namespace Nekoyume.Game.Item
         public void Remove(ItemBase item)
         {
             var i = items.FindIndex(ii => ii.Item.Equals(item));
-            if (i >= 0)
-            {
-                RemoveAt(i);
-            }
+            RemoveAt(i);
         }
 
         public void RemoveAt(int index)
