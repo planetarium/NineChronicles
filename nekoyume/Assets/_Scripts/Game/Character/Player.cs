@@ -66,11 +66,6 @@ namespace Nekoyume.Game.Character
 
         public override float Speed => 1.0f;
 
-        private void Start()
-        {
-            _anim = GetComponentInChildren<Animator>();
-        }
-
         public override IEnumerator CoProcessDamage(int dmg, bool critical)
         {
             yield return StartCoroutine(base.CoProcessDamage(dmg, critical));
@@ -120,6 +115,11 @@ namespace Nekoyume.Game.Character
             {
                 _mpBar.UpdatePosition(gameObject, _mpBarOffset);
             }
+
+            if (_anim == null)
+            {
+                _anim = GetComponentInChildren<Animator>();
+            }
         }
 
         public void UpdateMpBar()
@@ -142,8 +142,6 @@ namespace Nekoyume.Game.Character
             _hpBarOffset.Set(-0.22f, -0.61f, 0.0f);
             _castingBarOffset.Set(-0.22f, -0.85f, 0.0f);
             _mpBarOffset.Set(-0.22f, -0.66f, 0.0f);
-
-            _anim = GetComponentInChildren<Animator>();
         }
 
         private void InitStats(Model.Player character)
@@ -205,5 +203,6 @@ namespace Nekoyume.Game.Character
                 Event.OnUpdateStatus.Invoke();
             }
         }
+
     }
 }
