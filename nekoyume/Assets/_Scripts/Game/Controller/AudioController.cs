@@ -95,45 +95,6 @@ namespace Nekoyume.Game.Controller
 
         private void Update()
         {
-//            foreach (var pair in _sfxPlaylist)
-//            {
-//                foreach (var sfx in pair.Value)
-//                {
-//                    if (sfx.isPlaying)
-//                    {
-//                        continue;
-//                    }
-//
-//                    if (!_shouldRemoveSfx.ContainsKey(pair.Key))
-//                    {
-//                        _shouldRemoveSfx.Add(pair.Key, new List<AudioSource>());
-//                    }
-//
-//                    _shouldRemoveSfx[pair.Key].Add(sfx);
-//                }
-//            }
-//
-//            foreach (var pair in _shouldRemoveSfx)
-//            {
-//                foreach (var sfx in pair.Value)
-//                {
-//                    _sfxPlaylist[pair.Key].Remove(sfx);
-//                    Push(_sfxPool, pair.Key, sfx);
-//
-//                    if (_sfxPlaylist[pair.Key].Count == 0)
-//                    {
-//                        _sfxPlaylist.Remove(pair.Key);
-//                    }
-//                }
-//            }
-//
-//            _shouldRemoveSfx.Clear();
-
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                PlayMusic(MusicCode.Main);
-            }
-
             CheckPlaying(_musicPool, _musicPlaylist, _shouldRemoveMusic);
             CheckPlaying(_sfxPool, _sfxPlaylist, _shouldRemoveSfx);
         }
