@@ -95,8 +95,6 @@ namespace Nekoyume.Game.Character
         {
             base.PopUpDmg(position, force, dmg, critical);
 
-            // 피격 이펙트 발동.
-            // 회복 이펙트 테스트를 위해 70%의 확률로 피격 이펙트를 생성하고, 30%의 확률로 회복 이펙트를 생성한다.
             var pos = transform.position;
             pos.x -= 0.2f;
             pos.y += 0.32f;

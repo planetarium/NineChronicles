@@ -42,9 +42,7 @@ namespace Nekoyume.UI
                 w.Show();   
             }
 
-            // Reset camera focus
-            var cam = Camera.main.GetComponent<ActionCamera>();
-            cam.target = null;
+            ActionCamera.instance.Idle();
 
             var player = _stage.ReadyPlayer();
             var currentId = ActionManager.Instance.battleLog?.id;
@@ -103,7 +101,7 @@ namespace Nekoyume.UI
             }
             base.Close();
             
-            AudioController.instance.StopMusic();
+            AudioController.instance.StopMusicAll();
         }
 
         public void Add(ItemBase characterItem)

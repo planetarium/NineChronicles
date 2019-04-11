@@ -6,6 +6,8 @@ namespace Nekoyume.Game.Factory
 {
     public class VfxFactory : MonoSingleton<VfxFactory>
     {
+        protected override bool ShouldRename => true;
+        
         private ObjectPool _pool = null;
 
         protected override void Awake()

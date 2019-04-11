@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Action;
+using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
 using UnityEngine;
 
@@ -94,6 +95,8 @@ namespace Nekoyume.UI
             {
                 status.BtnInventory.group.SetAllTogglesOff();
             }
+            
+            AudioController.PlayClick();
         }
 
         public void SetItemTypesToDisable(params ItemBase.ItemType[] targetTypes)
