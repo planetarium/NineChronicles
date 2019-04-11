@@ -25,10 +25,8 @@ namespace Nekoyume.Model
         private const float CriticalMultiplier = 1.5f;
         public int level;
 
-        protected Elemental atkElement { get; set; } =
-            Elemental.Create(Data.Table.Elemental.ElementalType.Normal);
-        protected Elemental defElement { get; set; } =
-            Elemental.Create(Data.Table.Elemental.ElementalType.Normal);
+        protected Elemental ATKElement;
+        protected Elemental DEFElement;
 
         [NonSerialized] private Root _root;
         [NonSerialized] public Simulator Simulator;
@@ -80,7 +78,7 @@ namespace Nekoyume.Model
 
         private int CalcDmg(CharacterBase target, bool critical)
         {
-            int dmg = atkElement.CalculateDmg(atk, target.defElement);
+            int dmg = ATKElement.CalculateDmg(atk, target.DEFElement);
             dmg = Math.Max(dmg - target.def, 1);
             if (critical)
             {
