@@ -10,6 +10,7 @@ namespace Nekoyume.Data.Table
             return id == other.id && string.Equals(name, other.name) && elemental == other.elemental &&
                    grade == other.grade && setId == other.setId && string.Equals(ability1, other.ability1) &&
                    value1 == other.value1 && string.Equals(ability2, other.ability2) && value2 == other.value2 &&
+                   resourceId == other.resourceId &&
                    string.Equals(description, other.description);
         }
 
@@ -35,10 +36,12 @@ namespace Nekoyume.Data.Table
                 hashCode = (hashCode * 397) ^ (ability2 != null ? ability2.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ value2;
                 hashCode = (hashCode * 397) ^ (description != null ? description.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ resourceId;
                 return hashCode;
             }
         }
 
+        public int resourceId = 0;
         public Elemental.ElementalType elemental;
         public int setId = 0;
         public string ability1 = "";

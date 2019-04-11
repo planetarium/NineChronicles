@@ -1,5 +1,4 @@
 using System;
-using JetBrains.Annotations;
 using Nekoyume.Game.Util;
 using Nekoyume.Model;
 using UnityEngine;
@@ -46,7 +45,7 @@ namespace Nekoyume.Game.Factory
                 Destroy(prevAnim.gameObject);
             }
 
-            var origin = Resources.Load<GameObject>($"Prefab/{model.set?.Data.id}") ??
+            var origin = Resources.Load<GameObject>($"Prefab/{model.set?.equipData.resourceId}") ??
                          Resources.Load<GameObject>($"Prefab/{DefaultSetId}");
 
             Instantiate(origin, go.transform);
