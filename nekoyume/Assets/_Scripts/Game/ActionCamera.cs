@@ -56,6 +56,11 @@ namespace Nekoyume.Game
             _fsm.Run(State.Idle);
         }
 
+        protected override void OnDestroy()
+        {
+            _fsm.Kill();
+        }
+
         #endregion
 
         #region Fsm

@@ -250,23 +250,11 @@ namespace Nekoyume.Action
         {
             shop = newShop;
         }
-
-        public void Combination()
-        {
-            var action = new Combination
-            {
-                material_1 = 101001,
-                material_2 = 101001,
-                material_3 = 101001,
-                result = 301001,
-            };
-            ProcessAction(action);
-        }
         
         public void Combination(List<UI.Model.CountEditableItem<UI.Model.Inventory.Item>> materials)
         {
-            var action = new CombinationRenew();
-            materials.ForEach(m => action.Materials.Add(new CombinationRenew.ItemModel(m)));
+            var action = new Combination();
+            materials.ForEach(m => action.Materials.Add(new Combination.ItemModel(m)));
             ProcessAction(action);
         }
 

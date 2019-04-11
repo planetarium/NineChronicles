@@ -88,12 +88,12 @@ namespace Nekoyume.UI.Scroller
 
         private void OnDataAdd(CollectionAddEvent<Model.Inventory.Item> e)
         {
-            scroller.ReloadData(scroller.ScrollPosition);
+            scroller.ReloadData();
         }
 
         private void OnDataRemove(CollectionRemoveEvent<Model.Inventory.Item> e)
         {
-            scroller.ReloadData(scroller.ScrollPosition);
+            scroller.ReloadData();
         }
     }
 }

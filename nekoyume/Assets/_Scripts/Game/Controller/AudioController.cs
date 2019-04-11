@@ -44,7 +44,7 @@ namespace Nekoyume.Game.Controller
             public const string Critical02 = "sfx_critical02";
             public const string LevelUp = "sfx_levelup";
             public const string Cancel = "sfx_cancel";
-            public const string Popup = "sfx_pupop";
+            public const string Popup = "sfx_popup";
             public const string Click = "sfx_click";
         }
 
@@ -209,6 +209,12 @@ namespace Nekoyume.Game.Controller
             var audioSource = PopFromSfxPool(audioName);
             Push(_sfxPlaylist, audioName, audioSource);
             audioSource.Play();
+        }
+
+        public void StopAll(float musicFadeOut = 1f)
+        {
+            StopMusicAll(musicFadeOut);
+            StopSfxAll();
         }
 
         public void StopMusicAll(float fadeOut = 1f)

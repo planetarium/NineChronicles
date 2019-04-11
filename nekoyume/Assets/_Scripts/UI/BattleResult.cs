@@ -100,8 +100,6 @@ namespace Nekoyume.UI
                 Destroy(child.gameObject);
             }
             base.Close();
-            
-            AudioController.instance.StopMusicAll();
         }
 
         public void Add(ItemBase characterItem)

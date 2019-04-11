@@ -39,10 +39,6 @@ namespace Nekoyume.Pattern
                 InitState((T)Enum.Parse(t, name), null);
             }
         }
-        ~Fsm()
-        {
-            Kill();
-        }
 
         public void RegisterStateCoroutine(T state, Func<IEnumerator> func)
         {
@@ -119,11 +115,13 @@ namespace Nekoyume.Pattern
 
         private void StopCoroutine(ref Coroutine coroutine)
         {
-            if (!ReferenceEquals(coroutine, null))
+            if (ReferenceEquals(coroutine, null))
             {
-                _mono.StopCoroutine(coroutine);
-                coroutine = null;
+                return;
             }
+            
+            _mono.StopCoroutine(coroutine);
+            coroutine = null;
         }
     }
     

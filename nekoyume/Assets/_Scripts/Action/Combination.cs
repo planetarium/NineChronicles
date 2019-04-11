@@ -1,81 +1,200 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.IO;
 using System.Linq;
+using Libplanet;
 using Libplanet.Action;
+using Nekoyume.Data;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Item;
 using Nekoyume.Model;
+using UniRx;
+using UnityEngine;
 
 namespace Nekoyume.Action
 {
     [ActionType("combination")]
     public class Combination : ActionBase
     {
-        public int material_1;
-        public int material_2;
-        public int material_3;
-        public int result;
+        [Serializable]
+        public struct ItemModel
+        {
+            public int id;
+            public int count;
+
+            public ItemModel(int id, int count)
+            {
+                this.id = id;
+                this.count = count;
+            }
+
+            public ItemModel(UI.Model.CountEditableItem<UI.Model.Inventory.Item> item)
+            {
+                id = item.Item.Value.Item.Data.id;
+                count = item.Count.Value;
+                Debug.Log($"ItemModel | Id:{id}, Count:{count}");
+            }
+        }
+
+        private struct ItemModelInventoryItemPair
+        {
+            public readonly ItemModel ItemModel;
+            public readonly Inventory.InventoryItem InventoryItem;
+
+            public ItemModelInventoryItemPair(ItemModel itemModel, Inventory.InventoryItem inventoryItem)
+            {
+                ItemModel = itemModel;
+                InventoryItem = inventoryItem;
+            }
+        }
+
+        public struct ResultModel
+        {
+            public int ErrorCode;
+            public ItemModel Item;
+        }
+
+        private const string RecipePath = "Assets/Resources/DataTable/recipe.csv";
+
+        public static readonly Subject<Combination> EndOfExecuteSubject = new Subject<Combination>();
+
+        public List<ItemModel> Materials { get; private set; }
+        public ResultModel Result { get; private set; }
+
+        public override IImmutableDictionary<string, object> PlainValue =>
+            new Dictionary<string, object>
+            {
+                ["Materials"] = ByteSerializer.Serialize(Materials),
+            }.ToImmutableDictionary();
+
+        public Combination()
+        {
+            Materials = new List<ItemModel>();
+        }
+
         public override void LoadPlainValue(IImmutableDictionary<string, object> plainValue)
         {
-            material_1 = int.Parse(plainValue["material_1"].ToString());
-            material_2 = int.Parse(plainValue["material_2"].ToString());
-            material_3 = int.Parse(plainValue["material_3"].ToString());
-            result = int.Parse(plainValue["result"].ToString());
+            Materials = ByteSerializer.Deserialize<List<ItemModel>>((byte[]) plainValue["Materials"]);
         }
 
         public override IAccountStateDelta Execute(IActionContext actionCtx)
         {
             var states = actionCtx.PreviousStates;
-            var ctx = (Context) states.GetState(actionCtx.Signer) ?? CreateNovice.CreateContext("dummy");
-            var player = new Player(ctx.avatar);
-            var materials = new List<int>
+            if (actionCtx.Rehearsal)
             {
-                material_1,
-                material_2,
-                material_3
-            };
-            var items = player.inventory.items.Select(i => i.Item.Data.id);
-            bool owned = materials.All(material => items.Contains(material));
-            if (!owned)
-            {
-                throw new InvalidActionException();
+                return states.SetState(actionCtx.Signer, CreateNovice.CreateContext("dummy"));
             }
 
-            var tables = ActionManager.Instance.tables;
-            var recipe = tables.Recipe;
-            var itemTable = tables.Item;
+            var ctx = (Context) states.GetState(actionCtx.Signer);
 
-            Recipe r;
-            if (recipe.TryGetValue(result, out r))
+            // 인벤토리에 재료를 갖고 있는지 검증.
+            var pairs = new List<ItemModelInventoryItemPair>();
+            for (var i = Materials.Count - 1; i >= 0; i--)
             {
-                foreach (var material in materials)
+                var m = Materials[i];
+                try
                 {
                     var inventoryItem =
-                        player.inventory.items.FirstOrDefault(i => i.Item.Data.id == material && i.Count >= 1);
-                    if (inventoryItem == null)
-                    {
-                        throw new InvalidActionException();
-                    }
-                    inventoryItem.Count -= 1;
+                        ctx.avatar.Items.First(item => item.Item.Data.id == m.id && item.Count >= m.count);
+                    pairs.Add(new ItemModelInventoryItemPair(m, inventoryItem));
                 }
-                Item itemData;
-                if (itemTable.TryGetValue(r.Id, out itemData))
+                catch (InvalidOperationException)
                 {
-                    var combined = ItemBase.ItemFactory(itemData);
-                    player.inventory.Add(combined);
+                    Result = new ResultModel() {ErrorCode = ErrorCode.Fail};
+                    EndOfExecuteSubject.OnNext(this);
+
+                    return states.SetState(actionCtx.Signer, ctx);
                 }
-                ctx.avatar.Update(player);
+            }
+
+            // 조합식 테이블 로드.
+            var recipeTable = new Table<Recipe>();
+            var recipeTableRawDataPath = Path.Combine(Directory.GetCurrentDirectory(), RecipePath);
+            recipeTable.Load(File.ReadAllText(recipeTableRawDataPath));
+
+            // 조합식 검증.
+            Recipe resultItem = null;
+            var resultCount = 0;
+            using (var e = recipeTable.GetEnumerator())
+            {
+                while (e.MoveNext())
+                {
+                    if (!e.Current.Value.IsMatch(Materials))
+                    {
+                        continue;
+                    }
+
+                    resultItem = e.Current.Value;
+                    resultCount = e.Current.Value.CalculateCount(Materials);
+                    break;
+                }
+            }
+
+            // 제거가 잘 됐는지 로그 찍기.
+            ctx.avatar.Items.ForEach(item => Debug.Log($"제거 전 // Id:{item.Item.Data.id}, Count:{item.Count}"));
+            
+            // 사용한 재료를 인벤토리에서 제거.
+            pairs.ForEach(pair =>
+            {
+                Debug.Log($"제거 // pair.InventoryItem.Count:{pair.InventoryItem.Count}, pair.ItemModel.Count:{pair.ItemModel.count}");
+                pair.InventoryItem.Count -= pair.ItemModel.count;
+                if (pair.InventoryItem.Count == 0)
+                {
+                    ctx.avatar.Items.Remove(pair.InventoryItem);
+                }
+            });
+            
+            // 제거가 잘 됐는지 로그 찍기.
+            ctx.avatar.Items.ForEach(item => Debug.Log($"제거 후 // Id:{item.Item.Data.id}, Count:{item.Count}"));
+
+            // 뽀각!!
+            if (ReferenceEquals(resultItem, null) ||
+                resultCount == 0)
+            {
+                Result = new ResultModel() {ErrorCode = ErrorCode.Fail};
+                EndOfExecuteSubject.OnNext(this);
+
                 return states.SetState(actionCtx.Signer, ctx);
             }
-            throw new InvalidActionException();
-        }
+            
+            // 조합 결과 획득.
+            {
+                var itemTable = ActionManager.Instance.tables.ItemEquipment;
+                ItemEquipment itemData;
+                if (itemTable.TryGetValue(resultItem.Id, out itemData))
+                {
+                    try
+                    {
+                        var inventoryItem = ctx.avatar.Items.First(item => item.Item.Data.id == resultItem.Id);
+                        inventoryItem.Count += resultCount;
+                    }
+                    catch (InvalidOperationException)
+                    {
+                        var itemBase = ItemBase.ItemFactory(itemData);
+                        ctx.avatar.Items.Add(new Inventory.InventoryItem(itemBase, 1));   
+                    }
+                }
+                else
+                {
+                    Result = new ResultModel() {ErrorCode = ErrorCode.KeyNotFoundInTable};
+                    EndOfExecuteSubject.OnNext(this);
+                    
+                    return states.SetState(actionCtx.Signer, ctx);
+                }
+            }
+            
+            // 획득이 잘 됐는지 로그 찍기.
+            ctx.avatar.Items.ForEach(item => Debug.Log($"획득 후 // Id:{item.Item.Data.id}, Count:{item.Count}"));
 
-        public override IImmutableDictionary<string, object> PlainValue => new Dictionary<string, object>
-        {
-            ["material_1"] = material_1,
-            ["material_2"] = material_2,
-            ["material_3"] = material_3,
-            ["result"] = result,
-        }.ToImmutableDictionary();
+            Result = new ResultModel()
+            {
+                ErrorCode = ErrorCode.Success,
+                Item = new ItemModel(resultItem.Id, resultCount)
+            };
+            EndOfExecuteSubject.OnNext(this);
+
+            return states.SetState(actionCtx.Signer, ctx);
+        }
     }
 }

@@ -23,7 +23,7 @@ namespace Nekoyume.UI
             Widget.Create<Blind>();
             Widget.Create<Shop>();
             Widget.Create<QuestPreparation>();
-            Widget.Create<CombinationRenew>();
+            Widget.Create<Combination>();
             
             // 모듈류.
             Widget.Create<StatusDetail>();
@@ -35,6 +35,7 @@ namespace Nekoyume.UI
             Widget.Create<CombinationResultPopup>();
             
             // 로딩창류.
+            Widget.Create<GrayLoadingScreen>();
             Widget.Create<LoadingScreen>();
 #if DEBUG
             Widget.Create<Cheat>(true);
