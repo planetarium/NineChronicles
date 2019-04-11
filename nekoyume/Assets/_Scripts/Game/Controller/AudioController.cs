@@ -9,6 +9,7 @@ using UnityEditor;
 using UnityEngine;
 using UniRx;
 using UniRx.Triggers;
+using Random = UnityEngine.Random;
 
 namespace Nekoyume.Game.Controller
 {
@@ -46,6 +47,9 @@ namespace Nekoyume.Game.Controller
             public const string Cancel = "sfx_cancel";
             public const string Popup = "sfx_popup";
             public const string Click = "sfx_click";
+            public const string Swing = "sfx_swing";
+            public const string Swing2 = "sfx_swing2";
+            public const string Swing3 = "sfx_swing3";
         }
 
         public enum State
@@ -370,6 +374,41 @@ namespace Nekoyume.Game.Controller
         public static void PlayPopup()
         {
             instance.PlaySfx(SfxCode.Popup);
+        }
+
+        public static void PlaySwing()
+        {
+            var random = Random.value;
+            if (random < 0.33f)
+            {
+                instance.PlaySfx(SfxCode.Swing);
+            }
+            else if (random < 0.66f)
+            {
+                instance.PlaySfx(SfxCode.Swing2);
+            }
+            else
+            {
+                instance.PlaySfx(SfxCode.Swing3);
+            }
+        }
+
+        public static void PlayFootStep()
+        {
+            var random = Random.value;
+            instance.PlaySfx(random < 0.5f ? SfxCode.FootStepLow : SfxCode.FootStepHigh);
+        }
+        
+        public static void PlayDamaged()
+        {
+            var random = Random.value;
+            instance.PlaySfx(SfxCode.DamageNormal);
+        }
+        
+        public static void PlayDamagedCritical()
+        {
+            var random = Random.value;
+            instance.PlaySfx(random < 0.5f ? SfxCode.Critical01 : SfxCode.Critical02);
         }
 
         #endregion
