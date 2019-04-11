@@ -8,7 +8,7 @@ namespace Nekoyume.Data.Table
         public int id = 0;
         public string characterName = "";
         public string characterInfo = "";
-        public string characterResource = "";
+        public int characterResource = 0;
         public int bookIndex = 0;
         public string size = "s";
         public Elemental.ElementalType elemental;
