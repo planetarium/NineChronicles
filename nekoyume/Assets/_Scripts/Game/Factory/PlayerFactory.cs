@@ -1,5 +1,4 @@
 using System;
-using Nekoyume.Action;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Util;
 using UnityEngine;
@@ -8,6 +7,7 @@ namespace Nekoyume.Game.Factory
 {
     public class PlayerFactory : MonoBehaviour
     {
+        private const int DefaultSetId = 101000;
         public GameObject Create(Model.Avatar avatar)
         {
             if (ReferenceEquals(avatar, null))
@@ -22,9 +22,22 @@ namespace Nekoyume.Game.Factory
                 throw new NotFoundComponentException<Player>();
             }
 
+            var go = player.gameObject;
+
+            var prevAnim = go.GetComponentInChildren<Animator>(true);
+            if (prevAnim)
+            {
+                Destroy(prevAnim.gameObject);
+            }
+
+            var model = avatar.ToPlayer();
+            var origin = Resources.Load<GameObject>($"Prefab/{model.set?.Data.id}") ??
+                         Resources.Load<GameObject>($"Prefab/{DefaultSetId}");
+
+            Instantiate(origin, go.transform);
             player.Init(avatar.ToPlayer());
 
-            return player.gameObject;
+            return go;
         }
     }
 }
