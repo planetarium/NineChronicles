@@ -152,7 +152,8 @@ namespace Nekoyume.Action
         {
             PrivateKey privateKey = null;
             var key = string.Format(PrivateKeyFormat, "agent");
-            var privateKeyHex = PlayerPrefs.GetString(key, "");
+            var privateKeyHex = GetCommandLineOption("private-key")
+                                ?? PlayerPrefs.GetString(key, "");
 
             if (string.IsNullOrEmpty(privateKeyHex))
             {
