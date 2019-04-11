@@ -1,6 +1,7 @@
 using System;
-using Nekoyume.Game.Character;
+using JetBrains.Annotations;
 using Nekoyume.Game.Util;
+using Nekoyume.Model;
 using UnityEngine;
 
 namespace Nekoyume.Game.Factory
@@ -15,11 +16,26 @@ namespace Nekoyume.Game.Factory
                 throw new ArgumentNullException("`Model.Avatar` can't be null.");
             }
 
+            return Create(avatar.ToPlayer());
+        }
+
+        public GameObject Create(Player model = null)
+        {
+            if (ReferenceEquals(model, null))
+            {
+                model = new Player();
+            }
+
             var objectPool = GetComponent<ObjectPool>();
-            var player = objectPool.Get<Player>();
+            if (ReferenceEquals(objectPool, null))
+            {
+                throw new NotFoundComponentException<ObjectPool>();
+            }
+
+            var player = objectPool.Get<Character.Player>();
             if (ReferenceEquals(player, null))
             {
-                throw new NotFoundComponentException<Player>();
+                throw new NotFoundComponentException<Character.Player>();
             }
 
             var go = player.gameObject;
@@ -30,12 +46,11 @@ namespace Nekoyume.Game.Factory
                 Destroy(prevAnim.gameObject);
             }
 
-            var model = avatar.ToPlayer();
             var origin = Resources.Load<GameObject>($"Prefab/{model.set?.Data.id}") ??
                          Resources.Load<GameObject>($"Prefab/{DefaultSetId}");
 
             Instantiate(origin, go.transform);
-            player.Init(avatar.ToPlayer());
+            player.Init(model);
 
             return go;
         }
