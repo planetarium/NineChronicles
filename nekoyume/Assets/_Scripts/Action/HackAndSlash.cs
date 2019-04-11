@@ -39,8 +39,8 @@ namespace Nekoyume.Action
 
                 return states.SetState(actionCtx.Signer, ctx);
             }
-            var items = ctx.avatar.Items.Select(i => i.Item).ToArray();
-            var currentEquipments = items.OfType<Equipment>().ToArray();
+            var items = ctx.avatar.Items.Select(i => i.Item).ToImmutableHashSet();
+            var currentEquipments = items.OfType<Equipment>().ToImmutableHashSet();
             if (Equipments.Count > 0)
             {
                 foreach (var equipment in Equipments)
@@ -62,9 +62,9 @@ namespace Nekoyume.Action
                 }
             }
 
-            var currentFoods = items.OfType<Food>().ToArray();
             if (Foods.Count > 0)
             {
+                var currentFoods = items.OfType<Food>().ToImmutableHashSet();
                 foreach (var food in Foods)
                 {
                     if (!currentFoods.Contains(food))
