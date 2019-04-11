@@ -304,12 +304,13 @@ namespace Nekoyume.Action
         {
             foreach (string line in LoadConfigLines(PeersFileName))
             {
-                string[] tokens = line.Split('@');
+                string[] tokens = line.Split(',');
                 var pubKey = new PublicKey(ByteUtil.ParseHex(tokens[0]));
-                string host = tokens[1].Split(':')[0];
-                int port = int.Parse(tokens[1].Split(':')[1]);
+                string host = tokens[1];
+                int port = int.Parse(tokens[2]);
+                int version = int.Parse(tokens[3]);
 
-                yield return new Peer(pubKey, new DnsEndPoint(host, port));
+                yield return new Peer(pubKey, new DnsEndPoint(host, port), version);
             }
         }
 
