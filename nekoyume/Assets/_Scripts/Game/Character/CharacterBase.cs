@@ -5,6 +5,7 @@ using System.Linq;
 using BTAI;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.CC;
+using Nekoyume.Game.Controller;
 using Nekoyume.UI;
 using UnityEngine;
 
@@ -235,10 +236,12 @@ namespace Nekoyume.Game.Character
             if (critical)
             {
                 ActionCamera.instance.Shake();
+                AudioController.PlayDamagedCritical();
                 CriticalText.Show(position, force, dmg);
             }
             else
             {
+                AudioController.PlayDamaged();
                 DamageText.Show(position, force, dmg);
             }
         }
@@ -282,11 +285,6 @@ namespace Nekoyume.Game.Character
         protected void DieEnd()
         {
             dieEnd = true;
-        }
-
-        protected void DummyEvent()
-        {
-            Debug.Log("DummyEvent for avoid Animator exception.");
         }
     }
 }

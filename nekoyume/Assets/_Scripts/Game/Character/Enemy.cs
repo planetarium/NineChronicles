@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using DG.Tweening;
+using Nekoyume.Game.Controller;
 using UnityEngine;
 
 namespace Nekoyume.Game.Character
@@ -79,5 +80,10 @@ namespace Nekoyume.Game.Character
             _targetTag = Tag.Player;
         }
 
+        public void PlayAttackSfx()
+        {
+            // Fix me.
+            // 이후 몬스터 별 공격 음이 재생된다.
+        }
     }
 }
