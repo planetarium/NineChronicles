@@ -88,8 +88,8 @@ namespace Nekoyume.Game.Item
         public static Sprite GetSprite(ItemBase item = null)
         {
             var path = item is ItemUsable ? EquipmentPath : ItemPath;
-            var id = item?.Data.id ?? DefaultId;
-            return Resources.Load<Sprite>(string.Format(path, id));
+            return Resources.Load<Sprite>(string.Format(path, item?.Data.id)) ??
+                   Resources.Load<Sprite>(string.Format(path, DefaultId));
         }
     }
 }

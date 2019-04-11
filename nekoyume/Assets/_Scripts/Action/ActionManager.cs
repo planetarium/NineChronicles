@@ -62,6 +62,7 @@ namespace Nekoyume.Action
 
         private void Awake()
         {
+            Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
             DontDestroyOnLoad(gameObject);
             Instance = this;
             tables = GameObject.Find("Game").GetComponent<Tables>();
@@ -137,11 +138,12 @@ namespace Nekoyume.Action
             agent.queuedActions.Enqueue(action);
         }
 
-        public void HackAndSlash(List<Equipment> equipments)
+        public void HackAndSlash(List<Equipment> equipments, List<Food> foods)
         {
             var action = new HackAndSlash
             {
                 Equipments = equipments,
+                Foods = foods,
             };
             ProcessAction(action);
         }

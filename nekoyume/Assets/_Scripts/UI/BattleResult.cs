@@ -48,7 +48,7 @@ namespace Nekoyume.UI
 
             var player = _stage.ReadyPlayer();
             var currentId = ActionManager.Instance.battleLog?.id;
-            ActionManager.Instance.HackAndSlash(player.equipments);
+            ActionManager.Instance.HackAndSlash(player.equipments, new List<Food>());
             while (currentId == ActionManager.Instance.battleLog?.id)
             {
                 yield return null;

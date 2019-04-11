@@ -18,5 +18,9 @@ namespace Nekoyume.Game.Character
         {
             Event.OnDieEnd.Invoke();
         }
+
+        public void Dummy()
+        {
+        }
     }
 }

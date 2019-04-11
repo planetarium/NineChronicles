@@ -52,12 +52,21 @@ namespace Nekoyume.Game.Item
 
         public void Remove(ItemBase item)
         {
-
+            var i = items.FindIndex(ii => ii.Item.Equals(item));
+            RemoveAt(i);
         }
 
         public void RemoveAt(int index)
         {
-
+            var inventoryItem = items[index];
+            if (inventoryItem.Count <= 1)
+            {
+                items.RemoveAt(index);
+            }
+            else
+            {
+                inventoryItem.Count--;
+            }
         }
 
         public ItemBase GetItem(int index)

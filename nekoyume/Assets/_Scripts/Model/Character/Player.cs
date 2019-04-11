@@ -259,6 +259,15 @@ namespace Nekoyume.Model
                 yield return $"{Elemental.GetDescription(dWeak)} 방어 +{dMultiply}%";
             }
         }
+
+        public void Use(List<Food> foods)
+        {
+            foreach (var food in foods)
+            {
+                food.Use(this);
+                inventory.Remove(food);
+            }
+        }
     }
 
     public class InvalidEquipmentException : Exception

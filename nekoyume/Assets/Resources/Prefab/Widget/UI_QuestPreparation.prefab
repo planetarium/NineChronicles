@@ -435,7 +435,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &1307564517680520
 GameObject:
   m_ObjectHideFlags: 1
@@ -486,7 +486,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &1331457913435806
 GameObject:
   m_ObjectHideFlags: 1
@@ -857,7 +857,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &1546284709581432
 GameObject:
   m_ObjectHideFlags: 0
@@ -1354,7 +1354,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &1848691351574830
 GameObject:
   m_ObjectHideFlags: 1
@@ -1590,7 +1590,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &1962369396440776
 GameObject:
   m_ObjectHideFlags: 1
@@ -4012,7 +4012,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   button: {fileID: 1884178361045740}
   icon: {fileID: 114688556689353584}
-  type: 0
+  type: 9
 --- !u!114 &114556263348262734
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4081,7 +4081,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   button: {fileID: 1228854892702718}
   icon: {fileID: 114650127754207304}
-  type: 0
+  type: 9
 --- !u!114 &114586916123826132
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4375,7 +4375,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   button: {fileID: 1577613907961746}
   icon: {fileID: 114986572137101238}
-  type: 0
+  type: 9
 --- !u!114 &114632743116072858
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -5083,7 +5083,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   button: {fileID: 1597223757264018}
   icon: {fileID: 114151070390975008}
-  type: 0
+  type: 9
 --- !u!114 &114784436846778046
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -5336,14 +5336,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemInfoWidget: {fileID: 114154731307812880}
   itemInfoSelectedItem: {fileID: 114758025263029224}
+  selectedItemCount: 0
   buttonSellImage: {fileID: 114002145871747508}
   buttonSellText: {fileID: 114410782152371764}
   usableSlots:
-  - {fileID: 1509696070587918}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 114554965376900446}
+  - {fileID: 114866358232385862}
+  - {fileID: 114780327851574544}
+  - {fileID: 114573292851485406}
+  - {fileID: 114623971770294864}
   equipSlots:
   - {fileID: 1053444114446616}
   - {fileID: 1818915644472016}
@@ -5433,7 +5434,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   button: {fileID: 1523758151469910}
   icon: {fileID: 114698456501944118}
-  type: 0
+  type: 9
 --- !u!114 &114886806806124792
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -7600,10 +7601,10 @@ RectTransform:
   m_Father: {fileID: 224197421580198248}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 33, y: -201.5}
-  m_SizeDelta: {x: 66, y: 63}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: -10, y: -10}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224520955727129500
 RectTransform:
@@ -8175,7 +8176,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -62}
+  m_AnchoredPosition: {x: 0, y: -72}
   m_SizeDelta: {x: 0, y: 50}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!224 &224830093642002486
