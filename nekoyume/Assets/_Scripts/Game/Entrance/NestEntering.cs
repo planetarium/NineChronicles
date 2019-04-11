@@ -1,5 +1,8 @@
 ﻿using DG.Tweening;
 using System.Collections;
+using Nekoyume.Game.Character;
+using Nekoyume.Game.Factory;
+using Nekoyume.Game.Tween;
 using UnityEngine;
 
 namespace Nekoyume.Game.Entrance
@@ -14,10 +17,10 @@ namespace Nekoyume.Game.Entrance
             UI.Widget.Find<UI.Login>().ready = false;
 
             var objectPool = GetComponent<Util.ObjectPool>();
-            var clearPlayers = GetComponentsInChildren<Character.Player>(true);
+            var clearPlayers = GetComponentsInChildren<Player>(true);
             foreach (var clearPlayer in clearPlayers)
             {
-                objectPool.Remove<Character.Player>(clearPlayer.gameObject);
+                objectPool.Remove<Player>(clearPlayer.gameObject);
             }
 
             yield return null;
@@ -30,22 +33,37 @@ namespace Nekoyume.Game.Entrance
                 if (i % 2 == 0)
                     endPos.y = -1.1f;
                 var avatar = Action.ActionManager.Instance.Avatars[i];
-                var player = objectPool.Get<Character.Player>();
-                player.transform.position = beginPos;
-                Instantiate(placeRes, player.transform);
-                player.transform.DOMove(endPos, 2.0f).SetEase(Ease.OutBack);
-                var anim = player.GetComponentInChildren<Animator>();
-                anim.Play("Appear");
+
+                var factory = GetComponent<PlayerFactory>();
+                if (ReferenceEquals(factory, null))
+                {
+                    throw new NotFoundComponentException<PlayerFactory>();
+                }
+
+                GameObject go;
+                bool active;
                 if (avatar != null)
                 {
-                    player.Init(avatar.ToPlayer());
+                    go = factory.Create(avatar);
+                    var anim = go.GetComponentInChildren<Animator>();
+                    anim.Play("Appear");
+                    active = true;
                 }
                 else
                 {
-                    player.transform.Find("Animator")?.gameObject.SetActive(false);
-                    var tween = player.GetComponentInChildren<Tween.DOTweenSpriteAlpha>();
-                    tween.gameObject.SetActive(false);
+                    go = factory.Create();
+                    active = false;
                 }
+                go.transform.position = beginPos;
+                var place = Instantiate(placeRes, go.transform);
+
+                // player animator
+                go.transform.GetChild(0).gameObject.SetActive(active);
+
+                var tween = place.GetComponentInChildren<DOTweenSpriteAlpha>();
+                tween.gameObject.SetActive(active);
+
+                go.transform.DOMove(endPos, 2.0f).SetEase(Ease.OutBack);
                 yield return new WaitForSeconds(0.2f);
             }
 
