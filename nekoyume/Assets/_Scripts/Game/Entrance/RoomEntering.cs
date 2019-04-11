@@ -41,12 +41,8 @@ namespace Nekoyume.Game.Entrance
 
             UI.Widget.Find<UI.Status>().UpdatePlayer(player);
 
-            var cam = Camera.main.gameObject.GetComponent<ActionCamera>();
-            var camPos = cam.transform.position;
-            camPos.x = 0.0f;
-            camPos.y = 0.0f;
-            cam.transform.position = camPos;
-            cam.target = null;
+            ActionCamera.instance.SetPoint(0f, 0f);
+            ActionCamera.instance.Idle();
 
             yield return new WaitForSeconds(2.0f);
             loadingScreen.Close();

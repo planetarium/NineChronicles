@@ -176,7 +176,8 @@ namespace Nekoyume.UI
             {
                 _player.UpdateSet((SetItem) slot.item);
             }
-            AudioController.PlaySelect();
+
+            AudioController.instance.PlaySfx(AudioController.SfxCode.Equipment);
         }
 
         private void SetActiveButtonEquip(bool isActive)

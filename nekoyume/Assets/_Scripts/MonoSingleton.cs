@@ -5,7 +5,12 @@ namespace Nekoyume
     public class MonoSingleton<T> : MonoBehaviour where T : MonoSingleton<T>
     {
         private static T _instance;
+        
+        private static readonly object Lock = new object();
+        private static bool _applicationIsQuitting;
 
+        protected virtual bool ShouldRename => false;
+        
         public static T instance
         {
             get
@@ -43,9 +48,6 @@ namespace Nekoyume
             }
         }
 
-        private static readonly object Lock = new object();
-        private static bool _applicationIsQuitting = false;
-
         #region Mono
 
         protected virtual void Awake()
@@ -54,7 +56,10 @@ namespace Nekoyume
             {
                 _instance = (T) this;
 
-                name = typeof(T).ToString();
+                if (ShouldRename)
+                {
+                    name = typeof(T).ToString();
+                }
 
                 DontDestroyOnLoad(gameObject);
             }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Nekoyume.Action;
+using Nekoyume.Pattern;
 using UnityEditor;
 using UnityEngine;
 using UniRx;
@@ -55,6 +56,8 @@ namespace Nekoyume.Game.Controller
         }
 
         public State state { get; private set; }
+        
+        protected override bool ShouldRename => true;
 
         private readonly Dictionary<string, AudioSource> _musicPrefabs = new Dictionary<string, AudioSource>();
         private readonly Dictionary<string, AudioSource> _sfxPrefabs = new Dictionary<string, AudioSource>();
@@ -129,7 +132,7 @@ namespace Nekoyume.Game.Controller
         {
             if (state != State.None)
             {
-                throw new FiniteStateMachineException("Already initialized.");
+                throw new FsmException("Already initialized.");
             }
 
             state = State.InInitializing;
@@ -161,7 +164,7 @@ namespace Nekoyume.Game.Controller
         {
             if (state != State.Idle)
             {
-                throw new FiniteStateMachineException("Not initialized.");
+                throw new FsmException("Not initialized.");
             }
 
             if (string.IsNullOrEmpty(audioName))
@@ -180,7 +183,7 @@ namespace Nekoyume.Game.Controller
         {
             if (state != State.Idle)
             {
-                throw new FiniteStateMachineException("Not initialized.");
+                throw new FsmException("Not initialized.");
             }
 
             if (string.IsNullOrEmpty(audioName))
@@ -197,7 +200,7 @@ namespace Nekoyume.Game.Controller
         {
             if (state != State.Idle)
             {
-                throw new FiniteStateMachineException("Not initialized.");
+                throw new FsmException("Not initialized.");
             }
 
             if (_musicPlaylist.Count <= 0)

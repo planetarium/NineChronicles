@@ -605,9 +605,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78734f88311b444e29ca92aa6b70be08, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 0}
-  followSpeedScale: 0.08
-  targetRatioX: 0.4
+  chaseData:
+    offsetX: 1.5
+    smoothSpeed: 2
+  shakeData:
+    duration: 0.2
+    magnitudeX: 0.01
+    magnitudeY: 0.03
 --- !u!1 &2109428484
 GameObject:
   m_ObjectHideFlags: 0

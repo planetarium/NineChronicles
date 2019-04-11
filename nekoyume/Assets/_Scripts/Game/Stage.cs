@@ -34,7 +34,6 @@ namespace Nekoyume.Game
         private PlayerFactory _factory;
         private MonsterSpawner _spawner;
         private Camera _camera;
-        private ActionCamera _cam;
         private ObjectPool _objectPool;
 
         private void Awake()
@@ -43,12 +42,6 @@ namespace Nekoyume.Game
             if (ReferenceEquals(_camera, null))
             {
                 throw new NullReferenceException("`Camera.main` can't be null.");
-            }
-
-            _cam = _camera.GetComponent<ActionCamera>();
-            if (ReferenceEquals(_cam, null))
-            {
-                throw new NotFoundComponentException<ActionCamera>();
             }
 
             _factory = GetComponent<PlayerFactory>();
@@ -240,7 +233,7 @@ namespace Nekoyume.Game
             dummy.transform.position = roomPlayer.transform.position;
             while (Widget.Find<BattleResult>().IsActive())
             {
-                UpdateDummyPosition(roomPlayer, _cam);
+                UpdateDummyPosition(roomPlayer, ActionCamera.instance);
                 yield return new WaitForEndOfFrame();
             }
             _objectPool.ReleaseAll();
@@ -252,7 +245,7 @@ namespace Nekoyume.Game
             Vector2 position = dummy.transform.position;
             position.x += Time.deltaTime * player.Speed;
             dummy.transform.position = position;
-            cam.target = dummy.transform;
+            cam.ChaseX(dummy.transform);
         }
 
         public IEnumerator CoSpawnPlayer(Model.Player character)
@@ -266,7 +259,7 @@ namespace Nekoyume.Game
             playerCharacter.Init(character);
             var player = playerCharacter.gameObject;
             status.UpdatePlayer(player);
-            _cam.target = player.transform;
+            ActionCamera.instance.ChaseX(player.transform);
             while (true)
             {
                 Debug.Log($"pos: {pos.x}");

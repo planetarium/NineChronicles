@@ -49,11 +49,7 @@ namespace Nekoyume.Game.Entrance
                 yield return new WaitForSeconds(0.2f);
             }
 
-            var cam = Camera.main.gameObject.GetComponent<ActionCamera>();
-            var camPos = cam.transform.position;
-            camPos.x = 0.0f;
-            camPos.y = 0.0f;
-            cam.transform.position = camPos;
+            ActionCamera.instance.SetPoint(0f, 0f);
 
             yield return new WaitForSeconds(1.0f);
 

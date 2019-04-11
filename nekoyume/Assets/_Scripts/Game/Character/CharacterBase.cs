@@ -234,6 +234,7 @@ namespace Nekoyume.Game.Character
         {
             if (critical)
             {
+                ActionCamera.instance.Shake();
                 CriticalText.Show(position, force, dmg);
             }
             else
