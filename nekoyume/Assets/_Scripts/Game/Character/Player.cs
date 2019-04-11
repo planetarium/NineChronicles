@@ -32,6 +32,8 @@ namespace Nekoyume.Game.Character
         protected override Vector3 _hpBarOffset => _castingBarOffset + new Vector3(0, 0.24f, 0.0f);
         protected Vector3 _mpBarOffset => _castingBarOffset + new Vector3(0, 0.19f, 0.0f);
 
+        private const int DefaultSetId = 101000;
+
         protected override Vector3 _castingBarOffset
         {
             get
@@ -158,14 +160,17 @@ namespace Nekoyume.Game.Character
 
         public void UpdateSet(SetItem item)
         {
-            var itemId = item?.Data.id ?? 0;
-            int id;
-            // TODO Change Players mesh instead of weapon only.
-            if (SetItem.WeaponMap.TryGetValue(itemId, out id))
+            var itemId = item?.equipData.resourceId ?? DefaultSetId;
+            var prevAnim = gameObject.GetComponentInChildren<Animator>(true);
+            if (prevAnim)
             {
-                var mesh = Resources.Load<SpriteMesh>($"avatar/character_0003/item_{id}");
-                _weapon.spriteMesh = mesh;
+                Destroy(prevAnim.gameObject);
             }
+
+            var origin = Resources.Load<GameObject>($"Prefab/{itemId}");
+
+            Instantiate(origin, gameObject.transform);
+
         }
 
         public bool TargetInRange(CharacterBase target) =>

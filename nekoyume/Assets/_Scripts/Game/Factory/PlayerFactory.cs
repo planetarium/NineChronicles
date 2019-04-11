@@ -37,21 +37,9 @@ namespace Nekoyume.Game.Factory
                 throw new NotFoundComponentException<Character.Player>();
             }
 
-            var go = player.gameObject;
-
-            var prevAnim = go.GetComponentInChildren<Animator>(true);
-            if (prevAnim)
-            {
-                Destroy(prevAnim.gameObject);
-            }
-
-            var origin = Resources.Load<GameObject>($"Prefab/{model.set?.equipData.resourceId}") ??
-                         Resources.Load<GameObject>($"Prefab/{DefaultSetId}");
-
-            Instantiate(origin, go.transform);
             player.Init(model);
 
-            return go;
+            return player.gameObject;
         }
     }
 }
