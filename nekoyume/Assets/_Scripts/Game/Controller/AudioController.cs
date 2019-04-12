@@ -1,14 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using Nekoyume.Action;
 using Nekoyume.Pattern;
-using UnityEditor;
 using UnityEngine;
-using UniRx;
-using UniRx.Triggers;
 using Random = UnityEngine.Random;
 
 namespace Nekoyume.Game.Controller

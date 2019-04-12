@@ -3476,14 +3476,14 @@ AnimationClip:
   m_HasMotionFloatCurves: 0
   m_GenerateMotionCurves: 0
   m_Events:
-  - time: 0.35
+  - time: 0.33333334
     functionName: PlayAttackSfx
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
-  - time: 0.43333334
+  - time: 0.35
     functionName: AttackEnd
     data: 
     objectReferenceParameter: {fileID: 0}

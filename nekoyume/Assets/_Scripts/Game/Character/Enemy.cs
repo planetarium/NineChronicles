@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using DG.Tweening;
 using Nekoyume.Game.Controller;
+using Nekoyume.Game.Vfx;
 using UnityEngine;
 
 namespace Nekoyume.Game.Character
@@ -43,17 +44,30 @@ namespace Nekoyume.Game.Character
                 colorseq.Append(mat.DOColor(Color.red, 0.1f));
                 colorseq.Append(mat.DOColor(Color.white, 0.1f));
             }
-
-            if (HP <= 0)
-            {
-                StartCoroutine(Dying());
-            }
         }
 
         protected override void OnDead()
         {
             Event.OnEnemyDead.Invoke(this);
             base.OnDead();
+        }
+        
+        protected override void PopUpDmg(Vector3 position, Vector3 force, string dmg, bool critical)
+        {
+            base.PopUpDmg(position, force, dmg, critical);
+
+            var pos = transform.position;
+            pos.x -= 0.2f;
+            pos.y += 0.32f;
+            
+            if (critical)
+            {
+                VfxController.instance.Create<VfxBattleAttackCritical01>(pos).Play();
+            }
+            else
+            {
+                VfxController.instance.Create<VfxBattleAttack01>(pos).Play();    
+            }
         }
 
         public void Init(Model.Monster spawnCharacter)
@@ -75,8 +89,10 @@ namespace Nekoyume.Game.Character
             HPMax = HP;
         }
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
+            
             _targetTag = Tag.Player;
         }
 

@@ -55,12 +55,17 @@ namespace Nekoyume.Game.Character
         public Item.Inventory Inventory;
         private float _range = 1.2f;
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
+            
+            _anim = GetComponentInChildren<Animator>();
+            
             Event.OnAttackEnd.AddListener(AttackEnd);
             Event.OnHitEnd.AddListener(HitEnd);
             Event.OnDieEnd.AddListener(DieEnd);
             Inventory = new Item.Inventory();
+            
             _targetTag = Tag.Enemy;
         }
 
@@ -76,10 +81,6 @@ namespace Nekoyume.Game.Character
             PopUpDmg(position, force, txt, critical);
 
             Event.OnUpdateStatus.Invoke();
-            if (HP <= 0)
-            {
-                StartCoroutine(Dying());
-            }
         }
 
         protected override void OnDead()
@@ -95,14 +96,18 @@ namespace Nekoyume.Game.Character
             var pos = transform.position;
             pos.x -= 0.2f;
             pos.y += 0.32f;
-            VfxFactory.instance.Create<VfxBattleDamage01>(pos).Play();
+            VfxController.instance.Create<VfxBattleDamage01>(pos).Play();
         }
 
         protected override void Update()
         {
             base.Update();
 
-            if (ReferenceEquals(_anim, null))
+            // Reference.
+            // if (ReferenceEquals(_anim, null)) 이 라인일 때와 if (_anim == null) 이 라인일 때의 결과가 달라서 주석을 남겨뒀어요.
+            // 아마 전자는 포인터가 가리키는 실제 값을 검사하는 것이고, 후자는 _anim의 값을 검사하는 것 같아요.
+            // if (ReferenceEquals(_anim, null))
+            if (_anim == null)
             {
                 _anim = GetComponentInChildren<Animator>();
             }

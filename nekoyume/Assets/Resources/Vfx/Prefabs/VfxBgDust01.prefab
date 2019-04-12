@@ -21,8 +21,9 @@ GameObject:
   - component: {fileID: 4746484628171542}
   - component: {fileID: 198639120020848336}
   - component: {fileID: 199073692886060360}
+  - component: {fileID: 114409388165809060}
   m_Layer: 0
-  m_Name: NY_bg_effect_dust_01
+  m_Name: VfxBgDust01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -41,6 +42,17 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 86.216, y: 0, z: 0}
+--- !u!114 &114409388165809060
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1169974332204544}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 65cefeeffaee4d37982189e2088bf167, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!198 &198639120020848336
 ParticleSystem:
   m_ObjectHideFlags: 1
@@ -53,7 +65,7 @@ ParticleSystem:
   stopAction: 0
   looping: 1
   prewarm: 0
-  playOnAwake: 1
+  playOnAwake: 0
   useUnscaledTime: 0
   autoRandomSeed: 1
   useRigidbodyForVelocity: 1
