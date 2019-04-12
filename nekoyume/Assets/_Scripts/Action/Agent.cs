@@ -85,7 +85,10 @@ namespace Nekoyume.Action
 
             foreach (var peer in peers)
             {
-                swarm.Add(peer);
+                if (peer.PublicKey != agentPrivateKey.PublicKey)
+                {
+                    swarm.Add(peer);
+                }
             }
         }
 
