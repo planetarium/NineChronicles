@@ -40,6 +40,8 @@ namespace Nekoyume.Action
 
         private const int rewardAmount = 1;
 
+        private static readonly TimeSpan BlockInterval = TimeSpan.FromSeconds(10);
+
         static Agent() 
         {
             ForceDotNet.Force();
@@ -58,9 +60,10 @@ namespace Nekoyume.Action
             string host,
             int? port)
         {
-            IBlockPolicy<PolymorphicAction<ActionBase>> policy = new BlockPolicy<PolymorphicAction<ActionBase>>(TimeSpan.FromMilliseconds(500));
 # if UNITY_EDITOR
-            policy = new DebugPolicy();
+            var policy = new DebugPolicy();
+# else
+            var policy = new BlockPolicy<PolymorphicAction<ActionBase>>(BlockInterval);
 #endif
             this.agentPrivateKey = agentPrivateKey;
             blocks = new BlockChain<PolymorphicAction<ActionBase>>(

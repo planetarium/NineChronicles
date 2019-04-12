@@ -60,6 +60,12 @@ namespace Nekoyume.Action
 
         public Address agentAddress => agent.AgentAddress;
 
+#if UNITY_EDITOR
+        private const string AgentStoreDirName = "planetarium_dev";
+#else
+        private const string AgentStoreDirName = "planetarium";
+#endif
+
         private void Awake()
         {
             Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
@@ -177,7 +183,7 @@ namespace Nekoyume.Action
                 chainId = Guid.Parse(chainIdStr);
             }
 
-            var storePath = Path.Combine(Application.persistentDataPath, "planetarium");
+            var storePath = Path.Combine(Application.persistentDataPath, AgentStoreDirName);
             var peers = LoadPeers();
             var iceServers = LoadIceServers();
 
