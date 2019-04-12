@@ -53,7 +53,15 @@ namespace Nekoyume.Action
         public override IAccountStateDelta Execute(IActionContext actionCtx)
         {
             IAccountStateDelta states = actionCtx.PreviousStates;
-            Context ctx = CreateContext(name);
+            var ctx = (Context)states.GetState(actionCtx.Signer);
+            if (ReferenceEquals(ctx, null))
+            {
+                ctx = CreateContext(name);
+            }
+            else
+            {
+                ctx.avatar = CreateAvatar(name);
+            }
             return states.SetState(actionCtx.Signer, ctx);
         }
 
