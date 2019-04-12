@@ -12,6 +12,7 @@ namespace Nekoyume.Action
     {
         public string name;
         public const int DefaultId = 100010;
+        private const int DefaultSetId = 101000;
         public override void LoadPlainValue(IImmutableDictionary<string, object> plainValue)
         {
             name = (string) plainValue["name"];
@@ -38,10 +39,9 @@ namespace Nekoyume.Action
                 id = DefaultId,
             };
 
-            // FIXME 모든 아이템을 처음에 세팅하는 개발용 코드입니다.
-            // 릴리즈 할땐 지워야 합니다.
             var table = ActionManager.Instance.tables.ItemEquipment;
-            foreach (ItemEquipment itemData in table.Values)
+            ItemEquipment itemData;
+            if (table.TryGetValue(DefaultSetId, out itemData))
             {
                 var equipment = ItemBase.ItemFactory(itemData);
                 avatar.Items.Add(new Inventory.InventoryItem(equipment));
