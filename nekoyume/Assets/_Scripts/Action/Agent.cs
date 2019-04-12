@@ -26,7 +26,7 @@ namespace Nekoyume.Action
     public class Agent : IDisposable
     {
         internal readonly BlockChain<PolymorphicAction<ActionBase>> blocks;
-        private readonly PrivateKey privateKey;
+        private readonly PrivateKey agentPrivateKey;
         public readonly ConcurrentQueue<PolymorphicAction<ActionBase>> queuedActions;
 
         private const float AvatarUpdateInterval = 3.0f;
@@ -50,7 +50,7 @@ namespace Nekoyume.Action
         }
 
         public Agent(
-            PrivateKey privateKey,
+            PrivateKey agentPrivateKey,
             string path,
             Guid chainId,
             IEnumerable<Peer> peers,
@@ -62,7 +62,7 @@ namespace Nekoyume.Action
 # if UNITY_EDITOR
             policy = new DebugPolicy();
 #endif
-            this.privateKey = privateKey;
+            this.agentPrivateKey = agentPrivateKey;
             blocks = new BlockChain<PolymorphicAction<ActionBase>>(
                 policy,
                 new FileStore(path),
@@ -73,7 +73,7 @@ namespace Nekoyume.Action
 #endif
 
             swarm = new Swarm(
-                privateKey,
+                agentPrivateKey,
                 appProtocolVersion: 1,
                 dialTimeout: SwarmDialTimeout,
                 host: host,
@@ -86,8 +86,10 @@ namespace Nekoyume.Action
             }
         }
 
-        public Address UserAddress => privateKey.PublicKey.ToAddress();
+        public PrivateKey AvatarPrivateKey { get; set; }
+        public Address AvatarAddress => AvatarPrivateKey.PublicKey.ToAddress();
         public Address ShopAddress => ActionManager.shopAddress;
+        public Address AgentAddress => agentPrivateKey.PublicKey.ToAddress();
 
         public Guid ChainId => blocks.Id;
 
@@ -106,9 +108,9 @@ namespace Nekoyume.Action
             while (true)
             {
                 yield return new WaitForSeconds(AvatarUpdateInterval);
-                var task = Task.Run(() => blocks.GetStates(new[] {UserAddress}));
+                var task = Task.Run(() => blocks.GetStates(new[] {AvatarAddress}));
                 yield return new WaitUntil(() => task.IsCompleted);
-                var ctx = (Context) task.Result.GetValueOrDefault(UserAddress);
+                var ctx = (Context) task.Result.GetValueOrDefault(AvatarAddress);
                 if (ctx?.avatar != null)
                 {
                     DidReceiveAction?.Invoke(this, ctx);
@@ -173,7 +175,7 @@ namespace Nekoyume.Action
                 var task = Task.Run(async () =>
                 {
                     var tx = Transaction<PolymorphicAction<ActionBase>>.Create(
-                        privateKey,
+                        agentPrivateKey,
                         new List<PolymorphicAction<ActionBase>>()
                         {
                             new RewardGold() { Gold = rewardAmount }
@@ -181,7 +183,7 @@ namespace Nekoyume.Action
                         timestamp: DateTime.UtcNow
                     );
                     blocks.StageTransactions(new HashSet<Transaction<PolymorphicAction<ActionBase>>> {tx});
-                    var block = blocks.MineBlock(UserAddress);
+                    var block = blocks.MineBlock(AgentAddress);
                     await swarm.BroadcastBlocksAsync(new[] {block});
                     return block;
                 });
@@ -197,7 +199,7 @@ namespace Nekoyume.Action
         private void StageActions(IList<PolymorphicAction<ActionBase>> actions)
         {
             var tx = Transaction<PolymorphicAction<ActionBase>>.Create(
-                privateKey,
+                AvatarPrivateKey,
                 actions,
                 timestamp: DateTime.UtcNow
             );

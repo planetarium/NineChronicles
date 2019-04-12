@@ -58,7 +58,7 @@ namespace Nekoyume.Action
         private IEnumerator _shopUpdator;
         private IEnumerator _swarmRunner;
 
-        public Address userAddress => agent.UserAddress;
+        public Address agentAddress => agent.AgentAddress;
 
         private void Awake()
         {
@@ -148,11 +148,12 @@ namespace Nekoyume.Action
             ProcessAction(action);
         }
 
-        public void Init(int index)
+        public void InitAgent()
         {
             PrivateKey privateKey = null;
-            var key = string.Format(PrivateKeyFormat, index);
-            var privateKeyHex = PlayerPrefs.GetString(key, "");
+            var key = string.Format(PrivateKeyFormat, "agent");
+            var privateKeyHex = GetCommandLineOption("private-key")
+                                ?? PlayerPrefs.GetString(key, "");
 
             if (string.IsNullOrEmpty(privateKeyHex))
             {
@@ -162,7 +163,7 @@ namespace Nekoyume.Action
             else
             {
                 privateKey = new PrivateKey(ByteUtil.ParseHex(privateKeyHex));
-            }            
+            }
 
             Guid chainId;
             var chainIdStr = PlayerPrefs.GetString(ChainIdKey, "");
@@ -176,10 +177,6 @@ namespace Nekoyume.Action
                 chainId = Guid.Parse(chainIdStr);
             }
 
-            var fileName = string.Format(AvatarFileFormat, index);
-            _saveFilePath = Path.Combine(Application.persistentDataPath, fileName);
-            Avatar = LoadStatus(_saveFilePath);
-
             var storePath = Path.Combine(Application.persistentDataPath, "planetarium");
             var peers = LoadPeers();
             var iceServers = LoadIceServers();
@@ -191,7 +188,7 @@ namespace Nekoyume.Action
                 : null;
 
             agent = new Agent(
-                privateKey: privateKey, 
+                agentPrivateKey: privateKey, 
                 path: storePath, 
                 chainId: chainId, 
                 peers: peers, 
@@ -199,12 +196,7 @@ namespace Nekoyume.Action
                 host: host,
                 port: port
             );
-            agent.DidReceiveAction += ReceiveAction;
-            agent.UpdateShop += UpdateShop;
-
             _txProcessor = agent.CoTxProcessor();
-            _avatarUpdator = agent.CoAvatarUpdator();
-            _shopUpdator = agent.CoShopUpdator();
             _swarmRunner = agent.CoSwarmRunner();
 
             StartCoroutine(_txProcessor);
@@ -215,8 +207,37 @@ namespace Nekoyume.Action
                 _miner = agent.CoMiner();
                 StartCoroutine(_miner);
             }
+        }
 
-            Debug.Log($"User Address: 0x{agent.UserAddress.ToHex()}");
+        public void InitAvatar(int index)
+        {
+            PrivateKey privateKey = null;
+            var key = string.Format(PrivateKeyFormat, index);
+            var privateKeyHex = PlayerPrefs.GetString(key, "");
+
+            if (string.IsNullOrEmpty(privateKeyHex))
+            {
+                privateKey = new PrivateKey();
+                PlayerPrefs.SetString(key, ByteUtil.Hex(privateKey.ByteArray));
+            }
+            else
+            {
+                privateKey = new PrivateKey(ByteUtil.ParseHex(privateKeyHex));
+            }
+
+            agent.AvatarPrivateKey = privateKey;
+
+            var fileName = string.Format(AvatarFileFormat, index);
+            _saveFilePath = Path.Combine(Application.persistentDataPath, fileName);
+            Avatar = LoadStatus(_saveFilePath);
+            agent.DidReceiveAction += ReceiveAction;
+            agent.UpdateShop += UpdateShop;
+
+            _avatarUpdator = agent.CoAvatarUpdator();
+            _shopUpdator = agent.CoShopUpdator();
+
+            Debug.Log($"Agent Address: 0x{agent.AgentAddress.ToHex()}");
+            Debug.Log($"Avatar Address: 0x{agent.AvatarAddress.ToHex()}");
         }
 
         private string GetCommandLineOption(string name)
