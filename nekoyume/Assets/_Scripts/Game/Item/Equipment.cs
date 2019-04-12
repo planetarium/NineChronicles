@@ -105,7 +105,7 @@ namespace Nekoyume.Game.Item
                     player.hp += (int)Value;
                     break;
                 case "luck":
-                    player.luck += Value;
+                    player.luck += Value / 100;
                     break;
             }
         }
