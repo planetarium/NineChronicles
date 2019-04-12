@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using Nekoyume.Action;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
+using Nekoyume.Game.Factory;
 using Nekoyume.Game.Item;
+using Nekoyume.Game.Vfx;
 using Nekoyume.Model;
 using UnityEngine;
 using UnityEngine.UI;
@@ -78,7 +80,8 @@ namespace Nekoyume.UI
                 title.text = "획득한 아이템";
                 grid.gameObject.SetActive(true);
                 
-                AudioController.instance.PlayMusic(AudioController.MusicCode.Win);
+                AudioController.instance.PlayMusic(AudioController.MusicCode.Win, 0.3f);
+                VfxController.instance.Create<VfxBattleWin>(ActionCamera.instance.transform, new Vector3(-3.43f, -0.28f, 9f)).Play(10f);
             }
             else
             {

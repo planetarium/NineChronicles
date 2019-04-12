@@ -424,7 +424,7 @@ MonoBehaviour:
   id: 0
   dummy: {fileID: 282372974}
   loadingSpeed: 4
-  _players: []
+  selectedPlayer: {fileID: 0}
 --- !u!4 &1333831683
 Transform:
   m_ObjectHideFlags: 0
@@ -467,9 +467,18 @@ MonoBehaviour:
     InitCount: 1
     AddCount: 1
   - Prefab: {fileID: 1939661691863532, guid: 115fc8293630a3a4babf96ad5cd136aa, type: 2}
-    InitCount: 3
-    AddCount: 1
+    InitCount: 5
+    AddCount: 3
   - Prefab: {fileID: 1056061149771412, guid: 03c53e10d7e395e488ed8d2e3c35d367, type: 2}
+    InitCount: 5
+    AddCount: 3
+  - Prefab: {fileID: 1322198228859034, guid: 202892cb652c518458202618adbcefeb, type: 2}
+    InitCount: 5
+    AddCount: 3
+  - Prefab: {fileID: 1616911531835682, guid: 40708929f6f62304793a921c038de5f9, type: 2}
+    InitCount: 5
+    AddCount: 3
+  - Prefab: {fileID: 1488552392045130, guid: 818e3bf2cc4fe164a9b7867c669d037e, type: 2}
     InitCount: 1
     AddCount: 1
 --- !u!114 &1333831685

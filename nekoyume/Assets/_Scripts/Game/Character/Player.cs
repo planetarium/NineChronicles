@@ -55,12 +55,17 @@ namespace Nekoyume.Game.Character
         public Item.Inventory Inventory;
         private float _range = 1.2f;
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
+            
+            _anim = GetComponentInChildren<Animator>();
+            
             Event.OnAttackEnd.AddListener(AttackEnd);
             Event.OnHitEnd.AddListener(HitEnd);
             Event.OnDieEnd.AddListener(DieEnd);
             Inventory = new Item.Inventory();
+            
             _targetTag = Tag.Enemy;
         }
 
@@ -76,10 +81,6 @@ namespace Nekoyume.Game.Character
             PopUpDmg(position, force, txt, critical);
 
             Event.OnUpdateStatus.Invoke();
-            if (HP <= 0)
-            {
-                StartCoroutine(Dying());
-            }
         }
 
         protected override void OnDead()
@@ -95,14 +96,15 @@ namespace Nekoyume.Game.Character
             var pos = transform.position;
             pos.x -= 0.2f;
             pos.y += 0.32f;
-            VfxFactory.instance.Create<VfxBattleDamage01>(pos).Play();
+            VfxController.instance.Create<VfxBattleDamage01>(pos).Play();
         }
 
         protected override void Update()
         {
             base.Update();
 
-            if (ReferenceEquals(_anim, null))
+//            if (ReferenceEquals(_anim, null))
+            if (_anim == null)
             {
                 _anim = GetComponentInChildren<Animator>();
             }

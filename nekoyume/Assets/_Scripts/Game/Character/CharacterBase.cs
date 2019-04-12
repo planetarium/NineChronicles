@@ -6,6 +6,7 @@ using BTAI;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.CC;
 using Nekoyume.Game.Controller;
+using Nekoyume.Game.Vfx;
 using Nekoyume.UI;
 using UnityEngine;
 
@@ -43,7 +44,7 @@ namespace Nekoyume.Game.Character
         public bool dieEnd { get; private set; }
         public abstract float Speed { get; }
 
-        private void Start()
+        protected virtual void Awake()
         {
             _anim = GetComponent<Animator>();
         }
@@ -121,7 +122,7 @@ namespace Nekoyume.Game.Character
             if (_anim != null)
             {
                 dieEnd = false;
-                _anim.SetTrigger("Die");
+                _anim.Play("Die");
                 yield return new WaitUntil(() => dieEnd);
             }
 
@@ -194,9 +195,16 @@ namespace Nekoyume.Game.Character
 
             if (_anim != null)
             {
-                hitEnd = false;
-                _anim.SetTrigger("Hit");
-                yield return new WaitUntil(() => hitEnd);
+                if (HP > 0)
+                {
+                    hitEnd = false;
+                    _anim.Play("Hit");
+                    yield return new WaitUntil(() => hitEnd);    
+                }
+                else
+                {
+                    StartCoroutine(Dying());
+                }
             }
 
             UpdateHpBar();
@@ -207,8 +215,6 @@ namespace Nekoyume.Game.Character
             if (_anim != null)
             {
                 _anim.ResetTrigger("Attack");
-                _anim.ResetTrigger("Die");
-                _anim.ResetTrigger("Hit");
                 _anim.SetBool("Run", false);
             }
             gameObject.SetActive(false);
