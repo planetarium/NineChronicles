@@ -32,6 +32,8 @@ namespace Nekoyume.Game.Character
         protected override Vector3 _hpBarOffset => _castingBarOffset + new Vector3(0, 0.24f, 0.0f);
         protected Vector3 _mpBarOffset => _castingBarOffset + new Vector3(0, 0.19f, 0.0f);
 
+        private const int DefaultSetId = 101000;
+
         protected override Vector3 _castingBarOffset
         {
             get
@@ -63,11 +65,6 @@ namespace Nekoyume.Game.Character
         }
 
         public override float Speed => 1.0f;
-
-        private void Start()
-        {
-            _anim = GetComponentInChildren<Animator>();
-        }
 
         public override IEnumerator CoProcessDamage(int dmg, bool critical)
         {
@@ -101,34 +98,14 @@ namespace Nekoyume.Game.Character
             VfxFactory.instance.Create<VfxBattleDamage01>(pos).Play();
         }
 
-        protected override void OnDisable()
-        {
-            base.OnDisable();
-            if (_mpBar != null)
-            {
-                Destroy(_mpBar.gameObject);
-                _mpBar = null;
-            }
-        }
-
         protected override void Update()
         {
             base.Update();
-            if (_mpBar != null)
-            {
-                _mpBar.UpdatePosition(gameObject, _mpBarOffset);
-            }
-        }
 
-        public void UpdateMpBar()
-        {
-            if (_mpBar == null)
+            if (ReferenceEquals(_anim, null))
             {
-                _mpBar = Widget.Create<ProgressBar>(true);
-                _mpBar.greenBar = Resources.Load<Sprite>("ui/UI_bar_01_blue");
+                _anim = GetComponentInChildren<Animator>();
             }
-
-            _mpBar.SetValue((float) MP / (float) MPMax);
         }
 
         public void Init(Model.Player character)
@@ -156,14 +133,17 @@ namespace Nekoyume.Game.Character
 
         public void UpdateSet(SetItem item)
         {
-            var itemId = item?.Data.id ?? 0;
-            int id;
-            // TODO Change Players mesh instead of weapon only.
-            if (SetItem.WeaponMap.TryGetValue(itemId, out id))
+            var itemId = item?.equipData.resourceId ?? DefaultSetId;
+            var prevAnim = gameObject.GetComponentInChildren<Animator>(true);
+            if (prevAnim)
             {
-                var mesh = Resources.Load<SpriteMesh>($"avatar/character_0003/item_{id}");
-                _weapon.spriteMesh = mesh;
+                Destroy(prevAnim.gameObject);
             }
+
+            var origin = Resources.Load<GameObject>($"Prefab/{itemId}");
+
+            Instantiate(origin, gameObject.transform);
+
         }
 
         public bool TargetInRange(CharacterBase target) =>
@@ -198,5 +178,6 @@ namespace Nekoyume.Game.Character
                 Event.OnUpdateStatus.Invoke();
             }
         }
+
     }
 }

@@ -1,4 +1,5 @@
 using System.Collections;
+using Nekoyume.Action;
 using UnityEngine;
 
 namespace Nekoyume.Game.Entrance
@@ -36,7 +37,7 @@ namespace Nekoyume.Game.Entrance
             }
 
             var playerFactory = GetComponent<Factory.PlayerFactory>();
-            GameObject player = playerFactory.Create();
+            GameObject player = playerFactory.Create(ActionManager.Instance.Avatar);
             player.transform.position = stage.RoomPosition;
 
             UI.Widget.Find<UI.Status>().UpdatePlayer(player);

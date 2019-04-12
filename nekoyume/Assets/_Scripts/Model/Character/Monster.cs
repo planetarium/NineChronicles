@@ -19,7 +19,8 @@ namespace Nekoyume.Model
             Simulator = player.Simulator;
             this.data = data;
             level = monsterLevel;
-            defElement = Game.Elemental.Create(data.elemental);
+            ATKElement = Game.Elemental.Create(data.elemental);
+            DEFElement = Game.Elemental.Create(data.elemental);
         }
 
         protected override void OnDead()

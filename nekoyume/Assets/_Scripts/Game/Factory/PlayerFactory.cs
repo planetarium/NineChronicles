@@ -1,29 +1,43 @@
 using System;
-using Nekoyume.Action;
-using Nekoyume.Game.Character;
 using Nekoyume.Game.Util;
+using Nekoyume.Model;
 using UnityEngine;
 
 namespace Nekoyume.Game.Factory
 {
     public class PlayerFactory : MonoBehaviour
     {
-        public GameObject Create()
+        private const int DefaultSetId = 101000;
+        public GameObject Create(Model.Avatar avatar)
         {
-            var avatar = ActionManager.Instance.Avatar;
             if (ReferenceEquals(avatar, null))
             {
                 throw new ArgumentNullException("`Model.Avatar` can't be null.");
             }
 
-            var objectPool = GetComponent<ObjectPool>();
-            var player = objectPool.Get<Player>();
-            if (ReferenceEquals(player, null))
+            return Create(avatar.ToPlayer());
+        }
+
+        public GameObject Create(Player model = null)
+        {
+            if (ReferenceEquals(model, null))
             {
-                throw new NotFoundComponentException<Player>();
+                model = new Player();
             }
 
-            player.Init(avatar.ToPlayer());
+            var objectPool = GetComponent<ObjectPool>();
+            if (ReferenceEquals(objectPool, null))
+            {
+                throw new NotFoundComponentException<ObjectPool>();
+            }
+
+            var player = objectPool.Get<Character.Player>();
+            if (ReferenceEquals(player, null))
+            {
+                throw new NotFoundComponentException<Character.Player>();
+            }
+
+            player.Init(model);
 
             return player.gameObject;
         }

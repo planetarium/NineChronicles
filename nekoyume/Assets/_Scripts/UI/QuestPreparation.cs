@@ -199,12 +199,13 @@ namespace Nekoyume.UI
                     {
                         es.Equip(itemInfoSelectedItem);
                         AudioController.instance.PlaySfx(AudioController.SfxCode.Equipment);
+
+                        if (type == ItemBase.ItemType.Set)
+                        {
+                            _player.UpdateSet((SetItem) itemInfoSelectedItem.item);
+                        }
                     }
 
-                    if (type == ItemBase.ItemType.Set)
-                    {
-                        _player.UpdateSet((SetItem) itemInfoSelectedItem.item);
-                    }
                 }
             }
             

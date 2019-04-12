@@ -28,6 +28,7 @@ namespace Nekoyume.Game
         [SerializeField]
         private GameObject dummy;
         public float loadingSpeed = 2.0f;
+        public Character.Player selectedPlayer;
         private readonly Vector2 _stageStartPosition = new Vector2(-6.0f, -1.2f);
         public readonly Vector2 QuestPreparationPosition = new Vector2(1.65f, -1.3f);
         public readonly Vector2 RoomPosition = new Vector2(-2.66f, -1.85f);
@@ -111,6 +112,8 @@ namespace Nekoyume.Game
                         anim.gameObject.SetActive(true);
                         anim.Play("Appear");
                     }
+
+                    selectedPlayer = players[i];
                 }
                 else
                 {
@@ -354,7 +357,7 @@ namespace Nekoyume.Game
             var player = GetComponentInChildren<Character.Player>();
             if (ReferenceEquals(player, null))
             {
-                var go = _factory.Create();
+                var go = _factory.Create(ActionManager.Instance.Avatar);
                 player = go.GetComponent<Character.Player>();
 
                 if (ReferenceEquals(player, null))

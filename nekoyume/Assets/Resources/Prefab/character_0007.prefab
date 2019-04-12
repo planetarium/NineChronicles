@@ -1304,8 +1304,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4093178233809488}
-  - component: {fileID: 114093065019062570}
   - component: {fileID: 95101380023306680}
+  - component: {fileID: 114940685544901168}
   m_Layer: 0
   m_Name: character_0007
   m_TagString: Player
@@ -2175,7 +2175,7 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1193589009823902}
-  m_LocalRotation: {x: 0, y: 0, z: 0.63820875, w: 0.7698633}
+  m_LocalRotation: {x: 0, y: 0, z: 0.6382088, w: 0.76986337}
   m_LocalPosition: {x: 0.049009107, y: 0.3147082, z: 0}
   m_LocalScale: {x: 0.35694, y: 0.35694, z: 0.35694}
   m_Children: []
@@ -2580,7 +2580,7 @@ Animator:
   m_GameObject: {fileID: 1961998992099224}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 3280401a2ac4f1948a2d1fb36300f8ac, type: 2}
+  m_Controller: {fileID: 22100000, guid: 9496a79adbbc4fd448482966f712c120, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -2601,7 +2601,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Length: 0.26769868
+  m_Length: 0.26769876
   m_Child: {fileID: 0}
   m_ChildTransform: {fileID: 4148975896552784}
   m_AttachedIK: {fileID: 0}
@@ -2701,62 +2701,6 @@ MonoBehaviour:
   m_Bones: []
   m_BoneTransforms:
   - {fileID: 4915296450363560}
---- !u!114 &114093065019062570
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1961998992099224}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ce1bf0010a581c842a67d472deab9560, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  HP: 0
-  ATK: 0
-  DEF: 0
-  Power: 100
-  RunSpeed: 0
-  MP: 0
-  EXP: 0
-  Level: 0
-  MPMax: 0
-  _weapon: {fileID: 0}
-  model:
-    atk: 0
-    def: 0
-    currentHP: 0
-    hp: 0
-    luck: 0
-    level: 0
-    exp: 0
-    expMax: 0
-    expNeed: 0
-    stage: 0
-    weapon:
-      reserved: 0
-      equipped: 0
-    armor:
-      reserved: 0
-      equipped: 0
-    belt:
-      reserved: 0
-      equipped: 0
-    necklace:
-      reserved: 0
-      equipped: 0
-    ring:
-      reserved: 0
-      equipped: 0
-    helm:
-      reserved: 0
-      equipped: 0
-    set:
-      reserved: 0
-      equipped: 0
-    job: 0
-  Inventory:
-    items: []
 --- !u!114 &114096412026280590
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2863,7 +2807,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Length: 0.46499866
+  m_Length: 0.37184697
   m_Child: {fileID: 0}
   m_ChildTransform: {fileID: 4877655794310120}
   m_AttachedIK: {fileID: 0}
@@ -3067,7 +3011,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Length: 0.40010077
+  m_Length: 0.400011
   m_Child: {fileID: 0}
   m_ChildTransform: {fileID: 4362040619917218}
   m_AttachedIK: {fileID: 0}
@@ -3143,7 +3087,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Length: 1.0000013
+  m_Length: 1.0000011
   m_Child: {fileID: 0}
   m_ChildTransform: {fileID: 4382930329084136}
   m_AttachedIK: {fileID: 0}
@@ -3159,7 +3103,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Length: 0.315004
+  m_Length: 0.3049166
   m_Child: {fileID: 0}
   m_ChildTransform: {fileID: 4129865711446696}
   m_AttachedIK: {fileID: 0}
@@ -3195,7 +3139,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Length: 0.3885816
+  m_Length: 0.3885815
   m_Child: {fileID: 0}
   m_ChildTransform: {fileID: 4002771012014030}
   m_AttachedIK: {fileID: 0}
@@ -3319,7 +3263,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Length: 0.21039876
+  m_Length: 0.18991198
   m_Child: {fileID: 0}
   m_ChildTransform: {fileID: 4024151315994198}
   m_AttachedIK: {fileID: 0}
@@ -3542,7 +3486,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Length: 0.8360219
+  m_Length: 0.8330077
   m_Child: {fileID: 0}
   m_ChildTransform: {fileID: 4593956841855688}
   m_AttachedIK: {fileID: 0}
@@ -3578,7 +3522,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Length: 0.7008862
+  m_Length: 0.73624057
   m_Child: {fileID: 0}
   m_ChildTransform: {fileID: 4171888116106036}
   m_AttachedIK: {fileID: 0}
@@ -3614,7 +3558,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Length: 0.4218551
+  m_Length: 0.45346215
   m_Child: {fileID: 0}
   m_ChildTransform: {fileID: 4915296450363560}
   m_AttachedIK: {fileID: 0}
@@ -3650,7 +3594,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Length: 0.5229697
+  m_Length: 0.5229698
   m_Child: {fileID: 0}
   m_ChildTransform: {fileID: 4421337980762744}
   m_AttachedIK: {fileID: 0}
@@ -3706,7 +3650,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Length: 0.5150718
+  m_Length: 0.5008859
   m_Child: {fileID: 0}
   m_ChildTransform: {fileID: 4826089548847034}
   m_AttachedIK: {fileID: 0}
@@ -3898,7 +3842,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Length: 0.43209234
+  m_Length: 0.42576635
   m_Child: {fileID: 0}
   m_ChildTransform: {fileID: 4395466350079402}
   m_AttachedIK: {fileID: 0}
@@ -3970,7 +3914,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Length: 0.4595819
+  m_Length: 0.43326136
   m_Child: {fileID: 0}
   m_ChildTransform: {fileID: 4986422318766206}
   m_AttachedIK: {fileID: 0}
@@ -3994,6 +3938,17 @@ MonoBehaviour:
   m_Bones: []
   m_BoneTransforms:
   - {fileID: 4129865711446696}
+--- !u!114 &114940685544901168
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1961998992099224}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6a7d8e25e5b43849cff6e43ff548855, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114958771858294860
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4006,7 +3961,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Length: 0.18622933
+  m_Length: 0.23986793
   m_Child: {fileID: 0}
   m_ChildTransform: {fileID: 4239758539128376}
   m_AttachedIK: {fileID: 0}
@@ -4022,7 +3977,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Length: 0.36107627
+  m_Length: 0
   m_Child: {fileID: 0}
   m_ChildTransform: {fileID: 4369702413848410}
   m_AttachedIK: {fileID: 0}
