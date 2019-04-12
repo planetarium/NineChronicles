@@ -184,10 +184,16 @@ namespace Nekoyume.Action
             }
 
             var storePath = Path.Combine(Application.persistentDataPath, AgentStoreDirName);
+
+#if UNITY_EDITOR
+            var peers = new Peer[]{ };
+            IceServer[] iceServers = null;
+            string host = "127.0.0.1";
+#else
             var peers = LoadPeers();
             var iceServers = LoadIceServers();
-
             string host = GetCommandLineOption("host");
+#endif
             int portStr;
             int? port = int.TryParse(GetCommandLineOption("port"), out portStr) 
                 ? (int?)portStr 
