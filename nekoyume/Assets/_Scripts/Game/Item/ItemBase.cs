@@ -87,9 +87,26 @@ namespace Nekoyume.Game.Item
 
         public static Sprite GetSprite(ItemBase item = null)
         {
-            var path = item is ItemUsable ? EquipmentPath : ItemPath;
-            return Resources.Load<Sprite>(string.Format(path, item?.Data.id)) ??
-                   Resources.Load<Sprite>(string.Format(path, DefaultId));
+            string path;
+            int? id;
+            var casting = item as ItemUsable;
+            if (!ReferenceEquals(casting, null))
+            {
+                path = EquipmentPath;
+                id = casting.Data.resourceId;
+            }
+            else
+            {
+                path = ItemPath;
+                id = item?.Data.id;
+            }
+
+            if (Equals(id, null) || Equals(id, 0))
+            {
+                id = DefaultId;
+            }
+
+            return Resources.Load<Sprite>(string.Format(path, id));
         }
     }
 }

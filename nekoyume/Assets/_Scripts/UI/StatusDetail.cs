@@ -58,7 +58,7 @@ namespace Nekoyume.UI
             // equip slot
             foreach (var equipment in _player.equipments)
             {
-                var type = equipment.equipData.cls.ToEnumItemType();
+                var type = equipment.Data.cls.ToEnumItemType();
                 foreach (var slot in equipSlots)
                 {
                     var es = slot.GetComponent<EquipSlot>();

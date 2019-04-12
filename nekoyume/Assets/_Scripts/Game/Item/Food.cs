@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Nekoyume.Data.Table;
 using Nekoyume.Model;
 
@@ -10,16 +11,15 @@ namespace Nekoyume.Game.Item
         private readonly StatsMap[] _stats;
         public Food(Data.Table.Item data) : base(data)
         {
-            var equipData = (ItemEquipment) Data;
             var stat1 = new StatsMap
             {
-                Key = equipData.ability1,
-                Value = equipData.value1,
+                Key = Data.ability1,
+                Value = Data.value1,
             };
             var stat2 = new StatsMap
             {
-                Key = equipData.ability2,
-                Value = equipData.value2,
+                Key = Data.ability2,
+                Value = Data.value2,
             };
             _stats = new[] {stat1, stat2};
         }
@@ -30,6 +30,14 @@ namespace Nekoyume.Game.Item
             {
                 stat.UpdatePlayer(player);
             }
+        }
+
+        public override string ToItemInfo()
+        {
+            var infos = _stats
+                .Select(stat => stat.GetInformation())
+                .Where(info => !string.IsNullOrEmpty(info));
+            return string.Join(Environment.NewLine, infos);
         }
     }
 }
