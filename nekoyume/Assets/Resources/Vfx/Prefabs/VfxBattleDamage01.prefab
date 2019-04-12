@@ -21,7 +21,7 @@ GameObject:
   - component: {fileID: 4651480244848036}
   - component: {fileID: 198908810809764366}
   - component: {fileID: 199268237001873286}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: attack_03
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -38,7 +38,7 @@ GameObject:
   - component: {fileID: 4831563627697390}
   - component: {fileID: 198573736047323360}
   - component: {fileID: 199058088004645776}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: attack_01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -55,7 +55,7 @@ GameObject:
   - component: {fileID: 4535335913186608}
   - component: {fileID: 198237463905243722}
   - component: {fileID: 199741674351030956}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: dust_02
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -72,7 +72,7 @@ GameObject:
   - component: {fileID: 4583529532688234}
   - component: {fileID: 198698596429306798}
   - component: {fileID: 199534569254892568}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: glow_01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -90,7 +90,7 @@ GameObject:
   - component: {fileID: 198985415118394178}
   - component: {fileID: 199361075430162418}
   - component: {fileID: 114164716237331494}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: VfxBattleDamage01
   m_TagString: Untagged
   m_Icon: {fileID: 0}

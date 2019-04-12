@@ -41,8 +41,6 @@ namespace Nekoyume.Game.Vfx
 
             _particlesRoot = _particles[0];
             _particlesRoot.Stop();
-            
-            Debug.LogWarning($"{name} {_particlesDuration}");
         }
 
         #endregion

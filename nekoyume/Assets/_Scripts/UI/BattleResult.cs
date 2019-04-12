@@ -80,7 +80,7 @@ namespace Nekoyume.UI
                 grid.gameObject.SetActive(true);
                 
                 AudioController.instance.PlayMusic(AudioController.MusicCode.Win, 0.3f);
-                VfxController.instance.Create<VfxBattleWin>(ActionCamera.instance.transform, new Vector3(-3.43f, -0.28f, 9f)).Play(10f);
+                VfxController.instance.Create<VfxBattleWin>(ActionCamera.instance.transform, new Vector3(-3.43f, -0.28f, 10f)).Play(10f);
             }
             else
             {

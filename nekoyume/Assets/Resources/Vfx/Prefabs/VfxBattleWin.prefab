@@ -21,7 +21,7 @@ GameObject:
   - component: {fileID: 4036557254221890}
   - component: {fileID: 198873644289778944}
   - component: {fileID: 199521037052377028}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: dot_02
   m_TagString: Effects
   m_Icon: {fileID: 0}
@@ -38,7 +38,7 @@ GameObject:
   - component: {fileID: 4463497017250018}
   - component: {fileID: 198718956100367014}
   - component: {fileID: 199494243910534236}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: glow_01
   m_TagString: Effects
   m_Icon: {fileID: 0}
@@ -55,7 +55,7 @@ GameObject:
   - component: {fileID: 4575858024797536}
   - component: {fileID: 198920829782220614}
   - component: {fileID: 199997178148090776}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: glow_01
   m_TagString: Effects
   m_Icon: {fileID: 0}
@@ -72,7 +72,7 @@ GameObject:
   - component: {fileID: 4035374813000648}
   - component: {fileID: 198211039523509158}
   - component: {fileID: 199686662353183808}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: glow_01
   m_TagString: Effects
   m_Icon: {fileID: 0}
@@ -89,7 +89,7 @@ GameObject:
   - component: {fileID: 4248247464777556}
   - component: {fileID: 198199416679653832}
   - component: {fileID: 199139412440045704}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: dot_02
   m_TagString: Effects
   m_Icon: {fileID: 0}
@@ -106,7 +106,7 @@ GameObject:
   - component: {fileID: 4980433043906456}
   - component: {fileID: 198993016585574512}
   - component: {fileID: 199631796066814892}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: glow_01
   m_TagString: Effects
   m_Icon: {fileID: 0}
@@ -123,7 +123,7 @@ GameObject:
   - component: {fileID: 4780186115646698}
   - component: {fileID: 198324168898635190}
   - component: {fileID: 199224833181014662}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: dot_02
   m_TagString: Effects
   m_Icon: {fileID: 0}
@@ -141,7 +141,7 @@ GameObject:
   - component: {fileID: 198299100404957316}
   - component: {fileID: 199207768087296284}
   - component: {fileID: 114887466028990492}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: VfxBattleWin
   m_TagString: Effects
   m_Icon: {fileID: 0}
@@ -158,7 +158,7 @@ GameObject:
   - component: {fileID: 4238295725915144}
   - component: {fileID: 198572851550591332}
   - component: {fileID: 199775708289878962}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: dot_02
   m_TagString: Effects
   m_Icon: {fileID: 0}
@@ -175,7 +175,7 @@ GameObject:
   - component: {fileID: 4885113525989222}
   - component: {fileID: 198787139360107946}
   - component: {fileID: 199231708084305036}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: glow_01
   m_TagString: Effects
   m_Icon: {fileID: 0}
@@ -192,7 +192,7 @@ GameObject:
   - component: {fileID: 4817250602018664}
   - component: {fileID: 198246306957506562}
   - component: {fileID: 199708390950700162}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: dot_02
   m_TagString: Effects
   m_Icon: {fileID: 0}
@@ -209,7 +209,7 @@ GameObject:
   - component: {fileID: 4429882094328624}
   - component: {fileID: 198064184070377370}
   - component: {fileID: 199801778489119456}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: glow_01
   m_TagString: Effects
   m_Icon: {fileID: 0}
@@ -223,7 +223,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1488552392045130}
   m_LocalRotation: {x: -0.6963643, y: 0.1227878, z: -0.1227878, w: 0.6963643}
-  m_LocalPosition: {x: -3.43, y: -0.28, z: 0.00000013555}
+  m_LocalPosition: {x: -3.43, y: -0.28, z: -70}
   m_LocalScale: {x: 0.8074202, y: 0.8074202, z: 0.8074202}
   m_Children:
   - {fileID: 4035374813000648}
