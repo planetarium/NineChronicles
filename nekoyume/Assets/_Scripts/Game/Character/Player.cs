@@ -98,39 +98,14 @@ namespace Nekoyume.Game.Character
             VfxFactory.instance.Create<VfxBattleDamage01>(pos).Play();
         }
 
-        protected override void OnDisable()
-        {
-            base.OnDisable();
-            if (_mpBar != null)
-            {
-                Destroy(_mpBar.gameObject);
-                _mpBar = null;
-            }
-        }
-
         protected override void Update()
         {
             base.Update();
-            if (_mpBar != null)
-            {
-                _mpBar.UpdatePosition(gameObject, _mpBarOffset);
-            }
 
-            if (_anim == null)
+            if (ReferenceEquals(_anim, null))
             {
                 _anim = GetComponentInChildren<Animator>();
             }
-        }
-
-        public void UpdateMpBar()
-        {
-            if (_mpBar == null)
-            {
-                _mpBar = Widget.Create<ProgressBar>(true);
-                _mpBar.greenBar = Resources.Load<Sprite>("ui/UI_bar_01_blue");
-            }
-
-            _mpBar.SetValue((float) MP / (float) MPMax);
         }
 
         public void Init(Model.Player character)
