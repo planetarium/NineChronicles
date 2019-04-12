@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using Libplanet.Action;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Item;
@@ -12,7 +13,7 @@ namespace Nekoyume.Action
     {
         public string name;
         public const int DefaultId = 100010;
-        private const int DefaultSetId = 101000;
+        private const int DefaultSetId = 1;
         public override void LoadPlainValue(IImmutableDictionary<string, object> plainValue)
         {
             name = (string) plainValue["name"];
@@ -40,10 +41,9 @@ namespace Nekoyume.Action
             };
 
             var table = ActionManager.Instance.tables.ItemEquipment;
-            ItemEquipment itemData;
-            if (table.TryGetValue(DefaultSetId, out itemData))
+            foreach (ItemEquipment data in table.Select(i => i.Value).Where(e => e.setId == DefaultSetId))
             {
-                var equipment = ItemBase.ItemFactory(itemData);
+                var equipment = ItemBase.ItemFactory(data);
                 avatar.Items.Add(new Inventory.InventoryItem(equipment));
             }
 
