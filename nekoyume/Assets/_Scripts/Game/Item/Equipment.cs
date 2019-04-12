@@ -13,27 +13,18 @@ namespace Nekoyume.Game.Item
         private int _enchantCount = 0;
         private StatsMap[] _stats;
 
-        public ItemEquipment equipData
-        {
-            get
-            {
-                var data = (ItemEquipment) Data;
-                return data;
-            }
-        }
-
         public Equipment(Data.Table.Item data)
             : base(data)
         {
             var stat1 = new StatsMap
             {
-                Key = equipData.ability1,
-                Value = equipData.value1,
+                Key = Data.ability1,
+                Value = Data.value1,
             };
             var stat2 = new StatsMap
             {
-                Key = equipData.ability2,
-                Value = equipData.value2,
+                Key = Data.ability2,
+                Value = Data.value2,
             };
             _stats = new[] {stat1, stat2};
         }

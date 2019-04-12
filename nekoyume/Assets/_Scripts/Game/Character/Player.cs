@@ -133,7 +133,7 @@ namespace Nekoyume.Game.Character
 
         public void UpdateSet(SetItem item)
         {
-            var itemId = item?.equipData.resourceId ?? DefaultSetId;
+            var itemId = item?.Data.resourceId ?? DefaultSetId;
             var prevAnim = gameObject.GetComponentInChildren<Animator>(true);
             if (prevAnim)
             {
