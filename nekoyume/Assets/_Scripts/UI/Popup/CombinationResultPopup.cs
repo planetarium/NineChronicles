@@ -85,7 +85,7 @@ namespace Nekoyume.UI
                 titleText.text = "조합 성공";
                 resultItemView.SetData(_data.ResultItem);
                 resultItemNameText.text = item.Data.name;
-                SetElemental(item.equipData.elemental, 5);
+                SetElemental(item.Data.elemental, 5);
                 resultItemDescriptionText.text = item.ToItemInfo();
                 resultItem.SetActive(true);
                 materialText.text = "조합에 사용된 아이템";

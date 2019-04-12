@@ -96,7 +96,7 @@ namespace Nekoyume.Model
             var setMap = new Dictionary<int, int>();
             foreach (var equipment in Equipments)
             {
-                var key = equipment.equipData.setId;
+                var key = equipment.Data.setId;
                 int count;
                 if (!setMap.TryGetValue(key, out count))
                 {
@@ -176,8 +176,8 @@ namespace Nekoyume.Model
                         break;
                     case ItemBase.ItemType.Set:
                         set = equipment as SetItem;
-                        ATKElement = Game.Elemental.Create((Elemental.ElementalType) equipment?.equipData.elemental);
-                        DEFElement = Game.Elemental.Create((Elemental.ElementalType) equipment?.equipData.elemental);
+                        ATKElement = Game.Elemental.Create((Elemental.ElementalType) equipment?.Data.elemental);
+                        DEFElement = Game.Elemental.Create((Elemental.ElementalType) equipment?.Data.elemental);
                         break;
                     default:
                         throw new InvalidEquipmentException();
