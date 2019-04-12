@@ -54,7 +54,7 @@ namespace Nekoyume.Game.Vfx
                 return;
             }
 
-            StartCoroutine(PlayAndAutoInactiveAsync(duration > 0f ? duration : _particlesDuration));
+            StartCoroutine(CoPlayAndAutoInactive(duration > 0f ? duration : _particlesDuration));
         }
 
         public void LazyStop()
@@ -68,7 +68,7 @@ namespace Nekoyume.Game.Vfx
             gameObject.SetActive(false);
         }
 
-        private IEnumerator PlayAndAutoInactiveAsync(float duration)
+        private IEnumerator CoPlayAndAutoInactive(float duration)
         {
             if (!_particlesRoot.isPlaying)
             {

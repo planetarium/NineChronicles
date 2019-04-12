@@ -103,7 +103,10 @@ namespace Nekoyume.Game.Character
         {
             base.Update();
 
-//            if (ReferenceEquals(_anim, null))
+            // Reference.
+            // if (ReferenceEquals(_anim, null)) 이 라인일 때와 if (_anim == null) 이 라인일 때의 결과가 달라서 주석을 남겨뒀어요.
+            // 아마 전자는 포인터가 가리키는 실제 값을 검사하는 것이고, 후자는 _anim의 값을 검사하는 것 같아요.
+            // if (ReferenceEquals(_anim, null))
             if (_anim == null)
             {
                 _anim = GetComponentInChildren<Animator>();

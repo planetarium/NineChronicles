@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using Nekoyume.Action;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
-using Nekoyume.Game.Factory;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Vfx;
 using Nekoyume.Model;
