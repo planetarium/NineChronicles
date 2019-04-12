@@ -260,10 +260,17 @@ namespace Nekoyume.Model
                 var dWeak = DEFElement.Data.weak;
                 var aMultiply = ATKElement.Data.multiply * 100;
                 var dMultiply = DEFElement.Data.multiply * 100;
-                yield return $"{Elemental.GetDescription(aStrong)} 공격 +{aMultiply}%";
-                yield return $"{Elemental.GetDescription(aWeak)} 공격 -{aMultiply}%";
-                yield return $"{Elemental.GetDescription(dStrong)} 방어 -{dMultiply}%";
-                yield return $"{Elemental.GetDescription(dWeak)} 방어 +{dMultiply}%";
+                if (aMultiply > 0)
+                {
+                    yield return $"{Elemental.GetDescription(aStrong)} 공격 +{aMultiply}%";
+                    yield return $"{Elemental.GetDescription(aWeak)} 공격 -{aMultiply}%";
+                }
+
+                if (dMultiply > 0)
+                {
+                    yield return $"{Elemental.GetDescription(dStrong)} 방어 +{dMultiply}%";
+                    yield return $"{Elemental.GetDescription(dWeak)} 방어 -{dMultiply}%";
+                }
             }
         }
 
