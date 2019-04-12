@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Nekoyume.Data.Table;
 using Nekoyume.Model;
 
@@ -29,6 +30,14 @@ namespace Nekoyume.Game.Item
             {
                 stat.UpdatePlayer(player);
             }
+        }
+
+        public override string ToItemInfo()
+        {
+            var infos = _stats
+                .Select(stat => stat.GetInformation())
+                .Where(info => !string.IsNullOrEmpty(info));
+            return string.Join(Environment.NewLine, infos);
         }
     }
 }

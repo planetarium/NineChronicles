@@ -4,7 +4,7 @@ using Nekoyume.Data.Table;
 namespace Nekoyume.Game.Item
 {
     [Serializable]
-    public class ItemUsable : ItemBase
+    public abstract class ItemUsable : ItemBase
     {
         public new ItemEquipment Data { get; }
 
@@ -17,11 +17,6 @@ namespace Nekoyume.Game.Item
         public virtual bool Use()
         {
             return false;
-        }
-
-        public override string ToItemInfo()
-        {
-            return "";
         }
     }
 }
