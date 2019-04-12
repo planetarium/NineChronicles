@@ -60,6 +60,7 @@ namespace Nekoyume.Game.Character
             base.Awake();
             
             _anim = GetComponentInChildren<Animator>();
+            SetAnimatorSpeed(AnimatorSpeed);
             
             Event.OnAttackEnd.AddListener(AttackEnd);
             Event.OnHitEnd.AddListener(HitEnd);
@@ -110,6 +111,7 @@ namespace Nekoyume.Game.Character
             if (_anim == null)
             {
                 _anim = GetComponentInChildren<Animator>();
+                SetAnimatorSpeed(AnimatorSpeed);
             }
         }
 

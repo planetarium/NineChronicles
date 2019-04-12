@@ -14,6 +14,8 @@ namespace Nekoyume.Game.Character
 {
     public abstract class CharacterBase : MonoBehaviour
     {
+        protected const float AnimatorSpeed = 1.5f;
+        
         public Root Root;
         public int HP = 0;
         public int ATK = 0;
@@ -47,6 +49,15 @@ namespace Nekoyume.Game.Character
         protected virtual void Awake()
         {
             _anim = GetComponent<Animator>();
+            SetAnimatorSpeed(AnimatorSpeed);
+        }
+
+        protected void SetAnimatorSpeed(float speed)
+        {
+            if (_anim != null)
+            {
+                _anim.speed = speed;    
+            }
         }
 
         protected virtual void OnDisable()

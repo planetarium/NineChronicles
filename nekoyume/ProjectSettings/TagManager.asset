@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Canvas
   - Enemy
+  - Effects
   layers:
   - Default
   - TransparentFX
@@ -15,8 +16,8 @@ TagManager:
   - UI
   - 
   - 
+  - Character
   - Vfx
-  - 
   - 
   - 
   - 
@@ -42,6 +43,12 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Character
+    uniqueID: 3909689525
+    locked: 0
+  - name: UI
+    uniqueID: 555532309
     locked: 0
   - name: Vfx
     uniqueID: 764030297
