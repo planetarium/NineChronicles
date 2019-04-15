@@ -299,8 +299,8 @@ namespace Nekoyume.Action
             };
             ProcessAction(action);
         }
-        
-        public void OnDestroy() 
+
+        protected override void OnDestroy() 
         {
             if (agent != null)
             {
@@ -309,6 +309,8 @@ namespace Nekoyume.Action
             }
             
             NetMQConfig.Cleanup(false);
+            
+            base.OnDestroy();
         }
 
         private IEnumerable<IceServer> LoadIceServers()

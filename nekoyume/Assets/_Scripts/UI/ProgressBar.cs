@@ -1,7 +1,6 @@
 using Nekoyume.Game;
 using UnityEngine;
 using UnityEngine.UI;
-using _Scripts.UI;
 
 namespace Nekoyume.UI
 {
@@ -23,17 +22,16 @@ namespace Nekoyume.UI
             var targetPosition = target.transform.position + offset;
 
             // https://answers.unity.com/questions/799616/unity-46-beta-19-how-to-convert-from-world-space-t.html
-            var screenHeight = Screen.height;
             var canvasRectSizeDelta = MainCanvas.instance.RectTransform.sizeDelta;
             var viewportPosition = ActionCamera.instance.Cam.WorldToViewportPoint(targetPosition);
-            var canvasPosition = new Vector2(
+            var anchoredPosition = new Vector2(
                 viewportPosition.x * canvasRectSizeDelta.x,
                 viewportPosition.y * canvasRectSizeDelta.y);
-            if (canvasPosition.y > screenHeight)
+            if (anchoredPosition.y > Screen.height)
             {
-                canvasPosition.y = screenHeight - Margin;
+                anchoredPosition.y = Screen.height - Margin;
             }
-            RectTransform.anchoredPosition = canvasPosition;
+            RectTransform.anchoredPosition = anchoredPosition;
         }
 
         public void SetText(string text)

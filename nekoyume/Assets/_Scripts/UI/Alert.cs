@@ -1,6 +1,4 @@
 using UnityEngine.UI;
-using _Scripts.UI;
-
 
 namespace Nekoyume.UI
 {

@@ -1,9 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Nekoyume.Game.Controller;
 using UnityEngine;
-using _Scripts.UI;
 
 
 namespace Nekoyume.UI

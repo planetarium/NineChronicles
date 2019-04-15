@@ -1,7 +1,6 @@
 using Nekoyume.Game.Controller;
-using Nekoyume.UI;
 
-namespace _Scripts.UI
+namespace Nekoyume.UI
 {
     public class PopupWidget : Widget
     {

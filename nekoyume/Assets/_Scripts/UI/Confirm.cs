@@ -1,7 +1,5 @@
 using Nekoyume.Game.Controller;
 using UnityEngine.UI;
-using _Scripts.UI;
-
 
 namespace Nekoyume.UI
 {

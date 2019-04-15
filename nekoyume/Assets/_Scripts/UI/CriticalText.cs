@@ -1,7 +1,6 @@
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
-using _Scripts.UI;
 
 namespace Nekoyume.UI
 {

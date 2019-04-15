@@ -1,6 +1,4 @@
-using Nekoyume.UI;
-
-namespace _Scripts.UI
+namespace Nekoyume.UI
 {
     public class HudWidget : Widget
     {
