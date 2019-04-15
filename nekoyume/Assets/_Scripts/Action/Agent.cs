@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Threading;
 using System.Threading.Tasks;
 using AsyncIO;
 using Libplanet;
@@ -41,6 +42,7 @@ namespace Nekoyume.Action
         private const int RewardAmount = 1;
 
         private static readonly TimeSpan BlockInterval = TimeSpan.FromSeconds(10);
+        private static readonly TimeSpan SleepInterval = TimeSpan.FromSeconds(3);
 
         static Agent() 
         {
@@ -227,6 +229,7 @@ namespace Nekoyume.Action
 
             public int GetNextBlockDifficulty(IEnumerable<Block<PolymorphicAction<ActionBase>>> blocks)
             {
+                Thread.Sleep(SleepInterval);
                 return blocks.Empty() ? 0 : 1;
             }
         }
