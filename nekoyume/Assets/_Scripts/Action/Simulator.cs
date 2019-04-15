@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Libplanet.Action;
+using Nekoyume.Data;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Util;
@@ -96,8 +97,7 @@ namespace Nekoyume.Action
 
         private void SetWave()
         {
-            var tables = ActionManager.Instance.tables;
-            var stageTable = tables.Stage;
+            var stageTable = Tables.instance.Stage;
             var waves = new List<Stage>();
             foreach (var row in stageTable)
             {
@@ -119,8 +119,7 @@ namespace Nekoyume.Action
         private MonsterWave SpawnWave(Stage stage)
         {
             var wave = new MonsterWave();
-            var tables = ActionManager.Instance.tables;
-            var monsterTable = tables.Character;
+            var monsterTable = Tables.instance.Character;
             foreach (var monsterData in stage.Monsters())
             {
                 for (int i = 0; i < monsterData.count; i++)
@@ -142,9 +141,8 @@ namespace Nekoyume.Action
 
         private void GetReward(int id)
         {
-            var tables = ActionManager.Instance.tables;
-            var rewardTable = tables.StageReward;
-            var itemTable = tables.Item;
+            var rewardTable = Tables.instance.StageReward;
+            var itemTable = Tables.instance.Item;
             var itemSelector = new WeightedSelector<int>(Random);
             StageReward reward;
             var items = new List<ItemBase>();

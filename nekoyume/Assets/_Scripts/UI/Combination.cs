@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Nekoyume.Action;
+using Nekoyume.Data;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
@@ -40,8 +41,10 @@ namespace Nekoyume.UI
 
         #region Mono
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
+
             if (ReferenceEquals(inventoryRenew, null) ||
                 ReferenceEquals(selectedItemInfo, null) ||
                 ReferenceEquals(combinationButton, null) ||
@@ -123,7 +126,7 @@ namespace Nekoyume.UI
 
             _player.gameObject.SetActive(false);
 
-            _data = new Model.Combination(ActionManager.Instance.Avatar.Items, stagedItems.Length);
+            _data = new Model.Combination(ActionManager.instance.Avatar.Items, stagedItems.Length);
             _data.SelectedItemInfo.Value.Item.Subscribe(OnDataSelectedItemInfoItem);
             _data.SelectItemCountPopup.Value.Item.Subscribe(OnDataPopupItem);
             _data.SelectItemCountPopup.Value.OnClickClose.Subscribe(OnDataPopupOnClickClose);
@@ -251,7 +254,7 @@ namespace Nekoyume.UI
         {
             _loadingScreen.Show();
             _combinationDisposable = Action.Combination.EndOfExecuteSubject.ObserveOnMainThread().Subscribe(ResponseCombination);
-            ActionManager.Instance.Combination(_data.StagedItems.ToList());
+            ActionManager.instance.Combination(_data.StagedItems.ToList());
         }
 
         /// <summary>
@@ -266,7 +269,7 @@ namespace Nekoyume.UI
             if (result.ErrorCode == ActionBase.ErrorCode.Success)
             {
                 ItemEquipment itemData;
-                if (!ActionManager.Instance.tables.ItemEquipment.TryGetValue(result.Item.id, out itemData))
+                if (!Tables.instance.ItemEquipment.TryGetValue(result.Item.id, out itemData))
                 {
                     _loadingScreen.Close();
                     throw new InvalidActionException("`Combination` action's `Result` is invalid.");

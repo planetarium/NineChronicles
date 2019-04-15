@@ -1,10 +1,11 @@
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
+using _Scripts.UI;
 
 namespace Nekoyume.UI
 {
-    public class DamageText : HUD
+    public class DamageText : HudWidget
     {
         private static RectTransform CanvasRect;
 

@@ -33,8 +33,10 @@ namespace Nekoyume.UI
 
         #region Mono
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
+
             stage = GameObject.Find("Stage").GetComponent<Stage>();
 
             _inventory = inventory.GetComponent<Inventory>();
@@ -82,7 +84,7 @@ namespace Nekoyume.UI
 
             btnQuest.SetActive(false);
             _player.StartRun();
-            var currentId = ActionManager.Instance.battleLog?.id;
+            var currentId = ActionManager.instance.battleLog?.id;
             var equipments = new List<Equipment>();
             foreach (var slot in equipSlots)
             {
@@ -102,8 +104,8 @@ namespace Nekoyume.UI
                 }
             }
 
-            ActionManager.Instance.HackAndSlash(equipments, foods);
-            while (currentId == ActionManager.Instance.battleLog?.id)
+            ActionManager.instance.HackAndSlash(equipments, foods);
+            while (currentId == ActionManager.instance.battleLog?.id)
             {
                 yield return null;
             }

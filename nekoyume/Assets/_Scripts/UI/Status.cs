@@ -20,8 +20,10 @@ namespace Nekoyume.UI
         private string _avatarName = "";
         private Player _player = null;
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
+
             Game.Event.OnRoomEnter.AddListener(OnRoomEnter);
             Game.Event.OnStageStart.AddListener(OnStageStart);
             Game.Event.OnUpdateStatus.AddListener(OnUpdateStatus);
@@ -59,7 +61,7 @@ namespace Nekoyume.UI
         {
             if (_player != null)
             {
-                _avatarName = ActionManager.Instance.Avatar.Name;
+                _avatarName = ActionManager.instance.Avatar.Name;
                 TextLevelName.text = $"LV. {_player.Level} {_avatarName}";
                 TextHP.text = $"{_player.HP}/{_player.HPMax}";
                 TextExp.text = $"{_player.EXP}/{_player.EXPMax}";

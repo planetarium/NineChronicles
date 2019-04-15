@@ -107,7 +107,7 @@ namespace Nekoyume.Action
             }
 
             // 조합식 테이블 로드.
-            var recipeTable = ActionManager.Instance.tables.Recipe;
+            var recipeTable = Tables.instance.Recipe;
 
             // 조합식 검증.
             Recipe resultItem = null;
@@ -156,7 +156,7 @@ namespace Nekoyume.Action
             
             // 조합 결과 획득.
             {
-                var itemTable = ActionManager.Instance.tables.ItemEquipment;
+                var itemTable = Tables.instance.ItemEquipment;
                 ItemEquipment itemData;
                 if (itemTable.TryGetValue(resultItem.Id, out itemData))
                 {

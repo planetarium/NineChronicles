@@ -89,5 +89,11 @@ namespace Nekoyume
         }
 
         #endregion
+
+        // instance를 생성하기 위한 빈 메소드.
+        public void EmptyMethod()
+        {
+            
+        }
     }
 }

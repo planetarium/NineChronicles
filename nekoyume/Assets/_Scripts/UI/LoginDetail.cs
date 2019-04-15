@@ -36,31 +36,33 @@ namespace Nekoyume.UI
         private int _selectedIndex;
         private Nekoyume.Model.Avatar _avatar;
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
+
             deletePopUp.SetActive(false);
             btnDelete.SetActive(false);
             nameField.gameObject.SetActive(false);
             Game.Event.OnLoginDetail.AddListener(Init);
-            ActionManager.Instance.InitAgent();
+            ActionManager.instance.InitAgent();
         }
 
         private void OnEnable()
         {
-            ActionManager.Instance.DidAvatarLoaded += OnDidAvatarLoaded;
+            ActionManager.instance.DidAvatarLoaded += OnDidAvatarLoaded;
         }
 
         private void OnDisable()
         {
-            ActionManager.Instance.DidAvatarLoaded -= OnDidAvatarLoaded;
+            ActionManager.instance.DidAvatarLoaded -= OnDidAvatarLoaded;
         }
 
         public void LoginClick()
         {
             btnLogin.SetActive(false);
             nameField.gameObject.SetActive(false);
-            ActionManager.Instance.InitAvatar(_selectedIndex);
-            ActionManager.Instance.StartSync();
+            ActionManager.instance.InitAvatar(_selectedIndex);
+            ActionManager.instance.StartSync();
             AudioController.PlayClick();
         }
 
@@ -89,10 +91,10 @@ namespace Nekoyume.UI
             }
             
             btnCreate.SetActive(false);
-            ActionManager.Instance.InitAvatar(_selectedIndex);
+            ActionManager.instance.InitAvatar(_selectedIndex);
             var nickName = nameField.text;
-            ActionManager.Instance.CreateNovice(nickName);
-            ActionManager.Instance.StartSync();
+            ActionManager.instance.CreateNovice(nickName);
+            ActionManager.instance.StartSync();
             AudioController.PlayClick();
         }
 
@@ -100,7 +102,7 @@ namespace Nekoyume.UI
         {
             _selectedIndex = index;
             var active = true;
-            _avatar = ActionManager.Instance.Avatars[_selectedIndex];
+            _avatar = ActionManager.instance.Avatars[_selectedIndex];
             if (ReferenceEquals(_avatar, null))
             {
                 active = false;

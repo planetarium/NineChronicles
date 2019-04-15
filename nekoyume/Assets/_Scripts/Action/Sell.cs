@@ -25,7 +25,7 @@ namespace Nekoyume.Action
         {
             IAccountStateDelta states = actionCtx.PreviousStates;
             var ctx = (Context) states.GetState(actionCtx.Signer) ?? CreateNovice.CreateContext("dummy");
-            var shop = ActionManager.Instance.shop ?? new Shop();
+            var shop = ActionManager.instance.shop ?? new Shop();
             var player = new Player(ctx.avatar);
             foreach (var item in Items)
             {

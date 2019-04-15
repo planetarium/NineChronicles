@@ -1,10 +1,11 @@
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
+using _Scripts.UI;
 
 namespace Nekoyume.UI
 {
-    public class PopupText : HUD
+    public class PopupText : HudWidget
     {
         private static RectTransform CanvasRect;
 

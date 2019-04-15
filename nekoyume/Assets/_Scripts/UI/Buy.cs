@@ -20,8 +20,10 @@ namespace Nekoyume.UI
         public GameObject sellItemBase;
         public Transform grid;
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
+            
             items = new List<SelectedItem>();
             shopItems = new List<Item>();
         }
@@ -61,7 +63,7 @@ namespace Nekoyume.UI
 
         public override void Show()
         {
-            foreach (var pair in ActionManager.Instance.shop.Items)
+            foreach (var pair in ActionManager.instance.shop.Items)
             {
                 foreach (ItemBase itemInfo in pair.Value)
                 {

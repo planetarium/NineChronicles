@@ -28,8 +28,10 @@ namespace Nekoyume.UI
 
         #region Mono
 
-        private void Awake()
-        {   
+        protected override void Awake()
+        {
+            base.Awake();
+
             this.ComponentFieldsNotNullTest();
         }
 

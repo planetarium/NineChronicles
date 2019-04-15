@@ -8,8 +8,10 @@ namespace Nekoyume.UI
         
         #region Mono
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
+
             if (ReferenceEquals(scrollerController, null))
             {
                 throw new SerializeFieldNullException();

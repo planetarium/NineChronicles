@@ -12,8 +12,10 @@ namespace Nekoyume.UI
         public bool ready = false;
         public GameObject[] slots;
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
+
             Show();
         }
 
@@ -39,7 +41,7 @@ namespace Nekoyume.UI
                 button.gameObject.SetActive(true);
                 try
                 {
-                    var avatar = ActionManager.Instance.Avatars[i];
+                    var avatar = ActionManager.instance.Avatars[i];
                     slotText.text = $"LV.{avatar.Level} {avatar.Name}";
                     button.gameObject.SetActive(false);
                 }

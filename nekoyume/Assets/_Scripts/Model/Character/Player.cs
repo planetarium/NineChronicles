@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Action;
+using Nekoyume.Data;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Item;
 
@@ -67,9 +68,9 @@ namespace Nekoyume.Model
 
         public void CalcStats(int lv)
         {
-            var stats = ActionManager.Instance.tables.Character;
-            var levelTable = ActionManager.Instance.tables.Level;
-            var setTable = ActionManager.Instance.tables.SetEffect;
+            var stats = Tables.instance.Character;
+            var levelTable = Tables.instance.Level;
+            var setTable = Tables.instance.SetEffect;
             Character data;
             stats.TryGetValue(job, out data);
             if (data == null)
@@ -109,7 +110,7 @@ namespace Nekoyume.Model
 
             foreach (var pair in setMap)
             {
-                var effect = ActionManager.Instance.tables.GetSetEffect(pair.Key, pair.Value);
+                var effect = Tables.instance.GetSetEffect(pair.Key, pair.Value);
                 foreach (var e in effect)
                 {
                     e.UpdatePlayer(this);
@@ -196,7 +197,7 @@ namespace Nekoyume.Model
 
         private void LevelUp()
         {
-            var levelTable = ActionManager.Instance.tables.Level;
+            var levelTable = Tables.instance.Level;
             Level expData;
             var row = levelTable.First(r => r.Value.exp + r.Value.expNeed > exp);
             levelTable.TryGetValue(row.Key, out expData);
@@ -210,8 +211,8 @@ namespace Nekoyume.Model
 
         public float GetAdditionalStatus(string key)
         {
-            var stats = ActionManager.Instance.tables.Character;
-            var levelTable = ActionManager.Instance.tables.Level;
+            var stats = Tables.instance.Character;
+            var levelTable = Tables.instance.Level;
             Character data;
             stats.TryGetValue(job, out data);
             if (data == null)

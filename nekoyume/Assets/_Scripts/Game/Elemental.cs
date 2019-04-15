@@ -1,5 +1,6 @@
 using System;
 using Nekoyume.Action;
+using Nekoyume.Data;
 
 namespace Nekoyume.Game
 {
@@ -14,9 +15,8 @@ namespace Nekoyume.Game
 
         public static Elemental Create(Data.Table.Elemental.ElementalType type)
         {
-            var table = ActionManager.Instance.tables.Elemental;
             Data.Table.Elemental data;
-            if (table.TryGetValue((int)type, out data))
+            if (Tables.instance.Elemental.TryGetValue((int)type, out data))
             {
                 return new Elemental(data);
             }

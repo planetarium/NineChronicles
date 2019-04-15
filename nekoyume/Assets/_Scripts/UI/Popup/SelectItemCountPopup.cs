@@ -24,8 +24,10 @@ namespace Nekoyume.UI
 
         #region Mono
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
+
             if (ReferenceEquals(titleText, null) ||
                 ReferenceEquals(countText, null) ||
                 ReferenceEquals(itemView, null) ||
