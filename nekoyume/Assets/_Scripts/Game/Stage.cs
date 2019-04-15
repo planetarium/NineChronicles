@@ -82,7 +82,7 @@ namespace Nekoyume.Game
             {
                 qp.Close();
             }
-            _battleLog = ActionManager.Instance.battleLog;
+            _battleLog = ActionManager.instance.battleLog;
             Play(_battleLog);
         }
 
@@ -188,8 +188,7 @@ namespace Nekoyume.Game
         private IEnumerator CoStageEnter(int stage)
         {
             Data.Table.Background data;
-            var tables = this.GetRootComponent<Tables>();
-            if (tables.Background.TryGetValue(stage, out data))
+            if (Tables.instance.Background.TryGetValue(stage, out data))
             {
                 ReadyPlayer();
                 var loadingScreen = Widget.Find<LoadingScreen>();
@@ -357,7 +356,7 @@ namespace Nekoyume.Game
             var player = GetComponentInChildren<Character.Player>();
             if (ReferenceEquals(player, null))
             {
-                var go = _factory.Create(ActionManager.Instance.Avatar);
+                var go = _factory.Create(ActionManager.instance.Avatar);
                 player = go.GetComponent<Character.Player>();
 
                 if (ReferenceEquals(player, null))

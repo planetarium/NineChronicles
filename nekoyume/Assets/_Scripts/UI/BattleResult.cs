@@ -23,8 +23,10 @@ namespace Nekoyume.UI
         private List<InventorySlot> _slots;
         private Stage _stage;
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
+            
             _slots = new List<InventorySlot>();
             _stage = GameObject.Find("Stage").GetComponent<Stage>();
         }
@@ -46,9 +48,9 @@ namespace Nekoyume.UI
             ActionCamera.instance.Idle();
 
             var player = _stage.ReadyPlayer();
-            var currentId = ActionManager.Instance.battleLog?.id;
-            ActionManager.Instance.HackAndSlash(player.equipments, new List<Food>());
-            while (currentId == ActionManager.Instance.battleLog?.id)
+            var currentId = ActionManager.instance.battleLog?.id;
+            ActionManager.instance.HackAndSlash(player.equipments, new List<Food>());
+            while (currentId == ActionManager.instance.battleLog?.id)
             {
                 yield return null;
             }

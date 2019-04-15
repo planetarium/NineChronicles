@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Libplanet.Action;
+using Nekoyume.Data;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Item;
 using Nekoyume.Model;
@@ -40,8 +41,8 @@ namespace Nekoyume.Action
                 id = DefaultId,
             };
 
-            var table = ActionManager.Instance.tables.ItemEquipment;
-            foreach (ItemEquipment data in table.Select(i => i.Value).Where(e => e.setId == DefaultSetId))
+            var table = Tables.instance.ItemEquipment;
+            foreach (var data in table.Select(i => i.Value).Where(e => e.setId == DefaultSetId))
             {
                 var equipment = ItemBase.ItemFactory(data);
                 avatar.Items.Add(new Inventory.InventoryItem(equipment));

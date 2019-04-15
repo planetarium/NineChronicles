@@ -10,21 +10,18 @@ namespace Nekoyume.Game.Factory
     public class DropItemFactory : MonoBehaviour
     {
         private ItemBase _box;
-        private Tables _tables;
         private const int BoxId = 100000;
 
         private void Start()
         {
-            _tables = this.GetRootComponent<Tables>();
-            _box = _tables.GetItem(BoxId);
+            _box = Tables.instance.GetItem(BoxId);
         }
         public IEnumerator CoCreate(List<ItemBase> items, Vector3 position)
         {
-            Tables tables = this.GetRootComponent<Tables>();
-            for (int i = 0; i < items.Count; i++)
+            for (var i = 0; i < items.Count; i++)
             {
                 var item = items[i];
-                ItemBase exist = tables.GetItem(item.Data.id);
+                var exist = Tables.instance.GetItem(item.Data.id);
                 if (exist == null)
                 {
                     items.Remove(item);

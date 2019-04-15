@@ -15,8 +15,10 @@ namespace Nekoyume.UI
 
         #region Mono
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
+
             var pos = transform.localPosition;
             pos.z = -1f;
             transform.localPosition = pos;

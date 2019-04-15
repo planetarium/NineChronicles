@@ -1,10 +1,9 @@
 using UnityEngine.UI;
 
-
 namespace Nekoyume.UI
 {
     public delegate void AlertDelegate();
-    public class Alert : Popup
+    public class Alert : PopupWidget
     {
         public Text content;
         public Text labelOK;

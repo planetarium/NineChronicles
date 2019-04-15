@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
-    public class PopupText : HUD
+    public class PopupText : HudWidget
     {
         private static RectTransform CanvasRect;
 

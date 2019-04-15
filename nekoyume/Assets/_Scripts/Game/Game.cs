@@ -1,5 +1,6 @@
 using Assets.SimpleLocalization;
 using Nekoyume.Action;
+using Nekoyume.Data;
 using Nekoyume.Game.Controller;
 using Nekoyume.UI;
 using UnityEngine;
@@ -39,7 +40,7 @@ namespace Nekoyume.Game
 
         private void Start()
         {
-            ActionManager.Instance.DidAvatarLoaded += OnAvatarLoaded;
+            ActionManager.instance.DidAvatarLoaded += OnAvatarLoaded;
         }
 
         private void OnAvatarLoaded(object sender, Model.Avatar avatar)

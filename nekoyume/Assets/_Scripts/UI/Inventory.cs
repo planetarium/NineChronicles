@@ -17,8 +17,10 @@ namespace Nekoyume.UI
         private List<InventorySlot> _slots;
         private const int maxSlot = 42;
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
+
             _slots = new List<InventorySlot>();
             _slotBase.SetActive(true);
             for (int i = 0; i < maxSlot; ++i)
@@ -64,7 +66,7 @@ namespace Nekoyume.UI
 
         public override void Show()
         {
-            List<Game.Item.Inventory.InventoryItem> items = ActionManager.Instance.Avatar.Items;
+            List<Game.Item.Inventory.InventoryItem> items = ActionManager.instance.Avatar.Items;
             for (int i = 0; i < maxSlot; ++i)
             {
                 InventorySlot slot = _slots[i];

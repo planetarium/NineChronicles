@@ -32,6 +32,8 @@ namespace Nekoyume.Game
             public float magnitudeY;
         }
 
+        public Camera Cam { get; private set; }
+
         [SerializeField] private ChaseData chaseData;
         [SerializeField] private ShakeData shakeData;
 
@@ -47,6 +49,8 @@ namespace Nekoyume.Game
         protected override void Awake()
         {
             base.Awake();
+
+            Cam = GetComponent<Camera>();
 
             _transform = transform;
             _fsm = new Fsm<State>(this);

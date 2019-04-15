@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Nekoyume.Data
 {
-    public class Tables : MonoBehaviour
+    public class Tables : MonoSingleton<Tables>
     {
         public Table<Level> Level { get; private set; }
         public Table<Stage> Stage { get; private set; }
@@ -20,8 +20,10 @@ namespace Nekoyume.Data
         public Table<StageReward> StageReward { get; private set; }
         public Table<SetEffect> SetEffect { get; private set; }
 
-        private void Start()
+        protected override void Awake()
         {
+            base.Awake();
+            
             Level = new Table<Level>();
             Load(Level, "DataTable/level");
 

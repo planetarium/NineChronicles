@@ -37,7 +37,7 @@ namespace Nekoyume.Game.Entrance
             }
 
             var playerFactory = GetComponent<Factory.PlayerFactory>();
-            GameObject player = playerFactory.Create(ActionManager.Instance.Avatar);
+            GameObject player = playerFactory.Create(ActionManager.instance.Avatar);
             player.transform.position = stage.RoomPosition;
 
             UI.Widget.Find<UI.Status>().UpdatePlayer(player);

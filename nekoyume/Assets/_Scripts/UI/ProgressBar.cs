@@ -1,10 +1,13 @@
+using Nekoyume.Game;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
-    public class ProgressBar : HUD
+    public class ProgressBar : HudWidget
     {
+        private const float Margin = 50f;
+        
         public Sprite greenBar;
         public Sprite redBar;
         public Color greenColor;
@@ -16,22 +19,19 @@ namespace Nekoyume.UI
 
         public void UpdatePosition(GameObject target, Vector3 offset = new Vector3())
         {
-            Vector3 targetPosition = target.transform.position + offset;
+            var targetPosition = target.transform.position + offset;
 
             // https://answers.unity.com/questions/799616/unity-46-beta-19-how-to-convert-from-world-space-t.html
-            float screenHeight = Screen.height;
-            RectTransform canvasRect = transform.root.gameObject.GetComponent<RectTransform>();
-            Vector2 viewportPosition = Camera.main.WorldToViewportPoint(targetPosition);
-            Vector2 canvasPosition = new Vector2(
-                ((viewportPosition.x * canvasRect.sizeDelta.x)),
-                ((viewportPosition.y * canvasRect.sizeDelta.y)));
-            if (canvasPosition.y > screenHeight)
+            var canvasRectSizeDelta = MainCanvas.instance.RectTransform.sizeDelta;
+            var viewportPosition = ActionCamera.instance.Cam.WorldToViewportPoint(targetPosition);
+            var anchoredPosition = new Vector2(
+                viewportPosition.x * canvasRectSizeDelta.x,
+                viewportPosition.y * canvasRectSizeDelta.y);
+            if (anchoredPosition.y > Screen.height)
             {
-                float margin = 50.0f;
-                canvasPosition.y = screenHeight - margin;
+                anchoredPosition.y = Screen.height - Margin;
             }
-            RectTransform rectTransform = gameObject.GetComponent<RectTransform>();
-            rectTransform.anchoredPosition = canvasPosition;
+            RectTransform.anchoredPosition = anchoredPosition;
         }
 
         public void SetText(string text)

@@ -1,7 +1,6 @@
 using Nekoyume.Game.Controller;
 using UnityEngine.UI;
 
-
 namespace Nekoyume.UI
 {
     public enum ConfirmResult : int
@@ -12,7 +11,7 @@ namespace Nekoyume.UI
 
     public delegate void ConfirmDelegate(ConfirmResult result);
 
-    public class Confirm : Popup
+    public class Confirm : PopupWidget
     {
         public Text content;
         public Text labelYes;

@@ -29,14 +29,14 @@ namespace Nekoyume.Game.Entrance
 
             yield return null;
             
-            for (int i = 0; i < Action.ActionManager.Instance.Avatars.Count; ++i)
+            for (int i = 0; i < Action.ActionManager.instance.Avatars.Count; ++i)
             {
                 var beginPos = new Vector3(-2.2f + i * 2.22f, -2.6f, 0.0f);
                 var endPos = new Vector3(-2.2f + i * 2.22f, -0.88f, 0.0f);
                 var placeRes = Resources.Load<GameObject>("Prefab/PlayerPlace");
                 if (i % 2 == 0)
                     endPos.y = -1.1f;
-                var avatar = Action.ActionManager.Instance.Avatars[i];
+                var avatar = Action.ActionManager.instance.Avatars[i];
 
                 var factory = GetComponent<PlayerFactory>();
                 if (ReferenceEquals(factory, null))

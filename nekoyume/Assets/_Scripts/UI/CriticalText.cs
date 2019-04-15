@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Nekoyume.UI
 {
-    public class CriticalText : HUD
+    public class CriticalText : HudWidget
     {
         private static RectTransform CanvasRect;
 

@@ -15,8 +15,10 @@ namespace Nekoyume.UI
 
         private Player _player;
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
+
             stage = GameObject.Find("Stage").GetComponent<Stage>();
         }
 

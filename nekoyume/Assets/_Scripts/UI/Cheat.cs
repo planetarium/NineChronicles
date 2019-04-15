@@ -57,8 +57,10 @@ namespace Nekoyume
             Instance.log.text += Instance._logString.ToString();
         }
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
+
             Instance = this;
         }
 
@@ -132,7 +134,7 @@ namespace Nekoyume
         {
             Find<BattleResult>()?.Close();
             GameObject stage = GameObject.Find("Stage");
-            var simulator = new Simulator(new DebugRandom(), ActionManager.Instance.Avatar, new List<Food>());
+            var simulator = new Simulator(new DebugRandom(), ActionManager.instance.Avatar, new List<Food>());
             simulator.Simulate();
             simulator.Log.result = BattleLog.Result.Win;
             stage.GetComponent<Stage>().Play(simulator.Log);
@@ -143,7 +145,7 @@ namespace Nekoyume
         {
             Find<BattleResult>()?.Close();
             GameObject stage = GameObject.Find("Stage");
-            var simulator = new Simulator(new DebugRandom(), ActionManager.Instance.Avatar, new List<Food>());
+            var simulator = new Simulator(new DebugRandom(), ActionManager.instance.Avatar, new List<Food>());
             simulator.Simulate();
             simulator.Log.result = BattleLog.Result.Lose;
             stage.GetComponent<Stage>().Play(simulator.Log);

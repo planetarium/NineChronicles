@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Nekoyume.Game.Controller;
 using UnityEngine;
 
 
@@ -9,34 +8,37 @@ namespace Nekoyume.UI
 {
     public class Widget : MonoBehaviour
     {
-        private static GameObject CanvasObj = null;
-        private static Dictionary<Type, GameObject> Dict = new Dictionary<Type, GameObject>();
+        private static readonly Dictionary<Type, GameObject> Dict = new Dictionary<Type, GameObject>();
+        private static readonly int Radius = Shader.PropertyToID("_Radius");
 
-        private Animator _animator = null;
-        private Material _glass = null;
+        private Animator _animator;
+        private Material _glass;
+        
+        public RectTransform RectTransform { get; private set; }
+
+        protected virtual void Awake()
+        {
+            RectTransform = GetComponent<RectTransform>();
+        }
 
         public static T Create<T>(bool activate = false) where T : Widget
         {
-            if (CanvasObj == null)
-            {
-                CanvasObj = GameObject.FindGameObjectWithTag("Canvas");
-            }
-            Type t = typeof(T);
-            string[] names = t.ToString().Split('.');
-            string resname = $"Prefab/Widget/UI_{names[names.Length - 1]}";
-            GameObject res = Resources.Load<GameObject>(resname);
+            var t = typeof(T);
+            var names = t.ToString().Split('.');
+            var resName = $"Prefab/Widget/UI_{names[names.Length - 1]}";
+            var res = Resources.Load<GameObject>(resName);
             if (res != null)
             {
-                GameObject go = GameObject.Instantiate(res, CanvasObj.transform);
-                T twidget = go.GetComponent<T>();
-                if (twidget is Popup)
+                var go = Instantiate(res, MainCanvas.instance.transform);
+                var widget = go.GetComponent<T>();
+                if (widget is PopupWidget)
                 {
-                    go.transform.SetParent(CanvasObj.transform.Find("Popup"));
+                    go.transform.SetParent(MainCanvas.instance.popup.transform);
                     go.SetActive(activate);
                 }
-                else if (twidget is HUD)
+                else if (widget is HudWidget)
                 {
-                    go.transform.SetParent(CanvasObj.transform.Find("HUD"));
+                    go.transform.SetParent(MainCanvas.instance.hud.transform);
                     go.SetActive(activate);
                 }
                 else
@@ -48,11 +50,11 @@ namespace Nekoyume.UI
                         Dict[t].SetActive(activate);
                         return Dict[t].GetComponent<T>();
                     }
-                    go.transform.SetParent(CanvasObj.transform.Find("Widget"));
+                    go.transform.SetParent(MainCanvas.instance.widget.transform);
                     go.SetActive(activate);
                     Dict.Add(t, go);
                 }
-                return twidget;
+                return widget;
             }
             Debug.LogWarning(($"widget not exist: {t}"));
             return null;
@@ -60,24 +62,20 @@ namespace Nekoyume.UI
 
         public static T Find<T>() where T : Widget
         {
-            Type t = typeof(T);
+            var t = typeof(T);
             GameObject go;
-            if (Dict.TryGetValue(t, out go))
-            {
-                return go.GetComponent<T>();
-            }
-            return null;
+            return Dict.TryGetValue(t, out go) ? go.GetComponent<T>() : null;
         }
 
-        private bool FindGlassMaterial(GameObject go)
+        private void FindGlassMaterial(GameObject go)
         {
             var image = go.GetComponent<UnityEngine.UI.Image>();
-            if (image && image.material && image.material.name == "Glass")
+            if (!image || !image.material || image.material.name != "Glass")
             {
-                _glass = image.material;
-                return true;
+                return;
             }
-            return false;
+            
+            _glass = image.material;
         }
 
         public virtual void Show()
@@ -110,21 +108,21 @@ namespace Nekoyume.UI
             }
         }
 
-        public virtual IEnumerator Blur()
+        protected virtual IEnumerator Blur()
         {
             if (!_glass)
             {
                 yield break;
             }
 
-            _glass.SetFloat("_Radius", 0f);
-            float time = 0.0f;
+            _glass.SetFloat(Radius, 0f);
+            var time = 0.0f;
             while (true)
             {
-                float radius = Mathf.Lerp(0f, 6f, time);
+                var radius = Mathf.Lerp(0f, 6f, time);
                 time += Time.deltaTime * 2f;
                 yield return null;
-                _glass.SetFloat("_Radius", radius);
+                _glass.SetFloat(Radius, radius);
                 if (time > 1.0f)
                     break;
 
@@ -132,7 +130,7 @@ namespace Nekoyume.UI
                     break;
             }
             
-            _glass.SetFloat("_Radius", 6f);
+            _glass.SetFloat(Radius, 6f);
         }
 
         public virtual void Close()
@@ -166,28 +164,6 @@ namespace Nekoyume.UI
             {
                 Show();
             }
-        }
-    }
-
-    public class Popup : Widget
-    {
-        public override void Show()
-        {
-            base.Show();
-            AudioController.PlayPopup();
-        }
-
-        public override void Close()
-        {
-            Destroy(gameObject);
-        }
-    }
-
-    public class HUD : Widget
-    {
-        public override void Close()
-        {
-            Destroy(gameObject);
         }
     }
 }

@@ -43,7 +43,7 @@ namespace Nekoyume.Action
             Debug.Log($"Created reward for {actionCtx.BlockIndex},  Total Gold {ctx.gold}");
 
             if (!actionCtx.Rehearsal &&
-                actionCtx.Miner.Equals(ActionManager.Instance.agentAddress))
+                actionCtx.Miner.Equals(ActionManager.instance.agentAddress))
             {
                 RewardGoldMyselfSubject.OnNext(Gold);
             }

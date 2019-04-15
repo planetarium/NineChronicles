@@ -22,8 +22,10 @@ namespace Nekoyume.UI
 
         #region Mono
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
+
             items = new List<SelectedItem>();
         }
 
@@ -65,9 +67,9 @@ namespace Nekoyume.UI
         {
             btnConfirm.SetActive(false);
             var sellItems = items.Select(i => i.item).ToList();
-            var currentAvatar = ActionManager.Instance.Avatar;
-            ActionManager.Instance.Sell(sellItems, decimal.Parse(totalPrice.text));
-            while (currentAvatar.Equals(ActionManager.Instance.Avatar))
+            var currentAvatar = ActionManager.instance.Avatar;
+            ActionManager.instance.Sell(sellItems, decimal.Parse(totalPrice.text));
+            while (currentAvatar.Equals(ActionManager.instance.Avatar))
             {
                 yield return new WaitForSeconds(1.0f);
             }

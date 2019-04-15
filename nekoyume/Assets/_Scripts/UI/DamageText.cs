@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Nekoyume.UI
 {
-    public class DamageText : HUD
+    public class DamageText : HudWidget
     {
         private static RectTransform CanvasRect;
 

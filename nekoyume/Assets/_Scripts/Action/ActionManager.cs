@@ -24,7 +24,7 @@ namespace Nekoyume.Action
         public Model.Avatar Avatar;
     }
 
-    public class ActionManager : MonoBehaviour
+    public class ActionManager : MonoSingleton<ActionManager>
     {
         private string _saveFilePath;
         public List<Model.Avatar> Avatars
@@ -40,7 +40,6 @@ namespace Nekoyume.Action
 
         private Agent agent;
         public BattleLog battleLog;
-        public static ActionManager Instance { get; private set; }
         public Model.Avatar Avatar { get; private set; }
         public event EventHandler<Model.Avatar> DidAvatarLoaded;
         public const string PrivateKeyFormat = "private_key_{0}";
@@ -50,7 +49,6 @@ namespace Nekoyume.Action
         public const string ChainIdKey = "chain_id";
         public static Address shopAddress => default(Address);
         public Shop shop;
-        public Tables tables;
 
         private IEnumerator _miner;
         private IEnumerator _txProcessor;
@@ -66,12 +64,13 @@ namespace Nekoyume.Action
         private const string AgentStoreDirName = "planetarium";
 #endif
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
+            
             Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
             DontDestroyOnLoad(gameObject);
-            Instance = this;
-            tables = GameObject.Find("Game").GetComponent<Tables>();
+            Tables.instance.EmptyMethod();
         }
 
         private void ReceiveAction(object sender, Context ctx)
@@ -300,8 +299,8 @@ namespace Nekoyume.Action
             };
             ProcessAction(action);
         }
-        
-        public void OnDestroy() 
+
+        protected override void OnDestroy() 
         {
             if (agent != null)
             {
@@ -310,6 +309,8 @@ namespace Nekoyume.Action
             }
             
             NetMQConfig.Cleanup(false);
+            
+            base.OnDestroy();
         }
 
         private IEnumerable<IceServer> LoadIceServers()

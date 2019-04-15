@@ -2,20 +2,22 @@ using UnityEngine;
 
 namespace Nekoyume.UI
 {
-    public class MainCanvas : MonoBehaviour
+    public class MainCanvas : MonoSingleton<MainCanvas>
     {
-        private void Awake()
+        public GameObject hud;
+        public GameObject widget;
+        public GameObject popup;
+        
+        public RectTransform RectTransform { get; private set; }
+        
+        protected override void Awake()
         {
-            GameObject hudContainer = new GameObject("HUD");
-            hudContainer.transform.parent = transform;
-            GameObject widgetContainer = new GameObject("Widget");
-            widgetContainer.transform.parent = transform;
-            GameObject popupContainer = new GameObject("Popup");
-            popupContainer.transform.parent = transform;
-        }
+            base.Awake();
+            
+            this.ComponentFieldsNotNullTest();
 
-        private void Start()
-        {
+            RectTransform = GetComponent<RectTransform>();
+            
             Widget.Create<Login>(true);
             Widget.Create<LoginDetail>();
             Widget.Create<Menu>();
