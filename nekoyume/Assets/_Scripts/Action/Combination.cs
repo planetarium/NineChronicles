@@ -168,7 +168,7 @@ namespace Nekoyume.Action
                     catch (InvalidOperationException)
                     {
                         var itemBase = ItemBase.ItemFactory(itemData);
-                        ctx.avatar.Items.Add(new Inventory.InventoryItem(itemBase, 1));   
+                        ctx.avatar.Items.Add(new Inventory.InventoryItem(itemBase, resultCount));   
                     }
                 }
                 else

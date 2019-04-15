@@ -23,6 +23,8 @@ namespace Nekoyume.UI
         private List<InventorySlot> _slots;
         private Stage _stage;
 
+        private VfxBattleWin _battleWinVfx;
+
         protected override void Awake()
         {
             base.Awake();
@@ -44,6 +46,11 @@ namespace Nekoyume.UI
             {
                 w.Show();   
             }
+            
+            if (!ReferenceEquals(_battleWinVfx, null))
+            {
+                _battleWinVfx.Stop();
+            }
 
             ActionCamera.instance.Idle();
 
@@ -64,7 +71,12 @@ namespace Nekoyume.UI
             }
         }
         public void BackClick()
-        {
+        {   
+            if (!ReferenceEquals(_battleWinVfx, null))
+            {
+                _battleWinVfx.Stop();
+            }
+            
             Game.Event.OnRoomEnter.Invoke();
             Close();
             AudioController.PlayClick();
@@ -82,7 +94,8 @@ namespace Nekoyume.UI
                 grid.gameObject.SetActive(true);
                 
                 AudioController.instance.PlayMusic(AudioController.MusicCode.Win, 0.3f);
-                VfxController.instance.Create<VfxBattleWin>(ActionCamera.instance.transform, new Vector3(-3.43f, -0.28f, 10f)).Play(10f);
+                _battleWinVfx = VfxController.instance.Create<VfxBattleWin>(ActionCamera.instance.transform, new Vector3(-3.43f, -0.28f, 10f));
+                _battleWinVfx.Play(10f);
             }
             else
             {
@@ -99,10 +112,12 @@ namespace Nekoyume.UI
         public override void Close()
         {
             _slots.Clear();
+            
             foreach (Transform child in grid)
             {
                 Destroy(child.gameObject);
             }
+            
             base.Close();
         }
 
