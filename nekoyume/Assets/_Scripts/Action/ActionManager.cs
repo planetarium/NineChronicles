@@ -140,7 +140,7 @@ namespace Nekoyume.Action
 
         private void ProcessAction(ActionBase action)
         {
-            agent.queuedActions.Enqueue(action);
+            agent.QueuedActions.Enqueue(action);
         }
 
         public void HackAndSlash(List<Equipment> equipments, List<Food> foods)
