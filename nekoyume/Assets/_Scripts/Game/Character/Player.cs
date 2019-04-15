@@ -15,6 +15,10 @@ namespace Nekoyume.Game.Character
 {
     public class Player : CharacterBase
     {
+        private static readonly Vector3 DamageTextForce = new Vector3(-0.1f, 0.5f);
+        private static readonly Vector3 HpBarOffset = new Vector3(0f, 0.24f);
+        private static readonly Vector3 MpBarOffset = new Vector3(0f, 0.19f);
+        
         public int MP = 0;
         public long EXP = 0;
         public int Level = 0;
@@ -29,8 +33,8 @@ namespace Nekoyume.Game.Character
 
         public Model.Player model;
 
-        protected override Vector3 _hpBarOffset => _castingBarOffset + new Vector3(0, 0.24f, 0.0f);
-        protected Vector3 _mpBarOffset => _castingBarOffset + new Vector3(0, 0.19f, 0.0f);
+        protected override Vector3 _hpBarOffset => _castingBarOffset + HpBarOffset;
+        protected Vector3 _mpBarOffset => _castingBarOffset + MpBarOffset;
 
         private const int DefaultSetId = 101000;
 
@@ -76,8 +80,8 @@ namespace Nekoyume.Game.Character
         {
             yield return StartCoroutine(base.CoProcessDamage(dmg, critical));
 
-            var position = transform.TransformPoint(-0.1f, 0.6f, 0.0f);
-            var force = new Vector3(-0.02f, 0.4f);
+            var position = transform.TransformPoint(0f, 1.7f, 0f);
+            var force = DamageTextForce;
             var txt = dmg.ToString();
             PopUpDmg(position, force, txt, critical);
 

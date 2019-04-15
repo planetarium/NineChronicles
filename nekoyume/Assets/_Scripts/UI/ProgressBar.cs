@@ -20,18 +20,7 @@ namespace Nekoyume.UI
         public void UpdatePosition(GameObject target, Vector3 offset = new Vector3())
         {
             var targetPosition = target.transform.position + offset;
-
-            // https://answers.unity.com/questions/799616/unity-46-beta-19-how-to-convert-from-world-space-t.html
-            var canvasRectSizeDelta = MainCanvas.instance.RectTransform.sizeDelta;
-            var viewportPosition = ActionCamera.instance.Cam.WorldToViewportPoint(targetPosition);
-            var anchoredPosition = new Vector2(
-                viewportPosition.x * canvasRectSizeDelta.x,
-                viewportPosition.y * canvasRectSizeDelta.y);
-            if (anchoredPosition.y > Screen.height)
-            {
-                anchoredPosition.y = Screen.height - Margin;
-            }
-            RectTransform.anchoredPosition = anchoredPosition;
+            RectTransform.anchoredPosition = targetPosition.ToCanvasPosition(ActionCamera.instance.Cam, MainCanvas.instance.Canvas);;
         }
 
         public void SetText(string text)
