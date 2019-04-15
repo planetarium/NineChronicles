@@ -55,8 +55,6 @@ namespace Nekoyume.Action
             public ItemModel Item;
         }
 
-        private const string RecipePath = "Assets/Resources/DataTable/recipe.csv";
-
         public static readonly Subject<Combination> EndOfExecuteSubject = new Subject<Combination>();
 
         public List<ItemModel> Materials { get; private set; }
@@ -109,9 +107,7 @@ namespace Nekoyume.Action
             }
 
             // 조합식 테이블 로드.
-            var recipeTable = new Table<Recipe>();
-            var recipeTableRawDataPath = Path.Combine(Directory.GetCurrentDirectory(), RecipePath);
-            recipeTable.Load(File.ReadAllText(recipeTableRawDataPath));
+            var recipeTable = ActionManager.Instance.tables.Recipe;
 
             // 조합식 검증.
             Recipe resultItem = null;
