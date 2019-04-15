@@ -25,9 +25,9 @@ namespace Nekoyume.Action
 {
     public class Agent : IDisposable
     {
-        internal readonly BlockChain<PolymorphicAction<ActionBase>> blocks;
-        private readonly PrivateKey agentPrivateKey;
-        public readonly ConcurrentQueue<PolymorphicAction<ActionBase>> queuedActions;
+        private readonly BlockChain<PolymorphicAction<ActionBase>> _blocks;
+        private readonly PrivateKey _agentPrivateKey;
+        public readonly ConcurrentQueue<PolymorphicAction<ActionBase>> QueuedActions;
 
         private const float AvatarUpdateInterval = 3.0f;
 
@@ -36,9 +36,9 @@ namespace Nekoyume.Action
         private const float TxProcessInterval = 3.0f;
         private static readonly TimeSpan SwarmDialTimeout = TimeSpan.FromMilliseconds(1000);
 
-        private readonly Swarm swarm;
+        private readonly Swarm _swarm;
 
-        private const int rewardAmount = 1;
+        private const int RewardAmount = 1;
 
         private static readonly TimeSpan BlockInterval = TimeSpan.FromSeconds(10);
 
@@ -65,17 +65,17 @@ namespace Nekoyume.Action
 # else
             var policy = new BlockPolicy<PolymorphicAction<ActionBase>>(BlockInterval);
 #endif
-            this.agentPrivateKey = agentPrivateKey;
-            blocks = new BlockChain<PolymorphicAction<ActionBase>>(
+            this._agentPrivateKey = agentPrivateKey;
+            _blocks = new BlockChain<PolymorphicAction<ActionBase>>(
                 policy,
                 new FileStore(path),
                 chainId);
-            queuedActions = new ConcurrentQueue<PolymorphicAction<ActionBase>>();
+            QueuedActions = new ConcurrentQueue<PolymorphicAction<ActionBase>>();
 #if BLOCK_LOG_USE
             FileHelper.WriteAllText("Block.log", "");
 #endif
 
-            swarm = new Swarm(
+            _swarm = new Swarm(
                 agentPrivateKey,
                 appProtocolVersion: 1,
                 dialTimeout: SwarmDialTimeout,
@@ -87,7 +87,7 @@ namespace Nekoyume.Action
             {
                 if (peer.PublicKey != agentPrivateKey.PublicKey)
                 {
-                    swarm.Add(peer);
+                    _swarm.Add(peer);
                 }
             }
         }
@@ -95,16 +95,16 @@ namespace Nekoyume.Action
         public PrivateKey AvatarPrivateKey { get; set; }
         public Address AvatarAddress => AvatarPrivateKey.PublicKey.ToAddress();
         public Address ShopAddress => ActionManager.shopAddress;
-        public Address AgentAddress => agentPrivateKey.PublicKey.ToAddress();
+        public Address AgentAddress => _agentPrivateKey.PublicKey.ToAddress();
 
-        public Guid ChainId => blocks.Id;
+        public Guid ChainId => _blocks.Id;
 
         public event EventHandler<Context> DidReceiveAction;
         public event EventHandler<Shop> UpdateShop;
 
         public IEnumerator CoSwarmRunner()
         {
-            Task task = Task.Run(async () => { await swarm.StartAsync(blocks); });
+            Task task = Task.Run(async () => { await _swarm.StartAsync(_blocks); });
 
             yield return new WaitUntil(() => task.IsCompleted);
         }
@@ -114,7 +114,7 @@ namespace Nekoyume.Action
             while (true)
             {
                 yield return new WaitForSeconds(AvatarUpdateInterval);
-                var task = Task.Run(() => blocks.GetStates(new[] {AvatarAddress}));
+                var task = Task.Run(() => _blocks.GetStates(new[] {AvatarAddress}));
                 yield return new WaitUntil(() => task.IsCompleted);
                 var ctx = (Context) task.Result.GetValueOrDefault(AvatarAddress);
                 if (ctx?.avatar != null)
@@ -131,7 +131,7 @@ namespace Nekoyume.Action
             while (true)
             {
                 yield return new WaitForSeconds(ShopUpdateInterval);
-                var task = Task.Run(() => blocks.GetStates(new[] {ShopAddress}));
+                var task = Task.Run(() => _blocks.GetStates(new[] {ShopAddress}));
                 yield return new WaitUntil(() => task.IsCompleted);
                 var shop = (Shop) task.Result.GetValueOrDefault(ShopAddress);
                 if (shop != null)
@@ -149,7 +149,7 @@ namespace Nekoyume.Action
             {
                 yield return new WaitForSeconds(TxProcessInterval);
                 PolymorphicAction<ActionBase> action;
-                while (queuedActions.TryDequeue(out action))
+                while (QueuedActions.TryDequeue(out action))
                 {
                     actions.Add(action);
                 }
@@ -181,16 +181,16 @@ namespace Nekoyume.Action
                 var task = Task.Run(async () =>
                 {
                     var tx = Transaction<PolymorphicAction<ActionBase>>.Create(
-                        agentPrivateKey,
+                        _agentPrivateKey,
                         new List<PolymorphicAction<ActionBase>>()
                         {
-                            new RewardGold() { Gold = rewardAmount }
+                            new RewardGold() { Gold = RewardAmount }
                         },
                         timestamp: DateTime.UtcNow
                     );
-                    blocks.StageTransactions(new HashSet<Transaction<PolymorphicAction<ActionBase>>> {tx});
-                    var block = blocks.MineBlock(AgentAddress);
-                    await swarm.BroadcastBlocksAsync(new[] {block});
+                    _blocks.StageTransactions(new HashSet<Transaction<PolymorphicAction<ActionBase>>> {tx});
+                    var block = _blocks.MineBlock(AgentAddress);
+                    await _swarm.BroadcastBlocksAsync(new[] {block});
                     return block;
                 });
                 yield return new WaitUntil(() => task.IsCompleted);
@@ -209,13 +209,13 @@ namespace Nekoyume.Action
                 actions,
                 timestamp: DateTime.UtcNow
             );
-            blocks.StageTransactions(new HashSet<Transaction<PolymorphicAction<ActionBase>>> {tx});
-            swarm.BroadcastTxsAsync(new[] { tx }).Wait();
+            _blocks.StageTransactions(new HashSet<Transaction<PolymorphicAction<ActionBase>>> {tx});
+            _swarm.BroadcastTxsAsync(new[] { tx }).Wait();
         }
 
         public void Dispose()
         {
-            swarm?.Dispose();
+            _swarm?.Dispose();
         }
 
         private class DebugPolicy : IBlockPolicy<PolymorphicAction<ActionBase>>
