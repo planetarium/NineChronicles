@@ -2,12 +2,14 @@ using UnityEngine;
 
 namespace Nekoyume.UI
 {
+    [RequireComponent(typeof(Canvas))]
     public class MainCanvas : MonoSingleton<MainCanvas>
-    {
+    {   
         public GameObject hud;
         public GameObject widget;
         public GameObject popup;
         
+        public Canvas Canvas { get; private set; }
         public RectTransform RectTransform { get; private set; }
         
         protected override void Awake()
@@ -16,6 +18,7 @@ namespace Nekoyume.UI
             
             this.ComponentFieldsNotNullTest();
 
+            Canvas = GetComponent<Canvas>();
             RectTransform = GetComponent<RectTransform>();
             
             Widget.Create<Login>(true);

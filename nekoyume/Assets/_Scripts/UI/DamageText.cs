@@ -1,4 +1,5 @@
 using DG.Tweening;
+using Nekoyume.Game;
 using TMPro;
 using UnityEngine;
 
@@ -6,8 +7,12 @@ namespace Nekoyume.UI
 {
     public class DamageText : HudWidget
     {
-        private static RectTransform CanvasRect;
-
+        private const float TweenDuration = 0.3f;
+        private const float DestroyDelay = 0.8f;
+        
+        private static readonly Vector3 LocalScaleBefore = new Vector3(0.7f, 0.3f, 1f);
+        private static readonly Vector3 LocalScaleAfter = new Vector3(1.5f, 1.5f, 1f);
+        
         public TextMeshProUGUI label;
 
         private Vector3 _force;
@@ -15,33 +20,20 @@ namespace Nekoyume.UI
 
         public static DamageText Show(Vector3 position, Vector3 force, string text)
         {
-            var popupText = Create<DamageText>(true);
-            popupText.label.text = text;
+            var result = Create<DamageText>(true);
+            result.label.text = text;
+            
+            var rect = result.RectTransform;
+            rect.anchoredPosition = position.ToCanvasPosition(ActionCamera.instance.Cam, MainCanvas.instance.Canvas);
+            rect.localScale = LocalScaleBefore;
 
-            if (CanvasRect == null)
-                CanvasRect = popupText.transform.root.gameObject.GetComponent<RectTransform>();
+            var tweenPos = (position + force).ToCanvasPosition(ActionCamera.instance.Cam, MainCanvas.instance.Canvas);
+            rect.DOAnchorPos(tweenPos, TweenDuration).SetEase(Ease.OutBack);
+            rect.DOScale(LocalScaleAfter, TweenDuration).SetEase(Ease.OutBack);
+            
+            Destroy(result.gameObject, DestroyDelay);
 
-            RectTransform rectTransform = popupText.GetComponent<RectTransform>();
-            rectTransform.anchoredPosition = CalcCanvasPosition(position);
-            rectTransform.localScale = Vector3.one * 0.7f;
-            var pos =  CalcCanvasPosition(position + force);
-            rectTransform.DOMove(pos, 0.4f).SetEase(Ease.OutBack);
-            rectTransform.DOScale(Vector3.one * 1.5f, 0.4f).SetEase(Ease.OutBack);
-
-            Destroy(popupText.gameObject, 0.8f);
-
-            return popupText;
+            return result;
         }
-
-        private static Vector2 CalcCanvasPosition(Vector3 position)
-        {
-            if (CanvasRect == null)
-                return position;
-            Vector2 viewportPosition = Camera.main.WorldToViewportPoint(position);
-            return new Vector2(
-                ((viewportPosition.x * CanvasRect.sizeDelta.x)),
-                ((viewportPosition.y * CanvasRect.sizeDelta.y)));
-        }
-
     }
 }

@@ -15,7 +15,7 @@ namespace Nekoyume
         public static void ComponentFieldsNotNullTest<T>(this T mono) where T : MonoBehaviour
         {
             var nullValues = typeof(T)
-                .GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
+                .GetFields(BindingFlags.Public)
                 .Where(field => field.FieldType.IsInheritsFrom(typeof(MonoBehaviour)))
                 .Select(field => field.GetValue(mono))
                 .Where(value => ReferenceEquals(value, null));
