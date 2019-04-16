@@ -196,11 +196,14 @@ namespace Nekoyume.Action
                     return block;
                 });
                 yield return new WaitUntil(() => task.IsCompleted);
-                Debug.Log($"created block index: {task.Result.Index}");
 
+                if (!task.IsCanceled && !task.IsFaulted)
+                {
+                    Debug.Log($"created block index: {task.Result.Index}");
 #if BLOCK_LOG_USE
-                FileHelper.AppendAllText("Block.log", task.Result.ToVerboseString());
+                    FileHelper.AppendAllText("Block.log", task.Result.ToVerboseString());
 #endif
+                }
             }
         }
 
