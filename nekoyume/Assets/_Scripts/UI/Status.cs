@@ -93,5 +93,17 @@ namespace Nekoyume.UI
             
             AudioController.PlayClick();
         }
+
+        public override void Close()
+        {
+            foreach (var toggle in new[] {BtnStatus, BtnInventory})
+            {
+                if (toggle.isOn)
+                {
+                    toggle.isOn = false;
+                }
+            }
+            base.Close();
+        }
     }
 }
