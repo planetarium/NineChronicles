@@ -104,7 +104,7 @@ namespace Nekoyume.UI
                 }
             }
 
-            ActionManager.instance.HackAndSlash(equipments, foods);
+            ActionManager.instance.HackAndSlash(equipments, foods, ActionManager.instance.Avatar.WorldStage);
             while (currentId == ActionManager.instance.battleLog?.id)
             {
                 yield return null;

@@ -1,7 +1,9 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Libplanet.Action;
 using Nekoyume.Action;
+using Nekoyume.Data;
 using Nekoyume.Game;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Item;
@@ -18,11 +20,15 @@ namespace Nekoyume
 
         public Text log;
         public Button BtnOpen;
+        public Button buttonBase;
+        public ScrollRect list;
 
         private Transform _modal;
         private float _updateTime = 0.0f;
         private StringBuilder _logString = new StringBuilder();
-
+        private BattleLog.Result _result;
+        private int _stage;
+        private int[,] _stageRange;
 
         private class DebugRandom : IRandom
         {
@@ -84,11 +90,25 @@ namespace Nekoyume
         {
             _modal.gameObject.SetActive(true);
             BtnOpen.gameObject.SetActive(false);
+            _stage = 0;
+            foreach (var i in Enumerable.Range(1, int.Parse(Tables.instance.Stage.Keys.Last())))
+            {
+                Button newButton = Instantiate(buttonBase, list.content);
+                newButton.GetComponentInChildren<Text>().text = i.ToString();
+                newButton.onClick.AddListener(() => DummyBattle(i));
+                newButton.gameObject.SetActive(true);
+            }
             base.Show();
         }
 
         public override void Close()
         {
+            foreach (Transform child in list.content.transform)
+            {
+                Destroy(child.gameObject);
+            }
+            list.gameObject.SetActive(false);
+
             _modal.gameObject.SetActive(false);
             BtnOpen.gameObject.SetActive(true);
         }
@@ -132,23 +152,25 @@ namespace Nekoyume
 
         private void DummyBattleWin()
         {
-            Find<BattleResult>()?.Close();
-            GameObject stage = GameObject.Find("Stage");
-            var simulator = new Simulator(new DebugRandom(), ActionManager.instance.Avatar, new List<Food>());
-            simulator.Simulate();
-            simulator.Log.result = BattleLog.Result.Win;
-            stage.GetComponent<Stage>().Play(simulator.Log);
-            Close();
+            _result = BattleLog.Result.Win;
+            list.gameObject.SetActive(true);
         }
 
         private void DummyBattleLose()
         {
+            _result = BattleLog.Result.Lose;
+            list.gameObject.SetActive(true);
+        }
+
+        private void DummyBattle(int stage)
+        {
             Find<BattleResult>()?.Close();
-            GameObject stage = GameObject.Find("Stage");
-            var simulator = new Simulator(new DebugRandom(), ActionManager.instance.Avatar, new List<Food>());
+            GameObject go = GameObject.Find("Stage");
+            var avatar = ActionManager.instance.Avatar;
+            var simulator = new Simulator(new DebugRandom(), avatar, new List<Food>(), stage);
             simulator.Simulate();
-            simulator.Log.result = BattleLog.Result.Lose;
-            stage.GetComponent<Stage>().Play(simulator.Log);
+            simulator.Log.result = _result;
+            go.GetComponent<Stage>().Play(simulator.Log);
             Close();
         }
     }

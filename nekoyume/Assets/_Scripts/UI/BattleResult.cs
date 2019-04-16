@@ -42,14 +42,20 @@ namespace Nekoyume.UI
             var w = Find<LoadingScreen>();
             if (!ReferenceEquals(w, null))
             {
-                w.Show();   
+                w.Show();
             }
 
             ActionCamera.instance.Idle();
 
             var player = _stage.ReadyPlayer();
             var currentId = ActionManager.instance.battleLog?.id;
-            ActionManager.instance.HackAndSlash(player.equipments, new List<Food>());
+            var stage = ActionManager.instance.Avatar.WorldStage;
+            if (result == BattleLog.Result.Win)
+            {
+                stage++;
+            }
+
+            ActionManager.instance.HackAndSlash(player.equipments, new List<Food>(), stage);
             while (currentId == ActionManager.instance.battleLog?.id)
             {
                 yield return null;
