@@ -1,14 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.IO;
 using System.Linq;
-using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Data;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Item;
-using Nekoyume.Model;
 using UniRx;
 using UnityEngine;
 
@@ -79,12 +76,15 @@ namespace Nekoyume.Action
         public override IAccountStateDelta Execute(IActionContext actionCtx)
         {
             var states = actionCtx.PreviousStates;
+            var ctx = (Context) states.GetState(actionCtx.Signer);
             if (actionCtx.Rehearsal)
             {
-                return states.SetState(actionCtx.Signer, CreateNovice.CreateContext("dummy"));
+                if (ReferenceEquals(ctx, null))
+                {
+                    ctx = CreateNovice.CreateContext("dummy");
+                }
+                return states.SetState(actionCtx.Signer, ctx);
             }
-
-            var ctx = (Context) states.GetState(actionCtx.Signer);
 
             // 인벤토리에 재료를 갖고 있는지 검증.
             var pairs = new List<ItemModelInventoryItemPair>();
