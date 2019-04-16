@@ -14,6 +14,8 @@ namespace Nekoyume.UI
 {
     public class BattleResult : Widget
     {
+        private static readonly Vector3 VfxBattleWinOffset = new Vector3(-3.43f, -0.28f, 10f);
+        
         public BattleLog.Result result;
         public Text submitText;
         public Text header;
@@ -94,7 +96,7 @@ namespace Nekoyume.UI
                 grid.gameObject.SetActive(true);
                 
                 AudioController.instance.PlayMusic(AudioController.MusicCode.Win, 0.3f);
-                _battleWinVfx = VfxController.instance.Create<VfxBattleWin>(ActionCamera.instance.transform, new Vector3(-3.43f, -0.28f, 10f));
+                _battleWinVfx = VfxController.instance.Create<VfxBattleWin>(ActionCamera.instance.transform, VfxBattleWinOffset);
                 _battleWinVfx.Play(10f);
             }
             else
