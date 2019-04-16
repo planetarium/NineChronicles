@@ -134,7 +134,8 @@ namespace Nekoyume
         {
             Find<BattleResult>()?.Close();
             GameObject stage = GameObject.Find("Stage");
-            var simulator = new Simulator(new DebugRandom(), ActionManager.instance.Avatar, new List<Food>());
+            var avatar = ActionManager.instance.Avatar;
+            var simulator = new Simulator(new DebugRandom(), avatar, new List<Food>(), avatar.WorldStage);
             simulator.Simulate();
             simulator.Log.result = BattleLog.Result.Win;
             stage.GetComponent<Stage>().Play(simulator.Log);
@@ -145,7 +146,8 @@ namespace Nekoyume
         {
             Find<BattleResult>()?.Close();
             GameObject stage = GameObject.Find("Stage");
-            var simulator = new Simulator(new DebugRandom(), ActionManager.instance.Avatar, new List<Food>());
+            var avatar = ActionManager.instance.Avatar;
+            var simulator = new Simulator(new DebugRandom(), avatar, new List<Food>(), avatar.WorldStage);
             simulator.Simulate();
             simulator.Log.result = BattleLog.Result.Lose;
             stage.GetComponent<Stage>().Play(simulator.Log);

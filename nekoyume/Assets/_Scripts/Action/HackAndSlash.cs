@@ -11,12 +11,14 @@ namespace Nekoyume.Action
     {
         public List<Equipment> Equipments;
         public List<Food> Foods;
+        public int Stage;
 
         public override IImmutableDictionary<string, object> PlainValue =>
             new Dictionary<string, object>
             {
                 ["equipments"] = ByteSerializer.Serialize(Equipments),
                 ["foods"] = ByteSerializer.Serialize(Foods),
+                ["stage"] = ByteSerializer.Serialize(Stage),
             }.ToImmutableDictionary();
 
 
@@ -24,6 +26,7 @@ namespace Nekoyume.Action
         {
             Equipments = ByteSerializer.Deserialize<List<Equipment>>((byte[]) plainValue["equipments"]);
             Foods = ByteSerializer.Deserialize<List<Food>>((byte[]) plainValue["foods"]);
+            Stage = ByteSerializer.Deserialize<int>((byte[]) plainValue["stage"]);
         }
 
         public override IAccountStateDelta Execute(IActionContext actionCtx)
@@ -74,7 +77,7 @@ namespace Nekoyume.Action
                 }
             }
 
-            var simulator = new Simulator(actionCtx.Random, ctx.avatar, Foods);
+            var simulator = new Simulator(actionCtx.Random, ctx.avatar, Foods, Stage);
             var player = simulator.Simulate();
             ctx.avatar.Update(player);
             ctx.battleLog = simulator.Log;

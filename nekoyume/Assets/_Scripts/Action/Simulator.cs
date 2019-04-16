@@ -24,10 +24,10 @@ namespace Nekoyume.Action
         public List<CharacterBase> Characters;
         private readonly List<List<ItemBase>> _waveRewards;
         
-        public Simulator(IRandom random, Model.Avatar avatar, List<Food> foods)
+        public Simulator(IRandom random, Model.Avatar avatar, List<Food> foods, int stage)
         {
             Random = random;
-            _stage = avatar.WorldStage;
+            _stage = stage;
             Log = new BattleLog();
             _waves = new List<MonsterWave>();
             Player = new Player(avatar, this);

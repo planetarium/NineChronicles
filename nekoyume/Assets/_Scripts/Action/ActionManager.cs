@@ -143,12 +143,13 @@ namespace Nekoyume.Action
             agent.QueuedActions.Enqueue(action);
         }
 
-        public void HackAndSlash(List<Equipment> equipments, List<Food> foods)
+        public void HackAndSlash(List<Equipment> equipments, List<Food> foods, int stage)
         {
             var action = new HackAndSlash
             {
                 Equipments = equipments,
                 Foods = foods,
+                Stage = stage,
             };
             ProcessAction(action);
         }
