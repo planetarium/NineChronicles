@@ -64,7 +64,11 @@ namespace Nekoyume.Action
 
                         if (index == lastWave)
                         {
-                            Player.stage++;
+                            if (_stage == Player.stage)
+                            {
+                                Player.stage++;
+                            }
+
                             _result = BattleLog.Result.Win;
                             var rewards = _waveRewards.SelectMany(i => i).ToList();
                             Player.GetRewards(rewards);
