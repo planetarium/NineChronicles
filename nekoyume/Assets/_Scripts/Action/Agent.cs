@@ -225,12 +225,12 @@ namespace Nekoyume.Action
 
         private class DebugPolicy : IBlockPolicy<PolymorphicAction<ActionBase>>
         {
-            public InvalidBlockException ValidateBlocks(IEnumerable<Block<PolymorphicAction<ActionBase>>> blocks, DateTimeOffset currentTime)
+            public InvalidBlockException ValidateBlocks(IReadOnlyList<Block<PolymorphicAction<ActionBase>>> blocks, DateTimeOffset currentTime)
             {
                 return null;
             }
 
-            public int GetNextBlockDifficulty(IEnumerable<Block<PolymorphicAction<ActionBase>>> blocks)
+            public int GetNextBlockDifficulty(IReadOnlyList<Block<PolymorphicAction<ActionBase>>> blocks)
             {
                 Thread.Sleep(SleepInterval);
                 return blocks.Empty() ? 0 : 1;
