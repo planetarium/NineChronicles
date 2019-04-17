@@ -85,15 +85,15 @@ namespace Nekoyume.Action
             battleLog = ctx.battleLog;
         }
 
-        public void StartSync()
+        public void StartAvatarCoroutines()
         {
             if (Avatar != null)
             {
                 DidAvatarLoaded?.Invoke(this, Avatar);
             }
 
-            StartCoroutine(_avatarUpdator);
-            StartCoroutine(_shopUpdator);
+            StartNullableCoroutine(_avatarUpdator);
+            StartNullableCoroutine(_shopUpdator);
         }
 
         public void CreateNovice(string nickName)
@@ -211,14 +211,27 @@ namespace Nekoyume.Action
             _txProcessor = agent.CoTxProcessor();
             _swarmRunner = agent.CoSwarmRunner();
 
-            StartCoroutine(_txProcessor);
-            StartCoroutine(_swarmRunner);
-
             if (!HasCommandLineSwitch("no-miner"))
             {
-                _miner = agent.CoMiner();
-                StartCoroutine(_miner);
+                _miner = agent.CoMiner();   
             }
+        }
+
+        public void StartSystemCoroutines()
+        {
+            StartNullableCoroutine(_txProcessor);
+            StartNullableCoroutine(_swarmRunner);
+            StartNullableCoroutine(_miner);
+        }
+
+        private Coroutine StartNullableCoroutine(IEnumerator routine)
+        {
+            if (ReferenceEquals(routine, null))
+            {
+                return null;
+            }
+
+            return StartCoroutine(routine);
         }
 
         public void InitAvatar(int index)
