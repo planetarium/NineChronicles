@@ -3,55 +3,59 @@
 --- !u!687078895 &4343727234628468602
 SpriteAtlas:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_Name: TRexAtlas
   m_EditorData:
+    serializedVersion: 2
     textureSettings:
+      serializedVersion: 2
       anisoLevel: 1
       compressionQuality: 50
       maxTextureSize: 2048
       textureCompression: 0
-      colorSpace: 1
       filterMode: 1
       generateMipMaps: 0
       readable: 0
       crunchedCompression: 0
-    platformSettings: []
-    packingParameters:
-      paddingPower: 2
+      sRGB: 0
+    platformSettings:
+    - serializedVersion: 2
+      m_BuildTarget: DefaultTexturePlatform
+      m_MaxTextureSize: 2048
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: -1
+      m_TextureCompression: 0
+      m_CompressionQuality: 50
+      m_CrunchedCompression: 0
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 0
+      m_AndroidETC2FallbackOverride: 0
+    packingSettings:
+      serializedVersion: 2
+      padding: 4
       blockOffset: 1
       allowAlphaSplitting: 0
       enableRotation: 1
       enableTightPacking: 1
-    packedHash:
-      serializedVersion: 2
-      Hash: 243fd559dce6b5d3aed4b6142244c358
     variantMultiplier: 1
-    bindAsDefault: 1
-    finalFormat: 4
-    hashString: 243fd559dce6b5d3aed4b6142244c358
-    totalSpriteSurfaceArea: 370268
     packables:
     - {fileID: 2800000, guid: 726d2784a87b044f182b7487b3b8ebb8, type: 3}
-    packedSpriteRenderDataKeys:
-    - 726d2784a87b044f182b7487b3b8ebb8: 21300000
-    - 726d2784a87b044f182b7487b3b8ebb8: 21300002
-    - 726d2784a87b044f182b7487b3b8ebb8: 21300008
-    - 726d2784a87b044f182b7487b3b8ebb8: 21300004
-    - 726d2784a87b044f182b7487b3b8ebb8: 21300006
+    totalSpriteSurfaceArea: 370268
+    bindAsDefault: 1
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
-  - {fileID: 21300000, guid: 726d2784a87b044f182b7487b3b8ebb8, type: 3}
-  - {fileID: 21300002, guid: 726d2784a87b044f182b7487b3b8ebb8, type: 3}
   - {fileID: 21300008, guid: 726d2784a87b044f182b7487b3b8ebb8, type: 3}
+  - {fileID: 21300002, guid: 726d2784a87b044f182b7487b3b8ebb8, type: 3}
   - {fileID: 21300004, guid: 726d2784a87b044f182b7487b3b8ebb8, type: 3}
   - {fileID: 21300006, guid: 726d2784a87b044f182b7487b3b8ebb8, type: 3}
+  - {fileID: 21300000, guid: 726d2784a87b044f182b7487b3b8ebb8, type: 3}
   m_PackedSpriteNamesToIndex:
-  - t_rex_body
-  - t_rex_leg
   - t_rex_jaw_open
+  - t_rex_leg
   - t_rex_head
   - t_rex_jaw_open_back
+  - t_rex_body
   m_Tag: TRexAtlas
   m_IsVariant: 0
