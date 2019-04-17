@@ -58,13 +58,8 @@ namespace Nekoyume.UI
 
             var player = _stage.ReadyPlayer();
             var currentId = ActionManager.instance.battleLog?.id;
-            var stage = ActionManager.instance.Avatar.WorldStage;
-            if (result == BattleLog.Result.Win)
-            {
-                stage++;
-            }
-
-            ActionManager.instance.HackAndSlash(player.equipments, new List<Food>(), stage);
+            ActionManager.instance.HackAndSlash(player.equipments, new List<Food>(),
+                ActionManager.instance.Avatar.WorldStage);
             while (currentId == ActionManager.instance.battleLog?.id)
             {
                 yield return null;
