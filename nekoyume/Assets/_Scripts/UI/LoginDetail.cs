@@ -4,7 +4,6 @@ using DG.Tweening;
 using Nekoyume.Action;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
-using Nekoyume.Game.Item;
 using Nekoyume.Model;
 using UnityEngine;
 using UnityEngine.UI;
@@ -24,8 +23,6 @@ namespace Nekoyume.UI
         public Slider expBar;
         public Text levelInfo;
         public Text nameInfo;
-        public GameObject statusDetail;
-        public GameObject character;
         public GameObject profileImage;
         public GameObject menuSelect;
         public GameObject menuCreate;
