@@ -220,7 +220,7 @@ namespace Nekoyume.Action
 
         public void Dispose()
         {
-            _swarm?.Dispose();
+            _swarm?.StopAsync().Wait(0);
         }
 
         private class DebugPolicy : IBlockPolicy<PolymorphicAction<ActionBase>>
