@@ -1,4 +1,9 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace Assets.SimpleLocalization
 {
@@ -23,7 +28,7 @@ namespace Assets.SimpleLocalization
 		/// <summary>
 		/// Folder to save spreadsheets. Must be inside Resources folder.
 		/// </summary>
-		public Object SaveFolder;
+		public UnityEngine.Object SaveFolder;
 
 		private const string UrlPattern = "https://docs.google.com/spreadsheets/d/{0}/export?format=csv&gid={1}";
 
@@ -34,34 +39,56 @@ namespace Assets.SimpleLocalization
 		/// </summary>
 		public void Sync()
 		{
-			var folder = UnityEditor.AssetDatabase.GetAssetPath(SaveFolder);
-			var sheets = Sheets.Length;
+			StopAllCoroutines();
+			StartCoroutine(SyncCoroutine());
+		}
 
-			Debug.Log("<color=yellow>Sync started, please wait for confirmation message. If it doesn't work, try to run it in Play mode.</color>");
+		private IEnumerator SyncCoroutine()
+		{
+			var folder = UnityEditor.AssetDatabase.GetAssetPath(SaveFolder);
+
+			Debug.Log("<color=yellow>Sync started, please wait for confirmation message...</color>");
+
+			#if UNITY_5
+
+			Debug.Log("<color=yellow>You should do Sync in Play mode in Unity 5!</color>");
+
+			#endif
+
+			var downloaders = new List<UnityWebRequest>();
 
 			foreach (var sheet in Sheets)
 			{
 				var url = string.Format(UrlPattern, TableId, sheet.Id);
 
-				Downloader.Download(url, www =>
-				{
-					if (www.error == null)
-					{
-						var path = System.IO.Path.Combine(folder, sheet.Name + ".csv");
+				Debug.LogFormat("Downloading: {0}...", url);
 
-						System.IO.File.WriteAllBytes(path, www.bytes);
-						Debug.LogFormat("Sheet {0} saved to {1}", sheet.Id, path);
-					}
-
-					UnityEditor.AssetDatabase.Refresh();
-
-					if (--sheets == 0)
-					{
-						Debug.Log("<color=green>Localization successfully synced!</color>");
-						DestroyImmediate(Downloader.Instance.gameObject);
-					}
-				});
+				downloaders.Add(new UnityWebRequest(url));
 			}
+
+			foreach (var downloader in downloaders)
+			{
+				if (!downloader.isDone)
+				{
+					yield return downloader.SendWebRequest();
+				}
+
+				if (downloader.isNetworkError || downloader.isHttpError)
+				{
+					throw new Exception(downloader.error);
+				}
+				else
+				{
+					var sheet = Sheets.Single(i => downloader.url == string.Format(UrlPattern, TableId, i.Id));
+					var path = System.IO.Path.Combine(folder, sheet.Name + ".csv");
+
+					System.IO.File.WriteAllBytes(path, downloader.downloadHandler.data);
+					UnityEditor.AssetDatabase.Refresh();
+					Debug.LogFormat("Sheet {0} downloaded to {1}", sheet.Id, path);
+				}
+			}
+
+			Debug.Log("<color=green>Localization successfully synced!</color>");
 		}
 
 		#endif
