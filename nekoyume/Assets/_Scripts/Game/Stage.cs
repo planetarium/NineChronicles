@@ -25,8 +25,7 @@ namespace Nekoyume.Game
         private BattleLog _battleLog;
         private const float AttackDelay = 0.3f;
         // dummy for stage background moving.
-        [SerializeField]
-        private GameObject dummy;
+        public GameObject dummy;
         public float loadingSpeed = 2.0f;
         public Character.Player selectedPlayer;
         private readonly Vector2 _stageStartPosition = new Vector2(-6.0f, -1.2f);
