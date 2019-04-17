@@ -42,7 +42,7 @@ namespace Anima2D
 				get {
 					if(!mShowBonesImage)
 					{
-						mShowBonesImage = EditorGUIUtility.Load("Anima2D/showBonesIcon.png") as Texture2D;
+						mShowBonesImage = Resources.Load<Texture2D>("showBonesIcon");
 						mShowBonesImage.hideFlags = HideFlags.DontSave;
 					}
 					
@@ -175,17 +175,21 @@ namespace Anima2D
 			}
 			if (Event.current.type == EventType.ScrollWheel || (Event.current.type == EventType.MouseDrag && Event.current.alt && Event.current.button == 1))
 			{
-				float num = 1f - Event.current.delta.y * ((Event.current.type != EventType.ScrollWheel) ? -0.005f : 0.03f);
-				float num2 = this.m_Zoom * num;
-				float num3 = Mathf.Clamp(num2, this.GetMinZoom(), 10f);
-				if (num3 != this.m_Zoom)
+				float zoomMultiplier = 1f - Event.current.delta.y * ((Event.current.type != EventType.ScrollWheel) ? -0.005f : 0.03f);
+				float wantedZoom = this.m_Zoom * zoomMultiplier;
+				float currentZoom = Mathf.Clamp(wantedZoom, this.GetMinZoom(), 10f);
+				if (currentZoom != this.m_Zoom)
 				{
-					this.m_Zoom = num3;
-					if (num2 != num3)
-					{
-						num /= num2 / num3;
-					}
-					this.m_ScrollPosition *= num;
+					this.m_Zoom = currentZoom;
+					if (wantedZoom != currentZoom)
+						zoomMultiplier /= wantedZoom / currentZoom;
+					
+					Vector3 textureHalfSize = new Vector2(m_Texture.width, m_Texture.height) * 0.5f;
+                    Vector3 mousePositionWorld = Handles.inverseMatrix.MultiplyPoint3x4(Event.current.mousePosition);
+                    Vector3 delta = (mousePositionWorld - textureHalfSize) * (zoomMultiplier - 1f);
+
+                    m_ScrollPosition += (Vector2)Handles.matrix.MultiplyVector(delta);
+
 					Event.current.Use();
 				}
 			}

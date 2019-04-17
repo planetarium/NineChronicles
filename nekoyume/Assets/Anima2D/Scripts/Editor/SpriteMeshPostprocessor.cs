@@ -96,14 +96,10 @@ namespace Anima2D
 				
 				if(apiVersionProp.intValue < SpriteMesh.api_version)
 				{
-					if(apiVersionProp.intValue < 1)
-					{
-						Upgrade_001(spriteMeshSO);
-					}
-					
 					if(apiVersionProp.intValue < 2)
 					{
-						Upgrade_002(spriteMeshSO);
+						Debug.LogError("SpriteMesh " + spriteMesh + " was created using an ancient version of Anima2D which can't be upgraded anymore.\n" +
+							"The last version that can upgrade this asset is Anima2D 1.1.5");
 					}
 					
 					if(apiVersionProp.intValue < 3)
@@ -122,172 +118,6 @@ namespace Anima2D
 					
 					AssetDatabase.SaveAssets();
 				}
-			}
-		}
-		
-		static void Upgrade_001(SerializedObject spriteMeshSO)
-		{
-			spriteMeshSO.Update();
-			
-			SerializedProperty bindPosesProp = spriteMeshSO.FindProperty("bindPoses");
-			
-			for(int i = 0; i < bindPosesProp.arraySize; ++i)
-			{
-				SerializedProperty bindPoseProp = bindPosesProp.GetArrayElementAtIndex(i);
-				bindPoseProp.FindPropertyRelative("color").colorValue = ColorRing.GetColor(i);
-			}
-			
-			SerializedProperty pivotPointProp = spriteMeshSO.FindProperty("pivotPoint");
-			SerializedProperty spriteProp = spriteMeshSO.FindProperty("m_Sprite");
-			Sprite sprite = spriteProp.objectReferenceValue as Sprite;
-			
-			if(sprite)
-			{
-				pivotPointProp.vector2Value = SpriteMeshUtils.GetPivotPoint(sprite);
-			}
-			
-			spriteMeshSO.ApplyModifiedProperties();
-		}
-		
-		static void Upgrade_002(SerializedObject spriteMeshSO)
-		{
-			spriteMeshSO.Update();
-			
-			SpriteMesh spriteMesh = spriteMeshSO.targetObject as SpriteMesh;
-			
-			SerializedProperty sharedMeshProp = spriteMeshSO.FindProperty("m_SharedMesh");
-			SerializedProperty sharedMaterialsProp = spriteMeshSO.FindProperty("m_SharedMaterials");
-			SerializedProperty pivotPointProp = spriteMeshSO.FindProperty("pivotPoint");
-			SerializedProperty texVerticesProp = spriteMeshSO.FindProperty("texVertices");
-			SerializedProperty edgesProp = spriteMeshSO.FindProperty("edges");
-			SerializedProperty holesProp = spriteMeshSO.FindProperty("holes");
-			SerializedProperty indicesProp = spriteMeshSO.FindProperty("indices");
-			
-			string path = AssetDatabase.GetAssetPath(spriteMeshSO.targetObject);
-			GameObject go = AssetDatabase.LoadAssetAtPath(path,typeof(GameObject)) as GameObject;
-			
-			if(go)
-			{
-				Object.DestroyImmediate(go,true);
-			}
-			
-			Material material = AssetDatabase.LoadAssetAtPath(path,typeof(Material)) as Material;
-			
-			if(material)
-			{
-				sharedMaterialsProp.arraySize = 1;
-				sharedMaterialsProp.GetArrayElementAtIndex(0).objectReferenceValue = material;
-				material.hideFlags = HideFlags.HideInHierarchy;
-				EditorUtility.SetDirty(material);
-			}
-			
-			Mesh mesh = AssetDatabase.LoadAssetAtPath(path,typeof(Mesh)) as Mesh;
-			
-			if(mesh)
-			{
-				mesh.hideFlags = HideFlags.HideInHierarchy;
-				sharedMeshProp.objectReferenceValue = mesh;
-				EditorUtility.SetDirty(mesh);
-			}
-			
-			spriteMeshSO.ApplyModifiedProperties();
-			
-			SpriteMeshData spriteMeshData = SpriteMeshUtils.LoadSpriteMeshData(spriteMesh);
-			
-			if(!spriteMeshData)
-			{
-				spriteMeshData = ScriptableObject.CreateInstance<SpriteMeshData>();
-				AssetDatabase.AddObjectToAsset(spriteMeshData,path);
-			}
-			
-			if(spriteMeshData)
-			{
-				spriteMeshData.name = spriteMeshSO.targetObject.name + "_Data";
-				spriteMeshData.hideFlags = HideFlags.HideInHierarchy;
-				
-				SerializedObject spriteMeshDataSO = new SerializedObject(spriteMeshData);
-				SerializedProperty smdPivotPointProp = spriteMeshDataSO.FindProperty("m_PivotPoint");
-				SerializedProperty smdVerticesProp = spriteMeshDataSO.FindProperty("m_Vertices");
-				SerializedProperty smdBoneWeightsProp = spriteMeshDataSO.FindProperty("m_BoneWeights");
-				SerializedProperty smdEdgesProp = spriteMeshDataSO.FindProperty("m_Edges");
-				SerializedProperty smdHolesProp = spriteMeshDataSO.FindProperty("m_Holes");
-				SerializedProperty smdIndicesProp = spriteMeshDataSO.FindProperty("m_Indices");
-				
-				spriteMeshDataSO.Update();
-				
-				smdPivotPointProp.vector2Value = pivotPointProp.vector2Value;
-				
-				smdVerticesProp.arraySize = texVerticesProp.arraySize;
-				smdBoneWeightsProp.arraySize = texVerticesProp.arraySize;
-				
-				for(int i = 0; i < smdVerticesProp.arraySize; ++i)
-				{
-					SerializedProperty vertexProp = texVerticesProp.GetArrayElementAtIndex(i);
-					SerializedProperty vertexPositionProp = vertexProp.FindPropertyRelative("vertex");
-					SerializedProperty boneWeightProp = vertexProp.FindPropertyRelative("boneWeight");
-					SerializedProperty boneIndex0Prop = boneWeightProp.FindPropertyRelative("boneIndex0");
-					SerializedProperty boneIndex1Prop = boneWeightProp.FindPropertyRelative("boneIndex1");
-					SerializedProperty boneIndex2Prop = boneWeightProp.FindPropertyRelative("boneIndex2");
-					SerializedProperty boneIndex3Prop = boneWeightProp.FindPropertyRelative("boneIndex3");
-					SerializedProperty boneWeight0Prop = boneWeightProp.FindPropertyRelative("weight0");
-					SerializedProperty boneWeight1Prop = boneWeightProp.FindPropertyRelative("weight1");
-					SerializedProperty boneWeight2Prop = boneWeightProp.FindPropertyRelative("weight2");
-					SerializedProperty boneWeight3Prop = boneWeightProp.FindPropertyRelative("weight3");
-					
-					SerializedProperty smdVertexProp = smdVerticesProp.GetArrayElementAtIndex(i);
-					SerializedProperty smdBoneWeightProp = smdBoneWeightsProp.GetArrayElementAtIndex(i);
-					SerializedProperty smdBoneIndex0Prop = smdBoneWeightProp.FindPropertyRelative("boneIndex0");
-					SerializedProperty smdBoneIndex1Prop = smdBoneWeightProp.FindPropertyRelative("boneIndex1");
-					SerializedProperty smdBoneIndex2Prop = smdBoneWeightProp.FindPropertyRelative("boneIndex2");
-					SerializedProperty smdBoneIndex3Prop = smdBoneWeightProp.FindPropertyRelative("boneIndex3");
-					SerializedProperty smdBoneWeight0Prop = smdBoneWeightProp.FindPropertyRelative("weight0");
-					SerializedProperty smdBoneWeight1Prop = smdBoneWeightProp.FindPropertyRelative("weight1");
-					SerializedProperty smdBoneWeight2Prop = smdBoneWeightProp.FindPropertyRelative("weight2");
-					SerializedProperty smdBoneWeight3Prop = smdBoneWeightProp.FindPropertyRelative("weight3");
-					
-					smdVertexProp.vector2Value = vertexPositionProp.vector2Value;
-					smdBoneIndex0Prop.intValue = boneIndex0Prop.intValue;
-					smdBoneIndex1Prop.intValue = boneIndex1Prop.intValue;
-					smdBoneIndex2Prop.intValue = boneIndex2Prop.intValue;
-					smdBoneIndex3Prop.intValue = boneIndex3Prop.intValue;
-					smdBoneWeight0Prop.floatValue = boneWeight0Prop.floatValue;
-					smdBoneWeight1Prop.floatValue = boneWeight1Prop.floatValue;
-					smdBoneWeight2Prop.floatValue = boneWeight2Prop.floatValue;
-					smdBoneWeight3Prop.floatValue = boneWeight3Prop.floatValue;
-				}
-				
-				smdEdgesProp.arraySize = edgesProp.arraySize;
-				
-				for(int i = 0; i < smdEdgesProp.arraySize; ++i)
-				{
-					SerializedProperty edgeProp = edgesProp.GetArrayElementAtIndex(i);
-					SerializedProperty smdEdgeProp = smdEdgesProp.GetArrayElementAtIndex(i);
-					
-					smdEdgeProp.FindPropertyRelative("index1").intValue = edgeProp.FindPropertyRelative("index1").intValue;
-					smdEdgeProp.FindPropertyRelative("index2").intValue = edgeProp.FindPropertyRelative("index2").intValue;
-				}
-				
-				smdHolesProp.arraySize = holesProp.arraySize;
-				
-				for(int i = 0; i < smdHolesProp.arraySize; ++i)
-				{
-					SerializedProperty holeProp = holesProp.GetArrayElementAtIndex(i);
-					SerializedProperty smdHoleProp = smdHolesProp.GetArrayElementAtIndex(i);
-					
-					smdHoleProp.vector2Value = holeProp.FindPropertyRelative("vertex").vector2Value;
-				}
-				
-				smdIndicesProp.arraySize = indicesProp.arraySize;
-				
-				for(int i = 0; i < smdIndicesProp.arraySize; ++i)
-				{
-					smdIndicesProp.GetArrayElementAtIndex(i).intValue = indicesProp.GetArrayElementAtIndex(i).intValue;
-				}
-				
-				spriteMeshDataSO.ApplyModifiedProperties();
-				
-				//Can't find the way to make SerializedProperty work with Matrix4x4, so we use reflection
-				SetBindPoses(spriteMeshData,GetBindPoses(spriteMesh));
 			}
 		}
 		
@@ -357,49 +187,6 @@ namespace Anima2D
 			spriteMeshSO.Update();
 			materialsProp.arraySize = 0;
 			spriteMeshSO.ApplyModifiedProperties();
-		}
-
-		static SpriteMesh.BindInfo[] GetBindPoses(SpriteMesh spriteMesh)
-		{
-			SpriteMesh.BindInfo[] result = null;
-			
-			FieldInfo fieldInfo = typeof(SpriteMesh).GetField("bindPoses",BindingFlags.Instance | BindingFlags.NonPublic);
-			
-			if(fieldInfo != null)
-			{
-				result = (SpriteMesh.BindInfo[])fieldInfo.GetValue(spriteMesh);
-			}
-			return result;
-		}
-		
-		static void SetBindPoses(SpriteMeshData spriteMeshData, SpriteMesh.BindInfo[] bindPoses)
-		{
-			if(bindPoses != null && bindPoses.Length > 0)
-			{
-				BindInfo[] array = new BindInfo[bindPoses.Length];
-				
-				for(int i = 0; i < array.Length; ++i)
-				{
-					BindInfo b = new BindInfo();
-					b.bindPose = bindPoses[i].bindPose;
-					b.boneLength = bindPoses[i].boneLength;
-					b.color = bindPoses[i].color;
-					b.name = bindPoses[i].name;
-					b.path = bindPoses[i].path;
-					b.zOrder = bindPoses[i].zOrder;
-					
-					array[i] = b;
-				}
-				
-				FieldInfo fieldInfo = typeof(SpriteMeshData).GetField("m_BindPoses",BindingFlags.Instance | BindingFlags.NonPublic);
-				
-				if(fieldInfo != null)
-				{
-					fieldInfo.SetValue(spriteMeshData,array);
-				}
-				
-				EditorUtility.SetDirty(spriteMeshData);
-			}
 		}
 		
 		static void UpdateCachedSpriteMesh(SpriteMesh spriteMesh)
