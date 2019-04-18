@@ -165,7 +165,7 @@ namespace Nekoyume.UI
             if (_repeat)
             {
                 _timer -= Time.deltaTime;
-                timeText.text = $"{(int)_timer}초 후 다시 전투를 시작합니다.";
+                timeText.text = $"{_timer:0}초 후 다시 전투를 시작합니다.";
                 if (_timer <= 0)
                 {
                     _repeat = false;
