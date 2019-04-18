@@ -11,8 +11,8 @@ namespace Nekoyume.UI
     {
         private const float DisableAlpha = 0.3f;
 
-        [SerializeField] private Transform _grid;
-        [SerializeField] private GameObject _slotBase;
+        public Transform grid;
+        public GameObject slotBase;
 
         private List<InventorySlot> _slots;
         private const int maxSlot = 42;
@@ -22,16 +22,16 @@ namespace Nekoyume.UI
             base.Awake();
 
             _slots = new List<InventorySlot>();
-            _slotBase.SetActive(true);
+            slotBase.SetActive(true);
             for (int i = 0; i < maxSlot; ++i)
             {
-                GameObject newSlot = Instantiate(_slotBase, _grid);
+                GameObject newSlot = Instantiate(slotBase, grid);
                 InventorySlot slot = newSlot.GetComponent<InventorySlot>();
                 slot.Item = null;
                 _slots.Add(slot);
             }
 
-            _slotBase.SetActive(false);
+            slotBase.SetActive(false);
             Game.Event.OnUpdateEquipment.AddListener(UpdateEquipment);
             Game.Event.OnSlotClick.AddListener(ToggleSlot);
         }

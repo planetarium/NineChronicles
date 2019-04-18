@@ -32,7 +32,11 @@ namespace Anima2D
 
 			GameObject instance = GameObject.Instantiate(Selection.activeGameObject) as GameObject;
 
+#if UNITY_2018_3_OR_NEWER
+			GameObject prefab = PrefabUtility.SaveAsPrefabAsset(instance, path);
+#else
 			GameObject prefab = PrefabUtility.CreatePrefab(path,instance);
+#endif
 
 			GameObject.DestroyImmediate(instance);
 
