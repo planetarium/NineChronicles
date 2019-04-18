@@ -70,13 +70,13 @@ namespace Nekoyume.UI
 
         #endregion
 
-        public void QuestClick()
+        public void QuestClick(bool repeat)
         {
-            StartCoroutine(QuestAsync());
+            StartCoroutine(CoQuest(repeat));
             AudioController.PlayClick();
         }
 
-        private IEnumerator QuestAsync()
+        private IEnumerator CoQuest(bool repeat)
         {
             var loadingScreen = Find<LoadingScreen>();
             if (!ReferenceEquals(loadingScreen, null))
@@ -118,6 +118,8 @@ namespace Nekoyume.UI
             {
                 loadingScreen.Close();
             }
+
+            stage.repeatStage = repeat;
         }
 
         public override void Show()

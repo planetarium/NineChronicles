@@ -174,6 +174,7 @@ namespace Nekoyume.Game.Character
             );
             var level = model.level;
             model.GetExp(exp);
+            EXP += exp;
 
             if (model.level != level)
             {
