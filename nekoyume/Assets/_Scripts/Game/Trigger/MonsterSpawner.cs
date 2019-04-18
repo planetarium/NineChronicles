@@ -9,7 +9,7 @@ namespace Nekoyume.Game.Trigger
 {
     public class MonsterSpawner : MonoBehaviour
     {
-        [SerializeField] private Vector3[] _spawnPoints;
+        public Vector3[] spawnPoints;
 
         private Monster _monster;
 
@@ -35,13 +35,13 @@ namespace Nekoyume.Game.Trigger
             var factory = GetComponentInParent<EnemyFactory>();
             var player = _stage.GetComponentInChildren<Character.Player>();
             var offsetX = player.transform.position.x + 2.8f;
-            var randIndex = Enumerable.Range(0, _spawnPoints.Length / 2)
+            var randIndex = Enumerable.Range(0, spawnPoints.Length / 2)
                 .OrderBy(n => Guid.NewGuid()).ToArray();
             {
                 var r = randIndex[0];
                 var pos = new Vector2(
-                    _spawnPoints[r].x + offsetX,
-                    _spawnPoints[r].y);
+                    spawnPoints[r].x + offsetX,
+                    spawnPoints[r].y);
                 factory.Create(_monster, pos);
             }
         }
@@ -64,7 +64,7 @@ namespace Nekoyume.Game.Trigger
                     Vector3 point;
                     try
                     {
-                        point = _spawnPoints[index];
+                        point = spawnPoints[index];
                     }
                     catch (IndexOutOfRangeException)
                     {

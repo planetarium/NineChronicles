@@ -1501,29 +1501,9 @@ namespace Anima2D
 			{
 				l_spriteMesh = l_spriteMeshInstance.spriteMesh;
 				
-			}else{
-				if (Selection.activeObject is SpriteMesh)
-				{
-					l_spriteMesh = Selection.activeObject as SpriteMesh;
-				}else if(Selection.activeGameObject)
-				{
-					GameObject activeGameObject = Selection.activeGameObject;
-					GameObject prefab = null;
-					
-					if(PrefabUtility.GetPrefabType(activeGameObject) == PrefabType.Prefab)
-					{
-						prefab = Selection.activeGameObject;
-					}else if(PrefabUtility.GetPrefabType(activeGameObject) == PrefabType.PrefabInstance ||
-					         PrefabUtility.GetPrefabType(activeGameObject) == PrefabType.DisconnectedPrefabInstance)
-					{
-						prefab = PrefabUtility.GetCorrespondingObjectFromSource(activeGameObject) as GameObject;
-					}
-					
-					if(prefab)
-					{
-						l_spriteMesh = AssetDatabase.LoadAssetAtPath(AssetDatabase.GetAssetPath(prefab), typeof(SpriteMesh)) as SpriteMesh;
-					}
-				}
+			}else if(Selection.activeObject is SpriteMesh)
+			{
+				l_spriteMesh = Selection.activeObject as SpriteMesh;
 			}
 			
 			if(l_spriteMeshInstance || l_spriteMesh)
