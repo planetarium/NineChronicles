@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using Nekoyume.Action;
 using Nekoyume.Data;
@@ -38,6 +37,7 @@ namespace Nekoyume.UI
         private SelectItemCountPopup _selectItemCountPopup;
         private CombinationResultPopup _resultPopup;
         private GrayLoadingScreen _loadingScreen;
+        private int _count;
 
         #region Mono
 
@@ -85,6 +85,7 @@ namespace Nekoyume.UI
         {
             _stage = null;
             _player = null;
+            _count = 0;
         }
 
         private void OnDestroy()
@@ -263,6 +264,12 @@ namespace Nekoyume.UI
         /// </summary>
         private void ResponseCombination(Action.Combination action)
         {
+            //FIXME Block.Validate 시 이벤트가 호출되는 문제가 있음.
+            //액션이 처리되서 아바타가 변경되었다는 이벤트를 받았을때만 호출되야함.
+            _count++;
+            if (_count <= 1)
+                return;
+
             _combinationDisposable.Dispose();
             
             var result = action.Result;

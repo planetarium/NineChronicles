@@ -25,11 +25,13 @@ namespace Nekoyume.UI
         public GameObject[] equipSlots;
         public GameObject btnQuest;
         public GameObject inventory;
+        public Dropdown dropdown;
 
         public Stage stage;
 
         private Player _player = null;
         private Inventory _inventory = null;
+        private int[] _stages;
 
         #region Mono
 
@@ -104,7 +106,7 @@ namespace Nekoyume.UI
                 }
             }
 
-            ActionManager.instance.HackAndSlash(equipments, foods, ActionManager.instance.Avatar.WorldStage);
+            ActionManager.instance.HackAndSlash(equipments, foods, _stages[dropdown.value]);
             while (currentId == ActionManager.instance.battleLog?.id)
             {
                 yield return null;
@@ -139,6 +141,12 @@ namespace Nekoyume.UI
             itemInfoWidget.Show();
 
             btnQuest.SetActive(true);
+
+            dropdown.ClearOptions();
+            _stages = Enumerable.Range(1, ActionManager.instance.Avatar.WorldStage).ToArray();
+            var list = _stages.Select(i => $"Stage {i}").ToList();
+            dropdown.AddOptions(list);
+            dropdown.value = _stages.Length - 1;
             base.Show();
         }
 
@@ -232,6 +240,15 @@ namespace Nekoyume.UI
         {
             buttonSellImage.enabled = isActive;
             buttonSellText.enabled = isActive;
+        }
+
+        public void SelectItem(Toggle item)
+        {
+            if (item.isOn)
+            {
+                var label = item.GetComponentInChildren<Text>();
+                label.color = new Color(0.1960784f, 1, 0.1960784f, 1);
+            }
         }
     }
 }
