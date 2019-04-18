@@ -7,6 +7,7 @@ using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Vfx;
 using Nekoyume.Model;
+using Org.BouncyCastle.Bcpg.Sig;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,15 +16,20 @@ namespace Nekoyume.UI
     public class BattleResult : Widget
     {
         private static readonly Vector3 VfxBattleWinOffset = new Vector3(-3.43f, -0.28f, 10f);
+        private const float Timer = 5.0f;
         
         public BattleLog.Result result;
         public Text submitText;
         public Text header;
         public Text title;
+        public Text timeText;
         public GameObject slotBase;
         public Transform grid;
+        public GameObject button2;
         private List<InventorySlot> _slots;
         private Stage _stage;
+        private bool _repeat;
+        private float _timer = 0;
 
         private VfxBattleWin _battleWinVfx;
 
@@ -37,11 +43,11 @@ namespace Nekoyume.UI
 
         public void SubmitClick()
         {
-            StartCoroutine(SubmitAsync());
+            StartCoroutine(CoSubmit());
             AudioController.PlayClick();
         }
 
-        private IEnumerator SubmitAsync()
+        private IEnumerator CoSubmit()
         {
             var w = Find<LoadingScreen>();
             if (!ReferenceEquals(w, null))
@@ -58,8 +64,9 @@ namespace Nekoyume.UI
 
             var player = _stage.ReadyPlayer();
             var currentId = ActionManager.instance.battleLog?.id;
-            ActionManager.instance.HackAndSlash(player.equipments, new List<Food>(),
-                ActionManager.instance.Avatar.WorldStage);
+            var stage = _stage.repeatStage ? _stage.id : ActionManager.instance.Avatar.WorldStage;
+            Debug.Log(stage);
+            ActionManager.instance.HackAndSlash(player.equipments, new List<Food>(), stage);
             while (currentId == ActionManager.instance.battleLog?.id)
             {
                 yield return null;
@@ -79,14 +86,17 @@ namespace Nekoyume.UI
             {
                 _battleWinVfx.Stop();
             }
+
+            _stage.repeatStage = false;
             
             Game.Event.OnRoomEnter.Invoke();
             Close();
             AudioController.PlayClick();
         }
 
-        public void Show(BattleLog.Result battleResult)
+        public void Show(BattleLog.Result battleResult, bool repeat)
         {
+            _repeat = repeat;
             result = battleResult;
 
             if (result == BattleLog.Result.Win)
@@ -95,6 +105,11 @@ namespace Nekoyume.UI
                 header.text = "승리";
                 title.text = "획득한 아이템";
                 grid.gameObject.SetActive(true);
+
+                button2.SetActive(!_repeat);
+                timeText.gameObject.SetActive(_repeat);
+                if (_repeat)
+                    _timer = Timer;
                 
                 AudioController.instance.PlayMusic(AudioController.MusicCode.Win, 0.3f);
                 _battleWinVfx = VfxController.instance.Create<VfxBattleWin>(ActionCamera.instance.transform, VfxBattleWinOffset);
@@ -105,10 +120,13 @@ namespace Nekoyume.UI
                 submitText.text = "재도전";
                 title.text = "재도전 하시겠습니까?";
                 header.text = "실패";
-                grid.gameObject.SetActive(false);
-                
+                _repeat = false;
+                timeText.gameObject.SetActive(_repeat);
+                _stage.repeatStage = _repeat;
+
                 AudioController.instance.PlayMusic(AudioController.MusicCode.Lose);
             }
+
             base.Show();
         }
 
@@ -141,6 +159,20 @@ namespace Nekoyume.UI
             else
             {
                 _slots[i].LabelCount.text = (Convert.ToInt32(_slots[i].LabelCount.text) + 1).ToString();
+            }
+        }
+
+        private void Update()
+        {
+            if (_repeat)
+            {
+                _timer -= Time.deltaTime;
+                timeText.text = $"{(int)_timer}초 후 다시 전투를 시작합니다.";
+                if (_timer <= 0)
+                {
+                    _repeat = false;
+                    SubmitClick();
+                }
             }
         }
     }

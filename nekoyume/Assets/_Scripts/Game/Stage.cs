@@ -32,6 +32,7 @@ namespace Nekoyume.Game
         private readonly Vector2 _stageStartPosition = new Vector2(-6.0f, -1.2f);
         public readonly Vector2 QuestPreparationPosition = new Vector2(1.65f, -1.3f);
         public readonly Vector2 RoomPosition = new Vector2(-2.66f, -1.85f);
+        public bool repeatStage;
         private PlayerFactory _factory;
         private MonsterSpawner _spawner;
         private Camera _camera;
@@ -190,6 +191,7 @@ namespace Nekoyume.Game
             Data.Table.Background data;
             if (Tables.instance.Background.TryGetValue(stage, out data))
             {
+                id = stage;
                 ReadyPlayer();
                 var loadingScreen = Widget.Find<LoadingScreen>();
                 loadingScreen.Show();
@@ -218,7 +220,7 @@ namespace Nekoyume.Game
 
         public IEnumerator CoStageEnd(BattleLog.Result result)
         {
-            Widget.Find<BattleResult>().Show(result);
+            Widget.Find<BattleResult>().Show(result, repeatStage);
             if (result == BattleLog.Result.Win)
             {
                 StartCoroutine(CoSlideBg());
