@@ -42,6 +42,7 @@ namespace Nekoyume.Game
         private void Start()
         {
             ActionManager.instance.DidAvatarLoaded += OnAvatarLoaded;
+            ActionManager.instance.StartSystemCoroutines();
         }
 
         private void OnAvatarLoaded(object sender, Model.Avatar avatar)

@@ -104,11 +104,25 @@ namespace Nekoyume.Action
         public event EventHandler<Context> DidReceiveAction;
         public event EventHandler<Shop> UpdateShop;
 
+        public event EventHandler PreloadStarted;
+        public event EventHandler<BlockDownloadState> PreloadProcessed;
+        public event EventHandler PreloadEnded;
+
         public IEnumerator CoSwarmRunner()
         {
-            Task task = Task.Run(async () => { await _swarm.StartAsync(_blocks); });
+            PreloadStarted?.Invoke(this, null);
+            Task preload = _swarm.PreloadAsync(_blocks, new Progress<BlockDownloadState>(
+                state => 
+                {
+                    PreloadProcessed?.Invoke(this, state);
+                }
+            ));
+            yield return new WaitUntil(() => preload.IsCompleted);
+            PreloadEnded?.Invoke(this, null);
+            
+            Task runSwarm = _swarm.StartAsync(_blocks);
 
-            yield return new WaitUntil(() => task.IsCompleted);
+            yield return new WaitUntil(() => runSwarm.IsCompleted);
         }
 
         public IEnumerator CoAvatarUpdator()

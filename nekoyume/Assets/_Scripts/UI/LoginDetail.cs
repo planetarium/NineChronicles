@@ -59,7 +59,7 @@ namespace Nekoyume.UI
             btnLogin.SetActive(false);
             nameField.gameObject.SetActive(false);
             ActionManager.instance.InitAvatar(_selectedIndex);
-            ActionManager.instance.StartSync();
+            ActionManager.instance.StartAvatarCoroutines();
             AudioController.PlayClick();
         }
 
@@ -91,7 +91,7 @@ namespace Nekoyume.UI
             ActionManager.instance.InitAvatar(_selectedIndex);
             var nickName = nameField.text;
             ActionManager.instance.CreateNovice(nickName);
-            ActionManager.instance.StartSync();
+            ActionManager.instance.StartAvatarCoroutines();
             AudioController.PlayClick();
         }
 
