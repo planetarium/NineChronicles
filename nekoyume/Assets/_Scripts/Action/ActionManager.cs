@@ -215,6 +215,18 @@ namespace Nekoyume.Action
             {
                 _miner = agent.CoMiner();   
             }
+
+            agent.PreloadStarted += (_, __) => 
+            {
+                var loadingScreen = UI.Widget.Find<UI.LoadingScreen>();
+                loadingScreen.Show();
+            };
+
+            agent.PreloadEnded += (_, __) => 
+            {
+                var loadingScreen = UI.Widget.Find<UI.LoadingScreen>();
+                loadingScreen.Close();
+            };
         }
 
         public void StartSystemCoroutines()
