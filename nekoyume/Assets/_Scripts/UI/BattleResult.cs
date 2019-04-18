@@ -7,7 +7,6 @@ using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Vfx;
 using Nekoyume.Model;
-using Org.BouncyCastle.Bcpg.Sig;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -65,7 +64,6 @@ namespace Nekoyume.UI
             var player = _stage.ReadyPlayer();
             var currentId = ActionManager.instance.battleLog?.id;
             var stage = _stage.repeatStage ? _stage.id : ActionManager.instance.Avatar.WorldStage;
-            Debug.Log(stage);
             ActionManager.instance.HackAndSlash(player.equipments, new List<Food>(), stage);
             while (currentId == ActionManager.instance.battleLog?.id)
             {
