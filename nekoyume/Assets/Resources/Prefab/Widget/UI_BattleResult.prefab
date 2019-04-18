@@ -79,7 +79,7 @@ GameObject:
   m_Component:
   - component: {fileID: 224808293129448752}
   m_Layer: 5
-  m_Name: Button1
+  m_Name: BackPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -214,7 +214,7 @@ MonoBehaviour:
   timeText: {fileID: 114334681451427836}
   slotBase: {fileID: 1815796197388866}
   grid: {fileID: 224984853346124052}
-  button2: {fileID: 1626649270498514}
+  submitPanel: {fileID: 1626649270498514}
 --- !u!95 &95878591363038694
 Animator:
   serializedVersion: 3
@@ -908,7 +908,7 @@ GameObject:
   m_Component:
   - component: {fileID: 224692442093738020}
   m_Layer: 5
-  m_Name: Button2
+  m_Name: SubmitPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

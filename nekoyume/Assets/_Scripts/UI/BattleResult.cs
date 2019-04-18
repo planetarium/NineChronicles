@@ -24,7 +24,7 @@ namespace Nekoyume.UI
         public Text timeText;
         public GameObject slotBase;
         public Transform grid;
-        public GameObject button2;
+        public GameObject submitPanel;
         private List<InventorySlot> _slots;
         private Stage _stage;
         private bool _repeat;
@@ -104,7 +104,7 @@ namespace Nekoyume.UI
                 title.text = "획득한 아이템";
                 grid.gameObject.SetActive(true);
 
-                button2.SetActive(!_repeat);
+                submitPanel.SetActive(!_repeat);
                 timeText.gameObject.SetActive(_repeat);
                 if (_repeat)
                     _timer = Timer;
