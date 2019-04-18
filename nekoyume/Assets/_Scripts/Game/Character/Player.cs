@@ -162,32 +162,34 @@ namespace Nekoyume.Game.Character
 
         public IEnumerator CoGetExp(long exp)
         {
-            if (exp > 0)
+            if (exp <= 0)
             {
+                yield break;
+            }
+            
+            PopupText.Show(
+                transform.TransformPoint(-0.6f, 1.0f,0.0f),
+                new Vector3(0.0f,2.0f,0.0f),
+                $"+{exp}"
+            );
+            var level = model.level;
+            model.GetExp(exp);
+
+            if (model.level != level)
+            {
+                yield return new WaitForSeconds(0.3f);
                 PopupText.Show(
                     transform.TransformPoint(-0.6f, 1.0f,0.0f),
                     new Vector3(0.0f,2.0f,0.0f),
-                    $"+{exp}"
+                    "LEVEL UP"
                 );
-                var level = model.level;
-                model.GetExp(exp);
+                InitStats(model);
 
-                if (model.level != level)
-                {
-                    yield return new WaitForSeconds(0.3f);
-                    PopupText.Show(
-                        transform.TransformPoint(-0.6f, 1.0f,0.0f),
-                        new Vector3(0.0f,2.0f,0.0f),
-                        "LEVEL UP"
-                    );
-                    InitStats(model);
-
-                    UpdateHpBar();
+                UpdateHpBar();
                     
-                    AudioController.instance.PlaySfx(AudioController.SfxCode.LevelUp);
-                }
-                Event.OnUpdateStatus.Invoke();
+                AudioController.instance.PlaySfx(AudioController.SfxCode.LevelUp);
             }
+            Event.OnUpdateStatus.Invoke();
         }
 
     }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace Assets.SimpleLocalization
 {
@@ -24,21 +25,21 @@ namespace Assets.SimpleLocalization
             _instance = null;
         }
        
-        public static void Download(string url, Action<WWW> callback)
+        public static void Download(string url, Action<UnityWebRequest> callback)
         {
             Debug.LogFormat("downloading {0}", url);
             Instance.StartCoroutine(Coroutine(url, callback));
         }
 
-        private static IEnumerator Coroutine(string url, Action<WWW> callback)
+        private static IEnumerator Coroutine(string url, Action<UnityWebRequest> callback)
         {
-            var www = new WWW(url);
+            var www = new UnityWebRequest(url);
 
-            yield return www;
+            yield return www.SendWebRequest();
 
-            Debug.LogFormat("downloaded {0}, www.text = {1}, www.error = {2}", url, CleaunupText(www.text), www.error);
+            Debug.LogFormat("downloaded {0}, www.text = {1}, www.error = {2}", url, CleaunupText(www.downloadHandler.text), www.error);
 
-            if (www.error == null)
+            if (!www.isNetworkError && !www.isHttpError)
             {
                 OnNetworkReady();
             }

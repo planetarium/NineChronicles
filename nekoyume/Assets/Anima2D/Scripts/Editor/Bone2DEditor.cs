@@ -11,7 +11,6 @@ namespace Anima2D
 	{
 		SerializedProperty m_ColorProperty;
 		SerializedProperty m_AlphaProperty;
-		SerializedProperty m_ChildProperty;
 		SerializedProperty m_ChildTransformProperty;
 		SerializedProperty m_LengthProperty;
 		Bone2D m_Bone;
@@ -25,32 +24,8 @@ namespace Anima2D
 			m_ColorProperty = serializedObject.FindProperty("m_Color");
 			m_AlphaProperty = m_ColorProperty.FindPropertyRelative("a");
 			
-			//DEPRECATED
-			m_ChildProperty = serializedObject.FindProperty("m_Child");
-			
 			m_ChildTransformProperty = serializedObject.FindProperty("m_ChildTransform");
 			m_LengthProperty = serializedObject.FindProperty("m_Length");
-			
-			UpgradeToChildTransform();
-		}
-		
-		void UpgradeToChildTransform()
-		{
-			if(Selection.transforms.Length == 1 && !m_ChildTransformProperty.objectReferenceValue && m_ChildProperty.objectReferenceValue)
-			{
-				serializedObject.Update();
-				
-				Bone2D l_bone = m_ChildProperty.objectReferenceValue as Bone2D;
-				
-				if(l_bone)
-				{
-					m_ChildTransformProperty.objectReferenceValue = l_bone.transform;
-				}
-				
-				m_ChildProperty.objectReferenceValue = null;
-				
-				serializedObject.ApplyModifiedProperties();
-			}
 		}
 		
 		void OnDisable()
