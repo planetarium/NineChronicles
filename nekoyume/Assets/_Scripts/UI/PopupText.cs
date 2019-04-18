@@ -1,21 +1,17 @@
 using DG.Tweening;
-using DG.Tweening.Core;
-using DG.Tweening.Plugins.Options;
-using Nekoyume.Game;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
-    [RequireComponent(typeof(RectTransform))]
     public class PopupText : HudWidget
     {
-        public Text label;
+        private static RectTransform CanvasRect;
 
-        private RectTransform _rectTransform;
+        public Text Label;
 
-        private Sequence _sequence;
-        private TweenerCore<Color, Color, ColorOptions> _tweenColor;
+        private Vector3 _force;
+        private Vector3 _addForce;
 
         public static PopupText Show(Vector3 position, Vector3 force, string text)
         {
@@ -25,42 +21,31 @@ namespace Nekoyume.UI
         public static PopupText Show(Vector3 position, Vector3 force, string text, Color color)
         {
             var popupText = Create<PopupText>(true);
-            popupText.label.text = text;
-            popupText.label.color = color;
-            popupText.Show(position, force);
+            popupText.Label.text = text;
+            popupText.Label.color = color;
+
+            if (CanvasRect == null)
+                CanvasRect = popupText.transform.root.gameObject.GetComponent<RectTransform>();
+
+            RectTransform rectTransform = popupText.GetComponent<RectTransform>();
+            rectTransform.anchoredPosition = CalcCanvasPosition(position);
+            var pos =  CalcCanvasPosition(position + force);
+            rectTransform.DOJumpAnchorPos(pos, 30.0f, 1, 1.0f).SetEase(Ease.OutCirc);
+            popupText.Label.DOFade(0.0f, 2.0f).SetEase(Ease.InCubic);
+
+            Destroy(popupText.gameObject, 0.8f);
 
             return popupText;
         }
 
-        #region Mono
-
-        protected override void Awake()
+        private static Vector2 CalcCanvasPosition(Vector3 position)
         {
-            base.Awake();
-
-            _rectTransform = GetComponent<RectTransform>();
-        }
-
-        private void OnDisable()
-        {
-            _sequence?.Kill();
-            _sequence = null;
-            _tweenColor?.Kill();
-            _tweenColor = null;
-        }
-
-        #endregion
-
-        private void Show(Vector3 position, Vector3 force)
-        {
-            var pos = position.ToCanvasPosition(ActionCamera.instance.Cam, MainCanvas.instance.Canvas);
-            var tweenPos = (position + force).ToCanvasPosition(ActionCamera.instance.Cam, MainCanvas.instance.Canvas);
-            
-            _rectTransform.anchoredPosition = pos;
-            _sequence = _rectTransform.DOJumpAnchorPos(tweenPos, 30.0f, 1, 1.0f).SetEase(Ease.OutCirc);
-            _tweenColor = label.DOFade(0.0f, 2.0f).SetEase(Ease.InCubic);
-            
-            Destroy(gameObject, 0.8f);
+            if (CanvasRect == null)
+                return position;
+            Vector2 viewportPosition = Camera.main.WorldToViewportPoint(position);
+            return new Vector2(
+                ((viewportPosition.x * CanvasRect.sizeDelta.x)),
+                ((viewportPosition.y * CanvasRect.sizeDelta.y)));
         }
     }
 }

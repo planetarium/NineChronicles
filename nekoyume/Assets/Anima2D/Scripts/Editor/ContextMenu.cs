@@ -48,46 +48,48 @@ namespace Anima2D
 		[MenuItem("GameObject/2D Object/SpriteMesh", false, 10)]
 		static void ContextCreateSpriteMesh(MenuCommand menuCommand)
 		{
-			GameObject spriteRendererGO = Selection.activeGameObject;
-			SpriteRenderer spriteRenderer = null;
-			SpriteMesh spriteMesh = null;
-
-			int sortingLayerID = 0;
-			int sortingOrder = 0;
-
-			if(spriteRendererGO)
+			foreach (var spriteRendererGO in Selection.gameObjects)
 			{
-				spriteRenderer = spriteRendererGO.GetComponent<SpriteRenderer>();
-			}
-			
-			if(spriteRenderer &&
-			   spriteRenderer.sprite)
-			{
-				sortingLayerID = spriteRenderer.sortingLayerID;
-				sortingOrder = spriteRenderer.sortingOrder;
+				SpriteRenderer spriteRenderer = null;
+				SpriteMesh spriteMesh = null;
 
-				SpriteMesh overrideSpriteMesh =  SpriteMeshPostprocessor.GetSpriteMeshFromSprite(spriteRenderer.sprite);
+				int sortingLayerID = 0;
+				int sortingOrder = 0;
 
-				if(overrideSpriteMesh)
+				if(spriteRendererGO)
 				{
-					spriteMesh = overrideSpriteMesh;
-				}else{
-					spriteMesh = SpriteMeshUtils.CreateSpriteMesh(spriteRenderer.sprite);
+					spriteRenderer = spriteRendererGO.GetComponent<SpriteRenderer>();
 				}
-			}
-			
-			if(spriteMesh)
-			{
-				Undo.SetCurrentGroupName("create SpriteMeshInstance"); 
-				Undo.DestroyObjectImmediate(spriteRenderer);
-				SpriteMeshInstance spriteMeshInstance = SpriteMeshUtils.CreateSpriteMeshInstance(spriteMesh,spriteRendererGO,true);
-
-				spriteMeshInstance.sortingLayerID = sortingLayerID;
-				spriteMeshInstance.sortingOrder = sortingOrder;
 				
-				Selection.activeGameObject = spriteRendererGO;
-			}else{
-				Debug.Log("Select a SpriteRenderer with a Sprite to convert to SpriteMesh");
+				if(spriteRenderer &&
+				spriteRenderer.sprite)
+				{
+					sortingLayerID = spriteRenderer.sortingLayerID;
+					sortingOrder = spriteRenderer.sortingOrder;
+
+					SpriteMesh overrideSpriteMesh =  SpriteMeshPostprocessor.GetSpriteMeshFromSprite(spriteRenderer.sprite);
+
+					if(overrideSpriteMesh)
+					{
+						spriteMesh = overrideSpriteMesh;
+					}else{
+						spriteMesh = SpriteMeshUtils.CreateSpriteMesh(spriteRenderer.sprite);
+					}
+				}
+				
+				if(spriteMesh)
+				{
+					Undo.SetCurrentGroupName("create SpriteMeshInstance"); 
+					Undo.DestroyObjectImmediate(spriteRenderer);
+					SpriteMeshInstance spriteMeshInstance = SpriteMeshUtils.CreateSpriteMeshInstance(spriteMesh,spriteRendererGO,true);
+
+					spriteMeshInstance.sortingLayerID = sortingLayerID;
+					spriteMeshInstance.sortingOrder = sortingOrder;
+					
+					Selection.activeGameObject = spriteRendererGO;
+				}else{
+					Debug.Log("Select a SpriteRenderer with a Sprite to convert to SpriteMesh");
+				}
 			}
 		}
 

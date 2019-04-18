@@ -22,21 +22,32 @@ namespace Nekoyume.Game.Item
         private static readonly float DelayAfterDrop = Mathf.Max(DurationToFade, DurationToDrop) + 0.8f;
         private static readonly Vector3 DropAmount = new Vector3(-0.1f, 0f);
 
-        private static Status _status;
+        private static Camera _cam = null;
+        private static Status _status = null;
         private static Vector3 _inventoryPosition = Vector3.zero;
 
         public ItemBase Item { get; private set; }
         public List<ItemBase> Items { get; private set; }
 
-        private SpriteRenderer _renderer;
+        private SpriteRenderer _renderer = null;
 
-        private Tweener _tweenFade;
-        private Sequence _sequenceDrop;
+        private Tweener _tweenerFade = null;
+        private Sequence _sequenceDrop = null;
+        private Sequence _sequenceGet = null;
 
         #region Mono
 
         private void Awake()
         {
+            if (ReferenceEquals(_cam, null))
+            {
+                _cam = Camera.main;
+                if (ReferenceEquals(_cam, null))
+                {
+                    throw new NotFoundComponentException<Camera>();
+                }
+            }
+
             _renderer = GetComponent<SpriteRenderer>();
 
             transform.localScale = DefaultScale;
@@ -51,16 +62,24 @@ namespace Nekoyume.Game.Item
 
         private void OnDisable()
         {
-            _tweenFade?.Kill(true);
-            _tweenFade = null;
-            _sequenceDrop?.Kill(true);
+            _tweenerFade?.Kill();
+            _tweenerFade = null;
+            _sequenceDrop?.Kill();
             _sequenceDrop = null;
+            _sequenceGet?.Kill();
+            _sequenceGet = null;
         }
 
         #endregion
 
         public IEnumerator CoSet(List<ItemBase> items)
         {
+            if (ReferenceEquals(_cam, null))
+            {
+                gameObject.SetActive(false);
+                yield break;
+            }
+
             Items = items;
 
             yield return StartCoroutine(CoPlay());
@@ -74,7 +93,7 @@ namespace Nekoyume.Game.Item
             _renderer.color = color;
             _renderer.sortingOrder = SortOrder;
 
-            _tweenFade = _renderer.DOFade(1f, DurationToFade);
+            _tweenerFade = _renderer.DOFade(1f, DurationToFade);
             _sequenceDrop = transform.DOJump(pos + DropAmount, DropJumpPower, 1, DurationToDrop);
             yield return new WaitForSeconds(DelayAfterDrop);
             while (true)
@@ -87,8 +106,10 @@ namespace Nekoyume.Game.Item
                 {
                     break;
                 }
-                
-                yield return null;
+                else
+                {
+                    yield return null;
+                }
             }
 
             gameObject.SetActive(false);
@@ -96,7 +117,8 @@ namespace Nekoyume.Game.Item
 
         private void UpdateInventoryPosition()
         {
-            if (ReferenceEquals(_status, null))
+            if (ReferenceEquals(_cam, null) ||
+                ReferenceEquals(_status, null))
             {
                 _inventoryPosition = new Vector3(-2.99f, -1.84f);
             }

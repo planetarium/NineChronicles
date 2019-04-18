@@ -12,6 +12,10 @@ namespace Anima2D
 		[Serializable]
 		public class SolverPose 
 		{
+			//Deprecated
+			[SerializeField][HideInInspector][FormerlySerializedAs("bone")]
+			Bone2D m_Bone;
+
 			[SerializeField]
 			Transform m_BoneTransform;
 
@@ -19,8 +23,12 @@ namespace Anima2D
 			
 			public Bone2D bone
 			{
-				get
-				{					
+				get {
+					if(m_Bone)
+					{
+						bone = m_Bone;
+					}
+					
 					if(m_CachedBone && m_BoneTransform != m_CachedBone.transform)
 					{
 						m_CachedBone = null;
@@ -34,8 +42,8 @@ namespace Anima2D
 					return m_CachedBone;
 				}
 				
-				set
-				{
+				set {
+					m_Bone = null;
 					m_CachedBone = value;
 					m_BoneTransform = null;
 
@@ -63,6 +71,9 @@ namespace Anima2D
 			}
 		}
 
+		//Deprecated
+		[SerializeField][HideInInspector]
+		Bone2D m_RootBone;
 		[SerializeField]
 		Transform m_RootBoneTransform;
 
@@ -73,8 +84,12 @@ namespace Anima2D
 		Bone2D m_CachedRootBone;
 
 		public Bone2D rootBone {
-			get
-			{	
+			get {
+				if(m_RootBone)
+				{
+					rootBone = m_RootBone;
+				}
+				
 				if(m_CachedRootBone && m_RootBoneTransform != m_CachedRootBone.transform)
 				{
 					m_CachedRootBone = null;
@@ -87,8 +102,8 @@ namespace Anima2D
 				
 				return m_CachedRootBone;
 			}
-			private set
-			{
+			private set {
+				m_RootBone = null;
 				m_CachedRootBone = value;
 				m_RootBoneTransform = null;
 

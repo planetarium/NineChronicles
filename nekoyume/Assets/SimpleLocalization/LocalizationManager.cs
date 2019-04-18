@@ -56,20 +56,20 @@ namespace Assets.SimpleLocalization
                 }
 
                 var lines = text.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
-				var languages = lines[0].Split(',').Select(i => i.Trim()).ToList();
+                var languages = lines[0].Trim().Split(',').ToList();
 
-				for (var i = 1; i < languages.Count; i++)
+                for (var i = 1; i < languages.Count; i++)
                 {
                     if (!Dictionary.ContainsKey(languages[i]))
                     {
                         Dictionary.Add(languages[i], new Dictionary<string, string>());
                     }
                 }
-				
+
                 for (var i = 1; i < lines.Length; i++)
                 {
-					var columns = lines[i].Split(',').Select(j => j.Trim()).Select(j => j.Replace("[comma]", ",").Replace("[newline]", "\n")).ToList();
-					var key = columns[0];
+                    var columns = lines[i].Split(',').Select(j => j.Replace("[comma]", ",").Replace("[newline]", "\n")).ToList();
+                    var key = columns[0];
 
                     for (var j = 1; j < languages.Count; j++)
                     {

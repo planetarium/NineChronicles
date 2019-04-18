@@ -11,20 +11,72 @@ namespace Anima2D
 		public const int api_version = 4;
 
 		[SerializeField][HideInInspector]
-		private int m_ApiVersion;
-		[SerializeField]
-		private Sprite m_Sprite;
-		[SerializeField]
-		private Mesh m_SharedMesh;
+		int m_ApiVersion;
 
-		public Sprite sprite
+		[SerializeField][FormerlySerializedAs("sprite")]
+		Sprite m_Sprite;
+
+		[SerializeField]
+		Mesh m_SharedMesh;
+
+		public Sprite sprite { get { return m_Sprite; } }
+		public Mesh sharedMesh { get { return m_SharedMesh; } }
+
+#region DEPRECATED
+#if UNITY_EDITOR
+		[Serializable]
+		public class Vertex
 		{
-			get { return m_Sprite; }
+			public Vector2 vertex;
+			public BoneWeight2 boneWeight;
 		}
 
-		public Mesh sharedMesh
+		[Serializable]
+		public class BoneWeight2
 		{
-			get { return m_SharedMesh; }
+			public float weight0 = 0f;
+			public float weight1 = 0f;
+			public float weight2 = 0f;
+			public float weight3 = 0f;
+			public int boneIndex0 = 0;
+			public int boneIndex1 = 0;
+			public int boneIndex2 = 0;
+			public int boneIndex3 = 0;
 		}
+
+		[Serializable]
+		public class IndexedEdge
+		{
+			public int index1;
+			public int index2;
+		}
+
+		[Serializable]
+		public class Hole
+		{
+			public Vector2 vertex;
+		}
+
+		[Serializable]
+		public class BindInfo
+		{
+			public Matrix4x4 bindPose;
+			public float boneLength;
+			public string path;
+			public string name;
+			public Color color;
+			public int zOrder;
+		}
+
+		[SerializeField][HideInInspector] Vector2 pivotPoint;
+		[SerializeField][HideInInspector] Vertex[] texVertices;
+		[SerializeField][HideInInspector] IndexedEdge[] edges;
+		[SerializeField][HideInInspector] Hole[] holes;
+		[SerializeField][HideInInspector] int[] indices;
+		[SerializeField][HideInInspector] BindInfo[] bindPoses;
+		[SerializeField][HideInInspector] Material[] m_SharedMaterials;
+
+#endif
+#endregion
 	}
 }

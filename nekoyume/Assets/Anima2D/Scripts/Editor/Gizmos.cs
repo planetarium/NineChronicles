@@ -14,7 +14,7 @@ namespace Anima2D
 
 		static Gizmos()
 		{
-			EditorCallbacks.hierarchyChanged += HierarchyChanged;
+			EditorApplication.hierarchyChanged += HierarchyWindowChanged;
 		}
 
 		static bool IsVisible(Bone2D bone)
@@ -38,10 +38,10 @@ namespace Anima2D
 		}
 
 		[UnityEditor.Callbacks.DidReloadScripts]
-		static void HierarchyChanged()
+		static void HierarchyWindowChanged()
 		{
-			s_Bones = EditorExtra.FindComponentsOfType<Bone2D>().ToList();
-			s_Controls = EditorExtra.FindComponentsOfType<Control>().ToList();
+			s_Bones = GameObject.FindObjectsOfType<Bone2D>().ToList();
+			s_Controls = GameObject.FindObjectsOfType<Control>().ToList();
 
 			SceneView.RepaintAll();
 		}

@@ -6,6 +6,10 @@ namespace Anima2D
 {
 	public abstract class Ik2D : MonoBehaviour
 	{
+		//Deprecated
+		[SerializeField][HideInInspector]
+		Bone2D m_Target;
+
 		[SerializeField]
 		bool m_Record = false;
 
@@ -24,8 +28,12 @@ namespace Anima2D
 		Bone2D m_CachedTarget;
 
 		public Bone2D target {
-			get
-			{				
+			get {
+				if(m_Target)
+				{
+					target = m_Target;
+				}
+				
 				if(m_CachedTarget && m_TargetTransform != m_CachedTarget.transform)
 				{
 					m_CachedTarget = null;
@@ -38,11 +46,16 @@ namespace Anima2D
 				
 				return m_CachedTarget;
 			}
-			set
-			{
+			set {
 				m_CachedTarget = value;
 				m_TargetTransform = value.transform;
-				InitializeSolver();
+
+				if(!m_Target)
+				{
+					InitializeSolver();
+				}
+
+				m_Target = null;
 			}
 		}
 		

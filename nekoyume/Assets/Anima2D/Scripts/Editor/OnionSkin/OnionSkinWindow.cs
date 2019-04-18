@@ -218,7 +218,9 @@ namespace Anima2D
 			m_OnionLayerManager.source = null;
 
 			if(m_InstanceRoot)
-				EditorExtra.DestroyAnimatorPreviewInstance(m_InstanceRoot);
+			{
+				GameObject.DestroyImmediate(m_InstanceRoot);
+			}
 		}
 	}
 }

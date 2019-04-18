@@ -4,8 +4,7 @@
 SpriteAtlas:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
   m_Name: TRexAtlas
   m_EditorData:
     serializedVersion: 2
@@ -42,7 +41,6 @@ SpriteAtlas:
     variantMultiplier: 1
     packables:
     - {fileID: 2800000, guid: 726d2784a87b044f182b7487b3b8ebb8, type: 3}
-    totalSpriteSurfaceArea: 370268
     bindAsDefault: 1
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:

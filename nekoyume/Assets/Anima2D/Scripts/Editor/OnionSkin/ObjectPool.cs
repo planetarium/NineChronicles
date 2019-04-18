@@ -39,7 +39,7 @@ namespace Anima2D.Pool
 			return null;
 		}
 
-		public virtual void Destroy(T o)
+		public void Destroy(T o)
 		{
 			if(o)
 			{

@@ -1,23 +1,4 @@
 VERSION LOG
-v1.1.6.3 2019-02-27
-- Fixed Bone gizmos on inactive GameObjects regression
-- Removed "Editor Default Resources/Anima2D" directory. Content moved to Anima2D/Scripts/Editor/Resources
-
-v1.1.6.2 2019-01-09
-- Fix prefab isolation mode
-
-v1.1.6.1 2018-12-07
-- Fix regression on IK.
-
-v1.1.6 2018-11-21
-- Compatible with 2018.3
-- Removed deprecated code related to legacy releases.
-- Fix warnings in 2018.3.
-- Fix 2018.3 prefab reimport loop bug by removing prefab post-processing that set the sharedMesh for preview purposes.
-- Fix zoom in SpriteMeshEditorWindow.
-- Fix OnionSkin nullrefs.
-- Fix OnionSkin increasing object count.
-
 v1.1.5 2018-08-11
 - Using same auto-weights from 2d animation package.
 - Auto-weights for linux.
