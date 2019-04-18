@@ -34,6 +34,7 @@ namespace Nekoyume.Game
 
         private void Awake()
         {
+            Screen.SetResolution(GameConfig.ScreenSize.x, GameConfig.ScreenSize.y, FullScreenMode.Windowed);
             LocalizationManager.Read();
             AudioController.instance.Initialize();
         }
