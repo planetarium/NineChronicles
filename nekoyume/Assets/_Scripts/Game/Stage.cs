@@ -196,6 +196,7 @@ namespace Nekoyume.Game
 
                 LoadBackground(data.background, 3.0f);
                 Widget.Find<Menu>().ShowWorld();
+                Widget.Find<Status>().SetStage(stage);
 
                 switch (data.background)
                 {

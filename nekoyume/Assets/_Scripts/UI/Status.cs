@@ -51,7 +51,6 @@ namespace Nekoyume.UI
             if (playerObj != null)
             {
                 _player = playerObj.GetComponent<Player>();
-                TextStage.text = $"STAGE {_player.model.stage}";
             }
 
             UpdateExp();
@@ -104,6 +103,11 @@ namespace Nekoyume.UI
                 }
             }
             base.Close();
+        }
+
+        public void SetStage(int stage)
+        {
+            TextStage.text = $"STAGE {stage}";
         }
     }
 }

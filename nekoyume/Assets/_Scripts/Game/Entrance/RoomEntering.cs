@@ -40,7 +40,9 @@ namespace Nekoyume.Game.Entrance
             GameObject player = playerFactory.Create(ActionManager.instance.Avatar);
             player.transform.position = stage.RoomPosition;
 
-            UI.Widget.Find<UI.Status>().UpdatePlayer(player);
+            var status = UI.Widget.Find<UI.Status>();
+            status.UpdatePlayer(player);
+            status.SetStage(ActionManager.instance.Avatar.WorldStage);
 
             ActionCamera.instance.SetPoint(0f, 0f);
             ActionCamera.instance.Idle();
