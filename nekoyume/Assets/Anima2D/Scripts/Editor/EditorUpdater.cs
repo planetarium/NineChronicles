@@ -7,33 +7,6 @@ using System.Linq;
 
 namespace Anima2D 
 {
-	[InitializeOnLoad]
-	internal class EditorCallbacks
-	{
-		public delegate void CallbackFunction();
-		public delegate void OnSceneFunc(SceneView sceneView);
-		public delegate void HierarchyWindowItemCallback(int instanceID, Rect selectionRect);
-
-		public static CallbackFunction update;
-		public static OnSceneFunc onSceneGUIDelegate;
-		public static CallbackFunction hierarchyChanged;
-		public static CallbackFunction undoRedoPerformed;
-		public static HierarchyWindowItemCallback hierarchyWindowItemOnGUI;
-
-		static EditorCallbacks()
-		{
-			EditorApplication.update += () => { update(); };
-			SceneView.onSceneGUIDelegate += (sv) => { onSceneGUIDelegate(sv); };
-#if UNITY_2018_1_OR_NEWER
-			EditorApplication.hierarchyChanged += () => { hierarchyChanged(); };
-#else
-			EditorApplication.hierarchyWindowChanged += () => { hierarchyChanged(); };
-#endif
-			EditorApplication.hierarchyWindowItemOnGUI = (i, r) => { hierarchyWindowItemOnGUI(i, r); };
-			Undo.undoRedoPerformed += () => { undoRedoPerformed(); };
-		}
-	}
-
 	[InitializeOnLoad][ExecuteInEditMode]
 	public class EditorUpdater
 	{
@@ -50,18 +23,19 @@ namespace Anima2D
 
 		static EditorUpdater()
 		{
-			EditorCallbacks.update += Update;
-			EditorCallbacks.onSceneGUIDelegate += OnSceneGUI;
-			EditorCallbacks.hierarchyChanged += HierarchyChanged;
-			EditorCallbacks.undoRedoPerformed += UndoRedoPerformed;
+			EditorApplication.update += Update;
+			SceneView.onSceneGUIDelegate += OnSceneGUI;
+			EditorApplication.hierarchyChanged += HierarchyWindowChanged;
+
+			Undo.undoRedoPerformed += UndoRedoPerformed;
 		}
 
 		[UnityEditor.Callbacks.DidReloadScripts]
-		static void HierarchyChanged()
+		static void HierarchyWindowChanged()
 		{
-			s_Ik2Ds = EditorExtra.FindComponentsOfType<Ik2D>().ToList();
-			s_Bones = EditorExtra.FindComponentsOfType<Bone2D>().ToList();
-			s_Controls = EditorExtra.FindComponentsOfType<Control>().ToList();
+			s_Ik2Ds = GameObject.FindObjectsOfType<Ik2D>().ToList();
+			s_Bones = GameObject.FindObjectsOfType<Bone2D>().ToList();
+			s_Controls = GameObject.FindObjectsOfType<Control>().ToList();
 		}
 
 		static void UndoRedoPerformed()

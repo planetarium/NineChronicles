@@ -5,18 +5,16 @@ using Anima2D;
 public class SkinnedMeshCombiner : MonoBehaviour
 {
 	[SerializeField]
-	private SpriteMeshInstance[] m_SpriteMeshInstances;
-	private MaterialPropertyBlock m_MaterialPropertyBlock;
-	private SkinnedMeshRenderer m_CachedSkinnedRenderer;
+	SpriteMeshInstance[] m_SpriteMeshInstances;
 
-	public SpriteMeshInstance[] spriteMeshInstances
-	{
-		get { return m_SpriteMeshInstances; }
-		set { m_SpriteMeshInstances = value; }
+	SpriteMeshInstance[] spriteMeshInstances {
+		get {
+			return m_SpriteMeshInstances;
+		}
 	}
 
-	private MaterialPropertyBlock materialPropertyBlock
-	{
+	MaterialPropertyBlock m_MaterialPropertyBlock;
+	MaterialPropertyBlock materialPropertyBlock {
 		get {
 			if(m_MaterialPropertyBlock == null)
 			{
@@ -27,10 +25,9 @@ public class SkinnedMeshCombiner : MonoBehaviour
 		}
 	}
 
-	public SkinnedMeshRenderer cachedSkinnedRenderer
-	{
-		get
-		{
+	SkinnedMeshRenderer m_CachedSkinnedRenderer;
+	public SkinnedMeshRenderer cachedSkinnedRenderer {
+		get {
 			if(!m_CachedSkinnedRenderer)
 			{
 				m_CachedSkinnedRenderer = GetComponent<SkinnedMeshRenderer>();
@@ -140,7 +137,12 @@ public class SkinnedMeshCombiner : MonoBehaviour
 		{
 			if(materialPropertyBlock != null)
 			{
-				materialPropertyBlock.SetTexture("_MainTex", spriteMeshInstances[0].spriteMesh.sprite.texture);
+				//if(spriteTexture)
+				//{
+					materialPropertyBlock.SetTexture("_MainTex", spriteMeshInstances[0].spriteMesh.sprite.texture);
+				//}
+				
+				//materialPropertyBlock.SetColor("_Color",color);
 				
 				cachedSkinnedRenderer.SetPropertyBlock(materialPropertyBlock);
 			}

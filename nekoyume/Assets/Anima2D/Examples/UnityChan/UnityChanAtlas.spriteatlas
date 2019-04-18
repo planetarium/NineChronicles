@@ -4,8 +4,7 @@
 SpriteAtlas:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
   m_Name: UnityChanAtlas
   m_EditorData:
     serializedVersion: 2
@@ -42,7 +41,6 @@ SpriteAtlas:
     variantMultiplier: 1
     packables:
     - {fileID: 2800000, guid: dd105a39e474c4706aba36b8be4febd9, type: 3}
-    totalSpriteSurfaceArea: 1233802
     bindAsDefault: 1
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:

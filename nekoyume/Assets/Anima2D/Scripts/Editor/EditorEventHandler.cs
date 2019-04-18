@@ -13,9 +13,9 @@ namespace Anima2D
 
 		static EditorEventHandler()
 		{
-			EditorCallbacks.onSceneGUIDelegate += OnSceneGUI;
-			EditorCallbacks.hierarchyWindowItemOnGUI += HierarchyWindowItemCallback;
-			EditorCallbacks.hierarchyChanged += HierarchyChanged;
+			SceneView.onSceneGUIDelegate += OnSceneGUI;
+			EditorApplication.hierarchyWindowItemOnGUI += HierarchyWindowItemCallback;
+			EditorApplication.hierarchyChanged += HierarchyWindowChanged;
 		}
 
 		static SpriteMesh spriteMesh = null;
@@ -84,9 +84,9 @@ namespace Anima2D
 		}
 
 		[UnityEditor.Callbacks.DidReloadScripts]
-		static void HierarchyChanged()
+		static void HierarchyWindowChanged()
 		{
-			s_SpriteMeshInstances = EditorExtra.FindComponentsOfType<SpriteMeshInstance>().ToList();
+			s_SpriteMeshInstances = GameObject.FindObjectsOfType<SpriteMeshInstance>().ToList();
 		}
 
 		private static void HierarchyWindowItemCallback(int pID, Rect pRect)

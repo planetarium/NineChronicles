@@ -32,23 +32,23 @@ namespace Anima2D
 
 				dotCyan.fixedWidth = 8f;
 				dotCyan.fixedHeight = 8f;
-				dotCyan.normal.background = Resources.Load<Texture2D>("dotCyan");
+				dotCyan.normal.background = EditorGUIUtility.LoadRequired("Anima2D/dotCyan.png") as Texture2D;
 
 				dotYellow.fixedWidth = 8f;
 				dotYellow.fixedHeight = 8f;
-				dotYellow.normal.background = Resources.Load<Texture2D>("dotYellow");
+				dotYellow.normal.background = EditorGUIUtility.LoadRequired("Anima2D/dotYellow.png") as Texture2D;
 
 				dotRed.fixedWidth = 8f;
 				dotRed.fixedHeight = 8f;
-				dotRed.normal.background = Resources.Load<Texture2D>("dotRed");
+				dotRed.normal.background = EditorGUIUtility.LoadRequired("Anima2D/dotRed.png") as Texture2D;
 
 				dotBlackBig.fixedWidth = 23.5f;
 				dotBlackBig.fixedHeight = 23.5f;
-				dotBlackBig.normal.background = Resources.Load<Texture2D>("dotBlackBig");
+				dotBlackBig.normal.background = EditorGUIUtility.LoadRequired("Anima2D/dotBlackBig.png") as Texture2D;
 
 				dotYellowBig.fixedWidth = 23.5f;
 				dotYellowBig.fixedHeight = 23.5f;
-				dotYellowBig.normal.background = Resources.Load<Texture2D>("dotYellowBig");
+				dotYellowBig.normal.background = EditorGUIUtility.LoadRequired("Anima2D/dotYellowBig.png") as Texture2D;
 			}
 		}
 

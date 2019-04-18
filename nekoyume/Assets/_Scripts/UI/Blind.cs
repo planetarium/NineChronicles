@@ -9,22 +9,24 @@ namespace Nekoyume.UI
 {
     public class Blind : Widget
     {
-        public Image image;
-        public Text content;
+        [SerializeField]
+        private Image _image;
+        [SerializeField]
+        private Text _content;
 
         public IEnumerator FadeIn(float time, string text = "")
         {
             Show();
-            image.DOFade(0.0f, 0.0f);
-            image.DOFade(1.0f, time);
+            _image.DOFade(0.0f, 0.0f);
+            _image.DOFade(1.0f, time);
             yield return new WaitForSeconds(time);
-            content.text = text;
+            _content.text = text;
         }
 
         public IEnumerator FadeOut(float time)
         {
-            content.text = "";
-            image.DOFade(0.0f, time);
+            _content.text = "";
+            _image.DOFade(0.0f, time);
             yield return new WaitForSeconds(time);
             Close();
         }
