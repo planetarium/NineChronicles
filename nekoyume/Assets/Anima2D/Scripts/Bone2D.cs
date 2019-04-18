@@ -7,21 +7,17 @@ namespace Anima2D
 {
 	public class Bone2D : MonoBehaviour
 	{
-		[SerializeField][FormerlySerializedAs("color")]
-		Color m_Color = Color.white;
-
-		[SerializeField][FormerlySerializedAs("mLength")]
-		float m_Length = 1f;
-
-		//DEPRECATED
-		[SerializeField][HideInInspector][FormerlySerializedAs("mChild")]
-		Bone2D m_Child;
-
-		[SerializeField][HideInInspector]
-		Transform m_ChildTransform;
-
 		[SerializeField]
-		Ik2D m_AttachedIK;
+		private Color m_Color = Color.white;
+		[SerializeField]
+		private float m_Length = 1f;
+		[SerializeField][HideInInspector]
+		private Transform m_ChildTransform;
+		[SerializeField]
+		private Ik2D m_AttachedIK;
+		private Bone2D m_CachedChild;
+		private Bone2D m_ParentBone = null;
+
 		public Ik2D attachedIK
 		{
 			get { return m_AttachedIK; }
@@ -37,16 +33,9 @@ namespace Anima2D
 			}
 		}
 
-		Bone2D m_CachedChild;
-
 		public Bone2D child
 		{
 			get {
-				if(m_Child)
-				{
-					child = m_Child;
-				}
-
 				if(m_CachedChild && m_ChildTransform != m_CachedChild.transform)
 				{
 					m_CachedChild = null;
@@ -66,7 +55,6 @@ namespace Anima2D
 			}
 
 			set {
-				m_Child = null;
 				m_CachedChild = value;
 				m_ChildTransform = m_CachedChild.transform;
 			}
@@ -74,20 +62,18 @@ namespace Anima2D
 
 		public Vector3 localEndPosition
 		{
-			get {
-				return Vector3.right*localLength;
-			}
+			get { return Vector3.right*localLength; }
 		}
 
 		public Vector3 endPosition
 		{
-			get {
-				return transform.TransformPoint(localEndPosition);
-			}
+			get { return transform.TransformPoint(localEndPosition); }
 		}
 
-		public float localLength {
-			get {
+		public float localLength
+		{
+			get
+			{
 				if(child)
 				{
 					Vector3 childPosition = transform.InverseTransformPoint(child.transform.position);
@@ -96,7 +82,9 @@ namespace Anima2D
 
 				return m_Length;
 			}
-			set {
+
+			set
+			{
 				if(!child)
 				{
 					m_Length = value;
@@ -104,41 +92,38 @@ namespace Anima2D
 			}
 		}
 
-		public float length {
-			get {
-				return transform.TransformVector(localEndPosition).magnitude;
-			}
+		public float length
+		{
+			get { return transform.TransformVector(localEndPosition).magnitude; }
 		}
 
-		Bone2D mParentBone = null;
 		public Bone2D parentBone
 		{
-			get {
+			get
+			{
 				Transform parentTransform = transform.parent;
 
-				if(!mParentBone)
+				if(!m_ParentBone)
 				{
 					if(parentTransform)
-					{
-						mParentBone = parentTransform.GetComponent<Bone2D>();
-					}
-				}else if(parentTransform != mParentBone.transform)
+						m_ParentBone = parentTransform.GetComponent<Bone2D>();
+				}
+				else if(parentTransform != m_ParentBone.transform)
 				{
 					if(parentTransform)
-					{
-						mParentBone = parentTransform.GetComponent<Bone2D>();
-					}else{
-						mParentBone = null;
-					}
+						m_ParentBone = parentTransform.GetComponent<Bone2D>();
+					else
+						m_ParentBone = null;
 				}
 				
-				return mParentBone;
+				return m_ParentBone;
 			}
 		}
 
 		public Bone2D linkedParentBone
 		{
-			get {
+			get
+			{
 				if(parentBone && parentBone.child == this)
 				{
 					return parentBone;
@@ -150,7 +135,8 @@ namespace Anima2D
 		
 		public Bone2D root
 		{
-			get {
+			get
+			{
 				Bone2D rootBone = this;
 				
 				while(rootBone.parentBone)
@@ -164,7 +150,8 @@ namespace Anima2D
 
 		public Bone2D chainRoot
 		{
-			get {
+			get
+			{
 				Bone2D chainRoot = this;
 				
 				while(chainRoot.parentBone && chainRoot.parentBone.child == chainRoot)
@@ -178,7 +165,8 @@ namespace Anima2D
 
 		public int chainLength
 		{
-			get {
+			get
+			{
 				Bone2D chainRoot = this;
 
 				int length = 1;
@@ -195,7 +183,8 @@ namespace Anima2D
 
 		public static Bone2D GetChainBoneByIndex(Bone2D chainTip, int index)
 		{
-			if(!chainTip) return null;
+			if(!chainTip)
+				return null;
 			
 			Bone2D bone = chainTip;
 			
@@ -218,5 +207,7 @@ namespace Anima2D
 			
 			return null;
 		}
+
+		private void OnDrawGizmos() {}
 	}
 }

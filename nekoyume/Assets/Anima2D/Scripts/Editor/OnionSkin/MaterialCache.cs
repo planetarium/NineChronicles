@@ -58,8 +58,11 @@ namespace Anima2D
 			{
 				foreach(Material material in materials)
 				{
-					color.a = material.color.a;
-					material.color = color;
+					if (material)
+					{
+						color.a = material.color.a;
+						material.color = color;
+					}
 				}
 			}
 		}
@@ -70,9 +73,12 @@ namespace Anima2D
 			{
 				foreach(Material material in materials)
 				{
-					Color color = material.color;
-					color.a = alpha;
-					material.color = color;
+					if (material)
+					{
+						Color color = material.color;
+						color.a = alpha;
+						material.color = color;
+					}
 				}
 			}
 		}

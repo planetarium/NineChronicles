@@ -16,16 +16,6 @@ namespace Anima2D
 	{
 		public static GameObject InstantiateForAnimatorPreview(UnityEngine.Object original)
 		{
-			/*
-			GameObject result = null;
-			MethodInfo methodInfo = typeof(EditorUtility).GetMethod("InstantiateForAnimatorPreview", BindingFlags.Static | BindingFlags.NonPublic);
-			if(methodInfo != null)
-			{
-				object[] parameters = new object[] { original };
-				result = (GameObject) methodInfo.Invoke(null,parameters);
-			}
-			*/
-
 			GameObject result = GameObject.Instantiate(original) as GameObject;
 
 			List<Behaviour> behaviours = new List<Behaviour>();
@@ -45,21 +35,43 @@ namespace Anima2D
 						materialClone.hideFlags = HideFlags.HideAndDontSave;
 						materialClone.mainTexture = spriteMeshInstance.spriteMesh.sprite.texture;
 
+						spriteMeshInstance.sharedMaterial = materialClone;
 						spriteMeshInstance.cachedRenderer.sharedMaterial = materialClone;
 					}
 				}
 
-				if(!(behaviour is Ik2D)
+				if(behaviour == null ||
+					behaviour is Ik2D ||
+					behaviour is SpriteMeshAnimation
 #if UNITY_5_6_OR_NEWER
-					&& !(behaviour is SortingGroup)
+					|| behaviour is SortingGroup
 #endif
 				)
-				{
+					continue;
+				else
 					behaviour.enabled = false;
-				}
 			}
 
 			return result;
+		}
+
+		public static void DestroyAnimatorPreviewInstance(GameObject instance)
+		{
+			var spriteMeshInstances = new List<SpriteMeshInstance>();
+			instance.GetComponentsInChildren<SpriteMeshInstance>(false, spriteMeshInstances);
+
+			foreach(SpriteMeshInstance spriteMeshInstance in spriteMeshInstances)
+			{
+				if(spriteMeshInstance && spriteMeshInstance.spriteMesh && spriteMeshInstance.spriteMesh.sprite)
+				{
+					var materialClone = spriteMeshInstance.sharedMaterial;
+
+					if(materialClone != null)
+						UnityEngine.Object.DestroyImmediate(materialClone);
+				}
+			}
+
+			GameObject.DestroyImmediate(instance);
 		}
 		
 		public static void InitInstantiatedPreviewRecursive(GameObject go)
@@ -111,6 +123,16 @@ namespace Anima2D
 			}
 
 			return null;
+		}
+
+		public static T[] FindComponentsOfType<T>() where T : Component
+		{
+#if UNITY_2018_3_OR_NEWER
+			var currentStage = UnityEditor.SceneManagement.StageUtility.GetCurrentStageHandle();
+            return  currentStage.FindComponentsOfType<T>().Where(x => x.gameObject.scene.isLoaded && x.gameObject.activeInHierarchy).ToArray();
+#else
+			return GameObject.FindObjectsOfType<T>();
+#endif
 		}
 	}
 }

@@ -4,14 +4,17 @@
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 16995157, guid: 398e4233fbfeb457aaea03ebc0203b5a, type: 3}
+  m_Script: {fileID: 16995157, guid: a811bde74b26b53498b4f6d872b09b6d, type: 3}
   m_Name: DOTweenSettings
   m_EditorClassIdentifier: 
   useSafeMode: 1
+  safeModeOptions:
+    nestedTweenFailureBehaviour: 0
   timeScale: 1
   useSmoothDeltaTime: 0
   maxSmoothUnscaledTime: 0.15
@@ -28,6 +31,7 @@ MonoBehaviour:
   defaultEasePeriod: 0
   defaultAutoKill: 1
   defaultLoopType: 0
+  showPreviewPanel: 1
   storeSettingsLocation: 0
   modules:
     showPanel: 0

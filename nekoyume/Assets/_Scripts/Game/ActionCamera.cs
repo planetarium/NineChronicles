@@ -34,8 +34,8 @@ namespace Nekoyume.Game
 
         public Camera Cam { get; private set; }
 
-        [SerializeField] private ChaseData chaseData;
-        [SerializeField] private ShakeData shakeData;
+        public ChaseData chaseData;
+        public ShakeData shakeData;
 
         private Transform _transform;
         private Fsm<State> _fsm;
