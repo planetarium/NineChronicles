@@ -227,13 +227,17 @@ namespace Nekoyume.Action
                 var loadingScreen = UI.Widget.Find<UI.LoadingScreen>();
                 loadingScreen.Close();
             };
+
+            agent.PreloadEnded += (_, __) =>
+            {
+                StartNullableCoroutine(_miner);
+            };
         }
 
         public void StartSystemCoroutines()
         {
             StartNullableCoroutine(_txProcessor);
             StartNullableCoroutine(_swarmRunner);
-            StartNullableCoroutine(_miner);
         }
 
         private Coroutine StartNullableCoroutine(IEnumerator routine)
