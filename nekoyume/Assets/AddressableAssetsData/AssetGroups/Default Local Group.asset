@@ -16,7 +16,49 @@ MonoBehaviour:
   m_Data:
     m_SerializedData: []
   m_GUID: 435b2aff4ae444dcc82d269b2cd5cf68
-  m_SerializeEntries: []
+  m_SerializeEntries:
+  - m_GUID: 150ea7611a0f54f01b73729de82d71dd
+    m_Address: Character/Monster/201001
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Character
+    - Monster
+  - m_GUID: 22325679889434db0819903a79a10a1d
+    m_Address: Character/Monster/201004
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Character
+    - Monster
+  - m_GUID: 26ba743bd61b547d2bd463363e891265
+    m_Address: Character/Player/101001
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Character
+    - Player
+  - m_GUID: 6091ced3209d6403a8cb5c29dafd7458
+    m_Address: Character/Monster/201000
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Character
+    - Monster
+  - m_GUID: 70e4a6d1207004501a5b8cfb6fa4ad87
+    m_Address: Character/Monster/201002
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Character
+    - Monster
+  - m_GUID: 76f38435f787a48c88a6906756e6e892
+    m_Address: Character/Player/101000
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Character
+    - Player
+  - m_GUID: 7a33706cf14304024897f8cb1b25d870
+    m_Address: Character/Player/101002
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Character
+    - Player
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 314ad4573790845ce84c5b850f063d3b, type: 2}
   m_SchemaSet:
