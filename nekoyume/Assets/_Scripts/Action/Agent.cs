@@ -111,16 +111,21 @@ namespace Nekoyume.Action
         public IEnumerator CoSwarmRunner()
         {
             PreloadStarted?.Invoke(this, null);
-            Task preload = _swarm.PreloadAsync(_blocks, new Progress<BlockDownloadState>(
-                state => 
-                {
-                    PreloadProcessed?.Invoke(this, state);
-                }
-            ));
+            // Unity 플레이어에서 성능 문제로 Async를 직접 쓰지 않고 
+            // Task.Run(async ()) 로 감쌉니다.
+            Task preload = Task.Run(async () => 
+            {
+                await _swarm.PreloadAsync(_blocks, new Progress<BlockDownloadState>(
+                    state => 
+                    {
+                        PreloadProcessed?.Invoke(this, state);
+                    }
+                ));
+            });
             yield return new WaitUntil(() => preload.IsCompleted);
             PreloadEnded?.Invoke(this, null);
             
-            Task runSwarm = _swarm.StartAsync(_blocks);
+            Task runSwarm = Task.Run(async () => await _swarm.StartAsync(_blocks));
 
             yield return new WaitUntil(() => runSwarm.IsCompleted);
         }
