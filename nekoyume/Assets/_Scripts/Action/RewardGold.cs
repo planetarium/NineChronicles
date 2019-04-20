@@ -13,7 +13,7 @@ namespace Nekoyume.Action
         
         public int Gold;
 
-        public override void LoadPlainValue(IImmutableDictionary<string, object> plainValue)
+        protected override void LoadPlainValueInternal(IImmutableDictionary<string, object> plainValue)
         {
             Gold = int.Parse(plainValue["gold"].ToString());
         }
@@ -23,7 +23,7 @@ namespace Nekoyume.Action
             return new Context(null);
         }
 
-        public override IAccountStateDelta Execute(IActionContext actionCtx)
+        protected override IAccountStateDelta ExecuteInternal(IActionContext actionCtx)
         {
             IAccountStateDelta states = actionCtx.PreviousStates;
 
@@ -51,7 +51,7 @@ namespace Nekoyume.Action
             return states.SetState(actionCtx.Miner, ctx);
         }
 
-        public override IImmutableDictionary<string, object> PlainValue => new Dictionary<string, object>
+        protected override IImmutableDictionary<string, object> PlainValueInternal => new Dictionary<string, object>
         {
             ["gold"] = Gold.ToString(),
         }.ToImmutableDictionary();

@@ -15,13 +15,13 @@ namespace Nekoyume.Action
         public List<ItemBase> Items;
         public decimal Price;
 
-        public override void LoadPlainValue(IImmutableDictionary<string, object> plainValue)
+        protected override void LoadPlainValueInternal(IImmutableDictionary<string, object> plainValue)
         {
             Items = ByteSerializer.Deserialize<List<ItemBase>>((byte[])plainValue["items"]);
             Price = decimal.Parse(plainValue["price"].ToString());
         }
 
-        public override IAccountStateDelta Execute(IActionContext actionCtx)
+        protected override IAccountStateDelta ExecuteInternal(IActionContext actionCtx)
         {
             IAccountStateDelta states = actionCtx.PreviousStates;
             var ctx = (Context) states.GetState(actionCtx.Signer) ?? CreateNovice.CreateContext("dummy");
@@ -58,7 +58,7 @@ namespace Nekoyume.Action
             return states;
         }
 
-        public override IImmutableDictionary<string, object> PlainValue => new Dictionary<string, object>
+        protected override IImmutableDictionary<string, object> PlainValueInternal => new Dictionary<string, object>
         {
             ["items"] = ByteSerializer.Serialize(Items),
             ["price"] = Price.ToString(CultureInfo.InvariantCulture),
