@@ -261,7 +261,7 @@ namespace Nekoyume.Action
 
         private class DebugPolicy : IBlockPolicy<PolymorphicAction<ActionBase>>
         {
-            public InvalidBlockException ValidateBlocks(IReadOnlyList<Block<PolymorphicAction<ActionBase>>> blocks, DateTimeOffset currentTime)
+            public InvalidBlockException ValidateNextBlock(IReadOnlyList<Block<PolymorphicAction<ActionBase>>> blocks, Block<PolymorphicAction<ActionBase>> nextBlock)
             {
                 return null;
             }
