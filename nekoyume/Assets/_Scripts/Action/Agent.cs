@@ -36,7 +36,7 @@ namespace Nekoyume.Action
         private const float ShopUpdateInterval = 3.0f;
 
         private const float TxProcessInterval = 3.0f;
-        private static readonly TimeSpan SwarmDialTimeout = TimeSpan.FromSeconds(15);
+        private static readonly TimeSpan SwarmDialTimeout = TimeSpan.FromSeconds(5);
 
         private const float ActionRetryInterval = 15.0f;
 
