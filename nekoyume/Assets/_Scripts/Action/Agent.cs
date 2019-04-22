@@ -173,19 +173,27 @@ namespace Nekoyume.Action
             while (true)
             {
                 yield return new WaitForSeconds(ActionRetryInterval);
-
-                var processedActions = (HashSet<Guid>)_blocks.GetStates(
-                    new[] { GameAction.ProcessedActionsAddress }
-                ).GetValueOrDefault(
-                    GameAction.ProcessedActionsAddress,
-                    new HashSet<Guid>()
-                );
-
-                while (_actionPool.TryDequeue(out GameAction action)) 
+                var task = Task.Run(() =>
                 {
-                    if (!processedActions.Contains(action.Id))
+                    return (HashSet<Guid>)_blocks.GetStates(
+                        new[] { GameAction.ProcessedActionsAddress }
+                    ).GetValueOrDefault(
+                        GameAction.ProcessedActionsAddress,
+                        new HashSet<Guid>()
+                    );
+                });
+                
+                yield return new WaitUntil(() => task.IsCompleted);
+
+                if (!task.IsFaulted && !task.IsCanceled) 
+                {
+                    var processedActions = task.Result;
+                    while (_actionPool.TryDequeue(out GameAction action)) 
                     {
-                        QueuedActions.Enqueue(action);
+                        if (!processedActions.Contains(action.Id))
+                        {
+                            QueuedActions.Enqueue(action);
+                        }
                     }
                 }
             }
