@@ -10,7 +10,7 @@ using Nekoyume.Model;
 namespace Nekoyume.Action
 {
     [ActionType("sell")]
-    public class Sell : ActionBase
+    public class Sell : GameAction
     {
         public List<ItemBase> Items;
         public decimal Price;

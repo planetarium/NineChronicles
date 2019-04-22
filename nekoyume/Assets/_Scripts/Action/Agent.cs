@@ -42,7 +42,7 @@ namespace Nekoyume.Action
 
         private readonly Swarm _swarm;
 
-        private readonly ConcurrentQueue<PolymorphicAction<ActionBase>> _actionPool;
+        private readonly ConcurrentQueue<GameAction> _actionPool;
 
         private const int RewardAmount = 1;
 
@@ -78,7 +78,7 @@ namespace Nekoyume.Action
                 new FileStore(path),
                 chainId);
             QueuedActions = new ConcurrentQueue<PolymorphicAction<ActionBase>>();
-            _actionPool = new ConcurrentQueue<PolymorphicAction<ActionBase>>();
+            _actionPool = new ConcurrentQueue<GameAction>();
 #if BLOCK_LOG_USE
             FileHelper.WriteAllText("Block.log", "");
 #endif
@@ -175,15 +175,15 @@ namespace Nekoyume.Action
                 yield return new WaitForSeconds(ActionRetryInterval);
 
                 var processedActions = (HashSet<Guid>)_blocks.GetStates(
-                    new[] { ActionBase.ProcessedActionsAddress }
+                    new[] { GameAction.ProcessedActionsAddress }
                 ).GetValueOrDefault(
-                    ActionBase.ProcessedActionsAddress,
+                    GameAction.ProcessedActionsAddress,
                     new HashSet<Guid>()
                 );
 
-                while (_actionPool.TryDequeue(out PolymorphicAction<ActionBase> action)) 
+                while (_actionPool.TryDequeue(out GameAction action)) 
                 {
-                    if (!processedActions.Contains(action.InnerAction.Id))
+                    if (!processedActions.Contains(action.Id))
                     {
                         QueuedActions.Enqueue(action);
                     }
@@ -201,7 +201,10 @@ namespace Nekoyume.Action
                 while (QueuedActions.TryDequeue(out PolymorphicAction<ActionBase> action))
                 {
                     actions.Add(action);
-                    _actionPool.Enqueue(action);
+                    if (action.InnerAction is GameAction asGameAction) 
+                    {
+                        _actionPool.Enqueue(asGameAction);
+                    }
                 }
 
                 if (actions.Any())

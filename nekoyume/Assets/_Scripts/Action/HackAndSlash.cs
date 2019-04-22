@@ -7,7 +7,7 @@ using Nekoyume.Game.Item;
 namespace Nekoyume.Action
 {
     [ActionType("hack_and_slash")]
-    public class HackAndSlash : ActionBase
+    public class HackAndSlash : GameAction
     {
         public List<Equipment> Equipments;
         public List<Food> Foods;
