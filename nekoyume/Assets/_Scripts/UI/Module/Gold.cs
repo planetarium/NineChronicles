@@ -10,7 +10,7 @@ namespace Nekoyume.UI.Module
     public class Gold: MonoBehaviour
     {
         public Image image;
-        public TextMeshProUGUI text;
+        public Text text;
 
         private IDisposable _disposable;
 
