@@ -2,6 +2,7 @@ using Nekoyume.Game.Character;
 using Nekoyume.Game.Util;
 using Nekoyume.Model;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace Nekoyume.Game.Factory
 {
@@ -33,6 +34,14 @@ namespace Nekoyume.Game.Factory
                 throw new NotFoundComponentException<Enemy>();
             }
             enemy.Init(spawnCharacter);
+
+            // y좌표값에 따른 정렬 처리
+            var sortingGroup = go.GetComponent<SortingGroup>();
+            if (ReferenceEquals(sortingGroup, null))
+            {
+                throw new NotFoundComponentException<SortingGroup>();
+            }
+            sortingGroup.sortingOrder = (int) (position.y * 10) * -1;
             return go;
         }
     }
