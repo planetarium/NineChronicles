@@ -7,14 +7,7 @@ namespace Nekoyume.Serilog
     {
         public void Emit(LogEvent logEvent)
         {
-            if (logEvent.Exception != null) 
-            {
-                UnityEngine.Debug.LogException(logEvent.Exception);
-            }
-            else 
-            {
-                UnityEngine.Debug.Log(logEvent.RenderMessage());
-            }
+            UnityEngine.Debug.Log($"{logEvent.Timestamp}: {logEvent.RenderMessage()}");
         }
     }
 }

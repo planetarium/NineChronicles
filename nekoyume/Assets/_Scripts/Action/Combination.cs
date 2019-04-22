@@ -57,7 +57,7 @@ namespace Nekoyume.Action
         public List<ItemModel> Materials { get; private set; }
         public ResultModel Result { get; private set; }
 
-        public override IImmutableDictionary<string, object> PlainValue =>
+        protected override IImmutableDictionary<string, object> PlainValueInternal =>
             new Dictionary<string, object>
             {
                 ["Materials"] = ByteSerializer.Serialize(Materials),
@@ -68,12 +68,12 @@ namespace Nekoyume.Action
             Materials = new List<ItemModel>();
         }
 
-        public override void LoadPlainValue(IImmutableDictionary<string, object> plainValue)
+        protected override void LoadPlainValueInternal(IImmutableDictionary<string, object> plainValue)
         {
             Materials = ByteSerializer.Deserialize<List<ItemModel>>((byte[]) plainValue["Materials"]);
         }
 
-        public override IAccountStateDelta Execute(IActionContext actionCtx)
+        protected override IAccountStateDelta ExecuteInternal(IActionContext actionCtx)
         {
             var states = actionCtx.PreviousStates;
             var ctx = (Context) states.GetState(actionCtx.Signer);

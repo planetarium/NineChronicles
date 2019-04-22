@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AsyncIO;
@@ -35,9 +36,13 @@ namespace Nekoyume.Action
         private const float ShopUpdateInterval = 3.0f;
 
         private const float TxProcessInterval = 3.0f;
-        private static readonly TimeSpan SwarmDialTimeout = TimeSpan.FromSeconds(15);
+        private static readonly TimeSpan SwarmDialTimeout = TimeSpan.FromSeconds(5);
+
+        private const float ActionRetryInterval = 15.0f;
 
         private readonly Swarm _swarm;
+
+        private readonly ConcurrentQueue<PolymorphicAction<ActionBase>> _actionPool;
 
         private const int RewardAmount = 1;
 
@@ -73,6 +78,7 @@ namespace Nekoyume.Action
                 new FileStore(path),
                 chainId);
             QueuedActions = new ConcurrentQueue<PolymorphicAction<ActionBase>>();
+            _actionPool = new ConcurrentQueue<PolymorphicAction<ActionBase>>();
 #if BLOCK_LOG_USE
             FileHelper.WriteAllText("Block.log", "");
 #endif
@@ -162,35 +168,46 @@ namespace Nekoyume.Action
             }
         }
 
+        public IEnumerator CoActionRetryer() 
+        {
+            while (true)
+            {
+                yield return new WaitForSeconds(ActionRetryInterval);
+
+                var processedActions = (HashSet<Guid>)_blocks.GetStates(
+                    new[] { ActionBase.ProcessedActionsAddress }
+                ).GetValueOrDefault(
+                    ActionBase.ProcessedActionsAddress,
+                    new HashSet<Guid>()
+                );
+
+                while (_actionPool.TryDequeue(out PolymorphicAction<ActionBase> action)) 
+                {
+                    if (!processedActions.Contains(action.InnerAction.Id))
+                    {
+                        QueuedActions.Enqueue(action);
+                    }
+                }
+            }
+        }
+
         public IEnumerator CoTxProcessor()
         {
-            var actions = new List<PolymorphicAction<ActionBase>>();
-
             while (true)
             {
                 yield return new WaitForSeconds(TxProcessInterval);
-                PolymorphicAction<ActionBase> action;
-                while (QueuedActions.TryDequeue(out action))
+                var actions = new List<PolymorphicAction<ActionBase>>();
+
+                while (QueuedActions.TryDequeue(out PolymorphicAction<ActionBase> action))
                 {
                     actions.Add(action);
+                    _actionPool.Enqueue(action);
                 }
 
-                if (actions.Count > 0)
+                if (actions.Any())
                 {
-                    var task = Task.Run(() =>
-                    {
-                        try
-                        {
-                            StageActions(actions);
-                            actions.Clear();
-                        }
-                        catch (Exception e)
-                        {
-                            Debug.LogError($"{e}\n{e.StackTrace}");
-                            throw;
-                        }
-                    });
-                    yield return new WaitUntil(() => task.IsCompleted);
+                    var staging = StageActions(actions);
+                    yield return new WaitUntil(() => staging.IsCompleted);
                 }
             }
         }
@@ -218,7 +235,8 @@ namespace Nekoyume.Action
 
                 if (!task.IsCanceled && !task.IsFaulted)
                 {
-                    Debug.Log($"created block index: {task.Result.Index}");
+                    var block = task.Result;
+                    Debug.Log($"created block index: {block.Index}, difficulty: {block.Difficulty}");
 #if BLOCK_LOG_USE
                     FileHelper.AppendAllText("Block.log", task.Result.ToVerboseString());
 #endif
@@ -226,7 +244,7 @@ namespace Nekoyume.Action
             }
         }
 
-        private void StageActions(IList<PolymorphicAction<ActionBase>> actions)
+        private async Task StageActions(IList<PolymorphicAction<ActionBase>> actions)
         {
             var tx = Transaction<PolymorphicAction<ActionBase>>.Create(
                 AvatarPrivateKey,
@@ -234,7 +252,7 @@ namespace Nekoyume.Action
                 timestamp: DateTime.UtcNow
             );
             _blocks.StageTransactions(new HashSet<Transaction<PolymorphicAction<ActionBase>>> {tx});
-            _swarm.BroadcastTxsAsync(new[] { tx }).Wait();
+            await _swarm.BroadcastTxsAsync(new[] { tx });
         }
 
         public void Dispose()
@@ -244,7 +262,7 @@ namespace Nekoyume.Action
 
         private class DebugPolicy : IBlockPolicy<PolymorphicAction<ActionBase>>
         {
-            public InvalidBlockException ValidateBlocks(IReadOnlyList<Block<PolymorphicAction<ActionBase>>> blocks, DateTimeOffset currentTime)
+            public InvalidBlockException ValidateNextBlock(IReadOnlyList<Block<PolymorphicAction<ActionBase>>> blocks, Block<PolymorphicAction<ActionBase>> nextBlock)
             {
                 return null;
             }

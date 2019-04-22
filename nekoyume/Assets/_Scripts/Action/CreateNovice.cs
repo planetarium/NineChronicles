@@ -15,7 +15,7 @@ namespace Nekoyume.Action
         public string name;
         public const int DefaultId = 100010;
         private const int DefaultSetId = 1;
-        public override void LoadPlainValue(IImmutableDictionary<string, object> plainValue)
+        protected override void LoadPlainValueInternal(IImmutableDictionary<string, object> plainValue)
         {
             name = (string) plainValue["name"];
         }
@@ -51,7 +51,7 @@ namespace Nekoyume.Action
             return avatar;
         }
 
-        public override IAccountStateDelta Execute(IActionContext actionCtx)
+        protected override IAccountStateDelta ExecuteInternal(IActionContext actionCtx)
         {
             IAccountStateDelta states = actionCtx.PreviousStates;
             var ctx = (Context)states.GetState(actionCtx.Signer);
@@ -66,7 +66,7 @@ namespace Nekoyume.Action
             return states.SetState(actionCtx.Signer, ctx);
         }
 
-        public override IImmutableDictionary<string, object> PlainValue => new Dictionary<string, object>()
+        protected override IImmutableDictionary<string, object> PlainValueInternal => new Dictionary<string, object>()
         {
             ["name"] = name,
         }.ToImmutableDictionary();

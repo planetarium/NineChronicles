@@ -56,6 +56,8 @@ namespace Nekoyume.Action
         private IEnumerator _shopUpdator;
         private IEnumerator _swarmRunner;
 
+        private IEnumerator _actionRetryer;
+
         public Address agentAddress => agent.AgentAddress;
 
 #if UNITY_EDITOR
@@ -140,6 +142,7 @@ namespace Nekoyume.Action
 
         private void ProcessAction(ActionBase action)
         {
+            action.Id = Guid.NewGuid();
             agent.QueuedActions.Enqueue(action);
         }
 
@@ -210,6 +213,7 @@ namespace Nekoyume.Action
             );
             _txProcessor = agent.CoTxProcessor();
             _swarmRunner = agent.CoSwarmRunner();
+            _actionRetryer = agent.CoActionRetryer();
 
             if (!HasCommandLineSwitch("no-miner"))
             {
@@ -237,6 +241,7 @@ namespace Nekoyume.Action
         public void StartSystemCoroutines()
         {
             StartNullableCoroutine(_txProcessor);
+            StartNullableCoroutine(_actionRetryer);
             StartNullableCoroutine(_swarmRunner);
         }
 

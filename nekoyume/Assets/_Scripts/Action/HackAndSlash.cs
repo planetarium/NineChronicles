@@ -13,7 +13,7 @@ namespace Nekoyume.Action
         public List<Food> Foods;
         public int Stage;
 
-        public override IImmutableDictionary<string, object> PlainValue =>
+        protected override IImmutableDictionary<string, object> PlainValueInternal =>
             new Dictionary<string, object>
             {
                 ["equipments"] = ByteSerializer.Serialize(Equipments),
@@ -22,14 +22,14 @@ namespace Nekoyume.Action
             }.ToImmutableDictionary();
 
 
-        public override void LoadPlainValue(IImmutableDictionary<string, object> plainValue)
+        protected override void LoadPlainValueInternal(IImmutableDictionary<string, object> plainValue)
         {
             Equipments = ByteSerializer.Deserialize<List<Equipment>>((byte[]) plainValue["equipments"]);
             Foods = ByteSerializer.Deserialize<List<Food>>((byte[]) plainValue["foods"]);
             Stage = ByteSerializer.Deserialize<int>((byte[]) plainValue["stage"]);
         }
 
-        public override IAccountStateDelta Execute(IActionContext actionCtx)
+        protected override IAccountStateDelta ExecuteInternal(IActionContext actionCtx)
         {
             var states = actionCtx.PreviousStates;
             var ctx = (Context) states.GetState(actionCtx.Signer);
