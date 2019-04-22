@@ -34,6 +34,7 @@ namespace Nekoyume.UI
             Widget.Create<StatusDetail>();
             Widget.Create<BattleResult>();
             Widget.Create<Inventory>();
+            Widget.Create<Gold>();
 
             // 팝업류.
             Widget.Create<SelectItemCountPopup>();

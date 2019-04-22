@@ -45,7 +45,7 @@ namespace Nekoyume.Action
             if (!actionCtx.Rehearsal &&
                 actionCtx.Miner.Equals(ActionManager.instance.agentAddress))
             {
-                RewardGoldMyselfSubject.OnNext(Gold);
+                RewardGoldMyselfSubject.OnNext(ctx.gold);
             }
 
             return states.SetState(actionCtx.Miner, ctx);
