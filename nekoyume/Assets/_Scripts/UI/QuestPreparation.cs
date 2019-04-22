@@ -25,6 +25,7 @@ namespace Nekoyume.UI
         public GameObject[] equipSlots;
         public GameObject btnQuest;
         public GameObject inventory;
+        public GameObject equipSlotGlow;
         public Dropdown dropdown;
 
         public Stage stage;
@@ -172,6 +173,7 @@ namespace Nekoyume.UI
             {
                 itemInfoSelectedItem.Clear();
                 SetActiveButtonEquip(false);
+                SetGlowEquipSlot(false);
                 return;
             }
 
@@ -179,10 +181,39 @@ namespace Nekoyume.UI
             itemInfoSelectedItem.SetIcon(slot.Icon.sprite);
             selectedItemCount = Convert.ToInt32(slot.LabelCount.text);
             SetActiveButtonEquip(slot.Item is ItemUsable);
+            SetGlowEquipSlot(slot.Item is ItemUsable);
             AudioController.PlaySelect();
         }
 
         public void EquipClick()
+        {
+            var slot = FindSelectedItemSlot();
+            if (slot != null)
+            {
+                slot.Equip(itemInfoSelectedItem);
+                SetGlowEquipSlot(false);
+            }
+            
+            // Fix me.
+            // 소모 아이템을 장착할 때는 아래 코드를 사용해서 소리를 적용해주세요.
+            // AudioController.instance.PlaySfx(AudioController.SfxCode.ChainMail1);
+            var type = itemInfoSelectedItem.item.Data.cls.ToEnumItemType();
+            if (type == ItemBase.ItemType.Food)
+            {
+                AudioController.instance.PlaySfx(AudioController.SfxCode.Equipment);
+            }
+            else
+            {
+                AudioController.instance.PlaySfx(AudioController.SfxCode.Equipment);
+            }
+
+            if (type == ItemBase.ItemType.Set)
+            {
+                _player.UpdateSet((SetItem)itemInfoSelectedItem.item);
+            }
+        }
+
+        private EquipSlot FindSelectedItemSlot()
         {
             var type = itemInfoSelectedItem.item.Data.cls.ToEnumItemType();
             if (type == ItemBase.ItemType.Food)
@@ -198,8 +229,7 @@ namespace Nekoyume.UI
                     {
                         slot = usableSlots[0];
                     }
-                    slot.Equip(itemInfoSelectedItem);
-                    AudioController.instance.PlaySfx(AudioController.SfxCode.Equipment);
+                    return slot;
                 }
             }
             else
@@ -209,21 +239,11 @@ namespace Nekoyume.UI
                     var es = slot.GetComponent<EquipSlot>();
                     if (es.type == type)
                     {
-                        es.Equip(itemInfoSelectedItem);
-                        AudioController.instance.PlaySfx(AudioController.SfxCode.Equipment);
-
-                        if (type == ItemBase.ItemType.Set)
-                        {
-                            _player.UpdateSet((SetItem) itemInfoSelectedItem.item);
-                        }
+                        return es;
                     }
-
                 }
             }
-            
-            // Fix me.
-            // 소모 아이템을 장착할 때는 아래 코드를 사용해서 소리를 적용해주세요.
-            // AudioController.instance.PlaySfx(AudioController.SfxCode.ChainMail1);
+            return null;
         }
 
         public void Unequip(GameObject sender)
@@ -243,6 +263,25 @@ namespace Nekoyume.UI
             buttonSellImage.enabled = isActive;
             buttonSellText.enabled = isActive;
         }
+		
+        private void SetGlowEquipSlot(bool isActive)
+        {
+            equipSlotGlow.SetActive(isActive);
+
+            if (!isActive)
+                return;
+
+            var slot = FindSelectedItemSlot();
+            if (slot && slot.transform.parent)
+            {
+                equipSlotGlow.transform.SetParent(slot.transform);
+                equipSlotGlow.transform.localPosition = Vector3.zero;
+            }
+            else
+            {
+                equipSlotGlow.SetActive(false);
+			}
+		}
 
         public void SelectItem(Toggle item)
         {
