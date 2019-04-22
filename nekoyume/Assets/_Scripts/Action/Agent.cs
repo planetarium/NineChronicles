@@ -235,7 +235,8 @@ namespace Nekoyume.Action
 
                 if (!task.IsCanceled && !task.IsFaulted)
                 {
-                    Debug.Log($"created block index: {task.Result.Index}");
+                    var block = task.Result;
+                    Debug.Log($"created block index: {block.Index}, difficulty: {block.Difficulty}");
 #if BLOCK_LOG_USE
                     FileHelper.AppendAllText("Block.log", task.Result.ToVerboseString());
 #endif
