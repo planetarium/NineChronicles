@@ -42,26 +42,46 @@ namespace Nekoyume.UI
 
         public void QuestClick()
         {
-            Find<QuestPreparation>()?.Show();
             Find<Status>()?.Close();
             Close();
+            
+            Find<QuestPreparation>()?.Show();
+            Find<Gold>()?.Show();
             AudioController.PlayClick();
         }
 
         public void ShopClick()
         {
-            Find<Shop>().Show();
             Find<Status>()?.Close();
             Close();
+            
+            Find<Shop>().Show();
+            Find<Gold>()?.Show();
             AudioController.PlayClick();
         }
 
         public void CombinationClick()
         {
-            Find<Combination>()?.Show();
             Find<Status>()?.Close();
             Close();
+            
+            Find<Combination>()?.Show();
+            Find<Gold>()?.Show();
             AudioController.PlayClick();
+        }
+
+        public override void Show()
+        {
+            base.Show();
+            
+            Find<Gold>()?.Show();
+        }
+
+        public override void Close()
+        {
+            Find<Gold>()?.Close();
+            
+            base.Close();
         }
     }
 }
