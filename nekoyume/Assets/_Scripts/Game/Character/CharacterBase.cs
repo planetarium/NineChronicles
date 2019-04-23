@@ -147,6 +147,11 @@ namespace Nekoyume.Game.Character
             {
                 _hpBar.UpdatePosition(gameObject, _hpBarOffset);
             }
+            if (_anim == null)
+            {
+                _anim = GetComponentInChildren<Animator>();
+                SetAnimatorSpeed(AnimatorSpeed);
+            }
         }
 
         public int CalcAtk()
@@ -300,6 +305,8 @@ namespace Nekoyume.Game.Character
         }
 
         protected void DieEnd()
+        public bool TargetInRange(CharacterBase target) =>
+            Range > Mathf.Abs(gameObject.transform.position.x - target.transform.position.x);
         {
             dieEnd = true;
         }

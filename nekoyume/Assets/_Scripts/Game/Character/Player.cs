@@ -57,7 +57,6 @@ namespace Nekoyume.Game.Character
         }
 
         public Item.Inventory Inventory;
-        private float _range = 1.2f;
 
         protected override void Awake()
         {
@@ -156,9 +155,6 @@ namespace Nekoyume.Game.Character
             Instantiate(origin, gameObject.transform);
 
         }
-
-        public bool TargetInRange(CharacterBase target) =>
-            _range > Mathf.Abs(gameObject.transform.position.x - target.transform.position.x);
 
         public IEnumerator CoGetExp(long exp)
         {
