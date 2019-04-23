@@ -65,9 +65,6 @@ namespace Nekoyume.Game.Character
             _anim = GetComponentInChildren<Animator>();
             SetAnimatorSpeed(AnimatorSpeed);
             
-            Event.OnAttackEnd.AddListener(AttackEnd);
-            Event.OnHitEnd.AddListener(HitEnd);
-            Event.OnDieEnd.AddListener(DieEnd);
             Inventory = new Item.Inventory();
             
             _targetTag = Tag.Enemy;

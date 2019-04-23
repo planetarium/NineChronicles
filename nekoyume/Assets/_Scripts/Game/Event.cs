@@ -43,9 +43,18 @@ namespace Nekoyume.Game
         }
         public static readonly  SlotClick OnSlotClick = new SlotClick();
 
-        public static readonly UnityEvent OnAttackEnd = new UnityEvent();
+        public class AttackEnd : UnityEvent<CharacterBase>
+        {
+        }
+        public static readonly AttackEnd OnAttackEnd = new AttackEnd();
 
-        public static readonly UnityEvent OnHitEnd = new UnityEvent();
-        public static readonly UnityEvent OnDieEnd = new UnityEvent();
+        public class HitEnd : UnityEvent<CharacterBase>
+        {
+        }
+        public static readonly HitEnd OnHitEnd = new HitEnd();
+        public class DieEnd : UnityEvent<CharacterBase>
+        {
+        }
+        public static readonly DieEnd OnDieEnd = new DieEnd();
     }
 }
