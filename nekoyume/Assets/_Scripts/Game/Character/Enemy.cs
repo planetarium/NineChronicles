@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Linq;
 using DG.Tweening;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Vfx;
@@ -23,10 +24,15 @@ namespace Nekoyume.Game.Character
         {
             get
             {
-                var spriteRenderer = GetComponentInChildren<Renderer>();
-                var x = spriteRenderer.bounds.min.x - transform.position.x + spriteRenderer.bounds.size.x / 2;
+                var spriteRenderer = GetComponentsInChildren<Renderer>()
+                    .OrderByDescending(r => r.transform.position.y)
+                    .First();
                 var y = spriteRenderer.bounds.max.y - transform.position.y;
+                var body = GetComponentsInChildren<Transform>().First(g => g.name == "body");
+                var bodyRenderer = body.GetComponent<Renderer>();
+                var x = bodyRenderer.bounds.min.x - transform.position.x + bodyRenderer.bounds.size.x / 2;
                 return new Vector3(x, y, 0.0f);
+
             }
         }
 
