@@ -15,6 +15,8 @@ namespace Nekoyume.Game.Character
         public int DataId = 0;
         public Guid id;
 
+        private Player _player;
+
         protected override Vector3 _hpBarOffset => _castingBarOffset + HpBarOffset;
 
         protected override Vector3 _castingBarOffset
@@ -28,7 +30,7 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        public override float Speed => 0.0f;
+        public override float Speed => -1.8f;
 
         public override IEnumerator CoProcessDamage(int dmg, bool critical)
         {
@@ -73,10 +75,13 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        public void Init(Model.Monster spawnCharacter)
+        public void Init(Model.Monster spawnCharacter, Player player)
         {
+            _player = player;
             _hpBarOffset.Set(-0.0f, -0.11f, 0.0f);
             _castingBarOffset.Set(-0.0f, -0.33f, 0.0f);
+            _anim = GetComponentInChildren<Animator>();
+            SetAnimatorSpeed(AnimatorSpeed);
             InitStats(spawnCharacter);
             id = spawnCharacter.id;
             StartRun();
@@ -104,5 +109,11 @@ namespace Nekoyume.Game.Character
             // Fix me.
             // 이후 몬스터 별 공격 음이 재생된다.
         }
+
+        protected override bool CanRun()
+        {
+            return base.CanRun() && !TargetInRange(_player);
+        }
+
     }
 }

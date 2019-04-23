@@ -9,7 +9,7 @@ namespace Nekoyume.Game.Factory
     public class EnemyFactory : MonoBehaviour
     {
         private const int DefaultResource = 201000;
-        public GameObject Create(Monster spawnCharacter, Vector2 position)
+        public GameObject Create(Monster spawnCharacter, Vector2 position, Character.Player player)
         {
             var objectPool = GetComponent<ObjectPool>();
             if (ReferenceEquals(objectPool, null))
@@ -17,8 +17,13 @@ namespace Nekoyume.Game.Factory
                 throw new NotFoundComponentException<ObjectPool>();
             }
 
-            var go = objectPool.Get("Enemy", true, position);
-            var prevAnim = go.GetComponentInChildren<Animator>(true);
+//            var go = objectPool.Get("Enemy", true, position);
+            var enemy = objectPool.Get<Enemy>(position);
+            if (ReferenceEquals(enemy, null))
+            {
+                throw new NotFoundComponentException<Enemy>();
+            }
+            var prevAnim = enemy.GetComponentInChildren<Animator>(true);
             if (prevAnim)
             {
                 Destroy(prevAnim.gameObject);
@@ -27,22 +32,17 @@ namespace Nekoyume.Game.Factory
 //            var animator = objectPool.Get(spawnCharacter.data.Id.ToString(), true);
             var origin = Resources.Load<GameObject>($"Prefab/{spawnCharacter.data.characterResource}") ??
                          Resources.Load<GameObject>($"Prefab/{DefaultResource}");
-            var animator = Instantiate(origin, go.transform);
-            var enemy = animator.GetComponent<Enemy>();
-            if (ReferenceEquals(enemy, null))
-            {
-                throw new NotFoundComponentException<Enemy>();
-            }
-            enemy.Init(spawnCharacter);
+            Instantiate(origin, enemy.transform);
+            enemy.Init(spawnCharacter, player);
 
             // y좌표값에 따른 정렬 처리
-            var sortingGroup = go.GetComponent<SortingGroup>();
+            var sortingGroup = enemy.GetComponent<SortingGroup>();
             if (ReferenceEquals(sortingGroup, null))
             {
                 throw new NotFoundComponentException<SortingGroup>();
             }
             sortingGroup.sortingOrder = (int) (position.y * 10) * -1;
-            return go;
+            return enemy.gameObject;
         }
     }
 }

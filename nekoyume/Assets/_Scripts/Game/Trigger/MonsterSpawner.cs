@@ -42,7 +42,7 @@ namespace Nekoyume.Game.Trigger
                 var pos = new Vector2(
                     spawnPoints[r].x + offsetX,
                     spawnPoints[r].y);
-                factory.Create(_monster, pos);
+                factory.Create(_monster, pos, player);
             }
         }
 
@@ -73,7 +73,7 @@ namespace Nekoyume.Game.Trigger
                     var pos = new Vector2(
                         point.x + offsetX,
                         point.y);
-                    factory.Create(monster, pos);
+                    factory.Create(monster, pos, player);
                 }
             }
         }

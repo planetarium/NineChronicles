@@ -296,7 +296,7 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        private bool CanRun()
+        protected virtual bool CanRun()
         {
             return !(Mathf.Approximately(RunSpeed, 0f));
         }
