@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.Manager;
 using Nekoyume.Action;
 using Nekoyume.Data;
 using Nekoyume.Data.Table;
@@ -256,6 +257,7 @@ namespace Nekoyume.UI
             _loadingScreen.Show();
             _combinationDisposable = Action.Combination.EndOfExecuteSubject.ObserveOnMainThread().Subscribe(ResponseCombination);
             ActionManager.instance.Combination(_data.StagedItems.ToList());
+            AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ClickCombinationCombination);
         }
 
         /// <summary>
@@ -291,6 +293,8 @@ namespace Nekoyume.UI
                     ResultItem = itemModel,
                     MaterialItems = _data.StagedItems
                 };
+                
+                AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ActionCombinationSuccess);
             }
             else
             {
@@ -299,6 +303,8 @@ namespace Nekoyume.UI
                     IsSuccess = false,
                     MaterialItems = _data.StagedItems
                 };
+                
+                AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ActionCombinationFail);
             }
         }
 

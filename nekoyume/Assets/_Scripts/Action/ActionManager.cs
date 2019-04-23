@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text.RegularExpressions;
+using Nekoyume.Manager;
 using Libplanet;
 using Libplanet.Crypto;
 using Libplanet.Net;
@@ -155,6 +156,9 @@ namespace Nekoyume.Action
                 Stage = stage,
             };
             ProcessAction(action);
+
+            var itemIDs = equipments.Select(e => e.Data.id).Concat(foods.Select(f => f.Data.id)).ToArray();
+            AnalyticsManager.instance.Battle(itemIDs);
         }
 
         public void InitAgent()
@@ -323,6 +327,7 @@ namespace Nekoyume.Action
             var action = new Combination();
             materials.ForEach(m => action.Materials.Add(new Combination.ItemModel(m)));
             ProcessAction(action);
+            AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ActionCombination);
         }
 
         public void Sell(List<ItemBase> items, decimal price)

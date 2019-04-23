@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.Manager;
 using Nekoyume.Action;
 using Nekoyume.Game;
 using Nekoyume.Game.Character;
@@ -75,6 +76,7 @@ namespace Nekoyume.UI
         {
             StartCoroutine(CoQuest(repeat));
             AudioController.PlayClick();
+            AnalyticsManager.instance.BattleEntrance(repeat);
         }
 
         private IEnumerator CoQuest(bool repeat)

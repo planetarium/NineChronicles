@@ -8,6 +8,7 @@ using Nekoyume.Game.Controller;
 using Nekoyume.Game.Factory;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Vfx;
+using Nekoyume.Manager;
 using Nekoyume.UI;
 using UnityEngine;
 
@@ -178,6 +179,7 @@ namespace Nekoyume.Game.Character
 
             if (model.level != level)
             {
+                AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ActionStatusLevelUp, level);
                 yield return new WaitForSeconds(0.3f);
                 PopupText.Show(
                     transform.TransformPoint(-0.6f, 1.0f,0.0f),

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Nekoyume.Manager;
 using Nekoyume.Game.Item;
 using UniRx;
 
@@ -142,6 +143,7 @@ namespace Nekoyume.UI.Model
                 SelectItemCountPopup.Value.Count.Value = obj.Count.Value;
                 SelectItemCountPopup.Value.MinCount.Value = 1;
                 SelectItemCountPopup.Value.MaxCount.Value = obj.Item.Value.Count;
+                AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ClickCombinationEditMaterialItem);
             });
             data.OnClose.Subscribe(obj =>
             {
@@ -151,6 +153,7 @@ namespace Nekoyume.UI.Model
                 }
 
                 StagedItems.Remove(obj);
+                AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ClickCombinationRemoveMaterialItem);
             });
 
             UpdateReadyForCombination();

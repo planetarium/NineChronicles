@@ -154,9 +154,9 @@ namespace Nekoyume.UI
             return gameObject.activeSelf;
         }
 
-        public void Toggle()
+        public bool Toggle()
         {
-            if (IsActive())
+            if (gameObject.activeSelf)
             {
                 Close();
             }
@@ -164,6 +164,8 @@ namespace Nekoyume.UI
             {
                 Show();
             }
+
+            return gameObject.activeSelf;
         }
     }
 }
