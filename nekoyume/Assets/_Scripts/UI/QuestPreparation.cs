@@ -178,7 +178,7 @@ namespace Nekoyume.UI
             }
 
             itemInfoSelectedItem.SetItem(slot.Item);
-            itemInfoSelectedItem.SetIcon(slot.Icon.sprite);
+            itemInfoSelectedItem.SetIcon(slot.Icon.overrideSprite);
             selectedItemCount = Convert.ToInt32(slot.LabelCount.text);
             SetActiveButtonEquip(slot.Item is ItemUsable);
             SetGlowEquipSlot(slot.Item is ItemUsable);
@@ -190,7 +190,7 @@ namespace Nekoyume.UI
             var slot = FindSelectedItemSlot();
             if (slot != null)
             {
-                slot.Equip(itemInfoSelectedItem);
+                slot.Set(itemInfoSelectedItem.item as ItemUsable);
                 SetGlowEquipSlot(false);
             }
             
