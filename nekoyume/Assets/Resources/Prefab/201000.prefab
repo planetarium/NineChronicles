@@ -93,7 +93,7 @@ SkinnedMeshRenderer:
   m_Quality: 0
   m_UpdateWhenOffscreen: 0
   m_SkinnedMotionVectors: 1
-  m_Mesh: {fileID: 43795243767221978, guid: 7489e81723aeb6a478a686f124e2d4cd, type: 2}
+  m_Mesh: {fileID: 0}
   m_Bones:
   - {fileID: 4688231900865308}
   m_BlendShapeWeights: []
@@ -110,9 +110,11 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 4935342971902348}
+  - component: {fileID: 2843128906222005970}
   - component: {fileID: 114151475853381636}
   - component: {fileID: 137502286354210204}
+  - component: {fileID: 8551054528510997214}
+  - component: {fileID: 5441738774638161993}
   m_Layer: 0
   m_Name: body
   m_TagString: Untagged
@@ -120,20 +122,25 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4935342971902348
-Transform:
+--- !u!224 &2843128906222005970
+RectTransform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1176736283126610}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1.050645, y: 1.492903, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4256650868088180}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 1.050645, y: 1.492903}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &114151475853381636
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -195,7 +202,7 @@ SkinnedMeshRenderer:
   m_Quality: 0
   m_UpdateWhenOffscreen: 0
   m_SkinnedMotionVectors: 1
-  m_Mesh: {fileID: 43955280018070468, guid: cb3699a533e8f2948b38c98c51d8f780, type: 2}
+  m_Mesh: {fileID: 0}
   m_Bones:
   - {fileID: 4688231900865308}
   m_BlendShapeWeights: []
@@ -204,6 +211,43 @@ SkinnedMeshRenderer:
     m_Center: {x: 0.40559053, y: -0.052352875, z: 0}
     m_Extent: {x: 0.91434145, y: 1.0493855, z: 0}
   m_DirtyAABB: 0
+--- !u!222 &8551054528510997214
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1176736283126610}
+  m_CullTransparentMesh: 0
+--- !u!114 &5441738774638161993
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1176736283126610}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -765806418, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
+      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
 --- !u!1 &1406085506208186
 GameObject:
   m_ObjectHideFlags: 0
@@ -297,7 +341,7 @@ SkinnedMeshRenderer:
   m_Quality: 0
   m_UpdateWhenOffscreen: 0
   m_SkinnedMotionVectors: 1
-  m_Mesh: {fileID: 43730914557285906, guid: 54860f1ee0db6d342860bcb883a1b46a, type: 2}
+  m_Mesh: {fileID: 0}
   m_Bones:
   - {fileID: 4688231900865308}
   m_BlendShapeWeights: []
@@ -365,7 +409,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1406709776999388}
-  m_Mesh: {fileID: 43032466520600632, guid: 471c539ccc21ec543bed32147cd16c10, type: 2}
+  m_Mesh: {fileID: 0}
 --- !u!23 &23130660627443634
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -542,7 +586,7 @@ Transform:
   m_LocalPosition: {x: -1.237, y: -1.525, z: 0}
   m_LocalScale: {x: 1.0000001, y: 1.0000001, z: 1}
   m_Children:
-  - {fileID: 4935342971902348}
+  - {fileID: 2843128906222005970}
   - {fileID: 4447642506543390}
   - {fileID: 4113766181793684}
   - {fileID: 4739176339274276}
