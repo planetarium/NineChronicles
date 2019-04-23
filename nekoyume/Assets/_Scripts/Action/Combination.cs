@@ -12,7 +12,7 @@ using UnityEngine;
 namespace Nekoyume.Action
 {
     [ActionType("combination")]
-    public class Combination : ActionBase
+    public class Combination : GameAction
     {
         [Serializable]
         public struct ItemModel
