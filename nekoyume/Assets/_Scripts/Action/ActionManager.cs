@@ -141,7 +141,7 @@ namespace Nekoyume.Action
             SaveStatus();
         }
 
-        private void ProcessAction(ActionBase action)
+        private void ProcessAction(GameAction action)
         {
             action.Id = Guid.NewGuid();
             agent.QueuedActions.Enqueue(action);

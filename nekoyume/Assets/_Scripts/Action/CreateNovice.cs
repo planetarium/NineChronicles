@@ -10,7 +10,7 @@ using Nekoyume.Model;
 namespace Nekoyume.Action
 {
     [ActionType("create_novice")]
-    public class CreateNovice : ActionBase
+    public class CreateNovice : GameAction
     {
         public string name;
         public const int DefaultId = 100010;
