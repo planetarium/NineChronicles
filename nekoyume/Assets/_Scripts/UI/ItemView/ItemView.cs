@@ -37,7 +37,7 @@ namespace Nekoyume.UI.ItemView
                 throw new FailedToLoadResourceException<Sprite>();
             }
 
-            iconImage.sprite = sprite;
+            iconImage.overrideSprite = sprite;
             iconImage.SetNativeSize();
             iconImage.enabled = true;
         }

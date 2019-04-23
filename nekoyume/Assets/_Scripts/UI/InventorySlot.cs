@@ -28,7 +28,7 @@ namespace Nekoyume.UI
         public void Set(ItemBase item, int count)
         {
             Item = item;
-            Icon.sprite = ItemBase.GetSprite(item);
+            Icon.overrideSprite = ItemBase.GetSprite(item);
             Icon.SetNativeSize();
             Icon.gameObject.SetActive(true);
 

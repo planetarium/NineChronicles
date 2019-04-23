@@ -15,7 +15,7 @@ namespace Nekoyume.UI
 
         public void Equip(SelectedItem selected)
         {
-            icon.sprite = selected.icon.sprite;
+            icon.overrideSprite = selected.icon.sprite;
             icon.gameObject.SetActive(true);
             icon.SetNativeSize();
             item = selected.item;
@@ -37,7 +37,7 @@ namespace Nekoyume.UI
         public void Set(Equipment equipment)
         {
             var sprite = ItemBase.GetSprite(equipment);
-            icon.sprite = sprite;
+            icon.overrideSprite = sprite;
             icon.gameObject.SetActive(true);
             icon.SetNativeSize();
             item = equipment;

@@ -50,7 +50,7 @@ namespace Nekoyume.UI
 
         public void SetIcon(Sprite sprite)
         {
-            icon.sprite = sprite;
+            icon.overrideSprite = sprite;
             icon.SetNativeSize();
             icon.enabled = true;
         }
