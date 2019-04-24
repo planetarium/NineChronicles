@@ -1,4 +1,5 @@
 using System.Collections;
+using Nekoyume.Manager;
 using Nekoyume.Action;
 using Nekoyume.Game.Controller;
 using UnityEngine;
@@ -48,6 +49,7 @@ namespace Nekoyume.UI
             Find<QuestPreparation>()?.Show();
             Find<Gold>()?.Show();
             AudioController.PlayClick();
+            AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ClickMainBattle);
         }
 
         public void ShopClick()
@@ -58,6 +60,7 @@ namespace Nekoyume.UI
             Find<Shop>().Show();
             Find<Gold>()?.Show();
             AudioController.PlayClick();
+            AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ClickMainShop);
         }
 
         public void CombinationClick()
@@ -68,6 +71,7 @@ namespace Nekoyume.UI
             Find<Combination>()?.Show();
             Find<Gold>()?.Show();
             AudioController.PlayClick();
+            AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ClickMainCombination);
         }
 
         public override void Show()

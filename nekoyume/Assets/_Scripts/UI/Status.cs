@@ -1,7 +1,9 @@
+using Nekoyume.Manager;
 using Nekoyume.Action;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using UnityEngine;
+using UnityEngine.Analytics;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
@@ -80,16 +82,26 @@ namespace Nekoyume.UI
         public void ToggleInventory()
         {
             Find<StatusDetail>().Close();
-            Find<Inventory>().Toggle();
-            
+            if (Find<Inventory>().Toggle())
+            {
+                AnalyticsManager.instance.OnEvent(Find<Menu>().gameObject.activeSelf
+                    ? AnalyticsManager.EventName.ClickMainInventory
+                    : AnalyticsManager.EventName.ClickBattleInventory);
+            }
+
             AudioController.PlayClick();
         }
 
         public void ToggleStatus()
         {
             Find<Inventory>().Close();
-            Find<StatusDetail>().Toggle();
-            
+            if (Find<StatusDetail>().Toggle())
+            {
+                AnalyticsManager.instance.OnEvent(Find<Menu>().gameObject.activeSelf
+                    ? AnalyticsManager.EventName.ClickMainEquipment
+                    : AnalyticsManager.EventName.ClickBattleEquipment);
+            }
+
             AudioController.PlayClick();
         }
 
@@ -102,6 +114,7 @@ namespace Nekoyume.UI
                     toggle.isOn = false;
                 }
             }
+
             base.Close();
         }
 

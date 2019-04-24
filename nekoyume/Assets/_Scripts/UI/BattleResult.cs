@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Nekoyume.Manager;
 using Nekoyume.Action;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
@@ -44,6 +45,15 @@ namespace Nekoyume.UI
         {
             StartCoroutine(CoSubmit());
             AudioController.PlayClick();
+            
+            if (result == BattleLog.Result.Win)
+            {
+                AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ClickBattleResultNext);
+            }
+            else
+            {
+                AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ClickBattleResultRetry);
+            }
         }
 
         private IEnumerator CoSubmit()
@@ -90,6 +100,7 @@ namespace Nekoyume.UI
             Game.Event.OnRoomEnter.Invoke();
             Close();
             AudioController.PlayClick();
+            AnalyticsManager.instance.BattleLeave();
         }
 
         public void Show(BattleLog.Result battleResult, bool repeat)
@@ -112,6 +123,7 @@ namespace Nekoyume.UI
                 AudioController.instance.PlayMusic(AudioController.MusicCode.Win, 0.3f);
                 _battleWinVfx = VfxController.instance.Create<VfxBattleWin>(ActionCamera.instance.transform, VfxBattleWinOffset);
                 _battleWinVfx.Play(10f);
+                AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ActionBattleWin);
             }
             else
             {
@@ -123,6 +135,7 @@ namespace Nekoyume.UI
                 _stage.repeatStage = _repeat;
 
                 AudioController.instance.PlayMusic(AudioController.MusicCode.Lose);
+                AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ActionBattleLose);
             }
 
             base.Show();
@@ -169,7 +182,8 @@ namespace Nekoyume.UI
                 if (_timer <= 0)
                 {
                     _repeat = false;
-                    SubmitClick();
+                    StartCoroutine(CoSubmit());
+                    AnalyticsManager.instance.BattleContinueAutomatically();
                 }
             }
         }
