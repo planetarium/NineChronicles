@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using Nekoyume.Game.Factory;
 using Nekoyume.Model;
 using UnityEngine;
@@ -84,7 +83,7 @@ namespace Nekoyume.Game.Trigger
         private IEnumerator CoSpawnMonster(Monster monster, Vector2 pos, Character.Player player)
         {
             _factory.Create(monster, pos, player);
-            yield return new WaitForSeconds(0.1f);
+            yield return new WaitForSeconds(UnityEngine.Random.Range(0.0f, 0.2f));
         }
 
         public class InvalidWaveException: Exception
