@@ -28,7 +28,7 @@ namespace Nekoyume.Game
         public GameObject dummy;
         public float loadingSpeed = 2.0f;
         public Character.Player selectedPlayer;
-        private readonly Vector2 _stageStartPosition = new Vector2(-6.0f, -1.2f);
+        private readonly float stageStartPosition = -1.2f;
         public readonly Vector2 QuestPreparationPosition = new Vector2(1.65f, -1.3f);
         public readonly Vector2 RoomPosition = new Vector2(-2.66f, -1.85f);
         public bool repeatStage;
@@ -173,8 +173,6 @@ namespace Nekoyume.Game
 
         private IEnumerator PlayAsync(BattleLog log)
         {
-            _objectPool.ReleaseAll();
-            GetPlayer(_stageStartPosition);
             yield return StartCoroutine(CoStageEnter(log.stage));
             foreach (EventBase e in log)
             {
@@ -234,47 +232,21 @@ namespace Nekoyume.Game
 
         private IEnumerator CoSlideBg()
         {
-            var roomPlayer = RunPlayer();
-            dummy.transform.position = roomPlayer.transform.position;
+            RunPlayer();
             while (Widget.Find<BattleResult>().IsActive())
             {
-                UpdateDummyPosition(roomPlayer, ActionCamera.instance);
                 yield return new WaitForEndOfFrame();
             }
-        }
-
-        private void UpdateDummyPosition(Character.Player player, ActionCamera cam)
-        {
-            if (ReferenceEquals(cam, null)) throw new ArgumentNullException(nameof(cam));
-            Vector2 position = dummy.transform.position;
-            position.x += Time.deltaTime * player.Speed;
-            dummy.transform.position = position;
-            cam.ChaseX(dummy.transform);
         }
 
         public IEnumerator CoSpawnPlayer(Model.Player character)
         {
             var status = Widget.Find<Status>();
-            var pos = _camera.ScreenToWorldPoint(status.transform.position);
-            var playerPos = _stageStartPosition;
-            var playerCharacter = RunPlayer(playerPos);
-            playerPos.x = pos.x - 6.0f;
-            playerCharacter.transform.position = playerPos;
+            var playerCharacter = RunPlayer();
             playerCharacter.Init(character);
             var player = playerCharacter.gameObject;
             status.UpdatePlayer(player);
             ActionCamera.instance.ChaseX(player.transform);
-            while (true)
-            {
-                Debug.Log($"pos: {pos.x}");
-                Debug.Log($"player: {player.transform.position.x}");
-                if (pos.x <= player.transform.position.x)
-                {
-                    break;
-                }
-
-                yield return new WaitForEndOfFrame();
-            }
             yield return null;
         }
 
@@ -378,7 +350,6 @@ namespace Nekoyume.Game
         {
             var player = GetPlayer();
             player.StartRun();
-            player.RunSpeed *= loadingSpeed;
             return player;
         }
 
@@ -391,8 +362,11 @@ namespace Nekoyume.Game
 
         public Character.Player ReadyPlayer()
         {
-            var player = GetPlayer(_stageStartPosition);
-            player.RunSpeed = 0.0f;
+            var player = GetPlayer();
+            var playerTransform = player.transform;
+            Vector2 position = playerTransform.position;
+            position.y = stageStartPosition;
+            playerTransform.position = position;
             return player;
         }
     }

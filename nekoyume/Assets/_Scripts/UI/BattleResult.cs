@@ -69,8 +69,6 @@ namespace Nekoyume.UI
                 _battleWinVfx.Stop();
             }
 
-            ActionCamera.instance.Idle();
-
             var player = _stage.ReadyPlayer();
             var currentId = ActionManager.instance.battleLog?.id;
             var stage = _stage.repeatStage ? _stage.id : ActionManager.instance.Avatar.WorldStage;
