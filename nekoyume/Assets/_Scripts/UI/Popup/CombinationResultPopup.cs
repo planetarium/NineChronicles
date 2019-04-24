@@ -155,7 +155,7 @@ namespace Nekoyume.UI
                 var image = resultItemElementalImages[i];
                 if (i < count)
                 {
-                    image.sprite = sprite;
+                    image.overrideSprite = sprite;
                     image.SetNativeSize();
                     image.gameObject.SetActive(true);
                     

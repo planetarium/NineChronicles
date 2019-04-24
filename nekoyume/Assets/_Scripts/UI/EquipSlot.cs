@@ -8,22 +8,9 @@ namespace Nekoyume.UI
     {
         public GameObject button;
         public Image icon;
-        public ItemBase item;
+        public ItemUsable item;
         public ItemBase.ItemType type;
 
-
-
-        public void Equip(SelectedItem selected)
-        {
-            icon.sprite = selected.icon.sprite;
-            icon.gameObject.SetActive(true);
-            icon.SetNativeSize();
-            item = selected.item;
-            if (button != null)
-            {
-                button.gameObject.SetActive(true);
-            }
-        }
         public void Unequip()
         {
             icon.gameObject.SetActive(false);
@@ -34,10 +21,10 @@ namespace Nekoyume.UI
             }
         }
 
-        public void Set(Equipment equipment)
+        public void Set(ItemUsable equipment)
         {
             var sprite = ItemBase.GetSprite(equipment);
-            icon.sprite = sprite;
+            icon.overrideSprite = sprite;
             icon.gameObject.SetActive(true);
             icon.SetNativeSize();
             item = equipment;
