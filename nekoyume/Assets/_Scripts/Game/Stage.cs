@@ -287,25 +287,22 @@ namespace Nekoyume.Game
             if (character is Model.Player)
             {
                 attacker = player;
-                defender = enemies.FirstOrDefault(e => e.id == target.id);
-                if (!player.TargetInRange(defender))
-                {
-                    attacker.StartRun();
-                }
-
-                yield return new WaitUntil(() => player.TargetInRange(defender));
+                defender = enemies.First(e => e.id == target.id);
             }
             else
             {
-                attacker = enemies.FirstOrDefault(e => e.id == character.id);
+                attacker = enemies.First(e => e.id == character.id);
                 defender = player;
             }
 
-            if (attacker != null && defender != null)
+            if (!attacker.TargetInRange(defender))
             {
-                yield return StartCoroutine(attacker.CoAttack(atk, defender, critical));
-
+                attacker.StartRun();
+                defender.StartRun();
             }
+
+            yield return new WaitUntil(() => attacker.TargetInRange(defender));
+            yield return StartCoroutine(attacker.CoAttack(atk, defender, critical));
             yield return new WaitForSeconds(AttackDelay);
         }
 

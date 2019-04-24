@@ -58,7 +58,6 @@ namespace Nekoyume.Game.Character
         }
 
         public Item.Inventory Inventory;
-        private float _range = 1.2f;
 
         protected override void Awake()
         {
@@ -67,9 +66,6 @@ namespace Nekoyume.Game.Character
             _anim = GetComponentInChildren<Animator>();
             SetAnimatorSpeed(AnimatorSpeed);
             
-            Event.OnAttackEnd.AddListener(AttackEnd);
-            Event.OnHitEnd.AddListener(HitEnd);
-            Event.OnDieEnd.AddListener(DieEnd);
             Inventory = new Item.Inventory();
             
             _targetTag = Tag.Enemy;
@@ -157,9 +153,6 @@ namespace Nekoyume.Game.Character
             Instantiate(origin, gameObject.transform);
 
         }
-
-        public bool TargetInRange(CharacterBase target) =>
-            _range > Mathf.Abs(gameObject.transform.position.x - target.transform.position.x);
 
         public IEnumerator CoGetExp(long exp)
         {

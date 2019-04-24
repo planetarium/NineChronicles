@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Linq;
 using DG.Tweening;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Vfx;
@@ -15,20 +16,27 @@ namespace Nekoyume.Game.Character
         public int DataId = 0;
         public Guid id;
 
+        private Player _player;
+
         protected override Vector3 _hpBarOffset => _castingBarOffset + HpBarOffset;
 
         protected override Vector3 _castingBarOffset
         {
             get
             {
-                var spriteRenderer = GetComponentInChildren<Renderer>();
-                var x = spriteRenderer.bounds.min.x - transform.position.x + spriteRenderer.bounds.size.x / 2;
+                var spriteRenderer = GetComponentsInChildren<Renderer>()
+                    .OrderByDescending(r => r.transform.position.y)
+                    .First();
                 var y = spriteRenderer.bounds.max.y - transform.position.y;
+                var body = GetComponentsInChildren<Transform>().First(g => g.name == "body");
+                var bodyRenderer = body.GetComponent<Renderer>();
+                var x = bodyRenderer.bounds.min.x - transform.position.x + bodyRenderer.bounds.size.x / 2;
                 return new Vector3(x, y, 0.0f);
+
             }
         }
 
-        public override float Speed => 0.0f;
+        public override float Speed => -1.8f;
 
         public override IEnumerator CoProcessDamage(int dmg, bool critical)
         {
@@ -73,10 +81,13 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        public void Init(Model.Monster spawnCharacter)
+        public void Init(Model.Monster spawnCharacter, Player player)
         {
+            _player = player;
             _hpBarOffset.Set(-0.0f, -0.11f, 0.0f);
             _castingBarOffset.Set(-0.0f, -0.33f, 0.0f);
+            _anim = GetComponentInChildren<Animator>();
+            SetAnimatorSpeed(AnimatorSpeed);
             InitStats(spawnCharacter);
             id = spawnCharacter.id;
             StartRun();
@@ -104,5 +115,11 @@ namespace Nekoyume.Game.Character
             // Fix me.
             // 이후 몬스터 별 공격 음이 재생된다.
         }
+
+        protected override bool CanRun()
+        {
+            return base.CanRun() && !TargetInRange(_player);
+        }
+
     }
 }

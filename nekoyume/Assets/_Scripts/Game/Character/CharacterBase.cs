@@ -50,6 +50,10 @@ namespace Nekoyume.Game.Character
         {
             _anim = GetComponent<Animator>();
             SetAnimatorSpeed(AnimatorSpeed);
+
+            Event.OnAttackEnd.AddListener(AttackEnd);
+            Event.OnHitEnd.AddListener(HitEnd);
+            Event.OnDieEnd.AddListener(DieEnd);
         }
 
         protected void SetAnimatorSpeed(float speed)
@@ -147,6 +151,11 @@ namespace Nekoyume.Game.Character
             {
                 _hpBar.UpdatePosition(gameObject, _hpBarOffset);
             }
+            if (_anim == null)
+            {
+                _anim = GetComponentInChildren<Animator>();
+                SetAnimatorSpeed(AnimatorSpeed);
+            }
         }
 
         public int CalcAtk()
@@ -235,6 +244,10 @@ namespace Nekoyume.Game.Character
         {
             attackEnd = false;
             RunSpeed = 0.0f;
+            if (target.CanRun())
+            {
+                target.StopRun();
+            }
             if (_anim != null)
             {
                 _anim.SetTrigger("Attack");
@@ -268,6 +281,9 @@ namespace Nekoyume.Game.Character
             Root = new Root();
             Root.OpenBranch(
                 BT.Selector().OpenBranch(
+                    BT.If(() => !CanRun()).OpenBranch(
+                        BT.Call(StopRun)
+                    ),
                     BT.If(CanRun).OpenBranch(
                         BT.Call(Run)
                     )
@@ -284,24 +300,36 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        private bool CanRun()
+        protected virtual bool CanRun()
         {
             return !(Mathf.Approximately(RunSpeed, 0f));
         }
 
-        protected void AttackEnd()
+        private void AttackEnd(CharacterBase character)
         {
-            attackEnd = true;
+            if (ReferenceEquals(character, this))
+                attackEnd = true;
         }
 
-        protected void HitEnd()
+        private void HitEnd(CharacterBase character)
         {
-            hitEnd = true;
+            if (ReferenceEquals(character, this))
+                hitEnd = true;
         }
 
-        protected void DieEnd()
+        private void DieEnd(CharacterBase character)
         {
-            dieEnd = true;
+            if (ReferenceEquals(character, this))
+                dieEnd = true;
+        }
+
+        public bool TargetInRange(CharacterBase target) =>
+            Range > Mathf.Abs(gameObject.transform.position.x - target.transform.position.x);
+
+        private void StopRun()
+        {
+            RunSpeed = 0.0f;
+            _anim.SetBool("Run", false);
         }
     }
 }

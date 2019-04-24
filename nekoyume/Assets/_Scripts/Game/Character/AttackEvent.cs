@@ -17,17 +17,20 @@ namespace Nekoyume.Game.Character
         
         public void AttackEnd()
         {
-            Event.OnAttackEnd.Invoke();
+            var character = GetComponentInParent<CharacterBase>();
+            Event.OnAttackEnd.Invoke(character);
         }
 
         public void HitEnd()
         {
-            Event.OnHitEnd.Invoke();
+            var character = GetComponentInParent<CharacterBase>();
+            Event.OnHitEnd.Invoke(character);
         }
 
         public void DieEnd()
         {
-            Event.OnDieEnd.Invoke();
+            var character = GetComponentInParent<CharacterBase>();
+            Event.OnDieEnd.Invoke(character);
         }
     }
 }
