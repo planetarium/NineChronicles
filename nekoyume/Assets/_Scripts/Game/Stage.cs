@@ -298,6 +298,7 @@ namespace Nekoyume.Game
             if (!attacker.TargetInRange(defender))
             {
                 attacker.StartRun();
+                defender.StartRun();
             }
 
             yield return new WaitUntil(() => attacker.TargetInRange(defender));

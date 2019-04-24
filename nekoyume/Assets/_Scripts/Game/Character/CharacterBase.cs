@@ -244,6 +244,10 @@ namespace Nekoyume.Game.Character
         {
             attackEnd = false;
             RunSpeed = 0.0f;
+            if (target.CanRun())
+            {
+                target.StopRun();
+            }
             if (_anim != null)
             {
                 _anim.SetTrigger("Attack");
