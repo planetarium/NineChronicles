@@ -17,7 +17,6 @@ namespace Nekoyume.Game.Factory
                 throw new NotFoundComponentException<ObjectPool>();
             }
 
-//            var go = objectPool.Get("Enemy", true, position);
             var enemy = objectPool.Get<Enemy>(position);
             if (ReferenceEquals(enemy, null))
             {
