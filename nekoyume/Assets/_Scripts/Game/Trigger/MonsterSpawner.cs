@@ -1,6 +1,8 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Nekoyume.Game.Factory;
 using Nekoyume.Model;
 using UnityEngine;
@@ -16,10 +18,12 @@ namespace Nekoyume.Game.Trigger
         private Stage _stage;
         private int _stageId;
         private int _wave;
-        private const float SpawnOffset = 2.8f;
+        private EnemyFactory _factory;
+        private const float SpawnOffset = 6.0f;
 
         private void Start()
         {
+            _factory = GetComponentInParent<EnemyFactory>();
             _stage = GetComponentInParent<Stage>();
         }
 
@@ -49,15 +53,14 @@ namespace Nekoyume.Game.Trigger
         public void SetData(int stageId, List<Monster> monsters)
         {
             _stageId = stageId;
-            SpawnWave(monsters);
+            StartCoroutine(CoSpawnWave(monsters));
         }
 
-        private void SpawnWave(List<Monster> monsters)
+        private IEnumerator CoSpawnWave(List<Monster> monsters)
         {
             for (var index = 0; index < monsters.Count; index++)
             {
                 var monster = monsters[index];
-                var factory = GetComponentInParent<EnemyFactory>();
                 var player = _stage.GetComponentInChildren<Character.Player>();
                 var offsetX = player.transform.position.x + SpawnOffset;
                 {
@@ -73,9 +76,15 @@ namespace Nekoyume.Game.Trigger
                     var pos = new Vector2(
                         point.x + offsetX,
                         point.y);
-                    factory.Create(monster, pos, player);
+                    yield return StartCoroutine(CoSpawnMonster(monster, pos, player));
                 }
             }
+        }
+
+        private IEnumerator CoSpawnMonster(Monster monster, Vector2 pos, Character.Player player)
+        {
+            _factory.Create(monster, pos, player);
+            yield return new WaitForSeconds(0.1f);
         }
 
         public class InvalidWaveException: Exception
