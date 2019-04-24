@@ -82,7 +82,9 @@ namespace Nekoyume.UI
         public void ToggleInventory()
         {
             Find<StatusDetail>().Close();
-            if (Find<Inventory>().Toggle())
+            var inventory = Find<Inventory>();
+            inventory.Toggle();
+            if (inventory.IsActive())
             {
                 AnalyticsManager.instance.OnEvent(Find<Menu>().gameObject.activeSelf
                     ? AnalyticsManager.EventName.ClickMainInventory
@@ -95,7 +97,9 @@ namespace Nekoyume.UI
         public void ToggleStatus()
         {
             Find<Inventory>().Close();
-            if (Find<StatusDetail>().Toggle())
+            var statusDetail = Find<StatusDetail>();
+            statusDetail.Toggle();
+            if (statusDetail.IsActive())
             {
                 AnalyticsManager.instance.OnEvent(Find<Menu>().gameObject.activeSelf
                     ? AnalyticsManager.EventName.ClickMainEquipment
