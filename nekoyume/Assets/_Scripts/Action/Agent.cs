@@ -70,7 +70,11 @@ namespace Nekoyume.Action
 # if UNITY_EDITOR
             var policy = new DebugPolicy();
 # else
-            var policy = new BlockPolicy<PolymorphicAction<ActionBase>>(BlockInterval);
+            var policy = new BlockPolicy<PolymorphicAction<ActionBase>>(
+                BlockInterval,
+                1024,
+                128
+            );
 #endif
             this._agentPrivateKey = agentPrivateKey;
             _blocks = new BlockChain<PolymorphicAction<ActionBase>>(
@@ -278,7 +282,7 @@ namespace Nekoyume.Action
                 return null;
             }
 
-            public int GetNextBlockDifficulty(IReadOnlyList<Block<PolymorphicAction<ActionBase>>> blocks)
+            public long GetNextBlockDifficulty(IReadOnlyList<Block<PolymorphicAction<ActionBase>>> blocks)
             {
                 Thread.Sleep(SleepInterval);
                 return blocks.Empty() ? 0 : 1;
