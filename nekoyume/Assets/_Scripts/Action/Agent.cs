@@ -70,11 +70,15 @@ namespace Nekoyume.Action
 # if UNITY_EDITOR
             var policy = new DebugPolicy();
 # else
+            // FIXME 마이닝 속도가 안정화 될때까지 난이도를 올리지 않습니다.
+            var policy = new DebugPolicy();
+            /*
             var policy = new BlockPolicy<PolymorphicAction<ActionBase>>(
                 BlockInterval,
                 0x2000,
                 256
             );
+             */
 #endif
             this._agentPrivateKey = agentPrivateKey;
             _blocks = new BlockChain<PolymorphicAction<ActionBase>>(
