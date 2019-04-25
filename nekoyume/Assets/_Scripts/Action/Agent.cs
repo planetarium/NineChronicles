@@ -72,8 +72,8 @@ namespace Nekoyume.Action
 # else
             var policy = new BlockPolicy<PolymorphicAction<ActionBase>>(
                 BlockInterval,
-                1024,
-                128
+                0x2000,
+                256
             );
 #endif
             this._agentPrivateKey = agentPrivateKey;
