@@ -39,17 +39,7 @@ namespace Nekoyume.Game.Character
 
         private const int DefaultSetId = 101000;
 
-        protected override Vector3 _castingBarOffset
-        {
-            get
-            {
-                var face = GetComponentsInChildren<Transform>().First(g => g.name == "face");
-                var faceRenderer = face.GetComponent<Renderer>();
-                var x = faceRenderer.bounds.min.x - transform.position.x + faceRenderer.bounds.size.x / 2;
-                var y = faceRenderer.bounds.max.y - transform.position.y;
-                return new Vector3(x, y, 0.0f);
-            }
-        }
+        protected override Vector3 _castingBarOffset => animator.GetHUDPosition();
 
         public override WeightType WeightType
         {
@@ -63,8 +53,8 @@ namespace Nekoyume.Game.Character
         {
             base.Awake();
             
-            _anim = GetComponentInChildren<Animator>();
-            SetAnimatorSpeed(AnimatorSpeed);
+            animator = new PlayerAnimator(this);
+            animator.SetTimeScale(AnimatorTimeScale);
             
             Inventory = new Item.Inventory();
             
@@ -105,15 +95,11 @@ namespace Nekoyume.Game.Character
         {
             base.Update();
 
-            // Reference.
-            // if (ReferenceEquals(_anim, null)) 이 라인일 때와 if (_anim == null) 이 라인일 때의 결과가 달라서 주석을 남겨뒀어요.
-            // 아마 전자는 포인터가 가리키는 실제 값을 검사하는 것이고, 후자는 _anim의 값을 검사하는 것 같아요.
-            // if (ReferenceEquals(_anim, null))
-            if (_anim == null)
-            {
-                _anim = GetComponentInChildren<Animator>();
-                SetAnimatorSpeed(AnimatorSpeed);
-            }
+//            if (!animator.AnimatorValidation())
+//            {
+//                animator.ResetAnimator();
+//                animator.SetTimeScale(AnimatorTimeScale);
+//            }
         }
 
         public void Init(Model.Player character)
@@ -141,17 +127,12 @@ namespace Nekoyume.Game.Character
 
         public void UpdateSet(SetItem item)
         {
+            Destroy(animator.target);
+            
             var itemId = item?.Data.resourceId ?? DefaultSetId;
-            var prevAnim = gameObject.GetComponentInChildren<Animator>(true);
-            if (prevAnim)
-            {
-                Destroy(prevAnim.gameObject);
-            }
-
-            var origin = Resources.Load<GameObject>($"Prefab/{itemId}");
-
-            Instantiate(origin, gameObject.transform);
-
+            var origin = Resources.Load<GameObject>($"Character/Player/{itemId}");
+            var go = Instantiate(origin, gameObject.transform);
+            animator.ResetTarget(go);
         }
 
         public IEnumerator CoGetExp(long exp)

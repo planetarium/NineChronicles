@@ -14,7 +14,7 @@ namespace Nekoyume.Game.Character
 {
     public abstract class CharacterBase : MonoBehaviour
     {
-        protected const float AnimatorSpeed = 1.5f;
+        protected const float AnimatorTimeScale = 1.5f;
         
         public Root Root;
         public int HP = 0;
@@ -27,7 +27,6 @@ namespace Nekoyume.Game.Character
         public float RunSpeed = 0.0f;
 
         public int HPMax { get; protected set; } = 0;
-        protected internal Animator _anim = null;
         protected ProgressBar _hpBar = null;
         protected virtual Vector3 _hpBarOffset => new Vector3();
         protected ProgressBar _castingBar = null;
@@ -46,22 +45,13 @@ namespace Nekoyume.Game.Character
         public bool dieEnd { get; private set; }
         public abstract float Speed { get; }
 
+        public ICharacterAnimator animator { get; protected set; }
+
         protected virtual void Awake()
         {
-            _anim = GetComponent<Animator>();
-            SetAnimatorSpeed(AnimatorSpeed);
-
             Event.OnAttackEnd.AddListener(AttackEnd);
             Event.OnHitEnd.AddListener(HitEnd);
             Event.OnDieEnd.AddListener(DieEnd);
-        }
-
-        protected void SetAnimatorSpeed(float speed)
-        {
-            if (_anim != null)
-            {
-                _anim.speed = speed;    
-            }
         }
 
         protected virtual void OnDisable()
@@ -114,13 +104,11 @@ namespace Nekoyume.Game.Character
         {
             if (Rooted)
             {
-                _anim.SetBool("Run", false);
+                animator.Idle();
                 return;
             }
-            if (_anim != null)
-            {
-                _anim.SetBool("Run", true);
-            }
+            
+            animator.Run();
 
             Vector2 position = transform.position;
             position.x += Time.deltaTime * RunSpeed * RunSpeedMultiplier;
@@ -134,12 +122,10 @@ namespace Nekoyume.Game.Character
 
         protected IEnumerator Dying()
         {
-            if (_anim != null)
-            {
-                dieEnd = false;
-                _anim.Play("Die");
-                yield return new WaitUntil(() => dieEnd);
-            }
+//            dieEnd = false;
+            animator.Die();
+//            yield return new WaitUntil(() => dieEnd);
+            yield return new WaitForSeconds(1f);
 
             OnDead();
         }
@@ -151,11 +137,12 @@ namespace Nekoyume.Game.Character
             {
                 _hpBar.UpdatePosition(gameObject, _hpBarOffset);
             }
-            if (_anim == null)
-            {
-                _anim = GetComponentInChildren<Animator>();
-                SetAnimatorSpeed(AnimatorSpeed);
-            }
+            
+//            if (!animator.AnimatorValidation())
+//            {
+//                animator.ResetAnimator();
+//                animator.SetTimeScale(AnimatorTimeScale);
+//            }
         }
 
         public int CalcAtk()
@@ -213,18 +200,15 @@ namespace Nekoyume.Game.Character
 
             HP -= dmg;
 
-            if (_anim != null)
+            if (HP > 0)
             {
-                if (HP > 0)
-                {
-                    hitEnd = false;
-                    _anim.Play("Hit");
-                    yield return new WaitUntil(() => hitEnd);    
-                }
-                else
-                {
-                    StartCoroutine(Dying());
-                }
+//                hitEnd = false;
+                animator.Hit();
+//                yield return new WaitUntil(() => hitEnd);
+            }
+            else
+            {
+                StartCoroutine(Dying());
             }
 
             UpdateHpBar();
@@ -232,11 +216,7 @@ namespace Nekoyume.Game.Character
 
         protected virtual void OnDead()
         {
-            if (_anim != null)
-            {
-                _anim.ResetTrigger("Attack");
-                _anim.SetBool("Run", false);
-            }
+            animator.Idle();
             gameObject.SetActive(false);
         }
 
@@ -244,15 +224,14 @@ namespace Nekoyume.Game.Character
         {
             attackEnd = false;
             RunSpeed = 0.0f;
+
             if (target.CanRun())
             {
                 target.StopRun();
             }
-            if (_anim != null)
-            {
-                _anim.SetTrigger("Attack");
-                _anim.SetBool("Run", false);
-            }
+            
+            animator.Attack();
+
             yield return new WaitUntil(() => attackEnd);
 
             if (target != null)
@@ -329,7 +308,7 @@ namespace Nekoyume.Game.Character
         private void StopRun()
         {
             RunSpeed = 0.0f;
-            _anim.SetBool("Run", false);
+            animator.Idle();
         }
     }
 }

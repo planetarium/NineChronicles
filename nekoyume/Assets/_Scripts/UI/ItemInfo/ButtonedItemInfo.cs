@@ -28,7 +28,7 @@ namespace Nekoyume.UI.ItemInfo
 
         private void OnDestroy()
         {
-            _disposables.ForEach(d => d.Dispose());
+            _disposables.DisposeAllAndClear();
         }
 
         #endregion
@@ -45,7 +45,7 @@ namespace Nekoyume.UI.ItemInfo
 
             base.SetData(data);
             
-            _disposables.ForEach(d => d.Dispose());
+            _disposables.DisposeAllAndClear();
 
             _data.ButtonEnabled.Subscribe(SetButtonActive).AddTo(_disposables);
             _data.ButtonText.Subscribe(SetButtonText).AddTo(_disposables);
@@ -80,7 +80,7 @@ namespace Nekoyume.UI.ItemInfo
         {
             base.Clear();
             
-            _disposables.ForEach(d => d.Dispose());
+            _disposables.DisposeAllAndClear();
 
             UpdateView();
         }

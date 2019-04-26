@@ -20,21 +20,7 @@ namespace Nekoyume.Game.Character
 
         protected override Vector3 _hpBarOffset => _castingBarOffset + HpBarOffset;
 
-        protected override Vector3 _castingBarOffset
-        {
-            get
-            {
-                var spriteRenderer = GetComponentsInChildren<Renderer>()
-                    .OrderByDescending(r => r.transform.position.y)
-                    .First();
-                var y = spriteRenderer.bounds.max.y - transform.position.y;
-                var body = GetComponentsInChildren<Transform>().First(g => g.name == "body");
-                var bodyRenderer = body.GetComponent<Renderer>();
-                var x = bodyRenderer.bounds.min.x - transform.position.x + bodyRenderer.bounds.size.x / 2;
-                return new Vector3(x, y, 0.0f);
-
-            }
-        }
+        protected override Vector3 _castingBarOffset => animator.GetHUDPosition();
 
         public override float Speed => -1.8f;
 
@@ -86,8 +72,6 @@ namespace Nekoyume.Game.Character
             _player = player;
             _hpBarOffset.Set(-0.0f, -0.11f, 0.0f);
             _castingBarOffset.Set(-0.0f, -0.33f, 0.0f);
-            _anim = GetComponentInChildren<Animator>();
-            SetAnimatorSpeed(AnimatorSpeed);
             InitStats(spawnCharacter);
             id = spawnCharacter.id;
             StartRun();
@@ -106,6 +90,8 @@ namespace Nekoyume.Game.Character
         protected override void Awake()
         {
             base.Awake();
+            
+            animator = new EnemyAnimator(this);
             
             _targetTag = Tag.Player;
         }

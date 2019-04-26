@@ -31,7 +31,8 @@ namespace Nekoyume.Game.Factory
 //            var animator = objectPool.Get(spawnCharacter.data.Id.ToString(), true);
             var origin = Resources.Load<GameObject>($"Prefab/{spawnCharacter.data.characterResource}") ??
                          Resources.Load<GameObject>($"Prefab/{DefaultResource}");
-            Instantiate(origin, enemy.transform);
+            var go = Instantiate(origin, enemy.transform);
+            enemy.animator.ResetTarget(go);
             enemy.Init(spawnCharacter, player);
 
             // y좌표값에 따른 정렬 처리

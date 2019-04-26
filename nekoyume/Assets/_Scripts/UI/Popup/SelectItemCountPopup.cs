@@ -42,7 +42,7 @@ namespace Nekoyume.UI
 
         private void OnDestroy()
         {
-            _disposables.ForEach(d => d.Dispose());
+            _disposables.DisposeAllAndClear();
         }
 
         #endregion
@@ -68,7 +68,7 @@ namespace Nekoyume.UI
                 return;
             }
             
-            _disposables.ForEach(d => d.Dispose());
+            _disposables.DisposeAllAndClear();
 
             _data = data;
             _data.Count.Subscribe(SetCount)
@@ -117,7 +117,7 @@ namespace Nekoyume.UI
 
         public void Clear()
         {
-            _disposables.ForEach(d => d.Dispose());
+            _disposables.DisposeAllAndClear();
             
             _data = null;
             
