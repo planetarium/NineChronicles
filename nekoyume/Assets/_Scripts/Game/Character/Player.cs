@@ -5,7 +5,6 @@ using System.Linq;
 using Anima2D;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Controller;
-using Nekoyume.Game.Factory;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Vfx;
 using Nekoyume.Manager;
@@ -145,13 +144,17 @@ namespace Nekoyume.Game.Character
             var prevAnim = gameObject.GetComponentInChildren<Animator>(true);
             if (prevAnim)
             {
-                Destroy(prevAnim.gameObject);
+                if (!prevAnim.name.Contains(itemId.ToString()))
+                {
+                    Destroy(prevAnim.gameObject);
+                }
             }
+            else
+            {
+                var origin = Resources.Load<GameObject>($"Prefab/{itemId}");
 
-            var origin = Resources.Load<GameObject>($"Prefab/{itemId}");
-
-            Instantiate(origin, gameObject.transform);
-
+                Instantiate(origin, gameObject.transform);
+            }
         }
 
         public IEnumerator CoGetExp(long exp)

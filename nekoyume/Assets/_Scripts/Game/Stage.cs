@@ -20,7 +20,7 @@ namespace Nekoyume.Game
 {
     public class Stage : MonoBehaviour, IStage
     {
-        private GameObject _background;
+        public GameObject background;
         public int id;
         private BattleLog _battleLog;
         private const float AttackDelay = 0.3f;
@@ -28,10 +28,11 @@ namespace Nekoyume.Game
         public GameObject dummy;
         public float loadingSpeed = 2.0f;
         public Character.Player selectedPlayer;
-        private readonly Vector2 _stageStartPosition = new Vector2(-6.0f, -1.2f);
+        private readonly float stageStartPosition = -1.2f;
         public readonly Vector2 QuestPreparationPosition = new Vector2(1.65f, -1.3f);
         public readonly Vector2 RoomPosition = new Vector2(-2.66f, -1.85f);
         public bool repeatStage;
+        public string zone;
         private PlayerFactory _factory;
         private MonsterSpawner _spawner;
         private Camera _camera;
@@ -139,12 +140,12 @@ namespace Nekoyume.Game
 
         public void LoadBackground(string prefabName, float fadeTime = 0.0f)
         {
-            if (!(ReferenceEquals(_background, null)))
+            if (background != null)
             {
-                if (_background.name.Equals(prefabName)) return;
+                if (background.name.Equals(prefabName)) return;
                 if (fadeTime > 0.0f)
                 {
-                    var sprites = _background.GetComponentsInChildren<SpriteRenderer>();
+                    var sprites = background.GetComponentsInChildren<SpriteRenderer>();
                     foreach (var sprite in sprites)
                     {
                         sprite.sortingOrder += 1;
@@ -152,15 +153,15 @@ namespace Nekoyume.Game
                     }
                 }
 
-                Destroy(_background, fadeTime);
-                _background = null;
+                Destroy(background, fadeTime);
+                background = null;
             }
 
             var resName = $"Prefab/Background/{prefabName}";
             var prefab = Resources.Load<GameObject>(resName);
             if (ReferenceEquals(prefab, null)) return;
-            _background = Instantiate(prefab, transform);
-            _background.name = prefabName;
+            background = Instantiate(prefab, transform);
+            background.name = prefabName;
         }
 
         public void Play(BattleLog log)
@@ -173,8 +174,6 @@ namespace Nekoyume.Game
 
         private IEnumerator PlayAsync(BattleLog log)
         {
-            _objectPool.ReleaseAll();
-            GetPlayer(_stageStartPosition);
             yield return StartCoroutine(CoStageEnter(log.stage));
             foreach (EventBase e in log)
             {
@@ -191,15 +190,14 @@ namespace Nekoyume.Game
             if (Tables.instance.Background.TryGetValue(stage, out data))
             {
                 id = stage;
+                zone = data.background;
                 ReadyPlayer();
-                var loadingScreen = Widget.Find<LoadingScreen>();
-                loadingScreen.Show();
 
-                LoadBackground(data.background, 3.0f);
+                LoadBackground(zone, 3.0f);
                 Widget.Find<Menu>().ShowWorld();
                 Widget.Find<Status>().SetStage(stage);
 
-                switch (data.background)
+                switch (zone)
                 {
                     case "zone_0_0":
                         AudioController.instance.PlayMusic(AudioController.MusicCode.StageGreen);
@@ -213,7 +211,6 @@ namespace Nekoyume.Game
                 }
                 
                 yield return new WaitForSeconds(1.5f);
-                loadingScreen.Close();
             }
         }
 
@@ -234,47 +231,21 @@ namespace Nekoyume.Game
 
         private IEnumerator CoSlideBg()
         {
-            var roomPlayer = RunPlayer();
-            dummy.transform.position = roomPlayer.transform.position;
+            RunPlayer();
             while (Widget.Find<BattleResult>().IsActive())
             {
-                UpdateDummyPosition(roomPlayer, ActionCamera.instance);
                 yield return new WaitForEndOfFrame();
             }
-        }
-
-        private void UpdateDummyPosition(Character.Player player, ActionCamera cam)
-        {
-            if (ReferenceEquals(cam, null)) throw new ArgumentNullException(nameof(cam));
-            Vector2 position = dummy.transform.position;
-            position.x += Time.deltaTime * player.Speed;
-            dummy.transform.position = position;
-            cam.ChaseX(dummy.transform);
         }
 
         public IEnumerator CoSpawnPlayer(Model.Player character)
         {
             var status = Widget.Find<Status>();
-            var pos = _camera.ScreenToWorldPoint(status.transform.position);
-            var playerPos = _stageStartPosition;
-            var playerCharacter = RunPlayer(playerPos);
-            playerPos.x = pos.x - 6.0f;
-            playerCharacter.transform.position = playerPos;
+            var playerCharacter = RunPlayer();
             playerCharacter.Init(character);
             var player = playerCharacter.gameObject;
             status.UpdatePlayer(player);
             ActionCamera.instance.ChaseX(player.transform);
-            while (true)
-            {
-                Debug.Log($"pos: {pos.x}");
-                Debug.Log($"player: {player.transform.position.x}");
-                if (pos.x <= player.transform.position.x)
-                {
-                    break;
-                }
-
-                yield return new WaitForEndOfFrame();
-            }
             yield return null;
         }
 
@@ -378,7 +349,6 @@ namespace Nekoyume.Game
         {
             var player = GetPlayer();
             player.StartRun();
-            player.RunSpeed *= loadingSpeed;
             return player;
         }
 
@@ -391,8 +361,11 @@ namespace Nekoyume.Game
 
         public Character.Player ReadyPlayer()
         {
-            var player = GetPlayer(_stageStartPosition);
-            player.RunSpeed = 0.0f;
+            var player = GetPlayer();
+            var playerTransform = player.transform;
+            Vector2 position = playerTransform.position;
+            position.y = stageStartPosition;
+            playerTransform.position = position;
             return player;
         }
     }

@@ -195,6 +195,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8d166fc509ac340a381fea8bd61c9b88, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  animShowEnd: 0
 --- !u!114 &114531497922678152
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -207,6 +208,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a0e4e5910504ccb80fb9ce442db42e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  animShowEnd: 0
   result: 0
   submitText: {fileID: 114015105448067274}
   header: {fileID: 114229797625711246}
@@ -215,6 +217,7 @@ MonoBehaviour:
   slotBase: {fileID: 1815796197388866}
   grid: {fileID: 224984853346124052}
   submitPanel: {fileID: 1626649270498514}
+  modal: {fileID: 1677616164753050}
 --- !u!95 &95878591363038694
 Animator:
   serializedVersion: 3
