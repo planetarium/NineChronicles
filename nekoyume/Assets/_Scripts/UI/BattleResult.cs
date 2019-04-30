@@ -8,7 +8,7 @@ using Nekoyume.Action;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
-using Nekoyume.Game.Vfx;
+using Nekoyume.Game.VFX;
 using Nekoyume.Model;
 using UnityEngine;
 using UnityEngine.UI;
@@ -35,7 +35,7 @@ namespace Nekoyume.UI
         private bool _repeat;
         private float _timer = 0;
 
-        private VfxBattleWin _battleWinVfx;
+        private BattleWinVFX _battleWinVFX;
         private Image _image;
 
         protected override void Awake()
@@ -67,9 +67,9 @@ namespace Nekoyume.UI
             var w = Find<StageLoadingScreen>();
             w.Show(this, _stage.zone);
 
-            if (!ReferenceEquals(_battleWinVfx, null))
+            if (!ReferenceEquals(_battleWinVFX, null))
             {
-                _battleWinVfx.Stop();
+                _battleWinVFX.Stop();
             }
 
             var player = _stage.ReadyPlayer();
@@ -95,9 +95,9 @@ namespace Nekoyume.UI
         }
         public void BackClick()
         {   
-            if (!ReferenceEquals(_battleWinVfx, null))
+            if (!ReferenceEquals(_battleWinVFX, null))
             {
-                _battleWinVfx.Stop();
+                _battleWinVFX.Stop();
             }
 
             _stage.repeatStage = false;
@@ -128,8 +128,8 @@ namespace Nekoyume.UI
                     _timer = Timer;
                 
                 AudioController.instance.PlayMusic(AudioController.MusicCode.Win, 0.3f);
-                _battleWinVfx = VfxController.instance.Create<VfxBattleWin>(ActionCamera.instance.transform, VfxBattleWinOffset);
-                _battleWinVfx.Play(10f);
+                _battleWinVFX = VFXController.instance.Create<BattleWinVFX>(ActionCamera.instance.transform, VfxBattleWinOffset);
+                _battleWinVFX.Play(10f);
                 AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ActionBattleWin);
             }
             else

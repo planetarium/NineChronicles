@@ -1,11 +1,10 @@
 using System.Collections;
 using Nekoyume.Game.Util;
-using Nekoyume.Game.Vfx;
 using UnityEngine;
 
 namespace Nekoyume.Game.Controller
 {
-    public class VfxController : MonoSingleton<VfxController>
+    public class VFXController : MonoSingleton<VFXController>
     {
         protected override bool ShouldRename => true;
         
@@ -26,13 +25,13 @@ namespace Nekoyume.Game.Controller
 
         #endregion
         
-        public T Create<T>(Vector3 position) where T : Vfx.Vfx
+        public T Create<T>(Vector3 position) where T : VFX.VFX
         {
             var vfx = _pool.Get<T>(position);
             return vfx;
         }
         
-        public T Create<T>(Transform target, Vector3 offset) where T : Vfx.Vfx
+        public T Create<T>(Transform target, Vector3 offset) where T : VFX.VFX
         {
             var vfx = _pool.Get<T>();
             StartCoroutine(CoChaseTarget(vfx, target, offset));

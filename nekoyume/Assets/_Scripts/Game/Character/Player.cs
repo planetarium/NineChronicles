@@ -6,7 +6,7 @@ using Anima2D;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
-using Nekoyume.Game.Vfx;
+using Nekoyume.Game.VFX;
 using Nekoyume.Manager;
 using Nekoyume.UI;
 using UnityEngine;
@@ -97,7 +97,7 @@ namespace Nekoyume.Game.Character
             var pos = transform.position;
             pos.x -= 0.2f;
             pos.y += 0.32f;
-            VfxController.instance.Create<VfxBattleDamage01>(pos).Play();
+            VFXController.instance.Create<BattleDamage01VFX>(pos).Play();
         }
 
         protected override void Update()

@@ -1,12 +1,12 @@
 using System.Collections;
 using UnityEngine;
 
-namespace Nekoyume.Game.Vfx
+namespace Nekoyume.Game.VFX
 {
     [RequireComponent(typeof(ParticleSystem))]
-    public abstract class Vfx : MonoBehaviour
+    public abstract class VFX : MonoBehaviour
     {
-        private const string StringVfx = "Vfx";
+        private const string StringVFX = "VFX";
 
         private ParticleSystem[] _particles = null;
         private int _particlesLength = 0;
@@ -31,11 +31,11 @@ namespace Nekoyume.Game.Vfx
                     _particlesDuration = particle.main.duration;
                 }
                 
-                particle.gameObject.layer = LayerMask.NameToLayer(StringVfx);
+                particle.gameObject.layer = LayerMask.NameToLayer(StringVFX);
                 var r = particle.GetComponent<Renderer>();
                 if (r)
                 {
-                    r.sortingLayerName = StringVfx;
+                    r.sortingLayerName = StringVFX;
                 }
             }
 
