@@ -14,7 +14,7 @@ namespace Nekoyume.Game.Character
 {
     public abstract class CharacterBase : MonoBehaviour
     {
-        protected const float AnimatorTimeScale = 1.5f;
+        protected const float AnimatorTimeScale = 1f;
         
         public Root Root;
         public int HP = 0;
@@ -50,8 +50,6 @@ namespace Nekoyume.Game.Character
         protected virtual void Awake()
         {
             Event.OnAttackEnd.AddListener(AttackEnd);
-            Event.OnHitEnd.AddListener(HitEnd);
-            Event.OnDieEnd.AddListener(DieEnd);
         }
 
         protected virtual void OnDisable()
@@ -104,7 +102,7 @@ namespace Nekoyume.Game.Character
         {
             if (Rooted)
             {
-                animator.Idle();
+                animator.StopRun();
                 return;
             }
             
@@ -122,9 +120,8 @@ namespace Nekoyume.Game.Character
 
         protected IEnumerator Dying()
         {
-//            dieEnd = false;
             animator.Die();
-//            yield return new WaitUntil(() => dieEnd);
+            
             yield return new WaitForSeconds(1f);
 
             OnDead();
@@ -137,12 +134,6 @@ namespace Nekoyume.Game.Character
             {
                 _hpBar.UpdatePosition(gameObject, _hpBarOffset);
             }
-            
-//            if (!animator.AnimatorValidation())
-//            {
-//                animator.ResetAnimator();
-//                animator.SetTimeScale(AnimatorTimeScale);
-//            }
         }
 
         public int CalcAtk()
@@ -202,9 +193,7 @@ namespace Nekoyume.Game.Character
 
             if (HP > 0)
             {
-//                hitEnd = false;
                 animator.Hit();
-//                yield return new WaitUntil(() => hitEnd);
             }
             else
             {
@@ -290,25 +279,13 @@ namespace Nekoyume.Game.Character
                 attackEnd = true;
         }
 
-        private void HitEnd(CharacterBase character)
-        {
-            if (ReferenceEquals(character, this))
-                hitEnd = true;
-        }
-
-        private void DieEnd(CharacterBase character)
-        {
-            if (ReferenceEquals(character, this))
-                dieEnd = true;
-        }
-
         public bool TargetInRange(CharacterBase target) =>
             Range > Mathf.Abs(gameObject.transform.position.x - target.transform.position.x);
 
         private void StopRun()
         {
             RunSpeed = 0.0f;
-            animator.Idle();
+            animator.StopRun();
         }
     }
 }

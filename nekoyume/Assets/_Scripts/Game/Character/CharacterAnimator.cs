@@ -1,32 +1,23 @@
 using System;
+using UniRx;
 using UnityEngine;
 
 namespace Nekoyume.Game.Character
 {
     public abstract class CharacterAnimator<T> : ICharacterAnimator where T : Component
     {
-        private enum State
-        {
-            None = -1,
-            Appear,
-            Idle,
-            Run,
-            Attack,
-            Hit,
-            Die,
-            Disappear
-        }
-
-        private State _state = State.None;
-        
         public CharacterBase root { get; }
-        public GameObject target { get; private set; }
         
+        public GameObject target { get; private set; }
+
+        public Subject<string> onEvent { get; }
+
         protected T animator { get; private set; }
 
         protected CharacterAnimator(CharacterBase root)
         {
             this.root = root;
+            onEvent = new Subject<string>();
         }
 
         public virtual void ResetTarget(GameObject value)
@@ -46,9 +37,7 @@ namespace Nekoyume.Game.Character
         }
 
         public abstract bool AnimatorValidation();
-
         public abstract Vector3 GetHUDPosition();
-        
         public abstract void SetTimeScale(float value);
 
         #region Animation
@@ -56,11 +45,18 @@ namespace Nekoyume.Game.Character
         public abstract void Appear();
         public abstract void Idle();
         public abstract void Run();
+        public abstract void StopRun();
+
         public abstract void Attack();
         public abstract void Hit();
         public abstract void Die();
         public abstract void Disappear();
 
         #endregion
+
+        public void Dispose()
+        {
+            onEvent?.Dispose();
+        }
     }
 }

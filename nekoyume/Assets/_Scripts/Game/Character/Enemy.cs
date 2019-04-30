@@ -11,7 +11,7 @@ namespace Nekoyume.Game.Character
     public class Enemy : CharacterBase
     {
         private static readonly Vector3 DamageTextForce = new Vector3(0.1f, 0.5f);
-        private static readonly Vector3 HpBarOffset = new Vector3(0f, 0.22f);
+        private static readonly Vector3 HpBarOffset = new Vector3(0f, 0.6f);
         
         public int DataId = 0;
         public Guid id;
@@ -24,6 +24,30 @@ namespace Nekoyume.Game.Character
 
         public override float Speed => -1.8f;
 
+        #region Mono
+
+        protected override void Awake()
+        {
+            base.Awake();
+            
+            animator = new EnemyAnimator(this);
+            animator.SetTimeScale(AnimatorTimeScale);
+            
+            _targetTag = Tag.Player;
+        }
+
+        #endregion
+        
+        public void Init(Model.Monster spawnCharacter, Player player)
+        {
+            _player = player;
+            _hpBarOffset.Set(-0.0f, -0.11f, 0.0f);
+            _castingBarOffset.Set(-0.0f, -0.33f, 0.0f);
+            InitStats(spawnCharacter);
+            id = spawnCharacter.id;
+            StartRun();
+        }
+        
         public override IEnumerator CoProcessDamage(int dmg, bool critical)
         {
             yield return StartCoroutine(base.CoProcessDamage(dmg, critical));
@@ -41,6 +65,11 @@ namespace Nekoyume.Game.Character
                 colorseq.Append(mat.DOColor(Color.red, 0.1f));
                 colorseq.Append(mat.DOColor(Color.white, 0.1f));
             }
+        }
+        
+        protected override bool CanRun()
+        {
+            return base.CanRun() && !TargetInRange(_player);
         }
 
         protected override void OnDead()
@@ -67,16 +96,6 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        public void Init(Model.Monster spawnCharacter, Player player)
-        {
-            _player = player;
-            _hpBarOffset.Set(-0.0f, -0.11f, 0.0f);
-            _castingBarOffset.Set(-0.0f, -0.33f, 0.0f);
-            InitStats(spawnCharacter);
-            id = spawnCharacter.id;
-            StartRun();
-        }
-
         private void InitStats(Model.Monster character)
         {
             var stats = character.data.GetStats(character.level);
@@ -86,26 +105,5 @@ namespace Nekoyume.Game.Character
             Power = 0;
             HPMax = HP;
         }
-
-        protected override void Awake()
-        {
-            base.Awake();
-            
-            animator = new EnemyAnimator(this);
-            
-            _targetTag = Tag.Player;
-        }
-
-        public void PlayAttackSfx()
-        {
-            // Fix me.
-            // 이후 몬스터 별 공격 음이 재생된다.
-        }
-
-        protected override bool CanRun()
-        {
-            return base.CanRun() && !TargetInRange(_player);
-        }
-
     }
 }

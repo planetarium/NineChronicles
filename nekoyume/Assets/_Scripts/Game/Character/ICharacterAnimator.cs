@@ -1,8 +1,10 @@
+using System;
+using UniRx;
 using UnityEngine;
 
 namespace Nekoyume.Game.Character
 {
-    public interface ICharacterAnimator
+    public interface ICharacterAnimator : IDisposable
     {
         /// <summary>
         /// 캐릭터의 루트 게임 오브젝트.
@@ -13,6 +15,8 @@ namespace Nekoyume.Game.Character
         /// 컨트롤 하려는 애니메이터가 붙어 있는 게임 오브젝트.
         /// </summary>
         GameObject target { get; }
+        
+        Subject<string> onEvent { get; }
 
         void ResetTarget(GameObject value);
         bool AnimatorValidation();
@@ -24,6 +28,7 @@ namespace Nekoyume.Game.Character
         void Appear();
         void Idle();
         void Run();
+        void StopRun();
         void Attack();
         void Hit();
         void Die();

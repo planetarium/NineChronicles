@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using Anima2D;
 using Nekoyume.Data.Table;
@@ -10,6 +11,7 @@ using Nekoyume.Game.Item;
 using Nekoyume.Game.Vfx;
 using Nekoyume.Manager;
 using Nekoyume.UI;
+using UniRx;
 using UnityEngine;
 
 namespace Nekoyume.Game.Character
@@ -17,8 +19,8 @@ namespace Nekoyume.Game.Character
     public class Player : CharacterBase
     {
         private static readonly Vector3 DamageTextForce = new Vector3(-0.1f, 0.5f);
-        private static readonly Vector3 HpBarOffset = new Vector3(0f, 0.24f);
-        private static readonly Vector3 MpBarOffset = new Vector3(0f, 0.19f);
+        private static readonly Vector3 HpBarOffset = new Vector3(0f, 0.85f);
+        private static readonly Vector3 MpBarOffset = new Vector3(0f, 0.8f);
         
         public int MP = 0;
         public long EXP = 0;
@@ -49,11 +51,16 @@ namespace Nekoyume.Game.Character
 
         public Item.Inventory Inventory;
 
+        public override float Speed => 1.8f;
+
+        #region Mono
+
         protected override void Awake()
         {
             base.Awake();
             
             animator = new PlayerAnimator(this);
+            animator.onEvent.Subscribe(OnAnimatorEvent);
             animator.SetTimeScale(AnimatorTimeScale);
             
             Inventory = new Item.Inventory();
@@ -61,7 +68,12 @@ namespace Nekoyume.Game.Character
             _targetTag = Tag.Enemy;
         }
 
-        public override float Speed => 1.8f;
+        private void OnDestroy()
+        {
+            animator.Dispose();
+        }
+
+        #endregion
 
         public override IEnumerator CoProcessDamage(int dmg, bool critical)
         {
@@ -75,33 +87,6 @@ namespace Nekoyume.Game.Character
             Event.OnUpdateStatus.Invoke();
         }
 
-        protected override void OnDead()
-        {
-            gameObject.SetActive(false);
-            Event.OnPlayerDead.Invoke();
-        }
-
-        protected override void PopUpDmg(Vector3 position, Vector3 force, string dmg, bool critical)
-        {
-            base.PopUpDmg(position, force, dmg, critical);
-
-            var pos = transform.position;
-            pos.x -= 0.2f;
-            pos.y += 0.32f;
-            VfxController.instance.Create<VfxBattleDamage01>(pos).Play();
-        }
-
-        protected override void Update()
-        {
-            base.Update();
-
-//            if (!animator.AnimatorValidation())
-//            {
-//                animator.ResetAnimator();
-//                animator.SetTimeScale(AnimatorTimeScale);
-//            }
-        }
-
         public void Init(Model.Player character)
         {
             model = character;
@@ -111,18 +96,6 @@ namespace Nekoyume.Game.Character
             _hpBarOffset.Set(-0.22f, -0.61f, 0.0f);
             _castingBarOffset.Set(-0.22f, -0.85f, 0.0f);
             _mpBarOffset.Set(-0.22f, -0.66f, 0.0f);
-        }
-
-        private void InitStats(Model.Player character)
-        {
-            HP = character.currentHP;
-            HPMax = character.hp;
-            ATK = character.atk;
-            DEF = character.def;
-            EXP = character.exp;
-            Level = character.level;
-            EXPMax = character.expMax;
-            Inventory = character.inventory;
         }
 
         public void UpdateSet(SetItem item)
@@ -168,6 +141,49 @@ namespace Nekoyume.Game.Character
             }
             Event.OnUpdateStatus.Invoke();
         }
+        
+        protected override void OnDead()
+        {
+            gameObject.SetActive(false);
+            Event.OnPlayerDead.Invoke();
+        }
 
+        protected override void PopUpDmg(Vector3 position, Vector3 force, string dmg, bool critical)
+        {
+            base.PopUpDmg(position, force, dmg, critical);
+
+            var pos = transform.position;
+            pos.x -= 0.2f;
+            pos.y += 0.32f;
+            VfxController.instance.Create<VfxBattleDamage01>(pos).Play();
+        }
+        
+        private void InitStats(Model.Player character)
+        {
+            HP = character.currentHP;
+            HPMax = character.hp;
+            ATK = character.atk;
+            DEF = character.def;
+            EXP = character.exp;
+            Level = character.level;
+            EXPMax = character.expMax;
+            Inventory = character.inventory;
+        }
+
+        private void OnAnimatorEvent(string eventName)
+        {
+            switch (eventName)
+            {
+                case "attackStart":
+                    AudioController.PlaySwing();
+                    break;
+                case "attackPoint":
+                    Event.OnAttackEnd.Invoke(this);
+                    break;
+                case "footstep":
+                    AudioController.PlayFootStep();
+                    break;
+            }
+        }
     }
 }

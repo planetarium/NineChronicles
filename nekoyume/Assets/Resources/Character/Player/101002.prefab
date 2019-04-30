@@ -12,6 +12,8 @@ GameObject:
   - component: {fileID: 1830825284384115966}
   - component: {fileID: 5201987388505112760}
   - component: {fileID: 3131642407470304897}
+  - component: {fileID: 1107298590909214999}
+  - component: {fileID: 3919360982395880286}
   m_Layer: 8
   m_Name: 101002
   m_TagString: Untagged
@@ -113,3 +115,49 @@ MonoBehaviour:
   _animationName: idle
   loop: 1
   timeScale: 1
+--- !u!95 &1107298590909214999
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6042887452020993688}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 21ad0e93f82d940989ca46e7a61db8ac, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &3919360982395880286
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6042887452020993688}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6ea4943521264f4fb16186014e900c1f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  statesAndAnimations:
+  - stateName: Appear
+    animation: {fileID: 11400000, guid: b387c72121dff4db0b6061222d3dcb8c, type: 2}
+  - stateName: Idle
+    animation: {fileID: 11400000, guid: b387c72121dff4db0b6061222d3dcb8c, type: 2}
+  - stateName: Run
+    animation: {fileID: 11400000, guid: 4d635ed024d6c47398fb091c97c1d312, type: 2}
+  - stateName: Attack
+    animation: {fileID: 11400000, guid: 6f1156719d52049cfba9e0bd6546d5ba, type: 2}
+  - stateName: Hit
+    animation: {fileID: 11400000, guid: 1db316381a74340b28221030f26ec59c, type: 2}
+  - stateName: Die
+    animation: {fileID: 11400000, guid: 10087473f35b74858a760e1151d48395, type: 2}
+  - stateName: Disappear
+    animation: {fileID: 11400000, guid: 10087473f35b74858a760e1151d48395, type: 2}

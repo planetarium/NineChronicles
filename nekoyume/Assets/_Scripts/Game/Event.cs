@@ -47,14 +47,5 @@ namespace Nekoyume.Game
         {
         }
         public static readonly AttackEnd OnAttackEnd = new AttackEnd();
-
-        public class HitEnd : UnityEvent<CharacterBase>
-        {
-        }
-        public static readonly HitEnd OnHitEnd = new HitEnd();
-        public class DieEnd : UnityEvent<CharacterBase>
-        {
-        }
-        public static readonly DieEnd OnDieEnd = new DieEnd();
     }
 }
