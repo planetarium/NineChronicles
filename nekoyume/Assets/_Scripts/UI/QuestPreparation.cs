@@ -89,6 +89,8 @@ namespace Nekoyume.UI
 
             btnQuest.SetActive(false);
             _player.StartRun();
+            ActionCamera.instance.ChaseX(_player.transform);
+
             var currentId = ActionManager.instance.battleLog?.id;
             var equipments = new List<Equipment>();
             foreach (var slot in equipSlots)
@@ -123,6 +125,8 @@ namespace Nekoyume.UI
             }
 
             stage.repeatStage = repeat;
+
+            Close();
         }
 
         public override void Show()
@@ -157,14 +161,9 @@ namespace Nekoyume.UI
 
         public override void Close()
         {
-            stage.LoadBackground("room");
-            _player = stage.GetPlayer(stage.RoomPosition);
             _inventory.Close();
             itemInfoWidget.Close();
-            Find<Menu>().Show();
-            Find<Status>()?.Show();
             base.Close();
-            AudioController.PlayClick();
         }
 
         private void SlotClick(InventorySlot slot, bool toggled)
@@ -292,6 +291,17 @@ namespace Nekoyume.UI
                 var label = item.GetComponentInChildren<Text>();
                 label.color = new Color(0.1960784f, 1, 0.1960784f, 1);
             }
+        }
+
+        public void BackClick()
+        {
+            stage.LoadBackground("room");
+            _player = stage.GetPlayer(stage.RoomPosition);
+            _player.UpdateSet(_player.model.set);
+            Find<Menu>().Show();
+            Find<Status>()?.Show();
+            Close();
+            AudioController.PlayClick();
         }
     }
 }
