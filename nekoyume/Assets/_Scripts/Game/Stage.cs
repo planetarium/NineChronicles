@@ -78,11 +78,6 @@ namespace Nekoyume.Game
 
         private void OnStageStart()
         {
-            var qp = Widget.Find<QuestPreparation>();
-            if (qp.IsActive())
-            {
-                qp.Close();
-            }
             _battleLog = ActionManager.instance.battleLog;
             Play(_battleLog);
         }
