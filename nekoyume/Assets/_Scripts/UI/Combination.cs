@@ -241,12 +241,12 @@ namespace Nekoyume.UI
             if (isActive)
             {
                 combinationButton.enabled = true;
-                combinationButtonImage.sprite = Resources.Load<Sprite>("UI/button_blue_02");
+                combinationButtonImage.sprite = Resources.Load<Sprite>("UI/Textures/button_blue_02");
             }
             else
             {
                 combinationButton.enabled = false;
-                combinationButtonImage.sprite = Resources.Load<Sprite>("UI/button_black_01");
+                combinationButtonImage.sprite = Resources.Load<Sprite>("UI/Textures/button_black_01");
             }
         }
 
