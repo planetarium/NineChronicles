@@ -89,6 +89,8 @@ namespace Nekoyume.UI
 
             btnQuest.SetActive(false);
             _player.StartRun();
+            ActionCamera.instance.ChaseX(_player.transform);
+
             var currentId = ActionManager.instance.battleLog?.id;
             var equipments = new List<Equipment>();
             foreach (var slot in equipSlots)
@@ -123,6 +125,8 @@ namespace Nekoyume.UI
             }
 
             stage.repeatStage = repeat;
+
+            Close();
         }
 
         public override void Show()
