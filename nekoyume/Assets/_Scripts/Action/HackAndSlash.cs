@@ -44,6 +44,11 @@ namespace Nekoyume.Action
             }
             var items = ctx.avatar.Items.Select(i => i.Item).ToImmutableHashSet();
             var currentEquipments = items.OfType<Equipment>().ToImmutableHashSet();
+            foreach (var equipment in currentEquipments)
+            {
+                equipment.Unequip();
+            }
+
             if (Equipments.Count > 0)
             {
                 foreach (var equipment in Equipments)
@@ -55,13 +60,6 @@ namespace Nekoyume.Action
 
                     var equip = currentEquipments.First(e => e.Data.id == equipment.Data.id);
                     equip.Equip();
-                }
-            }
-            else
-            {
-                foreach (var equipment in currentEquipments)
-                {
-                    equipment.Unequip();
                 }
             }
 
