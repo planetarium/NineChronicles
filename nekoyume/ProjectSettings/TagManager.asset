@@ -18,8 +18,8 @@ TagManager:
   - 
   - Character
   - VFX
-  - 
-  - 
+  - InGameBackground
+  - InGameForeground
   - 
   - 
   - 
@@ -44,8 +44,14 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: InGameBackground
+    uniqueID: 573067601
+    locked: 0
   - name: Character
     uniqueID: 3909689525
+    locked: 0
+  - name: InGameForeground
+    uniqueID: 2862456707
     locked: 0
   - name: UI
     uniqueID: 555532309

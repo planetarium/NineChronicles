@@ -18,7 +18,7 @@ namespace Nekoyume.Game.Character
 	    }
 	    
 		public List<StateNameToAnimationReference> statesAndAnimations = new List<StateNameToAnimationReference>();
-		
+
         private SkeletonAnimation _skeletonAnimation;
 
 		private Spine.Animation targetAnimation { get; set; }
@@ -30,7 +30,7 @@ namespace Nekoyume.Game.Character
 			foreach (var entry in statesAndAnimations) {
 				entry.animation.Initialize();
 			}
-			
+
 			_skeletonAnimation = GetComponent<SkeletonAnimation>();
 		}
 
