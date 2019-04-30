@@ -28,9 +28,8 @@ namespace Nekoyume.Game.Character
 
         public int HPMax { get; protected set; } = 0;
         protected ProgressBar _hpBar = null;
-        protected virtual Vector3 _hpBarOffset => new Vector3();
         protected ProgressBar _castingBar = null;
-        protected virtual Vector3 _castingBarOffset => new Vector3();
+        protected virtual Vector3 _hudOffset => new Vector3();
         protected float _dyingTime = 1.0f;
 
         protected const float kSkillGlobalCooltime = 0.6f;
@@ -132,7 +131,7 @@ namespace Nekoyume.Game.Character
             Root?.Tick();
             if (_hpBar != null)
             {
-                _hpBar.UpdatePosition(gameObject, _hpBarOffset);
+                _hpBar.UpdatePosition(gameObject, _hudOffset);
             }
         }
 
@@ -148,7 +147,7 @@ namespace Nekoyume.Game.Character
             {
                 _hpBar = Widget.Create<ProgressBar>(true);
             }
-            _hpBar.UpdatePosition(gameObject, _hpBarOffset);
+            _hpBar.UpdatePosition(gameObject, _hudOffset);
             _hpBar.SetText($"{HP} / {HPMax}");
             _hpBar.SetValue((float)HP / (float)HPMax);
         }

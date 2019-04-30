@@ -17,30 +17,27 @@ namespace Nekoyume.Game.Character
 {
     public class Player : CharacterBase
     {
+        private const int DefaultSetId = 101000;
+        
         private static readonly Vector3 DamageTextForce = new Vector3(-0.1f, 0.5f);
-        private static readonly Vector3 HpBarOffset = new Vector3(0f, 0.85f);
-        private static readonly Vector3 MpBarOffset = new Vector3(0f, 0.8f);
         
         public int MP = 0;
         public long EXP = 0;
         public int Level = 0;
         public int MPMax = 0;
-        [SerializeField] private SpriteMeshInstance _weapon;
-        public long EXPMax { get; private set; }
-
-        private ProgressBar _mpBar = null;
-
+        public override float Speed => 1.8f;
+        
         public List<Equipment> equipments =>
             Inventory.items.Select(i => i.Item).OfType<Equipment>().Where(e => e.equipped).ToList();
 
         public Model.Player model;
+        public Item.Inventory Inventory;
+        
+        [SerializeField] private SpriteMeshInstance _weapon;
+        
+        private ProgressBar _mpBar = null;
 
-        protected override Vector3 _hpBarOffset => _castingBarOffset + HpBarOffset;
-        protected Vector3 _mpBarOffset => _castingBarOffset + MpBarOffset;
-
-        private const int DefaultSetId = 101000;
-
-        protected override Vector3 _castingBarOffset => animator.GetHUDPosition();
+        public long EXPMax { get; private set; }
 
         public override WeightType WeightType
         {
@@ -48,22 +45,20 @@ namespace Nekoyume.Game.Character
             protected set { throw new NotImplementedException(); }
         }
 
-        public Item.Inventory Inventory;
-
-        public override float Speed => 1.8f;
+        protected override Vector3 _hudOffset => animator.GetHUDPosition();
 
         #region Mono
 
         protected override void Awake()
         {
             base.Awake();
-            
+
             animator = new PlayerAnimator(this);
             animator.onEvent.Subscribe(OnAnimatorEvent);
             animator.SetTimeScale(AnimatorTimeScale);
-            
+
             Inventory = new Item.Inventory();
-            
+
             _targetTag = Tag.Enemy;
         }
 
@@ -101,22 +96,18 @@ namespace Nekoyume.Game.Character
             pos.y += 0.32f;
             VFXController.instance.Create<BattleDamage01VFX>(pos).Play();
         }
-        
+
         public void Init(Model.Player character)
         {
             model = character;
             UpdateSet(model.set);
             InitStats(character);
-
-            _hpBarOffset.Set(-0.22f, -0.61f, 0.0f);
-            _castingBarOffset.Set(-0.22f, -0.85f, 0.0f);
-            _mpBarOffset.Set(-0.22f, -0.66f, 0.0f);
         }
 
         public void UpdateSet(SetItem item)
         {
             Destroy(animator.target);
-            
+
             var itemId = item?.Data.resourceId ?? DefaultSetId;
             if (!ReferenceEquals(animator.target, null))
             {
@@ -129,6 +120,7 @@ namespace Nekoyume.Game.Character
                     return;
                 }
             }
+
             var origin = Resources.Load<GameObject>($"Character/Player/{itemId}");
             var go = Instantiate(origin, gameObject.transform);
             animator.ResetTarget(go);
@@ -140,10 +132,10 @@ namespace Nekoyume.Game.Character
             {
                 yield break;
             }
-            
+
             PopupText.Show(
-                transform.TransformPoint(-0.6f, 1.0f,0.0f),
-                new Vector3(0.0f,2.0f,0.0f),
+                transform.TransformPoint(-0.6f, 1.0f, 0.0f),
+                new Vector3(0.0f, 2.0f, 0.0f),
                 $"+{exp}"
             );
             var level = model.level;
@@ -155,19 +147,20 @@ namespace Nekoyume.Game.Character
                 AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ActionStatusLevelUp, level);
                 yield return new WaitForSeconds(0.3f);
                 PopupText.Show(
-                    transform.TransformPoint(-0.6f, 1.0f,0.0f),
-                    new Vector3(0.0f,2.0f,0.0f),
+                    transform.TransformPoint(-0.6f, 1.0f, 0.0f),
+                    new Vector3(0.0f, 2.0f, 0.0f),
                     "LEVEL UP"
                 );
                 InitStats(model);
 
                 UpdateHpBar();
-                    
+
                 AudioController.instance.PlaySfx(AudioController.SfxCode.LevelUp);
             }
+
             Event.OnUpdateStatus.Invoke();
         }
-        
+
         private void InitStats(Model.Player character)
         {
             HP = character.currentHP;

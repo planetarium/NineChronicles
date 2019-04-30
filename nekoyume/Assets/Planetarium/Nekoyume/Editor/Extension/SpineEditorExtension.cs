@@ -44,11 +44,13 @@ namespace Planetarium.Nekoyume.Unity.Editor.Extension
             meshRenderer.sortingLayerName = "Character";
 
             // 아래의 프리펩을 addressable 로 설정하고, Character, Player, Monster label을 에디터에서 적용하는 방법을 아직 찾지 못함.
-            PrefabUtility.SaveAsPrefabAsset(gameObject, Path.Combine(prefabPath, $"{prefabName}.prefab"));
+            var prefab = PrefabUtility.SaveAsPrefabAsset(gameObject, Path.Combine(prefabPath, $"{prefabName}.prefab"));
             // AddressableAssetSettings.CreateAssetReference(Guid.NewGuid().ToString());
             // 찾는다면 이곳에서 일괄 처리 해야함.
 
             Object.DestroyImmediate(gameObject);
+
+            Selection.activeObject = prefab;
         }
 
         [MenuItem("Assets/Create/Spine Prefab", true)]

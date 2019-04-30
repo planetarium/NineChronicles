@@ -9,11 +9,11 @@ namespace Nekoyume.Game.Character
 {
     public class PlayerAnimator : MecanimCharacterAnimator
     {
-        private const string StringFace = "face";
+        private const string StringHUD = "HUD";
         
         private SkeletonAnimation skeleton { get; set; }
 
-        private Vector3 facePosition { get; set; }
+        private Vector3 hudPosition { get; set; }
         
         public PlayerAnimator(CharacterBase root) : base(root)
         {
@@ -35,20 +35,20 @@ namespace Nekoyume.Game.Character
                 throw new NotFoundComponentException<SkeletonAnimation>();
             }
 
-            var face = skeleton.skeleton.FindSlot(StringFace);
-            if (ReferenceEquals(face, null))
+            var hud = skeleton.skeleton.FindBone(StringHUD);
+            if (ReferenceEquals(hud, null))
             {
-                throw new SlotNotFoundException(StringFace);
+                throw new SpineBoneNotFoundException(StringHUD);
             }
 
-            facePosition = face.Bone.GetWorldPosition(target.transform) - root.transform.position;
+            hudPosition = hud.GetWorldPosition(target.transform) - root.transform.position;
             
             skeleton.AnimationState.Event += RaiseEvent;
         }
 
         public override Vector3 GetHUDPosition()
         {
-            return facePosition;
+            return hudPosition;
         }
 
         private void RaiseEvent(TrackEntry trackEntry, Spine.Event e)

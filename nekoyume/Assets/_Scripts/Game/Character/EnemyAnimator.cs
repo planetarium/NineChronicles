@@ -1,25 +1,57 @@
 using System.Linq;
+using Spine;
+using Spine.Unity;
 using UnityEngine;
 
 namespace Nekoyume.Game.Character
 {
     public class EnemyAnimator : MecanimCharacterAnimator
     {
+        private const string StringHUD = "HUD";
+        
+        private SkeletonAnimation skeleton { get; set; }
+        
+        private Vector3 hudPosition { get; set; }
+        
         public EnemyAnimator(CharacterBase root) : base(root)
         {
         }
         
+        public override void ResetTarget(GameObject value)
+        {
+            base.ResetTarget(value);
+            
+            if (!ReferenceEquals(skeleton, null))
+            {
+                skeleton.AnimationState.Event -= RaiseEvent;
+            }
+
+            skeleton = value.GetComponent<SkeletonAnimation>(); 
+
+            if (ReferenceEquals(skeleton, null))
+            {
+                throw new NotFoundComponentException<SkeletonAnimation>();
+            }
+
+            var hud = skeleton.skeleton.FindBone(StringHUD);
+            if (ReferenceEquals(hud, null))
+            {
+                throw new SpineBoneNotFoundException(StringHUD);
+            }
+
+            hudPosition = hud.GetWorldPosition(target.transform) - root.transform.position;
+            
+            skeleton.AnimationState.Event += RaiseEvent;
+        }
+        
         public override Vector3 GetHUDPosition()
         {
-            var spriteRenderer = root.GetComponentsInChildren<Renderer>()
-                .OrderByDescending(r => r.transform.position.y)
-                .First();
-            var y = spriteRenderer.bounds.max.y - root.transform.position.y;
-            var body = root.GetComponentsInChildren<Transform>().First(g => g.name == "body");
-            var bodyRenderer = body.GetComponent<Renderer>();
-            var x = bodyRenderer.bounds.min.x - root.transform.position.x + bodyRenderer.bounds.size.x / 2;
-            return new Vector3(x, y, 0.0f);
-
+            return hudPosition;
+        }
+        
+        private void RaiseEvent(TrackEntry trackEntry, Spine.Event e)
+        {
+            onEvent.OnNext(e.Data.Name);
         }
     }
 }

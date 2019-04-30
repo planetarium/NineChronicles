@@ -4,6 +4,7 @@ using System.Linq;
 using DG.Tweening;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
+using UniRx;
 using UnityEngine;
 
 namespace Nekoyume.Game.Character
@@ -11,18 +12,16 @@ namespace Nekoyume.Game.Character
     public class Enemy : CharacterBase
     {
         private static readonly Vector3 DamageTextForce = new Vector3(0.1f, 0.5f);
-        private static readonly Vector3 HpBarOffset = new Vector3(0f, 0.6f);
+        
+        public Guid id;
         
         public int DataId = 0;
-        public Guid id;
 
         private Player _player;
 
-        protected override Vector3 _hpBarOffset => _castingBarOffset + HpBarOffset;
-
-        protected override Vector3 _castingBarOffset => animator.GetHUDPosition();
-
         public override float Speed => -1.8f;
+        
+        protected override Vector3 _hudOffset => animator.GetHUDPosition();
 
         #region Mono
 
@@ -31,9 +30,15 @@ namespace Nekoyume.Game.Character
             base.Awake();
             
             animator = new EnemyAnimator(this);
+            animator.onEvent.Subscribe(OnAnimatorEvent);
             animator.SetTimeScale(AnimatorTimeScale);
             
             _targetTag = Tag.Player;
+        }
+
+        private void OnDestroy()
+        {
+            animator?.Dispose();
         }
 
         #endregion
@@ -41,8 +46,6 @@ namespace Nekoyume.Game.Character
         public void Init(Model.Monster spawnCharacter, Player player)
         {
             _player = player;
-            _hpBarOffset.Set(-0.0f, -0.11f, 0.0f);
-            _castingBarOffset.Set(-0.0f, -0.33f, 0.0f);
             InitStats(spawnCharacter);
             id = spawnCharacter.id;
             StartRun();
@@ -57,14 +60,14 @@ namespace Nekoyume.Game.Character
             var txt = dmg.ToString();
             PopUpDmg(position, force, txt, critical);
 
-            SpriteRenderer renderer = gameObject.GetComponent<SpriteRenderer>();
-            if (renderer != null)
-            {
-                Material mat = renderer.material;
-                Sequence colorseq = DOTween.Sequence();
-                colorseq.Append(mat.DOColor(Color.red, 0.1f));
-                colorseq.Append(mat.DOColor(Color.white, 0.1f));
-            }
+//            SpriteRenderer renderer = gameObject.GetComponent<SpriteRenderer>();
+//            if (renderer != null)
+//            {
+//                Material mat = renderer.material;
+//                Sequence colorseq = DOTween.Sequence();
+//                colorseq.Append(mat.DOColor(Color.red, 0.1f));
+//                colorseq.Append(mat.DOColor(Color.white, 0.1f));
+//            }
         }
         
         protected override bool CanRun()
@@ -104,6 +107,20 @@ namespace Nekoyume.Game.Character
             DEF = stats.Defense;
             Power = 0;
             HPMax = HP;
+        }
+        
+        private void OnAnimatorEvent(string eventName)
+        {
+            switch (eventName)
+            {
+                case "attackStart":
+                    break;
+                case "attackPoint":
+                    Event.OnAttackEnd.Invoke(this);
+                    break;
+                case "footstep":
+                    break;
+            }
         }
     }
 }

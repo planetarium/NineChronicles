@@ -93,19 +93,36 @@ public class NotFoundComponentException<T> : Exception where T : Component
     }
 }
 
-public class SlotNotFoundException : Exception
+public class SpineBoneNotFoundException : Exception
 {
-    private const string MessageFormat = "Not found `{0}` slot.";
+    private const string MessageFormat = "Not found `{0}` spine bone.";
     
-    public SlotNotFoundException()
+    public SpineBoneNotFoundException()
     {
     }
 
-    public SlotNotFoundException(string slotName) : base(string.Format(MessageFormat, slotName))
+    public SpineBoneNotFoundException(string slotName) : base(string.Format(MessageFormat, slotName))
     {
     }
 
-    public SlotNotFoundException(string slotName, Exception inner) : base(string.Format(MessageFormat, slotName), inner)
+    public SpineBoneNotFoundException(string slotName, Exception inner) : base(string.Format(MessageFormat, slotName), inner)
+    {
+    }
+}
+
+public class SpineSlotNotFoundException : Exception
+{
+    private const string MessageFormat = "Not found `{0}` spine slot.";
+    
+    public SpineSlotNotFoundException()
+    {
+    }
+
+    public SpineSlotNotFoundException(string slotName) : base(string.Format(MessageFormat, slotName))
+    {
+    }
+
+    public SpineSlotNotFoundException(string slotName, Exception inner) : base(string.Format(MessageFormat, slotName), inner)
     {
     }
 }
