@@ -157,14 +157,9 @@ namespace Nekoyume.UI
 
         public override void Close()
         {
-            stage.LoadBackground("room");
-            _player = stage.GetPlayer(stage.RoomPosition);
             _inventory.Close();
             itemInfoWidget.Close();
-            Find<Menu>().Show();
-            Find<Status>()?.Show();
             base.Close();
-            AudioController.PlayClick();
         }
 
         private void SlotClick(InventorySlot slot, bool toggled)
@@ -292,6 +287,17 @@ namespace Nekoyume.UI
                 var label = item.GetComponentInChildren<Text>();
                 label.color = new Color(0.1960784f, 1, 0.1960784f, 1);
             }
+        }
+
+        public void BackClick()
+        {
+            stage.LoadBackground("room");
+            _player = stage.GetPlayer(stage.RoomPosition);
+            _player.UpdateSet(_player.model.set);
+            Find<Menu>().Show();
+            Find<Status>()?.Show();
+            Close();
+            AudioController.PlayClick();
         }
     }
 }
