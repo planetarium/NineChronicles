@@ -23,6 +23,8 @@ namespace Nekoyume.Game.Character
 
 		private Spine.Animation targetAnimation { get; set; }
 
+		#region Mono
+
 		private void Awake ()
 		{
 			foreach (var entry in statesAndAnimations) {
@@ -32,6 +34,8 @@ namespace Nekoyume.Game.Character
 			_skeletonAnimation = GetComponent<SkeletonAnimation>();
 		}
 
+		#endregion
+		
 		/// <summary>Sets the horizontal flip state of the skeleton based on a nonzero float. If negative, the skeleton is flipped. If positive, the skeleton is not flipped.</summary>
 		public void SetFlip (float horizontal) {
 			if (Math.Abs(horizontal) > 0f) {
@@ -55,8 +59,18 @@ namespace Nekoyume.Game.Character
 		}
 
 		/// <summary>Play an animation. If a transition animation is defined, the transition is played before the target animation being passed.</summary>
-		public void PlayNewAnimation (Spine.Animation target, int layerIndex) {
-			_skeletonAnimation.AnimationState.SetAnimation(layerIndex, target, true);
+		public void PlayNewAnimation (Spine.Animation target, int layerIndex)
+		{
+			var loop = false;
+			switch (target.Name)
+			{
+				case "idle":
+				case "run":
+					loop = true;
+					break;
+			}
+
+			_skeletonAnimation.AnimationState.SetAnimation(layerIndex, target, loop);
 			targetAnimation = target;
 		}
 

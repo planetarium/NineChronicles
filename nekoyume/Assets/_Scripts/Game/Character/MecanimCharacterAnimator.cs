@@ -5,8 +5,17 @@ namespace Nekoyume.Game.Character
 {
     public class MecanimCharacterAnimator : CharacterAnimator<Animator>
     {
+        private int _baseLayerIndex;
+        
         public MecanimCharacterAnimator(CharacterBase root) : base (root)
         {
+        }
+
+        public override void ResetTarget(GameObject value)
+        {
+            base.ResetTarget(value);
+            
+            _baseLayerIndex = animator.GetLayerIndex("Base Layer");
         }
 
         public override bool AnimatorValidation()
@@ -39,6 +48,8 @@ namespace Nekoyume.Game.Character
             {
                 return;
             }
+            
+            animator.Play("Appear");
         }
 
         public override void Idle()
@@ -48,7 +59,7 @@ namespace Nekoyume.Game.Character
                 return;
             }
             
-            animator.ResetTrigger("Attack");
+            animator.Play("Idle");
             animator.SetBool("Run", false);
         }
 
@@ -59,7 +70,7 @@ namespace Nekoyume.Game.Character
                 return;
             }
             
-            animator.ResetTrigger("Attack");
+            animator.Play("Run");
             animator.SetBool("Run", true);
         }
 
@@ -79,9 +90,8 @@ namespace Nekoyume.Game.Character
             {
                 return;
             }
-            
-            animator.SetTrigger("Attack");
-            animator.SetBool("Run", false);
+
+            animator.Play("Attack", _baseLayerIndex, 0f);
         }
 
         public override void Hit()
@@ -90,8 +100,8 @@ namespace Nekoyume.Game.Character
             {
                 return;
             }
-            
-            animator.Play("Hit");
+
+            animator.Play("Hit", _baseLayerIndex, 0f);
         }
 
         public override void Die()
@@ -110,6 +120,8 @@ namespace Nekoyume.Game.Character
             {
                 return;
             }
+            
+            animator.Play("Disappear");
         }
     }
 }
