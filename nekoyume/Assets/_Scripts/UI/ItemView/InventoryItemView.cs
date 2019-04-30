@@ -2,15 +2,18 @@ using System;
 using System.Collections.Generic;
 using Nekoyume.Game.Controller;
 using UniRx;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI.ItemView
 {
+    [RequireComponent(typeof(Button))]
     public class InventoryItemView : CountableItemView<Model.Inventory.Item>
     {
         public Image coverImage;
         public Image selectionImage;
-        public Button button;
+        
+        private Button _button;
 
         private readonly List<IDisposable> _dataDisposables = new List<IDisposable>();
         private IDisposable _buttonOnClickDisposable;
@@ -27,9 +30,8 @@ namespace Nekoyume.UI.ItemView
                 throw new SerializeFieldNullException();
             }
 
-            button = gameObject.GetComponent<Button>();
-            
-            _buttonOnClickDisposable = button.OnClickAsObservable()
+            _button = gameObject.GetComponent<Button>();
+            _buttonOnClickDisposable = _button.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
                     Data.OnClick.OnNext(Data);

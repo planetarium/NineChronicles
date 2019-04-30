@@ -13,6 +13,7 @@ namespace Nekoyume.UI
 
         private Animator _animator;
         private Material _glass;
+        private bool _animCloseEnd;
         
         public RectTransform RectTransform { get; private set; }
 
@@ -25,7 +26,7 @@ namespace Nekoyume.UI
         {
             var t = typeof(T);
             var names = t.ToString().Split('.');
-            var resName = $"Prefab/Widget/UI_{names[names.Length - 1]}";
+            var resName = $"UI/Prefabs/UI_{names[names.Length - 1]}";
             var res = Resources.Load<GameObject>(resName);
             if (res != null)
             {
@@ -141,9 +142,16 @@ namespace Nekoyume.UI
             }
 
             // TODO : wait close animation
+            StartCoroutine(CoClose());
+        }
+
+        private IEnumerator CoClose()
+        {
             if (_animator)
             {
+                _animCloseEnd = false;
                 _animator.Play("Close");
+                yield return new WaitUntil(() => _animCloseEnd);
             }
 
             gameObject.SetActive(false);
@@ -165,6 +173,11 @@ namespace Nekoyume.UI
                 Show();
             }
 
+        }
+
+        public void AnimCloseEnd()
+        {
+            _animCloseEnd = true;
         }
     }
 }

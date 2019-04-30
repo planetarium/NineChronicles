@@ -6,9 +6,8 @@ using System.Linq;
 using Anima2D;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Controller;
-using Nekoyume.Game.Factory;
 using Nekoyume.Game.Item;
-using Nekoyume.Game.Vfx;
+using Nekoyume.Game.VFX;
 using Nekoyume.Manager;
 using Nekoyume.UI;
 using UniRx;
@@ -87,6 +86,22 @@ namespace Nekoyume.Game.Character
             Event.OnUpdateStatus.Invoke();
         }
 
+        protected override void OnDead()
+        {
+            gameObject.SetActive(false);
+            Event.OnPlayerDead.Invoke();
+        }
+
+        protected override void PopUpDmg(Vector3 position, Vector3 force, string dmg, bool critical)
+        {
+            base.PopUpDmg(position, force, dmg, critical);
+
+            var pos = transform.position;
+            pos.x -= 0.2f;
+            pos.y += 0.32f;
+            VFXController.instance.Create<BattleDamage01VFX>(pos).Play();
+        }
+        
         public void Init(Model.Player character)
         {
             model = character;
@@ -103,6 +118,17 @@ namespace Nekoyume.Game.Character
             Destroy(animator.target);
             
             var itemId = item?.Data.resourceId ?? DefaultSetId;
+            if (!ReferenceEquals(animator.target, null))
+            {
+                if (animator.target.name.Contains(itemId.ToString()))
+                {
+                    Destroy(animator.target);
+                }
+                else
+                {
+                    return;
+                }
+            }
             var origin = Resources.Load<GameObject>($"Character/Player/{itemId}");
             var go = Instantiate(origin, gameObject.transform);
             animator.ResetTarget(go);
@@ -140,22 +166,6 @@ namespace Nekoyume.Game.Character
                 AudioController.instance.PlaySfx(AudioController.SfxCode.LevelUp);
             }
             Event.OnUpdateStatus.Invoke();
-        }
-        
-        protected override void OnDead()
-        {
-            gameObject.SetActive(false);
-            Event.OnPlayerDead.Invoke();
-        }
-
-        protected override void PopUpDmg(Vector3 position, Vector3 force, string dmg, bool critical)
-        {
-            base.PopUpDmg(position, force, dmg, critical);
-
-            var pos = transform.position;
-            pos.x -= 0.2f;
-            pos.y += 0.32f;
-            VfxController.instance.Create<VfxBattleDamage01>(pos).Play();
         }
         
         private void InitStats(Model.Player character)

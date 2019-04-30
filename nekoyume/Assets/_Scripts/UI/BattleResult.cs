@@ -1,12 +1,14 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using DG.Tweening;
 using Nekoyume.Manager;
 using Nekoyume.Action;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
-using Nekoyume.Game.Vfx;
+using Nekoyume.Game.VFX;
 using Nekoyume.Model;
 using UnityEngine;
 using UnityEngine.UI;
@@ -26,12 +28,15 @@ namespace Nekoyume.UI
         public GameObject slotBase;
         public Transform grid;
         public GameObject submitPanel;
+        public GameObject modal;
+        public bool actionEnd;
         private List<InventorySlot> _slots;
         private Stage _stage;
         private bool _repeat;
         private float _timer = 0;
 
-        private VfxBattleWin _battleWinVfx;
+        private BattleWinVFX _battleWinVFX;
+        private Image _image;
 
         protected override void Awake()
         {
@@ -39,6 +44,7 @@ namespace Nekoyume.UI
             
             _slots = new List<InventorySlot>();
             _stage = GameObject.Find("Stage").GetComponent<Stage>();
+            _image = GetComponent<Image>();
         }
 
         public void SubmitClick()
@@ -58,41 +64,40 @@ namespace Nekoyume.UI
 
         private IEnumerator CoSubmit()
         {
-            var w = Find<LoadingScreen>();
-            if (!ReferenceEquals(w, null))
-            {
-                w.Show();
-            }
-            
-            if (!ReferenceEquals(_battleWinVfx, null))
-            {
-                _battleWinVfx.Stop();
-            }
+            var w = Find<StageLoadingScreen>();
+            w.Show(this, _stage.zone);
 
-            ActionCamera.instance.Idle();
+            if (!ReferenceEquals(_battleWinVFX, null))
+            {
+                _battleWinVFX.Stop();
+            }
 
             var player = _stage.ReadyPlayer();
             var currentId = ActionManager.instance.battleLog?.id;
-            var stage = _stage.repeatStage ? _stage.id : ActionManager.instance.Avatar.WorldStage;
+            var stage = _stage.id;
+            if (!_stage.repeatStage)
+                stage++;
+            actionEnd = false;
             ActionManager.instance.HackAndSlash(player.equipments, new List<Food>(), stage);
+
+            Hide();
             while (currentId == ActionManager.instance.battleLog?.id)
             {
                 yield return null;
             }
 
+            actionEnd = true;
+            yield return StartCoroutine(w.CoClose());
+
             Game.Event.OnStageStart.Invoke();
             Close();
 
-            if (!ReferenceEquals(w, null))
-            {
-                w.Close();
-            }
         }
         public void BackClick()
         {   
-            if (!ReferenceEquals(_battleWinVfx, null))
+            if (!ReferenceEquals(_battleWinVFX, null))
             {
-                _battleWinVfx.Stop();
+                _battleWinVFX.Stop();
             }
 
             _stage.repeatStage = false;
@@ -106,6 +111,8 @@ namespace Nekoyume.UI
         public void Show(BattleLog.Result battleResult, bool repeat)
         {
             _repeat = repeat;
+            _image.enabled = true;
+            modal.SetActive(true);
             result = battleResult;
 
             if (result == BattleLog.Result.Win)
@@ -121,8 +128,8 @@ namespace Nekoyume.UI
                     _timer = Timer;
                 
                 AudioController.instance.PlayMusic(AudioController.MusicCode.Win, 0.3f);
-                _battleWinVfx = VfxController.instance.Create<VfxBattleWin>(ActionCamera.instance.transform, VfxBattleWinOffset);
-                _battleWinVfx.Play(10f);
+                _battleWinVFX = VFXController.instance.Create<BattleWinVFX>(ActionCamera.instance.transform, VfxBattleWinOffset);
+                _battleWinVFX.Play(10f);
                 AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ActionBattleWin);
             }
             else
@@ -186,6 +193,12 @@ namespace Nekoyume.UI
                     AnalyticsManager.instance.BattleContinueAutomatically();
                 }
             }
+        }
+
+        private void Hide()
+        {
+            _image.enabled = false;
+            modal.SetActive(false);
         }
     }
 }

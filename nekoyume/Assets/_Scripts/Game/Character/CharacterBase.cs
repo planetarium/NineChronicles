@@ -6,7 +6,7 @@ using BTAI;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.CC;
 using Nekoyume.Game.Controller;
-using Nekoyume.Game.Vfx;
+using Nekoyume.Game.VFX;
 using Nekoyume.UI;
 using UnityEngine;
 
