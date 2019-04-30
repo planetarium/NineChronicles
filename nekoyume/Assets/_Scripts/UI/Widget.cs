@@ -26,7 +26,7 @@ namespace Nekoyume.UI
         {
             var t = typeof(T);
             var names = t.ToString().Split('.');
-            var resName = $"Prefab/Widget/UI_{names[names.Length - 1]}";
+            var resName = $"UI/Prefabs/UI_{names[names.Length - 1]}";
             var res = Resources.Load<GameObject>(resName);
             if (res != null)
             {
