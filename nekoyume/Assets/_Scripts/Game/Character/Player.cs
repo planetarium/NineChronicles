@@ -5,9 +5,8 @@ using System.Linq;
 using Anima2D;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Controller;
-using Nekoyume.Game.Factory;
 using Nekoyume.Game.Item;
-using Nekoyume.Game.Vfx;
+using Nekoyume.Game.VFX;
 using Nekoyume.Manager;
 using Nekoyume.UI;
 using UnityEngine;
@@ -98,7 +97,7 @@ namespace Nekoyume.Game.Character
             var pos = transform.position;
             pos.x -= 0.2f;
             pos.y += 0.32f;
-            VfxController.instance.Create<VfxBattleDamage01>(pos).Play();
+            VFXController.instance.Create<BattleDamage01VFX>(pos).Play();
         }
 
         protected override void Update()
@@ -145,13 +144,18 @@ namespace Nekoyume.Game.Character
             var prevAnim = gameObject.GetComponentInChildren<Animator>(true);
             if (prevAnim)
             {
-                Destroy(prevAnim.gameObject);
+                if (!prevAnim.name.Contains(itemId.ToString()))
+                {
+                    Destroy(prevAnim.gameObject);
+                }
+                else
+                {
+                    return;
+                }
             }
-
             var origin = Resources.Load<GameObject>($"Prefab/{itemId}");
 
             Instantiate(origin, gameObject.transform);
-
         }
 
         public IEnumerator CoGetExp(long exp)

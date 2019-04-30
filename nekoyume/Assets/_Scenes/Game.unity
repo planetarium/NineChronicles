@@ -523,11 +523,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86391c7799e214590878c73a11a793b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  background: {fileID: 0}
   id: 0
   dummy: {fileID: 282372974}
   loadingSpeed: 4
   selectedPlayer: {fileID: 0}
   repeatStage: 0
+  zone: 
 --- !u!4 &1333831683
 Transform:
   m_ObjectHideFlags: 0

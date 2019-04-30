@@ -3,7 +3,7 @@ using System.Collections;
 using System.Linq;
 using DG.Tweening;
 using Nekoyume.Game.Controller;
-using Nekoyume.Game.Vfx;
+using Nekoyume.Game.VFX;
 using UnityEngine;
 
 namespace Nekoyume.Game.Character
@@ -73,11 +73,11 @@ namespace Nekoyume.Game.Character
             
             if (critical)
             {
-                VfxController.instance.Create<VfxBattleAttackCritical01>(pos).Play();
+                VFXController.instance.Create<BattleAttackCritical01VFX>(pos).Play();
             }
             else
             {
-                VfxController.instance.Create<VfxBattleAttack01>(pos).Play();    
+                VFXController.instance.Create<BattleAttack01VFX>(pos).Play();    
             }
         }
 

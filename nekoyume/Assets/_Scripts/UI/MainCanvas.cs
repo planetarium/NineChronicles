@@ -43,6 +43,7 @@ namespace Nekoyume.UI
             // 로딩창류.
             Widget.Create<GrayLoadingScreen>();
             Widget.Create<LoadingScreen>();
+            Widget.Create<StageLoadingScreen>();
 #if DEBUG
             Widget.Create<Cheat>(true);
 #endif
