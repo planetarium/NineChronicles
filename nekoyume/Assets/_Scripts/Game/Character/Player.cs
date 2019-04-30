@@ -148,13 +148,14 @@ namespace Nekoyume.Game.Character
                 {
                     Destroy(prevAnim.gameObject);
                 }
+                else
+                {
+                    return;
+                }
             }
-            else
-            {
-                var origin = Resources.Load<GameObject>($"Prefab/{itemId}");
+            var origin = Resources.Load<GameObject>($"Prefab/{itemId}");
 
-                Instantiate(origin, gameObject.transform);
-            }
+            Instantiate(origin, gameObject.transform);
         }
 
         public IEnumerator CoGetExp(long exp)
