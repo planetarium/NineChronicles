@@ -38,7 +38,9 @@ namespace Nekoyume.Game.Entrance
 
             var playerFactory = GetComponent<Factory.PlayerFactory>();
             GameObject player = playerFactory.Create(ActionManager.instance.Avatar);
-            player.transform.position = stage.RoomPosition;
+            player.transform.position = stage.RoomPosition - new Vector2(3.0f, 0.0f);
+            var playerComp = player.GetComponent<Character.Player>();
+            playerComp.StartRun();
 
             var status = UI.Widget.Find<UI.Status>();
             status.UpdatePlayer(player);
@@ -47,8 +49,15 @@ namespace Nekoyume.Game.Entrance
             ActionCamera.instance.SetPoint(0f, 0f);
             ActionCamera.instance.Idle();
 
-            yield return new WaitForSeconds(2.0f);
+            yield return new WaitForSeconds(1.0f);
             loadingScreen.Close();
+
+            while (player.transform.position.x < stage.RoomPosition.x)
+            {
+                yield return null;
+            }
+            playerComp.RunSpeed = 0.0f;
+
             Destroy(this);
         }
     }
