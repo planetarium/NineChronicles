@@ -12,6 +12,7 @@ namespace Nekoyume.UI
         public Text LabelEquip;
         public bool toggled;
         public GameObject outLine;
+        public GameObject glow;
 
         public ItemBase Item;
 

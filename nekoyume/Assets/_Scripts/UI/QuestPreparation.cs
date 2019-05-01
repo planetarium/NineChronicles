@@ -135,6 +135,8 @@ namespace Nekoyume.UI
             _player = stage.GetPlayer(stage.QuestPreparationPosition);
             _inventory.Show();
             _inventory.SetItemTypesToDisable(ItemBase.ItemType.Material);
+            _inventory.SetItemTypesToGlow();
+            equipSlotGlow.SetActive(false);
             foreach (var equipment in _player.equipments)
             {
                 var type = equipment.Data.cls.ToEnumItemType();
@@ -168,6 +170,8 @@ namespace Nekoyume.UI
 
         private void SlotClick(InventorySlot slot, bool toggled)
         {
+            _inventory.SetItemTypesToDisable(ItemBase.ItemType.Material);
+            _inventory.SetItemTypesToGlow();
             if (ReferenceEquals(slot, null) ||
                 ReferenceEquals(slot.Item, null) ||
                 !toggled)
@@ -193,6 +197,8 @@ namespace Nekoyume.UI
             {
                 slot.Set(itemInfoSelectedItem.item as ItemUsable);
                 SetGlowEquipSlot(false);
+                _inventory.SetItemTypesToDisable(ItemBase.ItemType.Material);
+                _inventory.SetItemTypesToGlow();
             }
             
             // Fix me.
@@ -250,6 +256,13 @@ namespace Nekoyume.UI
         public void Unequip(GameObject sender)
         {
             var slot = sender.GetComponent<EquipSlot>();
+            if (slot.item == null)
+            {
+                _inventory.SetItemTypesToGlow(slot.type);
+                _inventory.SetOtherItemTypesToDisable(slot.type);
+                equipSlotGlow.SetActive(false);
+                return;
+            }
             slot.Unequip();
             if (slot.type == ItemBase.ItemType.Set)
             {
