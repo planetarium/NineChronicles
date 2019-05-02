@@ -108,13 +108,52 @@ namespace Nekoyume.UI
                 var slot = _slots[i];
                 if (slot.Item == null)
                 {
-                    break;
+                    continue;
                 }
 
                 if (targetTypes.Contains(slot.Item.Data.cls.ToEnumItemType()))
                 {
                     slot.SetAlpha(DisableAlpha);
                 }
+                else
+                {
+                    slot.SetAlpha(1.0f);
+                }
+            }
+        }
+
+        public void SetOtherItemTypesToDisable(params ItemBase.ItemType[] targetTypes)
+        {
+            for (int i = 0; i < maxSlot; i++)
+            {
+                var slot = _slots[i];
+                if (slot.Item == null)
+                {
+                    continue;
+                }
+
+                if (!targetTypes.Contains(slot.Item.Data.cls.ToEnumItemType()))
+                {
+                    slot.SetAlpha(DisableAlpha);
+                }
+                else
+                {
+                    slot.SetAlpha(1.0f);
+                }
+            }
+        }
+
+        public void SetItemTypesToGlow(params ItemBase.ItemType[] targetTypes)
+        {
+            for (int i = 0; i < maxSlot; i++)
+            {
+                var slot = _slots[i];
+                if (slot.Item == null)
+                {
+                    continue;
+                }
+
+                slot.glow.SetActive(targetTypes.Contains(slot.Item.Data.cls.ToEnumItemType()));
             }
         }
     }
