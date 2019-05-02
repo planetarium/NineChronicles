@@ -54,8 +54,8 @@ namespace Nekoyume.Game.Character
             base.Awake();
 
             animator = new PlayerAnimator(this);
-            animator.onEvent.Subscribe(OnAnimatorEvent);
-            animator.SetTimeScale(AnimatorTimeScale);
+            animator.OnEvent.Subscribe(OnAnimatorEvent);
+            animator.TimeScale = AnimatorTimeScale;
 
             Inventory = new Item.Inventory();
 
@@ -106,14 +106,12 @@ namespace Nekoyume.Game.Character
 
         public void UpdateSet(SetItem item)
         {
-            Destroy(animator.target);
-
             var itemId = item?.Data.resourceId ?? DefaultSetId;
-            if (!ReferenceEquals(animator.target, null))
+            if (!ReferenceEquals(animator.Target, null))
             {
-                if (animator.target.name.Contains(itemId.ToString()))
+                if (!animator.Target.name.Contains(itemId.ToString()))
                 {
-                    Destroy(animator.target);
+                    animator.DestroyTarget();
                 }
                 else
                 {

@@ -30,8 +30,8 @@ namespace Nekoyume.Game.Character
             base.Awake();
             
             animator = new EnemyAnimator(this);
-            animator.onEvent.Subscribe(OnAnimatorEvent);
-            animator.SetTimeScale(AnimatorTimeScale);
+            animator.OnEvent.Subscribe(OnAnimatorEvent);
+            animator.TimeScale = AnimatorTimeScale;
             
             _targetTag = Tag.Player;
         }
@@ -59,15 +59,6 @@ namespace Nekoyume.Game.Character
             var force = DamageTextForce;
             var txt = dmg.ToString();
             PopUpDmg(position, force, txt, critical);
-
-//            SpriteRenderer renderer = gameObject.GetComponent<SpriteRenderer>();
-//            if (renderer != null)
-//            {
-//                Material mat = renderer.material;
-//                Sequence colorseq = DOTween.Sequence();
-//                colorseq.Append(mat.DOColor(Color.red, 0.1f));
-//                colorseq.Append(mat.DOColor(Color.white, 0.1f));
-//            }
         }
         
         protected override bool CanRun()

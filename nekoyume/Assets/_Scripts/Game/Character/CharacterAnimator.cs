@@ -1,23 +1,23 @@
 using System;
 using UniRx;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Nekoyume.Game.Character
 {
     public abstract class CharacterAnimator<T> : ICharacterAnimator where T : Component
     {
-        public CharacterBase root { get; }
-        
-        public GameObject target { get; private set; }
+        public CharacterBase Root { get; }
+        public GameObject Target { get; private set; }
+        public Subject<string> OnEvent { get; }
+        public float TimeScale { get; set; }
 
-        public Subject<string> onEvent { get; }
-
-        protected T animator { get; private set; }
+        protected T Animator { get; private set; }
 
         protected CharacterAnimator(CharacterBase root)
         {
-            this.root = root;
-            onEvent = new Subject<string>();
+            Root = root;
+            OnEvent = new Subject<string>();
         }
 
         public virtual void ResetTarget(GameObject value)
@@ -27,18 +27,28 @@ namespace Nekoyume.Game.Character
                 throw new ArgumentNullException();
             }
             
-            target = value;
-            animator = value.GetComponentInChildren<T>();
+            Target = value;
+            Animator = value.GetComponentInChildren<T>();
 
-            if (ReferenceEquals(animator, null))
+            if (ReferenceEquals(Animator, null))
             {
                 throw new NotFoundComponentException<T>();
             }
         }
 
+        public void DestroyTarget()
+        {
+            if (ReferenceEquals(Target, null))
+            {
+                throw new ArgumentNullException();
+            }
+
+            Object.Destroy(Target);
+            Target = null;
+        }
+
         public abstract bool AnimatorValidation();
         public abstract Vector3 GetHUDPosition();
-        public abstract void SetTimeScale(float value);
 
         #region Animation
 
@@ -46,7 +56,6 @@ namespace Nekoyume.Game.Character
         public abstract void Idle();
         public abstract void Run();
         public abstract void StopRun();
-
         public abstract void Attack();
         public abstract void Hit();
         public abstract void Die();
@@ -56,7 +65,7 @@ namespace Nekoyume.Game.Character
 
         public void Dispose()
         {
-            onEvent?.Dispose();
+            OnEvent?.Dispose();
         }
     }
 }

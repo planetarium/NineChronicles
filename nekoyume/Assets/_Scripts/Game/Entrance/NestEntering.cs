@@ -61,7 +61,7 @@ namespace Nekoyume.Game.Entrance
                 var place = Instantiate(placeRes, player.transform);
 
                 // player animator
-                player.animator.target.SetActive(active);
+                player.animator.Target.SetActive(active);
 
                 var tween = place.GetComponentInChildren<DOTweenSpriteAlpha>();
                 tween.gameObject.SetActive(active);

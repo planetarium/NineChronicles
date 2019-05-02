@@ -103,9 +103,9 @@ namespace Nekoyume.Game
                 {
                     playerObject.transform.DOScale(1.1f, 2.0f).SetDelay(0.2f);
                     playerObject.transform.DOMove(new Vector3(-1.25f, -0.7f), 2.4f).SetDelay(0.2f);
-                    if (!ReferenceEquals(anim, null) && !anim.target.activeSelf)
+                    if (!ReferenceEquals(anim, null) && !anim.Target.activeSelf)
                     {
-                        anim.target.SetActive(true);
+                        anim.Target.SetActive(true);
                         anim.Appear();
                     }
 
@@ -115,9 +115,9 @@ namespace Nekoyume.Game
                 {
                     playerObject.transform.DOScale(0.9f, 1.0f);
                     playerObject.transform.DOMoveY(-3.6f, 2.0f);
-                    if (!ReferenceEquals(anim, null) && anim.target.activeSelf)
+                    if (!ReferenceEquals(anim, null) && anim.Target.activeSelf)
                     {
-                        anim.target.SetActive(true);
+                        anim.Target.SetActive(true);
                         anim.Disappear();
                     }
                 }

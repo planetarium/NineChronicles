@@ -6,7 +6,6 @@ using BTAI;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.CC;
 using Nekoyume.Game.Controller;
-using Nekoyume.Game.VFX;
 using Nekoyume.UI;
 using UnityEngine;
 
@@ -14,7 +13,7 @@ namespace Nekoyume.Game.Character
 {
     public abstract class CharacterBase : MonoBehaviour
     {
-        protected const float AnimatorTimeScale = 1f;
+        protected const float AnimatorTimeScale = 1.2f;
         
         public Root Root;
         public int HP = 0;
