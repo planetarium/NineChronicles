@@ -8,6 +8,8 @@ namespace Nekoyume.UI
     {
         public Image loadingImage;
         public Text loadingText;
+        public Text toolTip;
+        public string[] tips;
 
         private Color _color;
         private Sequence[] _sequences;
@@ -24,7 +26,9 @@ namespace Nekoyume.UI
             pos.z = -1f;
             transform.localPosition = pos;
 
-            if (ReferenceEquals(loadingText, null) || ReferenceEquals(loadingImage, null))
+            if (ReferenceEquals(loadingText, null) ||
+                ReferenceEquals(loadingImage, null) ||
+                ReferenceEquals(toolTip, null))
             {
                 throw new SerializeFieldNullException();
             }
@@ -35,6 +39,7 @@ namespace Nekoyume.UI
 
         private void OnEnable()
         {
+            toolTip.text = tips[new System.Random().Next(0, tips.Length)];
             loadingImage.color = _color;
             _sequences = new[]
             {
