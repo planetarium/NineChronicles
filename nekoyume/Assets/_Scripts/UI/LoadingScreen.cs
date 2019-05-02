@@ -6,12 +6,13 @@ namespace Nekoyume.UI
 {
     public class LoadingScreen : Widget
     {
-        public Image _ui_loading_01;
-        
-        private Color _color;
-        private Sequence _sequence = null;
+        public Image loadingImage;
+        public Text loadingText;
 
-        private float _alphaToBeginning = 0.5f;
+        private Color _color;
+        private Sequence[] _sequences;
+
+        private const float AlphaToBeginning = 0.5f;
 
         #region Mono
 
@@ -22,34 +23,39 @@ namespace Nekoyume.UI
             var pos = transform.localPosition;
             pos.z = -1f;
             transform.localPosition = pos;
-            
-            if (_ui_loading_01 == null)
+
+            if (ReferenceEquals(loadingText, null) || ReferenceEquals(loadingImage, null))
             {
-                return;
+                throw new SerializeFieldNullException();
             }
 
-            _color = _ui_loading_01.color;
-            _color.a = _alphaToBeginning;
+            _color = loadingText.color;
+            _color.a = AlphaToBeginning;
         }
 
         private void OnEnable()
         {
-            if (!_ui_loading_01)
+            loadingImage.color = _color;
+            _sequences = new[]
             {
-                return;
-            }
-
-            _ui_loading_01.color = _color;
-            _sequence = DOTween.Sequence()
-                .Append(_ui_loading_01.DOFade(1f, 0.3f))
-                .Append(_ui_loading_01.DOFade(_alphaToBeginning, 0.6f))
-                .SetLoops(-1);
+                DOTween.Sequence()
+                    .Append(loadingImage.DOFade(1f, 0.3f))
+                    .Append(loadingImage.DOFade(AlphaToBeginning, 0.6f))
+                    .SetLoops(-1),
+                DOTween.Sequence()
+                    .Append(loadingText.DOFade(1f, 0.3f))
+                    .Append(loadingText.DOFade(AlphaToBeginning, 0.6f))
+                    .SetLoops(-1)
+            };
         }
 
         private void OnDisable()
         {
-            _sequence?.Kill();
-            _sequence = null;
+            foreach (var sequence in _sequences)
+            {
+                sequence.Kill();
+            }
+            _sequences = null;
         }
 
         #endregion
