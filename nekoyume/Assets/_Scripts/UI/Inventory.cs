@@ -108,7 +108,7 @@ namespace Nekoyume.UI
                 var slot = _slots[i];
                 if (slot.Item == null)
                 {
-                    break;
+                    continue;
                 }
 
                 if (targetTypes.Contains(slot.Item.Data.cls.ToEnumItemType()))
@@ -129,7 +129,7 @@ namespace Nekoyume.UI
                 var slot = _slots[i];
                 if (slot.Item == null)
                 {
-                    break;
+                    continue;
                 }
 
                 if (!targetTypes.Contains(slot.Item.Data.cls.ToEnumItemType()))
@@ -150,7 +150,7 @@ namespace Nekoyume.UI
                 var slot = _slots[i];
                 if (slot.Item == null)
                 {
-                    break;
+                    continue;
                 }
 
                 slot.glow.SetActive(targetTypes.Contains(slot.Item.Data.cls.ToEnumItemType()));
