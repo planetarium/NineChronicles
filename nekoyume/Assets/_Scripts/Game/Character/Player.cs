@@ -70,7 +70,7 @@ namespace Nekoyume.Game.Character
             _targetTag = Tag.Enemy;
         }
 
-        public override float Speed => 1.8f;
+        public override float Speed => 2.0f;
 
         public override IEnumerator CoProcessDamage(int dmg, bool critical)
         {
