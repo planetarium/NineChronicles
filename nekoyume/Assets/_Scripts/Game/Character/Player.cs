@@ -25,7 +25,7 @@ namespace Nekoyume.Game.Character
         public long EXP = 0;
         public int Level = 0;
         public int MPMax = 0;
-        public override float Speed => 1.8f;
+        public override float Speed => 2f;
         
         public List<Equipment> equipments =>
             Inventory.items.Select(i => i.Item).OfType<Equipment>().Where(e => e.equipped).ToList();

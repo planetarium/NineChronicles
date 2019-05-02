@@ -13,10 +13,9 @@ namespace Nekoyume.UI
     public class LoginDetail : Widget
     {
         public GameObject btnLogin;
-        public GameObject btnDelete;
         public GameObject btnCreate;
         public InputField nameField;
-        public GameObject deletePopUp;
+        public Text namePlaceHolder;
         public Text textHp;
         public Text textExp;
         public Slider hpBar;
@@ -24,24 +23,41 @@ namespace Nekoyume.UI
         public Text levelInfo;
         public Text nameInfo;
         public GameObject profileImage;
-        public GameObject menuSelect;
-        public GameObject menuCreate;
-        public GameObject statusInfo;
-        public GameObject grid;
+        public GameObject statusGrid;
+        public GameObject statusRow;
         public GameObject optionGrid;
         public GameObject optionRow;
+        public GameObject palette;
         private int _selectedIndex;
         private Nekoyume.Model.Avatar _avatar;
+
+        
+        private Color namePlaceHolderOriginColor;
+        private Color namePlaceHolderFocusedColor;
 
         protected override void Awake()
         {
             base.Awake();
 
-            deletePopUp.SetActive(false);
-            btnDelete.SetActive(false);
             nameField.gameObject.SetActive(false);
             Game.Event.OnLoginDetail.AddListener(Init);
             ActionManager.instance.InitAgent();
+            
+            namePlaceHolderOriginColor = namePlaceHolder.color;
+            namePlaceHolderFocusedColor = namePlaceHolder.color;
+            namePlaceHolderFocusedColor.a = 0.3f;
+        }
+
+        private void Update()
+        {
+            if (nameField.isFocused)
+            {
+                namePlaceHolder.color = namePlaceHolderFocusedColor;
+            }
+            else
+            {
+                namePlaceHolder.color = namePlaceHolderOriginColor;
+            }
         }
 
         private void OnEnable()
@@ -63,13 +79,6 @@ namespace Nekoyume.UI
             AudioController.PlayClick();
         }
 
-        public void DeleteClick()
-        {
-            deletePopUp.GetComponent<Widget>().Show();
-            deletePopUp.transform.SetAsLastSibling();
-            AudioController.PlayClick();
-        }
-
         public void BackClick()
         {
             Close();
@@ -81,7 +90,7 @@ namespace Nekoyume.UI
 
         public void CreateClick()
         {
-            var w = Find<LoadingScreen>();
+            var w = Find<GrayLoadingScreen>();
             if (!ReferenceEquals(w, null))
             {
                 w.Show();   
@@ -98,27 +107,31 @@ namespace Nekoyume.UI
         private void Init(int index)
         {
             _selectedIndex = index;
-            var active = true;
+            bool isCreateMode = false;
             _avatar = ActionManager.instance.Avatars[_selectedIndex];
             if (ReferenceEquals(_avatar, null))
             {
-                active = false;
+                isCreateMode = true;
                 _avatar = CreateNovice.CreateAvatar("");
                 nameField.text = "";
             }
+            bool isSelectMode = !isCreateMode;
 
             // create new or login
-            nameField.gameObject.SetActive(!active);
-            btnDelete.SetActive(active);
-            profileImage.SetActive(active);
+            nameField.gameObject.SetActive(isCreateMode);
+            btnCreate.SetActive(isCreateMode);
+            palette.SetActive(isCreateMode);
+
+            profileImage.SetActive(isSelectMode);
+            btnLogin.SetActive(isSelectMode);
+            optionGrid.SetActive(isSelectMode);
 
             var player = _avatar.ToPlayer();
             levelInfo.text = $"LV. {player.level}";
             nameInfo.text = $"{_avatar.Name}";
 
             SetInformation(player);
-            menuCreate.SetActive(!active);
-            menuSelect.SetActive(active);
+
             Show();
         }
 
@@ -159,7 +172,7 @@ namespace Nekoyume.UI
             {
                 if (field.IsDefined(typeof(InformationFieldAttribute), true))
                 {
-                    GameObject row = Instantiate(statusInfo, grid.transform);
+                    GameObject row = Instantiate(statusRow, statusGrid.transform);
                     var info = row.GetComponent<StatusInfo>();
                     info.Set(field.Name, field.GetValue(player), player.GetAdditionalStatus(field.Name));
                 }
@@ -183,7 +196,7 @@ namespace Nekoyume.UI
 
         private void Clear()
         {
-            foreach (Transform child in grid.transform)
+            foreach (Transform child in statusGrid.transform)
             {
                 Destroy(child.gameObject);
             }
@@ -192,37 +205,27 @@ namespace Nekoyume.UI
             {
                 Destroy(child.gameObject);
             }
-
-            deletePopUp.GetComponent<Widget>().Close();
-        }
-
-        public void DeleteCharacter()
-        {
-            //Delete key, avatar
-            var prefsKey = string.Format(ActionManager.PrivateKeyFormat, _selectedIndex);
-            string privateKey = PlayerPrefs.GetString(prefsKey, "");
-            PlayerPrefs.DeleteKey(prefsKey);
-            Debug.Log($"Delete {prefsKey}: {privateKey}");
-            var fileName = string.Format(ActionManager.AvatarFileFormat, _selectedIndex);
-            string datPath = Path.Combine(Application.persistentDataPath, fileName);
-            if (File.Exists(datPath))
-                File.Delete(datPath);
-            PlayerPrefs.Save();
-
-            Clear();
-
-            //Reset player
-            var go = GameObject.Find("Stage");
-            var stage = go.GetComponent<Stage>();
-            var player = stage.selectedPlayer;
-            player.Init(new Player());
-
-            Init(_selectedIndex);
         }
 
         private void OnDidAvatarLoaded(object sender, Nekoyume.Model.Avatar a)
         {
-            var w = Find<LoadingScreen>();
+            if (palette.activeInHierarchy)
+            {
+                Close();
+                var alert = Widget.Create<Alert>();
+                alert.Show("", "캐릭터가 생성되었습니다.", "확인");
+                alert.CloseCallback = () => {
+                    Init(_selectedIndex);
+                };
+            }
+            else
+            {
+                Game.Event.OnRoomEnter.Invoke();
+                Widget.Find<Login>().Close();
+                Close();
+            }
+
+            var w = Find<GrayLoadingScreen>();
             if (!ReferenceEquals(w, null))
             {
                 w.Close();
