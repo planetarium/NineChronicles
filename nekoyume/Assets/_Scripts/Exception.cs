@@ -1,4 +1,5 @@
 using System;
+using Spine;
 using UnityEngine;
 
 public class InvalidActionException : Exception
@@ -88,6 +89,40 @@ public class NotFoundComponentException<T> : Exception where T : Component
     }
 
     public NotFoundComponentException(string message, Exception inner) : base(message, inner)
+    {
+    }
+}
+
+public class SpineBoneNotFoundException : Exception
+{
+    private const string MessageFormat = "Not found `{0}` spine bone.";
+    
+    public SpineBoneNotFoundException()
+    {
+    }
+
+    public SpineBoneNotFoundException(string slotName) : base(string.Format(MessageFormat, slotName))
+    {
+    }
+
+    public SpineBoneNotFoundException(string slotName, Exception inner) : base(string.Format(MessageFormat, slotName), inner)
+    {
+    }
+}
+
+public class SpineSlotNotFoundException : Exception
+{
+    private const string MessageFormat = "Not found `{0}` spine slot.";
+    
+    public SpineSlotNotFoundException()
+    {
+    }
+
+    public SpineSlotNotFoundException(string slotName) : base(string.Format(MessageFormat, slotName))
+    {
+    }
+
+    public SpineSlotNotFoundException(string slotName, Exception inner) : base(string.Format(MessageFormat, slotName), inner)
     {
     }
 }

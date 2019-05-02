@@ -4,6 +4,7 @@ using System.Linq;
 using DG.Tweening;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
+using UniRx;
 using UnityEngine;
 
 namespace Nekoyume.Game.Character
@@ -11,33 +12,45 @@ namespace Nekoyume.Game.Character
     public class Enemy : CharacterBase
     {
         private static readonly Vector3 DamageTextForce = new Vector3(0.1f, 0.5f);
-        private static readonly Vector3 HpBarOffset = new Vector3(0f, 0.22f);
+        
+        public Guid id;
         
         public int DataId = 0;
-        public Guid id;
 
         private Player _player;
 
-        protected override Vector3 _hpBarOffset => _castingBarOffset + HpBarOffset;
+        public override float Speed => -1.8f;
+        
+        protected override Vector3 _hudOffset => animator.GetHUDPosition();
 
-        protected override Vector3 _castingBarOffset
+        #region Mono
+
+        protected override void Awake()
         {
-            get
-            {
-                var spriteRenderer = GetComponentsInChildren<Renderer>()
-                    .OrderByDescending(r => r.transform.position.y)
-                    .First();
-                var y = spriteRenderer.bounds.max.y - transform.position.y;
-                var body = GetComponentsInChildren<Transform>().First(g => g.name == "body");
-                var bodyRenderer = body.GetComponent<Renderer>();
-                var x = bodyRenderer.bounds.min.x - transform.position.x + bodyRenderer.bounds.size.x / 2;
-                return new Vector3(x, y, 0.0f);
-
-            }
+            base.Awake();
+            
+            animator = new EnemyAnimator(this);
+            animator.OnEvent.Subscribe(OnAnimatorEvent);
+            animator.TimeScale = AnimatorTimeScale;
+            
+            _targetTag = Tag.Player;
         }
 
-        public override float Speed => -1.8f;
+        private void OnDestroy()
+        {
+            animator?.Dispose();
+        }
 
+        #endregion
+        
+        public void Init(Model.Monster spawnCharacter, Player player)
+        {
+            _player = player;
+            InitStats(spawnCharacter);
+            id = spawnCharacter.id;
+            StartRun();
+        }
+        
         public override IEnumerator CoProcessDamage(int dmg, bool critical)
         {
             yield return StartCoroutine(base.CoProcessDamage(dmg, critical));
@@ -46,15 +59,11 @@ namespace Nekoyume.Game.Character
             var force = DamageTextForce;
             var txt = dmg.ToString();
             PopUpDmg(position, force, txt, critical);
-
-            SpriteRenderer renderer = gameObject.GetComponent<SpriteRenderer>();
-            if (renderer != null)
-            {
-                Material mat = renderer.material;
-                Sequence colorseq = DOTween.Sequence();
-                colorseq.Append(mat.DOColor(Color.red, 0.1f));
-                colorseq.Append(mat.DOColor(Color.white, 0.1f));
-            }
+        }
+        
+        protected override bool CanRun()
+        {
+            return base.CanRun() && !TargetInRange(_player);
         }
 
         protected override void OnDead()
@@ -81,18 +90,6 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        public void Init(Model.Monster spawnCharacter, Player player)
-        {
-            _player = player;
-            _hpBarOffset.Set(-0.0f, -0.11f, 0.0f);
-            _castingBarOffset.Set(-0.0f, -0.33f, 0.0f);
-            _anim = GetComponentInChildren<Animator>();
-            SetAnimatorSpeed(AnimatorSpeed);
-            InitStats(spawnCharacter);
-            id = spawnCharacter.id;
-            StartRun();
-        }
-
         private void InitStats(Model.Monster character)
         {
             var stats = character.data.GetStats(character.level);
@@ -102,24 +99,19 @@ namespace Nekoyume.Game.Character
             Power = 0;
             HPMax = HP;
         }
-
-        protected override void Awake()
+        
+        private void OnAnimatorEvent(string eventName)
         {
-            base.Awake();
-            
-            _targetTag = Tag.Player;
+            switch (eventName)
+            {
+                case "attackStart":
+                    break;
+                case "attackPoint":
+                    Event.OnAttackEnd.Invoke(this);
+                    break;
+                case "footstep":
+                    break;
+            }
         }
-
-        public void PlayAttackSfx()
-        {
-            // Fix me.
-            // 이후 몬스터 별 공격 음이 재생된다.
-        }
-
-        protected override bool CanRun()
-        {
-            return base.CanRun() && !TargetInRange(_player);
-        }
-
     }
 }

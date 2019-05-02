@@ -14,20 +14,18 @@ namespace Nekoyume
         
         public static void DisposeAll<T>(this ReactiveProperty<List<T>> property) where T : IDisposable
         {
-            property.Value?.ForEach(d => d.Dispose());
+            property.Value?.DisposeAllAndClear();
             property.Dispose();
         }
         
         public static void DisposeAll<T>(this ReactiveCollection<T> collection) where T : IDisposable
         {
-            using (var e = collection.GetEnumerator())
+            foreach (var item in collection)
             {
-                while (e.MoveNext())
-                {
-                    e.Current?.Dispose();
-                }
+                item.Dispose();
             }
             collection.Dispose();
+            collection.Clear();
         }
     }
 }

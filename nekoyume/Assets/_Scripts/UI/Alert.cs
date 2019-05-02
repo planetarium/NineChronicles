@@ -29,7 +29,7 @@ namespace Nekoyume.UI
             base.Show();
         }
 
-        override public void Close()
+        public override void Close()
         {
             if (CloseCallback != null)
             {

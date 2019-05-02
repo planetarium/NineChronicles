@@ -19,7 +19,7 @@ namespace Nekoyume
                 {
                     Debug.Log(
                         $"[MonoSingleton]Instance '{typeof(T)}' already destroyed on application quit. Won't create again - returning null.");
-                    return null;
+                    return _instance;
                 }
 
                 lock (Lock)

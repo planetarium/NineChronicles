@@ -195,18 +195,10 @@ namespace Nekoyume.UI
                 SetGlowEquipSlot(false);
             }
             
-            // Fix me.
-            // 소모 아이템을 장착할 때는 아래 코드를 사용해서 소리를 적용해주세요.
-            // AudioController.instance.PlaySfx(AudioController.SfxCode.ChainMail1);
             var type = itemInfoSelectedItem.item.Data.cls.ToEnumItemType();
-            if (type == ItemBase.ItemType.Food)
-            {
-                AudioController.instance.PlaySfx(AudioController.SfxCode.Equipment);
-            }
-            else
-            {
-                AudioController.instance.PlaySfx(AudioController.SfxCode.Equipment);
-            }
+            AudioController.instance.PlaySfx(type == ItemBase.ItemType.Food
+                ? AudioController.SfxCode.ChainMail1
+                : AudioController.SfxCode.Equipment);
 
             if (type == ItemBase.ItemType.Set)
             {

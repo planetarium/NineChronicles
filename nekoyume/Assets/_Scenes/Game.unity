@@ -222,11 +222,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spawnPoints:
-  - {x: 1.4, y: 0.1, z: 0}
-  - {x: 2.2, y: 0, z: 0}
-  - {x: 2.8, y: -0.1, z: 0}
-  - {x: 3.2, y: 0.1, z: 0}
-  - {x: 3.6, y: 0, z: 0}
+  - {x: 1.4, y: -1.1, z: 0}
+  - {x: 2.2, y: -1.2, z: 0}
+  - {x: 2.8, y: -1.3, z: 0}
+  - {x: 3.2, y: -1.1, z: 0}
+  - {x: 3.6, y: -1.2, z: 0}
 --- !u!1 &282372974
 GameObject:
   m_ObjectHideFlags: 0
@@ -558,7 +558,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   list:
-  - Prefab: {fileID: 1101687136648424, guid: 5ecf8c296832a4df395564f409462359, type: 3}
+  - Prefab: {fileID: 1101687136648424, guid: 8c480d3d02c5f45a3aaaabb41d8007bf, type: 3}
     InitCount: 1
     AddCount: 1
   - Prefab: {fileID: 1208442540372552, guid: 37bb47060ecc74f05a492d60ff3e28c6, type: 3}

@@ -91,7 +91,7 @@ namespace Nekoyume.UI
 
         private void OnDestroy()
         {
-            _disposables.ForEach(d => d.Dispose());
+            _disposables.DisposeAllAndClear();
         }
 
         #endregion

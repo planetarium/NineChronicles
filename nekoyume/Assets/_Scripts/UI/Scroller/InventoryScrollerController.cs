@@ -72,7 +72,7 @@ namespace Nekoyume.UI.Scroller
 
         public void SetData(ReactiveCollection<Model.Inventory.Item> dataList)
         {
-            _disposables.ForEach(d => d.Dispose());
+            _disposables.DisposeAllAndClear();
             
             if (ReferenceEquals(dataList, null))
             {

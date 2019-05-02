@@ -44,7 +44,7 @@ namespace Nekoyume.UI.ItemView
                 return;
             }
 
-            _disposables.ForEach(d => d.Dispose());
+            _disposables.DisposeAllAndClear();
 
             _data = data;
             _data.Item.Subscribe(SetItem).AddTo(_disposables);
@@ -66,7 +66,7 @@ namespace Nekoyume.UI.ItemView
         {
             base.Clear();
 
-            _disposables.ForEach(d => d.Dispose());
+            _disposables.DisposeAllAndClear();
 
             _data = null;
 

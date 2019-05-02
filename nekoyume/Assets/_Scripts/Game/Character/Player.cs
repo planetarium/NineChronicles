@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using Anima2D;
 using Nekoyume.Data.Table;
@@ -9,46 +10,34 @@ using Nekoyume.Game.Item;
 using Nekoyume.Game.VFX;
 using Nekoyume.Manager;
 using Nekoyume.UI;
+using UniRx;
 using UnityEngine;
 
 namespace Nekoyume.Game.Character
 {
     public class Player : CharacterBase
     {
+        private const int DefaultSetId = 101000;
+        
         private static readonly Vector3 DamageTextForce = new Vector3(-0.1f, 0.5f);
-        private static readonly Vector3 HpBarOffset = new Vector3(0f, 0.24f);
-        private static readonly Vector3 MpBarOffset = new Vector3(0f, 0.19f);
         
         public int MP = 0;
         public long EXP = 0;
         public int Level = 0;
         public int MPMax = 0;
-        [SerializeField] private SpriteMeshInstance _weapon;
-        public long EXPMax { get; private set; }
-
-        private ProgressBar _mpBar = null;
-
+        public override float Speed => 2f;
+        
         public List<Equipment> equipments =>
             Inventory.items.Select(i => i.Item).OfType<Equipment>().Where(e => e.equipped).ToList();
 
         public Model.Player model;
+        public Item.Inventory Inventory;
+        
+        [SerializeField] private SpriteMeshInstance _weapon;
+        
+        private ProgressBar _mpBar = null;
 
-        protected override Vector3 _hpBarOffset => _castingBarOffset + HpBarOffset;
-        protected Vector3 _mpBarOffset => _castingBarOffset + MpBarOffset;
-
-        private const int DefaultSetId = 101000;
-
-        protected override Vector3 _castingBarOffset
-        {
-            get
-            {
-                var face = GetComponentsInChildren<Transform>().First(g => g.name == "face");
-                var faceRenderer = face.GetComponent<Renderer>();
-                var x = faceRenderer.bounds.min.x - transform.position.x + faceRenderer.bounds.size.x / 2;
-                var y = faceRenderer.bounds.max.y - transform.position.y;
-                return new Vector3(x, y, 0.0f);
-            }
-        }
+        public long EXPMax { get; private set; }
 
         public override WeightType WeightType
         {
@@ -56,21 +45,29 @@ namespace Nekoyume.Game.Character
             protected set { throw new NotImplementedException(); }
         }
 
-        public Item.Inventory Inventory;
+        protected override Vector3 _hudOffset => animator.GetHUDPosition();
+
+        #region Mono
 
         protected override void Awake()
         {
             base.Awake();
-            
-            _anim = GetComponentInChildren<Animator>();
-            SetAnimatorSpeed(AnimatorSpeed);
-            
+
+            animator = new PlayerAnimator(this);
+            animator.OnEvent.Subscribe(OnAnimatorEvent);
+            animator.TimeScale = AnimatorTimeScale;
+
             Inventory = new Item.Inventory();
-            
+
             _targetTag = Tag.Enemy;
         }
 
-        public override float Speed => 2.0f;
+        private void OnDestroy()
+        {
+            animator.Dispose();
+        }
+
+        #endregion
 
         public override IEnumerator CoProcessDamage(int dmg, bool critical)
         {
@@ -100,30 +97,66 @@ namespace Nekoyume.Game.Character
             VFXController.instance.Create<BattleDamage01VFX>(pos).Play();
         }
 
-        protected override void Update()
-        {
-            base.Update();
-
-            // Reference.
-            // if (ReferenceEquals(_anim, null)) 이 라인일 때와 if (_anim == null) 이 라인일 때의 결과가 달라서 주석을 남겨뒀어요.
-            // 아마 전자는 포인터가 가리키는 실제 값을 검사하는 것이고, 후자는 _anim의 값을 검사하는 것 같아요.
-            // if (ReferenceEquals(_anim, null))
-            if (_anim == null)
-            {
-                _anim = GetComponentInChildren<Animator>();
-                SetAnimatorSpeed(AnimatorSpeed);
-            }
-        }
-
         public void Init(Model.Player character)
         {
             model = character;
             UpdateSet(model.set);
             InitStats(character);
+        }
 
-            _hpBarOffset.Set(-0.22f, -0.61f, 0.0f);
-            _castingBarOffset.Set(-0.22f, -0.85f, 0.0f);
-            _mpBarOffset.Set(-0.22f, -0.66f, 0.0f);
+        public void UpdateSet(SetItem item)
+        {
+            var itemId = item?.Data.resourceId ?? DefaultSetId;
+            if (!ReferenceEquals(animator.Target, null))
+            {
+                if (!animator.Target.name.Contains(itemId.ToString()))
+                {
+                    animator.DestroyTarget();
+                }
+                else
+                {
+                    return;
+                }
+            }
+
+            var origin = Resources.Load<GameObject>($"Character/Player/{itemId}");
+            var go = Instantiate(origin, gameObject.transform);
+            animator.ResetTarget(go);
+        }
+
+        public IEnumerator CoGetExp(long exp)
+        {
+            if (exp <= 0)
+            {
+                yield break;
+            }
+
+            PopupText.Show(
+                transform.TransformPoint(-0.6f, 1.0f, 0.0f),
+                new Vector3(0.0f, 2.0f, 0.0f),
+                $"+{exp}"
+            );
+            var level = model.level;
+            model.GetExp(exp);
+            EXP += exp;
+
+            if (model.level != level)
+            {
+                AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ActionStatusLevelUp, level);
+                yield return new WaitForSeconds(0.3f);
+                PopupText.Show(
+                    transform.TransformPoint(-0.6f, 1.0f, 0.0f),
+                    new Vector3(0.0f, 2.0f, 0.0f),
+                    "LEVEL UP"
+                );
+                InitStats(model);
+
+                UpdateHpBar();
+
+                AudioController.instance.PlaySfx(AudioController.SfxCode.LevelUp);
+            }
+
+            Event.OnUpdateStatus.Invoke();
         }
 
         private void InitStats(Model.Player character)
@@ -138,59 +171,20 @@ namespace Nekoyume.Game.Character
             Inventory = character.inventory;
         }
 
-        public void UpdateSet(SetItem item)
+        private void OnAnimatorEvent(string eventName)
         {
-            var itemId = item?.Data.resourceId ?? DefaultSetId;
-            var prevAnim = gameObject.GetComponentInChildren<Animator>(true);
-            if (prevAnim)
+            switch (eventName)
             {
-                if (!prevAnim.name.Contains(itemId.ToString()))
-                {
-                    Destroy(prevAnim.gameObject);
-                }
-                else
-                {
-                    return;
-                }
+                case "attackStart":
+                    AudioController.PlaySwing();
+                    break;
+                case "attackPoint":
+                    Event.OnAttackEnd.Invoke(this);
+                    break;
+                case "footstep":
+                    AudioController.PlayFootStep();
+                    break;
             }
-            var origin = Resources.Load<GameObject>($"Prefab/{itemId}");
-
-            Instantiate(origin, gameObject.transform);
         }
-
-        public IEnumerator CoGetExp(long exp)
-        {
-            if (exp <= 0)
-            {
-                yield break;
-            }
-            
-            PopupText.Show(
-                transform.TransformPoint(-0.6f, 1.0f,0.0f),
-                new Vector3(0.0f,2.0f,0.0f),
-                $"+{exp}"
-            );
-            var level = model.level;
-            model.GetExp(exp);
-            EXP += exp;
-
-            if (model.level != level)
-            {
-                AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ActionStatusLevelUp, level);
-                yield return new WaitForSeconds(0.3f);
-                PopupText.Show(
-                    transform.TransformPoint(-0.6f, 1.0f,0.0f),
-                    new Vector3(0.0f,2.0f,0.0f),
-                    "LEVEL UP"
-                );
-                InitStats(model);
-
-                UpdateHpBar();
-                    
-                AudioController.instance.PlaySfx(AudioController.SfxCode.LevelUp);
-            }
-            Event.OnUpdateStatus.Invoke();
-        }
-
     }
 }

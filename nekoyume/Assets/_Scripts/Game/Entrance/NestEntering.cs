@@ -44,31 +44,29 @@ namespace Nekoyume.Game.Entrance
                     throw new NotFoundComponentException<PlayerFactory>();
                 }
 
-                GameObject go;
+                Player player;
                 bool active;
                 if (avatar != null)
                 {
-                    go = factory.Create(avatar);
-                    var anim = go.GetComponentInChildren<Animator>();
-                    anim.Play("Appear");
+                    player = factory.Create(avatar).GetComponent<Player>();
+                    player.animator.Appear();
                     active = true;
                 }
                 else
                 {
-                    go = factory.Create();
+                    player = factory.Create().GetComponent<Player>();
                     active = false;
                 }
-                go.transform.position = beginPos;
-                var place = Instantiate(placeRes, go.transform);
+                player.transform.position = beginPos;
+                var place = Instantiate(placeRes, player.transform);
 
                 // player animator
-                var animator = go.GetComponentInChildren<Animator>();
-                animator.gameObject.SetActive(active);
+                player.animator.Target.SetActive(active);
 
                 var tween = place.GetComponentInChildren<DOTweenSpriteAlpha>();
                 tween.gameObject.SetActive(active);
 
-                go.transform.DOMove(endPos, 2.0f).SetEase(Ease.OutBack);
+                player.transform.DOMove(endPos, 2.0f).SetEase(Ease.OutBack);
                 yield return new WaitForSeconds(0.2f);
             }
 
