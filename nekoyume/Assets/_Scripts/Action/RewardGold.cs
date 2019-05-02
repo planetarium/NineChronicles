@@ -20,7 +20,7 @@ namespace Nekoyume.Action
 
         private static Context CreateRewardContext()
         {
-            return new Context(null);
+            return new Context(null, address: null);
         }
 
         public override IAccountStateDelta Execute(IActionContext actionCtx)

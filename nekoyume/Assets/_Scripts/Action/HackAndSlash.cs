@@ -1,7 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.ComponentModel.Design;
 using System.Linq;
 using Libplanet.Action;
+using Nekoyume.Game;
 using Nekoyume.Game.Item;
 
 namespace Nekoyume.Action
@@ -79,6 +82,14 @@ namespace Nekoyume.Action
             var player = simulator.Simulate();
             ctx.avatar.Update(player);
             ctx.battleLog = simulator.Log;
+            ctx.updatedAt = DateTimeOffset.UtcNow;
+            if (ctx.avatar.WorldStage > Stage)
+            {
+                var ranking = ActionManager.instance.rankingBoard ?? new RankingBoard();
+                ctx.clearedAt = DateTimeOffset.UtcNow;
+                ranking.Update(ctx);
+                states = states.SetState(ActionManager.RankingAddress, ranking);
+            }
             return states.SetState(actionCtx.Signer, ctx);
         }
     }

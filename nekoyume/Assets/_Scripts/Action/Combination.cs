@@ -190,6 +190,7 @@ namespace Nekoyume.Action
             };
             EndOfExecuteSubject.OnNext(this);
 
+            ctx.updatedAt = DateTimeOffset.UtcNow;
             return states.SetState(actionCtx.Signer, ctx);
         }
     }

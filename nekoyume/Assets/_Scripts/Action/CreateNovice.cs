@@ -23,7 +23,7 @@ namespace Nekoyume.Action
         public static Context CreateContext(string name)
         {
             Avatar avatar = CreateAvatar(name);
-            var ctx = new Context(avatar);
+            var ctx = new Context(avatar, ActionManager.instance.AvatarAddress);
             return ctx;
         }
 

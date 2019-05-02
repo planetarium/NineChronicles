@@ -49,6 +49,12 @@ namespace Nekoyume.Action
         public const string IceServersFileName = "ice_servers.dat";
         public const string ChainIdKey = "chain_id";
         public static Address shopAddress => default(Address);
+
+        public static Address RankingAddress => new Address(new byte[]
+            {
+                0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x1
+            }
+        );
         public Shop shop;
 
         private IEnumerator _miner;
@@ -60,6 +66,8 @@ namespace Nekoyume.Action
         private IEnumerator _actionRetryer;
 
         public Address agentAddress => agent.AgentAddress;
+        public Address AvatarAddress => agent.AvatarAddress;
+        public RankingBoard rankingBoard;
 
 #if UNITY_EDITOR
         private const string AgentStoreDirName = "planetarium_dev";

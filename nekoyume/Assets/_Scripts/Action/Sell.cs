@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Globalization;
@@ -53,6 +54,7 @@ namespace Nekoyume.Action
                 ctx.avatar.Update(player);
                 shop.Set(actionCtx.Signer, reservedItem);
             }
+            ctx.updatedAt = DateTimeOffset.UtcNow;
             states = states.SetState(ActionManager.shopAddress, shop);
             states = states.SetState(actionCtx.Signer, ctx);
             return states;
