@@ -1,4 +1,3 @@
-using Spine.Unity.Examples;
 using UnityEngine;
 
 namespace Nekoyume.Game.Character
