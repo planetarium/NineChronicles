@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.IO;
 using Nekoyume.Action;
 using Nekoyume.Game.Controller;
 using UnityEngine;
@@ -15,7 +16,10 @@ namespace Nekoyume.UI
         protected override void Awake()
         {
             base.Awake();
+        }
 
+        private void Start()
+        {
             Show();
         }
 
@@ -29,6 +33,35 @@ namespace Nekoyume.UI
             AudioController.PlayClick();
         }
 
+        public void SlotDeleteClick(int index)
+        {
+            if (!ready)
+                return;
+
+            var confirm = Widget.Create<Confirm>();
+            confirm.Show("Delete", "정말 삭제하시겠습니까?", "삭제합니다", "아니오");
+            confirm.CloseCallback = (ConfirmResult result) => {
+                if (result == ConfirmResult.Yes)
+                {
+                    //Delete key, avatar
+                    var prefsKey = string.Format(ActionManager.PrivateKeyFormat, index);
+                    string privateKey = PlayerPrefs.GetString(prefsKey, "");
+                    PlayerPrefs.DeleteKey(prefsKey);
+                    Debug.Log($"Delete {prefsKey}: {privateKey}");
+                    var fileName = string.Format(ActionManager.AvatarFileFormat, index);
+                    string datPath = Path.Combine(Application.persistentDataPath, fileName);
+                    if (File.Exists(datPath))
+                        File.Delete(datPath);
+                    PlayerPrefs.Save();
+
+                    Game.Event.OnNestEnter.Invoke();
+                    Show();
+                }
+            };
+
+            AudioController.PlayClick();
+        }
+
         public override void Show()
         {
             base.Show();
@@ -36,21 +69,28 @@ namespace Nekoyume.UI
             for (int i = 0; i < slots.Length; i++)
             {
                 var slot = slots[i];
-                var slotText = slot.GetComponentInChildren<Text>();
-                var button = slot.transform.Find("Character").Find("Button");
-                button.gameObject.SetActive(true);
+
+                var slotRect = slot.GetComponent<RectTransform>();
+                var targetPosition = new Vector3(-2.2f + i * 2.22f, 0.0f, 0.0f);
+                slotRect.anchoredPosition = targetPosition.ToCanvasPosition(Nekoyume.Game.ActionCamera.instance.Cam, MainCanvas.instance.Canvas);
+
+                var playerSlot = slot.GetComponent<LoginPlayerSlot>();
+                playerSlot.CreateView.SetActive(true);
+                playerSlot.NameView.SetActive(true);
+                playerSlot.DeleteView.SetActive(true);
                 try
                 {
                     var avatar = ActionManager.instance.Avatars[i];
-                    slotText.text = $"LV.{avatar.Level} {avatar.Name}";
-                    button.gameObject.SetActive(false);
+                    playerSlot.LabelLevel.text = $"LV.{avatar.Level}";
+                    playerSlot.LabelName.text = $"{avatar.Name}";
+                    playerSlot.CreateView.SetActive(false);
                 }
                 catch (Exception e)
                 {
+                    playerSlot.NameView.SetActive(false);
+                    playerSlot.DeleteView.SetActive(false);
                     if (e is ArgumentOutOfRangeException || e is NullReferenceException)
                     {
-                        slotText.text = "캐릭터를 생성하세요.";
-
                         var tween = slot.GetComponentInChildren<UI.Tween.DOTweenImageAlpha>();
                         if (tween)
                             tween.gameObject.SetActive(false);
