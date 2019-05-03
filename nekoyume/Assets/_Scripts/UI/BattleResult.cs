@@ -1,15 +1,12 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using DG.Tweening;
 using Nekoyume.Manager;
 using Nekoyume.Action;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
-using Nekoyume.Game.VFX;
 using Nekoyume.Model;
+using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -49,7 +46,7 @@ namespace Nekoyume.UI
 
         public void SubmitClick()
         {
-            StartCoroutine(CoSubmit());
+            Submit();
             AudioController.PlayClick();
             
             if (result == BattleLog.Result.Win)
@@ -62,7 +59,7 @@ namespace Nekoyume.UI
             }
         }
 
-        private IEnumerator CoSubmit()
+        private void Submit()
         {
             var w = Find<StageLoadingScreen>();
             w.Show(this, _stage.zone);
@@ -73,25 +70,24 @@ namespace Nekoyume.UI
             }
 
             var player = _stage.ReadyPlayer();
-            var currentId = ActionManager.instance.battleLog?.id;
             var stage = _stage.id;
             if (!_stage.repeatStage)
                 stage++;
             actionEnd = false;
-            ActionManager.instance.HackAndSlash(player.equipments, new List<Food>(), stage);
+            IObservable<ActionBase.ActionEvaluation<HackAndSlash>> observable =
+                ActionManager.instance.HackAndSlash(player.equipments, new List<Food>(), stage);
 
             Hide();
-            while (currentId == ActionManager.instance.battleLog?.id)
+
+            observable.ObserveOnMainThread().Subscribe(_ =>
             {
-                yield return null;
-            }
-
-            actionEnd = true;
-            yield return StartCoroutine(w.CoClose());
-
-            Game.Event.OnStageStart.Invoke();
-            Close();
-
+                
+                actionEnd = true;
+                StartCoroutine(w.CoClose());
+                
+                Game.Event.OnStageStart.Invoke();
+                Close();
+            }).AddTo(this);
         }
         public void BackClick()
         {   
@@ -189,7 +185,7 @@ namespace Nekoyume.UI
                 if (_timer <= 0)
                 {
                     _repeat = false;
-                    StartCoroutine(CoSubmit());
+                    Submit();
                     AnalyticsManager.instance.BattleContinueAutomatically();
                 }
             }
