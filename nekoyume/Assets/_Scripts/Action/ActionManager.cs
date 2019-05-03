@@ -61,6 +61,7 @@ namespace Nekoyume.Action
         private IEnumerator _txProcessor;
         private IEnumerator _avatarUpdator;
         private IEnumerator _shopUpdator;
+        private IEnumerator _rankingUpdator;
         private IEnumerator _swarmRunner;
 
         private IEnumerator _actionRetryer;
@@ -105,6 +106,7 @@ namespace Nekoyume.Action
 
             StartNullableCoroutine(_avatarUpdator);
             StartNullableCoroutine(_shopUpdator);
+            StartNullableCoroutine(_rankingUpdator);
         }
 
         public void CreateNovice(string nickName)
@@ -290,12 +292,19 @@ namespace Nekoyume.Action
             Avatar = LoadStatus(_saveFilePath);
             agent.DidReceiveAction += ReceiveAction;
             agent.UpdateShop += UpdateShop;
+            agent.UpdateRankingBoard += UpdateRankingBoard;
 
             _avatarUpdator = agent.CoAvatarUpdator();
             _shopUpdator = agent.CoShopUpdator();
+            _rankingUpdator = agent.CoRankingUpdator();
 
             Debug.Log($"Agent Address: 0x{agent.AgentAddress.ToHex()}");
             Debug.Log($"Avatar Address: 0x{agent.AvatarAddress.ToHex()}");
+        }
+
+        private void UpdateRankingBoard(object sender, RankingBoard board)
+        {
+            rankingBoard = board;
         }
 
         private string GetCommandLineOption(string name)

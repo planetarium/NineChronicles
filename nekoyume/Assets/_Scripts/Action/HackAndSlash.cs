@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.ComponentModel.Design;
 using System.Linq;
 using Libplanet.Action;
 using Nekoyume.Game;
@@ -42,6 +41,7 @@ namespace Nekoyume.Action
                 {
                     ctx = CreateNovice.CreateContext("dummy");
                 }
+                states = states.SetState(ActionManager.RankingAddress, new RankingBoard());
 
                 return states.SetState(actionCtx.Signer, ctx);
             }
