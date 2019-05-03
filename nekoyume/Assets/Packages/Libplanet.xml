@@ -1,0 +1,2765 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Libplanet</name>
+    </assembly>
+    <members>
+        <member name="T:Libplanet.Action.AccountStateDeltaImpl">
+            <summary>
+            An internal implementation of <see cref="T:Libplanet.Action.IAccountStateDelta"/>.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Action.AccountStateDeltaImpl.#ctor(Libplanet.Action.AccountStateGetter)">
+            <summary>
+            Creates a null delta from the given
+            <paramref name="accountStateGetter"/>.
+            </summary>
+            <param name="accountStateGetter">A view to the &#x201c;epoch&#x201d;
+            states.</param>
+        </member>
+        <member name="P:Libplanet.Action.AccountStateDeltaImpl.Libplanet#Action#IAccountStateDelta#UpdatedAddresses">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Action.AccountStateDeltaImpl.Libplanet#Action#IAccountStateDelta#GetState(Libplanet.Address)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Action.AccountStateDeltaImpl.Libplanet#Action#IAccountStateDelta#SetState(Libplanet.Address,System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Libplanet.Action.AccountStateGetter">
+            <summary>
+            An delegate to provide read-only view of account states.
+            <para>Gets an account state of the given
+            <paramref name="address"/>.</para>
+            <para>If the given <paramref name="address"/> has never been set
+            its account status, returns <c>null</c> instead of throwing
+            any exception.</para>
+            </summary>
+            <param name="address">An address of the account to read
+            its state.</param>
+            <returns>The account state if exists.  Otherwise <c>null</c>.
+            </returns>
+        </member>
+        <member name="T:Libplanet.Action.ActionEvaluation`1">
+            <summary>
+            A record type to represent an evaluation plan and result of
+            a single action (<typeparamref name="T"/>).
+            </summary>
+            <typeparam name="T">A concrete type that implements
+            <see cref="T:Libplanet.Action.IAction"/>.</typeparam>
+        </member>
+        <member name="M:Libplanet.Action.ActionEvaluation`1.#ctor(`0,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)">
+            <summary>
+            Creates an <see cref="T:Libplanet.Action.ActionEvaluation`1"/> instance
+            with filling properties.
+            </summary>
+            <param name="action">An action to evaluate.</param>
+            <param name="inputContext">An input <see cref="T:Libplanet.Action.IActionContext"/> to
+            evaluate <paramref name="action"/>.</param>
+            <param name="outputStates">The result states that
+            <paramref name="action"/> makes.</param>
+        </member>
+        <member name="P:Libplanet.Action.ActionEvaluation`1.Action">
+            <summary>
+            An action to evaluate.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Action.ActionEvaluation`1.InputContext">
+            <summary>
+            An input <see cref="T:Libplanet.Action.IActionContext"/> to evaluate
+            <see cref="P:Libplanet.Action.ActionEvaluation`1.Action"/>.
+            </summary>
+            <remarks>Its <see cref="P:Libplanet.Action.IActionContext.Random"/> property
+            is not consumed yet.</remarks>
+        </member>
+        <member name="P:Libplanet.Action.ActionEvaluation`1.OutputStates">
+            <summary>
+            The result states that <see cref="P:Libplanet.Action.ActionEvaluation`1.Action"/> makes.
+            </summary>
+        </member>
+        <member name="T:Libplanet.Action.ActionTypeAttribute">
+            <summary>
+            Indicates that an action class (i.e., a class implementing
+            <see cref="T:Libplanet.Action.IAction"/>) can be held by transactions and blocks.
+            It also gives an action class a <see cref="P:Libplanet.Action.ActionTypeAttribute.TypeIdentifier"/> for
+            serialization and deserialization.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Action.ActionTypeAttribute.#ctor(System.String)">
+            <summary>
+            Creates an <see cref="T:Libplanet.Action.ActionTypeAttribute"/> with a given
+            <paramref name="typeIdentifier"/>.
+            </summary>
+            <param name="typeIdentifier">An action class's unique
+            identifier for serialization and deserialization.</param>
+        </member>
+        <member name="P:Libplanet.Action.ActionTypeAttribute.TypeIdentifier">
+            <summary>
+            An action class's unique identifier for serialization and
+            deserialization.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Action.ActionTypeAttribute.ValueOf(System.Type)">
+            <summary>
+            Gets the <see cref="P:Libplanet.Action.ActionTypeAttribute.TypeIdentifier"/> for a given action class.
+            </summary>
+            <param name="actionType">A <see cref="T:System.Type"/> object of an action
+            class to know its annotated <see cref="P:Libplanet.Action.ActionTypeAttribute.TypeIdentifier"/>.</param>
+            <returns>The <see cref="P:Libplanet.Action.ActionTypeAttribute.TypeIdentifier"/> of the given
+            <paramref name="actionType"/> if it's annotated with
+            <see cref="T:Libplanet.Action.ActionTypeAttribute"/>.  If it's not annotated returns
+            <c>null</c>.</returns>
+        </member>
+        <member name="T:Libplanet.Action.AddressStateMap">
+            <summary>
+            An immutable key&#x2013;value data structure to represent states of
+            multiple accounts.  Keys are an account <see cref="T:Libplanet.Address"/>,
+            and values are their state.
+            <para>Since this implements <see
+            cref="T:System.Collections.Immutable.IImmutableDictionary`2"/>
+            interface, the usage is same.</para>
+            </summary>
+        </member>
+        <member name="M:Libplanet.Action.AddressStateMap.#ctor">
+            <summary>
+            Creates an empty map.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Action.AddressStateMap.#ctor(System.Collections.Immutable.IImmutableDictionary{Libplanet.Address,System.Object})">
+            <summary>
+            Creates a new map from the items of the
+            <paramref name="dictionary"/>.
+            </summary>
+            <param name="dictionary">A dictionary of items to
+            fill the new map with.</param>
+        </member>
+        <member name="P:Libplanet.Action.AddressStateMap.Keys">
+            <inheritdoc />
+        </member>
+        <member name="P:Libplanet.Action.AddressStateMap.Values">
+            <inheritdoc />
+        </member>
+        <member name="P:Libplanet.Action.AddressStateMap.Count">
+            <inheritdoc />
+        </member>
+        <member name="P:Libplanet.Action.AddressStateMap.Item(Libplanet.Address)">
+            <inheritdoc />
+        </member>
+        <member name="M:Libplanet.Action.AddressStateMap.Add(Libplanet.Address,System.Object)">
+            <inheritdoc />
+        </member>
+        <member name="M:Libplanet.Action.AddressStateMap.AddRange(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{Libplanet.Address,System.Object}})">
+            <inheritdoc />
+        </member>
+        <member name="M:Libplanet.Action.AddressStateMap.Clear">
+            <inheritdoc />
+        </member>
+        <member name="M:Libplanet.Action.AddressStateMap.Contains(System.Collections.Generic.KeyValuePair{Libplanet.Address,System.Object})">
+            <inheritdoc />
+        </member>
+        <member name="M:Libplanet.Action.AddressStateMap.ContainsKey(Libplanet.Address)">
+            <inheritdoc />
+        </member>
+        <member name="M:Libplanet.Action.AddressStateMap.GetEnumerator">
+            <inheritdoc />
+        </member>
+        <member name="M:Libplanet.Action.AddressStateMap.Remove(Libplanet.Address)">
+            <inheritdoc />
+        </member>
+        <member name="M:Libplanet.Action.AddressStateMap.RemoveRange(System.Collections.Generic.IEnumerable{Libplanet.Address})">
+            <inheritdoc />
+        </member>
+        <member name="M:Libplanet.Action.AddressStateMap.SetItem(Libplanet.Address,System.Object)">
+            <inheritdoc />
+        </member>
+        <member name="M:Libplanet.Action.AddressStateMap.SetItems(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{Libplanet.Address,System.Object}})">
+            <inheritdoc />
+        </member>
+        <member name="M:Libplanet.Action.AddressStateMap.TryGetKey(Libplanet.Address,Libplanet.Address@)">
+            <inheritdoc />
+        </member>
+        <member name="M:Libplanet.Action.AddressStateMap.TryGetValue(Libplanet.Address,System.Object@)">
+            <inheritdoc />
+        </member>
+        <member name="M:Libplanet.Action.AddressStateMap.System#Collections#IEnumerable#GetEnumerator">
+            <inheritdoc />
+        </member>
+        <member name="M:Libplanet.Action.AddressStateMap.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <inheritdoc />
+        </member>
+        <member name="T:Libplanet.Action.IAccountStateDelta">
+            <summary>
+            An interface to manipulate account states with
+            maintaining the set of <see cref="P:Libplanet.Action.IAccountStateDelta.UpdatedAddresses"/>.
+            <para>It is like a map which is virtually initialized such
+            that every possible <see cref="T:Libplanet.Address"/> exists and
+            is mapped to <c>null</c>.  That means that:</para>
+            <list type="bullet">
+            <item>
+            <description>it does not have length,</description>
+            </item>
+            <item>
+            <description>its index getter never throws
+            <see cref="T:System.Collections.Generic.KeyNotFoundException"/>,
+            but returns <c>null</c> instead, and</description>
+            </item>
+            <item>
+            <description>filling an <see cref="T:Libplanet.Address"/> with
+            <c>null</c> state cannot be distinguished from
+            the <see cref="T:Libplanet.Address"/> having never been set to
+            any state.</description>
+            </item>
+            </list>
+            </summary>
+            <remarks>
+            This interface is immutable.  <see cref="M:Libplanet.Action.IAccountStateDelta.SetState(Libplanet.Address,System.Object)"/>
+            method does not manipulate the instance, but returns a new
+            <see cref="T:Libplanet.Action.IAccountStateDelta"/> instance with updated states.
+            </remarks>
+        </member>
+        <member name="P:Libplanet.Action.IAccountStateDelta.UpdatedAddresses">
+            <summary>
+            <seealso cref="T:Libplanet.Address"/>es of the accounts that have
+            been updated since then.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Action.IAccountStateDelta.GetState(Libplanet.Address)">
+            <summary>
+            Gets the account state of the given <paramref name="address"/>.
+            </summary>
+            <param name="address">The <see cref="T:Libplanet.Address"/> referring
+            the account to get its state.</param>
+            <returns>The account state of the given <paramref name="address"/>.
+            If it has never been set to any state it returns <c>null</c>
+            instead.</returns>
+        </member>
+        <member name="M:Libplanet.Action.IAccountStateDelta.SetState(Libplanet.Address,System.Object)">
+            <summary>
+            Gets a new instance that the account state of the given
+            <paramref name="address"/> is set to the given
+            <paramref name="state"/>.
+            </summary>
+            <param name="address">The <see cref="T:Libplanet.Address"/> referring
+            the account to set its state.</param>
+            <param name="state">The new state to fill the account with.</param>
+            <returns>A new <see cref="T:Libplanet.Action.IAccountStateDelta"/> instance that
+            the account state of the given <paramref name="address"/>
+            is set to the given <paramref name="state"/>.</returns>
+            <remarks>
+            This method method does not manipulate the instance,
+            but returns a new <see cref="T:Libplanet.Action.IAccountStateDelta"/> instance
+            with updated states instead.
+            </remarks>
+        </member>
+        <member name="T:Libplanet.Action.IAction">
+             <summary>
+             An in-game action.  Every action should be replayable, because
+             multiple nodes in a network should execute an action and get the same
+             result.
+             <para>A &#x201c;class&#x201d; which implements this interface is
+             analogous to a function, and its instance is analogous to a
+             <a href="https://en.wikipedia.org/wiki/Partial_application">partial
+             function application</a>, in other words, a function with some bound
+             arguments.  Those parameters that will be bound at runtime should be
+             represented as fields or properties in an action class, and bound
+             argument values to these parameters should be received through
+             a constructor parameters of that class.</para>
+             </summary>
+             <example>
+             The following example shows how to implement an action of three types
+             of in-game logic:
+             <code><![CDATA[
+             using System;
+             using System.Collections.Immutable;
+             using Libplanet;
+             using Libplanet.Action;
+            
+             public class MyAction : IAction
+             {
+                 // Declare an enum type to distinguish types of in-game logic.
+                 public enum ActType { CreateCharacter, Attack, Heal }
+            
+                 // Declare properties (or fields) to store "bound" argument values.
+                 public ActType Type { get; private set; }
+                 public Address TargetAddress { get; private set; }
+            
+                 // Action must has a public parameterless constructor.
+                 // Usually this is used only by Libplanet's internals.
+                 public MyAction() {}
+            
+                 // Take argument values to "bind" through constructor parameters.
+                 public MyAction(ActType type, Address targetAddress)
+                 {
+                     Type = type;
+                     TargetAddress = targetAddress;
+                 }
+            
+                 // The main game logic belongs to here.  It takes the
+                 // previous states through its parameter named context,
+                 // and is offered "bound" argument values through
+                 // its own properties (or fields).
+                 IAccountStateDelta IAction.Execute(IActionContext context)
+                 {
+                     // Gets the state immediately before this action is executed.
+                     // ImmutableDictionary<string, uint> is just for example,
+                     // As far as it is serializable, you can store any types.
+                     // (We recommend to use immutable types though.)
+                     var state = (ImmutableDictionary<string, uint>)
+                         context.PreviousStates.GetState(TargetAddress);
+            
+                     // This variable purposes to store the state
+                     // right after this action finishes.
+                     ImmutableDictionary<string, uint> nextState;
+            
+                     // Does different things depending on the action's type.
+                     // This way is against the common principals of programming
+                     // as it is just an example.  You could compare this with
+                     // a better example of PolymorphicAction<T> class.
+                     switch (Type)
+                     {
+                         case ActType.CreateCharacter:
+                             if (!TargetAddress.Equals(context.Signer))
+                                 throw new Exception(
+                                     "TargetAddress of CreateCharacter action " +
+                                     "only can be the same address to the " +
+                                     "Transaction<T>.Signer.");
+                             else if (!(state is null))
+                                 throw new Exception(
+                                     "Character was already created.");
+            
+                             nextState = ImmutableDictionary<string, uint>.Empty
+                                 .Add("hp", 20);
+                             break;
+            
+                         case ActType.Attack:
+                             nextState =
+                                 state.SetItem("hp", Math.Max(state["hp"] - 5, 0));
+                             break;
+            
+                         case ActType.Heal:
+                             nextState =
+                                 state.SetItem("hp", Math.Min(state["hp"] + 5, 20));
+                             break;
+            
+                         default:
+                             throw new Exception(
+                                 "Properties are not properly initialized.");
+                     }
+            
+                     // Builds a delta (dirty) from previous to next states, and
+                     // returns it.
+                     return context.PreviousStates.SetState(TargetAddress,
+                         nextState);
+                 }
+            
+                 // Side effects, i.e., any effects on other than states, are
+                 // done here.
+                 void IAction.Render(
+                     IActionContext context,
+                     IAccountStateDelta nextStates)
+                 {
+                     Character c;
+            
+                     // You could compare this with a better example of
+                     // PolymorphicAction<T> class.
+                     switch (Type)
+                     {
+                         case ActType.CreateCharacter:
+                             c = new Character
+                             {
+                                 Address = TargetAddress,
+                                 Hp = 0,
+                             };
+                             break;
+            
+                         case ActType.Attack:
+                         case ActType.Heal:
+                             c = Character.GetByAddress(TargetAddress);
+                             break;
+            
+                         default:
+                             break;
+                     }
+            
+                     c?.Hp = nextStates.GetState(TargetAddress)["hp"];
+                     c?.Draw();
+                 }
+            
+                 // Sometimes a block to which an action belongs can be
+                 // a "stale."  If that action already has been rendered,
+                 // it should be undone.
+                 void IAction.Unrender(
+                     IActionContext context,
+                     IAccountStateDelta nextStates)
+                 {
+                     Character c = Character.GetByAddress(TargetAddress);
+            
+                     // You could compare this with a better example of
+                     // PolymorphicAction<T> class.
+                     switch (Type)
+                     {
+                         case ActType.CreateCharacter:
+                             c.Hide();
+                             break;
+            
+                         case ActType.Attack:
+                         case ActType.Heal:
+                             IAccountStateDelta prevStates = context.PreviousStates;
+                             c.Hp = prevStates.GetState(TargetAddress)["hp"];
+                             c.Draw();
+                             break;
+            
+                         default:
+                             break;
+                     }
+                 }
+            
+                 // Serializes its "bound arguments" so that they are transmitted
+                 // over network or stored to the persistent storage.
+                 // It uses .NET's built-in serialization mechanism.
+                 IImmutableDictionary<string, object> IAction.PlainValue =>
+                     ImmutableDictionary<string, object>.Empty
+                         .Add("type", Type)
+                         .Add("target_address", TargetAddress);
+            
+                 // Deserializes "bound arguments".  That is, it is inverse
+                 // of PlainValue property.
+                 void IAction.LoadPlainValue(
+                     IImmutableDictionary<string, object> plainValue)
+                 {
+                     Type = (ActType)plainValue["type"];
+                     TargetAddress = (Address)plainValue["target_address"];
+                 }
+             }
+             ]]></code>
+             <para>Note that the above example has several bad practices.
+             Compare this example with <see cref="T:Libplanet.Action.PolymorphicAction`1"/>'s
+             example.</para>
+             </example>
+        </member>
+        <member name="P:Libplanet.Action.IAction.PlainValue">
+            <summary>
+            Serializes values bound to an action, which is held by properties
+            (or fields) of an action, so that they can be transmitted over
+            network or saved to persistent storage.
+            <para>Serialized values are deserialized by <see
+            cref="M:Libplanet.Action.IAction.LoadPlainValue(System.Collections.Immutable.IImmutableDictionary{System.String,System.Object})"/> method
+            later.</para>
+            <para>It uses <a href=
+            "https://docs.microsoft.com/en-us/dotnet/standard/serialization/"
+            >.NET's built-in serialization mechanism</a>.</para>
+            </summary>
+            <returns>A value which encodes this action's bound values (held
+            by properties or fields).  It has to be <a href=
+            "https://docs.microsoft.com/en-us/dotnet/standard/serialization/"
+            >serializable</a>.</returns>
+            <seealso
+            cref="M:Libplanet.Action.IAction.LoadPlainValue(System.Collections.Immutable.IImmutableDictionary{System.String,System.Object})"/>
+        </member>
+        <member name="M:Libplanet.Action.IAction.LoadPlainValue(System.Collections.Immutable.IImmutableDictionary{System.String,System.Object})">
+            <summary>
+            Deserializes serialized data (i.e., data <see cref="P:Libplanet.Action.IAction.PlainValue"/>
+            property made), and then fills this action's properties (or fields)
+            with the deserialized values.
+            </summary>
+            <param name="plainValue">Data (made by <see cref="P:Libplanet.Action.IAction.PlainValue"/>
+            property) to be deserialized and assigned to this action's
+            properties (or fields).</param>
+            <seealso cref="P:Libplanet.Action.IAction.PlainValue"/>
+        </member>
+        <member name="M:Libplanet.Action.IAction.Execute(Libplanet.Action.IActionContext)">
+            <summary>
+            Executes the main game logic of an action.  This should be
+            <em>deterministic</em>.
+            <para>Through the <paramref name="context"/> object,
+            it receives information such as a transaction signer,
+            its states immediately before the execution,
+            and a deterministic random seed.</para>
+            <para>Other &#x201c;bound&#x201d; information resides in the action
+            object in itself, as its properties (or fields).</para>
+            <para>A returned <see cref="T:Libplanet.Action.AddressStateMap"/> object functions as
+            a delta which shifts from previous states to next states.</para>
+            </summary>
+            <param name="context">A context object containing addresses that
+            signed the transaction, states immediately before the execution,
+            and a PRNG object which produces deterministic random numbers.
+            See <see cref="T:Libplanet.Action.IActionContext"/> for details.</param>
+            <returns>A map of changed states (so-called "dirty").</returns>
+            <remarks>This method should be deterministic:
+            for structurally (member-wise) equal actions and <see
+            cref="T:Libplanet.Action.IActionContext"/>s, the same result should be returned.
+            Side effects should be avoided, because an action's
+            <see cref="M:Libplanet.Action.IAction.Execute(Libplanet.Action.IActionContext)"/> method can be called more
+            than once, the time it's called is difficult to predict.
+            <para>For changing in-memory game states or drawing graphics,
+            write such code in the <see
+            cref="M:Libplanet.Action.IAction.Render(Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/> method instead.
+            The <see cref="M:Libplanet.Action.IAction.Render(Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/> method
+            is guaranteed to be called only once, and only after an action is
+            transmitted to other nodes in the network.</para>
+            <para>For randomness, <em>never</em> use <see cref="T:System.Random"/>
+            nor any other PRNGs provided by other than Libplanet.
+            Use <see cref="P:Libplanet.Action.IActionContext.Random"/> instead.
+            <see cref="P:Libplanet.Action.IActionContext.Random"/> guarantees the same action
+            has the consistent result for every node in the network.</para>
+            <para>Also do not perform I/O operations such as file system access
+            or networking.  These bring an action indeterministic.  You maybe
+            fine to log messages for debugging purpose, but equivalent messages
+            could be logged multiple times.</para>
+            </remarks>
+            <seealso cref="T:Libplanet.Action.IActionContext"/>
+        </member>
+        <member name="M:Libplanet.Action.IAction.Render(Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)">
+            <summary>
+            Does things that should be done right after this action is
+            spread to the network or is &#x201c;confirmed&#x201d; (kind of)
+            by each peer node.
+            <para>Usually, this method updates the in-memory game states
+            (if exist), and then sends a signal to the UI thread (usually
+            the main thread) so that the graphics on the display is redrawn.
+            </para>
+            </summary>
+            <param name="context">The equivalent context object to
+            what <see cref="M:Libplanet.Action.IAction.Execute(Libplanet.Action.IActionContext)"/> method had received.
+            That means <see cref="P:Libplanet.Action.IActionContext.PreviousStates"/> are
+            the states right <em>before</em> this action executed.
+            For the states after this action executed,
+            use the <paramref name="nextStates"/> argument instead.
+            </param>
+            <param name="nextStates">The states right <em>after</em> this action
+            executed, which means it is equivalent to what <see
+            cref="M:Libplanet.Action.IAction.Execute(Libplanet.Action.IActionContext)"/> method returned.
+            </param>
+        </member>
+        <member name="M:Libplanet.Action.IAction.Unrender(Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)">
+            <summary>
+            Does things that should be undone right after this action is
+            invalidated (mostly due to a block which this action has belonged
+            to becoming considered a stale).
+            <para>This method takes the equivalent arguments to
+            <see cref="M:Libplanet.Action.IAction.Render(Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/> method.
+            </para>
+            </summary>
+            <param name="context">The equivalent context object to
+            what <see cref="M:Libplanet.Action.IAction.Execute(Libplanet.Action.IActionContext)"/> method had received.
+            That means <see cref="P:Libplanet.Action.IActionContext.PreviousStates"/> are
+            the states right <em>before</em> this action executed.
+            For the states after this action executed,
+            use the <paramref name="nextStates"/> argument instead.
+            </param>
+            <param name="nextStates">The states right <em>after</em> this action
+            executed, which means it is equivalent to what <see
+            cref="M:Libplanet.Action.IAction.Execute(Libplanet.Action.IActionContext)"/> method returned.
+            </param>
+            <remarks>As a rule of thumb, this should be the inverse of
+            <see cref="M:Libplanet.Action.IAction.Render(Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/> method
+            with redrawing the graphics on the display at the finish.</remarks>
+        </member>
+        <member name="T:Libplanet.Action.IActionContext">
+            <summary>
+            Contextual data determined by a transaction and a block.
+            Passed to <see cref="M:Libplanet.Action.IAction.Execute(Libplanet.Action.IActionContext)"/> method.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Action.IActionContext.Signer">
+            <summary>
+            <see cref="T:Libplanet.Address"/> of an account who made and signed
+            a transaction that an executed <see cref="T:Libplanet.Action.IAction"/> belongs to.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Action.IActionContext.Miner">
+            <summary>
+            <see cref="T:Libplanet.Address"/> of a block miner account.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Action.IActionContext.BlockIndex">
+            <summary>
+            Block index of a transaction that an executed <see cref="T:Libplanet.Action.IAction"/>
+            belongs to.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Action.IActionContext.Rehearsal">
+            <summary>
+            Whether an <see cref="T:Libplanet.Action.IAction"/> is being executed during
+            &#x201c;rehearsal mode&#x201d;, that there is nothing
+            in <see cref="P:Libplanet.Action.IActionContext.PreviousStates"/>.
+            </summary>
+            <seealso cref="M:Libplanet.Tx.Transaction`1.Create(Libplanet.Crypto.PrivateKey,System.Collections.Generic.IEnumerable{`0},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Nullable{System.DateTimeOffset})"/>
+        </member>
+        <member name="P:Libplanet.Action.IActionContext.PreviousStates">
+            <summary>
+            A null delta of states, which means it represents the states
+            before <see cref="T:Libplanet.Action.IAction"/> executes.
+            <para>Although a <see cref="T:Libplanet.Action.IAccountStateDelta"/> instance is
+            immutable, it has several manipulative methods that returns
+            new <see cref="T:Libplanet.Action.IAccountStateDelta"/> instances with some "dirty"
+            states.  These kinds of dirty <see cref="T:Libplanet.Action.IAccountStateDelta"/>
+            instances can be returned by <see
+            cref="M:Libplanet.Action.IAction.Execute(Libplanet.Action.IActionContext)"/> method.</para>
+            </summary>
+        </member>
+        <member name="P:Libplanet.Action.IActionContext.Random">
+            <summary>
+            An initialized pseudorandom number generator.  Its seed (state)
+            is determined by a block and a transaction, which is
+            deterministic so that every node can replay the same action and
+            then reproduce the same result, while neither a single block miner
+            nor a single transaction signer can predict the result and cheat.
+            </summary>
+            <returns>A random object that shares interface mostly equivalent
+            to <see cref="T:System.Random"/>.</returns>
+        </member>
+        <member name="T:Libplanet.Action.IRandom">
+            <summary>
+            An pseudorandom number generator interface equivalent to
+            <see cref="T:System.Random"/>.
+            <para>Although these two types have similar shapes, they are not
+            compatible (i.e., disallowed to be casted to each other).</para>
+            </summary>
+        </member>
+        <member name="M:Libplanet.Action.IRandom.Next">
+            <summary>
+            Gets a non-negative random integer.
+            </summary>
+            <returns>A 32-bit signed integer that is greater than or equal to
+            0 and less than <see cref="F:System.Int32.MaxValue"/>.</returns>
+            <seealso cref="M:System.Random.Next"/>
+        </member>
+        <member name="M:Libplanet.Action.IRandom.Next(System.Int32)">
+            <summary>
+            Gets a non-negative random integer that is less than the specified
+            <paramref name="maxValue"/>.
+            </summary>
+            <param name="maxValue">The exclusive upper bound of the random
+            number to be generated.  It must be greater than or equal to 0.
+            </param>
+            <returns>A 32-bit signed integer that is greater than or equal to
+            0 and less than <paramref name="maxValue"/>; that is, the range of
+            return values ordinarily includes 0 but not <paramref
+            name="maxValue"/>.  However, if <paramref name="maxValue"/> equals
+            to 0, <paramref name="maxValue"/> is returned.</returns>
+            <exception cref="T:System.ArgumentOutOfRangeException">Thrown when
+            <paramref name="maxValue"/> is less than 0.</exception>
+            <seealso cref="M:System.Random.Next(System.Int32)"/>
+        </member>
+        <member name="M:Libplanet.Action.IRandom.Next(System.Int32,System.Int32)">
+            <summary>
+            Gets a random integer that is within a specified range.
+            </summary>
+            <param name="minValue">The inclusive lower bound of the random
+            number to be generated.</param>
+            <param name="maxValue">The exclusive upper bound of the random
+            number to be generated.  It must be greater than or equal to
+            <paramref name="minValue"/>.
+            </param>
+            <returns>A 32-bit signed integer that is greater than or equal to
+            <paramref name="minValue"/> and less than <paramref
+            name="maxValue"/>; that is, the range of return values ordinarily
+            includes <paramref name="minValue"/> but not <paramref
+            name="maxValue"/>.  If <paramref name="maxValue"/> equals to
+            <paramref name="minValue"/>, <paramref name="minValue"/> is
+            returned.</returns>
+            <exception cref="T:System.ArgumentOutOfRangeException">Thrown when
+            <paramref name="maxValue"/> is less than <paramref
+            name="minValue"/>.</exception>
+            <seealso cref="M:System.Random.Next(System.Int32,System.Int32)"/>
+        </member>
+        <member name="M:Libplanet.Action.IRandom.NextBytes(System.Byte[])">
+            <summary>
+            Fills the elements of a specified <see cref="T:System.Byte"/>s <paramref
+            name="buffer"/> with random numbers.
+            </summary>
+            <param name="buffer">A <see cref="T:System.Byte"/> array to contain random
+            numbers.</param>
+            <exception cref="T:System.ArgumentNullException">Thrown when <paramref
+            name="buffer"/> is <c>null</c>.</exception>
+            <seealso cref="M:System.Random.NextBytes(System.Byte[])"/>
+        </member>
+        <member name="M:Libplanet.Action.IRandom.NextDouble">
+            <summary>
+            Gets a random floating-point number that is greater than or
+            equal to 0.0, and less than 1.0.
+            </summary>
+            <returns>A double-precision floating point number that is greater
+            than or equal to 0.0, and less than 1.0.</returns>
+            <seealso cref="M:System.Random.NextDouble"/>
+        </member>
+        <member name="T:Libplanet.Action.MissingActionTypeException">
+            <summary>
+            The exception that is thrown when an action class without
+            <see cref="T:Libplanet.Action.ActionTypeAttribute"/> is tried to used with
+            <see cref="T:Libplanet.Action.PolymorphicAction`1"/>.
+            </summary>
+            <seealso cref="T:Libplanet.Action.PolymorphicAction`1"/>
+        </member>
+        <member name="M:Libplanet.Action.MissingActionTypeException.#ctor(System.Type,System.String)">
+            <summary>
+            Creates a new <see cref="T:Libplanet.Action.MissingActionTypeException"/> object.
+            </summary>
+            <param name="actionType">The action type that lacks
+            <see cref="T:Libplanet.Action.ActionTypeAttribute"/>.  It is automatically included to
+            the <see cref="P:System.Exception.Message"/> string.</param>
+            <param name="message">Specifies an <see cref="P:System.Exception.Message"/>.
+            </param>
+        </member>
+        <member name="P:Libplanet.Action.MissingActionTypeException.ActionType">
+            <summary>
+            The action type that lacks <see cref="T:Libplanet.Action.ActionTypeAttribute"/>.
+            </summary>
+        </member>
+        <member name="T:Libplanet.Action.PolymorphicAction`1">
+             <summary>
+             A decorator to enable subtype polymorphism for action classes.
+             <para>By convention, concrete action subclasses are named with verb
+             phrases, e.g., <c>Heal</c>, <c>Sell</c>.</para>
+             <para>One downside of this compared to the vanilla <see cref="T:Libplanet.Action.IAction"/>
+             is the fact that it uses reflection under the hood.  This may cause
+             compatibility issues on certain platforms, and is slightly slower.
+             </para>
+             </summary>
+             <typeparam name="T">An action base class which implements
+             <see cref="T:Libplanet.Action.IAction"/> and has subclasses.  Usually an abstract
+             class.</typeparam>
+             <example>
+             The following example shows how polymorphic actions look like
+             (compare this with an <see cref="T:Libplanet.Action.IAction"/> example without
+             subtype polymorphism):
+             <code><![CDATA[
+             using System;
+             using System.Collections.Immutable;
+             using Libplanet;
+             using Libplanet.Action;
+            
+             // Instead of having multiple in-game actions in a class,
+             // in this example, we declare one abstract base class
+             // and its three concrete subclasses.
+             public abstract class ActionBase : IAction
+             {
+                 public ActionBase() { }
+            
+                 public ActionBase(Address targetAddress)
+                 {
+                     TargetAddress = targetAddress;
+                 }
+            
+                 public Address TargetAddress { get; private set; }
+            
+                 // Leaves Execute() abstract so that concrete subclasses
+                 // implement their own logic.
+                 public abstract IAccountStateDelta Execute(IActionContext context);
+            
+                 // Makes Render() no-op by default, but overrideable by subclasses.
+                 public virtual void Render(
+                     IActionContext context,
+                     IAccountStateDelta nextStates)
+                 {
+                 }
+            
+                 // Makes Unrender() no-op by default,
+                 // but overrideable by subclasses.
+                 public virtual void Unrender(
+                     IActionContext context,
+                     IAccountStateDelta nextStates)
+                 {
+                 }
+            
+                 IImmutableDictionary<string, object> IAction.PlainValue =>
+                     ImmutableDictionary<string, object>.Empty
+                         .Add("target_address", TargetAddress);
+            
+                 void IAction.LoadPlainValue(
+                     IImmutableDictionary<string, object> plainValue)
+                 {
+                     TargetAddress = (Address)plainValue["target_address"];
+                 }
+             }
+            
+             // PolymorphicAction<T> requires concrete action classes marked with
+             // ActionTypeAttribute.
+             // There is only one required parameter to ActionTypeAttribute,
+             // which takes a unique identifier of the action type.
+             // This is used for serialization and deserialization under the hood.
+             [ActionType("create_character")]
+             public sealed class CreateCharacter : ActionBase
+             {
+                 public override IAccountStateDelta Execute(IActionContext context)
+                 {
+                     var state = (ImmutableDictionary<string, uint>)
+                         context.PreviousStates.GetState(TargetAddress);
+                     if (!TargetAddress.Equals(context.Signer))
+                         throw new Exception(
+                             "TargetAddress of CreateCharacter action only can be " +
+                             "the same address to the Transaction<T>.Signer."
+                         );
+                     else if (!(state is null))
+                         throw new Exception("Character was already created.");
+                     return context.PreviousStates.SetState(
+                         TargetAddress,
+                         ImmutableDictionary<string, uint>.Empty.Add("hp", 20)
+                     );
+                 }
+            
+                 void IAction.Render(
+                     IActionContext context,
+                     IAccountStateDelta nextStates)
+                 {
+                     var c = new Character
+                     {
+                         Address = TargetAddress,
+                         Hp = nextStates.GetState(TargetAddress)["hp"],
+                     };
+                     c.Draw();
+                     break;
+                 }
+            
+                 void IAction.Unrender(
+                     IActionContext context,
+                     IAccountStateDelta nextStates)
+                 {
+                     Character c = Character.GetByAddress(TargetAddress);
+                     c.Hide();
+                 }
+             }
+            
+             [ActionType("attack")]
+             public sealed class Attack : ActionBase
+             {
+                 public override IAccountStateDelta Execute(IActionContext context)
+                 {
+                     var state = (ImmutableDictionary<string, uint>)
+                         context.PreviousStates.GetState(TargetAddress);
+                     return context.PreviousStates.SetState(
+                         TargetAddress,
+                         state.SetItem("hp", Math.Max(state["hp"] - 5, 0))
+                     );
+                 }
+            
+                 void IAction.Render(
+                     IActionContext context,
+                     IAccountStateDelta nextStates)
+                 {
+                     Character c = Character.GetByAddress(TargetAddress);
+                     c.Hp = nextStates.GetState(TargetAddress)["hp"];
+                     c.Draw();
+                 }
+            
+                 void IAction.Unrender(
+                     IActionContext context,
+                     IAccountStateDelta nextStates)
+                 {
+                     Character c = Character.GetByAddress(TargetAddress);
+                     c.Hp = context.PreviousStates.GetState(TargetAddress)["hp"];
+                     c.Draw();
+                 }
+             }
+            
+             [ActionType("heal")]
+             public sealed class Heal : ActionBase
+             {
+                 public override IAccountStateDelta Execute(IActionContext context)
+                 {
+                     var state = (ImmutableDictionary<string, uint>)
+                         context.PreviousStates.GetState(TargetAddress);
+                     return context.PreviousStates.SetState(
+                         TargetAddress,
+                         state.SetItem("hp", Math.Min(state["hp"] + 5, 20))
+                     );
+                 }
+            
+                 void IAction.Render(
+                     IActionContext context,
+                     IAccountStateDelta nextStates)
+                 {
+                     Character c = Character.GetByAddress(TargetAddress);
+                     c.Hp = nextStates.GetState(TargetAddress)["hp"];
+                     c.Draw();
+                 }
+            
+                 void IAction.Unrender(
+                     IActionContext context,
+                     IAccountStateDelta nextStates)
+                 {
+                     Character c = Character.GetByAddress(TargetAddress);
+                     c.Hp = context.PreviousStates.GetState(TargetAddress)["hp"];
+                     c.Draw();
+                 }
+             }
+             ]]></code>
+             </example>
+             <remarks>Every concrete action subclass of <typeparamref name="T"/>
+             has to be marked with the <see cref="T:Libplanet.Action.ActionTypeAttribute"/>.
+             Even if a superclass is marked with
+             the <see cref="T:Libplanet.Action.ActionTypeAttribute"/> its subclass also should be
+             marked with the <see cref="T:Libplanet.Action.ActionTypeAttribute"/> if it is concrete.
+             </remarks>
+        </member>
+        <member name="M:Libplanet.Action.PolymorphicAction`1.#ctor">
+            <summary>
+            Do not use this constructor.
+            Use <see cref="M:Libplanet.Action.PolymorphicAction`1.#ctor(`0)"/> instead.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Action.PolymorphicAction`1.#ctor(`0)">
+            <summary>
+            Creates a new <see cref="T:Libplanet.Action.PolymorphicAction`1"/> instance wrapping
+            an <paramref name="innerAction"/>.
+            </summary>
+            <param name="innerAction">An instance of <typeparamref name="T"/>
+            (or one of its subtypes) to wrap.</param>
+            <exception cref="T:Libplanet.Action.MissingActionTypeException">Thrown
+            when the class of the given <paramref name="innerAction"/>
+            is not annotated with <see cref="T:Libplanet.Action.ActionTypeAttribute"/>.</exception>
+        </member>
+        <member name="P:Libplanet.Action.PolymorphicAction`1.InnerAction">
+            <summary>
+            The wrapped action object of <typeparamref name="T"/>
+            (or one of its subtypes).
+            </summary>
+        </member>
+        <member name="P:Libplanet.Action.PolymorphicAction`1.PlainValue">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Action.PolymorphicAction`1.op_Implicit(`0)~Libplanet.Action.PolymorphicAction{`0}">
+            <summary>
+            For convenience, an inner action <typeparamref name="T"/> can be
+            implicitly casted to <see cref="T:Libplanet.Action.PolymorphicAction`1"/>.
+            </summary>
+            <param name="innerAction">An instance of <typeparamref name="T"/>
+            (or one of its subtypes) to wrap.</param>
+            <returns>A <see cref="T:Libplanet.Action.PolymorphicAction`1"/> wrapping the given
+            <paramref name="innerAction"/>.</returns>
+            <exception cref="T:Libplanet.Action.MissingActionTypeException">Thrown
+            when the class of the given <paramref name="innerAction"/>
+            is not annotated with <see cref="T:Libplanet.Action.ActionTypeAttribute"/>.</exception>
+        </member>
+        <member name="M:Libplanet.Action.PolymorphicAction`1.LoadPlainValue(System.Collections.Immutable.IImmutableDictionary{System.String,System.Object})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Action.PolymorphicAction`1.Execute(Libplanet.Action.IActionContext)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Action.PolymorphicAction`1.Render(Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Action.PolymorphicAction`1.Unrender(Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Libplanet.Address">
+            <summary>
+            An identifier of 20 bytes (or 40 letters in hexadecimal, commonly with
+            a prefix <c>0x</c>) that refers to a unique account.
+            <para>It is derived from the corresponding <see cref="T:Libplanet.Crypto.PublicKey"/>
+            of an account, but as a derivation loses information, it is always
+            unidirectional.</para>
+            <para>The address derivation from a public key is as follows:</para>
+            <list type="number">
+            <item><description>Calculates the Keccak-256, which is a previous form
+            of SHA-3 before NIST standardized it and does not follow
+            <a href="http://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.202.pdf"
+            >FIPS-202</a>, of the corresponding <see cref="T:Libplanet.Crypto.PublicKey"/>.
+            </description></item>
+            <item><description>Takes only the last 20 bytes of the calculated
+            Keccak-256 hash.</description></item>
+            <item><description>When the address needs to be shown to end users,
+            displays these 20 bytes in hexadecimal, with a prefix <c>0x</c>.
+            </description></item>
+            </list>
+            <para>Since the scheme of the address derivation and the <see
+            cref="T:Libplanet.Crypto.PrivateKey"/>/<see cref="T:Libplanet.Crypto.PublicKey"/> is the same to
+            <a href="https://www.ethereum.org/">Ethereum</a>, Ethereum addresses
+            can be used by Libplanet-backed games/apps too.</para>
+            </summary>
+            <remarks>Every <see cref="T:Libplanet.Address"/> value is immutable.</remarks>
+            <seealso cref="T:Libplanet.Crypto.PublicKey"/>
+        </member>
+        <member name="F:Libplanet.Address.Size">
+            <summary>
+            The <see cref="T:System.Byte"/>s size that each <see cref="T:Libplanet.Address"/> takes.
+            <para>It is 20 <see cref="T:System.Byte"/>s.</para>
+            </summary>
+        </member>
+        <member name="M:Libplanet.Address.#ctor(System.Byte[])">
+            <summary>
+            Creates an <see cref="T:Libplanet.Address"/> instance from the given <see
+            cref="T:System.Byte"/> array (i.e., <paramref name="address"/>).
+            </summary>
+            <param name="address">An array of 20 <see cref="T:System.Byte"/>s which
+            represents an <see cref="T:Libplanet.Address"/>.  This must not be <c>null</c>.
+            </param>
+            <exception cref="T:System.NullReferenceException">Thrown when <c>null</c> was
+            passed to <paramref name="address"/>.</exception>
+            <exception cref="T:System.ArgumentException">Thrown when the given <paramref
+            name="address"/> array did not lengthen 20 bytes.</exception>
+            <remarks>A valid <see cref="T:System.Byte"/> array which represents an
+            <see cref="T:Libplanet.Address"/> can be gotten using <see cref="M:Libplanet.Address.ToByteArray"
+            /> method.</remarks>
+            <seealso cref="M:Libplanet.Address.ToByteArray"/>
+        </member>
+        <member name="M:Libplanet.Address.#ctor(Libplanet.Crypto.PublicKey)">
+            <summary>
+            Derives the corresponding <see cref="T:Libplanet.Address"/> from a <see
+            cref="T:Libplanet.Crypto.PublicKey"/>.
+            <para>Note that there is an equivalent extension method
+            <see cref="M:Libplanet.AddressExtension.ToAddress(Libplanet.Crypto.PublicKey)"/>, which enables
+            a code like <c>publicKey.ToAddress()</c> instead of
+            <c>new Address(publicKey)</c>, for convenience.</para>
+            </summary>
+            <param name="publicKey">A <see cref="T:Libplanet.Crypto.PublicKey"/> to derive
+            the corresponding <see cref="T:Libplanet.Address"/> from.</param>
+            <seealso cref="M:Libplanet.AddressExtension.ToAddress(Libplanet.Crypto.PublicKey)"/>
+        </member>
+        <member name="M:Libplanet.Address.#ctor(System.String)">
+            <summary>
+            Derives the corresponding <see cref="T:Libplanet.Address"/> from a hexadecimal
+            address string.
+            </summary>
+            <exception cref="T:System.ArgumentNullException">Thrown when <c>null</c> was
+            passed to <paramref name="hex"/>.</exception>
+            <exception cref="T:System.ArgumentException">Thrown when the given <paramref
+            name="hex"/> did not lengthen 40 characters.</exception>
+            <exception cref="T:System.ArgumentException">Thrown when the given <paramref
+            name="hex"/> is mixed-case and the checksum is invalid.</exception>
+            <exception cref="T:System.ArgumentException">Thrown when the given <paramref
+            name="hex"/> does not consist of ASCII characters.</exception>
+            <param name="hex">A 40 characters hexadecimal address string to
+            derive the corresponding <see cref="T:Libplanet.Address"/> from. The string
+            should be all lower-case or mixed-case which follows <a
+            href="https://github.com/ethereum/EIPs/blob/master/EIPS/eip-55.md"
+            >EIP 55</a>.</param>
+        </member>
+        <member name="P:Libplanet.Address.ByteArray">
+            <summary>
+            An immutable array of 20 <see cref="T:System.Byte"/>s that represent this
+            <see cref="T:Libplanet.Address"/>.
+            </summary>
+            <remarks>This is immutable.  For a mutable array, call <see
+            cref="M:Libplanet.Address.ToByteArray"/> method.</remarks>
+            <seealso cref="M:Libplanet.Address.ToByteArray"/>
+        </member>
+        <member name="M:Libplanet.Address.ToByteArray">
+            <summary>
+            Gets a mutable array of 20 <see cref="T:System.Byte"/>s that represent
+            this <see cref="T:Libplanet.Address"/>.
+            </summary>
+            <returns>A new mutable array which represents this
+            <see cref="T:Libplanet.Address"/>.  Since it is created every time the method
+            is called, any mutation on that does not affect internal states of
+            this <see cref="T:Libplanet.Address"/>.</returns>
+            <seealso cref="P:Libplanet.Address.ByteArray"/>
+            <seealso cref="M:Libplanet.Address.#ctor(System.Byte[])"/>
+        </member>
+        <member name="M:Libplanet.Address.ToHex">
+            <summary>
+            Gets a mixed-case hexadecimal string of 40 letters that represent
+            this <see cref="T:Libplanet.Address"/>. The returned hexadecimal string follows
+            <a
+            href="https://github.com/ethereum/EIPs/blob/master/EIPS/eip-55.md"
+            >EIP 55</a>.
+            </summary>
+            <example>A returned string looks like
+            <c>87Ae4774E20963fd6caC967CF47aDCF880C3e89B</c>.</example>
+            <returns>A hexadecimal string of 40 letters that represent
+            this <see cref="T:Libplanet.Address"/>.  Note that it does not start with
+            a prefix.</returns>
+            <remarks>As the returned string has no prefix, for
+            <c>0x</c>-prefixed hexadecimal, call <see cref="M:Libplanet.Address.ToString"/>
+            method instead.</remarks>
+            <seealso cref="M:Libplanet.Address.ToString"/>
+        </member>
+        <member name="M:Libplanet.Address.ToString">
+            <summary>
+            Gets a <c>0x</c>-prefixed mixed-case hexadecimal string of
+            42 letters that represent this <see cref="T:Libplanet.Address"/>. The returned
+            hexadecimal string follows
+            <a
+            href="https://github.com/ethereum/EIPs/blob/master/EIPS/eip-55.md"
+            >EIP 55</a>.
+            </summary>
+            <example>A returned string looks like
+            <c>0x87Ae4774E20963fd6caC967CF47aDCF880C3e89B</c>.</example>
+            <returns>A <c>0x</c>-hexadecimal string of 42 letters that represent
+            this <see cref="T:Libplanet.Address"/>.</returns>
+            <remarks>As the returned string is <c>0x</c>-prefixed, for
+            hexadecimal without prefix, call <see cref="M:Libplanet.Address.ToHex"/> method
+            instead.</remarks>
+            <seealso cref="M:Libplanet.Address.ToHex"/>
+        </member>
+        <member name="M:Libplanet.Address.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <inheritdoc />
+        </member>
+        <member name="T:Libplanet.AddressExtension">
+            <summary>
+            This extension class enables some convenient methods (sugar for
+            the most part) to deal with <see cref="T:Libplanet.Address"/>.
+            </summary>
+            <seealso cref="T:Libplanet.Address"/>
+        </member>
+        <member name="M:Libplanet.AddressExtension.ToAddress(Libplanet.Crypto.PublicKey)">
+            <summary>
+            Derives the corresponding <see cref="T:Libplanet.Address"/> from a <see
+            cref="T:Libplanet.Crypto.PublicKey"/>.
+            <para>This enables a code like <c>publicKey.ToAddress()</c> instead
+            of <c>new Address(publicKey)</c>.</para>
+            </summary>
+            <param name="publicKey">A <see cref="T:Libplanet.Crypto.PublicKey"/> to derive
+            the corresponding <see cref="T:Libplanet.Address"/> from.</param>
+            <returns>The corresponding <see cref="T:Libplanet.Address"/> derived from
+            <paramref name="publicKey"/>.</returns>
+            <seealso cref="M:Libplanet.Address.#ctor(Libplanet.Crypto.PublicKey)"/>
+        </member>
+        <member name="P:Libplanet.Blockchain.BlockChain`1.Blocks">
+            <summary>
+            All <see cref="T:Libplanet.Blocks.Block`1"/>s in the <see cref="T:Libplanet.Blockchain.BlockChain`1"/>
+            storage, including orphan <see cref="T:Libplanet.Blocks.Block`1"/>s.
+            Keys are <see cref="P:Libplanet.Blocks.Block`1.Hash"/>es and values are
+            their corresponding <see cref="T:Libplanet.Blocks.Block`1"/>s.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Blockchain.BlockChain`1.Transactions">
+            <summary>
+            All <see cref="T:Libplanet.Tx.Transaction`1"/>s in the <see cref="T:Libplanet.Blockchain.BlockChain`1"/>
+            storage, including orphan <see cref="T:Libplanet.Tx.Transaction`1"/>s.
+            Keys are <see cref="P:Libplanet.Tx.Transaction`1.Id"/>s and values are
+            their corresponding <see cref="T:Libplanet.Tx.Transaction`1"/>s.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Blockchain.BlockChain`1.System#Collections#Generic#IReadOnlyCollection{Libplanet#Blocks#Block{T}}#Count">
+            <inheritdoc/>
+        </member>
+        <member name="P:Libplanet.Blockchain.BlockChain`1.Item(System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Blockchain.BlockChain`1.Append(Libplanet.Blocks.Block{`0})">
+            <summary>
+            Adds a <paramref name="block"/> to the end of this chain.
+            <para>Note that <see cref="M:Libplanet.Action.IAction.Render(Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/> methods of
+            all <see cref="T:Libplanet.Action.IAction"/> objects that belong
+            to the <paramref name="block"/> are called right after
+            the <paramref name="block"/> is confirmed (and thus all states
+            reflect changes in the <paramref name="block"/>).</para>
+            </summary>
+            <param name="block">A next <see cref="T:Libplanet.Blocks.Block`1"/>, which is mined,
+            to add.</param>
+            <exception cref="T:Libplanet.Blocks.InvalidBlockException">Thrown when the given
+            <paramref name="block"/> is invalid, in itself or according to
+            the <see cref="P:Libplanet.Blockchain.BlockChain`1.Policy"/>.</exception>
+        </member>
+        <member name="M:Libplanet.Blockchain.BlockChain`1.Append(Libplanet.Blocks.Block{`0},System.DateTimeOffset)">
+            <summary>
+            Adds a <paramref name="block"/> to the end of this chain.
+            <para>Note that <see cref="M:Libplanet.Action.IAction.Render(Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/> methods of
+            all <see cref="T:Libplanet.Action.IAction"/> objects that belong
+            to the <paramref name="block"/> are called right after
+            the <paramref name="block"/> is confirmed (and thus all states
+            reflect changes in the <paramref name="block"/>).</para>
+            </summary>
+            <param name="block">A next <see cref="T:Libplanet.Blocks.Block`1"/>, which is mined,
+            to add.</param>
+            <param name="currentTime">The current time.</param>
+            <exception cref="T:Libplanet.Blocks.InvalidBlockException">Thrown when the given
+            <paramref name="block"/> is invalid, in itself or according to
+            the <see cref="P:Libplanet.Blockchain.BlockChain`1.Policy"/>.</exception>
+        </member>
+        <member name="M:Libplanet.Blockchain.BlockChain`1.StageTransactions(System.Collections.Generic.ISet{Libplanet.Tx.Transaction{`0}})">
+            <summary>
+            Adds <paramref name="transactions"/> to the pending list so that
+            a next <see cref="T:Libplanet.Blocks.Block`1"/> to be mined contains these
+            <paramref name="transactions"/>.
+            </summary>
+            <param name="transactions">
+            <see cref="T:Libplanet.Tx.Transaction`1"/>s to add to the pending list.</param>
+        </member>
+        <member name="M:Libplanet.Blockchain.BlockChain`1.UnstageTransactions(System.Collections.Generic.ISet{Libplanet.Tx.Transaction{`0}})">
+            <summary>
+            Removes <paramref name="transactions"/> from the pending list.
+            </summary>
+            <param name="transactions"><see cref="T:Libplanet.Tx.Transaction`1"/>s
+            to remove from the pending list.</param>
+            <seealso cref="M:Libplanet.Blockchain.BlockChain`1.StageTransactions(System.Collections.Generic.ISet{Libplanet.Tx.Transaction{`0}})"/>
+        </member>
+        <member name="T:Libplanet.Blockchain.Policies.BlockPolicy`1">
+            <summary>
+            A default implementation of <see cref="T:Libplanet.Blockchain.Policies.IBlockPolicy`1"/> interface.
+            </summary>
+            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match
+            to <see cref="T:Libplanet.Blocks.Block`1"/>'s type parameter.</typeparam>
+        </member>
+        <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.#ctor(System.Int32,System.Int64,System.Int32)">
+            <summary>
+            Creates a <see cref="T:Libplanet.Blockchain.Policies.BlockPolicy`1"/> with configuring
+            <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.BlockInterval"/> in milliseconds,
+            <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.MinimumDifficulty"/> and
+            <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.DifficultyBoundDivisor"/>.
+            </summary>
+            <param name="blockIntervalMilliseconds">Configures
+            <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.BlockInterval"/> in milliseconds.
+            5000 milliseconds by default.
+            </param>
+            <param name="minimumDifficulty">Configures
+            <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.MinimumDifficulty"/>. 1024 by default.</param>
+            <param name="difficultyBoundDivisor">Configures
+            <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.DifficultyBoundDivisor"/>. 128 by default.</param>
+        </member>
+        <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.#ctor(System.TimeSpan,System.Int64,System.Int32)">
+            <summary>
+            Creates a <see cref="T:Libplanet.Blockchain.Policies.BlockPolicy`1"/> with configuring
+            <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.BlockInterval"/>, <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.MinimumDifficulty"/> and
+            <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.DifficultyBoundDivisor"/>.
+            </summary>
+            <param name="blockInterval">Configures <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.BlockInterval"/>.
+            </param>
+            <param name="minimumDifficulty">Configures
+            <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.MinimumDifficulty"/>.</param>
+            <param name="difficultyBoundDivisor">Configures
+            <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.DifficultyBoundDivisor"/>.</param>
+        </member>
+        <member name="P:Libplanet.Blockchain.Policies.BlockPolicy`1.BlockInterval">
+            <summary>
+            An appropriate interval between consecutive <see cref="T:Libplanet.Blocks.Block`1"/>s.
+            It is usually from 20 to 30 seconds.
+            <para>If a previous interval took longer than this
+            <see cref="M:Libplanet.Blockchain.Policies.BlockPolicy`1.GetNextBlockDifficulty(System.Collections.Generic.IReadOnlyList{Libplanet.Blocks.Block{`0}})"/> method
+            raises the <see cref="P:Libplanet.Blocks.Block`1.Difficulty"/>.  If it took shorter
+            than this <see cref="P:Libplanet.Blocks.Block`1.Difficulty"/> is dropped.</para>
+            </summary>
+        </member>
+        <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.ValidateNextBlock(System.Collections.Generic.IReadOnlyList{Libplanet.Blocks.Block{`0}},Libplanet.Blocks.Block{`0})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.GetNextBlockDifficulty(System.Collections.Generic.IReadOnlyList{Libplanet.Blocks.Block{`0}})">
+            <inheritdoc />
+        </member>
+        <member name="T:Libplanet.Blockchain.Policies.IBlockPolicy`1">
+            <summary>
+            An interface to determine if consecutive <see cref="T:Libplanet.Blocks.Block`1"/>s are
+            valid, and to suggest how difficult a <see cref="P:Libplanet.Blocks.Block`1.Nonce"/>
+            for a <see cref="T:Libplanet.Blocks.Block`1"/> to be mined.
+            </summary>
+            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match
+            to <see cref="T:Libplanet.Blocks.Block`1"/>'s type parameter.</typeparam>
+            <seealso cref="T:Libplanet.Blockchain.Policies.IBlockPolicyExtension"/>
+        </member>
+        <member name="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.ValidateNextBlock(System.Collections.Generic.IReadOnlyList{Libplanet.Blocks.Block{`0}},Libplanet.Blocks.Block{`0})">
+            <summary>
+            Checks if <paramref name="nextBlock"/> is invalid, and if that
+            returns the reason.
+            <para>Note that it returns <c>null</c> when
+            <paramref name="nextBlock"/> is <em>valid</em>.</para>
+            </summary>
+            <param name="blocks">Consecutive <see cref="T:Libplanet.Blocks.Block`1"/>s to
+            append <paramref name="nextBlock"/>.</param>
+            <param name="nextBlock">The next block to append to
+            <paramref name="blocks"/>.</param>
+            <returns>The reason why the given <paramref name="blocks"/> are
+            <em>invalid</em>, or <c>null</c> if <paramref name="blocks"/> are
+            <em>valid</em>.</returns>
+            <seealso cref="M:Libplanet.Blockchain.Policies.IBlockPolicyExtension.ValidateBlocks``1(Libplanet.Blockchain.Policies.IBlockPolicy{``0},System.Collections.Generic.IReadOnlyList{Libplanet.Blocks.Block{``0}},System.DateTimeOffset)"/>
+        </member>
+        <member name="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.GetNextBlockDifficulty(System.Collections.Generic.IReadOnlyList{Libplanet.Blocks.Block{`0}})">
+            <summary>
+            Determines a right <see cref="P:Libplanet.Blocks.Block`1.Difficulty"/>
+            for a new <see cref="T:Libplanet.Blocks.Block`1"/> to be mined
+            right after the given <paramref name="blocks"/>.
+            </summary>
+            <param name="blocks">Consecutive <see cref="T:Libplanet.Blocks.Block`1"/>s to be
+            followed by a new <see cref="T:Libplanet.Blocks.Block`1"/> to be mined.</param>
+            <returns>A right <see cref="P:Libplanet.Blocks.Block`1.Difficulty"/>
+            for a new <see cref="T:Libplanet.Blocks.Block`1"/> to be mined.</returns>
+        </member>
+        <member name="T:Libplanet.Blockchain.Policies.IBlockPolicyExtension">
+            <summary>
+            This extension class enables some convenient methods (sugar for
+            the most part) to deal with <see cref="T:Libplanet.Blockchain.Policies.IBlockPolicy`1"/>.
+            </summary>
+            <seealso cref="T:Libplanet.Blockchain.Policies.IBlockPolicy`1"/>
+        </member>
+        <member name="M:Libplanet.Blockchain.Policies.IBlockPolicyExtension.ValidateBlocks``1(Libplanet.Blockchain.Policies.IBlockPolicy{``0},System.Collections.Generic.IReadOnlyList{Libplanet.Blocks.Block{``0}},System.DateTimeOffset)">
+            <summary>
+            Checks if <paramref name="blocks"/> are invalid, and if that
+            returns the reason.
+            <para>Note that it returns <c>null</c> when blocks are
+            <em>valid</em>.</para>
+            </summary>
+            <param name="policy"><see cref="T:Libplanet.Blockchain.Policies.IBlockPolicy`1"/> to used for
+            validation <paramref name="blocks"/>.</param>
+            <param name="blocks">Consecutive <see cref="T:Libplanet.Blocks.Block`1"/>s to
+            validate.</param>
+            <param name="currentTime">The current time to be used to validate
+            of <see cref="P:Libplanet.Blocks.Block`1.Timestamp"/>s.
+            Usually <see cref="P:System.DateTimeOffset.UtcNow"/> is used.</param>
+            <returns>The reason why the given <paramref name="blocks"/> are
+            <em>invalid</em>, or <c>null</c> if <paramref name="blocks"/> are
+            <em>valid</em>.</returns>
+            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match
+            to <see cref="T:Libplanet.Blocks.Block`1"/>'s type parameter.</typeparam>
+            <seealso cref="T:Libplanet.Blockchain.Policies.IBlockPolicy`1"/>
+            <seealso cref="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.ValidateNextBlock(System.Collections.Generic.IReadOnlyList{Libplanet.Blocks.Block{`0}},Libplanet.Blocks.Block{`0})"/>
+        </member>
+        <member name="M:Libplanet.Blocks.Block`1.EvaluateActionsPerTx(Libplanet.Action.AccountStateGetter)">
+            <summary>
+            Executes every <see cref="T:Libplanet.Action.IAction"/> in the
+            <see cref="P:Libplanet.Blocks.Block`1.Transactions"/> step by step, and emits a pair of
+            a transaction, and an <see cref="T:Libplanet.Action.ActionEvaluation`1"/>
+            for each step.
+            <para>If the needed values are only the final states of each
+            transaction, use <see cref="M:Libplanet.Blocks.Block`1.EvaluateActions(Libplanet.Action.AccountStateGetter)"/> method instead.
+            </para>
+            </summary>
+            <param name="accountStateGetter">An <see cref="T:Libplanet.Action.AccountStateGetter"/>
+            delegate to get a previous state.
+            A <c>null</c> value, which is default, means a constant function
+            that returns <c>null</c>.</param>
+            <returns>Enumerates pair of a transaction, and
+            <see cref="T:Libplanet.Action.ActionEvaluation`1"/> for each action.
+            The order of pairs are the same to
+            the <see cref="P:Libplanet.Blocks.Block`1.Transactions"/> and their
+            <see cref="P:Libplanet.Tx.Transaction`1.Actions"/> (e.g., tx&#xb9;-act&#xb9;,
+            tx&#xb9;-act&#xb2;, tx&#xb2;-act&#xb9;, tx&#xb2;-act&#xb2;,
+            &#x2026;).
+            Note that each <see cref="P:Libplanet.Action.IActionContext.Random"/> object has
+            a unconsumed state.
+            </returns>
+        </member>
+        <member name="M:Libplanet.Blocks.Block`1.EvaluateActions(Libplanet.Action.AccountStateGetter)">
+            <summary>
+            Executes every <see cref="T:Libplanet.Action.IAction"/> in the
+            <see cref="P:Libplanet.Blocks.Block`1.Transactions"/> and gets result states of each step of
+            every <see cref="T:Libplanet.Tx.Transaction`1"/>.
+            </summary>
+            <param name="accountStateGetter">An <see cref="T:Libplanet.Action.AccountStateGetter"/>
+            delegate to get a previous state.
+            A <c>null</c> value, which is default, means a constant function
+            that returns <c>null</c>.</param>
+            <returns>Result states of immediately after
+            <see cref="T:Libplanet.Action.IAction"/>s in each <see cref="T:Libplanet.Tx.Transaction`1"/>
+            being executed.</returns>
+        </member>
+        <member name="M:Libplanet.Blocks.Block`1.Validate(System.DateTimeOffset,Libplanet.Action.AccountStateGetter)">
+            <summary>
+            Validates the integrity of the <see cref="T:Libplanet.Blocks.Block`1"/>.
+            <para>It throws an <see cref="T:Libplanet.Blocks.InvalidBlockException"/> or
+            an <see cref="T:Libplanet.Tx.InvalidTxException"/> if there is any
+            integrity error.</para>
+            <para>Otherwise it returns an <see cref="T:Libplanet.Action.IAccountStateDelta"/>
+            which represents the final states and maintains the changes
+            from the states of the previous <see cref="T:Libplanet.Blocks.Block`1"/>.</para>
+            </summary>
+            <param name="currentTime">The current time to validate
+            time-wise conditions.</param>
+            <param name="accountStateGetter">The getter of previous states.
+            This affects the execution of <see cref="P:Libplanet.Tx.Transaction`1.Actions"/>.
+            </param>
+            <returns>An <see cref="T:Libplanet.Action.IAccountStateDelta"/> of the states
+            right after all <see cref="P:Libplanet.Tx.Transaction`1.Actions"/> of
+            <see cref="P:Libplanet.Blocks.Block`1.Transactions"/>, which maintains the changes from
+            the states of the previous <see cref="T:Libplanet.Blocks.Block`1"/>.</returns>
+            <exception cref="T:Libplanet.Blocks.InvalidBlockTimestampException">Thrown when
+            the <see cref="P:Libplanet.Blocks.Block`1.Timestamp"/> is invalid, for example, it is the far
+            future than the given <paramref name="currentTime"/>.</exception>
+            <exception cref="T:Libplanet.Blocks.InvalidBlockIndexException">Thrown when
+            the <see cref="P:Libplanet.Blocks.Block`1.Index"/>is invalid, for example, it is a negative
+            integer.</exception>
+            <exception cref="T:Libplanet.Blocks.InvalidBlockDifficultyException">Thrown when
+            the <see cref="P:Libplanet.Blocks.Block`1.Difficulty"/> is not properly configured,
+            for example, it is too easy.</exception>
+            <exception cref="T:Libplanet.Blocks.InvalidBlockPreviousHashException">Thrown when
+            <see cref="P:Libplanet.Blocks.Block`1.PreviousHash"/> is invalid so that
+            the <see cref="T:Libplanet.Blocks.Block`1"/>s are not continuous.</exception>
+            <exception cref="T:Libplanet.Blocks.InvalidBlockNonceException">Thrown when
+            the <see cref="P:Libplanet.Blocks.Block`1.Nonce"/> does not satisfy its
+            <see cref="P:Libplanet.Blocks.Block`1.Difficulty"/> level.</exception>
+            <exception cref="T:Libplanet.Tx.InvalidTxSignatureException">Thrown when its
+            <see cref="P:Libplanet.Tx.Transaction`1.Signature"/> is invalid or not signed by
+            the account who corresponds to its
+            <see cref="P:Libplanet.Tx.Transaction`1.PublicKey"/>.</exception>
+            <exception cref="T:Libplanet.Tx.InvalidTxPublicKeyException">Thrown when its
+            <see cref="P:Libplanet.Tx.Transaction`1.Signer"/> is not derived from its
+            <see cref="P:Libplanet.Tx.Transaction`1.PublicKey"/>.</exception>
+            <exception cref="T:Libplanet.Tx.InvalidTxUpdatedAddressesException">Thrown when
+            any <see cref="T:Libplanet.Action.IAction"/> of <see cref="P:Libplanet.Blocks.Block`1.Transactions"/> tries
+            to update the states of <see cref="T:Libplanet.Address"/>es not included
+            in <see cref="P:Libplanet.Tx.Transaction`1.UpdatedAddresses"/>.</exception>
+        </member>
+        <member name="T:Libplanet.ByteUtil">
+            <summary>
+            Utility methods to deal with <see cref="T:System.Byte"/> arrays.
+            </summary>
+        </member>
+        <member name="M:Libplanet.ByteUtil.ParseHex(System.String)">
+            <summary>
+            Converts a hexadecimal string to a <see cref="T:System.Byte"/> array.
+            </summary>
+            <param name="hex">A <see cref="T:System.String"/> which encodes
+            <see cref="T:System.Byte"/>s in hexadecimal.  Its length must be zero or
+            an even number.  It must not be <c>null</c>.</param>
+            <returns>A <see cref="T:System.Byte"/> array that the given
+            <paramref name="hex"/> string represented in hexadecimal.
+            It lengthens the half of the given <paramref name="hex"/> string.
+            </returns>
+            <exception cref="T:System.ArgumentNullException">Thrown when the given
+            <paramref name="hex"/> string is <c>null</c>.
+            </exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">Thrown when the length
+            of the given <paramref name="hex"/> string is an odd number.
+            </exception>
+            <exception cref="T:System.FormatException">Thrown when the given
+            <paramref name="hex"/> string is not a valid hexadecimal string.
+            </exception>
+        </member>
+        <member name="M:Libplanet.ByteUtil.Hex(System.Byte[])">
+            <summary>
+            Renders a hexadecimal string from a <see cref="T:System.Byte"/> array.
+            </summary>
+            <param name="bytes">A <see cref="T:System.Byte"/> array to renders
+            the corresponding hexadecimal string.  It must not be <c>null</c>.
+            </param>
+            <returns>A hexadecimal string which encodes the given
+            <paramref name="bytes"/>.</returns>
+            <exception cref="T:System.ArgumentNullException">Thrown when the given
+            <paramref name="bytes"/> is <c>null</c>.</exception>
+        </member>
+        <member name="M:Libplanet.ByteUtil.CalculateHashCode(System.Byte[])">
+            <summary>
+            Calculates a deterministic hash code from a given
+            <paramref name="bytes"/>.  It is mostly used to implement
+            <see cref="M:System.Object.GetHashCode"/> method.
+            </summary>
+            <param name="bytes">A <see cref="T:System.Byte"/> array, which completely
+            determines (or encodes) an object, to calculate a hash code.</param>
+            <returns>A hash code determined from the given
+            <paramref name="bytes"/>.  For equivalent <paramref name="bytes"/>,
+            the same hash code is returned.  It must not be <c>null</c>.
+            </returns>
+            <exception cref="T:System.ArgumentNullException">Thrown when the given
+            <paramref name="bytes"/> is <c>null</c>.</exception>
+        </member>
+        <member name="T:Libplanet.Crypto.PrivateKey">
+            <summary>
+            A secret part of a key pair involved in
+            <a href="https://en.wikipedia.org/wiki/ECDSA">ECDSA</a>, the digital
+            signature algorithm on which the Libplanet is based.  It can be used to
+            create signatures, which can be verified with the corresponding
+            <see cref="T:Libplanet.Crypto.PublicKey"/>, as well as to decrypt
+            messages which were encrypted with the corresponding
+            <see cref="T:Libplanet.Crypto.PublicKey"/>.
+            <para>Note that it uses <a href="https://en.bitcoin.it/wiki/Secp256k1"
+            >secp256k1</a> as the parameters of the elliptic curve, which is
+            the same to <a href="https://bitcoin.org/">Bitcoin</a> and
+            <a href="https://www.ethereum.org/">Ethereum</a>.
+            It means private keys generated for Bitcoin/Ethereum can be used by
+            Libplanet-backed games/apps too.</para>
+            </summary>
+            <remarks>
+            These (and any derived representations, e.g., <see cref="P:Libplanet.Crypto.PrivateKey.ByteArray"/>)
+            must be kept secret, if they are exposed, an attacker will be able to
+            forge signatures.
+            <para>Every <see cref="T:Libplanet.Crypto.PrivateKey"/> object is immutable.</para>
+            </remarks>
+            <seealso cref="T:Libplanet.Crypto.PublicKey"/>
+        </member>
+        <member name="M:Libplanet.Crypto.PrivateKey.#ctor">
+            <summary>
+            Generates a new unique <see cref="T:Libplanet.Crypto.PrivateKey"/> instance.
+            It can be analogous to creating a new account in a degree.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Crypto.PrivateKey.#ctor(System.Byte[])">
+            <summary>
+            Creates a <see cref="T:Libplanet.Crypto.PrivateKey"/> instance from the given
+            <see cref="T:System.Byte"/> array (i.e., <paramref name="privateKey"/>),
+            which encodes a valid <a href="https://en.wikipedia.org/wiki/ECDSA">
+            ECDSA</a> private key.
+            </summary>
+            <param name="privateKey">A valid <see cref="T:System.Byte"/> array that
+            encodes an ECDSA private key.
+            </param>
+            <remarks>A valid <see cref="T:System.Byte"/> array for
+            a <see cref="T:Libplanet.Crypto.PrivateKey"/> can be encoded using
+            <see cref="P:Libplanet.Crypto.PrivateKey.ByteArray"/> property.
+            </remarks>
+            <seealso cref="P:Libplanet.Crypto.PrivateKey.ByteArray"/>
+        </member>
+        <member name="P:Libplanet.Crypto.PrivateKey.PublicKey">
+            <summary>
+            The corresponding <see cref="T:Libplanet.Crypto.PublicKey"/> of
+            this private key.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Crypto.PrivateKey.ByteArray">
+            <summary>
+            A <see cref="T:System.Byte"/> array encoding of this private key.
+            </summary>
+            <remarks>
+            An encoded <see cref="T:System.Byte"/> array representation can recover
+            a <see cref="T:Libplanet.Crypto.PrivateKey"/> object again using its constructor
+            (i.e., <see cref="M:Libplanet.Crypto.PrivateKey.#ctor(System.Byte[])"/>.
+            <para>As like <see cref="T:Libplanet.Crypto.PrivateKey"/> instances, this also must be
+            kept secret.  In practice, this must not be sent over the network,
+            and be securely stored in the file system.
+            For the most part, modern operating systems, mobile ones
+            in particular, provide their own API
+            to store password and private keys in the secure manner, which
+            means they encrypt things to store using their own hardware
+            security unit if possible.  See also <a
+            href="https://developer.android.com/training/articles/keystore"
+            >Android keystore system</a> or <a href="https://apple.co/2JHjxAq"
+            >iOS Secure Enclave</a>.</para>
+            </remarks>
+            <seealso cref="M:Libplanet.Crypto.PrivateKey.#ctor(System.Byte[])"/>
+        </member>
+        <member name="M:Libplanet.Crypto.PrivateKey.Sign(System.Byte[])">
+            <summary>
+            Creates a signature from the given <paramref name="message"/>.
+            <para>
+            A created signature can be verified by the corresponding
+            <see cref="P:Libplanet.Crypto.PrivateKey.PublicKey"/>.
+            </para>
+            <para>
+            Signatures can be created by only the <see cref="T:Libplanet.Crypto.PrivateKey"/>
+            which corresponds a <see cref="P:Libplanet.Crypto.PrivateKey.PublicKey"/> to verify these
+            signatures.
+            </para>
+            <para>
+            To sum up, a signature is used to guarantee:
+            </para>
+            <list type="bullet">
+            <item><description>that the <paramref name="message"/> was created
+            by someone possessing the corresponding <see cref="T:Libplanet.Crypto.PrivateKey"/>,
+            </description></item>
+            <item><description>that the possessor cannot deny having sent the
+            <paramref name="message"/>, and</description></item>
+            <item><description>that the <paramref name="message"/> was not
+            forged in the middle of transit.</description></item>
+            </list>
+            </summary>
+            <param name="message">A message to sign in <see cref="T:System.Byte"/> array
+            representation.</param>
+            <returns>A signature that verifies the <paramref name="message"/>.
+            It can be verified using
+            <see cref="M:Libplanet.Crypto.PublicKey.Verify(System.Byte[],System.Byte[])"/>
+            method.</returns>
+            <seealso cref="M:Libplanet.Crypto.PublicKey.Verify(System.Byte[],System.Byte[])"/>
+        </member>
+        <member name="M:Libplanet.Crypto.PrivateKey.Decrypt(System.Byte[])">
+            <summary>
+            Converts a <paramref name="ciphertext"/> which was encrypted with
+            the corresponding <see cref="P:Libplanet.Crypto.PrivateKey.PublicKey"/> to the plain message.
+            </summary>
+            <param name="ciphertext">The encrypted data.</param>
+            <returns>The plain data the <paramref name="ciphertext"/> encrypted.
+            </returns>
+            <exception cref="T:Libplanet.Crypto.InvalidCiphertextException">Thrown when the given
+            <paramref name="ciphertext"/> is invalid.</exception>
+            <remarks>
+            Although the parameter name <paramref name="ciphertext"/> has the
+            word &#x201c;text&#x201d;, both a <paramref name="ciphertext"/>
+            and a returned message are a <see cref="T:System.Byte"/> string,
+            not a Unicode <see cref="T:System.String"/>.
+            </remarks>
+            <seealso cref="M:Libplanet.Crypto.PublicKey.Encrypt(System.Byte[])"/>
+        </member>
+        <member name="M:Libplanet.Crypto.PrivateKey.ExchangeKey(Libplanet.Crypto.PublicKey)">
+            <summary>
+            Securely exchange a <see cref="T:Libplanet.Crypto.SymmetricKey"/> with a peer's
+            <see cref="P:Libplanet.Crypto.PrivateKey.PublicKey"/>.
+            Two parties can agree on a (new, unique, and typically temporal)
+            key without revealing to any eavesdropping party what key has been
+            agreed upon.
+            <para>Technically it is <a href="https://en.wikipedia.org/wiki/ECDH"
+            >ECDH</a>, a <a
+            href="https://en.wikipedia.org/wiki/DH_key_exchange"
+            >Diffie&#x2013;Hellman key exchange</a> of elliptic-curve version.
+            </para>
+            </summary>
+            <param name="publicKey">The <see cref="P:Libplanet.Crypto.PrivateKey.PublicKey"/> possessed by
+            a peer to whom exchange a private key with.</param>
+            <returns>An exchanged (agreed) <see cref="T:Libplanet.Crypto.SymmetricKey"/>.
+            Note that it is not an elliptic-curve private key, but an <a
+            href="https://en.wikipedia.org/wiki/Advanced_Encryption_Standard"
+            >AES</a> key.</returns>
+        </member>
+        <member name="T:Libplanet.Crypto.PublicKey">
+            <summary>
+            A public part of a key pair involved in
+            <a href="https://en.wikipedia.org/wiki/ECDSA">ECDSA</a>, the digital
+            signature algorithm on which the Libplanet is based.
+            It can be used to verify signatures created with the corresponding
+            <see cref="T:Libplanet.Crypto.PrivateKey"/> and to encrypt messages for someone
+            possessing the corresponding <see cref="T:Libplanet.Crypto.PrivateKey"/>.
+            This can be distributed publicly, hence the name.
+            <para>Note that it uses <a href="https://en.bitcoin.it/wiki/Secp256k1"
+            >secp256k1</a> as the parameters of the elliptic curve, which is same to
+            <a href="https://bitcoin.org/">Bitcoin</a> and
+            <a href="https://www.ethereum.org/">Ethereum</a>.
+            It means public keys generated for Bitcoin/Ethereum can be used by
+            Libplanet-backed games/apps too.</para>
+            </summary>
+            <remarks>Every <see cref="T:Libplanet.Crypto.PublicKey"/> object is immutable.</remarks>
+            <seealso cref="T:Libplanet.Crypto.PrivateKey"/>
+            <seealso cref="T:Libplanet.Address"/>
+        </member>
+        <member name="M:Libplanet.Crypto.PublicKey.#ctor(System.Byte[])">
+            <summary>
+            Creates a <see cref="T:Libplanet.Crypto.PublicKey"/> instance from the given
+            <see cref="T:System.Byte"/> array (i.e., <paramref name="publicKey"/>),
+            which encodes a valid <a href="https://en.wikipedia.org/wiki/ECDSA">
+            ECDSA</a> public key.
+            </summary>
+            <param name="publicKey">A valid <see cref="T:System.Byte"/> array that
+            encodes an ECDSA public key.  It can be either compressed or
+            not.</param>
+            <remarks>A valid <see cref="T:System.Byte"/> array for
+            a <see cref="T:Libplanet.Crypto.PublicKey"/> can be encoded using
+            <see cref="M:Libplanet.Crypto.PublicKey.Format(System.Boolean)"/> method.
+            </remarks>
+            <seealso cref="M:Libplanet.Crypto.PublicKey.Format(System.Boolean)"/>
+        </member>
+        <member name="M:Libplanet.Crypto.PublicKey.Format(System.Boolean)">
+            <summary>
+            Encodes this public key into a <see cref="T:System.Byte"/> array
+            representation.
+            </summary>
+            <param name="compress">Returns a short length representation if
+            it is <c>true</c>.  This option does not lose any information.
+            </param>
+            <returns>An encoded <see cref="T:System.Byte"/> array representation.
+            It can recover a <see cref="T:Libplanet.Crypto.PublicKey"/> object again using
+            its constructor (i.e., <see cref="M:Libplanet.Crypto.PublicKey.#ctor(System.Byte[])"/>)
+            regardless of compression.</returns>
+            <seealso cref="M:Libplanet.Crypto.PublicKey.#ctor(System.Byte[])"/>
+        </member>
+        <member name="M:Libplanet.Crypto.PublicKey.Encrypt(System.Byte[])">
+            <summary>
+            Converts a plain <paramref name="message"/> to a ciphertext
+            which can be decrypted with the corresponding <see cref="T:Libplanet.Crypto.PrivateKey"
+            />.
+            </summary>
+            <param name="message">A binary data to be encrypted.</param>
+            <returns>
+            A ciphertext that was encrypted from the <paramref name="message"/>
+            and can be decrypted with the corresponding <see cref="T:Libplanet.Crypto.PrivateKey"
+            />. (Although the word &#x201c;ciphertext&#x201d; has the word
+            &#x201c;text&#x201d;, a returned ciphertext is not a Unicode
+            <see cref="T:System.String"/>, but a <see cref="T:System.Byte"/> array.)
+            </returns>
+            <seealso cref="M:Libplanet.Crypto.PrivateKey.Decrypt(System.Byte[])"/>
+        </member>
+        <member name="M:Libplanet.Crypto.PublicKey.Verify(System.Byte[],System.Byte[])">
+            <summary>
+            Verifies whether a <paramref name="signature"/> was created from
+            a <paramref name="message"/> with the corresponding
+            <see cref="T:Libplanet.Crypto.PrivateKey"/>.
+            </summary>
+            <param name="message">A plain message that the
+            <paramref name="signature"/> was created from.  That is, a data
+            which was passed as an argument to
+            <see cref="M:Libplanet.Crypto.PrivateKey.Sign(System.Byte[])"/>.</param>
+            <param name="signature">A signature that was created from the
+            <paramref name="message"/>.  That is, a data which was returned
+            by <see cref="M:Libplanet.Crypto.PrivateKey.Sign(System.Byte[])"/>.</param>
+            <returns><c>true</c> if the <paramref name="signature"/> was created
+            from the <paramref name="message"/> with the corresponding
+            <see cref="T:Libplanet.Crypto.PrivateKey"/>. Otherwise <c>false</c>.</returns>
+        </member>
+        <member name="T:Libplanet.Crypto.SymmetricKey">
+            <summary>
+            An <a href="https://en.wikipedia.org/wiki/Advanced_Encryption_Standard"
+            >AES</a>-<a href="https://en.wikipedia.org/wiki/Galois/Counter_Mode"
+            >GCM</a> <a href="https://en.wikipedia.org/wiki/Symmetric-key_algorithm"
+            >symmetric key</a>.  Unlike <see cref="T:Libplanet.Crypto.PrivateKey"/> and
+            <see cref="T:Libplanet.Crypto.PublicKey"/> that are involved in an asymmetric key
+            cryptography, it uses the same <see cref="T:Libplanet.Crypto.SymmetricKey"/> for both
+            encrypting a plaintext and decrypting a ciphertext.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Crypto.SymmetricKey.#ctor(System.Byte[])">
+            <summary>
+            Creates a <see cref="T:Libplanet.Crypto.SymmetricKey"/> instance from the given
+            <see cref="T:System.Byte"/> array (i.e., <paramref name="key"/>),
+            which encodes a valid <a
+            href="https://en.wikipedia.org/wiki/Advanced_Encryption_Standard"
+            >AES</a>-<a href="https://en.wikipedia.org/wiki/Galois/Counter_Mode"
+            >GCM</a> <a
+            href="https://en.wikipedia.org/wiki/Symmetric-key_algorithm"
+            >symmetric key</a>.
+            </summary>
+            <param name="key">A valid <see cref="T:System.Byte"/> array that
+            encodes an AES-GCM symmetric key.
+            </param>
+            <remarks>A valid <see cref="T:System.Byte"/> array for
+            a <see cref="T:Libplanet.Crypto.SymmetricKey"/> can be encoded using
+            <see cref="M:Libplanet.Crypto.SymmetricKey.ToByteArray"/> method.
+            </remarks>
+            <seealso cref="M:Libplanet.Crypto.SymmetricKey.ToByteArray"/>
+        </member>
+        <member name="P:Libplanet.Crypto.SymmetricKey.ByteArray">
+            <summary>
+            An immutable <see cref="T:System.Byte"/> array encoding of this key.
+            </summary>
+            <remarks>This is immutable.  For a mutable array, call
+            <see cref="M:Libplanet.Crypto.SymmetricKey.ToByteArray"/> method.</remarks>
+            <seealso cref="M:Libplanet.Crypto.SymmetricKey.ToByteArray"/>
+        </member>
+        <member name="M:Libplanet.Crypto.SymmetricKey.Encrypt(System.Byte[],System.Byte[])">
+            <summary>
+            Converts a plain <paramref name="message"/> to a ciphertext
+            which can be decrypted with the same key.
+            </summary>
+            <param name="message">A binary data to be encrypted.</param>
+            <param name="nonSecret">An extra data not to be encrypted, but
+            to be just transmitted as is.  The default value is <c>null</c>,
+            which means empty.</param>
+            <returns>
+            A ciphertext that was encrypted from the <paramref name="message"/>
+            and can be decrypted with the same key.
+            (Although the word &#x201c;ciphertext&#x201d; has the word
+            &#x201c;text&#x201d;, a returned ciphertext is not a Unicode
+            <see cref="T:System.String"/>, but a <see cref="T:System.Byte"/> array.)
+            </returns>
+            <seealso cref="M:Libplanet.Crypto.SymmetricKey.Decrypt(System.Byte[],System.Int32)"/>
+        </member>
+        <member name="M:Libplanet.Crypto.SymmetricKey.Decrypt(System.Byte[],System.Int32)">
+            <summary>
+            Converts a <paramref name="ciphertext"/> which was encrypted with
+            the same key to the plain message.
+            </summary>
+            <param name="ciphertext">The encrypted data.</param>
+            <param name="nonSecretLength">The length of <c>nonSecret</c> data.
+            (See also <see cref="M:Libplanet.Crypto.SymmetricKey.Encrypt(System.Byte[],System.Byte[])"/> method's the second
+            parameter, which is optional.)  <c>0</c> by default.</param>
+            <returns>The plain data the <paramref name="ciphertext"/> encrypted.
+            It returns <c>null</c> if the <paramref name="ciphertext"/> is
+            invalid (this behavior will be eventually changed in the future to
+            throw an exception instead).</returns>
+            <remarks>
+            Although the parameter name <paramref name="ciphertext"/> has the
+            word &#x201c;text&#x201d;, both a <paramref name="ciphertext"/>
+            and a returned message are a <see cref="T:System.Byte"/> string,
+            not a Unicode <see cref="T:System.String"/>.
+            </remarks>
+            <seealso cref="M:Libplanet.Crypto.SymmetricKey.Encrypt(System.Byte[],System.Byte[])"/>
+        </member>
+        <member name="M:Libplanet.Crypto.SymmetricKey.ToByteArray">
+            <summary>
+            Gets a mutable <see cref="T:System.Byte"/> array which encodes this key.
+            </summary>
+            <returns>A new mutable <see cref="T:System.Byte"/> array which encodes this
+            key.  Since it is created every time the method is called, any
+            mutation on that does not affect this <see cref="T:Libplanet.Crypto.SymmetricKey"/>
+            object.</returns>
+            <seealso cref="P:Libplanet.Crypto.SymmetricKey.ByteArray"/>
+            <seealso cref="M:Libplanet.Crypto.SymmetricKey.#ctor(System.Byte[])"/>
+        </member>
+        <member name="T:Libplanet.Hashcash">
+            <summary>
+            This contains a set of functions that implements
+            <a href="https://en.wikipedia.org/wiki/Hashcash">Hashcash</a>,
+            a <a href="https://en.wikipedia.org/wiki/Proof-of-work_system"
+            >proof-of-work system</a>.
+            </summary>
+        </member>
+        <member name="T:Libplanet.Hashcash.Stamp">
+            <summary>
+            A delegate to determine a consistent <see cref="T:System.Byte"/>s
+            representation derived from a given <paramref name="nonce"/>.
+            <para>Since it is called multiple times with different
+            <paramref name="nonce"/>s for
+            <a href="https://en.wikipedia.org/wiki/Proof-of-work_system"
+            >proof-of-work system</a>, the total time an implementation elapses
+            should not vary for different <paramref name="nonce"/>s.</para>
+            </summary>
+            <param name="nonce">An arbitrary nonce for an attempt, provided
+            by <see cref="M:Libplanet.Hashcash.Answer(Libplanet.Hashcash.Stamp,System.Int64)"/> method.</param>
+            <returns>A <see cref="T:System.Byte"/> array determined from the given
+            <paramref name="nonce"/>.  It should return consistently
+            an equivalent array for equivalent <paramref name="nonce"/>
+            values.</returns>
+            <seealso cref="M:Libplanet.Hashcash.Answer(Libplanet.Hashcash.Stamp,System.Int64)"/>
+            <seealso cref="T:Libplanet.Nonce"/>
+        </member>
+        <member name="M:Libplanet.Hashcash.Answer(Libplanet.Hashcash.Stamp,System.Int64)">
+            <summary>
+            Finds a <see cref="T:Libplanet.Nonce"/> that satisfies the given
+            <paramref name="difficulty"/>.  This process is so-called
+            &#x0201c;<a
+            href="https://en.wikipedia.org/wiki/Cryptocurrency#Mining"
+            >mining</a>&#x0201d;.
+            </summary>
+            <param name="stamp">A callback to get a &#x0201c;stamp&#x0201d;
+            which is a <see cref="T:System.Byte"/> array determined from a given
+            <see cref="T:Libplanet.Nonce"/> value.</param>
+            <param name="difficulty">A number to calculate the target number
+            for which the returned answer should be less than.</param>
+            <returns>A <see cref="T:Libplanet.Nonce"/> value which satisfies the given
+            <paramref name="difficulty"/>.</returns>
+            <seealso cref="T:Libplanet.Hashcash.Stamp"/>
+        </member>
+        <member name="M:Libplanet.Hashcash.Hash(System.Byte[])">
+            <summary>
+            Calculates a SHA-256 digest from the given <paramref name="bytes"/>.
+            </summary>
+            <param name="bytes">A <see cref="T:System.Byte"/> array to calculate
+            its hash digest.</param>
+            <returns>A deterministic digest of the given
+            <paramref name="bytes"/>.</returns>
+        </member>
+        <member name="T:Libplanet.HashDigest`1">
+            <summary>
+            A value type to represent digest bytes determined by a
+            <see cref="T:System.Security.Cryptography.HashAlgorithm"/>.  For more type safety, it takes
+            a type parameter <typeparamref name="T"/> of
+            <see cref="T:System.Security.Cryptography.HashAlgorithm"/>.
+            </summary>
+            <typeparam name="T">A <see cref="T:System.Security.Cryptography.HashAlgorithm"/> which corresponds to
+            a digest.  This determines <see cref="F:Libplanet.HashDigest`1.Size"/> of a digest.</typeparam>
+            <seealso cref="T:System.Security.Cryptography.HashAlgorithm"/>
+        </member>
+        <member name="F:Libplanet.HashDigest`1.Size">
+            <summary>
+            The fixed, and valid <see cref="P:System.Array.Length"/> of
+            a <see cref="T:System.Byte"/> array of every digest.
+            <para>This varies depending upon what <see cref="T:System.Security.Cryptography.HashAlgorithm"/> is
+            used for <typeparamref name="T"/>.  For example, if <typeparamref
+            name="T"/> is <see cref="T:System.Security.Cryptography.SHA1"/> <see cref="F:Libplanet.HashDigest`1.Size"/> is <c>20</c>,
+            and if <see cref="T:System.Security.Cryptography.SHA256"/> it is <c>32</c>.</para>
+            </summary>
+        </member>
+        <member name="M:Libplanet.HashDigest`1.#ctor(System.Byte[])">
+            <summary>
+            Converts a <see cref="T:System.Byte"/> array into a
+            <see cref="T:Libplanet.HashDigest`1"/>.
+            </summary>
+            <param name="hashDigest">A <see cref="T:System.Byte"/> array that encodes
+            a <see cref="T:Libplanet.HashDigest`1"/>.  It must not be <c>null</c>,
+            and its <see cref="P:System.Array.Length"/> must be the same to
+            <see cref="F:Libplanet.HashDigest`1.Size"/>.</param>
+            <exception cref="T:System.ArgumentNullException">Thrown when the given
+            <paramref name="hashDigest"/> is <c>null</c>.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">Thrown when the given
+            <paramref name="hashDigest"/>'s <see cref="P:System.Array.Length"/> is not
+            the same to the <see cref="F:Libplanet.HashDigest`1.Size"/> the hash algorithm
+            (i.e., <typeparamref name="T"/> requires.</exception>
+        </member>
+        <member name="P:Libplanet.HashDigest`1.ByteArray">
+            <summary>
+            A bare immutable <see cref="T:System.Byte"/> array of the digest.
+            </summary>
+            <remarks>It is immutable.  For a mutable array, use
+            <see cref="M:Libplanet.HashDigest`1.ToByteArray"/> method instead.</remarks>
+            <seealso cref="M:Libplanet.HashDigest`1.ToByteArray"/>
+        </member>
+        <member name="M:Libplanet.HashDigest`1.FromString(System.String)">
+            <summary>
+            Converts a given hexadecimal representation of a digest into
+            a <see cref="T:Libplanet.HashDigest`1"/> object.
+            <para>This is an inverse function of <see cref="M:Libplanet.HashDigest`1.ToString"/>
+            method.</para>
+            </summary>
+            <param name="hexDigest">A hexadecimal representation of
+            a <see cref="T:Libplanet.HashDigest`1"/>.</param>
+            <returns>A corresponding <see cref="T:Libplanet.HashDigest`1"/> value.
+            </returns>
+            <exception cref="T:System.ArgumentNullException">Thrown when the given
+            <paramref name="hexDigest"/> is <c>null</c>.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">Thrown when the given
+            <paramref name="hexDigest"/>'s length is not the double of
+            the <see cref="F:Libplanet.HashDigest`1.Size"/>, the hash algorithm
+            (i.e., <typeparamref name="T"/> requires.</exception>
+            <seealso cref="M:Libplanet.HashDigest`1.ToString"/>
+            <seealso cref="M:Libplanet.HashDigestExtension.ToHashDigest``1(System.String)"/>
+        </member>
+        <member name="M:Libplanet.HashDigest`1.Satisfies(System.Int64)">
+            <summary>
+            Tests if a digest is less than the target computed for the given
+            <paramref name="difficulty"/>).
+            </summary>
+            <param name="difficulty">The difficulty to compute target number.
+            </param>
+            <returns><c>true</c> only if a digest is less than the target
+            computed for the given <paramref name="difficulty"/>).
+            If <paramref name="difficulty"/> is <c>0</c> it always returns
+            <c>true</c>.
+            </returns>
+        </member>
+        <member name="M:Libplanet.HashDigest`1.ToByteArray">
+            <summary>
+            Gets a bare mutable <see cref="T:System.Byte"/> array of the digest.
+            </summary>
+            <returns>A new mutable <see cref="T:System.Byte"/> array of the digest.
+            Since a returned array is created every time the method is called,
+            any mutations on that array does not affect to the digest object.
+            </returns>
+            <seealso cref="P:Libplanet.HashDigest`1.ByteArray"/>
+        </member>
+        <member name="M:Libplanet.HashDigest`1.ToString">
+            <summary>
+            Gets a hexadecimal representation of a digest.
+            <para>This is an inverse function of <see cref="M:Libplanet.HashDigest`1.FromString(System.String)"/>.
+            </para>
+            </summary>
+            <returns>A hexadecimal representation of a digest.</returns>
+            <seealso cref="M:Libplanet.HashDigest`1.FromString(System.String)"/>
+        </member>
+        <member name="T:Libplanet.HashDigestExtension">
+            <summary>
+            Augments types to have some shortcut methods dealing with
+            <see cref="T:Libplanet.HashDigest`1"/> values.
+            </summary>
+        </member>
+        <member name="M:Libplanet.HashDigestExtension.ToHashDigest``1(System.String)">
+            <summary>
+            Converts a given hexadecimal representation of a digest into
+            a <see cref="T:Libplanet.HashDigest`1"/> object.
+            <para>This is a shortcut of
+            <see cref="M:Libplanet.HashDigest`1.FromString(System.String)"/> method.</para>
+            <para>This is an inverse function of
+            <see cref="M:Libplanet.HashDigest`1.ToString"/> method.</para>
+            </summary>
+            <param name="hexDigest">A hexadecimal representation of
+            a <see cref="T:Libplanet.HashDigest`1"/>.</param>
+            <typeparam name="T">A <see cref="T:System.Security.Cryptography.HashAlgorithm"/> which corresponds
+            to a digest.</typeparam>
+            <returns>A corresponding <see cref="T:Libplanet.HashDigest`1"/> value.
+            </returns>
+            <exception cref="T:System.ArgumentNullException">Thrown when the given
+            <paramref name="hexDigest"/> is <c>null</c>.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">Thrown when the given
+            <paramref name="hexDigest"/>'s length is not the double of
+            the <see cref="F:Libplanet.HashDigest`1.Size"/>, the hash algorithm
+            (i.e., <typeparamref name="T"/> requires.</exception>
+            <seealso cref="M:Libplanet.HashDigest`1.FromString(System.String)"/>
+            <seealso cref="M:Libplanet.HashDigest`1.ToString"/>
+        </member>
+        <member name="T:Libplanet.Net.BlockDownloadState">
+            <summary>
+            A container that indicates the progress of a block download.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.BlockDownloadState.TotalBlockCount">
+            <summary>
+            Total number of blocks to receive in the current batch.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.BlockDownloadState.ReceivedBlockCount">
+            <summary>
+            The number of currently received blocks.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.BlockDownloadState.ReceivedBlockHash">
+            <summary>
+            The hash digest of the block just received.
+            </summary>
+        </member>
+        <member name="T:Libplanet.Net.DifferentAppProtocolVersionException">
+            <summary>
+            The exception that is thrown when the version of the
+            <see cref="T:Libplanet.Net.Peer" /> that <see cref="T:Libplanet.Net.Swarm" /> is trying to connect
+            to is different.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Net.DifferentAppProtocolVersionException.#ctor(System.String,System.Int32,System.Int32)">
+            <summary>
+            Initializes a new instance of the
+            <see cref="T:Libplanet.Net.DifferentAppProtocolVersionException"/> class.
+            </summary>
+            <param name="expectedVersion">The protocol version of the current
+            <see cref="T:Libplanet.Net.Swarm"/>.</param>
+            <param name="actualVersion">The protocol version of the
+            <see cref="T:Libplanet.Net.Peer"/> that <see cref="T:Libplanet.Net.Swarm" /> is trying to connect
+            to.</param>
+            <param name="message">Specifies an <see cref="P:System.Exception.Message"/>.
+            </param>
+        </member>
+        <member name="P:Libplanet.Net.DifferentAppProtocolVersionException.ExpectedVersion">
+            <summary>
+            The protocol version of the current <see cref="T:Libplanet.Net.Swarm"/>.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.DifferentAppProtocolVersionException.ActualVersion">
+            <summary>
+            The protocol version of the <see cref="T:Libplanet.Net.Peer"/> that the
+            <see cref="T:Libplanet.Net.Swarm" /> is trying to connect to.
+            </summary>
+        </member>
+        <member name="T:Libplanet.Net.DifferentProtocolVersionEventArgs">
+            <summary>
+            The event data that provides a value when
+            <see cref="E:Libplanet.Net.Swarm.DifferentVersionPeerEncountered" /> is occured.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.DifferentProtocolVersionEventArgs.ExpectedVersion">
+            <summary>
+            The protocol version of the current <see cref="T:Libplanet.Net.Swarm"/>.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.DifferentProtocolVersionEventArgs.ActualVersion">
+            <summary>
+            The protocol version of the <see cref="T:Libplanet.Net.Peer"/> that the
+            <see cref="T:Libplanet.Net.Swarm" /> is trying to connect to.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.Messages.Message.MessageType.Ping">
+            <summary>
+            Check message to determine peer is alive.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.Messages.Message.MessageType.Pong">
+            <summary>
+            Reply of `Ping`.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.Messages.Message.MessageType.PeerSetDelta">
+            <summary>
+            Peer's delta set to sync peer list.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.Messages.Message.MessageType.GetBlockHashes">
+            <summary>
+            Request to query block hashes.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.Messages.Message.MessageType.BlockHashes">
+            <summary>
+            Inventory to transfer blocks.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.Messages.Message.MessageType.TxIds">
+            <summary>
+            Inventory to transfer transactions.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.Messages.Message.MessageType.GetBlocks">
+            <summary>
+            Request to query blocks.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.Messages.Message.MessageType.GetTxs">
+            <summary>
+            Request to query transactions.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.Messages.Message.MessageType.Block">
+            <summary>
+            Message containing serialized block.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.Messages.Message.MessageType.Tx">
+            <summary>
+            Message containing serialized transaction.
+            </summary>
+        </member>
+        <member name="T:Libplanet.Net.Peer">
+            <summary>
+            A representation of peer node.
+            </summary>
+            <seealso cref="T:Libplanet.Net.Swarm"/>
+        </member>
+        <member name="M:Libplanet.Net.Peer.#ctor(Libplanet.Crypto.PublicKey,System.Net.DnsEndPoint,System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Libplanet.Net.Peer"/> class.
+            </summary>
+            <param name="publicKey">A <see cref="P:Libplanet.Net.Peer.PublicKey"/> of the
+            <see cref="T:Libplanet.Net.Peer"/>.</param>
+            <param name="endPoint">A <see cref="T:System.Net.DnsEndPoint"/> consisting of the
+            host and port of the <see cref="T:Libplanet.Net.Peer"/>.</param>
+            <param name="appProtocolVersion">An application protocol version
+            that the <see cref="T:Libplanet.Net.Peer"/> is using.</param>
+        </member>
+        <member name="P:Libplanet.Net.Peer.PublicKey">
+            <summary>
+            The corresponding <see cref="T:Libplanet.Crypto.PublicKey"/> of
+            this peer.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Peer.EndPoint">
+            <summary>
+            The corresponding <see cref="T:System.Net.DnsEndPoint"/> of this peer.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Peer.AppProtocolVersion">
+            <summary>
+            The corresponding application protocol version of this peer.
+            </summary>
+            <seealso cref="E:Libplanet.Net.Swarm.DifferentVersionPeerEncountered"/>
+        </member>
+        <member name="P:Libplanet.Net.Peer.Address">
+            <summary>The peer's address which is derviced from
+            its <see cref="P:Libplanet.Net.Peer.PublicKey"/>.
+            </summary>
+            <seealso cref="P:Libplanet.Net.Peer.PublicKey"/>
+        </member>
+        <member name="M:Libplanet.Net.Peer.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Net.Peer.ToString">
+            <inheritdoc/>
+        </member>
+        <member name="E:Libplanet.Net.Swarm.DifferentVersionPeerEncountered">
+            <summary>
+            The <see cref="T:System.EventHandler" /> called when the different version of
+            <see cref="T:Libplanet.Net.Peer" /> is discovered.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Swarm.Running">
+            <summary>
+            Whether this <see cref="T:Libplanet.Net.Swarm"/> instance is running.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Net.Swarm.WaitForRunningAsync">
+            <summary>
+            Waits until this <see cref="T:Libplanet.Net.Swarm"/> instance gets started to run.
+            </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> completed when <see cref="P:Libplanet.Net.Swarm.Running"/>
+            property becomes <c>true</c>.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Swarm.PreloadAsync``1(Libplanet.Blockchain.BlockChain{``0},System.IProgress{Libplanet.Net.BlockDownloadState},System.Threading.CancellationToken)">
+            <summary>
+            Preemptively downloads blocks from registered <see cref="T:Libplanet.Net.Peer"/>s.
+            </summary>
+            <param name="blockChain">
+            A <see cref="T:Libplanet.Blockchain.BlockChain`1"/> instance to synchronize.
+            </param>
+            <param name="progress">
+            An instance that receives progress updates for block downloads.
+            </param>
+            <param name="cancellationToken">
+            A cancellation token used to propagate notification that this
+            operation should be canceled.
+            </param>
+            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type. It should match
+            to <see cref="T:Libplanet.Blockchain.BlockChain`1"/>'s type parameter.</typeparam>
+            <returns>
+            A task without value.
+            You only can <c>await</c> until the method is completed.
+            </returns>
+        </member>
+        <member name="T:Libplanet.Nonce">
+            <summary>
+            An arbitrary <see cref="T:System.Byte"/>s that determines a
+            <see cref="T:Libplanet.Hashcash.Stamp"/>.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Nonce.#ctor(System.Byte[])">
+            <summary>
+            Converts a <see cref="T:System.Byte"/> array into a <see cref="T:Libplanet.Nonce"/>
+            value.
+            <para>This constructor is an inverse function of
+            <see cref="M:Libplanet.Nonce.ToByteArray"/> method.</para>
+            </summary>
+            <param name="nonce">A <see cref="T:System.Byte"/> array to convert to
+            a <see cref="T:Libplanet.Nonce"/> object.  It must not be <c>null</c>.</param>
+            <exception cref="T:System.ArgumentNullException">Thrown when the given
+            <paramref name="nonce"/> is a <c>null</c>.</exception>
+            <seealso cref="M:Libplanet.Nonce.ToByteArray"/>
+        </member>
+        <member name="P:Libplanet.Nonce.ByteArray">
+            <summary>
+            A bare immutable <see cref="T:System.Byte"/> array of the nonce.
+            </summary>
+            <remarks>It is immutable.  For a mutable array, use
+            <see cref="M:Libplanet.Nonce.ToByteArray"/> method instead.</remarks>
+            <seealso cref="M:Libplanet.Nonce.ToByteArray"/>
+        </member>
+        <member name="M:Libplanet.Nonce.ToByteArray">
+            <summary>
+            Gets a bare mutable <see cref="T:System.Byte"/> array of the nonce.
+            </summary>
+            <returns>A new mutable <see cref="T:System.Byte"/> array of the nonce.
+            Since a returned array is created every time the method is called,
+            any mutations on that array does not affect to
+            the <see cref="T:Libplanet.Nonce"/> object.
+            </returns>
+            <seealso cref="P:Libplanet.Nonce.ByteArray"/>
+        </member>
+        <member name="M:Libplanet.Nonce.ToString">
+            <summary>
+            Gets a hexadecimal representation of a <see cref="T:Libplanet.Nonce"/>.
+            </summary>
+            <returns>A hexadecimal representation of a <see cref="T:Libplanet.Nonce"/>.
+            </returns>
+        </member>
+        <member name="M:Libplanet.Store.BaseStore.GetAddressesMask(Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
+            <inheritdoc />
+        </member>
+        <member name="M:Libplanet.Store.BaseStore.PutBlock``1(Libplanet.Blocks.Block{``0},Libplanet.Address)">
+            <inheritdoc />
+        </member>
+        <member name="M:Libplanet.Store.FileStore.ListNamespaces">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.IStore.ListNamespaces">
+            <summary>
+            Lists existing namespaces.
+            </summary>
+            <returns>Existing namespaces.</returns>
+        </member>
+        <member name="M:Libplanet.Store.IStore.GetAddressesMask(Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
+            <summary>
+            Gets the bitmask of all addresses ever used until the block
+            of the given <paramref name="blockHash"/>.
+            </summary>
+            <param name="blockHash">The <see cref="P:Libplanet.Blocks.Block`1.Hash"/> of
+            the topmost <see cref="T:Libplanet.Blocks.Block`1"/> of the <see cref="T:Libplanet.Blocks.Block`1"/>
+            sequence that updated the <see cref="T:Libplanet.Address"/> set to which
+            the bit mask you want to obtain approximates.</param>
+            <returns>A bitmask in the <see cref="T:Libplanet.Address"/> type
+            (so this is probably not a valid address).  It can be
+            <c>null</c> if the given <paramref name="blockHash"/> refers to
+            a <see cref="T:Libplanet.Blocks.Block`1"/> that is not in the store.</returns>
+        </member>
+        <member name="M:Libplanet.Store.IStore.PutBlock``1(Libplanet.Blocks.Block{``0},Libplanet.Address)">
+            <summary>
+            Puts the given <paramref name="block"/> in to the store,
+            with a bit mask which approximates the <see cref="T:Libplanet.Address"/> set
+            updated by the <paramref name="block"/> and its all previous
+            <see cref="T:Libplanet.Blocks.Block`1"/>s.
+            </summary>
+            <param name="block">A <see cref="T:Libplanet.Blocks.Block`1"/> to put into the store.
+            </param>
+            <param name="addressesMask">A bit mask, in the <see cref="T:Libplanet.Address"/>
+            type (so this is probably not a valid address), which approximates
+            the <see cref="T:Libplanet.Address"/> set updated by the <paramref name="block"
+            /> and its all previous <see cref="T:Libplanet.Blocks.Block`1"/>s.</param>
+            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> class used with
+            <paramref name="block"/>.</typeparam>
+        </member>
+        <member name="T:Libplanet.Tx.InvalidTxException">
+            <summary>
+            Serves as the base class for exceptions thrown by
+            <see cref="M:Libplanet.Tx.Transaction`1.Validate"/>.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Tx.InvalidTxException.#ctor(Libplanet.Tx.TxId,System.String)">
+            <summary>
+            Instantiates a new exception object with proper metadata.
+            </summary>
+            <param name="txid">The invalid <see cref="T:Libplanet.Tx.Transaction`1"/>'s
+            <see cref="P:Libplanet.Tx.Transaction`1.Id"/>.  It is automatically included to
+            the <see cref="P:System.Exception.Message"/> string.</param>
+            <param name="message">A descriptive error message for programmers.
+            </param>
+        </member>
+        <member name="P:Libplanet.Tx.InvalidTxException.TxId">
+            <summary>
+            The <see cref="P:Libplanet.Tx.InvalidTxException.TxId"/> of the invalid <see cref="T:Libplanet.Tx.Transaction`1"/>.
+            </summary>
+        </member>
+        <member name="T:Libplanet.Tx.InvalidTxIdException">
+            <summary>
+            The exception that is thrown when a given <see cref="T:Libplanet.Tx.TxId"/> cannot be
+            found.
+            </summary>
+            <remarks>This does <em>not</em> mean a given value is an invalid
+            encoding of <see cref="T:Libplanet.Tx.TxId"/>, but there is no corresponding entry to
+            a given <see cref="T:Libplanet.Tx.TxId"/>, which is <em>valid</em>.</remarks>
+        </member>
+        <member name="M:Libplanet.Tx.InvalidTxIdException.#ctor(Libplanet.Tx.TxId,System.String)">
+            <summary>
+            Creates a new <see cref="T:Libplanet.Tx.InvalidTxIdException"/> object.
+            </summary>
+            <param name="txid">The invalid <see cref="T:Libplanet.Tx.TxId"/>.
+            It is automatically included to the <see cref="P:System.Exception.Message"/>
+            string.</param>
+            <param name="message">Specifies an <see cref="P:System.Exception.Message"/>.
+            </param>
+        </member>
+        <member name="T:Libplanet.Tx.InvalidTxPublicKeyException">
+            <summary>
+            The exception that is thrown when a <see cref="T:Libplanet.Tx.Transaction`1"/>'s
+            <see cref="P:Libplanet.Tx.Transaction`1.Signer"/> is not derived from its
+            <see cref="P:Libplanet.Tx.Transaction`1.PublicKey"/>.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Tx.InvalidTxPublicKeyException.#ctor(Libplanet.Tx.TxId,System.String)">
+            <summary>
+            Creates a new <see cref="T:Libplanet.Tx.InvalidTxPublicKeyException"/> object.
+            </summary>
+            <param name="txid">The invalid <see cref="T:Libplanet.Tx.Transaction`1"/>'s
+            <see cref="P:Libplanet.Tx.Transaction`1.Id"/>.  It is automatically included to
+            the <see cref="P:System.Exception.Message"/> string.</param>
+            <param name="message">Specifies an <see cref="P:System.Exception.Message"/>.
+            </param>
+        </member>
+        <member name="T:Libplanet.Tx.InvalidTxSignatureException">
+            <summary>
+            The exception that is thrown when a <see cref="T:Libplanet.Tx.Transaction`1"/>'s
+            <see cref="P:Libplanet.Tx.Transaction`1.Signature"/> is invalid.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Tx.InvalidTxSignatureException.#ctor(Libplanet.Tx.TxId,System.String)">
+            <summary>
+            Creates a new <see cref="T:Libplanet.Tx.InvalidTxSignatureException"/> object.
+            </summary>
+            <param name="txid">The invalid <see cref="T:Libplanet.Tx.Transaction`1"/>'s
+            <see cref="P:Libplanet.Tx.Transaction`1.Id"/>.  It is automatically included to
+            the <see cref="P:System.Exception.Message"/> string.</param>
+            <param name="message">Specifies an <see cref="P:System.Exception.Message"/>.
+            </param>
+        </member>
+        <member name="T:Libplanet.Tx.InvalidTxUpdatedAddressesException">
+            <summary>
+            The exception that is thrown when a given
+            <see cref="P:Libplanet.Tx.InvalidTxException.TxId"/> cannot be found.
+            The exception that is thrown when a <see cref="T:Libplanet.Tx.Transaction`1"/>'s
+            <see cref="P:Libplanet.Tx.Transaction`1.Actions"/> try to update any
+            <see cref="T:Libplanet.Address"/>es that are not included in
+            <see cref="P:Libplanet.Tx.Transaction`1.UpdatedAddresses"/> (i.e., <see
+            cref="T:Libplanet.Address"/>es that <see cref="T:Libplanet.Tx.Transaction`1"/>'s
+            <see cref="P:Libplanet.Tx.Transaction`1.Signer"/> granted to update.)
+            </summary>
+        </member>
+        <member name="M:Libplanet.Tx.InvalidTxUpdatedAddressesException.#ctor(Libplanet.Tx.TxId,System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.String)">
+            <summary>
+            Creates a new <see cref="T:Libplanet.Tx.InvalidTxUpdatedAddressesException"/>
+            object.
+            </summary>
+            <param name="txid">The invalid <see cref="T:Libplanet.Tx.Transaction`1"/>'s
+            <see cref="P:Libplanet.Tx.Transaction`1.Id"/>.  It is automatically included to
+            the <see cref="P:System.Exception.Message"/> string.</param>
+            <param name="updatableAddresses">Specifies the
+            <see cref="P:Libplanet.Tx.InvalidTxUpdatedAddressesException.UpdatableAddresses"/>.</param>
+            <param name="updatedAddresses">Specified the
+            <see cref="P:Libplanet.Tx.InvalidTxUpdatedAddressesException.UpdatedAddresses"/>.</param>
+            <param name="message">Specifies a <see cref="P:System.Exception.Message"/>.
+            </param>
+        </member>
+        <member name="P:Libplanet.Tx.InvalidTxUpdatedAddressesException.UpdatableAddresses">
+            <summary>
+            Expected <see cref="T:Libplanet.Address"/>es to be updated.  That means,
+            <see cref="T:Libplanet.Address"/>es that <see cref="T:Libplanet.Tx.Transaction`1"/>'s
+            <see cref="P:Libplanet.Tx.Transaction`1.Signer"/> granted to update.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Tx.InvalidTxUpdatedAddressesException.UpdatedAddresses">
+            <summary>
+            <see cref="T:Libplanet.Address"/>es that <see cref="P:Libplanet.Tx.Transaction`1.Actions"/>
+            actually try to update.
+            </summary>
+        </member>
+        <member name="T:Libplanet.Tx.Transaction`1">
+            <summary>
+            Consists of <see cref="T:Libplanet.Action.IAction"/> and is signed to be included in
+            a <see cref="T:Libplanet.Blocks.Block`1"/> and transmitted over the network.
+            </summary>
+            <typeparam name="T">A class implementing <see cref="T:Libplanet.Action.IAction"/> to
+            include.
+            Each game usually defines its own concrete class which implements
+            <see cref="T:Libplanet.Action.IAction"/>, and uses it for this type parameter.
+            This type parameter is aligned with <see cref="T:Libplanet.Blocks.Block`1"/>'s
+            and <see cref="T:Libplanet.Blockchain.BlockChain`1"/>'s type parameters.
+            </typeparam>
+            <seealso cref="T:Libplanet.Action.IAction"/>
+            <seealso cref="T:Libplanet.Action.PolymorphicAction`1"/>
+        </member>
+        <member name="M:Libplanet.Tx.Transaction`1.#ctor(Libplanet.Address,Libplanet.Crypto.PublicKey,System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.DateTimeOffset,System.Collections.Generic.IEnumerable{`0},System.Byte[])">
+            <summary>
+            Creates a new <see cref="T:Libplanet.Tx.Transaction`1"/>.
+            <para>This constructor takes all required and only required values
+            for a <see cref="T:Libplanet.Tx.Transaction`1"/>, so gives you full control of
+            creating a <see cref="T:Libplanet.Tx.Transaction`1"/>, and in other words,
+            this constructor is only useful when all details of
+            a <see cref="T:Libplanet.Tx.Transaction`1"/> need to be manually adjusted.
+            For the most cases, the fa&#xe7;ade factory <see
+            cref="M:Libplanet.Tx.Transaction`1.Create(Libplanet.Crypto.PrivateKey,System.Collections.Generic.IEnumerable{`0},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Nullable{System.DateTimeOffset})"/> is more useful.</para>
+            </summary>
+            <param name="signer">An <see cref="T:Libplanet.Address"/> of the account
+            who signs this transaction.  If this is not derived from <paramref
+            name="publicKey"/> <see cref="T:Libplanet.Tx.InvalidTxPublicKeyException"/> is
+            thrown.  This goes to the <see cref="P:Libplanet.Tx.Transaction`1.Signer"/> property.</param>
+            <param name="publicKey">A <see cref="P:Libplanet.Tx.Transaction`1.PublicKey"/> of the account
+            who signs this transaction.  If this does not match to <paramref
+            name="signer"/> address <see cref="T:Libplanet.Tx.InvalidTxPublicKeyException"/>
+            is thrown.  This cannot be <c>null</c>.  This goes to
+            the <see cref="P:Libplanet.Tx.Transaction`1.PublicKey"/> property.</param>
+            <param name="updatedAddresses"><see cref="T:Libplanet.Address"/>es whose
+            states affected by <paramref name="actions"/>.  This goes to
+            the <see cref="P:Libplanet.Tx.Transaction`1.UpdatedAddresses"/> property.</param>
+            <param name="timestamp">The time this <see cref="T:Libplanet.Tx.Transaction`1"/>
+            is created and signed.  This goes to the <see cref="P:Libplanet.Tx.Transaction`1.Timestamp"/>
+            property.</param>
+            <param name="actions">A list of <see cref="T:Libplanet.Action.IAction"/>s.  This
+            can be empty, but cannot be <c>null</c>.  This goes to
+            the <see cref="P:Libplanet.Tx.Transaction`1.Actions"/> property.</param>
+            <param name="signature">A digital signature of the content of
+            this <see cref="T:Libplanet.Tx.Transaction`1"/>.  This has to be signed by
+            the account who corresponds to <paramref name="publicKey"/>,
+            or it will throw <see cref="T:Libplanet.Tx.InvalidTxSignatureException"/>.
+            This is copied and then assigned to the <see cref="P:Libplanet.Tx.Transaction`1.Signature"/>
+            property.</param>
+            <exception cref="T:System.ArgumentNullException">Thrown when <c>null</c>
+            is passed to <paramref name="signature"/>,
+            <paramref name="actions"/>, or <paramref name="publicKey"/>.
+            </exception>
+            <exception cref="T:Libplanet.Tx.InvalidTxSignatureException">Thrown when its
+            <paramref name="signature"/> is invalid or not signed by
+            the account who corresponds to <paramref name="publicKey"/>.
+            </exception>
+            <exception cref="T:Libplanet.Tx.InvalidTxPublicKeyException">Thrown when its
+            <paramref name="signer"/> is not derived from its
+            <paramref name="publicKey"/>.</exception>
+        </member>
+        <member name="P:Libplanet.Tx.Transaction`1.Id">
+            <summary>
+            A unique identifier derived from this <see cref="T:Libplanet.Tx.Transaction`1"/>'s
+            content.
+            <para>For more characteristics, see <see cref="T:Libplanet.Tx.TxId"/> type.</para>
+            </summary>
+            <seealso cref="T:Libplanet.Tx.TxId"/>
+        </member>
+        <member name="P:Libplanet.Tx.Transaction`1.Signer">
+            <summary>
+            A <see cref="P:Libplanet.Tx.Transaction`1.PublicKey"/> of the account who signs this transaction.
+            This is derived from the <see cref="P:Libplanet.Tx.Transaction`1.PublicKey"/>.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Tx.Transaction`1.UpdatedAddresses">
+            <summary>
+            <see cref="T:Libplanet.Address"/>es whose states affected by
+            <see cref="P:Libplanet.Tx.Transaction`1.Actions"/>.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Tx.Transaction`1.Signature">
+            <summary>
+            A digital signature of the content of this
+            <see cref="T:Libplanet.Tx.Transaction`1"/>.  This is signed by the account
+            who corresponds to <see cref="P:Libplanet.Tx.Transaction`1.PublicKey"/>.
+            This cannot be <c>null</c>.
+            </summary>
+            <returns>A new <see cref="T:System.Byte"/> array of this transaction's
+            signature.  Changing a returned array does not affect the internal
+            state of this <see cref="T:Libplanet.Tx.Transaction`1"/> object.</returns>
+        </member>
+        <member name="P:Libplanet.Tx.Transaction`1.Actions">
+            <summary>
+            A list of <see cref="T:Libplanet.Action.IAction"/>s.  These are executed in the order.
+            This can be empty, but cannot be <c>null</c>.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Tx.Transaction`1.Timestamp">
+            <summary>
+            The time this <see cref="T:Libplanet.Tx.Transaction`1"/> is created and signed.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Tx.Transaction`1.PublicKey">
+            <summary>
+            A <see cref="P:Libplanet.Tx.Transaction`1.PublicKey"/> of the account who signs this
+            <see cref="T:Libplanet.Tx.Transaction`1"/>.
+            The <see cref="P:Libplanet.Tx.Transaction`1.Signer"/> address is always corresponding to this
+            for each transaction.  This cannot be <c>null</c>.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Tx.Transaction`1.FromBencodex(System.Byte[])">
+            <summary>
+            Decodes a transaction's
+            <a href="https://bencodex.org/">Bencodex</a> representation.
+            </summary>
+            <param name="bytes">A <a href="https://bencodex.org/">Bencodex</a>
+            representation of a transaction.</param>
+            <returns>A decoded <see cref="T:Libplanet.Tx.Transaction`1"/> object.</returns>
+            <seealso cref="M:Libplanet.Tx.Transaction`1.ToBencodex(System.Boolean)"/>
+        </member>
+        <member name="M:Libplanet.Tx.Transaction`1.Create(Libplanet.Crypto.PrivateKey,System.Collections.Generic.IEnumerable{`0},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Nullable{System.DateTimeOffset})">
+            <summary>
+            A fa&#xe7;ade factory to create a new <see cref="T:Libplanet.Tx.Transaction`1"/>.
+            Unlike the <see cref="M:Libplanet.Tx.Transaction`1.#ctor(Libplanet.Address,Libplanet.Crypto.PublicKey,System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.DateTimeOffset,System.Collections.Generic.IEnumerable{`0},System.Byte[])"/>
+            constructor, it automatically fills the following values from:
+            <list type="table">
+            <listheader>
+            <term>Property</term>
+            <description>Parameter the filled value derived from</description>
+            </listheader>
+            <item>
+            <term><see cref="P:Libplanet.Tx.Transaction`1.Signer"/></term>
+            <description><paramref name="privateKey"/></description>
+            </item>
+            <item>
+            <term><see cref="P:Libplanet.Tx.Transaction`1.PublicKey"/></term>
+            <description><paramref name="privateKey"/></description>
+            </item>
+            <item>
+            <term><see cref="P:Libplanet.Tx.Transaction`1.UpdatedAddresses"/></term>
+            <description><paramref name="actions"/> and
+            <paramref name="updatedAddresses"/></description>
+            </item>
+            </list>
+            <para>Note that the <paramref name="privateKey"/> in itself is not
+            included in the created <see cref="T:Libplanet.Tx.Transaction`1"/>.</para>
+            </summary>
+            <remarks>
+            This factory method tries its best to fill the <see
+            cref="P:Libplanet.Tx.Transaction`1.UpdatedAddresses"/> property by actually evaluating
+            the given <paramref name="actions"/> (we call it &#x201c;rehearsal
+            mode&#x201d;), but remember that its result
+            is approximated in some degree, because the result of
+            <paramref name="actions"/> are not deterministic until
+            the <see cref="T:Libplanet.Tx.Transaction`1"/> belongs to a <see
+            cref="T:Libplanet.Blocks.Block`1"/>.
+            <para>If an <see cref="T:Libplanet.Action.IAction"/> depends on previous states or
+            some randomness to determine what <see cref="T:Libplanet.Address"/> to update,
+            the automatically filled <see cref="P:Libplanet.Tx.Transaction`1.UpdatedAddresses"/> became
+            mismatched from the <see cref="T:Libplanet.Address"/>es
+            <paramref name="actions"/> actually update after
+            a <see cref="T:Libplanet.Blocks.Block`1"/> is mined.
+            Although such case would be rare, a programmer could manually give
+            the <paramref name="updatedAddresses"/> parameter
+            the <see cref="T:Libplanet.Address"/>es they predict to be updated.</para>
+            <para>If an <see cref="T:Libplanet.Action.IAction"/> oversimplifies the assumption
+            about the <see cref="T:Libplanet.Blocks.Block`1"/> it belongs to,
+            runtime exceptions could be thrown from this factory method.
+            The best solution to that is not to oversimplify things,
+            there is an option to check <see cref="T:Libplanet.Action.IActionContext"/>'s
+            <see cref="P:Libplanet.Action.IActionContext.Rehearsal"/> is <c>true</c> and
+            a conditional logic for the case.</para>
+            </remarks>
+            <param name="privateKey">A <see cref="T:Libplanet.Crypto.PrivateKey"/> of the account
+            who creates and signs a new transaction.  This key is used to fill
+            the <see cref="P:Libplanet.Tx.Transaction`1.Signer"/>, <see cref="P:Libplanet.Tx.Transaction`1.PublicKey"/>, and
+            <see cref="P:Libplanet.Tx.Transaction`1.Signature"/> properties, but this in itself is not
+            included in the transaction.</param>
+            <param name="actions">A list of <see cref="T:Libplanet.Action.IAction"/>s.  This
+            can be empty, but cannot be <c>null</c>.  This goes to
+            the <see cref="P:Libplanet.Tx.Transaction`1.Actions"/> property, and <see cref="T:Libplanet.Action.IAction"/>s
+            are evaluated before a <see cref="T:Libplanet.Tx.Transaction`1"/> is created
+            in order to fill the <see cref="P:Libplanet.Tx.Transaction`1.UpdatedAddresses"/>.  See also
+            <em>Remarks</em> section.</param>
+            <param name="updatedAddresses"><see cref="T:Libplanet.Address"/>es whose
+            states affected by <paramref name="actions"/>.
+            These <see cref="T:Libplanet.Address"/>es are also included in
+            the <see cref="P:Libplanet.Tx.Transaction`1.UpdatedAddresses"/> property, besides
+            <see cref="T:Libplanet.Address"/>es projected by evaluating
+            <paramref name="actions"/>.  See also <em>Remarks</em> section.
+            </param>
+            <param name="timestamp">The time this <see cref="T:Libplanet.Tx.Transaction`1"/>
+            is created and signed.  This goes to the <see cref="P:Libplanet.Tx.Transaction`1.Timestamp"/>
+            property.  If <c>null</c> (which is default) is passed this will
+            be the current time.</param>
+            <returns>A created new <see cref="T:Libplanet.Tx.Transaction`1"/> signed by
+            the given <paramref name="privateKey"/>.</returns>
+            <exception cref="T:System.ArgumentNullException">Thrown when <c>null</c>
+            is passed to <paramref name="privateKey"/> or
+            or <paramref name="actions"/>.
+            </exception>
+            <exception cref="T:Libplanet.Tx.UnexpectedlyTerminatedTxRehearsalException">
+            Thrown when one of <paramref name="actions"/> throws some
+            exception during their rehearsal.
+            <para>This exception is thrown probably because the logic of some of
+            the <paramref name="actions"/> is not enough generic so that
+            it can cover every case including &#x201c;rehearsal mode.&#x201d;
+            The <see cref="P:Libplanet.Action.IActionContext.Rehearsal"/> property also might be
+            useful to make the <see cref="T:Libplanet.Action.IAction"/> can deal with the case of
+            rehearsal mode.</para>
+            <para>The actual exception that an <see cref="T:Libplanet.Action.IAction"/> threw
+            is stored in its <see cref="P:System.Exception.InnerException"/> property.
+            </para>
+            </exception>
+        </member>
+        <member name="M:Libplanet.Tx.Transaction`1.ToBencodex(System.Boolean)">
+            <summary>
+            Encodes this <see cref="T:Libplanet.Tx.Transaction`1"/> into a <see cref="T:System.Byte"/>
+            array.
+            <para>This is an inverse function of
+            <see cref="M:Libplanet.Tx.Transaction`1.FromBencodex(System.Byte[])"/> method
+            where <paramref name="sign"/> is <c>true</c>.</para>
+            </summary>
+            <param name="sign">Whether to include its <see cref="P:Libplanet.Tx.Transaction`1.Signature"/>.
+            Note that an encoding without signature cannot be decoded using
+            <see cref="M:Libplanet.Tx.Transaction`1.FromBencodex(System.Byte[])"/> method.
+            </param>
+            <returns>A <a href="https://bencodex.org/">Bencodex</a>
+            representation of this <see cref="T:Libplanet.Tx.Transaction`1"/>.</returns>
+            <seealso cref="M:Libplanet.Tx.Transaction`1.FromBencodex(System.Byte[])"/>
+        </member>
+        <member name="M:Libplanet.Tx.Transaction`1.EvaluateActionsGradually(Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Int64,Libplanet.Action.IAccountStateDelta,Libplanet.Address,System.Boolean)">
+            <summary>
+            Executes the <see cref="P:Libplanet.Tx.Transaction`1.Actions"/> step by step, and emits
+            an action, input context, and output states for each step.
+            <para>If the needed value is only the final states,
+            use <see cref="M:Libplanet.Tx.Transaction`1.EvaluateActions(Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Int64,Libplanet.Action.IAccountStateDelta,Libplanet.Address,System.Boolean)"/> method instead.</para>
+            </summary>
+            <param name="blockHash">The <see
+            cref="P:Libplanet.Blocks.Block`1.Hash"/> of
+            <see cref="T:Libplanet.Blocks.Block`1"/> that this
+            <see cref="T:Libplanet.Tx.Transaction`1"/> will belong to.</param>
+            <param name="blockIndex">The <see
+            cref="P:Libplanet.Blocks.Block`1.Index"/> of
+            <see cref="T:Libplanet.Blocks.Block`1"/> that this
+            <see cref="T:Libplanet.Tx.Transaction`1"/> will belong to.</param>
+            <param name="previousStates">The states immediately before
+            <see cref="P:Libplanet.Tx.Transaction`1.Actions"/> being executed.  Note that its
+            <see cref="P:Libplanet.Action.IAccountStateDelta.UpdatedAddresses"/> are remained
+            to the returned next states.</param>
+            <param name="minerAddress">An address of block miner.</param>
+            <param name="rehearsal">Pass <c>true</c> if it is intended
+            to be dry-run (i.e., the returned result will be never used).
+            The default value is <c>false</c>.</param>
+            <returns>Enumerates an action, input context, and
+            output states for each one in <see cref="P:Libplanet.Tx.Transaction`1.Actions"/>.
+            The order is the same to the <see cref="P:Libplanet.Tx.Transaction`1.Actions"/>.
+            Note that each <see cref="P:Libplanet.Action.IActionContext.Random"/> object has
+            a unconsumed state.
+            </returns>
+            <exception cref="T:Libplanet.Tx.UnexpectedlyTerminatedTxRehearsalException">
+            Thrown when one of <see cref="P:Libplanet.Tx.Transaction`1.Actions"/> throws some
+            exception during <paramref name="rehearsal"/> mode.
+            The actual exception that an <see cref="T:Libplanet.Action.IAction"/> threw
+            is stored in its <see cref="P:System.Exception.InnerException"/> property.
+            It is never thrown if the <paramref name="rehearsal"/> option is
+            <c>false</c>.
+            </exception>
+        </member>
+        <member name="M:Libplanet.Tx.Transaction`1.EvaluateActions(Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Int64,Libplanet.Action.IAccountStateDelta,Libplanet.Address,System.Boolean)">
+            <summary>
+            Executes the <see cref="P:Libplanet.Tx.Transaction`1.Actions"/> and gets the result states.
+            </summary>
+            <param name="blockHash">The <see
+            cref="P:Libplanet.Blocks.Block`1.Hash"/> of
+            <see cref="T:Libplanet.Blocks.Block`1"/> that this
+            <see cref="T:Libplanet.Tx.Transaction`1"/> will belong to.</param>
+            <param name="blockIndex">The <see
+            cref="P:Libplanet.Blocks.Block`1.Index"/> of
+            <see cref="T:Libplanet.Blocks.Block`1"/> that this
+            <see cref="T:Libplanet.Tx.Transaction`1"/> will belong to.</param>
+            <param name="previousStates">The states immediately before
+            <see cref="P:Libplanet.Tx.Transaction`1.Actions"/> being executed.  Note that its
+            <see cref="P:Libplanet.Action.IAccountStateDelta.UpdatedAddresses"/> are remained
+            to the returned next states.</param>
+            <param name="minerAddress">An address of block miner.</param>
+            <param name="rehearsal">Pass <c>true</c> if it is intended
+            to be dry-run (i.e., the returned result will be never used).
+            The default value is <c>false</c>.</param>
+            <returns>The states immediately after <see cref="P:Libplanet.Tx.Transaction`1.Actions"/>
+            being executed.  Note that it maintains
+            <see cref="P:Libplanet.Action.IAccountStateDelta.UpdatedAddresses"/> of the given
+            <paramref name="previousStates"/> as well.</returns>
+            <exception cref="T:Libplanet.Tx.UnexpectedlyTerminatedTxRehearsalException">
+            Thrown when one of <see cref="P:Libplanet.Tx.Transaction`1.Actions"/> throws some
+            exception during <paramref name="rehearsal"/> mode.
+            The actual exception that an <see cref="T:Libplanet.Action.IAction"/> threw
+            is stored in its <see cref="P:System.Exception.InnerException"/> property.
+            It is never thrown if the <paramref name="rehearsal"/> option is
+            <c>false</c>.
+            </exception>
+        </member>
+        <member name="M:Libplanet.Tx.Transaction`1.Validate">
+            <summary>
+            Validates this <see cref="T:Libplanet.Tx.Transaction`1"/>.  If there is something
+            invalid it throws an exception.  If valid it does nothing.
+            </summary>
+            <exception cref="T:Libplanet.Tx.InvalidTxSignatureException">Thrown when its
+            <see cref="P:Libplanet.Tx.Transaction`1.Signature"/> is invalid or not signed by
+            the account who corresponds to its <see cref="P:Libplanet.Tx.Transaction`1.PublicKey"/>.
+            </exception>
+            <exception cref="T:Libplanet.Tx.InvalidTxPublicKeyException">Thrown when its
+            <see cref="P:Libplanet.Tx.Transaction`1.Signer"/> is not derived from its
+            <see cref="P:Libplanet.Tx.Transaction`1.PublicKey"/>.</exception>
+        </member>
+        <member name="M:Libplanet.Tx.Transaction`1.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <inheritdoc />
+        </member>
+        <member name="M:Libplanet.Tx.Transaction`1.Equals(Libplanet.Tx.Transaction{`0})">
+            <inheritdoc />
+        </member>
+        <member name="M:Libplanet.Tx.Transaction`1.Equals(System.Object)">
+            <inheritdoc />
+        </member>
+        <member name="M:Libplanet.Tx.Transaction`1.GetHashCode">
+            <inheritdoc />
+        </member>
+        <member name="T:Libplanet.Tx.TxId">
+            <summary>
+            <see cref="T:Libplanet.Tx.TxId"/>, abbreviation of transaction identifier,
+            is a SHA-256 digest derived from a <see cref="T:Libplanet.Tx.Transaction`1"/>'s
+            content.
+            <para>As it is a SHA-256 digest, it consists of 32 <see cref="T:System.Byte"/>s,
+            and 64 characters in hexadecimal.
+            (See also <see cref="F:Libplanet.Tx.TxId.Size"/> constant.)</para>
+            </summary>
+            <seealso cref="P:Libplanet.Tx.Transaction`1.Id"/>
+        </member>
+        <member name="F:Libplanet.Tx.TxId.Size">
+            <summary>
+            The <see cref="T:System.Byte"/>s size that each <see cref="T:Libplanet.Tx.TxId"/> takes.
+            <para>As a txid is a SHA-256 digest, it is 32 <see cref="T:System.Byte"/>s.
+            </para>
+            </summary>
+        </member>
+        <member name="M:Libplanet.Tx.TxId.#ctor(System.Byte[])">
+            <summary>
+            Converts a <see cref="T:System.Byte"/> array into a <see cref="T:Libplanet.Tx.TxId"/>.
+            </summary>
+            <param name="txid">A <see cref="T:System.Byte"/> array that encodes
+            a <see cref="T:Libplanet.Tx.TxId"/>.  It must not be <c>null</c>,
+            and its <see cref="P:System.Array.Length"/> must be the same to
+            <see cref="F:Libplanet.Tx.TxId.Size"/>.</param>
+            <exception cref="T:System.ArgumentNullException">Thrown when the given
+            <paramref name="txid"/> is <c>null</c>.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">Thrown when the given
+            <paramref name="txid"/>'s <see cref="P:System.Array.Length"/> is not
+            the same to the required <see cref="F:Libplanet.Tx.TxId.Size"/>.</exception>
+        </member>
+        <member name="P:Libplanet.Tx.TxId.ByteArray">
+            <summary>
+            A bare immutable <see cref="T:System.Byte"/> array of
+            this <see cref="T:Libplanet.Tx.TxId"/>.
+            </summary>
+            <remarks>It is immutable.  For a mutable array, use
+            <see cref="M:Libplanet.Tx.TxId.ToByteArray"/> method instead.</remarks>
+            <seealso cref="M:Libplanet.Tx.TxId.ToByteArray"/>
+        </member>
+        <member name="M:Libplanet.Tx.TxId.ToByteArray">
+            <summary>
+            Gets a bare mutable <see cref="T:System.Byte"/> array of
+            this <see cref="T:Libplanet.Tx.TxId"/>.
+            </summary>
+            <returns>A new mutable <see cref="T:System.Byte"/> array of
+            this <see cref="T:Libplanet.Tx.TxId"/>.
+            Since a returned array is created every time the method is called,
+            any mutations on that array does not affect to
+            the <see cref="T:Libplanet.Tx.TxId"/> object.
+            </returns>
+            <seealso cref="P:Libplanet.Tx.TxId.ByteArray"/>
+        </member>
+        <member name="M:Libplanet.Tx.TxId.ToHex">
+            <summary>
+            Gets a hexadecimal form of a <see cref="T:Libplanet.Tx.TxId"/>.
+            </summary>
+            <returns>64 hexadecimal characters.</returns>
+        </member>
+        <member name="M:Libplanet.Tx.TxId.ToString">
+            <summary>
+            Gets a <see cref="T:Libplanet.Tx.TxId"/>'s representative string.
+            </summary>
+            <returns>A string which represents this <see cref="T:Libplanet.Tx.TxId"/>.
+            </returns>
+        </member>
+        <member name="M:Libplanet.Tx.TxId.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <inheritdoc />
+        </member>
+        <member name="T:Libplanet.Tx.UnexpectedlyTerminatedTxRehearsalException">
+            <summary>
+            The exception that is thrown during a <see cref="T:Libplanet.Tx.Transaction`1"/>
+            is being created when one of <see cref="P:Libplanet.Tx.Transaction`1.Actions"/>
+            throws some exception during rehearsal mode.
+            <para>The actual exception that the <see cref="P:Libplanet.Tx.UnexpectedlyTerminatedTxRehearsalException.Action"/> threw
+            is stored in the <see cref="P:System.Exception.InnerException"/> property.</para>
+            </summary>
+        </member>
+        <member name="M:Libplanet.Tx.UnexpectedlyTerminatedTxRehearsalException.#ctor(Libplanet.Action.IAction,System.String,System.Exception)">
+            <summary>
+            Creates a new <see cref="T:Libplanet.Tx.UnexpectedlyTerminatedTxRehearsalException"
+            /> object with an <paramref name="innerException"/>.
+            </summary>
+            <param name="action">The <see cref="T:Libplanet.Action.IAction"/> object which threw
+            an exception.</param>
+            <param name="message">Specifies a <see cref="P:System.Exception.Message"/>.
+            </param>
+            <param name="innerException">The actual exception that
+            the <see cref="P:Libplanet.Tx.UnexpectedlyTerminatedTxRehearsalException.Action"/> threw.</param>
+        </member>
+        <member name="P:Libplanet.Tx.UnexpectedlyTerminatedTxRehearsalException.Action">
+            <summary>
+            The <see cref="T:Libplanet.Action.IAction"/> object which threw an exception.
+            </summary>
+        </member>
+    </members>
+</doc>
