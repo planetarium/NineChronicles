@@ -4,17 +4,21 @@ using UniRx;
 
 namespace Nekoyume.UI.Model
 {
-    public class CombinationResultPopup<T> : IDisposable where T : Game.Item.Inventory.InventoryItem
+    public class CombinationResultPopup : CountableItem
     {
-        public bool IsSuccess;
-        public T ResultItem;
-        public ICollection<CountEditableItem<T>> MaterialItems;
+        public bool isSuccess;
+        public ICollection<CountEditableItem> materialItems;
 
-        public readonly Subject<CombinationResultPopup<T>> OnClickSubmit = new Subject<CombinationResultPopup<T>>();
+        public readonly Subject<CombinationResultPopup> onClickSubmit = new Subject<CombinationResultPopup>();
         
-        public void Dispose()
+        public CombinationResultPopup(Game.Item.Inventory.InventoryItem value, int count) : base(value, count)
+        {
+        }
+        
+        public override void Dispose()
         {   
-            OnClickSubmit.Dispose();
+            base.Dispose();
+            onClickSubmit.Dispose();
         }
     }
 }

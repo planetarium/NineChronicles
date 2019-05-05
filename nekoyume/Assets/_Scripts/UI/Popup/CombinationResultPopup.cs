@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
-using Nekoyume.UI.ItemView;
 using Nekoyume.UI.Model;
+using Nekoyume.UI.Module;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -23,8 +23,8 @@ namespace Nekoyume.UI
         public SimpleCountableItemView[] materialItems;
         public Button okButton;
         
-        private readonly List<IDisposable> _disposables = new List<IDisposable>();
-        private CombinationResultPopup<Model.Inventory.Item> _data;
+        private readonly List<IDisposable> _disposablesForAwake = new List<IDisposable>();
+        private Model.CombinationResultPopup _data;
 
         #region Mono
 
@@ -33,29 +33,38 @@ namespace Nekoyume.UI
             base.Awake();
 
             this.ComponentFieldsNotNullTest();
+            
+            okButton.OnClickAsObservable()
+                .Subscribe(_ =>
+                {
+                    _data.onClickSubmit.OnNext(_data);
+                    AudioController.PlayClick();
+                })
+                .AddTo(_disposablesForAwake);
         }
 
         private void OnDestroy()
         {
-            _disposables.DisposeAllAndClear();
+            _disposablesForAwake.DisposeAllAndClear();
+            Clear();
         }
 
         #endregion
 
-        public void Pop(CombinationResultPopup<Model.Inventory.Item> data)
+        public void Pop(Model.CombinationResultPopup data)
         {
             if (ReferenceEquals(data, null))
             {
                 return;
             }
+            
+            AudioController.PlayPopup();
 
             SetData(data);
             base.Show();
-            
-            AudioController.PlayPopup();
         }
 
-        private void SetData(CombinationResultPopup<Model.Inventory.Item> data)
+        private void SetData(Model.CombinationResultPopup data)
         {
             if (ReferenceEquals(data, null))
             {
@@ -63,29 +72,45 @@ namespace Nekoyume.UI
                 return;
             }
             
-            _disposables.DisposeAllAndClear();
-
             _data = data;
-
-            okButton.OnClickAsObservable()
-                .Subscribe(_ =>
-                {
-                    _data.OnClickSubmit.OnNext(_data);
-                    AudioController.PlayClick();
-                })
-                .AddTo(_disposables);
+            
+            UpdateView();
+        }
+        
+        private void Clear()
+        {
+            _data = null;
             
             UpdateView();
         }
 
         private void UpdateView()
         {
-            if (_data.IsSuccess)
+            if (ReferenceEquals(_data, null))
             {
-                var item = new Equipment(_data.ResultItem.Item.Data);
+                titleText.text = "조합 에러";
+                resultItemView.Clear();
+                resultItemView.gameObject.SetActive(true);
+                resultItemNameText.gameObject.SetActive(false);
+                foreach (var image in resultItemElementalImages)
+                {
+                    image.gameObject.SetActive(false);
+                }
+                resultItemDescriptionText.text = "";
+                foreach (var item in materialItems)
+                {
+                    item.Clear();
+                }
+
+                return;
+            }
+            
+            if (_data.isSuccess)
+            {
+                var item = new Equipment(_data.item.Value.Item.Data);
                 
                 titleText.text = "조합 성공";
-                resultItemView.SetData(_data.ResultItem);
+                resultItemView.SetData(_data);
                 resultItemNameText.text = item.Data.name;
                 SetElemental(item.Data.elemental, 5);
                 resultItemDescriptionText.text = item.ToItemInfo();
@@ -103,7 +128,7 @@ namespace Nekoyume.UI
                 AudioController.instance.PlaySfx(AudioController.SfxCode.Failed);
             }
 
-            using (var e = _data.MaterialItems.GetEnumerator())
+            using (var e = _data.materialItems.GetEnumerator())
             {
                 foreach (var item in materialItems)
                 {
@@ -115,7 +140,7 @@ namespace Nekoyume.UI
                     else
                     {
                         var data = e.Current;
-                        item.SetData(data.Item.Value, data.Count.Value);
+                        item.SetData(data);
                     }
                 }
             }
@@ -163,27 +188,6 @@ namespace Nekoyume.UI
                 }
                 
                 image.gameObject.SetActive(false);
-            }
-        }
-
-        private void Clear()
-        {
-            _disposables.DisposeAllAndClear();
-            
-            _data = null;
-            
-            titleText.text = "조합 에러";
-            resultItemView.Clear();
-            resultItemView.gameObject.SetActive(true);
-            resultItemNameText.gameObject.SetActive(false);
-            foreach (var image in resultItemElementalImages)
-            {
-                image.gameObject.SetActive(false);
-            }
-            resultItemDescriptionText.text = "";
-            foreach (var item in materialItems)
-            {
-                item.Clear();
             }
         }
     }

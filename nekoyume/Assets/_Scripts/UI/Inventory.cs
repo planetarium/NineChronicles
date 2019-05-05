@@ -3,158 +3,51 @@ using System.Linq;
 using Nekoyume.Action;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
+using UniRx;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    /// <summary>
+    /// Fix me.
+    /// Status 위젯과 함께 사용할 때에는 해당 위젯 하위에 포함되어야 함.
+    /// 지금은 별도의 위젯으로 작동하는데, 이 때문에 위젯 라이프 사이클의 일관성을 잃음.(스스로 닫으면 안 되는 예외 발생)
+    /// </summary>
     public class Inventory : Widget
     {
-        private const float DisableAlpha = 0.3f;
+        public Module.Inventory inventory;
+        public Button closeButton;
 
-        public Transform grid;
-        public GameObject slotBase;
-
-        private List<InventorySlot> _slots;
-        private const int maxSlot = 42;
+        private Model.Inventory _data;
 
         protected override void Awake()
         {
             base.Awake();
+            
+            this.ComponentFieldsNotNullTest();
 
-            _slots = new List<InventorySlot>();
-            slotBase.SetActive(true);
-            for (int i = 0; i < maxSlot; ++i)
+            closeButton.OnClickAsObservable().Subscribe(_ =>
             {
-                GameObject newSlot = Instantiate(slotBase, grid);
-                InventorySlot slot = newSlot.GetComponent<InventorySlot>();
-                slot.Item = null;
-                _slots.Add(slot);
-            }
-
-            slotBase.SetActive(false);
-            Game.Event.OnUpdateEquipment.AddListener(UpdateEquipment);
-            Game.Event.OnSlotClick.AddListener(ToggleSlot);
-        }
-
-        private void ToggleSlot(InventorySlot selected, bool toggled)
-        {
-            foreach (var slot in _slots)
-            {
-                if (slot != selected && slot.outLine != null)
-                {
-                    slot.toggled = false;
-                    slot.outLine.SetActive(false);
-                }
-            }
-        }
-
-        private void UpdateEquipment(Equipment equipment)
-        {
-            foreach (var slot in _slots)
-            {
-                var item = slot.Item;
-                if (item != null && item is Weapon)
-                {
-                    slot.LabelEquip.text = "";
-                    if (item == equipment)
-                    {
-                        slot.LabelEquip.text = equipment.equipped ? "E" : "";
-                    }
-                }
-            }
+                AudioController.PlayClick();
+                Find<Status>()?.CloseInventory();
+            }).AddTo(this);
         }
 
         public override void Show()
         {
-            List<Game.Item.Inventory.InventoryItem> items = ActionManager.instance.Avatar.Items;
-            for (int i = 0; i < maxSlot; ++i)
-            {
-                InventorySlot slot = _slots[i];
-                slot.SetAlpha(1f);
-                if (items != null && items.Count > i)
-                {
-                    var inventoryItem = items[i];
-                    slot.Set(inventoryItem.Item, inventoryItem.Count);
-                    if (inventoryItem.Item is Weapon)
-                    {
-                        var weapon = (Weapon) inventoryItem.Item;
-                        slot.LabelEquip.text = weapon.equipped ? "E" : "";
-                    }
-                }
-                else
-                {
-                    slot.Clear();
-                }
-            }
+            _data = new Model.Inventory(ActionManager.instance.Avatar.Items);
+            inventory.SetData(_data);
 
             base.Show();
         }
 
-        public void CloseClick()
+        public override void Close()
         {
-            var status = Find<Status>();
-            if (status)
-            {
-                status.BtnInventory.group.SetAllTogglesOff();
-            }
+            _data?.Dispose();
+            _data = null;
             
-            AudioController.PlayClick();
-        }
-
-        public void SetItemTypesToDisable(params ItemBase.ItemType[] targetTypes)
-        {
-            for (int i = 0; i < maxSlot; i++)
-            {
-                var slot = _slots[i];
-                if (slot.Item == null)
-                {
-                    continue;
-                }
-
-                if (targetTypes.Contains(slot.Item.Data.cls.ToEnumItemType()))
-                {
-                    slot.SetAlpha(DisableAlpha);
-                }
-                else
-                {
-                    slot.SetAlpha(1.0f);
-                }
-            }
-        }
-
-        public void SetOtherItemTypesToDisable(params ItemBase.ItemType[] targetTypes)
-        {
-            for (int i = 0; i < maxSlot; i++)
-            {
-                var slot = _slots[i];
-                if (slot.Item == null)
-                {
-                    continue;
-                }
-
-                if (!targetTypes.Contains(slot.Item.Data.cls.ToEnumItemType()))
-                {
-                    slot.SetAlpha(DisableAlpha);
-                }
-                else
-                {
-                    slot.SetAlpha(1.0f);
-                }
-            }
-        }
-
-        public void SetItemTypesToGlow(params ItemBase.ItemType[] targetTypes)
-        {
-            for (int i = 0; i < maxSlot; i++)
-            {
-                var slot = _slots[i];
-                if (slot.Item == null)
-                {
-                    continue;
-                }
-
-                slot.glow.SetActive(targetTypes.Contains(slot.Item.Data.cls.ToEnumItemType()));
-            }
+            base.Close();
         }
     }
 }
