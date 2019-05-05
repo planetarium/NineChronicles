@@ -35,8 +35,7 @@ namespace Nekoyume.UI.Model
                         continue;
                     }
 
-                    e.Current.item.Value.Count += item.count.Value;
-                    e.Current.RaiseCountChanged();
+                    e.Current.count.Value += item.count.Value;
                     return;
                 }
             }
@@ -71,7 +70,6 @@ namespace Nekoyume.UI.Model
 
                             var inventoryItem = e2.Current;
                             inventoryItem.count.Value -= stagedItem.count.Value;
-                            inventoryItem.RaiseCountChanged();
 
                             if (inventoryItem.count.Value == 0)
                             {

@@ -10,7 +10,6 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<bool> selected = new ReactiveProperty<bool>(false);
 
         public readonly Subject<InventoryItem> onClick = new Subject<InventoryItem>();
-        public readonly Subject<int> onCountChanged = new Subject<int>();
 
         public InventoryItem(Game.Item.Inventory.InventoryItem item) : base(item, item.Count)
         {
@@ -29,12 +28,6 @@ namespace Nekoyume.UI.Model
             selected.Dispose();
 
             onClick.Dispose();
-            onCountChanged.Dispose();
-        }
-
-        public void RaiseCountChanged()
-        {
-//            OnCountChanged.OnNext(Count);
         }
     }
 }

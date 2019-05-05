@@ -60,7 +60,7 @@ namespace Nekoyume.UI.Module
             data.covered.Subscribe(SetCover).AddTo(_disposablesForSetData);
             data.dimmed.Subscribe(SetDim).AddTo(_disposablesForSetData);
             data.selected.Subscribe(SetSelect).AddTo(_disposablesForSetData);
-            data.onCountChanged.Subscribe(SetCount).AddTo(_disposablesForSetData);
+            data.count.Subscribe(SetCount).AddTo(_disposablesForSetData);
             
             UpdateView();
         }
