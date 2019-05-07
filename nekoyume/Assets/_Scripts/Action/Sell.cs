@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Globalization;
@@ -32,16 +33,8 @@ namespace Nekoyume.Action
                 var owned = player.inventory.items.FirstOrDefault(i => i.Item.Equals(item) && i.Count >= 1);
                 if (owned == null)
                 {
-                    if (actionCtx.BlockIndex < 1)
+                    if (actionCtx.Rehearsal)
                     {
-                        // While a new transaction is being created, every action
-                        // executes once for "rehearsal mode" (i.e., dry-run).
-                        // Since during this mode any states are not provided,
-                        // we work around this by checking if the block index is 0.
-                        // ("Rehearsal model" sets .BlockIndex to 0.)
-                        // FIXME: Detecting rehearsal model by checking .BlockIndex
-                        // seems unstable.  Libplanet needs to add a Boolean property
-                        // for this specific purpose, like .Rehearsal.
                         continue;
                     }
                     throw new InvalidActionException();
@@ -53,6 +46,7 @@ namespace Nekoyume.Action
                 ctx.avatar.Update(player);
                 shop.Set(actionCtx.Signer, reservedItem);
             }
+            ctx.updatedAt = DateTimeOffset.UtcNow;
             states = states.SetState(ActionManager.shopAddress, shop);
             states = states.SetState(actionCtx.Signer, ctx);
             return states;

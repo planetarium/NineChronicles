@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using TMPro;
 using UniRx;
-using Uno.Extensions.ValueType;
 
 namespace Nekoyume.UI.Module
 {
