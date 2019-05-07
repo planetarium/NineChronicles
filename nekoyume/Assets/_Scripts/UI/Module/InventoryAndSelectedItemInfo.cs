@@ -36,8 +36,6 @@ namespace Nekoyume.UI.Module
             _data = data;
             inventory.SetData(_data.inventory.Value);
             selectedItemInfo.SetData(_data.selectedItemInfo.Value);
-            
-            UpdateView();
         }
         
         public void Clear()
@@ -45,20 +43,6 @@ namespace Nekoyume.UI.Module
             inventory.Clear();
             selectedItemInfo.Clear();
             _data = null;
-            
-            UpdateView();
-        }
-
-        private void UpdateView()
-        {
-            if (ReferenceEquals(_data, null))
-            {               
-                //
-                
-                return;
-            }
-            
-            //
         }
     }
 }

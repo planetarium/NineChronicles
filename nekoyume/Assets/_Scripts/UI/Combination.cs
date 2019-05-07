@@ -77,7 +77,7 @@ namespace Nekoyume.UI
         #endregion
 
         public override void Show()
-        {   
+        {
             _selectItemCountPopup = Find<SelectItemCountPopup>();
             if (ReferenceEquals(_selectItemCountPopup, null))
             {

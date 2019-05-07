@@ -28,7 +28,7 @@ namespace Nekoyume.UI.Module
             
             this.ComponentFieldsNotNullTest();
 
-            _button = gameObject.GetComponent<Button>();
+            _button = GetComponent<Button>();
             _button.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
