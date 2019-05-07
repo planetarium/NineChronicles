@@ -120,7 +120,6 @@ namespace Nekoyume.Action
 
         public Guid ChainId => _blocks.Id;
 
-        public event EventHandler<Context> DidReceiveAction;
         public event EventHandler<Shop> UpdateShop;
 
         public event EventHandler PreloadStarted;
@@ -151,24 +150,7 @@ namespace Nekoyume.Action
             yield return new WaitUntil(() => runSwarm.IsCompleted);
         }
 
-        // FIXME: This should be safely removed and we should depend on BaseAction.Render().
-        public IEnumerator CoAvatarUpdator()
-        {
-            while (true)
-            {
-                yield return new WaitForSeconds(AvatarUpdateInterval);
-                var task = Task.Run(() => _blocks.GetStates(new[] {AvatarAddress}));
-                yield return new WaitUntil(() => task.IsCompleted);
-                var ctx = (Context) task.Result.GetValueOrDefault(AvatarAddress);
-                if (ctx?.avatar != null)
-                {
-                    DidReceiveAction?.Invoke(this, ctx);
-                }
-
-                yield return null;
-            }
-        }
-
+        // FIXME: This should be safely removed and we should depend on ActionBase.Render().
         public IEnumerator CoShopUpdator()
         {
             while (true)
@@ -184,6 +166,7 @@ namespace Nekoyume.Action
             }
         }
 
+        // FIXME: This should be safely removed and we should depend on ActionBase.Render().
         public IEnumerator CoRankingUpdator()
         {
             while (true)

@@ -60,7 +60,6 @@ namespace Nekoyume.Action
 
         private IEnumerator _miner;
         private IEnumerator _txProcessor;
-        private IEnumerator _avatarUpdator;
         private IEnumerator _shopUpdator;
         private IEnumerator _rankingUpdator;
         private IEnumerator _swarmRunner;
@@ -86,7 +85,7 @@ namespace Nekoyume.Action
             Tables.instance.EmptyMethod();
         }
 
-        private void ReceiveAction(object sender, Context ctx)
+        private void ReceiveAction(Context ctx)
         {
             var avatar = Avatar;
             Avatar = ctx.avatar;
@@ -98,6 +97,8 @@ namespace Nekoyume.Action
             battleLog = ctx.battleLog;
         }
 
+        // FIXME: We need to rename this after replace all polling coroutines
+        //        with stream subscriptions.
         public void StartAvatarCoroutines()
         {
             if (Avatar != null)
@@ -105,7 +106,14 @@ namespace Nekoyume.Action
                 DidAvatarLoaded?.Invoke(this, Avatar);
             }
 
-            StartNullableCoroutine(_avatarUpdator);
+            ActionBase.EveryRender(AvatarAddress).ObserveOnMainThread().Subscribe(eval =>
+            {
+                var ctx = (Context) eval.OutputStates.GetState(AvatarAddress);
+                if (!(ctx?.avatar is null))
+                {
+                    ReceiveAction(ctx);
+                }
+            }).AddTo(this);
             StartNullableCoroutine(_shopUpdator);
             StartNullableCoroutine(_rankingUpdator);
         }
@@ -298,11 +306,9 @@ namespace Nekoyume.Action
             var fileName = string.Format(AvatarFileFormat, index);
             _saveFilePath = Path.Combine(Application.persistentDataPath, fileName);
             Avatar = LoadStatus(_saveFilePath);
-            agent.DidReceiveAction += ReceiveAction;
             agent.UpdateShop += UpdateShop;
             agent.UpdateRankingBoard += UpdateRankingBoard;
 
-            _avatarUpdator = agent.CoAvatarUpdator();
             _shopUpdator = agent.CoShopUpdator();
             _rankingUpdator = agent.CoRankingUpdator();
 
