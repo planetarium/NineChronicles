@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Manager;
@@ -8,6 +7,7 @@ using Nekoyume.Game;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
+using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -74,12 +74,12 @@ namespace Nekoyume.UI
 
         public void QuestClick(bool repeat)
         {
-            StartCoroutine(CoQuest(repeat));
+            Quest(repeat);
             AudioController.PlayClick();
             AnalyticsManager.instance.BattleEntrance(repeat);
         }
 
-        private IEnumerator CoQuest(bool repeat)
+        private void Quest(bool repeat)
         {
             var loadingScreen = Find<LoadingScreen>();
             if (!ReferenceEquals(loadingScreen, null))
@@ -91,7 +91,6 @@ namespace Nekoyume.UI
             _player.StartRun();
             ActionCamera.instance.ChaseX(_player.transform);
 
-            var currentId = ActionManager.instance.battleLog?.id;
             var equipments = new List<Equipment>();
             foreach (var slot in equipSlots)
             {
@@ -111,22 +110,19 @@ namespace Nekoyume.UI
                 }
             }
 
-            ActionManager.instance.HackAndSlash(equipments, foods, _stages[dropdown.value]);
-            while (currentId == ActionManager.instance.battleLog?.id)
+            IObservable<ActionBase.ActionEvaluation<HackAndSlash>> observable =
+                ActionManager.instance.HackAndSlash(equipments, foods, _stages[dropdown.value]);
+
+            observable.ObserveOnMainThread().Subscribe(eval =>
             {
-                yield return null;
-            }
-
-            Game.Event.OnStageStart.Invoke();
-
-            if (!ReferenceEquals(loadingScreen, null))
-            {
-                loadingScreen.Close();
-            }
-
-            stage.repeatStage = repeat;
-
-            Close();
+                Context ctx = (Context)eval.OutputStates.GetState(eval.InputContext.Signer);
+                ActionManager.instance.battleLog = ctx.battleLog;
+                
+                Game.Event.OnStageStart.Invoke();
+                loadingScreen?.Close();
+                stage.repeatStage = repeat;
+                Close();
+            }).AddTo(this);
         }
 
         public override void Show()

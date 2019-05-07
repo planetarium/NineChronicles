@@ -15,6 +15,7 @@ using Nekoyume.Game;
 using Nekoyume.Game.Item;
 using Nekoyume.Model;
 using NetMQ;
+using UniRx;
 using UnityEngine;
 
 namespace Nekoyume.Action
@@ -153,14 +154,18 @@ namespace Nekoyume.Action
 
         private void ProcessAction(GameAction action)
         {
-            action.Id = Guid.NewGuid();
+            action.Id = action.Id.Equals(default(Guid)) ? Guid.NewGuid() : action.Id;
             agent.QueuedActions.Enqueue(action);
         }
 
-        public void HackAndSlash(List<Equipment> equipments, List<Food> foods, int stage)
+        public IObservable<ActionBase.ActionEvaluation<HackAndSlash>> HackAndSlash(
+            List<Equipment> equipments,
+            List<Food> foods,
+            int stage)
         {
             var action = new HackAndSlash
             {
+                Id = Guid.NewGuid(),
                 Equipments = equipments,
                 Foods = foods,
                 Stage = stage,
@@ -169,6 +174,9 @@ namespace Nekoyume.Action
 
             var itemIDs = equipments.Select(e => e.Data.id).Concat(foods.Select(f => f.Data.id)).ToArray();
             AnalyticsManager.instance.Battle(itemIDs);
+            return Action.HackAndSlash.EveryRender<HackAndSlash>().SkipWhile(
+                eval => !eval.Action.Id.Equals(action.Id)
+            ).Take(1).Last();  // Last() is for completion
         }
 
         public void InitAgent()

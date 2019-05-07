@@ -23,7 +23,6 @@ using Nekoyume.Helper;
 using Nekoyume.Serilog;
 using Serilog;
 using UnityEngine;
-using Uno.Extensions;
 
 namespace Nekoyume.Action
 {
@@ -152,6 +151,7 @@ namespace Nekoyume.Action
             yield return new WaitUntil(() => runSwarm.IsCompleted);
         }
 
+        // FIXME: This should be safely removed and we should depend on BaseAction.Render().
         public IEnumerator CoAvatarUpdator()
         {
             while (true)
@@ -312,7 +312,7 @@ namespace Nekoyume.Action
             public long GetNextBlockDifficulty(IReadOnlyList<Block<PolymorphicAction<ActionBase>>> blocks)
             {
                 Thread.Sleep(SleepInterval);
-                return blocks.Empty() ? 0 : 1;
+                return blocks.Any() ? 1 : 0;
             }
         }
     }
