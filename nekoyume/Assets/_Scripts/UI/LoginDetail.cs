@@ -1,8 +1,6 @@
 using System;
-using System.IO;
 using DG.Tweening;
 using Nekoyume.Action;
-using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model;
 using UnityEngine;
@@ -96,7 +94,6 @@ namespace Nekoyume.UI
                 w.Show();   
             }
             
-            btnCreate.SetActive(false);
             ActionManager.instance.InitAvatar(_selectedIndex);
             var nickName = nameField.text;
             ActionManager.instance.CreateNovice(nickName);
