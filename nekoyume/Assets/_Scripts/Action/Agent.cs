@@ -17,6 +17,9 @@ using Libplanet.Net;
 using Libplanet.Store;
 using Libplanet.Tx;
 using Nekoyume.Game;
+#if BLOCK_LOG_USE
+using Nekoyume.Helper;
+#endif
 using Nekoyume.Serilog;
 using Serilog;
 using UnityEngine;
