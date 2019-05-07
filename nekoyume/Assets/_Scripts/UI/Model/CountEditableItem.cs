@@ -3,30 +3,26 @@ using UniRx;
 
 namespace Nekoyume.UI.Model
 {
-    public class CountEditableItem<T> : IDisposable where T : Game.Item.Inventory.InventoryItem
+    public class CountEditableItem : CountableItem
     {
-        public readonly ReactiveProperty<T> Item = new ReactiveProperty<T>(null);
-        public readonly ReactiveProperty<int> Count = new ReactiveProperty<int>(0);
-        public readonly ReactiveProperty<string> EditButtonText = new ReactiveProperty<string>("");
+        public readonly ReactiveProperty<string> editButtonText = new ReactiveProperty<string>("");
 
-        public readonly Subject<CountEditableItem<T>> OnClose = new Subject<CountEditableItem<T>>();
-        public readonly Subject<CountEditableItem<T>> OnEdit = new Subject<CountEditableItem<T>>();
+        public readonly Subject<CountEditableItem> onClose = new Subject<CountEditableItem>();
+        public readonly Subject<CountEditableItem> onEdit = new Subject<CountEditableItem>();
         
-        public CountEditableItem(T item, int count, string editButtonText)
+        public CountEditableItem(Game.Item.Inventory.InventoryItem item, int count, string editButtonText) : base(item, count)
         {
-            Item.Value = item;
-            Count.Value = count;
-            EditButtonText.Value = editButtonText;
+            this.editButtonText.Value = editButtonText;
         }
         
-        public void Dispose()
+        public override void Dispose()
         {
-            Item.Dispose();
-            Count.Dispose();
-            EditButtonText.Dispose();
+            base.Dispose();
+            
+            editButtonText.Dispose();
 
-            OnClose.Dispose();
-            OnEdit.Dispose();
+            onClose.Dispose();
+            onEdit.Dispose();
         }
     }
 }

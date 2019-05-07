@@ -20,7 +20,12 @@ namespace Nekoyume.UI
         public Toggle BtnInventory;
 
         private string _avatarName = "";
-        private Player _player = null;
+        private Player _player;
+
+        private StatusDetail _statusDetail;
+        private Inventory _inventory;
+
+        #region Mono
 
         protected override void Awake()
         {
@@ -30,20 +35,37 @@ namespace Nekoyume.UI
             Game.Event.OnStageStart.AddListener(OnStageStart);
             Game.Event.OnUpdateStatus.AddListener(OnUpdateStatus);
         }
+        
+        #endregion
 
-        private void OnRoomEnter()
+        public override void Show()
         {
-            TextStage.gameObject.SetActive(false);
+            base.Show();
+
+            _statusDetail = Find<StatusDetail>();
+            if (ReferenceEquals(_statusDetail, null))
+            {
+                throw new NotFoundComponentException<StatusDetail>();
+            }
+            
+            _inventory = Find<Inventory>();
+            if (ReferenceEquals(_statusDetail, null))
+            {
+                throw new NotFoundComponentException<Inventory>();
+            }
         }
 
-        private void OnStageStart()
+        public override void Close()
         {
-            TextStage.gameObject.SetActive(true);
-        }
+            foreach (var toggle in new[] {BtnStatus, BtnInventory})
+            {
+                if (toggle.isOn)
+                {
+                    toggle.isOn = false;
+                }
+            }
 
-        private void OnUpdateStatus()
-        {
-            UpdateExp();
+            base.Close();
         }
 
         public void UpdatePlayer(GameObject playerObj)
@@ -81,50 +103,93 @@ namespace Nekoyume.UI
 
         public void ToggleInventory()
         {
-            Find<StatusDetail>().Close();
-            var inventory = Find<Inventory>();
-            inventory.Toggle();
-            if (inventory.IsActive())
-            {
-                AnalyticsManager.instance.OnEvent(Find<Menu>().gameObject.activeSelf
-                    ? AnalyticsManager.EventName.ClickMainInventory
-                    : AnalyticsManager.EventName.ClickBattleInventory);
-            }
-
             AudioController.PlayClick();
+
+            _inventory.Toggle();
+            
+            if (!_inventory.IsActive())
+            {
+                return;
+            }
+            
+            if (_statusDetail.IsActive())
+            {
+                _statusDetail.Close();   
+            }
+                
+            AnalyticsManager.instance.OnEvent(Find<Menu>().gameObject.activeSelf
+                ? AnalyticsManager.EventName.ClickMainInventory
+                : AnalyticsManager.EventName.ClickBattleInventory);
+        }
+
+        public void CloseInventory()
+        {
+            if (!_inventory.IsActive())
+            {
+                return;
+            }
+            
+            _inventory.Close();
+
+            if (BtnInventory.isOn)
+            {
+                BtnInventory.isOn = false;
+            }
         }
 
         public void ToggleStatus()
         {
-            Find<Inventory>().Close();
-            var statusDetail = Find<StatusDetail>();
-            statusDetail.Toggle();
-            if (statusDetail.IsActive())
+            AudioController.PlayClick();
+            
+            _statusDetail.Toggle();
+            if (!_statusDetail.IsActive())
             {
-                AnalyticsManager.instance.OnEvent(Find<Menu>().gameObject.activeSelf
-                    ? AnalyticsManager.EventName.ClickMainEquipment
-                    : AnalyticsManager.EventName.ClickBattleEquipment);
+                return;
             }
 
-            AudioController.PlayClick();
+            if (_inventory.IsActive())
+            {
+                _inventory.Close();
+            }
+
+            AnalyticsManager.instance.OnEvent(Find<Menu>().gameObject.activeSelf
+                ? AnalyticsManager.EventName.ClickMainEquipment
+                : AnalyticsManager.EventName.ClickBattleEquipment);
         }
 
-        public override void Close()
+        public void CloseStatusDetail()
         {
-            foreach (var toggle in new[] {BtnStatus, BtnInventory})
+            if (!_statusDetail.IsActive())
             {
-                if (toggle.isOn)
-                {
-                    toggle.isOn = false;
-                }
+                return;
             }
+            
+            _statusDetail.Close();
 
-            base.Close();
+            if (BtnStatus.isOn)
+            {
+                BtnStatus.isOn = false;
+            }
         }
 
         public void SetStage(int stage)
         {
             TextStage.text = $"STAGE {stage}";
+        }
+        
+        private void OnRoomEnter()
+        {
+            TextStage.gameObject.SetActive(false);
+        }
+
+        private void OnStageStart()
+        {
+            TextStage.gameObject.SetActive(true);
+        }
+
+        private void OnUpdateStatus()
+        {
+            UpdateExp();
         }
     }
 }

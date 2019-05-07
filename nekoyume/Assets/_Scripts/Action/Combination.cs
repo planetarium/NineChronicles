@@ -26,10 +26,10 @@ namespace Nekoyume.Action
                 this.count = count;
             }
 
-            public ItemModel(UI.Model.CountEditableItem<UI.Model.Inventory.Item> item)
+            public ItemModel(UI.Model.CountableItem item)
             {
-                id = item.Item.Value.Item.Data.id;
-                count = item.Count.Value;
+                id = item.item.Value.Item.Data.id;
+                count = item.count.Value;
                 Debug.Log($"ItemModel | Id:{id}, Count:{count}");
             }
         }

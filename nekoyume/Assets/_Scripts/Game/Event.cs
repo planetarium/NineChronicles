@@ -27,12 +27,6 @@ namespace Nekoyume.Game
 
         public static readonly UnityEvent OnUseSkill = new UnityEvent();
 
-        public class Equip : UnityEvent<Equipment>
-        {
-        }
-        public static readonly Equip OnEquip = new Equip();
-        public static readonly Equip OnUpdateEquipment = new Equip();
-
         public class LoginDetail : UnityEvent<int>
         {
         }

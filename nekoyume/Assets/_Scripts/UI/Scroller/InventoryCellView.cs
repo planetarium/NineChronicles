@@ -1,5 +1,6 @@
-﻿using EnhancedUI.EnhancedScroller;
-using Nekoyume.UI.ItemView;
+﻿using System;
+using EnhancedUI.EnhancedScroller;
+using Nekoyume.UI.Module;
 using UniRx;
 using UnityEngine;
 
@@ -9,9 +10,29 @@ namespace Nekoyume.UI.Scroller
     public class InventoryCellView : EnhancedScrollerCellView
     {
         public InventoryItemView[] items;
-        
-        public void SetData(ReactiveCollection<Model.Inventory.Item> dataList, int firstIndex)
+
+        #region Mono
+
+        private void Awake()
         {
+            this.ComponentFieldsNotNullTest();
+        }
+
+        private void OnDisable()
+        {
+            Clear();
+        }
+
+        #endregion
+        
+        public void SetData(ReactiveCollection<Model.InventoryItem> dataList, int firstIndex)
+        {
+            if (ReferenceEquals(dataList, null))
+            {
+                Clear();
+                return;
+            }
+            
             var dataCount = dataList.Count;
             for (int i = 0; i < items.Length; i++)
             {
@@ -26,6 +47,14 @@ namespace Nekoyume.UI.Scroller
                 {
                     item.gameObject.SetActive(false);
                 }
+            }
+        }
+
+        public void Clear()
+        {
+            foreach (var item in items)
+            {
+                item.Clear();
             }
         }
     }

@@ -18,20 +18,16 @@ namespace Nekoyume.UI.Scroller
         /// `EnhancedScroller`의 `LifeCycle` 함수가 호출되면서 `null` 참조 문제가 발생한다.
         /// 그 상황을 피하기 위해서 빈 리스트를 할당한다.
         /// </summary>
-        private ReactiveCollection<Model.Inventory.Item> _dataList = new ReactiveCollection<Model.Inventory.Item>();
+        private ReactiveCollection<Model.InventoryItem> _dataList = new ReactiveCollection<Model.InventoryItem>();
         private float _cellViewHeight = 100f;
         
-        private readonly List<IDisposable> _disposables = new List<IDisposable>();
+        private readonly List<IDisposable> _disposablesForSetData = new List<IDisposable>();
 
         #region Mono
 
         private void Awake()
         {
-            if (ReferenceEquals(scroller, null) ||
-                ReferenceEquals(cellViewPrefab, null))
-            {
-                throw new SerializeFieldNullException();
-            }
+            this.ComponentFieldsNotNullTest();
 
             scroller.Delegate = this;
 
@@ -70,28 +66,36 @@ namespace Nekoyume.UI.Scroller
 
         #endregion
 
-        public void SetData(ReactiveCollection<Model.Inventory.Item> dataList)
+        public void SetData(ReactiveCollection<Model.InventoryItem> dataList)
         {
-            _disposables.DisposeAllAndClear();
-            
             if (ReferenceEquals(dataList, null))
             {
-                dataList = new ReactiveCollection<Model.Inventory.Item>();
+                Clear();
+                return;
             }
-
+            
+            _disposablesForSetData.DisposeAllAndClear();
             _dataList = dataList;
-            _dataList.ObserveAdd().Subscribe(OnDataAdd).AddTo(_disposables);
-            _dataList.ObserveRemove().Subscribe(OnDataRemove).AddTo(_disposables);
+            _dataList.ObserveAdd().Subscribe(OnDataAdd).AddTo(_disposablesForSetData);
+            _dataList.ObserveRemove().Subscribe(OnDataRemove).AddTo(_disposablesForSetData);
             
             scroller.ReloadData();
         }
 
-        private void OnDataAdd(CollectionAddEvent<Model.Inventory.Item> e)
+        public void Clear()
+        {
+            _dataList = new ReactiveCollection<Model.InventoryItem>();
+            _disposablesForSetData.DisposeAllAndClear();
+            
+            scroller.ReloadData();
+        }
+
+        private void OnDataAdd(CollectionAddEvent<Model.InventoryItem> e)
         {
             scroller.ReloadData();
         }
 
-        private void OnDataRemove(CollectionRemoveEvent<Model.Inventory.Item> e)
+        private void OnDataRemove(CollectionRemoveEvent<Model.InventoryItem> e)
         {
             scroller.ReloadData();
         }

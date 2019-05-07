@@ -7,82 +7,63 @@ namespace Nekoyume.UI.Model
 {
     public class Inventory : IDisposable
     {
-        public class Item : Game.Item.Inventory.InventoryItem, IDisposable
+        public readonly ReactiveCollection<InventoryItem> items = new ReactiveCollection<InventoryItem>();
+        public readonly ReactiveProperty<InventoryItem> selectedItem = new ReactiveProperty<InventoryItem>(null);
+        public readonly ReactiveProperty<string[]> dimmedTypes = new ReactiveProperty<string[]>();
+
+        public Inventory(List<Game.Item.Inventory.InventoryItem> items, params string[] dimmedTypes)
         {
-            public readonly ReactiveProperty<bool> Covered = new ReactiveProperty<bool>(false);
-            public readonly ReactiveProperty<bool> Dimmed = new ReactiveProperty<bool>(false);
-            public readonly ReactiveProperty<bool> Selected = new ReactiveProperty<bool>(false);
-
-            public readonly Subject<Item> OnClick = new Subject<Item>();
-            public readonly Subject<int> OnCountChanged = new Subject<int>();
-
-            public Item(Game.Item.Inventory.InventoryItem item) : base(item)
-            {
-            }
-
-            public void Dispose()
-            {
-                Covered.Dispose();
-                Dimmed.Dispose();
-                Selected.Dispose();
-
-                OnClick.Dispose();
-                OnCountChanged.Dispose();
-            }
-
-            public void RaiseCountChanged()
-            {
-                OnCountChanged.OnNext(Count);
-            }
-        }
-
-        public readonly ReactiveCollection<Item> Items = new ReactiveCollection<Item>();
-        public readonly ReactiveProperty<Item> SelectedItem = new ReactiveProperty<Item>(null);
-
-        public Inventory(List<Game.Item.Inventory.InventoryItem> items, params string[] ignoreDimmedTypes)
-        {
+            this.dimmedTypes.Value = dimmedTypes;
+            
             items.ForEach(item =>
             {
-                var obj = new Item(item);
-                obj.Dimmed.Value = !ignoreDimmedTypes.Contains(obj.Item.Data.cls);
-                obj.OnClick.Subscribe(SubscribeOnClick);
-                Items.Add(obj);
+                var inventoryItem = new InventoryItem(item);
+                InitInventoryItem(inventoryItem);
+                this.items.Add(inventoryItem);
             });
 
-            Items.ObserveAdd().Subscribe(added =>
+            this.items.ObserveAdd().Subscribe(added =>
             {
-                added.Value.Dimmed.Value = !ignoreDimmedTypes.Contains(added.Value.Item.Data.cls);
-                added.Value.OnClick.Subscribe(SubscribeOnClick);
+                InitInventoryItem(added.Value);
             });
-
-            Items.ObserveRemove().Subscribe(removed => removed.Value.Dispose());
-
-            SelectedItem.Subscribe(item =>
+            this.items.ObserveRemove().Subscribe(removed => removed.Value.Dispose());
+            
+            this.dimmedTypes.Subscribe(value =>
             {
-                if (ReferenceEquals(item, null))
+                foreach (var item in this.items)
                 {
-                    return;
+                    item.dimmed.Value = this.dimmedTypes.Value.Contains(item.item.Value.Item.Data.cls);
                 }
-                
-                item.Selected.Value = true;
             });
         }
 
         public void Dispose()
         {
-            Items.DisposeAll();
-            SelectedItem.DisposeAll();
+            items.DisposeAll();
+            selectedItem.DisposeAll();
         }
 
-        private void SubscribeOnClick(Item item)
+        private void InitInventoryItem(InventoryItem item)
         {
-            if (!ReferenceEquals(SelectedItem.Value, null))
+            item.dimmed.Value = dimmedTypes.Value.Contains(item.item.Value.Item.Data.cls);
+            item.onClick.Subscribe(SubscribeOnClick);
+        }
+
+        private void SubscribeOnClick(InventoryItem inventoryItem)
+        {
+            if (!ReferenceEquals(selectedItem.Value, null))
             {
-                SelectedItem.Value.Selected.Value = false;
+                selectedItem.Value.selected.Value = false;
+                
+                if (selectedItem.Value.item.Value.Item.Data.id == inventoryItem.item.Value.Item.Data.id)
+                {
+                    selectedItem.Value = null;
+                    return;
+                }
             }
 
-            SelectedItem.Value = item;
-            SelectedItem.Value.Selected.Value = true;
+            selectedItem.Value = inventoryItem;
+            selectedItem.Value.selected.Value = true;
         }
     }
 }

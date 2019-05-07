@@ -159,7 +159,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.19607843}
+  m_Color: {r: 0, g: 0, b: 0, a: 0.003921569}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -240,7 +240,7 @@ MonoBehaviour:
   scroller: {fileID: 114820589499919672}
   cellViewPrefab: {fileID: 114868890745394016, guid: 6a60497ae88c640898dff7694a1c7d16,
     type: 3}
-  numberOfInnerItemPerCell: 5
+  numberOfInnerItemPerCell: 6
 --- !u!1 &1446215292169018
 GameObject:
   m_ObjectHideFlags: 0

@@ -8,9 +8,8 @@ using Nekoyume.Data.Table;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
-using Nekoyume.UI.ItemInfo;
-using Nekoyume.UI.ItemView;
 using Nekoyume.UI.Model;
+using Nekoyume.UI.Module;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -22,15 +21,15 @@ namespace Nekoyume.UI
     {
         private Model.Combination _data;
 
-        public InventoryRenew inventoryRenew;
-        public ButtonedItemInfo selectedItemInfo;
+        public Module.InventoryAndSelectedItemInfo inventoryAndSelectedItemInfo;
         public CombinationStagedItemView[] stagedItems;
         public Button combinationButton;
         public Image combinationButtonImage;
-        public Text combinationButtonText;
         public Button closeButton;
 
-        private readonly List<IDisposable> _disposables = new List<IDisposable>();
+        private readonly List<IDisposable> _disposablesForAwake = new List<IDisposable>();
+        private readonly List<IDisposable> _disposablesForSetData = new List<IDisposable>();
+        private IDisposable _actionDisposable;
 
         private Stage _stage;
         private Player _player;
@@ -46,23 +45,15 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
-            if (ReferenceEquals(inventoryRenew, null) ||
-                ReferenceEquals(selectedItemInfo, null) ||
-                ReferenceEquals(combinationButton, null) ||
-                ReferenceEquals(combinationButtonImage, null) ||
-                ReferenceEquals(combinationButtonText, null) ||
-                ReferenceEquals(closeButton, null))
-            {
-                throw new SerializeFieldNullException();
-            }
+            this.ComponentFieldsNotNullTest();
 
             combinationButton.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
-                    _data.OnClickCombination.OnNext(_data);
+                    _data.onClickCombination.OnNext(_data);
                     AudioController.PlayClick();
                 })
-                .AddTo(_disposables);
+                .AddTo(_disposablesForAwake);
 
             closeButton.OnClickAsObservable()
                 .Subscribe(_ =>
@@ -70,28 +61,17 @@ namespace Nekoyume.UI
                     Close();
                     AudioController.PlayClick();
                 })
-                .AddTo(_disposables);
-        }
-
-        private void OnEnable()
-        {
-            _stage = GameObject.Find("Stage").GetComponent<Stage>();
-            if (ReferenceEquals(_stage, null))
-            {
-                throw new NotFoundComponentException<Stage>();
-            }
-        }
-
-        private void OnDisable()
-        {
-            _stage = null;
-            _player = null;
-            _count = 0;
+                .AddTo(_disposablesForAwake);
         }
 
         private void OnDestroy()
         {
-            _disposables.DisposeAllAndClear();
+            _disposablesForAwake.DisposeAllAndClear();
+            
+            _actionDisposable?.Dispose();
+            _actionDisposable = null;
+            
+            Clear();
         }
 
         #endregion
@@ -118,6 +98,11 @@ namespace Nekoyume.UI
 
             base.Show();
 
+            _stage = GameObject.Find("Stage").GetComponent<Stage>();
+            if (ReferenceEquals(_stage, null))
+            {
+                throw new NotFoundComponentException<Stage>();
+            }
             _stage.LoadBackground("combination");
 
             _player = FindObjectOfType<Player>();
@@ -128,28 +113,14 @@ namespace Nekoyume.UI
 
             _player.gameObject.SetActive(false);
 
-            _data = new Model.Combination(ActionManager.instance.Avatar.Items, stagedItems.Length);
-            _data.SelectedItemInfo.Value.Item.Subscribe(OnDataSelectedItemInfoItem);
-            _data.SelectItemCountPopup.Value.Item.Subscribe(OnDataPopupItem);
-            _data.SelectItemCountPopup.Value.OnClickClose.Subscribe(OnDataPopupOnClickClose);
-            _data.StagedItems.ObserveAdd().Subscribe(OnDataStagedItemsAdd);
-            _data.StagedItems.ObserveRemove().Subscribe(OnDataStagedItemsRemove);
-            _data.StagedItems.ObserveReplace().Subscribe(OnDataStagedItemsReplace);
-            _data.ReadyForCombination.Subscribe(SetActiveCombinationButton);
-            _data.OnClickCombination.Subscribe(RequestCombination);
-            _data.ResultPopup.Subscribe(SubscribeResultPopup);
-
-            inventoryRenew.SetData(_data.Inventory.Value);
-            inventoryRenew.Show();
-            selectedItemInfo.SetData(_data.SelectedItemInfo.Value);
-            UpdateStagedItems();
+            SetData(new Model.Combination(ActionManager.instance.Avatar.Items, stagedItems.Length));
             
             AudioController.instance.PlayMusic(AudioController.MusicCode.Combination);
         }
-
+        
         public override void Close()
         {
-            _data.Dispose();
+            Clear();
 
             _player.gameObject.SetActive(true);
             _stage.LoadBackground("room");
@@ -161,65 +132,52 @@ namespace Nekoyume.UI
             
             AudioController.instance.PlayMusic(AudioController.MusicCode.Main);
         }
-
-        private void OnDataSelectedItemInfoItem(Model.Inventory.Item data)
+        
+        private void SetData(Model.Combination value)
         {
-            if (ReferenceEquals(data, null) ||
-                data.Dimmed.Value ||
-                _data.IsStagedItemsFulled)
+            if (ReferenceEquals(value, null))
             {
-                _data.SelectedItemInfo.Value.ButtonEnabled.Value = false;
-            }
-            else
-            {
-                _data.SelectedItemInfo.Value.ButtonEnabled.Value = true;
-            }
-        }
-
-        private void OnDataPopupItem(Model.Inventory.Item data)
-        {
-            if (ReferenceEquals(data, null))
-            {
-                _selectItemCountPopup.Close();
+                Clear();
                 return;
             }
-
-            _selectItemCountPopup.Pop(_data.SelectItemCountPopup.Value);
+            
+            _disposablesForSetData.DisposeAllAndClear();
+            _data = value;
+            _data.inventoryAndSelectedItemInfo.Value.selectedItemInfo.Value.item.Subscribe(OnDataSelectedItemInfoItem).AddTo(_disposablesForSetData);
+            _data.selectItemCountPopup.Value.item.Subscribe(OnDataPopupItem).AddTo(_disposablesForSetData);
+            _data.selectItemCountPopup.Value.onClickClose.Subscribe(OnDataPopupOnClickClose).AddTo(_disposablesForSetData);
+            _data.stagedItems.ObserveAdd().Subscribe(OnDataStagedItemsAdd).AddTo(_disposablesForSetData);
+            _data.stagedItems.ObserveRemove().Subscribe(OnDataStagedItemsRemove).AddTo(_disposablesForSetData);
+            _data.stagedItems.ObserveReplace().Subscribe(_ => UpdateStagedItems()).AddTo(_disposablesForSetData);
+            _data.readyForCombination.Subscribe(SetActiveCombinationButton).AddTo(_disposablesForSetData);
+            _data.onClickCombination.Subscribe(RequestCombination).AddTo(_disposablesForSetData);
+            _data.resultPopup.Subscribe(SubscribeResultPopup).AddTo(_disposablesForSetData);
+            inventoryAndSelectedItemInfo.SetData(_data.inventoryAndSelectedItemInfo.Value);
+            
+            UpdateStagedItems();
         }
 
-        private void OnDataPopupOnClickClose(SelectItemCountPopup<Model.Inventory.Item> data)
+        private void Clear()
         {
-            _data.SelectItemCountPopup.Value.Item.Value = null;
-            _selectItemCountPopup.Close();
-        }
-
-        private void OnDataStagedItemsAdd(CollectionAddEvent<CountEditableItem<Model.Inventory.Item>> e)
-        {
-            if (e.Index >= stagedItems.Length)
+            inventoryAndSelectedItemInfo.Clear();
+            _data = null;
+            _disposablesForSetData.DisposeAllAndClear();
+            
+            foreach (var item in stagedItems)
             {
-                _data.StagedItems.RemoveAt(e.Index);
-                throw new AddOutOfSpecificRangeException<CollectionAddEvent<CountEditableItem<Model.Inventory.Item>>>(
-                    stagedItems.Length);
+                item.Clear();
             }
-
-            stagedItems[e.Index].SetData(e.Value);
         }
-
-        private void OnDataStagedItemsRemove(CollectionRemoveEvent<CountEditableItem<Model.Inventory.Item>> e)
+        
+        private void UpdateStagedItems(int startIndex = 0)
         {
-            if (e.Index >= stagedItems.Length)
-            {
-                return;
-            }
-
-            var dataCount = _data.StagedItems.Count;
-            for (var i = e.Index; i <= dataCount; i++)
+            var dataCount = _data.stagedItems.Count;
+            for (var i = startIndex; i < stagedItems.Length; i++)
             {
                 var item = stagedItems[i];
-
                 if (i < dataCount)
                 {
-                    item.SetData(_data.StagedItems[i]);
+                    item.SetData(_data.stagedItems[i]);
                 }
                 else
                 {
@@ -228,11 +186,69 @@ namespace Nekoyume.UI
             }
         }
 
-        private void OnDataStagedItemsReplace(CollectionReplaceEvent<CountEditableItem<Model.Inventory.Item>> e)
+        private void OnDataSelectedItemInfoItem(InventoryItem data)
         {
-            if (ReferenceEquals(e.NewValue, null))
+            if (ReferenceEquals(data, null) ||
+                data.dimmed.Value ||
+                _data.IsStagedItemsFulled)
             {
-                UpdateStagedItems();
+                _data.inventoryAndSelectedItemInfo.Value.selectedItemInfo.Value.buttonEnabled.Value = false;
+            }
+            else
+            {
+                _data.inventoryAndSelectedItemInfo.Value.selectedItemInfo.Value.buttonEnabled.Value = true;
+            }
+        }
+
+        private void OnDataPopupItem(CountableItem data)
+        {
+            if (ReferenceEquals(data, null))
+            {
+                _selectItemCountPopup.Close();
+                return;
+            }
+
+            _selectItemCountPopup.Pop(_data.selectItemCountPopup.Value);
+        }
+
+        private void OnDataPopupOnClickClose(Model.SelectItemCountPopup data)
+        {
+            _data.selectItemCountPopup.Value.item.Value = null;
+            _selectItemCountPopup.Close();
+        }
+
+        private void OnDataStagedItemsAdd(CollectionAddEvent<CountEditableItem> e)
+        {
+            if (e.Index >= stagedItems.Length)
+            {
+                _data.stagedItems.RemoveAt(e.Index);
+                throw new AddOutOfSpecificRangeException<CollectionAddEvent<CountEditableItem>>(
+                    stagedItems.Length);
+            }
+
+            stagedItems[e.Index].SetData(e.Value);
+        }
+
+        private void OnDataStagedItemsRemove(CollectionRemoveEvent<CountEditableItem> e)
+        {
+            if (e.Index >= stagedItems.Length)
+            {
+                return;
+            }
+
+            var dataCount = _data.stagedItems.Count;
+            for (var i = e.Index; i <= dataCount; i++)
+            {
+                var item = stagedItems[i];
+
+                if (i < dataCount)
+                {
+                    item.SetData(_data.stagedItems[i]);
+                }
+                else
+                {
+                    item.Clear();
+                }
             }
         }
 
@@ -241,7 +257,7 @@ namespace Nekoyume.UI
             if (isActive)
             {
                 combinationButton.enabled = true;
-                combinationButtonImage.sprite = Resources.Load<Sprite>("UI/Textures/button_blue_02");
+                combinationButtonImage.sprite = Resources.Load<Sprite>("UI/Textures/button_blue_01");
             }
             else
             {
@@ -250,13 +266,12 @@ namespace Nekoyume.UI
             }
         }
 
-        private IDisposable _combinationDisposable;
-
         private void RequestCombination(Model.Combination data)
         {
             _loadingScreen.Show();
-            _combinationDisposable = Action.Combination.EndOfExecuteSubject.ObserveOnMainThread().Subscribe(ResponseCombination);
-            ActionManager.instance.Combination(_data.StagedItems.ToList());
+            _count = 0;
+            _actionDisposable = Action.Combination.EndOfExecuteSubject.ObserveOnMainThread().Subscribe(ResponseCombination);
+            ActionManager.instance.Combination(_data.stagedItems.ToList());
             AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ClickCombinationCombination);
         }
 
@@ -272,7 +287,8 @@ namespace Nekoyume.UI
             if (_count <= 1)
                 return;
 
-            _combinationDisposable.Dispose();
+            _actionDisposable.Dispose();
+            _actionDisposable = null;
             
             var result = action.Result;
             if (result.ErrorCode == ActionBase.ErrorCode.Success)
@@ -284,31 +300,29 @@ namespace Nekoyume.UI
                     throw new InvalidActionException("`Combination` action's `Result` is invalid.");
                 }
 
-                var itemModel = new Model.Inventory.Item(
-                    new Game.Item.Inventory.InventoryItem(new Equipment(itemData), action.Result.Item.count));
+                var itemModel = new Game.Item.Inventory.InventoryItem(new Equipment(itemData), action.Result.Item.count);
 
-                _data.ResultPopup.Value = new CombinationResultPopup<Model.Inventory.Item>()
+                _data.resultPopup.Value = new Model.CombinationResultPopup(itemModel, itemModel.Count)
                 {
-                    IsSuccess = true,
-                    ResultItem = itemModel,
-                    MaterialItems = _data.StagedItems
+                    isSuccess = true,
+                    materialItems = _data.stagedItems
                 };
                 
                 AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ActionCombinationSuccess);
             }
             else
             {
-                _data.ResultPopup.Value = new CombinationResultPopup<Model.Inventory.Item>()
+                _data.resultPopup.Value = new Model.CombinationResultPopup(null, 0)
                 {
-                    IsSuccess = false,
-                    MaterialItems = _data.StagedItems
+                    isSuccess = false,
+                    materialItems = _data.stagedItems
                 };
                 
                 AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ActionCombinationFail);
             }
         }
 
-        private void SubscribeResultPopup(CombinationResultPopup<Model.Inventory.Item> data)
+        private void SubscribeResultPopup(Model.CombinationResultPopup data)
         {
             if (ReferenceEquals(data, null))
             {
@@ -317,24 +331,7 @@ namespace Nekoyume.UI
             else
             {
                 _loadingScreen.Close();
-                _resultPopup.Pop(_data.ResultPopup.Value);
-            }
-        }
-
-        private void UpdateStagedItems(int startIndex = 0)
-        {
-            var dataCount = _data.StagedItems.Count;
-            for (var i = startIndex; i < stagedItems.Length; i++)
-            {
-                var item = stagedItems[i];
-                if (i < dataCount)
-                {
-                    item.SetData(_data.StagedItems[i]);
-                }
-                else
-                {
-                    item.Clear();
-                }
+                _resultPopup.Pop(_data.resultPopup.Value);
             }
         }
     }

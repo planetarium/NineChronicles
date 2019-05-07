@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Nekoyume.Game.Controller;
-using Nekoyume.UI.ItemView;
+using Nekoyume.UI.Module;
 using UniRx;
 using UnityEngine.UI;
 
@@ -19,8 +19,9 @@ namespace Nekoyume.UI
         public Button okButton;
         public SimpleCountableItemView itemView;
         
-        private readonly List<IDisposable> _disposables = new List<IDisposable>();
-        private Model.SelectItemCountPopup<Model.Inventory.Item> _data;
+        private Model.SelectItemCountPopup _data;
+        private readonly List<IDisposable> _disposablesForAwake = new List<IDisposable>();
+        private readonly List<IDisposable> _disposablesForSetDate = new List<IDisposable>();
 
         #region Mono
 
@@ -28,39 +29,62 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
-            if (ReferenceEquals(titleText, null) ||
-                ReferenceEquals(countText, null) ||
-                ReferenceEquals(itemView, null) ||
-                ReferenceEquals(minusButton, null) ||
-                ReferenceEquals(plusButton, null) ||
-                ReferenceEquals(cancelButton, null) ||
-                ReferenceEquals(okButton, null))
-            {
-                throw new SerializeFieldNullException();
-            }
+            this.ComponentFieldsNotNullTest();
+            
+            minusButton.OnClickAsObservable()
+                .Subscribe(_ =>
+                {
+                    _data.onClickMinus.OnNext(_data);
+                    AudioController.PlayClick();
+                })
+                .AddTo(_disposablesForAwake);
+
+            plusButton.OnClickAsObservable()
+                .Subscribe(_ =>
+                {
+                    _data.onClickPlus.OnNext(_data);
+                    AudioController.PlayClick();
+                })
+                .AddTo(_disposablesForAwake);
+
+            cancelButton.OnClickAsObservable()
+                .Subscribe(_ =>
+                {
+                    _data.onClickClose.OnNext(_data);
+                    AudioController.PlayCancel();
+                })
+                .AddTo(_disposablesForAwake);
+
+            okButton.OnClickAsObservable()
+                .Subscribe(_ =>
+                {
+                    _data.onClickSubmit.OnNext(_data);
+                    AudioController.PlayClick();
+                })
+                .AddTo(_disposablesForAwake);
         }
 
         private void OnDestroy()
         {
-            _disposables.DisposeAllAndClear();
+            _disposablesForAwake.DisposeAllAndClear();
+            Clear();
         }
 
         #endregion
 
-        public void Pop(Model.SelectItemCountPopup<Model.Inventory.Item> data)
+        public void Pop(Model.SelectItemCountPopup data)
         {
             if (ReferenceEquals(data, null))
             {
                 return;
             }
 
+            AudioController.PlayPopup();
             SetData(data);
             base.Show();
-            
-            AudioController.PlayPopup();
         }
 
-        public void SetData(Model.SelectItemCountPopup<Model.Inventory.Item> data)
+        private void SetData(Model.SelectItemCountPopup data)
         {
             if (ReferenceEquals(data, null))
             {
@@ -68,61 +92,37 @@ namespace Nekoyume.UI
                 return;
             }
             
-            _disposables.DisposeAllAndClear();
-
+            _disposablesForSetDate.DisposeAllAndClear();
             _data = data;
-            _data.Count.Subscribe(SetCount)
-                .AddTo(_disposables);
-
-            minusButton.OnClickAsObservable()
-                .Subscribe(_ =>
-                {
-                    _data.OnClickMinus.OnNext(_data);
-                    AudioController.PlayClick();
-                })
-                .AddTo(_disposables);
-
-            plusButton.OnClickAsObservable()
-                .Subscribe(_ =>
-                {
-                    _data.OnClickPlus.OnNext(_data);
-                    AudioController.PlayClick();
-                })
-                .AddTo(_disposables);
-
-            cancelButton.OnClickAsObservable()
-                .Subscribe(_ =>
-                {
-                    _data.OnClickClose.OnNext(_data);
-                    AudioController.PlayCancel();
-                })
-                .AddTo(_disposables);
-
-            okButton.OnClickAsObservable()
-                .Subscribe(_ =>
-                {
-                    _data.OnClickSubmit.OnNext(_data);
-                    AudioController.PlayClick();
-                })
-                .AddTo(_disposables);
+            _data.count.Subscribe(SetCount).AddTo(_disposablesForSetDate);
+            itemView.SetData(_data.item.Value);
             
-            SetCount(_data.Count.Value);
-            itemView.SetData(data.Item.Value);
+            UpdateView();
+        }
+        
+        private void Clear()
+        {
+            itemView.Clear();
+            _data = null;
+            _disposablesForSetDate.DisposeAllAndClear();
+            
+            UpdateView();
         }
 
-        public void SetCount(int count)
+        private void UpdateView()
+        {
+            if (ReferenceEquals(_data, null))
+            {
+                SetCount(0);
+                return;
+            }
+            
+            SetCount(_data.count.Value);
+        }
+        
+        private void SetCount(int count)
         {
             countText.text = string.Format(CountStringFormat, count);
-        }
-
-        public void Clear()
-        {
-            _disposables.DisposeAllAndClear();
-            
-            _data = null;
-            
-            SetCount(0);
-            itemView.Clear();
         }
     }
 }

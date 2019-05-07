@@ -3,70 +3,70 @@ using UniRx;
 
 namespace Nekoyume.UI.Model
 {
-    public class SelectItemCountPopup<T> : IDisposable where T : Game.Item.Inventory.InventoryItem
+    public class SelectItemCountPopup : IDisposable
     {
-        public readonly ReactiveProperty<T> Item = new ReactiveProperty<T>(null);
-        public readonly ReactiveProperty<int> Count = new ReactiveProperty<int>(1);
-        public readonly ReactiveProperty<int> MinCount = new ReactiveProperty<int>(0);
-        public readonly ReactiveProperty<int> MaxCount = new ReactiveProperty<int>(1);
+        public readonly ReactiveProperty<CountableItem> item = new ReactiveProperty<CountableItem>(null);
+        public readonly ReactiveProperty<int> count = new ReactiveProperty<int>(1);
+        public readonly ReactiveProperty<int> minCount = new ReactiveProperty<int>(0);
+        public readonly ReactiveProperty<int> maxCount = new ReactiveProperty<int>(1);
         
-        public readonly Subject<SelectItemCountPopup<T>> OnClickMinus = new Subject<SelectItemCountPopup<T>>();
-        public readonly Subject<SelectItemCountPopup<T>> OnClickPlus = new Subject<SelectItemCountPopup<T>>();
-        public readonly Subject<SelectItemCountPopup<T>> OnClickSubmit = new Subject<SelectItemCountPopup<T>>();
-        public readonly Subject<SelectItemCountPopup<T>> OnClickClose = new Subject<SelectItemCountPopup<T>>();
+        public readonly Subject<SelectItemCountPopup> onClickMinus = new Subject<SelectItemCountPopup>();
+        public readonly Subject<SelectItemCountPopup> onClickPlus = new Subject<SelectItemCountPopup>();
+        public readonly Subject<SelectItemCountPopup> onClickSubmit = new Subject<SelectItemCountPopup>();
+        public readonly Subject<SelectItemCountPopup> onClickClose = new Subject<SelectItemCountPopup>();
 
         public SelectItemCountPopup()
         {
-            MinCount.Subscribe(min =>
+            minCount.Subscribe(min =>
             {
-                if (Count.Value < min)
+                if (count.Value < min)
                 {
-                    Count.Value = min;
+                    count.Value = min;
                 }
             });
 
-            MaxCount.Subscribe(max =>
+            maxCount.Subscribe(max =>
             {
-                if (Count.Value > max)
+                if (count.Value > max)
                 {
-                    Count.Value = max;
+                    count.Value = max;
                 }
             });
             
-            OnClickMinus.Subscribe(obj =>
+            onClickMinus.Subscribe(obj =>
             {
                 if (ReferenceEquals(obj, null) ||
-                    obj.Count.Value <= MinCount.Value)
+                    obj.count.Value <= minCount.Value)
                 {
                     return;
                 }
 
-                obj.Count.Value--;
+                obj.count.Value--;
             });
             
-            OnClickPlus.Subscribe(obj =>
+            onClickPlus.Subscribe(obj =>
             {
                 if (ReferenceEquals(obj, null) ||
-                    obj.Count.Value >= MaxCount.Value)
+                    obj.count.Value >= maxCount.Value)
                 {
                     return;
                 }
 
-                obj.Count.Value++;
+                obj.count.Value++;
             });
         }
         
         public void Dispose()
         {
-            Item.Dispose();
-            Count.Dispose();
-            MinCount.Dispose();
-            MaxCount.Dispose();
+            item.Dispose();
+            count.Dispose();
+            minCount.Dispose();
+            maxCount.Dispose();
             
-            OnClickMinus.Dispose();
-            OnClickPlus.Dispose();
-            OnClickSubmit.Dispose();
-            OnClickClose.Dispose();
+            onClickMinus.Dispose();
+            onClickPlus.Dispose();
+            onClickSubmit.Dispose();
+            onClickClose.Dispose();
         }
     }
 }

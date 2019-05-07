@@ -347,7 +347,7 @@ namespace Nekoyume.Action
             shop = newShop;
         }
         
-        public void Combination(List<UI.Model.CountEditableItem<UI.Model.Inventory.Item>> materials)
+        public void Combination(List<UI.Model.CountEditableItem> materials)
         {
             var action = new Combination();
             materials.ForEach(m => action.Materials.Add(new Combination.ItemModel(m)));
