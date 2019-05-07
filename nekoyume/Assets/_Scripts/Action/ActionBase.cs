@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Immutable;
+using Libplanet;
 using Libplanet.Action;
 using UniRx;
 
@@ -73,6 +74,30 @@ namespace Nekoyume.Action
             ).Select(eval => new ActionEvaluation<T>
             {
                 Action = (T) eval.Action,
+                InputContext = eval.InputContext,
+                OutputStates = eval.OutputStates,
+            });
+        }
+
+        public static IObservable<ActionEvaluation<ActionBase>> EveryRender(Address updatedAddress)
+        {
+            return RenderSubject.AsObservable().Where(
+                eval => eval.OutputStates.UpdatedAddresses.Contains(updatedAddress)
+            ).Select(eval => new ActionEvaluation<ActionBase>
+            {
+                Action = eval.Action,
+                InputContext = eval.InputContext,
+                OutputStates = eval.OutputStates,
+            });
+        }
+
+        public static IObservable<ActionEvaluation<ActionBase>> EveryUnrender(Address updatedAddress)
+        {
+            return UnrenderSubject.AsObservable().Where(
+                eval => eval.OutputStates.UpdatedAddresses.Contains(updatedAddress)
+            ).Select(eval => new ActionEvaluation<ActionBase>
+            {
+                Action = eval.Action,
                 InputContext = eval.InputContext,
                 OutputStates = eval.OutputStates,
             });
