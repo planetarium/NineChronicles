@@ -50,17 +50,26 @@ namespace Nekoyume.Action
         public const string IceServersFileName = "ice_servers.dat";
         public const string ChainIdKey = "chain_id";
         public static Address shopAddress => default(Address);
+
+        public static Address RankingAddress => new Address(new byte[]
+            {
+                0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x1
+            }
+        );
         public Shop shop;
 
         private IEnumerator _miner;
         private IEnumerator _txProcessor;
         private IEnumerator _avatarUpdator;
         private IEnumerator _shopUpdator;
+        private IEnumerator _rankingUpdator;
         private IEnumerator _swarmRunner;
 
         private IEnumerator _actionRetryer;
 
         public Address agentAddress => agent.AgentAddress;
+        public Address AvatarAddress => agent.AvatarAddress;
+        public RankingBoard rankingBoard;
 
 #if UNITY_EDITOR
         private const string AgentStoreDirName = "planetarium_dev";
@@ -98,6 +107,7 @@ namespace Nekoyume.Action
 
             StartNullableCoroutine(_avatarUpdator);
             StartNullableCoroutine(_shopUpdator);
+            StartNullableCoroutine(_rankingUpdator);
         }
 
         public void CreateNovice(string nickName)
@@ -290,12 +300,19 @@ namespace Nekoyume.Action
             Avatar = LoadStatus(_saveFilePath);
             agent.DidReceiveAction += ReceiveAction;
             agent.UpdateShop += UpdateShop;
+            agent.UpdateRankingBoard += UpdateRankingBoard;
 
             _avatarUpdator = agent.CoAvatarUpdator();
             _shopUpdator = agent.CoShopUpdator();
+            _rankingUpdator = agent.CoRankingUpdator();
 
             Debug.Log($"Agent Address: 0x{agent.AgentAddress.ToHex()}");
             Debug.Log($"Avatar Address: 0x{agent.AvatarAddress.ToHex()}");
+        }
+
+        private void UpdateRankingBoard(object sender, RankingBoard board)
+        {
+            rankingBoard = board;
         }
 
         private string GetCommandLineOption(string name)

@@ -17,6 +17,9 @@ using Libplanet.Net;
 using Libplanet.Store;
 using Libplanet.Tx;
 using Nekoyume.Game;
+#if BLOCK_LOG_USE
+using Nekoyume.Helper;
+#endif
 using Nekoyume.Serilog;
 using Serilog;
 using UnityEngine;
@@ -34,6 +37,9 @@ namespace Nekoyume.Action
         private const float ShopUpdateInterval = 3.0f;
 
         private const float TxProcessInterval = 3.0f;
+
+        private const float RankingUpdateInterval = 3.0f;
+
         private static readonly TimeSpan SwarmDialTimeout = TimeSpan.FromSeconds(5);
 
         private const float ActionRetryInterval = 15.0f;
@@ -110,6 +116,7 @@ namespace Nekoyume.Action
         public Address AvatarAddress => AvatarPrivateKey.PublicKey.ToAddress();
         public Address ShopAddress => ActionManager.shopAddress;
         public Address AgentAddress => _agentPrivateKey.PublicKey.ToAddress();
+        public Address RankingBoardAddress => ActionManager.RankingAddress;
 
         public Guid ChainId => _blocks.Id;
 
@@ -119,6 +126,8 @@ namespace Nekoyume.Action
         public event EventHandler PreloadStarted;
         public event EventHandler<BlockDownloadState> PreloadProcessed;
         public event EventHandler PreloadEnded;
+
+        public EventHandler<RankingBoard> UpdateRankingBoard;
 
         public IEnumerator CoSwarmRunner()
         {
@@ -171,6 +180,21 @@ namespace Nekoyume.Action
                 if (shop != null)
                 {
                     UpdateShop?.Invoke(this, shop);
+                }
+            }
+        }
+
+        public IEnumerator CoRankingUpdator()
+        {
+            while (true)
+            {
+                yield return new WaitForSeconds(RankingUpdateInterval);
+                var task = Task.Run(() => _blocks.GetStates(new[] {RankingBoardAddress}));
+                yield return new WaitUntil(() => task.IsCompleted);
+                var rankingBoard = (RankingBoard) task.Result.GetValueOrDefault(RankingBoardAddress);
+                if (rankingBoard != null)
+                {
+                    UpdateRankingBoard?.Invoke(this, rankingBoard);
                 }
             }
         }

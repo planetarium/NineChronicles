@@ -74,6 +74,16 @@ namespace Nekoyume.UI
             AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ClickMainCombination);
         }
 
+        public void RankingClick()
+        {
+            Find<Status>()?.Close();
+            Close();
+
+            Find<RankingBoard>()?.Show();
+            Find<Gold>()?.Show();
+            AudioController.PlayClick();
+        }
+
         public override void Show()
         {
             base.Show();
