@@ -7,6 +7,7 @@ using Nekoyume.Data.Table;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Util;
 using Nekoyume.Model;
+using Priority_Queue;
 using UnityEngine;
 
 namespace Nekoyume.Action
@@ -21,9 +22,10 @@ namespace Nekoyume.Action
         public readonly Player Player;
         private BattleLog.Result _result;
         private int _totalWave;
-        public List<CharacterBase> Characters;
+        public SimplePriorityQueue<CharacterBase> Characters;
         private readonly List<List<ItemBase>> _waveRewards;
-        
+        public const int Speed = 100;
+
         public Simulator(IRandom random, Model.Avatar avatar, List<Food> foods, int stage)
         {
             Random = random;
@@ -42,19 +44,20 @@ namespace Nekoyume.Action
             Player.Spawn();
             foreach (var wave in _waves)
             {
-                Characters = new List<CharacterBase> {Player};
+                Characters = new SimplePriorityQueue<CharacterBase>();
+                Characters.Enqueue(Player, Speed / Player.TurnSpeed);
                 int lastWave = _totalWave - 1;
                 wave.Spawn(this);
                 while (true)
                 {
-                    var characters = Characters.ToList();
-                    foreach (var character in characters) character.Tick();
+                    var character = Characters.Dequeue();
+                    character.Tick();
 
                     if (Player.targets.Count == 0)
                     {
                         var index = Math.Min(_waves.IndexOf(wave), lastWave);
                         var items = _waveRewards[index];
-                        Player.GetExp(wave.exp, true);
+                        Player.GetExp(wave.EXP, true);
 
                         var dropBox = new DropBox
                         {
@@ -88,6 +91,14 @@ namespace Nekoyume.Action
                         Debug.Log("lose");
                         break;
                     }
+
+                    foreach (var other in Characters)
+                    {
+                        var current = Characters.GetPriority(other);
+                        var speed = current * 0.6f;
+                        Characters.UpdatePriority(other, speed);
+                    }
+                    Characters.Enqueue(character, 100 / character.TurnSpeed);
                 }
                 if (Lose)
                 {
@@ -134,10 +145,10 @@ namespace Nekoyume.Action
                         Debug.Log(monsterData.id);
                     }
                     wave.Add(new Monster(characterData, monsterData.level, Player));
-                    wave.isBoss = stage.isBoss;
+                    wave.IsBoss = stage.isBoss;
                 }
 
-                wave.exp = stage.exp;
+                wave.EXP = stage.exp;
             }
 
             return wave;
