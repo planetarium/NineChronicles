@@ -241,17 +241,18 @@ namespace Nekoyume.Action
         {
             while (true)
             {
-                var task = Task.Run(async () =>
-                {
-                    var tx = Transaction<PolymorphicAction<ActionBase>>.Create(
+                var tx = Transaction<PolymorphicAction<ActionBase>>.Create(
                         _agentPrivateKey,
                         new List<PolymorphicAction<ActionBase>>()
                         {
-                            new RewardGold() { Gold = RewardAmount }
+                            new RewardGold { Gold = RewardAmount }
                         },
-                        timestamp: DateTime.UtcNow
-                    );
-                    _blocks.StageTransactions(new HashSet<Transaction<PolymorphicAction<ActionBase>>> {tx});
+                        timestamp: DateTime.UtcNow);
+                var txs = new HashSet<Transaction<PolymorphicAction<ActionBase>>> { tx };
+
+                var task = Task.Run(async () =>
+                {
+                    _blocks.StageTransactions(txs);
                     var block = _blocks.MineBlock(AgentAddress);
                     await _swarm.BroadcastBlocksAsync(new[] {block});
                     return block;
@@ -265,6 +266,10 @@ namespace Nekoyume.Action
 #if BLOCK_LOG_USE
                     FileHelper.AppendAllText("Block.log", task.Result.ToVerboseString());
 #endif
+                }
+                else
+                {
+                    _blocks.UnstageTransactions(txs);
                 }
             }
         }
