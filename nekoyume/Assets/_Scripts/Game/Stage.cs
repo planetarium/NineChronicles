@@ -29,7 +29,7 @@ namespace Nekoyume.Game
         public float loadingSpeed = 2.0f;
         public Character.Player selectedPlayer;
         private readonly float stageStartPosition = -1.2f;
-        public readonly Vector2 QuestPreparationPosition = new Vector2(1.65f, -1.3f);
+        public readonly Vector2 QuestPreparationPosition = new Vector2(1.65f, -0.8f);
         public readonly Vector2 RoomPosition = new Vector2(-2.66f, -1.85f);
         public bool repeatStage;
         public string zone;
