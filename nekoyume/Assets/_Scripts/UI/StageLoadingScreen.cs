@@ -92,10 +92,10 @@ namespace Nekoyume.UI
             return sprite;
         }
 
-        public IEnumerator CoClose()
+        public override IEnumerator CoClose()
         {
             yield return new WaitUntil(() => closeEnd);
-            base.Close();
+            yield return StartCoroutine(base.CoClose());
         }
     }
 }

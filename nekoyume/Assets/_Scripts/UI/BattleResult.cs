@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Nekoyume.Manager;
 using Nekoyume.Action;
@@ -64,6 +65,8 @@ namespace Nekoyume.UI
         {
             var w = Find<StageLoadingScreen>();
             w.Show(this, _stage.zone);
+            Find<Status>().Close();
+            Find<Gold>().Close();
 
             if (!ReferenceEquals(_battleWinVFX, null))
             {
@@ -80,15 +83,7 @@ namespace Nekoyume.UI
 
             Hide();
 
-            observable.ObserveOnMainThread().Subscribe(_ =>
-            {
-                
-                actionEnd = true;
-                StartCoroutine(w.CoClose());
-                
-                Game.Event.OnStageStart.Invoke();
-                Close();
-            }).AddTo(this);
+            observable.ObserveOnMainThread().Subscribe(_ => { StartCoroutine(CoNextStage(w)); }).AddTo(this);
         }
         public void BackClick()
         {   
@@ -196,6 +191,14 @@ namespace Nekoyume.UI
         {
             _image.enabled = false;
             modal.SetActive(false);
+        }
+
+        private IEnumerator CoNextStage(StageLoadingScreen loadingScreen)
+        {
+            actionEnd = true;
+            yield return StartCoroutine(loadingScreen.CoClose());
+            Game.Event.OnStageStart.Invoke();
+            Close();
         }
     }
 }
