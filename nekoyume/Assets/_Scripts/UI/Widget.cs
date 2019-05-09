@@ -145,7 +145,7 @@ namespace Nekoyume.UI
             StartCoroutine(CoClose());
         }
 
-        private IEnumerator CoClose()
+        public virtual IEnumerator CoClose()
         {
             if (_animator)
             {

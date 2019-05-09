@@ -40,7 +40,8 @@ namespace Nekoyume.UI
             // 팝업류.
             Widget.Create<SelectItemCountPopup>();
             Widget.Create<CombinationResultPopup>();
-            
+            Widget.Create<StageTitle>();
+
             // 로딩창류.
             Widget.Create<GrayLoadingScreen>();
             Widget.Create<LoadingScreen>();
