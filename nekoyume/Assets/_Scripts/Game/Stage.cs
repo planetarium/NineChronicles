@@ -181,16 +181,22 @@ namespace Nekoyume.Game
 
         private IEnumerator CoStageEnter(int stage)
         {
-            Data.Table.Background data;
-            if (Tables.instance.Background.TryGetValue(stage, out data))
+            if (Tables.instance.Background.TryGetValue(stage, out Data.Table.Background data))
             {
                 id = stage;
                 zone = data.background;
-                ReadyPlayer();
+                var player = ReadyPlayer();
 
                 LoadBackground(zone, 3.0f);
                 Widget.Find<Menu>().ShowWorld();
-                Widget.Find<Status>().SetStage(stage);
+                var title = Widget.Find<StageTitle>();
+                title.Show(stage);
+                var status = Widget.Find<Status>();
+                status.UpdatePlayer(player.gameObject);
+                status.Show();
+                yield return new WaitForSeconds(1.0f);
+                yield return StartCoroutine(title.CoClose());
+                status.ShowStage(stage);
 
                 switch (zone)
                 {
