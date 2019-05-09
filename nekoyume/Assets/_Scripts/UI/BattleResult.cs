@@ -74,6 +74,7 @@ namespace Nekoyume.UI
             }
 
             var player = _stage.ReadyPlayer();
+            player.DisableHUD();
             var stage = _stage.id;
             if (!_stage.repeatStage)
                 stage++;
