@@ -26,17 +26,15 @@ namespace Nekoyume.Data.Table
         {
             unchecked
             {
-                var hashCode = id;
-                hashCode = (hashCode * 397) ^ (name != null ? name.GetHashCode() : 0);
+                var hashCode = base.GetHashCode();
+                hashCode = (hashCode * 397) ^ resourceId;
                 hashCode = (hashCode * 397) ^ (int) elemental;
-                hashCode = (hashCode * 397) ^ grade;
                 hashCode = (hashCode * 397) ^ setId;
                 hashCode = (hashCode * 397) ^ (ability1 != null ? ability1.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ value1;
                 hashCode = (hashCode * 397) ^ (ability2 != null ? ability2.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ value2;
-                hashCode = (hashCode * 397) ^ (description != null ? description.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ resourceId;
+                hashCode = (hashCode * 397) ^ turnSpeed.GetHashCode();
                 return hashCode;
             }
         }
@@ -48,5 +46,6 @@ namespace Nekoyume.Data.Table
         public int value1 = 0;
         public string ability2 = "";
         public int value2 = 0;
+        public float turnSpeed = 2.0f;
     }
 }

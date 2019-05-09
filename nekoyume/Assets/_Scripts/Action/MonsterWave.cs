@@ -5,29 +5,29 @@ namespace Nekoyume.Action
 {
     public class MonsterWave
     {
-        public readonly List<Monster> monsters = new List<Monster>();
-        public bool isBoss;
-        public long exp;
+        private readonly List<Monster> _monsters = new List<Monster>();
+        public bool IsBoss;
+        public long EXP;
 
 
         public void Add(Monster monster)
         {
-            monsters.Add(monster);
+            _monsters.Add(monster);
         }
 
         public void Spawn(Simulator simulator)
         {
-            foreach (var monster in monsters)
+            foreach (var monster in _monsters)
             {
                 simulator.Player.targets.Add(monster);
-                simulator.Characters.Add(monster);
+                simulator.Characters.Enqueue(monster, Simulator.TurnPriority / monster.TurnSpeed);
                 monster.InitAI();
             }
 
             var spawnWave = new SpawnWave
             {
-                monsters = monsters,
-                isBoss = isBoss
+                monsters = _monsters,
+                isBoss = IsBoss
             };
             simulator.Log.Add(spawnWave);
         }
