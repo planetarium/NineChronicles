@@ -1,6 +1,4 @@
-using System.Collections;
 using Nekoyume.Manager;
-using Nekoyume.Action;
 using Nekoyume.Game.Controller;
 using UnityEngine;
 using UnityEngine.UI;
