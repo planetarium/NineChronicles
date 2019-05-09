@@ -23,6 +23,7 @@ namespace Nekoyume.UI
         private Model.Shop _data;
         
         private readonly List<IDisposable> _disposablesForAwake = new List<IDisposable>();
+        private readonly List<IDisposable> _disposablesForSetData = new List<IDisposable>();
 
         private Stage _stage;
         private Player _player;
@@ -92,34 +93,22 @@ namespace Nekoyume.UI
 
         private void SetData(Model.Shop data)
         {
+            _disposablesForSetData.DisposeAllAndClear();
             _data = data;
             _data.state.Value = Model.Shop.State.Buy;
-            _data.state.Subscribe(OnState);
-            _data.onClickClose.Subscribe(_ => Close());
+            _data.state.Subscribe(OnState).AddTo(_disposablesForSetData);
+            _data.onClickClose.Subscribe(_ => Close()).AddTo(_disposablesForSetData);
             
             inventoryAndItemInfo.SetData(_data.inventoryAndItemInfo.Value);
             shopItems.SetData(_data.shopItems.Value);
-            
-            UpdateView();
         }
 
         private void Clear()
         {
             shopItems.Clear();
             inventoryAndItemInfo.Clear();
+            _disposablesForSetData.DisposeAllAndClear();
             _data = null;
-            
-            UpdateView();
-        }
-
-        private void UpdateView()
-        {
-            if (ReferenceEquals(_data, null))
-            {
-                return;
-            }
-            
-            //
         }
 
         private void OnState(Model.Shop.State state)

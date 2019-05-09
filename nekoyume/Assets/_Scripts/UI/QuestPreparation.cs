@@ -166,12 +166,10 @@ namespace Nekoyume.UI
             if (ReferenceEquals(data, null) ||
                 data.dimmed.Value)
             {
-//                _data.inventoryAndItemInfo.Value.itemInfo.Value.buttonEnabled.Value = false;
                 SetGlowEquipSlot(false);
             }
             else
             {
-//                _data.inventoryAndItemInfo.Value.itemInfo.Value.buttonEnabled.Value = true;
                 SetGlowEquipSlot(data.item.Value.Item is ItemUsable);
             }
         }
