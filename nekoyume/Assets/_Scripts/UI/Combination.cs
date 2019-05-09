@@ -21,7 +21,7 @@ namespace Nekoyume.UI
     {
         private Model.Combination _data;
 
-        public Module.InventoryAndSelectedItemInfo inventoryAndSelectedItemInfo;
+        public Module.InventoryAndItemInfo inventoryAndItemInfo;
         public CombinationStagedItemView[] stagedItems;
         public Button combinationButton;
         public Image combinationButtonImage;
@@ -143,23 +143,23 @@ namespace Nekoyume.UI
             
             _disposablesForSetData.DisposeAllAndClear();
             _data = value;
-            _data.inventoryAndSelectedItemInfo.Value.selectedItemInfo.Value.item.Subscribe(OnDataSelectedItemInfoItem).AddTo(_disposablesForSetData);
-            _data.selectItemCountPopup.Value.item.Subscribe(OnDataPopupItem).AddTo(_disposablesForSetData);
-            _data.selectItemCountPopup.Value.onClickClose.Subscribe(OnDataPopupOnClickClose).AddTo(_disposablesForSetData);
-            _data.stagedItems.ObserveAdd().Subscribe(OnDataStagedItemsAdd).AddTo(_disposablesForSetData);
-            _data.stagedItems.ObserveRemove().Subscribe(OnDataStagedItemsRemove).AddTo(_disposablesForSetData);
+            _data.inventoryAndItemInfo.Value.itemInfo.Value.item.Subscribe(OnItemInfoItem).AddTo(_disposablesForSetData);
+            _data.itemCountPopup.Value.item.Subscribe(OnPopupItem).AddTo(_disposablesForSetData);
+            _data.itemCountPopup.Value.onClickClose.Subscribe(OnClickClosePopup).AddTo(_disposablesForSetData);
+            _data.stagedItems.ObserveAdd().Subscribe(OnAddStagedItems).AddTo(_disposablesForSetData);
+            _data.stagedItems.ObserveRemove().Subscribe(OnRemoveStagedItems).AddTo(_disposablesForSetData);
             _data.stagedItems.ObserveReplace().Subscribe(_ => UpdateStagedItems()).AddTo(_disposablesForSetData);
             _data.readyForCombination.Subscribe(SetActiveCombinationButton).AddTo(_disposablesForSetData);
             _data.onClickCombination.Subscribe(RequestCombination).AddTo(_disposablesForSetData);
             _data.resultPopup.Subscribe(SubscribeResultPopup).AddTo(_disposablesForSetData);
-            inventoryAndSelectedItemInfo.SetData(_data.inventoryAndSelectedItemInfo.Value);
+            inventoryAndItemInfo.SetData(_data.inventoryAndItemInfo.Value);
             
             UpdateStagedItems();
         }
 
         private void Clear()
         {
-            inventoryAndSelectedItemInfo.Clear();
+            inventoryAndItemInfo.Clear();
             _data = null;
             _disposablesForSetData.DisposeAllAndClear();
             
@@ -186,21 +186,21 @@ namespace Nekoyume.UI
             }
         }
 
-        private void OnDataSelectedItemInfoItem(InventoryItem data)
+        private void OnItemInfoItem(InventoryItem data)
         {
             if (ReferenceEquals(data, null) ||
                 data.dimmed.Value ||
                 _data.IsStagedItemsFulled)
             {
-                _data.inventoryAndSelectedItemInfo.Value.selectedItemInfo.Value.buttonEnabled.Value = false;
+                _data.inventoryAndItemInfo.Value.itemInfo.Value.buttonEnabled.Value = false;
             }
             else
             {
-                _data.inventoryAndSelectedItemInfo.Value.selectedItemInfo.Value.buttonEnabled.Value = true;
+                _data.inventoryAndItemInfo.Value.itemInfo.Value.buttonEnabled.Value = true;
             }
         }
 
-        private void OnDataPopupItem(CountableItem data)
+        private void OnPopupItem(CountableItem data)
         {
             if (ReferenceEquals(data, null))
             {
@@ -208,16 +208,16 @@ namespace Nekoyume.UI
                 return;
             }
 
-            _selectItemCountPopup.Pop(_data.selectItemCountPopup.Value);
+            _selectItemCountPopup.Pop(_data.itemCountPopup.Value);
         }
 
-        private void OnDataPopupOnClickClose(Model.SelectItemCountPopup data)
+        private void OnClickClosePopup(Model.SelectItemCountPopup data)
         {
-            _data.selectItemCountPopup.Value.item.Value = null;
+            _data.itemCountPopup.Value.item.Value = null;
             _selectItemCountPopup.Close();
         }
 
-        private void OnDataStagedItemsAdd(CollectionAddEvent<CountEditableItem> e)
+        private void OnAddStagedItems(CollectionAddEvent<CountEditableItem> e)
         {
             if (e.Index >= stagedItems.Length)
             {
@@ -229,7 +229,7 @@ namespace Nekoyume.UI
             stagedItems[e.Index].SetData(e.Value);
         }
 
-        private void OnDataStagedItemsRemove(CollectionRemoveEvent<CountEditableItem> e)
+        private void OnRemoveStagedItems(CollectionRemoveEvent<CountEditableItem> e)
         {
             if (e.Index >= stagedItems.Length)
             {

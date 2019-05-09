@@ -56,7 +56,7 @@ namespace Nekoyume.UI.Model
             });
         }
         
-        public void Dispose()
+        public virtual void Dispose()
         {
             item.Dispose();
             count.Dispose();

@@ -37,7 +37,7 @@ namespace Nekoyume.Game.Item
             var i = items.FindIndex(
                 a => a.Item.Equals(item)
                      && !(item is Equipment)
-                     && !item.reserved
+                     && !item.registeredToShop
             );
             if (i < 0)
             {

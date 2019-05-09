@@ -7,17 +7,26 @@ namespace Nekoyume.UI.Model
 {
     public class QuestPreparation : IDisposable
     {
-        public readonly ReactiveProperty<InventoryAndSelectedItemInfo> inventoryAndSelectedItemInfo = new ReactiveProperty<InventoryAndSelectedItemInfo>();
+        private static readonly string TypeString = ItemBase.ItemType.Material.ToString();
+        
+        public readonly ReactiveProperty<InventoryAndItemInfo> inventoryAndItemInfo = new ReactiveProperty<InventoryAndItemInfo>();
 
         public QuestPreparation(List<Game.Item.Inventory.InventoryItem> items)
         {
-            inventoryAndSelectedItemInfo.Value = new InventoryAndSelectedItemInfo(items, ItemBase.ItemType.Material.ToString());
-            inventoryAndSelectedItemInfo.Value.selectedItemInfo.Value.buttonText.Value = "장착하기";
+            inventoryAndItemInfo.Value = new InventoryAndItemInfo(items);
+            inventoryAndItemInfo.Value.inventory.Value.dimmedFunc.Value = DimmedFunc;
+            inventoryAndItemInfo.Value.itemInfo.Value.buttonText.Value = "장착하기";
+            inventoryAndItemInfo.Value.itemInfo.Value.buttonEnabledFunc.Value = null;
         }
         
         public void Dispose()
         {
-            inventoryAndSelectedItemInfo.DisposeAll();
+            inventoryAndItemInfo.DisposeAll();
+        }
+
+        private bool DimmedFunc(InventoryItem inventoryItem)
+        {
+            return inventoryItem.item.Value.Item.Data.cls == TypeString;
         }
     }
 }

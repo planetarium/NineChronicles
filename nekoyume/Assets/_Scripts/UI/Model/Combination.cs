@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Nekoyume.Manager;
 using Nekoyume.Game.Item;
 using UniRx;
@@ -23,10 +24,10 @@ namespace Nekoyume.UI.Model
             ItemBase.ItemType.Shoes.ToString(),
         };
 
-        public readonly ReactiveProperty<InventoryAndSelectedItemInfo> inventoryAndSelectedItemInfo
-            = new ReactiveProperty<InventoryAndSelectedItemInfo>();
+        public readonly ReactiveProperty<InventoryAndItemInfo> inventoryAndItemInfo
+            = new ReactiveProperty<InventoryAndItemInfo>();
 
-        public readonly ReactiveProperty<SelectItemCountPopup> selectItemCountPopup =
+        public readonly ReactiveProperty<SelectItemCountPopup> itemCountPopup =
             new ReactiveProperty<SelectItemCountPopup>();
 
         public readonly ReactiveCollection<CountEditableItem> stagedItems =
@@ -47,13 +48,15 @@ namespace Nekoyume.UI.Model
         {
             _stagedItemsLimit = stagedItemsLimit;
 
-            inventoryAndSelectedItemInfo.Value = new InventoryAndSelectedItemInfo(items, DimmedTypes);
-            inventoryAndSelectedItemInfo.Value.selectedItemInfo.Value.buttonText.Value = "조합 리스트에 올리기";
+            inventoryAndItemInfo.Value = new InventoryAndItemInfo(items);
+            inventoryAndItemInfo.Value.inventory.Value.dimmedFunc.Value = DimmedFunc;
+            inventoryAndItemInfo.Value.itemInfo.Value.buttonText.Value = "조합 리스트에 올리기";
+            inventoryAndItemInfo.Value.itemInfo.Value.buttonEnabledFunc.Value = ButtonEnabledFunc;
 
-            selectItemCountPopup.Value = new SelectItemCountPopup();
+            itemCountPopup.Value = new SelectItemCountPopup();
 
-            inventoryAndSelectedItemInfo.Value.selectedItemInfo.Value.onClick.Subscribe(OnSelectedItemInfoOnClick);
-            selectItemCountPopup.Value.onClickSubmit.Subscribe(OnSelectItemCountPopupOnClickSubmit);
+            inventoryAndItemInfo.Value.itemInfo.Value.onClick.Subscribe(OnClickItemInfo);
+            itemCountPopup.Value.onClickSubmit.Subscribe(OnSelectItemCountPopupOnClickSubmit);
             stagedItems.ObserveAdd().Subscribe(OnStagedItemsAdd);
             stagedItems.ObserveRemove().Subscribe(OnStagedItemsRemove);
             resultPopup.Subscribe(OnResultPopup);
@@ -61,8 +64,8 @@ namespace Nekoyume.UI.Model
 
         public void Dispose()
         {
-            inventoryAndSelectedItemInfo.Dispose();
-            selectItemCountPopup.Dispose();
+            inventoryAndItemInfo.Dispose();
+            itemCountPopup.Dispose();
             stagedItems.DisposeAll();
             readyForCombination.Dispose();
             resultPopup.Dispose();
@@ -70,7 +73,32 @@ namespace Nekoyume.UI.Model
             onClickCombination.Dispose();
         }
 
-        private void OnSelectedItemInfoOnClick(ItemInfo data)
+        private bool DimmedFunc(InventoryItem inventoryItem)
+        {
+            return DimmedTypes.Contains(inventoryItem.item.Value.Item.Data.cls);
+        }
+
+        private bool ButtonEnabledFunc(InventoryItem inventoryItem)
+        {
+            if (ReferenceEquals(inventoryItem, null) ||
+                inventoryItem.dimmed.Value)
+            {
+                return false;
+            }
+
+            var id = inventoryItem.item.Value.Item.Data.id; 
+            foreach (var stagedItem in stagedItems)
+            {
+                if (id == stagedItem.item.Value.Item.Data.id)
+                {
+                    return false;
+                } 
+            }
+
+            return true;
+        }
+
+        private void OnClickItemInfo(ItemInfo data)
         {
             if (ReferenceEquals(data, null) ||
                 ReferenceEquals(data.item.Value, null))
@@ -78,10 +106,10 @@ namespace Nekoyume.UI.Model
                 return;
             }
 
-            selectItemCountPopup.Value.item.Value = data.item.Value;
-            selectItemCountPopup.Value.count.Value = 1;
-            selectItemCountPopup.Value.minCount.Value = 1;
-            selectItemCountPopup.Value.maxCount.Value = data.item.Value.count.Value;
+            itemCountPopup.Value.item.Value = data.item.Value;
+            itemCountPopup.Value.count.Value = 1;
+            itemCountPopup.Value.minCount.Value = 1;
+            itemCountPopup.Value.maxCount.Value = data.item.Value.count.Value;
         }
 
         private void OnSelectItemCountPopupOnClickSubmit(SelectItemCountPopup data)
@@ -89,13 +117,13 @@ namespace Nekoyume.UI.Model
             if (ReferenceEquals(data, null) ||
                 ReferenceEquals(data.item.Value, null))
             {
-                selectItemCountPopup.Value.item.Value = null;
+                itemCountPopup.Value.item.Value = null;
                 return;
             }
 
             if (data.count.Value <= 0)
             {
-                selectItemCountPopup.Value.item.Value = null;
+                itemCountPopup.Value.item.Value = null;
                 return;
             }
 
@@ -107,20 +135,20 @@ namespace Nekoyume.UI.Model
                 }
 
                 stagedItem.count.Value = data.count.Value;
-                selectItemCountPopup.Value.item.Value = null;
+                itemCountPopup.Value.item.Value = null;
                 return;
             }
 
             if (stagedItems.Count >= _stagedItemsLimit)
             {
-                selectItemCountPopup.Value.item.Value = null;
+                itemCountPopup.Value.item.Value = null;
                 return;
             }
 
             var item = new CountEditableItem(data.item.Value.item.Value, data.count.Value, "수정");
             stagedItems.Add(item);
 
-            selectItemCountPopup.Value.item.Value = null;
+            itemCountPopup.Value.item.Value = null;
         }
 
         private void OnStagedItemsAdd(CollectionAddEvent<CountEditableItem> e)
@@ -130,15 +158,15 @@ namespace Nekoyume.UI.Model
             data.onEdit.Subscribe(obj =>
             {
                 if (ReferenceEquals(obj, null) ||
-                    !ReferenceEquals(selectItemCountPopup.Value.item.Value, null))
+                    !ReferenceEquals(itemCountPopup.Value.item.Value, null))
                 {
                     return;
                 }
 
-                selectItemCountPopup.Value.item.Value = obj;
-                selectItemCountPopup.Value.count.Value = obj.count.Value;
-                selectItemCountPopup.Value.minCount.Value = 1;
-                selectItemCountPopup.Value.maxCount.Value = obj.item.Value.Count;
+                itemCountPopup.Value.item.Value = obj;
+                itemCountPopup.Value.count.Value = obj.count.Value;
+                itemCountPopup.Value.minCount.Value = 1;
+                itemCountPopup.Value.maxCount.Value = obj.item.Value.Count;
                 AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ClickCombinationEditMaterialItem);
             });
             data.onClose.Subscribe(obj =>
@@ -159,9 +187,6 @@ namespace Nekoyume.UI.Model
         private void OnStagedItemsRemove(CollectionRemoveEvent<CountEditableItem> e)
         {
             var data = e.Value;
-//            data.Count.Dispose();
-//            data.OnEdit.Dispose();
-//            data.OnClose.Dispose();
             data.Dispose();
 
             SetStaged(data.item.Value.Item.Data.id, false);
@@ -181,12 +206,12 @@ namespace Nekoyume.UI.Model
         private void OnResultPopupOnClickSubmit(CombinationResultPopup data)
         {
             // 재료 아이템들을 인벤토리에서 제거.
-            inventoryAndSelectedItemInfo.Value.RemoveFromInventory(data.materialItems);
+            inventoryAndItemInfo.Value.RemoveFromInventory(data.materialItems);
 
             // 결과 아이템이 있다면, 인벤토리에 추가.
             if (!ReferenceEquals(resultPopup.Value.item.Value, null))
             {
-                inventoryAndSelectedItemInfo.Value.AddToInventory(data);
+                inventoryAndItemInfo.Value.AddToInventory(data);
             }
 
             while (stagedItems.Count > 0)
@@ -200,7 +225,7 @@ namespace Nekoyume.UI.Model
         
         private void SetStaged(int id, bool isStaged)
         {
-            foreach (var item in inventoryAndSelectedItemInfo.Value.inventory.Value.items)
+            foreach (var item in inventoryAndItemInfo.Value.inventory.Value.items)
             {
                 if (item.item.Value.Item.Data.id != id)
                 {
@@ -211,10 +236,10 @@ namespace Nekoyume.UI.Model
                 item.dimmed.Value = isStaged;
             }
             
-            if (!ReferenceEquals(inventoryAndSelectedItemInfo.Value.selectedItemInfo.Value.item.Value, null) &&
-                inventoryAndSelectedItemInfo.Value.selectedItemInfo.Value.item.Value.item.Value.Item.Data.id == id)
+            if (!ReferenceEquals(inventoryAndItemInfo.Value.itemInfo.Value.item.Value, null) &&
+                inventoryAndItemInfo.Value.itemInfo.Value.item.Value.item.Value.Item.Data.id == id)
             {
-                inventoryAndSelectedItemInfo.Value.selectedItemInfo.Value.buttonEnabled.Value = !isStaged;
+                inventoryAndItemInfo.Value.itemInfo.Value.buttonEnabled.Value = !isStaged;
             }
         }
 

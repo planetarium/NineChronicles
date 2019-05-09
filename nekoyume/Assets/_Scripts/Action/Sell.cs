@@ -42,7 +42,7 @@ namespace Nekoyume.Action
                 }
                 owned.Count--;
                 var reservedItem = ItemBase.ItemFactory(owned.Item.Data);
-                reservedItem.reserved = true;
+                reservedItem.registeredToShop = true;
                 player.inventory.Add(reservedItem);
                 ctx.avatar.Update(player);
                 shop.Set(actionCtx.Signer, reservedItem);

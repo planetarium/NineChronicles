@@ -4,12 +4,12 @@ using UnityEngine;
 
 namespace Nekoyume.UI.Module
 {
-    public class InventoryAndSelectedItemInfo : MonoBehaviour
+    public class InventoryAndItemInfo : MonoBehaviour
     {
         public Inventory inventory;
-        public ItemInfo selectedItemInfo;
+        public ItemInfo itemInfo;
         
-        private Model.InventoryAndSelectedItemInfo _data;
+        private Model.InventoryAndItemInfo _data;
 
         #region Mono
 
@@ -25,7 +25,7 @@ namespace Nekoyume.UI.Module
 
         #endregion
         
-        public void SetData(Model.InventoryAndSelectedItemInfo data)
+        public void SetData(Model.InventoryAndItemInfo data)
         {
             if (ReferenceEquals(data, null))
             {
@@ -35,13 +35,13 @@ namespace Nekoyume.UI.Module
             
             _data = data;
             inventory.SetData(_data.inventory.Value);
-            selectedItemInfo.SetData(_data.selectedItemInfo.Value);
+            itemInfo.SetData(_data.itemInfo.Value);
         }
         
         public void Clear()
         {
             inventory.Clear();
-            selectedItemInfo.Clear();
+            itemInfo.Clear();
             _data = null;
         }
     }
