@@ -59,6 +59,7 @@ namespace Nekoyume.Game.Character
             Inventory = new Item.Inventory();
 
             _targetTag = Tag.Enemy;
+            Event.OnUpdateStatus.AddListener(UpdateHpBar);
         }
 
         private void OnDestroy()
@@ -149,8 +150,6 @@ namespace Nekoyume.Game.Character
                     "LEVEL UP"
                 );
                 InitStats(model);
-
-                UpdateHpBar();
 
                 AudioController.instance.PlaySfx(AudioController.SfxCode.LevelUp);
             }
