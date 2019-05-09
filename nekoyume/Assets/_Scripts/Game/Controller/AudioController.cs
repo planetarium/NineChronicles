@@ -30,7 +30,7 @@ namespace Nekoyume.Game.Controller
             public const string InputItem = "sfx_inputitem";
             public const string Success = "sfx_success";
             public const string Failed = "sfx_failed";
-            public const string ChainMail1 = "chainmail1";
+            public const string ChainMail2 = "sfx_chainmail2";
             public const string Equipment = "sfx_equipmount";
             public const string FootStepLow = "sfx_footstep-low";
             public const string FootStepHigh = "sfx_footstep-high";

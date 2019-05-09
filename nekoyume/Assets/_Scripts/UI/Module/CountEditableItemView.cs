@@ -14,8 +14,8 @@ namespace Nekoyume.UI.Module
         public Image editImage;
         public Text editText;
 
-        private readonly List<IDisposable> _disposables = new List<IDisposable>();
-        private T _data;
+        private readonly List<IDisposable> _disposablesForAwake = new List<IDisposable>();
+        private readonly List<IDisposable> _disposablesForSetData = new List<IDisposable>();
 
         #region Mono
 
@@ -27,16 +27,16 @@ namespace Nekoyume.UI.Module
             
             closeButton.OnClickAsObservable()
                 .Subscribe(OnClickCloseButton)
-                .AddTo(_disposables);
+                .AddTo(_disposablesForAwake);
 
             editButton.OnClickAsObservable()
                 .Subscribe(OnClickEditButton)
-                .AddTo(_disposables);
+                .AddTo(_disposablesForAwake);
         }
 
         protected override void OnDestroy()
         {
-            _disposables.DisposeAllAndClear();
+            _disposablesForAwake.DisposeAllAndClear();
             
             base.OnDestroy();
         }
@@ -51,27 +51,26 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
+            _disposablesForSetData.DisposeAllAndClear();
             base.SetData(value);
-            data.item.Subscribe(_ => UpdateView());
-            data.count.Subscribe(SetCount);
-            data.editButtonText.Subscribe(text => { editText.text = text; });
+            data.item.Subscribe(_ => UpdateView()).AddTo(_disposablesForSetData);
+            data.count.Subscribe(SetCount).AddTo(_disposablesForSetData);
+            data.editButtonText.Subscribe(text => { editText.text = text; }).AddTo(_disposablesForSetData);
             
             UpdateView();
         }
 
         public override void Clear()
         {
+            _disposablesForSetData.DisposeAllAndClear();
             base.Clear();
-
-            _data?.Dispose();
-            _data = null;
             
             UpdateView();
         }
 
         private void UpdateView()
         {
-            if (ReferenceEquals(_data, null))
+            if (ReferenceEquals(data, null))
             {
                 closeImage.enabled = false;
                 editImage.enabled = false;
@@ -87,13 +86,13 @@ namespace Nekoyume.UI.Module
 
         private void OnClickCloseButton(Unit u)
         {
-            _data?.onClose.OnNext(_data);
+            data?.onClose.OnNext(data);
             AudioController.PlayClick();
         }
 
         private void OnClickEditButton(Unit u)
         {
-            _data?.onEdit.OnNext(_data);
+            data?.onEdit.OnNext(data);
             AudioController.PlayClick();
         }
     }

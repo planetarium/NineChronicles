@@ -115,7 +115,9 @@ namespace Nekoyume.UI
                 _player.UpdateSet((SetItem) slot.item);
             }
 
-            AudioController.instance.PlaySfx(AudioController.SfxCode.Equipment);
+            AudioController.instance.PlaySfx(slot.type == ItemBase.ItemType.Food
+                ? AudioController.SfxCode.ChainMail2
+                : AudioController.SfxCode.Equipment);
         }
         
         public void SelectItem(Toggle item)
@@ -185,7 +187,7 @@ namespace Nekoyume.UI
             
             var type = itemInfo.item.Value.item.Value.Item.Data.cls.ToEnumItemType();
             AudioController.instance.PlaySfx(type == ItemBase.ItemType.Food
-                ? AudioController.SfxCode.ChainMail1
+                ? AudioController.SfxCode.ChainMail2
                 : AudioController.SfxCode.Equipment);
 
             if (type == ItemBase.ItemType.Set)

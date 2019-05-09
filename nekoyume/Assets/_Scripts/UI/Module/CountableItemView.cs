@@ -11,7 +11,7 @@ namespace Nekoyume.UI.Module
         
         public TextMeshProUGUI countText;
         
-        private readonly List<IDisposable> _disposables = new List<IDisposable>();
+        private readonly List<IDisposable> _disposablesForSetData = new List<IDisposable>();
 
         #region override
 
@@ -23,15 +23,16 @@ namespace Nekoyume.UI.Module
                 return;
             }
             
+            _disposablesForSetData.DisposeAllAndClear();
             base.SetData(value);
-            data.count.Subscribe(SetCount).AddTo(_disposables);
+            data.count.Subscribe(SetCount).AddTo(_disposablesForSetData);
             
             UpdateView();
         }
 
         public override void Clear()
         {
-            _disposables.DisposeAllAndClear();
+            _disposablesForSetData.DisposeAllAndClear();
             base.Clear();
             
             UpdateView();

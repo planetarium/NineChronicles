@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Nekoyume.Action;
 using Nekoyume.Game;
 using Nekoyume.Game.Character;
+using Nekoyume.Game.Controller;
 using Nekoyume.UI;
 using Nekoyume.UI.Module;
 using UniRx;
@@ -36,11 +37,23 @@ namespace Nekoyume.UI
             
             _stage = GameObject.Find("Stage").GetComponent<Stage>();
 
-            switchBuyButton.onClick.AsObservable().Subscribe(_ => _data?.onClickSwitchBuy.OnNext(_data))
+            switchBuyButton.onClick.AsObservable().Subscribe(_ =>
+                {
+                    AudioController.PlayClick();
+                    _data?.onClickSwitchBuy.OnNext(_data);
+                })
                 .AddTo(_disposablesForAwake);
-            switchSellButton.onClick.AsObservable().Subscribe(_ => _data?.onClickSwitchSell.OnNext(_data))
+            switchSellButton.onClick.AsObservable().Subscribe(_ =>
+                {
+                    AudioController.PlayClick();
+                    _data?.onClickSwitchSell.OnNext(_data);
+                })
                 .AddTo(_disposablesForAwake);
-            closeButton.onClick.AsObservable().Subscribe(_ => _data?.onClickClose.OnNext(_data))
+            closeButton.onClick.AsObservable().Subscribe(_ =>
+                {
+                    AudioController.PlayClick();
+                    _data?.onClickClose.OnNext(_data);
+                })
                 .AddTo(_disposablesForAwake);
         }
 
