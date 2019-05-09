@@ -44,7 +44,6 @@ namespace Nekoyume.Game.Entrance
 
             var status = UI.Widget.Find<UI.Status>();
             status.UpdatePlayer(player);
-            status.SetStage(ActionManager.instance.Avatar.WorldStage);
 
             ActionCamera.instance.SetPoint(0f, 0f);
             ActionCamera.instance.Idle();

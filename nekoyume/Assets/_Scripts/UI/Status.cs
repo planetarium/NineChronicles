@@ -32,7 +32,6 @@ namespace Nekoyume.UI
             base.Awake();
 
             Game.Event.OnRoomEnter.AddListener(OnRoomEnter);
-            Game.Event.OnStageStart.AddListener(OnStageStart);
             Game.Event.OnUpdateStatus.AddListener(OnUpdateStatus);
         }
         
@@ -173,11 +172,6 @@ namespace Nekoyume.UI
             }
         }
 
-        public void SetStage(int stage)
-        {
-            TextStage.text = $"STAGE {stage}";
-        }
-
         public void ShowStage(int stage)
         {
             stageTitle.Show(stage);
@@ -186,11 +180,6 @@ namespace Nekoyume.UI
         private void OnRoomEnter()
         {
             stageTitle.gameObject.SetActive(false);
-        }
-
-        private void OnStageStart()
-        {
-            Show();
         }
 
         private void OnUpdateStatus()
