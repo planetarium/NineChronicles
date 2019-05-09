@@ -185,18 +185,16 @@ namespace Nekoyume.Game
             {
                 id = stage;
                 zone = data.background;
-                var player = ReadyPlayer();
-
                 LoadBackground(zone, 3.0f);
-                Widget.Find<Menu>().ShowWorld();
+                RunPlayer();
+                Widget.Find<Gold>().Close();
+
                 var title = Widget.Find<StageTitle>();
                 title.Show(stage);
-                var status = Widget.Find<Status>();
-                status.UpdatePlayer(player.gameObject);
-                status.Show();
+
                 yield return new WaitForSeconds(1.0f);
+
                 yield return StartCoroutine(title.CoClose());
-                status.ShowStage(stage);
 
                 switch (zone)
                 {
@@ -210,8 +208,6 @@ namespace Nekoyume.Game
                         AudioController.instance.PlayMusic(AudioController.MusicCode.StageBlue);
                         break;
                 }
-                
-                yield return new WaitForSeconds(1.5f);
             }
         }
 
@@ -241,11 +237,17 @@ namespace Nekoyume.Game
 
         public IEnumerator CoSpawnPlayer(Model.Player character)
         {
-            var status = Widget.Find<Status>();
+            Widget.Find<Menu>().ShowWorld();
+
             var playerCharacter = RunPlayer();
             playerCharacter.Init(character);
             var player = playerCharacter.gameObject;
+
+            var status = Widget.Find<Status>();
             status.UpdatePlayer(player);
+            status.Show();
+            status.ShowStage(id);
+
             ActionCamera.instance.ChaseX(player.transform);
             yield return null;
         }
@@ -346,27 +348,14 @@ namespace Nekoyume.Game
             return player;
         }
 
-        private Character.Player RunPlayer()
-        {
-            var player = GetPlayer();
-            player.StartRun();
-            return player;
-        }
-
-        private Character.Player RunPlayer(Vector2 position)
-        {
-            var player = RunPlayer();
-            player.transform.position = position;
-            return player;
-        }
-
-        public Character.Player ReadyPlayer()
+        public Character.Player RunPlayer()
         {
             var player = GetPlayer();
             var playerTransform = player.transform;
             Vector2 position = playerTransform.position;
             position.y = stageStartPosition;
             playerTransform.position = position;
+            player.StartRun();
             return player;
         }
     }

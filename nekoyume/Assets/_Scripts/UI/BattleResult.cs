@@ -73,10 +73,10 @@ namespace Nekoyume.UI
                 _battleWinVFX.Stop();
             }
 
-            var player = _stage.ReadyPlayer();
+            var player = _stage.RunPlayer();
             player.DisableHUD();
             var stage = _stage.id;
-            if (!_stage.repeatStage)
+            if (!_stage.repeatStage && result == BattleLog.Result.Win)
                 stage++;
             actionEnd = false;
             IObservable<ActionBase.ActionEvaluation<HackAndSlash>> observable =
