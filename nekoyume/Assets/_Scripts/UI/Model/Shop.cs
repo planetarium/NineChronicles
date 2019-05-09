@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Nekoyume.Game.Item;
 using UniRx;
+using UnityEngine;
 
 namespace Nekoyume.UI.Model
 {
@@ -57,13 +58,11 @@ namespace Nekoyume.UI.Model
                     inventoryAndItemInfo.Value.inventory.Value.dimmedFunc.Value = null;
                     inventoryAndItemInfo.Value.itemInfo.Value.buttonText.Value = "구매하기";
                     inventoryAndItemInfo.Value.itemInfo.Value.buttonEnabledFunc.Value = ButtonEnabledFuncForBuy;
-//                    shopItems.Value.items
                     break;
                 case State.Sell:
                     inventoryAndItemInfo.Value.inventory.Value.dimmedFunc.Value = DimmedFuncForSell;
                     inventoryAndItemInfo.Value.itemInfo.Value.buttonText.Value = "판매하기";
                     inventoryAndItemInfo.Value.itemInfo.Value.buttonEnabledFunc.Value = null;
-//                    shopItems.Value.items
                     break;
             }
         }
@@ -81,10 +80,7 @@ namespace Nekoyume.UI.Model
 
         private void OnItemInfoItem(InventoryItem inventoryItem)
         {
-//            if (inventoryItem.dimmed.Value)
-//            {
-//                
-//            }
+            Debug.Log("OnItemInfoItem");
         }
         
         private void OnClickItemInfo(ItemInfo itemInfo)
@@ -104,15 +100,12 @@ namespace Nekoyume.UI.Model
 
         private void OnClickShopItemsRefresh(ShopItems value)
         {
-            switch (state.Value)
+            if (state.Value == State.Sell)
             {
-                case State.Buy:
-                    
-                    break;
-                case State.Sell:
-                    
-                    break;
+                return;
             }
+            
+            Debug.Log("OnClickShopItemsRefresh");
         }
     }
 }
