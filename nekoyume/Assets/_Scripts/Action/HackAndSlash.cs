@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Game;
 using Nekoyume.Game.Item;
@@ -39,7 +40,7 @@ namespace Nekoyume.Action
             {
                 if (ctx == null)
                 {
-                    ctx = CreateNovice.CreateContext("dummy");
+                    ctx = CreateNovice.CreateContext("dummy", default(Address));
                 }
                 states = states.SetState(ActionManager.RankingAddress, new RankingBoard());
 

@@ -122,7 +122,8 @@ namespace Nekoyume.Action
         {
             var action = new CreateNovice
             {
-                name = nickName
+                name = nickName,
+                avatarAddress = AvatarAddress,
             };
             ProcessAction(action);
         }
