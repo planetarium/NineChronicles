@@ -16,7 +16,7 @@ namespace Nekoyume.UI
 {
     public class QuestPreparation : Widget
     {
-        public Module.InventoryAndSelectedItemInfo inventoryAndSelectedItemInfo;
+        public Module.InventoryAndItemInfo inventoryAndItemInfo;
         
         public EquipSlot[] consumableSlots;
         public GameObject[] equipmentSlots;
@@ -142,20 +142,20 @@ namespace Nekoyume.UI
         {
             _disposablesForSetData.DisposeAllAndClear();
             _data = value;
-            _data.inventoryAndSelectedItemInfo.Value.selectedItemInfo.Value.item.Subscribe(OnDataSelectedItemInfoItem).AddTo(_disposablesForSetData);
-            _data.inventoryAndSelectedItemInfo.Value.selectedItemInfo.Value.onClick.Subscribe(OnClickEquip).AddTo(_disposablesForSetData);
+            _data.inventoryAndItemInfo.Value.itemInfo.Value.item.Subscribe(OnItemInfoItem).AddTo(_disposablesForSetData);
+            _data.inventoryAndItemInfo.Value.itemInfo.Value.onClick.Subscribe(OnClickEquip).AddTo(_disposablesForSetData);
             
-            inventoryAndSelectedItemInfo.SetData(_data.inventoryAndSelectedItemInfo.Value);
+            inventoryAndItemInfo.SetData(_data.inventoryAndItemInfo.Value);
         }
 
         private void Clear()
         {
-            inventoryAndSelectedItemInfo.Clear();
+            inventoryAndItemInfo.Clear();
             _data = null;
             _disposablesForSetData.DisposeAllAndClear();
         }
         
-        private void OnDataSelectedItemInfoItem(InventoryItem data)
+        private void OnItemInfoItem(InventoryItem data)
         {
             AudioController.PlaySelect();
             
@@ -164,12 +164,12 @@ namespace Nekoyume.UI
             if (ReferenceEquals(data, null) ||
                 data.dimmed.Value)
             {
-                _data.inventoryAndSelectedItemInfo.Value.selectedItemInfo.Value.buttonEnabled.Value = false;
+//                _data.inventoryAndItemInfo.Value.itemInfo.Value.buttonEnabled.Value = false;
                 SetGlowEquipSlot(false);
             }
             else
             {
-                _data.inventoryAndSelectedItemInfo.Value.selectedItemInfo.Value.buttonEnabled.Value = true;
+//                _data.inventoryAndItemInfo.Value.itemInfo.Value.buttonEnabled.Value = true;
                 SetGlowEquipSlot(data.item.Value.Item is ItemUsable);
             }
         }
@@ -238,14 +238,14 @@ namespace Nekoyume.UI
 
         private EquipSlot FindSelectedItemSlot()
         {
-            var type = _data.inventoryAndSelectedItemInfo.Value.selectedItemInfo.Value.item.Value.item.Value.Item.Data.cls.ToEnumItemType();
+            var type = _data.inventoryAndItemInfo.Value.itemInfo.Value.item.Value.item.Value.Item.Data.cls.ToEnumItemType();
             if (type == ItemBase.ItemType.Food)
             {
                 var count = consumableSlots
                     .Select(s => s.item)
                     .OfType<Food>()
-                    .Count(f => f.Data.id == _data.inventoryAndSelectedItemInfo.Value.selectedItemInfo.Value.item.Value.item.Value.Item.Data.id);
-                if (count >= _data.inventoryAndSelectedItemInfo.Value.selectedItemInfo.Value.item.Value.count.Value)
+                    .Count(f => f.Data.id == _data.inventoryAndItemInfo.Value.itemInfo.Value.item.Value.item.Value.Item.Data.id);
+                if (count >= _data.inventoryAndItemInfo.Value.itemInfo.Value.item.Value.count.Value)
                 {
                     return null;
                 }

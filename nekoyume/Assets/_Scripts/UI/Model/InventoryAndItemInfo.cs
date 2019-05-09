@@ -4,15 +4,15 @@ using UniRx;
 
 namespace Nekoyume.UI.Model
 {
-    public class InventoryAndSelectedItemInfo : IDisposable
+    public class InventoryAndItemInfo : IDisposable
     {
         public readonly ReactiveProperty<Inventory> inventory = new ReactiveProperty<Inventory>();
-        public readonly ReactiveProperty<ItemInfo> selectedItemInfo = new ReactiveProperty<ItemInfo>();
+        public readonly ReactiveProperty<ItemInfo> itemInfo = new ReactiveProperty<ItemInfo>();
 
-        public InventoryAndSelectedItemInfo(List<Game.Item.Inventory.InventoryItem> items, params string[] dimmedTypes)
+        public InventoryAndItemInfo(List<Game.Item.Inventory.InventoryItem> items)
         {
-            inventory.Value = new Inventory(items, dimmedTypes);
-            selectedItemInfo.Value = new ItemInfo();
+            inventory.Value = new Inventory(items);
+            itemInfo.Value = new ItemInfo();
             
             inventory.Value.selectedItem.Subscribe(OnInventorySelectedItem);
         }
@@ -20,7 +20,7 @@ namespace Nekoyume.UI.Model
         public void Dispose()
         {
             inventory.DisposeAll();
-            selectedItemInfo.DisposeAll();
+            itemInfo.DisposeAll();
         }
         
         public void AddToInventory(CountableItem item)
@@ -89,7 +89,7 @@ namespace Nekoyume.UI.Model
         
         private void OnInventorySelectedItem(InventoryItem data)
         {
-            selectedItemInfo.Value.item.Value = data;
+            itemInfo.Value.item.Value = data;
         }
     }
 }

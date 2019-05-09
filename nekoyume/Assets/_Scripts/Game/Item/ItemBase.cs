@@ -29,7 +29,7 @@ namespace Nekoyume.Game.Item
         }
 
         public Data.Table.Item Data { get; private set; }
-        public bool reserved = false;
+        public bool registeredToShop = false;
 
         public ItemBase(Data.Table.Item data)
         {

@@ -9,11 +9,11 @@ namespace Nekoyume.UI.Model
     {
         public readonly ReactiveCollection<InventoryItem> items = new ReactiveCollection<InventoryItem>();
         public readonly ReactiveProperty<InventoryItem> selectedItem = new ReactiveProperty<InventoryItem>(null);
-        public readonly ReactiveProperty<string[]> dimmedTypes = new ReactiveProperty<string[]>();
+        public readonly ReactiveProperty<Func<InventoryItem, bool>> dimmedFunc = new ReactiveProperty<Func<InventoryItem, bool>>();
 
-        public Inventory(List<Game.Item.Inventory.InventoryItem> items, params string[] dimmedTypes)
+        public Inventory(List<Game.Item.Inventory.InventoryItem> items)
         {
-            this.dimmedTypes.Value = dimmedTypes;
+            dimmedFunc.Value = DimmedFunc;
             
             items.ForEach(item =>
             {
@@ -28,13 +28,23 @@ namespace Nekoyume.UI.Model
             });
             this.items.ObserveRemove().Subscribe(removed => removed.Value.Dispose());
             
-            this.dimmedTypes.Subscribe(value =>
+            dimmedFunc.Subscribe(func =>
             {
+                if (dimmedFunc.Value == null)
+                {
+                    dimmedFunc.Value = DimmedFunc;
+                }
+                
                 foreach (var item in this.items)
                 {
-                    item.dimmed.Value = this.dimmedTypes.Value.Contains(item.item.Value.Item.Data.cls);
+                    item.dimmed.Value = dimmedFunc.Value(item);
                 }
             });
+        }
+
+        private static bool DimmedFunc(InventoryItem inventoryItem)
+        {
+            return false;
         }
 
         public void Dispose()
@@ -43,9 +53,20 @@ namespace Nekoyume.UI.Model
             selectedItem.DisposeAll();
         }
 
+        public void DeselectAll()
+        {
+            if (ReferenceEquals(selectedItem.Value, null))
+            {
+                return;
+            }
+
+            selectedItem.Value.selected.Value = false;
+            selectedItem.Value = null;
+        }
+
         private void InitInventoryItem(InventoryItem item)
         {
-            item.dimmed.Value = dimmedTypes.Value.Contains(item.item.Value.Item.Data.cls);
+            item.dimmed.Value = dimmedFunc.Value(item);
             item.onClick.Subscribe(SubscribeOnClick);
         }
 
