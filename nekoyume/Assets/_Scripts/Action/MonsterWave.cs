@@ -20,7 +20,7 @@ namespace Nekoyume.Action
             foreach (var monster in _monsters)
             {
                 simulator.Player.targets.Add(monster);
-                simulator.Characters.Enqueue(monster, Simulator.Speed / monster.TurnSpeed);
+                simulator.Characters.Enqueue(monster, Simulator.TurnPriority / monster.TurnSpeed);
                 monster.InitAI();
             }
 

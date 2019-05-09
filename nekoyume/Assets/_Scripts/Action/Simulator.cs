@@ -24,7 +24,7 @@ namespace Nekoyume.Action
         private int _totalWave;
         public SimplePriorityQueue<CharacterBase> Characters;
         private readonly List<List<ItemBase>> _waveRewards;
-        public const int Speed = 100;
+        public const float TurnPriority = 100f;
 
         public Simulator(IRandom random, Model.Avatar avatar, List<Food> foods, int stage)
         {
@@ -45,13 +45,19 @@ namespace Nekoyume.Action
             foreach (var wave in _waves)
             {
                 Characters = new SimplePriorityQueue<CharacterBase>();
-                Characters.Enqueue(Player, Speed / Player.TurnSpeed);
+                Characters.Enqueue(Player, TurnPriority / Player.TurnSpeed);
                 int lastWave = _totalWave - 1;
                 wave.Spawn(this);
                 while (true)
                 {
-                    var character = Characters.Dequeue();
-                    character.Tick();
+                    if (Characters.TryDequeue(out var character))
+                    {
+                        character.Tick();
+                    }
+                    else
+                    {
+                        break;
+                    }
 
                     if (Player.targets.Count == 0)
                     {
@@ -98,7 +104,7 @@ namespace Nekoyume.Action
                         var speed = current * 0.6f;
                         Characters.UpdatePriority(other, speed);
                     }
-                    Characters.Enqueue(character, 100 / character.TurnSpeed);
+                    Characters.Enqueue(character, TurnPriority / character.TurnSpeed);
                 }
                 if (Lose)
                 {
