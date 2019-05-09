@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Data;
 using Nekoyume.Data.Table;
@@ -13,17 +14,19 @@ namespace Nekoyume.Action
     public class CreateNovice : GameAction
     {
         public string name;
+        public Address avatarAddress;
         public const int DefaultId = 100010;
         private const int DefaultSetId = 1;
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, object> plainValue)
         {
             name = (string) plainValue["name"];
+            avatarAddress = new Address((byte[])plainValue["avatar_address"]);
         }
 
-        public static Context CreateContext(string name)
+        public static Context CreateContext(string name, Address avatarAddress)
         {
             Avatar avatar = CreateAvatar(name);
-            var ctx = new Context(avatar, ActionManager.instance.AvatarAddress);
+            var ctx = new Context(avatar, avatarAddress);
             return ctx;
         }
 
@@ -57,7 +60,7 @@ namespace Nekoyume.Action
             var ctx = (Context)states.GetState(actionCtx.Signer);
             if (ReferenceEquals(ctx, null))
             {
-                ctx = CreateContext(name);
+                ctx = CreateContext(name, avatarAddress);
             }
             else
             {
@@ -69,6 +72,7 @@ namespace Nekoyume.Action
         protected override IImmutableDictionary<string, object> PlainValueInternal => new Dictionary<string, object>()
         {
             ["name"] = name,
+            ["avatar_address"] = avatarAddress.ToByteArray(),
         }.ToImmutableDictionary();
     }
 }
