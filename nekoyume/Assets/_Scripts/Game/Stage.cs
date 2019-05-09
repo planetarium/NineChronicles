@@ -29,7 +29,7 @@ namespace Nekoyume.Game
         public float loadingSpeed = 2.0f;
         public Character.Player selectedPlayer;
         private readonly float stageStartPosition = -1.2f;
-        public readonly Vector2 QuestPreparationPosition = new Vector2(1.65f, -1.3f);
+        public readonly Vector2 QuestPreparationPosition = new Vector2(1.65f, -0.8f);
         public readonly Vector2 RoomPosition = new Vector2(-2.66f, -1.85f);
         public bool repeatStage;
         public string zone;
@@ -181,16 +181,20 @@ namespace Nekoyume.Game
 
         private IEnumerator CoStageEnter(int stage)
         {
-            Data.Table.Background data;
-            if (Tables.instance.Background.TryGetValue(stage, out data))
+            if (Tables.instance.Background.TryGetValue(stage, out Data.Table.Background data))
             {
                 id = stage;
                 zone = data.background;
-                ReadyPlayer();
-
                 LoadBackground(zone, 3.0f);
-                Widget.Find<Menu>().ShowWorld();
-                Widget.Find<Status>().SetStage(stage);
+                RunPlayer();
+                Widget.Find<Gold>().Close();
+
+                var title = Widget.Find<StageTitle>();
+                title.Show(stage);
+
+                yield return new WaitForSeconds(1.0f);
+
+                yield return StartCoroutine(title.CoClose());
 
                 switch (zone)
                 {
@@ -204,8 +208,6 @@ namespace Nekoyume.Game
                         AudioController.instance.PlayMusic(AudioController.MusicCode.StageBlue);
                         break;
                 }
-                
-                yield return new WaitForSeconds(1.5f);
             }
         }
 
@@ -235,11 +237,17 @@ namespace Nekoyume.Game
 
         public IEnumerator CoSpawnPlayer(Model.Player character)
         {
-            var status = Widget.Find<Status>();
+            Widget.Find<Menu>().ShowWorld();
+
             var playerCharacter = RunPlayer();
             playerCharacter.Init(character);
             var player = playerCharacter.gameObject;
+
+            var status = Widget.Find<Status>();
             status.UpdatePlayer(player);
+            status.Show();
+            status.ShowStage(id);
+
             ActionCamera.instance.ChaseX(player.transform);
             yield return null;
         }
@@ -340,27 +348,14 @@ namespace Nekoyume.Game
             return player;
         }
 
-        private Character.Player RunPlayer()
-        {
-            var player = GetPlayer();
-            player.StartRun();
-            return player;
-        }
-
-        private Character.Player RunPlayer(Vector2 position)
-        {
-            var player = RunPlayer();
-            player.transform.position = position;
-            return player;
-        }
-
-        public Character.Player ReadyPlayer()
+        public Character.Player RunPlayer()
         {
             var player = GetPlayer();
             var playerTransform = player.transform;
             Vector2 position = playerTransform.position;
             position.y = stageStartPosition;
             playerTransform.position = position;
+            player.StartRun();
             return player;
         }
     }

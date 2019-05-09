@@ -23,6 +23,7 @@ namespace Nekoyume.Model
         public Helm helm;
         public SetItem set;
         public int job;
+        public sealed override float TurnSpeed { get; set; }
 
         public readonly Inventory inventory;
         public List<Inventory.InventoryItem> Items => inventory.items;
@@ -39,6 +40,7 @@ namespace Nekoyume.Model
             inventory = new Inventory();
             ATKElement = Game.Elemental.Create(Elemental.ElementalType.Normal);
             DEFElement = Game.Elemental.Create(Elemental.ElementalType.Normal);
+            TurnSpeed = 1.0f;
 
             var inventoryItems = avatar.Items;
             if (inventoryItems != null)

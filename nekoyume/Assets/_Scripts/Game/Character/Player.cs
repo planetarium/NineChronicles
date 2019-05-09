@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using Anima2D;
 using Nekoyume.Data.Table;
@@ -60,6 +59,7 @@ namespace Nekoyume.Game.Character
             Inventory = new Item.Inventory();
 
             _targetTag = Tag.Enemy;
+            Event.OnUpdateStatus.AddListener(UpdateHpBar);
         }
 
         private void OnDestroy()
@@ -150,8 +150,6 @@ namespace Nekoyume.Game.Character
                     "LEVEL UP"
                 );
                 InitStats(model);
-
-                UpdateHpBar();
 
                 AudioController.instance.PlaySfx(AudioController.SfxCode.LevelUp);
             }

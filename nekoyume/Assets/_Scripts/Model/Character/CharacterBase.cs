@@ -24,6 +24,7 @@ namespace Nekoyume.Model
         public float luck;
         private const float CriticalMultiplier = 1.5f;
         public int level;
+        public abstract float TurnSpeed { get; set; }
 
         protected Elemental ATKElement;
         protected Elemental DEFElement;

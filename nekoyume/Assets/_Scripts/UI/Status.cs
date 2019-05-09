@@ -3,7 +3,6 @@ using Nekoyume.Action;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using UnityEngine;
-using UnityEngine.Analytics;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
@@ -11,6 +10,7 @@ namespace Nekoyume.UI
     public class Status : Widget
     {
         public Text TextLevelName;
+        public StageTitle stageTitle;
         public Text TextStage;
         public Text TextHP;
         public Text TextExp;
@@ -32,7 +32,6 @@ namespace Nekoyume.UI
             base.Awake();
 
             Game.Event.OnRoomEnter.AddListener(OnRoomEnter);
-            Game.Event.OnStageStart.AddListener(OnStageStart);
             Game.Event.OnUpdateStatus.AddListener(OnUpdateStatus);
         }
         
@@ -64,6 +63,7 @@ namespace Nekoyume.UI
                     toggle.isOn = false;
                 }
             }
+            stageTitle.Close();
 
             base.Close();
         }
@@ -172,19 +172,14 @@ namespace Nekoyume.UI
             }
         }
 
-        public void SetStage(int stage)
+        public void ShowStage(int stage)
         {
-            TextStage.text = $"STAGE {stage}";
+            stageTitle.Show(stage);
         }
         
         private void OnRoomEnter()
         {
-            TextStage.gameObject.SetActive(false);
-        }
-
-        private void OnStageStart()
-        {
-            TextStage.gameObject.SetActive(true);
+            stageTitle.gameObject.SetActive(false);
         }
 
         private void OnUpdateStatus()

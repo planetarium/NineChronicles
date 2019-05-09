@@ -30,13 +30,12 @@ namespace Nekoyume.Action
             var ctx = (Context) states.GetState(actionCtx.Signer);
             if (ReferenceEquals(ctx, null))
             {
+                ctx = CreateRewardContext();
+
                 if (actionCtx.Rehearsal)
                 {
-                    ctx = CreateNovice.CreateContext("dummy");
                     return states.SetState(actionCtx.Miner, ctx);
                 }
-
-                ctx = CreateRewardContext();
             }
 
             ctx.gold += Gold;

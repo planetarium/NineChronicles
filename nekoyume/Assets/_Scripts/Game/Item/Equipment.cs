@@ -26,7 +26,13 @@ namespace Nekoyume.Game.Item
                 Key = Data.ability2,
                 Value = Data.value2,
             };
-            _stats = new[] {stat1, stat2};
+            //TODO 논의후 테이블에 제대로 설정되야함.
+            var stat3 = new StatsMap
+            {
+                Key = "turnSpeed",
+                Value = Data.turnSpeed,
+            };
+            _stats = new[] {stat1, stat2, stat3};
         }
 
         public override bool Use()
@@ -106,6 +112,9 @@ namespace Nekoyume.Game.Item
                     break;
                 case "luck":
                     player.luck += Value / 100;
+                    break;
+                case "turnSpeed":
+                    player.TurnSpeed = Value;
                     break;
             }
         }

@@ -7,6 +7,7 @@ namespace Nekoyume.Model
     public class Monster : CharacterBase
     {
         public Character data;
+        public sealed override float TurnSpeed { get; set; }
 
         public Monster(Character data, int monsterLevel, Player player)
         {
@@ -21,6 +22,7 @@ namespace Nekoyume.Model
             level = monsterLevel;
             ATKElement = Game.Elemental.Create(data.elemental);
             DEFElement = Game.Elemental.Create(data.elemental);
+            TurnSpeed = 1.0f;
         }
 
         protected override void OnDead()

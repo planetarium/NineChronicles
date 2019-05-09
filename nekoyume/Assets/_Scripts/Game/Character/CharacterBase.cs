@@ -54,16 +54,7 @@ namespace Nekoyume.Game.Character
         {
             RunSpeed = 0.0f;
             Root = null;
-            if (_hpBar != null)
-            {
-                Destroy(_hpBar.gameObject);
-                _hpBar = null;
-            }
-            if (_castingBar != null)
-            {
-                Destroy(_castingBar.gameObject);
-                _castingBar = null;
-            }
+            DisableHUD();
         }
 
         public bool IsDead()
@@ -284,6 +275,20 @@ namespace Nekoyume.Game.Character
         {
             RunSpeed = 0.0f;
             animator.StopRun();
+        }
+
+        public void DisableHUD()
+        {
+            if (_hpBar != null)
+            {
+                Destroy(_hpBar.gameObject);
+                _hpBar = null;
+            }
+            if (_castingBar != null)
+            {
+                Destroy(_castingBar.gameObject);
+                _castingBar = null;
+            }
         }
     }
 }
