@@ -6,6 +6,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using BTAI;
 using Nekoyume.Action;
 using Nekoyume.Game;
+using Nekoyume.Game.Skill;
 
 namespace Nekoyume.Model
 {
@@ -22,16 +23,20 @@ namespace Nekoyume.Model
         public int hp;
         [InformationField]
         public float luck;
-        private const float CriticalMultiplier = 1.5f;
+
+        public const float CriticalMultiplier = 1.5f;
         public int level;
         public abstract float TurnSpeed { get; set; }
 
-        protected Elemental ATKElement;
-        protected Elemental DEFElement;
+        public Elemental ATKElement;
+        public Elemental DEFElement;
+        protected List<SkillBase> Skills;
+
+        private SkillBase _selectedSkill;
 
         [NonSerialized] private Root _root;
         [NonSerialized] public Simulator Simulator;
-        private bool isDead => currentHP <= 0;
+        public bool IsDead => currentHP <= 0;
         public Guid id = Guid.NewGuid();
         public float attackRange = 0.5f;
 
@@ -41,7 +46,10 @@ namespace Nekoyume.Model
             _root.OpenBranch(
                 BT.Selector().OpenBranch(
                     BT.If(IsAlive).OpenBranch(
-                        BT.Call(Attack)
+                        BT.Sequence().OpenBranch(
+                            BT.Call(SelectSkill),
+                            BT.Call(UseSkill)
+                        )
                     ),
                     BT.Terminate()
                 )
@@ -53,46 +61,23 @@ namespace Nekoyume.Model
             _root.Tick();
         }
 
-        private void Attack()
+        private void UseSkill()
         {
-            var target = targets.FirstOrDefault(t => !t.isDead);
-            if (target != null)
-            {
-                var critical = IsCritical();
-                var dmg = CalcDmg(target, critical);
-                var attack = new Attack
-                {
-                    character = Copy(this),
-                    target = Copy(target),
-                    atk = dmg,
-                    critical = critical,
-                };
-                Simulator.Log.Add(attack);
-                target.OnDamage(dmg);
-            }
+            var target = _selectedSkill.GetTarget();
+            var attack = _selectedSkill.Use();
+            Simulator.Log.Add(attack);
+            _selectedSkill = null;
         }
 
-        private bool IsCritical()
+        public bool IsCritical()
         {
             var chance = Simulator.Random.NextDouble();
             return chance < luck;
         }
 
-        private int CalcDmg(CharacterBase target, bool critical)
-        {
-            int dmg = ATKElement.CalculateDmg(atk, target.DEFElement);
-            dmg = Math.Max(dmg - target.def, 1);
-            if (critical)
-            {
-                dmg = Convert.ToInt32(dmg * CriticalMultiplier);
-            }
-
-            return dmg;
-        }
-
         private bool IsAlive()
         {
-            return !isDead;
+            return !IsDead;
         }
 
         private void Die()
@@ -109,7 +94,7 @@ namespace Nekoyume.Model
             Simulator.Log.Add(dead);
         }
 
-        protected static T Copy<T>(T origin)
+        public static T Copy<T>(T origin)
         {
             var formatter = new BinaryFormatter();
             var stream = new MemoryStream();
@@ -122,13 +107,21 @@ namespace Nekoyume.Model
 
         }
 
-        private void OnDamage(int dmg)
+        public void OnDamage(int dmg)
         {
             currentHP -= dmg;
-            if (isDead)
+            if (IsDead)
             {
                 Die();
             }
+        }
+
+        protected abstract void SetSkill();
+
+        private void SelectSkill()
+        {
+            SetSkill();
+            _selectedSkill = Skills.First();
         }
     }
 

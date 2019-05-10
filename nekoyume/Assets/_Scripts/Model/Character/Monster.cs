@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Nekoyume.Data.Table;
+using Nekoyume.Game.Skill;
 
 namespace Nekoyume.Model
 {
@@ -31,6 +34,13 @@ namespace Nekoyume.Model
             base.OnDead();
             var player = (Player) targets[0];
             player.RemoveTarget(this);
+        }
+
+        protected override void SetSkill()
+        {
+            Skills = new List<SkillBase>();
+            var attack = new Game.Skill.Attack(this, targets.First(), atk);
+            Skills.Add(attack);
         }
     }
 }

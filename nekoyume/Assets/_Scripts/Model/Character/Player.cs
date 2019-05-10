@@ -5,6 +5,7 @@ using Nekoyume.Action;
 using Nekoyume.Data;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Item;
+using Nekoyume.Game.Skill;
 
 namespace Nekoyume.Model
 {
@@ -68,7 +69,14 @@ namespace Nekoyume.Model
             Simulator.Lose = true;
         }
 
-        public void CalcStats(int lv)
+        protected override void SetSkill()
+        {
+            Skills = new List<SkillBase>();
+            var attack = new Game.Skill.Attack(this, targets.First(), atk);
+            Skills.Add(attack);
+        }
+
+        private void CalcStats(int lv)
         {
             var stats = Tables.instance.Character;
             var levelTable = Tables.instance.Level;
