@@ -122,7 +122,6 @@ namespace Nekoyume.UI
                 
                 AudioController.instance.PlayMusic(AudioController.MusicCode.Win, 0.3f);
                 _battleWinVFX = VFXController.instance.Create<BattleWinVFX>(ActionCamera.instance.transform, VfxBattleWinOffset);
-                _battleWinVFX.Play(10f);
                 AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ActionBattleWin);
             }
             else

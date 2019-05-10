@@ -94,7 +94,7 @@ namespace Nekoyume.Game.Character
             var pos = transform.position;
             pos.x -= 0.2f;
             pos.y += 0.32f;
-            VFXController.instance.Create<BattleDamage01VFX>(pos).Play();
+            VFXController.instance.Create<BattleDamage01VFX>(pos);
         }
 
         public void Init(Model.Player character)
@@ -143,6 +143,8 @@ namespace Nekoyume.Game.Character
             if (model.level != level)
             {
                 AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ActionStatusLevelUp, level);
+                AudioController.instance.PlaySfx(AudioController.SfxCode.LevelUp);
+                VFXController.instance.Create<BattleLevelUp01VFX>(transform, _hudOffset);
                 yield return new WaitForSeconds(0.3f);
                 PopupText.Show(
                     transform.TransformPoint(-0.6f, 1.0f, 0.0f),
@@ -150,8 +152,6 @@ namespace Nekoyume.Game.Character
                     "LEVEL UP"
                 );
                 InitStats(model);
-
-                AudioController.instance.PlaySfx(AudioController.SfxCode.LevelUp);
             }
 
             Event.OnUpdateStatus.Invoke();

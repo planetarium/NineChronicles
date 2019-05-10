@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -12,6 +13,8 @@ namespace Nekoyume.Game.VFX
         private int _particlesLength = 0;
         private ParticleSystem _particlesRoot = null;
         private float _particlesDuration = 0f;
+
+        protected virtual float EmmitDuration => 1f;
 
         #region Mono
 
@@ -43,17 +46,20 @@ namespace Nekoyume.Game.VFX
             _particlesRoot.Stop();
         }
 
-        #endregion
-
-        public void Play(float duration = 0f)
+        private void OnEnable()
         {
             if (ReferenceEquals(_particlesRoot, null))
             {
                 return;
             }
 
-            StartCoroutine(CoPlayAndAutoInactive(duration > 0f ? duration : _particlesDuration));
+            if (EmmitDuration > 0f)
+            {
+                StartCoroutine(CoAutoInactive());   
+            }
         }
+
+        #endregion
 
         public void LazyStop()
         {
@@ -66,17 +72,13 @@ namespace Nekoyume.Game.VFX
             gameObject.SetActive(false);
         }
 
-        private IEnumerator CoPlayAndAutoInactive(float duration)
+        private IEnumerator CoAutoInactive()
         {
-            if (!_particlesRoot.isPlaying)
-            {
-                _particlesRoot.time = 0f;
-                _particlesRoot.Play();
-            }
+            var duration = 0f;
 
-            while (duration > 0f)
+            while (duration < EmmitDuration)
             {
-                duration -= Time.deltaTime;
+                duration += Time.deltaTime;
 
                 if (!gameObject.activeSelf)
                 {

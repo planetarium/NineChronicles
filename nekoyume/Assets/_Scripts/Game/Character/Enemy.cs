@@ -80,11 +80,11 @@ namespace Nekoyume.Game.Character
             
             if (critical)
             {
-                VFXController.instance.Create<BattleAttackCritical01VFX>(pos).Play();
+                VFXController.instance.Create<BattleAttackCritical01VFX>(pos);
             }
             else
             {
-                VFXController.instance.Create<BattleAttack01VFX>(pos).Play();    
+                VFXController.instance.Create<BattleAttack01VFX>(pos);    
             }
         }
 
