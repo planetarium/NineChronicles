@@ -40,7 +40,7 @@ namespace Nekoyume.Action
 
         private const float RankingUpdateInterval = 3.0f;
 
-        private static readonly TimeSpan SwarmDialTimeout = TimeSpan.FromSeconds(5);
+        private static readonly int SwarmDialTimeout = 5000;
 
         private const float ActionRetryInterval = 15.0f;
 
@@ -98,7 +98,7 @@ namespace Nekoyume.Action
             _swarm = new Swarm(
                 agentPrivateKey,
                 appProtocolVersion: 1,
-                dialTimeout: SwarmDialTimeout,
+                millisecondsDialTimeout: SwarmDialTimeout,
                 host: host,
                 listenPort: port,
                 iceServers: iceServers);
@@ -231,8 +231,7 @@ namespace Nekoyume.Action
 
                 if (actions.Any())
                 {
-                    var staging = StageActions(actions);
-                    yield return new WaitUntil(() => staging.IsCompleted);
+                    StageActions(actions);
                 }
             }
         }
@@ -250,11 +249,11 @@ namespace Nekoyume.Action
                         timestamp: DateTime.UtcNow);
                 var txs = new HashSet<Transaction<PolymorphicAction<ActionBase>>> { tx };
 
-                var task = Task.Run(async () =>
+                var task = Task.Run(() =>
                 {
                     _blocks.StageTransactions(txs);
                     var block = _blocks.MineBlock(AgentAddress);
-                    await _swarm.BroadcastBlocksAsync(new[] {block});
+                    _swarm.BroadcastBlocks(new[] {block});
                     return block;
                 });
                 yield return new WaitUntil(() => task.IsCompleted);
@@ -274,7 +273,7 @@ namespace Nekoyume.Action
             }
         }
 
-        private async Task StageActions(IList<PolymorphicAction<ActionBase>> actions)
+        private void StageActions(IList<PolymorphicAction<ActionBase>> actions)
         {
             var tx = Transaction<PolymorphicAction<ActionBase>>.Create(
                 AvatarPrivateKey,
@@ -282,7 +281,7 @@ namespace Nekoyume.Action
                 timestamp: DateTime.UtcNow
             );
             _blocks.StageTransactions(new HashSet<Transaction<PolymorphicAction<ActionBase>>> {tx});
-            await _swarm.BroadcastTxsAsync(new[] { tx });
+            _swarm.BroadcastTxs(new[] { tx });
         }
 
         public void Dispose()

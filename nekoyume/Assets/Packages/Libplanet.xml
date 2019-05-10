@@ -1229,51 +1229,14 @@
         <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.GetNextBlockDifficulty(System.Collections.Generic.IReadOnlyList{Libplanet.Blocks.Block{`0}})">
             <inheritdoc />
         </member>
-        <member name="T:Libplanet.Blockchain.Policies.IBlockPolicy`1">
-            <summary>
-            An interface to determine if consecutive <see cref="T:Libplanet.Blocks.Block`1"/>s are
-            valid, and to suggest how difficult a <see cref="P:Libplanet.Blocks.Block`1.Nonce"/>
-            for a <see cref="T:Libplanet.Blocks.Block`1"/> to be mined.
-            </summary>
-            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match
-            to <see cref="T:Libplanet.Blocks.Block`1"/>'s type parameter.</typeparam>
-            <seealso cref="T:Libplanet.Blockchain.Policies.IBlockPolicyExtension"/>
-        </member>
-        <member name="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.ValidateNextBlock(System.Collections.Generic.IReadOnlyList{Libplanet.Blocks.Block{`0}},Libplanet.Blocks.Block{`0})">
-            <summary>
-            Checks if <paramref name="nextBlock"/> is invalid, and if that
-            returns the reason.
-            <para>Note that it returns <c>null</c> when
-            <paramref name="nextBlock"/> is <em>valid</em>.</para>
-            </summary>
-            <param name="blocks">Consecutive <see cref="T:Libplanet.Blocks.Block`1"/>s to
-            append <paramref name="nextBlock"/>.</param>
-            <param name="nextBlock">The next block to append to
-            <paramref name="blocks"/>.</param>
-            <returns>The reason why the given <paramref name="blocks"/> are
-            <em>invalid</em>, or <c>null</c> if <paramref name="blocks"/> are
-            <em>valid</em>.</returns>
-            <seealso cref="M:Libplanet.Blockchain.Policies.IBlockPolicyExtension.ValidateBlocks``1(Libplanet.Blockchain.Policies.IBlockPolicy{``0},System.Collections.Generic.IReadOnlyList{Libplanet.Blocks.Block{``0}},System.DateTimeOffset)"/>
-        </member>
-        <member name="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.GetNextBlockDifficulty(System.Collections.Generic.IReadOnlyList{Libplanet.Blocks.Block{`0}})">
-            <summary>
-            Determines a right <see cref="P:Libplanet.Blocks.Block`1.Difficulty"/>
-            for a new <see cref="T:Libplanet.Blocks.Block`1"/> to be mined
-            right after the given <paramref name="blocks"/>.
-            </summary>
-            <param name="blocks">Consecutive <see cref="T:Libplanet.Blocks.Block`1"/>s to be
-            followed by a new <see cref="T:Libplanet.Blocks.Block`1"/> to be mined.</param>
-            <returns>A right <see cref="P:Libplanet.Blocks.Block`1.Difficulty"/>
-            for a new <see cref="T:Libplanet.Blocks.Block`1"/> to be mined.</returns>
-        </member>
-        <member name="T:Libplanet.Blockchain.Policies.IBlockPolicyExtension">
+        <member name="T:Libplanet.Blockchain.Policies.BlockPolicyExtension">
             <summary>
             This extension class enables some convenient methods (sugar for
             the most part) to deal with <see cref="T:Libplanet.Blockchain.Policies.IBlockPolicy`1"/>.
             </summary>
             <seealso cref="T:Libplanet.Blockchain.Policies.IBlockPolicy`1"/>
         </member>
-        <member name="M:Libplanet.Blockchain.Policies.IBlockPolicyExtension.ValidateBlocks``1(Libplanet.Blockchain.Policies.IBlockPolicy{``0},System.Collections.Generic.IReadOnlyList{Libplanet.Blocks.Block{``0}},System.DateTimeOffset)">
+        <member name="M:Libplanet.Blockchain.Policies.BlockPolicyExtension.ValidateBlocks``1(Libplanet.Blockchain.Policies.IBlockPolicy{``0},System.Collections.Generic.IReadOnlyList{Libplanet.Blocks.Block{``0}},System.DateTimeOffset)">
             <summary>
             Checks if <paramref name="blocks"/> are invalid, and if that
             returns the reason.
@@ -1294,6 +1257,43 @@
             to <see cref="T:Libplanet.Blocks.Block`1"/>'s type parameter.</typeparam>
             <seealso cref="T:Libplanet.Blockchain.Policies.IBlockPolicy`1"/>
             <seealso cref="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.ValidateNextBlock(System.Collections.Generic.IReadOnlyList{Libplanet.Blocks.Block{`0}},Libplanet.Blocks.Block{`0})"/>
+        </member>
+        <member name="T:Libplanet.Blockchain.Policies.IBlockPolicy`1">
+            <summary>
+            An interface to determine if consecutive <see cref="T:Libplanet.Blocks.Block`1"/>s are
+            valid, and to suggest how difficult a <see cref="P:Libplanet.Blocks.Block`1.Nonce"/>
+            for a <see cref="T:Libplanet.Blocks.Block`1"/> to be mined.
+            </summary>
+            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match
+            to <see cref="T:Libplanet.Blocks.Block`1"/>'s type parameter.</typeparam>
+            <seealso cref="T:Libplanet.Blockchain.Policies.BlockPolicyExtension"/>
+        </member>
+        <member name="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.ValidateNextBlock(System.Collections.Generic.IReadOnlyList{Libplanet.Blocks.Block{`0}},Libplanet.Blocks.Block{`0})">
+            <summary>
+            Checks if <paramref name="nextBlock"/> is invalid, and if that
+            returns the reason.
+            <para>Note that it returns <c>null</c> when
+            <paramref name="nextBlock"/> is <em>valid</em>.</para>
+            </summary>
+            <param name="blocks">Consecutive <see cref="T:Libplanet.Blocks.Block`1"/>s to
+            append <paramref name="nextBlock"/>.</param>
+            <param name="nextBlock">The next block to append to
+            <paramref name="blocks"/>.</param>
+            <returns>The reason why the given <paramref name="blocks"/> are
+            <em>invalid</em>, or <c>null</c> if <paramref name="blocks"/> are
+            <em>valid</em>.</returns>
+            <seealso cref="M:Libplanet.Blockchain.Policies.BlockPolicyExtension.ValidateBlocks``1(Libplanet.Blockchain.Policies.IBlockPolicy{``0},System.Collections.Generic.IReadOnlyList{Libplanet.Blocks.Block{``0}},System.DateTimeOffset)"/>
+        </member>
+        <member name="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.GetNextBlockDifficulty(System.Collections.Generic.IReadOnlyList{Libplanet.Blocks.Block{`0}})">
+            <summary>
+            Determines a right <see cref="P:Libplanet.Blocks.Block`1.Difficulty"/>
+            for a new <see cref="T:Libplanet.Blocks.Block`1"/> to be mined
+            right after the given <paramref name="blocks"/>.
+            </summary>
+            <param name="blocks">Consecutive <see cref="T:Libplanet.Blocks.Block`1"/>s to be
+            followed by a new <see cref="T:Libplanet.Blocks.Block`1"/> to be mined.</param>
+            <returns>A right <see cref="P:Libplanet.Blocks.Block`1.Difficulty"/>
+            for a new <see cref="T:Libplanet.Blocks.Block`1"/> to be mined.</returns>
         </member>
         <member name="M:Libplanet.Blocks.Block`1.EvaluateActionsPerTx(Libplanet.Action.AccountStateGetter)">
             <summary>
