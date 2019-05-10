@@ -40,7 +40,7 @@ namespace Nekoyume.Action
 
         private const float RankingUpdateInterval = 3.0f;
 
-        private static readonly TimeSpan SwarmDialTimeout = TimeSpan.FromSeconds(5);
+        private static readonly int SwarmDialTimeout = 5000;
 
         private const float ActionRetryInterval = 15.0f;
 
@@ -98,10 +98,9 @@ namespace Nekoyume.Action
             _swarm = new Swarm(
                 agentPrivateKey,
                 appProtocolVersion: 1,
-                dialTimeout: SwarmDialTimeout,
+                millisecondsDialTimeout: SwarmDialTimeout,
                 host: host,
                 listenPort: port,
-                linger: TimeSpan.FromSeconds(1),
                 iceServers: iceServers);
 
             foreach (var peer in peers)
