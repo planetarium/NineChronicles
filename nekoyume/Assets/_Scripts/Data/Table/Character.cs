@@ -26,6 +26,7 @@ namespace Nekoyume.Data.Table
         public string skill1 = "";
         public string skill2 = "";
         public string skill3 = "";
+        public float attackRange = 0.5f;
 
         public class Stats
         {

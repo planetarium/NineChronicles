@@ -35,6 +35,7 @@ namespace Nekoyume.Data.Table
                 hashCode = (hashCode * 397) ^ (ability2 != null ? ability2.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ value2;
                 hashCode = (hashCode * 397) ^ turnSpeed.GetHashCode();
+                hashCode = (hashCode * 397) ^ attackRange.GetHashCode();
                 return hashCode;
             }
         }
@@ -47,5 +48,6 @@ namespace Nekoyume.Data.Table
         public string ability2 = "";
         public int value2 = 0;
         public float turnSpeed = 2.0f;
+        public float attackRange = 1.0f;
     }
 }

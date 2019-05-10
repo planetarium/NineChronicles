@@ -72,16 +72,13 @@ namespace Nekoyume.Model
         {
             var stats = Tables.instance.Character;
             var levelTable = Tables.instance.Level;
-            var setTable = Tables.instance.SetEffect;
-            Character data;
-            stats.TryGetValue(job, out data);
+            stats.TryGetValue(job, out var data);
             if (data == null)
             {
                 throw new InvalidActionException();
             }
 
-            Level expData;
-            levelTable.TryGetValue(lv, out expData);
+            levelTable.TryGetValue(lv, out var expData);
             if (expData == null)
             {
                 throw new InvalidActionException();
@@ -94,14 +91,13 @@ namespace Nekoyume.Model
             hp = statsData.HP;
             expMax = expData.exp + expData.expNeed;
             expNeed = expData.expNeed;
-
             luck = statsData.Luck;
+            attackRange = data.attackRange;
             var setMap = new Dictionary<int, int>();
             foreach (var equipment in Equipments)
             {
                 var key = equipment.Data.setId;
-                int count;
-                if (!setMap.TryGetValue(key, out count))
+                if (!setMap.TryGetValue(key, out _))
                 {
                     setMap[key] = 0;
                 }
