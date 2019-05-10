@@ -167,6 +167,7 @@ namespace Nekoyume.Game.Character
             Level = character.level;
             EXPMax = character.expMax;
             Inventory = character.inventory;
+            Range = character.attackRange;
         }
 
         private void OnAnimatorEvent(string eventName)

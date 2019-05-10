@@ -36,7 +36,7 @@ namespace Nekoyume.Game.Character
         public bool Rooted => gameObject.GetComponent<IRoot>() != null;
         public bool Silenced => gameObject.GetComponent<ISilence>() != null;
         public bool Stunned => gameObject.GetComponent<IStun>() != null;
-        private const float Range = 1f;
+        protected virtual float Range { get; set; }
         protected string _targetTag = "";
         public bool attackEnd { get; private set; }
         public bool hitEnd { get; private set; }

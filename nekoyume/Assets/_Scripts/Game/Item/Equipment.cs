@@ -32,7 +32,13 @@ namespace Nekoyume.Game.Item
                 Key = "turnSpeed",
                 Value = Data.turnSpeed,
             };
-            _stats = new[] {stat1, stat2, stat3};
+            //TODO 장비대신 스킬별 사거리를 사용해야함.
+            var stat4 = new StatsMap
+            {
+                Key = "attackRange",
+                Value = Data.attackRange,
+            };
+            _stats = new[] {stat1, stat2, stat3, stat4};
         }
 
         public override bool Use()
@@ -115,6 +121,9 @@ namespace Nekoyume.Game.Item
                     break;
                 case "turnSpeed":
                     player.TurnSpeed = Value;
+                    break;
+                case "attackRange":
+                    player.attackRange = Value;
                     break;
             }
         }

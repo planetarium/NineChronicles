@@ -1,7 +1,5 @@
 using System;
 using System.Collections;
-using System.Linq;
-using DG.Tweening;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using UniRx;
@@ -98,6 +96,7 @@ namespace Nekoyume.Game.Character
             DEF = stats.Defense;
             Power = 0;
             HPMax = HP;
+            Range = character.attackRange;
         }
         
         private void OnAnimatorEvent(string eventName)
