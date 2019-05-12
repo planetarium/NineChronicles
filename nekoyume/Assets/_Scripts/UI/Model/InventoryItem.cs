@@ -8,6 +8,7 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<bool> covered = new ReactiveProperty<bool>(false);
         public readonly ReactiveProperty<bool> dimmed = new ReactiveProperty<bool>(false);
         public readonly ReactiveProperty<bool> selected = new ReactiveProperty<bool>(false);
+        public readonly ReactiveProperty<bool> glowed = new ReactiveProperty<bool>(false);
 
         public readonly Subject<InventoryItem> onClick = new Subject<InventoryItem>();
 
@@ -26,6 +27,7 @@ namespace Nekoyume.UI.Model
             covered.Dispose();
             dimmed.Dispose();
             selected.Dispose();
+            glowed.Dispose();
 
             onClick.Dispose();
         }

@@ -13,6 +13,7 @@ namespace Nekoyume.UI.Module
     {
         public Image coverImage;
         public Image selectionImage;
+        public Image glowImage;
         public TextMeshProUGUI equipmentText;
         
         private Button _button;
@@ -60,6 +61,7 @@ namespace Nekoyume.UI.Module
             data.covered.Subscribe(SetCover).AddTo(_disposablesForSetData);
             data.dimmed.Subscribe(SetDim).AddTo(_disposablesForSetData);
             data.selected.Subscribe(SetSelect).AddTo(_disposablesForSetData);
+            data.glowed.Subscribe(SetGlow).AddTo(_disposablesForSetData);
             data.count.Subscribe(SetCount).AddTo(_disposablesForSetData);
             
             UpdateView();
@@ -104,6 +106,11 @@ namespace Nekoyume.UI.Module
         private void SetSelect(bool isSelect)
         {
             selectionImage.enabled = isSelect;
+        }
+
+        private void SetGlow(bool isGlow)
+        {
+            glowImage.enabled = isGlow;
         }
     }
 }
