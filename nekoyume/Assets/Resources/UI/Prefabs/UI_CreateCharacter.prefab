@@ -5468,7 +5468,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\uCE90\uB9AD\uD130 \uC0DD\uC131"
+  m_Text: "\uC0DD\uC131\uD558\uAE30"
 --- !u!114 &114777402153465806
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6559,6 +6559,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   TextLevelName: {fileID: 114134410861605756}
+  stageTitle: {fileID: 0}
   TextStage: {fileID: 0}
   TextHP: {fileID: 114291166385022350}
   TextExp: {fileID: 114418519908155294}
