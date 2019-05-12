@@ -809,7 +809,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\uC2B9\uB9AC"
+  m_Text: "\uC804\uD22C \uC2B9\uB9AC!"
 --- !u!114 &114473438261891532
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1141,7 +1141,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\uB2E4\uC74C \uD018\uC2A4\uD2B8"
+  m_Text: "\uB2E4\uC74C \uC2A4\uD14C\uC774\uC9C0"
 --- !u!114 &114112668354045750
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1316,7 +1316,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\uBA54\uC778\uC73C\uB85C"
+  m_Text: "\uB098\uAC00\uAE30"
 --- !u!114 &114896930526349062
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1735,6 +1735,7 @@ MonoBehaviour:
   LabelEquip: {fileID: 114315499327480996}
   toggled: 0
   outLine: {fileID: 1838830110056620}
+  glow: {fileID: 0}
 --- !u!1 &1838830110056620
 GameObject:
   m_ObjectHideFlags: 0
