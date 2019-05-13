@@ -56,7 +56,10 @@ namespace Nekoyume.UI
 
         private void GetAvatars(DateTimeOffset? dt)
         {
-            _avatars = ActionManager.instance.rankingBoard.GetAvatars(dt);
+            var rankingBoard = (Game.RankingBoard) ActionManager.instance.GetState(
+                ActionManager.RankingAddress);
+            Debug.LogWarningFormat("rankingBoard: {0}", rankingBoard);
+            _avatars = rankingBoard?.GetAvatars(dt) ?? new Nekoyume.Model.Avatar[0];
         }
 
         private void UpdateBoard(DateTimeOffset? dt)
