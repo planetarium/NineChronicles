@@ -280,6 +280,27 @@ namespace Nekoyume.Game
             yield return new WaitForSeconds(AttackDelay);
         }
 
+        public IEnumerator CoAreaAttack(Model.CharacterBase character, List<Attack.AttackInfo> attacks)
+        {
+            var player = GetPlayer();
+            var enemies = GetComponentsInChildren<Enemy>();
+            Character.CharacterBase attacker = player;
+            Character.CharacterBase defender = enemies.First(e => e.id == attacks.First().target.id);
+
+            if (!attacker.TargetInRange(defender))
+            {
+                attacker.StartRun();
+                foreach (var enemy in enemies)
+                {
+                    enemy.StartRun();
+                }
+            }
+
+            yield return new WaitUntil(() => attacker.TargetInRange(defender));
+            yield return StartCoroutine(attacker.CoAreaAttack(enemies, attacks));
+            yield return new WaitForSeconds(AttackDelay);
+        }
+
         public IEnumerator CoDropBox(List<ItemBase> items)
         {
             if (items.Count > 0)

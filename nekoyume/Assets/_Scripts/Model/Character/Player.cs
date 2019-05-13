@@ -70,11 +70,12 @@ namespace Nekoyume.Model
             Simulator.Lose = true;
         }
 
-        protected override void SetSkill()
+        protected sealed override void SetSkill()
         {
-            Skills = new List<SkillBase>();
-            var attack = new Game.Skill.Attack(this, targets.First(), atk);
-            Skills.Add(attack);
+            base.SetSkill();
+            //TODO 장비에서 스킬을 얻어와서 붙이도록 설정
+            var areaAttack = new Game.Skill.AreaAttack(this, targets, atk);
+            Skills.Add(areaAttack);
         }
 
         private void CalcStats(int lv)
