@@ -49,10 +49,10 @@ namespace Nekoyume.Game.Trigger
             }
         }
 
-        public void SetData(int stageId, List<Monster> monsters)
+        public IEnumerator CoSetData(int stageId, List<Monster> monsters)
         {
             _stageId = stageId;
-            StartCoroutine(CoSpawnWave(monsters));
+            yield return StartCoroutine(CoSpawnWave(monsters));
         }
 
         private IEnumerator CoSpawnWave(List<Monster> monsters)

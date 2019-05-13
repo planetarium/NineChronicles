@@ -15,6 +15,7 @@ namespace Nekoyume.UI.Model
         {
             inventoryAndItemInfo.Value = new InventoryAndItemInfo(items);
             inventoryAndItemInfo.Value.inventory.Value.dimmedFunc.Value = DimmedFunc;
+            inventoryAndItemInfo.Value.inventory.Value.glowedFunc.Value = GlowedFunc;
             inventoryAndItemInfo.Value.itemInfo.Value.buttonText.Value = "장착하기";
             inventoryAndItemInfo.Value.itemInfo.Value.buttonEnabledFunc.Value = null;
         }
@@ -27,6 +28,11 @@ namespace Nekoyume.UI.Model
         private bool DimmedFunc(InventoryItem inventoryItem)
         {
             return inventoryItem.item.Value.Item.Data.cls == TypeString;
+        }
+
+        private bool GlowedFunc(InventoryItem inventoryItem, ItemBase.ItemType type)
+        {
+            return inventoryItem.item.Value.Item.Data.cls.ToEnumItemType() == type;
         }
     }
 }

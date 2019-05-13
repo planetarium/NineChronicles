@@ -50,7 +50,7 @@ namespace Nekoyume.UI.Model
 
             inventoryAndItemInfo.Value = new InventoryAndItemInfo(items);
             inventoryAndItemInfo.Value.inventory.Value.dimmedFunc.Value = DimmedFunc;
-            inventoryAndItemInfo.Value.itemInfo.Value.buttonText.Value = "조합 리스트에 올리기";
+            inventoryAndItemInfo.Value.itemInfo.Value.buttonText.Value = "재료 선택";
             inventoryAndItemInfo.Value.itemInfo.Value.buttonEnabledFunc.Value = ButtonEnabledFunc;
 
             itemCountPopup.Value = new SimpleItemCountPopup();

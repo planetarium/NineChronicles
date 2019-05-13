@@ -109,21 +109,21 @@ namespace Nekoyume.UI
             {
                 var item = new Equipment(_data.item.Value.Item.Data);
                 
-                titleText.text = "조합 성공";
+                titleText.text = "제작 성공!";
                 resultItemView.SetData(_data);
                 resultItemNameText.text = item.Data.name;
                 SetElemental(item.Data.elemental, 5);
                 resultItemDescriptionText.text = item.ToItemInfo();
                 resultItem.SetActive(true);
-                materialText.text = "조합에 사용된 아이템";
+                materialText.text = "제작 재료";
 
                 AudioController.instance.PlaySfx(AudioController.SfxCode.Success);
             }
             else
             {
-                titleText.text = "조합 실패";
+                titleText.text = "제작 실패";
                 resultItem.SetActive(false);
-                materialText.text = "소모된 아이템";
+                materialText.text = "파괴된 재료";
                 
                 AudioController.instance.PlaySfx(AudioController.SfxCode.Failed);
             }

@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Nekoyume.Data.Table;
+using Nekoyume.Game.Skill;
 
 namespace Nekoyume.Model
 {
@@ -24,6 +27,7 @@ namespace Nekoyume.Model
             DEFElement = Game.Elemental.Create(data.elemental);
             TurnSpeed = 1.0f;
             attackRange = data.attackRange;
+            SetSkill();
         }
 
         protected override void OnDead()
@@ -31,6 +35,12 @@ namespace Nekoyume.Model
             base.OnDead();
             var player = (Player) targets[0];
             player.RemoveTarget(this);
+        }
+
+        protected sealed override void SetSkill()
+        {
+            base.SetSkill();
+            //TODO 몬스터별 스킬 구현
         }
     }
 }

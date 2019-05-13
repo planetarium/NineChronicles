@@ -30,7 +30,7 @@ namespace Nekoyume.UI
             base.Show();
 
             _stage.LoadBackground("ranking");
-            _player = FindObjectOfType<Player>();
+            _player = _stage.GetPlayer();
             if (ReferenceEquals(_player, null))
             {
                 throw new NotFoundComponentException<Player>();
@@ -48,6 +48,7 @@ namespace Nekoyume.UI
             Find<Status>()?.Show();
             Find<Menu>()?.Show();
             _stage.LoadBackground("room");
+            _stage.GetPlayer(_stage.RoomPosition);
             _player.gameObject.SetActive(true);
 
             base.Close();
@@ -55,7 +56,10 @@ namespace Nekoyume.UI
 
         private void GetAvatars(DateTimeOffset? dt)
         {
-            _avatars = ActionManager.instance.rankingBoard.GetAvatars(dt);
+            var rankingBoard = (Game.RankingBoard) ActionManager.instance.GetState(
+                ActionManager.RankingAddress);
+            Debug.LogWarningFormat("rankingBoard: {0}", rankingBoard);
+            _avatars = rankingBoard?.GetAvatars(dt) ?? new Nekoyume.Model.Avatar[0];
         }
 
         private void UpdateBoard(DateTimeOffset? dt)

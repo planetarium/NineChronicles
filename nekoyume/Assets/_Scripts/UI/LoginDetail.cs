@@ -208,12 +208,7 @@ namespace Nekoyume.UI
         {
             if (palette.activeInHierarchy)
             {
-                Close();
-                var alert = Widget.Create<Alert>();
-                alert.Show("", "캐릭터가 생성되었습니다.", "확인");
-                alert.CloseCallback = () => {
-                    Init(_selectedIndex);
-                };
+                BackClick();
             }
             else
             {

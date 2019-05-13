@@ -61,14 +61,12 @@ namespace Nekoyume.Action
         private IEnumerator _miner;
         private IEnumerator _txProcessor;
         private IEnumerator _shopUpdator;
-        private IEnumerator _rankingUpdator;
         private IEnumerator _swarmRunner;
 
         private IEnumerator _actionRetryer;
 
         public Address agentAddress => agent.AgentAddress;
         public Address AvatarAddress => agent.AvatarAddress;
-        public RankingBoard rankingBoard;
 
 #if UNITY_EDITOR
         private const string AgentStoreDirName = "planetarium_dev";
@@ -97,6 +95,11 @@ namespace Nekoyume.Action
             battleLog = ctx.battleLog;
         }
 
+        public object GetState(Address address)
+        {
+            return agent.GetState(address);
+        }
+
         // FIXME: We need to rename this after replace all polling coroutines
         //        with stream subscriptions.
         public void StartAvatarCoroutines()
@@ -115,7 +118,6 @@ namespace Nekoyume.Action
                 }
             }).AddTo(this);
             StartNullableCoroutine(_shopUpdator);
-            StartNullableCoroutine(_rankingUpdator);
         }
 
         public void CreateNovice(string nickName)
@@ -308,18 +310,11 @@ namespace Nekoyume.Action
             _saveFilePath = Path.Combine(Application.persistentDataPath, fileName);
             Avatar = LoadStatus(_saveFilePath);
             agent.UpdateShop += UpdateShop;
-            agent.UpdateRankingBoard += UpdateRankingBoard;
 
             _shopUpdator = agent.CoShopUpdator();
-            _rankingUpdator = agent.CoRankingUpdator();
 
             Debug.Log($"Agent Address: 0x{agent.AgentAddress.ToHex()}");
             Debug.Log($"Avatar Address: 0x{agent.AvatarAddress.ToHex()}");
-        }
-
-        private void UpdateRankingBoard(object sender, RankingBoard board)
-        {
-            rankingBoard = board;
         }
 
         private string GetCommandLineOption(string name)

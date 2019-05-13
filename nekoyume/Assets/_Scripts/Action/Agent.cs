@@ -40,7 +40,7 @@ namespace Nekoyume.Action
 
         private const float RankingUpdateInterval = 3.0f;
 
-        private static readonly TimeSpan SwarmDialTimeout = TimeSpan.FromSeconds(5);
+        private static readonly int SwarmDialTimeout = 5000;
 
         private const float ActionRetryInterval = 15.0f;
 
@@ -98,7 +98,7 @@ namespace Nekoyume.Action
             _swarm = new Swarm(
                 agentPrivateKey,
                 appProtocolVersion: 1,
-                dialTimeout: SwarmDialTimeout,
+                millisecondsDialTimeout: SwarmDialTimeout,
                 host: host,
                 listenPort: port,
                 iceServers: iceServers);
@@ -116,7 +116,6 @@ namespace Nekoyume.Action
         public Address AvatarAddress => AvatarPrivateKey.PublicKey.ToAddress();
         public Address ShopAddress => ActionManager.shopAddress;
         public Address AgentAddress => _agentPrivateKey.PublicKey.ToAddress();
-        public Address RankingBoardAddress => ActionManager.RankingAddress;
 
         public Guid ChainId => _blocks.Id;
 
@@ -126,7 +125,6 @@ namespace Nekoyume.Action
         public event EventHandler<BlockDownloadState> PreloadProcessed;
         public event EventHandler PreloadEnded;
 
-        public EventHandler<RankingBoard> UpdateRankingBoard;
 
         public IEnumerator CoSwarmRunner()
         {
@@ -162,22 +160,6 @@ namespace Nekoyume.Action
                 if (shop != null)
                 {
                     UpdateShop?.Invoke(this, shop);
-                }
-            }
-        }
-
-        // FIXME: This should be safely removed and we should depend on ActionBase.Render().
-        public IEnumerator CoRankingUpdator()
-        {
-            while (true)
-            {
-                yield return new WaitForSeconds(RankingUpdateInterval);
-                var task = Task.Run(() => _blocks.GetStates(new[] {RankingBoardAddress}));
-                yield return new WaitUntil(() => task.IsCompleted);
-                var rankingBoard = (RankingBoard) task.Result.GetValueOrDefault(RankingBoardAddress);
-                if (rankingBoard != null)
-                {
-                    UpdateRankingBoard?.Invoke(this, rankingBoard);
                 }
             }
         }
@@ -231,8 +213,7 @@ namespace Nekoyume.Action
 
                 if (actions.Any())
                 {
-                    var staging = StageActions(actions);
-                    yield return new WaitUntil(() => staging.IsCompleted);
+                    StageActions(actions);
                 }
             }
         }
@@ -250,11 +231,11 @@ namespace Nekoyume.Action
                         timestamp: DateTime.UtcNow);
                 var txs = new HashSet<Transaction<PolymorphicAction<ActionBase>>> { tx };
 
-                var task = Task.Run(async () =>
+                var task = Task.Run(() =>
                 {
                     _blocks.StageTransactions(txs);
                     var block = _blocks.MineBlock(AgentAddress);
-                    await _swarm.BroadcastBlocksAsync(new[] {block});
+                    _swarm.BroadcastBlocks(new[] {block});
                     return block;
                 });
                 yield return new WaitUntil(() => task.IsCompleted);
@@ -269,12 +250,16 @@ namespace Nekoyume.Action
                 }
                 else
                 {
+                    if (task.IsFaulted)
+                    {
+                        UnityEngine.Debug.LogException(task.Exception);
+                    }
                     _blocks.UnstageTransactions(txs);
                 }
             }
         }
 
-        private async Task StageActions(IList<PolymorphicAction<ActionBase>> actions)
+        private void StageActions(IList<PolymorphicAction<ActionBase>> actions)
         {
             var tx = Transaction<PolymorphicAction<ActionBase>>.Create(
                 AvatarPrivateKey,
@@ -282,7 +267,14 @@ namespace Nekoyume.Action
                 timestamp: DateTime.UtcNow
             );
             _blocks.StageTransactions(new HashSet<Transaction<PolymorphicAction<ActionBase>>> {tx});
-            await _swarm.BroadcastTxsAsync(new[] { tx });
+            _swarm.BroadcastTxs(new[] { tx });
+        }
+
+        public object GetState(Address address)
+        {
+            AddressStateMap states = _blocks.GetStates(new[] {address});
+            states.TryGetValue(address, out object value);
+            return value;
         }
 
         public void Dispose()

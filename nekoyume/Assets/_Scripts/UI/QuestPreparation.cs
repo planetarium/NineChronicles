@@ -51,6 +51,10 @@ namespace Nekoyume.UI
             
             SetData(new Model.QuestPreparation(ActionManager.instance.Avatar.Items));
             
+            // stop run immediately.
+            _player.gameObject.SetActive(false);
+            _player.gameObject.SetActive(true);
+            
             foreach (var equipment in _player.equipments)
             {
                 var type = equipment.Data.cls.ToEnumItemType();
@@ -107,6 +111,10 @@ namespace Nekoyume.UI
             if (slot.item == null)
             {
                 equipSlotGlow.SetActive(false);
+                foreach (var item in _data.inventoryAndItemInfo.Value.inventory.Value.items)
+                {
+                    item.glowed.Value = _data.inventoryAndItemInfo.Value.inventory.Value.glowedFunc.Value(item, slot.type);
+                }
                 return;
             }
             slot.Unequip();

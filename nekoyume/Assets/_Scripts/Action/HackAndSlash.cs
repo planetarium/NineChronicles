@@ -86,7 +86,11 @@ namespace Nekoyume.Action
             ctx.updatedAt = DateTimeOffset.UtcNow;
             if (ctx.avatar.WorldStage > Stage)
             {
-                var ranking = ActionManager.instance.rankingBoard ?? new RankingBoard();
+                var ranking = (RankingBoard) states.GetState(ActionManager.RankingAddress);
+                if (ranking is null)
+                {
+                    ranking = new RankingBoard();
+                }
                 ctx.clearedAt = DateTimeOffset.UtcNow;
                 ranking.Update(ctx);
                 states = states.SetState(ActionManager.RankingAddress, ranking);

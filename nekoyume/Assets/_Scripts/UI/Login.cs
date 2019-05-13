@@ -39,7 +39,7 @@ namespace Nekoyume.UI
                 return;
 
             var confirm = Widget.Create<Confirm>();
-            confirm.Show("Delete", "정말 삭제하시겠습니까?", "삭제합니다", "아니오");
+            confirm.Show("캐릭터 삭제", "정말 삭제하시겠습니까?", "삭제합니다", "아니오");
             confirm.CloseCallback = (ConfirmResult result) => {
                 if (result == ConfirmResult.Yes)
                 {

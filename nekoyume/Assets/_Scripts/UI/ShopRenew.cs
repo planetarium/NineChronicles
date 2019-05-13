@@ -77,7 +77,7 @@ namespace Nekoyume.UI
                 throw new NotFoundComponentException<Stage>();
             }
 
-            _player = FindObjectOfType<Player>();
+            _player = _stage.GetPlayer();
             if (!ReferenceEquals(_player, null))
             {
                 _player.gameObject.SetActive(false);
@@ -102,7 +102,8 @@ namespace Nekoyume.UI
         public override void Close()
         {
             Clear();
-
+            
+            _stage.GetPlayer(_stage.RoomPosition);
             if (!ReferenceEquals(_player, null))
             {
                 _player.gameObject.SetActive(true);

@@ -10,10 +10,12 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveCollection<InventoryItem> items = new ReactiveCollection<InventoryItem>();
         public readonly ReactiveProperty<InventoryItem> selectedItem = new ReactiveProperty<InventoryItem>(null);
         public readonly ReactiveProperty<Func<InventoryItem, bool>> dimmedFunc = new ReactiveProperty<Func<InventoryItem, bool>>();
+        public readonly ReactiveProperty<Func<InventoryItem, Game.Item.ItemBase.ItemType, bool>> glowedFunc = new ReactiveProperty<Func<InventoryItem, Game.Item.ItemBase.ItemType, bool>>();
 
         public Inventory(List<Game.Item.Inventory.InventoryItem> items)
         {
             dimmedFunc.Value = DimmedFunc;
+            glowedFunc.Value = GlowedFunc;
             
             items.ForEach(item =>
             {
@@ -43,6 +45,11 @@ namespace Nekoyume.UI.Model
         }
 
         private static bool DimmedFunc(InventoryItem inventoryItem)
+        {
+            return false;
+        }
+
+        private static bool GlowedFunc(InventoryItem inventoryItem, Game.Item.ItemBase.ItemType type)
         {
             return false;
         }
@@ -117,6 +124,11 @@ namespace Nekoyume.UI.Model
 
             selectedItem.Value = inventoryItem;
             selectedItem.Value.selected.Value = true;
+
+            foreach (var item in this.items)
+            {
+                item.glowed.Value = false;
+            }
         }
     }
 }
