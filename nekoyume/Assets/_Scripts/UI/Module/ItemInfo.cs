@@ -75,8 +75,8 @@ namespace Nekoyume.UI.Module
             if (ReferenceEquals(_data, null) ||
                 ReferenceEquals(_data.item.Value, null))
             {
-                nameText.text = "아이템 자세히 보기";
-                infoText.text = "상단의 아이템을 클릭하세요";
+                nameText.text = "아이템 정보";
+                infoText.text = "아이템을 선택하세요";
                 descriptionText.text = "";
                 button.gameObject.SetActive(false);
                 

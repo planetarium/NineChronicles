@@ -58,9 +58,9 @@ namespace Nekoyume.UI
         public void Clear()
         {
             item = null;
-            itemName.text = "아이템 자세히 보기";
+            itemName.text = "아이템 정보";
             icon.enabled = false;
-            info.text = "상단의 아이템을 클릭하세요";
+            info.text = "아이템을 선택하세요";
             flavour.text = "";
 
             if (_considerPrice)

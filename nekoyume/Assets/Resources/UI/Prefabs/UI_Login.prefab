@@ -630,7 +630,7 @@ GameObject:
   - component: {fileID: 114587319779942540}
   - component: {fileID: 95315943906553726}
   m_Layer: 5
-  m_Name: UI_Login 1
+  m_Name: UI_Login
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1961,7 +1961,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\uCE90\uB9AD\uD130\uB97C \uC0DD\uC131\uD558\uC138\uC694."
+  m_Text: "\uC0C8 \uCE90\uB9AD\uD130 \uC0DD\uC131"
 --- !u!114 &7870995622297101336
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2073,7 +2073,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\uCE90\uB9AD\uD130 \uC0AD\uC81C"
+  m_Text: "\uC0AD\uC81C\uD558\uAE30"
 --- !u!114 &6616576895419524421
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2866,7 +2866,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\uCE90\uB9AD\uD130 \uC0AD\uC81C"
+  m_Text: "\uC0AD\uC81C\uD558\uAE30"
 --- !u!114 &5583982458901329613
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4230,7 +4230,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\uCE90\uB9AD\uD130\uB97C \uC0DD\uC131\uD558\uC138\uC694."
+  m_Text: "\uC0C8 \uCE90\uB9AD\uD130 \uC0DD\uC131"
 --- !u!114 &1000910591593665032
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4723,7 +4723,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\uCE90\uB9AD\uD130 \uC0AD\uC81C"
+  m_Text: "\uC0AD\uC81C\uD558\uAE30"
 --- !u!114 &4688744796046286420
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4955,7 +4955,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\uCE90\uB9AD\uD130\uB97C \uC0DD\uC131\uD558\uC138\uC694."
+  m_Text: "\uC0C8 \uCE90\uB9AD\uD130 \uC0DD\uC131"
 --- !u!114 &7892355572353824989
 MonoBehaviour:
   m_ObjectHideFlags: 0

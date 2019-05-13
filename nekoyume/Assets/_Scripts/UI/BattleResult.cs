@@ -110,8 +110,8 @@ namespace Nekoyume.UI
 
             if (result == BattleLog.Result.Win)
             {
-                submitText.text = "다음 퀘스트";
-                header.text = "승리";
+                submitText.text = "다음 스테이지";
+                header.text = "전투 승리!";
                 title.text = "획득한 아이템";
                 grid.gameObject.SetActive(true);
 
@@ -126,9 +126,9 @@ namespace Nekoyume.UI
             }
             else
             {
-                submitText.text = "재도전";
-                title.text = "재도전 하시겠습니까?";
-                header.text = "실패";
+                submitText.text = "다시 하기";
+                title.text = "다시 도전 하시겠습니까?";
+                header.text = "전투 패배";
                 _repeat = false;
                 timeText.gameObject.SetActive(_repeat);
                 _stage.repeatStage = _repeat;

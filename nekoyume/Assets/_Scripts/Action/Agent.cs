@@ -116,7 +116,6 @@ namespace Nekoyume.Action
         public Address AvatarAddress => AvatarPrivateKey.PublicKey.ToAddress();
         public Address ShopAddress => ActionManager.shopAddress;
         public Address AgentAddress => _agentPrivateKey.PublicKey.ToAddress();
-        public Address RankingBoardAddress => ActionManager.RankingAddress;
 
         public Guid ChainId => _blocks.Id;
 
@@ -126,7 +125,6 @@ namespace Nekoyume.Action
         public event EventHandler<BlockDownloadState> PreloadProcessed;
         public event EventHandler PreloadEnded;
 
-        public EventHandler<RankingBoard> UpdateRankingBoard;
 
         public IEnumerator CoSwarmRunner()
         {
@@ -162,22 +160,6 @@ namespace Nekoyume.Action
                 if (shop != null)
                 {
                     UpdateShop?.Invoke(this, shop);
-                }
-            }
-        }
-
-        // FIXME: This should be safely removed and we should depend on ActionBase.Render().
-        public IEnumerator CoRankingUpdator()
-        {
-            while (true)
-            {
-                yield return new WaitForSeconds(RankingUpdateInterval);
-                var task = Task.Run(() => _blocks.GetStates(new[] {RankingBoardAddress}));
-                yield return new WaitUntil(() => task.IsCompleted);
-                var rankingBoard = (RankingBoard) task.Result.GetValueOrDefault(RankingBoardAddress);
-                if (rankingBoard != null)
-                {
-                    UpdateRankingBoard?.Invoke(this, rankingBoard);
                 }
             }
         }
@@ -268,6 +250,10 @@ namespace Nekoyume.Action
                 }
                 else
                 {
+                    if (task.IsFaulted)
+                    {
+                        UnityEngine.Debug.LogException(task.Exception);
+                    }
                     _blocks.UnstageTransactions(txs);
                 }
             }
@@ -282,6 +268,13 @@ namespace Nekoyume.Action
             );
             _blocks.StageTransactions(new HashSet<Transaction<PolymorphicAction<ActionBase>>> {tx});
             _swarm.BroadcastTxs(new[] { tx });
+        }
+
+        public object GetState(Address address)
+        {
+            AddressStateMap states = _blocks.GetStates(new[] {address});
+            states.TryGetValue(address, out object value);
+            return value;
         }
 
         public void Dispose()
