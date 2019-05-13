@@ -43,6 +43,13 @@ namespace Nekoyume
         }
 
         [System.Diagnostics.Conditional("DEBUG_USE")]
+        public static void LogFormat(string format, params object[] args)
+        {
+            // LogFormat() in itself expands an array when it takes only one array.
+            UnityEngine.Debug.LogFormat(format, args);
+        }
+
+        [System.Diagnostics.Conditional("DEBUG_USE")]
         public static void LogError(object message)
         {
             UnityEngine.Debug.LogError(message);
@@ -55,6 +62,13 @@ namespace Nekoyume
         }
 
         [System.Diagnostics.Conditional("DEBUG_USE")]
+        public static void LogErrorFormat(string format, params object[] args)
+        {
+            // LogErrorFormat() in itself expands an array when it takes only one array.
+            UnityEngine.Debug.LogErrorFormat(format, args);
+        }
+
+        [System.Diagnostics.Conditional("DEBUG_USE")]
         public static void LogWarning(object message)
         {
             UnityEngine.Debug.LogWarning(message.ToString());
@@ -64,6 +78,13 @@ namespace Nekoyume
         public static void LogWarning(object message, UnityEngine.Object context)
         {
             UnityEngine.Debug.LogWarning(message.ToString(), context);
+        }
+
+        [System.Diagnostics.Conditional("DEBUG_USE")]
+        public static void LogWarningFormat(string format, params object[] args)
+        {
+            // LogWarningFormat() in itself expands an array when it takes only one array.
+            UnityEngine.Debug.LogWarningFormat(format, args);
         }
 
         [System.Diagnostics.Conditional("DEBUG_USE")]
