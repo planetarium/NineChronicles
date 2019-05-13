@@ -6,6 +6,7 @@ using BTAI;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.CC;
 using Nekoyume.Game.Controller;
+using Nekoyume.Model;
 using Nekoyume.UI;
 using UnityEngine;
 
@@ -198,24 +199,16 @@ namespace Nekoyume.Game.Character
             gameObject.SetActive(false);
         }
 
-        public IEnumerator CoAttack(int atk, CharacterBase target, bool critical)
+        public IEnumerator CoAttack(CharacterBase target, Attack.AttackInfo attack)
         {
             attackEnd = false;
             RunSpeed = 0.0f;
 
-            if (target.CanRun())
-            {
-                target.StopRun();
-            }
-            
             animator.Attack();
 
             yield return new WaitUntil(() => attackEnd);
 
-            if (target != null)
-            {
-                yield return StartCoroutine(target.CoProcessDamage(atk, critical));
-            }
+            yield return StartCoroutine(CoProcessAttack(target, attack));
         }
 
         protected virtual void PopUpDmg(Vector3 position, Vector3 force, string dmg, bool critical)
@@ -289,6 +282,28 @@ namespace Nekoyume.Game.Character
                 Destroy(_castingBar.gameObject);
                 _castingBar = null;
             }
+        }
+
+        public IEnumerator CoAreaAttack(Enemy[] targets, List<Attack.AttackInfo> attacks)
+        {
+            attackEnd = false;
+            RunSpeed = 0.0f;
+            animator.Attack();
+
+            yield return new WaitUntil(() => attackEnd);
+
+            foreach (var attack in attacks)
+            {
+                var target = targets.First(t => t.id == attack.target.id);
+                yield return StartCoroutine(CoProcessAttack(target, attack));
+            }
+        }
+
+        private IEnumerator CoProcessAttack(CharacterBase target, Attack.AttackInfo attack)
+        {
+            if (target.CanRun())
+                target.StopRun();
+            yield return StartCoroutine(target.CoProcessDamage(attack.damage, attack.critical));
         }
     }
 }

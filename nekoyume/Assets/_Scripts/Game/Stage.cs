@@ -252,7 +252,7 @@ namespace Nekoyume.Game
             yield return null;
         }
 
-        public IEnumerator CoAttack(int atk, Model.CharacterBase character, Model.CharacterBase target, bool critical)
+        public IEnumerator CoAttack(Model.CharacterBase character, Attack.AttackInfo info)
         {
             Character.CharacterBase attacker;
             Character.CharacterBase defender;
@@ -261,7 +261,7 @@ namespace Nekoyume.Game
             if (character is Model.Player)
             {
                 attacker = player;
-                defender = enemies.First(e => e.id == target.id);
+                defender = enemies.First(e => e.id == info.target.id);
             }
             else
             {
@@ -276,7 +276,28 @@ namespace Nekoyume.Game
             }
 
             yield return new WaitUntil(() => attacker.TargetInRange(defender));
-            yield return StartCoroutine(attacker.CoAttack(atk, defender, critical));
+            yield return StartCoroutine(attacker.CoAttack(defender, info));
+            yield return new WaitForSeconds(AttackDelay);
+        }
+
+        public IEnumerator CoAreaAttack(Model.CharacterBase character, List<Attack.AttackInfo> attacks)
+        {
+            var player = GetPlayer();
+            var enemies = GetComponentsInChildren<Enemy>();
+            Character.CharacterBase attacker = player;
+            Character.CharacterBase defender = enemies.First(e => e.id == attacks.First().target.id);
+
+            if (!attacker.TargetInRange(defender))
+            {
+                attacker.StartRun();
+                foreach (var enemy in enemies)
+                {
+                    enemy.StartRun();
+                }
+            }
+
+            yield return new WaitUntil(() => attacker.TargetInRange(defender));
+            yield return StartCoroutine(attacker.CoAreaAttack(enemies, attacks));
             yield return new WaitForSeconds(AttackDelay);
         }
 
@@ -308,7 +329,7 @@ namespace Nekoyume.Game
         {
             var playerCharacter = GetPlayer();
             playerCharacter.StartRun();
-            _spawner.SetData(id, monsters);
+            yield return StartCoroutine(_spawner.CoSetData(id, monsters));
 
             if (isBoss)
             {

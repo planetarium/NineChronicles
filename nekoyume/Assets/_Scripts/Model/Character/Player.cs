@@ -5,6 +5,7 @@ using Nekoyume.Action;
 using Nekoyume.Data;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Item;
+using Nekoyume.Game.Skill;
 
 namespace Nekoyume.Model
 {
@@ -50,6 +51,7 @@ namespace Nekoyume.Model
             }
 
             CalcStats(level);
+            SetSkill();
         }
 
         public Player()
@@ -68,7 +70,15 @@ namespace Nekoyume.Model
             Simulator.Lose = true;
         }
 
-        public void CalcStats(int lv)
+        protected sealed override void SetSkill()
+        {
+            base.SetSkill();
+            //TODO 장비에서 스킬을 얻어와서 붙이도록 설정
+            var areaAttack = new Game.Skill.AreaAttack(this, targets, atk);
+            Skills.Add(areaAttack);
+        }
+
+        private void CalcStats(int lv)
         {
             var stats = Tables.instance.Character;
             var levelTable = Tables.instance.Level;

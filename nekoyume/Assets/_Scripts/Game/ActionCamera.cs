@@ -85,7 +85,8 @@ namespace Nekoyume.Game
 
         public void Shake()
         {
-            _targetTemp = _target;
+            if (ReferenceEquals(_targetTemp, null))
+                _targetTemp = _target;
             _target = null;
             _shakeDuration = shakeData.duration;
         }
