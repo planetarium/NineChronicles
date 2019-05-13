@@ -198,24 +198,16 @@ namespace Nekoyume.Game.Character
             gameObject.SetActive(false);
         }
 
-        public IEnumerator CoAttack(int atk, CharacterBase target, bool critical)
+        public IEnumerator CoAttack(CharacterBase target, Attack.AttackInfo attack)
         {
             attackEnd = false;
             RunSpeed = 0.0f;
 
-            if (target.CanRun())
-            {
-                target.StopRun();
-            }
-            
             animator.Attack();
 
             yield return new WaitUntil(() => attackEnd);
 
-            if (target != null)
-            {
-                yield return StartCoroutine(target.CoProcessDamage(atk, critical));
-            }
+            yield return StartCoroutine(CoProcessAttack(target, attack));
         }
 
         protected virtual void PopUpDmg(Vector3 position, Vector3 force, string dmg, bool critical)
@@ -289,6 +281,12 @@ namespace Nekoyume.Game.Character
                 Destroy(_castingBar.gameObject);
                 _castingBar = null;
             }
+        }
+        private IEnumerator CoProcessAttack(CharacterBase target, Attack.AttackInfo attack)
+        {
+            if (target.CanRun())
+                target.StopRun();
+            yield return StartCoroutine(target.CoProcessDamage(attack.damage, attack.critical));
         }
     }
 }

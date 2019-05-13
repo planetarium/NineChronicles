@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Nekoyume.Model;
 
 namespace Nekoyume.Game.Skill
@@ -13,7 +14,7 @@ namespace Nekoyume.Game.Skill
     public interface ISkill
     {
         SkillType GetSkillType();
-        Model.Attack Use();
+        EventBase Use();
     }
 
     public interface ISingleTargetSkill: ISkill
@@ -21,22 +22,25 @@ namespace Nekoyume.Game.Skill
         CharacterBase GetTarget();
     }
 
+    public interface IMultipleTargetSkill : ISkill
+    {
+        List<CharacterBase> GetTarget();
+    }
+
     [Serializable]
-    public abstract class SkillBase: ISingleTargetSkill
+    public abstract class SkillBase: ISkill
     {
         protected readonly CharacterBase Caster;
-        private readonly CharacterBase _target;
+        protected readonly IEnumerable<CharacterBase> Target;
         protected readonly int Effect;
-
-        public CharacterBase GetTarget() => _target;
 
         public abstract SkillType GetSkillType();
 
-        public abstract Model.Attack Use();
-        protected SkillBase(CharacterBase caster, CharacterBase target, int effect)
+        public abstract EventBase Use();
+        protected SkillBase(CharacterBase caster, IEnumerable<CharacterBase> target, int effect)
         {
             Caster = caster;
-            _target = target;
+            Target = target;
             Effect = effect;
         }
     }

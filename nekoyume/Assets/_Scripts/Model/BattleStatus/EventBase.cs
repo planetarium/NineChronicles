@@ -7,7 +7,6 @@ namespace Nekoyume.Model
     public abstract class EventBase
     {
         public CharacterBase character;
-        public CharacterBase target;
 
         public abstract IEnumerator CoExecute(IStage stage);
     }

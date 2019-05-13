@@ -27,6 +27,7 @@ namespace Nekoyume.Model
             DEFElement = Game.Elemental.Create(data.elemental);
             TurnSpeed = 1.0f;
             attackRange = data.attackRange;
+            SetSkill();
         }
 
         protected override void OnDead()
@@ -36,11 +37,10 @@ namespace Nekoyume.Model
             player.RemoveTarget(this);
         }
 
-        protected override void SetSkill()
+        protected sealed override void SetSkill()
         {
-            Skills = new List<SkillBase>();
-            var attack = new Game.Skill.Attack(this, targets.First(), atk);
-            Skills.Add(attack);
+            base.SetSkill();
+            //TODO 몬스터별 스킬 구현
         }
     }
 }

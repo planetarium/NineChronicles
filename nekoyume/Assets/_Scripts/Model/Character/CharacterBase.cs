@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using BTAI;
 using Nekoyume.Action;
@@ -63,7 +62,6 @@ namespace Nekoyume.Model
 
         private void UseSkill()
         {
-            var target = _selectedSkill.GetTarget();
             var attack = _selectedSkill.Use();
             Simulator.Log.Add(attack);
             _selectedSkill = null;
@@ -116,12 +114,16 @@ namespace Nekoyume.Model
             }
         }
 
-        protected abstract void SetSkill();
+        protected virtual void SetSkill()
+        {
+            Skills = new List<SkillBase>();
+            var attack = new Game.Skill.Attack(this, targets, atk);
+            Skills.Add(attack);
+        }
 
         private void SelectSkill()
         {
-            SetSkill();
-            _selectedSkill = Skills.First();
+            _selectedSkill = Skills[Simulator.Random.Next(Skills.Count)];
         }
     }
 

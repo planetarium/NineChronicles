@@ -1,23 +1,20 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Nekoyume.Model;
 
 namespace Nekoyume.Game.Skill
 {
     [Serializable]
-    public class Attack : SkillBase
+    public class AttackBase: SkillBase
     {
-        public Attack(CharacterBase caster, CharacterBase target, int effect) : base(caster, target, effect)
+        protected AttackBase(CharacterBase caster, IEnumerable<CharacterBase> target, int effect)
+            : base(caster, target, effect)
         {
         }
 
-        public override SkillType GetSkillType()
+        protected Model.Attack.AttackInfo ProcessDamage(CharacterBase target)
         {
-            return SkillType.Attack;
-        }
-
-        public override Model.Attack Use()
-        {
-            var target = GetTarget();
             var critical = Caster.IsCritical();
             var dmg = Caster.ATKElement.CalculateDmg(Effect, target.DEFElement);
             dmg = Math.Max(dmg - target.def, 1);
@@ -25,14 +22,45 @@ namespace Nekoyume.Game.Skill
             {
                 dmg = Convert.ToInt32(dmg * CharacterBase.CriticalMultiplier);
             }
+
             target.OnDamage(dmg);
+
+            return new Model.Attack.AttackInfo(CharacterBase.Copy(target), dmg, critical);
+        }
+
+        public override SkillType GetSkillType()
+        {
+            return SkillType.Attack;
+        }
+
+        public override EventBase Use()
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    [Serializable]
+    public class Attack : AttackBase, ISingleTargetSkill
+    {
+        public Attack(CharacterBase caster, IEnumerable<CharacterBase> target, int effect)
+            : base(caster, target, effect)
+        {
+        }
+
+        public CharacterBase GetTarget()
+        {
+            return Target.First();
+        }
+
+        public override EventBase Use()
+        {
+            var target = GetTarget();
+            var info = ProcessDamage(target);
 
             return new Model.Attack
             {
                 character = CharacterBase.Copy(Caster),
-                target = CharacterBase.Copy(target),
-                atk = dmg,
-                critical = critical,
+                info = info,
             };
         }
     }
