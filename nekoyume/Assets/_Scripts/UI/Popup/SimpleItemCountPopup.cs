@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
-    public class SelectItemCountPopup : Widget
+    public class ItemCountPopup : Widget
     {
         private const string CountStringFormat = "총 {0}개";
 
@@ -19,7 +19,7 @@ namespace Nekoyume.UI
         public Button okButton;
         public SimpleCountableItemView itemView;
         
-        private Model.SelectItemCountPopup _data;
+        private Model.SimpleItemCountPopup _data;
         private readonly List<IDisposable> _disposablesForAwake = new List<IDisposable>();
         private readonly List<IDisposable> _disposablesForSetDate = new List<IDisposable>();
 
@@ -64,7 +64,7 @@ namespace Nekoyume.UI
                 .AddTo(_disposablesForAwake);
         }
 
-        private void OnDestroy()
+        protected virtual void OnDestroy()
         {
             _disposablesForAwake.DisposeAllAndClear();
             Clear();
@@ -72,7 +72,7 @@ namespace Nekoyume.UI
 
         #endregion
 
-        public void Pop(Model.SelectItemCountPopup data)
+        public void Pop(Model.SimpleItemCountPopup data)
         {
             if (ReferenceEquals(data, null))
             {
@@ -84,7 +84,7 @@ namespace Nekoyume.UI
             base.Show();
         }
 
-        private void SetData(Model.SelectItemCountPopup data)
+        private void SetData(Model.SimpleItemCountPopup data)
         {
             if (ReferenceEquals(data, null))
             {
