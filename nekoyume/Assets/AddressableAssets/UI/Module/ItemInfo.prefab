@@ -121,7 +121,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\uC870\uD569 \uB9AC\uC2A4\uD2B8\uC5D0 \uC62C\uB9AC\uAE30"
+  m_Text: "\uC7AC\uB8CC \uC120\uD0DD"
 --- !u!114 &114991862475869104
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -692,7 +692,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\uC544\uC774\uD15C \uC790\uC138\uD788 \uBCF4\uAE30"
+  m_Text: "\uC544\uC774\uD15C \uC815\uBCF4"
 --- !u!114 &804981927995380767
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -819,7 +819,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\uC0C1\uB2E8\uC758 \uC544\uC774\uD15C\uC744 \uD074\uB9AD\uD558\uC138\uC694."
+  m_Text: "\uC544\uC774\uD15C\uC744 \uC120\uD0DD\uD558\uC138\uC694."
 --- !u!114 &6270677630470006966
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -872,11 +872,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 224789621366664852}
     m_Modifications:
-    - target: {fileID: 1885807040530065394, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
-        type: 3}
-      propertyPath: m_Name
-      value: SimpleCountableItemView
-      objectReference: {fileID: 0}
     - target: {fileID: 1816018180843216220, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -981,6 +976,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1885807040530065394, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
+        type: 3}
+      propertyPath: m_Name
+      value: SimpleCountableItemView
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5a7ec89f001bf46e686e8583d2f3a60e, type: 3}
