@@ -372,6 +372,16 @@ namespace Nekoyume.Action
             ProcessAction(action);
         }
 
+        public IObservable<ActionBase.ActionEvaluation<SellRenew>> SellRenew(int itemID, int count, decimal price)
+        {
+            var action = new SellRenew(itemID, count, price);
+            ProcessAction(action);
+            
+            return ActionBase.EveryRender<SellRenew>().SkipWhile(
+                eval => !eval.Action.Id.Equals(action.Id)
+            ).Take(1).Last();  // Last() is for completion
+        }
+
         protected override void OnDestroy() 
         {
             if (agent != null)

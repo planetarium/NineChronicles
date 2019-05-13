@@ -18,7 +18,7 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<State> state = new ReactiveProperty<State>();
         public readonly ReactiveProperty<InventoryAndItemInfo> inventoryAndItemInfo = new ReactiveProperty<InventoryAndItemInfo>();
         public readonly ReactiveProperty<ShopItems> shopItems = new ReactiveProperty<ShopItems>();
-        public readonly ReactiveProperty<SelectItemCountAndPricePopup> itemCountAndPricePopup = new ReactiveProperty<SelectItemCountAndPricePopup>();
+        public readonly ReactiveProperty<ItemCountAndPricePopup> itemCountAndPricePopup = new ReactiveProperty<ItemCountAndPricePopup>();
         
         public readonly Subject<Shop> onClickSwitchBuy = new Subject<Shop>();
         public readonly Subject<Shop> onClickSwitchSell = new Subject<Shop>();
@@ -28,6 +28,7 @@ namespace Nekoyume.UI.Model
         {
             inventoryAndItemInfo.Value = new InventoryAndItemInfo(items);
             shopItems.Value = new ShopItems();
+            itemCountAndPricePopup.Value = new ItemCountAndPricePopup();
 
             state.Subscribe(OnState);
             inventoryAndItemInfo.Value.itemInfo.Value.item.Subscribe(OnItemInfoItem);

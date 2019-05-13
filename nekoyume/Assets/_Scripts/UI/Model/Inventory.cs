@@ -53,6 +53,38 @@ namespace Nekoyume.UI.Model
             selectedItem.DisposeAll();
         }
 
+        public void RemoveItem(int id, int count)
+        {
+            InventoryItem shouldRemove = null;
+            foreach (var item in items)
+            {
+                if (item.item.Value.Item.Data.id != id)
+                {
+                    continue;
+                }
+                
+                if (item.count.Value > count)
+                {
+                    item.count.Value -= count;
+                }
+                else if (item.count.Value == count)
+                {
+                    shouldRemove = item;
+                }
+                else
+                {
+                    throw new InvalidOperationException($"item({id}) count is lesser then {count}");
+                }
+                
+                break;
+            }
+
+            if (!ReferenceEquals(shouldRemove, null))
+            {
+                items.Remove(shouldRemove);
+            }
+        }
+
         public void DeselectAll()
         {
             if (ReferenceEquals(selectedItem.Value, null))

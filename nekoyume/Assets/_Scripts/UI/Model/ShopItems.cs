@@ -5,7 +5,8 @@ namespace Nekoyume.UI.Model
 {
     public class ShopItems : IDisposable
     {
-        public readonly ReactiveCollection<ShopItem> items = new ReactiveCollection<ShopItem>();
+        public readonly ReactiveCollection<ShopItem> buyItems = new ReactiveCollection<ShopItem>();
+        public readonly ReactiveCollection<ShopItem> sellItems = new ReactiveCollection<ShopItem>();
         
         public readonly Subject<ShopItems> onClickRefresh = new Subject<ShopItems>();
 
@@ -16,7 +17,8 @@ namespace Nekoyume.UI.Model
 
         public void Dispose()
         {
-            items.DisposeAll();
+            buyItems.DisposeAll();
+            sellItems.DisposeAll();
             
             onClickRefresh.Dispose();
         }

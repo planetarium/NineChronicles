@@ -50,6 +50,7 @@ namespace Nekoyume.UI.Module
             _disposablesForSetData.DisposeAllAndClear();
             _data = data;
             _data.buttonType.Subscribe(UpdateButtonType).AddTo(_disposablesForSetData);
+            _data.text.Subscribe(value => text.text = value).AddTo(_disposablesForSetData);
         }
 
         public void Clear()

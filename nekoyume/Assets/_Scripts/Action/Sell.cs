@@ -16,6 +16,12 @@ namespace Nekoyume.Action
     {
         public List<ItemBase> Items;
         public decimal Price;
+        
+        protected override IImmutableDictionary<string, object> PlainValueInternal => new Dictionary<string, object>
+        {
+            ["items"] = ByteSerializer.Serialize(Items),
+            ["price"] = Price.ToString(CultureInfo.InvariantCulture),
+        }.ToImmutableDictionary();
 
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, object> plainValue)
         {
@@ -52,11 +58,5 @@ namespace Nekoyume.Action
             states = states.SetState(actionCtx.Signer, ctx);
             return states;
         }
-
-        protected override IImmutableDictionary<string, object> PlainValueInternal => new Dictionary<string, object>
-        {
-            ["items"] = ByteSerializer.Serialize(Items),
-            ["price"] = Price.ToString(CultureInfo.InvariantCulture),
-        }.ToImmutableDictionary();
     }
 }

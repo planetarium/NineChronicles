@@ -4,11 +4,14 @@ using Nekoyume.Action;
 using Nekoyume.Game;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
+using Nekoyume.Game.Item;
 using Nekoyume.UI;
-using Nekoyume.UI.Module;
+using Nekoyume.UI.Model;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
+using InventoryAndItemInfo = Nekoyume.UI.Module.InventoryAndItemInfo;
+using ShopItems = Nekoyume.UI.Module.ShopItems;
 
 namespace Nekoyume.UI
 {
@@ -19,24 +22,24 @@ namespace Nekoyume.UI
         public InventoryAndItemInfo inventoryAndItemInfo;
         public ShopItems shopItems;
         public Button closeButton;
-        
+
         private Model.Shop _data;
-        
+
         private readonly List<IDisposable> _disposablesForAwake = new List<IDisposable>();
         private readonly List<IDisposable> _disposablesForSetData = new List<IDisposable>();
 
         private Stage _stage;
         private Player _player;
+        private ItemCountAndPricePopup _itemCountAndPricePopup;
+        private GrayLoadingScreen _loadingScreen;
 
         #region Mono
 
         protected override void Awake()
         {
             base.Awake();
-            
+
             this.ComponentFieldsNotNullTest();
-            
-            _stage = GameObject.Find("Stage").GetComponent<Stage>();
 
             switchBuyButton.onClick.AsObservable().Subscribe(_ =>
                 {
@@ -68,12 +71,30 @@ namespace Nekoyume.UI
 
         public override void Show()
         {
+            _stage = GameObject.Find("Stage").GetComponent<Stage>();
+            if (ReferenceEquals(_stage, null))
+            {
+                throw new NotFoundComponentException<Stage>();
+            }
+
             _player = FindObjectOfType<Player>();
             if (!ReferenceEquals(_player, null))
             {
                 _player.gameObject.SetActive(false);
             }
-            
+
+            _itemCountAndPricePopup = Find<ItemCountAndPricePopup>();
+            if (ReferenceEquals(_itemCountAndPricePopup, null))
+            {
+                throw new NotFoundComponentException<ItemCountAndPricePopup>();
+            }
+
+            _loadingScreen = Find<GrayLoadingScreen>();
+            if (ReferenceEquals(_loadingScreen, null))
+            {
+                throw new NotFoundComponentException<LoadingScreen>();
+            }
+
             SetData(new Model.Shop(ActionManager.instance.Avatar.Items));
             base.Show();
         }
@@ -81,11 +102,12 @@ namespace Nekoyume.UI
         public override void Close()
         {
             Clear();
-            
+
             if (!ReferenceEquals(_player, null))
             {
                 _player.gameObject.SetActive(true);
             }
+
             Find<Status>()?.Show();
             Find<Menu>()?.Show();
             base.Close();
@@ -97,8 +119,13 @@ namespace Nekoyume.UI
             _data = data;
             _data.state.Value = Model.Shop.State.Buy;
             _data.state.Subscribe(OnState).AddTo(_disposablesForSetData);
+            _data.itemCountAndPricePopup.Value.item.Subscribe(OnPopup).AddTo(_disposablesForSetData);
+            _data.itemCountAndPricePopup.Value.onClickSubmit.Subscribe(OnClickSubmitItemCountAndPricePopup)
+                .AddTo(_disposablesForSetData);
+            _data.itemCountAndPricePopup.Value.onClickClose.Subscribe(OnClickCloseItemCountAndPricePopup)
+                .AddTo(_disposablesForSetData);
             _data.onClickClose.Subscribe(_ => Close()).AddTo(_disposablesForSetData);
-            
+
             inventoryAndItemInfo.SetData(_data.inventoryAndItemInfo.Value);
             shopItems.SetData(_data.shopItems.Value);
         }
@@ -124,6 +151,62 @@ namespace Nekoyume.UI
                     switchSellButton.image.sprite = Resources.Load<Sprite>("UI/Textures/button_blue_01");
                     break;
             }
+        }
+
+        private void OnPopup(CountableItem data)
+        {
+            if (ReferenceEquals(data, null))
+            {
+                _itemCountAndPricePopup.Close();
+                return;
+            }
+
+            _itemCountAndPricePopup.Pop(_data.itemCountAndPricePopup.Value);
+        }
+
+        private void OnClickSubmitItemCountAndPricePopup(Model.ItemCountAndPricePopup data)
+        {
+            IObservable<ActionBase.ActionEvaluation<SellRenew>> observable =
+                ActionManager.instance.SellRenew(
+                    data.item.Value.item.Value.Item.Data.id,
+                    data.count.Value,
+                    data.price.Value);
+
+            observable.ObserveOnMainThread().Subscribe(eval =>
+            {
+                var output = (Context) eval.OutputStates.GetState(eval.InputContext.Signer);
+                var result = output.GetGameActionResult<SellRenew.ResultModel>();
+                if (ReferenceEquals(result, null))
+                {
+                    throw new GameActionResultNullException();
+                }
+
+                if (result.errorCode != GameActionResult.ErrorCode.Success)
+                {
+                    Find<LoadingScreen>().Close();
+                    return;
+                }
+
+                if (result.id != data.item.Value.item.Value.Item.Data.id)
+                {
+                    throw new GameActionResultUnexpectedException();
+                }
+
+                _data.inventoryAndItemInfo.Value.inventory.Value.RemoveItem(result.id, 1);
+                _data.shopItems.Value.sellItems.Add(
+                    new ShopItem(
+                        new Game.Item.Inventory.InventoryItem(data.item.Value.item.Value),
+                        data.count.Value,
+                        data.price.Value));
+
+                Find<LoadingScreen>().Close();
+            }).AddTo(this);
+        }
+
+        private void OnClickCloseItemCountAndPricePopup(Model.ItemCountAndPricePopup data)
+        {
+            _data.itemCountAndPricePopup.Value.item.Value = null;
+            _itemCountAndPricePopup.Close();
         }
     }
 }

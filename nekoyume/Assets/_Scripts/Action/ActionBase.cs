@@ -8,6 +8,7 @@ namespace Nekoyume.Action
 {
     public abstract class ActionBase : IAction
     {
+        [Obsolete("GameActionResult.ErrorCode 로 이동시키고 있으니, 더이상 사용하지 마세요.")]
         public struct ErrorCode
         {
             public const int Success = 0;

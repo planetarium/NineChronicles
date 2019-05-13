@@ -1,7 +1,6 @@
 namespace Nekoyume.UI.Model
 {
-    public class SimpleItemCountPopup
+    public class SimpleItemCountPopup : ItemCountPopup<SimpleItemCountPopup>
     {
-        
     }
 }

@@ -38,7 +38,8 @@ namespace Nekoyume.UI
             Widget.Create<Gold>();
 
             // 팝업류.
-            Widget.Create<SelectItemCountPopup>();
+            Widget.Create<SimpleItemCountPopup>();
+            Widget.Create<ItemCountAndPricePopup>();
             Widget.Create<CombinationResultPopup>();
             Widget.Create<StageTitle>();
 

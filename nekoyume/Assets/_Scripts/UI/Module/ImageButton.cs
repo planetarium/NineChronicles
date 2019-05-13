@@ -77,6 +77,8 @@ namespace Nekoyume.UI.Module
                     backgroundImage.sprite = Resources.Load<Sprite>("UI/Textures/button_gray_plus");
                     break;
             }
+            
+            backgroundImage.SetNativeSize();
         }
     }
 }

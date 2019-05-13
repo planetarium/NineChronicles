@@ -51,6 +51,12 @@ namespace Nekoyume.Game.Item
             Shoes,
         }
 
+        public static ItemBase ItemFactory(int id)
+        {
+            // ToDo. 개발개발!!
+            return null;
+        }
+
         public static ItemBase ItemFactory(Data.Table.Item itemData)
         {
             var type = itemData.cls.ToEnumItemType();

@@ -63,7 +63,7 @@ namespace Nekoyume.UI
 
         public override void Show()
         {
-            foreach (var pair in ActionManager.instance.shop.Items)
+            foreach (var pair in ActionManager.instance.shop.items)
             {
                 foreach (ItemBase itemInfo in pair.Value)
                 {
