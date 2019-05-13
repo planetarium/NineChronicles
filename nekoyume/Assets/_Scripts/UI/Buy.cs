@@ -63,9 +63,9 @@ namespace Nekoyume.UI
 
         public override void Show()
         {
-            foreach (var pair in ActionManager.instance.shop.items)
+            foreach (var pair in ActionManager.instance.shop.Value.items)
             {
-                foreach (ItemBase itemInfo in pair.Value)
+                foreach (var itemInfo in pair.Value)
                 {
                     GameObject newItem = Instantiate(sellItemBase, grid);
                     Item item = newItem.GetComponent<Item>();

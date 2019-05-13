@@ -54,6 +54,7 @@ namespace Nekoyume.UI.Model
             inventoryAndItemInfo.Value.itemInfo.Value.buttonEnabledFunc.Value = ButtonEnabledFunc;
 
             itemCountPopup.Value = new SimpleItemCountPopup();
+            itemCountPopup.Value.titleText.Value = "재료 수량 선택";
 
             inventoryAndItemInfo.Value.itemInfo.Value.onClick.Subscribe(OnClickItemInfo);
             itemCountPopup.Value.onClickSubmit.Subscribe(OnClickSubmitItemCountPopup);

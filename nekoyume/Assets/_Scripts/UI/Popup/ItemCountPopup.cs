@@ -16,7 +16,8 @@ namespace Nekoyume.UI
         public Button minusButton;
         public Button plusButton;
         public Button cancelButton;
-        public Button okButton;
+        public Button submitButton;
+        public Text submitButtonText;
         public SimpleCountableItemView itemView;
         
         private T _data;
@@ -55,7 +56,7 @@ namespace Nekoyume.UI
                 })
                 .AddTo(_disposablesForAwake);
 
-            okButton.OnClickAsObservable()
+            submitButton.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
                     _data.onClickSubmit.OnNext(_data);
@@ -94,7 +95,9 @@ namespace Nekoyume.UI
             
             _disposablesForSetDate.DisposeAllAndClear();
             _data = data;
+            _data.titleText.Subscribe(value => titleText.text = value).AddTo(_disposablesForSetDate);
             _data.count.Subscribe(SetCount).AddTo(_disposablesForSetDate);
+            _data.submitText.Subscribe(value => submitButtonText.text = value).AddTo(_disposablesForSetDate);
             itemView.SetData(_data.item.Value);
             
             UpdateView();

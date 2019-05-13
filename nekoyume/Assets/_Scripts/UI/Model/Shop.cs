@@ -24,16 +24,17 @@ namespace Nekoyume.UI.Model
         public readonly Subject<Shop> onClickSwitchSell = new Subject<Shop>();
         public readonly Subject<Shop> onClickClose = new Subject<Shop>();
 
-        public Shop(List<Game.Item.Inventory.InventoryItem> items)
+        public Shop(List<Game.Item.Inventory.InventoryItem> items, Game.Shop shop)
         {
             inventoryAndItemInfo.Value = new InventoryAndItemInfo(items);
-            shopItems.Value = new ShopItems();
+            shopItems.Value = new ShopItems(shop);
             itemCountAndPricePopup.Value = new ItemCountAndPricePopup();
+            itemCountAndPricePopup.Value.titleText.Value = "판매 설정";
+            itemCountAndPricePopup.Value.submitText.Value = "판매";
 
             state.Subscribe(OnState);
             inventoryAndItemInfo.Value.itemInfo.Value.item.Subscribe(OnItemInfoItem);
             inventoryAndItemInfo.Value.itemInfo.Value.onClick.Subscribe(OnClickItemInfo);
-            shopItems.Value.onClickRefresh.Subscribe(OnClickShopItemsRefresh);
 
             onClickSwitchBuy.Subscribe(_ => state.Value = State.Buy);
             onClickSwitchSell.Subscribe(_ => state.Value = State.Sell);
@@ -45,8 +46,10 @@ namespace Nekoyume.UI.Model
             inventoryAndItemInfo.DisposeAll();
             shopItems.DisposeAll();
             itemCountAndPricePopup.DisposeAll();
+            
             onClickSwitchBuy.Dispose();
             onClickSwitchSell.Dispose();
+            onClickClose.Dispose();
         }
 
         private void OnState(State value)
@@ -70,8 +73,7 @@ namespace Nekoyume.UI.Model
         
         private static bool DimmedFuncForSell(InventoryItem inventoryItem)
         {
-            return inventoryItem.item.Value.Item.Data.cls == DimmedString ||
-                   inventoryItem.item.Value.Item.registeredToShop;
+            return inventoryItem.item.Value.Item.Data.cls == DimmedString;
         }
 
         private static bool ButtonEnabledFuncForBuy(InventoryItem inventoryItem)
@@ -96,17 +98,7 @@ namespace Nekoyume.UI.Model
             itemCountAndPricePopup.Value.count.Value = 1;
             itemCountAndPricePopup.Value.minCount.Value = 1;
             itemCountAndPricePopup.Value.maxCount.Value = itemInfo.item.Value.count.Value;
-            itemCountAndPricePopup.Value.price.Value = 0;
-        }
-
-        private void OnClickShopItemsRefresh(ShopItems value)
-        {
-            if (state.Value == State.Sell)
-            {
-                return;
-            }
-            
-            Debug.Log("OnClickShopItemsRefresh");
+            itemCountAndPricePopup.Value.price.Value = 1;
         }
     }
 }

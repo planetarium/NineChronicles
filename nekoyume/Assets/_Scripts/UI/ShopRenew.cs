@@ -11,6 +11,7 @@ using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 using InventoryAndItemInfo = Nekoyume.UI.Module.InventoryAndItemInfo;
+using ShopItem = Nekoyume.UI.Model.ShopItem;
 using ShopItems = Nekoyume.UI.Module.ShopItems;
 
 namespace Nekoyume.UI
@@ -95,7 +96,7 @@ namespace Nekoyume.UI
                 throw new NotFoundComponentException<LoadingScreen>();
             }
 
-            SetData(new Model.Shop(ActionManager.instance.Avatar.Items));
+            SetData(new Model.Shop(ActionManager.instance.Avatar.Items, ActionManager.instance.shop.Value));
             base.Show();
         }
 
@@ -167,7 +168,10 @@ namespace Nekoyume.UI
 
         private void OnClickSubmitItemCountAndPricePopup(Model.ItemCountAndPricePopup data)
         {
-            IObservable<ActionBase.ActionEvaluation<SellRenew>> observable =
+            AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
+            _loadingScreen.Show();
+            
+            var observable =
                 ActionManager.instance.SellRenew(
                     data.item.Value.item.Value.Item.Data.id,
                     data.count.Value,
@@ -175,8 +179,8 @@ namespace Nekoyume.UI
 
             observable.ObserveOnMainThread().Subscribe(eval =>
             {
-                var output = (Context) eval.OutputStates.GetState(eval.InputContext.Signer);
-                var result = output.GetGameActionResult<SellRenew.ResultModel>();
+                var context = (Context) eval.OutputStates.GetState(eval.InputContext.Signer);
+                var result = context.GetGameActionResult<SellRenew.ResultModel>();
                 if (ReferenceEquals(result, null))
                 {
                     throw new GameActionResultNullException();
@@ -184,7 +188,8 @@ namespace Nekoyume.UI
 
                 if (result.errorCode != GameActionResult.ErrorCode.Success)
                 {
-                    Find<LoadingScreen>().Close();
+                    _data.itemCountAndPricePopup.Value.item.Value = null;
+                    _loadingScreen.Close();
                     return;
                 }
 
@@ -193,14 +198,13 @@ namespace Nekoyume.UI
                     throw new GameActionResultUnexpectedException();
                 }
 
+                _data.itemCountAndPricePopup.Value.item.Value = null;
                 _data.inventoryAndItemInfo.Value.inventory.Value.RemoveItem(result.id, 1);
-                _data.shopItems.Value.sellItems.Add(
-                    new ShopItem(
-                        new Game.Item.Inventory.InventoryItem(data.item.Value.item.Value),
-                        data.count.Value,
-                        data.price.Value));
-
-                Find<LoadingScreen>().Close();
+                _data.shopItems.Value.sellItems.Add(new ShopItem(
+                    new Game.Item.Inventory.InventoryItem(result.id),
+                    result.count,
+                    result.price));
+                _loadingScreen.Close();
             }).AddTo(this);
         }
 

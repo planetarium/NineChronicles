@@ -63,11 +63,25 @@ namespace Nekoyume.UI
             }
             
             _data = data;
+
+            UpdateView();
         }
         
         private void Clear()
         {
             _data = null;
+
+            UpdateView();
+        }
+
+        private void UpdateView()
+        {
+            if (ReferenceEquals(_data, null))
+            {
+                return;
+            }
+
+            priceInputField.text = _data.price.Value.ToString("N0");
         }
     }
 }

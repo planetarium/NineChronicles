@@ -790,7 +790,8 @@ MonoBehaviour:
   minusButton: {fileID: 114837640360574166}
   plusButton: {fileID: 114332784386856094}
   cancelButton: {fileID: 114459440507080414}
-  okButton: {fileID: 114048535036119816}
+  submitButton: {fileID: 114048535036119816}
+  submitButtonText: {fileID: 114947721602337052}
   itemView: {fileID: 7542893747796969239}
 --- !u!1 &1829555925531014
 GameObject:
@@ -932,7 +933,7 @@ GameObject:
   - component: {fileID: 114081405384644942}
   - component: {fileID: 114048535036119816}
   m_Layer: 5
-  m_Name: OkButton
+  m_Name: SubmitButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

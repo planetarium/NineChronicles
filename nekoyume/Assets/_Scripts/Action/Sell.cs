@@ -33,7 +33,7 @@ namespace Nekoyume.Action
         {
             IAccountStateDelta states = actionCtx.PreviousStates;
             var ctx = (Context) states.GetState(actionCtx.Signer) ?? CreateNovice.CreateContext("dummy", default(Address));
-            var shop = ActionManager.instance.shop ?? new Shop();
+            var shop = ActionManager.instance.shop.Value ?? new Shop();
             var player = new Player(ctx.avatar);
             foreach (var item in Items)
             {
@@ -48,7 +48,6 @@ namespace Nekoyume.Action
                 }
                 owned.Count--;
                 var reservedItem = ItemBase.ItemFactory(owned.Item.Data);
-                reservedItem.registeredToShop = true;
                 player.inventory.Add(reservedItem);
                 ctx.avatar.Update(player);
                 shop.Set(actionCtx.Signer, reservedItem);

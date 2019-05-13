@@ -149,6 +149,7 @@ namespace Nekoyume.Action
         }
 
         // FIXME: This should be safely removed and we should depend on ActionBase.Render().
+        // ToDo. 매 3초 마다 동기화는 비효율적.. 켜고 끌 수 있어야 함.
         public IEnumerator CoShopUpdator()
         {
             while (true)

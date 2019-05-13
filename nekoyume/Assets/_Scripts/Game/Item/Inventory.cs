@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Nekoyume.Data;
 
 namespace Nekoyume.Game.Item
 {
@@ -14,7 +15,7 @@ namespace Nekoyume.Game.Item
 
             public InventoryItem(int id, int count = 1)
             {
-                Item = ItemBase.ItemFactory(id);
+                Item = Tables.instance.GetItem(id);
                 Count = count;
             }
             
@@ -43,7 +44,7 @@ namespace Nekoyume.Game.Item
             var i = items.FindIndex(
                 a => a.Item.Equals(item)
                      && !(item is Equipment)
-                     && !item.registeredToShop
+//                     && !item.registeredToShop
             );
             if (i < 0)
             {

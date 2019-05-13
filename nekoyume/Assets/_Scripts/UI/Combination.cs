@@ -291,7 +291,7 @@ namespace Nekoyume.UI
             _actionDisposable = null;
             
             var result = action.Result;
-            if (result.ErrorCode == ActionBase.ErrorCode.Success)
+            if (result.ErrorCode == GameActionResult.ErrorCode.Success)
             {
                 ItemEquipment itemData;
                 if (!Tables.instance.ItemEquipment.TryGetValue(result.Item.id, out itemData))

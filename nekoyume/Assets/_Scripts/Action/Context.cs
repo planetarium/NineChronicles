@@ -14,7 +14,7 @@ namespace Nekoyume.Action
         public DateTimeOffset updatedAt;
         public DateTimeOffset? clearedAt;
         public Address? AvatarAddress { get; private set; }
-        
+
         // To do. 각 액션의 변경점을 담을 수 있는 변수가 필요합니다.
         // 우선 SellRenew 액션에 한해서 이 방법을 적용해보고 있습니다.
         // 액션을 등록하고 해당 액션 타입의 결과를 쌓아 1회에 한해 꺼내갈 수 있는 변수입니다.
