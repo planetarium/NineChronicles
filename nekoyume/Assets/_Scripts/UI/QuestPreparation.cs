@@ -111,6 +111,10 @@ namespace Nekoyume.UI
             if (slot.item == null)
             {
                 equipSlotGlow.SetActive(false);
+                foreach (var item in _data.inventoryAndItemInfo.Value.inventory.Value.items)
+                {
+                    item.glowed.Value = _data.inventoryAndItemInfo.Value.inventory.Value.glowedFunc.Value(item, slot.type);
+                }
                 return;
             }
             slot.Unequip();
