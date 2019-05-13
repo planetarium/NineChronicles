@@ -35,17 +35,11 @@ namespace Nekoyume.Game
 
         public Avatar[] GetAvatars(DateTimeOffset? dt)
         {
-            var map = _map.OrderByDescending(c => c.avatar.WorldStage).ThenBy(c => c.clearedAt).ToList();
+            IEnumerable<Context> map =
+                _map.OrderByDescending(c => c.avatar.WorldStage).ThenBy(c => c.clearedAt);
             if (dt != null)
             {
-                foreach (var context in map)
-                {
-                    var diff = (TimeSpan) (dt - context.updatedAt);
-                    if (diff.Days > 1)
-                    {
-                        map.Remove(context);
-                    }
-                }
+                map = map.Where(context => ((TimeSpan) (dt - context.updatedAt)).Days <= 1);
             }
 
             return map.Select(c => c.avatar).ToArray();
