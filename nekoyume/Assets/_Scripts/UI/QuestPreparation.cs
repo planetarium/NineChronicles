@@ -51,6 +51,10 @@ namespace Nekoyume.UI
             
             SetData(new Model.QuestPreparation(ActionManager.instance.Avatar.Items));
             
+            // stop run immediately.
+            _player.gameObject.SetActive(false);
+            _player.gameObject.SetActive(true);
+            
             foreach (var equipment in _player.equipments)
             {
                 var type = equipment.Data.cls.ToEnumItemType();

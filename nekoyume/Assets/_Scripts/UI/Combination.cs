@@ -105,12 +105,11 @@ namespace Nekoyume.UI
             }
             _stage.LoadBackground("combination");
 
-            _player = FindObjectOfType<Player>();
+            _player = _stage.GetPlayer();
             if (ReferenceEquals(_player, null))
             {
                 throw new NotFoundComponentException<Player>();
             }
-
             _player.gameObject.SetActive(false);
 
             SetData(new Model.Combination(ActionManager.instance.Avatar.Items, stagedItems.Length));
@@ -122,8 +121,9 @@ namespace Nekoyume.UI
         {
             Clear();
 
-            _player.gameObject.SetActive(true);
+            _stage.GetPlayer(_stage.RoomPosition);
             _stage.LoadBackground("room");
+            _player.gameObject.SetActive(true);
 
             Find<Status>()?.Show();
             Find<Menu>()?.Show();
