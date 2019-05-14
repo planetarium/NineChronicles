@@ -26,7 +26,6 @@ namespace Nekoyume.UI
         public Text timeText;
         public GameObject slotBase;
         public Transform grid;
-        public GameObject submitPanel;
         public GameObject modal;
         public bool actionEnd;
         private List<InventorySlot> _slots;
@@ -114,11 +113,9 @@ namespace Nekoyume.UI
                 header.text = "전투 승리!";
                 title.text = "획득한 아이템";
                 grid.gameObject.SetActive(true);
+                _timer = Timer;
 
-                submitPanel.SetActive(!_repeat);
                 timeText.gameObject.SetActive(_repeat);
-                if (_repeat)
-                    _timer = Timer;
                 
                 AudioController.instance.PlayMusic(AudioController.MusicCode.Win, 0.3f);
                 _battleWinVFX = VFXController.instance.Create<BattleWinVFX>(ActionCamera.instance.transform, VfxBattleWinOffset);
