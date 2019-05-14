@@ -3,19 +3,11 @@ using System;
 namespace Nekoyume.Game.Item
 {
     [Serializable]
-    public class ShopItem : IDisposable
+    public class ShopItem
     {
-        public readonly ByteArrayReactiveProperty owner = new ByteArrayReactiveProperty();
-        public readonly ItemBaseReactiveProperty item = new ItemBaseReactiveProperty();
-        public readonly IntReactiveProperty count = new IntReactiveProperty();
-        public readonly DecimalReactiveProperty price = new DecimalReactiveProperty();
-
-        public virtual void Dispose()
-        {
-            owner.Dispose();
-            item.Dispose();
-            count.Dispose();
-            price.Dispose();
-        }
+        public string productId;
+        public ItemBase item;
+        public int count;
+        public decimal price;
     }
 }

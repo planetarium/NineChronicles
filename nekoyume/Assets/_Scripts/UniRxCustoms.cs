@@ -19,6 +19,18 @@ namespace Nekoyume
     }
     
     [Serializable]
+    public class StringReactiveProperty : ReactiveProperty<string>
+    {
+        public StringReactiveProperty()
+        {
+        }
+        
+        public StringReactiveProperty(string value) : base(value)
+        {
+        }
+    }
+    
+    [Serializable]
     public class ByteArrayReactiveProperty : ReactiveProperty<byte[]>
     {
     }

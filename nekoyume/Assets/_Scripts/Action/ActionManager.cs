@@ -357,22 +357,12 @@ namespace Nekoyume.Action
             AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ActionCombination);
         }
 
-        public void Sell(List<ItemBase> items, decimal price)
+        public IObservable<ActionBase.ActionEvaluation<Sell>> Sell(int itemID, int count, decimal price)
         {
-            var action = new Sell
-            {
-                Items = items,
-                Price = price,
-            };
-            ProcessAction(action);
-        }
-
-        public IObservable<ActionBase.ActionEvaluation<SellRenew>> SellRenew(int itemID, int count, decimal price)
-        {
-            var action = new SellRenew(itemID, count, price);
+            var action = new Sell {itemId = itemID, count = count, price = price};
             ProcessAction(action);
             
-            return ActionBase.EveryRender<SellRenew>().SkipWhile(
+            return ActionBase.EveryRender<Sell>().SkipWhile(
                 eval => !eval.Action.Id.Equals(action.Id)
             ).Take(1).Last();  // Last() is for completion
         }
