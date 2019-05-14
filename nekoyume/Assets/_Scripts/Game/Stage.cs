@@ -23,7 +23,7 @@ namespace Nekoyume.Game
         public GameObject background;
         public int id;
         private BattleLog _battleLog;
-        private const float AttackDelay = 0.3f;
+        private const float AttackDelay = 0.1f;
         // dummy for stage background moving.
         public GameObject dummy;
         public float loadingSpeed = 2.0f;

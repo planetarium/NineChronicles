@@ -207,8 +207,7 @@ namespace Nekoyume.Game.Character
             animator.Attack();
 
             yield return new WaitUntil(() => attackEnd);
-
-            yield return StartCoroutine(CoProcessAttack(target, attack));
+            ProcessAttack(target, attack);
         }
 
         protected virtual void PopUpDmg(Vector3 position, Vector3 force, string dmg, bool critical)
@@ -295,15 +294,16 @@ namespace Nekoyume.Game.Character
             foreach (var attack in attacks)
             {
                 var target = targets.First(t => t.id == attack.target.id);
-                yield return StartCoroutine(CoProcessAttack(target, attack));
+                ProcessAttack(target, attack);
             }
         }
 
-        private IEnumerator CoProcessAttack(CharacterBase target, Attack.AttackInfo attack)
+        private void ProcessAttack(CharacterBase target, Attack.AttackInfo attack)
         {
-            if (target.CanRun())
+            if (TargetInRange(target))
                 target.StopRun();
-            yield return StartCoroutine(target.CoProcessDamage(attack.damage, attack.critical));
+            StartCoroutine(target.CoProcessDamage(attack.damage, attack.critical));
         }
+
     }
 }
