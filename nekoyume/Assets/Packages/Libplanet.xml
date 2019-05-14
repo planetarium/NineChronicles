@@ -1129,6 +1129,19 @@
         <member name="P:Libplanet.Blockchain.BlockChain`1.Item(System.Int32)">
             <inheritdoc/>
         </member>
+        <member name="M:Libplanet.Blockchain.BlockChain`1.GetStates(System.Collections.Generic.IEnumerable{Libplanet.Address},System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}})">
+            <summary>
+            Gets the state of the given <paramref name="addresses"/> in the
+            <see cref="T:Libplanet.Blockchain.BlockChain`1"/> from <paramref name="offset"/>.
+            </summary>
+            <param name="addresses">The list of <see cref="T:Libplanet.Address"/>es to get
+            their states.</param>
+            <param name="offset">The <see cref="T:Libplanet.HashDigest`1"/> of the block to
+            start finding the state. It will be The tip of the
+            <see cref="T:Libplanet.Blockchain.BlockChain`1"/> if it is <c>null</c>.</param>
+            <returns>The <see cref="T:Libplanet.Action.AddressStateMap"/> of given
+            <paramref name="addresses"/>.</returns>
+        </member>
         <member name="M:Libplanet.Blockchain.BlockChain`1.Append(Libplanet.Blocks.Block{`0})">
             <summary>
             Adds a <paramref name="block"/> to the end of this chain.
@@ -2178,13 +2191,34 @@
             <returns>A hexadecimal representation of a <see cref="T:Libplanet.Nonce"/>.
             </returns>
         </member>
-        <member name="M:Libplanet.Store.BaseStore.GetAddressesMask(Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
+        <member name="M:Libplanet.Store.BaseStore.ListNamespaces">
             <inheritdoc />
         </member>
-        <member name="M:Libplanet.Store.BaseStore.PutBlock``1(Libplanet.Blocks.Block{``0},Libplanet.Address)">
+        <member name="M:Libplanet.Store.BaseStore.PutBlock``1(Libplanet.Blocks.Block{``0})">
+            <inheritdoc />
+        </member>
+        <member name="M:Libplanet.Store.BaseStore.LookupStateReference``1(System.String,Libplanet.Address,Libplanet.Blocks.Block{``0})">
+            <inheritdoc />
+        </member>
+        <member name="M:Libplanet.Store.BaseStore.StoreStateReference``1(System.String,System.Collections.Immutable.IImmutableSet{Libplanet.Address},Libplanet.Blocks.Block{``0})">
+            <inheritdoc />
+        </member>
+        <member name="M:Libplanet.Store.BaseStore.ForkStateReferences``1(System.String,System.String,Libplanet.Blocks.Block{``0},System.Collections.Immutable.IImmutableSet{Libplanet.Address})">
             <inheritdoc />
         </member>
         <member name="M:Libplanet.Store.FileStore.ListNamespaces">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.FileStore.PutBlock``1(Libplanet.Blocks.Block{``0})">
+            <inheritdoc />
+        </member>
+        <member name="M:Libplanet.Store.FileStore.LookupStateReference``1(System.String,Libplanet.Address,Libplanet.Blocks.Block{``0})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.FileStore.StoreStateReference``1(System.String,System.Collections.Immutable.IImmutableSet{Libplanet.Address},Libplanet.Blocks.Block{``0})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.FileStore.ForkStateReferences``1(System.String,System.String,Libplanet.Blocks.Block{``0},System.Collections.Immutable.IImmutableSet{Libplanet.Address})">
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Store.IStore.ListNamespaces">
@@ -2193,35 +2227,94 @@
             </summary>
             <returns>Existing namespaces.</returns>
         </member>
-        <member name="M:Libplanet.Store.IStore.GetAddressesMask(Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
+        <member name="M:Libplanet.Store.IStore.PutBlock``1(Libplanet.Blocks.Block{``0})">
             <summary>
-            Gets the bitmask of all addresses ever used until the block
-            of the given <paramref name="blockHash"/>.
-            </summary>
-            <param name="blockHash">The <see cref="P:Libplanet.Blocks.Block`1.Hash"/> of
-            the topmost <see cref="T:Libplanet.Blocks.Block`1"/> of the <see cref="T:Libplanet.Blocks.Block`1"/>
-            sequence that updated the <see cref="T:Libplanet.Address"/> set to which
-            the bit mask you want to obtain approximates.</param>
-            <returns>A bitmask in the <see cref="T:Libplanet.Address"/> type
-            (so this is probably not a valid address).  It can be
-            <c>null</c> if the given <paramref name="blockHash"/> refers to
-            a <see cref="T:Libplanet.Blocks.Block`1"/> that is not in the store.</returns>
-        </member>
-        <member name="M:Libplanet.Store.IStore.PutBlock``1(Libplanet.Blocks.Block{``0},Libplanet.Address)">
-            <summary>
-            Puts the given <paramref name="block"/> in to the store,
-            with a bit mask which approximates the <see cref="T:Libplanet.Address"/> set
-            updated by the <paramref name="block"/> and its all previous
-            <see cref="T:Libplanet.Blocks.Block`1"/>s.
+            Puts the given <paramref name="block"/> in to the store.
             </summary>
             <param name="block">A <see cref="T:Libplanet.Blocks.Block`1"/> to put into the store.
             </param>
-            <param name="addressesMask">A bit mask, in the <see cref="T:Libplanet.Address"/>
-            type (so this is probably not a valid address), which approximates
-            the <see cref="T:Libplanet.Address"/> set updated by the <paramref name="block"
-            /> and its all previous <see cref="T:Libplanet.Blocks.Block`1"/>s.</param>
             <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> class used with
             <paramref name="block"/>.</typeparam>
+        </member>
+        <member name="M:Libplanet.Store.IStore.LookupStateReference``1(System.String,Libplanet.Address,Libplanet.Blocks.Block{``0})">
+            <summary>
+            Lookup a state reference, which is a <see cref="P:Libplanet.Blocks.Block`1.Hash"/>
+            that has the state of the <paramref name="address"/>.
+            </summary>
+            <param name="namespace">The namespace to lookup a state reference.
+            </param>
+            <param name="address">The <see cref="T:Libplanet.Address"/> to find lookup.
+            </param>
+            <param name="lookupUntil">The upper bound (i.e., the latest block)
+            of the search range. <see cref="T:Libplanet.Blocks.Block`1"/>s after
+            <paramref name="lookupUntil"/> are ignored.</param>
+            <returns>A <see cref="P:Libplanet.Blocks.Block`1.Hash"/> which has the state of the
+            <paramref name="address"/>.</returns>
+            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> class used with
+            <paramref name="lookupUntil"/>.</typeparam>
+            <seealso cref="M:Libplanet.Store.IStore.StoreStateReference``1(System.String,System.Collections.Immutable.IImmutableSet{Libplanet.Address},Libplanet.Blocks.Block{``0})"/>
+        </member>
+        <member name="M:Libplanet.Store.IStore.StoreStateReference``1(System.String,System.Collections.Immutable.IImmutableSet{Libplanet.Address},Libplanet.Blocks.Block{``0})">
+            <summary>
+            Stores a state reference, which is a <see cref="P:Libplanet.Blocks.Block`1.Hash"/>
+            that has the state of the <see cref="T:Libplanet.Address"/> for each updated
+            <see cref="T:Libplanet.Address"/>es by the <see cref="T:Libplanet.Tx.Transaction`1"/>s in the
+            <paramref name="block"/>.</summary>
+            <param name="namespace">The namespace to store a state reference.
+            </param>
+            <param name="addresses">The <see cref="T:Libplanet.Address"/>es to store state
+            reference.</param>
+            <param name="block">The <see cref="T:Libplanet.Blocks.Block`1"/> which has the state
+            of the <see cref="T:Libplanet.Address"/>.</param>
+            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> class used with
+            <paramref name="block"/>.</typeparam>
+            <seealso cref="M:Libplanet.Store.IStore.LookupStateReference``1(System.String,Libplanet.Address,Libplanet.Blocks.Block{``0})"/>
+        </member>
+        <member name="M:Libplanet.Store.IStore.ForkStateReferences``1(System.String,System.String,Libplanet.Blocks.Block{``0},System.Collections.Immutable.IImmutableSet{Libplanet.Address})">
+            <summary>
+            Forks state references, which are <see cref="P:Libplanet.Blocks.Block`1.Hash"/>es that
+            have the state of the <see cref="T:Libplanet.Address"/>es, from
+            <paramref name="sourceNamespace"/> to
+            <paramref name="destinationNamespace"/>.
+            <para>This method copies state references from
+            <paramref name="sourceNamespace"/> to
+            <paramref name="destinationNamespace"/> and strips
+            <paramref name="addressesToStrip"/> of state references after
+            <paramref name="branchPoint"/>.</para>
+            </summary>
+            <param name="sourceNamespace">The namespace of state references to
+            fork.</param>
+            <param name="destinationNamespace">The namespace of destination
+            state references.</param>
+            <param name="branchPoint">The index of branch point to fork.
+            </param>
+            <param name="addressesToStrip">The set of <see cref="T:Libplanet.Address"/>es
+            to strip <see cref="P:Libplanet.Blocks.Block`1.Hash"/> after forking.</param>
+            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> class used with
+            <paramref name="branchPoint"/>.</typeparam>
+            <exception cref="T:Libplanet.Store.NamespaceNotFoundException">Thrown when the given
+            <paramref name="sourceNamespace"/> does not exist.</exception>
+            <seealso cref="M:Libplanet.Store.IStore.LookupStateReference``1(System.String,Libplanet.Address,Libplanet.Blocks.Block{``0})"/>
+            <seealso cref="M:Libplanet.Store.IStore.StoreStateReference``1(System.String,System.Collections.Immutable.IImmutableSet{Libplanet.Address},Libplanet.Blocks.Block{``0})"/>
+        </member>
+        <member name="T:Libplanet.Store.NamespaceNotFoundException">
+            <summary>
+            The exception that is thrown when the namespace of
+            <see cref="N:Libplanet.Store"/> does not exist.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Store.NamespaceNotFoundException.#ctor(System.String,System.String)">
+            <summary>
+            Initializes a new instance of the
+            <see cref="T:Libplanet.Store.NamespaceNotFoundException"/> class.
+            </summary>
+            <param name="namespace">The namespace not found.</param>
+            <param name="message">The message that describes the error.</param>
+        </member>
+        <member name="P:Libplanet.Store.NamespaceNotFoundException.Namespace">
+            <summary>
+            Gets the namespace not found.
+            </summary>
         </member>
         <member name="T:Libplanet.Tx.InvalidTxException">
             <summary>
