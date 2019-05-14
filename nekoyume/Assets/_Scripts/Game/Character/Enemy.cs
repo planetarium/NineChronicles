@@ -17,7 +17,7 @@ namespace Nekoyume.Game.Character
 
         private Player _player;
 
-        public override float Speed => -1.8f;
+        public override float Speed => -3.0f;
         
         protected override Vector3 _hudOffset => animator.GetHUDPosition();
 
