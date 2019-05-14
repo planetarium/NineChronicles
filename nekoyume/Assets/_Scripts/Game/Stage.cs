@@ -23,7 +23,7 @@ namespace Nekoyume.Game
         public GameObject background;
         public int id;
         private BattleLog _battleLog;
-        private const float AttackDelay = 0.3f;
+        private const float AttackDelay = 0.1f;
         // dummy for stage background moving.
         public GameObject dummy;
         public float loadingSpeed = 2.0f;
@@ -272,7 +272,6 @@ namespace Nekoyume.Game
             if (!attacker.TargetInRange(defender))
             {
                 attacker.StartRun();
-                defender.StartRun();
             }
 
             yield return new WaitUntil(() => attacker.TargetInRange(defender));
@@ -290,10 +289,6 @@ namespace Nekoyume.Game
             if (!attacker.TargetInRange(defender))
             {
                 attacker.StartRun();
-                foreach (var enemy in enemies)
-                {
-                    enemy.StartRun();
-                }
             }
 
             yield return new WaitUntil(() => attacker.TargetInRange(defender));
@@ -329,14 +324,20 @@ namespace Nekoyume.Game
         {
             var playerCharacter = GetPlayer();
             playerCharacter.StartRun();
-            yield return StartCoroutine(_spawner.CoSetData(id, monsters));
 
             if (isBoss)
             {
                 AudioController.instance.PlayMusic(AudioController.MusicCode.Boss1);
+                var title = Widget.Find<BossTitle>();
+                title.Show();
+
+                yield return new WaitForSeconds(2.0f);
+
+                title.Close();
             }
-            
-            yield break;
+
+            yield return StartCoroutine(_spawner.CoSetData(id, monsters));
+
         }
 
         public IEnumerator CoGetExp(long exp)
