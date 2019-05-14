@@ -31,7 +31,9 @@ namespace Nekoyume.UI
         private List<InventorySlot> _slots;
         private Stage _stage;
         private bool _repeat;
+        private bool _autoNext;
         private float _timer = 0;
+        private string _timeText;
 
         private BattleWinVFX _battleWinVFX;
         private Image _image;
@@ -62,6 +64,7 @@ namespace Nekoyume.UI
 
         private void Submit()
         {
+            _autoNext = false;
             var w = Find<StageLoadingScreen>();
             w.Show(this, _stage.zone);
             Find<Status>().Close();
@@ -106,17 +109,23 @@ namespace Nekoyume.UI
             _image.enabled = true;
             modal.SetActive(true);
             result = battleResult;
+            _autoNext = true;
 
             if (result == BattleLog.Result.Win)
             {
-                submitText.text = "다음 스테이지";
+                string submit = "다음 스테이지";
+                _timeText = "{0} 다음 스테이지로 이동합니다.";
+                if (_repeat)
+                {
+                    submit = "다시 전투";
+                    _timeText = "{0} 다시 전투를 시작합니다.";
+                }
+                submitText.text = submit;
                 header.text = "전투 승리!";
                 title.text = "획득한 아이템";
                 grid.gameObject.SetActive(true);
                 _timer = Timer;
 
-                timeText.gameObject.SetActive(_repeat);
-                
                 AudioController.instance.PlayMusic(AudioController.MusicCode.Win, 0.3f);
                 _battleWinVFX = VFXController.instance.Create<BattleWinVFX>(ActionCamera.instance.transform, VfxBattleWinOffset);
                 AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ActionBattleWin);
@@ -127,12 +136,13 @@ namespace Nekoyume.UI
                 title.text = "다시 도전 하시겠습니까?";
                 header.text = "전투 패배";
                 _repeat = false;
-                timeText.gameObject.SetActive(_repeat);
                 _stage.repeatStage = _repeat;
+                _autoNext = false;
 
                 AudioController.instance.PlayMusic(AudioController.MusicCode.Lose);
                 AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ActionBattleLose);
             }
+            timeText.gameObject.SetActive(_autoNext);
 
             base.Show();
         }
@@ -171,10 +181,10 @@ namespace Nekoyume.UI
 
         private void Update()
         {
-            if (_repeat)
+            if (_autoNext)
             {
                 _timer -= Time.deltaTime;
-                timeText.text = $"{_timer:0}초 후 다시 전투를 시작합니다.";
+                timeText.text = string.Format(_timeText, $"{_timer:0}초 후");
                 if (_timer <= 0)
                 {
                     _repeat = false;
