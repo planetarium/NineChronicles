@@ -41,6 +41,9 @@ namespace Nekoyume.Action
 
         [Option("no-miner", Required = false, HelpText = "Do not mine block.")]
         public bool NoMiner { get; set; }
+
+        [Option("peer", Required = false, HelpText = "Peers to add. (Usage: --peer peerA peerB ...)")]
+        public IEnumerable<string> Peers { get; set; }
     }
 
     public class ActionManager : MonoSingleton<ActionManager>
@@ -263,7 +266,9 @@ namespace Nekoyume.Action
             IceServer[] iceServers = null;
             string host = "127.0.0.1";
 #else
-            var peers = LoadPeers();
+            var peers = o.Peers.Any()
+                ? o.Peers.Select(LoadPeer)
+                : LoadConfigLines(PeersFileName).Select(LoadPeer);
             var iceServers = LoadIceServers();
             string host = o.Host;
 #endif
@@ -398,20 +403,16 @@ namespace Nekoyume.Action
             }
         }
 
-        private IEnumerable<Peer> LoadPeers()
+        private Peer LoadPeer(string peerInfo)
         {
-            foreach (string line in LoadConfigLines(PeersFileName))
-            {
-                string[] tokens = line.Split(',');
-                var pubKey = new PublicKey(ByteUtil.ParseHex(tokens[0]));
-                string host = tokens[1];
-                int port = int.Parse(tokens[2]);
-                int version = int.Parse(tokens[3]);
+            string[] tokens = peerInfo.Split(',');
+            var pubKey = new PublicKey(ByteUtil.ParseHex(tokens[0]));
+            string host = tokens[1];
+            int port = int.Parse(tokens[2]);
+            int version = int.Parse(tokens[3]);
 
-                yield return new Peer(pubKey, new DnsEndPoint(host, port), version);
-            }
+            return new Peer(pubKey, new DnsEndPoint(host, port), version);
         }
-
 
         private IEnumerable<string> LoadConfigLines(string fileName)
         {
