@@ -108,8 +108,9 @@ namespace Nekoyume.Game.Character
             StartCoroutine(Dying());
         }
 
-        protected IEnumerator Dying()
+        private IEnumerator Dying()
         {
+            StopRun();
             animator.Die();
             
             yield return new WaitForSeconds(1f);
