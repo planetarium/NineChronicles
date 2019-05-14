@@ -324,14 +324,20 @@ namespace Nekoyume.Game
         {
             var playerCharacter = GetPlayer();
             playerCharacter.StartRun();
-            yield return StartCoroutine(_spawner.CoSetData(id, monsters));
 
             if (isBoss)
             {
                 AudioController.instance.PlayMusic(AudioController.MusicCode.Boss1);
+                var title = Widget.Find<BossTitle>();
+                title.Show();
+
+                yield return new WaitForSeconds(2.0f);
+
+                title.Close();
             }
-            
-            yield break;
+
+            yield return StartCoroutine(_spawner.CoSetData(id, monsters));
+
         }
 
         public IEnumerator CoGetExp(long exp)
