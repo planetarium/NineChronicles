@@ -4,7 +4,6 @@ using UniRx;
 
 namespace Nekoyume.UI.Model
 {
-    [Serializable]
     public class CountableItem : Item
     {
         public readonly IntReactiveProperty count = new IntReactiveProperty(0);

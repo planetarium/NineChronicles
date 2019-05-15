@@ -73,7 +73,7 @@ namespace Nekoyume.UI
 
         #endregion
 
-        public void Pop(T data)
+        public virtual void Pop(T data)
         {
             if (ReferenceEquals(data, null))
             {

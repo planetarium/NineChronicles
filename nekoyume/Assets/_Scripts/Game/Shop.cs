@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Libplanet;
 using Nekoyume.Game.Item;
+using UnityEditor;
 
 namespace Nekoyume.Game
 {
@@ -18,16 +19,13 @@ namespace Nekoyume.Game
                 items.Add(addr, new List<ShopItem>());
             }
 
-            var productId = "";
-            item.productId = productId;
+            item.productId = new GUID().ToString();
             items[addr].Add(item);
-
-            return productId;
+            return item.productId;
         }
 
         public KeyValuePair<byte[], ShopItem> Unregister(string productId)
         {
-            var result = new KeyValuePair<byte[], ShopItem>();
             foreach (var pair in items)
             {
                 foreach (var shopItem in pair.Value)

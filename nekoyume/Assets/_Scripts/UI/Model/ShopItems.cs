@@ -4,7 +4,6 @@ using UniRx;
 
 namespace Nekoyume.UI.Model
 {
-    [Serializable]
     public class ShopItems : IDisposable
     {
         public readonly ShopItemReactiveCollection buyItems = new ShopItemReactiveCollection();
@@ -14,7 +13,8 @@ namespace Nekoyume.UI.Model
 
         public ShopItems(Game.Shop shop)
         {
-//            ResetBuyItems(shop);
+            ResetBuyItems(shop);
+            
         }
         
         public void Dispose()
@@ -38,7 +38,7 @@ namespace Nekoyume.UI.Model
                     continue;
                 }
 
-                var item = keyValuePair.Value.ElementAt(1);
+                var item = keyValuePair.Value.ElementAt(0);
                 
 //                buyItems.Add(new ShopItem(item));
 

@@ -42,7 +42,7 @@ namespace Nekoyume.UI
         
         #endregion
 
-        public void Pop(Model.ItemCountAndPricePopup data)
+        public override void Pop(Model.ItemCountAndPricePopup data)
         {
             base.Pop(data);
             

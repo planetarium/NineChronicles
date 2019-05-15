@@ -3,11 +3,15 @@ using UniRx;
 
 namespace Nekoyume.UI.Model
 {
-    [Serializable]
     public class ShopItem : CountableItem // Nekoyume.Game.Item.ShopItem
     {
         // public readonly ByteArrayReactiveProperty owner = new ByteArrayReactiveProperty();
         public readonly DecimalReactiveProperty price = new DecimalReactiveProperty();
+
+//        public ShopItem(Nekoyume.Game.Item.ShopItem item)
+//        {
+//            
+//        }
 
         public ShopItem(Game.Item.Inventory.InventoryItem item) : base(item, item.Count)
         {
