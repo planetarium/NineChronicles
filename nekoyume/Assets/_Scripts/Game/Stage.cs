@@ -18,7 +18,7 @@ using UnityEngine;
 
 namespace Nekoyume.Game
 {
-    public class Stage : MonoBehaviour, IStage
+    public class Stage : MonoSingleton<Stage>, IStage
     {
         public GameObject background;
         public int id;
@@ -38,8 +38,10 @@ namespace Nekoyume.Game
         private Camera _camera;
         private ObjectPool _objectPool;
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
+
             _camera = Camera.main;
             if (ReferenceEquals(_camera, null))
             {
