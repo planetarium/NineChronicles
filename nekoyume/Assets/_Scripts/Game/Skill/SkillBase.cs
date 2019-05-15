@@ -1,19 +1,14 @@
 using System;
 using System.Collections.Generic;
+using Nekoyume.Data.Table;
 using Nekoyume.Model;
 
 namespace Nekoyume.Game.Skill
 {
-    public enum SkillType
-    {
-        Attack,
-        Buff,
-        Debuff,
-    }
-
     public interface ISkill
     {
         SkillType GetSkillType();
+        SkillEffect.SkillType GetSkillType();
         EventBase Use();
     }
 
@@ -32,9 +27,12 @@ namespace Nekoyume.Game.Skill
     {
         protected readonly CharacterBase Caster;
         protected readonly IEnumerable<CharacterBase> Target;
-        protected readonly int Effect;
+        protected readonly SkillEffect Effect;
 
-        public abstract SkillType GetSkillType();
+        public SkillEffect.SkillType GetSkillType()
+        {
+            return Effect.type;
+        }
 
         public abstract EventBase Use();
         protected SkillBase(CharacterBase caster, IEnumerable<CharacterBase> target, int effect)
