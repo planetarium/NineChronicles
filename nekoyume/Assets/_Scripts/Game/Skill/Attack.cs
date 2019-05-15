@@ -19,7 +19,7 @@ namespace Nekoyume.Game.Skill
             foreach (var target in targets.ToList())
             {
                 var critical = Caster.IsCritical();
-                var dmg = Caster.ATKElement.CalculateDmg(Caster.atk, target.DEFElement);
+                var dmg = Caster.atkElement.CalculateDmg(Caster.atk, target.defElement);
                 dmg = Math.Max(dmg - target.def, 1);
                 dmg = Convert.ToInt32(dmg * Effect.multiplier);
                 if (critical)

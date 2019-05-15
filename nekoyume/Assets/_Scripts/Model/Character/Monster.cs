@@ -1,6 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using Nekoyume.Data;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Skill;
 
@@ -23,8 +22,8 @@ namespace Nekoyume.Model
             Simulator = player.Simulator;
             this.data = data;
             level = monsterLevel;
-            ATKElement = Game.Elemental.Create(data.elemental);
-            DEFElement = Game.Elemental.Create(data.elemental);
+            atkElement = Game.Elemental.Create(data.elemental);
+            defElement = Game.Elemental.Create(data.elemental);
             TurnSpeed = 1.0f;
             attackRange = data.attackRange;
             SetSkill();
@@ -41,6 +40,11 @@ namespace Nekoyume.Model
         {
             base.SetSkill();
             //TODO 몬스터별 스킬 구현
+            foreach (var effect in Tables.instance.SkillEffect.Values)
+            {
+                var skill = SkillFactory.Get(this, effect);
+                Skills.Add(skill);
+            }
         }
     }
 }

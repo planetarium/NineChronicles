@@ -4,7 +4,7 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using BTAI;
 using Nekoyume.Action;
-using Nekoyume.Game;
+using Nekoyume.Data.Table;
 using Nekoyume.Game.Skill;
 
 namespace Nekoyume.Model
@@ -27,8 +27,8 @@ namespace Nekoyume.Model
         public int level;
         public abstract float TurnSpeed { get; set; }
 
-        public Elemental ATKElement;
-        public Elemental DEFElement;
+        public Game.Elemental atkElement;
+        public Game.Elemental defElement;
         protected List<SkillBase> Skills;
 
         private SkillBase _selectedSkill;
@@ -117,13 +117,19 @@ namespace Nekoyume.Model
         protected virtual void SetSkill()
         {
             Skills = new List<SkillBase>();
-            var attack = new Game.Skill.Attack(this, targets, atk);
+
+            var attack = SkillFactory.Get(this, new SkillEffect());
             Skills.Add(attack);
         }
 
         private void SelectSkill()
         {
             _selectedSkill = Skills[Simulator.Random.Next(Skills.Count)];
+        }
+
+        public void Heal(int heal)
+        {
+            currentHP += heal;
         }
     }
 
