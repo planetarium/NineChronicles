@@ -1,36 +1,25 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using Nekoyume.Data.Table;
 using Nekoyume.Model;
 
 namespace Nekoyume.Game.Skill
 {
     [Serializable]
-    public class AreaAttack: AttackBase, IMultipleTargetSkill
+    public class AreaAttack: AttackBase
     {
-        public AreaAttack(CharacterBase caster, IEnumerable<CharacterBase> target, int effect) : base(caster, target, effect)
+        public AreaAttack(CharacterBase caster, SkillEffect effect) : base(caster, effect)
         {
         }
 
         public override EventBase Use()
         {
-            var events = new List<Model.Attack.AttackInfo>();
-            foreach (var target in GetTarget())
-            {
-                var attack = ProcessDamage(target);
-                events.Add(attack);
-            }
 
-            return new Model.AreaAttack
+            return new Model.Skill
             {
                 character = CharacterBase.Copy(Caster),
-                infos = events,
+                skillInfos = ProcessDamage(GetTarget()),
+                type = GetSkillType(),
             };
-        }
-
-        public List<CharacterBase> GetTarget()
-        {
-            return Target.ToList();
         }
     }
 }

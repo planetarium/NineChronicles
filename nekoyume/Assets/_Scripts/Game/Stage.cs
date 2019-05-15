@@ -5,7 +5,7 @@ using System.Linq;
 using DG.Tweening;
 using Nekoyume.Action;
 using Nekoyume.Data;
-using Nekoyume.Game.Character;
+using Nekoyume.Data.Table;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Entrance;
 using Nekoyume.Game.Factory;
@@ -23,7 +23,7 @@ namespace Nekoyume.Game
         public GameObject background;
         public int id;
         private BattleLog _battleLog;
-        private const float AttackDelay = 0.1f;
+        private const float SkillDelay = 0.1f;
         // dummy for stage background moving.
         public GameObject dummy;
         public float loadingSpeed = 2.0f;
@@ -254,48 +254,20 @@ namespace Nekoyume.Game
             yield return null;
         }
 
-        public IEnumerator CoAttack(Model.CharacterBase character, Attack.AttackInfo info)
+        public IEnumerator CoSkill(CharacterBase caster, SkillEffect.SkillType type,
+            IEnumerable<Model.Skill.SkillInfo> skillInfos)
         {
-            Character.CharacterBase attacker;
-            Character.CharacterBase defender;
-            var player = GetPlayer();
-            var enemies = GetComponentsInChildren<Enemy>();
-            if (character is Model.Player)
+            var character = GetCharacter(caster);
+            var infos = skillInfos.ToList();
+            var targetCharacter = GetCharacter(infos.First().Target);
+
+            if (!character.TargetInRange(targetCharacter))
             {
-                attacker = player;
-                defender = enemies.First(e => e.id == info.target.id);
+                character.StartRun();
             }
-            else
-            {
-                attacker = enemies.First(e => e.id == character.id);
-                defender = player;
-            }
-
-            if (!attacker.TargetInRange(defender))
-            {
-                attacker.StartRun();
-            }
-
-            yield return new WaitUntil(() => attacker.TargetInRange(defender));
-            yield return StartCoroutine(attacker.CoAttack(defender, info));
-            yield return new WaitForSeconds(AttackDelay);
-        }
-
-        public IEnumerator CoAreaAttack(Model.CharacterBase character, List<Attack.AttackInfo> attacks)
-        {
-            var player = GetPlayer();
-            var enemies = GetComponentsInChildren<Enemy>();
-            Character.CharacterBase attacker = player;
-            Character.CharacterBase defender = enemies.First(e => e.id == attacks.First().target.id);
-
-            if (!attacker.TargetInRange(defender))
-            {
-                attacker.StartRun();
-            }
-
-            yield return new WaitUntil(() => attacker.TargetInRange(defender));
-            yield return StartCoroutine(attacker.CoAreaAttack(enemies, attacks));
-            yield return new WaitForSeconds(AttackDelay);
+            yield return new WaitUntil(() => character.TargetInRange(targetCharacter));
+            yield return StartCoroutine(character.CoSkill(type, infos));
+            yield return new WaitForSeconds(SkillDelay);
         }
 
         public IEnumerator CoDropBox(List<ItemBase> items)
