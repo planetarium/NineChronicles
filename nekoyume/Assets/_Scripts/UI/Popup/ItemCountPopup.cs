@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
-    public class SelectItemCountPopup : Widget
+    public class ItemCountPopup<T> : Widget where T : Model.ItemCountPopup<T>
     {
         private const string CountStringFormat = "총 {0}개";
 
@@ -16,10 +16,11 @@ namespace Nekoyume.UI
         public Button minusButton;
         public Button plusButton;
         public Button cancelButton;
-        public Button okButton;
+        public Button submitButton;
+        public Text submitButtonText;
         public SimpleCountableItemView itemView;
         
-        private Model.SelectItemCountPopup _data;
+        private T _data;
         private readonly List<IDisposable> _disposablesForAwake = new List<IDisposable>();
         private readonly List<IDisposable> _disposablesForSetDate = new List<IDisposable>();
 
@@ -55,7 +56,7 @@ namespace Nekoyume.UI
                 })
                 .AddTo(_disposablesForAwake);
 
-            okButton.OnClickAsObservable()
+            submitButton.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
                     _data.onClickSubmit.OnNext(_data);
@@ -64,7 +65,7 @@ namespace Nekoyume.UI
                 .AddTo(_disposablesForAwake);
         }
 
-        private void OnDestroy()
+        protected virtual void OnDestroy()
         {
             _disposablesForAwake.DisposeAllAndClear();
             Clear();
@@ -72,7 +73,7 @@ namespace Nekoyume.UI
 
         #endregion
 
-        public void Pop(Model.SelectItemCountPopup data)
+        public void Pop(T data)
         {
             if (ReferenceEquals(data, null))
             {
@@ -84,7 +85,7 @@ namespace Nekoyume.UI
             base.Show();
         }
 
-        private void SetData(Model.SelectItemCountPopup data)
+        private void SetData(T data)
         {
             if (ReferenceEquals(data, null))
             {
@@ -94,7 +95,9 @@ namespace Nekoyume.UI
             
             _disposablesForSetDate.DisposeAllAndClear();
             _data = data;
+            _data.titleText.Subscribe(value => titleText.text = value).AddTo(_disposablesForSetDate);
             _data.count.Subscribe(SetCount).AddTo(_disposablesForSetDate);
+            _data.submitText.Subscribe(value => submitButtonText.text = value).AddTo(_disposablesForSetDate);
             itemView.SetData(_data.item.Value);
             
             UpdateView();

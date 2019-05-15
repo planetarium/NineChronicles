@@ -4,9 +4,10 @@ using UniRx;
 
 namespace Nekoyume.UI.Model
 {
+    [Serializable]
     public class CountableItem : Item
     {
-        public readonly ReactiveProperty<int> count = new ReactiveProperty<int>(0);
+        public readonly IntReactiveProperty count = new IntReactiveProperty(0);
         
         public CountableItem(Game.Item.Inventory.InventoryItem item, int count) : base(item)
         {

@@ -17,6 +17,9 @@ public class InvalidActionException : Exception
     }
 }
 
+public class GameActionResultNullException : Exception {}
+public class GameActionResultUnexpectedException : Exception {}
+
 public class FailedToInstantiateGameObjectException : Exception
 {
     private const string MessageDefault = "Failed to instantiate a `GameObject`.";

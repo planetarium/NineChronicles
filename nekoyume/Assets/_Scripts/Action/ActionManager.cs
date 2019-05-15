@@ -56,7 +56,7 @@ namespace Nekoyume.Action
                 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x1
             }
         );
-        public Shop shop;
+        public readonly ReactiveProperty<Shop> shop = new ReactiveProperty<Shop>();
 
         private IEnumerator _miner;
         private IEnumerator _txProcessor;
@@ -346,7 +346,7 @@ namespace Nekoyume.Action
 
         private void UpdateShop(object sender, Shop newShop)
         {
-            shop = newShop;
+            shop.Value = newShop;
         }
         
         public void Combination(List<UI.Model.CountEditableItem> materials)
@@ -357,14 +357,14 @@ namespace Nekoyume.Action
             AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ActionCombination);
         }
 
-        public void Sell(List<ItemBase> items, decimal price)
+        public IObservable<ActionBase.ActionEvaluation<Sell>> Sell(int itemID, int count, decimal price)
         {
-            var action = new Sell
-            {
-                Items = items,
-                Price = price,
-            };
+            var action = new Sell {itemId = itemID, count = count, price = price};
             ProcessAction(action);
+            
+            return ActionBase.EveryRender<Sell>().SkipWhile(
+                eval => !eval.Action.Id.Equals(action.Id)
+            ).Take(1).Last();  // Last() is for completion
         }
 
         protected override void OnDestroy() 

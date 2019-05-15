@@ -34,7 +34,7 @@ namespace Nekoyume.UI
         private Stage _stage;
         private Player _player;
 
-        private SelectItemCountPopup _selectItemCountPopup;
+        private SimpleItemCountPopup _simpleItemCountPopup;
         private CombinationResultPopup _resultPopup;
         private GrayLoadingScreen _loadingScreen;
         private int _count;
@@ -78,10 +78,10 @@ namespace Nekoyume.UI
 
         public override void Show()
         {
-            _selectItemCountPopup = Find<SelectItemCountPopup>();
-            if (ReferenceEquals(_selectItemCountPopup, null))
+            _simpleItemCountPopup = Find<SimpleItemCountPopup>();
+            if (ReferenceEquals(_simpleItemCountPopup, null))
             {
-                throw new NotFoundComponentException<SelectItemCountPopup>();
+                throw new NotFoundComponentException<SimpleItemCountPopup>();
             }
 
             _resultPopup = Find<CombinationResultPopup>();
@@ -204,17 +204,17 @@ namespace Nekoyume.UI
         {
             if (ReferenceEquals(data, null))
             {
-                _selectItemCountPopup.Close();
+                _simpleItemCountPopup.Close();
                 return;
             }
 
-            _selectItemCountPopup.Pop(_data.itemCountPopup.Value);
+            _simpleItemCountPopup.Pop(_data.itemCountPopup.Value);
         }
 
-        private void OnClickClosePopup(Model.SelectItemCountPopup data)
+        private void OnClickClosePopup(Model.SimpleItemCountPopup data)
         {
             _data.itemCountPopup.Value.item.Value = null;
-            _selectItemCountPopup.Close();
+            _simpleItemCountPopup.Close();
         }
 
         private void OnAddStagedItems(CollectionAddEvent<CountEditableItem> e)
@@ -291,7 +291,7 @@ namespace Nekoyume.UI
             _actionDisposable = null;
             
             var result = action.Result;
-            if (result.ErrorCode == ActionBase.ErrorCode.Success)
+            if (result.ErrorCode == GameActionResult.ErrorCode.Success)
             {
                 ItemEquipment itemData;
                 if (!Tables.instance.ItemEquipment.TryGetValue(result.Item.id, out itemData))
@@ -327,12 +327,11 @@ namespace Nekoyume.UI
             if (ReferenceEquals(data, null))
             {
                 _resultPopup.Close();
+                return;
             }
-            else
-            {
-                _loadingScreen.Close();
-                _resultPopup.Pop(_data.resultPopup.Value);
-            }
+            
+            _loadingScreen.Close();
+            _resultPopup.Pop(data);
         }
     }
 }

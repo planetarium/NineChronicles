@@ -56,5 +56,6 @@ namespace Nekoyume.Action
             }    
         }
         protected abstract IImmutableDictionary<string, object> PlainValueInternal { get; }
+        public const string MarkChanged = "";
     }
 }

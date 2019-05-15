@@ -27,8 +27,8 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<InventoryAndItemInfo> inventoryAndItemInfo
             = new ReactiveProperty<InventoryAndItemInfo>();
 
-        public readonly ReactiveProperty<SelectItemCountPopup> itemCountPopup =
-            new ReactiveProperty<SelectItemCountPopup>();
+        public readonly ReactiveProperty<SimpleItemCountPopup> itemCountPopup =
+            new ReactiveProperty<SimpleItemCountPopup>();
 
         public readonly ReactiveCollection<CountEditableItem> stagedItems =
             new ReactiveCollection<CountEditableItem>();
@@ -53,10 +53,11 @@ namespace Nekoyume.UI.Model
             inventoryAndItemInfo.Value.itemInfo.Value.buttonText.Value = "재료 선택";
             inventoryAndItemInfo.Value.itemInfo.Value.buttonEnabledFunc.Value = ButtonEnabledFunc;
 
-            itemCountPopup.Value = new SelectItemCountPopup();
+            itemCountPopup.Value = new SimpleItemCountPopup();
+            itemCountPopup.Value.titleText.Value = "재료 수량 선택";
 
             inventoryAndItemInfo.Value.itemInfo.Value.onClick.Subscribe(OnClickItemInfo);
-            itemCountPopup.Value.onClickSubmit.Subscribe(OnSelectItemCountPopupOnClickSubmit);
+            itemCountPopup.Value.onClickSubmit.Subscribe(OnClickSubmitItemCountPopup);
             stagedItems.ObserveAdd().Subscribe(OnStagedItemsAdd);
             stagedItems.ObserveRemove().Subscribe(OnStagedItemsRemove);
             resultPopup.Subscribe(OnResultPopup);
@@ -112,7 +113,7 @@ namespace Nekoyume.UI.Model
             itemCountPopup.Value.maxCount.Value = data.item.Value.count.Value;
         }
 
-        private void OnSelectItemCountPopupOnClickSubmit(SelectItemCountPopup data)
+        private void OnClickSubmitItemCountPopup(SimpleItemCountPopup data)
         {
             if (ReferenceEquals(data, null) ||
                 ReferenceEquals(data.item.Value, null))

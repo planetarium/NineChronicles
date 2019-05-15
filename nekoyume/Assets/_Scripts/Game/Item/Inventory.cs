@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Nekoyume.Data;
 
 namespace Nekoyume.Game.Item
 {
@@ -12,6 +13,12 @@ namespace Nekoyume.Game.Item
             public ItemBase Item;
             public int Count = 0;
 
+            public InventoryItem(int id, int count = 1)
+            {
+                Item = Tables.instance.GetItem(id);
+                Count = count;
+            }
+            
             public InventoryItem(ItemBase item, int count = 1)
             {
                 Item = ItemBase.ItemFactory(item.Data);
@@ -32,22 +39,23 @@ namespace Nekoyume.Game.Item
             items = new List<InventoryItem> {Capacity = 40};
         }
 
-        public bool Add(ItemBase item)
+        public InventoryItem Add(ItemBase item)
         {
             var i = items.FindIndex(
                 a => a.Item.Equals(item)
                      && !(item is Equipment)
-                     && !item.registeredToShop
             );
             if (i < 0)
             {
-                items.Add(new InventoryItem(item));
+                var inventoryItem = new InventoryItem(item);
+                items.Add(inventoryItem);
+                return inventoryItem;
             }
             else
             {
                 items[i].Count += 1;
+                return items[i];
             }
-            return true;
         }
 
         public void Remove(ItemBase item)

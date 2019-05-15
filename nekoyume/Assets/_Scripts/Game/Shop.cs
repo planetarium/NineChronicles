@@ -8,22 +8,37 @@ namespace Nekoyume.Game
     [Serializable]
     public class Shop
     {
-        public Shop()
+        public readonly Dictionary<byte[], List<ShopItem>> items = new Dictionary<byte[], List<ShopItem>>();
+        
+        public string Register(Address key, ShopItem item)
         {
-            Items = new Dictionary<byte[], List<ItemBase>>();
+            var addr = key.ToByteArray();
+            if (!items.ContainsKey(addr))
+            {
+                items.Add(addr, new List<ShopItem>());
+            }
+
+            var productId = "";
+            item.productId = productId;
+            items[addr].Add(item);
+
+            return productId;
         }
 
-        public readonly Dictionary<byte[], List<ItemBase>> Items;
-
-        public void Set(Address address, ItemBase item)
+        public KeyValuePair<byte[], ShopItem> Unregister(string productId)
         {
-            List<ItemBase> sales;
-            byte[] addr = address.ToByteArray();
-            if (!Items.TryGetValue(addr, out sales))
+            var result = new KeyValuePair<byte[], ShopItem>();
+            foreach (var pair in items)
             {
-                Items[addr] = new List<ItemBase>();
+                foreach (var shopItem in pair.Value)
+                {
+                    if (shopItem.productId != productId) continue;
+                    
+                    return new KeyValuePair<byte[], ShopItem>(pair.Key, shopItem);
+                }
             }
-            Items[addr].Add(item);
+
+            throw new KeyNotFoundException("productId");
         }
     }
 }

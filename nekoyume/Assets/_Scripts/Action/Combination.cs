@@ -100,7 +100,7 @@ namespace Nekoyume.Action
                 }
                 catch (InvalidOperationException)
                 {
-                    Result = new ResultModel() {ErrorCode = ErrorCode.Fail};
+                    Result = new ResultModel() {ErrorCode = GameActionResult.ErrorCode.Fail};
                     EndOfExecuteSubject.OnNext(this);
 
                     return states.SetState(actionCtx.Signer, ctx);
@@ -149,7 +149,7 @@ namespace Nekoyume.Action
             if (ReferenceEquals(resultItem, null) ||
                 resultCount == 0)
             {
-                Result = new ResultModel() {ErrorCode = ErrorCode.Fail};
+                Result = new ResultModel() {ErrorCode = GameActionResult.ErrorCode.Fail};
                 EndOfExecuteSubject.OnNext(this);
 
                 return states.SetState(actionCtx.Signer, ctx);
@@ -174,7 +174,7 @@ namespace Nekoyume.Action
                 }
                 else
                 {
-                    Result = new ResultModel() {ErrorCode = ErrorCode.KeyNotFoundInTable};
+                    Result = new ResultModel() {ErrorCode = GameActionResult.ErrorCode.KeyNotFoundInTable};
                     EndOfExecuteSubject.OnNext(this);
                     
                     return states.SetState(actionCtx.Signer, ctx);
@@ -186,7 +186,7 @@ namespace Nekoyume.Action
 
             Result = new ResultModel()
             {
-                ErrorCode = ErrorCode.Success,
+                ErrorCode = GameActionResult.ErrorCode.Success,
                 Item = new ItemModel(resultItem.Id, resultCount)
             };
             EndOfExecuteSubject.OnNext(this);

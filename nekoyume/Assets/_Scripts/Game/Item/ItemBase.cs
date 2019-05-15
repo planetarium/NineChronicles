@@ -28,8 +28,7 @@ namespace Nekoyume.Game.Item
             return (Data != null ? Data.GetHashCode() : 0);
         }
 
-        public Data.Table.Item Data { get; private set; }
-        public bool registeredToShop = false;
+        public Data.Table.Item Data { get; }
 
         public ItemBase(Data.Table.Item data)
         {

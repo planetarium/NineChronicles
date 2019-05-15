@@ -26,7 +26,7 @@ namespace Nekoyume.UI
             Widget.Create<Menu>();
             Widget.Create<Status>();
             Widget.Create<Blind>();
-            Widget.Create<ShopRenew>();
+            Widget.Create<Shop>();
             Widget.Create<QuestPreparation>();
             Widget.Create<Combination>();
             Widget.Create<RankingBoard>();
@@ -38,7 +38,8 @@ namespace Nekoyume.UI
             Widget.Create<Gold>();
 
             // 팝업류.
-            Widget.Create<SelectItemCountPopup>();
+            Widget.Create<SimpleItemCountPopup>();
+            Widget.Create<ItemCountAndPricePopup>();
             Widget.Create<CombinationResultPopup>();
             Widget.Create<StageTitle>();
             Widget.Create<BossTitle>();

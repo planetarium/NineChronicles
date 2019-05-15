@@ -55,7 +55,7 @@ namespace Nekoyume.UI
             Find<Status>()?.Close();
             Close();
             
-            Find<ShopRenew>().Show();
+            Find<Shop>()?.Show();
             Find<Gold>()?.Show();
             AudioController.PlayClick();
             AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ClickMainShop);
