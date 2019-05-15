@@ -15,6 +15,7 @@ using Libplanet.Net;
 using Nekoyume.Data;
 using Nekoyume.Game;
 using Nekoyume.Game.Item;
+using Nekoyume.Helper;
 using Nekoyume.Model;
 using NetMQ;
 using UniRx;
@@ -26,24 +27,6 @@ namespace Nekoyume.Action
     internal class SaveData
     {
         public Model.Avatar Avatar;
-    }
-
-    public class CommandLineOptions
-    {
-        [Option("private-key", Required = false, HelpText = "The private key to use.")]
-        public string PrivateKey { get; set; }
-
-        [Option("host", Required = false, HelpText = "The host name to use.")]
-        public string Host { get; set; }
-
-        [Option("port", Required = false, HelpText = "The source port to use.")]
-        public int? Port { get; set; }
-
-        [Option("no-miner", Required = false, HelpText = "Do not mine block.")]
-        public bool NoMiner { get; set; }
-
-        [Option("peer", Required = false, HelpText = "Peers to add. (Usage: --peer peerA peerB ...)")]
-        public IEnumerable<string> Peers { get; set; }
     }
 
     public class ActionManager : MonoSingleton<ActionManager>
@@ -212,31 +195,10 @@ namespace Nekoyume.Action
         public void InitAgent()
         {
 #if UNITY_EDITOR
-            InitAgent(new CommandLineOptions());
+            var o = new CommandLineOptions();
 #else
-            string[] args = Environment.GetCommandLineArgs();
-
-            var parserResult = Parser.Default.ParseArguments<CommandLineOptions>(args);
-
-            if (parserResult.Tag == ParserResultType.Parsed)
-            {
-                parserResult.WithParsed(InitAgent);
-            }
-            else
-            {
-                parserResult.WithNotParsed(
-                    errors =>
-                        Debug.Log(HelpText.AutoBuild(parserResult))
-                );
-
-                Application.Quit(1);
-            }
+            var o = CommnadLineParser.GetCommandLineOptions() ?? new CommandLineOptions();
 #endif
-            Shop = GetState(shopAddress) as Shop ?? new Shop();
-        }
-
-        public void InitAgent(CommandLineOptions o)
-        {
             PrivateKey privateKey = null;
             var key = string.Format(PrivateKeyFormat, "agent");
             var privateKeyHex = o.PrivateKey ?? PlayerPrefs.GetString(key, "");
@@ -312,6 +274,8 @@ namespace Nekoyume.Action
             {
                 StartNullableCoroutine(_miner);
             };
+
+            Shop = GetState(shopAddress) as Shop ?? new Shop();
         }
 
         public void StartSystemCoroutines()
