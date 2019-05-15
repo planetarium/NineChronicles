@@ -32,7 +32,7 @@ namespace Nekoyume.Game.Character
             animator.OnEvent.Subscribe(OnAnimatorEvent);
             animator.TimeScale = AnimatorTimeScale;
             
-            _targetTag = Tag.Player;
+            targetTag = Tag.Player;
         }
 
         private void OnDestroy()

@@ -61,7 +61,7 @@ namespace Nekoyume.Game.Character
 
             Inventory = new Item.Inventory();
 
-            _targetTag = Tag.Enemy;
+            targetTag = Tag.Enemy;
             Event.OnUpdateStatus.AddListener(UpdateHpBar);
         }
 

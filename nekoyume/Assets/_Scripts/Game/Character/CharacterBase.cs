@@ -38,7 +38,7 @@ namespace Nekoyume.Game.Character
         public bool Silenced => gameObject.GetComponent<ISilence>() != null;
         public bool Stunned => gameObject.GetComponent<IStun>() != null;
         protected virtual float Range { get; set; }
-        protected string _targetTag = "";
+        public string targetTag = "";
         public bool attackEnd { get; private set; }
         public bool hitEnd { get; private set; }
         public bool dieEnd { get; private set; }
@@ -286,7 +286,7 @@ namespace Nekoyume.Game.Character
             var calc = info.Effect - target.HP;
             if (calc <= 0)
             {
-                return;
+                calc = 0;
             }
             target.HP += calc;
 

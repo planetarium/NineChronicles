@@ -268,6 +268,15 @@ namespace Nekoyume.Game
             yield return new WaitUntil(() => character.TargetInRange(targetCharacter));
             yield return StartCoroutine(character.CoSkill(type, infos));
             yield return new WaitForSeconds(SkillDelay);
+
+            var enemy = GetComponentsInChildren<Character.CharacterBase>()
+                .Where(c => c.gameObject.CompareTag(character.targetTag))
+                .OrderBy(c => c.transform.position.x).First();
+            if (!character.TargetInRange(enemy))
+            {
+                character.StartRun();
+            }
+
         }
 
         public IEnumerator CoDropBox(List<ItemBase> items)
@@ -355,7 +364,7 @@ namespace Nekoyume.Game
             return player;
         }
 
-        public Character.CharacterBase GetCharacter(Model.CharacterBase caster) =>
+        public Character.CharacterBase GetCharacter(CharacterBase caster) =>
             GetComponentsInChildren<Character.CharacterBase>().FirstOrDefault(c => c.Id == caster.id);
     }
 }
