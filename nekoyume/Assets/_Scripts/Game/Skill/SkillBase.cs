@@ -33,19 +33,27 @@ namespace Nekoyume.Game.Skill
         protected IEnumerable<CharacterBase> GetTarget()
         {
             var targets = Caster.targets;
+            IEnumerable<CharacterBase> target;
             switch (Effect.target)
             {
                 case SkillEffect.Target.Enemy:
-                    return new[] {targets.First()};
+                    target = new[] {targets.First()};
+                    break;
                 case SkillEffect.Target.Enemies:
-                    return targets;
+                    target = Caster.targets;
+                    break;
                 case SkillEffect.Target.Self:
-                    return new[] {Caster};
+                    target = new[] {Caster};
+                    break;
                 case SkillEffect.Target.Ally:
+                    target = new[] {Caster};
+                    break;
+                default:
+                    target = new[] {targets.First()};
                     break;
             }
 
-            return new[] {targets.First()};
+            return target;
         }
     }
 }

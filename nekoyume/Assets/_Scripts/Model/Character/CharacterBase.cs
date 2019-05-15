@@ -6,6 +6,7 @@ using BTAI;
 using Nekoyume.Action;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Skill;
+using Unity.Mathematics;
 
 namespace Nekoyume.Model
 {
@@ -129,7 +130,8 @@ namespace Nekoyume.Model
 
         public void Heal(int heal)
         {
-            currentHP += heal;
+            var current = currentHP;
+            currentHP = Math.Max(heal + current, hp);
         }
     }
 

@@ -325,6 +325,8 @@ namespace Nekoyume.Game.Character
 
             foreach (var info in infos)
             {
+                //TODO 스킬별 서브클래스를 만들어서 처리?
+                // https://github.com/planetarium/nekoyume-unity/pull/300#discussion_r284206197
                 var target = Stage.instance.GetCharacter(info.Target);
                 switch (type)
                 {
@@ -337,7 +339,8 @@ namespace Nekoyume.Game.Character
                     case SkillEffect.SkillType.Debuff:
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException(nameof(type), type, null);
+                        ProcessAttack(target, info);
+                        break;
                 }
             }
 
