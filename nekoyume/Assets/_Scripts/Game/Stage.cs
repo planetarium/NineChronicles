@@ -382,5 +382,8 @@ namespace Nekoyume.Game
             player.StartRun();
             return player;
         }
+
+        public Character.CharacterBase GetCharacter(Model.CharacterBase caster) =>
+            GetComponentsInChildren<Character.CharacterBase>().FirstOrDefault(c => c.Id == caster.id);
     }
 }

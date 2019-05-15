@@ -10,8 +10,9 @@ namespace Nekoyume.Game.Character
     public class Enemy : CharacterBase
     {
         private static readonly Vector3 DamageTextForce = new Vector3(0.1f, 0.5f);
-        
+
         public Guid id;
+        public override Guid Id => id;
         
         public int DataId = 0;
 

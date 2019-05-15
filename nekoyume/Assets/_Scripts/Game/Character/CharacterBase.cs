@@ -45,6 +45,7 @@ namespace Nekoyume.Game.Character
         public abstract float Speed { get; }
 
         public ICharacterAnimator animator { get; protected set; }
+        public abstract Guid Id { get; }
 
         protected virtual void Awake()
         {

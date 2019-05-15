@@ -47,6 +47,8 @@ namespace Nekoyume.Game.Character
 
         protected override Vector3 _hudOffset => animator.GetHUDPosition();
 
+        public override Guid Id => model.id;
+
         #region Mono
 
         protected override void Awake()
