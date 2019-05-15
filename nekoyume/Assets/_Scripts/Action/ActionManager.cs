@@ -33,7 +33,7 @@ namespace Nekoyume.Action
         [Option("private-key", Required = false, HelpText = "The private key to use.")]
         public string PrivateKey { get; set; }
 
-        [Option("host", Required = false, HelpText = "The host IP address to use.")]
+        [Option("host", Required = false, HelpText = "The host name to use.")]
         public string Host { get; set; }
 
         [Option("port", Required = false, HelpText = "The source port to use.")]
