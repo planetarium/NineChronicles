@@ -1,3 +1,5 @@
+using CommandLine;
+using CommandLine.Text;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -24,6 +26,24 @@ namespace Nekoyume.Action
     internal class SaveData
     {
         public Model.Avatar Avatar;
+    }
+
+    public class CommandLineOptions
+    {
+        [Option("private-key", Required = false, HelpText = "The private key to use.")]
+        public string PrivateKey { get; set; }
+
+        [Option("host", Required = false, HelpText = "The host name to use.")]
+        public string Host { get; set; }
+
+        [Option("port", Required = false, HelpText = "The source port to use.")]
+        public int? Port { get; set; }
+
+        [Option("no-miner", Required = false, HelpText = "Do not mine block.")]
+        public bool NoMiner { get; set; }
+
+        [Option("peer", Required = false, HelpText = "Peers to add. (Usage: --peer peerA peerB ...)")]
+        public IEnumerable<string> Peers { get; set; }
     }
 
     public class ActionManager : MonoSingleton<ActionManager>
@@ -192,10 +212,30 @@ namespace Nekoyume.Action
 
         public void InitAgent()
         {
+            string[] args = Environment.GetCommandLineArgs();
+
+            var parserResult = Parser.Default.ParseArguments<CommandLineOptions>(args);
+
+            if (parserResult.Tag == ParserResultType.Parsed)
+            {
+                parserResult.WithParsed(InitAgent);
+            }
+            else
+            {
+                parserResult.WithNotParsed(
+                    errors =>
+                        Debug.Log(HelpText.AutoBuild(parserResult))
+                );
+
+                Application.Quit(1);
+            }
+        }
+
+        public void InitAgent(CommandLineOptions o)
+        {
             PrivateKey privateKey = null;
             var key = string.Format(PrivateKeyFormat, "agent");
-            var privateKeyHex = GetCommandLineOption("private-key")
-                                ?? PlayerPrefs.GetString(key, "");
+            var privateKeyHex = o.PrivateKey ?? PlayerPrefs.GetString(key, "");
 
             if (string.IsNullOrEmpty(privateKeyHex))
             {
@@ -226,14 +266,13 @@ namespace Nekoyume.Action
             IceServer[] iceServers = null;
             string host = "127.0.0.1";
 #else
-            var peers = LoadPeers();
+            var peers = o.Peers.Any()
+                ? o.Peers.Select(LoadPeer)
+                : LoadConfigLines(PeersFileName).Select(LoadPeer);
             var iceServers = LoadIceServers();
-            string host = GetCommandLineOption("host");
+            string host = o.Host;
 #endif
-            int portStr;
-            int? port = int.TryParse(GetCommandLineOption("port"), out portStr) 
-                ? (int?)portStr 
-                : null;
+            int? port = o.Port;
 
             agent = new Agent(
                 agentPrivateKey: privateKey, 
@@ -248,7 +287,7 @@ namespace Nekoyume.Action
             _swarmRunner = agent.CoSwarmRunner();
             _actionRetryer = agent.CoActionRetryer();
 
-            if (!HasCommandLineSwitch("no-miner"))
+            if (!o.NoMiner)
             {
                 _miner = agent.CoMiner();   
             }
@@ -317,33 +356,6 @@ namespace Nekoyume.Action
             Debug.Log($"Avatar Address: 0x{agent.AvatarAddress.ToHex()}");
         }
 
-        private string GetCommandLineOption(string name)
-        {
-            string[] args = Environment.GetCommandLineArgs();
-            for (var i = 0; i < args.Length; i++)
-            {
-                if (args[i] == $"--{name}") 
-                {
-                    return args[i+1];
-                }
-            }
-            
-            return null;
-        }
-
-        private bool HasCommandLineSwitch(string name)
-        {
-            foreach (string arg in Environment.GetCommandLineArgs())
-            {
-                if (arg == $"--{name}") 
-                {
-                    return true;
-                }
-            }
-            
-            return false;
-        }
-
         private void UpdateShop(object sender, Shop newShop)
         {
             shop.Value = newShop;
@@ -391,20 +403,16 @@ namespace Nekoyume.Action
             }
         }
 
-        private IEnumerable<Peer> LoadPeers()
+        private Peer LoadPeer(string peerInfo)
         {
-            foreach (string line in LoadConfigLines(PeersFileName))
-            {
-                string[] tokens = line.Split(',');
-                var pubKey = new PublicKey(ByteUtil.ParseHex(tokens[0]));
-                string host = tokens[1];
-                int port = int.Parse(tokens[2]);
-                int version = int.Parse(tokens[3]);
+            string[] tokens = peerInfo.Split(',');
+            var pubKey = new PublicKey(ByteUtil.ParseHex(tokens[0]));
+            string host = tokens[1];
+            int port = int.Parse(tokens[2]);
+            int version = int.Parse(tokens[3]);
 
-                yield return new Peer(pubKey, new DnsEndPoint(host, port), version);
-            }
+            return new Peer(pubKey, new DnsEndPoint(host, port), version);
         }
-
 
         private IEnumerable<string> LoadConfigLines(string fileName)
         {
