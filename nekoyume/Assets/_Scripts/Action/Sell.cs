@@ -49,7 +49,7 @@ namespace Nekoyume.Action
                 return states.SetState(actionCtx.Signer, MarkChanged);
             }
 
-            var shop = ActionManager.instance.shop.Value ?? new Shop();
+            var shop = (Shop) states.GetState(ActionManager.shopAddress);
 
             Inventory.InventoryItem target = null;
             foreach (var item in ctx.avatar.Items)

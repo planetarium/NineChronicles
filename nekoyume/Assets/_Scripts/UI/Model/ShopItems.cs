@@ -13,8 +13,13 @@ namespace Nekoyume.UI.Model
 
         public ShopItems(Game.Shop shop)
         {
-            ResetBuyItems(shop);
+            if (ReferenceEquals(shop, null))
+            {
+                throw new ArgumentNullException();
+            }
             
+            ResetBuyItems(shop);
+//            ResetSellItems(shop);
         }
         
         public void Dispose()

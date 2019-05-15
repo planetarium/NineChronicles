@@ -76,7 +76,6 @@ namespace Nekoyume.Action
                 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x1
             }
         );
-        public readonly ReactiveProperty<Shop> shop = new ReactiveProperty<Shop>();
 
         private IEnumerator _miner;
         private IEnumerator _txProcessor;
@@ -348,17 +347,9 @@ namespace Nekoyume.Action
             var fileName = string.Format(AvatarFileFormat, index);
             _saveFilePath = Path.Combine(Application.persistentDataPath, fileName);
             Avatar = LoadStatus(_saveFilePath);
-            agent.UpdateShop += UpdateShop;
-
-            _shopUpdator = agent.CoShopUpdator();
-
+            
             Debug.Log($"Agent Address: 0x{agent.AgentAddress.ToHex()}");
             Debug.Log($"Avatar Address: 0x{agent.AvatarAddress.ToHex()}");
-        }
-
-        private void UpdateShop(object sender, Shop newShop)
-        {
-            shop.Value = newShop;
         }
         
         public void Combination(List<UI.Model.CountEditableItem> materials)

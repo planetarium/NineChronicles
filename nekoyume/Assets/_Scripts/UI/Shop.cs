@@ -96,7 +96,7 @@ namespace Nekoyume.UI
                 throw new NotFoundComponentException<LoadingScreen>();
             }
 
-            SetData(new Model.Shop(ActionManager.instance.Avatar.Items, ActionManager.instance.shop.Value));
+            SetData(new Model.Shop(ActionManager.instance.Avatar.Items, ActionManager.instance.GetState(ActionManager.shopAddress) as Game.Shop));
             base.Show();
         }
 
