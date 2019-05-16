@@ -130,6 +130,7 @@ namespace Nekoyume.UI
             _data.onClickClose.Subscribe(_ => Close()).AddTo(_disposablesForSetData);
 
             inventoryAndItemInfo.SetData(_data.inventoryAndItemInfo.Value);
+            shopItems.SetState(_data.state.Value);
             shopItems.SetData(_data.shopItems.Value);
         }
 
@@ -154,6 +155,8 @@ namespace Nekoyume.UI
                     switchSellButton.image.sprite = Resources.Load<Sprite>("UI/Textures/button_blue_01");
                     break;
             }
+            
+            shopItems.SetState(state);
         }
 
         private void OnPopup(CountableItem data)
@@ -200,11 +203,13 @@ namespace Nekoyume.UI
                 }
 
                 _data.itemCountAndPricePopup.Value.item.Value = null;
-                _data.inventoryAndItemInfo.Value.inventory.Value.RemoveItem(result.itemId, 1);
+                _data.inventoryAndItemInfo.Value.inventory.Value.RemoveItem(result.itemId, result.count);
                 _data.shopItems.Value.sellItems.Add(new ShopItem(
                     Tables.instance.CreateItemBase(result.itemId),
                     result.count,
-                    result.price));
+                    ActionManager.instance.agentAddress.ToByteArray(),
+                    result.price,
+                    result.productId));
                 _loadingScreen.Close();
             }).AddTo(this);
         }

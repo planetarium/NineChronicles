@@ -15,10 +15,10 @@ namespace Nekoyume.Action
         [Serializable]
         public class ResultModel : GameActionResult
         {
-            public string productId;
             public int itemId;
             public int count;
             public decimal price;
+            public Guid productId;
         }
 
         public int itemId;
@@ -49,7 +49,7 @@ namespace Nekoyume.Action
                 return states.SetState(actionCtx.Signer, MarkChanged);
             }
 
-            var shop = (Shop) states.GetState(ActionManager.shopAddress);
+            var shop = (Shop) states.GetState(ActionManager.shopAddress) ?? new Shop();
 
             Inventory.InventoryItem target = null;
             foreach (var item in ctx.avatar.Items)

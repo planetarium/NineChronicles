@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Nekoyume.Game.Controller;
+using Nekoyume.UI.Model;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,9 +10,10 @@ namespace Nekoyume.UI.Module
 {
     public class ShopItems : MonoBehaviour
     {
-        public SimpleCountableItemView[] items;
+        public List<SimpleCountableItemView> items;
         public Button refreshButton;
 
+        private Model.Shop.State _state;
         private Model.ShopItems _data;
         
         private readonly List<IDisposable> _disposablesForAwake = new List<IDisposable>();
@@ -36,7 +38,13 @@ namespace Nekoyume.UI.Module
         }
 
         #endregion
-
+        
+        public void SetState(Model.Shop.State state)
+        {
+            _state = state;
+            UpdateView();
+        }
+        
         public void SetData(Model.ShopItems data)
         {
             if (ReferenceEquals(data, null))
@@ -52,11 +60,6 @@ namespace Nekoyume.UI.Module
 
         public void Clear()
         {
-            foreach (var item in items)
-            { 
-                item.Clear();
-            }
-
             _data = null;
             
             UpdateView();
@@ -66,7 +69,46 @@ namespace Nekoyume.UI.Module
         {
             if (ReferenceEquals(_data, null))
             {
+                foreach (var item in items)
+                {
+                    item.Clear();
+                }
+                
                 return;
+            }
+            
+            switch (_state)
+            {
+                case Model.Shop.State.Buy:
+                    UpdateViewWithItems(_data.buyItems);
+                    refreshButton.gameObject.SetActive(false);
+                    break;
+                case Model.Shop.State.Sell:
+                    UpdateViewWithItems(_data.sellItems);
+                    refreshButton.gameObject.SetActive(true);
+                    break;
+            }
+        }
+
+        private void UpdateViewWithItems(IEnumerable<ShopItem> data)
+        {
+            using (var uiItems = items.GetEnumerator())
+            using (var dataItems = data.GetEnumerator())
+            {
+                while (uiItems.MoveNext())
+                {
+                    if (!dataItems.MoveNext())
+                    {
+                        continue;
+                    }
+                    
+                    if (ReferenceEquals(uiItems.Current, null))
+                    {
+                        continue;
+                    }
+                        
+                    uiItems.Current.SetData(dataItems.Current);
+                }
             }
         }
     }

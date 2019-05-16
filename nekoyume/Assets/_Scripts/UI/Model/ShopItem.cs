@@ -6,17 +6,21 @@ namespace Nekoyume.UI.Model
 {
     public class ShopItem : CountableItem
     {
-        public readonly ByteArrayReactiveProperty owner = new ByteArrayReactiveProperty();
-        public readonly DecimalReactiveProperty price = new DecimalReactiveProperty();
+        public readonly ReactiveProperty<byte[]> owner = new ReactiveProperty<byte[]>();
+        public readonly ReactiveProperty<decimal> price = new ReactiveProperty<decimal>();
         
-        public ShopItem(ItemBase item, int count) : base(item, count)
+        public Guid ProductId { get; }
+
+        public ShopItem(Game.Item.ShopItem item) : this(item.item, item.count, item.owner, item.price, item.productId)
         {
-            price.Value = 0M;
         }
         
-        public ShopItem(ItemBase item, int count, decimal price) : base(item, count)
+        public ShopItem(ItemBase item, int count, byte[] owner, decimal price, Guid productId) : base(item, count)
         {
+            this.owner.Value = owner;
             this.price.Value = price;
+            
+            ProductId = productId;
         }
 
         public override void Dispose()

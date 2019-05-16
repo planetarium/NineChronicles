@@ -11,7 +11,7 @@ namespace Nekoyume.Game
     {
         public readonly Dictionary<byte[], List<ShopItem>> items = new Dictionary<byte[], List<ShopItem>>();
         
-        public string Register(Address key, ShopItem item)
+        public Guid Register(Address key, ShopItem item)
         {
             var addr = key.ToByteArray();
             if (!items.ContainsKey(addr))
@@ -19,12 +19,12 @@ namespace Nekoyume.Game
                 items.Add(addr, new List<ShopItem>());
             }
 
-            item.productId = new GUID().ToString();
+            item.productId = Guid.NewGuid();
             items[addr].Add(item);
             return item.productId;
         }
 
-        public KeyValuePair<byte[], ShopItem> Unregister(string productId)
+        public KeyValuePair<byte[], ShopItem> Unregister(Guid productId)
         {
             foreach (var pair in items)
             {

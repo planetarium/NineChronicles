@@ -20,6 +20,11 @@ namespace Nekoyume.UI.Model
                 throw new ArgumentNullException();
             }
             
+            if (shop.items.Count == 0)
+            {
+                return;
+            }
+            
             ResetBuyItems(shop);
             ResetSellItems(shop);
         }
@@ -35,26 +40,31 @@ namespace Nekoyume.UI.Model
         public void ResetBuyItems(Game.Shop shop)
         {
             var index = UnityEngine.Random.Range(0, shop.items.Count);
-            var loop = math.min(shop.items.Count, 16);
+            var total = 16;
 
-            for (var i = 0; i < loop; i++)
+            while (true)
             {
                 var keyValuePair = shop.items.ElementAt(index);
-                if (keyValuePair.Value.Count == 0)
+                var count = keyValuePair.Value.Count;
+                if (count == 0)
                 {
-                    i--;
                     continue;
                 }
 
-                var item = keyValuePair.Value.ElementAt(0);
-                
-                // ToDo. 아이템 기반 수정 후 적용.
-                // buyItems.Add(new ShopItem(item));
+                foreach (var shopItem in keyValuePair.Value)
+                {
+                    buyItems.Add(new ShopItem(shopItem));
+                    total--;
+                    if (total == 0)
+                    {
+                        return;
+                    }
+                }
 
                 index++;
                 if (index == shop.items.Count)
                 {
-                    index = 0;
+                    break;
                 }
             }
         }
@@ -70,8 +80,7 @@ namespace Nekoyume.UI.Model
             var items = shop.items[key];
             foreach (var item in items)
             {
-                // ToDo. 아이템 기반 수정 후 적용.
-                // sellItems.Add(item);
+                sellItems.Add(new ShopItem(item));
             }
         }
     }

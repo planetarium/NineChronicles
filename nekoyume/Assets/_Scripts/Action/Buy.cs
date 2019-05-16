@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Globalization;
 using Libplanet.Action;
 using Nekoyume.Game;
 using Nekoyume.Game.Item;
@@ -17,7 +16,7 @@ namespace Nekoyume.Action
             public ShopItem shopItem;
         }
 
-        public string productId;
+        public Guid productId;
 
         protected override IImmutableDictionary<string, object> PlainValueInternal => new Dictionary<string, object>
         {
@@ -26,7 +25,7 @@ namespace Nekoyume.Action
 
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, object> plainValue)
         {
-            productId = plainValue["productId"].ToString();
+            productId = new Guid((string) plainValue["productId"]);
         }
 
         protected override IAccountStateDelta ExecuteInternal(IActionContext actionCtx)
