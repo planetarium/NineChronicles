@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using Nekoyume.Game.Character;
 using Spine.Unity;
 using Spine.Unity.Editor;
 using UnityEditor;
@@ -27,6 +29,7 @@ namespace Planetarium.Nekoyume.Unity.Editor.Extension
 
             var assetPath = AssetDatabase.GetAssetPath(Selection.activeObject);
             var prefabPath = assetPath.Replace(Path.GetFileName(assetPath), "");
+            var animationAssetsPath = Path.Combine(prefabPath, "ReferenceAssets");
             var split = assetPath.Split('/');
             var prefabName = split[split.Length > 1 ? split.Length - 2 : 0];
             var skeletonAnimation = SpineEditorUtilities.EditorInstantiation.InstantiateSkeletonAnimation(dataAsset);
@@ -42,6 +45,32 @@ namespace Planetarium.Nekoyume.Unity.Editor.Extension
             meshRenderer.shadowCastingMode = ShadowCastingMode.Off;
             meshRenderer.receiveShadows = false;
             meshRenderer.sortingLayerName = "Character";
+
+            var animatorControllers = AssetDatabase.FindAssets("CharacterAnimator");
+            if (animatorControllers.Length == 0)
+            {
+                return;
+            }
+            
+            var animator = gameObject.AddComponent<Animator>();
+            animator.runtimeAnimatorController = AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>(animatorControllers[0]);
+
+            var controller = gameObject.AddComponent<SkeletonAnimationController>();
+            foreach (var animationName in SkeletonAnimationController.AnimationNames)
+            {
+                var asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(Path.Combine(animationAssetsPath, $"{animationName.ToLower()}.asset"));
+                if (ReferenceEquals(asset, null))
+                {
+                    switch (animationName)
+                    {
+                        case "Appear":
+                        case "Disappear":
+                            asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(Path.Combine(animationAssetsPath, "idle.asset"));
+                            break;
+                    }
+                }
+                controller.statesAndAnimations.Add(new SkeletonAnimationController.StateNameToAnimationReference {stateName = animationName, animation = asset});
+            }
 
             // 아래의 프리펩을 addressable 로 설정하고, Character, Player, Monster label을 에디터에서 적용하는 방법을 아직 찾지 못함.
             var prefab = PrefabUtility.SaveAsPrefabAsset(gameObject, Path.Combine(prefabPath, $"{prefabName}.prefab"));
