@@ -211,6 +211,9 @@ namespace Nekoyume.Action
 
         public void InitAgent()
         {
+#if UNITY_EDITOR
+            InitAgent(new CommandLineOptions());
+#else
             string[] args = Environment.GetCommandLineArgs();
 
             var parserResult = Parser.Default.ParseArguments<CommandLineOptions>(args);
@@ -228,6 +231,7 @@ namespace Nekoyume.Action
 
                 Application.Quit(1);
             }
+#endif
         }
 
         public void InitAgent(CommandLineOptions o)
