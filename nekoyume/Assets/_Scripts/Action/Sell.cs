@@ -15,10 +15,10 @@ namespace Nekoyume.Action
         [Serializable]
         public class ResultModel : GameActionResult
         {
-            public string productId;
             public int itemId;
             public int count;
             public decimal price;
+            public string productId;
         }
 
         public int itemId;

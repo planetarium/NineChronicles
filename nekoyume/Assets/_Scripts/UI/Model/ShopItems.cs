@@ -48,8 +48,7 @@ namespace Nekoyume.UI.Model
 
                 var item = keyValuePair.Value.ElementAt(0);
                 
-                // ToDo. 아이템 기반 수정 후 적용.
-                // buyItems.Add(new ShopItem(item));
+                buyItems.Add(new ShopItem(item));
 
                 index++;
                 if (index == shop.items.Count)
@@ -70,8 +69,7 @@ namespace Nekoyume.UI.Model
             var items = shop.items[key];
             foreach (var item in items)
             {
-                // ToDo. 아이템 기반 수정 후 적용.
-                // sellItems.Add(item);
+                sellItems.Add(new ShopItem(item));
             }
         }
     }

@@ -12,6 +12,7 @@ namespace Nekoyume.UI.Module
         public SimpleCountableItemView[] items;
         public Button refreshButton;
 
+        private Model.Shop.State _state;
         private Model.ShopItems _data;
         
         private readonly List<IDisposable> _disposablesForAwake = new List<IDisposable>();
@@ -36,7 +37,13 @@ namespace Nekoyume.UI.Module
         }
 
         #endregion
-
+        
+        public void SetState(Model.Shop.State state)
+        {
+            _state = state;
+            UpdateView();
+        }
+        
         public void SetData(Model.ShopItems data)
         {
             if (ReferenceEquals(data, null))
@@ -68,6 +75,8 @@ namespace Nekoyume.UI.Module
             {
                 return;
             }
+            
+            //
         }
     }
 }
