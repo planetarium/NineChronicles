@@ -134,7 +134,7 @@ namespace Nekoyume.Model
         public void Heal(int heal)
         {
             var current = currentHP;
-            currentHP = Math.Max(heal + current, hp);
+            currentHP = Math.Min(heal + current, hp);
         }
     }
 
