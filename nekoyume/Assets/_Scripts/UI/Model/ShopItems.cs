@@ -1,13 +1,14 @@
 using System;
 using System.Linq;
+using Nekoyume.Action;
 using UniRx;
 
 namespace Nekoyume.UI.Model
 {
     public class ShopItems : IDisposable
     {
-        public readonly ShopItemReactiveCollection buyItems = new ShopItemReactiveCollection();
-        public readonly ShopItemReactiveCollection sellItems = new ShopItemReactiveCollection();
+        public readonly ReactiveCollection<ShopItem> buyItems = new ReactiveCollection<ShopItem>();
+        public readonly ReactiveCollection<ShopItem> sellItems = new ReactiveCollection<ShopItem>();
         
         public readonly Subject<ShopItems> onClickRefresh = new Subject<ShopItems>();
 
@@ -19,7 +20,7 @@ namespace Nekoyume.UI.Model
             }
             
             ResetBuyItems(shop);
-//            ResetSellItems(shop);
+            ResetSellItems(shop);
         }
         
         public void Dispose()
@@ -45,13 +46,30 @@ namespace Nekoyume.UI.Model
 
                 var item = keyValuePair.Value.ElementAt(0);
                 
-//                buyItems.Add(new ShopItem(item));
+                // ToDo. 아이템 기반 수정 후 적용.
+                // buyItems.Add(new ShopItem(item));
 
                 index++;
                 if (index == shop.items.Count)
                 {
                     index = 0;
                 }
+            }
+        }
+
+        public void ResetSellItems(Game.Shop shop)
+        {
+            var key = ActionManager.instance.agentAddress.ToByteArray();
+            if (!shop.items.ContainsKey(key))
+            {
+                return;
+            }
+
+            var items = shop.items[key];
+            foreach (var item in items)
+            {
+                // ToDo. 아이템 기반 수정 후 적용.
+                // sellItems.Add(item);
             }
         }
     }

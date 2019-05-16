@@ -63,6 +63,7 @@ namespace Nekoyume.UI
 
         public override void Show()
         {
+            // ToDo. 아이템 기반 수정 후 적용.
 //            foreach (var pair in ActionManager.instance.shop.Value.items)
 //            {
 //                foreach (var itemInfo in pair.Value)
