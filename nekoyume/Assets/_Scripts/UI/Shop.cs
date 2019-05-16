@@ -5,8 +5,6 @@ using Nekoyume.Data;
 using Nekoyume.Game;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
-using Nekoyume.Game.Item;
-using Nekoyume.UI;
 using Nekoyume.UI.Model;
 using UniRx;
 using UnityEngine;
@@ -205,9 +203,9 @@ namespace Nekoyume.UI
                 _data.itemCountAndPricePopup.Value.item.Value = null;
                 _data.inventoryAndItemInfo.Value.inventory.Value.RemoveItem(result.itemId, result.count);
                 _data.shopItems.Value.sellItems.Add(new ShopItem(
+                    eval.InputContext.Signer.ToString(),
                     Tables.instance.CreateItemBase(result.itemId),
                     result.count,
-                    ActionManager.instance.agentAddress.ToByteArray(),
                     result.price,
                     result.productId));
                 _loadingScreen.Close();

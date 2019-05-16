@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using Nekoyume.Action;
 using UniRx;
-using Unity.Mathematics;
 
 namespace Nekoyume.UI.Model
 {
@@ -10,6 +9,7 @@ namespace Nekoyume.UI.Model
     {
         public readonly ReactiveCollection<ShopItem> buyItems = new ReactiveCollection<ShopItem>();
         public readonly ReactiveCollection<ShopItem> sellItems = new ReactiveCollection<ShopItem>();
+        public readonly ReactiveProperty<ShopItem> selectedItem = new ReactiveProperty<ShopItem>();
         
         public readonly Subject<ShopItems> onClickRefresh = new Subject<ShopItems>();
 
@@ -24,6 +24,9 @@ namespace Nekoyume.UI.Model
             {
                 return;
             }
+
+            buyItems.ObserveAdd().Subscribe(OnAddShopItem);
+            sellItems.ObserveAdd().Subscribe(OnAddShopItem);
             
             ResetBuyItems(shop);
             ResetSellItems(shop);
@@ -33,11 +36,28 @@ namespace Nekoyume.UI.Model
         {
             buyItems.DisposeAll();
             sellItems.DisposeAll();
+            selectedItem.DisposeAll();
             
             onClickRefresh.Dispose();
         }
 
-        public void ResetBuyItems(Game.Shop shop)
+        public void DeselectAll()
+        {
+            if (ReferenceEquals(selectedItem.Value, null))
+            {
+                return;
+            }
+
+            selectedItem.Value.selected.Value = false;
+            selectedItem.Value = null;
+        }
+
+        private void OnAddShopItem(CollectionAddEvent<ShopItem> e)
+        {
+            e.Value.selected.Subscribe(_ => selectedItem.Value = e.Value);
+        }
+
+        private void ResetBuyItems(Game.Shop shop)
         {
             var index = UnityEngine.Random.Range(0, shop.items.Count);
             var total = 16;
@@ -53,7 +73,7 @@ namespace Nekoyume.UI.Model
 
                 foreach (var shopItem in keyValuePair.Value)
                 {
-                    buyItems.Add(new ShopItem(shopItem));
+                    buyItems.Add(new ShopItem(keyValuePair.Key, shopItem));
                     total--;
                     if (total == 0)
                     {
@@ -69,9 +89,9 @@ namespace Nekoyume.UI.Model
             }
         }
 
-        public void ResetSellItems(Game.Shop shop)
+        private void ResetSellItems(Game.Shop shop)
         {
-            var key = ActionManager.instance.agentAddress.ToByteArray();
+            var key = ActionManager.instance.AvatarAddress.ToString();
             if (!shop.items.ContainsKey(key))
             {
                 return;
@@ -80,7 +100,7 @@ namespace Nekoyume.UI.Model
             var items = shop.items[key];
             foreach (var item in items)
             {
-                sellItems.Add(new ShopItem(item));
+                sellItems.Add(new ShopItem(key, item));
             }
         }
     }

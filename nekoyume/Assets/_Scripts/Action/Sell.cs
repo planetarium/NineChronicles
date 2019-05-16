@@ -5,7 +5,6 @@ using System.Globalization;
 using Libplanet.Action;
 using Nekoyume.Game;
 using Nekoyume.Game.Item;
-using Nekoyume.Model;
 
 namespace Nekoyume.Action
 {

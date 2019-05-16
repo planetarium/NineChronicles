@@ -10,7 +10,7 @@ namespace Nekoyume.UI.Module
 {
     public class ShopItems : MonoBehaviour
     {
-        public List<SimpleCountableItemView> items;
+        public List<ShopItemView> items;
         public Button refreshButton;
 
         private Model.Shop.State _state;
@@ -81,11 +81,11 @@ namespace Nekoyume.UI.Module
             {
                 case Model.Shop.State.Buy:
                     UpdateViewWithItems(_data.buyItems);
-                    refreshButton.gameObject.SetActive(false);
+                    refreshButton.gameObject.SetActive(true);
                     break;
                 case Model.Shop.State.Sell:
                     UpdateViewWithItems(_data.sellItems);
-                    refreshButton.gameObject.SetActive(true);
+                    refreshButton.gameObject.SetActive(false);
                     break;
             }
         }
@@ -97,13 +97,14 @@ namespace Nekoyume.UI.Module
             {
                 while (uiItems.MoveNext())
                 {
-                    if (!dataItems.MoveNext())
+                    if (ReferenceEquals(uiItems.Current, null))
                     {
                         continue;
                     }
                     
-                    if (ReferenceEquals(uiItems.Current, null))
+                    if (!dataItems.MoveNext())
                     {
+                        uiItems.Current.Clear();
                         continue;
                     }
                         

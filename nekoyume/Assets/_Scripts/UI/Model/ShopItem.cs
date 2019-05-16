@@ -6,29 +6,39 @@ namespace Nekoyume.UI.Model
 {
     public class ShopItem : CountableItem
     {
-        public readonly ReactiveProperty<byte[]> owner = new ReactiveProperty<byte[]>();
+        public readonly ReactiveProperty<string> owner = new ReactiveProperty<string>();
         public readonly ReactiveProperty<decimal> price = new ReactiveProperty<decimal>();
+        public readonly ReactiveProperty<Guid> productId = new ReactiveProperty<Guid>();
+        public readonly ReactiveProperty<bool> selected = new ReactiveProperty<bool>();
         
-        public Guid ProductId { get; }
-
-        public ShopItem(Game.Item.ShopItem item) : this(item.item, item.count, item.owner, item.price, item.productId)
+        public readonly Subject<ShopItem> onClick = new Subject<ShopItem>();
+        
+        public ShopItem(string owner, Game.Item.ShopItem item) : this(owner, item.item, item.count, item.price, item.productId)
         {
         }
         
-        public ShopItem(ItemBase item, int count, byte[] owner, decimal price, Guid productId) : base(item, count)
+        public ShopItem(string owner, ItemBase item, int count, decimal price, Guid productId) : base(item, count)
         {
             this.owner.Value = owner;
             this.price.Value = price;
-            
-            ProductId = productId;
+            this.productId.Value = productId;
+
+            onClick.Subscribe(_ =>
+            {
+                selected.Value = !selected.Value;
+            });
         }
 
         public override void Dispose()
         {
             base.Dispose();
             
+            productId.Dispose();
             owner.Dispose();
             price.Dispose();
+            selected.Dispose();
+            
+            onClick.Dispose();
         }
     }
 }

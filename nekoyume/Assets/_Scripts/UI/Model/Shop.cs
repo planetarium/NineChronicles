@@ -55,6 +55,7 @@ namespace Nekoyume.UI.Model
         private void OnState(State value)
         {
             inventoryAndItemInfo.Value.inventory.Value.DeselectAll();
+            shopItems.Value.DeselectAll();
             
             switch (value)
             {
