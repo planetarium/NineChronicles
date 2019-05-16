@@ -32,8 +32,6 @@ namespace Nekoyume.Action
         private readonly PrivateKey _agentPrivateKey;
         public readonly ConcurrentQueue<PolymorphicAction<ActionBase>> QueuedActions;
 
-        private const float ShopUpdateInterval = 3.0f;
-
         private const float TxProcessInterval = 3.0f;
 
         private static readonly int SwarmDialTimeout = 5000;
@@ -111,8 +109,6 @@ namespace Nekoyume.Action
 
         public Guid ChainId => _blocks.Id;
 
-        public event EventHandler<Shop> UpdateShop;
-
         public event EventHandler PreloadStarted;
         public event EventHandler<BlockDownloadState> PreloadProcessed;
         public event EventHandler PreloadEnded;
@@ -138,23 +134,6 @@ namespace Nekoyume.Action
             Task runSwarm = Task.Run(async () => await _swarm.StartAsync(_blocks));
 
             yield return new WaitUntil(() => runSwarm.IsCompleted);
-        }
-
-        // FIXME: This should be safely removed and we should depend on ActionBase.Render().
-        // ToDo. 매 3초 마다 동기화는 비효율적.. 켜고 끌 수 있어야 함.
-        public IEnumerator CoShopUpdator()
-        {
-            while (true)
-            {
-                yield return new WaitForSeconds(ShopUpdateInterval);
-                var task = Task.Run(() => _blocks.GetStates(new[] {ShopAddress}));
-                yield return new WaitUntil(() => task.IsCompleted);
-                var shop = (Shop) task.Result.GetValueOrDefault(ShopAddress);
-                if (shop != null)
-                {
-                    UpdateShop?.Invoke(this, shop);
-                }
-            }
         }
 
         public IEnumerator CoActionRetryer() 

@@ -281,16 +281,13 @@ namespace Nekoyume.UI
             var result = action.Result;
             if (result.ErrorCode == GameActionResult.ErrorCode.Success)
             {
-                ItemEquipment itemData;
-                if (!Tables.instance.ItemEquipment.TryGetValue(result.Item.id, out itemData))
+                if (!Tables.instance.TryGetItemEquipment(result.Item.id, out var itemEquipment))
                 {
                     _loadingScreen.Close();
                     throw new InvalidActionException("`Combination` action's `Result` is invalid.");
                 }
 
-                var itemModel = new Game.Item.Inventory.InventoryItem(new Equipment(itemData), action.Result.Item.count);
-
-                _data.resultPopup.Value = new Model.CombinationResultPopup(itemModel, itemModel.Count)
+                _data.resultPopup.Value = new Model.CombinationResultPopup(ItemBase.ItemFactory(itemEquipment), action.Result.Item.count)
                 {
                     isSuccess = true,
                     materialItems = _data.stagedItems

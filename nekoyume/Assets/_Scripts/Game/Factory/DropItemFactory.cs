@@ -14,14 +14,14 @@ namespace Nekoyume.Game.Factory
 
         private void Start()
         {
-            _box = Tables.instance.GetItem(BoxId);
+            _box = Tables.instance.CreateItemBase(BoxId);
         }
         public IEnumerator CoCreate(List<ItemBase> items, Vector3 position)
         {
             for (var i = 0; i < items.Count; i++)
             {
                 var item = items[i];
-                var exist = Tables.instance.GetItem(item.Data.id);
+                var exist = Tables.instance.CreateItemBase(item.Data.id);
                 if (exist == null)
                 {
                     items.Remove(item);

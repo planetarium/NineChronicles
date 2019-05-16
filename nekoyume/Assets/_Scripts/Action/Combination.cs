@@ -29,7 +29,7 @@ namespace Nekoyume.Action
 
             public ItemModel(UI.Model.CountableItem item)
             {
-                id = item.item.Value.Item.Data.id;
+                id = item.item.Value.Data.id;
                 count = item.count.Value;
                 Debug.Log($"ItemModel | Id:{id}, Count:{count}");
             }

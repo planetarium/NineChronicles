@@ -1,5 +1,5 @@
-using System;
 using System.Collections.Generic;
+using Nekoyume.Game.Item;
 using UniRx;
 
 namespace Nekoyume.UI.Model
@@ -11,7 +11,7 @@ namespace Nekoyume.UI.Model
 
         public readonly Subject<CombinationResultPopup> onClickSubmit = new Subject<CombinationResultPopup>();
         
-        public CombinationResultPopup(Game.Item.Inventory.InventoryItem value, int count) : base(value, count)
+        public CombinationResultPopup(ItemBase value, int count) : base(value, count)
         {
         }
         

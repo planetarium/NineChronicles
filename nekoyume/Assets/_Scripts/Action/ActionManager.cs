@@ -76,17 +76,17 @@ namespace Nekoyume.Action
                 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x1
             }
         );
-        public readonly ReactiveProperty<Shop> shop = new ReactiveProperty<Shop>();
 
         private IEnumerator _miner;
         private IEnumerator _txProcessor;
-        private IEnumerator _shopUpdator;
         private IEnumerator _swarmRunner;
 
         private IEnumerator _actionRetryer;
 
         public Address agentAddress => agent.AgentAddress;
         public Address AvatarAddress => agent.AvatarAddress;
+        
+        public Shop Shop { get; private set; }
 
 #if UNITY_EDITOR
         private const string AgentStoreDirName = "planetarium_dev";
@@ -137,7 +137,6 @@ namespace Nekoyume.Action
                     ReceiveAction(ctx);
                 }
             }).AddTo(this);
-            StartNullableCoroutine(_shopUpdator);
         }
 
         public void CreateNovice(string nickName)
@@ -233,6 +232,7 @@ namespace Nekoyume.Action
                 Application.Quit(1);
             }
 #endif
+            Shop = GetState(shopAddress) as Shop ?? new Shop();
         }
 
         public void InitAgent(CommandLineOptions o)
@@ -352,17 +352,9 @@ namespace Nekoyume.Action
             var fileName = string.Format(AvatarFileFormat, index);
             _saveFilePath = Path.Combine(Application.persistentDataPath, fileName);
             Avatar = LoadStatus(_saveFilePath);
-            agent.UpdateShop += UpdateShop;
-
-            _shopUpdator = agent.CoShopUpdator();
-
+            
             Debug.Log($"Agent Address: 0x{agent.AgentAddress.ToHex()}");
             Debug.Log($"Avatar Address: 0x{agent.AvatarAddress.ToHex()}");
-        }
-
-        private void UpdateShop(object sender, Shop newShop)
-        {
-            shop.Value = newShop;
         }
         
         public IObservable<ActionBase.ActionEvaluation<Combination>> Combination(

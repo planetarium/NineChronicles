@@ -15,7 +15,7 @@ namespace Nekoyume.Game.Item
 
             public InventoryItem(int id, int count = 1)
             {
-                Item = Tables.instance.GetItem(id);
+                Item = Tables.instance.CreateItemBase(id);
                 Count = count;
             }
             

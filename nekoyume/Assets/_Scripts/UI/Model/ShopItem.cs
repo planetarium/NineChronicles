@@ -1,25 +1,20 @@
 using System;
+using Nekoyume.Game.Item;
 using UniRx;
 
 namespace Nekoyume.UI.Model
 {
-    [Serializable]
-    public class ShopItem : CountableItem // Nekoyume.Game.Item.ShopItem
+    public class ShopItem : CountableItem
     {
-        // public readonly ByteArrayReactiveProperty owner = new ByteArrayReactiveProperty();
+        public readonly ByteArrayReactiveProperty owner = new ByteArrayReactiveProperty();
         public readonly DecimalReactiveProperty price = new DecimalReactiveProperty();
-
-        public ShopItem(Game.Item.Inventory.InventoryItem item) : base(item, item.Count)
+        
+        public ShopItem(ItemBase item, int count) : base(item, count)
         {
             price.Value = 0M;
         }
         
-        public ShopItem(Game.Item.Inventory.InventoryItem item, int count) : base(item, count)
-        {
-            price.Value = 0M;
-        }
-        
-        public ShopItem(Game.Item.Inventory.InventoryItem item, int count, decimal price) : base(item, count)
+        public ShopItem(ItemBase item, int count, decimal price) : base(item, count)
         {
             this.price.Value = price;
         }
@@ -28,6 +23,7 @@ namespace Nekoyume.UI.Model
         {
             base.Dispose();
             
+            owner.Dispose();
             price.Dispose();
         }
     }

@@ -63,21 +63,22 @@ namespace Nekoyume.UI
 
         public override void Show()
         {
-            foreach (var pair in ActionManager.instance.shop.Value.items)
-            {
-                foreach (var itemInfo in pair.Value)
-                {
-                    GameObject newItem = Instantiate(sellItemBase, grid);
-                    Item item = newItem.GetComponent<Item>();
-                    item.itemName.text = itemInfo.item.Data.id.ToString();
-                    item.price.text = "1";
-                    item.info.text = "info";
-                    item.icon.sprite = ItemBase.GetSprite(itemInfo.item);
-                    item.seller = new Address(pair.Key);
-                    item.gameObject.SetActive(true);
-                    shopItems.Add(item);
-                }
-            }
+            // ToDo. 아이템 기반 수정 후 적용.
+//            foreach (var pair in ActionManager.instance.shop.Value.items)
+//            {
+//                foreach (var itemInfo in pair.Value)
+//                {
+//                    GameObject newItem = Instantiate(sellItemBase, grid);
+//                    Item item = newItem.GetComponent<Item>();
+//                    item.itemName.text = itemInfo.item.Data.id.ToString();
+//                    item.price.text = "1";
+//                    item.info.text = "info";
+//                    item.icon.sprite = ItemBase.GetSprite(itemInfo.item);
+//                    item.seller = new Address(pair.Key);
+//                    item.gameObject.SetActive(true);
+//                    shopItems.Add(item);
+//                }
+//            }
 
             CalcTotalPrice();
             base.Show();

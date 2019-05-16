@@ -76,7 +76,7 @@ namespace Nekoyume.UI.Model
 
         private bool DimmedFunc(InventoryItem inventoryItem)
         {
-            return DimmedTypes.Contains(inventoryItem.item.Value.Item.Data.cls);
+            return DimmedTypes.Contains(inventoryItem.item.Value.Data.cls);
         }
 
         private bool ButtonEnabledFunc(InventoryItem inventoryItem)
@@ -87,10 +87,10 @@ namespace Nekoyume.UI.Model
                 return false;
             }
 
-            var id = inventoryItem.item.Value.Item.Data.id; 
+            var id = inventoryItem.item.Value.Data.id; 
             foreach (var stagedItem in stagedItems)
             {
-                if (id == stagedItem.item.Value.Item.Data.id)
+                if (id == stagedItem.item.Value.Data.id)
                 {
                     return false;
                 } 
@@ -107,10 +107,12 @@ namespace Nekoyume.UI.Model
                 return;
             }
 
-            itemCountPopup.Value.item.Value = data.item.Value;
-            itemCountPopup.Value.count.Value = 1;
-            itemCountPopup.Value.minCount.Value = 1;
-            itemCountPopup.Value.maxCount.Value = data.item.Value.count.Value;
+            itemCountPopup.Value.item.Value = new CountEditableItem(
+                data.item.Value.item.Value,
+                data.item.Value.count.Value,
+                0,
+                data.item.Value.count.Value,
+                "수정");
         }
 
         private void OnClickSubmitItemCountPopup(SimpleItemCountPopup data)
@@ -122,20 +124,22 @@ namespace Nekoyume.UI.Model
                 return;
             }
 
-            if (data.count.Value <= 0)
-            {
-                itemCountPopup.Value.item.Value = null;
-                return;
-            }
-
             foreach (var stagedItem in stagedItems)
             {
-                if (stagedItem.item.Value.Item.Data.id != data.item.Value.item.Value.Item.Data.id)
+                if (stagedItem.item.Value.Data.id != data.item.Value.item.Value.Data.id)
                 {
                     continue;
                 }
 
-                stagedItem.count.Value = data.count.Value;
+                if (data.item.Value.count.Value == 0)
+                {
+                    stagedItems.Remove(stagedItem);
+                }
+                else
+                {
+                    stagedItem.count.Value = data.item.Value.count.Value;                    
+                }
+                
                 itemCountPopup.Value.item.Value = null;
                 return;
             }
@@ -146,8 +150,7 @@ namespace Nekoyume.UI.Model
                 return;
             }
 
-            var item = new CountEditableItem(data.item.Value.item.Value, data.count.Value, "수정");
-            stagedItems.Add(item);
+            stagedItems.Add(data.item.Value);
 
             itemCountPopup.Value.item.Value = null;
         }
@@ -165,9 +168,6 @@ namespace Nekoyume.UI.Model
                 }
 
                 itemCountPopup.Value.item.Value = obj;
-                itemCountPopup.Value.count.Value = obj.count.Value;
-                itemCountPopup.Value.minCount.Value = 1;
-                itemCountPopup.Value.maxCount.Value = obj.item.Value.Count;
                 AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ClickCombinationEditMaterialItem);
             });
             data.onClose.Subscribe(obj =>
@@ -181,7 +181,7 @@ namespace Nekoyume.UI.Model
                 AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ClickCombinationRemoveMaterialItem);
             });
 
-            SetStaged(data.item.Value.Item.Data.id, true);
+            SetStaged(data.item.Value.Data.id, true);
             UpdateReadyForCombination();
         }
 
@@ -190,7 +190,7 @@ namespace Nekoyume.UI.Model
             var data = e.Value;
             data.Dispose();
 
-            SetStaged(data.item.Value.Item.Data.id, false);
+            SetStaged(data.item.Value.Data.id, false);
             UpdateReadyForCombination();
         }
 
@@ -228,7 +228,7 @@ namespace Nekoyume.UI.Model
         {
             foreach (var item in inventoryAndItemInfo.Value.inventory.Value.items)
             {
-                if (item.item.Value.Item.Data.id != id)
+                if (item.item.Value.Data.id != id)
                 {
                     continue;
                 }
@@ -238,7 +238,7 @@ namespace Nekoyume.UI.Model
             }
             
             if (!ReferenceEquals(inventoryAndItemInfo.Value.itemInfo.Value.item.Value, null) &&
-                inventoryAndItemInfo.Value.itemInfo.Value.item.Value.item.Value.Item.Data.id == id)
+                inventoryAndItemInfo.Value.itemInfo.Value.item.Value.item.Value.Data.id == id)
             {
                 inventoryAndItemInfo.Value.itemInfo.Value.buttonEnabled.Value = !isStaged;
             }

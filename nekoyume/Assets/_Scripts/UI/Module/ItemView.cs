@@ -63,7 +63,7 @@ namespace Nekoyume.UI.Module
                 return;
             }
             
-            var sprite = ItemBase.GetSprite(data.item.Value.Item);
+            var sprite = ItemBase.GetSprite(data.item.Value);
             if (ReferenceEquals(sprite, null))
             {
                 throw new FailedToLoadResourceException<Sprite>();

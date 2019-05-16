@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Nekoyume.Action;
+using Nekoyume.Data;
 using Nekoyume.Game;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
@@ -96,7 +97,7 @@ namespace Nekoyume.UI
                 throw new NotFoundComponentException<LoadingScreen>();
             }
 
-            SetData(new Model.Shop(ActionManager.instance.Avatar.Items, ActionManager.instance.shop.Value));
+            SetData(new Model.Shop(ActionManager.instance.Avatar.Items, ActionManager.instance.Shop));
             base.Show();
         }
 
@@ -173,8 +174,8 @@ namespace Nekoyume.UI
             
             var observable =
                 ActionManager.instance.Sell(
-                    data.item.Value.item.Value.Item.Data.id,
-                    data.count.Value,
+                    data.item.Value.item.Value.Data.id,
+                    data.item.Value.count.Value,
                     data.price.Value);
 
             observable.ObserveOnMainThread().Subscribe(eval =>
@@ -193,7 +194,7 @@ namespace Nekoyume.UI
                     return;
                 }
 
-                if (result.itemId != data.item.Value.item.Value.Item.Data.id)
+                if (result.itemId != data.item.Value.item.Value.Data.id)
                 {
                     throw new GameActionResultUnexpectedException();
                 }
@@ -201,7 +202,7 @@ namespace Nekoyume.UI
                 _data.itemCountAndPricePopup.Value.item.Value = null;
                 _data.inventoryAndItemInfo.Value.inventory.Value.RemoveItem(result.itemId, 1);
                 _data.shopItems.Value.sellItems.Add(new ShopItem(
-                    new Game.Item.Inventory.InventoryItem(result.itemId),
+                    Tables.instance.CreateItemBase(result.itemId),
                     result.count,
                     result.price));
                 _loadingScreen.Close();

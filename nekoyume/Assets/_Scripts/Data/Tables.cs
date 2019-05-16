@@ -57,23 +57,24 @@ namespace Nekoyume.Data
 
         private void Load(ITable table, string filename)
         {
-            TextAsset file = Resources.Load<TextAsset>(filename);
+            var file = Resources.Load<TextAsset>(filename);
             if (file != null)
             {
                 table.Load(file.text);
             }
         }
 
-        public ItemBase GetItem(int itemId)
+        public ItemBase CreateItemBase(int itemId)
         {
-            Item itemData;
-            if (!Item.TryGetValue(itemId, out itemData))
-                return null;
-            var item = ItemBase.ItemFactory(itemData);
-            return item;
+            return !Item.TryGetValue(itemId, out var item) ? null : ItemBase.ItemFactory(item);
+        }
+        
+        public bool TryGetItemEquipment(int itemEquipmentId, out ItemEquipment itemEquipment)
+        {
+            return ItemEquipment.TryGetValue(itemEquipmentId, out itemEquipment);
         }
 
-        public SetEffect.SetEffectMap[] GetSetEffect(int id, int count)
+        public IEnumerable<SetEffect.SetEffectMap> GetSetEffect(int id, int count)
         {
             var effects = new List<SetEffect.SetEffectMap>();
             foreach (var row in SetEffect)

@@ -73,7 +73,7 @@ namespace Nekoyume.UI.Model
         
         private static bool DimmedFuncForSell(InventoryItem inventoryItem)
         {
-            return inventoryItem.item.Value.Item.Data.cls == DimmedString;
+            return inventoryItem.item.Value.Data.cls == DimmedString;
         }
 
         private static bool ButtonEnabledFuncForBuy(InventoryItem inventoryItem)
@@ -94,10 +94,12 @@ namespace Nekoyume.UI.Model
                 return;
             }
 
-            itemCountAndPricePopup.Value.item.Value = itemInfo.item.Value;
-            itemCountAndPricePopup.Value.count.Value = 1;
-            itemCountAndPricePopup.Value.minCount.Value = 1;
-            itemCountAndPricePopup.Value.maxCount.Value = itemInfo.item.Value.count.Value;
+            itemCountAndPricePopup.Value.item.Value = new CountEditableItem(
+                itemInfo.item.Value.item.Value,
+                itemInfo.item.Value.count.Value,
+                0,
+                itemInfo.item.Value.count.Value,
+                "수정");
             itemCountAndPricePopup.Value.price.Value = 1;
         }
     }
