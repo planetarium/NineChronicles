@@ -79,13 +79,14 @@ namespace Nekoyume.Action
 
         private IEnumerator _miner;
         private IEnumerator _txProcessor;
-        private IEnumerator _shopUpdator;
         private IEnumerator _swarmRunner;
 
         private IEnumerator _actionRetryer;
 
         public Address agentAddress => agent.AgentAddress;
         public Address AvatarAddress => agent.AvatarAddress;
+        
+        public Shop Shop { get; private set; }
 
 #if UNITY_EDITOR
         private const string AgentStoreDirName = "planetarium_dev";
@@ -136,7 +137,6 @@ namespace Nekoyume.Action
                     ReceiveAction(ctx);
                 }
             }).AddTo(this);
-            StartNullableCoroutine(_shopUpdator);
         }
 
         public void CreateNovice(string nickName)
@@ -232,6 +232,7 @@ namespace Nekoyume.Action
                 Application.Quit(1);
             }
 #endif
+            Shop = GetState(shopAddress) as Shop ?? new Shop();
         }
 
         public void InitAgent(CommandLineOptions o)

@@ -178,7 +178,7 @@ namespace Nekoyume.UI
             }
             else
             {
-                SetGlowEquipSlot(data.item.Value.Item is ItemUsable);
+                SetGlowEquipSlot(data.item.Value is ItemUsable);
             }
         }
 
@@ -187,18 +187,18 @@ namespace Nekoyume.UI
             var slot = FindSelectedItemSlot();
             if (slot != null)
             {
-                slot.Set(itemInfo.item.Value.item.Value.Item as ItemUsable);
+                slot.Set(itemInfo.item.Value.item.Value as ItemUsable);
                 SetGlowEquipSlot(false);
             }
             
-            var type = itemInfo.item.Value.item.Value.Item.Data.cls.ToEnumItemType();
+            var type = itemInfo.item.Value.item.Value.Data.cls.ToEnumItemType();
             AudioController.instance.PlaySfx(type == ItemBase.ItemType.Food
                 ? AudioController.SfxCode.ChainMail2
                 : AudioController.SfxCode.Equipment);
 
             if (type == ItemBase.ItemType.Set)
             {
-                _player.UpdateSet((SetItem)itemInfo.item.Value.item.Value.Item);
+                _player.UpdateSet((SetItem)itemInfo.item.Value.item.Value);
             }
         }
 
@@ -246,13 +246,13 @@ namespace Nekoyume.UI
 
         private EquipSlot FindSelectedItemSlot()
         {
-            var type = _data.inventoryAndItemInfo.Value.itemInfo.Value.item.Value.item.Value.Item.Data.cls.ToEnumItemType();
+            var type = _data.inventoryAndItemInfo.Value.itemInfo.Value.item.Value.item.Value.Data.cls.ToEnumItemType();
             if (type == ItemBase.ItemType.Food)
             {
                 var count = consumableSlots
                     .Select(s => s.item)
                     .OfType<Food>()
-                    .Count(f => f.Data.id == _data.inventoryAndItemInfo.Value.itemInfo.Value.item.Value.item.Value.Item.Data.id);
+                    .Count(f => f.Data.id == _data.inventoryAndItemInfo.Value.itemInfo.Value.item.Value.item.Value.Data.id);
                 if (count >= _data.inventoryAndItemInfo.Value.itemInfo.Value.item.Value.count.Value)
                 {
                     return null;

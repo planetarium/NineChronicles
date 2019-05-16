@@ -19,7 +19,7 @@ namespace Nekoyume.UI.Model
             
             items.ForEach(item =>
             {
-                var inventoryItem = new InventoryItem(item);
+                var inventoryItem = new InventoryItem(item.Item, item.Count);
                 InitInventoryItem(inventoryItem);
                 this.items.Add(inventoryItem);
             });
@@ -65,7 +65,7 @@ namespace Nekoyume.UI.Model
             InventoryItem shouldRemove = null;
             foreach (var item in items)
             {
-                if (item.item.Value.Item.Data.id != id)
+                if (item.item.Value.Data.id != id)
                 {
                     continue;
                 }
@@ -115,7 +115,7 @@ namespace Nekoyume.UI.Model
             {
                 selectedItem.Value.selected.Value = false;
                 
-                if (selectedItem.Value.item.Value.Item.Data.id == inventoryItem.item.Value.Item.Data.id)
+                if (selectedItem.Value.item.Value.Data.id == inventoryItem.item.Value.Data.id)
                 {
                     selectedItem.Value = null;
                     return;

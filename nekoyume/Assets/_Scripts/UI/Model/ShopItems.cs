@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Nekoyume.Action;
 using UniRx;
+using Unity.Mathematics;
 
 namespace Nekoyume.UI.Model
 {
@@ -34,8 +35,9 @@ namespace Nekoyume.UI.Model
         public void ResetBuyItems(Game.Shop shop)
         {
             var index = UnityEngine.Random.Range(0, shop.items.Count);
+            var loop = math.min(shop.items.Count, 16);
 
-            for (var i = 0; i < 16; i++)
+            for (var i = 0; i < loop; i++)
             {
                 var keyValuePair = shop.items.ElementAt(index);
                 if (keyValuePair.Value.Count == 0)

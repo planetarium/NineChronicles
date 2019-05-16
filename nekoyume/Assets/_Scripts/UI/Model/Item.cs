@@ -1,13 +1,14 @@
 using System;
+using Nekoyume.Game.Item;
 using UniRx;
 
 namespace Nekoyume.UI.Model
 {
     public class Item : IDisposable
     {
-        public readonly ReactiveProperty<Game.Item.Inventory.InventoryItem> item = new InventoryItemReactiveProperty();
+        public readonly ReactiveProperty<ItemBase> item = new ReactiveProperty<ItemBase>();
 
-        public Item(Game.Item.Inventory.InventoryItem value)
+        public Item(ItemBase value)
         {
             item.Value = value;
         }

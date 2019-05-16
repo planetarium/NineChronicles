@@ -27,12 +27,12 @@ namespace Nekoyume.UI.Model
 
         private bool DimmedFunc(InventoryItem inventoryItem)
         {
-            return inventoryItem.item.Value.Item.Data.cls == TypeString;
+            return inventoryItem.item.Value.Data.cls == TypeString;
         }
 
         private bool GlowedFunc(InventoryItem inventoryItem, ItemBase.ItemType type)
         {
-            return inventoryItem.item.Value.Item.Data.cls.ToEnumItemType() == type;
+            return inventoryItem.item.Value.Data.cls.ToEnumItemType() == type;
         }
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using Nekoyume.Game.Item;
 using UniRx;
 
 namespace Nekoyume.UI.Model
@@ -12,11 +13,7 @@ namespace Nekoyume.UI.Model
 
         public readonly Subject<InventoryItem> onClick = new Subject<InventoryItem>();
 
-        public InventoryItem(Game.Item.Inventory.InventoryItem item) : base(item, item.Count)
-        {
-        }
-        
-        public InventoryItem(Game.Item.Inventory.InventoryItem item, int count) : base(item, count)
+        public InventoryItem(ItemBase item, int count) : base(item, count)
         {
         }
 

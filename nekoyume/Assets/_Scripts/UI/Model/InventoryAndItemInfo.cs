@@ -30,7 +30,7 @@ namespace Nekoyume.UI.Model
                 while (e.MoveNext())
                 {
                     if (ReferenceEquals(e.Current, null) ||
-                        e.Current.item.Value.Item.Data.id != item.item.Value.Item.Data.id)
+                        e.Current.item.Value.Data.id != item.item.Value.Data.id)
                     {
                         continue;
                     }
@@ -63,7 +63,7 @@ namespace Nekoyume.UI.Model
                         while (e2.MoveNext())
                         {
                             if (ReferenceEquals(e2.Current, null) ||
-                                e2.Current.item.Value.Item.Data.id != stagedItem.item.Value.Item.Data.id)
+                                e2.Current.item.Value.Data.id != stagedItem.item.Value.Data.id)
                             {
                                 continue;
                             }

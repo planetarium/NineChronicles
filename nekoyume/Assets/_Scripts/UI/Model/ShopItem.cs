@@ -1,4 +1,5 @@
 using System;
+using Nekoyume.Game.Item;
 using UniRx;
 
 namespace Nekoyume.UI.Model
@@ -8,12 +9,12 @@ namespace Nekoyume.UI.Model
         public readonly ByteArrayReactiveProperty owner = new ByteArrayReactiveProperty();
         public readonly DecimalReactiveProperty price = new DecimalReactiveProperty();
         
-        public ShopItem(Game.Item.Inventory.InventoryItem item, int count) : base(item, count)
+        public ShopItem(ItemBase item, int count) : base(item, count)
         {
             price.Value = 0M;
         }
         
-        public ShopItem(Game.Item.Inventory.InventoryItem item, int count, decimal price) : base(item, count)
+        public ShopItem(ItemBase item, int count, decimal price) : base(item, count)
         {
             this.price.Value = price;
         }

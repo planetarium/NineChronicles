@@ -113,8 +113,6 @@ namespace Nekoyume.Action
 
         public Guid ChainId => _blocks.Id;
 
-        public event EventHandler<Shop> UpdateShop;
-
         public event EventHandler PreloadStarted;
         public event EventHandler<BlockDownloadState> PreloadProcessed;
         public event EventHandler PreloadEnded;

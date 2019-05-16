@@ -96,7 +96,7 @@ namespace Nekoyume.UI
             _disposablesForSetDate.DisposeAllAndClear();
             _data = data;
             _data.titleText.Subscribe(value => titleText.text = value).AddTo(_disposablesForSetDate);
-            _data.count.Subscribe(SetCount).AddTo(_disposablesForSetDate);
+            _data.item.Value.count.Subscribe(SetCount).AddTo(_disposablesForSetDate);
             _data.submitText.Subscribe(value => submitButtonText.text = value).AddTo(_disposablesForSetDate);
             itemView.SetData(_data.item.Value);
             
@@ -120,7 +120,7 @@ namespace Nekoyume.UI
                 return;
             }
             
-            SetCount(_data.count.Value);
+            SetCount(_data.item.Value.count.Value);
         }
         
         private void SetCount(int count)
