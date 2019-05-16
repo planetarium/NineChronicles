@@ -9,13 +9,13 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<byte[]> owner = new ReactiveProperty<byte[]>();
         public readonly ReactiveProperty<decimal> price = new ReactiveProperty<decimal>();
         
-        public string ProductId { get; }
+        public Guid ProductId { get; }
 
         public ShopItem(Game.Item.ShopItem item) : this(item.item, item.count, item.owner, item.price, item.productId)
         {
         }
         
-        public ShopItem(ItemBase item, int count, byte[] owner, decimal price, string productId) : base(item, count)
+        public ShopItem(ItemBase item, int count, byte[] owner, decimal price, Guid productId) : base(item, count)
         {
             this.owner.Value = owner;
             this.price.Value = price;
