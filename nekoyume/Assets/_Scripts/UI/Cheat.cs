@@ -32,29 +32,30 @@ namespace Nekoyume
 
         private class DebugRandom : IRandom
         {
+            private readonly System.Random _random = new System.Random();
             public int Next()
             {
-                return new System.Random().Next();
+                return _random.Next();
             }
 
             public int Next(int maxValue)
             {
-                return new System.Random().Next(maxValue);
+                return _random.Next(maxValue);
             }
 
             public int Next(int minValue, int maxValue)
             {
-                return new System.Random().Next(minValue, maxValue);
+                return _random.Next(minValue, maxValue);
             }
 
             public void NextBytes(byte[] buffer)
             {
-                new System.Random().NextBytes(buffer);
+                _random.NextBytes(buffer);
             }
 
             public double NextDouble()
             {
-                return new System.Random().NextDouble();
+                return _random.NextDouble();
             }
         }
         static void Log(string text)

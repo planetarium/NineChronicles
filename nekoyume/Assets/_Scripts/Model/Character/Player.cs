@@ -51,7 +51,6 @@ namespace Nekoyume.Model
             }
 
             CalcStats(level);
-            SetSkill();
         }
 
         public Player()
@@ -76,7 +75,7 @@ namespace Nekoyume.Model
             //TODO 장비에서 스킬을 얻어와서 붙이도록 설정
             foreach (var effect in Tables.instance.SkillEffect.Values)
             {
-                var skill = SkillFactory.Get(this, effect);
+                var skill = SkillFactory.Get(this, (float) Simulator.Random.NextDouble(), effect);
                 Skills.Add(skill);
             }
         }

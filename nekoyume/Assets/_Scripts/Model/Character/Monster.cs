@@ -26,7 +26,6 @@ namespace Nekoyume.Model
             defElement = Game.Elemental.Create(data.elemental);
             TurnSpeed = 1.0f;
             attackRange = data.attackRange;
-            SetSkill();
         }
 
         protected override void OnDead()
@@ -42,7 +41,7 @@ namespace Nekoyume.Model
             //TODO 몬스터별 스킬 구현
             foreach (var effect in Tables.instance.SkillEffect.Values)
             {
-                var skill = SkillFactory.Get(this, effect);
+                var skill = SkillFactory.Get(this, (float) Simulator.Random.NextDouble(), effect);
                 Skills.Add(skill);
             }
         }

@@ -1,12 +1,14 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using BTAI;
+using Libplanet.Action;
 using Nekoyume.Action;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Skill;
-using Unity.Mathematics;
 
 namespace Nekoyume.Model
 {
@@ -30,7 +32,7 @@ namespace Nekoyume.Model
 
         public Game.Elemental atkElement;
         public Game.Elemental defElement;
-        protected List<SkillBase> Skills;
+        protected readonly Skills Skills = new Skills();
 
         private SkillBase _selectedSkill;
 
@@ -42,6 +44,8 @@ namespace Nekoyume.Model
 
         public void InitAI()
         {
+            SetSkill();
+
             _root = new Root();
             _root.OpenBranch(
                 BT.Selector().OpenBranch(
@@ -117,15 +121,14 @@ namespace Nekoyume.Model
 
         protected virtual void SetSkill()
         {
-            Skills = new List<SkillBase>();
-
-            var attack = SkillFactory.Get(this, new SkillEffect());
+            //기본공격 설정
+            var attack = SkillFactory.Get(this, 1.0f, new SkillEffect());
             Skills.Add(attack);
         }
 
         private void SelectSkill()
         {
-            _selectedSkill = Skills[Simulator.Random.Next(Skills.Count)];
+            _selectedSkill = Skills.Select(Simulator.Random);
         }
 
         public void Heal(int heal)
@@ -137,5 +140,40 @@ namespace Nekoyume.Model
 
     public class InformationFieldAttribute : Attribute
     {
+    }
+
+    [Serializable]
+    public class Skills : IEnumerable<SkillBase>
+    {
+        private readonly List<SkillBase> _skills = new List<SkillBase>();
+
+        public void Add(SkillBase s)
+        {
+            _skills.Add(s);
+        }
+
+        public IEnumerator<SkillBase> GetEnumerator()
+        {
+            return _skills.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        public SkillBase Select(IRandom random)
+        {
+            var skills = _skills.OrderBy(s => s.chance).ToArray();
+            foreach (var skill in skills)
+            {
+                var chance = (float) random.NextDouble();
+                if (skill.chance > chance)
+                {
+                    return skill;
+                }
+            }
+            return skills.Last();
+        }
     }
 }
