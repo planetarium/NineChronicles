@@ -357,12 +357,19 @@ namespace Nekoyume.Action
             Debug.Log($"Avatar Address: 0x{agent.AvatarAddress.ToHex()}");
         }
         
-        public void Combination(List<UI.Model.CountEditableItem> materials)
+        public IObservable<ActionBase.ActionEvaluation<Combination>> Combination(
+            List<UI.Model.CountEditableItem> materials)
         {
-            var action = new Combination();
+            var action = new Combination
+            {
+                Id = Guid.NewGuid(),
+            };
             materials.ForEach(m => action.Materials.Add(new Combination.ItemModel(m)));
             ProcessAction(action);
             AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ActionCombination);
+            return ActionBase.EveryRender<Combination>().Where(eval =>
+                eval.Action.Id.Equals(action.Id)
+            ).Take(1).Last();
         }
 
         public IObservable<ActionBase.ActionEvaluation<Sell>> Sell(int itemID, int count, decimal price)

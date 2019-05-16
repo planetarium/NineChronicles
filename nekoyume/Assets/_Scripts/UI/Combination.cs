@@ -29,7 +29,6 @@ namespace Nekoyume.UI
 
         private readonly List<IDisposable> _disposablesForAwake = new List<IDisposable>();
         private readonly List<IDisposable> _disposablesForSetData = new List<IDisposable>();
-        private IDisposable _actionDisposable;
 
         private Stage _stage;
         private Player _player;
@@ -37,7 +36,6 @@ namespace Nekoyume.UI
         private SimpleItemCountPopup _simpleItemCountPopup;
         private CombinationResultPopup _resultPopup;
         private GrayLoadingScreen _loadingScreen;
-        private int _count;
 
         #region Mono
 
@@ -67,10 +65,7 @@ namespace Nekoyume.UI
         private void OnDestroy()
         {
             _disposablesForAwake.DisposeAllAndClear();
-            
-            _actionDisposable?.Dispose();
-            _actionDisposable = null;
-            
+
             Clear();
         }
 
@@ -269,9 +264,11 @@ namespace Nekoyume.UI
         private void RequestCombination(Model.Combination data)
         {
             _loadingScreen.Show();
-            _count = 0;
-            _actionDisposable = Action.Combination.EndOfExecuteSubject.ObserveOnMainThread().Subscribe(ResponseCombination);
-            ActionManager.instance.Combination(_data.stagedItems.ToList());
+            ActionManager.instance.Combination(_data.stagedItems.ToList())
+                .Select(eval => eval.Action)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseCombination)
+                .AddTo(this);
             AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ClickCombinationCombination);
         }
 
@@ -281,15 +278,6 @@ namespace Nekoyume.UI
         /// </summary>
         private void ResponseCombination(Action.Combination action)
         {
-            //FIXME Block.Validate 시 이벤트가 호출되는 문제가 있음.
-            //액션이 처리되서 아바타가 변경되었다는 이벤트를 받았을때만 호출되야함.
-            _count++;
-            if (_count <= 1)
-                return;
-
-            _actionDisposable.Dispose();
-            _actionDisposable = null;
-            
             var result = action.Result;
             if (result.ErrorCode == GameActionResult.ErrorCode.Success)
             {

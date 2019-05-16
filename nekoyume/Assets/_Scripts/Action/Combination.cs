@@ -53,8 +53,6 @@ namespace Nekoyume.Action
             public ItemModel Item;
         }
 
-        public static readonly Subject<Combination> EndOfExecuteSubject = new Subject<Combination>();
-
         public List<ItemModel> Materials { get; private set; }
         public ResultModel Result { get; private set; }
 
@@ -101,8 +99,6 @@ namespace Nekoyume.Action
                 catch (InvalidOperationException)
                 {
                     Result = new ResultModel() {ErrorCode = GameActionResult.ErrorCode.Fail};
-                    EndOfExecuteSubject.OnNext(this);
-
                     return states.SetState(actionCtx.Signer, ctx);
                 }
             }
@@ -150,8 +146,6 @@ namespace Nekoyume.Action
                 resultCount == 0)
             {
                 Result = new ResultModel() {ErrorCode = GameActionResult.ErrorCode.Fail};
-                EndOfExecuteSubject.OnNext(this);
-
                 return states.SetState(actionCtx.Signer, ctx);
             }
             
@@ -175,8 +169,6 @@ namespace Nekoyume.Action
                 else
                 {
                     Result = new ResultModel() {ErrorCode = GameActionResult.ErrorCode.KeyNotFoundInTable};
-                    EndOfExecuteSubject.OnNext(this);
-                    
                     return states.SetState(actionCtx.Signer, ctx);
                 }
             }
@@ -189,7 +181,6 @@ namespace Nekoyume.Action
                 ErrorCode = GameActionResult.ErrorCode.Success,
                 Item = new ItemModel(resultItem.Id, resultCount)
             };
-            EndOfExecuteSubject.OnNext(this);
 
             ctx.updatedAt = DateTimeOffset.UtcNow;
             return states.SetState(actionCtx.Signer, ctx);
