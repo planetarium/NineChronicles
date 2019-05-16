@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Anima2D;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
@@ -32,8 +31,6 @@ namespace Nekoyume.Game.Character
 
         public Model.Player model;
         public Item.Inventory Inventory;
-        
-        [SerializeField] private SpriteMeshInstance _weapon;
         
         private ProgressBar _mpBar = null;
 
