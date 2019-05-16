@@ -1,47 +1,59 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Nekoyume.Data.Table;
 using Nekoyume.Model;
 
 namespace Nekoyume.Game.Skill
 {
-    public enum SkillType
-    {
-        Attack,
-        Buff,
-        Debuff,
-    }
-
     public interface ISkill
     {
-        SkillType GetSkillType();
+        SkillEffect.SkillType GetSkillType();
         EventBase Use();
-    }
-
-    public interface ISingleTargetSkill: ISkill
-    {
-        CharacterBase GetTarget();
-    }
-
-    public interface IMultipleTargetSkill : ISkill
-    {
-        List<CharacterBase> GetTarget();
     }
 
     [Serializable]
     public abstract class SkillBase: ISkill
     {
         protected readonly CharacterBase Caster;
-        protected readonly IEnumerable<CharacterBase> Target;
-        protected readonly int Effect;
+        protected readonly SkillEffect Effect;
 
-        public abstract SkillType GetSkillType();
+        public SkillEffect.SkillType GetSkillType()
+        {
+            return Effect.type;
+        }
 
         public abstract EventBase Use();
-        protected SkillBase(CharacterBase caster, IEnumerable<CharacterBase> target, int effect)
+        protected SkillBase(CharacterBase caster, SkillEffect effect)
         {
             Caster = caster;
-            Target = target;
             Effect = effect;
+        }
+
+        protected IEnumerable<CharacterBase> GetTarget()
+        {
+            var targets = Caster.targets;
+            IEnumerable<CharacterBase> target;
+            switch (Effect.target)
+            {
+                case SkillEffect.Target.Enemy:
+                    target = new[] {targets.First()};
+                    break;
+                case SkillEffect.Target.Enemies:
+                    target = Caster.targets;
+                    break;
+                case SkillEffect.Target.Self:
+                    target = new[] {Caster};
+                    break;
+                case SkillEffect.Target.Ally:
+                    target = new[] {Caster};
+                    break;
+                default:
+                    target = new[] {targets.First()};
+                    break;
+            }
+
+            return target;
         }
     }
 }

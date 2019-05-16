@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using Libplanet.Crypto;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Item;
 using UnityEngine;
@@ -19,6 +18,7 @@ namespace Nekoyume.Data
         public Table<Background> Background { get; private set; }
         public Table<StageReward> StageReward { get; private set; }
         public Table<SetEffect> SetEffect { get; private set; }
+        public Table<SkillEffect> SkillEffect { get; private set; }
 
         protected override void Awake()
         {
@@ -50,6 +50,8 @@ namespace Nekoyume.Data
             Load(StageReward, "DataTable/stage_reward");
             SetEffect = new Table<SetEffect>();
             Load(SetEffect, "DataTable/set_effect");
+            SkillEffect = new Table<SkillEffect>();
+            Load(SkillEffect, "DataTable/skill_effect");
 
         }
 

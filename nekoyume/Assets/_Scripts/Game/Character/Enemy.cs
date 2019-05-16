@@ -10,8 +10,9 @@ namespace Nekoyume.Game.Character
     public class Enemy : CharacterBase
     {
         private static readonly Vector3 DamageTextForce = new Vector3(0.1f, 0.5f);
-        
+
         public Guid id;
+        public override Guid Id => id;
         
         public int DataId = 0;
 
@@ -31,7 +32,7 @@ namespace Nekoyume.Game.Character
             animator.OnEvent.Subscribe(OnAnimatorEvent);
             animator.TimeScale = AnimatorTimeScale;
             
-            _targetTag = Tag.Player;
+            targetTag = Tag.Player;
         }
 
         private void OnDestroy()

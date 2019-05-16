@@ -39,8 +39,8 @@ namespace Nekoyume.Model
             Simulator = simulator;
             job = avatar.id;
             inventory = new Inventory();
-            ATKElement = Game.Elemental.Create(Elemental.ElementalType.Normal);
-            DEFElement = Game.Elemental.Create(Elemental.ElementalType.Normal);
+            atkElement = Game.Elemental.Create(Elemental.ElementalType.Normal);
+            defElement = Game.Elemental.Create(Elemental.ElementalType.Normal);
             TurnSpeed = 1.0f;
 
             var inventoryItems = avatar.Items;
@@ -74,8 +74,11 @@ namespace Nekoyume.Model
         {
             base.SetSkill();
             //TODO 장비에서 스킬을 얻어와서 붙이도록 설정
-            var areaAttack = new Game.Skill.AreaAttack(this, targets, atk);
-            Skills.Add(areaAttack);
+            foreach (var effect in Tables.instance.SkillEffect.Values)
+            {
+                var skill = SkillFactory.Get(this, effect);
+                Skills.Add(skill);
+            }
         }
 
         private void CalcStats(int lv)
@@ -185,8 +188,8 @@ namespace Nekoyume.Model
                         break;
                     case ItemBase.ItemType.Set:
                         set = equipment as SetItem;
-                        ATKElement = Game.Elemental.Create((Elemental.ElementalType) equipment?.Data.elemental);
-                        DEFElement = Game.Elemental.Create((Elemental.ElementalType) equipment?.Data.elemental);
+                        atkElement = Game.Elemental.Create((Elemental.ElementalType) equipment?.Data.elemental);
+                        defElement = Game.Elemental.Create((Elemental.ElementalType) equipment?.Data.elemental);
                         break;
                     default:
                         throw new InvalidEquipmentException();
@@ -263,12 +266,12 @@ namespace Nekoyume.Model
         {
             if (set != null)
             {
-                var aStrong = ATKElement.Data.strong;
-                var aWeak = ATKElement.Data.weak;
-                var dStrong = DEFElement.Data.strong;
-                var dWeak = DEFElement.Data.weak;
-                var aMultiply = ATKElement.Data.multiply * 100;
-                var dMultiply = DEFElement.Data.multiply * 100;
+                var aStrong = atkElement.Data.strong;
+                var aWeak = atkElement.Data.weak;
+                var dStrong = defElement.Data.strong;
+                var dWeak = defElement.Data.weak;
+                var aMultiply = atkElement.Data.multiply * 100;
+                var dMultiply = defElement.Data.multiply * 100;
                 if (aMultiply > 0)
                 {
                     yield return $"{Elemental.GetDescription(aStrong)} 공격 +{aMultiply}%";

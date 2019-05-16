@@ -2,11 +2,12 @@ using System.Collections;
 
 namespace Nekoyume.Model
 {
-    public class Attack : Skill
+    public class Heal: Skill
     {
         public override IEnumerator CoExecute(IStage stage)
         {
-            yield return stage.CoAttack(character, skillInfos);
+            yield return stage.CoHeal(character, skillInfos);
         }
+
     }
 }

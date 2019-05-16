@@ -6,7 +6,7 @@ using BTAI;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.CC;
 using Nekoyume.Game.Controller;
-using Nekoyume.Model;
+using Nekoyume.Game.VFX;
 using Nekoyume.UI;
 using UnityEngine;
 
@@ -38,13 +38,14 @@ namespace Nekoyume.Game.Character
         public bool Silenced => gameObject.GetComponent<ISilence>() != null;
         public bool Stunned => gameObject.GetComponent<IStun>() != null;
         protected virtual float Range { get; set; }
-        protected string _targetTag = "";
+        public string targetTag = "";
         public bool attackEnd { get; private set; }
         public bool hitEnd { get; private set; }
         public bool dieEnd { get; private set; }
         public abstract float Speed { get; }
 
         public ICharacterAnimator animator { get; protected set; }
+        public abstract Guid Id { get; }
 
         protected virtual void Awake()
         {
@@ -200,17 +201,6 @@ namespace Nekoyume.Game.Character
             gameObject.SetActive(false);
         }
 
-        public IEnumerator CoAttack(CharacterBase target, Attack.AttackInfo attack)
-        {
-            attackEnd = false;
-            RunSpeed = 0.0f;
-
-            animator.Attack();
-
-            yield return new WaitUntil(() => attackEnd);
-            ProcessAttack(target, attack);
-        }
-
         protected virtual void PopUpDmg(Vector3 position, Vector3 force, string dmg, bool critical)
         {
             if (critical)
@@ -284,26 +274,72 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        public IEnumerator CoAreaAttack(Enemy[] targets, List<Attack.AttackInfo> attacks)
-        {
-            attackEnd = false;
-            RunSpeed = 0.0f;
-            animator.Attack();
-
-            yield return new WaitUntil(() => attackEnd);
-
-            foreach (var attack in attacks)
-            {
-                var target = targets.First(t => t.id == attack.target.id);
-                ProcessAttack(target, attack);
-            }
-        }
-
-        private void ProcessAttack(CharacterBase target, Attack.AttackInfo attack)
+        private void ProcessAttack(CharacterBase target, Model.Skill.SkillInfo skill)
         {
             if (TargetInRange(target))
                 target.StopRun();
-            StartCoroutine(target.CoProcessDamage(attack.damage, attack.critical));
+            StartCoroutine(target.CoProcessDamage(skill.Effect, skill.Critical));
+        }
+
+        private void ProcessHeal(CharacterBase target, Model.Skill.SkillInfo info)
+        {
+            var calc = info.Effect - target.HP;
+            if (calc <= 0)
+            {
+                calc = 0;
+            }
+            target.HP += calc;
+
+            var position = transform.TransformPoint(0f, 1.7f, 0f);
+            var force = new Vector3(-0.1f, 0.5f);
+            var txt = calc.ToString();
+            PopUpHeal(position, force, txt, info.Critical);
+
+            UpdateHpBar();
+
+            Event.OnUpdateStatus.Invoke();
+        }
+
+        private void PopUpHeal(Vector3 position, Vector3 force, string dmg, bool critical)
+        {
+            DamageText.Show(position, force, dmg);
+
+            var pos = transform.position;
+            pos.x -= 0.2f;
+            pos.y += 0.32f;
+            VFXController.instance.Create<BattleHeal01VFX>(pos);
+        }
+
+        private IEnumerator CoAnimationAttack()
+        {
+            attackEnd = false;
+            RunSpeed = 0.0f;
+
+            animator.Attack();
+            yield return new WaitUntil(() => attackEnd);
+        }
+        public IEnumerator CoAttack(IEnumerable<Model.Skill.SkillInfo> infos)
+        {
+            yield return StartCoroutine(CoAnimationAttack());
+
+            foreach (var info in infos)
+            {
+                var target = Stage.instance.GetCharacter(info.Target);
+                ProcessAttack(target, info);
+            }
+
+        }
+
+        public IEnumerator CoHeal(IEnumerable<Model.Skill.SkillInfo> infos)
+        {
+            yield return StartCoroutine(CoAnimationAttack());
+
+            foreach (var info in infos)
+            {
+                var target = Stage.instance.GetCharacter(info.Target);
+                ProcessHeal(target, info);
+            }
+
         }
 
     }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.Data.Table;
 using Nekoyume.Model;
 
 namespace Nekoyume.Game.Skill
@@ -8,29 +9,30 @@ namespace Nekoyume.Game.Skill
     [Serializable]
     public class AttackBase: SkillBase
     {
-        protected AttackBase(CharacterBase caster, IEnumerable<CharacterBase> target, int effect)
-            : base(caster, target, effect)
+        protected AttackBase(CharacterBase caster, SkillEffect effect) : base(caster, effect)
         {
         }
 
-        protected Model.Attack.AttackInfo ProcessDamage(CharacterBase target)
+        protected List<Model.Skill.SkillInfo> ProcessDamage(IEnumerable<CharacterBase> targets)
         {
-            var critical = Caster.IsCritical();
-            var dmg = Caster.ATKElement.CalculateDmg(Effect, target.DEFElement);
-            dmg = Math.Max(dmg - target.def, 1);
-            if (critical)
+            var infos = new List<Model.Skill.SkillInfo>();
+            foreach (var target in targets.ToList())
             {
-                dmg = Convert.ToInt32(dmg * CharacterBase.CriticalMultiplier);
+                var critical = Caster.IsCritical();
+                var dmg = Caster.atkElement.CalculateDmg(Caster.atk, target.defElement);
+                dmg = Math.Max(dmg - target.def, 1);
+                dmg = Convert.ToInt32(dmg * Effect.multiplier);
+                if (critical)
+                {
+                    dmg = Convert.ToInt32(dmg * CharacterBase.CriticalMultiplier);
+                }
+
+                target.OnDamage(dmg);
+
+                infos.Add(new Model.Skill.SkillInfo(CharacterBase.Copy(target), dmg, critical));
             }
 
-            target.OnDamage(dmg);
-
-            return new Model.Attack.AttackInfo(CharacterBase.Copy(target), dmg, critical);
-        }
-
-        public override SkillType GetSkillType()
-        {
-            return SkillType.Attack;
+            return infos;
         }
 
         public override EventBase Use()
@@ -40,16 +42,10 @@ namespace Nekoyume.Game.Skill
     }
 
     [Serializable]
-    public class Attack : AttackBase, ISingleTargetSkill
+    public class Attack : AttackBase
     {
-        public Attack(CharacterBase caster, IEnumerable<CharacterBase> target, int effect)
-            : base(caster, target, effect)
+        public Attack(CharacterBase caster, SkillEffect effect) : base(caster, effect)
         {
-        }
-
-        public CharacterBase GetTarget()
-        {
-            return Target.First();
         }
 
         public override EventBase Use()
@@ -60,7 +56,7 @@ namespace Nekoyume.Game.Skill
             return new Model.Attack
             {
                 character = CharacterBase.Copy(Caster),
-                info = info,
+                skillInfos = info,
             };
         }
     }
