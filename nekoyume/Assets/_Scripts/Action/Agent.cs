@@ -32,13 +32,9 @@ namespace Nekoyume.Action
         private readonly PrivateKey _agentPrivateKey;
         public readonly ConcurrentQueue<PolymorphicAction<ActionBase>> QueuedActions;
 
-        private const float AvatarUpdateInterval = 3.0f;
-
         private const float ShopUpdateInterval = 3.0f;
 
         private const float TxProcessInterval = 3.0f;
-
-        private const float RankingUpdateInterval = 3.0f;
 
         private static readonly int SwarmDialTimeout = 5000;
 
