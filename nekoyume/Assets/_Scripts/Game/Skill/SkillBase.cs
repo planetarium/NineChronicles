@@ -17,6 +17,7 @@ namespace Nekoyume.Game.Skill
     {
         protected readonly CharacterBase Caster;
         protected readonly SkillEffect Effect;
+        public float chance;
 
         public SkillEffect.SkillType GetSkillType()
         {
@@ -24,11 +25,13 @@ namespace Nekoyume.Game.Skill
         }
 
         public abstract EventBase Use();
-        protected SkillBase(CharacterBase caster, SkillEffect effect)
+        protected SkillBase(CharacterBase caster, float chance, SkillEffect effect)
         {
             Caster = caster;
             Effect = effect;
+            this.chance = chance;
         }
+
 
         protected IEnumerable<CharacterBase> GetTarget()
         {

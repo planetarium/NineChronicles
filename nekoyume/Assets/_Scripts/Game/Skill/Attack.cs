@@ -9,8 +9,9 @@ namespace Nekoyume.Game.Skill
     [Serializable]
     public class AttackBase: SkillBase
     {
-        protected AttackBase(CharacterBase caster, SkillEffect effect) : base(caster, effect)
+        protected AttackBase(CharacterBase caster, float chance, SkillEffect effect) : base(caster, chance, effect)
         {
+            this.chance = chance;
         }
 
         protected List<Model.Skill.SkillInfo> ProcessDamage(IEnumerable<CharacterBase> targets)
@@ -44,7 +45,7 @@ namespace Nekoyume.Game.Skill
     [Serializable]
     public class Attack : AttackBase
     {
-        public Attack(CharacterBase caster, SkillEffect effect) : base(caster, effect)
+        public Attack(CharacterBase caster, float chance, SkillEffect effect) : base(caster, chance, effect)
         {
         }
 

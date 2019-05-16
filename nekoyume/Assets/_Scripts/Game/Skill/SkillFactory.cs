@@ -5,7 +5,7 @@ namespace Nekoyume.Game.Skill
 {
     public static class SkillFactory
     {
-        public static SkillBase Get(CharacterBase caster, SkillEffect effect)
+        public static SkillBase Get(CharacterBase caster, float chance, SkillEffect effect)
         {
             switch (effect.type)
             {
@@ -13,16 +13,16 @@ namespace Nekoyume.Game.Skill
                     switch (effect.target)
                     {
                         case SkillEffect.Target.Enemy:
-                            return new Attack(caster, effect);
+                            return new Attack(caster, chance, effect);
                         case SkillEffect.Target.Enemies:
-                            return new AreaAttack(caster, effect);
+                            return new AreaAttack(caster, chance, effect);
                     }
                     break;
                 case SkillEffect.SkillType.Buff:
                     switch (effect.target)
                     {
                         case SkillEffect.Target.Self:
-                            return new Heal(caster, effect);
+                            return new Heal(caster, chance, effect);
                     }
                     break;
                 case SkillEffect.SkillType.Debuff:

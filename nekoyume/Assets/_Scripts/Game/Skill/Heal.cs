@@ -8,11 +8,9 @@ namespace Nekoyume.Game.Skill
     [Serializable]
     public class Heal : SkillBase
     {
-        public Heal(CharacterBase caster, SkillEffect effect) : base(caster, effect)
+        public Heal(CharacterBase caster, float chance, SkillEffect effect) : base(caster, chance, effect)
         {
         }
-
-
 
         public override EventBase Use()
         {
