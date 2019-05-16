@@ -5,7 +5,6 @@ using System.Linq;
 using DG.Tweening;
 using Nekoyume.Action;
 using Nekoyume.Data;
-using Nekoyume.Data.Table;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Entrance;
 using Nekoyume.Game.Factory;
@@ -254,29 +253,28 @@ namespace Nekoyume.Game
             yield return null;
         }
 
-        public IEnumerator CoSkill(CharacterBase caster, SkillEffect.SkillType type,
-            IEnumerable<Model.Skill.SkillInfo> skillInfos)
+        public IEnumerator CoAttack(CharacterBase caster, IEnumerable<Model.Skill.SkillInfo> skillInfos)
         {
             var character = GetCharacter(caster);
             var infos = skillInfos.ToList();
-            var targetCharacter = GetCharacter(infos.First().Target);
 
-            if (!character.TargetInRange(targetCharacter))
-            {
-                character.StartRun();
-            }
-            yield return new WaitUntil(() => character.TargetInRange(targetCharacter));
-            yield return StartCoroutine(character.CoSkill(type, infos));
-            yield return new WaitForSeconds(SkillDelay);
+            yield return StartCoroutine(BeforeSkill(character, infos));
 
-            var enemy = GetComponentsInChildren<Character.CharacterBase>()
-                .Where(c => c.gameObject.CompareTag(character.targetTag))
-                .OrderBy(c => c.transform.position.x).First();
-            if (!character.TargetInRange(enemy))
-            {
-                character.StartRun();
-            }
+            yield return StartCoroutine(character.CoAttack(infos));
 
+            yield return StartCoroutine(AfterSkill(character));
+        }
+
+        public IEnumerator CoHeal(CharacterBase caster, IEnumerable<Model.Skill.SkillInfo> skillInfos)
+        {
+            var character = GetCharacter(caster);
+            var infos = skillInfos.ToList();
+
+            yield return StartCoroutine(BeforeSkill(character, infos));
+
+            yield return StartCoroutine(character.CoHeal(infos));
+
+            yield return StartCoroutine(AfterSkill(character));
         }
 
         public IEnumerator CoDropBox(List<ItemBase> items)
@@ -366,5 +364,26 @@ namespace Nekoyume.Game
 
         public Character.CharacterBase GetCharacter(CharacterBase caster) =>
             GetComponentsInChildren<Character.CharacterBase>().FirstOrDefault(c => c.Id == caster.id);
+
+        private IEnumerator BeforeSkill(Character.CharacterBase character, IEnumerable<Model.Skill.SkillInfo> infos)
+        {
+            var target = GetCharacter(infos.First().Target);
+            if (!character.TargetInRange(target))
+                character.StartRun();
+            yield return new WaitUntil(() => character.TargetInRange(target));
+        }
+
+        private IEnumerator AfterSkill(Character.CharacterBase character)
+        {
+            yield return new WaitForSeconds(SkillDelay);
+
+            var enemy = GetComponentsInChildren<Character.CharacterBase>()
+                .Where(c => c.gameObject.CompareTag(character.targetTag))
+                .OrderBy(c => c.transform.position.x).First();
+            if (!character.TargetInRange(enemy))
+            {
+                character.StartRun();
+            }
+        }
     }
 }

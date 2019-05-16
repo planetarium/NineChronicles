@@ -14,11 +14,10 @@ namespace Nekoyume.Game.Skill
         public override EventBase Use()
         {
 
-            return new Model.Skill
+            return new Model.Attack
             {
                 character = CharacterBase.Copy(Caster),
                 skillInfos = ProcessDamage(GetTarget()),
-                type = GetSkillType(),
             };
         }
     }

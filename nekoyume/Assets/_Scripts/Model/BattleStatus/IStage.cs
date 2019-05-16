@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using Nekoyume.Data.Table;
 using Nekoyume.Game.Item;
 
 namespace Nekoyume.Model
@@ -8,7 +7,8 @@ namespace Nekoyume.Model
     public interface IStage
     {
         IEnumerator CoSpawnPlayer(Player character);
-        IEnumerator CoSkill(CharacterBase caster, SkillEffect.SkillType type, IEnumerable<Skill.SkillInfo> skills);
+        IEnumerator CoAttack(CharacterBase caster, IEnumerable<Skill.SkillInfo> infos);
+        IEnumerator CoHeal(CharacterBase caster, IEnumerable<Skill.SkillInfo> infos);
         IEnumerator CoDropBox(List<ItemBase> items);
         IEnumerator CoGetReward(List<ItemBase> rewards);
         IEnumerator CoSpawnWave(List<Monster> monsters, bool isBoss);

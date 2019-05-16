@@ -26,11 +26,10 @@ namespace Nekoyume.Game.Skill
                 infos.Add(new Model.Skill.SkillInfo(target, healHp, Caster.IsCritical()));
             }
 
-            return new Model.Skill
+            return new Model.Heal
             {
                 character = CharacterBase.Copy(Caster),
                 skillInfos = infos,
-                type = GetSkillType(),
             };
         }
     }

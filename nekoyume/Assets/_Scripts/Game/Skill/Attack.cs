@@ -53,11 +53,10 @@ namespace Nekoyume.Game.Skill
             var target = GetTarget();
             var info = ProcessDamage(target);
 
-            return new Model.Skill
+            return new Model.Attack
             {
                 character = CharacterBase.Copy(Caster),
                 skillInfos = info,
-                type = GetSkillType(),
             };
         }
     }

@@ -310,38 +310,34 @@ namespace Nekoyume.Game.Character
             VFXController.instance.Create<BattleHeal01VFX>(pos);
         }
 
-        public IEnumerator CoSkill(SkillEffect.SkillType type, IEnumerable<Model.Skill.SkillInfo> infos)
-        {
-            yield return StartCoroutine(CoProcessSkill(type, infos));
-        }
-
-        private IEnumerator CoProcessSkill(SkillEffect.SkillType type, IEnumerable<Model.Skill.SkillInfo> infos)
+        private IEnumerator CoAnimationAttack()
         {
             attackEnd = false;
             RunSpeed = 0.0f;
 
             animator.Attack();
             yield return new WaitUntil(() => attackEnd);
+        }
+        public IEnumerator CoAttack(IEnumerable<Model.Skill.SkillInfo> infos)
+        {
+            yield return StartCoroutine(CoAnimationAttack());
 
             foreach (var info in infos)
             {
-                //TODO 스킬별 서브클래스를 만들어서 처리?
-                // https://github.com/planetarium/nekoyume-unity/pull/300#discussion_r284206197
                 var target = Stage.instance.GetCharacter(info.Target);
-                switch (type)
-                {
-                    case SkillEffect.SkillType.Attack:
-                        ProcessAttack(target, info);
-                        break;
-                    case SkillEffect.SkillType.Buff:
-                        ProcessHeal(target, info);
-                        break;
-                    case SkillEffect.SkillType.Debuff:
-                        break;
-                    default:
-                        ProcessAttack(target, info);
-                        break;
-                }
+                ProcessAttack(target, info);
+            }
+
+        }
+
+        public IEnumerator CoHeal(IEnumerable<Model.Skill.SkillInfo> infos)
+        {
+            yield return StartCoroutine(CoAnimationAttack());
+
+            foreach (var info in infos)
+            {
+                var target = Stage.instance.GetCharacter(info.Target);
+                ProcessHeal(target, info);
             }
 
         }
