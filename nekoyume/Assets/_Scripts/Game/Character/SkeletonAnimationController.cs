@@ -11,6 +11,11 @@ namespace Nekoyume.Game.Character
 	[RequireComponent(typeof(SkeletonAnimation))]
     public class SkeletonAnimationController: MonoBehaviour
     {
+	    public static readonly string[] AnimationNames = new string[]
+	    {
+			"Appear", "Idle", "Run", "Attack", "Hit", "Die", "Disappear",
+	    };
+	    
 	    [Serializable]
 	    public class StateNameToAnimationReference {
 		    public string stateName;
