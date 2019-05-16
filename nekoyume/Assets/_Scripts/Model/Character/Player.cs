@@ -51,7 +51,6 @@ namespace Nekoyume.Model
             }
 
             CalcStats(level);
-            SetSkill();
         }
 
         public Player()

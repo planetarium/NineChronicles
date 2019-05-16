@@ -9,7 +9,6 @@ using Libplanet.Action;
 using Nekoyume.Action;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Skill;
-using UnityEngine;
 
 namespace Nekoyume.Model
 {
@@ -45,6 +44,8 @@ namespace Nekoyume.Model
 
         public void InitAI()
         {
+            SetSkill();
+
             _root = new Root();
             _root.OpenBranch(
                 BT.Selector().OpenBranch(
