@@ -155,3 +155,7 @@ public class AddOutOfSpecificRangeException<T> : Exception
     {
     }
 }
+
+public class AssetNotFoundException : Exception
+{
+}
