@@ -44,20 +44,74 @@ namespace Nekoyume.UI.Model
             });
         }
 
-        private static bool DimmedFunc(InventoryItem inventoryItem)
-        {
-            return false;
-        }
-
-        private static bool GlowedFunc(InventoryItem inventoryItem, Game.Item.ItemBase.ItemType type)
-        {
-            return false;
-        }
-
         public void Dispose()
         {
             items.DisposeAll();
             selectedItem.DisposeAll();
+        }
+        
+        public void AddToInventory(CountableItem item)
+        {
+            using (var e = items.GetEnumerator())
+            {
+                while (e.MoveNext())
+                {
+                    if (ReferenceEquals(e.Current, null) ||
+                        e.Current.item.Value.Data.id != item.item.Value.Data.id)
+                    {
+                        continue;
+                    }
+
+                    e.Current.count.Value += item.count.Value;
+                    return;
+                }
+            }
+            
+            items.Add(new InventoryItem(item.item.Value, item.count.Value));
+        }
+
+        public void RemoveFromInventory(ICollection<CountEditableItem> items)
+        {
+            var shouldRemoveItems = new List<CountEditableItem>();
+            
+            using (var e = items.GetEnumerator())
+            {
+                while (e.MoveNext())
+                {
+                    if (ReferenceEquals(e.Current, null))
+                    {
+                        continue;
+                    }
+
+                    var stagedItem = e.Current;
+                    
+                    using (var e2 = items.GetEnumerator())
+                    {
+                        while (e2.MoveNext())
+                        {
+                            if (ReferenceEquals(e2.Current, null) ||
+                                e2.Current.item.Value.Data.id != stagedItem.item.Value.Data.id)
+                            {
+                                continue;
+                            }
+
+                            var inventoryItem = e2.Current;
+                            inventoryItem.count.Value -= stagedItem.count.Value;
+
+                            if (inventoryItem.count.Value == 0)
+                            {
+                                items.Remove(inventoryItem);
+                            }
+
+                            shouldRemoveItems.Add(stagedItem);
+                            
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            shouldRemoveItems.ForEach(item => items.Remove(item));
         }
 
         public void RemoveItem(int id, int count)
@@ -125,10 +179,20 @@ namespace Nekoyume.UI.Model
             selectedItem.Value = inventoryItem;
             selectedItem.Value.selected.Value = true;
 
-            foreach (var item in this.items)
+            foreach (var item in items)
             {
                 item.glowed.Value = false;
             }
+        }
+        
+        private bool DimmedFunc(InventoryItem inventoryItem)
+        {
+            return false;
+        }
+
+        private bool GlowedFunc(InventoryItem inventoryItem, Game.Item.ItemBase.ItemType type)
+        {
+            return false;
         }
     }
 }

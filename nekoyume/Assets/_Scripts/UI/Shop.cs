@@ -127,7 +127,7 @@ namespace Nekoyume.UI
                 .AddTo(_disposablesForSetData);
             _data.onClickClose.Subscribe(_ => Close()).AddTo(_disposablesForSetData);
 
-            inventoryAndItemInfo.SetData(_data.inventoryAndItemInfo.Value);
+            inventoryAndItemInfo.SetData(_data.inventory.Value, _data.itemInfo.Value);
             shopItems.SetState(_data.state.Value);
             shopItems.SetData(_data.shopItems.Value);
         }
@@ -201,13 +201,13 @@ namespace Nekoyume.UI
                 }
 
                 _data.itemCountAndPricePopup.Value.item.Value = null;
-                _data.inventoryAndItemInfo.Value.inventory.Value.RemoveItem(result.itemId, result.count);
+                _data.inventory.Value.RemoveItem(result.itemId, result.count);
                 _data.shopItems.Value.sellItems.Add(new ShopItem(
                     eval.InputContext.Signer.ToString(),
-                    Tables.instance.CreateItemBase(result.itemId),
-                    result.count,
                     result.price,
-                    result.productId));
+                    result.productId,
+                    Tables.instance.CreateItemBase(result.itemId),
+                    result.count));
                 _loadingScreen.Close();
             }).AddTo(this);
         }

@@ -261,6 +261,7 @@ namespace Nekoyume.Game.Character
                 attackEnd = true;
         }
 
+        // FixMe. 캐릭터와 몬스터가 겹치는 현상 있음.
         public bool TargetInRange(CharacterBase target) =>
             Range > Mathf.Abs(gameObject.transform.position.x - target.transform.position.x);
 

@@ -4,29 +4,23 @@ using UniRx;
 
 namespace Nekoyume.UI.Model
 {
-    public class ShopItem : CountableItem
+    public class ShopItem : InventoryItem
     {
         public readonly ReactiveProperty<string> owner = new ReactiveProperty<string>();
         public readonly ReactiveProperty<decimal> price = new ReactiveProperty<decimal>();
         public readonly ReactiveProperty<Guid> productId = new ReactiveProperty<Guid>();
-        public readonly ReactiveProperty<bool> selected = new ReactiveProperty<bool>();
         
-        public readonly Subject<ShopItem> onClick = new Subject<ShopItem>();
+        public new readonly Subject<ShopItem> onClick = new Subject<ShopItem>();
         
-        public ShopItem(string owner, Game.Item.ShopItem item) : this(owner, item.item, item.count, item.price, item.productId)
+        public ShopItem(string owner, Game.Item.ShopItem item) : this(owner, item.price, item.productId, item.item, item.count)
         {
         }
         
-        public ShopItem(string owner, ItemBase item, int count, decimal price, Guid productId) : base(item, count)
+        public ShopItem(string owner, decimal price, Guid productId, ItemBase item, int count) : base(item, count)
         {
             this.owner.Value = owner;
             this.price.Value = price;
             this.productId.Value = productId;
-
-            onClick.Subscribe(_ =>
-            {
-                selected.Value = !selected.Value;
-            });
         }
 
         public override void Dispose()
@@ -36,7 +30,6 @@ namespace Nekoyume.UI.Model
             productId.Dispose();
             owner.Dispose();
             price.Dispose();
-            selected.Dispose();
             
             onClick.Dispose();
         }

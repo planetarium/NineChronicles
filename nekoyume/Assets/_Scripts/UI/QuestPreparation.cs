@@ -111,9 +111,9 @@ namespace Nekoyume.UI
             if (slot.item == null)
             {
                 equipSlotGlow.SetActive(false);
-                foreach (var item in _data.inventoryAndItemInfo.Value.inventory.Value.items)
+                foreach (var item in _data.inventory.Value.items)
                 {
-                    item.glowed.Value = _data.inventoryAndItemInfo.Value.inventory.Value.glowedFunc.Value(item, slot.type);
+                    item.glowed.Value = _data.inventory.Value.glowedFunc.Value(item, slot.type);
                 }
                 return;
             }
@@ -152,10 +152,10 @@ namespace Nekoyume.UI
         {
             _disposablesForSetData.DisposeAllAndClear();
             _data = value;
-            _data.inventoryAndItemInfo.Value.itemInfo.Value.item.Subscribe(OnItemInfoItem).AddTo(_disposablesForSetData);
-            _data.inventoryAndItemInfo.Value.itemInfo.Value.onClick.Subscribe(OnClickEquip).AddTo(_disposablesForSetData);
+            _data.itemInfo.Value.item.Subscribe(OnItemInfoItem).AddTo(_disposablesForSetData);
+            _data.itemInfo.Value.onClick.Subscribe(OnClickEquip).AddTo(_disposablesForSetData);
             
-            inventoryAndItemInfo.SetData(_data.inventoryAndItemInfo.Value);
+            inventoryAndItemInfo.SetData(_data.inventory.Value, _data.itemInfo.Value);
         }
 
         private void Clear()
@@ -246,14 +246,14 @@ namespace Nekoyume.UI
 
         private EquipSlot FindSelectedItemSlot()
         {
-            var type = _data.inventoryAndItemInfo.Value.itemInfo.Value.item.Value.item.Value.Data.cls.ToEnumItemType();
+            var type = _data.itemInfo.Value.item.Value.item.Value.Data.cls.ToEnumItemType();
             if (type == ItemBase.ItemType.Food)
             {
                 var count = consumableSlots
                     .Select(s => s.item)
                     .OfType<Food>()
-                    .Count(f => f.Data.id == _data.inventoryAndItemInfo.Value.itemInfo.Value.item.Value.item.Value.Data.id);
-                if (count >= _data.inventoryAndItemInfo.Value.itemInfo.Value.item.Value.count.Value)
+                    .Count(f => f.Data.id == _data.itemInfo.Value.item.Value.item.Value.Data.id);
+                if (count >= _data.itemInfo.Value.item.Value.count.Value)
                 {
                     return null;
                 }

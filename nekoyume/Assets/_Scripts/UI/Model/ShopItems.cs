@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Action;
 using UniRx;
@@ -52,9 +53,68 @@ namespace Nekoyume.UI.Model
             selectedItem.Value = null;
         }
 
+        public void RemoveBuyItem(Guid productId, int count)
+        {
+            RemoveItem(buyItems, productId, count);
+        }
+        
+        public void RemoveSellItem(Guid productId, int count)
+        {
+            RemoveItem(sellItems, productId, count);
+        }
+        
+        private void RemoveItem(ICollection<ShopItem> collection, Guid productId, int count)
+        {
+            ShopItem shouldRemove = null;
+            foreach (var item in collection)
+            {
+                if (item.productId.Value != productId)
+                {
+                    continue;
+                }
+                
+                if (item.count.Value > count)
+                {
+                    item.count.Value -= count;
+                }
+                else if (item.count.Value == count)
+                {
+                    shouldRemove = item;
+                }
+                else
+                {
+                    throw new InvalidOperationException($"item({productId}) count is lesser then {count}");
+                }
+                
+                break;
+            }
+
+            if (!ReferenceEquals(shouldRemove, null))
+            {
+                collection.Remove(shouldRemove);
+            }
+        }
+
         private void OnAddShopItem(CollectionAddEvent<ShopItem> e)
         {
-            e.Value.selected.Subscribe(_ => selectedItem.Value = e.Value);
+            e.Value.onClick.Subscribe(OnClickShopItem);
+        }
+        
+        private void OnClickShopItem(ShopItem shopItem)
+        {
+            if (!ReferenceEquals(selectedItem.Value, null))
+            {
+                selectedItem.Value.selected.Value = false;
+                
+                if (selectedItem.Value.item.Value.Data.id == shopItem.item.Value.Data.id)
+                {
+                    selectedItem.Value = null;
+                    return;
+                }
+            }
+
+            selectedItem.Value = shopItem;
+            selectedItem.Value.selected.Value = true;
         }
 
         private void ResetBuyItems(Game.Shop shop)

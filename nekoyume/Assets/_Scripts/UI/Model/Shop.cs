@@ -16,8 +16,9 @@ namespace Nekoyume.UI.Model
         }
         
         public readonly ReactiveProperty<State> state = new ReactiveProperty<State>();
-        public readonly ReactiveProperty<InventoryAndItemInfo> inventoryAndItemInfo = new ReactiveProperty<InventoryAndItemInfo>();
+        public readonly ReactiveProperty<Inventory> inventory = new ReactiveProperty<Inventory>();
         public readonly ReactiveProperty<ShopItems> shopItems = new ReactiveProperty<ShopItems>();
+        public readonly ReactiveProperty<ItemInfo> itemInfo = new ReactiveProperty<ItemInfo>();
         public readonly ReactiveProperty<ItemCountAndPricePopup> itemCountAndPricePopup = new ReactiveProperty<ItemCountAndPricePopup>();
         
         public readonly Subject<Shop> onClickSwitchBuy = new Subject<Shop>();
@@ -26,15 +27,16 @@ namespace Nekoyume.UI.Model
 
         public Shop(List<Game.Item.Inventory.InventoryItem> items, Game.Shop shop)
         {
-            inventoryAndItemInfo.Value = new InventoryAndItemInfo(items);
+            inventory.Value = new Inventory(items);
             shopItems.Value = new ShopItems(shop);
+            itemInfo.Value = new ItemInfo();
             itemCountAndPricePopup.Value = new ItemCountAndPricePopup();
-            itemCountAndPricePopup.Value.titleText.Value = "판매 설정";
-            itemCountAndPricePopup.Value.submitText.Value = "판매";
 
             state.Subscribe(OnState);
-            inventoryAndItemInfo.Value.itemInfo.Value.item.Subscribe(OnItemInfoItem);
-            inventoryAndItemInfo.Value.itemInfo.Value.onClick.Subscribe(OnClickItemInfo);
+            inventory.Value.selectedItem.Subscribe(OnSelectInventoryItem);
+            shopItems.Value.selectedItem.Subscribe(OnSelectShopItem);
+            itemInfo.Value.item.Subscribe(OnItemInfoItem);
+            itemInfo.Value.onClick.Subscribe(OnClickItemInfo);
 
             onClickSwitchBuy.Subscribe(_ => state.Value = State.Buy);
             onClickSwitchSell.Subscribe(_ => state.Value = State.Sell);
@@ -43,8 +45,9 @@ namespace Nekoyume.UI.Model
         public void Dispose()
         {
             state.Dispose();
-            inventoryAndItemInfo.DisposeAll();
+            inventory.DisposeAll();
             shopItems.DisposeAll();
+            itemInfo.DisposeAll();
             itemCountAndPricePopup.DisposeAll();
             
             onClickSwitchBuy.Dispose();
@@ -54,20 +57,19 @@ namespace Nekoyume.UI.Model
 
         private void OnState(State value)
         {
-            inventoryAndItemInfo.Value.inventory.Value.DeselectAll();
+            inventory.Value.DeselectAll();
             shopItems.Value.DeselectAll();
             
             switch (value)
             {
                 case State.Buy:
-                    inventoryAndItemInfo.Value.inventory.Value.dimmedFunc.Value = null;
-                    inventoryAndItemInfo.Value.itemInfo.Value.buttonText.Value = "구매하기";
-                    inventoryAndItemInfo.Value.itemInfo.Value.buttonEnabledFunc.Value = ButtonEnabledFuncForBuy;
+                    inventory.Value.dimmedFunc.Value = null;
+                    itemInfo.Value.buttonText.Value = "구매하기";
+                    itemInfo.Value.buttonEnabledFunc.Value = ButtonEnabledFuncForBuy;
                     break;
                 case State.Sell:
-                    inventoryAndItemInfo.Value.inventory.Value.dimmedFunc.Value = DimmedFuncForSell;
-                    inventoryAndItemInfo.Value.itemInfo.Value.buttonText.Value = "판매하기";
-                    inventoryAndItemInfo.Value.itemInfo.Value.buttonEnabledFunc.Value = null;
+                    inventory.Value.dimmedFunc.Value = DimmedFuncForSell;
+                    itemInfo.Value.buttonEnabledFunc.Value = ButtonEnabledFuncForSell;
                     break;
             }
         }
@@ -77,9 +79,25 @@ namespace Nekoyume.UI.Model
             return inventoryItem.item.Value.Data.cls == DimmedString;
         }
 
-        private static bool ButtonEnabledFuncForBuy(InventoryItem inventoryItem)
+        private bool ButtonEnabledFuncForBuy(InventoryItem inventoryItem)
         {
-            return false;
+            return inventoryItem is ShopItem shopItem &&
+                   Nekoyume.Model.Agent.Gold.Value >= shopItem.price.Value;
+        }
+
+        private bool ButtonEnabledFuncForSell(InventoryItem inventoryItem)
+        {
+            switch (inventoryItem)
+            {
+                case null:
+                    return false;
+                case ShopItem _:
+                    itemInfo.Value.buttonText.Value = "판매 취소";
+                    return true;
+                default:
+                    itemInfo.Value.buttonText.Value = "판매하기";
+                    return !inventoryItem.dimmed.Value;
+            }
         }
 
         private void OnItemInfoItem(InventoryItem inventoryItem)
@@ -95,13 +113,59 @@ namespace Nekoyume.UI.Model
                 return;
             }
 
-            itemCountAndPricePopup.Value.item.Value = new CountEditableItem(
-                itemInfo.item.Value.item.Value,
-                itemInfo.item.Value.count.Value,
-                0,
-                itemInfo.item.Value.count.Value,
-                "수정");
-            itemCountAndPricePopup.Value.price.Value = 1;
+            switch (state.Value)
+            {
+                case State.Buy:
+                    // 구매하겠습니까?
+                    return;
+            }
+            
+            if (itemInfo.item.Value is ShopItem)
+            {
+                // 판매 취소하겠습니까?
+            }
+            else
+            {
+                itemCountAndPricePopup.Value.titleText.Value = "판매 설정";
+                itemCountAndPricePopup.Value.submitText.Value = "판매";
+                itemCountAndPricePopup.Value.item.Value = new CountEditableItem(
+                    itemInfo.item.Value.item.Value,
+                    itemInfo.item.Value.count.Value,
+                    0,
+                    itemInfo.item.Value.count.Value,
+                    "수정");
+                itemCountAndPricePopup.Value.price.Value = 1;
+            }
+        }
+
+        private void OnSelectInventoryItem(InventoryItem inventoryItem)
+        {
+            if (itemInfo.Value.item.Value is ShopItem)
+            {
+                if (ReferenceEquals(inventoryItem, null))
+                {
+                    return;
+                }
+                
+                shopItems.Value.DeselectAll();
+            }
+            
+            itemInfo.Value.item.Value = inventoryItem;
+        }
+
+        private void OnSelectShopItem(ShopItem shopItem)
+        {
+            if (!(itemInfo.Value.item.Value is ShopItem))
+            {
+                if (ReferenceEquals(shopItem, null))
+                {
+                    return;
+                }
+                
+                inventory.Value.DeselectAll();
+            }
+            
+            itemInfo.Value.item.Value = shopItem;
         }
     }
 }
