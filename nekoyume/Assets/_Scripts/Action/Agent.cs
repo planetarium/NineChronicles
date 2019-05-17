@@ -4,6 +4,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using AsyncIO;
@@ -138,9 +139,17 @@ namespace Nekoyume.Action
 
         public IEnumerator CoActionRetryer() 
         {
+            HashDigest<SHA256>? previousTipHash = _blocks.Tip?.Hash;
             while (true)
             {
                 yield return new WaitForSeconds(ActionRetryInterval);
+                if (_blocks.Tip?.Hash is HashDigest<SHA256> currentTipHash && 
+                    currentTipHash.Equals(previousTipHash)) 
+                {
+                    continue;
+                }
+
+                previousTipHash = _blocks.Tip.Hash;
                 var task = Task.Run(() =>
                 {
                     return (HashSet<Guid>)_blocks.GetStates(
