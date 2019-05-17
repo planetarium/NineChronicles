@@ -70,11 +70,11 @@ namespace Nekoyume.UI.Model
             items.Add(new InventoryItem(item.item.Value, item.count.Value));
         }
 
-        public void RemoveFromInventory(ICollection<CountEditableItem> items)
+        public void RemoveFromInventory(IEnumerable<CountEditableItem> collection)
         {
-            var shouldRemoveItems = new List<CountEditableItem>();
+            var shouldRemoveItems = new List<InventoryItem>();
             
-            using (var e = items.GetEnumerator())
+            using (var e = collection.GetEnumerator())
             {
                 while (e.MoveNext())
                 {
@@ -83,27 +83,26 @@ namespace Nekoyume.UI.Model
                         continue;
                     }
 
-                    var stagedItem = e.Current;
+                    var removeItem = e.Current;
                     
                     using (var e2 = items.GetEnumerator())
                     {
                         while (e2.MoveNext())
                         {
-                            if (ReferenceEquals(e2.Current, null) ||
-                                e2.Current.item.Value.Data.id != stagedItem.item.Value.Data.id)
+                            var inventoryItem = e2.Current;
+                            
+                            if (ReferenceEquals(inventoryItem, null) ||
+                                inventoryItem.item.Value.Data.id != removeItem.item.Value.Data.id)
                             {
                                 continue;
                             }
 
-                            var inventoryItem = e2.Current;
-                            inventoryItem.count.Value -= stagedItem.count.Value;
+                            inventoryItem.count.Value -= removeItem.count.Value;
 
-                            if (inventoryItem.count.Value == 0)
+                            if (inventoryItem.count.Value <= 0)
                             {
-                                items.Remove(inventoryItem);
+                                shouldRemoveItems.Add(inventoryItem);
                             }
-
-                            shouldRemoveItems.Add(stagedItem);
                             
                             break;
                         }

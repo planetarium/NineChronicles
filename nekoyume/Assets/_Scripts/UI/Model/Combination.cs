@@ -219,7 +219,7 @@ namespace Nekoyume.UI.Model
             inventory.Value.RemoveFromInventory(data.materialItems);
 
             // 결과 아이템이 있다면, 인벤토리에 추가.
-            if (!ReferenceEquals(resultPopup.Value.item.Value, null))
+            if (!ReferenceEquals(data.item.Value, null))
             {
                 inventory.Value.AddToInventory(data);
             }
