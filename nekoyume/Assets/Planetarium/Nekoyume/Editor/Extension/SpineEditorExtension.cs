@@ -46,14 +46,8 @@ namespace Planetarium.Nekoyume.Unity.Editor.Extension
             meshRenderer.receiveShadows = false;
             meshRenderer.sortingLayerName = "Character";
 
-            var animatorControllers = AssetDatabase.FindAssets("CharacterAnimator");
-            if (animatorControllers.Length == 0)
-            {
-                return;
-            }
-            
             var animator = gameObject.AddComponent<Animator>();
-            animator.runtimeAnimatorController = AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>(animatorControllers[0]);
+            animator.runtimeAnimatorController = AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>("Assets/AddressableAssets/Character/CharacterAnimator.controller");
 
             var controller = gameObject.AddComponent<SkeletonAnimationController>();
             foreach (var animationName in SkeletonAnimationController.AnimationNames)
