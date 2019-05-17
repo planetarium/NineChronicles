@@ -116,13 +116,13 @@ namespace Nekoyume.UI.Model
             switch (state.Value)
             {
                 case State.Buy:
-                    // 구매하겠습니까?
+                    // ToDo. 구매하겠습니까?
                     return;
             }
             
             if (itemInfo.item.Value is ShopItem)
             {
-                // 판매 취소하겠습니까?
+                // ToDo. 판매 취소하겠습니까?
             }
             else
             {
