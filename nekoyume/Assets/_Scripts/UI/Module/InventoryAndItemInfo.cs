@@ -31,7 +31,7 @@ namespace Nekoyume.UI.Module
             if (ReferenceEquals(inventory, null))
             {
                 Clear();
-                return;       
+                return;
             }
             
             _inventoryData = inventoryData;

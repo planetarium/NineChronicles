@@ -17,6 +17,7 @@ namespace Nekoyume.UI.Module
         private Model.ShopItems _data;
         
         private readonly List<IDisposable> _disposablesForAwake = new List<IDisposable>();
+        private readonly List<IDisposable> _disposablesForSetData = new List<IDisposable>();
         
         #region Mono
         
@@ -54,12 +55,17 @@ namespace Nekoyume.UI.Module
             }
 
             _data = data;
+            _data.products.ObserveAdd().Subscribe(_ => UpdateView()).AddTo(_disposablesForSetData);
+            _data.products.ObserveRemove().Subscribe(_ => UpdateView()).AddTo(_disposablesForSetData);
+            _data.registeredProducts.ObserveAdd().Subscribe(_ => UpdateView()).AddTo(_disposablesForSetData);
+            _data.registeredProducts.ObserveRemove().Subscribe(_ => UpdateView()).AddTo(_disposablesForSetData);
             
             UpdateView();
         }
 
         public void Clear()
         {
+            _disposablesForSetData.DisposeAllAndClear();
             _data = null;
             
             UpdateView();
@@ -80,11 +86,11 @@ namespace Nekoyume.UI.Module
             switch (_state)
             {
                 case Model.Shop.State.Buy:
-                    UpdateViewWithItems(_data.buyItems);
+                    UpdateViewWithItems(_data.products);
                     refreshButton.gameObject.SetActive(true);
                     break;
                 case Model.Shop.State.Sell:
-                    UpdateViewWithItems(_data.sellItems);
+                    UpdateViewWithItems(_data.registeredProducts);
                     refreshButton.gameObject.SetActive(false);
                     break;
             }

@@ -60,7 +60,7 @@ namespace Nekoyume.Action
                 }
 
                 target = item;
-                target.Count--;
+                target.Count -= count;
             }
 
             if (ReferenceEquals(target, null))

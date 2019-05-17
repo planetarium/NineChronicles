@@ -8,8 +8,8 @@ namespace Nekoyume.UI.Model
 {
     public class ShopItems : IDisposable
     {
-        public readonly ReactiveCollection<ShopItem> buyItems = new ReactiveCollection<ShopItem>();
-        public readonly ReactiveCollection<ShopItem> sellItems = new ReactiveCollection<ShopItem>();
+        public readonly ReactiveCollection<ShopItem> products = new ReactiveCollection<ShopItem>();
+        public readonly ReactiveCollection<ShopItem> registeredProducts = new ReactiveCollection<ShopItem>();
         public readonly ReactiveProperty<ShopItem> selectedItem = new ReactiveProperty<ShopItem>();
         
         public readonly Subject<ShopItems> onClickRefresh = new Subject<ShopItems>();
@@ -26,8 +26,8 @@ namespace Nekoyume.UI.Model
                 return;
             }
 
-            buyItems.ObserveAdd().Subscribe(OnAddShopItem);
-            sellItems.ObserveAdd().Subscribe(OnAddShopItem);
+            products.ObserveAdd().Subscribe(OnAddShopItem);
+            registeredProducts.ObserveAdd().Subscribe(OnAddShopItem);
             
             ResetBuyItems(shop);
             ResetSellItems(shop);
@@ -35,8 +35,8 @@ namespace Nekoyume.UI.Model
         
         public void Dispose()
         {
-            buyItems.DisposeAll();
-            sellItems.DisposeAll();
+            products.DisposeAll();
+            registeredProducts.DisposeAll();
             selectedItem.DisposeAll();
             
             onClickRefresh.Dispose();
@@ -55,12 +55,12 @@ namespace Nekoyume.UI.Model
 
         public void RemoveBuyItem(Guid productId, int count)
         {
-            RemoveItem(buyItems, productId, count);
+            RemoveItem(products, productId, count);
         }
         
         public void RemoveSellItem(Guid productId, int count)
         {
-            RemoveItem(sellItems, productId, count);
+            RemoveItem(registeredProducts, productId, count);
         }
         
         private void RemoveItem(ICollection<ShopItem> collection, Guid productId, int count)
@@ -106,7 +106,7 @@ namespace Nekoyume.UI.Model
             {
                 selectedItem.Value.selected.Value = false;
                 
-                if (selectedItem.Value.item.Value.Data.id == shopItem.item.Value.Data.id)
+                if (selectedItem.Value.productId == shopItem.productId)
                 {
                     selectedItem.Value = null;
                     return;
@@ -133,7 +133,7 @@ namespace Nekoyume.UI.Model
 
                 foreach (var shopItem in keyValuePair.Value)
                 {
-                    buyItems.Add(new ShopItem(keyValuePair.Key, shopItem));
+                    products.Add(new ShopItem(keyValuePair.Key, shopItem));
                     total--;
                     if (total == 0)
                     {
@@ -160,7 +160,7 @@ namespace Nekoyume.UI.Model
             var items = shop.items[key];
             foreach (var item in items)
             {
-                sellItems.Add(new ShopItem(key, item));
+                registeredProducts.Add(new ShopItem(key, item));
             }
         }
     }
