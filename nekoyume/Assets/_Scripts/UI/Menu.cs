@@ -1,3 +1,4 @@
+using Nekoyume.Game;
 using Nekoyume.Manager;
 using Nekoyume.Game.Controller;
 using UnityEngine;
@@ -12,7 +13,16 @@ namespace Nekoyume.UI
         public GameObject btnShop;
         public GameObject btnTemple;
         public Text LabelInfo;
-        
+
+        public Stage Stage;
+
+        protected override void Awake()
+        {
+            base.Awake();
+
+            Stage = GameObject.Find("Stage").GetComponent<Stage>();
+        }
+
         public void ShowButtons(bool value)
         {
             btnQuest.SetActive(value);

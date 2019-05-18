@@ -101,7 +101,7 @@ GameObject:
   - component: {fileID: 222280120489536254}
   - component: {fileID: 114701395425875382}
   - component: {fileID: 114251822891201942}
-  - component: {fileID: 95799223342529134}
+  - component: {fileID: 4877393150678171673}
   m_Layer: 5
   m_Name: Btn
   m_TagString: Untagged
@@ -184,7 +184,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 3
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -222,25 +222,21 @@ MonoBehaviour:
         m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
---- !u!95 &95799223342529134
-Animator:
-  serializedVersion: 3
+--- !u!114 &4877393150678171673
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1054939152201896}
   m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 482de21319c2db14194a7ff9aec6466e, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75dd30a88f5deec4ebd3e75a76ac45f3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TweenDuration: 0.3
+  BgName: bg_character_main_06
+  Caption: {fileID: 225482200772157878}
 --- !u!1 &1057739395603766
 GameObject:
   m_ObjectHideFlags: 0
@@ -253,7 +249,7 @@ GameObject:
   - component: {fileID: 222331264590691430}
   - component: {fileID: 114625393046835654}
   - component: {fileID: 114485802770953696}
-  - component: {fileID: 95605969648516862}
+  - component: {fileID: 3450333501486923500}
   m_Layer: 5
   m_Name: Btn
   m_TagString: Untagged
@@ -336,7 +332,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 3
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -374,25 +370,21 @@ MonoBehaviour:
         m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
---- !u!95 &95605969648516862
-Animator:
-  serializedVersion: 3
+--- !u!114 &3450333501486923500
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1057739395603766}
   m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 482de21319c2db14194a7ff9aec6466e, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75dd30a88f5deec4ebd3e75a76ac45f3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TweenDuration: 0.3
+  BgName: bg_character_main_07
+  Caption: {fileID: 225328644751426344}
 --- !u!1 &1373194469851996
 GameObject:
   m_ObjectHideFlags: 0
@@ -957,6 +949,7 @@ MonoBehaviour:
   btnShop: {fileID: 1057739395603766}
   btnTemple: {fileID: 1853928540865328}
   LabelInfo: {fileID: 114407027513806374}
+  Stage: {fileID: 0}
 --- !u!1 &1548395960810348
 GameObject:
   m_ObjectHideFlags: 0
@@ -1871,7 +1864,7 @@ GameObject:
   - component: {fileID: 222296114074211404}
   - component: {fileID: 114660582191480924}
   - component: {fileID: 114562187411683950}
-  - component: {fileID: 95677682423232762}
+  - component: {fileID: 7983721594100104734}
   m_Layer: 5
   m_Name: Btn
   m_TagString: Untagged
@@ -1954,7 +1947,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 3
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -1992,25 +1985,21 @@ MonoBehaviour:
         m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
---- !u!95 &95677682423232762
-Animator:
-  serializedVersion: 3
+--- !u!114 &7983721594100104734
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1690004906704222}
   m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 482de21319c2db14194a7ff9aec6466e, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75dd30a88f5deec4ebd3e75a76ac45f3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TweenDuration: 0.3
+  BgName: bg_character_main_08
+  Caption: {fileID: 225731661836741652}
 --- !u!1 &1765745704192396
 GameObject:
   m_ObjectHideFlags: 0
@@ -2118,7 +2107,7 @@ GameObject:
   - component: {fileID: 222023525449448118}
   - component: {fileID: 114207616623351780}
   - component: {fileID: 114903063250779554}
-  - component: {fileID: 95632782952745146}
+  - component: {fileID: 5615811817025174728}
   m_Layer: 5
   m_Name: Btn
   m_TagString: Untagged
@@ -2201,7 +2190,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 3
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -2239,25 +2228,21 @@ MonoBehaviour:
         m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
---- !u!95 &95632782952745146
-Animator:
-  serializedVersion: 3
+--- !u!114 &5615811817025174728
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1853928540865328}
   m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 482de21319c2db14194a7ff9aec6466e, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75dd30a88f5deec4ebd3e75a76ac45f3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TweenDuration: 0.3
+  BgName: bg_character_main_04
+  Caption: {fileID: 225868632686622920}
 --- !u!1 &1859998891452742
 GameObject:
   m_ObjectHideFlags: 0
