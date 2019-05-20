@@ -1,16 +1,10 @@
-using System;
-using System.Collections.Generic;
 using System.IO;
 using Nekoyume.Game.Character;
 using Spine.Unity;
 using Spine.Unity.Editor;
 using UnityEditor;
-using UnityEditor.AddressableAssets;
-using UnityEditor.AddressableAssets.Settings;
 using UnityEditor.Animations;
-using UnityEditor.Experimental;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
 using UnityEngine.Rendering;
 using Object = UnityEngine.Object;
 
@@ -46,11 +40,12 @@ namespace Planetarium.Nekoyume.Unity.Editor
             meshRenderer.receiveShadows = false;
             meshRenderer.sortingLayerName = "Character";
 
-            var animatorControllerGuidArray = AssetDatabase.FindAssets("CharacterAnimator t:AnimatorController");
+            var findAssetFilter = "CharacterAnimator t:AnimatorController";
+            var animatorControllerGuidArray = AssetDatabase.FindAssets(findAssetFilter);
             if (animatorControllerGuidArray.Length == 0)
             {
                 Object.DestroyImmediate(gameObject);
-                throw new AssetNotFoundException();
+                throw new AssetNotFoundException($"AssetDatabase.FindAssets(\"{findAssetFilter}\")");
             }
 
             var animatorControllerPath = AssetDatabase.GUIDToAssetPath(animatorControllerGuidArray[0]);
@@ -60,19 +55,21 @@ namespace Planetarium.Nekoyume.Unity.Editor
             var controller = gameObject.AddComponent<SkeletonAnimationController>();
             foreach (var animationName in CharacterAnimation.List)
             {
-                var asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(Path.Combine(animationAssetsPath, $"{CharacterAnimation.Lowers[animationName]}.asset"));
+                assetPath = Path.Combine(animationAssetsPath, $"{CharacterAnimation.Lowers[animationName]}.asset");
+                var asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(assetPath);
                 if (ReferenceEquals(asset, null))
                 {
                     if (animationName == CharacterAnimation.Appear ||
                         animationName == CharacterAnimation.Disappear)
                     {
-                        asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(Path.Combine(animationAssetsPath, $"{CharacterAnimation.IdleLower}.asset"));
+                        assetPath = Path.Combine(animationAssetsPath, $"{CharacterAnimation.IdleLower}.asset");
+                        asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(assetPath);
                     }
 
                     if (ReferenceEquals(asset, null))
                     {
                         Object.DestroyImmediate(gameObject);
-                        throw new AssetNotFoundException();
+                        throw new AssetNotFoundException(assetPath);
                     }
                 }
                 
