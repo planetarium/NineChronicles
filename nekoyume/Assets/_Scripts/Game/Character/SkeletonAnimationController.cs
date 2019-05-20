@@ -11,11 +11,6 @@ namespace Nekoyume.Game.Character
 	[RequireComponent(typeof(SkeletonAnimation))]
     public class SkeletonAnimationController: MonoBehaviour
     {
-	    public static readonly string[] AnimationNames = new string[]
-	    {
-			"Appear", "Idle", "Run", "Attack", "Hit", "Die", "Disappear",
-	    };
-	    
 	    [Serializable]
 	    public class StateNameToAnimationReference {
 		    public string stateName;
@@ -66,14 +61,8 @@ namespace Nekoyume.Game.Character
 		/// <summary>Play an animation. If a transition animation is defined, the transition is played before the target animation being passed.</summary>
 		public void PlayNewAnimation (Spine.Animation target, int layerIndex)
 		{
-			var loop = false;
-			switch (target.Name)
-			{
-				case "idle":
-				case "run":
-					loop = true;
-					break;
-			}
+			var loop = target.Name == CharacterAnimation.IdleLower ||
+			            target.Name == CharacterAnimation.RunLower;
 
 			_skeletonAnimation.AnimationState.SetAnimation(layerIndex, target, loop);
 			targetAnimation = target;
