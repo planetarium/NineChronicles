@@ -266,7 +266,6 @@ namespace Nekoyume.UI
             _loadingScreen.Show();
             ActionManager.instance.Combination(_data.stagedItems.ToList())
                 .Select(eval => eval.Action)
-                .ObserveOnMainThread()
                 .Subscribe(ResponseCombination)
                 .AddTo(this);
             AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ClickCombinationCombination);

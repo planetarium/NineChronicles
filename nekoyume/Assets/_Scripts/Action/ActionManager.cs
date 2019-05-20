@@ -324,16 +324,17 @@ namespace Nekoyume.Action
         public IObservable<ActionBase.ActionEvaluation<Combination>> Combination(
             List<UI.Model.CountEditableItem> materials)
         {
-            var action = new Combination
-            {
-                Id = Guid.NewGuid(),
-            };
+            AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ActionCombination);
+            
+            var action = new Combination();
             materials.ForEach(m => action.Materials.Add(new Combination.ItemModel(m)));
             ProcessAction(action);
-            AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ActionCombination);
-            return ActionBase.EveryRender<Combination>().Where(eval =>
-                eval.Action.Id.Equals(action.Id)
-            ).Take(1).Last();
+
+            return ActionBase.EveryRender<Combination>()
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .Take(1)
+                .Last()
+                .ObserveOnMainThread();
         }
 
         public IObservable<ActionBase.ActionEvaluation<Sell>> Sell(int itemID, int count, decimal price)
@@ -342,7 +343,7 @@ namespace Nekoyume.Action
             ProcessAction(action);
 
             return ActionBase.EveryRender<Sell>()
-                .SkipWhile(eval => !eval.Action.Id.Equals(action.Id))
+                .Where(eval => eval.Action.Id.Equals(action.Id))
                 .Take(1)
                 .Last()
                 .ObserveOnMainThread()
