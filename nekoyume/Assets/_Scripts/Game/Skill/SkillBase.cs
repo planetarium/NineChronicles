@@ -9,7 +9,7 @@ namespace Nekoyume.Game.Skill
     public interface ISkill
     {
         SkillEffect.SkillType GetSkillType();
-        EventBase Use();
+        Model.Skill Use();
     }
 
     [Serializable]
@@ -24,7 +24,7 @@ namespace Nekoyume.Game.Skill
             return Effect.type;
         }
 
-        public abstract EventBase Use();
+        public abstract Model.Skill Use();
         protected SkillBase(CharacterBase caster, float chance, SkillEffect effect)
         {
             Caster = caster;

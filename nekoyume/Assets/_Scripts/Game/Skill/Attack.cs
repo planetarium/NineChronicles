@@ -36,7 +36,7 @@ namespace Nekoyume.Game.Skill
             return infos;
         }
 
-        public override EventBase Use()
+        public override Model.Skill Use()
         {
             throw new NotImplementedException();
         }
@@ -49,7 +49,7 @@ namespace Nekoyume.Game.Skill
         {
         }
 
-        public override EventBase Use()
+        public override Model.Skill Use()
         {
             var target = GetTarget();
             var info = ProcessDamage(target);
