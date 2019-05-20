@@ -99,6 +99,8 @@ namespace Nekoyume.UI
 
             SetData(new Model.Shop(ActionManager.instance.Avatar.Items, ActionManager.instance.Shop));
             base.Show();
+
+            AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
         }
 
         public override void Close()
@@ -114,6 +116,8 @@ namespace Nekoyume.UI
             Find<Status>()?.Show();
             Find<Menu>()?.Show();
             base.Close();
+
+            AudioController.instance.PlayMusic(AudioController.MusicCode.Main);
         }
 
         private void SetData(Model.Shop data)

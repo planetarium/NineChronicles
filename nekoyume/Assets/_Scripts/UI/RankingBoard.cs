@@ -2,6 +2,7 @@ using System;
 using Nekoyume.Action;
 using Nekoyume.Game;
 using Nekoyume.Game.Character;
+using Nekoyume.Game.Controller;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -38,6 +39,8 @@ namespace Nekoyume.UI
 
             _player.gameObject.SetActive(false);
             GetFilteredRanking();
+
+            AudioController.instance.PlayMusic(AudioController.MusicCode.Ranking);
         }
 
         public override void Close()
@@ -52,6 +55,8 @@ namespace Nekoyume.UI
             _player.gameObject.SetActive(true);
 
             base.Close();
+
+            AudioController.instance.PlayMusic(AudioController.MusicCode.Main);
         }
 
         private void GetAvatars(DateTimeOffset? dt)
