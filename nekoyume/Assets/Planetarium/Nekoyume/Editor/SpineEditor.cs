@@ -8,7 +8,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using Object = UnityEngine.Object;
 
-namespace Planetarium.Nekoyume.Unity.Editor
+namespace Planetarium.Nekoyume.Editor
 {
     public class SpineEditor
     {
@@ -53,14 +53,14 @@ namespace Planetarium.Nekoyume.Unity.Editor
             animator.runtimeAnimatorController = AssetDatabase.LoadAssetAtPath<AnimatorController>(animatorControllerPath);
 
             var controller = gameObject.AddComponent<SkeletonAnimationController>();
-            foreach (var animationName in CharacterAnimation.List)
+            foreach (var animationType in CharacterAnimation.List)
             {
-                assetPath = Path.Combine(animationAssetsPath, $"{CharacterAnimation.Lowers[animationName]}.asset");
+                assetPath = Path.Combine(animationAssetsPath, $"{CharacterAnimation.Lowers[animationType]}.asset");
                 var asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(assetPath);
                 if (ReferenceEquals(asset, null))
                 {
-                    if (animationName == CharacterAnimation.Appear ||
-                        animationName == CharacterAnimation.Disappear)
+                    if (animationType == CharacterAnimation.Type.Appear ||
+                        animationType == CharacterAnimation.Type.Disappear)
                     {
                         assetPath = Path.Combine(animationAssetsPath, $"{CharacterAnimation.IdleLower}.asset");
                         asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(assetPath);
@@ -73,7 +73,7 @@ namespace Planetarium.Nekoyume.Unity.Editor
                     }
                 }
                 
-                controller.statesAndAnimations.Add(new SkeletonAnimationController.StateNameToAnimationReference {stateName = animationName, animation = asset});
+                controller.statesAndAnimations.Add(new SkeletonAnimationController.StateNameToAnimationReference {stateName = nameof(animationType), animation = asset});
             }
 
             var prefab = PrefabUtility.SaveAsPrefabAsset(gameObject, Path.Combine(prefabPath, $"{prefabName}.prefab"));

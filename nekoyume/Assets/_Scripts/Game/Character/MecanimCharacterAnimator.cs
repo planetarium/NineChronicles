@@ -43,7 +43,7 @@ namespace Nekoyume.Game.Character
                 return;
             }
             
-            Animator.Play(CharacterAnimation.Appear);
+            Animator.Play(nameof(CharacterAnimation.Type.Appear));
         }
 
         public override void Idle()
@@ -53,8 +53,8 @@ namespace Nekoyume.Game.Character
                 return;
             }
             
-            Animator.Play(CharacterAnimation.Idle);
-            Animator.SetBool(CharacterAnimation.Run, false);
+            Animator.Play(nameof(CharacterAnimation.Type.Idle));
+            Animator.SetBool(nameof(CharacterAnimation.Type.Run), false);
         }
 
         public override void Run()
@@ -64,8 +64,8 @@ namespace Nekoyume.Game.Character
                 return;
             }
             
-            Animator.Play(CharacterAnimation.Run);
-            Animator.SetBool(CharacterAnimation.Run, true);
+            Animator.Play(nameof(CharacterAnimation.Type.Run));
+            Animator.SetBool(nameof(CharacterAnimation.Type.Run), true);
         }
 
         public override void StopRun()
@@ -75,7 +75,7 @@ namespace Nekoyume.Game.Character
                 return;
             }
             
-            Animator.SetBool(CharacterAnimation.Run, false);
+            Animator.SetBool(nameof(CharacterAnimation.Type.Run), false);
         }
 
         public override void Attack()
@@ -85,7 +85,7 @@ namespace Nekoyume.Game.Character
                 return;
             }
 
-            Animator.Play(CharacterAnimation.Attack, _baseLayerIndex, 0f);
+            Animator.Play(nameof(CharacterAnimation.Type.Attack), _baseLayerIndex, 0f);
         }
 
         public override void Casting()
@@ -95,7 +95,7 @@ namespace Nekoyume.Game.Character
                 return;
             }
 
-            Animator.Play(CharacterAnimation.Casting, _baseLayerIndex, 0f);
+            Animator.Play(nameof(CharacterAnimation.Type.Casting), _baseLayerIndex, 0f);
         }
 
         public override void Hit()
@@ -105,7 +105,7 @@ namespace Nekoyume.Game.Character
                 return;
             }
 
-            Animator.Play(CharacterAnimation.Hit, _baseLayerIndex, 0f);
+            Animator.Play(nameof(CharacterAnimation.Type.Hit), _baseLayerIndex, 0f);
         }
 
         public override void Die()
@@ -115,7 +115,7 @@ namespace Nekoyume.Game.Character
                 return;
             }
             
-            Animator.Play(CharacterAnimation.Die);
+            Animator.Play(nameof(CharacterAnimation.Type.Die));
         }
 
         public override void Disappear()
@@ -125,7 +125,7 @@ namespace Nekoyume.Game.Character
                 return;
             }
             
-            Animator.Play(CharacterAnimation.Disappear);
+            Animator.Play(nameof(CharacterAnimation.Type.Disappear));
         }
     }
 }

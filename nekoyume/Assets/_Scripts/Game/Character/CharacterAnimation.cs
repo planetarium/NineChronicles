@@ -4,46 +4,52 @@ namespace Nekoyume.Game.Character
 {
     public class CharacterAnimation
     {
-        public const string Appear = "Appear";
-        public const string Idle = "Idle";
-        public const string Run = "Run";
-        public const string Attack = "Attack";
-        public const string Casting = "Casting";
-        public const string Hit = "Hit";
-        public const string Die = "Die";
-        public const string Disappear = "Disappear";
+        public enum Type
+        {
+            Appear,
+            Idle,
+            Run,
+            Attack,
+            Casting,
+            Hit,
+            Die,
+            Disappear
+        }
+
+        // ToDo. Lower로 끝나는 변수들은 애니메이션 리소스 이름이 변경된 후 제거될 예정입니다.
+        public static readonly string AppearLower = nameof(Type.Appear).ToLower();
+        public static readonly string IdleLower = nameof(Type.Idle).ToLower();
+        public static readonly string RunLower = nameof(Type.Run).ToLower();
+        public static readonly string AttackLower = nameof(Type.Attack).ToLower();
+        public static readonly string CastingLower = nameof(Type.Casting).ToLower();
+        public static readonly string HitLower = nameof(Type.Hit).ToLower();
+        public static readonly string DieLower = nameof(Type.Die).ToLower();
+        public static readonly string DisappearLower = nameof(Type.Disappear).ToLower();
         
-        public static readonly string AppearLower = Appear.ToLower();
-        public static readonly string IdleLower = Idle.ToLower();
-        public static readonly string RunLower = Run.ToLower();
-        public static readonly string AttackLower = Attack.ToLower();
-        public static readonly string CastingLower = Casting.ToLower();
-        public static readonly string HitLower = Hit.ToLower();
-        public static readonly string DieLower = Die.ToLower();
-        public static readonly string DisappearLower = Disappear.ToLower();
+        public static readonly List<Type> List = new List<Type>();
         
-        public static readonly List<string> List = new List<string>();
-        public static readonly Dictionary<string, string> Lowers = new Dictionary<string, string>();
+        // ToDo. 애니메이션 리소스 이름이 변경된 후 제거될 예정입니다.
+        public static readonly Dictionary<Type, string> Lowers = new Dictionary<Type, string>();
 
         static CharacterAnimation()
         {
-            List.Add(Appear);
-            List.Add(Idle);
-            List.Add(Run);
-            List.Add(Attack);
-            List.Add(Casting);
-            List.Add(Hit);
-            List.Add(Die);
-            List.Add(Disappear);
+            List.Add(Type.Appear);
+            List.Add(Type.Idle);
+            List.Add(Type.Run);
+            List.Add(Type.Attack);
+            List.Add(Type.Casting);
+            List.Add(Type.Hit);
+            List.Add(Type.Die);
+            List.Add(Type.Disappear);
             
-            Lowers.Add(Appear, AppearLower);
-            Lowers.Add(Idle, IdleLower);
-            Lowers.Add(Run, RunLower);
-            Lowers.Add(Attack, AttackLower);
-            Lowers.Add(Casting, CastingLower);
-            Lowers.Add(Hit, HitLower);
-            Lowers.Add(Die, DieLower);
-            Lowers.Add(Disappear, DisappearLower);
+            Lowers.Add(Type.Appear, AppearLower);
+            Lowers.Add(Type.Idle, IdleLower);
+            Lowers.Add(Type.Run, RunLower);
+            Lowers.Add(Type.Attack, AttackLower);
+            Lowers.Add(Type.Casting, CastingLower);
+            Lowers.Add(Type.Hit, HitLower);
+            Lowers.Add(Type.Die, DieLower);
+            Lowers.Add(Type.Disappear, DisappearLower);
         } 
     }
 }
