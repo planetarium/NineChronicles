@@ -383,7 +383,6 @@ namespace Nekoyume.Game
             if (!character.TargetInRange(enemy))
             {
                 character.StartRun();
-                enemy.StartRun();
             }
         }
     }
