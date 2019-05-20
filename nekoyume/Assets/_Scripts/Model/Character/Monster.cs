@@ -26,6 +26,7 @@ namespace Nekoyume.Model
             defElement = Game.Elemental.Create(data.elemental);
             TurnSpeed = 1.0f;
             attackRange = data.attackRange;
+            hp = stats.HP;
         }
 
         protected override void OnDead()
