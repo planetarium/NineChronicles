@@ -57,7 +57,7 @@ namespace Nekoyume.Game.Character
         public abstract void Run();
         public abstract void StopRun();
         public abstract void Attack();
-        public abstract void Casting();
+        public abstract void Cast();
         public abstract void Hit();
         public abstract void Die();
         public abstract void Disappear();
