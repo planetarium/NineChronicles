@@ -342,5 +342,14 @@ namespace Nekoyume.Game.Character
 
         }
 
+        private void OnCollisionEnter(Collision other)
+        {
+            if (other.gameObject.CompareTag(targetTag))
+            {
+                var character = other.gameObject.GetComponent<CharacterBase>();
+                if (TargetInRange(character))
+                    StopRun();
+            }
+        }
     }
 }
