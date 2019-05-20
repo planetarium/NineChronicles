@@ -184,7 +184,7 @@ namespace Nekoyume.UI
                     data.item.Value.count.Value,
                     data.price.Value);
 
-            observable.ObserveOnMainThread().Subscribe(eval =>
+            observable.Subscribe(eval =>
             {
                 var context = (Context) eval.OutputStates.GetState(eval.InputContext.Signer);
                 var result = context.GetGameActionResult<Nekoyume.Action.Sell.ResultModel>();

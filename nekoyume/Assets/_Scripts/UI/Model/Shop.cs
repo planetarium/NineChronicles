@@ -146,7 +146,7 @@ namespace Nekoyume.UI.Model
                 {
                     // 초기화 단계에서 `inventory.Value.selectedItem.Subscribe(OnSelectInventoryItem);` 라인을 통해
                     // 구독할 때, 한 번 반드시 이 라인에 들어옵니다.
-                    // 이때 예외를 발생하지 않아야 해서 수정합니다.
+                    // 이때 예외가 발생하지 않아야 해서 수정합니다.
                     return; // throw new UnexpectedOperationException();
                 }
                 
@@ -164,7 +164,7 @@ namespace Nekoyume.UI.Model
                 {
                     // 초기화 단계에서 `shopItems.Value.selectedItem.Subscribe(OnSelectShopItem);` 라인을 통해
                     // 구독할 때, 한 번 반드시 이 라인에 들어옵니다.
-                    // 이때 예외를 발생하지 않아야 해서 수정합니다.
+                    // 이때 예외가 발생하지 않아야 해서 수정합니다.
                     return; // throw new UnexpectedOperationException();
                 }
                 

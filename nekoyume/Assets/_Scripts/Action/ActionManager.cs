@@ -340,10 +340,28 @@ namespace Nekoyume.Action
         {
             var action = new Sell {itemId = itemID, count = count, price = price};
             ProcessAction(action);
-            
-            return ActionBase.EveryRender<Sell>().SkipWhile(
-                eval => !eval.Action.Id.Equals(action.Id)
-            ).Take(1).Last();  // Last() is for completion
+
+            return ActionBase.EveryRender<Sell>()
+                .SkipWhile(eval => !eval.Action.Id.Equals(action.Id))
+                .Take(1)
+                .Last()
+                .ObserveOnMainThread()
+                .Do(_ =>
+                {
+                    if (Tables.instance.TryGetItemEquipment(itemID, out var itemEquipment))
+                    {
+                        Shop.Register(AvatarAddress, new ShopItem
+                        {
+                            item = ItemBase.ItemFactory(itemEquipment),
+                            count = count,
+                            price = price
+                        });   
+                    }
+                    else
+                    {
+                        throw new KeyNotFoundException(itemID.ToString());
+                    }
+                }); // Last() is for completion
         }
 
         protected override void OnDestroy() 
