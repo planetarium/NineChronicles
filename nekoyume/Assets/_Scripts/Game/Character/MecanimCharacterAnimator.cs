@@ -26,7 +26,7 @@ namespace Nekoyume.Game.Character
         {
             // Reference.
             // if (ReferenceEquals(_anim, null)) 이 라인일 때와 if (_anim == null) 이 라인일 때의 결과가 달라서 주석을 남겨뒀어요.
-            // ReferenceEquals(left, null) 함수는 left 변수의 메모리에 담긴 포인터가이 null인지 검사하고,
+            // ReferenceEquals(left, null) 함수는 left 변수의 메모리에 담긴 포인터가 null인지 검사하고,
             // `left == null` 식은 left 변수의 메모리에 담긴 포인터가 가리키는 메모리의 값이 null인지 검사합니다.
             return Animator != null;
         }

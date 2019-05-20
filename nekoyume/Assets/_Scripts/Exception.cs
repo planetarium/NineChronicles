@@ -2,6 +2,10 @@ using System;
 using Spine;
 using UnityEngine;
 
+public class UnexpectedOperationException : Exception
+{
+}
+
 public class InvalidActionException : Exception
 {
     public InvalidActionException()

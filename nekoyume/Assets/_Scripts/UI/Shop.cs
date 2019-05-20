@@ -203,7 +203,7 @@ namespace Nekoyume.UI
                 
                 if (!Tables.instance.TryGetItemEquipment(result.itemId, out var itemEquipment))
                 {
-                    throw new KeyNotFoundException();
+                    throw new KeyNotFoundException(result.itemId.ToString());
                 }
 
                 _data.itemCountAndPricePopup.Value.item.Value = null;

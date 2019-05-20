@@ -52,19 +52,16 @@ namespace Nekoyume.UI.Model
         
         public void AddToInventory(CountableItem item)
         {
-            using (var e = items.GetEnumerator())
+            foreach (var inventoryItem in items)
             {
-                while (e.MoveNext())
+                if (ReferenceEquals(inventoryItem, null) ||
+                    inventoryItem.item.Value.Data.id != item.item.Value.Data.id)
                 {
-                    if (ReferenceEquals(e.Current, null) ||
-                        e.Current.item.Value.Data.id != item.item.Value.Data.id)
-                    {
-                        continue;
-                    }
-
-                    e.Current.count.Value += item.count.Value;
-                    return;
+                    continue;
                 }
+
+                inventoryItem.count.Value += item.count.Value;
+                return;
             }
             
             items.Add(new InventoryItem(item.item.Value, item.count.Value));
@@ -73,39 +70,34 @@ namespace Nekoyume.UI.Model
         public void RemoveFromInventory(IEnumerable<CountEditableItem> collection)
         {
             var shouldRemoveItems = new List<InventoryItem>();
-            
-            using (var e = collection.GetEnumerator())
+
+            foreach (var countEditableItem in collection)
             {
-                while (e.MoveNext())
+                if (ReferenceEquals(countEditableItem, null))
                 {
-                    if (ReferenceEquals(e.Current, null))
-                    {
-                        continue;
-                    }
+                    continue;
+                }
 
-                    var removeItem = e.Current;
-                    
-                    using (var e2 = items.GetEnumerator())
+                using (var e2 = items.GetEnumerator())
+                {
+                    while (e2.MoveNext())
                     {
-                        while (e2.MoveNext())
+                        var inventoryItem = e2.Current;
+                            
+                        if (ReferenceEquals(inventoryItem, null) ||
+                            inventoryItem.item.Value.Data.id != countEditableItem.item.Value.Data.id)
                         {
-                            var inventoryItem = e2.Current;
-                            
-                            if (ReferenceEquals(inventoryItem, null) ||
-                                inventoryItem.item.Value.Data.id != removeItem.item.Value.Data.id)
-                            {
-                                continue;
-                            }
-
-                            inventoryItem.count.Value -= removeItem.count.Value;
-
-                            if (inventoryItem.count.Value <= 0)
-                            {
-                                shouldRemoveItems.Add(inventoryItem);
-                            }
-                            
-                            break;
+                            continue;
                         }
+
+                        inventoryItem.count.Value -= countEditableItem.count.Value;
+
+                        if (inventoryItem.count.Value <= 0)
+                        {
+                            shouldRemoveItems.Add(inventoryItem);
+                        }
+                            
+                        break;
                     }
                 }
             }

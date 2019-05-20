@@ -144,7 +144,7 @@ namespace Nekoyume.UI.Model
             {
                 if (ReferenceEquals(inventoryItem, null))
                 {
-                    return;
+                    throw new UnexpectedOperationException();
                 }
                 
                 shopItems.Value.DeselectAll();
@@ -159,7 +159,7 @@ namespace Nekoyume.UI.Model
             {
                 if (ReferenceEquals(shopItem, null))
                 {
-                    return;
+                    throw new UnexpectedOperationException();
                 }
                 
                 inventory.Value.DeselectAll();

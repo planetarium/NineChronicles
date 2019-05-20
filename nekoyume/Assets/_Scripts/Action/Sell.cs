@@ -60,6 +60,15 @@ namespace Nekoyume.Action
                 }
 
                 target = item;
+                if (target.Count < count)
+                {
+                    ctx.SetGameActionResult(new ResultModel
+                    {
+                        errorCode = GameActionResult.ErrorCode.SellItemCountNotEnoughInInventory,
+                    });
+                    
+                    return states.SetState(actionCtx.Signer, ctx);
+                }
                 target.Count -= count;
             }
 
