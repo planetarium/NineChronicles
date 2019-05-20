@@ -2,6 +2,13 @@ using UnityEngine;
 
 namespace Nekoyume
 {
+    /// <summary>
+    /// ToDo. 루트 게임오브젝트가 아닐 경우 `DontDestroyOnLoad(gameObject);`가 작동하지 않는다.
+    /// 특정 게임오브젝트의 자식으로 존재하는 싱글턴 게임오브젝트가 필요할까?
+    /// 부모 게임오브젝트가 파괴되었을 때 싱글턴 게임오브젝트는 어떤 형태로 존재해야 하는가?
+    /// 필요하다면, 어떻게 제공할까?
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class MonoSingleton<T> : MonoBehaviour where T : MonoSingleton<T>
     {
         private static T _instance;

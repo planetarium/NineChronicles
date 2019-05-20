@@ -144,7 +144,10 @@ namespace Nekoyume.UI.Model
             {
                 if (ReferenceEquals(inventoryItem, null))
                 {
-                    throw new UnexpectedOperationException();
+                    // 초기화 단계에서 `inventory.Value.selectedItem.Subscribe(OnSelectInventoryItem);` 라인을 통해
+                    // 구독할 때, 한 번 반드시 이 라인에 들어옵니다.
+                    // 이때 예외를 발생하지 않아야 해서 수정합니다.
+                    return; // throw new UnexpectedOperationException();
                 }
                 
                 shopItems.Value.DeselectAll();
@@ -159,7 +162,10 @@ namespace Nekoyume.UI.Model
             {
                 if (ReferenceEquals(shopItem, null))
                 {
-                    throw new UnexpectedOperationException();
+                    // 초기화 단계에서 `shopItems.Value.selectedItem.Subscribe(OnSelectShopItem);` 라인을 통해
+                    // 구독할 때, 한 번 반드시 이 라인에 들어옵니다.
+                    // 이때 예외를 발생하지 않아야 해서 수정합니다.
+                    return; // throw new UnexpectedOperationException();
                 }
                 
                 inventory.Value.DeselectAll();
