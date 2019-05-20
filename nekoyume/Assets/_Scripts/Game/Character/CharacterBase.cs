@@ -312,6 +312,12 @@ namespace Nekoyume.Game.Character
 
             animator.Attack();
             yield return new WaitUntil(() => attackEnd);
+
+            var enemy = GetComponentsInChildren<CharacterBase>()
+                .Where(c => c.gameObject.CompareTag(targetTag))
+                .OrderBy(c => c.transform.position.x).FirstOrDefault();
+            if (enemy != null && !TargetInRange(enemy))
+                RunSpeed = Speed;
         }
         public IEnumerator CoAttack(IEnumerable<Model.Skill.SkillInfo> infos)
         {

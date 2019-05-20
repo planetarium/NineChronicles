@@ -185,5 +185,19 @@ namespace Nekoyume.Game.Character
                     break;
             }
         }
+
+        protected override bool CanRun()
+        {
+            var canRun = base.CanRun();
+            var enemy = GetComponentsInChildren<CharacterBase>()
+                .Where(c => c.gameObject.CompareTag(targetTag))
+                .OrderBy(c => c.transform.position.x).FirstOrDefault();
+            if (enemy != null)
+            {
+                return canRun && !TargetInRange(enemy);
+            }
+
+            return canRun;
+        }
     }
 }
