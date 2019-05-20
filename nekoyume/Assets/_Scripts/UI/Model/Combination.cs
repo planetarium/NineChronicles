@@ -24,8 +24,10 @@ namespace Nekoyume.UI.Model
             ItemBase.ItemType.Shoes.ToString(),
         };
 
-        public readonly ReactiveProperty<InventoryAndItemInfo> inventoryAndItemInfo
-            = new ReactiveProperty<InventoryAndItemInfo>();
+        public readonly ReactiveProperty<Inventory> inventory
+            = new ReactiveProperty<Inventory>();
+        public readonly ReactiveProperty<ItemInfo> itemInfo
+            = new ReactiveProperty<ItemInfo>();
 
         public readonly ReactiveProperty<SimpleItemCountPopup> itemCountPopup =
             new ReactiveProperty<SimpleItemCountPopup>();
@@ -48,15 +50,16 @@ namespace Nekoyume.UI.Model
         {
             _stagedItemsLimit = stagedItemsLimit;
 
-            inventoryAndItemInfo.Value = new InventoryAndItemInfo(items);
-            inventoryAndItemInfo.Value.inventory.Value.dimmedFunc.Value = DimmedFunc;
-            inventoryAndItemInfo.Value.itemInfo.Value.buttonText.Value = "재료 선택";
-            inventoryAndItemInfo.Value.itemInfo.Value.buttonEnabledFunc.Value = ButtonEnabledFunc;
-
+            inventory.Value = new Inventory(items);
+            inventory.Value.dimmedFunc.Value = DimmedFunc;
+            itemInfo.Value = new ItemInfo();
+            itemInfo.Value.buttonText.Value = "재료 선택";
+            itemInfo.Value.buttonEnabledFunc.Value = ButtonEnabledFunc;
             itemCountPopup.Value = new SimpleItemCountPopup();
             itemCountPopup.Value.titleText.Value = "재료 수량 선택";
 
-            inventoryAndItemInfo.Value.itemInfo.Value.onClick.Subscribe(OnClickItemInfo);
+            inventory.Value.selectedItem.Subscribe(OnInventorySelectedItem);
+            itemInfo.Value.onClick.Subscribe(OnClickItemInfo);
             itemCountPopup.Value.onClickSubmit.Subscribe(OnClickSubmitItemCountPopup);
             stagedItems.ObserveAdd().Subscribe(OnStagedItemsAdd);
             stagedItems.ObserveRemove().Subscribe(OnStagedItemsRemove);
@@ -65,11 +68,12 @@ namespace Nekoyume.UI.Model
 
         public void Dispose()
         {
-            inventoryAndItemInfo.Dispose();
-            itemCountPopup.Dispose();
+            inventory.DisposeAll();
+            itemInfo.DisposeAll();
+            itemCountPopup.DisposeAll();
             stagedItems.DisposeAll();
             readyForCombination.Dispose();
-            resultPopup.Dispose();
+            resultPopup.DisposeAll();
 
             onClickCombination.Dispose();
         }
@@ -97,6 +101,11 @@ namespace Nekoyume.UI.Model
             }
 
             return true;
+        }
+        
+        private void OnInventorySelectedItem(InventoryItem data)
+        {
+            itemInfo.Value.item.Value = data;
         }
 
         private void OnClickItemInfo(ItemInfo data)
@@ -207,12 +216,12 @@ namespace Nekoyume.UI.Model
         private void OnResultPopupOnClickSubmit(CombinationResultPopup data)
         {
             // 재료 아이템들을 인벤토리에서 제거.
-            inventoryAndItemInfo.Value.RemoveFromInventory(data.materialItems);
+            inventory.Value.RemoveFromInventory(data.materialItems);
 
             // 결과 아이템이 있다면, 인벤토리에 추가.
-            if (!ReferenceEquals(resultPopup.Value.item.Value, null))
+            if (!ReferenceEquals(data.item.Value, null))
             {
-                inventoryAndItemInfo.Value.AddToInventory(data);
+                inventory.Value.AddToInventory(data);
             }
 
             while (stagedItems.Count > 0)
@@ -226,7 +235,7 @@ namespace Nekoyume.UI.Model
         
         private void SetStaged(int id, bool isStaged)
         {
-            foreach (var item in inventoryAndItemInfo.Value.inventory.Value.items)
+            foreach (var item in inventory.Value.items)
             {
                 if (item.item.Value.Data.id != id)
                 {
@@ -237,10 +246,10 @@ namespace Nekoyume.UI.Model
                 item.dimmed.Value = isStaged;
             }
             
-            if (!ReferenceEquals(inventoryAndItemInfo.Value.itemInfo.Value.item.Value, null) &&
-                inventoryAndItemInfo.Value.itemInfo.Value.item.Value.item.Value.Data.id == id)
+            if (!ReferenceEquals(itemInfo.Value.item.Value, null) &&
+                itemInfo.Value.item.Value.item.Value.Data.id == id)
             {
-                inventoryAndItemInfo.Value.itemInfo.Value.buttonEnabled.Value = !isStaged;
+                itemInfo.Value.buttonEnabled.Value = !isStaged;
             }
         }
 

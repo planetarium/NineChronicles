@@ -2,11 +2,9 @@ using System;
 using System.Collections.Generic;
 using Nekoyume.Action;
 using Nekoyume.Data;
-using Nekoyume.Game;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
-using Nekoyume.UI;
 using Nekoyume.UI.Model;
 using UniRx;
 using UnityEngine;
@@ -14,6 +12,7 @@ using UnityEngine.UI;
 using InventoryAndItemInfo = Nekoyume.UI.Module.InventoryAndItemInfo;
 using ShopItem = Nekoyume.UI.Model.ShopItem;
 using ShopItems = Nekoyume.UI.Module.ShopItems;
+using Stage = Nekoyume.Game.Stage;
 
 namespace Nekoyume.UI
 {
@@ -129,7 +128,7 @@ namespace Nekoyume.UI
                 .AddTo(_disposablesForSetData);
             _data.onClickClose.Subscribe(_ => Close()).AddTo(_disposablesForSetData);
 
-            inventoryAndItemInfo.SetData(_data.inventoryAndItemInfo.Value);
+            inventoryAndItemInfo.SetData(_data.inventory.Value, _data.itemInfo.Value);
             shopItems.SetState(_data.state.Value);
             shopItems.SetData(_data.shopItems.Value);
         }
@@ -201,15 +200,20 @@ namespace Nekoyume.UI
                 {
                     throw new GameActionResultUnexpectedException();
                 }
+                
+                if (!Tables.instance.TryGetItemEquipment(result.itemId, out var itemEquipment))
+                {
+                    throw new KeyNotFoundException(result.itemId.ToString());
+                }
 
                 _data.itemCountAndPricePopup.Value.item.Value = null;
-                _data.inventoryAndItemInfo.Value.inventory.Value.RemoveItem(result.itemId, result.count);
-                _data.shopItems.Value.sellItems.Add(new ShopItem(
-                    Tables.instance.CreateItemBase(result.itemId),
-                    result.count,
-                    ActionManager.instance.agentAddress.ToByteArray(),
+                _data.inventory.Value.RemoveItem(result.itemId, result.count);
+                _data.shopItems.Value.registeredProducts.Add(new ShopItem(
+                    eval.InputContext.Signer.ToString(),
                     result.price,
-                    result.productId));
+                    result.productId,
+                    ItemBase.ItemFactory(itemEquipment),
+                    result.count));
                 _loadingScreen.Close();
             }).AddTo(this);
         }

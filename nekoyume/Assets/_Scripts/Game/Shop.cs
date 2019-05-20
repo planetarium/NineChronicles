@@ -2,18 +2,17 @@ using System;
 using System.Collections.Generic;
 using Libplanet;
 using Nekoyume.Game.Item;
-using UnityEditor;
 
 namespace Nekoyume.Game
 {
     [Serializable]
     public class Shop
     {
-        public readonly Dictionary<byte[], List<ShopItem>> items = new Dictionary<byte[], List<ShopItem>>();
+        public readonly Dictionary<string, List<ShopItem>> items = new Dictionary<string, List<ShopItem>>();
         
         public Guid Register(Address key, ShopItem item)
         {
-            var addr = key.ToByteArray();
+            var addr = key.ToString();
             if (!items.ContainsKey(addr))
             {
                 items.Add(addr, new List<ShopItem>());
@@ -24,7 +23,7 @@ namespace Nekoyume.Game
             return item.productId;
         }
 
-        public KeyValuePair<byte[], ShopItem> Unregister(Guid productId)
+        public KeyValuePair<string, ShopItem> Unregister(Guid productId)
         {
             foreach (var pair in items)
             {
@@ -32,7 +31,7 @@ namespace Nekoyume.Game
                 {
                     if (shopItem.productId != productId) continue;
                     
-                    return new KeyValuePair<byte[], ShopItem>(pair.Key, shopItem);
+                    return new KeyValuePair<string, ShopItem>(pair.Key, shopItem);
                 }
             }
 

@@ -138,7 +138,7 @@ namespace Nekoyume.UI
             
             _disposablesForSetData.DisposeAllAndClear();
             _data = value;
-            _data.inventoryAndItemInfo.Value.itemInfo.Value.item.Subscribe(OnItemInfoItem).AddTo(_disposablesForSetData);
+            _data.itemInfo.Value.item.Subscribe(OnItemInfoItem).AddTo(_disposablesForSetData);
             _data.itemCountPopup.Value.item.Subscribe(OnPopupItem).AddTo(_disposablesForSetData);
             _data.itemCountPopup.Value.onClickClose.Subscribe(OnClickClosePopup).AddTo(_disposablesForSetData);
             _data.stagedItems.ObserveAdd().Subscribe(OnAddStagedItems).AddTo(_disposablesForSetData);
@@ -147,7 +147,7 @@ namespace Nekoyume.UI
             _data.readyForCombination.Subscribe(SetActiveCombinationButton).AddTo(_disposablesForSetData);
             _data.onClickCombination.Subscribe(RequestCombination).AddTo(_disposablesForSetData);
             _data.resultPopup.Subscribe(SubscribeResultPopup).AddTo(_disposablesForSetData);
-            inventoryAndItemInfo.SetData(_data.inventoryAndItemInfo.Value);
+            inventoryAndItemInfo.SetData(_data.inventory.Value, _data.itemInfo.Value);
             
             UpdateStagedItems();
         }
@@ -187,11 +187,11 @@ namespace Nekoyume.UI
                 data.dimmed.Value ||
                 _data.IsStagedItemsFulled)
             {
-                _data.inventoryAndItemInfo.Value.itemInfo.Value.buttonEnabled.Value = false;
+                _data.itemInfo.Value.buttonEnabled.Value = false;
             }
             else
             {
-                _data.inventoryAndItemInfo.Value.itemInfo.Value.buttonEnabled.Value = true;
+                _data.itemInfo.Value.buttonEnabled.Value = true;
             }
         }
 
