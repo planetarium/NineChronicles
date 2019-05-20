@@ -9,7 +9,8 @@ namespace Nekoyume.UI.Module
         public Inventory inventory;
         public ItemInfo itemInfo;
         
-        private Model.InventoryAndItemInfo _data;
+        private Model.Inventory _inventoryData;
+        private Model.ItemInfo _itemInfoData;
 
         #region Mono
 
@@ -25,24 +26,26 @@ namespace Nekoyume.UI.Module
 
         #endregion
         
-        public void SetData(Model.InventoryAndItemInfo data)
+        public void SetData(Model.Inventory inventoryData, Model.ItemInfo itemInfoData)
         {
-            if (ReferenceEquals(data, null))
+            if (ReferenceEquals(inventory, null))
             {
                 Clear();
-                return;       
+                return;
             }
             
-            _data = data;
-            inventory.SetData(_data.inventory.Value);
-            itemInfo.SetData(_data.itemInfo.Value);
+            _inventoryData = inventoryData;
+            _itemInfoData = itemInfoData;
+            inventory.SetData(_inventoryData);
+            itemInfo.SetData(_itemInfoData);
         }
         
         public void Clear()
         {
             inventory.Clear();
             itemInfo.Clear();
-            _data = null;
+            _inventoryData = null;
+            _itemInfoData = null;
         }
     }
 }

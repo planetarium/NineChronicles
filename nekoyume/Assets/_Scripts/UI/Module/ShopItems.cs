@@ -10,13 +10,14 @@ namespace Nekoyume.UI.Module
 {
     public class ShopItems : MonoBehaviour
     {
-        public List<SimpleCountableItemView> items;
+        public List<ShopItemView> items;
         public Button refreshButton;
 
         private Model.Shop.State _state;
         private Model.ShopItems _data;
         
         private readonly List<IDisposable> _disposablesForAwake = new List<IDisposable>();
+        private readonly List<IDisposable> _disposablesForSetData = new List<IDisposable>();
         
         #region Mono
         
@@ -54,12 +55,17 @@ namespace Nekoyume.UI.Module
             }
 
             _data = data;
+            _data.products.ObserveAdd().Subscribe(_ => UpdateView()).AddTo(_disposablesForSetData);
+            _data.products.ObserveRemove().Subscribe(_ => UpdateView()).AddTo(_disposablesForSetData);
+            _data.registeredProducts.ObserveAdd().Subscribe(_ => UpdateView()).AddTo(_disposablesForSetData);
+            _data.registeredProducts.ObserveRemove().Subscribe(_ => UpdateView()).AddTo(_disposablesForSetData);
             
             UpdateView();
         }
 
         public void Clear()
         {
+            _disposablesForSetData.DisposeAllAndClear();
             _data = null;
             
             UpdateView();
@@ -80,12 +86,12 @@ namespace Nekoyume.UI.Module
             switch (_state)
             {
                 case Model.Shop.State.Buy:
-                    UpdateViewWithItems(_data.buyItems);
-                    refreshButton.gameObject.SetActive(false);
+                    UpdateViewWithItems(_data.products);
+                    refreshButton.gameObject.SetActive(true);
                     break;
                 case Model.Shop.State.Sell:
-                    UpdateViewWithItems(_data.sellItems);
-                    refreshButton.gameObject.SetActive(true);
+                    UpdateViewWithItems(_data.registeredProducts);
+                    refreshButton.gameObject.SetActive(false);
                     break;
             }
         }
@@ -97,13 +103,14 @@ namespace Nekoyume.UI.Module
             {
                 while (uiItems.MoveNext())
                 {
-                    if (!dataItems.MoveNext())
+                    if (ReferenceEquals(uiItems.Current, null))
                     {
                         continue;
                     }
                     
-                    if (ReferenceEquals(uiItems.Current, null))
+                    if (!dataItems.MoveNext())
                     {
+                        uiItems.Current.Clear();
                         continue;
                     }
                         

@@ -5,7 +5,6 @@ using System.Globalization;
 using Libplanet.Action;
 using Nekoyume.Game;
 using Nekoyume.Game.Item;
-using Nekoyume.Model;
 
 namespace Nekoyume.Action
 {
@@ -61,7 +60,16 @@ namespace Nekoyume.Action
                 }
 
                 target = item;
-                target.Count--;
+                if (target.Count < count)
+                {
+                    ctx.SetGameActionResult(new ResultModel
+                    {
+                        errorCode = GameActionResult.ErrorCode.SellItemCountNotEnoughInInventory,
+                    });
+                    
+                    return states.SetState(actionCtx.Signer, ctx);
+                }
+                target.Count -= count;
             }
 
             if (ReferenceEquals(target, null))

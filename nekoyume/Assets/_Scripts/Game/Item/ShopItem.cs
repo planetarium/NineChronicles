@@ -6,7 +6,6 @@ namespace Nekoyume.Game.Item
     public class ShopItem
     {
         public Guid productId;
-        public byte[] owner;
         public ItemBase item;
         public int count;
         public decimal price;

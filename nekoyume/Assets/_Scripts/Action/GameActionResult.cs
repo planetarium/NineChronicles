@@ -16,6 +16,7 @@ namespace Nekoyume.Action
             #region Sell
 
             public const int SellItemNotFoundInInventory = -100;
+            public const int SellItemCountNotEnoughInInventory = -101;
 
             #endregion
         }

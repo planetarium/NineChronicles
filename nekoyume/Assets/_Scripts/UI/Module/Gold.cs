@@ -30,7 +30,7 @@ namespace Nekoyume.UI.Module
         
         #endregion
 
-        private void SetGold(int gold)
+        private void SetGold(decimal gold)
         {
             text.text = gold.ToString("n0");
         }
