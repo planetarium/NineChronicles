@@ -59,7 +59,8 @@ namespace Nekoyume.Action
                         break;
                     }
 
-                    if (Player.targets.Count == 0)
+
+                    if (!Player.targets.Any())
                     {
                         var index = Math.Min(_waves.IndexOf(wave), lastWave);
                         var items = _waveRewards[index];
