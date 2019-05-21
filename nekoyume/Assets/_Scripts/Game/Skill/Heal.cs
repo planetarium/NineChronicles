@@ -25,7 +25,7 @@ namespace Nekoyume.Game.Skill
 
             return new Model.Heal
             {
-                character = CharacterBase.Copy(Caster),
+                character = (CharacterBase) Caster.Clone(),
                 skillInfos = infos,
             };
         }

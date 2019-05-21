@@ -16,7 +16,7 @@ namespace Nekoyume.Game.Skill
 
             return new Model.Attack
             {
-                character = CharacterBase.Copy(Caster),
+                character = (CharacterBase) Caster.Clone(),
                 skillInfos = ProcessDamage(GetTarget()),
             };
         }
