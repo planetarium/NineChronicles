@@ -14,23 +14,25 @@ namespace Nekoyume.UI.Model
         
         public readonly Subject<ShopItems> onClickRefresh = new Subject<ShopItems>();
 
+        private Game.Shop _shop;
+
         public ShopItems(Game.Shop shop)
         {
             if (ReferenceEquals(shop, null))
             {
                 throw new ArgumentNullException();
             }
-            
-            if (shop.items.Count == 0)
-            {
-                return;
-            }
+
+            _shop = shop;
 
             products.ObserveAdd().Subscribe(OnAddShopItem);
+            products.ObserveRemove().Subscribe(OnRemoveShopItem);
             registeredProducts.ObserveAdd().Subscribe(OnAddShopItem);
+            registeredProducts.ObserveRemove().Subscribe(OnRemoveShopItem);
+            onClickRefresh.Subscribe(_ => ResetBuyItems());
             
-            ResetBuyItems(shop);
-            ResetSellItems(shop);
+            ResetBuyItems();
+            ResetSellItems();
         }
         
         public void Dispose()
@@ -100,6 +102,12 @@ namespace Nekoyume.UI.Model
             e.Value.onClick.Subscribe(OnClickShopItem);
         }
         
+        private void OnRemoveShopItem(CollectionRemoveEvent<ShopItem> e)
+        {
+            // 데이터의 프로퍼티를 외부에서 처분하는 부분 기억.
+            e.Value.onClick.Dispose();
+        }
+        
         private void OnClickShopItem(ShopItem shopItem)
         {
             if (!ReferenceEquals(selectedItem.Value, null))
@@ -117,15 +125,17 @@ namespace Nekoyume.UI.Model
             selectedItem.Value.selected.Value = true;
         }
 
-        private void ResetBuyItems(Game.Shop shop)
+        private void ResetBuyItems()
         {
-            var startIndex = UnityEngine.Random.Range(0, shop.items.Count);
+            products.Clear();
+            
+            var startIndex = UnityEngine.Random.Range(0, _shop.items.Count);
             var index = startIndex;
             var total = 16;
 
             for (var i = 0; i < total; i++)
             {
-                var keyValuePair = shop.items.ElementAt(index);
+                var keyValuePair = _shop.items.ElementAt(index);
                 var count = keyValuePair.Value.Count;
                 if (count == 0)
                 {
@@ -140,29 +150,34 @@ namespace Nekoyume.UI.Model
                         return;
                     }
                 }
-
-                index++;
+                
+                if (index + 1 == _shop.items.Count)
+                {
+                    index = 0;
+                }
+                else
+                {
+                    index++;
+                }
+                
                 if (index == startIndex)
                 {
                     break;
                 }
-                
-                if (index == shop.items.Count)
-                {
-                    index = 0;
-                }
             }
         }
 
-        private void ResetSellItems(Game.Shop shop)
+        private void ResetSellItems()
         {
+            registeredProducts.Clear();
+            
             var key = ActionManager.instance.AvatarAddress.ToString();
-            if (!shop.items.ContainsKey(key))
+            if (!_shop.items.ContainsKey(key))
             {
                 return;
             }
 
-            var items = shop.items[key];
+            var items = _shop.items[key];
             foreach (var item in items)
             {
                 registeredProducts.Add(new ShopItem(key, item));
