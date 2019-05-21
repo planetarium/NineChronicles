@@ -1,7 +1,7 @@
 # Nekoyume
 
 ### 의존성
- - [Unity Hub]()
+ - [Unity Hub]
 
 
 ### 설치 방법
