@@ -5,7 +5,6 @@ using Nekoyume.Action;
 using Nekoyume.Data;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Item;
-using Nekoyume.Game.Skill;
 
 namespace Nekoyume.Model
 {
@@ -67,17 +66,6 @@ namespace Nekoyume.Model
         {
             base.OnDead();
             Simulator.Lose = true;
-        }
-
-        protected sealed override void SetSkill()
-        {
-            base.SetSkill();
-            //TODO 장비에서 스킬을 얻어와서 붙이도록 설정
-            foreach (var effect in Tables.instance.SkillEffect.Values)
-            {
-                var skill = SkillFactory.Get(this, 0.1f, effect);
-                Skills.Add(skill);
-            }
         }
 
         private void CalcStats(int lv)

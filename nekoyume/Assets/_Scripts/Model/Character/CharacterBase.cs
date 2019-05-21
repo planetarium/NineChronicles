@@ -32,7 +32,7 @@ namespace Nekoyume.Model
 
         public Game.Elemental atkElement;
         public Game.Elemental defElement;
-        protected readonly Skills Skills = new Skills();
+        public readonly Skills Skills = new Skills();
 
         private SkillBase _selectedSkill;
 
