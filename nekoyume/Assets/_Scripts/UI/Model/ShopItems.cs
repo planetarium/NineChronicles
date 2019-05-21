@@ -128,6 +128,11 @@ namespace Nekoyume.UI.Model
         private void ResetBuyItems()
         {
             products.Clear();
+
+            if (_shop.items.Count == 0)
+            {
+                return;
+            }
             
             var startIndex = UnityEngine.Random.Range(0, _shop.items.Count);
             var index = startIndex;
@@ -170,6 +175,11 @@ namespace Nekoyume.UI.Model
         private void ResetSellItems()
         {
             registeredProducts.Clear();
+            
+            if (_shop.items.Count == 0)
+            {
+                return;
+            }
             
             var key = ActionManager.instance.AvatarAddress.ToString();
             if (!_shop.items.ContainsKey(key))

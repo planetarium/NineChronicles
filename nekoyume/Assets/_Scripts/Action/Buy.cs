@@ -38,11 +38,11 @@ namespace Nekoyume.Action
             var ctx = (Context) states.GetState(actionCtx.Signer);
             if (actionCtx.Rehearsal)
             {
-                states = states.SetState(ActionManager.shopAddress, MarkChanged);
+                states = states.SetState(ActionManager.ShopAddress, MarkChanged);
                 return states.SetState(actionCtx.Signer, MarkChanged);
             }
 
-            var shop = (Shop) states.GetState(ActionManager.shopAddress);
+            var shop = (Shop) states.GetState(ActionManager.ShopAddress);
             
             try
             {
@@ -75,7 +75,7 @@ namespace Nekoyume.Action
                     shopItem = target.Value,
                 });
 
-                states = states.SetState(ActionManager.shopAddress, shop);
+                states = states.SetState(ActionManager.ShopAddress, shop);
                 return states.SetState(actionCtx.Signer, ctx);
             }
             catch

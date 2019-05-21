@@ -31,8 +31,27 @@ namespace Nekoyume.Action
 
     public class ActionManager : MonoSingleton<ActionManager>
     {
-        private string _saveFilePath;
-        public List<Model.Avatar> Avatars
+#if UNITY_EDITOR
+        private const string AgentStoreDirName = "planetarium_dev";
+#else
+        private const string AgentStoreDirName = "planetarium";
+#endif
+        public const string PrivateKeyFormat = "private_key_{0}";
+        public const string AvatarFileFormat = "avatar_{0}.dat";
+        public const string PeersFileName = "peers.dat";
+        public const string IceServersFileName = "ice_servers.dat";
+        public const string ChainIdKey = "chain_id";
+        
+        public static Address ShopAddress => default(Address);
+        public static Address RankingAddress => new Address(new byte[]
+            {
+                0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x1
+            }
+        );
+        
+        public static event EventHandler<Model.Avatar> DidAvatarLoaded;
+        
+        public static List<Model.Avatar> Avatars
         {
             get
             {
@@ -42,65 +61,48 @@ namespace Nekoyume.Action
             }
         }
 
-
-        private Agent agent;
-        public BattleLog battleLog;
-        public Model.Avatar Avatar { get; private set; }
-        public event EventHandler<Model.Avatar> DidAvatarLoaded;
-        public const string PrivateKeyFormat = "private_key_{0}";
-        public const string AvatarFileFormat = "avatar_{0}.dat";
-        public const string PeersFileName = "peers.dat";
-        public const string IceServersFileName = "ice_servers.dat";
-        public const string ChainIdKey = "chain_id";
-        public static Address shopAddress => default(Address);
-
-        public static Address RankingAddress => new Address(new byte[]
-            {
-                0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x1
-            }
-        );
-
+        private string _saveFilePath;
+        private Agent _agent;
         private IEnumerator _miner;
         private IEnumerator _txProcessor;
         private IEnumerator _swarmRunner;
-
         private IEnumerator _actionRetryer;
-
-        public Address agentAddress => agent.AgentAddress;
-        public Address AvatarAddress => agent.AvatarAddress;
         
+        public BattleLog battleLog;
+        
+        public Address AgentAddress => _agent.AgentAddress;
+        public Address AvatarAddress => _agent.AvatarAddress;
+        
+        public Model.Avatar Avatar { get; private set; }
         public Shop Shop { get; private set; }
 
-#if UNITY_EDITOR
-        private const string AgentStoreDirName = "planetarium_dev";
-#else
-        private const string AgentStoreDirName = "planetarium";
-#endif
+        #region Mono
 
         protected override void Awake()
         {
             base.Awake();
             
             Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
-            DontDestroyOnLoad(gameObject);
-            Tables.instance.EmptyMethod();
         }
-
-        private void ReceiveAction(Context ctx)
+        
+        protected override void OnDestroy() 
         {
-            var avatar = Avatar;
-            Avatar = ctx.avatar;
-            SaveStatus();
-            if (avatar == null)
+            if (_agent != null)
             {
-                DidAvatarLoaded?.Invoke(this, Avatar);
+                PlayerPrefs.SetString(ChainIdKey, _agent.ChainId.ToString());
+                _agent.Dispose();
             }
-            battleLog = ctx.battleLog;
+            
+            NetMQConfig.Cleanup(false);
+            
+            base.OnDestroy();
         }
+        
+        #endregion
 
         public object GetState(Address address)
         {
-            return agent.GetState(address);
+            return _agent.GetState(address);
         }
 
         /// <summary>
@@ -126,9 +128,6 @@ namespace Nekoyume.Action
             }).AddTo(this);
         }
 
-        /// <summary>
-        /// LoginDetail 이라는 UI 클래스에서 불리고 있는 것을 게임 초기화 로직으로 옮길 필요성 있음.
-        /// </summary>
         public void InitAgent()
         {
 #if UNITY_EDITOR
@@ -136,7 +135,7 @@ namespace Nekoyume.Action
 #else
             var o = CommnadLineParser.GetCommandLineOptions() ?? new CommandLineOptions();
 #endif
-            PrivateKey privateKey = null;
+            PrivateKey privateKey;
             var key = string.Format(PrivateKeyFormat, "agent");
             var privateKeyHex = o.PrivateKey ?? PlayerPrefs.GetString(key, "");
 
@@ -167,7 +166,7 @@ namespace Nekoyume.Action
 #if UNITY_EDITOR
             var peers = new Peer[]{ };
             IceServer[] iceServers = null;
-            string host = "127.0.0.1";
+            var host = "127.0.0.1";
 #else
             var peers = o.Peers.Any()
                 ? o.Peers.Select(LoadPeer)
@@ -177,7 +176,7 @@ namespace Nekoyume.Action
 #endif
             int? port = o.Port;
 
-            agent = new Agent(
+            _agent = new Agent(
                 agentPrivateKey: privateKey, 
                 path: storePath, 
                 chainId: chainId, 
@@ -186,38 +185,27 @@ namespace Nekoyume.Action
                 host: host,
                 port: port
             );
-            _txProcessor = agent.CoTxProcessor();
-            _swarmRunner = agent.CoSwarmRunner();
-            _actionRetryer = agent.CoActionRetryer();
+            _txProcessor = _agent.CoTxProcessor();
+            _swarmRunner = _agent.CoSwarmRunner();
+            _actionRetryer = _agent.CoActionRetryer();
 
             if (!o.NoMiner)
             {
-                _miner = agent.CoMiner();   
+                _miner = _agent.CoMiner();   
             }
 
-            agent.PreloadStarted += (_, __) => 
+            _agent.PreloadStarted += (_, __) =>
             {
-                var loadingScreen = UI.Widget.Find<UI.LoadingScreen>();
-                loadingScreen.Show();
+                UI.Widget.Find<UI.LoadingScreen>()?.Show();
             };
-
-            agent.PreloadEnded += (_, __) => 
-            {
-                var loadingScreen = UI.Widget.Find<UI.LoadingScreen>();
-                loadingScreen.Close();
-            };
-
-            agent.PreloadEnded += (_, __) =>
+            _agent.PreloadEnded += (_, __) =>
             {
                 StartNullableCoroutine(_miner);
+                Shop = GetState(ShopAddress) as Shop ?? new Shop();
+                UI.Widget.Find<UI.LoadingScreen>()?.Close();
             };
-
-            Shop = GetState(shopAddress) as Shop ?? new Shop();
         }
 
-        /// <summary>
-        /// Game.Start 에서 불리고 있는 형태이니 위의 InitAgent도 이 함수가 불리는 쪽으로 모아두면 좋겠음. 
-        /// </summary>
         public void StartSystemCoroutines()
         {
             StartNullableCoroutine(_txProcessor);
@@ -241,15 +229,17 @@ namespace Nekoyume.Action
                 privateKey = new PrivateKey(ByteUtil.ParseHex(privateKeyHex));
             }
 
-            agent.AvatarPrivateKey = privateKey;
+            _agent.AvatarPrivateKey = privateKey;
 
             var fileName = string.Format(AvatarFileFormat, index);
             _saveFilePath = Path.Combine(Application.persistentDataPath, fileName);
             Avatar = LoadStatus(_saveFilePath);
             
-            Debug.Log($"Agent Address: 0x{agent.AgentAddress.ToHex()}");
-            Debug.Log($"Avatar Address: 0x{agent.AvatarAddress.ToHex()}");
+            Debug.Log($"Agent Address: 0x{_agent.AgentAddress.ToHex()}");
+            Debug.Log($"Avatar Address: 0x{_agent.AvatarAddress.ToHex()}");
         }
+
+        #region Actions
         
         public void CreateNovice(string nickName)
         {
@@ -372,21 +362,22 @@ namespace Nekoyume.Action
                     return result;
                 }); // Last() is for completion
         }
+        
+        #endregion
 
-        protected override void OnDestroy() 
+        private void ReceiveAction(Context ctx)
         {
-            if (agent != null)
+            var avatar = Avatar;
+            Avatar = ctx.avatar;
+            SaveStatus();
+            if (avatar == null)
             {
-                PlayerPrefs.SetString(ChainIdKey, agent.ChainId.ToString());
-                agent.Dispose();
+                DidAvatarLoaded?.Invoke(this, Avatar);
             }
-            
-            NetMQConfig.Cleanup(false);
-            
-            base.OnDestroy();
+            battleLog = ctx.battleLog;
         }
         
-        private Model.Avatar LoadStatus(string path)
+        private static Model.Avatar LoadStatus(string path)
         {
             if (File.Exists(path))
             {
@@ -416,7 +407,7 @@ namespace Nekoyume.Action
         private void ProcessAction(GameAction action)
         {
             action.Id = action.Id.Equals(default(Guid)) ? Guid.NewGuid() : action.Id;
-            agent.QueuedActions.Enqueue(action);
+            _agent.QueuedActions.Enqueue(action);
         }
 
         private IEnumerable<IceServer> LoadIceServers()

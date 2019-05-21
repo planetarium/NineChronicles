@@ -105,7 +105,7 @@ namespace Nekoyume.Action
 
         public PrivateKey AvatarPrivateKey { get; set; }
         public Address AvatarAddress => AvatarPrivateKey.PublicKey.ToAddress();
-        public Address ShopAddress => ActionManager.shopAddress;
+        public Address ShopAddress => ActionManager.ShopAddress;
         public Address AgentAddress => _agentPrivateKey.PublicKey.ToAddress();
 
         public Guid ChainId => _blocks.Id;
@@ -118,23 +118,20 @@ namespace Nekoyume.Action
         public IEnumerator CoSwarmRunner()
         {
             PreloadStarted?.Invoke(this, null);
+            
             // Unity 플레이어에서 성능 문제로 Async를 직접 쓰지 않고 
             // Task.Run(async ()) 로 감쌉니다.
-            Task preload = Task.Run(async () => 
+            var swarmPreloadTask = Task.Run(async () =>
             {
-                await _swarm.PreloadAsync(_blocks, new Progress<BlockDownloadState>(
-                    state => 
-                    {
-                        PreloadProcessed?.Invoke(this, state);
-                    }
-                ));
+                await _swarm.PreloadAsync(_blocks,
+                    new Progress<BlockDownloadState>(state => PreloadProcessed?.Invoke(this, state)));
             });
-            yield return new WaitUntil(() => preload.IsCompleted);
-            PreloadEnded?.Invoke(this, null);
+            yield return new WaitUntil(() => swarmPreloadTask.IsCompleted);
             
-            Task runSwarm = Task.Run(async () => await _swarm.StartAsync(_blocks));
+            PreloadEnded?.Invoke(this, null);
 
-            yield return new WaitUntil(() => runSwarm.IsCompleted);
+            var swarmStartTask = Task.Run(async () => await _swarm.StartAsync(_blocks));
+            yield return new WaitUntil(() => swarmStartTask.IsCompleted);
         }
 
         public IEnumerator CoActionRetryer() 

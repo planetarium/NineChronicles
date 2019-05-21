@@ -39,7 +39,6 @@ namespace Nekoyume.UI
 
             nameField.gameObject.SetActive(false);
             Game.Event.OnLoginDetail.AddListener(Init);
-            ActionManager.instance.InitAgent();
             
             namePlaceHolderOriginColor = namePlaceHolder.color;
             namePlaceHolderFocusedColor = namePlaceHolder.color;
@@ -60,12 +59,12 @@ namespace Nekoyume.UI
 
         private void OnEnable()
         {
-            ActionManager.instance.DidAvatarLoaded += OnDidAvatarLoaded;
+            ActionManager.DidAvatarLoaded += OnDidAvatarLoaded;
         }
 
         private void OnDisable()
         {
-            ActionManager.instance.DidAvatarLoaded -= OnDidAvatarLoaded;
+            ActionManager.DidAvatarLoaded -= OnDidAvatarLoaded;
         }
 
         public void LoginClick()
@@ -105,7 +104,7 @@ namespace Nekoyume.UI
         {
             _selectedIndex = index;
             bool isCreateMode = false;
-            _avatar = ActionManager.instance.Avatars[_selectedIndex];
+            _avatar = ActionManager.Avatars[_selectedIndex];
             if (ReferenceEquals(_avatar, null))
             {
                 isCreateMode = true;

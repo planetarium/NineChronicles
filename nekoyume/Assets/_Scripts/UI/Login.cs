@@ -80,7 +80,7 @@ namespace Nekoyume.UI
                 playerSlot.DeleteView.SetActive(true);
                 try
                 {
-                    var avatar = ActionManager.instance.Avatars[i];
+                    var avatar = ActionManager.Avatars[i];
                     playerSlot.LabelLevel.text = $"LV.{avatar.Level}";
                     playerSlot.LabelName.text = $"{avatar.Name}";
                     playerSlot.CreateView.SetActive(false);

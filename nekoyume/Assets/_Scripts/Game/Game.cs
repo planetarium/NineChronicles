@@ -30,18 +30,17 @@ namespace Nekoyume.Game
 
     public class Game : MonoBehaviour
     {
-        static public readonly int PixelPerUnit = 160;
+        public static readonly int PixelPerUnit = 160;
 
         private void Awake()
         {
             Screen.SetResolution(GameConfig.ScreenSize.x, GameConfig.ScreenSize.y, FullScreenMode.Windowed);
+            Tables.instance.EmptyMethod();
+            ActionManager.instance.InitAgent();
+            ActionManager.instance.StartSystemCoroutines();
+            
             LocalizationManager.Read();
             AudioController.instance.Initialize();
-        }
-
-        private void Start()
-        {
-            ActionManager.instance.StartSystemCoroutines();
         }
     }
 }
