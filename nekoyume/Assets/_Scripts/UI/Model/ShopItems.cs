@@ -119,10 +119,11 @@ namespace Nekoyume.UI.Model
 
         private void ResetBuyItems(Game.Shop shop)
         {
-            var index = UnityEngine.Random.Range(0, shop.items.Count);
+            var startIndex = UnityEngine.Random.Range(0, shop.items.Count);
+            var index = startIndex;
             var total = 16;
 
-            while (true)
+            for (var i = 0; i < total; i++)
             {
                 var keyValuePair = shop.items.ElementAt(index);
                 var count = keyValuePair.Value.Count;
@@ -134,17 +135,21 @@ namespace Nekoyume.UI.Model
                 foreach (var shopItem in keyValuePair.Value)
                 {
                     products.Add(new ShopItem(keyValuePair.Key, shopItem));
-                    total--;
-                    if (total == 0)
+                    if (products.Count == total)
                     {
                         return;
                     }
                 }
 
                 index++;
-                if (index == shop.items.Count)
+                if (index == startIndex)
                 {
                     break;
+                }
+                
+                if (index == shop.items.Count)
+                {
+                    index = 0;
                 }
             }
         }

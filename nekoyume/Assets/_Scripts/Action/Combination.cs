@@ -124,7 +124,7 @@ namespace Nekoyume.Action
                 }
             }
 
-            // 제거가 잘 됐는지 로그 찍기.
+            // 제거 전.
             ctx.avatar.Items.ForEach(item => Debug.Log($"제거 전 // Id:{item.Item.Data.id}, Count:{item.Count}"));
             
             // 사용한 재료를 인벤토리에서 제거.
@@ -138,7 +138,7 @@ namespace Nekoyume.Action
                 }
             });
             
-            // 제거가 잘 됐는지 로그 찍기.
+            // 제거 후.
             ctx.avatar.Items.ForEach(item => Debug.Log($"제거 후 // Id:{item.Item.Data.id}, Count:{item.Count}"));
 
             // 뽀각!!
@@ -151,9 +151,7 @@ namespace Nekoyume.Action
             
             // 조합 결과 획득.
             {
-                var itemTable = Tables.instance.ItemEquipment;
-                ItemEquipment itemData;
-                if (itemTable.TryGetValue(resultItem.Id, out itemData))
+                if (Tables.instance.TryGetItemEquipment(resultItem.Id, out var itemData))
                 {
                     try
                     {

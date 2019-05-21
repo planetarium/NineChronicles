@@ -113,29 +113,27 @@ namespace Nekoyume.UI.Model
                 return;
             }
 
-            switch (state.Value)
+            if (state.Value == State.Buy)
             {
-                case State.Buy:
-                    // ToDo. 구매하겠습니까?
-                    return;
+                // ToDo. 구매하겠습니까?
+                return;   
             }
             
             if (itemInfo.item.Value is ShopItem)
             {
                 // ToDo. 판매 취소하겠습니까?
+                return;
             }
-            else
-            {
-                itemCountAndPricePopup.Value.titleText.Value = "판매 설정";
-                itemCountAndPricePopup.Value.submitText.Value = "판매";
-                itemCountAndPricePopup.Value.item.Value = new CountEditableItem(
-                    itemInfo.item.Value.item.Value,
-                    itemInfo.item.Value.count.Value,
-                    0,
-                    itemInfo.item.Value.count.Value,
-                    "수정");
-                itemCountAndPricePopup.Value.price.Value = 1;
-            }
+            
+            itemCountAndPricePopup.Value.titleText.Value = "판매 설정";
+            itemCountAndPricePopup.Value.submitText.Value = "판매";
+            itemCountAndPricePopup.Value.item.Value = new CountEditableItem(
+                itemInfo.item.Value.item.Value,
+                itemInfo.item.Value.count.Value,
+                0,
+                itemInfo.item.Value.count.Value,
+                "수정");
+            itemCountAndPricePopup.Value.price.Value = 1;
         }
 
         private void OnSelectInventoryItem(InventoryItem inventoryItem)

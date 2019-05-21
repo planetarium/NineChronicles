@@ -1,14 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Globalization;
 using Libplanet.Action;
 using Nekoyume.Game;
 using Nekoyume.Game.Item;
 
 namespace Nekoyume.Action
 {
-    [ActionType("buy")]
-    public class Buy : GameAction
+    [ActionType("sell_cancelation")]
+    public class SellCancelation : GameAction
     {
         [Serializable]
         public class ResultModel : GameActionResult
@@ -42,37 +43,22 @@ namespace Nekoyume.Action
                 return states.SetState(actionCtx.Signer, MarkChanged);
             }
 
-            var shop = (Shop) states.GetState(ActionManager.shopAddress);
-            
+            var shop = (Shop) states.GetState(ActionManager.shopAddress) ?? new Shop();
+
             try
             {
-                // 상점에서 구매할 아이템을 찾는다.
-                var target = shop.Find(owner, productId);
-                
-                // 돈은 있냐?
-                if (ctx.gold < target.Value.price)
-                {
-                    return SimpleError(actionCtx, ctx, GameActionResult.ErrorCode.BuyGoldNotEnough);
-                }
-                
-                // 상점에서 구매할 아이템을 제거한다.
-                if (!shop.Unregister(target.Key, target.Value))
-                {
-                    return SimpleError(actionCtx, ctx, GameActionResult.ErrorCode.UnexpectedInternalAction);
-                }
-                
-                // 돈을 차감한다.
-                ctx.gold -= target.Value.price;
-                
-                // 인벤토리에 구매한 아이템을 넣는다.
-                ctx.avatar.AddEquipmentItemToItems(target.Value.item.Data.id, target.Value.count);
-                
+                // 상점에서 아이템을 빼온다.
+                var target = shop.Unregister(owner, productId);
+
+                // 인벤토리에 아이템을 넣는다.
+                ctx.avatar.AddEquipmentItemToItems(target.item.Data.id, target.count);
+
                 ctx.updatedAt = DateTimeOffset.UtcNow;
                 ctx.SetGameActionResult(new ResultModel
                 {
                     errorCode = GameActionResult.ErrorCode.Success,
-                    owner = target.Key,
-                    shopItem = target.Value,
+                    owner = owner,
+                    shopItem = target
                 });
 
                 states = states.SetState(ActionManager.shopAddress, shop);

@@ -103,9 +103,13 @@ namespace Nekoyume.Action
             return agent.GetState(address);
         }
 
-        // FIXME: We need to rename this after replace all polling coroutines
-        //        with stream subscriptions.
-        public void StartAvatarCoroutines()
+        /// <summary>
+        /// FixMe. 모든 액션에 대한 랜더 단계에서 아바타 주소의 상태를 얻어 오고 있음.
+        /// 모든 액션 생성 단계에서 각각의 변경점을 업데이트 하는 방향으로 수정해볼 필요성 있음.
+        /// CreateNovice와 HackAndSlash 액션의 처리를 개선해서 테스트해 볼 예정.
+        /// 시작 전에 양님에게 문의!
+        /// </summary>
+        public void SubscribeAvatarUpdates()
         {
             if (Avatar != null)
             {
@@ -122,76 +126,9 @@ namespace Nekoyume.Action
             }).AddTo(this);
         }
 
-        public void CreateNovice(string nickName)
-        {
-            var action = new CreateNovice
-            {
-                name = nickName,
-                avatarAddress = AvatarAddress,
-            };
-            ProcessAction(action);
-        }
-
-        private Model.Avatar LoadStatus(string path)
-        {
-            if (File.Exists(path))
-            {
-                var formatter = new BinaryFormatter();
-                using (FileStream stream = File.Open(path, FileMode.Open))
-                {
-                    var data = (SaveData) formatter.Deserialize(stream);
-                    return data.Avatar;
-                }
-            }
-            return null;
-        }
-
-        private void SaveStatus()
-        {
-            var data = new SaveData
-            {
-                Avatar = Avatar,
-            };
-            var formatter = new BinaryFormatter();
-            using (FileStream stream = File.Open(_saveFilePath, FileMode.OpenOrCreate))
-            {
-                formatter.Serialize(stream, data);
-            }
-        }
-
-        public void UpdateItems(List<Inventory.InventoryItem> items)
-        {
-            Avatar.Items = items;
-            SaveStatus();
-        }
-
-        private void ProcessAction(GameAction action)
-        {
-            action.Id = action.Id.Equals(default(Guid)) ? Guid.NewGuid() : action.Id;
-            agent.QueuedActions.Enqueue(action);
-        }
-
-        public IObservable<ActionBase.ActionEvaluation<HackAndSlash>> HackAndSlash(
-            List<Equipment> equipments,
-            List<Food> foods,
-            int stage)
-        {
-            var action = new HackAndSlash
-            {
-                Id = Guid.NewGuid(),
-                Equipments = equipments,
-                Foods = foods,
-                Stage = stage,
-            };
-            ProcessAction(action);
-
-            var itemIDs = equipments.Select(e => e.Data.id).Concat(foods.Select(f => f.Data.id)).ToArray();
-            AnalyticsManager.instance.Battle(itemIDs);
-            return Action.HackAndSlash.EveryRender<HackAndSlash>().SkipWhile(
-                eval => !eval.Action.Id.Equals(action.Id)
-            ).Take(1).Last();  // Last() is for completion
-        }
-
+        /// <summary>
+        /// LoginDetail 이라는 UI 클래스에서 불리고 있는 것을 게임 초기화 로직으로 옮길 필요성 있음.
+        /// </summary>
         public void InitAgent()
         {
 #if UNITY_EDITOR
@@ -278,21 +215,14 @@ namespace Nekoyume.Action
             Shop = GetState(shopAddress) as Shop ?? new Shop();
         }
 
+        /// <summary>
+        /// Game.Start 에서 불리고 있는 형태이니 위의 InitAgent도 이 함수가 불리는 쪽으로 모아두면 좋겠음. 
+        /// </summary>
         public void StartSystemCoroutines()
         {
             StartNullableCoroutine(_txProcessor);
             StartNullableCoroutine(_actionRetryer);
             StartNullableCoroutine(_swarmRunner);
-        }
-
-        private Coroutine StartNullableCoroutine(IEnumerator routine)
-        {
-            if (ReferenceEquals(routine, null))
-            {
-                return null;
-            }
-
-            return StartCoroutine(routine);
         }
 
         public void InitAvatar(int index)
@@ -321,6 +251,36 @@ namespace Nekoyume.Action
             Debug.Log($"Avatar Address: 0x{agent.AvatarAddress.ToHex()}");
         }
         
+        public void CreateNovice(string nickName)
+        {
+            var action = new CreateNovice
+            {
+                name = nickName,
+                avatarAddress = AvatarAddress,
+            };
+            ProcessAction(action);
+        }
+
+        public IObservable<ActionBase.ActionEvaluation<HackAndSlash>> HackAndSlash(
+            List<Equipment> equipments,
+            List<Food> foods,
+            int stage)
+        {
+            var action = new HackAndSlash
+            {
+                Equipments = equipments,
+                Foods = foods,
+                Stage = stage,
+            };
+            ProcessAction(action);
+
+            var itemIDs = equipments.Select(e => e.Data.id).Concat(foods.Select(f => f.Data.id)).ToArray();
+            AnalyticsManager.instance.Battle(itemIDs);
+            return Action.HackAndSlash.EveryRender<HackAndSlash>().SkipWhile(
+                eval => !eval.Action.Id.Equals(action.Id)
+            ).Take(1).Last();  // Last() is for completion
+        }
+        
         public IObservable<ActionBase.ActionEvaluation<Combination>> Combination(
             List<UI.Model.CountEditableItem> materials)
         {
@@ -337,9 +297,9 @@ namespace Nekoyume.Action
                 .ObserveOnMainThread();
         }
 
-        public IObservable<ActionBase.ActionEvaluation<Sell>> Sell(int itemID, int count, decimal price)
+        public IObservable<Sell.ResultModel> Sell(int itemId, int count, decimal price)
         {
-            var action = new Sell {itemId = itemID, count = count, price = price};
+            var action = new Sell {itemId = itemId, count = count, price = price};
             ProcessAction(action);
 
             return ActionBase.EveryRender<Sell>()
@@ -347,21 +307,69 @@ namespace Nekoyume.Action
                 .Take(1)
                 .Last()
                 .ObserveOnMainThread()
-                .Do(_ =>
+                .Select(eval =>
                 {
-                    if (Tables.instance.TryGetItemEquipment(itemID, out var itemEquipment))
-                    {
-                        Shop.Register(AvatarAddress, new ShopItem
-                        {
-                            item = ItemBase.ItemFactory(itemEquipment),
-                            count = count,
-                            price = price
-                        });   
-                    }
-                    else
-                    {
-                        throw new KeyNotFoundException(itemID.ToString());
-                    }
+                    var context = (Context) eval.OutputStates.GetState(eval.InputContext.Signer);
+                    var result = context.GetGameActionResult<Sell.ResultModel>();
+                    
+                    // 인벤토리에서 빼기.
+                    // ToDo. SubscribeAvatarUpdates()에서 동기화 중. 분리할 예정.
+//                    Avatar.RemoveEquipmentItemFromItems(result.shopItem.item.Data.id, result.shopItem.count);
+                    
+                    // 상점에 넣기.
+                    Shop.Register(AvatarAddress, result.shopItem);
+
+                    return result;
+                }); // Last() is for completion
+        }
+        
+        public IObservable<SellCancelation.ResultModel> SellCancelation(string owner, Guid productId)
+        {
+            var action = new SellCancelation {owner = owner, productId = productId};
+            ProcessAction(action);
+
+            return ActionBase.EveryRender<SellCancelation>()
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .Take(1)
+                .Last()
+                .ObserveOnMainThread()
+                .Select(eval =>
+                {
+                    var context = (Context) eval.OutputStates.GetState(eval.InputContext.Signer);
+                    var result = context.GetGameActionResult<SellCancelation.ResultModel>();
+                    
+                    // 상점에서 빼기.
+                    var shopItem = Shop.Unregister(result.owner, result.shopItem.productId);
+                    // 인벤토리에 넣기.
+                    // ToDo. SubscribeAvatarUpdates()에서 동기화 중. 분리할 예정.
+//                    Avatar.AddEquipmentItemToItems(shopItem.item.Data.id, shopItem.count);
+
+                    return result;
+                }); // Last() is for completion
+        }
+        
+        public IObservable<Buy.ResultModel> Buy(string owner, Guid productId)
+        {
+            var action = new Buy {owner = owner, productId = productId};
+            ProcessAction(action);
+
+            return ActionBase.EveryRender<Buy>()
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .Take(1)
+                .Last()
+                .ObserveOnMainThread()
+                .Select(eval =>
+                {
+                    var context = (Context) eval.OutputStates.GetState(eval.InputContext.Signer);
+                    var result = context.GetGameActionResult<Buy.ResultModel>();
+                    
+                    // 상점에서 빼기.
+                    var shopItem = Shop.Unregister(result.owner, result.shopItem.productId);
+                    // 인벤토리에 넣기.
+                    // ToDo. SubscribeAvatarUpdates()에서 동기화 중. 분리할 예정.
+//                    Avatar.AddEquipmentItemToItems(shopItem.item.Data.id, shopItem.count);
+
+                    return result;
                 }); // Last() is for completion
         }
 
@@ -376,6 +384,39 @@ namespace Nekoyume.Action
             NetMQConfig.Cleanup(false);
             
             base.OnDestroy();
+        }
+        
+        private Model.Avatar LoadStatus(string path)
+        {
+            if (File.Exists(path))
+            {
+                var formatter = new BinaryFormatter();
+                using (FileStream stream = File.Open(path, FileMode.Open))
+                {
+                    var data = (SaveData) formatter.Deserialize(stream);
+                    return data.Avatar;
+                }
+            }
+            return null;
+        }
+
+        private void SaveStatus()
+        {
+            var data = new SaveData
+            {
+                Avatar = Avatar,
+            };
+            var formatter = new BinaryFormatter();
+            using (FileStream stream = File.Open(_saveFilePath, FileMode.OpenOrCreate))
+            {
+                formatter.Serialize(stream, data);
+            }
+        }
+
+        private void ProcessAction(GameAction action)
+        {
+            action.Id = action.Id.Equals(default(Guid)) ? Guid.NewGuid() : action.Id;
+            agent.QueuedActions.Enqueue(action);
         }
 
         private IEnumerable<IceServer> LoadIceServers()
@@ -425,6 +466,16 @@ namespace Nekoyume.Action
                     yield return line;
                 }
             }
+        }
+        
+        private Coroutine StartNullableCoroutine(IEnumerator routine)
+        {
+            if (ReferenceEquals(routine, null))
+            {
+                return null;
+            }
+
+            return StartCoroutine(routine);
         }
     }
 }

@@ -9,7 +9,7 @@ namespace Nekoyume.Action
     [ActionType("reward_gold")]
     public class RewardGold : ActionBase
     {
-        public static readonly Subject<int> RewardGoldMyselfSubject = new Subject<int>();
+        public static readonly Subject<decimal> RewardGoldMyselfSubject = new Subject<decimal>();
         
         public int Gold;
 

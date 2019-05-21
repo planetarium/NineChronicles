@@ -14,10 +14,8 @@ namespace Nekoyume.Action
         [Serializable]
         public class ResultModel : GameActionResult
         {
-            public int itemId;
-            public int count;
-            public decimal price;
-            public Guid productId;
+            public string owner;
+            public ShopItem shopItem;
         }
 
         public int itemId;
@@ -50,6 +48,7 @@ namespace Nekoyume.Action
 
             var shop = (Shop) states.GetState(ActionManager.shopAddress) ?? new Shop();
 
+            // 인벤토리에서 판매할 아이템을 선택하고 수량을 조절한다.
             Inventory.InventoryItem target = null;
             foreach (var item in ctx.avatar.Items)
             {
@@ -62,42 +61,33 @@ namespace Nekoyume.Action
                 target = item;
                 if (target.Count < count)
                 {
-                    ctx.SetGameActionResult(new ResultModel
-                    {
-                        errorCode = GameActionResult.ErrorCode.SellItemCountNotEnoughInInventory,
-                    });
-                    
-                    return states.SetState(actionCtx.Signer, ctx);
+                    return SimpleError(actionCtx, ctx, GameActionResult.ErrorCode.SellItemCountNotEnoughInInventory);
                 }
                 target.Count -= count;
             }
 
+            // 인벤토리에 판매할 아이템이 없는 경우.
             if (ReferenceEquals(target, null))
             {
-                ctx.SetGameActionResult(new ResultModel
-                {
-                    errorCode = GameActionResult.ErrorCode.SellItemNotFoundInInventory,
-                });
-
-                return states.SetState(actionCtx.Signer, ctx);
+                return SimpleError(actionCtx, ctx, GameActionResult.ErrorCode.SellItemNotFoundInInventory);
             }
 
+            // 인벤토리에서 판매할 아이템을 뺀 후에 수량이 0일 경우.
             if (target.Count == 0)
             {
                 ctx.avatar.Items.Remove(target);
             }
 
+            // 상점에 아이템을 등록한다.
             var shopItem = new ShopItem {item = target.Item, count = count, price = price};
-            var productId = shop.Register(actionCtx.Signer, shopItem);
+            shopItem = shop.Register(actionCtx.Signer, shopItem);
 
             ctx.updatedAt = DateTimeOffset.UtcNow;
             ctx.SetGameActionResult(new ResultModel
             {
                 errorCode = GameActionResult.ErrorCode.Success,
-                productId = productId,
-                itemId = itemId,
-                count = count,
-                price = price,
+                owner = actionCtx.Signer.ToString(),
+                shopItem = shopItem
             });
 
             states = states.SetState(ActionManager.shopAddress, shop);

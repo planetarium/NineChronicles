@@ -177,19 +177,29 @@ namespace Nekoyume.UI
         {
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
             _loadingScreen.Show();
-            
-            ActionManager.instance.Sell(
-                data.item.Value.item.Value.Data.id,
-                data.item.Value.count.Value,
-                data.price.Value)
+
+            if (_data.state.Value == Model.Shop.State.Buy)
+            {
+                // ToDo. 구매하겠습니까?
+                return;
+            }
+
+            if (_data.itemInfo.Value.item.Value is ShopItem)
+            {
+                // ToDo. 판매 취소하겠습니까?
+                return;
+            }
+
+            ActionManager.instance
+                .Sell(data.item.Value.item.Value.Data.id,
+                    data.item.Value.count.Value,
+                    data.price.Value)
                 .Subscribe(ResponseSell)
                 .AddTo(this);
         }
 
-        private void ResponseSell(ActionBase.ActionEvaluation<Nekoyume.Action.Sell> eval)
+        private void ResponseSell(Nekoyume.Action.Sell.ResultModel result)
         {
-            var context = (Context) eval.OutputStates.GetState(eval.InputContext.Signer);
-            var result = context.GetGameActionResult<Nekoyume.Action.Sell.ResultModel>();
             if (ReferenceEquals(result, null))
             {
                 throw new GameActionResultNullException();
@@ -202,19 +212,16 @@ namespace Nekoyume.UI
                 return;
             }
                     
-            if (!Tables.instance.TryGetItemEquipment(result.itemId, out var itemEquipment))
+            if (!Tables.instance.TryGetItemEquipment(result.shopItem.item.Data.id, out var itemEquipment))
             {
-                throw new KeyNotFoundException(result.itemId.ToString());
+                throw new KeyNotFoundException(result.shopItem.item.Data.id.ToString());
             }
 
             _data.itemCountAndPricePopup.Value.item.Value = null;
-            _data.inventory.Value.RemoveItem(result.itemId, result.count);
+            _data.inventory.Value.RemoveItem(result.shopItem.item.Data.id, result.shopItem.count);
             _data.shopItems.Value.registeredProducts.Add(new ShopItem(
-                eval.InputContext.Signer.ToString(),
-                result.price,
-                result.productId,
-                ItemBase.ItemFactory(itemEquipment),
-                result.count));
+                result.owner,
+                result.shopItem));
             _loadingScreen.Close();
         }
 
