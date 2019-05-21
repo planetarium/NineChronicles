@@ -40,7 +40,7 @@ namespace Nekoyume.Model
         [NonSerialized] public Simulator Simulator;
         public bool IsDead => currentHP <= 0;
         public Guid id = Guid.NewGuid();
-        public float attackRange = 0.5f;
+        public float attackRange = 1.0f;
 
         public void InitAI()
         {

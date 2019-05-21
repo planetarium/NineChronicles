@@ -89,7 +89,7 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        protected virtual void Run()
+        private void Run()
         {
             if (Rooted)
             {
@@ -104,11 +104,6 @@ namespace Nekoyume.Game.Character
             transform.position = position;
         }
 
-        public void Die()
-        {
-            StartCoroutine(Dying());
-        }
-
         private IEnumerator Dying()
         {
             StopRun();
@@ -119,7 +114,7 @@ namespace Nekoyume.Game.Character
             OnDead();
         }
 
-        protected  virtual void Update()
+        protected virtual void Update()
         {
             Root?.Tick();
             if (_hpBar != null)
@@ -255,7 +250,7 @@ namespace Nekoyume.Game.Character
         public bool TargetInRange(CharacterBase target) =>
             Range > Mathf.Abs(gameObject.transform.position.x - target.transform.position.x);
 
-        private void StopRun()
+        public void StopRun()
         {
             RunSpeed = 0.0f;
             animator.StopRun();
@@ -318,6 +313,12 @@ namespace Nekoyume.Game.Character
 
             animator.Attack();
             yield return new WaitUntil(() => attackEnd);
+
+            var enemy = GetComponentsInChildren<CharacterBase>()
+                .Where(c => c.gameObject.CompareTag(targetTag))
+                .OrderBy(c => c.transform.position.x).FirstOrDefault();
+            if (enemy != null && !TargetInRange(enemy))
+                RunSpeed = Speed;
         }
         public IEnumerator CoAttack(IEnumerable<Model.Skill.SkillInfo> infos)
         {
@@ -343,5 +344,16 @@ namespace Nekoyume.Game.Character
 
         }
 
+        private void OnTriggerEnter(Collider other)
+        {
+            if (other.gameObject.CompareTag(targetTag))
+            {
+                var character = other.gameObject.GetComponent<CharacterBase>();
+                if (TargetInRange(character) && character.IsAlive())
+                {
+                    StopRun();
+                }
+            }
+        }
     }
 }
