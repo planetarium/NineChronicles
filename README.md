@@ -1,12 +1,12 @@
 # Nekoyume
 
 ### 의존성
- - [UnityHub]()
+ - [Unity Hub]()
 
 
 ### 설치 방법
 
- 1. [UnityHub] 설치
+ 1. [Unity Hub] 설치
  1. Unity 2019.1.0f2 버전 설치
  1. 저장소 클론
     ```
@@ -23,4 +23,4 @@
  - `--no-miner`    : 마이닝을 사용하지 않습니다.
  - `--peer`        : Peer 를 추가합니다. 추가하려는 Peer가 여럿일 경우 --peer peerA peerB ... 와 같이 추가할 수 있습니다.
 
-[Unityhub]: https://unity3d.com/get-unity/download
+[Unity Hub]: https://unity3d.com/get-unity/download
