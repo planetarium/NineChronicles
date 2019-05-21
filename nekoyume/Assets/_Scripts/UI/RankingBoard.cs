@@ -51,7 +51,7 @@ namespace Nekoyume.UI
             Find<Status>()?.Show();
             Find<Menu>()?.Show();
             _stage.LoadBackground("room");
-            _stage.GetPlayer(_stage.RoomPosition);
+            _stage.GetPlayer(_stage.roomPosition);
             _player.gameObject.SetActive(true);
 
             base.Close();

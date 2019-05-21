@@ -27,7 +27,6 @@ namespace Nekoyume
         private float _updateTime = 0.0f;
         private StringBuilder _logString = new StringBuilder();
         private BattleLog.Result _result;
-        private int _stage;
         private int[,] _stageRange;
 
         private class DebugRandom : IRandom
@@ -91,7 +90,6 @@ namespace Nekoyume
         {
             _modal.gameObject.SetActive(true);
             BtnOpen.gameObject.SetActive(false);
-            _stage = 0;
             foreach (var i in Enumerable.Range(1, int.Parse(Tables.instance.Stage.Keys.Last())))
             {
                 Button newButton = Instantiate(buttonBase, list.content);

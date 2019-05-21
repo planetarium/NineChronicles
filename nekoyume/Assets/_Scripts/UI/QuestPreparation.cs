@@ -43,7 +43,7 @@ namespace Nekoyume.UI
             }
             _stage.LoadBackground("dungeon");
             
-            _player = _stage.GetPlayer(_stage.QuestPreparationPosition);
+            _player = _stage.GetPlayer(_stage.questPreparationPosition);
             if (ReferenceEquals(_player, null))
             {
                 throw new NotFoundComponentException<Player>();
@@ -140,7 +140,7 @@ namespace Nekoyume.UI
         public void BackClick()
         {
             _stage.LoadBackground("room");
-            _player = _stage.GetPlayer(_stage.RoomPosition);
+            _player = _stage.GetPlayer(_stage.roomPosition);
             _player.UpdateSet(_player.model.set);
             Find<Menu>().Show();
             Find<Status>()?.Show();

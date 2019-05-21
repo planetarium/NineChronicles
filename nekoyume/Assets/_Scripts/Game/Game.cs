@@ -2,6 +2,8 @@ using Assets.SimpleLocalization;
 using Nekoyume.Action;
 using Nekoyume.Data;
 using Nekoyume.Game.Controller;
+using Nekoyume.Game.Factory;
+using Nekoyume.Game.Util;
 using Nekoyume.UI;
 using UnityEngine;
 
@@ -9,31 +11,33 @@ namespace Nekoyume.Game
 {
     public static class GameExtensionMethods
     {
-        static Transform root = null;
+        private static Transform _root;
 
         public static T GetRootComponent<T>(this MonoBehaviour behaviour)
         {
-            if (root == null)
-                root = behaviour.transform.root;
+            if (_root == null)
+                _root = behaviour.transform.root;
 
-            return root.GetComponent<T>();
+            return _root.GetComponent<T>();
         }
 
         public static T GetOrAddComponent<T>(this MonoBehaviour behaviour) where T : MonoBehaviour
         {
-            T t = behaviour.GetComponent<T>();
-            if (t)
-                return t;
-            return behaviour.gameObject.AddComponent<T>();
+            var t = behaviour.GetComponent<T>();
+            return t ? t : behaviour.gameObject.AddComponent<T>();
         }
     }
 
-    public class Game : MonoBehaviour
+    public class Game : MonoSingleton<Game>
     {
         public static readonly int PixelPerUnit = 160;
 
-        private void Awake()
+        public Stage stage;
+
+        protected override void Awake()
         {
+            base.Awake();
+            
             Screen.SetResolution(GameConfig.ScreenSize.x, GameConfig.ScreenSize.y, FullScreenMode.Windowed);
             Tables.instance.EmptyMethod();
             ActionManager.instance.InitAgent();

@@ -326,7 +326,7 @@ namespace Nekoyume.Game.Character
 
             foreach (var info in infos)
             {
-                var target = Stage.instance.GetCharacter(info.Target);
+                var target = Game.instance.stage.GetCharacter(info.Target);
                 ProcessAttack(target, info);
             }
 
@@ -338,7 +338,7 @@ namespace Nekoyume.Game.Character
 
             foreach (var info in infos)
             {
-                var target = Stage.instance.GetCharacter(info.Target);
+                var target = Game.instance.stage.GetCharacter(info.Target);
                 ProcessHeal(target, info);
             }
 

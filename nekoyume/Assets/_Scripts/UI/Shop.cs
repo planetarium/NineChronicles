@@ -106,7 +106,7 @@ namespace Nekoyume.UI
         {
             Clear();
             
-            _stage.GetPlayer(_stage.RoomPosition);
+            _stage.GetPlayer(_stage.roomPosition);
             if (!ReferenceEquals(_player, null))
             {
                 _player.gameObject.SetActive(true);

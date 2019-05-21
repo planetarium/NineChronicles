@@ -31,8 +31,6 @@ namespace Nekoyume.Game.Character
 
         public Model.Player model;
         public Item.Inventory Inventory;
-        
-        private ProgressBar _mpBar = null;
 
         public long EXPMax { get; private set; }
 
