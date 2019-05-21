@@ -1,6 +1,7 @@
 using System;
 using DG.Tweening;
 using Nekoyume.Action;
+using Nekoyume.State;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model;
 using UnityEngine;
@@ -59,12 +60,12 @@ namespace Nekoyume.UI
 
         private void OnEnable()
         {
-            ActionManager.DidAvatarLoaded += OnDidAvatarLoaded;
+            Agent.DidAvatarLoaded += OnDidAvatarLoaded;
         }
 
         private void OnDisable()
         {
-            ActionManager.DidAvatarLoaded -= OnDidAvatarLoaded;
+            Agent.DidAvatarLoaded -= OnDidAvatarLoaded;
         }
 
         public void LoginClick()
@@ -104,7 +105,7 @@ namespace Nekoyume.UI
         {
             _selectedIndex = index;
             bool isCreateMode = false;
-            _avatar = ActionManager.Avatars[_selectedIndex];
+            _avatar = Agent.Avatars[_selectedIndex];
             if (ReferenceEquals(_avatar, null))
             {
                 isCreateMode = true;

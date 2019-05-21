@@ -2,9 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Globalization;
+using Libplanet;
 using Libplanet.Action;
-using Nekoyume.Game;
 using Nekoyume.Game.Item;
+using Nekoyume.State;
 
 namespace Nekoyume.Action
 {
@@ -14,7 +15,7 @@ namespace Nekoyume.Action
         [Serializable]
         public class ResultModel : GameActionResult
         {
-            public string owner;
+            public Address owner;
             public ShopItem shopItem;
         }
 
@@ -39,14 +40,14 @@ namespace Nekoyume.Action
         protected override IAccountStateDelta ExecuteInternal(IActionContext actionCtx)
         {
             var states = actionCtx.PreviousStates;
-            var ctx = (Context) states.GetState(actionCtx.Signer);
+            var ctx = (AvatarState) states.GetState(actionCtx.Signer);
             if (actionCtx.Rehearsal)
             {
-                states = states.SetState(ActionManager.ShopAddress, MarkChanged);
+                states = states.SetState(AddressBook.Shop, MarkChanged);
                 return states.SetState(actionCtx.Signer, MarkChanged);
             }
 
-            var shop = (Shop) states.GetState(ActionManager.ShopAddress) ?? new Shop();
+            var shop = (ShopState) states.GetState(AddressBook.Shop) ?? new ShopState();
 
             // 인벤토리에서 판매할 아이템을 선택하고 수량을 조절한다.
             Inventory.InventoryItem target = null;
@@ -86,11 +87,11 @@ namespace Nekoyume.Action
             ctx.SetGameActionResult(new ResultModel
             {
                 errorCode = GameActionResult.ErrorCode.Success,
-                owner = actionCtx.Signer.ToString(),
+                owner = actionCtx.Signer,
                 shopItem = shopItem
             });
 
-            states = states.SetState(ActionManager.ShopAddress, shop);
+            states = states.SetState(AddressBook.Shop, shop);
             return states.SetState(actionCtx.Signer, ctx);
         }
     }

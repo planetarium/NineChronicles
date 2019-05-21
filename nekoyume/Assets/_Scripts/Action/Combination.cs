@@ -7,7 +7,7 @@ using Libplanet.Action;
 using Nekoyume.Data;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Item;
-using UniRx;
+using Nekoyume.State;
 using UnityEngine;
 
 namespace Nekoyume.Action
@@ -75,12 +75,12 @@ namespace Nekoyume.Action
         protected override IAccountStateDelta ExecuteInternal(IActionContext actionCtx)
         {
             var states = actionCtx.PreviousStates;
-            var ctx = (Context) states.GetState(actionCtx.Signer);
+            var ctx = (AvatarState) states.GetState(actionCtx.Signer);
             if (actionCtx.Rehearsal)
             {
                 if (ReferenceEquals(ctx, null))
                 {
-                    ctx = CreateNovice.CreateContext("dummy", default(Address));
+                    ctx = CreateNovice.CreateState("dummy", default(Address));
                 }
                 return states.SetState(actionCtx.Signer, ctx);
             }

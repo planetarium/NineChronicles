@@ -41,7 +41,6 @@ namespace Nekoyume.Game
             Screen.SetResolution(GameConfig.ScreenSize.x, GameConfig.ScreenSize.y, FullScreenMode.Windowed);
             Tables.instance.EmptyMethod();
             ActionManager.instance.InitAgent();
-            ActionManager.instance.StartSystemCoroutines();
             
             LocalizationManager.Read();
             AudioController.instance.Initialize();

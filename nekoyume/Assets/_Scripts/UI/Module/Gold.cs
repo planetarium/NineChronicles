@@ -1,7 +1,4 @@
 using System;
-using Nekoyume.Action;
-using TMPro;
-using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -18,14 +15,14 @@ namespace Nekoyume.UI.Module
 
         private void OnEnable()
         {
-            _disposable = Nekoyume.Model.Agent.Gold.Subscribe(SetGold);
-            
-            SetGold(Nekoyume.Model.Agent.Gold.Value);
+//            _disposable = ContextManager.AgentContext?.gold.Subscribe(SetGold);
+//            
+//            SetGold(ContextManager.AgentContext?.gold.Value ?? 0);
         }
 
         private void OnDisable()
         {
-            _disposable.Dispose();
+//            _disposable.Dispose();
         }
         
         #endregion

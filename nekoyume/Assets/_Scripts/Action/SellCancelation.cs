@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Globalization;
+using Libplanet;
 using Libplanet.Action;
-using Nekoyume.Game;
 using Nekoyume.Game.Item;
+using Nekoyume.State;
 
 namespace Nekoyume.Action
 {
@@ -14,36 +14,36 @@ namespace Nekoyume.Action
         [Serializable]
         public class ResultModel : GameActionResult
         {
-            public string owner;
+            public Address owner;
             public ShopItem shopItem;
         }
 
-        public string owner;
+        public Address owner;
         public Guid productId;
 
         protected override IImmutableDictionary<string, object> PlainValueInternal => new Dictionary<string, object>
         {
-            ["owner"] = owner,
+            ["owner"] = owner.ToByteArray(),
             ["productId"] = productId,
         }.ToImmutableDictionary();
 
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, object> plainValue)
         {
-            owner = (string) plainValue["owner"];
+            owner = new Address((byte[]) plainValue["owner"]);
             productId = new Guid((string) plainValue["productId"]);
         }
 
         protected override IAccountStateDelta ExecuteInternal(IActionContext actionCtx)
         {
             var states = actionCtx.PreviousStates;
-            var ctx = (Context) states.GetState(actionCtx.Signer);
+            var ctx = (AvatarState) states.GetState(actionCtx.Signer);
             if (actionCtx.Rehearsal)
             {
-                states = states.SetState(ActionManager.ShopAddress, MarkChanged);
+                states = states.SetState(AddressBook.Shop, MarkChanged);
                 return states.SetState(actionCtx.Signer, MarkChanged);
             }
 
-            var shop = (Shop) states.GetState(ActionManager.ShopAddress) ?? new Shop();
+            var shop = (ShopState) states.GetState(AddressBook.Shop) ?? new ShopState();
 
             try
             {
@@ -61,7 +61,7 @@ namespace Nekoyume.Action
                     shopItem = target
                 });
 
-                states = states.SetState(ActionManager.ShopAddress, shop);
+                states = states.SetState(AddressBook.Shop, shop);
                 return states.SetState(actionCtx.Signer, ctx);
             }
             catch

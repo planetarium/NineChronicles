@@ -1,5 +1,3 @@
-using CommandLine;
-using CommandLine.Text;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -12,11 +10,10 @@ using Nekoyume.Manager;
 using Libplanet;
 using Libplanet.Crypto;
 using Libplanet.Net;
-using Nekoyume.Data;
-using Nekoyume.Game;
 using Nekoyume.Game.Item;
 using Nekoyume.Helper;
 using Nekoyume.Model;
+using Nekoyume.State;
 using NetMQ;
 using UniRx;
 using UnityEngine;
@@ -36,46 +33,24 @@ namespace Nekoyume.Action
 #else
         private const string AgentStoreDirName = "planetarium";
 #endif
-        public const string PrivateKeyFormat = "private_key_{0}";
-        public const string AvatarFileFormat = "avatar_{0}.dat";
         public const string PeersFileName = "peers.dat";
         public const string IceServersFileName = "ice_servers.dat";
         public const string ChainIdKey = "chain_id";
         
-        public static Address ShopAddress => default(Address);
-        public static Address RankingAddress => new Address(new byte[]
-            {
-                0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x1
-            }
-        );
-        
-        public static event EventHandler<Model.Avatar> DidAvatarLoaded;
-        
-        public static List<Model.Avatar> Avatars
-        {
-            get
-            {
-                return Enumerable.Range(0, 3).Select(index => string.Format(AvatarFileFormat, index))
-                    .Select(fileName => Path.Combine(Application.persistentDataPath, fileName))
-                    .Select(path => LoadStatus(path)).ToList();
-            }
-        }
-
         private string _saveFilePath;
         private Agent _agent;
+        
         private IEnumerator _miner;
         private IEnumerator _txProcessor;
         private IEnumerator _swarmRunner;
         private IEnumerator _actionRetryer;
-        
-        public BattleLog battleLog;
-        
-        public Address AgentAddress => _agent.AgentAddress;
-        public Address AvatarAddress => _agent.AvatarAddress;
-        
-        public Model.Avatar Avatar { get; private set; }
-        public Shop Shop { get; private set; }
 
+        private IDisposable _rewardGoldActionDisposable;
+
+        public Model.Avatar Avatar => _agent.Avatar;
+        public BattleLog battleLog;
+        public ShopState ShopState { get; private set; }
+        
         #region Mono
 
         protected override void Awake()
@@ -105,38 +80,32 @@ namespace Nekoyume.Action
             return _agent.GetState(address);
         }
 
-        /// <summary>
-        /// FixMe. 모든 액션에 대한 랜더 단계에서 아바타 주소의 상태를 얻어 오고 있음.
-        /// 모든 액션 생성 단계에서 각각의 변경점을 업데이트 하는 방향으로 수정해볼 필요성 있음.
-        /// CreateNovice와 HackAndSlash 액션의 처리를 개선해서 테스트해 볼 예정.
-        /// 시작 전에 양님에게 문의!
-        /// </summary>
         public void SubscribeAvatarUpdates()
         {
-            if (Avatar != null)
+            if (ReferenceEquals(_agent, null))
             {
-                DidAvatarLoaded?.Invoke(this, Avatar);
+                throw new NullReferenceException("_agent is null.");
             }
-
-            ActionBase.EveryRender(AvatarAddress).ObserveOnMainThread().Subscribe(eval =>
-            {
-                var ctx = (Context) eval.OutputStates.GetState(AvatarAddress);
-                if (!(ctx?.avatar is null))
-                {
-                    ReceiveAction(ctx);
-                }
-            }).AddTo(this);
+            
+            _agent.SubscribeAvatarUpdates();
         }
+
+        #region Init
 
         public void InitAgent()
         {
+            if (!ReferenceEquals(_agent, null))
+            {
+                return;
+            }
+            
 #if UNITY_EDITOR
             var o = new CommandLineOptions();
 #else
             var o = CommnadLineParser.GetCommandLineOptions() ?? new CommandLineOptions();
 #endif
             PrivateKey privateKey;
-            var key = string.Format(PrivateKeyFormat, "agent");
+            var key = string.Format(Agent.PrivateKeyFormat, "agent");
             var privateKeyHex = o.PrivateKey ?? PlayerPrefs.GetString(key, "");
 
             if (string.IsNullOrEmpty(privateKeyHex))
@@ -156,7 +125,7 @@ namespace Nekoyume.Action
                 chainId = Guid.NewGuid();
                 PlayerPrefs.SetString(ChainIdKey, chainId.ToString());
             }
-            else 
+            else
             {
                 chainId = Guid.Parse(chainIdStr);
             }
@@ -185,15 +154,6 @@ namespace Nekoyume.Action
                 host: host,
                 port: port
             );
-            _txProcessor = _agent.CoTxProcessor();
-            _swarmRunner = _agent.CoSwarmRunner();
-            _actionRetryer = _agent.CoActionRetryer();
-
-            if (!o.NoMiner)
-            {
-                _miner = _agent.CoMiner();   
-            }
-
             _agent.PreloadStarted += (_, __) =>
             {
                 UI.Widget.Find<UI.LoadingScreen>()?.Show();
@@ -201,44 +161,26 @@ namespace Nekoyume.Action
             _agent.PreloadEnded += (_, __) =>
             {
                 StartNullableCoroutine(_miner);
-                Shop = GetState(ShopAddress) as Shop ?? new Shop();
+                ShopState = GetState(AddressBook.Shop) as ShopState ?? new ShopState();
                 UI.Widget.Find<UI.LoadingScreen>()?.Close();
             };
+            _miner = o.NoMiner ? null : _agent.CoMiner();
+            
+            StartSystemCoroutines(_agent);
         }
-
-        public void StartSystemCoroutines()
-        {
-            StartNullableCoroutine(_txProcessor);
-            StartNullableCoroutine(_actionRetryer);
-            StartNullableCoroutine(_swarmRunner);
-        }
-
+        
         public void InitAvatar(int index)
         {
-            PrivateKey privateKey = null;
-            var key = string.Format(PrivateKeyFormat, index);
-            var privateKeyHex = PlayerPrefs.GetString(key, "");
-
-            if (string.IsNullOrEmpty(privateKeyHex))
+            if (ReferenceEquals(_agent, null))
             {
-                privateKey = new PrivateKey();
-                PlayerPrefs.SetString(key, ByteUtil.Hex(privateKey.ByteArray));
-            }
-            else
-            {
-                privateKey = new PrivateKey(ByteUtil.ParseHex(privateKeyHex));
+                throw new NullReferenceException("_agent is null.");
             }
 
-            _agent.AvatarPrivateKey = privateKey;
-
-            var fileName = string.Format(AvatarFileFormat, index);
-            _saveFilePath = Path.Combine(Application.persistentDataPath, fileName);
-            Avatar = LoadStatus(_saveFilePath);
-            
-            Debug.Log($"Agent Address: 0x{_agent.AgentAddress.ToHex()}");
-            Debug.Log($"Avatar Address: 0x{_agent.AvatarAddress.ToHex()}");
+            _agent.InitAvatar(index);
         }
 
+        #endregion
+        
         #region Actions
         
         public void CreateNovice(string nickName)
@@ -246,7 +188,7 @@ namespace Nekoyume.Action
             var action = new CreateNovice
             {
                 name = nickName,
-                avatarAddress = AvatarAddress,
+                avatarAddress = AddressBook.Avatar.Value,
             };
             ProcessAction(action);
         }
@@ -299,7 +241,7 @@ namespace Nekoyume.Action
                 .ObserveOnMainThread()
                 .Select(eval =>
                 {
-                    var context = (Context) eval.OutputStates.GetState(eval.InputContext.Signer);
+                    var context = (AvatarState) eval.OutputStates.GetState(eval.InputContext.Signer);
                     var result = context.GetGameActionResult<Sell.ResultModel>();
                     
                     // 인벤토리에서 빼기.
@@ -307,13 +249,13 @@ namespace Nekoyume.Action
 //                    Avatar.RemoveEquipmentItemFromItems(result.shopItem.item.Data.id, result.shopItem.count);
                     
                     // 상점에 넣기.
-                    Shop.Register(AvatarAddress, result.shopItem);
+                    ShopState.Register(AddressBook.Avatar.Value, result.shopItem);
 
                     return result;
                 }); // Last() is for completion
         }
         
-        public IObservable<SellCancelation.ResultModel> SellCancelation(string owner, Guid productId)
+        public IObservable<SellCancelation.ResultModel> SellCancelation(Address owner, Guid productId)
         {
             var action = new SellCancelation {owner = owner, productId = productId};
             ProcessAction(action);
@@ -325,11 +267,11 @@ namespace Nekoyume.Action
                 .ObserveOnMainThread()
                 .Select(eval =>
                 {
-                    var context = (Context) eval.OutputStates.GetState(eval.InputContext.Signer);
+                    var context = (AvatarState) eval.OutputStates.GetState(eval.InputContext.Signer);
                     var result = context.GetGameActionResult<SellCancelation.ResultModel>();
                     
                     // 상점에서 빼기.
-                    var shopItem = Shop.Unregister(result.owner, result.shopItem.productId);
+                    var shopItem = ShopState.Unregister(result.owner, result.shopItem.productId);
                     // 인벤토리에 넣기.
                     // ToDo. SubscribeAvatarUpdates()에서 동기화 중. 분리할 예정.
 //                    Avatar.AddEquipmentItemToItems(shopItem.item.Data.id, shopItem.count);
@@ -338,7 +280,7 @@ namespace Nekoyume.Action
                 }); // Last() is for completion
         }
         
-        public IObservable<Buy.ResultModel> Buy(string owner, Guid productId)
+        public IObservable<Buy.ResultModel> Buy(Address owner, Guid productId)
         {
             var action = new Buy {owner = owner, productId = productId};
             ProcessAction(action);
@@ -350,11 +292,11 @@ namespace Nekoyume.Action
                 .ObserveOnMainThread()
                 .Select(eval =>
                 {
-                    var context = (Context) eval.OutputStates.GetState(eval.InputContext.Signer);
+                    var context = (AvatarState) eval.OutputStates.GetState(eval.InputContext.Signer);
                     var result = context.GetGameActionResult<Buy.ResultModel>();
                     
                     // 상점에서 빼기.
-                    var shopItem = Shop.Unregister(result.owner, result.shopItem.productId);
+                    var shopItem = ShopState.Unregister(result.owner, result.shopItem.productId);
                     // 인벤토리에 넣기.
                     // ToDo. SubscribeAvatarUpdates()에서 동기화 중. 분리할 예정.
 //                    Avatar.AddEquipmentItemToItems(shopItem.item.Data.id, shopItem.count);
@@ -365,62 +307,7 @@ namespace Nekoyume.Action
         
         #endregion
 
-        private void ReceiveAction(Context ctx)
-        {
-            var avatar = Avatar;
-            Avatar = ctx.avatar;
-            SaveStatus();
-            if (avatar == null)
-            {
-                DidAvatarLoaded?.Invoke(this, Avatar);
-            }
-            battleLog = ctx.battleLog;
-        }
-        
-        private static Model.Avatar LoadStatus(string path)
-        {
-            if (File.Exists(path))
-            {
-                var formatter = new BinaryFormatter();
-                using (FileStream stream = File.Open(path, FileMode.Open))
-                {
-                    var data = (SaveData) formatter.Deserialize(stream);
-                    return data.Avatar;
-                }
-            }
-            return null;
-        }
-
-        private void SaveStatus()
-        {
-            var data = new SaveData
-            {
-                Avatar = Avatar,
-            };
-            var formatter = new BinaryFormatter();
-            using (FileStream stream = File.Open(_saveFilePath, FileMode.OpenOrCreate))
-            {
-                formatter.Serialize(stream, data);
-            }
-        }
-
-        private void ProcessAction(GameAction action)
-        {
-            action.Id = action.Id.Equals(default(Guid)) ? Guid.NewGuid() : action.Id;
-            _agent.QueuedActions.Enqueue(action);
-        }
-
-        private IEnumerable<IceServer> LoadIceServers()
-        {
-            foreach (string line in LoadConfigLines(IceServersFileName)) 
-            {
-                var uri = new Uri(line);
-                string[] userInfo = uri.UserInfo.Split(':');
-
-                yield return new IceServer(new[] {uri}, userInfo[0], userInfo[1]);
-            }
-        }
-
+#if !UNITY_EDITOR
         private Peer LoadPeer(string peerInfo)
         {
             string[] tokens = peerInfo.Split(',');
@@ -458,15 +345,39 @@ namespace Nekoyume.Action
                 }
             }
         }
+
+        private IEnumerable<IceServer> LoadIceServers()
+        {
+            foreach (string line in LoadConfigLines(IceServersFileName)) 
+            {
+                var uri = new Uri(line);
+                string[] userInfo = uri.UserInfo.Split(':');
+
+                yield return new IceServer(new[] {uri}, userInfo[0], userInfo[1]);
+            }
+        }
+#endif
+        
+        private void StartSystemCoroutines(Agent agent)
+        {
+            _txProcessor = agent.CoTxProcessor();
+            _swarmRunner = agent.CoSwarmRunner();
+            _actionRetryer = agent.CoActionRetryer();
+            
+            StartNullableCoroutine(_txProcessor);
+            StartNullableCoroutine(_actionRetryer);
+            StartNullableCoroutine(_swarmRunner);
+        }
         
         private Coroutine StartNullableCoroutine(IEnumerator routine)
         {
-            if (ReferenceEquals(routine, null))
-            {
-                return null;
-            }
-
-            return StartCoroutine(routine);
+            return ReferenceEquals(routine, null) ? null : StartCoroutine(routine);
+        }
+        
+        private void ProcessAction(GameAction action)
+        {
+            action.Id = action.Id.Equals(default(Guid)) ? Guid.NewGuid() : action.Id;
+            _agent.QueuedActions.Enqueue(action);
         }
     }
 }

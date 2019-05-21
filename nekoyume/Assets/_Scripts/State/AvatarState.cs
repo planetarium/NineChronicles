@@ -1,12 +1,16 @@
 using System;
 using System.Collections.Generic;
 using Libplanet;
+using Nekoyume.Action;
 using Nekoyume.Model;
 
-namespace Nekoyume.Action
+namespace Nekoyume.State
 {
+    /// <summary>
+    /// Agent가 포함하는 각 Avatar의 데이터 모델.
+    /// </summary>
     [Serializable]
-    public class Context
+    public class AvatarState
     {
         public Avatar avatar;
         public BattleLog battleLog;
@@ -21,7 +25,7 @@ namespace Nekoyume.Action
         // ToDo. 각 액션 내에 결과 값을 저장 시키는 식의 접근도 고려해봐야 합니다.
         private readonly Dictionary<string, GameActionResult> _gameActionResults = new Dictionary<string, GameActionResult>();
 
-        public Context(Avatar avatar, Address? address, BattleLog logs = null, int gold = 0)
+        public AvatarState(Avatar avatar, Address? address, BattleLog logs = null, int gold = 0)
         {
             this.avatar = avatar;
             battleLog = logs;

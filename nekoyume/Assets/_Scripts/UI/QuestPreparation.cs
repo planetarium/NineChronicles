@@ -7,6 +7,7 @@ using Nekoyume.Game;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
+using Nekoyume.State;
 using Nekoyume.UI.Model;
 using UniRx;
 using UnityEngine;
@@ -234,8 +235,8 @@ namespace Nekoyume.UI
 
             observable.ObserveOnMainThread().Subscribe(eval =>
             {
-                Context ctx = (Context)eval.OutputStates.GetState(eval.InputContext.Signer);
-                ActionManager.instance.battleLog = ctx.battleLog;
+                var avatar = (AvatarState)eval.OutputStates.GetState(eval.InputContext.Signer);
+                ActionManager.instance.battleLog = avatar.battleLog;
                 
                 Game.Event.OnStageStart.Invoke();
                 Find<LoadingScreen>().Close();

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Nekoyume.Game.Item;
+using Nekoyume.State;
 using UniRx;
 using UnityEngine;
 
@@ -25,7 +26,7 @@ namespace Nekoyume.UI.Model
         public readonly Subject<Shop> onClickSwitchSell = new Subject<Shop>();
         public readonly Subject<Shop> onClickClose = new Subject<Shop>();
 
-        public Shop(List<Game.Item.Inventory.InventoryItem> items, Game.Shop shop)
+        public Shop(List<Game.Item.Inventory.InventoryItem> items, ShopState shop)
         {
             inventory.Value = new Inventory(items);
             shopItems.Value = new ShopItems(shop);
@@ -81,8 +82,10 @@ namespace Nekoyume.UI.Model
 
         private bool ButtonEnabledFuncForBuy(InventoryItem inventoryItem)
         {
-            return inventoryItem is ShopItem shopItem &&
-                   Nekoyume.Model.Agent.Gold.Value >= shopItem.price.Value;
+            // FIXME!!!!!!!
+            return false;
+//            return inventoryItem is ShopItem shopItem &&
+//                   ContextManager.AgentContext?.gold.Value >= shopItem.price.Value;
         }
 
         private bool ButtonEnabledFuncForSell(InventoryItem inventoryItem)

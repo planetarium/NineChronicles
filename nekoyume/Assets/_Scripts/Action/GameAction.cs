@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using Libplanet;
 using Libplanet.Action;
+using Nekoyume.State;
 
 namespace Nekoyume.Action
 {
@@ -23,7 +24,7 @@ namespace Nekoyume.Action
             Id = Guid.NewGuid();
         }
 
-        protected static IAccountStateDelta SimpleError(IActionContext actionCtx, Context ctx, int errorCode)
+        protected static IAccountStateDelta SimpleError(IActionContext actionCtx, AvatarState ctx, int errorCode)
         {
             ctx.updatedAt = DateTimeOffset.UtcNow;
             ctx.SetGameActionResult(new GameActionResult
