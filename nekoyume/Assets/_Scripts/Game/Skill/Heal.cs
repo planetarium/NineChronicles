@@ -12,9 +12,8 @@ namespace Nekoyume.Game.Skill
         {
         }
 
-        public override EventBase Use()
+        public override Model.Skill Use()
         {
-            var type = GetSkillType();
             var infos = new List<Model.Skill.SkillInfo>();
             foreach (var target in GetTarget())
             {

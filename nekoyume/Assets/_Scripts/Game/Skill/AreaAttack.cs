@@ -11,7 +11,7 @@ namespace Nekoyume.Game.Skill
         {
         }
 
-        public override EventBase Use()
+        public override Model.Skill Use()
         {
 
             return new Model.Attack
