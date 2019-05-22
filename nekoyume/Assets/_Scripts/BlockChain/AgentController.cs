@@ -1,7 +1,14 @@
+#if UNITY_EDITOR
+#define EDITOR_MODE
+#endif
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Net;
+using System.Text.RegularExpressions;
 using Libplanet;
 using Libplanet.Crypto;
 using Libplanet.Net;
@@ -16,7 +23,7 @@ namespace Nekoyume
     /// </summary>
     public class AgentController : MonoSingleton<AgentController>
     {
-#if UNITY_EDITOR
+#if EDITOR_MODE
         private const string AgentStoreDirName = "planetarium_dev";
         private const string DefaultHost = "127.0.0.1";
 #else
@@ -84,7 +91,7 @@ namespace Nekoyume
         
         private static CommandLineOptions GetOptions()
         {
-#if UNITY_EDITOR
+#if EDITOR_MODE
             return new CommandLineOptions();
 #else
             return CommnadLineParser.GetCommandLineOptions() ?? new CommandLineOptions();
@@ -129,18 +136,18 @@ namespace Nekoyume
 
         private static IEnumerable<Peer> GetPeers(CommandLineOptions options)
         {
-#if UNITY_EDITOR
+#if EDITOR_MODE
             return new Peer[]{ };
 #else
             return options.Peers is null
-                ? LoadConfigLines(PeersFileName).Select(LoadPeer);
-                : options.Peers.Select(LoadPeer)
+                ? LoadConfigLines(PeersFileName).Select(LoadPeer)
+                : options.Peers.Select(LoadPeer);
 #endif
         }
 
         private static IEnumerable<IceServer> GetIceServers()
         {
-#if UNITY_EDITOR
+#if EDITOR_MODE
             return null;
 #else
             return LoadIceServers();
@@ -149,14 +156,14 @@ namespace Nekoyume
 
         private static string GetHost(CommandLineOptions options)
         {
-#if UNITY_EDITOR
+#if EDITOR_MODE
             return DefaultHost;
 #else
             return options.Host;
 #endif
         }
         
-#if !UNITY_EDITOR
+#if !EDITOR_MODE
         private static Peer LoadPeer(string peerInfo)
         {
             string[] tokens = peerInfo.Split(',');
