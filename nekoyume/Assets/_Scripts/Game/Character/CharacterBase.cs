@@ -216,11 +216,11 @@ namespace Nekoyume.Game.Character
             Root = new Root();
             Root.OpenBranch(
                 BT.Selector().OpenBranch(
-                    BT.If(() => !CanRun()).OpenBranch(
-                        BT.Call(StopRun)
-                    ),
                     BT.If(CanRun).OpenBranch(
                         BT.Call(Run)
+                    ),
+                    BT.If(() => !CanRun()).OpenBranch(
+                        BT.Call(StopRun)
                     )
                 )
             );
