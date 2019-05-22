@@ -30,7 +30,7 @@ namespace Nekoyume.Game.Skill
 
                 target.OnDamage(dmg);
 
-                infos.Add(new Model.Skill.SkillInfo(CharacterBase.Copy(target), dmg, critical));
+                infos.Add(new Model.Skill.SkillInfo((CharacterBase) target.Clone(), dmg, critical));
             }
 
             return infos;
@@ -56,7 +56,7 @@ namespace Nekoyume.Game.Skill
 
             return new Model.Attack
             {
-                character = CharacterBase.Copy(Caster),
+                character = (CharacterBase) Caster.Clone(),
                 skillInfos = info,
             };
         }

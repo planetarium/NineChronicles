@@ -136,7 +136,7 @@ namespace Nekoyume.Model
                 var getExp = new GetExp
                 {
                     exp = waveExp,
-                    character = Copy(this),
+                    character = (CharacterBase) Clone(),
                 };
                 Simulator.Log.Add(getExp);
             }
@@ -200,7 +200,7 @@ namespace Nekoyume.Model
             InitAI();
             var spawn = new SpawnPlayer
             {
-                character = Copy(this),
+                character = (CharacterBase) Clone(),
             };
             Simulator.Log.Add(spawn);
         }

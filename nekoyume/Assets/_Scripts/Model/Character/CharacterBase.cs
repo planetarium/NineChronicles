@@ -13,7 +13,7 @@ using Nekoyume.Game.Skill;
 namespace Nekoyume.Model
 {
     [Serializable]
-    public abstract class CharacterBase
+    public abstract class CharacterBase : ICloneable
     {
         public readonly List<CharacterBase> targets = new List<CharacterBase>();
         [InformationField]
@@ -92,22 +92,9 @@ namespace Nekoyume.Model
         {
             var dead = new Dead
             {
-                character = Copy(this),
+                character = (CharacterBase) Clone(),
             };
             Simulator.Log.Add(dead);
-        }
-
-        public static T Copy<T>(T origin)
-        {
-            var formatter = new BinaryFormatter();
-            var stream = new MemoryStream();
-            using (stream)
-            {
-                formatter.Serialize(stream, origin);
-                stream.Seek(0, SeekOrigin.Begin);
-                return (T) formatter.Deserialize(stream);
-            }
-
         }
 
         public void OnDamage(int dmg)
@@ -135,6 +122,11 @@ namespace Nekoyume.Model
         {
             var current = currentHP;
             currentHP = Math.Min(heal + current, hp);
+        }
+
+        public object Clone()
+        {
+            return MemberwiseClone();
         }
     }
 
