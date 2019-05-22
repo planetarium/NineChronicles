@@ -23,4 +23,17 @@
  - `--no-miner`    : 마이닝을 사용하지 않습니다.
  - `--peer`        : Peer 를 추가합니다. 추가하려는 Peer가 여럿일 경우 --peer peerA peerB ... 와 같이 추가할 수 있습니다.
 
+
+### 커맨드라인 빌드
+
+```
+$ /UnityPath/Unity -quit -batchmode -executeMethod Editor.Builder.Build[All, MacOS, Windows, Linux]
+```
+
+- Example
+
+```
+$ /Applications/Unity/Hub/Editor/2019.1.0f2/Unity.app/Contents/MacOS/Unity -quit -batchmode -executeMethod Editor.Builder.Build[All, MacOS, Windows, Linux]
+```
+
 [Unity Hub]: https://unity3d.com/get-unity/download
