@@ -41,8 +41,6 @@ namespace Nekoyume.Helper
                     Debug.Log(HelpText.AutoBuild(result)
             ));
 
-            Application.Quit();
-
             return null;
         }
     }
