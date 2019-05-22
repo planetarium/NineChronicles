@@ -167,9 +167,9 @@ namespace Nekoyume.Action
             IceServer[] iceServers = null;
             string host = "127.0.0.1";
 #else
-            var peers = o.Peers.Any()
-                ? o.Peers.Select(LoadPeer)
-                : LoadConfigLines(PeersFileName).Select(LoadPeer);
+            var peers = o.Peers is null
+                ? LoadConfigLines(PeersFileName).Select(LoadPeer)
+                : o.Peers.Select(LoadPeer);
             var iceServers = LoadIceServers();
             string host = o.Host;
 #endif
