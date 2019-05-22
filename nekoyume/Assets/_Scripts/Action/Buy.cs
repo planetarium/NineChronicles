@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Game;
 using Nekoyume.Game.Item;
@@ -13,22 +14,22 @@ namespace Nekoyume.Action
         [Serializable]
         public class ResultModel : GameActionResult
         {
-            public string owner;
+            public Address owner;
             public ShopItem shopItem;
         }
 
-        public string owner;
+        public Address owner;
         public Guid productId;
 
         protected override IImmutableDictionary<string, object> PlainValueInternal => new Dictionary<string, object>
         {
-            ["owner"] = owner,
+            ["owner"] = owner.ToByteArray(),
             ["productId"] = productId,
         }.ToImmutableDictionary();
 
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, object> plainValue)
         {
-            owner = (string) plainValue["owner"];
+            owner = new Address((byte[]) plainValue["owner"]);
             productId = new Guid((string) plainValue["productId"]);
         }
 

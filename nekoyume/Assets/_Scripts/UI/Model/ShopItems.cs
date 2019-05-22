@@ -171,7 +171,7 @@ namespace Nekoyume.UI.Model
         {
             registeredProducts.Clear();
             
-            var key = ActionManager.instance.AvatarAddress.ToString();
+            var key = ActionManager.instance.AvatarAddress;
             if (!_shop.items.ContainsKey(key))
             {
                 return;

@@ -1,5 +1,3 @@
-using CommandLine;
-using CommandLine.Text;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -323,7 +321,7 @@ namespace Nekoyume.Action
                 }); // Last() is for completion
         }
         
-        public IObservable<SellCancelation.ResultModel> SellCancelation(string owner, Guid productId)
+        public IObservable<SellCancelation.ResultModel> SellCancelation(Address owner, Guid productId)
         {
             var action = new SellCancelation {owner = owner, productId = productId};
             ProcessAction(action);
@@ -348,7 +346,7 @@ namespace Nekoyume.Action
                 }); // Last() is for completion
         }
         
-        public IObservable<Buy.ResultModel> Buy(string owner, Guid productId)
+        public IObservable<Buy.ResultModel> Buy(Address owner, Guid productId)
         {
             var action = new Buy {owner = owner, productId = productId};
             ProcessAction(action);

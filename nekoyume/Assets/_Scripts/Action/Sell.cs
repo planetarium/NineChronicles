@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Globalization;
+using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Game;
 using Nekoyume.Game.Item;
@@ -14,7 +15,7 @@ namespace Nekoyume.Action
         [Serializable]
         public class ResultModel : GameActionResult
         {
-            public string owner;
+            public Address owner;
             public ShopItem shopItem;
         }
 
@@ -86,7 +87,7 @@ namespace Nekoyume.Action
             ctx.SetGameActionResult(new ResultModel
             {
                 errorCode = GameActionResult.ErrorCode.Success,
-                owner = actionCtx.Signer.ToString(),
+                owner = actionCtx.Signer,
                 shopItem = shopItem
             });
 

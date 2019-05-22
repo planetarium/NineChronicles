@@ -14,22 +14,21 @@ namespace Nekoyume.Game
     [Serializable]
     public class Shop
     {
-        public readonly Dictionary<string, List<ShopItem>> items = new Dictionary<string, List<ShopItem>>();
+        public readonly Dictionary<Address, List<ShopItem>> items = new Dictionary<Address, List<ShopItem>>();
         
         public ShopItem Register(Address address, ShopItem item)
         {
-            var key = address.ToString();
-            if (!items.ContainsKey(key))
+            if (!items.ContainsKey(address))
             {
-                items.Add(key, new List<ShopItem>());
+                items.Add(address, new List<ShopItem>());
             }
 
             item.productId = Guid.NewGuid();
-            items[key].Add(item);
+            items[address].Add(item);
             return item;
         }
 
-        public KeyValuePair<string, ShopItem> Find(string address, Guid productId)
+        public KeyValuePair<Address, ShopItem> Find(Address address, Guid productId)
         {
             if (!items.ContainsKey(address))
             {
@@ -42,13 +41,13 @@ namespace Nekoyume.Game
             {
                 if (shopItem.productId != productId) continue;
                 
-                return new KeyValuePair<string, ShopItem>(address, shopItem);
+                return new KeyValuePair<Address, ShopItem>(address, shopItem);
             }
 
             throw new KeyNotFoundException($"productId: {productId}");
         }
         
-        public ShopItem Unregister(string address, Guid productId)
+        public ShopItem Unregister(Address address, Guid productId)
         {
             try
             {
@@ -63,7 +62,7 @@ namespace Nekoyume.Game
             }
         }
         
-        public bool Unregister(string address, ShopItem shopItem)
+        public bool Unregister(Address address, ShopItem shopItem)
         {
             if (!items[address].Contains(shopItem))
             {
