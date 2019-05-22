@@ -144,8 +144,10 @@ namespace Nekoyume
             while (true)
             {
                 yield return new WaitForSeconds(ActionRetryInterval);
-                if (_blocks.Tip?.Hash is HashDigest<SHA256> currentTipHash && 
-                    currentTipHash.Equals(previousTipHash)) 
+
+                if (_blocks.Tip is null ||
+                    _blocks.Tip.Hash is HashDigest<SHA256> currentTipHash &&
+                    currentTipHash.Equals(previousTipHash))
                 {
                     continue;
                 }

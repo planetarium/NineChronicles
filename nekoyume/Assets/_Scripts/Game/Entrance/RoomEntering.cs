@@ -56,6 +56,7 @@ namespace Nekoyume.Game.Entrance
                 yield return null;
             }
             playerComp.RunSpeed = 0.0f;
+            playerComp.animator.Idle();
 
             Destroy(this);
         }

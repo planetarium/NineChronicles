@@ -41,7 +41,7 @@ namespace Nekoyume.Model
             inventory = new Inventory();
             atkElement = Game.Elemental.Create(Elemental.ElementalType.Normal);
             defElement = Game.Elemental.Create(Elemental.ElementalType.Normal);
-            TurnSpeed = 1.0f;
+            TurnSpeed = 1.8f;
 
             var inventoryItems = avatar.Items;
             if (inventoryItems != null)
@@ -75,7 +75,7 @@ namespace Nekoyume.Model
             //TODO 장비에서 스킬을 얻어와서 붙이도록 설정
             foreach (var effect in Tables.instance.SkillEffect.Values)
             {
-                var skill = SkillFactory.Get(this, (float) Simulator.Random.NextDouble(), effect);
+                var skill = SkillFactory.Get(this, 0.1f, effect);
                 Skills.Add(skill);
             }
         }
