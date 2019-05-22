@@ -33,32 +33,29 @@ namespace Nekoyume.Model
         private static void Subscribes()
         {
             ActionBase.EveryRender<Sell>()
-                .Where(eval => eval.InputContext.Signer == AddressBook.Agent.Value)
+                .Where(eval => eval.InputContext.Signer == AddressBook.Avatar.Value)
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
                 {
-                    var context = (AvatarState) eval.OutputStates.GetState(eval.InputContext.Signer);
-                    var result = context.GetGameActionResult<Sell.ResultModel>();
+                    var result = eval.Action.result;
                     ShopState.Register(Items, AddressBook.Avatar.Value, result.shopItem);
                 });
             
             ActionBase.EveryRender<SellCancellation>()
-                .Where(eval => eval.InputContext.Signer == AddressBook.Agent.Value)
+                .Where(eval => eval.InputContext.Signer == AddressBook.Avatar.Value)
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
                 {
-                    var context = (AvatarState) eval.OutputStates.GetState(eval.InputContext.Signer);
-                    var result = context.GetGameActionResult<SellCancellation.ResultModel>();
+                    var result = eval.Action.result;
                     ShopState.Unregister(Items, result.owner, result.shopItem.productId);
                 });
             
             ActionBase.EveryRender<Buy>()
-                .Where(eval => eval.InputContext.Signer == AddressBook.Agent.Value)
+                .Where(eval => eval.InputContext.Signer == AddressBook.Avatar.Value)
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
                 {
-                    var context = (AvatarState) eval.OutputStates.GetState(eval.InputContext.Signer);
-                    var result = context.GetGameActionResult<Buy.ResultModel>();
+                    var result = eval.Action.result;
                     ShopState.Unregister(Items, result.owner, result.shopItem.productId);
                 });
         }

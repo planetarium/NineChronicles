@@ -23,6 +23,8 @@ namespace Nekoyume.Action
         public int count;
         public decimal price;
 
+        public new ResultModel result;
+
         protected override IImmutableDictionary<string, object> PlainValueInternal => new Dictionary<string, object>
         {
             ["itemId"] = itemId.ToString(),
@@ -40,7 +42,7 @@ namespace Nekoyume.Action
         protected override IAccountStateDelta ExecuteInternal(IActionContext actionCtx)
         {
             var states = actionCtx.PreviousStates;
-            var ctx = (AvatarState) states.GetState(actionCtx.Signer);
+            var avatarState = (AvatarState) states.GetState(actionCtx.Signer);
             if (actionCtx.Rehearsal)
             {
                 states = states.SetState(AddressBook.Shop, MarkChanged);
@@ -51,7 +53,7 @@ namespace Nekoyume.Action
 
             // 인벤토리에서 판매할 아이템을 선택하고 수량을 조절한다.
             Inventory.InventoryItem target = null;
-            foreach (var item in ctx.avatar.Items)
+            foreach (var item in avatarState.avatar.Items)
             {
                 if (item.Item.Data.id != itemId ||
                     item.Count == 0)
@@ -62,7 +64,7 @@ namespace Nekoyume.Action
                 target = item;
                 if (target.Count < count)
                 {
-                    return SimpleError(actionCtx, ctx, GameActionResult.ErrorCode.SellItemCountNotEnoughInInventory);
+                    return SimpleError(actionCtx, avatarState, GameActionResult.ErrorCode.SellItemCountNotEnoughInInventory);
                 }
                 target.Count -= count;
             }
@@ -70,29 +72,29 @@ namespace Nekoyume.Action
             // 인벤토리에 판매할 아이템이 없는 경우.
             if (ReferenceEquals(target, null))
             {
-                return SimpleError(actionCtx, ctx, GameActionResult.ErrorCode.SellItemNotFoundInInventory);
+                return SimpleError(actionCtx, avatarState, GameActionResult.ErrorCode.SellItemNotFoundInInventory);
             }
 
             // 인벤토리에서 판매할 아이템을 뺀 후에 수량이 0일 경우.
             if (target.Count == 0)
             {
-                ctx.avatar.Items.Remove(target);
+                avatarState.avatar.Items.Remove(target);
             }
 
             // 상점에 아이템을 등록한다.
             var shopItem = new ShopItem {item = target.Item, count = count, price = price};
             shopItem = shop.Register(actionCtx.Signer, shopItem);
 
-            ctx.updatedAt = DateTimeOffset.UtcNow;
-            ctx.SetGameActionResult(new ResultModel
+            avatarState.updatedAt = DateTimeOffset.UtcNow;
+            result = new ResultModel
             {
                 errorCode = GameActionResult.ErrorCode.Success,
                 owner = actionCtx.Signer,
                 shopItem = shopItem
-            });
+            };
 
             states = states.SetState(AddressBook.Shop, shop);
-            return states.SetState(actionCtx.Signer, ctx);
+            return states.SetState(actionCtx.Signer, avatarState);
         }
     }
 }

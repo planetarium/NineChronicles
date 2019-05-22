@@ -21,6 +21,8 @@ namespace Nekoyume.Action
         public Address owner;
         public Guid productId;
 
+        public new ResultModel result;
+
         protected override IImmutableDictionary<string, object> PlainValueInternal => new Dictionary<string, object>
         {
             ["owner"] = owner.ToByteArray(),
@@ -54,12 +56,12 @@ namespace Nekoyume.Action
                 ctx.avatar.AddEquipmentItemToItems(target.item.Data.id, target.count);
 
                 ctx.updatedAt = DateTimeOffset.UtcNow;
-                ctx.SetGameActionResult(new ResultModel
+                result = new ResultModel
                 {
                     errorCode = GameActionResult.ErrorCode.Success,
                     owner = owner,
                     shopItem = target
-                });
+                };
 
                 states = states.SetState(AddressBook.Shop, shop);
                 return states.SetState(actionCtx.Signer, ctx);

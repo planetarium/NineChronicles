@@ -101,8 +101,7 @@ namespace Nekoyume
                 .ObserveOnMainThread()
                 .Select(eval =>
                 {
-                    var context = (AvatarState) eval.OutputStates.GetState(eval.InputContext.Signer);
-                    var result = context.GetGameActionResult<Sell.ResultModel>();
+                    var result = eval.Action.result;
                     
                     // 인벤토리에서 빼기.
                     // ToDo. SubscribeAvatarUpdates()에서 동기화 중. 분리할 예정.
@@ -127,8 +126,7 @@ namespace Nekoyume
                 .ObserveOnMainThread()
                 .Select(eval =>
                 {
-                    var context = (AvatarState) eval.OutputStates.GetState(eval.InputContext.Signer);
-                    var result = context.GetGameActionResult<SellCancellation.ResultModel>();
+                    var result = eval.Action.result;
                     
                     // 상점에서 빼기. ReactiveShopState 에서 동기화 중.
 //                    var shopItem = States.Shop.Value.Unregister(result.owner, result.shopItem.productId);
@@ -152,8 +150,7 @@ namespace Nekoyume
                 .ObserveOnMainThread()
                 .Select(eval =>
                 {
-                    var context = (AvatarState) eval.OutputStates.GetState(eval.InputContext.Signer);
-                    var result = context.GetGameActionResult<Buy.ResultModel>();
+                    var result = eval.Action.result;
                     
                     // 상점에서 빼기. ReactiveShopState 에서 동기화 중.
 //                    var shopItem = States.Shop.Value.Unregister(result.owner, result.shopItem.productId);
