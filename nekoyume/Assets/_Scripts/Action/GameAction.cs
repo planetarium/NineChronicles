@@ -18,6 +18,22 @@ namespace Nekoyume.Action
 
         public Guid Id { get; internal set; }
 
+        public GameAction()
+        {
+            Id = Guid.NewGuid();
+        }
+
+        protected static IAccountStateDelta SimpleError(IActionContext actionCtx, Context ctx, int errorCode)
+        {
+            ctx.updatedAt = DateTimeOffset.UtcNow;
+            ctx.SetGameActionResult(new GameActionResult
+            {
+                errorCode = errorCode,
+            });
+                    
+            return actionCtx.PreviousStates.SetState(actionCtx.Signer, ctx);
+        }
+
         public override void LoadPlainValue(IImmutableDictionary<string, object> plainValue)
         {
             Id = new Guid((string) plainValue["id"]);

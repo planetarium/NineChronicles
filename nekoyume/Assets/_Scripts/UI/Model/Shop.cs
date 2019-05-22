@@ -113,29 +113,27 @@ namespace Nekoyume.UI.Model
                 return;
             }
 
-            switch (state.Value)
+            if (state.Value == State.Buy)
             {
-                case State.Buy:
-                    // ToDo. 구매하겠습니까?
-                    return;
+                // ToDo. 구매하겠습니까?
+                return;   
             }
             
             if (itemInfo.item.Value is ShopItem)
             {
                 // ToDo. 판매 취소하겠습니까?
+                return;
             }
-            else
-            {
-                itemCountAndPricePopup.Value.titleText.Value = "판매 설정";
-                itemCountAndPricePopup.Value.submitText.Value = "판매";
-                itemCountAndPricePopup.Value.item.Value = new CountEditableItem(
-                    itemInfo.item.Value.item.Value,
-                    itemInfo.item.Value.count.Value,
-                    0,
-                    itemInfo.item.Value.count.Value,
-                    "수정");
-                itemCountAndPricePopup.Value.price.Value = 1;
-            }
+            
+            itemCountAndPricePopup.Value.titleText.Value = "판매 설정";
+            itemCountAndPricePopup.Value.submitText.Value = "판매";
+            itemCountAndPricePopup.Value.item.Value = new CountEditableItem(
+                itemInfo.item.Value.item.Value,
+                itemInfo.item.Value.count.Value,
+                0,
+                itemInfo.item.Value.count.Value,
+                "수정");
+            itemCountAndPricePopup.Value.price.Value = 1;
         }
 
         private void OnSelectInventoryItem(InventoryItem inventoryItem)
@@ -146,7 +144,7 @@ namespace Nekoyume.UI.Model
                 {
                     // 초기화 단계에서 `inventory.Value.selectedItem.Subscribe(OnSelectInventoryItem);` 라인을 통해
                     // 구독할 때, 한 번 반드시 이 라인에 들어옵니다.
-                    // 이때 예외를 발생하지 않아야 해서 수정합니다.
+                    // 이때 예외가 발생하지 않아야 해서 수정합니다.
                     return; // throw new UnexpectedOperationException();
                 }
                 
@@ -164,7 +162,7 @@ namespace Nekoyume.UI.Model
                 {
                     // 초기화 단계에서 `shopItems.Value.selectedItem.Subscribe(OnSelectShopItem);` 라인을 통해
                     // 구독할 때, 한 번 반드시 이 라인에 들어옵니다.
-                    // 이때 예외를 발생하지 않아야 해서 수정합니다.
+                    // 이때 예외가 발생하지 않아야 해서 수정합니다.
                     return; // throw new UnexpectedOperationException();
                 }
                 

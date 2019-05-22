@@ -177,49 +177,52 @@ namespace Nekoyume.UI
         {
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
             _loadingScreen.Show();
-            
-            var observable =
-                ActionManager.instance.Sell(
-                    data.item.Value.item.Value.Data.id,
-                    data.item.Value.count.Value,
-                    data.price.Value);
 
-            observable.ObserveOnMainThread().Subscribe(eval =>
+            if (_data.state.Value == Model.Shop.State.Buy)
             {
-                var context = (Context) eval.OutputStates.GetState(eval.InputContext.Signer);
-                var result = context.GetGameActionResult<Nekoyume.Action.Sell.ResultModel>();
-                if (ReferenceEquals(result, null))
-                {
-                    throw new GameActionResultNullException();
-                }
+                // ToDo. 구매하겠습니까?
+                return;
+            }
 
-                if (result.errorCode != GameActionResult.ErrorCode.Success)
-                {
-                    _data.itemCountAndPricePopup.Value.item.Value = null;
-                    _loadingScreen.Close();
-                    return;
-                }
+            if (_data.itemInfo.Value.item.Value is ShopItem)
+            {
+                // ToDo. 판매 취소하겠습니까?
+                return;
+            }
 
-                if (result.itemId != data.item.Value.item.Value.Data.id)
-                {
-                    throw new GameActionResultUnexpectedException();
-                }
-                
-                if (!Tables.instance.TryGetItemEquipment(result.itemId, out var itemEquipment))
-                {
-                    throw new KeyNotFoundException(result.itemId.ToString());
-                }
+            ActionManager.instance
+                .Sell(data.item.Value.item.Value.Data.id,
+                    data.item.Value.count.Value,
+                    data.price.Value)
+                .Subscribe(ResponseSell)
+                .AddTo(this);
+        }
 
+        private void ResponseSell(Nekoyume.Action.Sell.ResultModel result)
+        {
+            if (ReferenceEquals(result, null))
+            {
+                throw new GameActionResultNullException();
+            }
+
+            if (result.errorCode != GameActionResult.ErrorCode.Success)
+            {
                 _data.itemCountAndPricePopup.Value.item.Value = null;
-                _data.inventory.Value.RemoveItem(result.itemId, result.count);
-                _data.shopItems.Value.registeredProducts.Add(new ShopItem(
-                    eval.InputContext.Signer.ToString(),
-                    result.price,
-                    result.productId,
-                    ItemBase.ItemFactory(itemEquipment),
-                    result.count));
                 _loadingScreen.Close();
-            }).AddTo(this);
+                return;
+            }
+                    
+            if (!Tables.instance.TryGetItemEquipment(result.shopItem.item.Data.id, out var itemEquipment))
+            {
+                throw new KeyNotFoundException(result.shopItem.item.Data.id.ToString());
+            }
+
+            _data.itemCountAndPricePopup.Value.item.Value = null;
+            _data.inventory.Value.RemoveItem(result.shopItem.item.Data.id, result.shopItem.count);
+            _data.shopItems.Value.registeredProducts.Add(new ShopItem(
+                result.owner,
+                result.shopItem));
+            _loadingScreen.Close();
         }
 
         private void OnClickCloseItemCountAndPricePopup(Model.ItemCountAndPricePopup data)

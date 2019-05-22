@@ -1,5 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Nekoyume.Action;
+using Nekoyume.Data;
 using Nekoyume.Game.Item;
 
 namespace Nekoyume.Model
@@ -60,6 +63,51 @@ namespace Nekoyume.Model
         public Player ToPlayer()
         {
             return new Player(this);
+        }
+
+        public void AddEquipmentItemToItems(int itemId, int count)
+        {
+            if (!Tables.instance.TryGetItemEquipment(itemId, out var itemData))
+            {
+                throw new KeyNotFoundException($"itemId: {itemId}");
+            }
+            
+            var inventoryItem = Items.FirstOrDefault(item => item.Item.Data.id == itemId);
+            if (ReferenceEquals(inventoryItem, null))
+            {
+                var itemBase = ItemBase.ItemFactory(itemData);
+                Items.Add(new Inventory.InventoryItem(itemBase, count));
+            }
+            else
+            {
+                inventoryItem.Count += count;
+            }
+        }
+
+        public void RemoveEquipmentItemFromItems(int itemId, int count)
+        {
+            if (!Tables.instance.TryGetItemEquipment(itemId, out var itemData))
+            {
+                throw new KeyNotFoundException($"itemId: {itemId}");
+            }
+            
+            var inventoryItem = Items.FirstOrDefault(item => item.Item.Data.id == itemId);
+            if (ReferenceEquals(inventoryItem, null))
+            {
+                throw new KeyNotFoundException($"itemId: {itemId}");
+            }
+
+            if (inventoryItem.Count < count)
+            {
+                throw new InvalidOperationException("Reduce more than the quantity of inventoryItem.");
+            }
+            
+            inventoryItem.Count -= count;
+
+            if (inventoryItem.Count == 0)
+            {
+                Items.Remove(inventoryItem);
+            }
         }
     }
 }

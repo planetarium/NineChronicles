@@ -5,37 +5,73 @@ using Nekoyume.Game.Item;
 
 namespace Nekoyume.Game
 {
+    /// <summary>
+    /// 지금의 상점의 동기화 정책.
+    /// `Sell` 액션에 대해서는 매번 직접 `Register`.
+    /// `Buy` 액션에 대해서도 매번 직접 `Unregister`.
+    /// ShopAddress의 Shop 자체에 대한 동기화는 게임 실행 시 한 번.
+    /// </summary>
     [Serializable]
     public class Shop
     {
-        public readonly Dictionary<string, List<ShopItem>> items = new Dictionary<string, List<ShopItem>>();
+        public readonly Dictionary<Address, List<ShopItem>> items = new Dictionary<Address, List<ShopItem>>();
         
-        public Guid Register(Address key, ShopItem item)
+        public ShopItem Register(Address address, ShopItem item)
         {
-            var addr = key.ToString();
-            if (!items.ContainsKey(addr))
+            if (!items.ContainsKey(address))
             {
-                items.Add(addr, new List<ShopItem>());
+                items.Add(address, new List<ShopItem>());
             }
 
             item.productId = Guid.NewGuid();
-            items[addr].Add(item);
-            return item.productId;
+            items[address].Add(item);
+            return item;
         }
 
-        public KeyValuePair<string, ShopItem> Unregister(Guid productId)
+        public KeyValuePair<Address, ShopItem> Find(Address address, Guid productId)
         {
-            foreach (var pair in items)
+            if (!items.ContainsKey(address))
             {
-                foreach (var shopItem in pair.Value)
-                {
-                    if (shopItem.productId != productId) continue;
-                    
-                    return new KeyValuePair<string, ShopItem>(pair.Key, shopItem);
-                }
+                throw new KeyNotFoundException($"address: {address}");
             }
 
-            throw new KeyNotFoundException("productId");
+            var list = items[address];
+            
+            foreach (var shopItem in list)
+            {
+                if (shopItem.productId != productId) continue;
+                
+                return new KeyValuePair<Address, ShopItem>(address, shopItem);
+            }
+
+            throw new KeyNotFoundException($"productId: {productId}");
+        }
+        
+        public ShopItem Unregister(Address address, Guid productId)
+        {
+            try
+            {
+                var pair = Find(address, productId);
+                items[pair.Key].Remove(pair.Value);
+
+                return pair.Value;
+            }
+            catch
+            {
+                throw new KeyNotFoundException($"address: {address}, productId: {productId}");
+            }
+        }
+        
+        public bool Unregister(Address address, ShopItem shopItem)
+        {
+            if (!items[address].Contains(shopItem))
+            {
+                return false;
+            }
+            
+            items[address].Remove(shopItem);
+            
+            return true;
         }
     }
 }

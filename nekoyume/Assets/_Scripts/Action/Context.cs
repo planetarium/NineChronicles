@@ -10,7 +10,7 @@ namespace Nekoyume.Action
     {
         public Avatar avatar;
         public BattleLog battleLog;
-        public int gold;
+        public decimal gold;
         public DateTimeOffset updatedAt;
         public DateTimeOffset? clearedAt;
         public Address? AvatarAddress { get; private set; }
