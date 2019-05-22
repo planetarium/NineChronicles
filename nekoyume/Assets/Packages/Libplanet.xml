@@ -1314,9 +1314,6 @@
             <see cref="P:Libplanet.Blocks.Block`1.Transactions"/> step by step, and emits a pair of
             a transaction, and an <see cref="T:Libplanet.Action.ActionEvaluation`1"/>
             for each step.
-            <para>If the needed values are only the final states of each
-            transaction, use <see cref="M:Libplanet.Blocks.Block`1.EvaluateActions(Libplanet.Action.AccountStateGetter)"/> method instead.
-            </para>
             </summary>
             <param name="accountStateGetter">An <see cref="T:Libplanet.Action.AccountStateGetter"/>
             delegate to get a previous state.
@@ -1333,39 +1330,24 @@
             a unconsumed state.
             </returns>
         </member>
-        <member name="M:Libplanet.Blocks.Block`1.EvaluateActions(Libplanet.Action.AccountStateGetter)">
+        <member name="M:Libplanet.Blocks.Block`1.Evaluate(System.DateTimeOffset,Libplanet.Action.AccountStateGetter)">
             <summary>
             Executes every <see cref="T:Libplanet.Action.IAction"/> in the
             <see cref="P:Libplanet.Blocks.Block`1.Transactions"/> and gets result states of each step of
             every <see cref="T:Libplanet.Tx.Transaction`1"/>.
-            </summary>
-            <param name="accountStateGetter">An <see cref="T:Libplanet.Action.AccountStateGetter"/>
-            delegate to get a previous state.
-            A <c>null</c> value, which is default, means a constant function
-            that returns <c>null</c>.</param>
-            <returns>Result states of immediately after
-            <see cref="T:Libplanet.Action.IAction"/>s in each <see cref="T:Libplanet.Tx.Transaction`1"/>
-            being executed.</returns>
-        </member>
-        <member name="M:Libplanet.Blocks.Block`1.Validate(System.DateTimeOffset,Libplanet.Action.AccountStateGetter)">
-            <summary>
-            Validates the integrity of the <see cref="T:Libplanet.Blocks.Block`1"/>.
             <para>It throws an <see cref="T:Libplanet.Blocks.InvalidBlockException"/> or
             an <see cref="T:Libplanet.Tx.InvalidTxException"/> if there is any
             integrity error.</para>
-            <para>Otherwise it returns an <see cref="T:Libplanet.Action.IAccountStateDelta"/>
-            which represents the final states and maintains the changes
-            from the states of the previous <see cref="T:Libplanet.Blocks.Block`1"/>.</para>
+            <para>Otherwise it enumerates an <see cref="T:Libplanet.Action.ActionEvaluation`1"/>
+            for each <see cref="T:Libplanet.Action.IAction"/>.</para>
             </summary>
             <param name="currentTime">The current time to validate
             time-wise conditions.</param>
             <param name="accountStateGetter">The getter of previous states.
             This affects the execution of <see cref="P:Libplanet.Tx.Transaction`1.Actions"/>.
             </param>
-            <returns>An <see cref="T:Libplanet.Action.IAccountStateDelta"/> of the states
-            right after all <see cref="P:Libplanet.Tx.Transaction`1.Actions"/> of
-            <see cref="P:Libplanet.Blocks.Block`1.Transactions"/>, which maintains the changes from
-            the states of the previous <see cref="T:Libplanet.Blocks.Block`1"/>.</returns>
+            <returns>An <see cref="T:Libplanet.Action.ActionEvaluation`1"/> for each
+            <see cref="T:Libplanet.Action.IAction"/>.</returns>
             <exception cref="T:Libplanet.Blocks.InvalidBlockTimestampException">Thrown when
             the <see cref="P:Libplanet.Blocks.Block`1.Timestamp"/> is invalid, for example, it is the far
             future than the given <paramref name="currentTime"/>.</exception>
@@ -2096,7 +2078,7 @@
             <seealso cref="E:Libplanet.Net.Swarm.DifferentVersionPeerEncountered"/>
         </member>
         <member name="P:Libplanet.Net.Peer.Address">
-            <summary>The peer's address which is derviced from
+            <summary>The peer's address which is derived from
             its <see cref="P:Libplanet.Net.Peer.PublicKey"/>.
             </summary>
             <seealso cref="P:Libplanet.Net.Peer.PublicKey"/>
