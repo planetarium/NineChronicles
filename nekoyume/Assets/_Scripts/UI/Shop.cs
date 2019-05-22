@@ -4,7 +4,6 @@ using Nekoyume.Action;
 using Nekoyume.Data;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
-using Nekoyume.Game.Item;
 using Nekoyume.UI.Model;
 using UniRx;
 using UnityEngine;
@@ -96,7 +95,7 @@ namespace Nekoyume.UI
                 throw new NotFoundComponentException<LoadingScreen>();
             }
 
-            SetData(new Model.Shop(ActionManager.instance.Avatar.Items, ActionManager.instance.ShopState));
+            SetData(new Model.Shop(AvatarManager.Avatar.Items, States.Shop.Value));
             base.Show();
 
             AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);

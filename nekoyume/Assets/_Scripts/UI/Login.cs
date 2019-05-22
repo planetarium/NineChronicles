@@ -44,11 +44,11 @@ namespace Nekoyume.UI
                 if (result == ConfirmResult.Yes)
                 {
                     //Delete key, avatar
-                    var prefsKey = string.Format(Agent.PrivateKeyFormat, index);
+                    var prefsKey = string.Format(AvatarManager.PrivateKeyFormat, index);
                     string privateKey = PlayerPrefs.GetString(prefsKey, "");
                     PlayerPrefs.DeleteKey(prefsKey);
                     Debug.Log($"Delete {prefsKey}: {privateKey}");
-                    var fileName = string.Format(Agent.AvatarFileFormat, index);
+                    var fileName = string.Format(AvatarManager.AvatarFileFormat, index);
                     string datPath = Path.Combine(Application.persistentDataPath, fileName);
                     if (File.Exists(datPath))
                         File.Delete(datPath);
@@ -80,7 +80,7 @@ namespace Nekoyume.UI
                 playerSlot.DeleteView.SetActive(true);
                 try
                 {
-                    var avatar = Agent.Avatars[i];
+                    var avatar = AvatarManager.Avatars[i];
                     playerSlot.LabelLevel.text = $"LV.{avatar.Level}";
                     playerSlot.LabelName.text = $"{avatar.Name}";
                     playerSlot.CreateView.SetActive(false);

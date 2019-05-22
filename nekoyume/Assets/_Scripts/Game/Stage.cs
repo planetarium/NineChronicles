@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
-using Nekoyume.Action;
 using Nekoyume.Data;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Entrance;
@@ -65,7 +64,7 @@ namespace Nekoyume.Game
 
         private void OnStageStart()
         {
-            _battleLog = ActionManager.instance.battleLog;
+            _battleLog = AvatarManager.BattleLog;
             Play(_battleLog);
         }
 
@@ -318,7 +317,7 @@ namespace Nekoyume.Game
             var player = GetComponentInChildren<Character.Player>();
             if (ReferenceEquals(player, null))
             {
-                var go = playerFactory.Create(ActionManager.instance.Avatar);
+                var go = playerFactory.Create(AvatarManager.Avatar);
                 player = go.GetComponent<Character.Player>();
 
                 if (ReferenceEquals(player, null))

@@ -19,6 +19,7 @@ using Libplanet.Crypto;
 using Libplanet.Net;
 using Libplanet.Store;
 using Libplanet.Tx;
+using Nekoyume.Action;
 using Nekoyume.Model;
 #if BLOCK_LOG_USE
 using Nekoyume.Helper;
@@ -29,7 +30,7 @@ using Serilog;
 using UniRx;
 using UnityEngine;
 
-namespace Nekoyume.Action
+namespace Nekoyume
 {
     public class Agent : IDisposable
     {
@@ -50,44 +51,20 @@ namespace Nekoyume.Action
         private const float TxProcessInterval = 3.0f;
         private const float ActionRetryInterval = 15.0f;
         private const int RewardAmount = 1;
+        private const int SwarmDialTimeout = 5000;
         
-        public const string PrivateKeyFormat = "private_key_{0}";
-        public const string AvatarFileFormat = "avatar_{0}.dat";
-        
-        public static event EventHandler<Model.Avatar> DidAvatarLoaded;
-        
-        private static readonly int SwarmDialTimeout = 5000;
         private static readonly TimeSpan BlockInterval = TimeSpan.FromSeconds(10);
         private static readonly TimeSpan SleepInterval = TimeSpan.FromSeconds(3);
         
-        public static List<Model.Avatar> Avatars
-        {
-            get
-            {
-                return Enumerable.Range(0, 3).Select(index => string.Format(Agent.AvatarFileFormat, index))
-                    .Select(fileName => Path.Combine(Application.persistentDataPath, fileName))
-                    .Select(path => LoadStatus(path)).ToList();
-            }
-        }
-        
-        public readonly ConcurrentQueue<PolymorphicAction<ActionBase>> QueuedActions;
-        
+        private readonly ConcurrentQueue<PolymorphicAction<ActionBase>> _queuedActions = new ConcurrentQueue<PolymorphicAction<ActionBase>>();
+        private readonly ConcurrentQueue<GameAction> _actionPool = new ConcurrentQueue<GameAction>();
         private readonly BlockChain<PolymorphicAction<ActionBase>> _blocks;
         private readonly Swarm _swarm;
-        private readonly ConcurrentQueue<GameAction> _actionPool;
+        
         private readonly PrivateKey _agentPrivateKey;
-        
-        private PrivateKey _avatarPrivateKey;
-        
-        private string _saveFilePath;
-
-        private IDisposable _disposableForEveryRender;
         
         public Guid ChainId => _blocks.Id;
         
-        public Model.Avatar Avatar { get; set; }
-        public BattleLog battleLog;
-
         public event EventHandler PreloadStarted;
         public event EventHandler<BlockDownloadState> PreloadProcessed;
         public event EventHandler PreloadEnded;
@@ -101,7 +78,7 @@ namespace Nekoyume.Action
                 .CreateLogger();
         }
 
-        private static Model.Avatar LoadStatus(string path)
+        private static Model.Avatar LoadAvatar(string path)
         {
             if (!File.Exists(path))
             {
@@ -139,8 +116,6 @@ namespace Nekoyume.Action
                 policy,
                 new FileStore(path),
                 chainId);
-            QueuedActions = new ConcurrentQueue<PolymorphicAction<ActionBase>>();
-            _actionPool = new ConcurrentQueue<GameAction>();
 #if BLOCK_LOG_USE
             FileHelper.WriteAllText("Block.log", "");
 #endif
@@ -166,7 +141,6 @@ namespace Nekoyume.Action
 
         public void Dispose()
         {
-            _disposableForEveryRender.Dispose();
             _swarm?.StopAsync().Wait(0);
         }
         
@@ -182,14 +156,14 @@ namespace Nekoyume.Action
                     new Progress<BlockDownloadState>(state => PreloadProcessed?.Invoke(this, state)));
             });
             yield return new WaitUntil(() => swarmPreloadTask.IsCompleted);
-            
+
             PreloadEnded?.Invoke(this, null);
 
             var swarmStartTask = Task.Run(async () => await _swarm.StartAsync(_blocks));
             yield return new WaitUntil(() => swarmStartTask.IsCompleted);
         }
 
-        public IEnumerator CoActionRetryer() 
+        public IEnumerator CoActionRetryor() 
         {
             HashDigest<SHA256>? previousTipHash = _blocks.Tip?.Hash;
             while (true)
@@ -221,7 +195,7 @@ namespace Nekoyume.Action
                     {
                         if (!processedActions.Contains(action.Id))
                         {
-                            QueuedActions.Enqueue(action);
+                            _queuedActions.Enqueue(action);
                         }
                     }
                 }
@@ -235,7 +209,7 @@ namespace Nekoyume.Action
                 yield return new WaitForSeconds(TxProcessInterval);
                 var actions = new List<PolymorphicAction<ActionBase>>();
 
-                while (QueuedActions.TryDequeue(out PolymorphicAction<ActionBase> action))
+                while (_queuedActions.TryDequeue(out PolymorphicAction<ActionBase> action))
                 {
                     actions.Add(action);
                     if (action.InnerAction is GameAction asGameAction) 
@@ -253,13 +227,6 @@ namespace Nekoyume.Action
 
         public IEnumerator CoMiner()
         {
-            ActionBase.EveryRender<RewardGold>()
-                .Where(eval => eval.InputContext.Signer == AddressBook.Agent.Value)
-                .Subscribe(eval =>
-                {
-//                    Model.AgentContext.gold.Value = eval.Action.gold;
-                });
-            
             while (true)
             {
                 var tx = Transaction<PolymorphicAction<ActionBase>>.Create(
@@ -298,30 +265,10 @@ namespace Nekoyume.Action
                 }
             }
         }
-        
-        public void InitAvatar(int index)
+
+        public void EnqueueAction(GameAction gameAction)
         {
-            PrivateKey privateKey = null;
-            var key = string.Format(PrivateKeyFormat, index);
-            var privateKeyHex = PlayerPrefs.GetString(key, "");
-
-            if (string.IsNullOrEmpty(privateKeyHex))
-            {
-                privateKey = new PrivateKey();
-                PlayerPrefs.SetString(key, ByteUtil.Hex(privateKey.ByteArray));
-            }
-            else
-            {
-                privateKey = new PrivateKey(ByteUtil.ParseHex(privateKeyHex));
-            }
-
-            _avatarPrivateKey = privateKey;
-
-            var fileName = string.Format(AvatarFileFormat, index);
-            _saveFilePath = Path.Combine(Application.persistentDataPath, fileName);
-            Avatar = LoadStatus(_saveFilePath);
-
-            AddressBook.Avatar.Value = _avatarPrivateKey.PublicKey.ToAddress();
+            _queuedActions.Enqueue(gameAction);
         }
         
         public object GetState(Address address)
@@ -331,61 +278,9 @@ namespace Nekoyume.Action
             return value;
         }
         
-        /// <summary>
-        /// FixMe. 모든 액션에 대한 랜더 단계에서 아바타 주소의 상태를 얻어 오고 있음.
-        /// 모든 액션 생성 단계에서 각각의 변경점을 업데이트 하는 방향으로 수정해볼 필요성 있음.
-        /// CreateNovice와 HackAndSlash 액션의 처리를 개선해서 테스트해 볼 예정.
-        /// 시작 전에 양님에게 문의!
-        /// </summary>
-        public void SubscribeAvatarUpdates()
+        private void StageActions(IEnumerable<PolymorphicAction<ActionBase>> actions)
         {
-            if (Avatar != null)
-            {
-                DidAvatarLoaded?.Invoke(this, Avatar);
-            }
-
-            _disposableForEveryRender = ActionBase.EveryRender(AddressBook.Avatar.Value).ObserveOnMainThread().Subscribe(eval =>
-            {
-                var ctx = (AvatarState) eval.OutputStates.GetState(AddressBook.Avatar.Value);
-                if (!(ctx?.avatar is null))
-                {
-                    ReceiveAction(ctx);
-                }
-            });
-        }
-        
-        private void ReceiveAction(AvatarState ctx)
-        {
-            var avatar = Avatar;
-            Avatar = ctx.avatar;
-            SaveStatus();
-            if (avatar == null)
-            {
-                DidAvatarLoaded?.Invoke(this, Avatar);
-            }
-            battleLog = ctx.battleLog;
-        }
-        
-        private void SaveStatus()
-        {
-            var data = new SaveData
-            {
-                Avatar = Avatar,
-            };
-            var formatter = new BinaryFormatter();
-            using (FileStream stream = File.Open(_saveFilePath, FileMode.OpenOrCreate))
-            {
-                formatter.Serialize(stream, data);
-            }
-        }
-
-        private void StageActions(IList<PolymorphicAction<ActionBase>> actions)
-        {
-            var tx = Transaction<PolymorphicAction<ActionBase>>.Create(
-                _avatarPrivateKey,
-                actions,
-                timestamp: DateTime.UtcNow
-            );
+            var tx = AvatarManager.MakeTransaction(actions);
             _blocks.StageTransactions(new HashSet<Transaction<PolymorphicAction<ActionBase>>> {tx});
             _swarm.BroadcastTxs(new[] { tx });
         }

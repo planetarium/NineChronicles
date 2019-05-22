@@ -67,9 +67,9 @@ namespace Nekoyume.UI
         {
             btnConfirm.SetActive(false);
             var sellItems = items.Select(i => i.item).ToList();
-            var currentAvatar = ActionManager.instance.Avatar;
+            var currentAvatar = AvatarManager.Avatar;
 //            ActionManager.instance.Sell(sellItems, decimal.Parse(totalPrice.text));
-            while (currentAvatar.Equals(ActionManager.instance.Avatar))
+            while (currentAvatar.Equals(AvatarManager.Avatar))
             {
                 yield return new WaitForSeconds(1.0f);
             }

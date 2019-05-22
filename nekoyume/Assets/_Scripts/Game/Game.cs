@@ -1,10 +1,6 @@
 using Assets.SimpleLocalization;
-using Nekoyume.Action;
 using Nekoyume.Data;
 using Nekoyume.Game.Controller;
-using Nekoyume.Game.Factory;
-using Nekoyume.Game.Util;
-using Nekoyume.UI;
 using UnityEngine;
 
 namespace Nekoyume.Game
@@ -30,17 +26,15 @@ namespace Nekoyume.Game
 
     public class Game : MonoSingleton<Game>
     {
-        public static readonly int PixelPerUnit = 160;
-
         public Stage stage;
-
+        
         protected override void Awake()
         {
             base.Awake();
             
             Screen.SetResolution(GameConfig.ScreenSize.x, GameConfig.ScreenSize.y, FullScreenMode.Windowed);
             Tables.instance.EmptyMethod();
-            ActionManager.instance.InitAgent();
+            AgentController.Initialize();
             
             LocalizationManager.Read();
             AudioController.instance.Initialize();

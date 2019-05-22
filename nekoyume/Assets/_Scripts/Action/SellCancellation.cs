@@ -8,8 +8,8 @@ using Nekoyume.State;
 
 namespace Nekoyume.Action
 {
-    [ActionType("sell_cancelation")]
-    public class SellCancelation : GameAction
+    [ActionType("sell_cancellation")]
+    public class SellCancellation : GameAction
     {
         [Serializable]
         public class ResultModel : GameActionResult

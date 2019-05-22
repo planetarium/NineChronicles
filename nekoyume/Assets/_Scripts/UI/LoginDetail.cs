@@ -60,20 +60,20 @@ namespace Nekoyume.UI
 
         private void OnEnable()
         {
-            Agent.DidAvatarLoaded += OnDidAvatarLoaded;
+            AvatarManager.DidAvatarLoaded += OnDidAvatarLoaded;
         }
 
         private void OnDisable()
         {
-            Agent.DidAvatarLoaded -= OnDidAvatarLoaded;
+            AvatarManager.DidAvatarLoaded -= OnDidAvatarLoaded;
         }
 
         public void LoginClick()
         {
             btnLogin.SetActive(false);
             nameField.gameObject.SetActive(false);
-            ActionManager.instance.InitAvatar(_selectedIndex);
-            ActionManager.instance.SubscribeAvatarUpdates();
+            AvatarManager.InitAvatarState(_selectedIndex);
+            AvatarManager.SubscribeAvatarUpdates();
             AudioController.PlayClick();
         }
 
@@ -94,10 +94,10 @@ namespace Nekoyume.UI
                 w.Show();   
             }
             
-            ActionManager.instance.InitAvatar(_selectedIndex);
+            AvatarManager.InitAvatarPrivateKeyAndFilePath(_selectedIndex);
             var nickName = nameField.text;
             ActionManager.instance.CreateNovice(nickName);
-            ActionManager.instance.SubscribeAvatarUpdates();
+            AvatarManager.SubscribeAvatarUpdates();
             AudioController.PlayClick();
         }
 
@@ -105,7 +105,7 @@ namespace Nekoyume.UI
         {
             _selectedIndex = index;
             bool isCreateMode = false;
-            _avatar = Agent.Avatars[_selectedIndex];
+            _avatar = AvatarManager.Avatars[_selectedIndex];
             if (ReferenceEquals(_avatar, null))
             {
                 isCreateMode = true;

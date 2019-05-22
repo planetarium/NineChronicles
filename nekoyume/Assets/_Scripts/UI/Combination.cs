@@ -107,7 +107,7 @@ namespace Nekoyume.UI
             }
             _player.gameObject.SetActive(false);
 
-            SetData(new Model.Combination(ActionManager.instance.Avatar.Items, stagedItems.Length));
+            SetData(new Model.Combination(AvatarManager.Avatar.Items, stagedItems.Length));
             
             AudioController.instance.PlayMusic(AudioController.MusicCode.Combination);
         }

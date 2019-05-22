@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Nekoyume.Action;
 using Nekoyume.State;
 using UniRx;
 
@@ -15,16 +14,16 @@ namespace Nekoyume.UI.Model
         
         public readonly Subject<ShopItems> onClickRefresh = new Subject<ShopItems>();
 
-        private ShopState _shopContext;
+        private readonly ShopState _shopState;
 
-        public ShopItems(ShopState shopContext)
+        public ShopItems(ShopState shopState)
         {
-            if (ReferenceEquals(shopContext, null))
+            if (ReferenceEquals(shopState, null))
             {
                 throw new ArgumentNullException();
             }
 
-            _shopContext = shopContext;
+            _shopState = shopState;
 
             products.ObserveAdd().Subscribe(OnAddShopItem);
             products.ObserveRemove().Subscribe(OnRemoveShopItem);
@@ -130,18 +129,18 @@ namespace Nekoyume.UI.Model
         {
             products.Clear();
 
-            if (_shopContext.items.Count == 0)
+            if (_shopState.items.Count == 0)
             {
                 return;
             }
             
-            var startIndex = UnityEngine.Random.Range(0, _shopContext.items.Count);
+            var startIndex = UnityEngine.Random.Range(0, _shopState.items.Count);
             var index = startIndex;
             var total = 16;
 
             for (var i = 0; i < total; i++)
             {
-                var keyValuePair = _shopContext.items.ElementAt(index);
+                var keyValuePair = _shopState.items.ElementAt(index);
                 var count = keyValuePair.Value.Count;
                 if (count == 0)
                 {
@@ -157,7 +156,7 @@ namespace Nekoyume.UI.Model
                     }
                 }
                 
-                if (index + 1 == _shopContext.items.Count)
+                if (index + 1 == _shopState.items.Count)
                 {
                     index = 0;
                 }
@@ -177,18 +176,18 @@ namespace Nekoyume.UI.Model
         {
             registeredProducts.Clear();
             
-            if (_shopContext.items.Count == 0)
+            if (_shopState.items.Count == 0)
             {
                 return;
             }
 
             var key = AddressBook.Avatar.Value;
-            if (!_shopContext.items.ContainsKey(key))
+            if (!_shopState.items.ContainsKey(key))
             {
                 return;
             }
 
-            var items = _shopContext.items[key];
+            var items = _shopState.items[key];
             foreach (var item in items)
             {
                 registeredProducts.Add(new ShopItem(key, item));

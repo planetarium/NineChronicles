@@ -2,7 +2,7 @@ using Libplanet;
 using UniRx;
 using UnityEngine;
 
-namespace Nekoyume.Action
+namespace Nekoyume
 {
     public static class AddressBook
     {
