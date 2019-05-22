@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Nekoyume.State;
+using Libplanet;
 using UniRx;
 
 namespace Nekoyume.UI.Model
@@ -14,16 +14,16 @@ namespace Nekoyume.UI.Model
         
         public readonly Subject<ShopItems> onClickRefresh = new Subject<ShopItems>();
 
-        private readonly ShopState _shopState;
+        private readonly IDictionary<Address, List<Game.Item.ShopItem>> _shopItems;
 
-        public ShopItems(ShopState shopState)
+        public ShopItems(IDictionary<Address, List<Game.Item.ShopItem>> shopItems)
         {
-            if (ReferenceEquals(shopState, null))
+            if (ReferenceEquals(shopItems, null))
             {
                 throw new ArgumentNullException();
             }
 
-            _shopState = shopState;
+            _shopItems = shopItems;
 
             products.ObserveAdd().Subscribe(OnAddShopItem);
             products.ObserveRemove().Subscribe(OnRemoveShopItem);
@@ -129,18 +129,18 @@ namespace Nekoyume.UI.Model
         {
             products.Clear();
 
-            if (_shopState.items.Count == 0)
+            if (_shopItems.Count == 0)
             {
                 return;
             }
             
-            var startIndex = UnityEngine.Random.Range(0, _shopState.items.Count);
+            var startIndex = UnityEngine.Random.Range(0, _shopItems.Count);
             var index = startIndex;
             var total = 16;
 
             for (var i = 0; i < total; i++)
             {
-                var keyValuePair = _shopState.items.ElementAt(index);
+                var keyValuePair = _shopItems.ElementAt(index);
                 var count = keyValuePair.Value.Count;
                 if (count == 0)
                 {
@@ -156,7 +156,7 @@ namespace Nekoyume.UI.Model
                     }
                 }
                 
-                if (index + 1 == _shopState.items.Count)
+                if (index + 1 == _shopItems.Count)
                 {
                     index = 0;
                 }
@@ -176,18 +176,18 @@ namespace Nekoyume.UI.Model
         {
             registeredProducts.Clear();
             
-            if (_shopState.items.Count == 0)
+            if (_shopItems.Count == 0)
             {
                 return;
             }
 
             var key = AddressBook.Avatar.Value;
-            if (!_shopState.items.ContainsKey(key))
+            if (!_shopItems.ContainsKey(key))
             {
                 return;
             }
 
-            var items = _shopState.items[key];
+            var items = _shopItems[key];
             foreach (var item in items)
             {
                 registeredProducts.Add(new ShopItem(key, item));

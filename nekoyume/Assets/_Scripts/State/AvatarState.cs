@@ -7,7 +7,7 @@ using Nekoyume.Model;
 namespace Nekoyume.State
 {
     /// <summary>
-    /// Agent가 포함하는 각 Avatar의 데이터 모델.
+    /// Agent가 포함하는 각 Avatar의 상태 모델이다.
     /// </summary>
     [Serializable]
     public class AvatarState

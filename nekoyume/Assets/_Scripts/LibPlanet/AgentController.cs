@@ -11,6 +11,9 @@ using UnityEngine;
 
 namespace Nekoyume
 {
+    /// <summary>
+    /// Agent를 구동시킨다.
+    /// </summary>
     public class AgentController : MonoSingleton<AgentController>
     {
 #if UNITY_EDITOR
@@ -68,7 +71,7 @@ namespace Nekoyume
             Agent.PreloadEnded += (_, __) =>
             {
                 // 에이전트의 준비단계가 끝나면 에이전트와 상점의 상태를 한 번 동기화 한다.
-                States.Agent.Value = Agent.GetState(AddressBook.Agent.Value) as AgentState;
+                States.Agent.Value = Agent.GetState(AddressBook.Agent.Value) as AgentState ?? new AgentState();
                 States.Shop.Value = Agent.GetState(AddressBook.Shop) as ShopState ?? new ShopState();
                 // 그리고 마이닝을 시작한다.
                 StartNullableCoroutine(_miner);

@@ -2,13 +2,14 @@ using System;
 using System.Collections.Generic;
 using Nekoyume.Action;
 using Nekoyume.Data;
-using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
+using Nekoyume.Model;
 using Nekoyume.UI.Model;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 using InventoryAndItemInfo = Nekoyume.UI.Module.InventoryAndItemInfo;
+using Player = Nekoyume.Game.Character.Player;
 using ShopItem = Nekoyume.UI.Model.ShopItem;
 using ShopItems = Nekoyume.UI.Module.ShopItems;
 using Stage = Nekoyume.Game.Stage;
@@ -95,7 +96,7 @@ namespace Nekoyume.UI
                 throw new NotFoundComponentException<LoadingScreen>();
             }
 
-            SetData(new Model.Shop(AvatarManager.Avatar.Items, States.Shop.Value));
+            SetData(new Model.Shop(AvatarManager.Avatar.Items, ReactiveShopState.Items));
             base.Show();
 
             AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);

@@ -12,12 +12,9 @@ using UnityEngine;
 
 namespace Nekoyume
 {
-    [Serializable]
-    internal class SaveData
-    {
-        public Model.Avatar Avatar;
-    }
-
+    /// <summary>
+    /// 게임의 Action을 생성하고 Agent에 넣어주는 역할을 한다.
+    /// </summary>
     public class ActionManager : MonoSingleton<ActionManager>
     {
         private static void ProcessAction(GameAction action)
@@ -111,14 +108,14 @@ namespace Nekoyume
                     // ToDo. SubscribeAvatarUpdates()에서 동기화 중. 분리할 예정.
 //                    Avatar.RemoveEquipmentItemFromItems(result.shopItem.item.Data.id, result.shopItem.count);
                     
-                    // 상점에 넣기.
-                    States.Shop.Value.Register(AddressBook.Avatar.Value, result.shopItem);
+                    // 상점에 넣기. ReactiveShopState 에서 동기화 중.
+//                    States.Shop.Value.Register(AddressBook.Avatar.Value, result.shopItem);
 
                     return result;
                 }); // Last() is for completion
         }
         
-        public IObservable<SellCancellation.ResultModel> SellCancelation(Address owner, Guid productId)
+        public IObservable<SellCancellation.ResultModel> SellCancellation(Address owner, Guid productId)
         {
             var action = new SellCancellation {owner = owner, productId = productId};
             ProcessAction(action);
@@ -133,8 +130,8 @@ namespace Nekoyume
                     var context = (AvatarState) eval.OutputStates.GetState(eval.InputContext.Signer);
                     var result = context.GetGameActionResult<SellCancellation.ResultModel>();
                     
-                    // 상점에서 빼기.
-                    var shopItem = States.Shop.Value.Unregister(result.owner, result.shopItem.productId);
+                    // 상점에서 빼기. ReactiveShopState 에서 동기화 중.
+//                    var shopItem = States.Shop.Value.Unregister(result.owner, result.shopItem.productId);
                     // 인벤토리에 넣기.
                     // ToDo. SubscribeAvatarUpdates()에서 동기화 중. 분리할 예정.
 //                    Avatar.AddEquipmentItemToItems(shopItem.item.Data.id, shopItem.count);
@@ -158,8 +155,8 @@ namespace Nekoyume
                     var context = (AvatarState) eval.OutputStates.GetState(eval.InputContext.Signer);
                     var result = context.GetGameActionResult<Buy.ResultModel>();
                     
-                    // 상점에서 빼기.
-                    var shopItem = States.Shop.Value.Unregister(result.owner, result.shopItem.productId);
+                    // 상점에서 빼기. ReactiveShopState 에서 동기화 중.
+//                    var shopItem = States.Shop.Value.Unregister(result.owner, result.shopItem.productId);
                     // 인벤토리에 넣기.
                     // ToDo. SubscribeAvatarUpdates()에서 동기화 중. 분리할 예정.
 //                    Avatar.AddEquipmentItemToItems(shopItem.item.Data.id, shopItem.count);

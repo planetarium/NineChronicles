@@ -3,9 +3,7 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.IO;
 using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,18 +18,18 @@ using Libplanet.Net;
 using Libplanet.Store;
 using Libplanet.Tx;
 using Nekoyume.Action;
-using Nekoyume.Model;
 #if BLOCK_LOG_USE
 using Nekoyume.Helper;
 #endif
 using Nekoyume.Serilog;
-using Nekoyume.State;
 using Serilog;
-using UniRx;
 using UnityEngine;
 
 namespace Nekoyume
 {
+    /// <summary>
+    /// 메인넷에 직접 붙어서 블록을 마이닝 한다.
+    /// </summary>
     public class Agent : IDisposable
     {
         private class DebugPolicy : IBlockPolicy<PolymorphicAction<ActionBase>>
@@ -78,21 +76,6 @@ namespace Nekoyume
                 .CreateLogger();
         }
 
-        private static Model.Avatar LoadAvatar(string path)
-        {
-            if (!File.Exists(path))
-            {
-                return null;
-            }
-            
-            var formatter = new BinaryFormatter();
-            using (FileStream stream = File.Open(path, FileMode.Open))
-            {
-                var data = (SaveData) formatter.Deserialize(stream);
-                return data.Avatar;
-            }
-        }
-        
         public Agent(
             PrivateKey agentPrivateKey,
             string path,
@@ -102,15 +85,7 @@ namespace Nekoyume
             string host,
             int? port)
         {
-# if UNITY_EDITOR
-            var policy = new DebugPolicy();
-# else
-            var policy = new BlockPolicy<PolymorphicAction<ActionBase>>(
-                BlockInterval,
-                0x2000,
-                256
-            );
-#endif
+            var policy = GetPolicy();
             _agentPrivateKey = agentPrivateKey;
             _blocks = new BlockChain<PolymorphicAction<ActionBase>>(
                 policy,
@@ -283,6 +258,19 @@ namespace Nekoyume
             var tx = AvatarManager.MakeTransaction(actions);
             _blocks.StageTransactions(new HashSet<Transaction<PolymorphicAction<ActionBase>>> {tx});
             _swarm.BroadcastTxs(new[] { tx });
+        }
+
+        private IBlockPolicy<PolymorphicAction<ActionBase>> GetPolicy()
+        {
+# if UNITY_EDITOR
+            return new DebugPolicy();
+# else
+            return new BlockPolicy<PolymorphicAction<ActionBase>>(
+                BlockInterval,
+                0x2000,
+                256
+            );
+#endif
         }
     }
 }
