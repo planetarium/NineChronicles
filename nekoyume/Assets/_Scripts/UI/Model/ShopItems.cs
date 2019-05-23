@@ -93,7 +93,7 @@ namespace Nekoyume.UI.Model
             e.Value.onClick.Dispose();
         }
         
-        private void OnClickShopItem(ShopItem shopItem)
+        public void OnClickShopItem(ShopItem shopItem)
         {
             if (!ReferenceEquals(selectedItem.Value, null))
             {

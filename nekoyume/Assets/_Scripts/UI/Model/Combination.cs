@@ -119,7 +119,7 @@ namespace Nekoyume.UI.Model
             itemCountPopup.Value.item.Value = new CountEditableItem(
                 data.item.Value.item.Value,
                 data.item.Value.count.Value,
-                0,
+                1,
                 data.item.Value.count.Value);
         }
 
@@ -176,6 +176,7 @@ namespace Nekoyume.UI.Model
                 }
 
                 itemCountPopup.Value.item.Value = obj;
+                itemCountPopup.Value.item.Value.minCount.Value = 0;
                 AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ClickCombinationEditMaterialItem);
             });
             data.onClose.Subscribe(obj =>
@@ -220,7 +221,8 @@ namespace Nekoyume.UI.Model
             // 결과 아이템이 있다면, 인벤토리에 추가.
             if (!ReferenceEquals(data.item.Value, null))
             {
-                inventory.Value.AddItem(data.item.Value, data.count.Value);
+                var addedItem = inventory.Value.AddItem(data.item.Value, data.count.Value);
+                inventory.Value.SubscribeOnClick(addedItem);
             }
 
             while (stagedItems.Count > 0)

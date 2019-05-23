@@ -236,8 +236,7 @@ namespace Nekoyume.UI
             _data.itemCountAndPricePopup.Value.item.Value = null;
             _data.inventory.Value.RemoveItem(result.shopItem.item.Data.id, result.shopItem.count);
             var registeredProduct = _data.shopItems.Value.AddRegisteredProduct(result.sellerAvatarAddress, result.shopItem);
-            registeredProduct.selected.Value = true;
-            _data.shopItems.Value.selectedItem.Value = registeredProduct;
+            _data.shopItems.Value.OnClickShopItem(registeredProduct);
             _loadingScreen.Close();
         }
 
@@ -264,8 +263,7 @@ namespace Nekoyume.UI
             _data.shopItems.Value.RemoveProduct(result.shopItem.productId);
             _data.shopItems.Value.RemoveRegisteredProduct(result.shopItem.productId);
             var addedItem = _data.inventory.Value.AddItem(result.shopItem.item, result.shopItem.count);
-            addedItem.selected.Value = true;
-            _data.inventory.Value.selectedItem.Value = addedItem;
+            _data.inventory.Value.SubscribeOnClick(addedItem);
             _loadingScreen.Close();
         }
         
@@ -296,8 +294,7 @@ namespace Nekoyume.UI
             _data.shopItems.Value.RemoveProduct(result.shopItem.productId);
             _data.shopItems.Value.RemoveRegisteredProduct(result.shopItem.productId);
             var addedItem = _data.inventory.Value.AddItem(result.shopItem.item, result.shopItem.count);
-            addedItem.selected.Value = true;
-            _data.inventory.Value.selectedItem.Value = addedItem;
+            _data.inventory.Value.SubscribeOnClick(addedItem);
             _loadingScreen.Close();
         }
         

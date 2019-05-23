@@ -51,23 +51,18 @@ namespace Nekoyume.UI.Model
             selectedItem.DisposeAll();
         }
         
-        public InventoryItem AddItem(ItemBase item, int count)
+        public InventoryItem AddItem(ItemBase addItemBase, int count)
         {
-            foreach (var inventoryItem in items)
+            var addedItem = items.FirstOrDefault(item => item.item.Value.Data.id == addItemBase.Data.id);
+            if (ReferenceEquals(addedItem, null))
             {
-                if (ReferenceEquals(inventoryItem, null) ||
-                    inventoryItem.item.Value.Data.id != item.Data.id)
-                {
-                    continue;
-                }
-
-                inventoryItem.count.Value += count;
-                return null;
+                var result = new InventoryItem(addItemBase, count); 
+                items.Add(result);
+                return result;
             }
-
-            var result = new InventoryItem(item, count); 
-            items.Add(result);
-            return result;
+            
+            addedItem.count.Value += count;
+            return addedItem;
         }
 
         public void RemoveItems(IEnumerable<CountEditableItem> collection)
@@ -128,7 +123,7 @@ namespace Nekoyume.UI.Model
             item.onClick.Subscribe(SubscribeOnClick);
         }
 
-        private void SubscribeOnClick(InventoryItem inventoryItem)
+        public void SubscribeOnClick(InventoryItem inventoryItem)
         {
             if (!ReferenceEquals(selectedItem.Value, null))
             {
