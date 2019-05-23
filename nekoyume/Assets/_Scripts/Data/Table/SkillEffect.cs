@@ -20,7 +20,14 @@ namespace Nekoyume.Data.Table
             Ally,
         }
 
+        public enum Category
+        {
+            Normal,
+            Double,
+        }
+
         public SkillType type = SkillType.Attack;
+        public Category category = Category.Normal;
         public Target target = Target.Enemy;
         public float multiplier = 1.0f;
     }
