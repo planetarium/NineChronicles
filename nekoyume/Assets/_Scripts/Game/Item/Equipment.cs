@@ -1,6 +1,8 @@
 using System;
 using System.Linq;
+using Nekoyume.Data;
 using Nekoyume.Data.Table;
+using Nekoyume.Game.Skill;
 using Nekoyume.Model;
 
 namespace Nekoyume.Game.Item
@@ -11,7 +13,8 @@ namespace Nekoyume.Game.Item
         public bool equipped = false;
         private int _level = 0;
         private int _enchantCount = 0;
-        private StatsMap[] _stats;
+        private readonly StatsMap[] _stats;
+        private readonly SkillEffect _skillEffect;
 
         public Equipment(Data.Table.Item data)
             : base(data)
@@ -39,6 +42,7 @@ namespace Nekoyume.Game.Item
                 Value = Data.attackRange,
             };
             _stats = new[] {stat1, stat2, stat3, stat4};
+            Tables.instance.SkillEffect.TryGetValue(Data.skillId, out _skillEffect);
         }
 
         public override bool Use()
@@ -84,6 +88,8 @@ namespace Nekoyume.Game.Item
                 stat.UpdatePlayer(player);
             }
 
+            var skill = SkillFactory.Get(player, Data.skillChance, _skillEffect);
+            player.Skills.Add(skill);
         }
 
         public override string ToItemInfo()
