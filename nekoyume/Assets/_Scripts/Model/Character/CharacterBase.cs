@@ -41,6 +41,7 @@ namespace Nekoyume.Model
         public bool IsDead => currentHP <= 0;
         public Guid id = Guid.NewGuid();
         public float attackRange = 1.0f;
+        public float runSpeed = 1.0f;
 
         public void InitAI()
         {

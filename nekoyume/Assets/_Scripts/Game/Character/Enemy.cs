@@ -18,9 +18,10 @@ namespace Nekoyume.Game.Character
 
         private Player _player;
 
-        public override float Speed => -3.0f;
+        public override float Speed => _runSpeed;
         
         protected override Vector3 _hudOffset => animator.GetHUDPosition();
+        private float _runSpeed = -1.0f;
 
         #region Mono
 
@@ -98,6 +99,7 @@ namespace Nekoyume.Game.Character
             Power = 0;
             HPMax = HP;
             Range = character.attackRange;
+            _runSpeed = -character.runSpeed;
         }
         
         private void OnAnimatorEvent(string eventName)

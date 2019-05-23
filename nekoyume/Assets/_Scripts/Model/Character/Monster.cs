@@ -27,6 +27,7 @@ namespace Nekoyume.Model
             TurnSpeed = 1.0f;
             attackRange = data.attackRange;
             hp = stats.HP;
+            runSpeed = data.runSpeed;
         }
 
         protected override void OnDead()

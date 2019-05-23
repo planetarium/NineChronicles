@@ -93,6 +93,7 @@ namespace Nekoyume.Model
             expNeed = expData.expNeed;
             luck = statsData.Luck;
             attackRange = data.attackRange;
+            runSpeed = data.runSpeed;
             var setMap = new Dictionary<int, int>();
             foreach (var equipment in Equipments)
             {
