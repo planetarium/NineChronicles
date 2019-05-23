@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.Game.Item;
 using UniRx;
 
 namespace Nekoyume.UI.Model
@@ -50,27 +51,22 @@ namespace Nekoyume.UI.Model
             selectedItem.DisposeAll();
         }
         
-        public void AddToInventory(CountableItem item)
+        public InventoryItem AddItem(ItemBase addItemBase, int count)
         {
-            foreach (var inventoryItem in items)
+            var addedItem = items.FirstOrDefault(item => item.item.Value.Data.id == addItemBase.Data.id);
+            if (ReferenceEquals(addedItem, null))
             {
-                if (ReferenceEquals(inventoryItem, null) ||
-                    inventoryItem.item.Value.Data.id != item.item.Value.Data.id)
-                {
-                    continue;
-                }
-
-                inventoryItem.count.Value += item.count.Value;
-                return;
+                var result = new InventoryItem(addItemBase, count); 
+                items.Add(result);
+                return result;
             }
             
-            items.Add(new InventoryItem(item.item.Value, item.count.Value));
+            addedItem.count.Value += count;
+            return addedItem;
         }
 
-        public void RemoveFromInventory(IEnumerable<CountEditableItem> collection)
+        public void RemoveItems(IEnumerable<CountEditableItem> collection)
         {
-            var shouldRemoveItems = new List<InventoryItem>();
-
             foreach (var countEditableItem in collection)
             {
                 if (ReferenceEquals(countEditableItem, null))
@@ -78,62 +74,35 @@ namespace Nekoyume.UI.Model
                     continue;
                 }
 
-                using (var e2 = items.GetEnumerator())
-                {
-                    while (e2.MoveNext())
-                    {
-                        var inventoryItem = e2.Current;
-                            
-                        if (ReferenceEquals(inventoryItem, null) ||
-                            inventoryItem.item.Value.Data.id != countEditableItem.item.Value.Data.id)
-                        {
-                            continue;
-                        }
-
-                        inventoryItem.count.Value -= countEditableItem.count.Value;
-
-                        if (inventoryItem.count.Value <= 0)
-                        {
-                            shouldRemoveItems.Add(inventoryItem);
-                        }
-                            
-                        break;
-                    }
-                }
+                RemoveItem(countEditableItem.item.Value.Data.id, countEditableItem.count.Value);
             }
-            
-            shouldRemoveItems.ForEach(item => items.Remove(item));
         }
 
         public void RemoveItem(int id, int count)
         {
-            InventoryItem shouldRemove = null;
-            foreach (var item in items)
+            var inventoryItem = items.FirstOrDefault(item => item.item.Value.Data.id == id);
+
+            if (ReferenceEquals(inventoryItem, null))
             {
-                if (item.item.Value.Data.id != id)
-                {
-                    continue;
-                }
-                
-                if (item.count.Value > count)
-                {
-                    item.count.Value -= count;
-                }
-                else if (item.count.Value == count)
-                {
-                    shouldRemove = item;
-                }
-                else
-                {
-                    throw new InvalidOperationException($"item({id}) count is lesser then {count}");
-                }
-                
-                break;
+                return;
+            }
+            
+            if (inventoryItem.count.Value > count)
+            {
+                inventoryItem.count.Value -= count;
+            }
+            else if (inventoryItem.count.Value == count)
+            {
+                items.Remove(inventoryItem);
+            }
+            else
+            {
+                throw new InvalidOperationException($"item({id}) count is lesser then {count}");
             }
 
-            if (!ReferenceEquals(shouldRemove, null))
+            if (inventoryItem.count.Value > count)
             {
-                items.Remove(shouldRemove);
+                inventoryItem.count.Value -= count;
             }
         }
 
@@ -154,7 +123,7 @@ namespace Nekoyume.UI.Model
             item.onClick.Subscribe(SubscribeOnClick);
         }
 
-        private void SubscribeOnClick(InventoryItem inventoryItem)
+        public void SubscribeOnClick(InventoryItem inventoryItem)
         {
             if (!ReferenceEquals(selectedItem.Value, null))
             {

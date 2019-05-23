@@ -1,26 +1,26 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Nekoyume.Action;
 using Nekoyume.Model;
+using Nekoyume.State;
 
 namespace Nekoyume.Game
 {
     [Serializable]
     public class RankingBoard
     {
-        private readonly HashSet<Context> _map;
+        private readonly HashSet<AvatarState> _map;
 
         public RankingBoard()
         {
-            _map = new HashSet<Context>();
+            _map = new HashSet<AvatarState>();
         }
-        public void Update(Context ctx)
+        public void Update(AvatarState state)
         {
-            var current = _map.FirstOrDefault(c => c.AvatarAddress == ctx.AvatarAddress);
+            var current = _map.FirstOrDefault(c => c.AvatarAddress == state.AvatarAddress);
             if (!ReferenceEquals(current, null))
             {
-                if (current.avatar.WorldStage < ctx.avatar.WorldStage)
+                if (current.avatar.WorldStage < state.avatar.WorldStage)
                 {
                     _map.Remove(current);
                 }
@@ -30,12 +30,12 @@ namespace Nekoyume.Game
                 }
             }
 
-            _map.Add(ctx);
+            _map.Add(state);
         }
 
         public Avatar[] GetAvatars(DateTimeOffset? dt)
         {
-            IEnumerable<Context> map =
+            IEnumerable<AvatarState> map =
                 _map.OrderByDescending(c => c.avatar.WorldStage).ThenBy(c => c.clearedAt);
             if (dt != null)
             {

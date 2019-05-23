@@ -1,6 +1,7 @@
 using System;
 using DG.Tweening;
 using Nekoyume.Action;
+using Nekoyume.State;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model;
 using UnityEngine;
@@ -39,7 +40,6 @@ namespace Nekoyume.UI
 
             nameField.gameObject.SetActive(false);
             Game.Event.OnLoginDetail.AddListener(Init);
-            ActionManager.instance.InitAgent();
             
             namePlaceHolderOriginColor = namePlaceHolder.color;
             namePlaceHolderFocusedColor = namePlaceHolder.color;
@@ -60,20 +60,20 @@ namespace Nekoyume.UI
 
         private void OnEnable()
         {
-            ActionManager.instance.DidAvatarLoaded += OnDidAvatarLoaded;
+            AvatarManager.DidAvatarLoaded += OnDidAvatarLoaded;
         }
 
         private void OnDisable()
         {
-            ActionManager.instance.DidAvatarLoaded -= OnDidAvatarLoaded;
+            AvatarManager.DidAvatarLoaded -= OnDidAvatarLoaded;
         }
 
         public void LoginClick()
         {
             btnLogin.SetActive(false);
             nameField.gameObject.SetActive(false);
-            ActionManager.instance.InitAvatar(_selectedIndex);
-            ActionManager.instance.SubscribeAvatarUpdates();
+            AvatarManager.InitAvatarState(_selectedIndex);
+            AvatarManager.SubscribeAvatarUpdates();
             AudioController.PlayClick();
         }
 
@@ -94,10 +94,10 @@ namespace Nekoyume.UI
                 w.Show();   
             }
             
-            ActionManager.instance.InitAvatar(_selectedIndex);
+            AvatarManager.InitAvatarPrivateKeyAndFilePath(_selectedIndex);
             var nickName = nameField.text;
             ActionManager.instance.CreateNovice(nickName);
-            ActionManager.instance.SubscribeAvatarUpdates();
+            AvatarManager.SubscribeAvatarUpdates();
             AudioController.PlayClick();
         }
 
@@ -105,7 +105,7 @@ namespace Nekoyume.UI
         {
             _selectedIndex = index;
             bool isCreateMode = false;
-            _avatar = ActionManager.instance.Avatars[_selectedIndex];
+            _avatar = AvatarManager.Avatars[_selectedIndex];
             if (ReferenceEquals(_avatar, null))
             {
                 isCreateMode = true;

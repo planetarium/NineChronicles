@@ -7,6 +7,8 @@ namespace Nekoyume.UI.Model
     public class ItemInfo : IDisposable
     {
         public readonly ReactiveProperty<InventoryItem> item = new ReactiveProperty<InventoryItem>(null);
+        public readonly ReactiveProperty<decimal> price = new ReactiveProperty<decimal>(0);
+        public readonly ReactiveProperty<bool> priceEnabled = new ReactiveProperty<bool>(false);
         public readonly ReactiveProperty<bool> buttonEnabled = new ReactiveProperty<bool>(false);
         public readonly ReactiveProperty<string> buttonText = new ReactiveProperty<string>("");
 
@@ -48,6 +50,8 @@ namespace Nekoyume.UI.Model
         public void Dispose()
         {
             item.DisposeAll();
+            price.Dispose();
+            priceEnabled.Dispose();
             buttonEnabled.Dispose();
             buttonText.Dispose();
 

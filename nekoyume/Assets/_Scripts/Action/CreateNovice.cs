@@ -4,9 +4,9 @@ using System.Linq;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Data;
-using Nekoyume.Data.Table;
 using Nekoyume.Game.Item;
 using Nekoyume.Model;
+using Nekoyume.State;
 
 namespace Nekoyume.Action
 {
@@ -23,10 +23,10 @@ namespace Nekoyume.Action
             avatarAddress = new Address((byte[])plainValue["avatar_address"]);
         }
 
-        public static Context CreateContext(string name, Address avatarAddress)
+        public static AvatarState CreateState(string name, Address avatarAddress)
         {
             Avatar avatar = CreateAvatar(name);
-            var ctx = new Context(avatar, avatarAddress);
+            var ctx = new AvatarState(avatar, avatarAddress);
             return ctx;
         }
 
@@ -57,10 +57,10 @@ namespace Nekoyume.Action
         protected override IAccountStateDelta ExecuteInternal(IActionContext actionCtx)
         {
             IAccountStateDelta states = actionCtx.PreviousStates;
-            var ctx = (Context)states.GetState(actionCtx.Signer);
+            var ctx = (AvatarState)states.GetState(actionCtx.Signer);
             if (ReferenceEquals(ctx, null))
             {
-                ctx = CreateContext(name, avatarAddress);
+                ctx = CreateState(name, avatarAddress);
             }
             else
             {

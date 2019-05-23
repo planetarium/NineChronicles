@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using Nekoyume.Game.Controller;
 using UniRx;
 using UnityEngine;
@@ -10,6 +11,8 @@ namespace Nekoyume.UI.Module
     public class ItemInfo : MonoBehaviour
     {
         public Text nameText;
+        public GameObject price;
+        public Text priceText;
         public Text infoText;
         public Text descriptionText;
         public SimpleCountableItemView itemView;
@@ -56,6 +59,8 @@ namespace Nekoyume.UI.Module
             _disposablesForSetData.DisposeAllAndClear();
             _data = data;
             _data.item.Subscribe(_ => UpdateView()).AddTo(_disposablesForSetData);
+            _data.price.Subscribe(_ => priceText.text = _.ToString(CultureInfo.InvariantCulture)).AddTo(_disposablesForSetData);
+            _data.priceEnabled.Subscribe(_ => price.SetActive(_)).AddTo(_disposablesForSetData);
             _data.buttonEnabled.Subscribe(SetButtonActive).AddTo(_disposablesForSetData);
             _data.buttonText.Subscribe(SetButtonText).AddTo(_disposablesForSetData);
             

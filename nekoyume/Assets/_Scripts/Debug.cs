@@ -1,11 +1,7 @@
 #if !UNITY_EDITOR
 
 using UnityEngine;
-using System.Collections;
 using System;
-using System.IO;
-using System.Text.RegularExpressions;
-using UnityEngineInternal;
 
 namespace Nekoyume
 {
@@ -48,6 +44,25 @@ namespace Nekoyume
             // LogFormat() in itself expands an array when it takes only one array.
             UnityEngine.Debug.LogFormat(format, args);
         }
+        
+        [System.Diagnostics.Conditional("DEBUG_USE")]
+        public static void LogWarning(object message)
+        {
+            UnityEngine.Debug.LogWarning(message.ToString());
+        }
+
+        [System.Diagnostics.Conditional("DEBUG_USE")]
+        public static void LogWarning(object message, UnityEngine.Object context)
+        {
+            UnityEngine.Debug.LogWarning(message.ToString(), context);
+        }
+
+        [System.Diagnostics.Conditional("DEBUG_USE")]
+        public static void LogWarningFormat(string format, params object[] args)
+        {
+            // LogWarningFormat() in itself expands an array when it takes only one array.
+            UnityEngine.Debug.LogWarningFormat(format, args);
+        }
 
         [System.Diagnostics.Conditional("DEBUG_USE")]
         public static void LogError(object message)
@@ -69,22 +84,15 @@ namespace Nekoyume
         }
 
         [System.Diagnostics.Conditional("DEBUG_USE")]
-        public static void LogWarning(object message)
+        public static void LogException(Exception exception)
         {
-            UnityEngine.Debug.LogWarning(message.ToString());
+            UnityEngine.Debug.LogException(exception);
         }
 
         [System.Diagnostics.Conditional("DEBUG_USE")]
-        public static void LogWarning(object message, UnityEngine.Object context)
+        public static void LogException(Exception exception, UnityEngine.Object context)
         {
-            UnityEngine.Debug.LogWarning(message.ToString(), context);
-        }
-
-        [System.Diagnostics.Conditional("DEBUG_USE")]
-        public static void LogWarningFormat(string format, params object[] args)
-        {
-            // LogWarningFormat() in itself expands an array when it takes only one array.
-            UnityEngine.Debug.LogWarningFormat(format, args);
+            UnityEngine.Debug.LogException(exception, context);
         }
 
         [System.Diagnostics.Conditional("DEBUG_USE")]

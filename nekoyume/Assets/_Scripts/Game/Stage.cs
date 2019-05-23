@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
-using Nekoyume.Action;
 using Nekoyume.Data;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Entrance;
@@ -17,52 +16,38 @@ using UnityEngine;
 
 namespace Nekoyume.Game
 {
-    public class Stage : MonoSingleton<Stage>, IStage
+    public class Stage : MonoBehaviour, IStage
     {
-        public GameObject background;
-        public int id;
-        private BattleLog _battleLog;
         private const float SkillDelay = 0.1f;
+        private const float StageStartPosition = -1.2f;
+        
+        public ObjectPool objectPool;
+        public PlayerFactory playerFactory;
+        public EnemyFactory enemyFactory;
+        public DropItemFactory dropItemFactory;
+        
+        public MonsterSpawner spawner;
+        
+        public GameObject background;
         // dummy for stage background moving.
         public GameObject dummy;
-        public float loadingSpeed = 2.0f;
+        
+        public int id;
         public Character.Player selectedPlayer;
-        private readonly float stageStartPosition = -1.2f;
-        public readonly Vector2 QuestPreparationPosition = new Vector2(1.65f, -0.8f);
-        public readonly Vector2 RoomPosition = new Vector2(-2.66f, -1.85f);
+        public readonly Vector2 questPreparationPosition = new Vector2(1.65f, -0.8f);
+        public readonly Vector2 roomPosition = new Vector2(-2.66f, -1.85f);
         public bool repeatStage;
         public string zone;
-        private PlayerFactory _factory;
-        private MonsterSpawner _spawner;
+        
         private Camera _camera;
-        private ObjectPool _objectPool;
+        private BattleLog _battleLog;
 
-        protected override void Awake()
+        protected void Awake()
         {
-            base.Awake();
-
             _camera = Camera.main;
             if (ReferenceEquals(_camera, null))
             {
                 throw new NullReferenceException("`Camera.main` can't be null.");
-            }
-
-            _factory = GetComponent<PlayerFactory>();
-            if (ReferenceEquals(_factory, null))
-            {
-                throw new NotFoundComponentException<PlayerFactory>();
-            }
-
-            _objectPool = GetComponent<ObjectPool>();
-            if (ReferenceEquals(_objectPool, null))
-            {
-                throw new NotFoundComponentException<ObjectPool>();
-            }
-
-            _spawner = GetComponentInChildren<MonsterSpawner>();
-            if (ReferenceEquals(_spawner, null))
-            {
-                throw new NotFoundComponentException<MonsterSpawner>();
             }
 
             if (ReferenceEquals(dummy, null))
@@ -79,7 +64,7 @@ namespace Nekoyume.Game
 
         private void OnStageStart()
         {
-            _battleLog = ActionManager.instance.battleLog;
+            _battleLog = AvatarManager.BattleLog;
             Play(_battleLog);
         }
 
@@ -221,7 +206,7 @@ namespace Nekoyume.Game
             }
             else
             {
-                _objectPool.ReleaseAll();
+                objectPool.ReleaseAll();
             }
 
             yield return null;
@@ -317,7 +302,7 @@ namespace Nekoyume.Game
                 title.Close();
             }
 
-            yield return StartCoroutine(_spawner.CoSetData(id, monsters));
+            yield return StartCoroutine(spawner.CoSetData(id, monsters));
 
         }
 
@@ -332,7 +317,7 @@ namespace Nekoyume.Game
             var player = GetComponentInChildren<Character.Player>();
             if (ReferenceEquals(player, null))
             {
-                var go = _factory.Create(ActionManager.instance.Avatar);
+                var go = playerFactory.Create(AvatarManager.Avatar);
                 player = go.GetComponent<Character.Player>();
 
                 if (ReferenceEquals(player, null))
@@ -356,7 +341,7 @@ namespace Nekoyume.Game
             var player = GetPlayer();
             var playerTransform = player.transform;
             Vector2 position = playerTransform.position;
-            position.y = stageStartPosition;
+            position.y = StageStartPosition;
             playerTransform.position = position;
             player.StartRun();
             return player;

@@ -1,6 +1,5 @@
 using System;
-using Nekoyume.Action;
-using TMPro;
+using Nekoyume.Model;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -18,9 +17,7 @@ namespace Nekoyume.UI.Module
 
         private void OnEnable()
         {
-            _disposable = Nekoyume.Model.Agent.Gold.Subscribe(SetGold);
-            
-            SetGold(Nekoyume.Model.Agent.Gold.Value);
+            _disposable = ReactiveAgentState.Gold.Subscribe(SetGold);
         }
 
         private void OnDisable()

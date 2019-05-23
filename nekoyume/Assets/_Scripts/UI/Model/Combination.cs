@@ -119,9 +119,8 @@ namespace Nekoyume.UI.Model
             itemCountPopup.Value.item.Value = new CountEditableItem(
                 data.item.Value.item.Value,
                 data.item.Value.count.Value,
-                0,
-                data.item.Value.count.Value,
-                "수정");
+                1,
+                data.item.Value.count.Value);
         }
 
         private void OnClickSubmitItemCountPopup(SimpleItemCountPopup data)
@@ -177,6 +176,7 @@ namespace Nekoyume.UI.Model
                 }
 
                 itemCountPopup.Value.item.Value = obj;
+                itemCountPopup.Value.item.Value.minCount.Value = 0;
                 AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ClickCombinationEditMaterialItem);
             });
             data.onClose.Subscribe(obj =>
@@ -216,12 +216,13 @@ namespace Nekoyume.UI.Model
         private void OnResultPopupOnClickSubmit(CombinationResultPopup data)
         {
             // 재료 아이템들을 인벤토리에서 제거.
-            inventory.Value.RemoveFromInventory(data.materialItems);
+            inventory.Value.RemoveItems(data.materialItems);
 
             // 결과 아이템이 있다면, 인벤토리에 추가.
             if (!ReferenceEquals(data.item.Value, null))
             {
-                inventory.Value.AddToInventory(data);
+                var addedItem = inventory.Value.AddItem(data.item.Value, data.count.Value);
+                inventory.Value.SubscribeOnClick(addedItem);
             }
 
             while (stagedItems.Count > 0)

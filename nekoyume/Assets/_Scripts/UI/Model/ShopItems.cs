@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Nekoyume.Action;
+using Libplanet;
 using UniRx;
 
 namespace Nekoyume.UI.Model
@@ -14,16 +14,16 @@ namespace Nekoyume.UI.Model
         
         public readonly Subject<ShopItems> onClickRefresh = new Subject<ShopItems>();
 
-        private Game.Shop _shop;
+        private readonly IDictionary<Address, List<Game.Item.ShopItem>> _shopItems;
 
-        public ShopItems(Game.Shop shop)
+        public ShopItems(IDictionary<Address, List<Game.Item.ShopItem>> shopItems)
         {
-            if (ReferenceEquals(shop, null))
+            if (ReferenceEquals(shopItems, null))
             {
                 throw new ArgumentNullException();
             }
 
-            _shop = shop;
+            _shopItems = shopItems;
 
             products.ObserveAdd().Subscribe(OnAddShopItem);
             products.ObserveRemove().Subscribe(OnRemoveShopItem);
@@ -55,41 +55,26 @@ namespace Nekoyume.UI.Model
             selectedItem.Value = null;
         }
 
-        public void RemoveBuyItem(Guid productId, int count)
+        public void RemoveProduct(Guid productId)
         {
-            RemoveItem(products, productId, count);
+            RemoveItem(products, productId);
+        }
+
+        public ShopItem AddRegisteredProduct(Address sellerAvatarAddress, Game.Item.ShopItem shopItem)
+        {
+            var result = new ShopItem(sellerAvatarAddress, shopItem);
+            registeredProducts.Add(result);
+            return result;
         }
         
-        public void RemoveSellItem(Guid productId, int count)
+        public void RemoveRegisteredProduct(Guid productId)
         {
-            RemoveItem(registeredProducts, productId, count);
+            RemoveItem(registeredProducts, productId);
         }
         
-        private void RemoveItem(ICollection<ShopItem> collection, Guid productId, int count)
+        private void RemoveItem(ICollection<ShopItem> collection, Guid productId)
         {
-            ShopItem shouldRemove = null;
-            foreach (var item in collection)
-            {
-                if (item.productId.Value != productId)
-                {
-                    continue;
-                }
-                
-                if (item.count.Value > count)
-                {
-                    item.count.Value -= count;
-                }
-                else if (item.count.Value == count)
-                {
-                    shouldRemove = item;
-                }
-                else
-                {
-                    throw new InvalidOperationException($"item({productId}) count is lesser then {count}");
-                }
-                
-                break;
-            }
+            var shouldRemove = collection.FirstOrDefault(item => item.productId.Value == productId);
 
             if (!ReferenceEquals(shouldRemove, null))
             {
@@ -108,7 +93,7 @@ namespace Nekoyume.UI.Model
             e.Value.onClick.Dispose();
         }
         
-        private void OnClickShopItem(ShopItem shopItem)
+        public void OnClickShopItem(ShopItem shopItem)
         {
             if (!ReferenceEquals(selectedItem.Value, null))
             {
@@ -128,14 +113,19 @@ namespace Nekoyume.UI.Model
         private void ResetBuyItems()
         {
             products.Clear();
+
+            if (_shopItems.Count == 0)
+            {
+                return;
+            }
             
-            var startIndex = UnityEngine.Random.Range(0, _shop.items.Count);
+            var startIndex = UnityEngine.Random.Range(0, _shopItems.Count);
             var index = startIndex;
             var total = 16;
 
             for (var i = 0; i < total; i++)
             {
-                var keyValuePair = _shop.items.ElementAt(index);
+                var keyValuePair = _shopItems.ElementAt(index);
                 var count = keyValuePair.Value.Count;
                 if (count == 0)
                 {
@@ -151,7 +141,7 @@ namespace Nekoyume.UI.Model
                     }
                 }
                 
-                if (index + 1 == _shop.items.Count)
+                if (index + 1 == _shopItems.Count)
                 {
                     index = 0;
                 }
@@ -171,13 +161,18 @@ namespace Nekoyume.UI.Model
         {
             registeredProducts.Clear();
             
-            var key = ActionManager.instance.AvatarAddress;
-            if (!_shop.items.ContainsKey(key))
+            if (_shopItems.Count == 0)
             {
                 return;
             }
 
-            var items = _shop.items[key];
+            var key = AddressBook.Avatar.Value;
+            if (!_shopItems.ContainsKey(key))
+            {
+                return;
+            }
+
+            var items = _shopItems[key];
             foreach (var item in items)
             {
                 registeredProducts.Add(new ShopItem(key, item));

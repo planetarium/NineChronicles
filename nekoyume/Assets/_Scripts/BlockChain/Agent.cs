@@ -17,7 +17,7 @@ using Libplanet.Crypto;
 using Libplanet.Net;
 using Libplanet.Store;
 using Libplanet.Tx;
-using Nekoyume.Game;
+using Nekoyume.Action;
 #if BLOCK_LOG_USE
 using Nekoyume.Helper;
 #endif
@@ -25,28 +25,47 @@ using Nekoyume.Serilog;
 using Serilog;
 using UnityEngine;
 
-namespace Nekoyume.Action
+namespace Nekoyume
 {
+    /// <summary>
+    /// 메인넷에 직접 붙어서 블록을 마이닝 한다.
+    /// </summary>
     public class Agent : IDisposable
     {
-        private readonly BlockChain<PolymorphicAction<ActionBase>> _blocks;
-        private readonly PrivateKey _agentPrivateKey;
-        public readonly ConcurrentQueue<PolymorphicAction<ActionBase>> QueuedActions;
+        private class DebugPolicy : IBlockPolicy<PolymorphicAction<ActionBase>>
+        {
+            public InvalidBlockException ValidateNextBlock(IReadOnlyList<Block<PolymorphicAction<ActionBase>>> blocks, Block<PolymorphicAction<ActionBase>> nextBlock)
+            {
+                return null;
+            }
 
+            public long GetNextBlockDifficulty(IReadOnlyList<Block<PolymorphicAction<ActionBase>>> blocks)
+            {
+                Thread.Sleep(SleepInterval);
+                return blocks.Any() ? 1 : 0;
+            }
+        }
+        
         private const float TxProcessInterval = 3.0f;
-
-        private static readonly int SwarmDialTimeout = 5000;
-
         private const float ActionRetryInterval = 15.0f;
-
-        private readonly Swarm _swarm;
-
-        private readonly ConcurrentQueue<GameAction> _actionPool;
-
         private const int RewardAmount = 1;
-
+        private const int SwarmDialTimeout = 5000;
+        
         private static readonly TimeSpan BlockInterval = TimeSpan.FromSeconds(10);
         private static readonly TimeSpan SleepInterval = TimeSpan.FromSeconds(3);
+        
+        private readonly ConcurrentQueue<PolymorphicAction<ActionBase>> _queuedActions = new ConcurrentQueue<PolymorphicAction<ActionBase>>();
+        private readonly ConcurrentQueue<GameAction> _actionPool = new ConcurrentQueue<GameAction>();
+        private readonly BlockChain<PolymorphicAction<ActionBase>> _blocks;
+        private readonly Swarm _swarm;
+        
+        private readonly PrivateKey _agentPrivateKey;
+        
+        public Guid ChainId => _blocks.Id;
+        
+        public event EventHandler PreloadStarted;
+        public event EventHandler<BlockDownloadState> PreloadProcessed;
+        public event EventHandler PreloadEnded;
 
         static Agent() 
         {
@@ -66,22 +85,12 @@ namespace Nekoyume.Action
             string host,
             int? port)
         {
-# if UNITY_EDITOR
-            var policy = new DebugPolicy();
-# else
-            var policy = new BlockPolicy<PolymorphicAction<ActionBase>>(
-                BlockInterval,
-                0x2000,
-                256
-            );
-#endif
-            this._agentPrivateKey = agentPrivateKey;
+            var policy = GetPolicy();
+            _agentPrivateKey = agentPrivateKey;
             _blocks = new BlockChain<PolymorphicAction<ActionBase>>(
                 policy,
                 new FileStore(path),
                 chainId);
-            QueuedActions = new ConcurrentQueue<PolymorphicAction<ActionBase>>();
-            _actionPool = new ConcurrentQueue<GameAction>();
 #if BLOCK_LOG_USE
             FileHelper.WriteAllText("Block.log", "");
 #endif
@@ -101,43 +110,35 @@ namespace Nekoyume.Action
                     _swarm.Add(peer);
                 }
             }
+
+            AddressBook.Agent.Value = _agentPrivateKey.PublicKey.ToAddress();
         }
 
-        public PrivateKey AvatarPrivateKey { get; set; }
-        public Address AvatarAddress => AvatarPrivateKey.PublicKey.ToAddress();
-        public Address ShopAddress => ActionManager.shopAddress;
-        public Address AgentAddress => _agentPrivateKey.PublicKey.ToAddress();
-
-        public Guid ChainId => _blocks.Id;
-
-        public event EventHandler PreloadStarted;
-        public event EventHandler<BlockDownloadState> PreloadProcessed;
-        public event EventHandler PreloadEnded;
-
-
+        public void Dispose()
+        {
+            _swarm?.StopAsync().Wait(0);
+        }
+        
         public IEnumerator CoSwarmRunner()
         {
             PreloadStarted?.Invoke(this, null);
+            
             // Unity 플레이어에서 성능 문제로 Async를 직접 쓰지 않고 
             // Task.Run(async ()) 로 감쌉니다.
-            Task preload = Task.Run(async () => 
+            var swarmPreloadTask = Task.Run(async () =>
             {
-                await _swarm.PreloadAsync(_blocks, new Progress<BlockDownloadState>(
-                    state => 
-                    {
-                        PreloadProcessed?.Invoke(this, state);
-                    }
-                ));
+                await _swarm.PreloadAsync(_blocks,
+                    new Progress<BlockDownloadState>(state => PreloadProcessed?.Invoke(this, state)));
             });
-            yield return new WaitUntil(() => preload.IsCompleted);
-            PreloadEnded?.Invoke(this, null);
-            
-            Task runSwarm = Task.Run(async () => await _swarm.StartAsync(_blocks));
+            yield return new WaitUntil(() => swarmPreloadTask.IsCompleted);
 
-            yield return new WaitUntil(() => runSwarm.IsCompleted);
+            PreloadEnded?.Invoke(this, null);
+
+            var swarmStartTask = Task.Run(async () => await _swarm.StartAsync(_blocks));
+            yield return new WaitUntil(() => swarmStartTask.IsCompleted);
         }
 
-        public IEnumerator CoActionRetryer() 
+        public IEnumerator CoActionRetryor() 
         {
             HashDigest<SHA256>? previousTipHash = _blocks.Tip?.Hash;
             while (true)
@@ -171,7 +172,7 @@ namespace Nekoyume.Action
                     {
                         if (!processedActions.Contains(action.Id))
                         {
-                            QueuedActions.Enqueue(action);
+                            _queuedActions.Enqueue(action);
                         }
                     }
                 }
@@ -185,7 +186,7 @@ namespace Nekoyume.Action
                 yield return new WaitForSeconds(TxProcessInterval);
                 var actions = new List<PolymorphicAction<ActionBase>>();
 
-                while (QueuedActions.TryDequeue(out PolymorphicAction<ActionBase> action))
+                while (_queuedActions.TryDequeue(out PolymorphicAction<ActionBase> action))
                 {
                     actions.Add(action);
                     if (action.InnerAction is GameAction asGameAction) 
@@ -209,7 +210,7 @@ namespace Nekoyume.Action
                         _agentPrivateKey,
                         new List<PolymorphicAction<ActionBase>>()
                         {
-                            new RewardGold { Gold = RewardAmount }
+                            new RewardGold { gold = RewardAmount }
                         },
                         timestamp: DateTime.UtcNow);
                 var txs = new HashSet<Transaction<PolymorphicAction<ActionBase>>> { tx };
@@ -217,7 +218,7 @@ namespace Nekoyume.Action
                 var task = Task.Run(() =>
                 {
                     _blocks.StageTransactions(txs);
-                    var block = _blocks.MineBlock(AgentAddress);
+                    var block = _blocks.MineBlock(AddressBook.Agent.Value);
                     _swarm.BroadcastBlocks(new[] {block});
                     return block;
                 });
@@ -235,48 +236,43 @@ namespace Nekoyume.Action
                 {
                     if (task.IsFaulted)
                     {
-                        UnityEngine.Debug.LogException(task.Exception);
+                        Debug.LogException(task.Exception);
                     }
                     _blocks.UnstageTransactions(txs);
                 }
             }
         }
 
-        private void StageActions(IList<PolymorphicAction<ActionBase>> actions)
+        public void EnqueueAction(GameAction gameAction)
         {
-            var tx = Transaction<PolymorphicAction<ActionBase>>.Create(
-                AvatarPrivateKey,
-                actions,
-                timestamp: DateTime.UtcNow
-            );
-            _blocks.StageTransactions(new HashSet<Transaction<PolymorphicAction<ActionBase>>> {tx});
-            _swarm.BroadcastTxs(new[] { tx });
+            _queuedActions.Enqueue(gameAction);
         }
-
+        
         public object GetState(Address address)
         {
             AddressStateMap states = _blocks.GetStates(new[] {address});
             states.TryGetValue(address, out object value);
             return value;
         }
-
-        public void Dispose()
+        
+        private void StageActions(IEnumerable<PolymorphicAction<ActionBase>> actions)
         {
-            _swarm?.StopAsync().Wait(0);
+            var tx = AvatarManager.MakeTransaction(actions);
+            _blocks.StageTransactions(new HashSet<Transaction<PolymorphicAction<ActionBase>>> {tx});
+            _swarm.BroadcastTxs(new[] { tx });
         }
 
-        private class DebugPolicy : IBlockPolicy<PolymorphicAction<ActionBase>>
+        private IBlockPolicy<PolymorphicAction<ActionBase>> GetPolicy()
         {
-            public InvalidBlockException ValidateNextBlock(IReadOnlyList<Block<PolymorphicAction<ActionBase>>> blocks, Block<PolymorphicAction<ActionBase>> nextBlock)
-            {
-                return null;
-            }
-
-            public long GetNextBlockDifficulty(IReadOnlyList<Block<PolymorphicAction<ActionBase>>> blocks)
-            {
-                Thread.Sleep(SleepInterval);
-                return blocks.Any() ? 1 : 0;
-            }
+# if UNITY_EDITOR
+            return new DebugPolicy();
+# else
+            return new BlockPolicy<PolymorphicAction<ActionBase>>(
+                BlockInterval,
+                0x2000,
+                256
+            );
+#endif
         }
     }
 }

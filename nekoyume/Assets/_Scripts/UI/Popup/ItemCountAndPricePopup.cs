@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Nekoyume.Game.Controller;
 using UniRx;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
@@ -12,6 +13,7 @@ namespace Nekoyume.UI
         
         private Model.ItemCountAndPricePopup _data;
         private readonly List<IDisposable> _disposablesForAwake = new List<IDisposable>();
+        private readonly List<IDisposable> _disposablesForSetData = new List<IDisposable>();
         
         #region Mono
 
@@ -62,13 +64,16 @@ namespace Nekoyume.UI
                 return;
             }
             
+            _disposablesForSetData.DisposeAllAndClear();
             _data = data;
+            _data.priceInteractable.Subscribe(interactable => priceInputField.interactable = interactable).AddTo(_disposablesForSetData);
 
             UpdateView();
         }
         
         private void Clear()
         {
+            _disposablesForSetData.DisposeAllAndClear();
             _data = null;
 
             UpdateView();
@@ -82,6 +87,7 @@ namespace Nekoyume.UI
             }
 
             priceInputField.text = _data.price.Value.ToString("N0");
+            priceInputField.interactable = _data.priceInteractable.Value;
         }
     }
 }

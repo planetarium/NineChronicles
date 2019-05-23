@@ -7,6 +7,7 @@ using Nekoyume.Game;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
+using Nekoyume.State;
 using Nekoyume.UI.Model;
 using UniRx;
 using UnityEngine;
@@ -43,13 +44,13 @@ namespace Nekoyume.UI
             }
             _stage.LoadBackground("dungeon");
             
-            _player = _stage.GetPlayer(_stage.QuestPreparationPosition);
+            _player = _stage.GetPlayer(_stage.questPreparationPosition);
             if (ReferenceEquals(_player, null))
             {
                 throw new NotFoundComponentException<Player>();
             }
             
-            SetData(new Model.QuestPreparation(ActionManager.instance.Avatar.Items));
+            SetData(new Model.QuestPreparation(AvatarManager.Avatar.Items));
             
             // stop run immediately.
             _player.gameObject.SetActive(false);
@@ -71,7 +72,7 @@ namespace Nekoyume.UI
             btnQuest.SetActive(true);
 
             dropdown.ClearOptions();
-            _stages = Enumerable.Range(1, ActionManager.instance.Avatar.WorldStage).ToArray();
+            _stages = Enumerable.Range(1, AvatarManager.Avatar.WorldStage).ToArray();
             var list = _stages.Select(i => $"Stage {i}").ToList();
             dropdown.AddOptions(list);
             dropdown.value = _stages.Length - 1;
@@ -140,7 +141,7 @@ namespace Nekoyume.UI
         public void BackClick()
         {
             _stage.LoadBackground("room");
-            _player = _stage.GetPlayer(_stage.RoomPosition);
+            _player = _stage.GetPlayer(_stage.roomPosition);
             _player.UpdateSet(_player.model.set);
             Find<Menu>().Show();
             Find<Status>()?.Show();
@@ -234,8 +235,8 @@ namespace Nekoyume.UI
 
             observable.ObserveOnMainThread().Subscribe(eval =>
             {
-                Context ctx = (Context)eval.OutputStates.GetState(eval.InputContext.Signer);
-                ActionManager.instance.battleLog = ctx.battleLog;
+                var avatar = (AvatarState)eval.OutputStates.GetState(eval.InputContext.Signer);
+                AvatarManager.BattleLog = avatar.battleLog;
                 
                 Game.Event.OnStageStart.Invoke();
                 Find<LoadingScreen>().Close();

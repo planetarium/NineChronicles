@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Libplanet.Action;
 using Nekoyume.Manager;
 using Nekoyume.Action;
 using Nekoyume.Data;
@@ -107,7 +108,7 @@ namespace Nekoyume.UI
             }
             _player.gameObject.SetActive(false);
 
-            SetData(new Model.Combination(ActionManager.instance.Avatar.Items, stagedItems.Length));
+            SetData(new Model.Combination(AvatarManager.Avatar.Items, stagedItems.Length));
             
             AudioController.instance.PlayMusic(AudioController.MusicCode.Combination);
         }
@@ -116,7 +117,7 @@ namespace Nekoyume.UI
         {
             Clear();
 
-            _stage.GetPlayer(_stage.RoomPosition);
+            _stage.GetPlayer(_stage.roomPosition);
             _stage.LoadBackground("room");
             _player.gameObject.SetActive(true);
 
@@ -265,7 +266,6 @@ namespace Nekoyume.UI
         {
             _loadingScreen.Show();
             ActionManager.instance.Combination(_data.stagedItems.ToList())
-                .Select(eval => eval.Action)
                 .Subscribe(ResponseCombination)
                 .AddTo(this);
             AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ClickCombinationCombination);
@@ -275,26 +275,9 @@ namespace Nekoyume.UI
         /// 결과를 직접 받아서 데이타에 넣어주는 방법 보다는,
         /// 네트워크 결과를 핸들링하는 곳에 핸들링 인터페이스를 구현한 데이타 모델을 등록하는 방법이 좋겠다. 
         /// </summary>
-        private void ResponseCombination(Action.Combination action)
+        private void ResponseCombination(ActionBase.ActionEvaluation<Action.Combination> eval)
         {
-            var result = action.Result;
-            if (result.ErrorCode == GameActionResult.ErrorCode.Success)
-            {
-                if (!Tables.instance.TryGetItemEquipment(result.Item.id, out var itemEquipment))
-                {
-                    _loadingScreen.Close();
-                    throw new InvalidActionException("`Combination` action's `Result` is invalid.");
-                }
-
-                _data.resultPopup.Value = new Model.CombinationResultPopup(ItemBase.ItemFactory(itemEquipment), action.Result.Item.count)
-                {
-                    isSuccess = true,
-                    materialItems = _data.stagedItems
-                };
-                
-                AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ActionCombinationSuccess);
-            }
-            else
+            if (eval.Action.errorCode != GameActionErrorCode.Success)
             {
                 _data.resultPopup.Value = new Model.CombinationResultPopup(null, 0)
                 {
@@ -303,7 +286,25 @@ namespace Nekoyume.UI
                 };
                 
                 AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ActionCombinationFail);
+                _loadingScreen.Close();
+                return;
             }
+            
+            var result = eval.Action.Result;
+            if (!Tables.instance.TryGetItemEquipment(result.Item.id, out var itemEquipment))
+            {
+                _loadingScreen.Close();
+                throw new InvalidActionException("`Combination` action's `Result` is invalid.");
+            }
+
+            _data.resultPopup.Value = new Model.CombinationResultPopup(ItemBase.ItemFactory(itemEquipment), result.Item.count)
+            {
+                isSuccess = true,
+                materialItems = _data.stagedItems
+            };
+            
+            AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ActionCombinationSuccess);
+            _loadingScreen.Close();
         }
 
         private void SubscribeResultPopup(Model.CombinationResultPopup data)
@@ -313,8 +314,6 @@ namespace Nekoyume.UI
                 _resultPopup.Close();
                 return;
             }
-            
-            _loadingScreen.Close();
             _resultPopup.Pop(data);
         }
     }

@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
+using Libplanet;
 using Nekoyume.Game.Item;
+using Nekoyume.Model;
+using Nekoyume.State;
 using UniRx;
 using UnityEngine;
 
@@ -25,16 +28,16 @@ namespace Nekoyume.UI.Model
         public readonly Subject<Shop> onClickSwitchSell = new Subject<Shop>();
         public readonly Subject<Shop> onClickClose = new Subject<Shop>();
 
-        public Shop(List<Game.Item.Inventory.InventoryItem> items, Game.Shop shop)
+        public Shop(List<Game.Item.Inventory.InventoryItem> items, IDictionary<Address, List<Game.Item.ShopItem>> shopItems)
         {
             inventory.Value = new Inventory(items);
-            shopItems.Value = new ShopItems(shop);
+            this.shopItems.Value = new ShopItems(shopItems);
             itemInfo.Value = new ItemInfo();
             itemCountAndPricePopup.Value = new ItemCountAndPricePopup();
 
             state.Subscribe(OnState);
             inventory.Value.selectedItem.Subscribe(OnSelectInventoryItem);
-            shopItems.Value.selectedItem.Subscribe(OnSelectShopItem);
+            this.shopItems.Value.selectedItem.Subscribe(OnSelectShopItem);
             itemInfo.Value.item.Subscribe(OnItemInfoItem);
             itemInfo.Value.onClick.Subscribe(OnClickItemInfo);
 
@@ -79,10 +82,10 @@ namespace Nekoyume.UI.Model
             return inventoryItem.item.Value.Data.cls == DimmedString;
         }
 
-        private bool ButtonEnabledFuncForBuy(InventoryItem inventoryItem)
+        private static bool ButtonEnabledFuncForBuy(InventoryItem inventoryItem)
         {
             return inventoryItem is ShopItem shopItem &&
-                   Nekoyume.Model.Agent.Gold.Value >= shopItem.price.Value;
+                   ReactiveAgentState.Gold.Value >= shopItem.price.Value;
         }
 
         private bool ButtonEnabledFuncForSell(InventoryItem inventoryItem)
@@ -112,31 +115,42 @@ namespace Nekoyume.UI.Model
             {
                 return;
             }
-
-            if (state.Value == State.Buy)
+            
+            if (itemInfo.item.Value is ShopItem shopItem)
             {
-                // ToDo. 구매하겠습니까?
-                return;   
+                if (state.Value == State.Buy)
+                {
+                    // 구매하겠습니까?
+                    itemCountAndPricePopup.Value.titleText.Value = "구매";
+                    itemCountAndPricePopup.Value.submitText.Value = "확인";
+                }
+                else
+                {
+                    // 판매 취소하겠습니까?
+                    itemCountAndPricePopup.Value.titleText.Value = "판매 취소";
+                    itemCountAndPricePopup.Value.submitText.Value = "확인";
+                }
+                
+                itemCountAndPricePopup.Value.price.Value = shopItem.price.Value;
+                itemCountAndPricePopup.Value.priceInteractable.Value = false;
+            }
+            else
+            {
+                // 판매하겠습니까?
+                itemCountAndPricePopup.Value.titleText.Value = "판매 설정";
+                itemCountAndPricePopup.Value.submitText.Value = "판매";
+                itemCountAndPricePopup.Value.price.Value = 1;
+                itemCountAndPricePopup.Value.priceInteractable.Value = true;
             }
             
-            if (itemInfo.item.Value is ShopItem)
-            {
-                // ToDo. 판매 취소하겠습니까?
-                return;
-            }
-            
-            itemCountAndPricePopup.Value.titleText.Value = "판매 설정";
-            itemCountAndPricePopup.Value.submitText.Value = "판매";
             itemCountAndPricePopup.Value.item.Value = new CountEditableItem(
                 itemInfo.item.Value.item.Value,
                 itemInfo.item.Value.count.Value,
                 0,
-                itemInfo.item.Value.count.Value,
-                "수정");
-            itemCountAndPricePopup.Value.price.Value = 1;
+                itemInfo.item.Value.count.Value);
         }
 
-        private void OnSelectInventoryItem(InventoryItem inventoryItem)
+        public void OnSelectInventoryItem(InventoryItem inventoryItem)
         {
             if (itemInfo.Value.item.Value is ShopItem)
             {
@@ -152,9 +166,10 @@ namespace Nekoyume.UI.Model
             }
             
             itemInfo.Value.item.Value = inventoryItem;
+            itemInfo.Value.priceEnabled.Value = false;
         }
 
-        private void OnSelectShopItem(ShopItem shopItem)
+        public void OnSelectShopItem(ShopItem shopItem)
         {
             if (!(itemInfo.Value.item.Value is ShopItem))
             {
@@ -170,6 +185,16 @@ namespace Nekoyume.UI.Model
             }
             
             itemInfo.Value.item.Value = shopItem;
+
+            if (ReferenceEquals(shopItem, null))
+            {
+                itemInfo.Value.priceEnabled.Value = false;    
+            }
+            else
+            {
+                itemInfo.Value.price.Value = shopItem.price.Value;
+                itemInfo.Value.priceEnabled.Value = true;
+            }
         }
     }
 }
