@@ -6,9 +6,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+#if !EDITOR_MODE
 using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
+#endif
 using Libplanet;
 using Libplanet.Crypto;
 using Libplanet.Net;
