@@ -51,14 +51,14 @@ namespace Nekoyume.Game.Character
             StartRun();
         }
         
-        public override IEnumerator CoProcessDamage(int dmg, bool critical)
+        public override IEnumerator CoProcessDamage(Model.Skill.SkillInfo info)
         {
-            yield return StartCoroutine(base.CoProcessDamage(dmg, critical));
+            yield return StartCoroutine(base.CoProcessDamage(info));
 
             var position = transform.TransformPoint(0f, 1f, 0f);
             var force = DamageTextForce;
-            var txt = dmg.ToString();
-            PopUpDmg(position, force, txt, critical);
+            var txt = info.Effect.ToString();
+            PopUpDmg(position, force, info);
         }
         
         protected override bool CanRun()
@@ -72,21 +72,21 @@ namespace Nekoyume.Game.Character
             base.OnDead();
         }
         
-        protected override void PopUpDmg(Vector3 position, Vector3 force, string dmg, bool critical)
+        protected override void PopUpDmg(Vector3 position, Vector3 force, Model.Skill.SkillInfo info)
         {
-            base.PopUpDmg(position, force, dmg, critical);
+            base.PopUpDmg(position, force, info);
 
             var pos = transform.position;
             pos.x -= 0.2f;
             pos.y += 0.32f;
             
-            if (critical)
+            if (info.Critical)
             {
                 VFXController.instance.Create<BattleAttackCritical01VFX>(pos);
             }
             else
             {
-                VFXController.instance.Create<BattleAttack01VFX>(pos);    
+                VFXController.instance.Create<BattleAttack01VFX>(pos);
             }
         }
 

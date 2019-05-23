@@ -63,14 +63,13 @@ namespace Nekoyume.Game.Character
 
         #endregion
 
-        public override IEnumerator CoProcessDamage(int dmg, bool critical)
+        public override IEnumerator CoProcessDamage(Model.Skill.SkillInfo info)
         {
-            yield return StartCoroutine(base.CoProcessDamage(dmg, critical));
+            yield return StartCoroutine(base.CoProcessDamage(info));
 
             var position = transform.TransformPoint(0f, 1.7f, 0f);
             var force = DamageTextForce;
-            var txt = dmg.ToString();
-            PopUpDmg(position, force, txt, critical);
+            PopUpDmg(position, force, info);
 
             Event.OnUpdateStatus.Invoke();
         }
@@ -81,9 +80,9 @@ namespace Nekoyume.Game.Character
             Event.OnPlayerDead.Invoke();
         }
 
-        protected override void PopUpDmg(Vector3 position, Vector3 force, string dmg, bool critical)
+        protected override void PopUpDmg(Vector3 position, Vector3 force, Model.Skill.SkillInfo info)
         {
-            base.PopUpDmg(position, force, dmg, critical);
+            base.PopUpDmg(position, force, info);
 
             var pos = transform.position;
             pos.x -= 0.2f;

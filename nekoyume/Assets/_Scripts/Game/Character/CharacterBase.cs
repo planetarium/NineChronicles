@@ -171,8 +171,10 @@ namespace Nekoyume.Game.Character
             );
         }
 
-        public virtual IEnumerator CoProcessDamage(int dmg, bool critical)
+        public virtual IEnumerator CoProcessDamage(Model.Skill.SkillInfo info)
         {
+            var dmg = info.Effect;
+
             if (dmg <= 0)
                 yield break;
 
@@ -195,9 +197,10 @@ namespace Nekoyume.Game.Character
             gameObject.SetActive(false);
         }
 
-        protected virtual void PopUpDmg(Vector3 position, Vector3 force, string dmg, bool critical)
+        protected virtual void PopUpDmg(Vector3 position, Vector3 force, Model.Skill.SkillInfo info)
         {
-            if (critical)
+            var dmg = info.Effect.ToString();
+            if (info.Critical)
             {
                 ActionCamera.instance.Shake();
                 AudioController.PlayDamagedCritical();
@@ -274,7 +277,7 @@ namespace Nekoyume.Game.Character
         {
             if (TargetInRange(target))
                 target.StopRun();
-            StartCoroutine(target.CoProcessDamage(skill.Effect, skill.Critical));
+            StartCoroutine(target.CoProcessDamage(skill));
         }
 
         private void ProcessHeal(CharacterBase target, Model.Skill.SkillInfo info)
