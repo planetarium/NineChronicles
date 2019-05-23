@@ -24,7 +24,7 @@ namespace Nekoyume.Game.Character
         public int Level = 0;
         public int MPMax = 0;
         public float RunSpeedMax = 3.0f;
-        public override float Speed { get { return RunSpeedMax; } }
+        public override float Speed => RunSpeedMax;
         
         public List<Equipment> equipments =>
             Inventory.items.Select(i => i.Item).OfType<Equipment>().Where(e => e.equipped).ToList();
@@ -168,6 +168,7 @@ namespace Nekoyume.Game.Character
             EXPMax = character.expMax;
             Inventory = character.inventory;
             Range = character.attackRange;
+            RunSpeedMax = character.runSpeed;
         }
 
         private void OnAnimatorEvent(string eventName)
