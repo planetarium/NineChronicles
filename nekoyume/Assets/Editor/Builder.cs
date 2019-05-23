@@ -38,13 +38,37 @@ namespace Editor
             Build(BuildTarget.StandaloneLinux64);
         }
 
-        public static void Build(BuildTarget buildTarget)
+        [MenuItem("Build/MacOS Headless")]
+        public static void BuildMacOSHeadless()
+        {
+            Debug.Log("Build MacOS Headless");
+            Build(BuildTarget.StandaloneOSX, BuildOptions.EnableHeadlessMode, "OSXHeadless");
+        }
+
+        [MenuItem("Build/Linux Headless")]
+        public static void BuildLinuxHeadless()
+        {
+            Debug.Log("Build Linux Headless");
+            Build(BuildTarget.StandaloneLinux64, BuildOptions.EnableHeadlessMode, "LinuxHeadless");
+        }
+
+        [MenuItem("Build/Windows")]
+        public static void BuildWindowsHeadless()
+        {
+            Debug.Log("Build Windows Headless");
+            Build(BuildTarget.StandaloneWindows64, BuildOptions.EnableHeadlessMode, "WindowsHeadless");
+        }
+
+        public static void Build(
+            BuildTarget buildTarget,
+            BuildOptions options = BuildOptions.None,
+            string targetDirName = null)
         {
             string[] scenes = { "Assets/_Scenes/Game.unity" };
             const string basePath = "Build";
             string locationPathName = Path.Combine(
                 basePath,
-                buildTarget.ToString(),
+                targetDirName ?? buildTarget.ToString(),
                 PlayerName);
 
             BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions
@@ -52,7 +76,7 @@ namespace Editor
                 scenes = scenes,
                 locationPathName = locationPathName,
                 target = buildTarget,
-                options = BuildOptions.None,
+                options = options,
             };
 
             BuildReport report = BuildPipeline.BuildPlayer(buildPlayerOptions);
