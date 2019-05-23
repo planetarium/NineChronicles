@@ -235,11 +235,23 @@ namespace Nekoyume
                 }
                 else
                 {
+                    var invalidTxs = new HashSet<Transaction<PolymorphicAction<ActionBase>>>(txs);
                     if (task.IsFaulted)
                     {
-                        Debug.LogException(task.Exception);
+                        foreach (var ex in task.Exception.InnerExceptions) 
+                        {
+                            if (ex is InvalidTxException invalidTxException) 
+                            {
+                                Debug.Log($"Tx[{invalidTxException.TxId}] is invalid. mark to unstage.");
+                                invalidTxs.Add(_blocks.Transactions[invalidTxException.TxId]);
+                            }
+                            else
+                            {
+                                Debug.LogException(task.Exception);
+                            }
+                        }
                     }
-                    _blocks.UnstageTransactions(txs);
+                    _blocks.UnstageTransactions(invalidTxs);
                 }
             }
         }
