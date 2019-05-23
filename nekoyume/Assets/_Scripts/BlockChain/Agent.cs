@@ -207,6 +207,7 @@ namespace Nekoyume
             while (true)
             {
                 var tx = Transaction<PolymorphicAction<ActionBase>>.Create(
+                        _blocks.GetNonce(_agentPrivateKey.PublicKey.ToAddress()),
                         _agentPrivateKey,
                         new List<PolymorphicAction<ActionBase>>()
                         {
@@ -257,7 +258,7 @@ namespace Nekoyume
         
         private void StageActions(IEnumerable<PolymorphicAction<ActionBase>> actions)
         {
-            var tx = AvatarManager.MakeTransaction(actions);
+            var tx = AvatarManager.MakeTransaction(actions, _blocks);
             _blocks.StageTransactions(new HashSet<Transaction<PolymorphicAction<ActionBase>>> {tx});
             _swarm.BroadcastTxs(new[] { tx });
         }

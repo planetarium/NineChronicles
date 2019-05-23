@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.Blockchain;
 using Libplanet.Crypto;
 using Libplanet.Tx;
 using Nekoyume.Action;
@@ -110,9 +111,13 @@ namespace Nekoyume
             States.Avatar.Value = new AvatarState(avatar, AddressBook.Avatar.Value);
         }
 
-        public static Transaction<PolymorphicAction<ActionBase>> MakeTransaction(IEnumerable<PolymorphicAction<ActionBase>> actions)
+        public static Transaction<PolymorphicAction<ActionBase>> MakeTransaction(
+            IEnumerable<PolymorphicAction<ActionBase>> actions,
+            BlockChain<PolymorphicAction<ActionBase>> chain
+        )
         {
             return Transaction<PolymorphicAction<ActionBase>>.Create(
+                chain.GetNonce(_avatarPrivateKey.PublicKey.ToAddress()),
                 _avatarPrivateKey,
                 actions,
                 timestamp: DateTime.UtcNow

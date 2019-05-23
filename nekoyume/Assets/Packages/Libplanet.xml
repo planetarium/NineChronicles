@@ -584,7 +584,7 @@
             &#x201c;rehearsal mode&#x201d;, that there is nothing
             in <see cref="P:Libplanet.Action.IActionContext.PreviousStates"/>.
             </summary>
-            <seealso cref="M:Libplanet.Tx.Transaction`1.Create(Libplanet.Crypto.PrivateKey,System.Collections.Generic.IEnumerable{`0},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Nullable{System.DateTimeOffset})"/>
+            <seealso cref="M:Libplanet.Tx.Transaction`1.Create(System.Int64,Libplanet.Crypto.PrivateKey,System.Collections.Generic.IEnumerable{`0},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Nullable{System.DateTimeOffset})"/>
         </member>
         <member name="P:Libplanet.Action.IActionContext.PreviousStates">
             <summary>
@@ -1156,6 +1156,10 @@
             <exception cref="T:Libplanet.Blocks.InvalidBlockException">Thrown when the given
             <paramref name="block"/> is invalid, in itself or according to
             the <see cref="P:Libplanet.Blockchain.BlockChain`1.Policy"/>.</exception>
+            <exception cref="T:Libplanet.Tx.InvalidTxNonceException">Thrown when the
+            <see cref="P:Libplanet.Tx.Transaction`1.Nonce"/> is different from
+            <see cref="M:Libplanet.Blockchain.BlockChain`1.GetNonce(Libplanet.Address)"/> result of the
+            <see cref="P:Libplanet.Tx.Transaction`1.Signer"/>.</exception>
         </member>
         <member name="M:Libplanet.Blockchain.BlockChain`1.Append(Libplanet.Blocks.Block{`0},System.DateTimeOffset)">
             <summary>
@@ -1172,6 +1176,10 @@
             <exception cref="T:Libplanet.Blocks.InvalidBlockException">Thrown when the given
             <paramref name="block"/> is invalid, in itself or according to
             the <see cref="P:Libplanet.Blockchain.BlockChain`1.Policy"/>.</exception>
+            <exception cref="T:Libplanet.Tx.InvalidTxNonceException">Thrown when the
+            <see cref="P:Libplanet.Tx.Transaction`1.Nonce"/> is different from
+            <see cref="M:Libplanet.Blockchain.BlockChain`1.GetNonce(Libplanet.Address)"/> result of the
+            <see cref="P:Libplanet.Tx.Transaction`1.Signer"/>.</exception>
         </member>
         <member name="M:Libplanet.Blockchain.BlockChain`1.StageTransactions(System.Collections.Generic.ISet{Libplanet.Tx.Transaction{`0}})">
             <summary>
@@ -2188,6 +2196,15 @@
         <member name="M:Libplanet.Store.BaseStore.ForkStateReferences``1(System.String,System.String,Libplanet.Blocks.Block{``0},System.Collections.Immutable.IImmutableSet{Libplanet.Address})">
             <inheritdoc />
         </member>
+        <member name="M:Libplanet.Store.BaseStore.GetTxNonce(System.String,Libplanet.Address)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.BaseStore.IncreaseTxNonce``1(System.String,Libplanet.Blocks.Block{``0})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.BaseStore.ForkTxNonce``1(System.String,System.String,Libplanet.Blocks.Block{``0},System.Collections.Immutable.IImmutableSet{Libplanet.Address})">
+            <inheritdoc/>
+        </member>
         <member name="M:Libplanet.Store.FileStore.ListNamespaces">
             <inheritdoc/>
         </member>
@@ -2201,6 +2218,15 @@
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Store.FileStore.ForkStateReferences``1(System.String,System.String,Libplanet.Blocks.Block{``0},System.Collections.Immutable.IImmutableSet{Libplanet.Address})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.FileStore.GetTxNonce(System.String,Libplanet.Address)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.FileStore.IncreaseTxNonce``1(System.String,Libplanet.Blocks.Block{``0})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.FileStore.ForkTxNonce``1(System.String,System.String,Libplanet.Blocks.Block{``0},System.Collections.Immutable.IImmutableSet{Libplanet.Address})">
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Store.IStore.ListNamespaces">
@@ -2220,12 +2246,12 @@
         </member>
         <member name="M:Libplanet.Store.IStore.LookupStateReference``1(System.String,Libplanet.Address,Libplanet.Blocks.Block{``0})">
             <summary>
-            Lookup a state reference, which is a <see cref="P:Libplanet.Blocks.Block`1.Hash"/>
+            Looks up a state reference, which is a <see cref="P:Libplanet.Blocks.Block`1.Hash"/>
             that has the state of the <paramref name="address"/>.
             </summary>
-            <param name="namespace">The namespace to lookup a state reference.
+            <param name="namespace">The namespace to look up a state reference.
             </param>
-            <param name="address">The <see cref="T:Libplanet.Address"/> to find lookup.
+            <param name="address">The <see cref="T:Libplanet.Address"/> to look up.
             </param>
             <param name="lookupUntil">The upper bound (i.e., the latest block)
             of the search range. <see cref="T:Libplanet.Blocks.Block`1"/>s after
@@ -2268,8 +2294,8 @@
             fork.</param>
             <param name="destinationNamespace">The namespace of destination
             state references.</param>
-            <param name="branchPoint">The index of branch point to fork.
-            </param>
+            <param name="branchPoint">The branch point <see cref="T:Libplanet.Blocks.Block`1"/>
+            to fork.</param>
             <param name="addressesToStrip">The set of <see cref="T:Libplanet.Address"/>es
             to strip <see cref="P:Libplanet.Blocks.Block`1.Hash"/> after forking.</param>
             <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> class used with
@@ -2278,6 +2304,60 @@
             <paramref name="sourceNamespace"/> does not exist.</exception>
             <seealso cref="M:Libplanet.Store.IStore.LookupStateReference``1(System.String,Libplanet.Address,Libplanet.Blocks.Block{``0})"/>
             <seealso cref="M:Libplanet.Store.IStore.StoreStateReference``1(System.String,System.Collections.Immutable.IImmutableSet{Libplanet.Address},Libplanet.Blocks.Block{``0})"/>
+        </member>
+        <member name="M:Libplanet.Store.IStore.GetTxNonce(System.String,Libplanet.Address)">
+            <summary>
+            Gets <see cref="T:Libplanet.Tx.Transaction`1"/> nonce of the
+            <paramref name="address"/>.
+            </summary>
+            <param name="namespace">The namespace to get
+            <see cref="T:Libplanet.Tx.Transaction`1"/> nonce.
+            </param>
+            <param name="address">The <see cref="T:Libplanet.Address"/> to get
+            <see cref="T:Libplanet.Tx.Transaction`1"/> nonce.
+            </param>
+            <returns>A <see cref="T:Libplanet.Tx.Transaction`1"/> nonce. If there is no
+            previous <see cref="T:Libplanet.Tx.Transaction`1"/>, return 0.</returns>
+            <seealso cref="M:Libplanet.Store.IStore.IncreaseTxNonce``1(System.String,Libplanet.Blocks.Block{``0})"/>
+        </member>
+        <member name="M:Libplanet.Store.IStore.IncreaseTxNonce``1(System.String,Libplanet.Blocks.Block{``0})">
+            <summary>
+            Increases <see cref="T:Libplanet.Tx.Transaction`1"/> of
+            <see cref="P:Libplanet.Tx.Transaction`1.Signer"/> in the <paramref name="block"/>.
+            </summary>
+            <param name="namespace">The namespace to increase
+            <see cref="T:Libplanet.Tx.Transaction`1"/> nonce.</param>
+            <param name="block">The <see cref="T:Libplanet.Blocks.Block`1"/> which has the
+            <see cref="T:Libplanet.Tx.Transaction`1"/>s.</param>
+            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> class used with
+            <paramref name="block"/>.</typeparam>
+            <seealso cref="M:Libplanet.Store.IStore.GetTxNonce(System.String,Libplanet.Address)"/>
+        </member>
+        <member name="M:Libplanet.Store.IStore.ForkTxNonce``1(System.String,System.String,Libplanet.Blocks.Block{``0},System.Collections.Immutable.IImmutableSet{Libplanet.Address})">
+            <summary>
+            Forks <see cref="T:Libplanet.Tx.Transaction`1"/> nonces from
+            <paramref name="sourceNamespace"/> to
+            <paramref name="destinationNamespace"/>.
+            <para>This method copies <see cref="T:Libplanet.Tx.Transaction`1"/> nonces from
+            <paramref name="sourceNamespace"/> to
+            <paramref name="destinationNamespace"/> and strips
+            <paramref name="addressesToStrip"/> of nonces after
+            <paramref name="branchPoint"/>.</para>
+            </summary>
+            <param name="sourceNamespace">The namespace of
+            <see cref="T:Libplanet.Tx.Transaction`1"/> nonces to fork.</param>
+            <param name="destinationNamespace">The namespace of destination
+            <see cref="T:Libplanet.Tx.Transaction`1"/> nonces.</param>
+            <param name="branchPoint">The branch point <see cref="T:Libplanet.Blocks.Block`1"/>
+            to fork.</param>
+            <param name="addressesToStrip">The set of <see cref="T:Libplanet.Address"/>es
+            to strip <see cref="T:Libplanet.Tx.Transaction`1"/> nonces after forking.</param>
+            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> class used with
+            <paramref name="branchPoint"/>.</typeparam>
+            <exception cref="T:Libplanet.Store.NamespaceNotFoundException">Thrown when the given
+            <paramref name="sourceNamespace"/> does not exist.</exception>
+            <seealso cref="M:Libplanet.Store.IStore.GetTxNonce(System.String,Libplanet.Address)"/>
+            <seealso cref="M:Libplanet.Store.IStore.IncreaseTxNonce``1(System.String,Libplanet.Blocks.Block{``0})"/>
         </member>
         <member name="T:Libplanet.Store.NamespaceNotFoundException">
             <summary>
@@ -2337,6 +2417,38 @@
             string.</param>
             <param name="message">Specifies an <see cref="P:System.Exception.Message"/>.
             </param>
+        </member>
+        <member name="T:Libplanet.Tx.InvalidTxNonceException">
+            <summary>
+            The exception that is thrown when the <see cref="P:Libplanet.Tx.Transaction`1.Nonce"/>
+            is different from <see cref="M:Libplanet.Blockchain.BlockChain`1.GetNonce(Libplanet.Address)"/> result of
+            the <see cref="P:Libplanet.Tx.Transaction`1.Signer"/>.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Tx.InvalidTxNonceException.#ctor(Libplanet.Tx.TxId,System.Int64,System.Int64,System.String)">
+            <summary>
+            Initializes a new instance of the
+            <see cref="T:Libplanet.Tx.InvalidTxNonceException"/> class.
+            </summary>
+            <param name="txid">The invalid <see cref="T:Libplanet.Tx.Transaction`1"/>'s
+            <see cref="P:Libplanet.Tx.Transaction`1.Id"/>.  It is automatically included to
+            the <see cref="P:System.Exception.Message"/> string.</param>
+            <param name="expectedNonce"><see cref="M:Libplanet.Blockchain.BlockChain`1.GetNonce(Libplanet.Address)"/>
+            result of the <see cref="P:Libplanet.Tx.Transaction`1.Signer"/>.</param>
+            <param name="improperNonce">The actual
+            <see cref="P:Libplanet.Tx.Transaction`1.Nonce"/>.</param>
+            <param name="message">The message that describes the error.</param>
+        </member>
+        <member name="P:Libplanet.Tx.InvalidTxNonceException.ExpectedNonce">
+            <summary>
+            <see cref="M:Libplanet.Blockchain.BlockChain`1.GetNonce(Libplanet.Address)"/> result of the
+            <see cref="P:Libplanet.Tx.Transaction`1.Signer"/>.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Tx.InvalidTxNonceException.ImproperNonce">
+            <summary>
+            The actual <see cref="P:Libplanet.Tx.Transaction`1.Nonce"/>, which is improper.
+            </summary>
         </member>
         <member name="T:Libplanet.Tx.InvalidTxPublicKeyException">
             <summary>
@@ -2426,7 +2538,7 @@
             <seealso cref="T:Libplanet.Action.IAction"/>
             <seealso cref="T:Libplanet.Action.PolymorphicAction`1"/>
         </member>
-        <member name="M:Libplanet.Tx.Transaction`1.#ctor(Libplanet.Address,Libplanet.Crypto.PublicKey,System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.DateTimeOffset,System.Collections.Generic.IEnumerable{`0},System.Byte[])">
+        <member name="M:Libplanet.Tx.Transaction`1.#ctor(System.Int64,Libplanet.Address,Libplanet.Crypto.PublicKey,System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.DateTimeOffset,System.Collections.Generic.IEnumerable{`0},System.Byte[])">
             <summary>
             Creates a new <see cref="T:Libplanet.Tx.Transaction`1"/>.
             <para>This constructor takes all required and only required values
@@ -2435,8 +2547,12 @@
             this constructor is only useful when all details of
             a <see cref="T:Libplanet.Tx.Transaction`1"/> need to be manually adjusted.
             For the most cases, the fa&#xe7;ade factory <see
-            cref="M:Libplanet.Tx.Transaction`1.Create(Libplanet.Crypto.PrivateKey,System.Collections.Generic.IEnumerable{`0},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Nullable{System.DateTimeOffset})"/> is more useful.</para>
+            cref="M:Libplanet.Tx.Transaction`1.Create(System.Int64,Libplanet.Crypto.PrivateKey,System.Collections.Generic.IEnumerable{`0},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Nullable{System.DateTimeOffset})"/> is more useful.</para>
             </summary>
+            <param name="nonce">The number of previous
+            <see cref="T:Libplanet.Tx.Transaction`1"/>s committed by the <see cref="P:Libplanet.Tx.Transaction`1.Signer"/>
+            of this transaction.  This goes to the
+            <see cref="P:Libplanet.Tx.Transaction`1.Nonce"/> property.</param>
             <param name="signer">An <see cref="T:Libplanet.Address"/> of the account
             who signs this transaction.  If this is not derived from <paramref
             name="publicKey"/> <see cref="T:Libplanet.Tx.InvalidTxPublicKeyException"/> is
@@ -2480,6 +2596,12 @@
             <para>For more characteristics, see <see cref="T:Libplanet.Tx.TxId"/> type.</para>
             </summary>
             <seealso cref="T:Libplanet.Tx.TxId"/>
+        </member>
+        <member name="P:Libplanet.Tx.Transaction`1.Nonce">
+            <summary>
+            The number of previous <see cref="T:Libplanet.Tx.Transaction`1"/>s committed by
+            the <see cref="P:Libplanet.Tx.Transaction`1.Signer"/> of this transaction.
+            </summary>
         </member>
         <member name="P:Libplanet.Tx.Transaction`1.Signer">
             <summary>
@@ -2533,10 +2655,10 @@
             <returns>A decoded <see cref="T:Libplanet.Tx.Transaction`1"/> object.</returns>
             <seealso cref="M:Libplanet.Tx.Transaction`1.ToBencodex(System.Boolean)"/>
         </member>
-        <member name="M:Libplanet.Tx.Transaction`1.Create(Libplanet.Crypto.PrivateKey,System.Collections.Generic.IEnumerable{`0},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Nullable{System.DateTimeOffset})">
+        <member name="M:Libplanet.Tx.Transaction`1.Create(System.Int64,Libplanet.Crypto.PrivateKey,System.Collections.Generic.IEnumerable{`0},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Nullable{System.DateTimeOffset})">
             <summary>
             A fa&#xe7;ade factory to create a new <see cref="T:Libplanet.Tx.Transaction`1"/>.
-            Unlike the <see cref="M:Libplanet.Tx.Transaction`1.#ctor(Libplanet.Address,Libplanet.Crypto.PublicKey,System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.DateTimeOffset,System.Collections.Generic.IEnumerable{`0},System.Byte[])"/>
+            Unlike the <see cref="M:Libplanet.Tx.Transaction`1.#ctor(System.Int64,Libplanet.Address,Libplanet.Crypto.PublicKey,System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.DateTimeOffset,System.Collections.Generic.IEnumerable{`0},System.Byte[])"/>
             constructor, it automatically fills the following values from:
             <list type="table">
             <listheader>
@@ -2586,6 +2708,10 @@
             <see cref="P:Libplanet.Action.IActionContext.Rehearsal"/> is <c>true</c> and
             a conditional logic for the case.</para>
             </remarks>
+            <param name="nonce">The number of previous
+            <see cref="T:Libplanet.Tx.Transaction`1"/>s committed by the <see cref="P:Libplanet.Tx.Transaction`1.Signer"/>
+            of this transaction.  This goes to the
+            <see cref="P:Libplanet.Tx.Transaction`1.Nonce"/> property.</param>
             <param name="privateKey">A <see cref="T:Libplanet.Crypto.PrivateKey"/> of the account
             who creates and signs a new transaction.  This key is used to fill
             the <see cref="P:Libplanet.Tx.Transaction`1.Signer"/>, <see cref="P:Libplanet.Tx.Transaction`1.PublicKey"/>, and
