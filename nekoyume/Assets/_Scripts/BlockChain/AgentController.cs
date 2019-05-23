@@ -138,9 +138,9 @@ namespace Nekoyume
 #if UNITY_EDITOR
             return new Peer[]{ };
 #else
-            return options.Peers is null
-                ? LoadConfigLines(PeersFileName).Select(LoadPeer)
-                : options.Peers.Select(LoadPeer);
+            return options.Peers?.Any() ?? false
+                ? options.Peers.Select(LoadPeer)
+                : LoadConfigLines(PeersFileName).Select(LoadPeer);
 #endif
         }
 
