@@ -12,6 +12,7 @@ using Libplanet.Crypto;
 using Libplanet.Net;
 using Nekoyume.Helper;
 using Nekoyume.State;
+using NetMQ;
 using UnityEngine;
 
 namespace Nekoyume
@@ -220,7 +221,8 @@ namespace Nekoyume
             {
                 PlayerPrefs.SetString(ChainIdKey, Agent.ChainId.ToString());
                 Agent.Dispose();
-            }
+            }            
+            NetMQConfig.Cleanup(false);
             
             base.OnDestroy();
         }

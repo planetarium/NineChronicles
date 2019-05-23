@@ -5,7 +5,6 @@ using Nekoyume.Manager;
 using Libplanet;
 using Nekoyume.Action;
 using Nekoyume.Game.Item;
-using NetMQ;
 using UniRx;
 using UnityEngine;
 
@@ -29,13 +28,6 @@ namespace Nekoyume
             base.Awake();
             
             Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
-        }
-        
-        protected override void OnDestroy() 
-        {
-            NetMQConfig.Cleanup(false);
-            
-            base.OnDestroy();
         }
         
         #endregion
