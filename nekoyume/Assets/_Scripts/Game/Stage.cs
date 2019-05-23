@@ -367,7 +367,6 @@ namespace Nekoyume.Game
 
         private IEnumerator BeforeSkill(Character.CharacterBase character, IEnumerable<Model.Skill.SkillInfo> infos)
         {
-            var target = GetCharacter(infos.First().Target);
             var enemy = GetComponentsInChildren<Character.CharacterBase>()
                 .Where(c => c.gameObject.CompareTag(character.targetTag) && c.IsAlive())
                 .OrderBy(c => c.transform.position.x).First();
@@ -380,6 +379,11 @@ namespace Nekoyume.Game
         private IEnumerator AfterSkill(Character.CharacterBase character)
         {
             yield return new WaitForSeconds(SkillDelay);
+            var enemy = GetComponentsInChildren<Character.CharacterBase>()
+                .Where(c => c.gameObject.CompareTag(character.targetTag) && c.IsAlive())
+                .OrderBy(c => c.transform.position.x).FirstOrDefault();
+            if (enemy != null && !character.TargetInRange(enemy))
+                character.StartRun();
         }
     }
 }
