@@ -15,25 +15,20 @@ namespace Nekoyume.Action
             gold = int.Parse(plainValue["gold"].ToString());
         }
 
-        private static AvatarState CreateRewardContext()
-        {
-            return new AvatarState(null, address: null);
-        }
-
         public override IAccountStateDelta Execute(IActionContext actionCtx)
         {
             IAccountStateDelta states = actionCtx.PreviousStates;
 
-            var ctx = (AvatarState) states.GetState(actionCtx.Signer) ?? CreateRewardContext();
+            var agentState = (AgentState) states.GetState(actionCtx.Signer) ?? new AgentState();
 
             if (actionCtx.Rehearsal)
             {
-                return states.SetState(actionCtx.Miner, ctx);
+                return states.SetState(actionCtx.Miner, agentState);
             }
 
-            ctx.gold += gold;
+            agentState.gold += gold;
 
-            return states.SetState(actionCtx.Miner, ctx);
+            return states.SetState(actionCtx.Miner, agentState);
         }
 
         public override IImmutableDictionary<string, object> PlainValue => new Dictionary<string, object>

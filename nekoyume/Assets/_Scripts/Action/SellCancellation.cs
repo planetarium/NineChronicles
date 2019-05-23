@@ -12,64 +12,65 @@ namespace Nekoyume.Action
     public class SellCancellation : GameAction
     {
         [Serializable]
-        public class ResultModel : GameActionResult
+        public class ResultModel
         {
             public Address owner;
             public ShopItem shopItem;
         }
 
-        public Address owner;
+        public Address sellerAvatarAddress;
         public Guid productId;
 
-        public new ResultModel result;
+        public ResultModel result;
 
         protected override IImmutableDictionary<string, object> PlainValueInternal => new Dictionary<string, object>
         {
-            ["owner"] = owner.ToByteArray(),
-            ["productId"] = productId,
+            ["sellerAvatarAddress"] = sellerAvatarAddress.ToByteArray(),
+            ["productId"] = productId.ToByteArray(),
         }.ToImmutableDictionary();
 
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, object> plainValue)
         {
-            owner = new Address((byte[]) plainValue["owner"]);
-            productId = new Guid((string) plainValue["productId"]);
+            sellerAvatarAddress = new Address((byte[]) plainValue["sellerAvatarAddress"]);
+            productId = new Guid((byte[]) plainValue["productId"]);
         }
 
         protected override IAccountStateDelta ExecuteInternal(IActionContext actionCtx)
         {
             var states = actionCtx.PreviousStates;
-            var ctx = (AvatarState) states.GetState(actionCtx.Signer);
             if (actionCtx.Rehearsal)
             {
                 states = states.SetState(AddressBook.Shop, MarkChanged);
                 return states.SetState(actionCtx.Signer, MarkChanged);
             }
 
-            var shop = (ShopState) states.GetState(AddressBook.Shop) ?? new ShopState();
+            var avatarState = (AvatarState) states.GetState(actionCtx.Signer);
+            var shopState = (ShopState) states.GetState(AddressBook.Shop) ?? new ShopState();
 
+            ShopItem target;
             try
             {
                 // 상점에서 아이템을 빼온다.
-                var target = shop.Unregister(owner, productId);
-
-                // 인벤토리에 아이템을 넣는다.
-                ctx.avatar.AddEquipmentItemToItems(target.item.Data.id, target.count);
-
-                ctx.updatedAt = DateTimeOffset.UtcNow;
-                result = new ResultModel
-                {
-                    errorCode = GameActionResult.ErrorCode.Success,
-                    owner = owner,
-                    shopItem = target
-                };
-
-                states = states.SetState(AddressBook.Shop, shop);
-                return states.SetState(actionCtx.Signer, ctx);
+                target = shopState.Unregister(sellerAvatarAddress, productId);
             }
             catch
             {
-                return SimpleError(actionCtx, ctx, GameActionResult.ErrorCode.UnexpectedInternalAction);
+                return SimpleError(actionCtx, avatarState, GameActionErrorCode.UnexpectedInternalAction);
             }
+            
+            // 인벤토리에 아이템을 넣는다.
+            avatarState.avatar.AddEquipmentItemToItems(target.item.Data.id, target.count);
+            avatarState.updatedAt = DateTimeOffset.UtcNow;
+                
+            errorCode = GameActionErrorCode.Success;
+            result = new ResultModel
+            {
+                owner = sellerAvatarAddress,
+                shopItem = target
+            };
+
+            states = states.SetState(actionCtx.Signer, avatarState);
+            return states.SetState(AddressBook.Shop, shopState);
         }
     }
 }

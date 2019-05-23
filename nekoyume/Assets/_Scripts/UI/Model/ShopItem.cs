@@ -2,24 +2,27 @@ using System;
 using Libplanet;
 using Nekoyume.Game.Item;
 using UniRx;
+using UnityEngine;
 
 namespace Nekoyume.UI.Model
 {
     public class ShopItem : InventoryItem
     {
-        public readonly ReactiveProperty<Address> owner = new ReactiveProperty<Address>();
+        public readonly ReactiveProperty<Address> sellerAvatarAddress = new ReactiveProperty<Address>();
+        public readonly ReactiveProperty<Address> sellerAgentAddress = new ReactiveProperty<Address>();
         public readonly ReactiveProperty<decimal> price = new ReactiveProperty<decimal>();
         public readonly ReactiveProperty<Guid> productId = new ReactiveProperty<Guid>();
         
         public new readonly Subject<ShopItem> onClick = new Subject<ShopItem>();
         
-        public ShopItem(Address owner, Game.Item.ShopItem item) : this(owner, item.price, item.productId, item.item, item.count)
+        public ShopItem(Address sellerAvatarAddress, Game.Item.ShopItem item) : this(sellerAvatarAddress, item.sellerAgentAddress, item.price, item.productId, item.item, item.count)
         {
         }
         
-        public ShopItem(Address owner, decimal price, Guid productId, ItemBase item, int count) : base(item, count)
+        public ShopItem(Address sellerAvatarAddress, Address sellerAgentAddress, decimal price, Guid productId, ItemBase item, int count) : base(item, count)
         {
-            this.owner.Value = owner;
+            this.sellerAvatarAddress.Value = sellerAvatarAddress;
+            this.sellerAgentAddress.Value = sellerAgentAddress;
             this.price.Value = price;
             this.productId.Value = productId;
         }
@@ -29,7 +32,7 @@ namespace Nekoyume.UI.Model
             base.Dispose();
             
             productId.Dispose();
-            owner.Dispose();
+            sellerAvatarAddress.Dispose();
             price.Dispose();
             
             onClick.Dispose();

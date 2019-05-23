@@ -23,12 +23,12 @@ namespace Nekoyume.Model
                 return;
             }
             
-            // 기본 값을 초기화 한다.
+            // ToDo. 기본 값을 초기화 한다.
         }
 
         private static void Subscribes()
         {
-            // ActionBase.EveryRender<T>() 를 통해 필요한 동기화를 진행한다.
+            // ToDo. ActionBase.EveryRender<T>() 를 통해 필요한 동기화를 진행한다.
         }
     }
 }

@@ -278,7 +278,7 @@ namespace Nekoyume.UI
         private void ResponseCombination(Action.Combination action)
         {
             var result = action.Result;
-            if (result.ErrorCode == GameActionResult.ErrorCode.Success)
+            if (result.ErrorCode == GameActionErrorCode.Success)
             {
                 if (!Tables.instance.TryGetItemEquipment(result.Item.id, out var itemEquipment))
                 {

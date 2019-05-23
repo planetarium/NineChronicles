@@ -18,9 +18,9 @@ namespace Nekoyume.Action
         );
 
         public Guid Id { get; internal set; }
-        
-        public GameActionResult result;
 
+        public int errorCode = GameActionErrorCode.Fail;
+        
         public GameAction()
         {
             Id = Guid.NewGuid();
@@ -29,10 +29,7 @@ namespace Nekoyume.Action
         protected IAccountStateDelta SimpleError(IActionContext actionCtx, AvatarState ctx, int errorCode)
         {
             ctx.updatedAt = DateTimeOffset.UtcNow;
-            result = new GameActionResult
-            {
-                errorCode = errorCode,
-            };
+            this.errorCode = errorCode;
                     
             return actionCtx.PreviousStates.SetState(actionCtx.Signer, ctx);
         }

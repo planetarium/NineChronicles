@@ -33,7 +33,8 @@ namespace Nekoyume.Model
         private static void Subscribes()
         {
             ActionBase.EveryRender<Sell>()
-                .Where(eval => eval.InputContext.Signer == AddressBook.Avatar.Value)
+                .Where(eval => eval.InputContext.Signer == AddressBook.Avatar.Value
+                               && eval.Action.errorCode == GameActionErrorCode.Success)
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
                 {
@@ -42,7 +43,8 @@ namespace Nekoyume.Model
                 });
             
             ActionBase.EveryRender<SellCancellation>()
-                .Where(eval => eval.InputContext.Signer == AddressBook.Avatar.Value)
+                .Where(eval => eval.InputContext.Signer == AddressBook.Avatar.Value
+                               && eval.Action.errorCode == GameActionErrorCode.Success)
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
                 {
@@ -51,7 +53,8 @@ namespace Nekoyume.Model
                 });
             
             ActionBase.EveryRender<Buy>()
-                .Where(eval => eval.InputContext.Signer == AddressBook.Avatar.Value)
+                .Where(eval => eval.InputContext.Signer == AddressBook.Avatar.Value
+                               && eval.Action.errorCode == GameActionErrorCode.Success)
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
                 {

@@ -6,6 +6,7 @@ using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Game.Item;
 using Nekoyume.State;
+using UnityEngine;
 
 namespace Nekoyume.Action
 {
@@ -13,20 +14,24 @@ namespace Nekoyume.Action
     public class Sell : GameAction
     {
         [Serializable]
-        public class ResultModel : GameActionResult
+        public class ResultModel
         {
-            public Address owner;
+            public Address sellerAvatarAddress;
             public ShopItem shopItem;
         }
 
+        public Address sellerAgentAddress;
+        public Guid productId;
         public int itemId;
         public int count;
         public decimal price;
 
-        public new ResultModel result;
+        public ResultModel result;
 
         protected override IImmutableDictionary<string, object> PlainValueInternal => new Dictionary<string, object>
         {
+            ["sellerAgentAddress"] = sellerAgentAddress.ToByteArray(),
+            ["productId"] = productId.ToByteArray(),
             ["itemId"] = itemId.ToString(),
             ["count"] = count.ToString(),
             ["price"] = price.ToString(CultureInfo.InvariantCulture),
@@ -34,6 +39,8 @@ namespace Nekoyume.Action
 
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, object> plainValue)
         {
+            sellerAgentAddress = new Address((byte[]) plainValue["sellerAgentAddress"]);
+            productId = new Guid((byte[]) plainValue["productId"]);
             itemId = int.Parse(plainValue["itemId"].ToString());
             count = int.Parse(plainValue["count"].ToString());
             price = decimal.Parse(plainValue["price"].ToString());
@@ -42,14 +49,14 @@ namespace Nekoyume.Action
         protected override IAccountStateDelta ExecuteInternal(IActionContext actionCtx)
         {
             var states = actionCtx.PreviousStates;
-            var avatarState = (AvatarState) states.GetState(actionCtx.Signer);
             if (actionCtx.Rehearsal)
             {
                 states = states.SetState(AddressBook.Shop, MarkChanged);
                 return states.SetState(actionCtx.Signer, MarkChanged);
             }
 
-            var shop = (ShopState) states.GetState(AddressBook.Shop) ?? new ShopState();
+            var avatarState = (AvatarState) states.GetState(actionCtx.Signer);
+            var shopState = (ShopState) states.GetState(AddressBook.Shop) ?? new ShopState();
 
             // 인벤토리에서 판매할 아이템을 선택하고 수량을 조절한다.
             Inventory.InventoryItem target = null;
@@ -64,7 +71,7 @@ namespace Nekoyume.Action
                 target = item;
                 if (target.Count < count)
                 {
-                    return SimpleError(actionCtx, avatarState, GameActionResult.ErrorCode.SellItemCountNotEnoughInInventory);
+                    return SimpleError(actionCtx, avatarState, GameActionErrorCode.SellItemCountNotEnoughInInventory);
                 }
                 target.Count -= count;
             }
@@ -72,7 +79,7 @@ namespace Nekoyume.Action
             // 인벤토리에 판매할 아이템이 없는 경우.
             if (ReferenceEquals(target, null))
             {
-                return SimpleError(actionCtx, avatarState, GameActionResult.ErrorCode.SellItemNotFoundInInventory);
+                return SimpleError(actionCtx, avatarState, GameActionErrorCode.SellItemNotFoundInInventory);
             }
 
             // 인벤토리에서 판매할 아이템을 뺀 후에 수량이 0일 경우.
@@ -82,19 +89,26 @@ namespace Nekoyume.Action
             }
 
             // 상점에 아이템을 등록한다.
-            var shopItem = new ShopItem {item = target.Item, count = count, price = price};
-            shopItem = shop.Register(actionCtx.Signer, shopItem);
+            var shopItem = new ShopItem
+            {
+                sellerAgentAddress = sellerAgentAddress,
+                productId = productId,
+                item = target.Item,
+                count = count,
+                price = price
+            };
+            shopItem = shopState.Register(actionCtx.Signer, shopItem);
 
             avatarState.updatedAt = DateTimeOffset.UtcNow;
+            errorCode = GameActionErrorCode.Success;
             result = new ResultModel
             {
-                errorCode = GameActionResult.ErrorCode.Success,
-                owner = actionCtx.Signer,
+                sellerAvatarAddress = actionCtx.Signer,
                 shopItem = shopItem
             };
 
-            states = states.SetState(AddressBook.Shop, shop);
-            return states.SetState(actionCtx.Signer, avatarState);
+            states = states.SetState(actionCtx.Signer, avatarState);
+            return states.SetState(AddressBook.Shop, shopState);
         }
     }
 }

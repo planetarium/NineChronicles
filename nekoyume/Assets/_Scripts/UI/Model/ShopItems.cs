@@ -55,41 +55,26 @@ namespace Nekoyume.UI.Model
             selectedItem.Value = null;
         }
 
-        public void RemoveBuyItem(Guid productId, int count)
+        public void RemoveProduct(Guid productId)
         {
-            RemoveItem(products, productId, count);
+            RemoveItem(products, productId);
+        }
+
+        public ShopItem AddRegisteredProduct(Address sellerAvatarAddress, Game.Item.ShopItem shopItem)
+        {
+            var result = new ShopItem(sellerAvatarAddress, shopItem);
+            registeredProducts.Add(result);
+            return result;
         }
         
-        public void RemoveSellItem(Guid productId, int count)
+        public void RemoveRegisteredProduct(Guid productId)
         {
-            RemoveItem(registeredProducts, productId, count);
+            RemoveItem(registeredProducts, productId);
         }
         
-        private void RemoveItem(ICollection<ShopItem> collection, Guid productId, int count)
+        private void RemoveItem(ICollection<ShopItem> collection, Guid productId)
         {
-            ShopItem shouldRemove = null;
-            foreach (var item in collection)
-            {
-                if (item.productId.Value != productId)
-                {
-                    continue;
-                }
-                
-                if (item.count.Value > count)
-                {
-                    item.count.Value -= count;
-                }
-                else if (item.count.Value == count)
-                {
-                    shouldRemove = item;
-                }
-                else
-                {
-                    throw new InvalidOperationException($"item({productId}) count is lesser then {count}");
-                }
-                
-                break;
-            }
+            var shouldRemove = collection.FirstOrDefault(item => item.productId.Value == productId);
 
             if (!ReferenceEquals(shouldRemove, null))
             {

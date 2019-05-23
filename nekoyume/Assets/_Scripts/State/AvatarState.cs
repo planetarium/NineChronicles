@@ -14,16 +14,14 @@ namespace Nekoyume.State
     {
         public Avatar avatar;
         public BattleLog battleLog;
-        public decimal gold;
         public DateTimeOffset updatedAt;
         public DateTimeOffset? clearedAt;
         public Address? AvatarAddress { get; }
 
-        public AvatarState(Avatar avatar, Address? address, BattleLog logs = null, int gold = 0)
+        public AvatarState(Avatar avatar, Address? address, BattleLog logs = null)
         {
             this.avatar = avatar;
             battleLog = logs;
-            this.gold = gold;
             updatedAt = DateTimeOffset.UtcNow;
             AvatarAddress = address;
         }

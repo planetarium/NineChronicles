@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Libplanet;
 using Nekoyume.Game.Item;
 
@@ -31,8 +32,7 @@ namespace Nekoyume.State
             {
                 dictionary.Add(address, new List<ShopItem>());
             }
-
-            item.productId = Guid.NewGuid();
+            
             dictionary[address].Add(item);
             return item;
         }
@@ -58,17 +58,10 @@ namespace Nekoyume.State
         
         public static ShopItem Unregister(IDictionary<Address, List<ShopItem>> dictionary, Address address, Guid productId)
         {
-            try
-            {
-                var pair = Find(dictionary, address, productId);
-                dictionary[pair.Key].Remove(pair.Value);
+            var pair = Find(dictionary, address, productId);
+            dictionary[pair.Key].Remove(pair.Value);
 
-                return pair.Value;
-            }
-            catch
-            {
-                throw new KeyNotFoundException($"address: {address}, productId: {productId}");
-            }
+            return pair.Value;
         }
         
         public static bool Unregister(IDictionary<Address, List<ShopItem>> dictionary, Address address, ShopItem shopItem)

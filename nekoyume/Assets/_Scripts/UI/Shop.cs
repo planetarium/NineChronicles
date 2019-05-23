@@ -178,18 +178,29 @@ namespace Nekoyume.UI
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
             _loadingScreen.Show();
 
-            if (_data.state.Value == Model.Shop.State.Buy)
+            if (_data.itemInfo.Value.item.Value is ShopItem shopItem)
             {
-                // ToDo. 구매하겠습니까?
+                if (_data.state.Value == Model.Shop.State.Buy)
+                {
+                    // 구매하겠습니다.
+                    ActionManager.instance
+                        .Buy(shopItem.sellerAgentAddress.Value, shopItem.sellerAvatarAddress.Value, shopItem.productId.Value)
+                        .Subscribe(ResponseBuy)
+                        .AddTo(this);
+                }
+                else
+                {
+                    // 판매 취소하겠습니다.
+                    ActionManager.instance
+                        .SellCancellation(shopItem.sellerAvatarAddress.Value, shopItem.productId.Value)
+                        .Subscribe(ResponseSellCancellation)
+                        .AddTo(this);
+                }
+
                 return;
             }
 
-            if (_data.itemInfo.Value.item.Value is ShopItem)
-            {
-                // ToDo. 판매 취소하겠습니까?
-                return;
-            }
-
+            // 판매하겠습니다.
             ActionManager.instance
                 .Sell(data.item.Value.item.Value.Data.id,
                     data.item.Value.count.Value,
@@ -198,20 +209,25 @@ namespace Nekoyume.UI
                 .AddTo(this);
         }
 
-        private void ResponseSell(Nekoyume.Action.Sell.ResultModel result)
+        private void ResponseSell(ActionBase.ActionEvaluation<Action.Sell> eval)
         {
+            if (eval.Action.errorCode != GameActionErrorCode.Success)
+            {
+                _data.itemCountAndPricePopup.Value.item.Value = null;
+                _loadingScreen.Close();
+                
+                // ToDo. 액션 실패 팝업!
+                Debug.LogWarning($"액션 실패!! productId: {eval.Action.itemId}");
+                
+                return;
+            }
+            
+            var result = eval.Action.result;
             if (ReferenceEquals(result, null))
             {
                 throw new GameActionResultNullException();
             }
-
-            if (result.errorCode != GameActionResult.ErrorCode.Success)
-            {
-                _data.itemCountAndPricePopup.Value.item.Value = null;
-                _loadingScreen.Close();
-                return;
-            }
-                    
+        
             if (!Tables.instance.TryGetItemEquipment(result.shopItem.item.Data.id, out var itemEquipment))
             {
                 throw new KeyNotFoundException(result.shopItem.item.Data.id.ToString());
@@ -219,12 +235,72 @@ namespace Nekoyume.UI
 
             _data.itemCountAndPricePopup.Value.item.Value = null;
             _data.inventory.Value.RemoveItem(result.shopItem.item.Data.id, result.shopItem.count);
-            _data.shopItems.Value.registeredProducts.Add(new ShopItem(
-                result.owner,
-                result.shopItem));
+            var registeredProduct = _data.shopItems.Value.AddRegisteredProduct(result.sellerAvatarAddress, result.shopItem);
+            registeredProduct.selected.Value = true;
+            _data.shopItems.Value.selectedItem.Value = registeredProduct;
             _loadingScreen.Close();
         }
 
+        private void ResponseSellCancellation(ActionBase.ActionEvaluation<Action.SellCancellation> eval)
+        {
+            if (eval.Action.errorCode != GameActionErrorCode.Success)
+            {
+                _data.itemCountAndPricePopup.Value.item.Value = null;
+                _loadingScreen.Close();
+                
+                // ToDo. 액션 실패 팝업!
+                Debug.LogWarning($"액션 실패!! productId: {eval.Action.productId}");
+                
+                return;
+            }
+            
+            var result = eval.Action.result;
+            if (ReferenceEquals(result, null))
+            {
+                throw new GameActionResultNullException();
+            }
+
+            _data.itemCountAndPricePopup.Value.item.Value = null;
+            _data.shopItems.Value.RemoveProduct(result.shopItem.productId);
+            _data.shopItems.Value.RemoveRegisteredProduct(result.shopItem.productId);
+            var addedItem = _data.inventory.Value.AddItem(result.shopItem.item, result.shopItem.count);
+            addedItem.selected.Value = true;
+            _data.inventory.Value.selectedItem.Value = addedItem;
+            _loadingScreen.Close();
+        }
+        
+        private void ResponseBuy(ActionBase.ActionEvaluation<Action.Buy> eval)
+        {
+            if (eval.Action.errorCode != GameActionErrorCode.Success)
+            {
+                _data.itemCountAndPricePopup.Value.item.Value = null;
+                _loadingScreen.Close();
+                
+                if (eval.Action.errorCode == GameActionErrorCode.BuySoldOut)
+                {
+                    // ToDo. 매진 팝업!
+                    Debug.LogWarning($"매진!! productId: {eval.Action.productId}");
+                    _data.shopItems.Value.RemoveProduct(eval.Action.productId);
+                }
+                
+                return;
+            }
+            
+            var result = eval.Action.result;
+            if (ReferenceEquals(result, null))
+            {
+                throw new GameActionResultNullException();
+            }
+
+            _data.itemCountAndPricePopup.Value.item.Value = null;
+            _data.shopItems.Value.RemoveProduct(result.shopItem.productId);
+            _data.shopItems.Value.RemoveRegisteredProduct(result.shopItem.productId);
+            var addedItem = _data.inventory.Value.AddItem(result.shopItem.item, result.shopItem.count);
+            addedItem.selected.Value = true;
+            _data.inventory.Value.selectedItem.Value = addedItem;
+            _loadingScreen.Close();
+        }
+        
         private void OnClickCloseItemCountAndPricePopup(Model.ItemCountAndPricePopup data)
         {
             _data.itemCountAndPricePopup.Value.item.Value = null;
