@@ -29,6 +29,7 @@ namespace Nekoyume.Game.Character
         void Run();
         void StopRun();
         void Attack();
+        void Cast();
         void Hit();
         void Die();
         void Disappear();
