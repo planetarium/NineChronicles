@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Nekoyume.Data.Table;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using UniRx;
@@ -79,14 +80,21 @@ namespace Nekoyume.Game.Character
             var pos = transform.position;
             pos.x -= 0.2f;
             pos.y += 0.32f;
-            
-            if (info.Critical)
+
+            if (info.Category == SkillEffect.Category.Double)
             {
-                VFXController.instance.Create<BattleAttackCritical01VFX>(pos);
+                VFXController.instance.Create<BattleSkillDoubleMVFX>(pos);
             }
             else
             {
-                VFXController.instance.Create<BattleAttack01VFX>(pos);
+                if (info.Critical)
+                {
+                    VFXController.instance.Create<BattleAttackCritical01VFX>(pos);
+                }
+                else
+                {
+                    VFXController.instance.Create<BattleAttack01VFX>(pos);
+                }
             }
         }
 
