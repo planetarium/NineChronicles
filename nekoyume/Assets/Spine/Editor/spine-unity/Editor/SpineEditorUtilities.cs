@@ -56,7 +56,7 @@ using System.Reflection;
 
 namespace Spine.Unity.Editor {
 	using EventType = UnityEngine.EventType;
-
+	
 	// Analysis disable once ConvertToStaticType
 	[InitializeOnLoad]
 	public class SpineEditorUtilities : AssetPostprocessor {
@@ -201,8 +201,8 @@ namespace Spine.Unity.Editor {
 			Icons.Initialize();
 
 			// Drag and Drop
-			SceneView.onSceneGUIDelegate -= DragAndDropInstantiation.SceneViewDragAndDrop;
-			SceneView.onSceneGUIDelegate += DragAndDropInstantiation.SceneViewDragAndDrop;
+			SceneView.duringSceneGui -= DragAndDropInstantiation.SceneViewDragAndDrop;
+			SceneView.duringSceneGui += DragAndDropInstantiation.SceneViewDragAndDrop;
 
 			EditorApplication.hierarchyWindowItemOnGUI -= HierarchyHandler.HandleDragAndDrop;
 			EditorApplication.hierarchyWindowItemOnGUI += HierarchyHandler.HandleDragAndDrop;
