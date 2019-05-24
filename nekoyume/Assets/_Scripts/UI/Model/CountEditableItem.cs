@@ -7,16 +7,14 @@ namespace Nekoyume.UI.Model
     {
         public readonly ReactiveProperty<int> minCount = new ReactiveProperty<int>(0);
         public readonly ReactiveProperty<int> maxCount = new ReactiveProperty<int>(1);
-        public readonly ReactiveProperty<string> editButtonText = new ReactiveProperty<string>("수정");
 
-        public readonly Subject<CountEditableItem> onClose = new Subject<CountEditableItem>();
+        public readonly Subject<CountEditableItem> onDelete = new Subject<CountEditableItem>();
         public readonly Subject<CountEditableItem> onEdit = new Subject<CountEditableItem>();
         
-        public CountEditableItem(ItemBase item, int count, int minCount, int maxCount, string editButtonText = "수정") : base(item, count)
+        public CountEditableItem(ItemBase item, int count, int minCount, int maxCount) : base(item, count)
         {
             this.minCount.Value = minCount;
             this.maxCount.Value = maxCount;
-            this.editButtonText.Value = editButtonText;
             
             this.minCount.Subscribe(min =>
             {
@@ -41,9 +39,8 @@ namespace Nekoyume.UI.Model
 
             minCount.Dispose();
             maxCount.Dispose();
-            editButtonText.Dispose();
 
-            onClose.Dispose();
+            onDelete.Dispose();
             onEdit.Dispose();
         }
     }
