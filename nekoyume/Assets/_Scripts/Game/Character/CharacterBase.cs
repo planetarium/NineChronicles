@@ -299,11 +299,7 @@ namespace Nekoyume.Game.Character
         private void PopUpHeal(Vector3 position, Vector3 force, string dmg, bool critical)
         {
             DamageText.Show(position, force, dmg);
-
-            var pos = transform.position;
-            pos.x -= 0.2f;
-            pos.y += 0.32f;
-            VFXController.instance.Create<BattleHeal01VFX>(pos);
+            VFXController.instance.Create<BattleHeal01VFX>(transform, _hudOffset - new Vector3(0f, 0.4f));
         }
 
         private IEnumerator CoAnimationAttack()
@@ -320,9 +316,34 @@ namespace Nekoyume.Game.Character
             if (enemy != null && !TargetInRange(enemy))
                 RunSpeed = Speed;
         }
+        
+        private IEnumerator CoAnimationCast()
+        {
+            attackEnd = false;
+            RunSpeed = 0.0f;
+
+            animator.Cast();
+            yield return new WaitForSeconds(0.3f);
+
+            var enemy = GetComponentsInChildren<CharacterBase>()
+                .Where(c => c.gameObject.CompareTag(targetTag))
+                .OrderBy(c => c.transform.position.x).FirstOrDefault();
+            if (enemy != null && !TargetInRange(enemy))
+                RunSpeed = Speed;
+        }
+
         public IEnumerator CoAttack(IEnumerable<Model.Skill.SkillInfo> infos)
         {
-            yield return StartCoroutine(CoAnimationAttack());
+            var isCast = infos.Count() > 1;
+
+            if (isCast)
+            {
+                yield return StartCoroutine(CoAnimationCast());
+            }
+            else
+            {
+                yield return StartCoroutine(CoAnimationAttack());
+            }
 
             foreach (var info in infos)
             {
@@ -330,18 +351,21 @@ namespace Nekoyume.Game.Character
                 ProcessAttack(target, info);
             }
 
+            if (isCast)
+            {
+                yield return new WaitForSeconds(1.2f);
+            }
         }
 
         public IEnumerator CoHeal(IEnumerable<Model.Skill.SkillInfo> infos)
         {
-            yield return StartCoroutine(CoAnimationAttack());
+            yield return StartCoroutine(CoAnimationCast());
 
             foreach (var info in infos)
             {
                 var target = Game.instance.stage.GetCharacter(info.Target);
                 ProcessHeal(target, info);
             }
-
         }
 
         private void OnTriggerEnter(Collider other)

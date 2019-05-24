@@ -61,8 +61,9 @@ namespace Nekoyume.Game.Character
 		/// <summary>Play an animation. If a transition animation is defined, the transition is played before the target animation being passed.</summary>
 		public void PlayNewAnimation (Spine.Animation target, int layerIndex)
 		{
-			var loop = target.Name == CharacterAnimation.IdleLower ||
-			            target.Name == CharacterAnimation.RunLower;
+			var loop = target.Name == CharacterAnimation.IdleLower
+			           || target.Name == CharacterAnimation.RunLower
+			           || target.Name == CharacterAnimation.CastingLower;
 
 			_skeletonAnimation.AnimationState.SetAnimation(layerIndex, target, loop);
 			targetAnimation = target;
