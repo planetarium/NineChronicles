@@ -207,6 +207,7 @@ namespace Nekoyume
             while (true)
             {
                 var tx = Transaction<PolymorphicAction<ActionBase>>.Create(
+                        _blocks.GetNonce(_agentPrivateKey.PublicKey.ToAddress()),
                         _agentPrivateKey,
                         new List<PolymorphicAction<ActionBase>>()
                         {
@@ -234,11 +235,23 @@ namespace Nekoyume
                 }
                 else
                 {
+                    var invalidTxs = new HashSet<Transaction<PolymorphicAction<ActionBase>>>(txs);
                     if (task.IsFaulted)
                     {
-                        Debug.LogException(task.Exception);
+                        foreach (var ex in task.Exception.InnerExceptions) 
+                        {
+                            if (ex is InvalidTxException invalidTxException) 
+                            {
+                                Debug.Log($"Tx[{invalidTxException.TxId}] is invalid. mark to unstage.");
+                                invalidTxs.Add(_blocks.Transactions[invalidTxException.TxId]);
+                            }
+                            else
+                            {
+                                Debug.LogException(task.Exception);
+                            }
+                        }
                     }
-                    _blocks.UnstageTransactions(txs);
+                    _blocks.UnstageTransactions(invalidTxs);
                 }
             }
         }
@@ -257,7 +270,7 @@ namespace Nekoyume
         
         private void StageActions(IEnumerable<PolymorphicAction<ActionBase>> actions)
         {
-            var tx = AvatarManager.MakeTransaction(actions);
+            var tx = AvatarManager.MakeTransaction(actions, _blocks);
             _blocks.StageTransactions(new HashSet<Transaction<PolymorphicAction<ActionBase>>> {tx});
             _swarm.BroadcastTxs(new[] { tx });
         }

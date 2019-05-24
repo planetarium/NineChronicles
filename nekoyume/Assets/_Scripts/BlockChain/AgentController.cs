@@ -12,6 +12,7 @@ using Libplanet.Crypto;
 using Libplanet.Net;
 using Nekoyume.Helper;
 using Nekoyume.State;
+using NetMQ;
 using UnityEngine;
 
 namespace Nekoyume
@@ -137,9 +138,9 @@ namespace Nekoyume
 #if UNITY_EDITOR
             return new Peer[]{ };
 #else
-            return options.Peers is null
-                ? LoadConfigLines(PeersFileName).Select(LoadPeer)
-                : options.Peers.Select(LoadPeer);
+            return options.Peers?.Any() ?? false
+                ? options.Peers.Select(LoadPeer)
+                : LoadConfigLines(PeersFileName).Select(LoadPeer);
 #endif
         }
 
@@ -220,7 +221,8 @@ namespace Nekoyume
             {
                 PlayerPrefs.SetString(ChainIdKey, Agent.ChainId.ToString());
                 Agent.Dispose();
-            }
+            }            
+            NetMQConfig.Cleanup(false);
             
             base.OnDestroy();
         }
