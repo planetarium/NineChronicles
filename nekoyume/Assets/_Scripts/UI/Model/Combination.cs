@@ -59,7 +59,6 @@ namespace Nekoyume.UI.Model
             itemCountPopup.Value.titleText.Value = "재료 수량 선택";
 
             inventory.Value.selectedItem.Subscribe(OnInventorySelectedItem);
-            itemInfo.Value.onClick.Subscribe(OnClickItemInfo);
             itemCountPopup.Value.onClickSubmit.Subscribe(OnClickSubmitItemCountPopup);
             stagedItems.ObserveAdd().Subscribe(OnStagedItemsAdd);
             stagedItems.ObserveRemove().Subscribe(OnStagedItemsRemove);
@@ -85,42 +84,20 @@ namespace Nekoyume.UI.Model
 
         private bool ButtonEnabledFunc(InventoryItem inventoryItem)
         {
-            if (ReferenceEquals(inventoryItem, null) ||
-                inventoryItem.dimmed.Value)
-            {
-                return false;
-            }
-
-            var id = inventoryItem.item.Value.Data.id; 
-            foreach (var stagedItem in stagedItems)
-            {
-                if (id == stagedItem.item.Value.Data.id)
-                {
-                    return false;
-                } 
-            }
-
-            return true;
+            return false;
         }
         
         private void OnInventorySelectedItem(InventoryItem data)
         {
             itemInfo.Value.item.Value = data;
-        }
 
-        private void OnClickItemInfo(ItemInfo data)
-        {
-            if (ReferenceEquals(data, null) ||
-                ReferenceEquals(data.item.Value, null))
+            if (!ReferenceEquals(data, null) 
+                && data.dimmed.Value)
             {
                 return;
             }
-
-            itemCountPopup.Value.item.Value = new CountEditableItem(
-                data.item.Value.item.Value,
-                data.item.Value.count.Value,
-                1,
-                data.item.Value.count.Value);
+            
+            RegisterToStagedItems(data);
         }
 
         private void OnClickSubmitItemCountPopup(SimpleItemCountPopup data)
@@ -132,35 +109,47 @@ namespace Nekoyume.UI.Model
                 return;
             }
 
+            RegisterToStagedItems(data.item.Value);
+            itemCountPopup.Value.item.Value = null;
+        }
+
+        private bool RegisterToStagedItems(CountableItem countEditableItem)
+        {
+            if (ReferenceEquals(countEditableItem, null))
+            {
+                return false;
+            }
+            
             foreach (var stagedItem in stagedItems)
             {
-                if (stagedItem.item.Value.Data.id != data.item.Value.item.Value.Data.id)
+                if (stagedItem.item.Value.Data.id != countEditableItem.item.Value.Data.id)
                 {
                     continue;
                 }
 
-                if (data.item.Value.count.Value == 0)
+                if (countEditableItem.count.Value == 0)
                 {
                     stagedItems.Remove(stagedItem);
                 }
                 else
                 {
-                    stagedItem.count.Value = data.item.Value.count.Value;                    
+                    stagedItem.count.Value = countEditableItem.count.Value;                    
                 }
                 
-                itemCountPopup.Value.item.Value = null;
-                return;
+                return true;
             }
 
             if (stagedItems.Count >= _stagedItemsLimit)
             {
-                itemCountPopup.Value.item.Value = null;
-                return;
+                return false;
             }
 
-            stagedItems.Add(data.item.Value);
-
-            itemCountPopup.Value.item.Value = null;
+            stagedItems.Add(new CountEditableItem(
+                countEditableItem.item.Value,
+                1,
+                0,
+                countEditableItem.count.Value));
+            return true;
         }
 
         private void OnStagedItemsAdd(CollectionAddEvent<CountEditableItem> e)
@@ -169,8 +158,7 @@ namespace Nekoyume.UI.Model
             data.count.Subscribe(count => UpdateReadyForCombination());
             data.onEdit.Subscribe(obj =>
             {
-                if (ReferenceEquals(obj, null) ||
-                    !ReferenceEquals(itemCountPopup.Value.item.Value, null))
+                if (ReferenceEquals(obj, null))
                 {
                     return;
                 }
@@ -179,7 +167,7 @@ namespace Nekoyume.UI.Model
                 itemCountPopup.Value.item.Value.minCount.Value = 0;
                 AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ClickCombinationEditMaterialItem);
             });
-            data.onClose.Subscribe(obj =>
+            data.onDelete.Subscribe(obj =>
             {
                 if (ReferenceEquals(obj, null))
                 {
@@ -250,7 +238,7 @@ namespace Nekoyume.UI.Model
             if (!ReferenceEquals(itemInfo.Value.item.Value, null) &&
                 itemInfo.Value.item.Value.item.Value.Data.id == id)
             {
-                itemInfo.Value.buttonEnabled.Value = !isStaged;
+                itemInfo.Value.buttonEnabled.Value = itemInfo.Value.buttonEnabledFunc.Value(itemInfo.Value.item.Value);
             }
         }
 
