@@ -10,8 +10,14 @@ using Object = UnityEngine.Object;
 
 namespace Planetarium.Nekoyume.Editor
 {
-    public class SpineEditor
+    public static class SpineEditor
     {
+        [MenuItem("Assets/Create/Spine Prefab", true)]
+        public static bool CreateSpinePrefabValidation()
+        {
+            return Selection.activeObject is SkeletonDataAsset;
+        }
+        
         [MenuItem("Assets/Create/Spine Prefab", false, 10000)]
         public static void CreateSpinePrefab()
         {
@@ -80,12 +86,6 @@ namespace Planetarium.Nekoyume.Editor
 
             Object.DestroyImmediate(gameObject);
             Selection.activeObject = prefab;
-        }
-
-        [MenuItem("Assets/Create/Spine Prefab", true)]
-        public static bool CreateSpinePrefabValidation()
-        {
-            return Selection.activeObject.GetType() == typeof(SkeletonDataAsset);
         }
     }
 }
