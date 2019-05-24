@@ -170,7 +170,9 @@ namespace Spine.Unity.Editor {
 		static int STRAIGHT_ALPHA_PARAM_ID = Shader.PropertyToID("_StraightAlphaInput");
 
 		// Preferences entry point
+#pragma warning disable 618
 		[PreferenceItem("Spine")]
+#pragma warning restore 618
 		static void PreferencesGUI () {
 			Preferences.HandlePreferencesGUI();
 		}
