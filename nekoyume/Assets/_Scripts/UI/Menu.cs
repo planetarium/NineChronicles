@@ -1,8 +1,10 @@
 using Nekoyume.Game;
 using Nekoyume.Manager;
 using Nekoyume.Game.Controller;
+using Nekoyume.UI.Module;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
 
 namespace Nekoyume.UI
 {
@@ -13,6 +15,7 @@ namespace Nekoyume.UI
         public GameObject btnShop;
         public GameObject btnTemple;
         public Text LabelInfo;
+        public SpeechBubble[] SpeechBubbles;
 
         public Stage Stage;
 
@@ -21,6 +24,7 @@ namespace Nekoyume.UI
             base.Awake();
 
             Stage = GameObject.Find("Stage").GetComponent<Stage>();
+            SpeechBubbles = GetComponentsInChildren<SpeechBubble>();
         }
 
         public void ShowButtons(bool value)
@@ -95,15 +99,35 @@ namespace Nekoyume.UI
         public override void Show()
         {
             base.Show();
-            
+            StartCoroutine("ShowSpeeches");
             Find<Gold>()?.Show();
         }
 
         public override void Close()
         {
             Find<Gold>()?.Close();
-            
+            StopCoroutine("ShowSpeeches");
             base.Close();
+        }
+
+        public IEnumerator ShowSpeeches()
+        {
+            foreach (var speechBubble in SpeechBubbles)
+            {
+                speechBubble.Init();
+            }
+
+            yield return new WaitForSeconds(2.0f);
+
+            while (true)
+            {
+                foreach (var speechBubble in SpeechBubbles)
+                {
+                    speechBubble.Show();
+                    yield return new WaitForSeconds(2.0f);
+                    speechBubble.Hide();
+                }
+            }
         }
     }
 }

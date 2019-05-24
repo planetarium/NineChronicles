@@ -111,5 +111,28 @@ namespace Assets.SimpleLocalization
         {
             return text.Replace("[Newline]", "\n");
         }
+
+        /// <summary>
+        /// Get localized string count by localization key with numbering.
+        /// </summary>
+        public static int LocalizedCount(string localizationKey)
+        {
+            if (Dictionary.Count == 0)
+            {
+                Read();
+            }
+
+            if (!Dictionary.ContainsKey(Language)) throw new KeyNotFoundException("Language not found: " + Language);
+
+            int count = 0;
+            while (true)
+            {
+                if (!Dictionary[Language].ContainsKey($"{localizationKey}{count}"))
+                {
+                    return count;
+                }
+                count++;
+            }
+        }
     }
 }
