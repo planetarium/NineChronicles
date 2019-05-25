@@ -11,6 +11,7 @@ namespace Nekoyume.UI.Module
     {
         public string localizationKey;
         public Image bubbleImage;
+        public Text textSize;
         public Text text;
         public string imageName;
         public Vector3 positionOffset;
@@ -33,11 +34,11 @@ namespace Nekoyume.UI.Module
 
             gameObject.SetActive(true);
 
-            bubbleImage.rectTransform.DOScale(0.0f, 0.0f);
-            bubbleImage.rectTransform.DOScale(1.0f, bubbleTweenTime).SetEase(Ease.OutBack);
-            yield return new WaitForSeconds(bubbleTweenTime);
-
             string speech = LocalizationManager.Localize($"{localizationKey}{Random.Range(0, _speechCount)}");
+            textSize.text = speech;
+            textSize.rectTransform.DOScale(0.0f, 0.0f);
+            textSize.rectTransform.DOScale(1.0f, bubbleTweenTime).SetEase(Ease.OutBack);
+            yield return new WaitForSeconds(bubbleTweenTime);
             for (int i = 1; i <= speech.Length; ++i)
             {
                 if (i == speech.Length)
@@ -50,7 +51,7 @@ namespace Nekoyume.UI.Module
             yield return new WaitForSeconds(speechWaitTime);
 
             text.text = "";
-            bubbleImage.rectTransform.DOScale(0.0f, bubbleTweenTime).SetEase(Ease.InBack);
+            textSize.rectTransform.DOScale(0.0f, bubbleTweenTime).SetEase(Ease.InBack);
             yield return new WaitForSeconds(bubbleTweenTime);
 
             gameObject.SetActive(false);
