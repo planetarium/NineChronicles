@@ -132,6 +132,12 @@ namespace Nekoyume.Game
                         sprite.sortingOrder += 1;
                         sprite.DOFade(0.0f, fadeTime);
                     }
+
+                    var particles = background.GetComponentsInChildren<ParticleSystem>();
+                    foreach (var particle in particles)
+                    {
+                        particle.Stop();
+                    }
                 }
 
                 Destroy(background, fadeTime);

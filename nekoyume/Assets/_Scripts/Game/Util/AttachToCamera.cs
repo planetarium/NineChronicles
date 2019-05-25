@@ -18,7 +18,9 @@ namespace Nekoyume.Game.Util
         {
             if (_mainCamera != null)
             {
-                transform.position = _mainCamera.transform.position + _offset;
+                var cameraPosition = _mainCamera.transform.position;
+                cameraPosition.z = 0;
+                transform.position = cameraPosition + _offset;
             }
         }
     }
