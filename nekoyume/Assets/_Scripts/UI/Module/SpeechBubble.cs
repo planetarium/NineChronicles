@@ -44,7 +44,7 @@ namespace Nekoyume.UI.Module
                 if (i == speech.Length)
                     text.text = $"{speech.Substring(0, i)}";
                 else
-                    text.text = $"{speech.Substring(0, i)}<color=white>{speech.Substring(i)}</color>";
+                    text.text = $"{speech.Substring(0, i)}<color=#ffffff00>{speech.Substring(i)}</color>";
                 yield return new WaitForSeconds(speechSpeedInterval);
             }
 
