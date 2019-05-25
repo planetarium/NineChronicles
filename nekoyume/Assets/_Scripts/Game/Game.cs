@@ -37,7 +37,6 @@ namespace Nekoyume.Game
             AgentController.Initialize();
             
             LocalizationManager.Read();
-            LocalizationManager.Language = "Korean";
             AudioController.instance.Initialize();
         }
     }

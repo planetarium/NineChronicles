@@ -33,7 +33,15 @@ namespace Assets.SimpleLocalization
 		/// </summary>
         public static void AutoLanguage()
         {
-            Language = "English";
+            string systemLang = Application.systemLanguage.ToString();
+            if (Dictionary.ContainsKey(systemLang))
+            {
+                Language = systemLang;
+            }
+            else
+            {
+                Language = "English";
+            }
         }
 
 		/// <summary>
