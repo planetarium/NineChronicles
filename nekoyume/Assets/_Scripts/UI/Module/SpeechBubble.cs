@@ -1,4 +1,6 @@
 ﻿using Assets.SimpleLocalization;
+using DG.Tweening;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,21 +14,11 @@ namespace Nekoyume.UI.Module
         public Text text;
         public string imageName;
         public Vector3 positionOffset;
+        public float speechSpeedInterval = 0.04f;
+        public float speechWaitTime = 2.0f;
+        public float bubbleTweenTime = 0.2f;
 
         private int _speechCount = 0;
-
-        #region Mono
-
-        protected virtual void Awake()
-        {
-            this.ComponentFieldsNotNullTest();
-        }
-
-        protected virtual void OnDestroy()
-        {
-        }
-
-        #endregion
 
         public void Init()
         {
@@ -34,46 +26,35 @@ namespace Nekoyume.UI.Module
             gameObject.SetActive(false);
         }
 
-        public void Show()
+        public IEnumerator Show()
         {
             if (_speechCount == 0)
-                return;
-
-            Menu parent = GetComponentInParent<Menu>();
-            if (!parent)
-                throw new NotFoundComponentException<Menu>();
-
-            var rect = bubbleImage.GetComponent<RectTransform>();
-            var targetImage = parent.Stage.background.transform.Find(imageName);
-            if (!targetImage)
-                return;
-
-            var position = targetImage.position + positionOffset;
-            rect.anchoredPosition = position.ToCanvasPosition(Game.ActionCamera.instance.Cam, MainCanvas.instance.Canvas);
-
-            text.text = LocalizationManager.Localize($"{localizationKey}{Random.Range(0, _speechCount)}");
+                yield break;
 
             gameObject.SetActive(true);
-        }
 
-        public void Hide()
-        {
+            bubbleImage.rectTransform.DOScale(0.0f, 0.0f);
+            bubbleImage.rectTransform.DOScale(1.0f, bubbleTweenTime).SetEase(Ease.OutBack);
+            yield return new WaitForSeconds(bubbleTweenTime);
+
+
+            string speech = LocalizationManager.Localize($"{localizationKey}{Random.Range(0, _speechCount)}");
+            for (int i = 1; i <= speech.Length; ++i)
+            {
+                if (i == speech.Length)
+                    text.text = $"{speech.Substring(0, i)}";
+                else
+                    text.text = $"{speech.Substring(0, i)}<color=white>{speech.Substring(i)}</color>";
+                yield return new WaitForSeconds(speechSpeedInterval);
+            }
+
+            yield return new WaitForSeconds(speechWaitTime);
+
+            text.text = "";
+            bubbleImage.rectTransform.DOScale(0.0f, bubbleTweenTime).SetEase(Ease.InBack);
+            yield return new WaitForSeconds(bubbleTweenTime);
+
             gameObject.SetActive(false);
-        }
-
-        public void Update()
-        {
-            Menu parent = GetComponentInParent<Menu>();
-            if (!parent)
-                throw new NotFoundComponentException<Menu>();
-
-            var rect = bubbleImage.GetComponent<RectTransform>();
-            var targetImage = parent.Stage.background.transform.Find(imageName);
-            if (!targetImage)
-                return;
-
-            var position = targetImage.position + positionOffset;
-            rect.anchoredPosition = position.ToCanvasPosition(Game.ActionCamera.instance.Cam, MainCanvas.instance.Canvas);
         }
     }
 }

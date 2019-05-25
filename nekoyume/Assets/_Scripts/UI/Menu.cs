@@ -121,11 +121,20 @@ namespace Nekoyume.UI
 
             while (true)
             {
+                var n = SpeechBubbles.Length;
+                while (n > 1)
+                {
+                    n--;
+                    var k = Mathf.FloorToInt(Random.value * (n + 1));
+                    var value = SpeechBubbles[k];
+                    SpeechBubbles[k] = SpeechBubbles[n];
+                    SpeechBubbles[n] = value;
+                }
+
                 foreach (var speechBubble in SpeechBubbles)
                 {
-                    speechBubble.Show();
-                    yield return new WaitForSeconds(2.0f);
-                    speechBubble.Hide();
+                    yield return StartCoroutine(speechBubble.Show());
+                    yield return new WaitForSeconds(Random.Range(2.0f, 4.0f));
                 }
             }
         }
