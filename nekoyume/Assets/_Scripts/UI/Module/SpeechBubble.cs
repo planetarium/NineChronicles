@@ -37,7 +37,6 @@ namespace Nekoyume.UI.Module
             bubbleImage.rectTransform.DOScale(1.0f, bubbleTweenTime).SetEase(Ease.OutBack);
             yield return new WaitForSeconds(bubbleTweenTime);
 
-
             string speech = LocalizationManager.Localize($"{localizationKey}{Random.Range(0, _speechCount)}");
             for (int i = 1; i <= speech.Length; ++i)
             {
