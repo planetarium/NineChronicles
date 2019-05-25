@@ -39,6 +39,7 @@ namespace Nekoyume.UI
         {
             Show();
             ShowButtons(true);
+            StartCoroutine("ShowSpeeches");
 
             LabelInfo.text = "";
             
@@ -55,7 +56,6 @@ namespace Nekoyume.UI
 
         public void QuestClick()
         {
-            Find<Status>()?.Close();
             Close();
             
             Find<QuestPreparation>()?.Show();
@@ -66,7 +66,6 @@ namespace Nekoyume.UI
 
         public void ShopClick()
         {
-            Find<Status>()?.Close();
             Close();
             
             Find<Shop>()?.Show();
@@ -77,7 +76,6 @@ namespace Nekoyume.UI
 
         public void CombinationClick()
         {
-            Find<Status>()?.Close();
             Close();
             
             Find<Combination>()?.Show();
@@ -88,7 +86,6 @@ namespace Nekoyume.UI
 
         public void RankingClick()
         {
-            Find<Status>()?.Close();
             Close();
 
             Find<RankingBoard>()?.Show();
@@ -99,14 +96,22 @@ namespace Nekoyume.UI
         public override void Show()
         {
             base.Show();
-            StartCoroutine("ShowSpeeches");
+
             Find<Gold>()?.Show();
+            Find<Status>()?.Show();
         }
 
         public override void Close()
         {
             Find<Gold>()?.Close();
+            Find<Status>()?.Close();
+
             StopCoroutine("ShowSpeeches");
+            foreach (var speechBubble in SpeechBubbles)
+            {
+                speechBubble.Hide();
+            }
+
             base.Close();
         }
 

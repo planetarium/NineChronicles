@@ -55,5 +55,11 @@ namespace Nekoyume.UI.Module
 
             gameObject.SetActive(false);
         }
+
+        public void Hide()
+        {
+            text.text = "";
+            gameObject.SetActive(false);
+        }
     }
 }

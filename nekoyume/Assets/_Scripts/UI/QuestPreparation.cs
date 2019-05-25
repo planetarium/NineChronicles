@@ -143,8 +143,7 @@ namespace Nekoyume.UI
             _stage.LoadBackground("room");
             _player = _stage.GetPlayer(_stage.roomPosition);
             _player.UpdateSet(_player.model.set);
-            Find<Menu>().Show();
-            Find<Status>()?.Show();
+            Find<Menu>().ShowRoom();
             Close();
             AudioController.PlayClick();
         }

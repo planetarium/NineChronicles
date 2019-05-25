@@ -121,8 +121,7 @@ namespace Nekoyume.UI
             _stage.LoadBackground("room");
             _player.gameObject.SetActive(true);
 
-            Find<Status>()?.Show();
-            Find<Menu>()?.Show();
+            Find<Menu>()?.ShowRoom();
 
             base.Close();
             
