@@ -12,6 +12,7 @@ using Nekoyume.Game.Trigger;
 using Nekoyume.Game.Util;
 using Nekoyume.Model;
 using Nekoyume.UI;
+using Nekoyume.Game.VFX;
 using UnityEngine;
 
 namespace Nekoyume.Game
@@ -300,12 +301,9 @@ namespace Nekoyume.Game
             if (isBoss)
             {
                 AudioController.instance.PlayMusic(AudioController.MusicCode.Boss1);
-                var title = Widget.Find<BossTitle>();
-                title.Show();
+                VFXController.instance.Create<BattleBossTitleVFX>(Vector3.zero);
 
-                yield return new WaitForSeconds(2.0f);
-
-                title.Close();
+                yield return new WaitForSeconds(3.0f);
             }
 
             yield return StartCoroutine(spawner.CoSetData(id, monsters));

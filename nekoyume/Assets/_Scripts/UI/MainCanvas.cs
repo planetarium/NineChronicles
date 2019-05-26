@@ -42,7 +42,6 @@ namespace Nekoyume.UI
             Widget.Create<ItemCountAndPricePopup>();
             Widget.Create<CombinationResultPopup>();
             Widget.Create<StageTitle>();
-            Widget.Create<BossTitle>();
 
             // 로딩창류.
             Widget.Create<GrayLoadingScreen>();
