@@ -27,7 +27,7 @@ namespace Planetarium.Nekoyume.Editor
             var split = assetPath.Split('/');
             var prefabName = split[split.Length > 1 ? split.Length - 2 : 0];
             var skeletonAnimation = SpineEditorUtilities.EditorInstantiation.InstantiateSkeletonAnimation(dataAsset);
-            skeletonAnimation.AnimationName = CharacterAnimation.IdleLower;
+            skeletonAnimation.AnimationName = nameof(CharacterAnimation.Type.Idle);
 
             var gameObject = skeletonAnimation.gameObject;
             gameObject.name = prefabName;
@@ -55,14 +55,14 @@ namespace Planetarium.Nekoyume.Editor
             var controller = gameObject.AddComponent<SkeletonAnimationController>();
             foreach (var animationType in CharacterAnimation.List)
             {
-                assetPath = Path.Combine(animationAssetsPath, $"{CharacterAnimation.Lowers[animationType]}.asset");
+                assetPath = Path.Combine(animationAssetsPath, $"{animationType}.asset");
                 var asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(assetPath);
                 if (ReferenceEquals(asset, null))
                 {
                     if (animationType == CharacterAnimation.Type.Appear ||
                         animationType == CharacterAnimation.Type.Disappear)
                     {
-                        assetPath = Path.Combine(animationAssetsPath, $"{CharacterAnimation.IdleLower}.asset");
+                        assetPath = Path.Combine(animationAssetsPath, $"{nameof(CharacterAnimation.Type.Idle)}.asset");
                         asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(assetPath);
                     }
 
@@ -73,7 +73,12 @@ namespace Planetarium.Nekoyume.Editor
                     }
                 }
                 
-                controller.statesAndAnimations.Add(new SkeletonAnimationController.StateNameToAnimationReference {stateName = nameof(animationType), animation = asset});
+                controller.statesAndAnimations.Add(
+                    new SkeletonAnimationController.StateNameToAnimationReference
+                    {
+                        stateName = animationType.ToString(),
+                        animation = asset
+                    });
             }
 
             var prefab = PrefabUtility.SaveAsPrefabAsset(gameObject, Path.Combine(prefabPath, $"{prefabName}.prefab"));
