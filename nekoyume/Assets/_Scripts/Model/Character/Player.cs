@@ -5,6 +5,7 @@ using Nekoyume.Action;
 using Nekoyume.Data;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Item;
+using Nekoyume.State;
 
 namespace Nekoyume.Model
 {
@@ -43,6 +44,28 @@ namespace Nekoyume.Model
             TurnSpeed = 1.8f;
 
             var inventoryItems = avatar.Items;
+            if (inventoryItems != null)
+            {
+                Equip(inventoryItems);
+                inventory.Set(inventoryItems);
+            }
+
+            CalcStats(level);
+        }
+        
+        public Player(AvatarState avatarState, Simulator simulator = null)
+        {
+            exp = avatarState.exp;
+            level = avatarState.level;
+            stage = avatarState.worldStage;
+            Simulator = simulator;
+            job = avatarState.id;
+            inventory = new Inventory();
+            atkElement = Game.Elemental.Create(Elemental.ElementalType.Normal);
+            defElement = Game.Elemental.Create(Elemental.ElementalType.Normal);
+            TurnSpeed = 1.8f;
+
+            var inventoryItems = avatarState.items;
             if (inventoryItems != null)
             {
                 Equip(inventoryItems);

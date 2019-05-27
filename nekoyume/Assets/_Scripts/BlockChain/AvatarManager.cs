@@ -25,7 +25,7 @@ namespace Nekoyume
         [Serializable]
         internal class SaveData
         {
-            public Model.Avatar Avatar;
+            public Model.Avatar avatar;
         }
         
         public const string PrivateKeyFormat = "private_key_{0}";
@@ -50,21 +50,7 @@ namespace Nekoyume
         }
 
         public static AvatarState AvatarState => States.Avatar.Value;
-        public static Model.Avatar Avatar => AvatarState?.avatar;
-        public static BattleLog BattleLog
-        {
-            get => AvatarState?.battleLog;
-            set
-            {
-                if (ReferenceEquals(AvatarState, null))
-                {
-                    return;
-                }
-                
-                AvatarState.battleLog = value;   
-            }
-        }
-
+        
         public static bool InitAvatarPrivateKeyAndFilePath(int index)
         {
             if (_currentAvatarIndex == index)
@@ -166,7 +152,7 @@ namespace Nekoyume
         {
             var data = new SaveData
             {
-                Avatar = AvatarState.avatar,
+                avatar = AvatarState.avatar,
             };
             var formatter = new BinaryFormatter();
             using (FileStream stream = File.Open(_saveFilePath, FileMode.OpenOrCreate))
@@ -186,7 +172,7 @@ namespace Nekoyume
             using (FileStream stream = File.Open(path, FileMode.Open))
             {
                 var data = (SaveData) formatter.Deserialize(stream);
-                return data.Avatar;
+                return data.avatar;
             }
         }
     }

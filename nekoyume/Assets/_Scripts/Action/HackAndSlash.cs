@@ -47,7 +47,7 @@ namespace Nekoyume.Action
 
                 return states.SetState(actionCtx.Signer, avatarState);
             }
-            var items = avatarState.avatar.Items.Select(i => i.Item).ToImmutableHashSet();
+            var items = avatarState.items.Select(i => i.Item).ToImmutableHashSet();
             var currentEquipments = items.OfType<Equipment>().ToImmutableHashSet();
             foreach (var equipment in currentEquipments)
             {
@@ -82,10 +82,10 @@ namespace Nekoyume.Action
 
             var simulator = new Simulator(actionCtx.Random, avatarState.avatar, Foods, Stage);
             var player = simulator.Simulate();
-            avatarState.avatar.Update(player);
+            avatarState.Update(player);
             avatarState.battleLog = simulator.Log;
             avatarState.updatedAt = DateTimeOffset.UtcNow;
-            if (avatarState.avatar.WorldStage > Stage)
+            if (avatarState.worldStage > Stage)
             {
                 var ranking = (RankingBoard) states.GetState(AddressBook.Ranking);
                 if (ranking is null)

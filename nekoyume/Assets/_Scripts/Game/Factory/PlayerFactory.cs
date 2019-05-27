@@ -1,6 +1,7 @@
 using System;
 using Nekoyume.Game.Util;
 using Nekoyume.Model;
+using Nekoyume.State;
 using UnityEngine;
 
 namespace Nekoyume.Game.Factory
@@ -8,6 +9,7 @@ namespace Nekoyume.Game.Factory
     public class PlayerFactory : MonoBehaviour
     {
         private const int DefaultSetId = 101000;
+        
         public GameObject Create(Model.Avatar avatar)
         {
             if (ReferenceEquals(avatar, null))
@@ -16,6 +18,15 @@ namespace Nekoyume.Game.Factory
             }
 
             return Create(avatar.ToPlayer());
+        }
+        public GameObject Create(AvatarState avatarState)
+        {
+            if (ReferenceEquals(avatarState, null))
+            {
+                throw new ArgumentNullException("`Model.Avatar` can't be null.");
+            }
+
+            return Create(avatarState.ToPlayer());
         }
 
         public GameObject Create(Player model = null)

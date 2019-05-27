@@ -59,7 +59,7 @@ namespace Nekoyume.Action
             }
             
             // 인벤토리에 아이템을 넣는다.
-            avatarState.avatar.AddEquipmentItemToItems(target.item.Data.id, target.count);
+            avatarState.AddEquipmentItemToItems(target.item.Data.id, target.count);
             avatarState.updatedAt = DateTimeOffset.UtcNow;
                 
             errorCode = GameActionErrorCode.Success;

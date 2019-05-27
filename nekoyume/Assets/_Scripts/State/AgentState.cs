@@ -11,7 +11,7 @@ namespace Nekoyume.State
     public class AgentState
     {
         // ToDo. Avatar 주소들을 갖고 있도록. 이 주소를 통해서 블록에서 꺼내오도록.
-        // public List<Address> avatarAddresses;
+//        public List<Address> avatarAddresses;
         
         public decimal gold;
     }

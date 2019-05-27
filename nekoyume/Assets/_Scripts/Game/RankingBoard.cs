@@ -20,7 +20,7 @@ namespace Nekoyume.Game
             var current = _map.FirstOrDefault(c => c.AvatarAddress == state.AvatarAddress);
             if (!ReferenceEquals(current, null))
             {
-                if (current.avatar.WorldStage < state.avatar.WorldStage)
+                if (current.worldStage < state.worldStage)
                 {
                     _map.Remove(current);
                 }
@@ -36,7 +36,7 @@ namespace Nekoyume.Game
         public Avatar[] GetAvatars(DateTimeOffset? dt)
         {
             IEnumerable<AvatarState> map =
-                _map.OrderByDescending(c => c.avatar.WorldStage).ThenBy(c => c.clearedAt);
+                _map.OrderByDescending(c => c.worldStage).ThenBy(c => c.clearedAt);
             if (dt != null)
             {
                 map = map.Where(context => ((TimeSpan) (dt - context.updatedAt)).Days <= 1);
