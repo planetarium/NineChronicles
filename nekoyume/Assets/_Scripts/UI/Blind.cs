@@ -12,11 +12,11 @@ namespace Nekoyume.UI
         public Image image;
         public Text content;
 
-        public IEnumerator FadeIn(float time, string text = "")
+        public IEnumerator FadeIn(float time, string text = "", float fadeValue = 1.0f)
         {
             Show();
             image.DOFade(0.0f, 0.0f);
-            image.DOFade(1.0f, time);
+            image.DOFade(fadeValue, time);
             yield return new WaitForSeconds(time);
             content.text = text;
         }
