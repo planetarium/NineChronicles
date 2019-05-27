@@ -28,7 +28,7 @@ namespace Nekoyume.UI
             var names = t.ToString().Split('.');
             var resName = $"UI/Prefabs/UI_{names[names.Length - 1]}";
             var res = Resources.Load<GameObject>(resName);
-            if (res != null)
+            if (!ReferenceEquals(res, null))
             {
                 var go = Instantiate(res, MainCanvas.instance.transform);
                 var widget = go.GetComponent<T>();

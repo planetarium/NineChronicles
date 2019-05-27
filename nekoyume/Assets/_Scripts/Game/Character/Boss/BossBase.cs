@@ -6,7 +6,7 @@ namespace Nekoyume.Game.Character.Boss
         {
             base.Awake();
             
-            _dyingTime = 2.5f;
+            dyingTime = 2.5f;
         }
     }
 }

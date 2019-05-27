@@ -10,8 +10,13 @@ using Object = UnityEngine.Object;
 
 namespace Planetarium.Nekoyume.Editor
 {
-    public class SpineEditor
+    public static class SpineEditor
     {
+        private static readonly Vector3 PlayerPosition = new Vector3(0f, 1f, 0f);
+        private static readonly Vector3 EnemyPosition = Vector3.zero;
+        private static readonly Vector3 CharacterLocalScale = new Vector3(.64f, .64f, 1f);
+        private const string FindAssetFilter = "CharacterAnimator t:AnimatorController";
+        
         [MenuItem("Assets/Create/Spine Prefab", false, 10000)]
         public static void CreateSpinePrefab()
         {
@@ -27,11 +32,13 @@ namespace Planetarium.Nekoyume.Editor
             var split = assetPath.Split('/');
             var prefabName = split[split.Length > 1 ? split.Length - 2 : 0];
             var skeletonAnimation = SpineEditorUtilities.EditorInstantiation.InstantiateSkeletonAnimation(dataAsset);
-            skeletonAnimation.AnimationName = CharacterAnimation.IdleLower;
+            skeletonAnimation.AnimationName = nameof(CharacterAnimation.Type.Idle);
 
             var gameObject = skeletonAnimation.gameObject;
             gameObject.name = prefabName;
             gameObject.layer = LayerMask.NameToLayer("Character");
+            gameObject.transform.position = prefabName.StartsWith("1") ? PlayerPosition : EnemyPosition;
+            gameObject.transform.localScale = CharacterLocalScale;
 
             var meshRenderer = gameObject.GetComponent<MeshRenderer>();
             meshRenderer.lightProbeUsage = LightProbeUsage.Off;
@@ -40,12 +47,11 @@ namespace Planetarium.Nekoyume.Editor
             meshRenderer.receiveShadows = false;
             meshRenderer.sortingLayerName = "Character";
 
-            var findAssetFilter = "CharacterAnimator t:AnimatorController";
-            var animatorControllerGuidArray = AssetDatabase.FindAssets(findAssetFilter);
+            var animatorControllerGuidArray = AssetDatabase.FindAssets(FindAssetFilter);
             if (animatorControllerGuidArray.Length == 0)
             {
                 Object.DestroyImmediate(gameObject);
-                throw new AssetNotFoundException($"AssetDatabase.FindAssets(\"{findAssetFilter}\")");
+                throw new AssetNotFoundException($"AssetDatabase.FindAssets(\"{FindAssetFilter}\")");
             }
 
             var animatorControllerPath = AssetDatabase.GUIDToAssetPath(animatorControllerGuidArray[0]);
@@ -55,14 +61,14 @@ namespace Planetarium.Nekoyume.Editor
             var controller = gameObject.AddComponent<SkeletonAnimationController>();
             foreach (var animationType in CharacterAnimation.List)
             {
-                assetPath = Path.Combine(animationAssetsPath, $"{CharacterAnimation.Lowers[animationType]}.asset");
+                assetPath = Path.Combine(animationAssetsPath, $"{animationType}.asset");
                 var asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(assetPath);
                 if (ReferenceEquals(asset, null))
                 {
                     if (animationType == CharacterAnimation.Type.Appear ||
                         animationType == CharacterAnimation.Type.Disappear)
                     {
-                        assetPath = Path.Combine(animationAssetsPath, $"{CharacterAnimation.IdleLower}.asset");
+                        assetPath = Path.Combine(animationAssetsPath, $"{nameof(CharacterAnimation.Type.Idle)}.asset");
                         asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(assetPath);
                     }
 
@@ -73,7 +79,12 @@ namespace Planetarium.Nekoyume.Editor
                     }
                 }
                 
-                controller.statesAndAnimations.Add(new SkeletonAnimationController.StateNameToAnimationReference {stateName = nameof(animationType), animation = asset});
+                controller.statesAndAnimations.Add(
+                    new SkeletonAnimationController.StateNameToAnimationReference
+                    {
+                        stateName = animationType.ToString(),
+                        animation = asset
+                    });
             }
 
             var prefab = PrefabUtility.SaveAsPrefabAsset(gameObject, Path.Combine(prefabPath, $"{prefabName}.prefab"));
