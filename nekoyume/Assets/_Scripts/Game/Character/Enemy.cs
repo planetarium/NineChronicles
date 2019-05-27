@@ -20,7 +20,7 @@ namespace Nekoyume.Game.Character
 
         public override float Speed => _runSpeed;
         
-        protected override Vector3 _hudOffset => animator.GetHUDPosition();
+        protected override Vector3 HUDOffset => animator.GetHUDPosition();
         private float _runSpeed = -1.0f;
 
         #region Mono

@@ -34,13 +34,9 @@ namespace Nekoyume.Game.Character
 
         public long EXPMax { get; private set; }
 
-        public override WeightType WeightType
-        {
-            get { return WeightType.Small; }
-            protected set { throw new NotImplementedException(); }
-        }
+        protected override WeightType WeightType => WeightType.Small;
 
-        protected override Vector3 _hudOffset => animator.GetHUDPosition();
+        protected override Vector3 HUDOffset => animator.GetHUDPosition();
 
         public override Guid Id => model.id;
 
@@ -142,7 +138,7 @@ namespace Nekoyume.Game.Character
             {
                 AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ActionStatusLevelUp, level);
                 AudioController.instance.PlaySfx(AudioController.SfxCode.LevelUp);
-                VFXController.instance.Create<BattleLevelUp01VFX>(transform, _hudOffset);
+                VFXController.instance.Create<BattleLevelUp01VFX>(transform, HUDOffset);
                 yield return new WaitForSeconds(0.3f);
                 PopupText.Show(
                     transform.TransformPoint(-0.6f, 1.0f, 0.0f),
