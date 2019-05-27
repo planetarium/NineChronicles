@@ -1,8 +1,10 @@
 using Nekoyume.Game;
 using Nekoyume.Manager;
 using Nekoyume.Game.Controller;
+using Nekoyume.UI.Module;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
 
 namespace Nekoyume.UI
 {
@@ -13,6 +15,7 @@ namespace Nekoyume.UI
         public GameObject btnShop;
         public GameObject btnTemple;
         public Text LabelInfo;
+        public SpeechBubble[] SpeechBubbles;
 
         public Stage Stage;
 
@@ -21,6 +24,7 @@ namespace Nekoyume.UI
             base.Awake();
 
             Stage = GameObject.Find("Stage").GetComponent<Stage>();
+            SpeechBubbles = GetComponentsInChildren<SpeechBubble>();
         }
 
         public void ShowButtons(bool value)
@@ -35,6 +39,7 @@ namespace Nekoyume.UI
         {
             Show();
             ShowButtons(true);
+            StartCoroutine("ShowSpeeches");
 
             LabelInfo.text = "";
             
@@ -51,7 +56,6 @@ namespace Nekoyume.UI
 
         public void QuestClick()
         {
-            Find<Status>()?.Close();
             Close();
             
             Find<QuestPreparation>()?.Show();
@@ -62,7 +66,6 @@ namespace Nekoyume.UI
 
         public void ShopClick()
         {
-            Find<Status>()?.Close();
             Close();
             
             Find<Shop>()?.Show();
@@ -73,7 +76,6 @@ namespace Nekoyume.UI
 
         public void CombinationClick()
         {
-            Find<Status>()?.Close();
             Close();
             
             Find<Combination>()?.Show();
@@ -84,7 +86,6 @@ namespace Nekoyume.UI
 
         public void RankingClick()
         {
-            Find<Status>()?.Close();
             Close();
 
             Find<RankingBoard>()?.Show();
@@ -95,15 +96,52 @@ namespace Nekoyume.UI
         public override void Show()
         {
             base.Show();
-            
+
             Find<Gold>()?.Show();
+            Find<Status>()?.Show();
         }
 
         public override void Close()
         {
             Find<Gold>()?.Close();
-            
+            Find<Status>()?.Close();
+
+            StopCoroutine("ShowSpeeches");
+            foreach (var speechBubble in SpeechBubbles)
+            {
+                speechBubble.Hide();
+            }
+
             base.Close();
+        }
+
+        public IEnumerator ShowSpeeches()
+        {
+            foreach (var speechBubble in SpeechBubbles)
+            {
+                speechBubble.Init();
+            }
+
+            yield return new WaitForSeconds(2.0f);
+
+            while (true)
+            {
+                var n = SpeechBubbles.Length;
+                while (n > 1)
+                {
+                    n--;
+                    var k = Mathf.FloorToInt(Random.value * (n + 1));
+                    var value = SpeechBubbles[k];
+                    SpeechBubbles[k] = SpeechBubbles[n];
+                    SpeechBubbles[n] = value;
+                }
+
+                foreach (var speechBubble in SpeechBubbles)
+                {
+                    yield return StartCoroutine(speechBubble.Show());
+                    yield return new WaitForSeconds(Random.Range(2.0f, 4.0f));
+                }
+            }
         }
     }
 }

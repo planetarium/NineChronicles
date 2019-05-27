@@ -48,8 +48,7 @@ namespace Nekoyume.UI
             _avatars = null;
             ClearBoard();
 
-            Find<Status>()?.Show();
-            Find<Menu>()?.Show();
+            Find<Menu>()?.ShowRoom();
             _stage.LoadBackground("room");
             _stage.GetPlayer(_stage.roomPosition);
             _player.gameObject.SetActive(true);

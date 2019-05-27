@@ -33,7 +33,15 @@ namespace Assets.SimpleLocalization
 		/// </summary>
         public static void AutoLanguage()
         {
-            Language = "English";
+            string systemLang = Application.systemLanguage.ToString();
+            if (Dictionary.ContainsKey(systemLang))
+            {
+                Language = systemLang;
+            }
+            else
+            {
+                Language = "English";
+            }
         }
 
 		/// <summary>
@@ -110,6 +118,29 @@ namespace Assets.SimpleLocalization
         private static string ReplaceMarkers(string text)
         {
             return text.Replace("[Newline]", "\n");
+        }
+
+        /// <summary>
+        /// Get localized string count by localization key with numbering.
+        /// </summary>
+        public static int LocalizedCount(string localizationKey)
+        {
+            if (Dictionary.Count == 0)
+            {
+                Read();
+            }
+
+            if (!Dictionary.ContainsKey(Language)) throw new KeyNotFoundException("Language not found: " + Language);
+
+            int count = 0;
+            while (true)
+            {
+                if (!Dictionary[Language].ContainsKey($"{localizationKey}{count}"))
+                {
+                    return count;
+                }
+                count++;
+            }
         }
     }
 }
