@@ -45,7 +45,7 @@ namespace Nekoyume.Action
             }
 
             var avatarState = (AvatarState) states.GetState(actionCtx.Signer);
-            var shopState = (ShopState) states.GetState(AddressBook.Shop) ?? new ShopState();
+            var shopState = (ShopState) states.GetState(AddressBook.Shop) ?? new ShopState(AddressBook.Shop);
 
             ShopItem target;
             try

@@ -9,9 +9,9 @@ namespace Nekoyume.Model
     /// 각각의 ReactiveProperty<T> 필드를 통해 외부에 변화를 알린다.
     /// 실 구현은 별도의 PR로 진행한다.
     /// </summary>
-    public static class ReactiveAvatarState
+    public static class ReactiveCurrentAvatarState
     {
-        static ReactiveAvatarState()
+        static ReactiveCurrentAvatarState()
         {
             Subscribes();
         }

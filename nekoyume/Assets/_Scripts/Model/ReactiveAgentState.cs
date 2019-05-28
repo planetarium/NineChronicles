@@ -32,7 +32,7 @@ namespace Nekoyume.Model
         private static void Subscribes()
         {
             ActionBase.EveryRender<RewardGold>()
-                .Where(eval => eval.InputContext.Signer == AddressBook.Agent.Value)
+                .Where(eval => eval.InputContext.Signer == States.Agent.Value.address)
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
                 {

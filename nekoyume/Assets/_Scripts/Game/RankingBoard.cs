@@ -17,7 +17,7 @@ namespace Nekoyume.Game
         }
         public void Update(AvatarState state)
         {
-            var current = _map.FirstOrDefault(c => c.avatarAddress == state.avatarAddress);
+            var current = _map.FirstOrDefault(c => c.address == state.address);
             if (!ReferenceEquals(current, null))
             {
                 if (current.worldStage < state.worldStage)

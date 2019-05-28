@@ -56,7 +56,7 @@ namespace Nekoyume.Action
             }
 
             var avatarState = (AvatarState) states.GetState(actionCtx.Signer);
-            var shopState = (ShopState) states.GetState(AddressBook.Shop) ?? new ShopState();
+            var shopState = (ShopState) states.GetState(AddressBook.Shop) ?? new ShopState(AddressBook.Shop);
 
             // 인벤토리에서 판매할 아이템을 선택하고 수량을 조절한다.
             Inventory.InventoryItem target = null;

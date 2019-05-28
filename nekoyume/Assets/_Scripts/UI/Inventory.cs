@@ -36,7 +36,7 @@ namespace Nekoyume.UI
 
         public override void Show()
         {
-            _data = new Model.Inventory(AvatarManager.AvatarState.items);
+            _data = new Model.Inventory(States.CurrentAvatar.Value.items);
             inventory.SetData(_data);
 
             base.Show();

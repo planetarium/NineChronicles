@@ -33,18 +33,6 @@ namespace Nekoyume
         
         private static IDisposable _disposableForEveryRender;
         
-        public static List<AvatarState> AvatarStates
-        {
-            get
-            {
-                return Enumerable.Range(0, 3).Select(index => string.Format(AvatarFileFormat, index))
-                    .Select(fileName => Path.Combine(Application.persistentDataPath, fileName))
-                    .Select(LoadAvatar).ToList();
-            }
-        }
-
-        public static AvatarState AvatarState => States.Avatar.Value;
-        
         public static bool InitAvatarPrivateKeyAndFilePath(int index)
         {
             if (_currentAvatarIndex == index)
@@ -67,7 +55,7 @@ namespace Nekoyume
                 _avatarPrivateKey = new PrivateKey(ByteUtil.ParseHex(privateKeyHex));
             }
 
-            AddressBook.Avatar.Value = _avatarPrivateKey.PublicKey.ToAddress();   
+            States.CurrentAvatar.Value.address = _avatarPrivateKey.PublicKey.ToAddress();   
             
             var fileName = string.Format(AvatarFileFormat, index);
             _saveFilePath = Path.Combine(Application.persistentDataPath, fileName);
@@ -88,7 +76,7 @@ namespace Nekoyume
                 throw new NullReferenceException("LoadAvatar() returns null.");
             }
             
-            States.Avatar.Value = avatarState;
+            States.CurrentAvatar.Value = avatarState;
         }
 
         public static Transaction<PolymorphicAction<ActionBase>> MakeTransaction(
@@ -112,18 +100,18 @@ namespace Nekoyume
         /// </summary>
         public static void SubscribeAvatarUpdates()
         {
-            if (AvatarState != null)
+            if (States.CurrentAvatar.Value != null)
             {
-                DidAvatarStateLoaded(AvatarState);
+                DidAvatarStateLoaded(States.CurrentAvatar.Value);
             }
 
             if (!ReferenceEquals(_disposableForEveryRender, null))
             {
                 return;
             }
-            _disposableForEveryRender = ActionBase.EveryRender(AddressBook.Avatar.Value).ObserveOnMainThread().Subscribe(eval =>
+            _disposableForEveryRender = ActionBase.EveryRender(States.CurrentAvatar.Value.address).ObserveOnMainThread().Subscribe(eval =>
             {
-                var avatarState = (AvatarState) eval.OutputStates.GetState(AddressBook.Avatar.Value);
+                var avatarState = (AvatarState) eval.OutputStates.GetState(States.CurrentAvatar.Value.address);
                 if (avatarState is null)
                 {
                     return;
@@ -134,22 +122,11 @@ namespace Nekoyume
         
         private static void PostActionRender(AvatarState avatarState)
         {
-            var avatarLoaded = AvatarState == null;
-            States.Avatar.Value = avatarState;
-            // ToDo. 모든 랜더에 대해서 아바타를 저장하는 비용에 대해서 생각해볼 필요 있음.
-            SaveStatus();
+            var avatarLoaded = States.CurrentAvatar.Value == null;
+            States.CurrentAvatar.Value = avatarState;
             if (avatarLoaded)
             {
-                DidAvatarStateLoaded(AvatarState);
-            }
-        }
-        private static void SaveStatus()
-        {
-            var data = States.Avatar.Value;
-            var formatter = new BinaryFormatter();
-            using (FileStream stream = File.Open(_saveFilePath, FileMode.OpenOrCreate))
-            {
-                formatter.Serialize(stream, data);
+                DidAvatarStateLoaded(States.CurrentAvatar.Value);
             }
         }
         
@@ -174,7 +151,7 @@ namespace Nekoyume
         /// <returns></returns>
         private static PrivateKey CreateHierarchicalDeterministicPrivateKey(int param)
         {
-            var key = AgentController.Agent.AgentPrivateKey;
+            var key = AgentController.Agent.PrivateKey;
             
             return new PrivateKey();
         }

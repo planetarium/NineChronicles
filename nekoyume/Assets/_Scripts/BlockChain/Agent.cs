@@ -60,7 +60,8 @@ namespace Nekoyume
         private readonly Swarm _swarm;
         
         
-        public PrivateKey AgentPrivateKey { get; }
+        public PrivateKey PrivateKey { get; }
+        public Address Address { get; }
         public Guid ChainId => _blocks.Id;
         
         public event EventHandler PreloadStarted;
@@ -77,7 +78,7 @@ namespace Nekoyume
         }
 
         public Agent(
-            PrivateKey agentPrivateKey,
+            PrivateKey privateKey,
             string path,
             Guid chainId,
             IEnumerable<Peer> peers,
@@ -86,7 +87,8 @@ namespace Nekoyume
             int? port)
         {
             var policy = GetPolicy();
-            AgentPrivateKey = agentPrivateKey;
+            PrivateKey = privateKey;
+            Address = privateKey.PublicKey.ToAddress();
             _blocks = new BlockChain<PolymorphicAction<ActionBase>>(
                 policy,
                 new FileStore(path),
@@ -96,7 +98,7 @@ namespace Nekoyume
 #endif
 
             _swarm = new Swarm(
-                agentPrivateKey,
+                privateKey,
                 appProtocolVersion: 1,
                 millisecondsDialTimeout: SwarmDialTimeout,
                 host: host,
@@ -105,13 +107,11 @@ namespace Nekoyume
 
             foreach (var peer in peers)
             {
-                if (peer.PublicKey != agentPrivateKey.PublicKey)
+                if (peer.PublicKey != privateKey.PublicKey)
                 {
                     _swarm.Add(peer);
                 }
             }
-
-            AddressBook.Agent.Value = AgentPrivateKey.PublicKey.ToAddress();
         }
 
         public void Dispose()
@@ -207,11 +207,15 @@ namespace Nekoyume
             while (true)
             {
                 var tx = Transaction<PolymorphicAction<ActionBase>>.Create(
-                        _blocks.GetNonce(AgentPrivateKey.PublicKey.ToAddress()),
-                        AgentPrivateKey,
+                        _blocks.GetNonce(PrivateKey.PublicKey.ToAddress()),
+                        PrivateKey,
                         new List<PolymorphicAction<ActionBase>>()
                         {
-                            new RewardGold { gold = RewardAmount }
+                            new RewardGold
+                            {
+                                agentAddress = Address,
+                                gold = RewardAmount
+                            }
                         },
                         timestamp: DateTime.UtcNow);
                 var txs = new HashSet<Transaction<PolymorphicAction<ActionBase>>> { tx };
@@ -219,7 +223,7 @@ namespace Nekoyume
                 var task = Task.Run(() =>
                 {
                     _blocks.StageTransactions(txs);
-                    var block = _blocks.MineBlock(AddressBook.Agent.Value);
+                    var block = _blocks.MineBlock(Address);
                     _swarm.BroadcastBlocks(new[] {block});
                     return block;
                 });

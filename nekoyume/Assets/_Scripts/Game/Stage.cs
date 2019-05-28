@@ -65,7 +65,7 @@ namespace Nekoyume.Game
 
         private void OnStageStart()
         {
-            _battleLog = AvatarManager.AvatarState.battleLog;
+            _battleLog = States.CurrentAvatar.Value.battleLog;
             Play(_battleLog);
         }
 
@@ -323,7 +323,7 @@ namespace Nekoyume.Game
             var player = GetComponentInChildren<Character.Player>();
             if (ReferenceEquals(player, null))
             {
-                var go = playerFactory.Create(AvatarManager.AvatarState);
+                var go = playerFactory.Create(States.CurrentAvatar.Value);
                 player = go.GetComponent<Character.Player>();
 
                 if (ReferenceEquals(player, null))

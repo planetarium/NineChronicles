@@ -30,8 +30,8 @@ namespace Nekoyume.Game.Entrance
 
             yield return null;
 
-            var avatars = AvatarManager.AvatarStates;
-            for (int i = 0; i < avatars.Count; ++i)
+            var avatars = States.Avatars;
+            for (var i = 0; i < avatars.Count; ++i)
             {
                 var beginPos = new Vector3(-2.2f + i * 2.22f, -2.6f, 0.0f);
                 var endPos = new Vector3(-2.2f + i * 2.22f, -0.88f, 0.0f);

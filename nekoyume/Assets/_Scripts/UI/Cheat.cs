@@ -165,7 +165,7 @@ namespace Nekoyume
         {
             Find<BattleResult>()?.Close();
             GameObject go = GameObject.Find("Stage");
-            var simulator = new Simulator(new DebugRandom(), AvatarManager.AvatarState, new List<Food>(), stage);
+            var simulator = new Simulator(new DebugRandom(), States.CurrentAvatar.Value, new List<Food>(), stage);
             simulator.Simulate();
             simulator.Log.result = _result;
             go.GetComponent<Stage>().Play(simulator.Log);

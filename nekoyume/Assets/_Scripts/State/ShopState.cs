@@ -22,7 +22,7 @@ namespace Nekoyume.State
     /// 단, 이때 각 아바타의 판매 목록을 불러오는 것에 문제가 생기니, 이 목록에 접근하는 방법을 아바타의 상태에 포함해야 함.
     /// </summary>
     [Serializable]
-    public class ShopState
+    public class ShopState : State
     {
         public readonly Dictionary<Address, List<ShopItem>> items = new Dictionary<Address, List<ShopItem>>();
         
@@ -74,6 +74,10 @@ namespace Nekoyume.State
             dictionary[address].Remove(shopItem);
             
             return true;
+        }
+        
+        public ShopState(Address address) : base(address)
+        {
         }
         
         public ShopItem Register(Address address, ShopItem item)

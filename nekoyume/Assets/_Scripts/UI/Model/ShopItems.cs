@@ -166,7 +166,7 @@ namespace Nekoyume.UI.Model
                 return;
             }
 
-            var key = AddressBook.Avatar.Value;
+            var key = States.CurrentAvatar.Value.address;
             if (!_shopItems.ContainsKey(key))
             {
                 return;

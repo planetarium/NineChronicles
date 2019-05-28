@@ -16,13 +16,5 @@ namespace Nekoyume
                 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x1
             }
         );
-        public static readonly ReactiveProperty<Address> Agent = new ReactiveProperty<Address>();
-        public static readonly ReactiveProperty<Address> Avatar = new ReactiveProperty<Address>();
-
-        static AddressBook()
-        {
-            Agent.Subscribe(address => Debug.Log($"Agent Address: 0x{address.ToHex()}"));
-            Avatar.Subscribe(address => Debug.Log($"Avatar Address: 0x{address.ToHex()}"));
-        }
     }
 }

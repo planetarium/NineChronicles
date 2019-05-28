@@ -50,7 +50,7 @@ namespace Nekoyume.UI
                 throw new NotFoundComponentException<Player>();
             }
             
-            SetData(new Model.QuestPreparation(AvatarManager.AvatarState.items));
+            SetData(new Model.QuestPreparation(States.CurrentAvatar.Value.items));
             
             // stop run immediately.
             _player.gameObject.SetActive(false);
@@ -72,7 +72,7 @@ namespace Nekoyume.UI
             btnQuest.SetActive(true);
 
             dropdown.ClearOptions();
-            _stages = Enumerable.Range(1, AvatarManager.AvatarState.worldStage).ToArray();
+            _stages = Enumerable.Range(1, States.CurrentAvatar.Value.worldStage).ToArray();
             var list = _stages.Select(i => $"Stage {i}").ToList();
             dropdown.AddOptions(list);
             dropdown.value = _stages.Length - 1;
@@ -235,7 +235,7 @@ namespace Nekoyume.UI
             observable.ObserveOnMainThread().Subscribe(eval =>
             {
                 var avatar = (AvatarState)eval.OutputStates.GetState(eval.InputContext.Signer);
-                AvatarManager.AvatarState.battleLog = avatar.battleLog;
+                States.CurrentAvatar.Value.battleLog = avatar.battleLog;
                 
                 Game.Event.OnStageStart.Invoke();
                 Find<LoadingScreen>().Close();

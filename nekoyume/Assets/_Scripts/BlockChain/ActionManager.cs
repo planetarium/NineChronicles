@@ -39,7 +39,7 @@ namespace Nekoyume
             var action = new CreateNovice
             {
                 name = nickName,
-                avatarAddress = AddressBook.Avatar.Value,
+                avatarAddress = States.CurrentAvatar.Value.address,
             };
             ProcessAction(action);
         }
@@ -84,7 +84,7 @@ namespace Nekoyume
         {
             var action = new Sell
             {
-                sellerAgentAddress = AddressBook.Agent.Value,
+                sellerAgentAddress = States.Agent.Value.address,
                 productId = Guid.NewGuid(),
                 itemId = itemId,
                 count = count,
@@ -119,7 +119,7 @@ namespace Nekoyume
         {
             var action = new Buy
             {
-                buyerAgentAddress = AddressBook.Agent.Value,
+                buyerAgentAddress = States.Agent.Value.address,
                 sellerAgentAddress = sellerAgentAddress,
                 sellerAvatarAddress = sellerAvatarAddress,
                 productId = productId

@@ -13,9 +13,8 @@ namespace Nekoyume.State
     /// Agent가 포함하는 각 Avatar의 상태 모델이다.
     /// </summary>
     [Serializable]
-    public class AvatarState
+    public class AvatarState : State
     {
-        public readonly Address avatarAddress;
         public string name;
         public int level;
         public long exp;
@@ -28,14 +27,13 @@ namespace Nekoyume.State
         public DateTimeOffset updatedAt;
         public DateTimeOffset? clearedAt;
         
-        public AvatarState(Address avatarAddress, string name = null)
+        public AvatarState(Address address, string name = null) : base(address)
         {
-            if (avatarAddress == null)
+            if (address == null)
             {
                 throw new ArgumentNullException();                
             }
             
-            this.avatarAddress = avatarAddress;
             this.name = name ?? "";
             level = 1;
             exp = 0;
@@ -48,15 +46,10 @@ namespace Nekoyume.State
             
             updatedAt = DateTimeOffset.UtcNow;
         }
-
-        public AvatarState()
-        {
-            updatedAt = DateTimeOffset.UtcNow;
-        }
         
         public AvatarState Clone()
         {
-            return new AvatarState(avatarAddress)
+            return new AvatarState(address)
             {
                 name = name,
                 level = level,
