@@ -109,7 +109,7 @@ namespace Nekoyume.UI
             if (ReferenceEquals(_avatarState, null))
             {
                 isCreateMode = true;
-                _avatarState = new AvatarState(AddressBook.Avatar.Value); // CreateNovice.CreateAvatar("");
+                _avatarState = new AvatarState(AddressBook.Avatar.Value);
                 nameField.text = "";
             }
             var isSelectMode = !isCreateMode;

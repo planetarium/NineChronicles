@@ -9,15 +9,15 @@ namespace Nekoyume
     /// </summary>
     public class States
     {
-        public static readonly ReactiveProperty<AgentState> Agent = new ReactiveProperty<AgentState>();
-        public static readonly ReactiveProperty<AvatarState> Avatar = new ReactiveProperty<AvatarState>();
-        public static readonly ReactiveProperty<ShopState> Shop = new ReactiveProperty<ShopState>();
+        public static readonly ReactiveProperty<AgentState> AgentState = new ReactiveProperty<AgentState>();
+        public static readonly ReactiveProperty<AvatarState> AvatarState = new ReactiveProperty<AvatarState>();
+        public static readonly ReactiveProperty<ShopState> ShopState = new ReactiveProperty<ShopState>();
 
         static States()
         {
-            Agent.Subscribe(AgentSubscribe);
-            Avatar.Subscribe(AvatarSubscribe);
-            Shop.Subscribe(ShopSubscribe);
+            AgentState.Subscribe(AgentSubscribe);
+            AvatarState.Subscribe(AvatarSubscribe);
+            ShopState.Subscribe(ShopSubscribe);
         }
 
         private static void AgentSubscribe(AgentState agentState)

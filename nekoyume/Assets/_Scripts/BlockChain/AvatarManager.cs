@@ -43,7 +43,7 @@ namespace Nekoyume
             }
         }
 
-        public static AvatarState AvatarState => States.Avatar.Value;
+        public static AvatarState AvatarState => States.AvatarState.Value;
         
         public static bool InitAvatarPrivateKeyAndFilePath(int index)
         {
@@ -88,7 +88,7 @@ namespace Nekoyume
                 throw new NullReferenceException("LoadAvatar() returns null.");
             }
             
-            States.Avatar.Value = avatarState;
+            States.AvatarState.Value = avatarState;
         }
 
         public static Transaction<PolymorphicAction<ActionBase>> MakeTransaction(
@@ -135,7 +135,7 @@ namespace Nekoyume
         private static void PostActionRender(AvatarState avatarState)
         {
             var avatarLoaded = AvatarState == null;
-            States.Avatar.Value = avatarState;
+            States.AvatarState.Value = avatarState;
             // ToDo. 모든 랜더에 대해서 아바타를 저장하는 비용에 대해서 생각해볼 필요 있음.
             SaveStatus();
             if (avatarLoaded)
@@ -145,7 +145,7 @@ namespace Nekoyume
         }
         private static void SaveStatus()
         {
-            var data = States.Avatar.Value;
+            var data = States.AvatarState.Value;
             var formatter = new BinaryFormatter();
             using (FileStream stream = File.Open(_saveFilePath, FileMode.OpenOrCreate))
             {
