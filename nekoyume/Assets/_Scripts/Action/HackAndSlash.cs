@@ -36,17 +36,12 @@ namespace Nekoyume.Action
         protected override IAccountStateDelta ExecuteInternal(IActionContext actionCtx)
         {
             var states = actionCtx.PreviousStates;
-            var avatarState = (AvatarState) states.GetState(actionCtx.Signer);
             if (actionCtx.Rehearsal)
             {
-                if (avatarState == null)
-                {
-                    avatarState = CreateNovice.CreateState("dummy", default(Address));
-                }
-                states = states.SetState(AddressBook.Ranking, new RankingBoard());
-
-                return states.SetState(actionCtx.Signer, avatarState);
+                states = states.SetState(AddressBook.Ranking, MarkChanged);
+                return states.SetState(actionCtx.Signer, MarkChanged);
             }
+            var avatarState = (AvatarState) states.GetState(actionCtx.Signer);
             var items = avatarState.items.Select(i => i.Item).ToImmutableHashSet();
             var currentEquipments = items.OfType<Equipment>().ToImmutableHashSet();
             foreach (var equipment in currentEquipments)
@@ -80,7 +75,7 @@ namespace Nekoyume.Action
                 }
             }
 
-            var simulator = new Simulator(actionCtx.Random, avatarState.avatar, Foods, Stage);
+            var simulator = new Simulator(actionCtx.Random, avatarState, Foods, Stage);
             var player = simulator.Simulate();
             avatarState.Update(player);
             avatarState.battleLog = simulator.Log;

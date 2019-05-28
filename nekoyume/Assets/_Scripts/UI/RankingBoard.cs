@@ -17,7 +17,7 @@ namespace Nekoyume.UI
 
         private Stage _stage;
         private Player _player;
-        private Nekoyume.Model.Avatar[] _avatars;
+        private State.AvatarState[] _avatarStates;
 
         protected override void Awake()
         {
@@ -45,7 +45,7 @@ namespace Nekoyume.UI
 
         public override void Close()
         {
-            _avatars = null;
+            _avatarStates = null;
             ClearBoard();
 
             Find<Menu>()?.ShowRoom();
@@ -63,27 +63,29 @@ namespace Nekoyume.UI
             var rankingBoard = (Game.RankingBoard) AgentController.Agent.GetState(
                 AddressBook.Ranking);
             Debug.LogWarningFormat("rankingBoard: {0}", rankingBoard);
-            _avatars = rankingBoard?.GetAvatars(dt) ?? new Nekoyume.Model.Avatar[0];
+            _avatarStates = rankingBoard?.GetAvatars(dt) ?? new State.AvatarState[0];
         }
 
         private void UpdateBoard(DateTimeOffset? dt)
         {
             ClearBoard();
             GetAvatars(dt);
-            for (var index = 0; index < _avatars.Length; index++)
+            for (var index = 0; index < _avatarStates.Length; index++)
             {
-                var avatar = _avatars[index];
-                if (avatar != null)
+                var avatarState = _avatarStates[index];
+                if (avatarState == null)
                 {
-                    RankingInfo rankingInfo = Instantiate(rankingBase, board.content);
-                    var bg = rankingInfo.GetComponent<Image>();
-                    if (index % 2 == 1)
-                    {
-                        bg.enabled = false;
-                    }
-                    rankingInfo.Set(index +1, avatar);
-                    rankingInfo.gameObject.SetActive(true);
+                    continue;
                 }
+                
+                RankingInfo rankingInfo = Instantiate(rankingBase, board.content);
+                var bg = rankingInfo.GetComponent<Image>();
+                if (index % 2 == 1)
+                {
+                    bg.enabled = false;
+                }
+                rankingInfo.Set(index +1, avatarState);
+                rankingInfo.gameObject.SetActive(true);
             }
         }
 

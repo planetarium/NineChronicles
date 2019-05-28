@@ -14,15 +14,15 @@ namespace Nekoyume.UI
         public Text stage;
         public Image flag;
 
-        public void Set(int ranking, Nekoyume.Model.Avatar avatar)
+        public void Set(int ranking, State.AvatarState avatarState)
         {
             rank.text = ranking.ToString();
-            var set = avatar.Items.Select(i => i.Item).OfType<SetItem>().FirstOrDefault(e => e.equipped);
+            var set = avatarState.items.Select(i => i.Item).OfType<SetItem>().FirstOrDefault(e => e.equipped);
             icon.overrideSprite = ItemBase.GetSprite(set);
             icon.SetNativeSize();
-            level.text = avatar.Level.ToString();
-            id.text = avatar.Name;
-            stage.text = avatar.WorldStage.ToString();
+            level.text = avatarState.level.ToString();
+            id.text = avatarState.name;
+            stage.text = avatarState.worldStage.ToString();
             //TODO 국가설정에 따라 국기가 변해야함
         }
     }

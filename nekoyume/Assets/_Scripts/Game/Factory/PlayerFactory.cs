@@ -10,15 +10,6 @@ namespace Nekoyume.Game.Factory
     {
         private const int DefaultSetId = 101000;
         
-        public GameObject Create(Model.Avatar avatar)
-        {
-            if (ReferenceEquals(avatar, null))
-            {
-                throw new ArgumentNullException("`Model.Avatar` can't be null.");
-            }
-
-            return Create(avatar.ToPlayer());
-        }
         public GameObject Create(AvatarState avatarState)
         {
             if (ReferenceEquals(avatarState, null))

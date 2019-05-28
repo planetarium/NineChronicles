@@ -76,8 +76,11 @@ namespace Nekoyume
             };
             Agent.PreloadEnded += (_, __) =>
             {
-                // 에이전트의 준비단계가 끝나면 에이전트와 상점의 상태를 한 번 동기화 한다.
+                // 에이전트의 준비단계가 끝나면 에이전트의 상태를 한 번 동기화 한다.
                 States.Agent.Value = Agent.GetState(AddressBook.Agent.Value) as AgentState ?? new AgentState();
+                // ToDo. 에이전트에 포함된 모든 아바타의 상태를 한 번씩 동기화 한다.
+                // ...
+                // 상점의 상태를 한 번 동기화 한다.
                 States.Shop.Value = Agent.GetState(AddressBook.Shop) as ShopState ?? new ShopState();
                 // 그리고 마이닝을 시작한다.
                 StartNullableCoroutine(_miner);

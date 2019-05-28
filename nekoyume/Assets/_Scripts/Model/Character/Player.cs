@@ -30,28 +30,6 @@ namespace Nekoyume.Model
         public List<Inventory.InventoryItem> Items => inventory.items;
         public List<Equipment> Equipments =>
             inventory.items.Select(i => i.Item).OfType<Equipment>().Where(e => e.equipped).ToList();
-
-        public Player(Avatar avatar, Simulator simulator = null)
-        {
-            exp = avatar.EXP;
-            level = avatar.Level;
-            stage = avatar.WorldStage;
-            Simulator = simulator;
-            job = avatar.id;
-            inventory = new Inventory();
-            atkElement = Game.Elemental.Create(Elemental.ElementalType.Normal);
-            defElement = Game.Elemental.Create(Elemental.ElementalType.Normal);
-            TurnSpeed = 1.8f;
-
-            var inventoryItems = avatar.Items;
-            if (inventoryItems != null)
-            {
-                Equip(inventoryItems);
-                inventory.Set(inventoryItems);
-            }
-
-            CalcStats(level);
-        }
         
         public Player(AvatarState avatarState, Simulator simulator = null)
         {

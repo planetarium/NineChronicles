@@ -15,10 +15,7 @@ namespace Nekoyume.State
     [Serializable]
     public class AvatarState
     {
-        public Address? AvatarAddress { get; }
-        
-        public Avatar avatar;
-        
+        public readonly Address avatarAddress;
         public string name;
         public int level;
         public long exp;
@@ -27,33 +24,51 @@ namespace Nekoyume.State
         public List<Inventory.InventoryItem> items;
         public int worldStage;
         public int id;
-        
         public BattleLog battleLog;
         public DateTimeOffset updatedAt;
         public DateTimeOffset? clearedAt;
-
-        public AvatarState(Avatar avatar, Address? address, BattleLog logs = null)
+        
+        public AvatarState(Address avatarAddress, string name = null)
         {
-            this.avatar = avatar;
-            battleLog = logs;
+            if (avatarAddress == null)
+            {
+                throw new ArgumentNullException();                
+            }
+            
+            this.avatarAddress = avatarAddress;
+            this.name = name ?? "";
+            level = 1;
+            exp = 0;
+            items = new List<Inventory.InventoryItem>();
+            hpMax = 0;
+            currentHP = 0;
+            worldStage = 1;
+            id = 100010;
+            battleLog = null;
+            
             updatedAt = DateTimeOffset.UtcNow;
-            AvatarAddress = address;
+        }
+
+        public AvatarState()
+        {
+            updatedAt = DateTimeOffset.UtcNow;
         }
         
-        public AvatarState(Address address, AvatarState avatarState, BattleLog logs = null)
+        public AvatarState Clone()
         {
-            name = avatarState.name;
-            level = avatarState.level;
-            exp = avatarState.exp;
-            hpMax = avatarState.hpMax;
-            currentHP = avatarState.currentHP;
-            items = avatarState.items;
-            worldStage = avatarState.worldStage;
-            id = avatarState.id;
-            
-            battleLog = logs;
-            updatedAt = DateTimeOffset.UtcNow;
-            AvatarAddress = address;
+            return new AvatarState(avatarAddress)
+            {
+                name = name,
+                level = level,
+                exp = exp,
+                items = items,
+                hpMax = hpMax,
+                currentHP = currentHP,
+                worldStage = worldStage,
+                id = id,
+                battleLog = battleLog,
+                updatedAt = updatedAt,
+            };
         }
         
         public void Update(Player player)
@@ -65,11 +80,6 @@ namespace Nekoyume.State
             items = player.Items;
             worldStage = player.stage;
             id = player.job;
-        }
-
-        public Player ToPlayer()
-        {
-            return new Player(this);
         }
 
         public void AddEquipmentItemToItems(int itemId, int count)

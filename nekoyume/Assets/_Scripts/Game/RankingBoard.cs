@@ -17,7 +17,7 @@ namespace Nekoyume.Game
         }
         public void Update(AvatarState state)
         {
-            var current = _map.FirstOrDefault(c => c.AvatarAddress == state.AvatarAddress);
+            var current = _map.FirstOrDefault(c => c.avatarAddress == state.avatarAddress);
             if (!ReferenceEquals(current, null))
             {
                 if (current.worldStage < state.worldStage)
@@ -33,7 +33,7 @@ namespace Nekoyume.Game
             _map.Add(state);
         }
 
-        public Avatar[] GetAvatars(DateTimeOffset? dt)
+        public AvatarState[] GetAvatars(DateTimeOffset? dt)
         {
             IEnumerable<AvatarState> map =
                 _map.OrderByDescending(c => c.worldStage).ThenBy(c => c.clearedAt);
@@ -42,7 +42,7 @@ namespace Nekoyume.Game
                 map = map.Where(context => ((TimeSpan) (dt - context.updatedAt)).Days <= 1);
             }
 
-            return map.Select(c => c.avatar).ToArray();
+            return map.ToArray();
         }
     }
 }

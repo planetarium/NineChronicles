@@ -27,12 +27,12 @@ namespace Nekoyume.UI
         public GameObject optionGrid;
         public GameObject optionRow;
         public GameObject palette;
-        private int _selectedIndex;
-        private Nekoyume.Model.Avatar _avatar;
-
         
-        private Color namePlaceHolderOriginColor;
-        private Color namePlaceHolderFocusedColor;
+        private int _selectedIndex;
+        private AvatarState _avatarState;
+
+        private Color _namePlaceHolderOriginColor;
+        private Color _namePlaceHolderFocusedColor;
 
         protected override void Awake()
         {
@@ -41,31 +41,31 @@ namespace Nekoyume.UI
             nameField.gameObject.SetActive(false);
             Game.Event.OnLoginDetail.AddListener(Init);
             
-            namePlaceHolderOriginColor = namePlaceHolder.color;
-            namePlaceHolderFocusedColor = namePlaceHolder.color;
-            namePlaceHolderFocusedColor.a = 0.3f;
+            _namePlaceHolderOriginColor = namePlaceHolder.color;
+            _namePlaceHolderFocusedColor = namePlaceHolder.color;
+            _namePlaceHolderFocusedColor.a = 0.3f;
         }
 
         private void Update()
         {
             if (nameField.isFocused)
             {
-                namePlaceHolder.color = namePlaceHolderFocusedColor;
+                namePlaceHolder.color = _namePlaceHolderFocusedColor;
             }
             else
             {
-                namePlaceHolder.color = namePlaceHolderOriginColor;
+                namePlaceHolder.color = _namePlaceHolderOriginColor;
             }
         }
 
         private void OnEnable()
         {
-            AvatarManager.DidAvatarLoaded += OnDidAvatarLoaded;
+            AvatarManager.DidAvatarStateLoaded += OnDidAvatarStateLoaded;
         }
 
         private void OnDisable()
         {
-            AvatarManager.DidAvatarLoaded -= OnDidAvatarLoaded;
+            AvatarManager.DidAvatarStateLoaded -= OnDidAvatarStateLoaded;
         }
 
         public void LoginClick()
@@ -104,15 +104,15 @@ namespace Nekoyume.UI
         private void Init(int index)
         {
             _selectedIndex = index;
-            bool isCreateMode = false;
-            _avatar = AvatarManager.Avatars[_selectedIndex];
-            if (ReferenceEquals(_avatar, null))
+            var isCreateMode = false;
+            _avatarState = AvatarManager.AvatarStates[_selectedIndex];
+            if (ReferenceEquals(_avatarState, null))
             {
                 isCreateMode = true;
-                _avatar = CreateNovice.CreateAvatar("");
+                _avatarState = new AvatarState(AddressBook.Avatar.Value); // CreateNovice.CreateAvatar("");
                 nameField.text = "";
             }
-            bool isSelectMode = !isCreateMode;
+            var isSelectMode = !isCreateMode;
 
             // create new or login
             nameField.gameObject.SetActive(isCreateMode);
@@ -123,9 +123,9 @@ namespace Nekoyume.UI
             btnLogin.SetActive(isSelectMode);
             optionGrid.SetActive(isSelectMode);
 
-            var player = _avatar.ToPlayer();
+            var player = _avatarState.ToPlayer();
             levelInfo.text = $"LV. {player.level}";
-            nameInfo.text = $"{_avatar.Name}";
+            nameInfo.text = $"{_avatarState.name}";
 
             SetInformation(player);
 
@@ -204,7 +204,7 @@ namespace Nekoyume.UI
             }
         }
 
-        private void OnDidAvatarLoaded(object sender, Nekoyume.Model.Avatar a)
+        private void OnDidAvatarStateLoaded(AvatarState avatarState)
         {
             if (palette.activeInHierarchy)
             {

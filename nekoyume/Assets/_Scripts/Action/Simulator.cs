@@ -27,18 +27,6 @@ namespace Nekoyume.Action
         private readonly List<List<ItemBase>> _waveRewards;
         public const float TurnPriority = 100f;
 
-        public Simulator(IRandom random, Model.Avatar avatar, List<Food> foods, int stage)
-        {
-            Random = random;
-            _stage = stage;
-            Log = new BattleLog();
-            _waves = new List<MonsterWave>();
-            Player = new Player(avatar, this);
-            Player.Use(foods);
-            _waveRewards = new List<List<ItemBase>>();
-            SetWave();
-        }
-        
         public Simulator(IRandom random, AvatarState avatarState, List<Food> foods, int stage)
         {
             Random = random;
