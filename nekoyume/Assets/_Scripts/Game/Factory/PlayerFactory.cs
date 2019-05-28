@@ -17,7 +17,7 @@ namespace Nekoyume.Game.Factory
                 throw new ArgumentNullException("`Model.Avatar` can't be null.");
             }
 
-            return Create(avatarState.ToPlayer());
+            return Create(new Player(avatarState));
         }
 
         public GameObject Create(Player model = null)

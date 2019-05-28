@@ -123,7 +123,7 @@ namespace Nekoyume.UI
             btnLogin.SetActive(isSelectMode);
             optionGrid.SetActive(isSelectMode);
 
-            var player = _avatarState.ToPlayer();
+            var player = new Player(_avatarState);
             levelInfo.text = $"LV. {player.level}";
             nameInfo.text = $"{_avatarState.name}";
 
