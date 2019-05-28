@@ -1,8 +1,5 @@
 using System;
 using System.Collections;
-using Nekoyume.Data.Table;
-using Nekoyume.Game.Controller;
-using Nekoyume.Game.VFX;
 using UniRx;
 using UnityEngine;
 
@@ -10,7 +7,7 @@ namespace Nekoyume.Game.Character
 {
     public class Enemy : CharacterBase
     {
-        private static readonly Vector3 DamageTextForce = new Vector3(0.1f, 0.5f);
+        protected override Vector3 DamageTextForce => new Vector3(0.1f, 0.5f);
 
         public Guid id;
         public override Guid Id => id;
@@ -55,11 +52,11 @@ namespace Nekoyume.Game.Character
         public override IEnumerator CoProcessDamage(Model.Skill.SkillInfo info)
         {
             yield return StartCoroutine(base.CoProcessDamage(info));
-
             var position = transform.TransformPoint(0f, 1f, 0f);
             var force = DamageTextForce;
-            var txt = info.Effect.ToString();
+            animator.Hit();
             PopUpDmg(position, force, info);
+
         }
         
         protected override bool CanRun()
@@ -73,31 +70,6 @@ namespace Nekoyume.Game.Character
             base.OnDead();
         }
         
-        protected override void PopUpDmg(Vector3 position, Vector3 force, Model.Skill.SkillInfo info)
-        {
-            base.PopUpDmg(position, force, info);
-
-            var pos = transform.position;
-            pos.x -= 0.2f;
-            pos.y += 0.32f;
-
-            if (info.Category == SkillEffect.Category.Double)
-            {
-                VFXController.instance.Create<BattleSkillDoubleMVFX>(pos);
-            }
-            else
-            {
-                if (info.Critical)
-                {
-                    VFXController.instance.Create<BattleAttackCritical01VFX>(pos);
-                }
-                else
-                {
-                    VFXController.instance.Create<BattleAttack01VFX>(pos);
-                }
-            }
-        }
-
         private void InitStats(Model.Monster character)
         {
             var stats = character.data.GetStats(character.level);
