@@ -15,6 +15,7 @@ namespace Nekoyume.Game.Character
     public abstract class CharacterBase : MonoBehaviour
     {
         protected const float AnimatorTimeScale = 1.2f;
+        protected const float KSkillGlobalCooltime = 0.6f;
         
         public Root Root;
         public int HP = 0;
@@ -22,30 +23,29 @@ namespace Nekoyume.Game.Character
         public int DEF = 0;
 
         public int Power = 100;
-
-        public virtual WeightType WeightType { get; protected set; } = WeightType.Small;
         public float RunSpeed = 0.0f;
-
-        public int HPMax { get; protected set; } = 0;
-        protected ProgressBar _hpBar = null;
-        protected ProgressBar _castingBar = null;
-        protected virtual Vector3 _hudOffset => new Vector3();
-        protected float _dyingTime = 1.0f;
-
-        protected const float kSkillGlobalCooltime = 0.6f;
-
-        public bool Rooted => gameObject.GetComponent<IRoot>() != null;
-        public bool Silenced => gameObject.GetComponent<ISilence>() != null;
-        public bool Stunned => gameObject.GetComponent<IStun>() != null;
-        protected virtual float Range { get; set; }
         public string targetTag = "";
+
+        protected virtual WeightType WeightType => WeightType.Small;
+
+        protected float dyingTime = 1.0f;
+
+        private ProgressBar _hpBar;
+        private ProgressBar _castingBar;
+
+        public abstract Guid Id { get; }
+        public abstract float Speed { get; }
+        public int HPMax { get; protected set; } = 0;
+        public ICharacterAnimator animator { get; protected set; }
         public bool attackEnd { get; private set; }
         public bool hitEnd { get; private set; }
         public bool dieEnd { get; private set; }
-        public abstract float Speed { get; }
-
-        public ICharacterAnimator animator { get; protected set; }
-        public abstract Guid Id { get; }
+        public bool Rooted => gameObject.GetComponent<IRoot>() != null;
+        public bool Silenced => gameObject.GetComponent<ISilence>() != null;
+        public bool Stunned => gameObject.GetComponent<IStun>() != null;
+        
+        protected virtual float Range { get; set; }
+        protected virtual Vector3 HUDOffset => new Vector3();
 
         protected virtual void Awake()
         {
@@ -108,18 +108,18 @@ namespace Nekoyume.Game.Character
         {
             StopRun();
             animator.Die();
-            
-            yield return new WaitForSeconds(1f);
-
+            yield return new WaitForSeconds(.2f);
+            DisableHUD();
+            yield return new WaitForSeconds(.8f);
             OnDead();
         }
 
         protected virtual void Update()
         {
             Root?.Tick();
-            if (_hpBar != null)
+            if (!ReferenceEquals(_hpBar, null))
             {
-                _hpBar.UpdatePosition(gameObject, _hudOffset);
+                _hpBar.UpdatePosition(gameObject, HUDOffset);
             }
         }
 
@@ -131,13 +131,13 @@ namespace Nekoyume.Game.Character
 
         public void UpdateHpBar()
         {
-            if (_hpBar == null)
+            if (ReferenceEquals(_hpBar, null))
             {
                 _hpBar = Widget.Create<ProgressBar>(true);
             }
-            _hpBar.UpdatePosition(gameObject, _hudOffset);
+            _hpBar.UpdatePosition(gameObject, HUDOffset);
             _hpBar.SetText($"{HP} / {HPMax}");
-            _hpBar.SetValue((float)HP / (float)HPMax);
+            _hpBar.SetValue((float)HP / HPMax);
         }
 
         private float GetDamageFactor(AttackType attackType)
@@ -177,7 +177,8 @@ namespace Nekoyume.Game.Character
                 yield break;
 
             HP -= dmg;
-
+            UpdateHpBar();
+            
             if (HP > 0)
             {
                 animator.Hit();
@@ -186,8 +187,6 @@ namespace Nekoyume.Game.Character
             {
                 StartCoroutine(Dying());
             }
-
-            UpdateHpBar();
         }
 
         protected virtual void OnDead()
@@ -258,12 +257,13 @@ namespace Nekoyume.Game.Character
 
         public void DisableHUD()
         {
-            if (_hpBar != null)
+            if (!ReferenceEquals(_hpBar, null))
             {
                 Destroy(_hpBar.gameObject);
                 _hpBar = null;
             }
-            if (_castingBar != null)
+            
+            if (!ReferenceEquals(_castingBar, null))
             {
                 Destroy(_castingBar.gameObject);
                 _castingBar = null;
@@ -299,7 +299,7 @@ namespace Nekoyume.Game.Character
         private void PopUpHeal(Vector3 position, Vector3 force, string dmg, bool critical)
         {
             DamageText.Show(position, force, dmg);
-            VFXController.instance.Create<BattleHeal01VFX>(transform, _hudOffset - new Vector3(0f, 0.4f));
+            VFXController.instance.Create<BattleHeal01VFX>(transform, HUDOffset - new Vector3(0f, 0.4f));
         }
 
         private IEnumerator CoAnimationAttack()

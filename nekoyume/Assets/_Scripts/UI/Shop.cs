@@ -112,8 +112,7 @@ namespace Nekoyume.UI
                 _player.gameObject.SetActive(true);
             }
 
-            Find<Status>()?.Show();
-            Find<Menu>()?.Show();
+            Find<Menu>()?.ShowRoom();
             base.Close();
 
             AudioController.instance.PlayMusic(AudioController.MusicCode.Main);
