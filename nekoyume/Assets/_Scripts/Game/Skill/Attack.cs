@@ -31,7 +31,7 @@ namespace Nekoyume.Game.Skill
 
                 target.OnDamage(dmg);
 
-                infos.Add(new Model.Skill.SkillInfo((CharacterBase) target.Clone(), dmg, critical));
+                infos.Add(new Model.Skill.SkillInfo((CharacterBase) target.Clone(), dmg, critical, Effect.category));
             }
 
             return infos;

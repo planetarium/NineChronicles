@@ -17,7 +17,7 @@ namespace Nekoyume.Game.Character
     {
         private const int DefaultSetId = 101000;
         
-        private static readonly Vector3 DamageTextForce = new Vector3(-0.1f, 0.5f);
+        protected override Vector3 DamageTextForce => new Vector3(-0.1f, 0.5f);
         
         public int MP = 0;
         public long EXP = 0;
@@ -63,14 +63,14 @@ namespace Nekoyume.Game.Character
 
         #endregion
 
-        public override IEnumerator CoProcessDamage(int dmg, bool critical)
+        public override IEnumerator CoProcessDamage(Model.Skill.SkillInfo info)
         {
-            yield return StartCoroutine(base.CoProcessDamage(dmg, critical));
+            yield return StartCoroutine(base.CoProcessDamage(info));
 
             var position = transform.TransformPoint(0f, 1.7f, 0f);
             var force = DamageTextForce;
-            var txt = dmg.ToString();
-            PopUpDmg(position, force, txt, critical);
+            animator.Hit();
+            PopUpDmg(position, force, info);
 
             Event.OnUpdateStatus.Invoke();
         }
@@ -79,16 +79,6 @@ namespace Nekoyume.Game.Character
         {
             gameObject.SetActive(false);
             Event.OnPlayerDead.Invoke();
-        }
-
-        protected override void PopUpDmg(Vector3 position, Vector3 force, string dmg, bool critical)
-        {
-            base.PopUpDmg(position, force, dmg, critical);
-
-            var pos = transform.position;
-            pos.x -= 0.2f;
-            pos.y += 0.32f;
-            VFXController.instance.Create<BattleDamage01VFX>(pos);
         }
 
         public void Init(Model.Player character)

@@ -14,7 +14,7 @@ namespace Nekoyume.Game.Skill
         public override Model.Skill Use()
         {
 
-            return new Model.Attack
+            return new Model.AreaAttack
             {
                 character = (CharacterBase) Caster.Clone(),
                 skillInfos = ProcessDamage(GetTarget()),
