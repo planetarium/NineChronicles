@@ -32,12 +32,12 @@ namespace Nekoyume.Model
         private static void Subscribes()
         {
             ActionBase.EveryRender<RewardGold>()
-                .Where(eval => eval.InputContext.Signer == States.Agent.Value.address)
+                .Where(eval => eval.InputContext.Signer == States.AgentState.Value.address)
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
                 {
-                    States.Agent.Value.gold += eval.Action.gold;
-                    Gold.Value = States.Agent.Value.gold;
+                    States.AgentState.Value.gold += eval.Action.gold;
+                    Gold.Value = States.AgentState.Value.gold;
                 });
         }
     }

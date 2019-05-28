@@ -84,7 +84,7 @@ namespace Nekoyume.UI
         {
             if (_player != null)
             {
-                _avatarName = States.CurrentAvatar.Value.name;
+                _avatarName = States.CurrentAvatarState.Value.name;
                 TextLevelName.text = $"LV. {_player.Level} {_avatarName}";
                 TextHP.text = $"{_player.HP}/{_player.HPMax}";
                 TextExp.text = $"{_player.EXP}/{_player.EXPMax}";

@@ -80,7 +80,7 @@ namespace Nekoyume.UI
                 playerSlot.DeleteView.SetActive(true);
                 try
                 {
-                    var avatarState = States.Avatars[i];
+                    var avatarState = States.AvatarStates[i];
                     playerSlot.LabelLevel.text = $"LV.{avatarState.level}";
                     playerSlot.LabelName.text = $"{avatarState.name}";
                     playerSlot.CreateView.SetActive(false);

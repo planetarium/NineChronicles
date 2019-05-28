@@ -105,11 +105,11 @@ namespace Nekoyume.UI
         {
             _selectedIndex = index;
             var isCreateMode = false;
-            _avatarState = States.Avatars[_selectedIndex];
+            _avatarState = States.AvatarStates[_selectedIndex];
             if (ReferenceEquals(_avatarState, null))
             {
                 isCreateMode = true;
-                _avatarState = new AvatarState(States.CurrentAvatar.Value.address); // CreateNovice.CreateAvatar("");
+                _avatarState = new AvatarState(States.CurrentAvatarState.Value.address); // CreateNovice.CreateAvatar("");
                 nameField.text = "";
             }
             var isSelectMode = !isCreateMode;

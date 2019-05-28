@@ -77,16 +77,16 @@ namespace Nekoyume
             Agent.PreloadEnded += (_, __) =>
             {
                 // 에이전트의 준비단계가 끝나면 에이전트의 상태를 한 번 동기화 한다.
-                States.Agent.Value = Agent.GetState(Agent.Address) as AgentState ??
+                States.AgentState.Value = Agent.GetState(Agent.Address) as AgentState ??
                                      new AgentState(Agent.Address);
                 // 에이전트에 포함된 모든 아바타의 상태를 한 번씩 동기화 한다.
-                foreach (var pair in States.Agent.Value.avatarAddresses)
+                foreach (var pair in States.AgentState.Value.avatarAddresses)
                 {
                     var avatarState = Agent.GetState(pair.Value) as AvatarState;
-                    States.Avatars.Add(pair.Key, avatarState);
+                    States.AvatarStates.Add(pair.Key, avatarState);
                 }
                 // 상점의 상태를 한 번 동기화 한다.
-                States.Shop.Value = Agent.GetState(AddressBook.Shop) as ShopState ?? new ShopState(AddressBook.Shop);
+                States.ShopState.Value = Agent.GetState(AddressBook.Shop) as ShopState ?? new ShopState(AddressBook.Shop);
                 // 그리고 마이닝을 시작한다.
                 StartNullableCoroutine(_miner);
                 UI.Widget.Find<UI.LoadingScreen>()?.Close();

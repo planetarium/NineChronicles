@@ -55,7 +55,7 @@ namespace Nekoyume
                 _avatarPrivateKey = new PrivateKey(ByteUtil.ParseHex(privateKeyHex));
             }
 
-            States.CurrentAvatar.Value.address = _avatarPrivateKey.PublicKey.ToAddress();   
+            States.CurrentAvatarState.Value.address = _avatarPrivateKey.PublicKey.ToAddress();   
             
             var fileName = string.Format(AvatarFileFormat, index);
             _saveFilePath = Path.Combine(Application.persistentDataPath, fileName);
@@ -76,7 +76,7 @@ namespace Nekoyume
                 throw new NullReferenceException("LoadAvatar() returns null.");
             }
             
-            States.CurrentAvatar.Value = avatarState;
+            States.CurrentAvatarState.Value = avatarState;
         }
 
         public static Transaction<PolymorphicAction<ActionBase>> MakeTransaction(
@@ -100,18 +100,18 @@ namespace Nekoyume
         /// </summary>
         public static void SubscribeAvatarUpdates()
         {
-            if (States.CurrentAvatar.Value != null)
+            if (States.CurrentAvatarState.Value != null)
             {
-                DidAvatarStateLoaded(States.CurrentAvatar.Value);
+                DidAvatarStateLoaded(States.CurrentAvatarState.Value);
             }
 
             if (!ReferenceEquals(_disposableForEveryRender, null))
             {
                 return;
             }
-            _disposableForEveryRender = ActionBase.EveryRender(States.CurrentAvatar.Value.address).ObserveOnMainThread().Subscribe(eval =>
+            _disposableForEveryRender = ActionBase.EveryRender(States.CurrentAvatarState.Value.address).ObserveOnMainThread().Subscribe(eval =>
             {
-                var avatarState = (AvatarState) eval.OutputStates.GetState(States.CurrentAvatar.Value.address);
+                var avatarState = (AvatarState) eval.OutputStates.GetState(States.CurrentAvatarState.Value.address);
                 if (avatarState is null)
                 {
                     return;
@@ -122,11 +122,11 @@ namespace Nekoyume
         
         private static void PostActionRender(AvatarState avatarState)
         {
-            var avatarLoaded = States.CurrentAvatar.Value == null;
-            States.CurrentAvatar.Value = avatarState;
+            var avatarLoaded = States.CurrentAvatarState.Value == null;
+            States.CurrentAvatarState.Value = avatarState;
             if (avatarLoaded)
             {
-                DidAvatarStateLoaded(States.CurrentAvatar.Value);
+                DidAvatarStateLoaded(States.CurrentAvatarState.Value);
             }
         }
         

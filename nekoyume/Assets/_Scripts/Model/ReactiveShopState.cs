@@ -33,17 +33,17 @@ namespace Nekoyume.Model
         private static void Subscribes()
         {
             ActionBase.EveryRender<Sell>()
-                .Where(eval => eval.InputContext.Signer == States.CurrentAvatar.Value.address
+                .Where(eval => eval.InputContext.Signer == States.CurrentAvatarState.Value.address
                                && eval.Action.errorCode == GameActionErrorCode.Success)
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
                 {
                     var result = eval.Action.result;
-                    ShopState.Register(Items, States.CurrentAvatar.Value.address, result.shopItem);
+                    ShopState.Register(Items, States.CurrentAvatarState.Value.address, result.shopItem);
                 });
             
             ActionBase.EveryRender<SellCancellation>()
-                .Where(eval => eval.InputContext.Signer == States.CurrentAvatar.Value.address
+                .Where(eval => eval.InputContext.Signer == States.CurrentAvatarState.Value.address
                                && eval.Action.errorCode == GameActionErrorCode.Success)
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
@@ -53,7 +53,7 @@ namespace Nekoyume.Model
                 });
             
             ActionBase.EveryRender<Buy>()
-                .Where(eval => eval.InputContext.Signer == States.CurrentAvatar.Value.address
+                .Where(eval => eval.InputContext.Signer == States.CurrentAvatarState.Value.address
                                && eval.Action.errorCode == GameActionErrorCode.Success)
                 .ObserveOnMainThread()
                 .Subscribe(eval =>

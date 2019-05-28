@@ -96,7 +96,7 @@ namespace Nekoyume.UI
                 throw new NotFoundComponentException<LoadingScreen>();
             }
 
-            SetData(new Model.Shop(States.CurrentAvatar.Value.items, ReactiveShopState.Items));
+            SetData(new Model.Shop(States.CurrentAvatarState.Value.items, ReactiveShopState.Items));
             base.Show();
 
             AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
