@@ -55,6 +55,7 @@ namespace Nekoyume.Game.Character
             
             Animator.Play(nameof(CharacterAnimation.Type.Idle));
             Animator.SetBool(nameof(CharacterAnimation.Type.Run), false);
+            Animator.SetBool(nameof(CharacterAnimation.Type.Die), false);
         }
 
         public override void Run()
@@ -119,7 +120,7 @@ namespace Nekoyume.Game.Character
                 return;
             }
             
-            Animator.Play(nameof(CharacterAnimation.Type.Die));
+            Animator.SetBool(nameof(CharacterAnimation.Type.Die), true);
         }
 
         public override void Disappear()
