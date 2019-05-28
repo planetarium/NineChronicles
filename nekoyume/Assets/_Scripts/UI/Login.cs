@@ -80,9 +80,9 @@ namespace Nekoyume.UI
                 playerSlot.DeleteView.SetActive(true);
                 try
                 {
-                    var avatar = AvatarManager.Avatars[i];
-                    playerSlot.LabelLevel.text = $"LV.{avatar.Level}";
-                    playerSlot.LabelName.text = $"{avatar.Name}";
+                    var avatarState = AvatarManager.AvatarStates[i];
+                    playerSlot.LabelLevel.text = $"LV.{avatarState.level}";
+                    playerSlot.LabelName.text = $"{avatarState.name}";
                     playerSlot.CreateView.SetActive(false);
                 }
                 catch (Exception e)

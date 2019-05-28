@@ -13,66 +13,47 @@ namespace Nekoyume.Action
     [ActionType("create_novice")]
     public class CreateNovice : GameAction
     {
-        public string name;
-        public Address avatarAddress;
         public const int DefaultId = 100010;
-        private const int DefaultSetId = 1;
+        private const int DefaultItemEquipmentSetId = 1;
+        
+        public Address avatarAddress;
+        public string name;
+        
+        protected override IImmutableDictionary<string, object> PlainValueInternal => new Dictionary<string, object>()
+        {
+            ["avatarAddress"] = avatarAddress.ToByteArray(),
+            ["name"] = name,
+        }.ToImmutableDictionary();
+        
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, object> plainValue)
         {
             name = (string) plainValue["name"];
-            avatarAddress = new Address((byte[])plainValue["avatar_address"]);
-        }
-
-        public static AvatarState CreateState(string name, Address avatarAddress)
-        {
-            Avatar avatar = CreateAvatar(name);
-            var ctx = new AvatarState(avatar, avatarAddress);
-            return ctx;
-        }
-
-        public static Avatar CreateAvatar(string name)
-        {
-            var avatar = new Avatar
-            {
-                Name = name,
-                Level = 1,
-                EXP = 0,
-                HPMax = 0,
-                WorldStage = 1,
-                CurrentHP = 0,
-                Items = new List<Inventory.InventoryItem>(),
-                id = DefaultId,
-            };
-
-            var table = Tables.instance.ItemEquipment;
-            foreach (var data in table.Select(i => i.Value).Where(e => e.setId == DefaultSetId))
-            {
-                var equipment = ItemBase.ItemFactory(data);
-                avatar.Items.Add(new Inventory.InventoryItem(equipment));
-            }
-
-            return avatar;
+            avatarAddress = new Address((byte[])plainValue["avatarAddress"]);
         }
 
         protected override IAccountStateDelta ExecuteInternal(IActionContext actionCtx)
         {
-            IAccountStateDelta states = actionCtx.PreviousStates;
-            var ctx = (AvatarState)states.GetState(actionCtx.Signer);
-            if (ReferenceEquals(ctx, null))
+            var states = actionCtx.PreviousStates;
+            if (actionCtx.Rehearsal)
             {
-                ctx = CreateState(name, avatarAddress);
+                return states.SetState(actionCtx.Signer, MarkChanged);
             }
-            else
-            {
-                ctx.avatar = CreateAvatar(name);
-            }
+            
+            var ctx = (AvatarState)states.GetState(actionCtx.Signer) ?? CreateState(name, avatarAddress);
+
             return states.SetState(actionCtx.Signer, ctx);
         }
-
-        protected override IImmutableDictionary<string, object> PlainValueInternal => new Dictionary<string, object>()
+        
+        private static AvatarState CreateState(string name, Address avatarAddress)
         {
-            ["name"] = name,
-            ["avatar_address"] = avatarAddress.ToByteArray(),
-        }.ToImmutableDictionary();
+            var avatarState = new AvatarState(avatarAddress, name);
+            var table = Tables.instance.ItemEquipment;
+            foreach (var data in table.Select(i => i.Value).Where(e => e.setId == DefaultItemEquipmentSetId))
+            {
+                var equipment = ItemBase.ItemFactory(data);
+                avatarState.items.Add(new Inventory.InventoryItem(equipment));
+            }
+            return avatarState;
+        }
     }
 }

@@ -36,8 +36,8 @@ namespace Nekoyume.Model
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
                 {
-                    States.Agent.Value.gold += eval.Action.gold;
-                    Gold.Value = States.Agent.Value.gold;
+                    States.AgentState.Value.gold += eval.Action.gold;
+                    Gold.Value = States.AgentState.Value.gold;
                 });
         }
     }

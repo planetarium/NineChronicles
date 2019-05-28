@@ -22,16 +22,10 @@ namespace Nekoyume
     /// </summary>
     public class AvatarManager
     {
-        [Serializable]
-        internal class SaveData
-        {
-            public Model.Avatar Avatar;
-        }
-        
         public const string PrivateKeyFormat = "private_key_{0}";
         public const string AvatarFileFormat = "avatar_{0}.dat";
         
-        public static event EventHandler<Model.Avatar> DidAvatarLoaded;
+        public static event Action<AvatarState> DidAvatarStateLoaded = delegate { };
         
         private static int _currentAvatarIndex = -1;
         private static PrivateKey _avatarPrivateKey;
@@ -39,7 +33,7 @@ namespace Nekoyume
         
         private static IDisposable _disposableForEveryRender;
         
-        public static List<Model.Avatar> Avatars
+        public static List<AvatarState> AvatarStates
         {
             get
             {
@@ -49,22 +43,8 @@ namespace Nekoyume
             }
         }
 
-        public static AvatarState AvatarState => States.Avatar.Value;
-        public static Model.Avatar Avatar => AvatarState?.avatar;
-        public static BattleLog BattleLog
-        {
-            get => AvatarState?.battleLog;
-            set
-            {
-                if (ReferenceEquals(AvatarState, null))
-                {
-                    return;
-                }
-                
-                AvatarState.battleLog = value;   
-            }
-        }
-
+        public static AvatarState AvatarState => States.AvatarState.Value;
+        
         public static bool InitAvatarPrivateKeyAndFilePath(int index)
         {
             if (_currentAvatarIndex == index)
@@ -102,13 +82,13 @@ namespace Nekoyume
                 return;
             }
             
-            var avatar = LoadAvatar(_saveFilePath);
-            if (ReferenceEquals(avatar, null))
+            var avatarState = LoadAvatar(_saveFilePath);
+            if (ReferenceEquals(avatarState, null))
             {
                 throw new NullReferenceException("LoadAvatar() returns null.");
             }
             
-            States.Avatar.Value = new AvatarState(avatar, AddressBook.Avatar.Value);
+            States.AvatarState.Value = avatarState;
         }
 
         public static Transaction<PolymorphicAction<ActionBase>> MakeTransaction(
@@ -132,9 +112,9 @@ namespace Nekoyume
         /// </summary>
         public static void SubscribeAvatarUpdates()
         {
-            if (AvatarState?.avatar != null)
+            if (AvatarState != null)
             {
-                DidAvatarLoaded?.Invoke(null, AvatarState.avatar);
+                DidAvatarStateLoaded(AvatarState);
             }
 
             if (!ReferenceEquals(_disposableForEveryRender, null))
@@ -144,30 +124,28 @@ namespace Nekoyume
             _disposableForEveryRender = ActionBase.EveryRender(AddressBook.Avatar.Value).ObserveOnMainThread().Subscribe(eval =>
             {
                 var avatarState = (AvatarState) eval.OutputStates.GetState(AddressBook.Avatar.Value);
-                if (!(avatarState?.avatar is null))
+                if (avatarState is null)
                 {
-                    PostActionRender(avatarState);
+                    return;
                 }
+                PostActionRender(avatarState);
             });
         }
         
         private static void PostActionRender(AvatarState avatarState)
         {
             var avatarLoaded = AvatarState == null;
-            States.Avatar.Value = avatarState;
+            States.AvatarState.Value = avatarState;
             // ToDo. 모든 랜더에 대해서 아바타를 저장하는 비용에 대해서 생각해볼 필요 있음.
             SaveStatus();
             if (avatarLoaded)
             {
-                DidAvatarLoaded?.Invoke(null, AvatarState.avatar);
+                DidAvatarStateLoaded(AvatarState);
             }
         }
         private static void SaveStatus()
         {
-            var data = new SaveData
-            {
-                Avatar = AvatarState.avatar,
-            };
+            var data = States.AvatarState.Value;
             var formatter = new BinaryFormatter();
             using (FileStream stream = File.Open(_saveFilePath, FileMode.OpenOrCreate))
             {
@@ -175,7 +153,7 @@ namespace Nekoyume
             }
         }
         
-        private static Model.Avatar LoadAvatar(string path)
+        private static AvatarState LoadAvatar(string path)
         {
             if (!File.Exists(path))
             {
@@ -185,9 +163,20 @@ namespace Nekoyume
             var formatter = new BinaryFormatter();
             using (FileStream stream = File.Open(path, FileMode.Open))
             {
-                var data = (SaveData) formatter.Deserialize(stream);
-                return data.Avatar;
+                var data = (AvatarState) formatter.Deserialize(stream);
+                return data;
             }
+        }
+
+        /// <summary>
+        /// ToDo. `AgentController.Agent.AgentPrivateKey`에 기반해서 계층적 결정성 비밀키를 만들어서 리턴하도록. 
+        /// </summary>
+        /// <returns></returns>
+        private static PrivateKey CreateHierarchicalDeterministicPrivateKey(int param)
+        {
+            var key = AgentController.Agent.AgentPrivateKey;
+            
+            return new PrivateKey();
         }
     }
 }

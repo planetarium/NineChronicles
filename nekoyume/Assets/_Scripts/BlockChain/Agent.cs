@@ -59,8 +59,8 @@ namespace Nekoyume
         private readonly BlockChain<PolymorphicAction<ActionBase>> _blocks;
         private readonly Swarm _swarm;
         
-        private readonly PrivateKey _agentPrivateKey;
         
+        public PrivateKey AgentPrivateKey { get; }
         public Guid ChainId => _blocks.Id;
         
         public event EventHandler PreloadStarted;
@@ -86,7 +86,7 @@ namespace Nekoyume
             int? port)
         {
             var policy = GetPolicy();
-            _agentPrivateKey = agentPrivateKey;
+            AgentPrivateKey = agentPrivateKey;
             _blocks = new BlockChain<PolymorphicAction<ActionBase>>(
                 policy,
                 new FileStore(path),
@@ -111,7 +111,7 @@ namespace Nekoyume
                 }
             }
 
-            AddressBook.Agent.Value = _agentPrivateKey.PublicKey.ToAddress();
+            AddressBook.Agent.Value = AgentPrivateKey.PublicKey.ToAddress();
         }
 
         public void Dispose()
@@ -207,8 +207,8 @@ namespace Nekoyume
             while (true)
             {
                 var tx = Transaction<PolymorphicAction<ActionBase>>.Create(
-                        _blocks.GetNonce(_agentPrivateKey.PublicKey.ToAddress()),
-                        _agentPrivateKey,
+                        _blocks.GetNonce(AgentPrivateKey.PublicKey.ToAddress()),
+                        AgentPrivateKey,
                         new List<PolymorphicAction<ActionBase>>()
                         {
                             new RewardGold { gold = RewardAmount }

@@ -60,7 +60,7 @@ namespace Nekoyume.Action
 
             // 인벤토리에서 판매할 아이템을 선택하고 수량을 조절한다.
             Inventory.InventoryItem target = null;
-            foreach (var item in avatarState.avatar.Items)
+            foreach (var item in avatarState.items)
             {
                 if (item.Item.Data.id != itemId ||
                     item.Count == 0)
@@ -85,7 +85,7 @@ namespace Nekoyume.Action
             // 인벤토리에서 판매할 아이템을 뺀 후에 수량이 0일 경우.
             if (target.Count == 0)
             {
-                avatarState.avatar.Items.Remove(target);
+                avatarState.items.Remove(target);
             }
 
             // 상점에 아이템을 등록한다.

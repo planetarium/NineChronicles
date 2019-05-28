@@ -5,6 +5,7 @@ using Nekoyume.Action;
 using Nekoyume.Data;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Item;
+using Nekoyume.State;
 
 namespace Nekoyume.Model
 {
@@ -29,20 +30,20 @@ namespace Nekoyume.Model
         public List<Inventory.InventoryItem> Items => inventory.items;
         public List<Equipment> Equipments =>
             inventory.items.Select(i => i.Item).OfType<Equipment>().Where(e => e.equipped).ToList();
-
-        public Player(Avatar avatar, Simulator simulator = null)
+        
+        public Player(AvatarState avatarState, Simulator simulator = null)
         {
-            exp = avatar.EXP;
-            level = avatar.Level;
-            stage = avatar.WorldStage;
+            exp = avatarState.exp;
+            level = avatarState.level;
+            stage = avatarState.worldStage;
             Simulator = simulator;
-            job = avatar.id;
+            job = avatarState.id;
             inventory = new Inventory();
             atkElement = Game.Elemental.Create(Elemental.ElementalType.Normal);
             defElement = Game.Elemental.Create(Elemental.ElementalType.Normal);
             TurnSpeed = 1.8f;
 
-            var inventoryItems = avatar.Items;
+            var inventoryItems = avatarState.items;
             if (inventoryItems != null)
             {
                 Equip(inventoryItems);

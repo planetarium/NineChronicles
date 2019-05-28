@@ -7,6 +7,7 @@ using Nekoyume.Data.Table;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Util;
 using Nekoyume.Model;
+using Nekoyume.State;
 using Priority_Queue;
 using UnityEngine;
 
@@ -26,13 +27,13 @@ namespace Nekoyume.Action
         private readonly List<List<ItemBase>> _waveRewards;
         public const float TurnPriority = 100f;
 
-        public Simulator(IRandom random, Model.Avatar avatar, List<Food> foods, int stage)
+        public Simulator(IRandom random, AvatarState avatarState, List<Food> foods, int stage)
         {
             Random = random;
             _stage = stage;
             Log = new BattleLog();
             _waves = new List<MonsterWave>();
-            Player = new Player(avatar, this);
+            Player = new Player(avatarState, this);
             Player.Use(foods);
             _waveRewards = new List<List<ItemBase>>();
             SetWave();

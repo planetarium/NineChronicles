@@ -36,18 +36,13 @@ namespace Nekoyume.Action
         protected override IAccountStateDelta ExecuteInternal(IActionContext actionCtx)
         {
             var states = actionCtx.PreviousStates;
-            var avatarState = (AvatarState) states.GetState(actionCtx.Signer);
             if (actionCtx.Rehearsal)
             {
-                if (avatarState == null)
-                {
-                    avatarState = CreateNovice.CreateState("dummy", default(Address));
-                }
-                states = states.SetState(AddressBook.Ranking, new RankingBoard());
-
-                return states.SetState(actionCtx.Signer, avatarState);
+                states = states.SetState(AddressBook.Ranking, MarkChanged);
+                return states.SetState(actionCtx.Signer, MarkChanged);
             }
-            var items = avatarState.avatar.Items.Select(i => i.Item).ToImmutableHashSet();
+            var avatarState = (AvatarState) states.GetState(actionCtx.Signer);
+            var items = avatarState.items.Select(i => i.Item).ToImmutableHashSet();
             var currentEquipments = items.OfType<Equipment>().ToImmutableHashSet();
             foreach (var equipment in currentEquipments)
             {
@@ -80,12 +75,12 @@ namespace Nekoyume.Action
                 }
             }
 
-            var simulator = new Simulator(actionCtx.Random, avatarState.avatar, Foods, Stage);
+            var simulator = new Simulator(actionCtx.Random, avatarState, Foods, Stage);
             var player = simulator.Simulate();
-            avatarState.avatar.Update(player);
+            avatarState.Update(player);
             avatarState.battleLog = simulator.Log;
             avatarState.updatedAt = DateTimeOffset.UtcNow;
-            if (avatarState.avatar.WorldStage > Stage)
+            if (avatarState.worldStage > Stage)
             {
                 var ranking = (RankingBoard) states.GetState(AddressBook.Ranking);
                 if (ranking is null)

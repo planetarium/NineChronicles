@@ -89,7 +89,7 @@ namespace Nekoyume.Action
                 try
                 {
                     var inventoryItem =
-                        avatarState.avatar.Items.First(item => item.Item.Data.id == m.id && item.Count >= m.count);
+                        avatarState.items.First(item => item.Item.Data.id == m.id && item.Count >= m.count);
                     pairs.Add(new ItemModelInventoryItemPair(m, inventoryItem));
                 }
                 catch (InvalidOperationException)
@@ -120,7 +120,7 @@ namespace Nekoyume.Action
             }
 
             // 제거 전.
-            avatarState.avatar.Items.ForEach(item => Debug.Log($"제거 전 // Id:{item.Item.Data.id}, Count:{item.Count}"));
+            avatarState.items.ForEach(item => Debug.Log($"제거 전 // Id:{item.Item.Data.id}, Count:{item.Count}"));
             
             // 사용한 재료를 인벤토리에서 제거.
             pairs.ForEach(pair =>
@@ -129,12 +129,12 @@ namespace Nekoyume.Action
                 pair.InventoryItem.Count -= pair.ItemModel.count;
                 if (pair.InventoryItem.Count == 0)
                 {
-                    avatarState.avatar.Items.Remove(pair.InventoryItem);
+                    avatarState.items.Remove(pair.InventoryItem);
                 }
             });
             
             // 제거 후.
-            avatarState.avatar.Items.ForEach(item => Debug.Log($"제거 후 // Id:{item.Item.Data.id}, Count:{item.Count}"));
+            avatarState.items.ForEach(item => Debug.Log($"제거 후 // Id:{item.Item.Data.id}, Count:{item.Count}"));
 
             // 뽀각!!
             if (ReferenceEquals(resultItem, null) ||
@@ -149,13 +149,13 @@ namespace Nekoyume.Action
                 {
                     try
                     {
-                        var inventoryItem = avatarState.avatar.Items.First(item => item.Item.Data.id == resultItem.Id);
+                        var inventoryItem = avatarState.items.First(item => item.Item.Data.id == resultItem.Id);
                         inventoryItem.Count += resultCount;
                     }
                     catch (InvalidOperationException)
                     {
                         var itemBase = ItemBase.ItemFactory(itemData);
-                        avatarState.avatar.Items.Add(new Inventory.InventoryItem(itemBase, resultCount));   
+                        avatarState.items.Add(new Inventory.InventoryItem(itemBase, resultCount));   
                     }
                 }
                 else
@@ -165,7 +165,7 @@ namespace Nekoyume.Action
             }
             
             // 획득이 잘 됐는지 로그 찍기.
-            avatarState.avatar.Items.ForEach(item => Debug.Log($"획득 후 // Id:{item.Item.Data.id}, Count:{item.Count}"));
+            avatarState.items.ForEach(item => Debug.Log($"획득 후 // Id:{item.Item.Data.id}, Count:{item.Count}"));
 
             errorCode = GameActionErrorCode.Success;
             Result = new ResultModel()
