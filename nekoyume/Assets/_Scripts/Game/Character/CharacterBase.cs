@@ -337,16 +337,7 @@ namespace Nekoyume.Game.Character
 
         public IEnumerator CoAttack(IEnumerable<Model.Skill.SkillInfo> infos)
         {
-            var isCast = infos.Count() > 1;
-
-            if (isCast)
-            {
-                yield return StartCoroutine(CoAnimationCast());
-            }
-            else
-            {
-                yield return StartCoroutine(CoAnimationAttack());
-            }
+            yield return StartCoroutine(CoAnimationAttack());
 
             foreach (var info in infos)
             {
@@ -354,10 +345,19 @@ namespace Nekoyume.Game.Character
                 ProcessAttack(target, info);
             }
 
-            if (isCast)
+        }
+
+        public IEnumerator CoAreaAttack(IEnumerable<Model.Skill.SkillInfo> infos)
+        {
+            yield return StartCoroutine(CoAnimationCast());
+
+            foreach (var info in infos)
             {
-                yield return new WaitForSeconds(1.2f);
+                var target = Game.instance.stage.GetCharacter(info.Target);
+                ProcessAttack(target, info);
             }
+
+            yield return new WaitForSeconds(1.2f);
         }
 
         public IEnumerator CoHeal(IEnumerable<Model.Skill.SkillInfo> infos)
