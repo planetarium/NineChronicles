@@ -22,7 +22,7 @@ namespace Nekoyume.UI
         
         private T _data;
         private readonly List<IDisposable> _disposablesForAwake = new List<IDisposable>();
-        private readonly List<IDisposable> _disposablesForSetDate = new List<IDisposable>();
+        private readonly List<IDisposable> _disposablesForSetData = new List<IDisposable>();
 
         #region Mono
 
@@ -93,11 +93,16 @@ namespace Nekoyume.UI
                 return;
             }
             
-            _disposablesForSetDate.DisposeAllAndClear();
+            _disposablesForSetData.DisposeAllAndClear();
             _data = data;
-            _data.titleText.Subscribe(value => titleText.text = value).AddTo(_disposablesForSetDate);
-            _data.item.Value.count.Subscribe(SetCount).AddTo(_disposablesForSetDate);
-            _data.submitText.Subscribe(value => submitButtonText.text = value).AddTo(_disposablesForSetDate);
+            _data.titleText.Subscribe(value => titleText.text = value).AddTo(_disposablesForSetData);
+            _data.item.Value.count.Subscribe(SetCount).AddTo(_disposablesForSetData);
+            _data.countInteractable.Subscribe(interactable =>
+            {
+                minusButton.interactable = interactable;
+                plusButton.interactable = interactable;
+            }).AddTo(_disposablesForSetData);
+            _data.submitText.Subscribe(value => submitButtonText.text = value).AddTo(_disposablesForSetData);
             itemView.SetData(_data.item.Value);
             
             UpdateView();
@@ -107,7 +112,7 @@ namespace Nekoyume.UI
         {
             itemView.Clear();
             _data = null;
-            _disposablesForSetDate.DisposeAllAndClear();
+            _disposablesForSetData.DisposeAllAndClear();
             
             UpdateView();
         }
