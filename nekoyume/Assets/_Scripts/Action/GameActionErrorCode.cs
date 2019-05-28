@@ -11,6 +11,12 @@ namespace Nekoyume.Action
         public const int UnexpectedInternalAction = -2;
         public const int KeyNotFoundInTable = -3;
 
+        #region CreateNovice
+
+        public const int CreateNoviceAlreadyExistAvatarAddress = -100;
+
+        #endregion
+
         #region Sell
 
         public const int SellItemNotFoundInInventory = -100;

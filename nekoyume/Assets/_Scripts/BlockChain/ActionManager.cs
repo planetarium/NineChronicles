@@ -5,6 +5,7 @@ using Nekoyume.Manager;
 using Libplanet;
 using Nekoyume.Action;
 using Nekoyume.Game.Item;
+using Nekoyume.State;
 using UniRx;
 using UnityEngine;
 
@@ -34,14 +35,27 @@ namespace Nekoyume
         
         #region Actions
         
-        public void CreateNovice(string nickName)
+        public IObservable<ActionBase.ActionEvaluation<CreateNovice>> CreateNovice(int index, string nickName)
         {
             var action = new CreateNovice
             {
+                agentAddress = States.AgentState.Value.address,
+                index = index,
                 name = nickName,
-                avatarAddress = States.CurrentAvatarState.Value.address,
             };
             ProcessAction(action);
+            
+            return ActionBase.EveryRender<CreateNovice>()
+                .SkipWhile(eval => !eval.Action.Id.Equals(action.Id))
+                .Take(1)
+                .Last()
+                .ObserveOnMainThread()
+                .Do(eval =>
+                {
+                    var avatarAddress = AvatarManager.GetOrCreateAvatarAddress(index);
+                    States.AgentState.Value.avatarAddresses.Add(index, avatarAddress);
+                    States.AvatarStates.Add(index, (AvatarState) AgentController.Agent.GetState(avatarAddress));
+                });
         }
 
         public IObservable<ActionBase.ActionEvaluation<HackAndSlash>> HackAndSlash(
@@ -59,9 +73,11 @@ namespace Nekoyume
 
             var itemIDs = equipments.Select(e => e.Data.id).Concat(foods.Select(f => f.Data.id)).ToArray();
             AnalyticsManager.instance.Battle(itemIDs);
-            return Action.HackAndSlash.EveryRender<HackAndSlash>().SkipWhile(
-                eval => !eval.Action.Id.Equals(action.Id)
-            ).Take(1).Last();  // Last() is for completion
+            return ActionBase.EveryRender<HackAndSlash>()
+                .SkipWhile(eval => !eval.Action.Id.Equals(action.Id))
+                .Take(1)
+                .Last()
+                .ObserveOnMainThread();
         }
         
         public IObservable<ActionBase.ActionEvaluation<Combination>> Combination(

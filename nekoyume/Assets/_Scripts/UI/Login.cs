@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using Nekoyume.Action;
 using Nekoyume.Game.Controller;
@@ -13,16 +14,6 @@ namespace Nekoyume.UI
         public bool ready = false;
         public GameObject[] slots;
 
-        protected override void Awake()
-        {
-            base.Awake();
-        }
-
-        private void Start()
-        {
-            Show();
-        }
-
         public void SlotClick(int index)
         {
             if (!ready)
@@ -33,6 +24,10 @@ namespace Nekoyume.UI
             AudioController.PlayClick();
         }
 
+        /// <summary>
+        /// ToDo. DeleteNovice 액션을 통해서 삭제되도록.
+        /// </summary>
+        /// <param name="index"></param>
         public void SlotDeleteClick(int index)
         {
             if (!ready)
@@ -40,7 +35,8 @@ namespace Nekoyume.UI
 
             var confirm = Widget.Create<Confirm>();
             confirm.Show("캐릭터 삭제", "정말 삭제하시겠습니까?", "삭제합니다", "아니오");
-            confirm.CloseCallback = (ConfirmResult result) => {
+            confirm.CloseCallback = (ConfirmResult result) =>
+            {
                 if (result == ConfirmResult.Yes)
                 {
                     //Delete key, avatar
@@ -66,13 +62,14 @@ namespace Nekoyume.UI
         {
             base.Show();
 
-            for (int i = 0; i < slots.Length; i++)
+            for (var i = 0; i < slots.Length; i++)
             {
                 var slot = slots[i];
 
                 var slotRect = slot.GetComponent<RectTransform>();
                 var targetPosition = new Vector3(-2.2f + i * 2.22f, 0.0f, 0.0f);
-                slotRect.anchoredPosition = targetPosition.ToCanvasPosition(Nekoyume.Game.ActionCamera.instance.Cam, MainCanvas.instance.Canvas);
+                slotRect.anchoredPosition = targetPosition.ToCanvasPosition(Nekoyume.Game.ActionCamera.instance.Cam,
+                    MainCanvas.instance.Canvas);
 
                 var playerSlot = slot.GetComponent<LoginPlayerSlot>();
                 playerSlot.CreateView.SetActive(true);
@@ -89,7 +86,7 @@ namespace Nekoyume.UI
                 {
                     playerSlot.NameView.SetActive(false);
                     playerSlot.DeleteView.SetActive(false);
-                    if (e is ArgumentOutOfRangeException || e is NullReferenceException)
+                    if (e is KeyNotFoundException || e is NullReferenceException)
                     {
                         var tween = slot.GetComponentInChildren<UI.Tween.DOTweenImageAlpha>();
                         if (tween)
@@ -102,16 +99,6 @@ namespace Nekoyume.UI
                 }
             }
 
-            StartCoroutine(CoPlayMusic());
-        }
-
-        private IEnumerator CoPlayMusic()
-        {
-            while (AudioController.instance.state != AudioController.State.Idle)
-            {
-                yield return null;
-            }
-            
             AudioController.instance.PlayMusic(AudioController.MusicCode.SelectCharacter);
         }
     }

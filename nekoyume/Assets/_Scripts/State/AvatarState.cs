@@ -47,23 +47,6 @@ namespace Nekoyume.State
             updatedAt = DateTimeOffset.UtcNow;
         }
         
-        public AvatarState Clone()
-        {
-            return new AvatarState(address)
-            {
-                name = name,
-                level = level,
-                exp = exp,
-                items = items,
-                hpMax = hpMax,
-                currentHP = currentHP,
-                worldStage = worldStage,
-                id = id,
-                battleLog = battleLog,
-                updatedAt = updatedAt,
-            };
-        }
-        
         public void Update(Player player)
         {
             level = player.level;

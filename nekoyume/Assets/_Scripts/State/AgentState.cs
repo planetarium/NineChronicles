@@ -11,10 +11,11 @@ namespace Nekoyume.State
     public class AgentState : State
     {
         public decimal gold;
-        public Dictionary<int, Address> avatarAddresses;
+        public readonly Dictionary<int, Address> avatarAddresses;
 
         public AgentState(Address address) : base(address)
         {
+            avatarAddresses = new Dictionary<int, Address>();
         }
     }
 }

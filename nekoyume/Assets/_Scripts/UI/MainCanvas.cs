@@ -21,7 +21,7 @@ namespace Nekoyume.UI
             Canvas = GetComponent<Canvas>();
             RectTransform = GetComponent<RectTransform>();
             
-            Widget.Create<Login>(true);
+            Widget.Create<Login>();
             Widget.Create<LoginDetail>();
             Widget.Create<Menu>();
             Widget.Create<Status>();
@@ -45,7 +45,7 @@ namespace Nekoyume.UI
 
             // 로딩창류.
             Widget.Create<GrayLoadingScreen>();
-            Widget.Create<LoadingScreen>();
+            Widget.Create<LoadingScreen>(true);
             Widget.Create<StageLoadingScreen>();
 #if DEBUG
             Widget.Create<Cheat>(true);

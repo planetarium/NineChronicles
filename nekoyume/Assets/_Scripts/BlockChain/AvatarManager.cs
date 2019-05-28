@@ -25,7 +25,7 @@ namespace Nekoyume
         public const string PrivateKeyFormat = "private_key_{0}";
         public const string AvatarFileFormat = "avatar_{0}.dat";
         
-        public static event Action<AvatarState> DidAvatarStateLoaded = delegate { };
+//        public static event Action<AvatarState> DidAvatarStateLoaded = delegate { };
         
         private static int _currentAvatarIndex = -1;
         private static PrivateKey _avatarPrivateKey;
@@ -33,13 +33,8 @@ namespace Nekoyume
         
         private static IDisposable _disposableForEveryRender;
         
-        public static bool InitAvatarPrivateKeyAndFilePath(int index)
+        public static Address GetOrCreateAvatarAddress(int index)
         {
-            if (_currentAvatarIndex == index)
-            {
-                return false;
-            }
-            
             _currentAvatarIndex = index;
 
             var key = string.Format(PrivateKeyFormat, index);
@@ -55,28 +50,18 @@ namespace Nekoyume
                 _avatarPrivateKey = new PrivateKey(ByteUtil.ParseHex(privateKeyHex));
             }
 
-            States.CurrentAvatarState.Value.address = _avatarPrivateKey.PublicKey.ToAddress();   
-            
-            var fileName = string.Format(AvatarFileFormat, index);
-            _saveFilePath = Path.Combine(Application.persistentDataPath, fileName);
-
-            return true;
+            return _avatarPrivateKey.PublicKey.ToAddress();
         }
         
-        public static void InitAvatarState(int index)
+        public static AvatarState InitAvatarState(int index)
         {
-            if (!InitAvatarPrivateKeyAndFilePath(index))
+            if (!States.AvatarStates.ContainsKey(index))
             {
-                return;
+                return null;
             }
             
-            var avatarState = LoadAvatar(_saveFilePath);
-            if (ReferenceEquals(avatarState, null))
-            {
-                throw new NullReferenceException("LoadAvatar() returns null.");
-            }
-            
-            States.CurrentAvatarState.Value = avatarState;
+            States.CurrentAvatarState.Value = States.AvatarStates[index];
+            return States.CurrentAvatarState.Value;
         }
 
         public static Transaction<PolymorphicAction<ActionBase>> MakeTransaction(
@@ -92,68 +77,42 @@ namespace Nekoyume
             );
         }
         
-        /// <summary>
-        /// FixMe. 모든 액션에 대한 랜더 단계에서 아바타 주소의 상태를 얻어 오고 있음.
-        /// 모든 액션 생성 단계에서 각각의 변경점을 업데이트 하는 방향으로 수정해볼 필요성 있음.
-        /// CreateNovice와 HackAndSlash 액션의 처리를 개선해서 테스트해 볼 예정.
-        /// 시작 전에 양님에게 문의!
-        /// </summary>
-        public static void SubscribeAvatarUpdates()
-        {
-            if (States.CurrentAvatarState.Value != null)
-            {
-                DidAvatarStateLoaded(States.CurrentAvatarState.Value);
-            }
-
-            if (!ReferenceEquals(_disposableForEveryRender, null))
-            {
-                return;
-            }
-            _disposableForEveryRender = ActionBase.EveryRender(States.CurrentAvatarState.Value.address).ObserveOnMainThread().Subscribe(eval =>
-            {
-                var avatarState = (AvatarState) eval.OutputStates.GetState(States.CurrentAvatarState.Value.address);
-                if (avatarState is null)
-                {
-                    return;
-                }
-                PostActionRender(avatarState);
-            });
-        }
-        
-        private static void PostActionRender(AvatarState avatarState)
-        {
-            var avatarLoaded = States.CurrentAvatarState.Value == null;
-            States.CurrentAvatarState.Value = avatarState;
-            if (avatarLoaded)
-            {
-                DidAvatarStateLoaded(States.CurrentAvatarState.Value);
-            }
-        }
-        
-        private static AvatarState LoadAvatar(string path)
-        {
-            if (!File.Exists(path))
-            {
-                return null;
-            }
-            
-            var formatter = new BinaryFormatter();
-            using (FileStream stream = File.Open(path, FileMode.Open))
-            {
-                var data = (AvatarState) formatter.Deserialize(stream);
-                return data;
-            }
-        }
-
-        /// <summary>
-        /// ToDo. `AgentController.Agent.AgentPrivateKey`에 기반해서 계층적 결정성 비밀키를 만들어서 리턴하도록. 
-        /// </summary>
-        /// <returns></returns>
-        private static PrivateKey CreateHierarchicalDeterministicPrivateKey(int param)
-        {
-            var key = AgentController.Agent.PrivateKey;
-            
-            return new PrivateKey();
-        }
+//        /// <summary>
+//        /// FixMe. 모든 액션에 대한 랜더 단계에서 아바타 주소의 상태를 얻어 오고 있음.
+//        /// 모든 액션 생성 단계에서 각각의 변경점을 업데이트 하는 방향으로 수정해볼 필요성 있음.
+//        /// CreateNovice와 HackAndSlash 액션의 처리를 개선해서 테스트해 볼 예정.
+//        /// 시작 전에 양님에게 문의!
+//        /// </summary>
+//        public static void SubscribeAvatarUpdates()
+//        {
+//            if (States.CurrentAvatarState.Value != null)
+//            {
+//                DidAvatarStateLoaded(States.CurrentAvatarState.Value);
+//            }
+//
+//            if (!ReferenceEquals(_disposableForEveryRender, null))
+//            {
+//                return;
+//            }
+//            _disposableForEveryRender = ActionBase.EveryRender(States.CurrentAvatarState.Value.address).ObserveOnMainThread().Subscribe(eval =>
+//            {
+//                var avatarState = (AvatarState) eval.OutputStates.GetState(States.CurrentAvatarState.Value.address);
+//                if (avatarState is null)
+//                {
+//                    return;
+//                }
+//                PostActionRender(avatarState);
+//            });
+//        }
+//        
+//        private static void PostActionRender(AvatarState avatarState)
+//        {
+//            var avatarLoaded = States.CurrentAvatarState.Value == null;
+//            States.CurrentAvatarState.Value = avatarState;
+//            if (avatarLoaded)
+//            {
+//                DidAvatarStateLoaded(States.CurrentAvatarState.Value);
+//            }
+//        }
     }
 }

@@ -86,7 +86,7 @@ namespace Nekoyume.UI
 
             Hide();
 
-            observable.ObserveOnMainThread().Subscribe(_ => { StartCoroutine(CoNextStage(w)); }).AddTo(this);
+            observable.Subscribe(_ => { StartCoroutine(CoNextStage(w)); }).AddTo(this);
         }
         public void BackClick()
         {   

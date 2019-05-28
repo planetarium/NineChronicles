@@ -232,7 +232,7 @@ namespace Nekoyume.UI
             IObservable<ActionBase.ActionEvaluation<HackAndSlash>> observable =
                 ActionManager.instance.HackAndSlash(equipments, foods, _stages[dropdown.value]);
 
-            observable.ObserveOnMainThread().Subscribe(eval =>
+            observable.Subscribe(eval =>
             {
                 var avatar = (AvatarState)eval.OutputStates.GetState(eval.InputContext.Signer);
                 States.CurrentAvatarState.Value.battleLog = avatar.battleLog;

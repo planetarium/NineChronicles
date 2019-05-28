@@ -33,11 +33,13 @@ namespace Nekoyume.Model
         
         public Player(AvatarState avatarState, Simulator simulator = null)
         {
-            exp = avatarState.exp;
-            level = avatarState.level;
-            stage = avatarState.worldStage;
             Simulator = simulator;
+            
+            level = avatarState.level;
+            exp = avatarState.exp;
             job = avatarState.id;
+            stage = avatarState.worldStage;
+            
             inventory = new Inventory();
             atkElement = Game.Elemental.Create(Elemental.ElementalType.Normal);
             defElement = Game.Elemental.Create(Elemental.ElementalType.Normal);
@@ -55,6 +57,10 @@ namespace Nekoyume.Model
 
         public Player()
         {
+            level = 1;
+            exp = 0;
+            job = 100010;
+            stage = 1;
         }
 
         public void RemoveTarget(Monster monster)

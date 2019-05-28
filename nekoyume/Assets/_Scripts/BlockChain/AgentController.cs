@@ -41,17 +41,17 @@ namespace Nekoyume
         private static IEnumerator _swarmRunner;
         private static IEnumerator _actionRetryor;
         
-        public static void Initialize()
+        public static void Initialize(Action<bool> callback)
         {
             if (!ReferenceEquals(Agent, null))
             {
                 return;
             }   
             
-            instance.InitAgent();
+            instance.InitAgent(callback);
         }
 
-        private void InitAgent()
+        private void InitAgent(Action<bool> callback)
         {
             var options = GetOptions();
             var privateKey = GetPrivateKey(options);
@@ -89,7 +89,7 @@ namespace Nekoyume
                 States.ShopState.Value = Agent.GetState(AddressBook.Shop) as ShopState ?? new ShopState(AddressBook.Shop);
                 // 그리고 마이닝을 시작한다.
                 StartNullableCoroutine(_miner);
-                UI.Widget.Find<UI.LoadingScreen>()?.Close();
+                callback(true);
             };
             _miner = options.NoMiner ? null : Agent.CoMiner();
             
