@@ -8,6 +8,8 @@ namespace Nekoyume.Action
 {
     public abstract class ActionBase : IAction
     {
+        public const string MarkChanged = "";
+        
         public abstract IImmutableDictionary<string, object> PlainValue { get; }
         public abstract void LoadPlainValue(IImmutableDictionary<string, object> plainValue);
         public abstract IAccountStateDelta Execute(IActionContext context);

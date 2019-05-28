@@ -17,21 +17,15 @@ namespace Nekoyume.Action
             }
         );
 
-        public Guid Id { get; internal set; }
-
         public int errorCode = GameActionErrorCode.Fail;
+
+        public Guid Id { get; internal set; }
+        public override IImmutableDictionary<string, object> PlainValue => PlainValueInternal.SetItem("id", Id.ToString());
+        protected abstract IImmutableDictionary<string, object> PlainValueInternal { get; }
         
-        public GameAction()
+        protected GameAction()
         {
             Id = Guid.NewGuid();
-        }
-
-        protected IAccountStateDelta SimpleError(IActionContext actionCtx, AvatarState ctx, int errorCode)
-        {
-            ctx.updatedAt = DateTimeOffset.UtcNow;
-            this.errorCode = errorCode;
-                    
-            return actionCtx.PreviousStates.SetState(actionCtx.Signer, ctx);
         }
 
         public override void LoadPlainValue(IImmutableDictionary<string, object> plainValue)
@@ -39,16 +33,10 @@ namespace Nekoyume.Action
             Id = new Guid((string) plainValue["id"]);
             LoadPlainValueInternal(plainValue);
         }
-        protected abstract void LoadPlainValueInternal(IImmutableDictionary<string, object> plainValue);
-
+        
         public override IAccountStateDelta Execute(IActionContext ctx) 
         {
-            var processedActions = (HashSet<Guid>) ctx.PreviousStates.GetState(ProcessedActionsAddress);
-
-            if (ReferenceEquals(processedActions, null)) 
-            {
-                processedActions = new HashSet<Guid>();
-            }
+            var processedActions = (HashSet<Guid>) ctx.PreviousStates.GetState(ProcessedActionsAddress) ?? new HashSet<Guid>();
 
             if (processedActions.Contains(Id)) 
             {
@@ -61,17 +49,17 @@ namespace Nekoyume.Action
             
             return delta.SetState(ProcessedActionsAddress, processedActions);
         }
-
+        
+        protected abstract void LoadPlainValueInternal(IImmutableDictionary<string, object> plainValue);
+        
         protected abstract IAccountStateDelta ExecuteInternal(IActionContext ctx);
         
-        public override IImmutableDictionary<string, object> PlainValue
-        { 
-            get 
-            {
-                return PlainValueInternal.SetItem("id", Id.ToString());
-            }    
+        protected IAccountStateDelta SimpleError(IActionContext actionCtx, AvatarState ctx, int errorCode)
+        {
+            ctx.updatedAt = DateTimeOffset.UtcNow;
+            this.errorCode = errorCode;
+                    
+            return actionCtx.PreviousStates.SetState(actionCtx.Signer, ctx);
         }
-        protected abstract IImmutableDictionary<string, object> PlainValueInternal { get; }
-        public const string MarkChanged = "";
     }
 }
