@@ -9,6 +9,7 @@ namespace Nekoyume.Model
         IEnumerator CoSpawnPlayer(Player character);
         IEnumerator CoAttack(CharacterBase caster, IEnumerable<Skill.SkillInfo> infos);
         IEnumerator CoAreaAttack(CharacterBase caster, IEnumerable<Skill.SkillInfo> infos);
+        IEnumerator CoDoubleAttack(CharacterBase caster, IEnumerable<Skill.SkillInfo> infos);
         IEnumerator CoHeal(CharacterBase caster, IEnumerable<Skill.SkillInfo> infos);
         IEnumerator CoDropBox(List<ItemBase> items);
         IEnumerator CoGetReward(List<ItemBase> rewards);

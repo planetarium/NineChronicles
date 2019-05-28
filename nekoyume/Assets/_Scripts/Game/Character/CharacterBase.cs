@@ -360,6 +360,19 @@ namespace Nekoyume.Game.Character
             yield return new WaitForSeconds(1.2f);
         }
 
+        public IEnumerator CoDoubleAttack(IEnumerable<Model.Skill.SkillInfo> infos)
+        {
+            yield return StartCoroutine(CoAnimationCast());
+
+            foreach (var info in infos)
+            {
+                var target = Game.instance.stage.GetCharacter(info.Target);
+                ProcessAttack(target, info);
+            }
+
+            yield return new WaitForSeconds(1.2f);
+        }
+
         public IEnumerator CoHeal(IEnumerable<Model.Skill.SkillInfo> infos)
         {
             yield return StartCoroutine(CoAnimationCast());
