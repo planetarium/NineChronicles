@@ -164,7 +164,7 @@ namespace Nekoyume.UI.Model
                 }
 
                 itemCountPopup.Value.item.Value = obj;
-                itemCountPopup.Value.item.Value.minCount.Value = 0;
+                itemCountPopup.Value.item.Value.minCount.Value = 1;
                 AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ClickCombinationEditMaterialItem);
             });
             data.onDelete.Subscribe(obj =>
