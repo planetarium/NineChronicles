@@ -58,6 +58,32 @@ namespace Nekoyume.State
             id = player.job;
         }
 
+        public void RemoveItemFromItems(int itemId, int count)
+        {
+            if (!Tables.instance.TryGetItem(itemId, out var itemData))
+            {
+                throw new KeyNotFoundException($"itemId: {itemId}");
+            }
+            
+            var inventoryItem = items.FirstOrDefault(item => item.Item.Data.id == itemId);
+            if (ReferenceEquals(inventoryItem, null))
+            {
+                throw new KeyNotFoundException($"itemId: {itemId}");
+            }
+
+            if (inventoryItem.Count < count)
+            {
+                throw new InvalidOperationException("Reduce more than the quantity of inventoryItem.");
+            }
+            
+            inventoryItem.Count -= count;
+
+            if (inventoryItem.Count == 0)
+            {
+                items.Remove(inventoryItem);
+            }
+        }
+
         public void AddEquipmentItemToItems(int itemId, int count)
         {
             if (!Tables.instance.TryGetItemEquipment(itemId, out var itemData))

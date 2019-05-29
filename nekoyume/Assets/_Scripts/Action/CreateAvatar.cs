@@ -49,6 +49,8 @@ namespace Nekoyume.Action
                 return SimpleError(actionCtx, avatarState, ErrorCode.CreateAvatarAlreadyExistAvatarAddress);
             }
 
+            errorCode = ErrorCode.Success;
+
             var agentState = (AgentState)states.GetState(actionCtx.Signer);
             agentState.avatarAddresses.Add(index, avatarAddress);
             avatarState = CreateAvatarState(name, avatarAddress);

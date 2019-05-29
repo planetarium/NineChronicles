@@ -17,7 +17,6 @@ namespace Nekoyume.BlockChain
     {
         private static void ProcessAction(GameAction action)
         {
-//            action.Id = action.Id.Equals(default(Guid)) ? Guid.NewGuid() : action.Id;
             AgentController.Agent.EnqueueAction(action);
         }
         

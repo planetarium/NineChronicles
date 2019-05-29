@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Nekoyume.Action;
+using Nekoyume.Data;
 using Nekoyume.Model;
 using Nekoyume.State;
 using UniRx;
@@ -42,7 +43,8 @@ namespace Nekoyume.BlockChain
         private static void CreateNovice()
         {
             ActionBase.EveryRender<CreateAvatar>()
-                .Where(eval => eval.InputContext.Signer == States.AgentState.Value.address)
+                .Where(eval => eval.InputContext.Signer == States.AgentState.Value.address
+                               && eval.Action.errorCode == GameAction.ErrorCode.Success)
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
                 {
@@ -56,7 +58,8 @@ namespace Nekoyume.BlockChain
         private static void HackAndSlash()
         {
             ActionBase.EveryRender<HackAndSlash>()
-                .Where(eval => eval.InputContext.Signer == States.CurrentAvatarState.Value.address)
+                .Where(eval => eval.InputContext.Signer == States.CurrentAvatarState.Value.address
+                               && eval.Action.errorCode == GameAction.ErrorCode.Success)
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
                 {
@@ -79,11 +82,18 @@ namespace Nekoyume.BlockChain
         private static void Combination()
         {
             ActionBase.EveryRender<Combination>()
-                .Where(eval => eval.InputContext.Signer == States.CurrentAvatarState.Value.address)
+                .Where(eval => eval.InputContext.Signer == States.CurrentAvatarState.Value.address
+                               && eval.Action.errorCode == GameAction.ErrorCode.Success)
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
                 {
-                    //
+                    foreach (var material in eval.Action.Materials)
+                    {
+                        States.CurrentAvatarState.Value.RemoveItemFromItems(material.id, material.count);   
+                    }
+                    
+                    var result = eval.Action.Result;
+                    States.CurrentAvatarState.Value.AddEquipmentItemToItems(result.Item.id, result.Item.count);
                 }).AddTo(Disposables);
         }
 
@@ -96,6 +106,7 @@ namespace Nekoyume.BlockChain
                 .Subscribe(eval =>
                 {
                     var result = eval.Action.result;
+                    States.CurrentAvatarState.Value.RemoveEquipmentItemFromItems(result.shopItem.item.Data.id, result.shopItem.count);
                     ShopState.Register(ReactiveShopState.Items, States.CurrentAvatarState.Value.address,
                         result.shopItem);
                 }).AddTo(Disposables);
@@ -110,6 +121,7 @@ namespace Nekoyume.BlockChain
                 .Subscribe(eval =>
                 {
                     var result = eval.Action.result;
+                    States.CurrentAvatarState.Value.AddEquipmentItemToItems(result.shopItem.item.Data.id, result.shopItem.count);
                     ShopState.Unregister(ReactiveShopState.Items, result.owner, result.shopItem.productId);
                 }).AddTo(Disposables);
         }
@@ -123,6 +135,7 @@ namespace Nekoyume.BlockChain
                 .Subscribe(eval =>
                 {
                     var result = eval.Action.result;
+                    States.CurrentAvatarState.Value.AddEquipmentItemToItems(result.shopItem.item.Data.id, result.shopItem.count);
                     ShopState.Unregister(ReactiveShopState.Items, result.owner, result.shopItem.productId);
                 }).AddTo(Disposables);
         }
@@ -130,7 +143,8 @@ namespace Nekoyume.BlockChain
         private static void Ranking()
         {
             ActionBase.EveryRender<HackAndSlash>()
-                .Where(eval => eval.InputContext.Signer == States.CurrentAvatarState.Value.address)
+                .Where(eval => eval.InputContext.Signer == States.CurrentAvatarState.Value.address
+                               && eval.Action.errorCode == GameAction.ErrorCode.Success)
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
                 {

@@ -210,10 +210,17 @@ namespace Nekoyume.BlockChain
                 var txs = new HashSet<Transaction<PolymorphicAction<ActionBase>>> { tx };
                 var task = Task.Run(() =>
                 {
-                    _blocks.StageTransactions(txs);
-                    var block = _blocks.MineBlock(Address);
-                    _swarm.BroadcastBlocks(new[] {block});
-                    return block;
+                    try
+                    {
+                        _blocks.StageTransactions(txs);
+                        var block = _blocks.MineBlock(Address);
+                        _swarm.BroadcastBlocks(new[] {block});
+                        return block;
+                    }
+                    catch (Exception e)
+                    {
+                        throw;
+                    }
                 });
                 yield return new WaitUntil(() => task.IsCompleted);
 

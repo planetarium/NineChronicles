@@ -73,6 +73,8 @@ namespace Nekoyume.Action
                     }
                 }
             }
+            
+            errorCode = ErrorCode.Success;
 
             var simulator = new Simulator(actionCtx.Random, avatarState, Foods, Stage);
             var player = simulator.Simulate();

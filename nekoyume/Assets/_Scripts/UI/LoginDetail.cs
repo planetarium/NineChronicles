@@ -96,11 +96,11 @@ namespace Nekoyume.UI
         private void Init(int index)
         {
             _selectedIndex = index;
+            AvatarManager.GetOrCreateAvatarAddress(_selectedIndex);
             Player player;
             var isCreateMode = !States.AvatarStates.ContainsKey(index);
             if (isCreateMode)
             {
-                AvatarManager.GetOrCreateAvatarAddress(_selectedIndex);
                 player = new Player();
                 nameField.text = "";
                 nameInfo.text = "";
