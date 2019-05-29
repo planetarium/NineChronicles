@@ -21,17 +21,6 @@ namespace Nekoyume
             AgentController.Agent.EnqueueAction(action);
         }
         
-        #region Mono
-
-        protected override void Awake()
-        {
-            base.Awake();
-            
-            Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
-        }
-        
-        #endregion
-        
         #region Actions
         
         public void CreateNovice(string nickName)
