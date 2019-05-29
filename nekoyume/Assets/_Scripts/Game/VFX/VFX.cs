@@ -43,7 +43,6 @@ namespace Nekoyume.Game.VFX
             }
 
             _particlesRoot = _particles[0];
-            _particlesRoot.Stop();
         }
 
         private void OnEnable()
@@ -67,6 +66,10 @@ namespace Nekoyume.Game.VFX
             StartCoroutine(CoLazyStop(_particlesDuration));
         }
 
+        public void Play()
+        {
+            gameObject.SetActive(true);
+        }
         public void Stop()
         {
             gameObject.SetActive(false);

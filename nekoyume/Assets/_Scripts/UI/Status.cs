@@ -36,11 +36,12 @@ namespace Nekoyume.UI
             Game.Event.OnRoomEnter.AddListener(OnRoomEnter);
             Game.Event.OnUpdateStatus.AddListener(OnUpdateStatus);
             Game.Event.OnGetItem.AddListener(OnGetItem);
+            InventoryVfx.Stop();
         }
 
         private void OnGetItem(DropItem dropItem)
         {
-            InventoryVfx.gameObject.SetActive(true);
+            InventoryVfx.Play();
         }
 
         #endregion

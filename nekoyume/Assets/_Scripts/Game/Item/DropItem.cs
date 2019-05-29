@@ -70,7 +70,7 @@ namespace Nekoyume.Game.Item
 
         private IEnumerator CoPlay()
         {
-            dropItemVfx.gameObject.SetActive(false);
+            dropItemVfx.Stop();
             var pos = transform.position;
             var color = _renderer.color;
             color.a = BeginningAlphaOfFade;
@@ -81,7 +81,7 @@ namespace Nekoyume.Game.Item
             _sequenceDrop = transform.DOJump(pos + DropAmount, DropJumpPower, 1, DurationToDrop);
 
             yield return new WaitWhile(_sequenceDrop.IsPlaying);
-            dropItemVfx.gameObject.SetActive(true);
+            dropItemVfx.Play();
 
             yield return new WaitForSeconds(DelayAfterDrop);
             while (true)
