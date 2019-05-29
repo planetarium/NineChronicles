@@ -40,6 +40,8 @@ namespace Nekoyume.Game
             
             LocalizationManager.Read();
             AudioController.instance.Initialize();
+            
+            Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
         }
 
         private void AgentInitialized(bool succeed)

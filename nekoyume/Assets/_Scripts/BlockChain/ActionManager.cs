@@ -21,17 +21,6 @@ namespace Nekoyume.BlockChain
             AgentController.Agent.EnqueueAction(action);
         }
         
-        #region Mono
-
-        protected override void Awake()
-        {
-            base.Awake();
-            
-            Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
-        }
-        
-        #endregion
-        
         #region Actions
         
         public IObservable<ActionBase.ActionEvaluation<CreateAvatar>> CreateNovice(Address avatarAddress, int index, string nickName)
