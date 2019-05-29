@@ -3,32 +3,35 @@ using System.Collections.Generic;
 
 namespace Nekoyume.Action
 {
-    [Serializable]
-    public struct GameActionErrorCode
+    public abstract partial class GameAction
     {
-        public const int Success = 0;
-        public const int Fail = -1;
-        public const int UnexpectedInternalAction = -2;
-        public const int KeyNotFoundInTable = -3;
+        [Serializable]
+        public struct ErrorCode
+        {
+            public const int Success = 0;
+            public const int Fail = -1;
+            public const int UnexpectedInternalAction = -2;
+            public const int KeyNotFoundInTable = -3;
 
-        #region CreateNovice
+            #region CreateNovice
 
-        public const int CreateNoviceAlreadyExistAvatarAddress = -100;
+            public const int CreateAvatarAlreadyExistAvatarAddress = -100;
 
-        #endregion
+            #endregion
 
-        #region Sell
+            #region Sell
 
-        public const int SellItemNotFoundInInventory = -100;
-        public const int SellItemCountNotEnoughInInventory = -101;
+            public const int SellItemNotFoundInInventory = -100;
+            public const int SellItemCountNotEnoughInInventory = -101;
 
-        #endregion
+            #endregion
 
-        #region Buy
+            #region Buy
 
-        public const int BuyGoldNotEnough = -100;
-        public const int BuySoldOut = -101;
+            public const int BuyGoldNotEnough = -100;
+            public const int BuySoldOut = -101;
 
-        #endregion
+            #endregion
+        }
     }
 }

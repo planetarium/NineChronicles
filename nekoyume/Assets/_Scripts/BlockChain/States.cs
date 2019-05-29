@@ -7,7 +7,7 @@ namespace Nekoyume.BlockChain
     /// <summary>
     /// 각 주소 고유의 상태들을 모아서 데이터 지역성을 확보한다.
     /// </summary>
-    public class States
+    public static class States
     {
         public static readonly ReactiveProperty<AgentState> AgentState = new ReactiveProperty<AgentState>();
         public static readonly ReactiveDictionary<int, AvatarState> AvatarStates = new ReactiveDictionary<int, AvatarState>();

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Libplanet.Action;
-using Nekoyume.Action;
+using Nekoyume.Battle;
 using Nekoyume.BlockChain;
 using Nekoyume.Data;
 using Nekoyume.Game.Character;

@@ -39,13 +39,10 @@ namespace Nekoyume.BlockChain
                 }).AddTo(Disposables);
         }
 
-        /// <summary>
-        /// ToDo. 지금은 아바타가 사이닝하지만, 액션의 주체인 에이전트가 사이닝하게 바꾸는 것이 좋겠음.
-        /// </summary>
         private static void CreateNovice()
         {
-            ActionBase.EveryRender<CreateNovice>()
-                .Where(eval => eval.InputContext.Signer == States.CurrentAvatarState.Value.address)
+            ActionBase.EveryRender<CreateAvatar>()
+                .Where(eval => eval.InputContext.Signer == States.AgentState.Value.address)
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
                 {
@@ -94,7 +91,7 @@ namespace Nekoyume.BlockChain
         {
             ActionBase.EveryRender<Sell>()
                 .Where(eval => eval.InputContext.Signer == States.CurrentAvatarState.Value.address
-                               && eval.Action.errorCode == GameActionErrorCode.Success)
+                               && eval.Action.errorCode == GameAction.ErrorCode.Success)
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
                 {
@@ -108,7 +105,7 @@ namespace Nekoyume.BlockChain
         {
             ActionBase.EveryRender<SellCancellation>()
                 .Where(eval => eval.InputContext.Signer == States.CurrentAvatarState.Value.address
-                               && eval.Action.errorCode == GameActionErrorCode.Success)
+                               && eval.Action.errorCode == GameAction.ErrorCode.Success)
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
                 {
@@ -121,7 +118,7 @@ namespace Nekoyume.BlockChain
         {
             ActionBase.EveryRender<Buy>()
                 .Where(eval => eval.InputContext.Signer == States.CurrentAvatarState.Value.address
-                               && eval.Action.errorCode == GameActionErrorCode.Success)
+                               && eval.Action.errorCode == GameAction.ErrorCode.Success)
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
                 {

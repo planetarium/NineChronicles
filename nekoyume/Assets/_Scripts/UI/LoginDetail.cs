@@ -64,7 +64,8 @@ namespace Nekoyume.UI
             
             var nickName = nameField.text;
 
-            ActionManager.instance.CreateNovice(_selectedIndex, nickName)
+            ActionManager.instance
+                .CreateNovice(AvatarManager.GetOrCreateAvatarAddress(_selectedIndex), _selectedIndex, nickName)
                 .Subscribe(eval =>
                 {
                     var avatarState = AvatarManager.InitAvatarState(_selectedIndex);

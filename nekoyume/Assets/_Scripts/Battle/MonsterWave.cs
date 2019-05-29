@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Nekoyume.Model;
 
-namespace Nekoyume.Action
+namespace Nekoyume.Battle
 {
     public class MonsterWave
     {

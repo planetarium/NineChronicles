@@ -17,7 +17,7 @@ namespace Nekoyume.BlockChain
     {
         private static void ProcessAction(GameAction action)
         {
-            action.Id = action.Id.Equals(default(Guid)) ? Guid.NewGuid() : action.Id;
+//            action.Id = action.Id.Equals(default(Guid)) ? Guid.NewGuid() : action.Id;
             AgentController.Agent.EnqueueAction(action);
         }
         
@@ -34,17 +34,19 @@ namespace Nekoyume.BlockChain
         
         #region Actions
         
-        public IObservable<ActionBase.ActionEvaluation<CreateNovice>> CreateNovice(int index, string nickName)
+        public IObservable<ActionBase.ActionEvaluation<CreateAvatar>> CreateNovice(Address avatarAddress, int index, string nickName)
         {
-            var action = new CreateNovice
-            {
-                agentAddress = States.AgentState.Value.address,
-                index = index,
-                name = nickName,
-            };
-            ProcessAction(action);
+//            var action = new CreateAvatar
+//            {
+//                agentAddress = States.AgentState.Value.address,
+//                index = index,
+//                name = nickName,
+//            };
+//            ProcessAction(action);
 
-            return ActionBase.EveryRender<CreateNovice>()
+            var action = AgentController.Agent.CreateAvatar(avatarAddress, index, nickName);
+            
+            return ActionBase.EveryRender<CreateAvatar>()
                 .SkipWhile(eval => !eval.Action.Id.Equals(action.Id))
                 .Take(1)
                 .Last()

@@ -275,7 +275,7 @@ namespace Nekoyume.UI
         /// </summary>
         private void ResponseCombination(ActionBase.ActionEvaluation<Action.Combination> eval)
         {
-            if (eval.Action.errorCode != GameActionErrorCode.Success)
+            if (eval.Action.errorCode != GameAction.ErrorCode.Success)
             {
                 _data.resultPopup.Value = new Model.CombinationResultPopup(null, 0)
                 {

@@ -7,7 +7,7 @@ using Nekoyume.State;
 
 namespace Nekoyume.Action
 {
-    public abstract class GameAction : ActionBase
+    public abstract partial class GameAction : ActionBase
     {
         public static readonly Address ProcessedActionsAddress = new Address(
             new byte[20]
@@ -17,7 +17,7 @@ namespace Nekoyume.Action
             }
         );
 
-        public int errorCode = GameActionErrorCode.Fail;
+        public int errorCode = ErrorCode.Fail;
 
         public Guid Id { get; internal set; }
         public override IImmutableDictionary<string, object> PlainValue => PlainValueInternal.SetItem("id", Id.ToString());

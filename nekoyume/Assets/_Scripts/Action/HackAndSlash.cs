@@ -2,9 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using Libplanet;
 using Libplanet.Action;
-using Nekoyume.Game;
+using Nekoyume.Battle;
 using Nekoyume.Game.Item;
 using Nekoyume.State;
 

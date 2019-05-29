@@ -1,12 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
 using BTAI;
 using Libplanet.Action;
-using Nekoyume.Action;
+using Nekoyume.Battle;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Skill;
 

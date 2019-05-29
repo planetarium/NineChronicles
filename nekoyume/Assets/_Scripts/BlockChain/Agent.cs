@@ -197,7 +197,7 @@ namespace Nekoyume.BlockChain
 
                 if (actions.Any())
                 {
-                    StageActions(actions);
+                    StageAvatarActions(actions);
                 }
             }
         }
@@ -206,20 +206,8 @@ namespace Nekoyume.BlockChain
         {
             while (true)
             {
-                var tx = Transaction<PolymorphicAction<ActionBase>>.Create(
-                        _blocks.GetNonce(PrivateKey.PublicKey.ToAddress()),
-                        PrivateKey,
-                        new List<PolymorphicAction<ActionBase>>()
-                        {
-                            new RewardGold
-                            {
-                                agentAddress = Address,
-                                gold = RewardAmount
-                            }
-                        },
-                        timestamp: DateTime.UtcNow);
+                var tx = RewardGold();
                 var txs = new HashSet<Transaction<PolymorphicAction<ActionBase>>> { tx };
-
                 var task = Task.Run(() =>
                 {
                     _blocks.StageTransactions(txs);
@@ -272,11 +260,20 @@ namespace Nekoyume.BlockChain
             return value;
         }
         
-        private void StageActions(IEnumerable<PolymorphicAction<ActionBase>> actions)
+        public CreateAvatar CreateAvatar(Address avatarAddress, int index, string nickName)
         {
-            var tx = AvatarManager.MakeTransaction(actions, _blocks);
-            _blocks.StageTransactions(new HashSet<Transaction<PolymorphicAction<ActionBase>>> {tx});
-            _swarm.BroadcastTxs(new[] { tx });
+            var createAvatar = new CreateAvatar
+            {
+                avatarAddress = avatarAddress,
+                index = index,
+                name = nickName,
+            };
+            StageAgentActions(new List<PolymorphicAction<ActionBase>>
+            {
+                createAvatar  
+            });
+            
+            return createAvatar;
         }
 
         private IBlockPolicy<PolymorphicAction<ActionBase>> GetPolicy()
@@ -290,6 +287,48 @@ namespace Nekoyume.BlockChain
                 256
             );
 #endif
+        }
+
+        private Transaction<PolymorphicAction<ActionBase>> RewardGold()
+        {
+            return MakeTransaction(new List<PolymorphicAction<ActionBase>>
+            {
+                new RewardGold
+                {
+                    agentAddress = Address,
+                    gold = RewardAmount
+                }
+            });
+        }
+        
+        private void StageAgentActions(IEnumerable<PolymorphicAction<ActionBase>> actions)
+        {
+            var tx = MakeTransaction(actions);
+            StageTransaction(tx);
+        }
+        
+        private void StageAvatarActions(IEnumerable<PolymorphicAction<ActionBase>> actions)
+        {
+            var tx = AvatarManager.MakeTransaction(actions, _blocks);
+            StageTransaction(tx);
+        }
+
+        private void StageTransaction(Transaction<PolymorphicAction<ActionBase>> tx)
+        {
+            _blocks.StageTransactions(new HashSet<Transaction<PolymorphicAction<ActionBase>>> {tx});
+            _swarm.BroadcastTxs(new[] { tx });
+        }
+        
+        private Transaction<PolymorphicAction<ActionBase>> MakeTransaction(
+            IEnumerable<PolymorphicAction<ActionBase>> actions
+        )
+        {
+            return Transaction<PolymorphicAction<ActionBase>>.Create(
+                _blocks.GetNonce(Address),
+                PrivateKey,
+                actions,
+                timestamp: DateTime.UtcNow
+            );
         }
     }
 }

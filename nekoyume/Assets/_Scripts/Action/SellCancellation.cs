@@ -55,14 +55,14 @@ namespace Nekoyume.Action
             }
             catch
             {
-                return SimpleError(actionCtx, avatarState, GameActionErrorCode.UnexpectedInternalAction);
+                return SimpleError(actionCtx, avatarState, ErrorCode.UnexpectedInternalAction);
             }
             
             // 인벤토리에 아이템을 넣는다.
             avatarState.AddEquipmentItemToItems(target.item.Data.id, target.count);
             avatarState.updatedAt = DateTimeOffset.UtcNow;
                 
-            errorCode = GameActionErrorCode.Success;
+            errorCode = ErrorCode.Success;
             result = new ResultModel
             {
                 owner = sellerAvatarAddress,

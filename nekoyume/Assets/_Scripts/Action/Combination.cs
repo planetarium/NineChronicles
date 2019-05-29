@@ -94,7 +94,7 @@ namespace Nekoyume.Action
                 }
                 catch (InvalidOperationException)
                 {
-                    return SimpleError(actionCtx, avatarState, GameActionErrorCode.Fail);
+                    return SimpleError(actionCtx, avatarState, ErrorCode.Fail);
                 }
             }
 
@@ -140,7 +140,7 @@ namespace Nekoyume.Action
             if (ReferenceEquals(resultItem, null) ||
                 resultCount == 0)
             {
-                return SimpleError(actionCtx, avatarState, GameActionErrorCode.Fail);
+                return SimpleError(actionCtx, avatarState, ErrorCode.Fail);
             }
             
             // 조합 결과 획득.
@@ -160,14 +160,14 @@ namespace Nekoyume.Action
                 }
                 else
                 {
-                    return SimpleError(actionCtx, avatarState, GameActionErrorCode.KeyNotFoundInTable);
+                    return SimpleError(actionCtx, avatarState, ErrorCode.KeyNotFoundInTable);
                 }
             }
             
             // 획득이 잘 됐는지 로그 찍기.
             avatarState.items.ForEach(item => Debug.Log($"획득 후 // Id:{item.Item.Data.id}, Count:{item.Count}"));
 
-            errorCode = GameActionErrorCode.Success;
+            errorCode = ErrorCode.Success;
             Result = new ResultModel()
             {
                 Item = new ItemModel(resultItem.Id, resultCount)

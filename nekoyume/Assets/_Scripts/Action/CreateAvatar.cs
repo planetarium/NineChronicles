@@ -10,26 +10,26 @@ using Nekoyume.State;
 
 namespace Nekoyume.Action
 {
-    [ActionType("create_novice")]
-    public class CreateNovice : GameAction
+    [ActionType("create_avatar")]
+    public class CreateAvatar : GameAction
     {
         public const int DefaultId = 100010;
         private const int DefaultItemEquipmentSetId = 1;
 
-        public Address agentAddress;
+        public Address avatarAddress;
         public int index;
         public string name;
         
         protected override IImmutableDictionary<string, object> PlainValueInternal => new Dictionary<string, object>()
         {
-            ["agentAddress"] = agentAddress.ToByteArray(),
+            ["avatarAddress"] = avatarAddress.ToByteArray(),
             ["index"] = index.ToString(),
             ["name"] = name,
         }.ToImmutableDictionary();
         
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, object> plainValue)
         {
-            agentAddress = new Address((byte[])plainValue["agentAddress"]);
+            avatarAddress = new Address((byte[])plainValue["avatarAddress"]);
             index = int.Parse(plainValue["index"].ToString());
             name = (string) plainValue["name"];
         }
@@ -39,22 +39,22 @@ namespace Nekoyume.Action
             var states = actionCtx.PreviousStates;
             if (actionCtx.Rehearsal)
             {
-                states = states.SetState(agentAddress, MarkChanged);
-                return states.SetState(actionCtx.Signer, MarkChanged);
+                states = states.SetState(actionCtx.Signer, MarkChanged);
+                return states.SetState(avatarAddress, MarkChanged);
             }
             
-            var avatarState = (AvatarState)states.GetState(actionCtx.Signer);
+            var avatarState = (AvatarState)states.GetState(avatarAddress);
             if (avatarState != null)
             {
-                return SimpleError(actionCtx, avatarState, GameActionErrorCode.CreateNoviceAlreadyExistAvatarAddress);
+                return SimpleError(actionCtx, avatarState, GameAction.ErrorCode.CreateAvatarAlreadyExistAvatarAddress);
             }
 
-            var agentState = (AgentState)states.GetState(agentAddress);
+            var agentState = (AgentState)states.GetState(actionCtx.Signer);
             agentState.avatarAddresses.Add(index, actionCtx.Signer);
             avatarState = CreateAvatarState(name, actionCtx.Signer);
 
-            states = states.SetState(agentAddress, agentState);
-            return states.SetState(actionCtx.Signer, avatarState);
+            states = states.SetState(actionCtx.Signer, agentState);
+            return states.SetState(avatarAddress, avatarState);
         }
         
         private static AvatarState CreateAvatarState(string name, Address avatarAddress)

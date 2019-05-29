@@ -65,13 +65,13 @@ namespace Nekoyume.Action
                 // 돈은 있냐?
                 if (buyerAgentState.gold < target.Value.price)
                 {
-                    return SimpleError(actionCtx, buyerAvatarState, GameActionErrorCode.BuyGoldNotEnough);
+                    return SimpleError(actionCtx, buyerAvatarState, ErrorCode.BuyGoldNotEnough);
                 }
 
                 // 상점에서 구매할 아이템을 제거한다.
                 if (!shopState.Unregister(target.Key, target.Value))
                 {
-                    return SimpleError(actionCtx, buyerAvatarState, GameActionErrorCode.UnexpectedInternalAction);
+                    return SimpleError(actionCtx, buyerAvatarState, ErrorCode.UnexpectedInternalAction);
                 }
                 
                 // 구매자의 돈을 감소 시킨다.
@@ -84,7 +84,7 @@ namespace Nekoyume.Action
                 buyerAvatarState.AddEquipmentItemToItems(target.Value.item.Data.id, target.Value.count);
                 buyerAvatarState.updatedAt = DateTimeOffset.UtcNow;
 
-                errorCode = GameActionErrorCode.Success;
+                errorCode = ErrorCode.Success;
                 result = new ResultModel
                 {
                     owner = target.Key,
@@ -98,11 +98,11 @@ namespace Nekoyume.Action
             }
             catch (KeyNotFoundException)
             {
-                return SimpleError(actionCtx, buyerAvatarState, GameActionErrorCode.BuySoldOut);
+                return SimpleError(actionCtx, buyerAvatarState, ErrorCode.BuySoldOut);
             }
             catch
             {
-                return SimpleError(actionCtx, buyerAvatarState, GameActionErrorCode.UnexpectedInternalAction);
+                return SimpleError(actionCtx, buyerAvatarState, ErrorCode.UnexpectedInternalAction);
             }
         }
     }

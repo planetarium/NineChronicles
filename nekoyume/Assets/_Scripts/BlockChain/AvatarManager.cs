@@ -15,7 +15,7 @@ namespace Nekoyume.BlockChain
     /// Avatar들을 관리한다.
     /// ToDo. 추후 복수의 아바타를 오갈 수 있도록 한다.
     /// </summary>
-    public class AvatarManager
+    public static class AvatarManager
     {
         public const string PrivateKeyFormat = "private_key_{0}";
         public const string AvatarFileFormat = "avatar_{0}.dat";

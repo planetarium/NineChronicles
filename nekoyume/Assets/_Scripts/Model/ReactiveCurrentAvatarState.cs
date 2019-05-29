@@ -17,7 +17,7 @@ namespace Nekoyume.Model
         {
             if (ReferenceEquals(avatarState, null))
             {
-                throw new ArgumentNullException(nameof(avatarState));
+                return;
             }
 
             AvatarState.Value = avatarState;

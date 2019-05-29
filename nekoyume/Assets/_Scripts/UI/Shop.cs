@@ -211,7 +211,7 @@ namespace Nekoyume.UI
 
         private void ResponseSell(ActionBase.ActionEvaluation<Sell> eval)
         {
-            if (eval.Action.errorCode != GameActionErrorCode.Success)
+            if (eval.Action.errorCode != GameAction.ErrorCode.Success)
             {
                 _data.itemCountAndPricePopup.Value.item.Value = null;
                 _loadingScreen.Close();
@@ -242,7 +242,7 @@ namespace Nekoyume.UI
 
         private void ResponseSellCancellation(ActionBase.ActionEvaluation<SellCancellation> eval)
         {
-            if (eval.Action.errorCode != GameActionErrorCode.Success)
+            if (eval.Action.errorCode != GameAction.ErrorCode.Success)
             {
                 _data.itemCountAndPricePopup.Value.item.Value = null;
                 _loadingScreen.Close();
@@ -269,12 +269,12 @@ namespace Nekoyume.UI
         
         private void ResponseBuy(ActionBase.ActionEvaluation<Buy> eval)
         {
-            if (eval.Action.errorCode != GameActionErrorCode.Success)
+            if (eval.Action.errorCode != GameAction.ErrorCode.Success)
             {
                 _data.itemCountAndPricePopup.Value.item.Value = null;
                 _loadingScreen.Close();
                 
-                if (eval.Action.errorCode == GameActionErrorCode.BuySoldOut)
+                if (eval.Action.errorCode == GameAction.ErrorCode.BuySoldOut)
                 {
                     // ToDo. 매진 팝업!
                     Debug.LogWarning($"매진!! productId: {eval.Action.productId}");

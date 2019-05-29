@@ -71,7 +71,7 @@ namespace Nekoyume.Action
                 target = item;
                 if (target.Count < count)
                 {
-                    return SimpleError(actionCtx, avatarState, GameActionErrorCode.SellItemCountNotEnoughInInventory);
+                    return SimpleError(actionCtx, avatarState, ErrorCode.SellItemCountNotEnoughInInventory);
                 }
                 target.Count -= count;
             }
@@ -79,7 +79,7 @@ namespace Nekoyume.Action
             // 인벤토리에 판매할 아이템이 없는 경우.
             if (ReferenceEquals(target, null))
             {
-                return SimpleError(actionCtx, avatarState, GameActionErrorCode.SellItemNotFoundInInventory);
+                return SimpleError(actionCtx, avatarState, ErrorCode.SellItemNotFoundInInventory);
             }
 
             // 인벤토리에서 판매할 아이템을 뺀 후에 수량이 0일 경우.
@@ -100,7 +100,7 @@ namespace Nekoyume.Action
             shopItem = shopState.Register(actionCtx.Signer, shopItem);
 
             avatarState.updatedAt = DateTimeOffset.UtcNow;
-            errorCode = GameActionErrorCode.Success;
+            errorCode = ErrorCode.Success;
             result = new ResultModel
             {
                 sellerAvatarAddress = actionCtx.Signer,
