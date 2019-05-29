@@ -91,6 +91,7 @@ namespace Nekoyume.Game.Item
                 yield return null;
             }
 
+            Event.OnGetItem.Invoke(this);
             gameObject.SetActive(false);
         }
 
