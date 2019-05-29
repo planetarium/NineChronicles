@@ -25,14 +25,6 @@ namespace Nekoyume.BlockChain
         
         public IObservable<ActionBase.ActionEvaluation<CreateAvatar>> CreateNovice(Address avatarAddress, int index, string nickName)
         {
-//            var action = new CreateAvatar
-//            {
-//                agentAddress = States.AgentState.Value.address,
-//                index = index,
-//                name = nickName,
-//            };
-//            ProcessAction(action);
-
             var action = AgentController.Agent.CreateAvatar(avatarAddress, index, nickName);
             
             return ActionBase.EveryRender<CreateAvatar>()

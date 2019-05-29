@@ -229,8 +229,7 @@ namespace Nekoyume.UI
                     foods.Add((Food)slot.item);
                 }
             }
-
-
+            
             ActionManager.instance.HackAndSlash(equipments, foods, _stages[dropdown.value])
                 .Subscribe(eval =>
                 {

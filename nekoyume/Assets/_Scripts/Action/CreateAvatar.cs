@@ -46,12 +46,12 @@ namespace Nekoyume.Action
             var avatarState = (AvatarState)states.GetState(avatarAddress);
             if (avatarState != null)
             {
-                return SimpleError(actionCtx, avatarState, GameAction.ErrorCode.CreateAvatarAlreadyExistAvatarAddress);
+                return SimpleError(actionCtx, avatarState, ErrorCode.CreateAvatarAlreadyExistAvatarAddress);
             }
 
             var agentState = (AgentState)states.GetState(actionCtx.Signer);
-            agentState.avatarAddresses.Add(index, actionCtx.Signer);
-            avatarState = CreateAvatarState(name, actionCtx.Signer);
+            agentState.avatarAddresses.Add(index, avatarAddress);
+            avatarState = CreateAvatarState(name, avatarAddress);
 
             states = states.SetState(actionCtx.Signer, agentState);
             return states.SetState(avatarAddress, avatarState);
