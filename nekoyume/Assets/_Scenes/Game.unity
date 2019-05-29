@@ -555,6 +555,18 @@ MonoBehaviour:
       type: 3}
     InitCount: 1
     AddCount: 1
+  - Prefab: {fileID: 6935105740374106053, guid: 2653e88a359db924e8a1e487ef5bc45f,
+      type: 3}
+    InitCount: 5
+    AddCount: 3
+  - Prefab: {fileID: 8197625422693294542, guid: a338bc95fcc862e43ad0a42976b45e7b,
+      type: 3}
+    InitCount: 5
+    AddCount: 3
+  - Prefab: {fileID: 3236136856082345825, guid: a9f0799f07af9c348bf02ecae72037c4,
+      type: 3}
+    InitCount: 5
+    AddCount: 3
 --- !u!114 &1333831685
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -677,7 +689,7 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.3
-  far clip plane: 100
+  far clip plane: 200
   field of view: 60
   orthographic: 1
   orthographic size: 2

@@ -123,12 +123,14 @@ namespace Nekoyume.UI.Model
                     // 구매하겠습니까?
                     itemCountAndPricePopup.Value.titleText.Value = "구매";
                     itemCountAndPricePopup.Value.submitText.Value = "확인";
+                    itemCountAndPricePopup.Value.countInteractable.Value = false;
                 }
                 else
                 {
                     // 판매 취소하겠습니까?
                     itemCountAndPricePopup.Value.titleText.Value = "판매 취소";
                     itemCountAndPricePopup.Value.submitText.Value = "확인";
+                    itemCountAndPricePopup.Value.countInteractable.Value = true;
                 }
                 
                 itemCountAndPricePopup.Value.price.Value = shopItem.price.Value;
@@ -140,12 +142,13 @@ namespace Nekoyume.UI.Model
                 itemCountAndPricePopup.Value.titleText.Value = "판매 설정";
                 itemCountAndPricePopup.Value.submitText.Value = "판매";
                 itemCountAndPricePopup.Value.price.Value = 1;
+                itemCountAndPricePopup.Value.countInteractable.Value = true;
                 itemCountAndPricePopup.Value.priceInteractable.Value = true;
             }
             
             itemCountAndPricePopup.Value.item.Value = new CountEditableItem(
                 itemInfo.item.Value.item.Value,
-                itemInfo.item.Value.count.Value,
+                1,
                 0,
                 itemInfo.item.Value.count.Value);
         }

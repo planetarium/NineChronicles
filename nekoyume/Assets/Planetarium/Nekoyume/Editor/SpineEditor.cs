@@ -16,7 +16,13 @@ namespace Planetarium.Nekoyume.Editor
         private static readonly Vector3 EnemyPosition = Vector3.zero;
         private static readonly Vector3 CharacterLocalScale = new Vector3(.64f, .64f, 1f);
         private const string FindAssetFilter = "CharacterAnimator t:AnimatorController";
-        
+
+        [MenuItem("Assets/Create/Spine Prefab", true)]
+        public static bool CreateSpinePrefabValidation()
+        {
+            return Selection.activeObject is SkeletonDataAsset;
+        }
+      
         [MenuItem("Assets/Create/Spine Prefab", false, 10000)]
         public static void CreateSpinePrefab()
         {
@@ -91,12 +97,6 @@ namespace Planetarium.Nekoyume.Editor
 
             Object.DestroyImmediate(gameObject);
             Selection.activeObject = prefab;
-        }
-
-        [MenuItem("Assets/Create/Spine Prefab", true)]
-        public static bool CreateSpinePrefabValidation()
-        {
-            return Selection.activeObject.GetType() == typeof(SkeletonDataAsset);
         }
     }
 }

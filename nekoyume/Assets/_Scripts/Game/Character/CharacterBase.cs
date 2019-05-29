@@ -46,6 +46,7 @@ namespace Nekoyume.Game.Character
         
         protected virtual float Range { get; set; }
         protected virtual Vector3 HUDOffset => new Vector3();
+        protected virtual Vector3 DamageTextForce => default;
 
         protected virtual void Awake()
         {
@@ -171,22 +172,17 @@ namespace Nekoyume.Game.Character
             );
         }
 
-        public virtual IEnumerator CoProcessDamage(int dmg, bool critical)
+        public virtual IEnumerator CoProcessDamage(Model.Skill.SkillInfo info)
         {
+            var dmg = info.Effect;
+
             if (dmg <= 0)
                 yield break;
 
             HP -= dmg;
             UpdateHpBar();
-            
-            if (HP > 0)
-            {
-                animator.Hit();
-            }
-            else
-            {
-                StartCoroutine(Dying());
-            }
+
+            animator.Hit();
         }
 
         protected virtual void OnDead()
@@ -195,18 +191,26 @@ namespace Nekoyume.Game.Character
             gameObject.SetActive(false);
         }
 
-        protected virtual void PopUpDmg(Vector3 position, Vector3 force, string dmg, bool critical)
+        protected void PopUpDmg(Vector3 position, Vector3 force, Model.Skill.SkillInfo info)
         {
-            if (critical)
+            var dmg = info.Effect.ToString();
+            var pos = transform.position;
+            pos.x -= 0.2f;
+            pos.y += 0.32f;
+            if (info.Critical)
             {
                 ActionCamera.instance.Shake();
                 AudioController.PlayDamagedCritical();
                 CriticalText.Show(position, force, dmg);
+                if (info.Category == SkillEffect.Category.Normal)
+                    VFXController.instance.Create<BattleAttackCritical01VFX>(pos);
             }
             else
             {
                 AudioController.PlayDamaged();
                 DamageText.Show(position, force, dmg);
+                if (info.Category == SkillEffect.Category.Normal)
+                    VFXController.instance.Create<BattleAttack01VFX>(pos);
             }
         }
 
@@ -274,7 +278,7 @@ namespace Nekoyume.Game.Character
         {
             if (TargetInRange(target))
                 target.StopRun();
-            StartCoroutine(target.CoProcessDamage(skill.Effect, skill.Critical));
+            StartCoroutine(target.CoProcessDamage(skill));
         }
 
         private void ProcessHeal(CharacterBase target, Model.Skill.SkillInfo info)
@@ -334,27 +338,72 @@ namespace Nekoyume.Game.Character
 
         public IEnumerator CoAttack(IEnumerable<Model.Skill.SkillInfo> infos)
         {
-            var isCast = infos.Count() > 1;
+            yield return StartCoroutine(CoAnimationAttack());
 
-            if (isCast)
-            {
-                yield return StartCoroutine(CoAnimationCast());
-            }
-            else
-            {
-                yield return StartCoroutine(CoAnimationAttack());
-            }
-
-            foreach (var info in infos)
+            var skillInfos = infos.ToList();
+            foreach (var info in skillInfos)
             {
                 var target = Game.instance.stage.GetCharacter(info.Target);
                 ProcessAttack(target, info);
             }
 
-            if (isCast)
+            foreach (var info in skillInfos)
             {
-                yield return new WaitForSeconds(1.2f);
+                var target = Game.instance.stage.GetCharacter(info.Target);
+                if (target.IsDead())
+                    StartCoroutine(target.Dying());
             }
+
+        }
+
+        public IEnumerator CoAreaAttack(IEnumerable<Model.Skill.SkillInfo> infos)
+        {
+            yield return StartCoroutine(CoAnimationCast());
+
+            var skillInfos = infos.ToList();
+            foreach (var info in skillInfos)
+            {
+                var target = Game.instance.stage.GetCharacter(info.Target);
+                ProcessAttack(target, info);
+            }
+
+            foreach (var info in skillInfos)
+            {
+                var target = Game.instance.stage.GetCharacter(info.Target);
+                if (target.IsDead())
+                    StartCoroutine(target.Dying());
+            }
+
+            yield return new WaitForSeconds(1.2f);
+        }
+
+        public IEnumerator CoDoubleAttack(IEnumerable<Model.Skill.SkillInfo> infos)
+        {
+            yield return StartCoroutine(CoAnimationCast());
+
+            var skillInfos = infos.ToList();
+            foreach (var info in skillInfos)
+            {
+                var target = Game.instance.stage.GetCharacter(info.Target);
+                ProcessAttack(target, info);
+                if (skillInfos.First() == info)
+                {
+                    var pos = target.transform.position;
+                    pos.x -= 0.2f;
+                    pos.y += 0.32f;
+                    VFXController.instance.Create<BattleSkillDoubleMVFX>(pos);
+                    yield return new WaitForSeconds(0.3f);
+                }
+            }
+
+            foreach (var info in skillInfos)
+            {
+                var target = Game.instance.stage.GetCharacter(info.Target);
+                if (target.IsDead())
+                    StartCoroutine(target.Dying());
+            }
+
+            yield return new WaitForSeconds(1.2f);
         }
 
         public IEnumerator CoHeal(IEnumerable<Model.Skill.SkillInfo> infos)

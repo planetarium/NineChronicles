@@ -66,7 +66,7 @@ namespace Nekoyume.Model
         public void RemoveTarget(Monster monster)
         {
             targets.Remove(monster);
-            Simulator.Characters.Remove(monster);
+            Simulator.Characters.TryRemove(monster);
         }
 
         protected override void OnDead()
