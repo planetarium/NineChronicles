@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Nekoyume.Action;
+using Nekoyume.BlockChain;
 using Nekoyume.Data;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model;
@@ -208,7 +209,7 @@ namespace Nekoyume.UI
                 .AddTo(this);
         }
 
-        private void ResponseSell(ActionBase.ActionEvaluation<Action.Sell> eval)
+        private void ResponseSell(ActionBase.ActionEvaluation<Sell> eval)
         {
             if (eval.Action.errorCode != GameActionErrorCode.Success)
             {
@@ -239,7 +240,7 @@ namespace Nekoyume.UI
             _loadingScreen.Close();
         }
 
-        private void ResponseSellCancellation(ActionBase.ActionEvaluation<Action.SellCancellation> eval)
+        private void ResponseSellCancellation(ActionBase.ActionEvaluation<SellCancellation> eval)
         {
             if (eval.Action.errorCode != GameActionErrorCode.Success)
             {
@@ -266,7 +267,7 @@ namespace Nekoyume.UI
             _loadingScreen.Close();
         }
         
-        private void ResponseBuy(ActionBase.ActionEvaluation<Action.Buy> eval)
+        private void ResponseBuy(ActionBase.ActionEvaluation<Buy> eval)
         {
             if (eval.Action.errorCode != GameActionErrorCode.Success)
             {

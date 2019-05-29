@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Nekoyume.Manager;
 using Nekoyume.Action;
+using Nekoyume.BlockChain;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
@@ -81,12 +82,10 @@ namespace Nekoyume.UI
             if (!_stage.repeatStage && result == BattleLog.Result.Win)
                 stage++;
             actionEnd = false;
-            IObservable<ActionBase.ActionEvaluation<HackAndSlash>> observable =
-                ActionManager.instance.HackAndSlash(player.equipments, new List<Food>(), stage);
+            ActionManager.instance.HackAndSlash(player.equipments, new List<Food>(), stage)
+                .Subscribe(_ => { StartCoroutine(CoNextStage(w)); }).AddTo(this);
 
             Hide();
-
-            observable.Subscribe(_ => { StartCoroutine(CoNextStage(w)); }).AddTo(this);
         }
         public void BackClick()
         {   

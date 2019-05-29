@@ -1,4 +1,4 @@
-using Nekoyume.Action;
+using System;
 using Nekoyume.State;
 using UniRx;
 
@@ -11,24 +11,16 @@ namespace Nekoyume.Model
     /// </summary>
     public static class ReactiveCurrentAvatarState
     {
-        static ReactiveCurrentAvatarState()
-        {
-            Subscribes();
-        }
-
+        public static readonly ReactiveProperty<AvatarState> AvatarState = new ReactiveProperty<AvatarState>();
+        
         public static void Initialize(AvatarState avatarState)
         {
             if (ReferenceEquals(avatarState, null))
             {
-                return;
+                throw new ArgumentNullException(nameof(avatarState));
             }
-            
-            // ToDo. 기본 값을 초기화 한다.
-        }
 
-        private static void Subscribes()
-        {
-            // ToDo. ActionBase.EveryRender<T>() 를 통해 필요한 동기화를 진행한다.
+            AvatarState.Value = avatarState;
         }
     }
 }

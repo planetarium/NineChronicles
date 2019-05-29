@@ -1,6 +1,6 @@
 using System;
 using DG.Tweening;
-using Nekoyume.Action;
+using Nekoyume.BlockChain;
 using Nekoyume.State;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model;

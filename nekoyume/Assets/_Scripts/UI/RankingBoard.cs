@@ -1,8 +1,9 @@
 using System;
-using Nekoyume.Action;
+using Nekoyume.BlockChain;
 using Nekoyume.Game;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
+using Nekoyume.State;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -60,10 +61,9 @@ namespace Nekoyume.UI
 
         private void GetAvatars(DateTimeOffset? dt)
         {
-            var rankingBoard = (Game.RankingBoard) AgentController.Agent.GetState(
-                AddressBook.Ranking);
+            var rankingBoard = States.RankingState.Value;
             Debug.LogWarningFormat("rankingBoard: {0}", rankingBoard);
-            _avatarStates = rankingBoard?.GetAvatars(dt) ?? new State.AvatarState[0];
+            _avatarStates = rankingBoard?.GetAvatars(dt) ?? new AvatarState[0];
         }
 
         private void UpdateBoard(DateTimeOffset? dt)

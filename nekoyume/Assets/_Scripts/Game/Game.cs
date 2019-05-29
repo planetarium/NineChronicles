@@ -1,4 +1,5 @@
 using Assets.SimpleLocalization;
+using Nekoyume.BlockChain;
 using Nekoyume.Data;
 using Nekoyume.Game.Controller;
 using Nekoyume.UI;

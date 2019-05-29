@@ -1,20 +1,15 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Blockchain;
 using Libplanet.Crypto;
 using Libplanet.Tx;
 using Nekoyume.Action;
-using Nekoyume.Model;
 using Nekoyume.State;
-using UniRx;
 using UnityEngine;
 
-namespace Nekoyume
+namespace Nekoyume.BlockChain
 {
     /// <summary>
     /// Avatar들을 관리한다.

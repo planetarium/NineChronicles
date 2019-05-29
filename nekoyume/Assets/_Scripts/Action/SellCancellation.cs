@@ -40,12 +40,12 @@ namespace Nekoyume.Action
             var states = actionCtx.PreviousStates;
             if (actionCtx.Rehearsal)
             {
-                states = states.SetState(AddressBook.Shop, MarkChanged);
+                states = states.SetState(ShopState.Address, MarkChanged);
                 return states.SetState(actionCtx.Signer, MarkChanged);
             }
 
             var avatarState = (AvatarState) states.GetState(actionCtx.Signer);
-            var shopState = (ShopState) states.GetState(AddressBook.Shop) ?? new ShopState(AddressBook.Shop);
+            var shopState = (ShopState) states.GetState(ShopState.Address) ?? new ShopState();
 
             ShopItem target;
             try
@@ -70,7 +70,7 @@ namespace Nekoyume.Action
             };
 
             states = states.SetState(actionCtx.Signer, avatarState);
-            return states.SetState(AddressBook.Shop, shopState);
+            return states.SetState(ShopState.Address, shopState);
         }
     }
 }

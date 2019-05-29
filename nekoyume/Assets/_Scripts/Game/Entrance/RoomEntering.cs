@@ -1,5 +1,5 @@
 using System.Collections;
-using Nekoyume.Action;
+using Nekoyume.BlockChain;
 using Nekoyume.UI;
 using UnityEngine;
 

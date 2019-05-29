@@ -38,7 +38,7 @@ namespace Nekoyume.Action
             var states = actionCtx.PreviousStates;
             if (actionCtx.Rehearsal)
             {
-                states = states.SetState(AddressBook.Ranking, MarkChanged);
+                states = states.SetState(RankingState.Address, MarkChanged);
                 return states.SetState(actionCtx.Signer, MarkChanged);
             }
             var avatarState = (AvatarState) states.GetState(actionCtx.Signer);
@@ -82,14 +82,10 @@ namespace Nekoyume.Action
             avatarState.updatedAt = DateTimeOffset.UtcNow;
             if (avatarState.worldStage > Stage)
             {
-                var ranking = (RankingBoard) states.GetState(AddressBook.Ranking);
-                if (ranking is null)
-                {
-                    ranking = new RankingBoard();
-                }
+                var ranking = (RankingState) states.GetState(RankingState.Address) ?? new RankingState();
                 avatarState.clearedAt = DateTimeOffset.UtcNow;
                 ranking.Update(avatarState);
-                states = states.SetState(AddressBook.Ranking, ranking);
+                states = states.SetState(RankingState.Address, ranking);
             }
             return states.SetState(actionCtx.Signer, avatarState);
         }

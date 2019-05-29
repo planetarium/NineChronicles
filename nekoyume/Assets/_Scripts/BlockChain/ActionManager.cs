@@ -5,11 +5,10 @@ using Nekoyume.Manager;
 using Libplanet;
 using Nekoyume.Action;
 using Nekoyume.Game.Item;
-using Nekoyume.State;
 using UniRx;
 using UnityEngine;
 
-namespace Nekoyume
+namespace Nekoyume.BlockChain
 {
     /// <summary>
     /// 게임의 Action을 생성하고 Agent에 넣어주는 역할을 한다.
@@ -44,18 +43,12 @@ namespace Nekoyume
                 name = nickName,
             };
             ProcessAction(action);
-            
+
             return ActionBase.EveryRender<CreateNovice>()
                 .SkipWhile(eval => !eval.Action.Id.Equals(action.Id))
                 .Take(1)
                 .Last()
-                .ObserveOnMainThread()
-                .Do(eval =>
-                {
-                    var avatarAddress = AvatarManager.GetOrCreateAvatarAddress(index);
-                    States.AgentState.Value.avatarAddresses.Add(index, avatarAddress);
-                    States.AvatarStates.Add(index, (AvatarState) AgentController.Agent.GetState(avatarAddress));
-                });
+                .ObserveOnMainThread();
         }
 
         public IObservable<ActionBase.ActionEvaluation<HackAndSlash>> HackAndSlash(

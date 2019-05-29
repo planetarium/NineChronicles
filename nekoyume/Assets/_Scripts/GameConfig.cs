@@ -4,6 +4,6 @@ namespace Nekoyume
 {
     public class GameConfig
     {
-        public static int2 ScreenSize = new int2(1136, 640);
+        public static readonly int2 ScreenSize = new int2(1136, 640);
     }
 }

@@ -1,5 +1,5 @@
 using Nekoyume.Manager;
-using Nekoyume.Action;
+using Nekoyume.BlockChain;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using UnityEngine;

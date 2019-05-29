@@ -24,6 +24,8 @@ namespace Nekoyume.State
     [Serializable]
     public class ShopState : State
     {
+        public static readonly Address Address = default;
+        
         public readonly Dictionary<Address, List<ShopItem>> items = new Dictionary<Address, List<ShopItem>>();
         
         public static ShopItem Register(IDictionary<Address, List<ShopItem>> dictionary, Address address, ShopItem item)
@@ -76,7 +78,7 @@ namespace Nekoyume.State
             return true;
         }
         
-        public ShopState(Address address) : base(address)
+        public ShopState() : base(Address)
         {
         }
         

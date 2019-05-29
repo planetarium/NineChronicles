@@ -51,12 +51,12 @@ namespace Nekoyume.Action
             var states = actionCtx.PreviousStates;
             if (actionCtx.Rehearsal)
             {
-                states = states.SetState(AddressBook.Shop, MarkChanged);
+                states = states.SetState(ShopState.Address, MarkChanged);
                 return states.SetState(actionCtx.Signer, MarkChanged);
             }
 
             var avatarState = (AvatarState) states.GetState(actionCtx.Signer);
-            var shopState = (ShopState) states.GetState(AddressBook.Shop) ?? new ShopState(AddressBook.Shop);
+            var shopState = (ShopState) states.GetState(ShopState.Address) ?? new ShopState();
 
             // 인벤토리에서 판매할 아이템을 선택하고 수량을 조절한다.
             Inventory.InventoryItem target = null;
@@ -108,7 +108,7 @@ namespace Nekoyume.Action
             };
 
             states = states.SetState(actionCtx.Signer, avatarState);
-            return states.SetState(AddressBook.Shop, shopState);
+            return states.SetState(ShopState.Address, shopState);
         }
     }
 }

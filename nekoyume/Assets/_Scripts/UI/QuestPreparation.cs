@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Manager;
 using Nekoyume.Action;
+using Nekoyume.BlockChain;
 using Nekoyume.Game;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
@@ -229,19 +230,15 @@ namespace Nekoyume.UI
                 }
             }
 
-            IObservable<ActionBase.ActionEvaluation<HackAndSlash>> observable =
-                ActionManager.instance.HackAndSlash(equipments, foods, _stages[dropdown.value]);
 
-            observable.Subscribe(eval =>
-            {
-                var avatar = (AvatarState)eval.OutputStates.GetState(eval.InputContext.Signer);
-                States.CurrentAvatarState.Value.battleLog = avatar.battleLog;
-                
-                Game.Event.OnStageStart.Invoke();
-                Find<LoadingScreen>().Close();
-                _stage.repeatStage = repeat;
-                Close();
-            }).AddTo(this);
+            ActionManager.instance.HackAndSlash(equipments, foods, _stages[dropdown.value])
+                .Subscribe(eval =>
+                {
+                    Game.Event.OnStageStart.Invoke();
+                    Find<LoadingScreen>().Close();
+                    _stage.repeatStage = repeat;
+                    Close();
+                }).AddTo(this);
         }
 
         private EquipSlot FindSelectedItemSlot()

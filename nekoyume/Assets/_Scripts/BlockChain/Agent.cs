@@ -25,7 +25,7 @@ using Nekoyume.Serilog;
 using Serilog;
 using UnityEngine;
 
-namespace Nekoyume
+namespace Nekoyume.BlockChain
 {
     /// <summary>
     /// 메인넷에 직접 붙어서 블록을 마이닝 한다.

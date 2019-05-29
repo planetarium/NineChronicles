@@ -49,12 +49,12 @@ namespace Nekoyume.Action
                 states = states.SetState(buyerAgentAddress, MarkChanged);
                 states = states.SetState(actionCtx.Signer, MarkChanged);
                 states = states.SetState(sellerAgentAddress, MarkChanged);
-                return states.SetState(AddressBook.Shop, MarkChanged);
+                return states.SetState(ShopState.Address, MarkChanged);
             }
 
             var buyerAgentState = (AgentState) states.GetState(buyerAgentAddress);
             var buyerAvatarState = (AvatarState) states.GetState(actionCtx.Signer);
-            var shopState = (ShopState) states.GetState(AddressBook.Shop) ?? new ShopState(AddressBook.Shop);
+            var shopState = (ShopState) states.GetState(ShopState.Address) ?? new ShopState();
             
             try
             {
@@ -94,7 +94,7 @@ namespace Nekoyume.Action
                 states = states.SetState(buyerAgentAddress, buyerAgentState);
                 states = states.SetState(actionCtx.Signer, buyerAvatarState);
                 states = states.SetState(target.Value.sellerAgentAddress, sellerAgentState);
-                return states.SetState(AddressBook.Shop, shopState);
+                return states.SetState(ShopState.Address, shopState);
             }
             catch (KeyNotFoundException)
             {

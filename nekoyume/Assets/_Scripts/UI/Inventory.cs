@@ -1,10 +1,6 @@
-using System.Collections.Generic;
-using System.Linq;
-using Nekoyume.Action;
+using Nekoyume.BlockChain;
 using Nekoyume.Game.Controller;
-using Nekoyume.Game.Item;
 using UniRx;
-using UnityEngine;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI

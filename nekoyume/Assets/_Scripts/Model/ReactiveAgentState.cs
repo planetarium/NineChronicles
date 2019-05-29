@@ -1,4 +1,3 @@
-using Nekoyume.Action;
 using Nekoyume.State;
 using UniRx;
 
@@ -12,11 +11,6 @@ namespace Nekoyume.Model
     {
         public static readonly ReactiveProperty<decimal> Gold = new ReactiveProperty<decimal>(0);
 
-        static ReactiveAgentState()
-        {
-            Subscribes();
-        }
-
         public static void Initialize(AgentState agentState)
         {
             if (ReferenceEquals(agentState, null))
@@ -25,18 +19,6 @@ namespace Nekoyume.Model
             }
             
             Gold.Value = agentState.gold;
-        }
-
-        private static void Subscribes()
-        {
-            ActionBase.EveryRender<RewardGold>()
-                .Where(eval => eval.InputContext.Signer == States.AgentState.Value.address)
-                .ObserveOnMainThread()
-                .Subscribe(eval =>
-                {
-                    States.AgentState.Value.gold += eval.Action.gold;
-                    Gold.Value = States.AgentState.Value.gold;
-                });
         }
     }
 }

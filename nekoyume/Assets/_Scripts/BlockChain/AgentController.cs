@@ -15,7 +15,7 @@ using Nekoyume.State;
 using NetMQ;
 using UnityEngine;
 
-namespace Nekoyume
+namespace Nekoyume.BlockChain
 {
     /// <summary>
     /// Agent를 구동시킨다.
@@ -77,16 +77,20 @@ namespace Nekoyume
             Agent.PreloadEnded += (_, __) =>
             {
                 // 에이전트의 준비단계가 끝나면 에이전트의 상태를 한 번 동기화 한다.
-                States.AgentState.Value = Agent.GetState(Agent.Address) as AgentState ??
+                States.AgentState.Value = (AgentState) Agent.GetState(Agent.Address) ??
                                      new AgentState(Agent.Address);
                 // 에이전트에 포함된 모든 아바타의 상태를 한 번씩 동기화 한다.
                 foreach (var pair in States.AgentState.Value.avatarAddresses)
                 {
-                    var avatarState = Agent.GetState(pair.Value) as AvatarState;
+                    var avatarState = (AvatarState) Agent.GetState(pair.Value);
                     States.AvatarStates.Add(pair.Key, avatarState);
                 }
+                // 랭킹의 상태를 한 번 동기화 한다.
+                States.RankingState.Value = (RankingState) Agent.GetState(RankingState.Address) ?? new RankingState();
                 // 상점의 상태를 한 번 동기화 한다.
-                States.ShopState.Value = Agent.GetState(AddressBook.Shop) as ShopState ?? new ShopState(AddressBook.Shop);
+                States.ShopState.Value = (ShopState) Agent.GetState(ShopState.Address) ?? new ShopState();
+                // 그리고 모든 액션에 대한 랜더를 핸들링하기 시작한다.
+                ActionRenderHandler.Start();
                 // 그리고 마이닝을 시작한다.
                 StartNullableCoroutine(_miner);
                 callback(true);
@@ -225,6 +229,7 @@ namespace Nekoyume
 
         protected override void OnDestroy()
         {
+            ActionRenderHandler.Stop();
             if (Agent != null)
             {
                 PlayerPrefs.SetString(ChainIdKey, Agent.ChainId.ToString());

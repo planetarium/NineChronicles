@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Libplanet;
-using Nekoyume.Action;
 using Nekoyume.Game.Item;
 using Nekoyume.State;
 using UniRx;
@@ -15,11 +14,6 @@ namespace Nekoyume.Model
     {
         public static ReactiveDictionary<Address, List<ShopItem>> Items { get; private set; }
         
-        static ReactiveShopState()
-        {
-            Subscribes();
-        }
-        
         public static void Initialize(ShopState shopState)
         {
             if (ReferenceEquals(shopState, null))
@@ -28,39 +22,6 @@ namespace Nekoyume.Model
             }
             
             Items = new ReactiveDictionary<Address, List<ShopItem>>(shopState.items);
-        }
-        
-        private static void Subscribes()
-        {
-            ActionBase.EveryRender<Sell>()
-                .Where(eval => eval.InputContext.Signer == States.CurrentAvatarState.Value.address
-                               && eval.Action.errorCode == GameActionErrorCode.Success)
-                .ObserveOnMainThread()
-                .Subscribe(eval =>
-                {
-                    var result = eval.Action.result;
-                    ShopState.Register(Items, States.CurrentAvatarState.Value.address, result.shopItem);
-                });
-            
-            ActionBase.EveryRender<SellCancellation>()
-                .Where(eval => eval.InputContext.Signer == States.CurrentAvatarState.Value.address
-                               && eval.Action.errorCode == GameActionErrorCode.Success)
-                .ObserveOnMainThread()
-                .Subscribe(eval =>
-                {
-                    var result = eval.Action.result;
-                    ShopState.Unregister(Items, result.owner, result.shopItem.productId);
-                });
-            
-            ActionBase.EveryRender<Buy>()
-                .Where(eval => eval.InputContext.Signer == States.CurrentAvatarState.Value.address
-                               && eval.Action.errorCode == GameActionErrorCode.Success)
-                .ObserveOnMainThread()
-                .Subscribe(eval =>
-                {
-                    var result = eval.Action.result;
-                    ShopState.Unregister(Items, result.owner, result.shopItem.productId);
-                });
         }
     }
 }

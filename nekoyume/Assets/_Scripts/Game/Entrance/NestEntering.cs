@@ -1,6 +1,6 @@
 ﻿using DG.Tweening;
 using System.Collections;
-using Nekoyume.Action;
+using Nekoyume.BlockChain;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Factory;
 using Nekoyume.Game.Tween;
