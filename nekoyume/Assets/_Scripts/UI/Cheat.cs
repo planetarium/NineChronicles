@@ -161,14 +161,17 @@ namespace Nekoyume
             list.gameObject.SetActive(true);
         }
 
-        private void DummyBattle(int stage)
+        private void DummyBattle(int stageId)
         {
             Find<BattleResult>()?.Close();
-            GameObject go = GameObject.Find("Stage");
-            var simulator = new Simulator(new DebugRandom(), States.CurrentAvatarState.Value, new List<Food>(), stage);
+            
+            var simulator = new Simulator(new DebugRandom(), States.CurrentAvatarState.Value, new List<Food>(), stageId);
             simulator.Simulate();
             simulator.Log.result = _result;
-            go.GetComponent<Stage>().Play(simulator.Log);
+            
+            var stage = Game.Game.instance.stage;
+            stage.Play(simulator.Log);
+            
             Close();
         }
     }

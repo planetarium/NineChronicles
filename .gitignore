@@ -37,9 +37,12 @@ sysinfo.txt
 
 .DS_Store
 .vscode
+.vscode/
+.sln.DotSettins
 
 # Rider
 .idea
+.idea/
 nekoyume/Assets/Plugins/Editor/JetBrains
 nekoyume/Assets/Plugins/Editor/Jetbrains.meta
 nekoyume/Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll

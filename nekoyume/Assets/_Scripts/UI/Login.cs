@@ -65,37 +65,27 @@ namespace Nekoyume.UI
             for (var i = 0; i < slots.Length; i++)
             {
                 var slot = slots[i];
-
+                var playerSlot = slot.GetComponent<LoginPlayerSlot>();
                 var slotRect = slot.GetComponent<RectTransform>();
                 var targetPosition = new Vector3(-2.2f + i * 2.22f, 0.0f, 0.0f);
-                slotRect.anchoredPosition = targetPosition.ToCanvasPosition(Nekoyume.Game.ActionCamera.instance.Cam,
+                slotRect.anchoredPosition = targetPosition.ToCanvasPosition(Game.ActionCamera.instance.Cam,
                     MainCanvas.instance.Canvas);
 
-                var playerSlot = slot.GetComponent<LoginPlayerSlot>();
-                playerSlot.CreateView.SetActive(true);
-                playerSlot.NameView.SetActive(true);
-                playerSlot.DeleteView.SetActive(true);
-                try
+                if (States.AvatarStates.TryGetValue(i, out var avatarState))
                 {
-                    var avatarState = States.AvatarStates[i];
                     playerSlot.LabelLevel.text = $"LV.{avatarState.level}";
                     playerSlot.LabelName.text = $"{avatarState.name}";
                     playerSlot.CreateView.SetActive(false);
+                    playerSlot.NameView.SetActive(true);
+                    playerSlot.DeleteView.SetActive(true);
                 }
-                catch (Exception e)
+                else
                 {
-                    playerSlot.NameView.SetActive(false);
-                    playerSlot.DeleteView.SetActive(false);
-                    if (e is KeyNotFoundException || e is NullReferenceException)
-                    {
-                        var tween = slot.GetComponentInChildren<UI.Tween.DOTweenImageAlpha>();
-                        if (tween)
-                            tween.gameObject.SetActive(false);
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    playerSlot.LabelLevel.text = "LV.1";
+                    playerSlot.LabelName.text = "";
+                    playerSlot.CreateView.SetActive(true);
+                    playerSlot.NameView.SetActive(true);
+                    playerSlot.DeleteView.SetActive(false);   
                 }
             }
 
