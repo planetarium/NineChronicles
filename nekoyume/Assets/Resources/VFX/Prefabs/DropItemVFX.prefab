@@ -4763,8 +4763,9 @@ GameObject:
   - component: {fileID: 544455244146570386}
   - component: {fileID: 1891051865323658137}
   - component: {fileID: 708780606284774776}
+  - component: {fileID: 4300689548754571659}
   m_Layer: 5
-  m_Name: NY_itemdrop_01
+  m_Name: DropItemVFX
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9600,3 +9601,15 @@ ParticleSystemRenderer:
   m_Mesh2: {fileID: 0}
   m_Mesh3: {fileID: 0}
   m_MaskInteraction: 0
+--- !u!114 &4300689548754571659
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6747803266662703441}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc6babd8afc2424a93693d26dcdeb279, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

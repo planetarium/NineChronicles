@@ -1,6 +1,7 @@
 using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
+using Nekoyume.Game.VFX;
 using Nekoyume.UI;
 using UnityEngine;
 
@@ -25,6 +26,7 @@ namespace Nekoyume.Game.Item
         private static Status _status;
         private static Vector3 _inventoryPosition = Vector3.zero;
 
+        public DropItemVFX dropItemVfx;
         public ItemBase Item { get; private set; }
         public List<ItemBase> Items { get; private set; }
 
@@ -68,6 +70,7 @@ namespace Nekoyume.Game.Item
 
         private IEnumerator CoPlay()
         {
+            dropItemVfx.gameObject.SetActive(false);
             var pos = transform.position;
             var color = _renderer.color;
             color.a = BeginningAlphaOfFade;
@@ -76,6 +79,10 @@ namespace Nekoyume.Game.Item
 
             _tweenFade = _renderer.DOFade(1f, DurationToFade);
             _sequenceDrop = transform.DOJump(pos + DropAmount, DropJumpPower, 1, DurationToDrop);
+
+            yield return new WaitWhile(_sequenceDrop.IsPlaying);
+            dropItemVfx.gameObject.SetActive(true);
+
             yield return new WaitForSeconds(DelayAfterDrop);
             while (true)
             {
