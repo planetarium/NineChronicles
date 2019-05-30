@@ -20,7 +20,7 @@ namespace Nekoyume.Game
 
         public static readonly UnityEvent OnUpdateStatus = new UnityEvent();
 
-        public class GetItem : UnityEvent<Item.DropItem>
+        public class GetItem : UnityEvent<DropItem>
         {
         }
         public static readonly  GetItem OnGetItem = new GetItem();
