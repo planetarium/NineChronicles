@@ -277,6 +277,22 @@ namespace Nekoyume.BlockChain
             
             return createAvatar;
         }
+        
+        public DeleteAvatar DeleteAvatar(int index, Address avatarAddress)
+        {
+            var deleteAvatar = new DeleteAvatar
+            {
+                index = index,
+                avatarAddress = avatarAddress,
+            };
+            var actions = new List<PolymorphicAction<ActionBase>>
+            {
+                deleteAvatar
+            };
+            Task.Run(() => StageAgentActions(actions));
+            
+            return deleteAvatar;
+        }
 
         private IBlockPolicy<PolymorphicAction<ActionBase>> GetPolicy()
         {
@@ -297,7 +313,6 @@ namespace Nekoyume.BlockChain
             {
                 new RewardGold
                 {
-                    agentAddress = Address,
                     gold = RewardAmount
                 }
             });

@@ -32,6 +32,18 @@ namespace Nekoyume.BlockChain
                 .Last()
                 .ObserveOnMainThread();
         }
+        
+        public IObservable<ActionBase.ActionEvaluation<DeleteAvatar>> DeleteAvatar(int index)
+        {
+            var avatarAddress = States.Instance.avatarStates[index].address;
+            var action = AgentController.Agent.DeleteAvatar(index, avatarAddress);
+            
+            return ActionBase.EveryRender<DeleteAvatar>()
+                .SkipWhile(eval => !eval.Action.Id.Equals(action.Id))
+                .Take(1)
+                .Last()
+                .ObserveOnMainThread();
+        }
 
         public IObservable<ActionBase.ActionEvaluation<HackAndSlash>> HackAndSlash(
             List<Equipment> equipments,

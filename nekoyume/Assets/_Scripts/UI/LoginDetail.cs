@@ -68,7 +68,7 @@ namespace Nekoyume.UI
                 .CreateAvatar(AvatarManager.GetOrCreateAvatarAddress(_selectedIndex), _selectedIndex, nickName)
                 .Subscribe(eval =>
                 {
-                    var avatarState = AvatarManager.InitAvatarState(_selectedIndex);
+                    var avatarState = AvatarManager.SetIndex(_selectedIndex);
                     OnDidAvatarStateLoaded(avatarState);
                     Find<GrayLoadingScreen>()?.Close();
                 });
@@ -79,7 +79,7 @@ namespace Nekoyume.UI
         {
             btnLogin.SetActive(false);
             nameField.gameObject.SetActive(false);
-            var avatarState = AvatarManager.InitAvatarState(_selectedIndex);
+            var avatarState = AvatarManager.SetIndex(_selectedIndex);
             OnDidAvatarStateLoaded(avatarState);
             AudioController.PlayClick();
         }

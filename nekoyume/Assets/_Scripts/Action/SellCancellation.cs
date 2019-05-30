@@ -35,16 +35,21 @@ namespace Nekoyume.Action
             productId = new Guid((byte[]) plainValue["productId"]);
         }
 
-        protected override IAccountStateDelta ExecuteInternal(IActionContext actionCtx)
+        protected override IAccountStateDelta ExecuteInternal(IActionContext ctx)
         {
-            var states = actionCtx.PreviousStates;
-            if (actionCtx.Rehearsal)
+            var states = ctx.PreviousStates;
+            if (ctx.Rehearsal)
             {
                 states = states.SetState(ShopState.Address, MarkChanged);
-                return states.SetState(actionCtx.Signer, MarkChanged);
+                return states.SetState(ctx.Signer, MarkChanged);
             }
 
-            var avatarState = (AvatarState) states.GetState(actionCtx.Signer);
+            var avatarState = (AvatarState) states.GetState(ctx.Signer);
+            if (avatarState == null)
+            {
+                return SimpleError(ctx, ErrorCode.AvatarNotFound);
+            }
+            
             var shopState = (ShopState) states.GetState(ShopState.Address) ?? new ShopState();
 
             ShopItem target;
@@ -55,21 +60,20 @@ namespace Nekoyume.Action
             }
             catch
             {
-                return SimpleError(actionCtx, avatarState, ErrorCode.UnexpectedInternalAction);
+                return SimpleError(ctx, ErrorCode.UnexpectedCaseInActionExecute);
             }
             
             // 인벤토리에 아이템을 넣는다.
             avatarState.AddEquipmentItemToItems(target.item.Data.id, target.count);
             avatarState.updatedAt = DateTimeOffset.UtcNow;
-                
-            errorCode = ErrorCode.Success;
+            
             result = new ResultModel
             {
                 owner = sellerAvatarAddress,
                 shopItem = target
             };
 
-            states = states.SetState(actionCtx.Signer, avatarState);
+            states = states.SetState(ctx.Signer, avatarState);
             return states.SetState(ShopState.Address, shopState);
         }
     }

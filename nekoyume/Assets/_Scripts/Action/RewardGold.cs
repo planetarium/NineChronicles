@@ -10,35 +10,30 @@ namespace Nekoyume.Action
     [ActionType("reward_gold")]
     public class RewardGold : ActionBase
     {
-        public Address agentAddress;
         public decimal gold;
 
         public override IImmutableDictionary<string, object> PlainValue => new Dictionary<string, object>
         {
-            ["agentAddress"] = agentAddress.ToByteArray(),
             ["gold"] = gold.ToString(CultureInfo.InvariantCulture),
         }.ToImmutableDictionary();
         
         public override void LoadPlainValue(IImmutableDictionary<string, object> plainValue)
         {
-            agentAddress = new Address((byte[]) plainValue["agentAddress"]);
             gold = decimal.Parse(plainValue["gold"].ToString());
         }
 
-        public override IAccountStateDelta Execute(IActionContext actionCtx)
+        public override IAccountStateDelta Execute(IActionContext ctx)
         {
-            var states = actionCtx.PreviousStates;
-
-            if (actionCtx.Rehearsal)
+            var states = ctx.PreviousStates;
+            if (ctx.Rehearsal)
             {
-                return states.SetState(actionCtx.Miner, MarkChanged);
+                return states.SetState(ctx.Miner, MarkChanged);
             }
             
-            var agentState = (AgentState) states.GetState(actionCtx.Signer) ?? new AgentState(agentAddress);
-
+            var agentState = (AgentState) states.GetState(ctx.Signer) ?? new AgentState(ctx.Signer);
             agentState.gold += gold;
 
-            return states.SetState(actionCtx.Miner, agentState);
+            return states.SetState(ctx.Miner, agentState);
         }
     }
 }

@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using Nekoyume.BlockChain;
 using Nekoyume.Game.Controller;
+using UniRx;
 using UnityEngine;
 
 namespace Nekoyume.UI
@@ -40,26 +41,24 @@ namespace Nekoyume.UI
             if (!ready)
                 return;
 
-            var confirm = Widget.Create<Confirm>();
+            var confirm = Create<Confirm>();
             confirm.Show("캐릭터 삭제", "정말 삭제하시겠습니까?", "삭제합니다", "아니오");
-            confirm.CloseCallback = (ConfirmResult result) =>
+            confirm.CloseCallback = result =>
             {
-                if (result == ConfirmResult.Yes)
+                if (result != ConfirmResult.Yes)
                 {
-                    //Delete key, avatar
-                    var prefsKey = string.Format(AvatarManager.PrivateKeyFormat, index);
-                    string privateKey = PlayerPrefs.GetString(prefsKey, "");
-                    PlayerPrefs.DeleteKey(prefsKey);
-                    Debug.Log($"Delete {prefsKey}: {privateKey}");
-                    var fileName = string.Format(AvatarManager.AvatarFileFormat, index);
-                    string datPath = Path.Combine(Application.persistentDataPath, fileName);
-                    if (File.Exists(datPath))
-                        File.Delete(datPath);
-                    PlayerPrefs.Save();
-
-                    Game.Event.OnNestEnter.Invoke();
-                    Show();
+                    return;
                 }
+                
+                Find<GrayLoadingScreen>()?.Show();
+
+                ActionManager.instance.DeleteAvatar(index)
+                    .Subscribe(eval =>
+                    {
+                        Game.Event.OnNestEnter.Invoke();
+                        Show();
+                        Find<GrayLoadingScreen>()?.Close();
+                    });
             };
 
             AudioController.PlayClick();

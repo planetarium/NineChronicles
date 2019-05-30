@@ -41,19 +41,29 @@ namespace Nekoyume.Action
             productId = new Guid((byte[]) plainValue["productId"]);
         }
 
-        protected override IAccountStateDelta ExecuteInternal(IActionContext actionCtx)
+        protected override IAccountStateDelta ExecuteInternal(IActionContext ctx)
         {
-            var states = actionCtx.PreviousStates;
-            if (actionCtx.Rehearsal)
+            var states = ctx.PreviousStates;
+            if (ctx.Rehearsal)
             {   
                 states = states.SetState(buyerAgentAddress, MarkChanged);
-                states = states.SetState(actionCtx.Signer, MarkChanged);
+                states = states.SetState(ctx.Signer, MarkChanged);
                 states = states.SetState(sellerAgentAddress, MarkChanged);
                 return states.SetState(ShopState.Address, MarkChanged);
             }
 
             var buyerAgentState = (AgentState) states.GetState(buyerAgentAddress);
-            var buyerAvatarState = (AvatarState) states.GetState(actionCtx.Signer);
+            if (buyerAgentState == null)
+            {
+                return SimpleError(ctx, ErrorCode.BuyBuyerAgentNotFound);
+            }
+            
+            var buyerAvatarState = (AvatarState) states.GetState(ctx.Signer);
+            if (buyerAvatarState == null)
+            {
+                return SimpleError(ctx, ErrorCode.BuyBuyerAvatarNotFound);
+            }
+            
             var shopState = (ShopState) states.GetState(ShopState.Address) ?? new ShopState();
             
             try
@@ -61,17 +71,21 @@ namespace Nekoyume.Action
                 // 상점에서 구매할 아이템을 찾는다.
                 var target = shopState.Find(sellerAvatarAddress, productId);
                 var sellerAgentState = (AgentState) states.GetState(target.Value.sellerAgentAddress);
-
+                if (sellerAgentState == null)
+                {
+                    return SimpleError(ctx, ErrorCode.BuySellerAgentNotFound);
+                }
+                
                 // 돈은 있냐?
                 if (buyerAgentState.gold < target.Value.price)
                 {
-                    return SimpleError(actionCtx, buyerAvatarState, ErrorCode.BuyGoldNotEnough);
+                    return SimpleError(ctx, ErrorCode.BuyGoldNotEnough);
                 }
 
                 // 상점에서 구매할 아이템을 제거한다.
                 if (!shopState.Unregister(target.Key, target.Value))
                 {
-                    return SimpleError(actionCtx, buyerAvatarState, ErrorCode.UnexpectedInternalAction);
+                    return SimpleError(ctx, ErrorCode.UnexpectedCaseInActionExecute);
                 }
                 
                 // 구매자의 돈을 감소 시킨다.
@@ -84,7 +98,6 @@ namespace Nekoyume.Action
                 buyerAvatarState.AddEquipmentItemToItems(target.Value.item.Data.id, target.Value.count);
                 buyerAvatarState.updatedAt = DateTimeOffset.UtcNow;
 
-                errorCode = ErrorCode.Success;
                 result = new ResultModel
                 {
                     owner = target.Key,
@@ -92,17 +105,17 @@ namespace Nekoyume.Action
                 };
 
                 states = states.SetState(buyerAgentAddress, buyerAgentState);
-                states = states.SetState(actionCtx.Signer, buyerAvatarState);
+                states = states.SetState(ctx.Signer, buyerAvatarState);
                 states = states.SetState(target.Value.sellerAgentAddress, sellerAgentState);
                 return states.SetState(ShopState.Address, shopState);
             }
             catch (KeyNotFoundException)
             {
-                return SimpleError(actionCtx, buyerAvatarState, ErrorCode.BuySoldOut);
+                return SimpleError(ctx, ErrorCode.BuySoldOut);
             }
             catch
             {
-                return SimpleError(actionCtx, buyerAvatarState, ErrorCode.UnexpectedInternalAction);
+                return SimpleError(ctx, ErrorCode.UnexpectedCaseInActionExecute);
             }
         }
     }

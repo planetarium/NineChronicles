@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Nekoyume.Action;
-using Nekoyume.Data;
 using Nekoyume.Model;
 using Nekoyume.State;
 using UniRx;
@@ -26,7 +25,8 @@ namespace Nekoyume.BlockChain
         public void Start()
         {
             RewardGold();
-            CreateNovice();
+            CreateAvatar();
+            DeleteAvatar();
             HackAndSlash();
             Combination();
             Sell();
@@ -51,18 +51,34 @@ namespace Nekoyume.BlockChain
                 }).AddTo(_disposables);
         }
 
-        private void CreateNovice()
+        private void CreateAvatar()
         {
             ActionBase.EveryRender<CreateAvatar>()
                 .Where(eval => eval.InputContext.Signer == States.Instance.agentState.Value.address
-                               && eval.Action.errorCode == GameAction.ErrorCode.Success)
+                               && eval.Action.Succeed)
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
                 {
                     var index = eval.Action.index;
                     var avatarAddress = AvatarManager.GetOrCreateAvatarAddress(index);
                     States.Instance.agentState.Value.avatarAddresses.Add(index, avatarAddress);
-                    States.Instance.avatarStates.Add(index, (AvatarState) AgentController.Agent.GetState(avatarAddress));
+                    States.Instance.avatarStates.Add(index,
+                        (AvatarState) AgentController.Agent.GetState(avatarAddress));
+                }).AddTo(_disposables);
+        }
+        
+        private void DeleteAvatar()
+        {
+            ActionBase.EveryRender<DeleteAvatar>()
+                .Where(eval => eval.InputContext.Signer == States.Instance.agentState.Value.address
+                               && eval.Action.Succeed)
+                .ObserveOnMainThread()
+                .Subscribe(eval =>
+                {
+                    var index = eval.Action.index;
+                    States.Instance.agentState.Value.avatarAddresses.Remove(index);
+                    States.Instance.avatarStates.Remove(index);
+                    AvatarManager.DeleteAvatarPrivateKey(index);
                 }).AddTo(_disposables);
         }
         
@@ -70,7 +86,7 @@ namespace Nekoyume.BlockChain
         {
             ActionBase.EveryRender<HackAndSlash>()
                 .Where(eval => eval.InputContext.Signer == States.Instance.currentAvatarState.Value.address
-                               && eval.Action.errorCode == GameAction.ErrorCode.Success)
+                               && eval.Action.Succeed)
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
                 {
@@ -94,13 +110,18 @@ namespace Nekoyume.BlockChain
         {
             ActionBase.EveryRender<Combination>()
                 .Where(eval => eval.InputContext.Signer == States.Instance.currentAvatarState.Value.address
-                               && eval.Action.errorCode == GameAction.ErrorCode.Success)
+                               && (eval.Action.Succeed || eval.Action.errorCode == GameAction.ErrorCode.CombinationNoResultItem))
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
                 {
                     foreach (var material in eval.Action.Materials)
                     {
                         States.Instance.currentAvatarState.Value.RemoveItemFromItems(material.id, material.count);   
+                    }
+
+                    if (eval.Action.errorCode == GameAction.ErrorCode.CombinationNoResultItem)
+                    {
+                        return;
                     }
                     
                     var result = eval.Action.Result;
@@ -112,7 +133,7 @@ namespace Nekoyume.BlockChain
         {
             ActionBase.EveryRender<Sell>()
                 .Where(eval => eval.InputContext.Signer == States.Instance.currentAvatarState.Value.address
-                               && eval.Action.errorCode == GameAction.ErrorCode.Success)
+                               && eval.Action.Succeed)
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
                 {
@@ -127,7 +148,7 @@ namespace Nekoyume.BlockChain
         {
             ActionBase.EveryRender<SellCancellation>()
                 .Where(eval => eval.InputContext.Signer == States.Instance.currentAvatarState.Value.address
-                               && eval.Action.errorCode == GameAction.ErrorCode.Success)
+                               && eval.Action.Succeed)
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
                 {
@@ -141,7 +162,7 @@ namespace Nekoyume.BlockChain
         {
             ActionBase.EveryRender<Buy>()
                 .Where(eval => eval.InputContext.Signer == States.Instance.currentAvatarState.Value.address
-                               && eval.Action.errorCode == GameAction.ErrorCode.Success)
+                               && eval.Action.Succeed)
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
                 {
@@ -155,7 +176,7 @@ namespace Nekoyume.BlockChain
         {
             ActionBase.EveryRender<HackAndSlash>()
                 .Where(eval => eval.InputContext.Signer == States.Instance.currentAvatarState.Value.address
-                               && eval.Action.errorCode == GameAction.ErrorCode.Success)
+                               && eval.Action.Succeed)
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
                 {

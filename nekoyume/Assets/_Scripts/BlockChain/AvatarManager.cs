@@ -17,44 +17,77 @@ namespace Nekoyume.BlockChain
     /// </summary>
     public static class AvatarManager
     {
-        public const string PrivateKeyFormat = "private_key_{0}";
-        public const string AvatarFileFormat = "avatar_{0}.dat";
+        private const string PrivateKeyFormat = "private_key_{0}";
         
         private static int _currentAvatarIndex = -1;
-        private static PrivateKey _avatarPrivateKey;
-        private static string _saveFilePath;
+        private static PrivateKey _privateKey;
         
-        private static IDisposable _disposableForEveryRender;
-        
-        public static Address GetOrCreateAvatarAddress(int index)
+        public static PrivateKey GetOrCreateAvatarPrivateKey(int index)
         {
-            _currentAvatarIndex = index;
-
             var key = string.Format(PrivateKeyFormat, index);
-            var privateKeyHex = PlayerPrefs.GetString(key, "");
-
-            if (string.IsNullOrEmpty(privateKeyHex))
+            
+            if (PlayerPrefs.HasKey(key))
             {
-                _avatarPrivateKey = new PrivateKey();
-                PlayerPrefs.SetString(key, ByteUtil.Hex(_avatarPrivateKey.ByteArray));
+                var privateKeyHex = PlayerPrefs.GetString(key);
+                _privateKey = new PrivateKey(ByteUtil.ParseHex(privateKeyHex));
+                
+                Debug.Log($"Avatar PrivateKey Loaded '{key}': {privateKeyHex}");
             }
             else
             {
-                _avatarPrivateKey = new PrivateKey(ByteUtil.ParseHex(privateKeyHex));
+                _privateKey = new PrivateKey();
+                var privateKeyHex = ByteUtil.Hex(_privateKey.ByteArray);
+                PlayerPrefs.SetString(key, privateKeyHex);
+                
+                Debug.Log($"Avatar PrivateKey Created '{key}': {privateKeyHex}");
             }
 
-            return _avatarPrivateKey.PublicKey.ToAddress();
+            return _privateKey;
         }
         
-        public static AvatarState InitAvatarState(int index)
+        public static Address GetOrCreateAvatarAddress(int index)
+        {
+            return GetOrCreateAvatarPrivateKey(index).PublicKey.ToAddress();
+        }
+
+        public static bool DeleteAvatarPrivateKey(int index)
+        {
+            var key = string.Format(PrivateKeyFormat, index);
+            if (!PlayerPrefs.HasKey(key))
+            {
+                return false;
+            }
+            
+            if (_currentAvatarIndex == index)
+            {
+                ResetIndex();
+            }
+
+            var privateKeyHex = PlayerPrefs.GetString(key);
+            PlayerPrefs.DeleteKey(key);
+            
+            Debug.Log($"Avatar PrivateKey Deleted '{key}': {privateKeyHex}");
+            
+            return true;
+        }
+        
+        public static AvatarState SetIndex(int index)
         {
             if (!States.Instance.avatarStates.ContainsKey(index))
             {
                 return null;
             }
             
+            _currentAvatarIndex = index;
+            
             States.Instance.currentAvatarState.Value = States.Instance.avatarStates[index];
             return States.Instance.currentAvatarState.Value;
+        }
+
+        public static void ResetIndex()
+        {
+            _currentAvatarIndex = -1;
+            States.Instance.currentAvatarState.Value = null;
         }
 
         public static Transaction<PolymorphicAction<ActionBase>> MakeTransaction(
@@ -63,8 +96,8 @@ namespace Nekoyume.BlockChain
         )
         {
             return Transaction<PolymorphicAction<ActionBase>>.Create(
-                chain.GetNonce(_avatarPrivateKey.PublicKey.ToAddress()),
-                _avatarPrivateKey,
+                chain.GetNonce(_privateKey.PublicKey.ToAddress()),
+                _privateKey,
                 actions,
                 timestamp: DateTime.UtcNow
             );

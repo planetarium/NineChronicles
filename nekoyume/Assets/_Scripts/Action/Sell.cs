@@ -46,16 +46,21 @@ namespace Nekoyume.Action
             price = decimal.Parse(plainValue["price"].ToString());
         }
 
-        protected override IAccountStateDelta ExecuteInternal(IActionContext actionCtx)
+        protected override IAccountStateDelta ExecuteInternal(IActionContext ctx)
         {
-            var states = actionCtx.PreviousStates;
-            if (actionCtx.Rehearsal)
+            var states = ctx.PreviousStates;
+            if (ctx.Rehearsal)
             {
                 states = states.SetState(ShopState.Address, MarkChanged);
-                return states.SetState(actionCtx.Signer, MarkChanged);
+                return states.SetState(ctx.Signer, MarkChanged);
             }
 
-            var avatarState = (AvatarState) states.GetState(actionCtx.Signer);
+            var avatarState = (AvatarState) states.GetState(ctx.Signer);
+            if (avatarState == null)
+            {
+                return SimpleError(ctx, ErrorCode.AvatarNotFound);
+            }
+            
             var shopState = (ShopState) states.GetState(ShopState.Address) ?? new ShopState();
 
             // 인벤토리에서 판매할 아이템을 선택하고 수량을 조절한다.
@@ -71,7 +76,7 @@ namespace Nekoyume.Action
                 target = item;
                 if (target.Count < count)
                 {
-                    return SimpleError(actionCtx, avatarState, ErrorCode.SellItemCountNotEnoughInInventory);
+                    return SimpleError(ctx, ErrorCode.SellItemCountNotEnoughInInventory);
                 }
                 target.Count -= count;
             }
@@ -79,7 +84,7 @@ namespace Nekoyume.Action
             // 인벤토리에 판매할 아이템이 없는 경우.
             if (ReferenceEquals(target, null))
             {
-                return SimpleError(actionCtx, avatarState, ErrorCode.SellItemNotFoundInInventory);
+                return SimpleError(ctx, ErrorCode.SellItemNotFoundInInventory);
             }
 
             // 인벤토리에서 판매할 아이템을 뺀 후에 수량이 0일 경우.
@@ -97,17 +102,16 @@ namespace Nekoyume.Action
                 count = count,
                 price = price
             };
-            shopItem = shopState.Register(actionCtx.Signer, shopItem);
+            shopItem = shopState.Register(ctx.Signer, shopItem);
 
             avatarState.updatedAt = DateTimeOffset.UtcNow;
-            errorCode = ErrorCode.Success;
             result = new ResultModel
             {
-                sellerAvatarAddress = actionCtx.Signer,
+                sellerAvatarAddress = ctx.Signer,
                 shopItem = shopItem
             };
 
-            states = states.SetState(actionCtx.Signer, avatarState);
+            states = states.SetState(ctx.Signer, avatarState);
             return states.SetState(ShopState.Address, shopState);
         }
     }

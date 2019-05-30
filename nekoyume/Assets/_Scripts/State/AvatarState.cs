@@ -31,7 +31,7 @@ namespace Nekoyume.State
         {
             if (address == null)
             {
-                throw new ArgumentNullException();                
+                throw new ArgumentNullException(nameof(address));                
             }
             
             this.name = name ?? "";
@@ -43,8 +43,27 @@ namespace Nekoyume.State
             worldStage = 1;
             id = 100010;
             battleLog = null;
-            
             updatedAt = DateTimeOffset.UtcNow;
+        }
+        
+        public AvatarState(AvatarState avatarState) : base(avatarState.address)
+        {
+            if (avatarState == null)
+            {
+                throw new ArgumentNullException(nameof(avatarState));
+            }
+            
+            name = avatarState.name;
+            level = avatarState.level;
+            exp = avatarState.exp;
+            items = avatarState.items;
+            hpMax = avatarState.hpMax;
+            currentHP = avatarState.currentHP;
+            worldStage = avatarState.worldStage;
+            id = avatarState.id;
+            battleLog = avatarState.battleLog;
+            updatedAt = avatarState.updatedAt;
+            clearedAt = avatarState.clearedAt;
         }
         
         public void Update(Player player)

@@ -34,28 +34,36 @@ namespace Nekoyume.Action
             name = (string) plainValue["name"];
         }
 
-        protected override IAccountStateDelta ExecuteInternal(IActionContext actionCtx)
+        protected override IAccountStateDelta ExecuteInternal(IActionContext ctx)
         {
-            var states = actionCtx.PreviousStates;
-            if (actionCtx.Rehearsal)
+            var states = ctx.PreviousStates;
+            if (ctx.Rehearsal)
             {
-                states = states.SetState(actionCtx.Signer, MarkChanged);
+                states = states.SetState(ctx.Signer, MarkChanged);
                 return states.SetState(avatarAddress, MarkChanged);
+            }
+            
+            var agentState = (AgentState)states.GetState(ctx.Signer);
+            if (agentState == null)
+            {
+                return SimpleError(ctx, ErrorCode.AgentNotFound);
             }
             
             var avatarState = (AvatarState)states.GetState(avatarAddress);
             if (avatarState != null)
             {
-                return SimpleError(actionCtx, avatarState, ErrorCode.CreateAvatarAlreadyExistAvatarAddress);
+                return SimpleError(ctx, ErrorCode.CreateAvatarAlreadyExistAvatarAddress);
             }
 
-            errorCode = ErrorCode.Success;
+            if (agentState.avatarAddresses.ContainsKey(index))
+            {
+                return SimpleError(ctx, ErrorCode.CreateAvatarAlreadyExistKeyAvatarAddress);
+            }
 
-            var agentState = (AgentState)states.GetState(actionCtx.Signer);
             agentState.avatarAddresses.Add(index, avatarAddress);
             avatarState = CreateAvatarState(name, avatarAddress);
 
-            states = states.SetState(actionCtx.Signer, agentState);
+            states = states.SetState(ctx.Signer, agentState);
             return states.SetState(avatarAddress, avatarState);
         }
         

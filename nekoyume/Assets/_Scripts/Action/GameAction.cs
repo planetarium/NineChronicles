@@ -17,9 +17,10 @@ namespace Nekoyume.Action
             }
         );
 
-        public int errorCode = ErrorCode.Fail;
+        public int errorCode = ErrorCode.Success;
 
-        public Guid Id { get; internal set; }
+        public Guid Id { get; private set; }
+        public bool Succeed => errorCode == ErrorCode.Success;
         public override IImmutableDictionary<string, object> PlainValue => PlainValueInternal.SetItem("id", Id.ToString());
         protected abstract IImmutableDictionary<string, object> PlainValueInternal { get; }
         
@@ -54,12 +55,23 @@ namespace Nekoyume.Action
         
         protected abstract IAccountStateDelta ExecuteInternal(IActionContext ctx);
         
-        protected IAccountStateDelta SimpleError(IActionContext actionCtx, AvatarState ctx, int errorCode)
+        protected IAccountStateDelta SimpleError(IActionContext ctx, int code)
         {
-            ctx.updatedAt = DateTimeOffset.UtcNow;
-            this.errorCode = errorCode;
-                    
-            return actionCtx.PreviousStates.SetState(actionCtx.Signer, ctx);
+            errorCode = code;
+            return ctx.PreviousStates;
+        }
+        
+        protected IAccountStateDelta SimpleAgentError(IActionContext ctx, Address address, AgentState agentState, int code)
+        {
+            errorCode = code;
+            return ctx.PreviousStates.SetState(address, agentState);
+        }
+        
+        protected IAccountStateDelta SimpleAvatarError(IActionContext ctx, Address address, AvatarState avatarState, int code)
+        {
+            avatarState.updatedAt = DateTimeOffset.UtcNow;
+            errorCode = code;
+            return ctx.PreviousStates.SetState(address, avatarState);
         }
     }
 }

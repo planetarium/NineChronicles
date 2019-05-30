@@ -22,6 +22,7 @@ namespace Nekoyume.BlockChain
     /// </summary>
     public class AgentController : MonoSingleton<AgentController>
     {
+        public const string PrivateKeyFormat = "private_key_{0}";
 #if UNITY_EDITOR
         private const string AgentStoreDirName = "planetarium_dev";
         private const string DefaultHost = "127.0.0.1";
@@ -112,7 +113,7 @@ namespace Nekoyume.BlockChain
         private static PrivateKey GetPrivateKey(CommandLineOptions options)
         {
             PrivateKey privateKey;
-            var key = string.Format(AvatarManager.PrivateKeyFormat, "agent");
+            var key = string.Format(PrivateKeyFormat, "agent");
             var privateKeyHex = options.PrivateKey ?? PlayerPrefs.GetString(key, "");
 
             if (string.IsNullOrEmpty(privateKeyHex))

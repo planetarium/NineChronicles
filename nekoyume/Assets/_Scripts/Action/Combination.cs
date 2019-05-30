@@ -71,15 +71,19 @@ namespace Nekoyume.Action
             Materials = ByteSerializer.Deserialize<List<ItemModel>>((byte[]) plainValue["Materials"]);
         }
 
-        protected override IAccountStateDelta ExecuteInternal(IActionContext actionCtx)
+        protected override IAccountStateDelta ExecuteInternal(IActionContext ctx)
         {
-            var states = actionCtx.PreviousStates;
-            if (actionCtx.Rehearsal)
+            var states = ctx.PreviousStates;
+            if (ctx.Rehearsal)
             {
-                return states.SetState(actionCtx.Signer, MarkChanged);
+                return states.SetState(ctx.Signer, MarkChanged);
             }
             
-            var avatarState = (AvatarState) states.GetState(actionCtx.Signer);
+            var avatarState = (AvatarState) states.GetState(ctx.Signer);
+            if (avatarState == null)
+            {
+                return SimpleError(ctx, ErrorCode.AvatarNotFound);
+            }
 
             // 인벤토리에 재료를 갖고 있는지 검증.
             var pairs = new List<ItemModelInventoryItemPair>();
@@ -94,7 +98,7 @@ namespace Nekoyume.Action
                 }
                 catch (InvalidOperationException)
                 {
-                    return SimpleError(actionCtx, avatarState, ErrorCode.Fail);
+                    return SimpleError(ctx, ErrorCode.CombinationNotFoundMaterials);
                 }
             }
 
@@ -140,7 +144,7 @@ namespace Nekoyume.Action
             if (ReferenceEquals(resultItem, null) ||
                 resultCount == 0)
             {
-                return SimpleError(actionCtx, avatarState, ErrorCode.Fail);
+                return SimpleAvatarError(ctx, ctx.Signer, avatarState, ErrorCode.CombinationNoResultItem);
             }
             
             // 조합 결과 획득.
@@ -160,21 +164,20 @@ namespace Nekoyume.Action
                 }
                 else
                 {
-                    return SimpleError(actionCtx, avatarState, ErrorCode.KeyNotFoundInTable);
+                    return SimpleError(ctx, ErrorCode.KeyNotFoundInTable);
                 }
             }
             
             // 획득이 잘 됐는지 로그 찍기.
             avatarState.items.ForEach(item => Debug.Log($"획득 후 // Id:{item.Item.Data.id}, Count:{item.Count}"));
 
-            errorCode = ErrorCode.Success;
             Result = new ResultModel()
             {
                 Item = new ItemModel(resultItem.Id, resultCount)
             };
 
             avatarState.updatedAt = DateTimeOffset.UtcNow;
-            return states.SetState(actionCtx.Signer, avatarState);
+            return states.SetState(ctx.Signer, avatarState);
         }
     }
 }
