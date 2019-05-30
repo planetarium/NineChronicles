@@ -197,7 +197,8 @@ namespace Nekoyume.BlockChain
 
                 if (actions.Any())
                 {
-                    StageAvatarActions(actions);
+                    var task = Task.Run(() => StageAvatarActions(actions));
+                    yield return new WaitUntil(() => task.IsCompleted);
                 }
             }
         }
@@ -210,17 +211,10 @@ namespace Nekoyume.BlockChain
                 var txs = new HashSet<Transaction<PolymorphicAction<ActionBase>>> { tx };
                 var task = Task.Run(() =>
                 {
-                    try
-                    {
-                        _blocks.StageTransactions(txs);
-                        var block = _blocks.MineBlock(Address);
-                        _swarm.BroadcastBlocks(new[] {block});
-                        return block;
-                    }
-                    catch (Exception e)
-                    {
-                        throw;
-                    }
+                    _blocks.StageTransactions(txs);
+                    var block = _blocks.MineBlock(Address);
+                    _swarm.BroadcastBlocks(new[] {block});
+                    return block;
                 });
                 yield return new WaitUntil(() => task.IsCompleted);
 
@@ -275,10 +269,11 @@ namespace Nekoyume.BlockChain
                 index = index,
                 name = nickName,
             };
-            StageAgentActions(new List<PolymorphicAction<ActionBase>>
+            var actions = new List<PolymorphicAction<ActionBase>>
             {
-                createAvatar  
-            });
+                createAvatar
+            };
+            Task.Run(() => StageAgentActions(actions));
             
             return createAvatar;
         }

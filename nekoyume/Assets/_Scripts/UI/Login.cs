@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using Nekoyume.BlockChain;
 using Nekoyume.Game.Controller;
@@ -10,6 +11,16 @@ namespace Nekoyume.UI
         public bool ready = false;
         public GameObject[] slots;
 
+        protected override void Awake()
+        {
+            base.Awake();
+
+            if (slots.Length != GameConfig.SlotCount)
+            {
+                throw new Exception("Login widget's slots.Length is not equals GameConfig.SlotCount.");
+            }
+        }
+
         public void SlotClick(int index)
         {
             if (!ready)
@@ -21,7 +32,7 @@ namespace Nekoyume.UI
         }
 
         /// <summary>
-        /// ToDo. DeleteNovice 액션을 통해서 삭제되도록.
+        /// ToDo. DeleteAvatar 액션을 통해서 삭제되도록.
         /// </summary>
         /// <param name="index"></param>
         public void SlotDeleteClick(int index)
@@ -67,12 +78,11 @@ namespace Nekoyume.UI
                 slotRect.anchoredPosition = targetPosition.ToCanvasPosition(Game.ActionCamera.instance.Cam,
                     MainCanvas.instance.Canvas);
 
-                if (States.AvatarStates.TryGetValue(i, out var avatarState))
+                if (States.Instance.avatarStates.TryGetValue(i, out var avatarState))
                 {
                     playerSlot.LabelLevel.text = $"LV.{avatarState.level}";
                     playerSlot.LabelName.text = $"{avatarState.name}";
                     playerSlot.CreateView.SetActive(false);
-                    playerSlot.NameView.SetActive(true);
                     playerSlot.DeleteView.SetActive(true);
                 }
                 else
@@ -80,9 +90,9 @@ namespace Nekoyume.UI
                     playerSlot.LabelLevel.text = "LV.1";
                     playerSlot.LabelName.text = "";
                     playerSlot.CreateView.SetActive(true);
-                    playerSlot.NameView.SetActive(true);
                     playerSlot.DeleteView.SetActive(false);   
                 }
+                playerSlot.NameView.SetActive(true);
             }
 
             AudioController.instance.PlayMusic(AudioController.MusicCode.SelectCharacter);

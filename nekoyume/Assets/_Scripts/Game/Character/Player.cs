@@ -126,7 +126,7 @@ namespace Nekoyume.Game.Character
 
             if (model.level != level)
             {
-                AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ActionStatusLevelUp, level);
+                AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionStatusLevelUp, level);
                 AudioController.instance.PlaySfx(AudioController.SfxCode.LevelUp);
                 VFXController.instance.Create<BattleLevelUp01VFX>(transform, HUDOffset);
                 yield return new WaitForSeconds(0.3f);

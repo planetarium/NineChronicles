@@ -165,7 +165,7 @@ namespace Nekoyume
         {
             Find<BattleResult>()?.Close();
             
-            var simulator = new Simulator(new DebugRandom(), States.CurrentAvatarState.Value, new List<Food>(), stageId);
+            var simulator = new Simulator(new DebugRandom(), States.Instance.currentAvatarState.Value, new List<Food>(), stageId);
             simulator.Simulate();
             simulator.Log.result = _result;
             

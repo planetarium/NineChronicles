@@ -8,11 +8,11 @@ namespace Nekoyume.Manager
 {
     public class AnalyticsManager
     {
-        private static class Instance
+        private static class Singleton
         {
             internal static readonly AnalyticsManager Value = new AnalyticsManager();
 
-            static Instance()
+            static Singleton()
             {
             }
         }
@@ -48,7 +48,7 @@ namespace Nekoyume.Manager
 
         private const string StringValue = "Value";
 
-        public static AnalyticsManager instance => Instance.Value;
+        public static AnalyticsManager Instance => Singleton.Value;
 
         private readonly Dictionary<string, object> _dictionary = new Dictionary<string, object>();
 

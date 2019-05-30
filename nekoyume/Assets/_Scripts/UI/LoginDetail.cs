@@ -65,7 +65,7 @@ namespace Nekoyume.UI
             var nickName = nameField.text;
 
             ActionManager.instance
-                .CreateNovice(AvatarManager.GetOrCreateAvatarAddress(_selectedIndex), _selectedIndex, nickName)
+                .CreateAvatar(AvatarManager.GetOrCreateAvatarAddress(_selectedIndex), _selectedIndex, nickName)
                 .Subscribe(eval =>
                 {
                     var avatarState = AvatarManager.InitAvatarState(_selectedIndex);
@@ -98,7 +98,7 @@ namespace Nekoyume.UI
             _selectedIndex = index;
             AvatarManager.GetOrCreateAvatarAddress(_selectedIndex);
             Player player;
-            var isCreateMode = !States.AvatarStates.ContainsKey(index);
+            var isCreateMode = !States.Instance.avatarStates.ContainsKey(index);
             if (isCreateMode)
             {
                 player = new Player();
@@ -107,9 +107,9 @@ namespace Nekoyume.UI
             }
             else
             {
-                States.CurrentAvatarState.Value = States.AvatarStates[_selectedIndex];
-                player = new Player(States.CurrentAvatarState.Value);
-                nameInfo.text = States.CurrentAvatarState.Value.name;
+                States.Instance.currentAvatarState.Value = States.Instance.avatarStates[_selectedIndex];
+                player = new Player(States.Instance.currentAvatarState.Value);
+                nameInfo.text = States.Instance.currentAvatarState.Value.name;
             }
             
             // create new or login

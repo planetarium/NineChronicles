@@ -13,7 +13,7 @@ namespace Nekoyume.Action
             public const int UnexpectedInternalAction = -2;
             public const int KeyNotFoundInTable = -3;
 
-            #region CreateNovice
+            #region CreateAvatar
 
             public const int CreateAvatarAlreadyExistAvatarAddress = -100;
 

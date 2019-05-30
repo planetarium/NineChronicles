@@ -167,7 +167,7 @@ namespace Nekoyume.UI.Model
                 return;
             }
 
-            var key = States.CurrentAvatarState.Value.address;
+            var key = States.Instance.currentAvatarState.Value.address;
             if (!_shopItems.ContainsKey(key))
             {
                 return;

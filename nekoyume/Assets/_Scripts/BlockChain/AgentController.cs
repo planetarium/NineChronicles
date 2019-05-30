@@ -77,20 +77,20 @@ namespace Nekoyume.BlockChain
             Agent.PreloadEnded += (_, __) =>
             {
                 // 에이전트의 준비단계가 끝나면 에이전트의 상태를 한 번 동기화 한다.
-                States.AgentState.Value = (AgentState) Agent.GetState(Agent.Address) ??
+                States.Instance.agentState.Value = (AgentState) Agent.GetState(Agent.Address) ??
                                      new AgentState(Agent.Address);
                 // 에이전트에 포함된 모든 아바타의 상태를 한 번씩 동기화 한다.
-                foreach (var pair in States.AgentState.Value.avatarAddresses)
+                foreach (var pair in States.Instance.agentState.Value.avatarAddresses)
                 {
                     var avatarState = (AvatarState) Agent.GetState(pair.Value);
-                    States.AvatarStates.Add(pair.Key, avatarState);
+                    States.Instance.avatarStates.Add(pair.Key, avatarState);
                 }
                 // 랭킹의 상태를 한 번 동기화 한다.
-                States.RankingState.Value = (RankingState) Agent.GetState(RankingState.Address) ?? new RankingState();
+                States.Instance.rankingState.Value = (RankingState) Agent.GetState(RankingState.Address) ?? new RankingState();
                 // 상점의 상태를 한 번 동기화 한다.
-                States.ShopState.Value = (ShopState) Agent.GetState(ShopState.Address) ?? new ShopState();
+                States.Instance.shopState.Value = (ShopState) Agent.GetState(ShopState.Address) ?? new ShopState();
                 // 그리고 모든 액션에 대한 랜더를 핸들링하기 시작한다.
-                ActionRenderHandler.Start();
+                ActionRenderHandler.Instance.Start();
                 // 그리고 마이닝을 시작한다.
                 StartNullableCoroutine(_miner);
                 callback(true);
@@ -229,7 +229,7 @@ namespace Nekoyume.BlockChain
 
         protected override void OnDestroy()
         {
-            ActionRenderHandler.Stop();
+            ActionRenderHandler.Instance.Stop();
             if (Agent != null)
             {
                 PlayerPrefs.SetString(ChainIdKey, Agent.ChainId.ToString());

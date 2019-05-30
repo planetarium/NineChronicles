@@ -107,7 +107,7 @@ namespace Nekoyume.UI
             }
             _player.gameObject.SetActive(false);
 
-            SetData(new Model.Combination(States.CurrentAvatarState.Value.items, stagedItems.Length));
+            SetData(new Model.Combination(States.Instance.currentAvatarState.Value.items, stagedItems.Length));
             
             AudioController.instance.PlayMusic(AudioController.MusicCode.Combination);
         }
@@ -266,7 +266,7 @@ namespace Nekoyume.UI
             ActionManager.instance.Combination(_data.stagedItems.ToList())
                 .Subscribe(ResponseCombination)
                 .AddTo(this);
-            AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ClickCombinationCombination);
+            AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickCombinationCombination);
         }
 
         /// <summary>
@@ -283,7 +283,7 @@ namespace Nekoyume.UI
                     materialItems = _data.stagedItems
                 };
                 
-                AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ActionCombinationFail);
+                AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionCombinationFail);
                 _loadingScreen.Close();
                 return;
             }
@@ -301,7 +301,7 @@ namespace Nekoyume.UI
                 materialItems = _data.stagedItems
             };
             
-            AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ActionCombinationSuccess);
+            AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionCombinationSuccess);
             _loadingScreen.Close();
         }
 

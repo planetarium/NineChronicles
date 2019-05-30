@@ -55,11 +55,11 @@ namespace Nekoyume.UI
             
             if (result == BattleLog.Result.Win)
             {
-                AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ClickBattleResultNext);
+                AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickBattleResultNext);
             }
             else
             {
-                AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ClickBattleResultRetry);
+                AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickBattleResultRetry);
             }
         }
 
@@ -99,7 +99,7 @@ namespace Nekoyume.UI
             Game.Event.OnRoomEnter.Invoke();
             Close();
             AudioController.PlayClick();
-            AnalyticsManager.instance.BattleLeave();
+            AnalyticsManager.Instance.BattleLeave();
         }
 
         public void Show(BattleLog.Result battleResult, bool repeat)
@@ -127,7 +127,7 @@ namespace Nekoyume.UI
 
                 AudioController.instance.PlayMusic(AudioController.MusicCode.Win, 0.3f);
                 _battleWinVFX = VFXController.instance.Create<BattleWinVFX>(ActionCamera.instance.transform, VfxBattleWinOffset);
-                AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ActionBattleWin);
+                AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionBattleWin);
             }
             else
             {
@@ -139,7 +139,7 @@ namespace Nekoyume.UI
                 _autoNext = false;
 
                 AudioController.instance.PlayMusic(AudioController.MusicCode.Lose);
-                AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ActionBattleLose);
+                AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionBattleLose);
             }
             timeText.gameObject.SetActive(_autoNext);
 
@@ -188,7 +188,7 @@ namespace Nekoyume.UI
                 {
                     _repeat = false;
                     Submit();
-                    AnalyticsManager.instance.BattleContinueAutomatically();
+                    AnalyticsManager.Instance.BattleContinueAutomatically();
                 }
             }
         }

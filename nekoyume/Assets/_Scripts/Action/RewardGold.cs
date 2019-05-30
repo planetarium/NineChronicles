@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Globalization;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.State;
@@ -10,18 +11,18 @@ namespace Nekoyume.Action
     public class RewardGold : ActionBase
     {
         public Address agentAddress;
-        public int gold;
+        public decimal gold;
 
         public override IImmutableDictionary<string, object> PlainValue => new Dictionary<string, object>
         {
             ["agentAddress"] = agentAddress.ToByteArray(),
-            ["gold"] = gold.ToString(),
+            ["gold"] = gold.ToString(CultureInfo.InvariantCulture),
         }.ToImmutableDictionary();
         
         public override void LoadPlainValue(IImmutableDictionary<string, object> plainValue)
         {
             agentAddress = new Address((byte[]) plainValue["agentAddress"]);
-            gold = int.Parse(plainValue["gold"].ToString());
+            gold = decimal.Parse(plainValue["gold"].ToString());
         }
 
         public override IAccountStateDelta Execute(IActionContext actionCtx)

@@ -61,7 +61,7 @@ namespace Nekoyume.UI
             Find<QuestPreparation>()?.Show();
             Find<Gold>()?.Show();
             AudioController.PlayClick();
-            AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ClickMainBattle);
+            AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickMainBattle);
         }
 
         public void ShopClick()
@@ -71,7 +71,7 @@ namespace Nekoyume.UI
             Find<Shop>()?.Show();
             Find<Gold>()?.Show();
             AudioController.PlayClick();
-            AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ClickMainShop);
+            AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickMainShop);
         }
 
         public void CombinationClick()
@@ -81,7 +81,7 @@ namespace Nekoyume.UI
             Find<Combination>()?.Show();
             Find<Gold>()?.Show();
             AudioController.PlayClick();
-            AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ClickMainCombination);
+            AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickMainCombination);
         }
 
         public void RankingClick()

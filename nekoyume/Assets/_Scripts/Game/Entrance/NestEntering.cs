@@ -34,7 +34,7 @@ namespace Nekoyume.Game.Entrance
                 throw new NotFoundComponentException<PlayerFactory>();
             }
 
-            for (var i = 0; i < 3; i++)
+            for (var i = 0; i < GameConfig.SlotCount; i++)
             {
                 Player player;
                 bool active;
@@ -43,7 +43,7 @@ namespace Nekoyume.Game.Entrance
                 var placeRes = Resources.Load<GameObject>("Prefab/PlayerPlace");
                 if (i % 2 == 0)
                     endPos.y = -1.1f;
-                if (States.AvatarStates.TryGetValue(i, out var avatarState))
+                if (States.Instance.avatarStates.TryGetValue(i, out var avatarState))
                 {
                     player = factory.Create(avatarState).GetComponent<Player>();
                     player.animator.Appear();

@@ -20,8 +20,6 @@ namespace Nekoyume.BlockChain
         public const string PrivateKeyFormat = "private_key_{0}";
         public const string AvatarFileFormat = "avatar_{0}.dat";
         
-//        public static event Action<AvatarState> DidAvatarStateLoaded = delegate { };
-        
         private static int _currentAvatarIndex = -1;
         private static PrivateKey _avatarPrivateKey;
         private static string _saveFilePath;
@@ -50,13 +48,13 @@ namespace Nekoyume.BlockChain
         
         public static AvatarState InitAvatarState(int index)
         {
-            if (!States.AvatarStates.ContainsKey(index))
+            if (!States.Instance.avatarStates.ContainsKey(index))
             {
                 return null;
             }
             
-            States.CurrentAvatarState.Value = States.AvatarStates[index];
-            return States.CurrentAvatarState.Value;
+            States.Instance.currentAvatarState.Value = States.Instance.avatarStates[index];
+            return States.Instance.currentAvatarState.Value;
         }
 
         public static Transaction<PolymorphicAction<ActionBase>> MakeTransaction(

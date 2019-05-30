@@ -84,7 +84,7 @@ namespace Nekoyume.UI
         {
             if (_player != null)
             {
-                _avatarName = States.CurrentAvatarState.Value.name;
+                _avatarName = States.Instance.currentAvatarState.Value.name;
                 TextLevelName.text = $"LV. {_player.Level} {_avatarName}";
                 TextHP.text = $"{_player.HP}/{_player.HPMax}";
                 TextExp.text = $"{_player.EXP}/{_player.EXPMax}";
@@ -117,7 +117,7 @@ namespace Nekoyume.UI
                 _statusDetail.Close();   
             }
                 
-            AnalyticsManager.instance.OnEvent(Find<Menu>().gameObject.activeSelf
+            AnalyticsManager.Instance.OnEvent(Find<Menu>().gameObject.activeSelf
                 ? AnalyticsManager.EventName.ClickMainInventory
                 : AnalyticsManager.EventName.ClickBattleInventory);
         }
@@ -152,7 +152,7 @@ namespace Nekoyume.UI
                 _inventory.Close();
             }
 
-            AnalyticsManager.instance.OnEvent(Find<Menu>().gameObject.activeSelf
+            AnalyticsManager.Instance.OnEvent(Find<Menu>().gameObject.activeSelf
                 ? AnalyticsManager.EventName.ClickMainEquipment
                 : AnalyticsManager.EventName.ClickBattleEquipment);
         }

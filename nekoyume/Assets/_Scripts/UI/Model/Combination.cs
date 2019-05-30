@@ -165,7 +165,7 @@ namespace Nekoyume.UI.Model
 
                 itemCountPopup.Value.item.Value = obj;
                 itemCountPopup.Value.item.Value.minCount.Value = 1;
-                AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ClickCombinationEditMaterialItem);
+                AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickCombinationEditMaterialItem);
             });
             data.onDelete.Subscribe(obj =>
             {
@@ -175,7 +175,7 @@ namespace Nekoyume.UI.Model
                 }
 
                 stagedItems.Remove(obj);
-                AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ClickCombinationRemoveMaterialItem);
+                AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickCombinationRemoveMaterialItem);
             });
 
             SetStaged(data.item.Value.Data.id, true);

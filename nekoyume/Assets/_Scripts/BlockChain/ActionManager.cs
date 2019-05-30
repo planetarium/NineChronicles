@@ -22,7 +22,7 @@ namespace Nekoyume.BlockChain
         
         #region Actions
         
-        public IObservable<ActionBase.ActionEvaluation<CreateAvatar>> CreateNovice(Address avatarAddress, int index, string nickName)
+        public IObservable<ActionBase.ActionEvaluation<CreateAvatar>> CreateAvatar(Address avatarAddress, int index, string nickName)
         {
             var action = AgentController.Agent.CreateAvatar(avatarAddress, index, nickName);
             
@@ -47,7 +47,7 @@ namespace Nekoyume.BlockChain
             ProcessAction(action);
 
             var itemIDs = equipments.Select(e => e.Data.id).Concat(foods.Select(f => f.Data.id)).ToArray();
-            AnalyticsManager.instance.Battle(itemIDs);
+            AnalyticsManager.Instance.Battle(itemIDs);
             return ActionBase.EveryRender<HackAndSlash>()
                 .SkipWhile(eval => !eval.Action.Id.Equals(action.Id))
                 .Take(1)
@@ -58,7 +58,7 @@ namespace Nekoyume.BlockChain
         public IObservable<ActionBase.ActionEvaluation<Combination>> Combination(
             List<UI.Model.CountEditableItem> materials)
         {
-            AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ActionCombination);
+            AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionCombination);
             
             var action = new Combination();
             materials.ForEach(m => action.Materials.Add(new Combination.ItemModel(m)));
@@ -75,7 +75,7 @@ namespace Nekoyume.BlockChain
         {
             var action = new Sell
             {
-                sellerAgentAddress = States.AgentState.Value.address,
+                sellerAgentAddress = States.Instance.agentState.Value.address,
                 productId = Guid.NewGuid(),
                 itemId = itemId,
                 count = count,
@@ -110,7 +110,7 @@ namespace Nekoyume.BlockChain
         {
             var action = new Buy
             {
-                buyerAgentAddress = States.AgentState.Value.address,
+                buyerAgentAddress = States.Instance.agentState.Value.address,
                 sellerAgentAddress = sellerAgentAddress,
                 sellerAvatarAddress = sellerAvatarAddress,
                 productId = productId
