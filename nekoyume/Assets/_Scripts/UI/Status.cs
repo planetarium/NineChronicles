@@ -2,6 +2,8 @@ using Nekoyume.Manager;
 using Nekoyume.BlockChain;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
+using Nekoyume.Game.Item;
+using Nekoyume.Game.VFX;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -18,6 +20,7 @@ namespace Nekoyume.UI
         public Slider ExpBar;
         public Toggle BtnStatus;
         public Toggle BtnInventory;
+        public DropItemInventoryVFX InventoryVfx;
 
         private string _avatarName = "";
         private Player _player;
@@ -33,8 +36,15 @@ namespace Nekoyume.UI
 
             Game.Event.OnRoomEnter.AddListener(OnRoomEnter);
             Game.Event.OnUpdateStatus.AddListener(OnUpdateStatus);
+            Game.Event.OnGetItem.AddListener(OnGetItem);
+            InventoryVfx.Stop();
         }
-        
+
+        private void OnGetItem(DropItem dropItem)
+        {
+            InventoryVfx.Play();
+        }
+
         #endregion
 
         public override void Show()
