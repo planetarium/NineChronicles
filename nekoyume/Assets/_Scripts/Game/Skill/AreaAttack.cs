@@ -7,7 +7,8 @@ namespace Nekoyume.Game.Skill
     [Serializable]
     public class AreaAttack: AttackBase
     {
-        public AreaAttack(CharacterBase caster, float chance, SkillEffect effect) : base(caster, chance, effect)
+        public AreaAttack(CharacterBase caster, float chance, SkillEffect effect,
+            Data.Table.Elemental.ElementalType elemental) : base(caster, chance, effect, elemental)
         {
         }
 
