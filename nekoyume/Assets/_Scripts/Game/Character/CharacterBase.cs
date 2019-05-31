@@ -25,6 +25,7 @@ namespace Nekoyume.Game.Character
         public int Power = 100;
         public float RunSpeed = 0.0f;
         public string targetTag = "";
+        public string characterSize = "s";
 
         protected virtual WeightType WeightType => WeightType.Small;
 
@@ -379,21 +380,28 @@ namespace Nekoyume.Game.Character
 
         public IEnumerator CoDoubleAttack(IEnumerable<Model.Skill.SkillInfo> infos)
         {
-            yield return StartCoroutine(CoAnimationCast());
 
             var skillInfos = infos.ToList();
             foreach (var info in skillInfos)
             {
                 var target = Game.instance.stage.GetCharacter(info.Target);
-                ProcessAttack(target, info);
-                if (skillInfos.First() == info)
+                var first = skillInfos.First() == info;
+                var pos = target.transform.position;
+                pos.x -= 0.2f;
+                pos.y += 0.32f;
+                var effect = Game.instance.stage.SkillController.GetDoubleVFX(target.characterSize, info, pos);
+                effect.Stop();
+
+                yield return StartCoroutine(CoAnimationAttack());
+                if (first)
                 {
-                    var pos = target.transform.position;
-                    pos.x -= 0.2f;
-                    pos.y += 0.32f;
-                    VFXController.instance.Create<BattleSkillDoubleMVFX>(pos);
-                    yield return new WaitForSeconds(0.3f);
+                    effect.FirstStrike();
                 }
+                else
+                {
+                    effect.SecondStrike();
+                }
+                ProcessAttack(target, info);
             }
 
             foreach (var info in skillInfos)

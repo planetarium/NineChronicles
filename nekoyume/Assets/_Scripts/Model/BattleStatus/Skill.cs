@@ -16,6 +16,7 @@ namespace Nekoyume.Model
             public readonly int Effect;
             public readonly bool Critical;
             public readonly SkillEffect.Category Category;
+            public readonly Elemental.ElementalType Elemental;
 
             public SkillInfo(CharacterBase character, int effect, bool critical, SkillEffect.Category category)
             {
@@ -23,6 +24,7 @@ namespace Nekoyume.Model
                 Effect = effect;
                 Critical = critical;
                 Category = category;
+                Elemental = Data.Table.Elemental.ElementalType.Normal;
             }
         }
     }

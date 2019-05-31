@@ -80,6 +80,7 @@ namespace Nekoyume.Game.Character
             HPMax = HP;
             Range = character.attackRange;
             _runSpeed = -character.runSpeed;
+            characterSize = character.characterSize;
         }
         
         private void OnAnimatorEvent(string eventName)

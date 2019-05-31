@@ -29,7 +29,7 @@ namespace Nekoyume.Game.Util
             }
         }
 
-        private GameObject Add(GameObject prefab, int count)
+        public GameObject Add(GameObject prefab, int count)
         {
             GameObject first = null;
             for (int i = 0; i < count; ++i)
@@ -41,12 +41,12 @@ namespace Nekoyume.Game.Util
                 }
                 go.name = prefab.name;
                 go.SetActive(false);
-                List<GameObject> list;
-                if (!objects.TryGetValue(go.name, out list))
+                if (!objects.TryGetValue(go.name, out var list))
                 {
                     list = new List<GameObject>();
                     objects.Add(go.name, list);
                 }
+
                 list.Add(go);
             }
 
