@@ -9496,8 +9496,9 @@ GameObject:
   - component: {fileID: 4032886992938641481}
   - component: {fileID: 3839008315052980145}
   - component: {fileID: 3836827796561762817}
+  - component: {fileID: 3130563562220373295}
   m_Layer: 0
-  m_Name: range_L_fire_explosion
+  m_Name: area_m_fire
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -14176,6 +14177,18 @@ ParticleSystemRenderer:
   m_Mesh2: {fileID: 0}
   m_Mesh3: {fileID: 0}
   m_MaskInteraction: 0
+--- !u!114 &3130563562220373295
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4034650039367802905}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3c825b618e5480e99b4fe5546594179, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4035033983656874723
 GameObject:
   m_ObjectHideFlags: 0
