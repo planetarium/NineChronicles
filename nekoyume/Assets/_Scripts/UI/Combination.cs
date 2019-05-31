@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Libplanet.Action;
 using Nekoyume.Manager;
 using Nekoyume.Action;
+using Nekoyume.BlockChain;
 using Nekoyume.Data;
-using Nekoyume.Data.Table;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
@@ -108,7 +107,7 @@ namespace Nekoyume.UI
             }
             _player.gameObject.SetActive(false);
 
-            SetData(new Model.Combination(AvatarManager.AvatarState.items, stagedItems.Length));
+            SetData(new Model.Combination(States.Instance.currentAvatarState.Value.items, stagedItems.Length));
             
             AudioController.instance.PlayMusic(AudioController.MusicCode.Combination);
         }
@@ -267,7 +266,7 @@ namespace Nekoyume.UI
             ActionManager.instance.Combination(_data.stagedItems.ToList())
                 .Subscribe(ResponseCombination)
                 .AddTo(this);
-            AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ClickCombinationCombination);
+            AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickCombinationCombination);
         }
 
         /// <summary>
@@ -276,7 +275,7 @@ namespace Nekoyume.UI
         /// </summary>
         private void ResponseCombination(ActionBase.ActionEvaluation<Action.Combination> eval)
         {
-            if (eval.Action.errorCode != GameActionErrorCode.Success)
+            if (eval.Action.errorCode != GameAction.ErrorCode.Success)
             {
                 _data.resultPopup.Value = new Model.CombinationResultPopup(null, 0)
                 {
@@ -284,7 +283,7 @@ namespace Nekoyume.UI
                     materialItems = _data.stagedItems
                 };
                 
-                AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ActionCombinationFail);
+                AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionCombinationFail);
                 _loadingScreen.Close();
                 return;
             }
@@ -302,7 +301,7 @@ namespace Nekoyume.UI
                 materialItems = _data.stagedItems
             };
             
-            AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ActionCombinationSuccess);
+            AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionCombinationSuccess);
             _loadingScreen.Close();
         }
 

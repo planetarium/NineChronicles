@@ -1,4 +1,5 @@
 using Nekoyume.Manager;
+using Nekoyume.BlockChain;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
@@ -93,7 +94,7 @@ namespace Nekoyume.UI
         {
             if (_player != null)
             {
-                _avatarName = AvatarManager.AvatarState.name;
+                _avatarName = States.Instance.currentAvatarState.Value.name;
                 TextLevelName.text = $"LV. {_player.Level} {_avatarName}";
                 TextHP.text = $"{_player.HP}/{_player.HPMax}";
                 TextExp.text = $"{_player.EXP}/{_player.EXPMax}";
@@ -126,7 +127,7 @@ namespace Nekoyume.UI
                 _statusDetail.Close();   
             }
                 
-            AnalyticsManager.instance.OnEvent(Find<Menu>().gameObject.activeSelf
+            AnalyticsManager.Instance.OnEvent(Find<Menu>().gameObject.activeSelf
                 ? AnalyticsManager.EventName.ClickMainInventory
                 : AnalyticsManager.EventName.ClickBattleInventory);
         }
@@ -161,7 +162,7 @@ namespace Nekoyume.UI
                 _inventory.Close();
             }
 
-            AnalyticsManager.instance.OnEvent(Find<Menu>().gameObject.activeSelf
+            AnalyticsManager.Instance.OnEvent(Find<Menu>().gameObject.activeSelf
                 ? AnalyticsManager.EventName.ClickMainEquipment
                 : AnalyticsManager.EventName.ClickBattleEquipment);
         }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Nekoyume.Action;
+using Nekoyume.BlockChain;
 using Nekoyume.Data;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model;
@@ -96,7 +97,7 @@ namespace Nekoyume.UI
                 throw new NotFoundComponentException<LoadingScreen>();
             }
 
-            SetData(new Model.Shop(AvatarManager.AvatarState.items, ReactiveShopState.Items));
+            SetData(new Model.Shop(States.Instance.currentAvatarState.Value.items, ReactiveShopState.Items));
             base.Show();
 
             AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
@@ -208,9 +209,9 @@ namespace Nekoyume.UI
                 .AddTo(this);
         }
 
-        private void ResponseSell(ActionBase.ActionEvaluation<Action.Sell> eval)
+        private void ResponseSell(ActionBase.ActionEvaluation<Sell> eval)
         {
-            if (eval.Action.errorCode != GameActionErrorCode.Success)
+            if (eval.Action.errorCode != GameAction.ErrorCode.Success)
             {
                 _data.itemCountAndPricePopup.Value.item.Value = null;
                 _loadingScreen.Close();
@@ -239,9 +240,9 @@ namespace Nekoyume.UI
             _loadingScreen.Close();
         }
 
-        private void ResponseSellCancellation(ActionBase.ActionEvaluation<Action.SellCancellation> eval)
+        private void ResponseSellCancellation(ActionBase.ActionEvaluation<SellCancellation> eval)
         {
-            if (eval.Action.errorCode != GameActionErrorCode.Success)
+            if (eval.Action.errorCode != GameAction.ErrorCode.Success)
             {
                 _data.itemCountAndPricePopup.Value.item.Value = null;
                 _loadingScreen.Close();
@@ -266,14 +267,14 @@ namespace Nekoyume.UI
             _loadingScreen.Close();
         }
         
-        private void ResponseBuy(ActionBase.ActionEvaluation<Action.Buy> eval)
+        private void ResponseBuy(ActionBase.ActionEvaluation<Buy> eval)
         {
-            if (eval.Action.errorCode != GameActionErrorCode.Success)
+            if (eval.Action.errorCode != GameAction.ErrorCode.Success)
             {
                 _data.itemCountAndPricePopup.Value.item.Value = null;
                 _loadingScreen.Close();
                 
-                if (eval.Action.errorCode == GameActionErrorCode.BuySoldOut)
+                if (eval.Action.errorCode == GameAction.ErrorCode.BuySoldOut)
                 {
                     // ToDo. 매진 팝업!
                     Debug.LogWarning($"매진!! productId: {eval.Action.productId}");

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Libplanet;
+using Nekoyume.BlockChain;
 using UniRx;
 
 namespace Nekoyume.UI.Model
@@ -166,7 +167,7 @@ namespace Nekoyume.UI.Model
                 return;
             }
 
-            var key = AddressBook.Avatar.Value;
+            var key = States.Instance.currentAvatarState.Value.address;
             if (!_shopItems.ContainsKey(key))
             {
                 return;

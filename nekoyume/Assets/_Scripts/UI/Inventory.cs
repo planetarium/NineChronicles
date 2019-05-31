@@ -1,10 +1,6 @@
-using System.Collections.Generic;
-using System.Linq;
-using Nekoyume.Action;
+using Nekoyume.BlockChain;
 using Nekoyume.Game.Controller;
-using Nekoyume.Game.Item;
 using UniRx;
-using UnityEngine;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
@@ -36,7 +32,7 @@ namespace Nekoyume.UI
 
         public override void Show()
         {
-            _data = new Model.Inventory(AvatarManager.AvatarState.items);
+            _data = new Model.Inventory(States.Instance.currentAvatarState.Value.items);
             inventory.SetData(_data);
 
             base.Show();

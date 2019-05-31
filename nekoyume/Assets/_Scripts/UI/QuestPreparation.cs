@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Manager;
 using Nekoyume.Action;
+using Nekoyume.BlockChain;
 using Nekoyume.Game;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
@@ -50,7 +51,7 @@ namespace Nekoyume.UI
                 throw new NotFoundComponentException<Player>();
             }
             
-            SetData(new Model.QuestPreparation(AvatarManager.AvatarState.items));
+            SetData(new Model.QuestPreparation(States.Instance.currentAvatarState.Value.items));
             
             // stop run immediately.
             _player.gameObject.SetActive(false);
@@ -72,7 +73,7 @@ namespace Nekoyume.UI
             btnQuest.SetActive(true);
 
             dropdown.ClearOptions();
-            _stages = Enumerable.Range(1, AvatarManager.AvatarState.worldStage).ToArray();
+            _stages = Enumerable.Range(1, States.Instance.currentAvatarState.Value.worldStage).ToArray();
             var list = _stages.Select(i => $"Stage {i}").ToList();
             dropdown.AddOptions(list);
             dropdown.value = _stages.Length - 1;
@@ -103,7 +104,7 @@ namespace Nekoyume.UI
         {
             Quest(repeat);
             AudioController.PlayClick();
-            AnalyticsManager.instance.BattleEntrance(repeat);
+            AnalyticsManager.Instance.BattleEntrance(repeat);
         }
 
         public void Unequip(GameObject sender)
@@ -228,20 +229,15 @@ namespace Nekoyume.UI
                     foods.Add((Food)slot.item);
                 }
             }
-
-            IObservable<ActionBase.ActionEvaluation<HackAndSlash>> observable =
-                ActionManager.instance.HackAndSlash(equipments, foods, _stages[dropdown.value]);
-
-            observable.ObserveOnMainThread().Subscribe(eval =>
-            {
-                var avatar = (AvatarState)eval.OutputStates.GetState(eval.InputContext.Signer);
-                AvatarManager.AvatarState.battleLog = avatar.battleLog;
-                
-                Game.Event.OnStageStart.Invoke();
-                Find<LoadingScreen>().Close();
-                _stage.repeatStage = repeat;
-                Close();
-            }).AddTo(this);
+            
+            ActionManager.instance.HackAndSlash(equipments, foods, _stages[dropdown.value])
+                .Subscribe(eval =>
+                {
+                    Game.Event.OnStageStart.Invoke();
+                    Find<LoadingScreen>().Close();
+                    _stage.repeatStage = repeat;
+                    Close();
+                }).AddTo(this);
         }
 
         private EquipSlot FindSelectedItemSlot()

@@ -1,9 +1,10 @@
 using System;
 using DG.Tweening;
-using Nekoyume.Action;
+using Nekoyume.BlockChain;
 using Nekoyume.State;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model;
+using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -29,7 +30,6 @@ namespace Nekoyume.UI
         public GameObject palette;
         
         private int _selectedIndex;
-        private AvatarState _avatarState;
 
         private Color _namePlaceHolderOriginColor;
         private Color _namePlaceHolderFocusedColor;
@@ -58,22 +58,29 @@ namespace Nekoyume.UI
             }
         }
 
-        private void OnEnable()
+        public void CreateClick()
         {
-            AvatarManager.DidAvatarStateLoaded += OnDidAvatarStateLoaded;
-        }
+            Find<GrayLoadingScreen>()?.Show();
+            
+            var nickName = nameField.text;
 
-        private void OnDisable()
-        {
-            AvatarManager.DidAvatarStateLoaded -= OnDidAvatarStateLoaded;
+            ActionManager.instance
+                .CreateAvatar(AvatarManager.GetOrCreateAvatarAddress(_selectedIndex), _selectedIndex, nickName)
+                .Subscribe(eval =>
+                {
+                    var avatarState = AvatarManager.SetIndex(_selectedIndex);
+                    OnDidAvatarStateLoaded(avatarState);
+                    Find<GrayLoadingScreen>()?.Close();
+                });
+            AudioController.PlayClick();
         }
 
         public void LoginClick()
         {
             btnLogin.SetActive(false);
             nameField.gameObject.SetActive(false);
-            AvatarManager.InitAvatarState(_selectedIndex);
-            AvatarManager.SubscribeAvatarUpdates();
+            var avatarState = AvatarManager.SetIndex(_selectedIndex);
+            OnDidAvatarStateLoaded(avatarState);
             AudioController.PlayClick();
         }
 
@@ -86,47 +93,34 @@ namespace Nekoyume.UI
             AudioController.PlayClick();
         }
 
-        public void CreateClick()
-        {
-            var w = Find<GrayLoadingScreen>();
-            if (!ReferenceEquals(w, null))
-            {
-                w.Show();   
-            }
-            
-            AvatarManager.InitAvatarPrivateKeyAndFilePath(_selectedIndex);
-            var nickName = nameField.text;
-            ActionManager.instance.CreateNovice(nickName);
-            AvatarManager.SubscribeAvatarUpdates();
-            AudioController.PlayClick();
-        }
-
         private void Init(int index)
         {
             _selectedIndex = index;
-            var isCreateMode = false;
-            _avatarState = AvatarManager.AvatarStates[_selectedIndex];
-            if (ReferenceEquals(_avatarState, null))
+            AvatarManager.GetOrCreateAvatarAddress(_selectedIndex);
+            Player player;
+            var isCreateMode = !States.Instance.avatarStates.ContainsKey(index);
+            if (isCreateMode)
             {
-                isCreateMode = true;
-                _avatarState = new AvatarState(AddressBook.Avatar.Value);
+                player = new Player();
                 nameField.text = "";
+                nameInfo.text = "";
             }
-            var isSelectMode = !isCreateMode;
-
+            else
+            {
+                States.Instance.currentAvatarState.Value = States.Instance.avatarStates[_selectedIndex];
+                player = new Player(States.Instance.currentAvatarState.Value);
+                nameInfo.text = States.Instance.currentAvatarState.Value.name;
+            }
+            
             // create new or login
             nameField.gameObject.SetActive(isCreateMode);
             btnCreate.SetActive(isCreateMode);
             palette.SetActive(isCreateMode);
 
-            profileImage.SetActive(isSelectMode);
-            btnLogin.SetActive(isSelectMode);
-            optionGrid.SetActive(isSelectMode);
-
-            var player = new Player(_avatarState);
-            levelInfo.text = $"LV. {player.level}";
-            nameInfo.text = $"{_avatarState.name}";
-
+            profileImage.SetActive(!isCreateMode);
+            btnLogin.SetActive(!isCreateMode);
+            optionGrid.SetActive(!isCreateMode);
+            
             SetInformation(player);
 
             Show();
@@ -134,6 +128,8 @@ namespace Nekoyume.UI
 
         private void SetInformation(Player player)
         {
+            levelInfo.text = $"LV. {player.level}";
+            
             var hp = player.currentHP;
             var hpMax = player.currentHP;
             var exp = player.exp;
@@ -213,14 +209,8 @@ namespace Nekoyume.UI
             else
             {
                 Game.Event.OnRoomEnter.Invoke();
-                Widget.Find<Login>().Close();
+                Find<Login>().Close();
                 Close();
-            }
-
-            var w = Find<GrayLoadingScreen>();
-            if (!ReferenceEquals(w, null))
-            {
-                w.Close();
             }
         }
     }

@@ -69,6 +69,11 @@ namespace Nekoyume.Data
             return !Item.TryGetValue(itemId, out var item) ? null : ItemBase.ItemFactory(item);
         }
         
+        public bool TryGetItem(int itemId, out Item item)
+        {
+            return Item.TryGetValue(itemId, out item);
+        }
+        
         public bool TryGetItemEquipment(int itemEquipmentId, out ItemEquipment itemEquipment)
         {
             return ItemEquipment.TryGetValue(itemEquipmentId, out itemEquipment);

@@ -1,5 +1,6 @@
 using System.Collections;
-using Nekoyume.Action;
+using Nekoyume.BlockChain;
+using Nekoyume.UI;
 using UnityEngine;
 
 namespace Nekoyume.Game.Entrance
@@ -13,16 +14,15 @@ namespace Nekoyume.Game.Entrance
 
         private IEnumerator Act()
         {
-            var stage = GetComponent<Stage>();
-            var loadingScreen = UI.Widget.Find<UI.LoadingScreen>();
-            loadingScreen.Show();
-
-            UI.Widget.Find<UI.Menu>().ShowRoom();
+            var stage = Game.instance.stage;
+            var objectPool = stage.objectPool;
+            
+            Widget.Find<LoadingScreen>()?.Show();
+            Widget.Find<Menu>()?.ShowRoom();
 
             stage.id = 0;
             stage.LoadBackground("room");
 
-            var objectPool = GetComponent<Util.ObjectPool>();
             var players = stage.GetComponentsInChildren<Character.Player>();
             foreach (var p in players)
             {
@@ -36,20 +36,20 @@ namespace Nekoyume.Game.Entrance
                 Destroy(boss.gameObject);
             }
 
-            var playerFactory = GetComponent<Factory.PlayerFactory>();
-            GameObject player = playerFactory.Create(AvatarManager.AvatarState);
+            var playerFactory = Game.instance.stage.playerFactory;
+            GameObject player = playerFactory.Create(States.Instance.currentAvatarState.Value);
             player.transform.position = stage.roomPosition - new Vector2(3.0f, 0.0f);
             var playerComp = player.GetComponent<Character.Player>();
             playerComp.StartRun();
 
-            var status = UI.Widget.Find<UI.Status>();
+            var status = Widget.Find<Status>();
             status.UpdatePlayer(player);
 
             ActionCamera.instance.SetPoint(0f, 0f);
             ActionCamera.instance.Idle();
 
             yield return new WaitForSeconds(1.0f);
-            loadingScreen.Close();
+            Widget.Find<LoadingScreen>()?.Close();
 
             while (player.transform.position.x < stage.roomPosition.x)
             {

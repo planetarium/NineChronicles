@@ -1,6 +1,8 @@
 using Assets.SimpleLocalization;
+using Nekoyume.BlockChain;
 using Nekoyume.Data;
 using Nekoyume.Game.Controller;
+using Nekoyume.UI;
 using UnityEngine;
 
 namespace Nekoyume.Game
@@ -34,12 +36,18 @@ namespace Nekoyume.Game
             
             Screen.SetResolution(GameConfig.ScreenSize.x, GameConfig.ScreenSize.y, FullScreenMode.Windowed);
             Tables.instance.EmptyMethod();
-            AgentController.Initialize();
+            AgentController.Initialize(AgentInitialized);
             
             LocalizationManager.Read();
             AudioController.instance.Initialize();
             
             Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
+        }
+
+        private void AgentInitialized(bool succeed)
+        {
+            Widget.Find<LoadingScreen>()?.Close();
+            Widget.Find<Login>()?.Show();
         }
     }
 }

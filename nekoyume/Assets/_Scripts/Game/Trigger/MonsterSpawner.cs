@@ -14,17 +14,9 @@ namespace Nekoyume.Game.Trigger
 
         private Monster _monster;
 
-        private Stage _stage;
         private int _stageId;
         private int _wave;
-        private EnemyFactory _factory;
         private const float SpawnOffset = 6.0f;
-
-        private void Start()
-        {
-            _factory = GetComponentInParent<EnemyFactory>();
-            _stage = GetComponentInParent<Stage>();
-        }
 
         public void SetData(int stageId, Monster monster)
         {
@@ -35,8 +27,8 @@ namespace Nekoyume.Game.Trigger
 
         private void SpawnWave()
         {
-            var factory = GetComponentInParent<EnemyFactory>();
-            var player = _stage.GetComponentInChildren<Character.Player>();
+            var factory = Game.instance.stage.enemyFactory;
+            var player = Game.instance.stage.GetComponentInChildren<Character.Player>();
             var offsetX = player.transform.position.x + 2.8f;
             var randIndex = Enumerable.Range(0, spawnPoints.Length / 2)
                 .OrderBy(n => Guid.NewGuid()).ToArray();
@@ -57,10 +49,11 @@ namespace Nekoyume.Game.Trigger
 
         private IEnumerator CoSpawnWave(List<Monster> monsters)
         {
+            var stage = Game.instance.stage;
             for (var index = 0; index < monsters.Count; index++)
             {
                 var monster = monsters[index];
-                var player = _stage.GetComponentInChildren<Character.Player>();
+                var player = stage.GetComponentInChildren<Character.Player>();
                 var offsetX = player.transform.position.x + SpawnOffset;
                 {
                     Vector3 point;
@@ -82,7 +75,7 @@ namespace Nekoyume.Game.Trigger
 
         private IEnumerator CoSpawnMonster(Monster monster, Vector2 pos, Character.Player player)
         {
-            _factory.Create(monster, pos, player);
+            Game.instance.stage.enemyFactory.Create(monster, pos, player);
             yield return new WaitForSeconds(UnityEngine.Random.Range(0.0f, 0.2f));
         }
 

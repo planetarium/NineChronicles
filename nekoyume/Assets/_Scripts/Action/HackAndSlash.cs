@@ -2,9 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using Libplanet;
 using Libplanet.Action;
-using Nekoyume.Game;
+using Nekoyume.Battle;
 using Nekoyume.Game.Item;
 using Nekoyume.State;
 
@@ -33,15 +32,20 @@ namespace Nekoyume.Action
             Stage = ByteSerializer.Deserialize<int>((byte[]) plainValue["stage"]);
         }
 
-        protected override IAccountStateDelta ExecuteInternal(IActionContext actionCtx)
+        protected override IAccountStateDelta ExecuteInternal(IActionContext ctx)
         {
-            var states = actionCtx.PreviousStates;
-            if (actionCtx.Rehearsal)
+            var states = ctx.PreviousStates;
+            if (ctx.Rehearsal)
             {
-                states = states.SetState(AddressBook.Ranking, MarkChanged);
-                return states.SetState(actionCtx.Signer, MarkChanged);
+                states = states.SetState(RankingState.Address, MarkChanged);
+                return states.SetState(ctx.Signer, MarkChanged);
             }
-            var avatarState = (AvatarState) states.GetState(actionCtx.Signer);
+            var avatarState = (AvatarState) states.GetState(ctx.Signer);
+            if (avatarState == null)
+            {
+                return SimpleError(ctx, ErrorCode.AvatarNotFound);
+            }
+            
             var items = avatarState.items.Select(i => i.Item).ToImmutableHashSet();
             var currentEquipments = items.OfType<Equipment>().ToImmutableHashSet();
             foreach (var equipment in currentEquipments)
@@ -74,24 +78,20 @@ namespace Nekoyume.Action
                     }
                 }
             }
-
-            var simulator = new Simulator(actionCtx.Random, avatarState, Foods, Stage);
+            
+            var simulator = new Simulator(ctx.Random, avatarState, Foods, Stage);
             var player = simulator.Simulate();
             avatarState.Update(player);
             avatarState.battleLog = simulator.Log;
             avatarState.updatedAt = DateTimeOffset.UtcNow;
             if (avatarState.worldStage > Stage)
             {
-                var ranking = (RankingBoard) states.GetState(AddressBook.Ranking);
-                if (ranking is null)
-                {
-                    ranking = new RankingBoard();
-                }
+                var ranking = (RankingState) states.GetState(RankingState.Address) ?? new RankingState();
                 avatarState.clearedAt = DateTimeOffset.UtcNow;
                 ranking.Update(avatarState);
-                states = states.SetState(AddressBook.Ranking, ranking);
+                states = states.SetState(RankingState.Address, ranking);
             }
-            return states.SetState(actionCtx.Signer, avatarState);
+            return states.SetState(ctx.Signer, avatarState);
         }
     }
 }

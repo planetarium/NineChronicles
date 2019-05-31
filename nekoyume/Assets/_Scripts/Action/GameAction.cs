@@ -7,7 +7,7 @@ using Nekoyume.State;
 
 namespace Nekoyume.Action
 {
-    public abstract class GameAction : ActionBase
+    public abstract partial class GameAction : ActionBase
     {
         public static readonly Address ProcessedActionsAddress = new Address(
             new byte[20]
@@ -17,21 +17,16 @@ namespace Nekoyume.Action
             }
         );
 
-        public Guid Id { get; internal set; }
+        public int errorCode = ErrorCode.Success;
 
-        public int errorCode = GameActionErrorCode.Fail;
+        public Guid Id { get; private set; }
+        public bool Succeed => errorCode == ErrorCode.Success;
+        public override IImmutableDictionary<string, object> PlainValue => PlainValueInternal.SetItem("id", Id.ToString());
+        protected abstract IImmutableDictionary<string, object> PlainValueInternal { get; }
         
-        public GameAction()
+        protected GameAction()
         {
             Id = Guid.NewGuid();
-        }
-
-        protected IAccountStateDelta SimpleError(IActionContext actionCtx, AvatarState ctx, int errorCode)
-        {
-            ctx.updatedAt = DateTimeOffset.UtcNow;
-            this.errorCode = errorCode;
-                    
-            return actionCtx.PreviousStates.SetState(actionCtx.Signer, ctx);
         }
 
         public override void LoadPlainValue(IImmutableDictionary<string, object> plainValue)
@@ -39,16 +34,10 @@ namespace Nekoyume.Action
             Id = new Guid((string) plainValue["id"]);
             LoadPlainValueInternal(plainValue);
         }
-        protected abstract void LoadPlainValueInternal(IImmutableDictionary<string, object> plainValue);
-
+        
         public override IAccountStateDelta Execute(IActionContext ctx) 
         {
-            var processedActions = (HashSet<Guid>) ctx.PreviousStates.GetState(ProcessedActionsAddress);
-
-            if (ReferenceEquals(processedActions, null)) 
-            {
-                processedActions = new HashSet<Guid>();
-            }
+            var processedActions = (HashSet<Guid>) ctx.PreviousStates.GetState(ProcessedActionsAddress) ?? new HashSet<Guid>();
 
             if (processedActions.Contains(Id)) 
             {
@@ -61,17 +50,28 @@ namespace Nekoyume.Action
             
             return delta.SetState(ProcessedActionsAddress, processedActions);
         }
-
+        
+        protected abstract void LoadPlainValueInternal(IImmutableDictionary<string, object> plainValue);
+        
         protected abstract IAccountStateDelta ExecuteInternal(IActionContext ctx);
         
-        public override IImmutableDictionary<string, object> PlainValue
-        { 
-            get 
-            {
-                return PlainValueInternal.SetItem("id", Id.ToString());
-            }    
+        protected IAccountStateDelta SimpleError(IActionContext ctx, int code)
+        {
+            errorCode = code;
+            return ctx.PreviousStates;
         }
-        protected abstract IImmutableDictionary<string, object> PlainValueInternal { get; }
-        public const string MarkChanged = "";
+        
+        protected IAccountStateDelta SimpleAgentError(IActionContext ctx, Address address, AgentState agentState, int code)
+        {
+            errorCode = code;
+            return ctx.PreviousStates.SetState(address, agentState);
+        }
+        
+        protected IAccountStateDelta SimpleAvatarError(IActionContext ctx, Address address, AvatarState avatarState, int code)
+        {
+            avatarState.updatedAt = DateTimeOffset.UtcNow;
+            errorCode = code;
+            return ctx.PreviousStates.SetState(address, avatarState);
+        }
     }
 }

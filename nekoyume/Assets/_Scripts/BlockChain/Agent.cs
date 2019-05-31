@@ -25,7 +25,7 @@ using Nekoyume.Serilog;
 using Serilog;
 using UnityEngine;
 
-namespace Nekoyume
+namespace Nekoyume.BlockChain
 {
     /// <summary>
     /// 메인넷에 직접 붙어서 블록을 마이닝 한다.
@@ -60,7 +60,8 @@ namespace Nekoyume
         private readonly Swarm _swarm;
         
         
-        public PrivateKey AgentPrivateKey { get; }
+        public PrivateKey PrivateKey { get; }
+        public Address Address { get; }
         public Guid ChainId => _blocks.Id;
         
         public event EventHandler PreloadStarted;
@@ -77,7 +78,7 @@ namespace Nekoyume
         }
 
         public Agent(
-            PrivateKey agentPrivateKey,
+            PrivateKey privateKey,
             string path,
             Guid chainId,
             IEnumerable<Peer> peers,
@@ -86,7 +87,8 @@ namespace Nekoyume
             int? port)
         {
             var policy = GetPolicy();
-            AgentPrivateKey = agentPrivateKey;
+            PrivateKey = privateKey;
+            Address = privateKey.PublicKey.ToAddress();
             _blocks = new BlockChain<PolymorphicAction<ActionBase>>(
                 policy,
                 new FileStore(path),
@@ -96,7 +98,7 @@ namespace Nekoyume
 #endif
 
             _swarm = new Swarm(
-                agentPrivateKey,
+                privateKey,
                 appProtocolVersion: 1,
                 millisecondsDialTimeout: SwarmDialTimeout,
                 host: host,
@@ -105,13 +107,11 @@ namespace Nekoyume
 
             foreach (var peer in peers)
             {
-                if (peer.PublicKey != agentPrivateKey.PublicKey)
+                if (peer.PublicKey != privateKey.PublicKey)
                 {
                     _swarm.Add(peer);
                 }
             }
-
-            AddressBook.Agent.Value = AgentPrivateKey.PublicKey.ToAddress();
         }
 
         public void Dispose()
@@ -197,7 +197,8 @@ namespace Nekoyume
 
                 if (actions.Any())
                 {
-                    StageActions(actions);
+                    var task = Task.Run(() => StageAvatarActions(actions));
+                    yield return new WaitUntil(() => task.IsCompleted);
                 }
             }
         }
@@ -206,20 +207,12 @@ namespace Nekoyume
         {
             while (true)
             {
-                var tx = Transaction<PolymorphicAction<ActionBase>>.Create(
-                        _blocks.GetNonce(AgentPrivateKey.PublicKey.ToAddress()),
-                        AgentPrivateKey,
-                        new List<PolymorphicAction<ActionBase>>()
-                        {
-                            new RewardGold { gold = RewardAmount }
-                        },
-                        timestamp: DateTime.UtcNow);
+                var tx = RewardGold();
                 var txs = new HashSet<Transaction<PolymorphicAction<ActionBase>>> { tx };
-
                 var task = Task.Run(() =>
                 {
                     _blocks.StageTransactions(txs);
-                    var block = _blocks.MineBlock(AddressBook.Agent.Value);
+                    var block = _blocks.MineBlock(Address);
                     _swarm.BroadcastBlocks(new[] {block});
                     return block;
                 });
@@ -268,11 +261,37 @@ namespace Nekoyume
             return value;
         }
         
-        private void StageActions(IEnumerable<PolymorphicAction<ActionBase>> actions)
+        public CreateAvatar CreateAvatar(Address avatarAddress, int index, string nickName)
         {
-            var tx = AvatarManager.MakeTransaction(actions, _blocks);
-            _blocks.StageTransactions(new HashSet<Transaction<PolymorphicAction<ActionBase>>> {tx});
-            _swarm.BroadcastTxs(new[] { tx });
+            var createAvatar = new CreateAvatar
+            {
+                avatarAddress = avatarAddress,
+                index = index,
+                name = nickName,
+            };
+            var actions = new List<PolymorphicAction<ActionBase>>
+            {
+                createAvatar
+            };
+            Task.Run(() => StageAgentActions(actions));
+            
+            return createAvatar;
+        }
+        
+        public DeleteAvatar DeleteAvatar(int index, Address avatarAddress)
+        {
+            var deleteAvatar = new DeleteAvatar
+            {
+                index = index,
+                avatarAddress = avatarAddress,
+            };
+            var actions = new List<PolymorphicAction<ActionBase>>
+            {
+                deleteAvatar
+            };
+            Task.Run(() => StageAgentActions(actions));
+            
+            return deleteAvatar;
         }
 
         private IBlockPolicy<PolymorphicAction<ActionBase>> GetPolicy()
@@ -286,6 +305,47 @@ namespace Nekoyume
                 256
             );
 #endif
+        }
+
+        private Transaction<PolymorphicAction<ActionBase>> RewardGold()
+        {
+            return MakeTransaction(new List<PolymorphicAction<ActionBase>>
+            {
+                new RewardGold
+                {
+                    gold = RewardAmount
+                }
+            });
+        }
+        
+        private void StageAgentActions(IEnumerable<PolymorphicAction<ActionBase>> actions)
+        {
+            var tx = MakeTransaction(actions);
+            StageTransaction(tx);
+        }
+        
+        private void StageAvatarActions(IEnumerable<PolymorphicAction<ActionBase>> actions)
+        {
+            var tx = AvatarManager.MakeTransaction(actions, _blocks);
+            StageTransaction(tx);
+        }
+
+        private void StageTransaction(Transaction<PolymorphicAction<ActionBase>> tx)
+        {
+            _blocks.StageTransactions(new HashSet<Transaction<PolymorphicAction<ActionBase>>> {tx});
+            _swarm.BroadcastTxs(new[] { tx });
+        }
+        
+        private Transaction<PolymorphicAction<ActionBase>> MakeTransaction(
+            IEnumerable<PolymorphicAction<ActionBase>> actions
+        )
+        {
+            return Transaction<PolymorphicAction<ActionBase>>.Create(
+                _blocks.GetNonce(Address),
+                PrivateKey,
+                actions,
+                timestamp: DateTime.UtcNow
+            );
         }
     }
 }

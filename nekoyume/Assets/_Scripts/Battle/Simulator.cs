@@ -11,7 +11,7 @@ using Nekoyume.State;
 using Priority_Queue;
 using UnityEngine;
 
-namespace Nekoyume.Action
+namespace Nekoyume.Battle
 {
     public class Simulator
     {

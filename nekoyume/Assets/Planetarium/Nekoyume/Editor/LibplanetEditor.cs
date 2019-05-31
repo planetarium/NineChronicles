@@ -11,6 +11,7 @@ namespace Planetarium.Nekoyume.Editor
         {
             var info = new DirectoryInfo(Application.persistentDataPath);
             info.Delete(true);
+            PlayerPrefs.DeleteAll();
         }
     }   
 }

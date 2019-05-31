@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
+using Nekoyume.BlockChain;
 using Nekoyume.Data;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Entrance;
@@ -67,7 +68,7 @@ namespace Nekoyume.Game
 
         private void OnStageStart()
         {
-            _battleLog = AvatarManager.AvatarState.battleLog;
+            _battleLog = States.Instance.currentAvatarState.Value.battleLog;
             Play(_battleLog);
         }
 
@@ -349,7 +350,7 @@ namespace Nekoyume.Game
             var player = GetComponentInChildren<Character.Player>();
             if (ReferenceEquals(player, null))
             {
-                var go = playerFactory.Create(AvatarManager.AvatarState);
+                var go = playerFactory.Create(States.Instance.currentAvatarState.Value);
                 player = go.GetComponent<Character.Player>();
 
                 if (ReferenceEquals(player, null))

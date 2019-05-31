@@ -8,11 +8,14 @@ namespace Nekoyume.State
     /// Agent의 상태 모델이다.
     /// </summary>
     [Serializable]
-    public class AgentState
+    public class AgentState : State
     {
-        // ToDo. Avatar 주소들을 갖고 있도록. 이 주소를 통해서 블록에서 꺼내오도록.
-//        public List<Address> avatarAddresses;
-        
         public decimal gold;
+        public readonly Dictionary<int, Address> avatarAddresses;
+
+        public AgentState(Address address) : base(address)
+        {
+            avatarAddresses = new Dictionary<int, Address>();
+        }
     }
 }

@@ -15,13 +15,14 @@ using Nekoyume.State;
 using NetMQ;
 using UnityEngine;
 
-namespace Nekoyume
+namespace Nekoyume.BlockChain
 {
     /// <summary>
     /// Agent를 구동시킨다.
     /// </summary>
     public class AgentController : MonoSingleton<AgentController>
     {
+        public const string PrivateKeyFormat = "private_key_{0}";
 #if UNITY_EDITOR
         private const string AgentStoreDirName = "planetarium_dev";
         private const string DefaultHost = "127.0.0.1";
@@ -41,17 +42,17 @@ namespace Nekoyume
         private static IEnumerator _swarmRunner;
         private static IEnumerator _actionRetryor;
         
-        public static void Initialize()
+        public static void Initialize(Action<bool> callback)
         {
             if (!ReferenceEquals(Agent, null))
             {
                 return;
             }   
             
-            instance.InitAgent();
+            instance.InitAgent(callback);
         }
 
-        private void InitAgent()
+        private void InitAgent(Action<bool> callback)
         {
             var options = GetOptions();
             var privateKey = GetPrivateKey(options);
@@ -62,7 +63,7 @@ namespace Nekoyume
             int? port = options.Port;
 
             Agent = new Agent(
-                agentPrivateKey: privateKey, 
+                privateKey: privateKey, 
                 path: StorePath, 
                 chainId: chainId, 
                 peers: peers, 
@@ -77,14 +78,23 @@ namespace Nekoyume
             Agent.PreloadEnded += (_, __) =>
             {
                 // 에이전트의 준비단계가 끝나면 에이전트의 상태를 한 번 동기화 한다.
-                States.AgentState.Value = Agent.GetState(AddressBook.Agent.Value) as AgentState ?? new AgentState();
-                // ToDo. 에이전트에 포함된 모든 아바타의 상태를 한 번씩 동기화 한다.
-                // ...
+                States.Instance.agentState.Value = (AgentState) Agent.GetState(Agent.Address) ??
+                                     new AgentState(Agent.Address);
+                // 에이전트에 포함된 모든 아바타의 상태를 한 번씩 동기화 한다.
+                foreach (var pair in States.Instance.agentState.Value.avatarAddresses)
+                {
+                    var avatarState = (AvatarState) Agent.GetState(pair.Value);
+                    States.Instance.avatarStates.Add(pair.Key, avatarState);
+                }
+                // 랭킹의 상태를 한 번 동기화 한다.
+                States.Instance.rankingState.Value = (RankingState) Agent.GetState(RankingState.Address) ?? new RankingState();
                 // 상점의 상태를 한 번 동기화 한다.
-                States.ShopState.Value = Agent.GetState(AddressBook.Shop) as ShopState ?? new ShopState();
+                States.Instance.shopState.Value = (ShopState) Agent.GetState(ShopState.Address) ?? new ShopState();
+                // 그리고 모든 액션에 대한 랜더를 핸들링하기 시작한다.
+                ActionRenderHandler.Instance.Start();
                 // 그리고 마이닝을 시작한다.
                 StartNullableCoroutine(_miner);
-                UI.Widget.Find<UI.LoadingScreen>()?.Close();
+                callback(true);
             };
             _miner = options.NoMiner ? null : Agent.CoMiner();
             
@@ -103,7 +113,7 @@ namespace Nekoyume
         private static PrivateKey GetPrivateKey(CommandLineOptions options)
         {
             PrivateKey privateKey;
-            var key = string.Format(AvatarManager.PrivateKeyFormat, "agent");
+            var key = string.Format(PrivateKeyFormat, "agent");
             var privateKeyHex = options.PrivateKey ?? PlayerPrefs.GetString(key, "");
 
             if (string.IsNullOrEmpty(privateKeyHex))
@@ -220,6 +230,7 @@ namespace Nekoyume
 
         protected override void OnDestroy()
         {
+            ActionRenderHandler.Instance.Stop();
             if (Agent != null)
             {
                 PlayerPrefs.SetString(ChainIdKey, Agent.ChainId.ToString());

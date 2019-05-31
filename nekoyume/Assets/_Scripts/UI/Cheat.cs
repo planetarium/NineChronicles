@@ -2,9 +2,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Libplanet.Action;
-using Nekoyume.Action;
+using Nekoyume.Battle;
+using Nekoyume.BlockChain;
 using Nekoyume.Data;
-using Nekoyume.Game;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Item;
 using Nekoyume.Model;
@@ -161,14 +161,17 @@ namespace Nekoyume
             list.gameObject.SetActive(true);
         }
 
-        private void DummyBattle(int stage)
+        private void DummyBattle(int stageId)
         {
             Find<BattleResult>()?.Close();
-            GameObject go = GameObject.Find("Stage");
-            var simulator = new Simulator(new DebugRandom(), AvatarManager.AvatarState, new List<Food>(), stage);
+            
+            var simulator = new Simulator(new DebugRandom(), States.Instance.currentAvatarState.Value, new List<Food>(), stageId);
             simulator.Simulate();
             simulator.Log.result = _result;
-            go.GetComponent<Stage>().Play(simulator.Log);
+            
+            var stage = Game.Game.instance.stage;
+            stage.Play(simulator.Log);
+            
             Close();
         }
     }

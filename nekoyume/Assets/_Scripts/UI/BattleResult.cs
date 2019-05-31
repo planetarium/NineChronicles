@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Nekoyume.Manager;
 using Nekoyume.Action;
+using Nekoyume.BlockChain;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
@@ -54,11 +55,11 @@ namespace Nekoyume.UI
             
             if (result == BattleLog.Result.Win)
             {
-                AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ClickBattleResultNext);
+                AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickBattleResultNext);
             }
             else
             {
-                AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ClickBattleResultRetry);
+                AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickBattleResultRetry);
             }
         }
 
@@ -81,12 +82,10 @@ namespace Nekoyume.UI
             if (!_stage.repeatStage && result == BattleLog.Result.Win)
                 stage++;
             actionEnd = false;
-            IObservable<ActionBase.ActionEvaluation<HackAndSlash>> observable =
-                ActionManager.instance.HackAndSlash(player.equipments, new List<Food>(), stage);
+            ActionManager.instance.HackAndSlash(player.equipments, new List<Food>(), stage)
+                .Subscribe(_ => { StartCoroutine(CoNextStage(w)); }).AddTo(this);
 
             Hide();
-
-            observable.ObserveOnMainThread().Subscribe(_ => { StartCoroutine(CoNextStage(w)); }).AddTo(this);
         }
         public void BackClick()
         {   
@@ -100,7 +99,7 @@ namespace Nekoyume.UI
             Game.Event.OnRoomEnter.Invoke();
             Close();
             AudioController.PlayClick();
-            AnalyticsManager.instance.BattleLeave();
+            AnalyticsManager.Instance.BattleLeave();
         }
 
         public void Show(BattleLog.Result battleResult, bool repeat)
@@ -128,7 +127,7 @@ namespace Nekoyume.UI
 
                 AudioController.instance.PlayMusic(AudioController.MusicCode.Win, 0.3f);
                 _battleWinVFX = VFXController.instance.Create<BattleWinVFX>(ActionCamera.instance.transform, VfxBattleWinOffset);
-                AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ActionBattleWin);
+                AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionBattleWin);
             }
             else
             {
@@ -140,7 +139,7 @@ namespace Nekoyume.UI
                 _autoNext = false;
 
                 AudioController.instance.PlayMusic(AudioController.MusicCode.Lose);
-                AnalyticsManager.instance.OnEvent(AnalyticsManager.EventName.ActionBattleLose);
+                AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionBattleLose);
             }
             timeText.gameObject.SetActive(_autoNext);
 
@@ -189,7 +188,7 @@ namespace Nekoyume.UI
                 {
                     _repeat = false;
                     Submit();
-                    AnalyticsManager.instance.BattleContinueAutomatically();
+                    AnalyticsManager.Instance.BattleContinueAutomatically();
                 }
             }
         }
