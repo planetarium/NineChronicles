@@ -2,6 +2,7 @@ using CommandLine;
 using CommandLine.Text;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Nekoyume.Helper
@@ -28,7 +29,7 @@ namespace Nekoyume.Helper
     {
         public static CommandLineOptions GetCommandLineOptions()
         {
-            string[] args = Environment.GetCommandLineArgs();
+            string[] args = Environment.GetCommandLineArgs().Where(s => s.StartsWith("--")).ToArray();
             ParserResult<CommandLineOptions> result = Parser.Default.ParseArguments<CommandLineOptions>(args);
 
             if (result.Tag == ParserResultType.Parsed)
