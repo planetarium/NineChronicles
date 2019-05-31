@@ -42,6 +42,7 @@ namespace Nekoyume.Model
         public Guid id = Guid.NewGuid();
         public float attackRange = 1.0f;
         public float runSpeed = 1.0f;
+        public string characterSize = "s";
 
         public void InitAI()
         {
