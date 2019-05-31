@@ -13,6 +13,7 @@ using Nekoyume.Game.Util;
 using Nekoyume.Model;
 using Nekoyume.UI;
 using Nekoyume.Game.VFX;
+using Nekoyume.Game.VFX.Skill;
 using UnityEngine;
 
 namespace Nekoyume.Game
@@ -26,6 +27,7 @@ namespace Nekoyume.Game
         public PlayerFactory playerFactory;
         public EnemyFactory enemyFactory;
         public DropItemFactory dropItemFactory;
+        public SkillController SkillController;
         
         public MonsterSpawner spawner;
         
