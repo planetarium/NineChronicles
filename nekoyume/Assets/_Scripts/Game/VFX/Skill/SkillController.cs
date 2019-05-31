@@ -18,12 +18,12 @@ namespace Nekoyume.Game.VFX.Skill
             }
         }
 
-        public SkillDoubleVFX GetDoubleVFX(string size, Model.Skill.SkillInfo skillInfo, Vector3 position)
+        public T Get<T>(string size, Model.Skill.SkillInfo skillInfo, Vector3 position) where T : SkillVFX
         {
             size = size == "xs" ? "s" : "m";
             var skillName = $"{skillInfo.Category}_{size}_{skillInfo.Elemental}".ToLower();
             var go = _pool.Get(skillName, false, position);
-            return go.GetComponent<SkillDoubleVFX>();
+            return go.GetComponent<T>();
         }
     }
 }

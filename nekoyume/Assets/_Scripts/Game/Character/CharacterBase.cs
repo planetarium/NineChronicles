@@ -7,6 +7,7 @@ using Nekoyume.Data.Table;
 using Nekoyume.Game.CC;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
+using Nekoyume.Game.VFX.Skill;
 using Nekoyume.UI;
 using UnityEngine;
 
@@ -389,7 +390,7 @@ namespace Nekoyume.Game.Character
                 var pos = target.transform.position;
                 pos.x -= 0.2f;
                 pos.y += 0.32f;
-                var effect = Game.instance.stage.SkillController.GetDoubleVFX(target.characterSize, info, pos);
+                var effect = Game.instance.stage.SkillController.Get<SkillDoubleVFX>(target.characterSize, info, pos);
                 effect.Stop();
 
                 yield return StartCoroutine(CoAnimationAttack());
