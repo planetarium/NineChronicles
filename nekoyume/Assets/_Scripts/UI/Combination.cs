@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +15,7 @@ using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 using Stage = Nekoyume.Game.Stage;
+using System.Collections;
 
 namespace Nekoyume.UI
 {
@@ -26,6 +28,9 @@ namespace Nekoyume.UI
         public Button combinationButton;
         public Image combinationButtonImage;
         public Button closeButton;
+
+        public GameObject particleVFX;
+        public GameObject resultItemVFX;
 
         private readonly List<IDisposable> _disposablesForAwake = new List<IDisposable>();
         private readonly List<IDisposable> _disposablesForSetData = new List<IDisposable>();
@@ -313,6 +318,40 @@ namespace Nekoyume.UI
                 return;
             }
             _resultPopup.Pop(data);
+
+            
+        }
+
+        public void ShowResultVFX(Model.CombinationResultPopup data)
+        {
+            StartCoroutine(CoShowResultVFX(data));
+        }
+
+        private IEnumerator CoShowResultVFX(Model.CombinationResultPopup data)
+        {
+            yield return null;
+            particleVFX.SetActive(false);
+            resultItemVFX.SetActive(false);
+            if (data.isSuccess)
+            {
+                InventoryItem invenItem = _data.inventory.Value.items.Single(i => i.item.Value.Data.id == data.item.Value.Data.id);
+                var index = _data.inventory.Value.items.IndexOf(invenItem);
+                if (!ReferenceEquals(invenItem, null))
+                {
+                    InventoryItemView itemView = inventoryAndItemInfo.inventory.scrollerController.TryFindIndexAt(index);
+                    if (!ReferenceEquals(itemView, null))
+                    {
+                        particleVFX.transform.position = _resultPopup.resultItem.transform.position;
+                        particleVFX.transform.DOMoveX(itemView.transform.position.x, 0.6f);
+                        particleVFX.transform.DOMoveY(itemView.transform.position.y, 0.6f).SetEase(Ease.InCubic)
+                        .onComplete = () =>{
+                            resultItemVFX.SetActive(true);
+                        };
+                        particleVFX.SetActive(true);
+                        resultItemVFX.transform.position = itemView.transform.position;
+                    }
+                }
+            }
         }
     }
 }

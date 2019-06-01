@@ -99,5 +99,23 @@ namespace Nekoyume.UI.Scroller
         {
             scroller.ReloadData();
         }
+
+        public Module.InventoryItemView TryFindIndexAt(int index)
+        {
+            for (int i = scroller.StartDataIndex ; i <= scroller.EndDataIndex; ++i)
+            {
+                var cellView = scroller.GetCellViewAtDataIndex(i) as InventoryCellView;
+                int itemIndex = i * numberOfInnerItemPerCell;
+                for (int j = 0; j < cellView.items.Length; ++j)
+                {
+                    if (itemIndex == index)
+                    {
+                        return cellView.items[j];
+                    }
+                    itemIndex++;
+                }
+            }
+            return null;
+        }
     }
 }

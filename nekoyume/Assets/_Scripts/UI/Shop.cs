@@ -1,5 +1,8 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using DG.Tweening;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
 using Nekoyume.Data;
@@ -24,6 +27,9 @@ namespace Nekoyume.UI
         public InventoryAndItemInfo inventoryAndItemInfo;
         public ShopItems shopItems;
         public Button closeButton;
+
+        public GameObject particleVFX;
+        public GameObject resultItemVFX;
 
         private Model.Shop _data;
 
@@ -266,7 +272,7 @@ namespace Nekoyume.UI
             _data.inventory.Value.SubscribeOnClick(addedItem);
             _loadingScreen.Close();
         }
-        
+
         private void ResponseBuy(ActionBase.ActionEvaluation<Buy> eval)
         {
             if (eval.Action.errorCode != GameAction.ErrorCode.Success)
@@ -291,11 +297,43 @@ namespace Nekoyume.UI
             }
 
             _data.itemCountAndPricePopup.Value.item.Value = null;
+
+            StartCoroutine(CoShowBuyResultVFX(result));
+
             _data.shopItems.Value.RemoveProduct(result.shopItem.productId);
             _data.shopItems.Value.RemoveRegisteredProduct(result.shopItem.productId);
             var addedItem = _data.inventory.Value.AddItem(result.shopItem.item, result.shopItem.count);
             _data.inventory.Value.SubscribeOnClick(addedItem);
             _loadingScreen.Close();
+        }
+
+        private IEnumerator CoShowBuyResultVFX(Buy.ResultModel result)
+        {
+            Module.ShopItemView shopView = shopItems.TryFindByProductId(result.shopItem.productId);
+            if (!ReferenceEquals(shopView, null))
+            {
+                yield return new WaitForSeconds(0.1f);
+
+                particleVFX.SetActive(false);
+                resultItemVFX.SetActive(false);
+                InventoryItem invenItem = _data.inventory.Value.items.Single(i => i.item.Value.Data.id == result.shopItem.item.Data.id);
+                var index = _data.inventory.Value.items.IndexOf(invenItem);
+                if (!ReferenceEquals(invenItem, null))
+                {
+                    Module.InventoryItemView itemView = inventoryAndItemInfo.inventory.scrollerController.TryFindIndexAt(index);
+                    if (!ReferenceEquals(itemView, null))
+                    {
+                        particleVFX.transform.position = shopView.transform.position;
+                        particleVFX.transform.DOMoveX(itemView.transform.position.x, 0.6f);
+                        particleVFX.transform.DOMoveY(itemView.transform.position.y, 0.6f).SetEase(Ease.InCubic)
+                        .onComplete = () =>{
+                            resultItemVFX.SetActive(true);
+                        };
+                        particleVFX.SetActive(true);
+                        resultItemVFX.transform.position = itemView.transform.position;
+                    }
+                }
+            }
         }
         
         private void OnClickCloseItemCountAndPricePopup(Model.ItemCountAndPricePopup data)
