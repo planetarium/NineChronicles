@@ -119,7 +119,7 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        public ShopItemView TryFindByProductId(Guid id)
+        public ShopItemView GetByProductId(Guid id)
         {
             using (var uiItems = items.GetEnumerator())
             using (var dataItems = _data.products.GetEnumerator())
