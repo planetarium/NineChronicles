@@ -21,28 +21,28 @@ namespace Editor
         public static void BuildMacOS()
         {
             Debug.Log("Build MacOS");
-            Build(BuildTarget.StandaloneOSX);
+            Build(BuildTarget.StandaloneOSX, targetDirName: "MacOS");
         }
 
         [MenuItem("Build/Windows")]
         public static void BuildWindows()
         {
             Debug.Log("Build Windows");
-            Build(BuildTarget.StandaloneWindows64);
+            Build(BuildTarget.StandaloneWindows64, targetDirName: "Windows");
         }
 
         [MenuItem("Build/Linux")]
         public static void BuildLinux()
         {
             Debug.Log("Build Linux");
-            Build(BuildTarget.StandaloneLinux64);
+            Build(BuildTarget.StandaloneLinux64, targetDirName: "Linux");
         }
 
         [MenuItem("Build/MacOS Headless")]
         public static void BuildMacOSHeadless()
         {
             Debug.Log("Build MacOS Headless");
-            Build(BuildTarget.StandaloneOSX, BuildOptions.EnableHeadlessMode, "OSXHeadless");
+            Build(BuildTarget.StandaloneOSX, BuildOptions.EnableHeadlessMode, "MacOSHeadless");
         }
 
         [MenuItem("Build/Linux Headless")]
@@ -52,7 +52,7 @@ namespace Editor
             Build(BuildTarget.StandaloneLinux64, BuildOptions.EnableHeadlessMode, "LinuxHeadless");
         }
 
-        [MenuItem("Build/Windows")]
+        [MenuItem("Build/Windows Headless")]
         public static void BuildWindowsHeadless()
         {
             Debug.Log("Build Windows Headless");

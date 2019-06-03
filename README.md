@@ -27,13 +27,13 @@
 ### 커맨드라인 빌드
 
 ```
-$ /UnityPath/Unity -quit -batchmode -executeMethod Editor.Builder.Build[All, MacOS, Windows, Linux]
+$ /UnityPath/Unity -quit -batchmode -projectPath=/path/to/nekoyume/ -executeMethod Editor.Builder.Build[All, MacOS, Windows, Linux, MacOSHeadless, WindowsHeadless, LinuxHeadless]
 ```
 
 - Example
 
 ```
-$ /Applications/Unity/Hub/Editor/2019.1.0f2/Unity.app/Contents/MacOS/Unity -quit -batchmode -executeMethod Editor.Builder.Build[All, MacOS, Windows, Linux]
+$ /Applications/Unity/Hub/Editor/2019.1.0f2/Unity.app/Contents/MacOS/Unity -quit -batchmode -projectPath=~/planetarium/nekoyume-unity/nekoyume/ -executeMethod Editor.Builder.BuildAll
 ```
 
 [Unity Hub]: https://unity3d.com/get-unity/download
