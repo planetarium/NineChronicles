@@ -309,7 +309,7 @@ namespace Nekoyume.UI
 
         private IEnumerator CoShowBuyResultVFX(Buy.ResultModel result)
         {
-            Module.ShopItemView shopView = shopItems.TryFindByProductId(result.shopItem.productId);
+            Module.ShopItemView shopView = shopItems.GetByProductId(result.shopItem.productId);
             if (!ReferenceEquals(shopView, null))
             {
                 yield return new WaitForSeconds(0.1f);
@@ -320,7 +320,7 @@ namespace Nekoyume.UI
                 var index = _data.inventory.Value.items.IndexOf(invenItem);
                 if (!ReferenceEquals(invenItem, null))
                 {
-                    Module.InventoryItemView itemView = inventoryAndItemInfo.inventory.scrollerController.TryFindIndexAt(index);
+                    Module.InventoryItemView itemView = inventoryAndItemInfo.inventory.scrollerController.GetByIndex(index);
                     if (!ReferenceEquals(itemView, null))
                     {
                         particleVFX.transform.position = shopView.transform.position;
