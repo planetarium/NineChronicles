@@ -7,6 +7,7 @@ using Nekoyume.Data.Table;
 using Nekoyume.Game.CC;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
+using Nekoyume.Game.VFX.Skill;
 using Nekoyume.UI;
 using UnityEngine;
 
@@ -328,7 +329,11 @@ namespace Nekoyume.Game.Character
             RunSpeed = 0.0f;
 
             animator.Cast();
-            yield return new WaitForSeconds(0.3f);
+            var pos = transform.position;
+            var effect = Game.instance.stage.SkillController.Get(pos);
+            effect.Stop();
+            effect.Play();
+            yield return new WaitForSeconds(0.6f);
 
             var enemy = GetComponentsInChildren<CharacterBase>()
                 .Where(c => c.gameObject.CompareTag(targetTag))
@@ -362,20 +367,23 @@ namespace Nekoyume.Game.Character
             yield return StartCoroutine(CoAnimationCast());
 
             var skillInfos = infos.ToList();
-            foreach (var info in skillInfos)
-            {
-                var target = Game.instance.stage.GetCharacter(info.Target);
-                ProcessAttack(target, info);
-            }
+            var skillInfo = skillInfos.First();
+            var pos = transform.position;
+            pos.x += 2f;
+            var effect = Game.instance.stage.SkillController.Get<SkillAreaVFX>(characterSize, skillInfo, pos);
+            effect.Stop();
+            effect.Play();
 
             foreach (var info in skillInfos)
             {
                 var target = Game.instance.stage.GetCharacter(info.Target);
+                yield return new WaitForSeconds(0.5f);
+                ProcessAttack(target, info);
                 if (target.IsDead())
                     StartCoroutine(target.Dying());
             }
 
-            yield return new WaitForSeconds(1.2f);
+            yield return new WaitWhile(() => effect.isActiveAndEnabled);
         }
 
         public IEnumerator CoDoubleAttack(IEnumerable<Model.Skill.SkillInfo> infos)
@@ -389,7 +397,7 @@ namespace Nekoyume.Game.Character
                 var pos = target.transform.position;
                 pos.x -= 0.2f;
                 pos.y += 0.32f;
-                var effect = Game.instance.stage.SkillController.GetDoubleVFX(target.characterSize, info, pos);
+                var effect = Game.instance.stage.SkillController.Get<SkillDoubleVFX>(target.characterSize, info, pos);
                 effect.Stop();
 
                 yield return StartCoroutine(CoAnimationAttack());

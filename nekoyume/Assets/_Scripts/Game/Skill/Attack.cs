@@ -9,9 +9,12 @@ namespace Nekoyume.Game.Skill
     [Serializable]
     public class AttackBase: SkillBase
     {
-        protected AttackBase(CharacterBase caster, float chance, SkillEffect effect) : base(caster, chance, effect)
+        private Data.Table.Elemental.ElementalType _elemental;
+        protected AttackBase(CharacterBase caster, float chance, SkillEffect effect,
+            Data.Table.Elemental.ElementalType elemental) : base(caster, chance, effect)
         {
             this.chance = chance;
+            _elemental = elemental;
         }
 
         protected List<Model.Skill.SkillInfo> ProcessDamage(IEnumerable<CharacterBase> targets)
@@ -31,7 +34,8 @@ namespace Nekoyume.Game.Skill
 
                 target.OnDamage(dmg);
 
-                infos.Add(new Model.Skill.SkillInfo((CharacterBase) target.Clone(), dmg, critical, Effect.category));
+                infos.Add(new Model.Skill.SkillInfo((CharacterBase) target.Clone(), dmg, critical, Effect.category,
+                    _elemental));
             }
 
             return infos;
@@ -46,7 +50,8 @@ namespace Nekoyume.Game.Skill
     [Serializable]
     public class Attack : AttackBase
     {
-        public Attack(CharacterBase caster, float chance, SkillEffect effect) : base(caster, chance, effect)
+        public Attack(CharacterBase caster, float chance, SkillEffect effect,
+            Data.Table.Elemental.ElementalType elemental) : base(caster, chance, effect, elemental)
         {
         }
 

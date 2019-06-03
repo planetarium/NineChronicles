@@ -8,7 +8,8 @@ namespace Nekoyume.Game.Skill
     [Serializable]
     public class DoubleAttack : AttackBase
     {
-        public DoubleAttack(CharacterBase caster, float chance, SkillEffect effect) : base(caster, chance, effect)
+        public DoubleAttack(CharacterBase caster, float chance, SkillEffect effect,
+            Data.Table.Elemental.ElementalType elemental) : base(caster, chance, effect, elemental)
         {
         }
 
