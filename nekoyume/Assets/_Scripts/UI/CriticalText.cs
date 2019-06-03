@@ -10,14 +10,12 @@ namespace Nekoyume.UI
         private const float TweenDuration = 0.3f;
         private const float DestroyDelay = 0.8f;
         
-        private static readonly Vector3 LocalScaleBefore = new Vector3(0.5f, 0.1f, 1f);
-        private static readonly Vector3 LocalScaleAfter = new Vector3(1.2f, 1.2f, 1f);
+        private static readonly Vector3 LocalScaleBefore = new Vector3(2.4f, 2.4f, 1f);
+        private static readonly Vector3 LocalScaleAfter = new Vector3(1.4f, 1.4f, 1f);
         
         public TextMeshProUGUI label;
         public TextMeshProUGUI shadow;
-
-        private Vector3 _force;
-        private Vector3 _addForce;
+        public CanvasGroup group;
 
         public static CriticalText Show(Vector3 position, Vector3 force, string text)
         {
@@ -30,8 +28,9 @@ namespace Nekoyume.UI
             rect.localScale = LocalScaleBefore;
 
             var tweenPos = (position + force).ToCanvasPosition(ActionCamera.instance.Cam, MainCanvas.instance.Canvas);
-            rect.DOAnchorPos(tweenPos, TweenDuration).SetEase(Ease.OutBack);
-            rect.DOScale(LocalScaleAfter, TweenDuration).SetEase(Ease.OutBack);
+            rect.DOAnchorPos(tweenPos, TweenDuration * 2.0f).SetEase(Ease.InOutQuad);
+            rect.DOScale(LocalScaleAfter, TweenDuration).SetEase(Ease.OutCubic);
+            result.group.DOFade(0.0f, TweenDuration).SetDelay(TweenDuration).SetEase(Ease.InCirc);
             
             Destroy(result.gameObject, DestroyDelay);
 

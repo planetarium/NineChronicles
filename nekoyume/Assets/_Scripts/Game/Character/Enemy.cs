@@ -7,7 +7,7 @@ namespace Nekoyume.Game.Character
 {
     public class Enemy : CharacterBase
     {
-        protected override Vector3 DamageTextForce => new Vector3(0.1f, 0.5f);
+        protected override Vector3 DamageTextForce => new Vector3(0.0f, 0.8f);
 
         public Guid id;
         public override Guid Id => id;
