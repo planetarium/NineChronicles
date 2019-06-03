@@ -338,7 +338,7 @@ namespace Nekoyume.UI
                 var index = _data.inventory.Value.items.IndexOf(invenItem);
                 if (!ReferenceEquals(invenItem, null))
                 {
-                    InventoryItemView itemView = inventoryAndItemInfo.inventory.scrollerController.TryFindIndexAt(index);
+                    InventoryItemView itemView = inventoryAndItemInfo.inventory.scrollerController.GetByIndex(index);
                     if (!ReferenceEquals(itemView, null))
                     {
                         particleVFX.transform.position = _resultPopup.resultItem.transform.position;
