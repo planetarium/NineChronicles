@@ -33,10 +33,11 @@ namespace Nekoyume.Game.VFX
                 {
                     _particlesDuration = particle.main.duration;
                 }
-                
-                particle.gameObject.layer = LayerMask.NameToLayer(StringVFX);
+
+                if (particle.gameObject.layer == LayerMask.NameToLayer("Default"))
+                    particle.gameObject.layer = LayerMask.NameToLayer(StringVFX);
                 var r = particle.GetComponent<Renderer>();
-                if (r)
+                if (r && r.sortingLayerName == "Default")
                 {
                     r.sortingLayerName = StringVFX;
                 }
