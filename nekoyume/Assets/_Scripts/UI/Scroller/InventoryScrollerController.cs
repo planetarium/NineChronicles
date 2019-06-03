@@ -100,7 +100,7 @@ namespace Nekoyume.UI.Scroller
             scroller.ReloadData();
         }
 
-        public Module.InventoryItemView TryFindIndexAt(int index)
+        public Module.InventoryItemView GetByIndex(int index)
         {
             for (int i = scroller.StartDataIndex ; i <= scroller.EndDataIndex; ++i)
             {
