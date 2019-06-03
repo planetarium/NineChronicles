@@ -22,6 +22,7 @@ namespace Nekoyume.UI
         public Text materialText;
         public SimpleCountableItemView[] materialItems;
         public Button okButton;
+        public GameObject resultItemVfx;
         
         private readonly List<IDisposable> _disposablesForAwake = new List<IDisposable>();
         private Model.CombinationResultPopup _data;
@@ -33,12 +34,12 @@ namespace Nekoyume.UI
             base.Awake();
 
             this.ComponentFieldsNotNullTest();
-            
             okButton.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
                     _data.onClickSubmit.OnNext(_data);
                     AudioController.PlayClick();
+                    Find<Combination>()?.ShowResultVFX(_data);
                 })
                 .AddTo(_disposablesForAwake);
         }
@@ -105,6 +106,7 @@ namespace Nekoyume.UI
                 return;
             }
             
+            resultItemVfx.SetActive(false);
             if (_data.isSuccess)
             {
                 var item = new Equipment(_data.item.Value.Data);
@@ -116,6 +118,7 @@ namespace Nekoyume.UI
                 resultItemDescriptionText.text = item.ToItemInfo();
                 resultItem.SetActive(true);
                 materialText.text = "제작 재료";
+                resultItemVfx.SetActive(true);
 
                 AudioController.instance.PlaySfx(AudioController.SfxCode.Success);
             }

@@ -144,6 +144,19 @@ namespace Nekoyume.UI
             timeText.gameObject.SetActive(_autoNext);
 
             base.Show();
+
+            StartCoroutine(ShowSlots());
+        }
+
+        private IEnumerator ShowSlots()
+        {
+            yield return new WaitForSeconds(0.5f);
+            foreach (var slot in _slots)
+            {
+                var container = slot.gameObject.transform.GetChild(0);
+                container.gameObject.SetActive(true);
+                yield return new WaitForSeconds(0.4f);
+            }
         }
 
         public override void Close()

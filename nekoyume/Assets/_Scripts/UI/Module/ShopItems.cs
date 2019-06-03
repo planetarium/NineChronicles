@@ -118,5 +118,28 @@ namespace Nekoyume.UI.Module
                 }
             }
         }
+
+        public ShopItemView GetByProductId(Guid id)
+        {
+            using (var uiItems = items.GetEnumerator())
+            using (var dataItems = _data.products.GetEnumerator())
+            {
+                while (uiItems.MoveNext())
+                {
+                    if (ReferenceEquals(uiItems.Current, null))
+                    {
+                        continue;
+                    }
+                    
+                    if (!dataItems.MoveNext())
+                    {
+                        continue;
+                    }
+                    if (dataItems.Current.productId.Value == id)
+                        return uiItems.Current;
+                }
+            }
+            return null;
+        }
     }
 }
