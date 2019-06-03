@@ -284,6 +284,18 @@ namespace Nekoyume.Game
             yield return StartCoroutine(AfterSkill(character));
         }
 
+        public IEnumerator CoBlow(CharacterBase caster, IEnumerable<Model.Skill.SkillInfo> skillInfos)
+        {
+            var character = GetCharacter(caster);
+            var infos = skillInfos.ToList();
+
+            yield return StartCoroutine(BeforeSkill(character, infos));
+
+            yield return StartCoroutine(character.CoBlow(infos));
+
+            yield return StartCoroutine(AfterSkill(character));
+        }
+
         public IEnumerator CoHeal(CharacterBase caster, IEnumerable<Model.Skill.SkillInfo> skillInfos)
         {
             var character = GetCharacter(caster);

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 719633715610859303}
   - component: {fileID: 5747805462261817425}
   - component: {fileID: 5149907225635348621}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: glow_01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4613,8 +4613,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -317291175
+  m_SortingLayer: 4
   m_SortingOrder: 10
   m_RenderMode: 0
   m_SortMode: 0
@@ -4650,7 +4650,7 @@ GameObject:
   - component: {fileID: 3831812625128490875}
   - component: {fileID: 1717623830891706503}
   - component: {fileID: 1056396667687065665}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: dot_01 (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9207,8 +9207,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -317291175
+  m_SortingLayer: 4
   m_SortingOrder: 10
   m_RenderMode: 0
   m_SortMode: 0
@@ -9244,7 +9244,7 @@ GameObject:
   - component: {fileID: 275533783454908962}
   - component: {fileID: 3190584507555376711}
   - component: {fileID: 1320061364563979947}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: lines_02 (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -13828,8 +13828,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -317291175
+  m_SortingLayer: 4
   m_SortingOrder: 10
   m_RenderMode: 1
   m_SortMode: 0
@@ -13865,7 +13865,7 @@ GameObject:
   - component: {fileID: 653283114470696285}
   - component: {fileID: 5825904743722716416}
   - component: {fileID: 5431151382092431630}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: ob_water (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -18436,8 +18436,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -317291175
+  m_SortingLayer: 4
   m_SortingOrder: 10
   m_RenderMode: 0
   m_SortMode: 0
@@ -18473,7 +18473,7 @@ GameObject:
   - component: {fileID: 2907779582320850550}
   - component: {fileID: 8151708765208647991}
   - component: {fileID: 5761151562200329985}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: ob_water (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -23044,8 +23044,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -317291175
+  m_SortingLayer: 4
   m_SortingOrder: 10
   m_RenderMode: 0
   m_SortMode: 0
@@ -23081,7 +23081,7 @@ GameObject:
   - component: {fileID: 1011900274304897075}
   - component: {fileID: 3740126136076868636}
   - component: {fileID: 1027618759790233598}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: lines_02
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -27665,8 +27665,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -317291175
+  m_SortingLayer: 4
   m_SortingOrder: 10
   m_RenderMode: 1
   m_SortMode: 0
@@ -27702,7 +27702,7 @@ GameObject:
   - component: {fileID: 1047694759995219375}
   - component: {fileID: 9183967695917981599}
   - component: {fileID: 3296435260764204871}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: glow_water
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -27759,8 +27759,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -317291175
+  m_SortingLayer: 4
   m_SortingOrder: 10
   m_RenderMode: 0
   m_SortMode: 0
@@ -32384,7 +32384,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6574656267441048569}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: GameObject
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -32421,7 +32421,7 @@ GameObject:
   - component: {fileID: 2668631272791688760}
   - component: {fileID: 1574155508097071866}
   - component: {fileID: 61088812191323466}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: dot_01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -36978,8 +36978,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -317291175
+  m_SortingLayer: 4
   m_SortingOrder: 10
   m_RenderMode: 0
   m_SortMode: 0
@@ -37015,7 +37015,7 @@ GameObject:
   - component: {fileID: 2333922561879941813}
   - component: {fileID: 8695527127228489590}
   - component: {fileID: 5908886890138331763}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: flash_02 (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -41617,8 +41617,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -317291175
+  m_SortingLayer: 4
   m_SortingOrder: 10
   m_RenderMode: 0
   m_SortMode: 0
@@ -41654,7 +41654,7 @@ GameObject:
   - component: {fileID: 626258428059838141}
   - component: {fileID: 6924605418895246830}
   - component: {fileID: 9146705168476551313}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: flash_02 (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -46264,8 +46264,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -317291175
+  m_SortingLayer: 4
   m_SortingOrder: 10
   m_RenderMode: 0
   m_SortMode: 0
@@ -46301,7 +46301,7 @@ GameObject:
   - component: {fileID: 2468827855198195155}
   - component: {fileID: 6629750791249109826}
   - component: {fileID: 903299627234781042}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: glow_01 (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -50903,8 +50903,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -317291175
+  m_SortingLayer: 4
   m_SortingOrder: 10
   m_RenderMode: 0
   m_SortMode: 0
@@ -50940,7 +50940,7 @@ GameObject:
   - component: {fileID: 4487036096075176059}
   - component: {fileID: 6883491676513951122}
   - component: {fileID: 9001751810673039662}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: flash_01 (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -55542,8 +55542,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -317291175
+  m_SortingLayer: 4
   m_SortingOrder: 10
   m_RenderMode: 0
   m_SortMode: 0
@@ -55580,7 +55580,7 @@ GameObject:
   - component: {fileID: 7185331263445023255}
   - component: {fileID: 6778420269260148697}
   - component: {fileID: 2857995067340453545}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: double_m_water
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -55594,7 +55594,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7486381731988434509}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2.163, y: -0.748, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -60238,8 +60238,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -317291175
+  m_SortingLayer: 4
   m_SortingOrder: 10
   m_RenderMode: 0
   m_SortMode: 0
@@ -60289,7 +60289,7 @@ GameObject:
   - component: {fileID: 1708605976089452223}
   - component: {fileID: 5826765580271979498}
   - component: {fileID: 4788362157271509769}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: glow_water (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -60346,8 +60346,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -317291175
+  m_SortingLayer: 4
   m_SortingOrder: 10
   m_RenderMode: 0
   m_SortMode: 0
@@ -64982,7 +64982,7 @@ GameObject:
   - component: {fileID: 7799005580541145301}
   - component: {fileID: 4988116596117012530}
   - component: {fileID: 5452688308655139716}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: attack_04
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -69638,8 +69638,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -317291175
+  m_SortingLayer: 4
   m_SortingOrder: 10
   m_RenderMode: 0
   m_SortMode: 0

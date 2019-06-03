@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Nekoyume.Game.VFX
 {
     [RequireComponent(typeof(ParticleSystem))]
-    public abstract class VFX : MonoBehaviour
+    public class VFX : MonoBehaviour
     {
         private const string StringVFX = "VFX";
 
@@ -33,10 +33,11 @@ namespace Nekoyume.Game.VFX
                 {
                     _particlesDuration = particle.main.duration;
                 }
-                
-                particle.gameObject.layer = LayerMask.NameToLayer(StringVFX);
+
+                if (particle.gameObject.layer == LayerMask.NameToLayer("Default"))
+                    particle.gameObject.layer = LayerMask.NameToLayer(StringVFX);
                 var r = particle.GetComponent<Renderer>();
-                if (r)
+                if (r && r.sortingLayerName == "Default")
                 {
                     r.sortingLayerName = StringVFX;
                 }
@@ -66,7 +67,7 @@ namespace Nekoyume.Game.VFX
             StartCoroutine(CoLazyStop(_particlesDuration));
         }
 
-        public void Play()
+        public virtual void Play()
         {
             gameObject.SetActive(true);
         }

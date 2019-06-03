@@ -1,4 +1,5 @@
 using Nekoyume.Data.Table;
+using Nekoyume.Game.Character;
 using Nekoyume.Game.Util;
 using UnityEngine;
 
@@ -19,15 +20,23 @@ namespace Nekoyume.Game.VFX.Skill
             }
         }
 
-        public T Get<T>(string size, Model.Skill.SkillInfo skillInfo, Vector3 position) where T : SkillVFX
+        public T Get<T>(CharacterBase target, Model.Skill.SkillInfo skillInfo) where T : SkillVFX
         {
+            var position = target.transform.position;
+            position.x -= 0.2f;
+            position.y += 0.32f;
+            var size = target.characterSize == "xs" ? "s" : "m";
             if (skillInfo.Category == SkillEffect.Category.Area)
+            {
                 size = "l";
-            else
-                size = size == "xs" ? "s" : "m";
+                position = target.transform.position;
+            }
             var skillName = $"{skillInfo.Category}_{size}_{skillInfo.Elemental}".ToLower();
             var go = _pool.Get(skillName, false, position);
-            return go.GetComponent<T>();
+            var effect = go.GetComponent<T>();
+            effect.target = target;
+            effect.Stop();
+            return effect;
         }
 
         public SkillCastingVFX Get(Vector3 position)
@@ -36,6 +45,5 @@ namespace Nekoyume.Game.VFX.Skill
             var go = _pool.Get("casting_fire", false, position);
             return go.GetComponent<SkillCastingVFX>();
         }
-
     }
 }

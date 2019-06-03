@@ -331,7 +331,6 @@ namespace Nekoyume.Game.Character
             animator.Cast();
             var pos = transform.position;
             var effect = Game.instance.stage.SkillController.Get(pos);
-            effect.Stop();
             effect.Play();
             yield return new WaitForSeconds(0.6f);
 
@@ -368,10 +367,8 @@ namespace Nekoyume.Game.Character
 
             var skillInfos = infos.ToList();
             var skillInfo = skillInfos.First();
-            var pos = transform.position;
-            pos.x += 2f;
-            var effect = Game.instance.stage.SkillController.Get<SkillAreaVFX>(characterSize, skillInfo, pos);
-            effect.Stop();
+            var effectTarget = Game.instance.stage.GetCharacter(skillInfo.Target);
+            var effect = Game.instance.stage.SkillController.Get<SkillAreaVFX>(effectTarget, skillInfo);
             effect.Play();
 
             foreach (var info in skillInfos)
@@ -388,17 +385,12 @@ namespace Nekoyume.Game.Character
 
         public IEnumerator CoDoubleAttack(IEnumerable<Model.Skill.SkillInfo> infos)
         {
-
             var skillInfos = infos.ToList();
             foreach (var info in skillInfos)
             {
                 var target = Game.instance.stage.GetCharacter(info.Target);
                 var first = skillInfos.First() == info;
-                var pos = target.transform.position;
-                pos.x -= 0.2f;
-                pos.y += 0.32f;
-                var effect = Game.instance.stage.SkillController.Get<SkillDoubleVFX>(target.characterSize, info, pos);
-                effect.Stop();
+                var effect = Game.instance.stage.SkillController.Get<SkillDoubleVFX>(target, info);
 
                 yield return StartCoroutine(CoAnimationAttack());
                 if (first)
@@ -420,6 +412,29 @@ namespace Nekoyume.Game.Character
             }
 
             yield return new WaitForSeconds(1.2f);
+        }
+
+        public IEnumerator CoBlow(IEnumerable<Model.Skill.SkillInfo> infos)
+        {
+            yield return StartCoroutine(CoAnimationCast());
+
+            yield return StartCoroutine(CoAnimationAttack());
+
+            var skillInfos = infos.ToList();
+            foreach (var info in skillInfos)
+            {
+                var target = Game.instance.stage.GetCharacter(info.Target);
+                var effect = Game.instance.stage.SkillController.Get<SkillBlowVFX>(target, info);
+                effect.Play();
+                ProcessAttack(target, info);
+            }
+
+            foreach (var info in skillInfos)
+            {
+                var target = Game.instance.stage.GetCharacter(info.Target);
+                if (target.IsDead())
+                    StartCoroutine(target.Dying());
+            }
         }
 
         public IEnumerator CoHeal(IEnumerable<Model.Skill.SkillInfo> infos)
