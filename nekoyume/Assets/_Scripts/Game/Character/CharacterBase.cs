@@ -414,6 +414,29 @@ namespace Nekoyume.Game.Character
             yield return new WaitForSeconds(1.2f);
         }
 
+        public IEnumerator CoBlow(IEnumerable<Model.Skill.SkillInfo> infos)
+        {
+            yield return StartCoroutine(CoAnimationCast());
+
+            yield return StartCoroutine(CoAnimationAttack());
+
+            var skillInfos = infos.ToList();
+            foreach (var info in skillInfos)
+            {
+                var target = Game.instance.stage.GetCharacter(info.Target);
+                var effect = Game.instance.stage.SkillController.Get<SkillBlowVFX>(target, info);
+                effect.Play();
+                ProcessAttack(target, info);
+            }
+
+            foreach (var info in skillInfos)
+            {
+                var target = Game.instance.stage.GetCharacter(info.Target);
+                if (target.IsDead())
+                    StartCoroutine(target.Dying());
+            }
+        }
+
         public IEnumerator CoHeal(IEnumerable<Model.Skill.SkillInfo> infos)
         {
             yield return StartCoroutine(CoAnimationCast());

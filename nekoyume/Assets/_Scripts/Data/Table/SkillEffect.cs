@@ -25,6 +25,7 @@ namespace Nekoyume.Data.Table
             Normal,
             Double,
             Area,
+            Blow,
         }
 
         public SkillType type = SkillType.Attack;

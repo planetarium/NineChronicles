@@ -25,6 +25,8 @@ namespace Nekoyume.Game.Skill
                                         (Data.Table.Elemental.ElementalType) values.GetValue(
                                             random.Next(values.Length));
                                     return new DoubleAttack(caster, chance, effect, elemental);
+                                case SkillEffect.Category.Blow:
+                                    return new Blow(caster, chance, effect, Data.Table.Elemental.ElementalType.Normal);
                                 default:
                                     return new Attack(caster, chance, effect, Data.Table.Elemental.ElementalType.Normal);
                             }

@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Nekoyume.Game.VFX
 {
     [RequireComponent(typeof(ParticleSystem))]
-    public abstract class VFX : MonoBehaviour
+    public class VFX : MonoBehaviour
     {
         private const string StringVFX = "VFX";
 
@@ -67,7 +67,7 @@ namespace Nekoyume.Game.VFX
             StartCoroutine(CoLazyStop(_particlesDuration));
         }
 
-        public void Play()
+        public virtual void Play()
         {
             gameObject.SetActive(true);
         }
