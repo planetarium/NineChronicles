@@ -39,7 +39,6 @@ namespace Nekoyume.UI
                 {
                     _data.onClickSubmit.OnNext(_data);
                     AudioController.PlayClick();
-                    Find<Combination>()?.ShowResultVFX(_data);
                 })
                 .AddTo(_disposablesForAwake);
         }

@@ -123,33 +123,36 @@ namespace Nekoyume.UI.Model
                     // 구매하겠습니까?
                     itemCountAndPricePopup.Value.titleText.Value = "구매";
                     itemCountAndPricePopup.Value.submitText.Value = "확인";
-                    itemCountAndPricePopup.Value.countInteractable.Value = false;
                 }
                 else
                 {
                     // 판매 취소하겠습니까?
                     itemCountAndPricePopup.Value.titleText.Value = "판매 취소";
                     itemCountAndPricePopup.Value.submitText.Value = "확인";
-                    itemCountAndPricePopup.Value.countInteractable.Value = true;
                 }
                 
+                itemCountAndPricePopup.Value.countInteractable.Value = false;
                 itemCountAndPricePopup.Value.price.Value = shopItem.price.Value;
                 itemCountAndPricePopup.Value.priceInteractable.Value = false;
+                itemCountAndPricePopup.Value.item.Value = new CountEditableItem(
+                    itemInfo.item.Value.item.Value,
+                    shopItem.count.Value,
+                    shopItem.count.Value,
+                    shopItem.count.Value);
+
+                return;
             }
-            else
-            {
-                // 판매하겠습니까?
-                itemCountAndPricePopup.Value.titleText.Value = "판매 설정";
-                itemCountAndPricePopup.Value.submitText.Value = "판매";
-                itemCountAndPricePopup.Value.price.Value = 1;
-                itemCountAndPricePopup.Value.countInteractable.Value = true;
-                itemCountAndPricePopup.Value.priceInteractable.Value = true;
-            }
-            
+
+            // 판매하겠습니까?
+            itemCountAndPricePopup.Value.titleText.Value = "판매 설정";
+            itemCountAndPricePopup.Value.submitText.Value = "판매";
+            itemCountAndPricePopup.Value.countInteractable.Value = true;
+            itemCountAndPricePopup.Value.price.Value = 1;
+            itemCountAndPricePopup.Value.priceInteractable.Value = true;
             itemCountAndPricePopup.Value.item.Value = new CountEditableItem(
                 itemInfo.item.Value.item.Value,
                 1,
-                0,
+                1,
                 itemInfo.item.Value.count.Value);
         }
 
