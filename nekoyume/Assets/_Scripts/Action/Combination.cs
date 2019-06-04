@@ -71,7 +71,7 @@ namespace Nekoyume.Action
             Materials = ByteSerializer.Deserialize<List<ItemModel>>((byte[]) plainValue["Materials"]);
         }
 
-        protected override IAccountStateDelta ExecuteInternal(IActionContext ctx)
+        public override IAccountStateDelta Execute(IActionContext ctx)
         {
             var states = ctx.PreviousStates;
             if (ctx.Rehearsal)

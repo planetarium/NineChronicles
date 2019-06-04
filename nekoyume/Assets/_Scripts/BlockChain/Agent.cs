@@ -47,7 +47,6 @@ namespace Nekoyume.BlockChain
         }
         
         private const float TxProcessInterval = 3.0f;
-        private const float ActionRetryInterval = 15.0f;
         private const int RewardAmount = 1;
         private const int SwarmDialTimeout = 5000;
         
@@ -55,7 +54,6 @@ namespace Nekoyume.BlockChain
         private static readonly TimeSpan SleepInterval = TimeSpan.FromSeconds(3);
         
         private readonly ConcurrentQueue<PolymorphicAction<ActionBase>> _queuedActions = new ConcurrentQueue<PolymorphicAction<ActionBase>>();
-        private readonly ConcurrentQueue<GameAction> _actionPool = new ConcurrentQueue<GameAction>();
         private readonly BlockChain<PolymorphicAction<ActionBase>> _blocks;
         private readonly Swarm _swarm;
         
@@ -138,47 +136,6 @@ namespace Nekoyume.BlockChain
             yield return new WaitUntil(() => swarmStartTask.IsCompleted);
         }
 
-        public IEnumerator CoActionRetryor() 
-        {
-            HashDigest<SHA256>? previousTipHash = _blocks.Tip?.Hash;
-            while (true)
-            {
-                yield return new WaitForSeconds(ActionRetryInterval);
-
-                if (_blocks.Tip is null ||
-                    _blocks.Tip.Hash is HashDigest<SHA256> currentTipHash &&
-                    currentTipHash.Equals(previousTipHash))
-                {
-                    continue;
-                }
-
-                previousTipHash = _blocks.Tip.Hash;
-                var task = Task.Run(() =>
-                {
-                    return (HashSet<Guid>)_blocks.GetStates(
-                        new[] { GameAction.ProcessedActionsAddress }
-                    ).GetValueOrDefault(
-                        GameAction.ProcessedActionsAddress,
-                        new HashSet<Guid>()
-                    );
-                });
-                
-                yield return new WaitUntil(() => task.IsCompleted);
-
-                if (!task.IsFaulted && !task.IsCanceled) 
-                {
-                    var processedActions = task.Result;
-                    while (_actionPool.TryDequeue(out GameAction action)) 
-                    {
-                        if (!processedActions.Contains(action.Id))
-                        {
-                            _queuedActions.Enqueue(action);
-                        }
-                    }
-                }
-            }
-        }
-
         public IEnumerator CoTxProcessor()
         {
             while (true)
@@ -189,10 +146,6 @@ namespace Nekoyume.BlockChain
                 while (_queuedActions.TryDequeue(out PolymorphicAction<ActionBase> action))
                 {
                     actions.Add(action);
-                    if (action.InnerAction is GameAction asGameAction) 
-                    {
-                        _actionPool.Enqueue(asGameAction);
-                    }
                 }
 
                 if (actions.Any())

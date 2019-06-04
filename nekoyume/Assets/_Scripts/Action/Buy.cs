@@ -41,7 +41,7 @@ namespace Nekoyume.Action
             productId = new Guid((byte[]) plainValue["productId"]);
         }
 
-        protected override IAccountStateDelta ExecuteInternal(IActionContext ctx)
+        public override IAccountStateDelta Execute(IActionContext ctx)
         {
             var states = ctx.PreviousStates;
             if (ctx.Rehearsal)

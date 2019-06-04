@@ -46,7 +46,7 @@ namespace Nekoyume.Action
             price = decimal.Parse(plainValue["price"].ToString());
         }
 
-        protected override IAccountStateDelta ExecuteInternal(IActionContext ctx)
+        public override IAccountStateDelta Execute(IActionContext ctx)
         {
             var states = ctx.PreviousStates;
             if (ctx.Rehearsal)

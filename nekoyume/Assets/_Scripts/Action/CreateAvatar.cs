@@ -34,7 +34,7 @@ namespace Nekoyume.Action
             name = (string) plainValue["name"];
         }
 
-        protected override IAccountStateDelta ExecuteInternal(IActionContext ctx)
+        public override IAccountStateDelta Execute(IActionContext ctx)
         {
             var states = ctx.PreviousStates;
             if (ctx.Rehearsal)
