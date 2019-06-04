@@ -11,7 +11,7 @@ namespace Nekoyume.UI.Model
 {
     public class Shop : IDisposable
     {
-        private static readonly string DimmedString = ItemBase.ItemType.Material.ToString();
+        private static readonly string DimmedString = nameof(ItemBase.ItemType.Material);
         
         public enum State
         {

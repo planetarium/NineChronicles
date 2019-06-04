@@ -97,10 +97,10 @@ namespace Nekoyume.UI
             _data = data;
             _data.titleText.Subscribe(value => titleText.text = value).AddTo(_disposablesForSetData);
             _data.item.Value.count.Subscribe(SetCount).AddTo(_disposablesForSetData);
-            _data.countEnabled.Subscribe(interactable =>
+            _data.countEnabled.Subscribe(countEnabled =>
             {
-                minusButton.enabled = interactable;
-                plusButton.enabled = interactable;
+                minusButton.gameObject.SetActive(countEnabled);
+                plusButton.gameObject.SetActive(countEnabled);
             }).AddTo(_disposablesForSetData);
             _data.submitText.Subscribe(value => submitButtonText.text = value).AddTo(_disposablesForSetData);
             itemView.SetData(_data.item.Value);
