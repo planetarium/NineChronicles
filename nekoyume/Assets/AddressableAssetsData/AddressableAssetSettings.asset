@@ -66,17 +66,9 @@ MonoBehaviour:
     - Character
     - Player
     - Monster
-  m_SchemaTemplates:
-  - m_DisplayName: Packed Assets
-    m_Description: Pack assets into asset bundles.
-    m_SchemaTypes:
-    - m_AssemblyName: Unity.Addressables.Editor, Version=0.0.0.0, Culture=neutral,
-        PublicKeyToken=null
-      m_ClassName: UnityEditor.AddressableAssets.Settings.GroupSchemas.BundledAssetGroupSchema
-    - m_AssemblyName: Unity.Addressables.Editor, Version=0.0.0.0, Culture=neutral,
-        PublicKeyToken=null
-      m_ClassName: UnityEditor.AddressableAssets.Settings.GroupSchemas.ContentUpdateGroupSchema
+  m_SchemaTemplates: []
   m_GroupTemplateObjects:
+  - {fileID: 11400000, guid: 3eef9683fdc3e4e4eaf5beca5725a3ee, type: 2}
   - {fileID: 11400000, guid: 3eef9683fdc3e4e4eaf5beca5725a3ee, type: 2}
   m_InitializationObjects: []
   m_CertificateHandlerType:
