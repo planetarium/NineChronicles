@@ -236,6 +236,7 @@ namespace Nekoyume.BlockChain
                             if (ex is InvalidTxException invalidTxException) 
                             {
                                 Debug.Log($"Tx[{invalidTxException.TxId}] is invalid. mark to unstage.");
+                                Debug.LogException(ex);
                                 invalidTxs.Add(_blocks.Transactions[invalidTxException.TxId]);
                             }
                             else
@@ -341,7 +342,7 @@ namespace Nekoyume.BlockChain
         )
         {
             return Transaction<PolymorphicAction<ActionBase>>.Create(
-                _blocks.GetNonce(Address),
+                _blocks.GetNonce(Address, true),
                 PrivateKey,
                 actions,
                 timestamp: DateTime.UtcNow
