@@ -12,9 +12,8 @@ namespace Planetarium.Nekoyume.Editor
 {
     public static class SpineEditor
     {
-        private static readonly Vector3 PlayerPosition = new Vector3(0f, 1f, 0f);
-        private static readonly Vector3 EnemyPosition = Vector3.zero;
-        private static readonly Vector3 CharacterLocalScale = new Vector3(.64f, .64f, 1f);
+        private static readonly Vector3 Position = Vector3.zero;
+        private static readonly Vector3 LocalScale = new Vector3(.64f, .64f, 1f);
         private const string FindAssetFilter = "CharacterAnimator t:AnimatorController";
 
         [MenuItem("Assets/Create/Spine Prefab", true)]
@@ -43,8 +42,8 @@ namespace Planetarium.Nekoyume.Editor
             var gameObject = skeletonAnimation.gameObject;
             gameObject.name = prefabName;
             gameObject.layer = LayerMask.NameToLayer("Character");
-            gameObject.transform.position = prefabName.StartsWith("1") ? PlayerPosition : EnemyPosition;
-            gameObject.transform.localScale = CharacterLocalScale;
+            gameObject.transform.position = Position;
+            gameObject.transform.localScale = LocalScale;
 
             var meshRenderer = gameObject.GetComponent<MeshRenderer>();
             meshRenderer.lightProbeUsage = LightProbeUsage.Off;

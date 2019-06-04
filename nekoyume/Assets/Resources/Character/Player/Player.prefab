@@ -28,7 +28,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1101687136648424}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.5, y: -1.29, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -52,6 +52,7 @@ MonoBehaviour:
   Power: 100
   RunSpeed: 0
   targetTag: 
+  characterSize: s
   MP: 0
   EXP: 0
   Level: 0
@@ -65,6 +66,8 @@ MonoBehaviour:
     luck: 0
     level: 0
     attackRange: 1
+    runSpeed: 1
+    characterSize: s
     exp: 0
     expMax: 0
     expNeed: 0
@@ -95,7 +98,7 @@ SortingGroup:
   m_GameObject: {fileID: 1101687136648424}
   m_Enabled: 1
   m_SortingLayerID: -385277771
-  m_SortingLayer: 2
+  m_SortingLayer: 3
   m_SortingOrder: 100
 --- !u!65 &-359039227354913585
 BoxCollider:
