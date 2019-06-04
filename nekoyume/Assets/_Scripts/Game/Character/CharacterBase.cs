@@ -323,14 +323,14 @@ namespace Nekoyume.Game.Character
                 RunSpeed = Speed;
         }
         
-        private IEnumerator CoAnimationCast()
+        private IEnumerator CoAnimationCast(Model.Skill.SkillInfo info)
         {
             attackEnd = false;
             RunSpeed = 0.0f;
 
             animator.Cast();
             var pos = transform.position;
-            var effect = Game.instance.stage.SkillController.Get(pos);
+            var effect = Game.instance.stage.SkillController.Get(pos, info);
             effect.Play();
             yield return new WaitForSeconds(0.6f);
 
@@ -363,10 +363,11 @@ namespace Nekoyume.Game.Character
 
         public IEnumerator CoAreaAttack(IEnumerable<Model.Skill.SkillInfo> infos)
         {
-            yield return StartCoroutine(CoAnimationCast());
-
             var skillInfos = infos.ToList();
             var skillInfo = skillInfos.First();
+
+            yield return StartCoroutine(CoAnimationCast(skillInfo));
+
             var effectTarget = Game.instance.stage.GetCharacter(skillInfo.Target);
             var effect = Game.instance.stage.SkillController.Get<SkillAreaVFX>(effectTarget, skillInfo);
             effect.Play();
@@ -416,11 +417,12 @@ namespace Nekoyume.Game.Character
 
         public IEnumerator CoBlow(IEnumerable<Model.Skill.SkillInfo> infos)
         {
-            yield return StartCoroutine(CoAnimationCast());
+            var skillInfos = infos.ToList();
+
+            yield return StartCoroutine(CoAnimationCast(skillInfos.First()));
 
             yield return StartCoroutine(CoAnimationAttack());
 
-            var skillInfos = infos.ToList();
             foreach (var info in skillInfos)
             {
                 var target = Game.instance.stage.GetCharacter(info.Target);
@@ -439,9 +441,11 @@ namespace Nekoyume.Game.Character
 
         public IEnumerator CoHeal(IEnumerable<Model.Skill.SkillInfo> infos)
         {
-            yield return StartCoroutine(CoAnimationCast());
+            var skillInfos = infos.ToList();
 
-            foreach (var info in infos)
+            yield return StartCoroutine(CoAnimationCast(skillInfos.First()));
+
+            foreach (var info in skillInfos)
             {
                 var target = Game.instance.stage.GetCharacter(info.Target);
                 ProcessHeal(target, info);

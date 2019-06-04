@@ -39,11 +39,17 @@ namespace Nekoyume.Game.VFX.Skill
             return effect;
         }
 
-        public SkillCastingVFX Get(Vector3 position)
+        public SkillCastingVFX Get(Vector3 position, Model.Skill.SkillInfo skillInfo)
         {
             //TODO 속성별 캐스팅 마법진이 달라야함.
-            var go = _pool.Get("casting_fire", false, position);
-            return go.GetComponent<SkillCastingVFX>();
+            var elemental = Data.Table.Elemental.ElementalType.Normal;
+            if (skillInfo.Elemental == Data.Table.Elemental.ElementalType.Fire)
+                elemental = Data.Table.Elemental.ElementalType.Fire;
+            var skillName = $"casting_{elemental}".ToLower();
+            var go = _pool.Get(skillName, false, position);
+            var effect = go.GetComponent<SkillCastingVFX>();
+            effect.Stop();
+            return effect;
         }
     }
 }
