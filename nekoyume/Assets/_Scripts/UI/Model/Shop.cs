@@ -11,7 +11,7 @@ namespace Nekoyume.UI.Model
 {
     public class Shop : IDisposable
     {
-        private static readonly string DimmedString = ItemBase.ItemType.Material.ToString();
+        private static readonly string DimmedString = nameof(ItemBase.ItemType.Material);
         
         public enum State
         {
@@ -131,7 +131,7 @@ namespace Nekoyume.UI.Model
                     itemCountAndPricePopup.Value.submitText.Value = "확인";
                 }
                 
-                itemCountAndPricePopup.Value.countInteractable.Value = false;
+                itemCountAndPricePopup.Value.countEnabled.Value = false;
                 itemCountAndPricePopup.Value.price.Value = shopItem.price.Value;
                 itemCountAndPricePopup.Value.priceInteractable.Value = false;
                 itemCountAndPricePopup.Value.item.Value = new CountEditableItem(
@@ -146,7 +146,7 @@ namespace Nekoyume.UI.Model
             // 판매하겠습니까?
             itemCountAndPricePopup.Value.titleText.Value = "판매 설정";
             itemCountAndPricePopup.Value.submitText.Value = "판매";
-            itemCountAndPricePopup.Value.countInteractable.Value = true;
+            itemCountAndPricePopup.Value.countEnabled.Value = true;
             itemCountAndPricePopup.Value.price.Value = 1;
             itemCountAndPricePopup.Value.priceInteractable.Value = true;
             itemCountAndPricePopup.Value.item.Value = new CountEditableItem(

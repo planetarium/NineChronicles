@@ -7,7 +7,7 @@ namespace Nekoyume.UI.Model
     {
         public readonly ReactiveProperty<string> titleText = new ReactiveProperty<string>("수량 선택");
         public readonly ReactiveProperty<CountEditableItem> item = new ReactiveProperty<CountEditableItem>(null);
-        public readonly ReactiveProperty<bool> countInteractable = new ReactiveProperty<bool>(true);
+        public readonly ReactiveProperty<bool> countEnabled = new ReactiveProperty<bool>(true);
         public readonly ReactiveProperty<string> submitText = new ReactiveProperty<string>("확인");
         
         public readonly Subject<T> onClickMinus = new Subject<T>();
@@ -44,7 +44,7 @@ namespace Nekoyume.UI.Model
         {
             titleText.Dispose();
             item.Dispose();
-            countInteractable.Dispose();
+            countEnabled.Dispose();
             submitText.Dispose();
             
             onClickMinus.Dispose();
