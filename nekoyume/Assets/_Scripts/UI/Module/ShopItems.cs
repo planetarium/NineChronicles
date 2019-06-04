@@ -121,24 +121,14 @@ namespace Nekoyume.UI.Module
 
         public ShopItemView GetByProductId(Guid id)
         {
-            using (var uiItems = items.GetEnumerator())
-            using (var dataItems = _data.products.GetEnumerator())
+            foreach (var shopItemView in items)
             {
-                while (uiItems.MoveNext())
+                if (shopItemView.Data.productId.Value == id)
                 {
-                    if (ReferenceEquals(uiItems.Current, null))
-                    {
-                        continue;
-                    }
-                    
-                    if (!dataItems.MoveNext())
-                    {
-                        continue;
-                    }
-                    if (dataItems.Current.productId.Value == id)
-                        return uiItems.Current;
+                    return shopItemView;
                 }
             }
+            
             return null;
         }
     }

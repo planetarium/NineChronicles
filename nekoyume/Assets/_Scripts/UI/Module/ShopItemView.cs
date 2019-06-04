@@ -23,7 +23,7 @@ namespace Nekoyume.UI.Module
 
             button.OnClickAsObservable().Subscribe(_ =>
             {
-                data?.onClick.OnNext(data);
+                Data?.onClick.OnNext(Data);
                 AudioController.instance.PlaySfx(AudioController.SfxCode.Click);
             }).AddTo(_disposablesForAwake);
         }
@@ -46,7 +46,7 @@ namespace Nekoyume.UI.Module
             
             base.SetData(value);
             _disposablesForSetData.DisposeAllAndClear();
-            data.selected.Subscribe(_ => selectedImage.enabled = _).AddTo(_disposablesForSetData);
+            Data.selected.Subscribe(_ => selectedImage.enabled = _).AddTo(_disposablesForSetData);
 
             UpdateView();
         }
@@ -61,14 +61,14 @@ namespace Nekoyume.UI.Module
         
         private void UpdateView()
         {
-            if (ReferenceEquals(data, null))
+            if (ReferenceEquals(Data, null))
             {
                 selectedImage.enabled = false;
                 button.enabled = false;
                 return;
             }
 
-            selectedImage.enabled = data.selected.Value;
+            selectedImage.enabled = Data.selected.Value;
             button.enabled = true;
         }
     }

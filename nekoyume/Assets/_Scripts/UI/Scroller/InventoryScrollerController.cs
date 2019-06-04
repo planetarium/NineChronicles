@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using EnhancedUI.EnhancedScroller;
+using Nekoyume.UI.Module;
 using UniRx;
 using UnityEngine;
 
@@ -100,17 +101,17 @@ namespace Nekoyume.UI.Scroller
             scroller.ReloadData();
         }
 
-        public Module.InventoryItemView GetByIndex(int index)
+        public InventoryItemView GetByIndex(int index)
         {
-            for (int i = scroller.StartDataIndex ; i <= scroller.EndDataIndex; ++i)
+            for (var i = scroller.StartDataIndex ; i <= scroller.EndDataIndex; ++i)
             {
-                var cellView = scroller.GetCellViewAtDataIndex(i) as InventoryCellView;
-                int itemIndex = i * numberOfInnerItemPerCell;
-                for (int j = 0; j < cellView.items.Length; ++j)
+                var cellView = (InventoryCellView) scroller.GetCellViewAtDataIndex(i);
+                var itemIndex = i * numberOfInnerItemPerCell;
+                foreach (var item in cellView.items)
                 {
                     if (itemIndex == index)
                     {
-                        return cellView.items[j];
+                        return item;
                     }
                     itemIndex++;
                 }

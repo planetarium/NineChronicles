@@ -34,7 +34,7 @@ namespace Nekoyume.UI.Module
                 .Subscribe(_ =>
                 {
                     AudioController.PlaySelect();
-                    data.onClick.OnNext(data);
+                    Data.onClick.OnNext(Data);
                 }).AddTo(_disposablesForAwake);
         }
 
@@ -58,11 +58,11 @@ namespace Nekoyume.UI.Module
             
             base.SetData(value);
             _disposablesForSetData.DisposeAllAndClear();
-            data.covered.Subscribe(SetCover).AddTo(_disposablesForSetData);
-            data.dimmed.Subscribe(SetDim).AddTo(_disposablesForSetData);
-            data.selected.Subscribe(SetSelect).AddTo(_disposablesForSetData);
-            data.glowed.Subscribe(SetGlow).AddTo(_disposablesForSetData);
-            data.count.Subscribe(SetCount).AddTo(_disposablesForSetData);
+            Data.covered.Subscribe(SetCover).AddTo(_disposablesForSetData);
+            Data.dimmed.Subscribe(SetDim).AddTo(_disposablesForSetData);
+            Data.selected.Subscribe(SetSelect).AddTo(_disposablesForSetData);
+            Data.glowed.Subscribe(SetGlow).AddTo(_disposablesForSetData);
+            Data.count.Subscribe(SetCount).AddTo(_disposablesForSetData);
             
             UpdateView();
         }
@@ -86,16 +86,16 @@ namespace Nekoyume.UI.Module
 
         private void UpdateView()
         {
-            if (ReferenceEquals(data, null))
+            if (ReferenceEquals(Data, null))
             {
                 selectionImage.enabled = false;
                 
                 return;
             }
             
-            coverImage.enabled = data.covered.Value;
-            selectionImage.enabled = data.selected.Value;
-            SetDim(data.dimmed.Value);
+            coverImage.enabled = Data.covered.Value;
+            selectionImage.enabled = Data.selected.Value;
+            SetDim(Data.dimmed.Value);
         }
 
         private void SetCover(bool isCover)

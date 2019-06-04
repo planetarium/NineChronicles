@@ -149,8 +149,9 @@ namespace Nekoyume.UI
             _data.stagedItems.ObserveRemove().Subscribe(OnRemoveStagedItems).AddTo(_disposablesForSetData);
             _data.stagedItems.ObserveReplace().Subscribe(_ => UpdateStagedItems()).AddTo(_disposablesForSetData);
             _data.readyForCombination.Subscribe(SetActiveCombinationButton).AddTo(_disposablesForSetData);
-            _data.onClickCombination.Subscribe(RequestCombination).AddTo(_disposablesForSetData);
             _data.resultPopup.Subscribe(SubscribeResultPopup).AddTo(_disposablesForSetData);
+            _data.onClickCombination.Subscribe(RequestCombination).AddTo(_disposablesForSetData);
+            _data.onShowResultVFX.Subscribe(ShowResultVFX).AddTo(_disposablesForSetData);
             inventoryAndItemInfo.SetData(_data.inventory.Value, _data.itemInfo.Value);
             
             UpdateStagedItems();
@@ -317,41 +318,49 @@ namespace Nekoyume.UI
                 _resultPopup.Close();
                 return;
             }
-            _resultPopup.Pop(data);
-
             
+            _resultPopup.Pop(data);
         }
 
-        public void ShowResultVFX(Model.CombinationResultPopup data)
+        private void ShowResultVFX(Model.CombinationResultPopup data)
         {
             StartCoroutine(CoShowResultVFX(data));
         }
 
         private IEnumerator CoShowResultVFX(Model.CombinationResultPopup data)
         {
+            if (!data.isSuccess)
+            {
+                yield break;
+            }
+            
             yield return null;
             particleVFX.SetActive(false);
             resultItemVFX.SetActive(false);
-            if (data.isSuccess)
+            
+            var inventoryItem = _data.inventory.Value.items.Single(i => i.item.Value.Data.id == data.item.Value.Data.id);
+            if (ReferenceEquals(inventoryItem, null))
             {
-                InventoryItem invenItem = _data.inventory.Value.items.Single(i => i.item.Value.Data.id == data.item.Value.Data.id);
-                var index = _data.inventory.Value.items.IndexOf(invenItem);
-                if (!ReferenceEquals(invenItem, null))
-                {
-                    InventoryItemView itemView = inventoryAndItemInfo.inventory.scrollerController.GetByIndex(index);
-                    if (!ReferenceEquals(itemView, null))
-                    {
-                        particleVFX.transform.position = _resultPopup.resultItem.transform.position;
-                        particleVFX.transform.DOMoveX(itemView.transform.position.x, 0.6f);
-                        particleVFX.transform.DOMoveY(itemView.transform.position.y, 0.6f).SetEase(Ease.InCubic)
-                        .onComplete = () =>{
-                            resultItemVFX.SetActive(true);
-                        };
-                        particleVFX.SetActive(true);
-                        resultItemVFX.transform.position = itemView.transform.position;
-                    }
-                }
+                yield break;
             }
+            
+            var index = _data.inventory.Value.items.IndexOf(inventoryItem);
+            var inventoryItemView = inventoryAndItemInfo.inventory.scrollerController.GetByIndex(index);
+            if (ReferenceEquals(inventoryItemView, null))
+            {
+                yield break;
+            }
+
+            var position = inventoryItemView.transform.position;
+            
+            particleVFX.transform.position = _resultPopup.resultItem.transform.position;
+            particleVFX.transform.DOMoveX(position.x, 0.6f);
+            particleVFX.transform.DOMoveY(position.y, 0.6f).SetEase(Ease.InCubic)
+                .onComplete = () =>{
+                resultItemVFX.SetActive(true);
+            };
+            particleVFX.SetActive(true);
+            resultItemVFX.transform.position = position;
         }
     }
 }

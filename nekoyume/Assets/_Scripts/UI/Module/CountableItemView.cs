@@ -25,7 +25,7 @@ namespace Nekoyume.UI.Module
             
             _disposablesForSetData.DisposeAllAndClear();
             base.SetData(value);
-            data.count.Subscribe(SetCount).AddTo(_disposablesForSetData);
+            Data.count.Subscribe(SetCount).AddTo(_disposablesForSetData);
             
             UpdateView();
         }
@@ -55,13 +55,13 @@ namespace Nekoyume.UI.Module
 
         private void UpdateView()
         {
-            if (ReferenceEquals(data, null))
+            if (ReferenceEquals(Data, null))
             {
                 countText.enabled = false;
                 return;
             }
             
-            SetCount(data.count.Value);
+            SetCount(Data.count.Value);
         }
     }
 }

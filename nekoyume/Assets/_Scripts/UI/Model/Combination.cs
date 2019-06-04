@@ -41,6 +41,7 @@ namespace Nekoyume.UI.Model
             new ReactiveProperty<CombinationResultPopup>();
 
         public readonly Subject<Combination> onClickCombination = new Subject<Combination>();
+        public readonly Subject<CombinationResultPopup> onShowResultVFX = new Subject<CombinationResultPopup>();
 
         private readonly int _stagedItemsLimit;
 
@@ -75,6 +76,7 @@ namespace Nekoyume.UI.Model
             resultPopup.DisposeAll();
 
             onClickCombination.Dispose();
+            onShowResultVFX.Dispose();
         }
 
         private bool DimmedFunc(InventoryItem inventoryItem)
@@ -217,6 +219,8 @@ namespace Nekoyume.UI.Model
             {
                 stagedItems.RemoveAt(0);
             }
+            
+            onShowResultVFX.OnNext(resultPopup.Value);
 
             resultPopup.Value.Dispose();
             resultPopup.Value = null;

@@ -25,15 +25,15 @@ namespace Nekoyume.UI.Module
             editButton.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
-                    data?.onEdit.OnNext(data);
+                    Data?.onEdit.OnNext(Data);
                     AudioController.PlayClick();
                 })
                 .AddTo(_disposablesForAwake);
-            
+
             deleteButton.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
-                    data?.onDelete.OnNext(data);
+                    Data?.onDelete.OnNext(Data);
                     AudioController.PlayClick();
                 })
                 .AddTo(_disposablesForAwake);
@@ -42,7 +42,7 @@ namespace Nekoyume.UI.Module
         protected override void OnDestroy()
         {
             _disposablesForAwake.DisposeAllAndClear();
-            
+
             base.OnDestroy();
         }
 
@@ -58,7 +58,7 @@ namespace Nekoyume.UI.Module
 
             _disposablesForSetData.DisposeAllAndClear();
             base.SetData(value);
-            data.count.Subscribe(SetCount).AddTo(_disposablesForSetData);
+            Data.count.Subscribe(SetCount).AddTo(_disposablesForSetData);
         }
 
         public override void Clear()
