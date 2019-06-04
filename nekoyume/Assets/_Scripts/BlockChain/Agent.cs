@@ -342,7 +342,7 @@ namespace Nekoyume.BlockChain
         )
         {
             return Transaction<PolymorphicAction<ActionBase>>.Create(
-                _blocks.GetNonce(Address, true),
+                _blocks.GetNonce(Address),
                 PrivateKey,
                 actions,
                 timestamp: DateTime.UtcNow
