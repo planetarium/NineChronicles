@@ -7,8 +7,8 @@ namespace Nekoyume.Game.Skill
     [Serializable]
     public class AreaAttack: AttackBase
     {
-        public AreaAttack(CharacterBase caster, float chance, SkillEffect effect,
-            Data.Table.Elemental.ElementalType elemental) : base(caster, chance, effect, elemental)
+        public AreaAttack(float chance, SkillEffect effect,
+            Data.Table.Elemental.ElementalType elemental) : base(chance, effect, elemental)
         {
         }
 
@@ -17,7 +17,7 @@ namespace Nekoyume.Game.Skill
 
             return new Model.AreaAttack
             {
-                character = (CharacterBase) Caster.Clone(),
+                character = (CharacterBase) caster.Clone(),
                 skillInfos = ProcessDamage(GetTarget()),
             };
         }

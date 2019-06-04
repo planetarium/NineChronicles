@@ -6,7 +6,7 @@ namespace Nekoyume.Game.Skill
 {
     public static class SkillFactory
     {
-        public static SkillBase Get(CharacterBase caster, float chance, SkillEffect effect)
+        public static SkillBase Get(float chance, SkillEffect effect)
         {
             switch (effect.type)
             {
@@ -17,28 +17,28 @@ namespace Nekoyume.Game.Skill
                             switch (effect.category)
                             {
                                 case SkillEffect.Category.Normal:
-                                    return new Attack(caster, chance, effect, Data.Table.Elemental.ElementalType.Normal);
+                                    return new Attack(chance, effect, Data.Table.Elemental.ElementalType.Normal);
                                 case SkillEffect.Category.Double:
                                     var values = Enum.GetValues(typeof(Data.Table.Elemental.ElementalType));
                                     var random = new Random();
                                     var elemental =
                                         (Data.Table.Elemental.ElementalType) values.GetValue(
                                             random.Next(values.Length));
-                                    return new DoubleAttack(caster, chance, effect, elemental);
+                                    return new DoubleAttack(chance, effect, elemental);
                                 case SkillEffect.Category.Blow:
-                                    return new Blow(caster, chance, effect, Data.Table.Elemental.ElementalType.Normal);
+                                    return new Blow(chance, effect, Data.Table.Elemental.ElementalType.Normal);
                                 default:
-                                    return new Attack(caster, chance, effect, Data.Table.Elemental.ElementalType.Normal);
+                                    return new Attack(chance, effect, Data.Table.Elemental.ElementalType.Normal);
                             }
                         case SkillEffect.Target.Enemies:
-                            return new AreaAttack(caster, chance, effect, Data.Table.Elemental.ElementalType.Fire);
+                            return new AreaAttack(chance, effect, Data.Table.Elemental.ElementalType.Fire);
                     }
                     break;
                 case SkillEffect.SkillType.Buff:
                     switch (effect.target)
                     {
                         case SkillEffect.Target.Self:
-                            return new Heal(caster, chance, effect);
+                            return new Heal(chance, effect);
                     }
                     break;
                 case SkillEffect.SkillType.Debuff:

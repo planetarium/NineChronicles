@@ -109,7 +109,8 @@ namespace Nekoyume.Model
         protected virtual void SetSkill()
         {
             //기본공격 설정
-            var attack = SkillFactory.Get(this, 1.0f, new SkillEffect());
+            var attack = SkillFactory.Get(1.0f, new SkillEffect());
+            attack.caster = this;
             Skills.Add(attack);
         }
 

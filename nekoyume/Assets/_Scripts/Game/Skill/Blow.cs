@@ -7,7 +7,7 @@ namespace Nekoyume.Game.Skill
     [Serializable]
     public class Blow : AttackBase
     {
-        public Blow(CharacterBase caster, float chance, SkillEffect effect, Data.Table.Elemental.ElementalType elemental) : base(caster, chance, effect, elemental)
+        public Blow(float chance, SkillEffect effect, Data.Table.Elemental.ElementalType elemental) : base(chance, effect, elemental)
         {
         }
 
@@ -18,7 +18,7 @@ namespace Nekoyume.Game.Skill
 
             return new Model.Blow
             {
-                character = (CharacterBase) Caster.Clone(),
+                character = (CharacterBase) caster.Clone(),
                 skillInfos = info,
             };
         }

@@ -9,9 +9,9 @@ namespace Nekoyume.Game.Skill
     [Serializable]
     public class AttackBase: SkillBase
     {
-        private Data.Table.Elemental.ElementalType _elemental;
-        protected AttackBase(CharacterBase caster, float chance, SkillEffect effect,
-            Data.Table.Elemental.ElementalType elemental) : base(caster, chance, effect)
+        private readonly Data.Table.Elemental.ElementalType _elemental;
+        protected AttackBase(float chance, SkillEffect effect,
+            Data.Table.Elemental.ElementalType elemental) : base(chance, effect)
         {
             this.chance = chance;
             _elemental = elemental;
@@ -22,8 +22,8 @@ namespace Nekoyume.Game.Skill
             var infos = new List<Model.Skill.SkillInfo>();
             foreach (var target in targets.ToList())
             {
-                var critical = Caster.IsCritical();
-                var dmg = Caster.atkElement.CalculateDmg(Caster.atk, target.defElement);
+                var critical = caster.IsCritical();
+                var dmg = caster.atkElement.CalculateDmg(caster.atk, target.defElement);
                 // https://gamedev.stackexchange.com/questions/129319/rpg-formula-attack-and-defense
                 dmg = Math.Max((dmg * dmg) / (dmg + target.def), 1);
                 dmg = Convert.ToInt32(dmg * Effect.multiplier);
@@ -50,8 +50,8 @@ namespace Nekoyume.Game.Skill
     [Serializable]
     public class Attack : AttackBase
     {
-        public Attack(CharacterBase caster, float chance, SkillEffect effect,
-            Data.Table.Elemental.ElementalType elemental) : base(caster, chance, effect, elemental)
+        public Attack(float chance, SkillEffect effect,
+            Data.Table.Elemental.ElementalType elemental) : base(chance, effect, elemental)
         {
         }
 
@@ -62,7 +62,7 @@ namespace Nekoyume.Game.Skill
 
             return new Model.Attack
             {
-                character = (CharacterBase) Caster.Clone(),
+                character = (CharacterBase) caster.Clone(),
                 skillInfos = info,
             };
         }

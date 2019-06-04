@@ -44,7 +44,8 @@ namespace Nekoyume.Model
             //TODO 몬스터별 스킬 구현
             foreach (var effect in Tables.instance.SkillEffect.Values)
             {
-                var skill = SkillFactory.Get(this, 0.1f, effect);
+                var skill = SkillFactory.Get(0.1f, effect);
+                skill.caster = this;
                 Skills.Add(skill);
             }
         }
