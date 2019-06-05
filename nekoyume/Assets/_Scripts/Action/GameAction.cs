@@ -35,26 +35,8 @@ namespace Nekoyume.Action
             LoadPlainValueInternal(plainValue);
         }
         
-        public override IAccountStateDelta Execute(IActionContext ctx) 
-        {
-            var processedActions = (HashSet<Guid>) ctx.PreviousStates.GetState(ProcessedActionsAddress) ?? new HashSet<Guid>();
-
-            if (processedActions.Contains(Id)) 
-            {
-                // 이미 액션이 처리된 것으로 간주하고 아무 일도 하지 않습니다.
-                return ctx.PreviousStates;
-            }
-
-            IAccountStateDelta delta = ExecuteInternal(ctx);
-            processedActions.Add(Id);
-            
-            return delta.SetState(ProcessedActionsAddress, processedActions);
-        }
-        
         protected abstract void LoadPlainValueInternal(IImmutableDictionary<string, object> plainValue);
-        
-        protected abstract IAccountStateDelta ExecuteInternal(IActionContext ctx);
-        
+                
         protected IAccountStateDelta SimpleError(IActionContext ctx, int code)
         {
             errorCode = code;

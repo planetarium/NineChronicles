@@ -40,7 +40,6 @@ namespace Nekoyume.BlockChain
         private static IEnumerator _miner;
         private static IEnumerator _txProcessor;
         private static IEnumerator _swarmRunner;
-        private static IEnumerator _actionRetryor;
         
         public static void Initialize(Action<bool> callback)
         {
@@ -247,10 +246,8 @@ namespace Nekoyume.BlockChain
         {
             _txProcessor = agent.CoTxProcessor();
             _swarmRunner = agent.CoSwarmRunner();
-            _actionRetryor = agent.CoActionRetryor();
             
             StartNullableCoroutine(_txProcessor);
-            StartNullableCoroutine(_actionRetryor);
             StartNullableCoroutine(_swarmRunner);
         }
         
