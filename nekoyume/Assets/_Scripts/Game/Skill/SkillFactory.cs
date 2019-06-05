@@ -6,7 +6,7 @@ namespace Nekoyume.Game.Skill
 {
     public static class SkillFactory
     {
-        public static SkillBase Get(float chance, SkillEffect effect)
+        public static SkillBase Get(float chance, SkillEffect effect, Data.Table.Elemental.ElementalType elemental)
         {
             switch (effect.type)
             {
@@ -17,21 +17,16 @@ namespace Nekoyume.Game.Skill
                             switch (effect.category)
                             {
                                 case SkillEffect.Category.Normal:
-                                    return new Attack(chance, effect, Data.Table.Elemental.ElementalType.Normal);
+                                    return new Attack(chance, effect, elemental);
                                 case SkillEffect.Category.Double:
-                                    var values = Enum.GetValues(typeof(Data.Table.Elemental.ElementalType));
-                                    var random = new Random();
-                                    var elemental =
-                                        (Data.Table.Elemental.ElementalType) values.GetValue(
-                                            random.Next(values.Length));
                                     return new DoubleAttack(chance, effect, elemental);
                                 case SkillEffect.Category.Blow:
-                                    return new Blow(chance, effect, Data.Table.Elemental.ElementalType.Normal);
+                                    return new Blow(chance, effect, elemental);
                                 default:
-                                    return new Attack(chance, effect, Data.Table.Elemental.ElementalType.Normal);
+                                    return new Attack(chance, effect, elemental);
                             }
                         case SkillEffect.Target.Enemies:
-                            return new AreaAttack(chance, effect, Data.Table.Elemental.ElementalType.Fire);
+                            return new AreaAttack(chance, effect, elemental);
                     }
                     break;
                 case SkillEffect.SkillType.Buff:

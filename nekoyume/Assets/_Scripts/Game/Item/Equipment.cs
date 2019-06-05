@@ -88,7 +88,7 @@ namespace Nekoyume.Game.Item
                 stat.UpdatePlayer(player);
             }
 
-            var skill = SkillFactory.Get(Data.skillChance, _skillEffect);
+            var skill = SkillFactory.Get(Data.skillChance, _skillEffect, player.GetRandomElemental());
             skill.caster = player;
             player.Skills.Add(skill);
         }

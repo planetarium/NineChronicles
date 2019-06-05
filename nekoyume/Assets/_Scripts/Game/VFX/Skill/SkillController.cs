@@ -26,12 +26,14 @@ namespace Nekoyume.Game.VFX.Skill
             position.x -= 0.2f;
             position.y += 0.32f;
             var size = target.characterSize == "xs" ? "s" : "m";
+            var elemental = skillInfo.Elemental;
             if (skillInfo.Category == SkillEffect.Category.Area)
             {
                 size = "l";
                 position = target.transform.position;
+                elemental = Data.Table.Elemental.ElementalType.Fire;
             }
-            var skillName = $"{skillInfo.Category}_{size}_{skillInfo.Elemental}".ToLower();
+            var skillName = $"{skillInfo.Category}_{size}_{elemental}".ToLower();
             var go = _pool.Get(skillName, false, position);
             var effect = go.GetComponent<T>();
             effect.target = target;
