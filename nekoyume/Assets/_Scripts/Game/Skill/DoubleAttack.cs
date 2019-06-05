@@ -8,8 +8,8 @@ namespace Nekoyume.Game.Skill
     [Serializable]
     public class DoubleAttack : AttackBase
     {
-        public DoubleAttack(CharacterBase caster, float chance, SkillEffect effect,
-            Data.Table.Elemental.ElementalType elemental) : base(caster, chance, effect, elemental)
+        public DoubleAttack(float chance, SkillEffect effect,
+            Data.Table.Elemental.ElementalType elemental) : base(chance, effect, elemental)
         {
         }
 
@@ -20,7 +20,7 @@ namespace Nekoyume.Game.Skill
             infos.AddRange(ProcessDamage(target));
             return new Model.DoubleAttack
             {
-                character = (CharacterBase) Caster.Clone(),
+                character = (CharacterBase) caster.Clone(),
                 skillInfos = infos,
             };
         }

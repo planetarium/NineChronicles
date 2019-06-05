@@ -45,7 +45,7 @@ namespace Nekoyume.Game.Character
         public bool Rooted => gameObject.GetComponent<IRoot>() != null;
         public bool Silenced => gameObject.GetComponent<ISilence>() != null;
         public bool Stunned => gameObject.GetComponent<IStun>() != null;
-        
+
         protected virtual float Range { get; set; }
         protected virtual Vector3 HUDOffset => new Vector3();
         protected virtual Vector3 DamageTextForce => default;

@@ -5,6 +5,7 @@ using Libplanet.Action;
 using Nekoyume.Data;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Item;
+using Nekoyume.Game.Skill;
 using Nekoyume.Game.Util;
 using Nekoyume.Model;
 using Nekoyume.State;
@@ -27,7 +28,7 @@ namespace Nekoyume.Battle
         private readonly List<List<ItemBase>> _waveRewards;
         public const float TurnPriority = 100f;
 
-        public Simulator(IRandom random, AvatarState avatarState, List<Food> foods, int stage)
+        public Simulator(IRandom random, AvatarState avatarState, List<Food> foods, int stage, SkillBase skill=null)
         {
             Random = random;
             _stage = stage;
@@ -35,6 +36,8 @@ namespace Nekoyume.Battle
             _waves = new List<MonsterWave>();
             Player = new Player(avatarState, this);
             Player.Use(foods);
+            if (!ReferenceEquals(skill, null))
+                Player.OverrideSkill(skill);
             _waveRewards = new List<List<ItemBase>>();
             SetWave();
         }

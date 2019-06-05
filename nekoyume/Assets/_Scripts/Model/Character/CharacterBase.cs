@@ -109,7 +109,8 @@ namespace Nekoyume.Model
         protected virtual void SetSkill()
         {
             //기본공격 설정
-            var attack = SkillFactory.Get(this, 1.0f, new SkillEffect());
+            var attack = SkillFactory.Get(1.0f, new SkillEffect(), Elemental.ElementalType.Normal);
+            attack.caster = this;
             Skills.Add(attack);
         }
 
@@ -128,6 +129,14 @@ namespace Nekoyume.Model
         {
             return MemberwiseClone();
         }
+
+        //FIXME 임시 속성부여 메서드.
+        public Elemental.ElementalType GetRandomElemental()
+        {
+            var values = Enum.GetValues(typeof(Data.Table.Elemental.ElementalType));
+            var random = new Random();
+            return (Elemental.ElementalType) values.GetValue(random.Next(values.Length));
+        }
     }
 
     public class InformationFieldAttribute : Attribute
@@ -142,6 +151,11 @@ namespace Nekoyume.Model
         public void Add(SkillBase s)
         {
             _skills.Add(s);
+        }
+
+        public void Clear()
+        {
+            _skills.Clear();
         }
 
         public IEnumerator<SkillBase> GetEnumerator()

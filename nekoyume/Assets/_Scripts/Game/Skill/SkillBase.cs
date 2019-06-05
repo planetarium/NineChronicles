@@ -15,7 +15,7 @@ namespace Nekoyume.Game.Skill
     [Serializable]
     public abstract class SkillBase: ISkill
     {
-        protected readonly CharacterBase Caster;
+        public CharacterBase caster;
         protected readonly SkillEffect Effect;
         public float chance;
 
@@ -24,10 +24,14 @@ namespace Nekoyume.Game.Skill
             return Effect.type;
         }
 
-        public abstract Model.Skill Use();
-        protected SkillBase(CharacterBase caster, float chance, SkillEffect effect)
+        public SkillEffect.Category GetCategory()
         {
-            Caster = caster;
+            return Effect.category;
+        }
+
+        public abstract Model.Skill Use();
+        protected SkillBase(float chance, SkillEffect effect)
+        {
             Effect = effect;
             this.chance = chance;
         }
@@ -35,7 +39,7 @@ namespace Nekoyume.Game.Skill
 
         protected IEnumerable<CharacterBase> GetTarget()
         {
-            var targets = Caster.targets;
+            var targets = caster.targets;
             IEnumerable<CharacterBase> target;
             switch (Effect.target)
             {
@@ -43,13 +47,13 @@ namespace Nekoyume.Game.Skill
                     target = new[] {targets.First()};
                     break;
                 case SkillEffect.Target.Enemies:
-                    target = Caster.targets;
+                    target = caster.targets;
                     break;
                 case SkillEffect.Target.Self:
-                    target = new[] {Caster};
+                    target = new[] {caster};
                     break;
                 case SkillEffect.Target.Ally:
-                    target = new[] {Caster};
+                    target = new[] {caster};
                     break;
                 default:
                     target = new[] {targets.First()};

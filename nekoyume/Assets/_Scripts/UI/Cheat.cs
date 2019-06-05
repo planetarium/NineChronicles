@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -5,8 +6,10 @@ using Libplanet.Action;
 using Nekoyume.Battle;
 using Nekoyume.BlockChain;
 using Nekoyume.Data;
+using Nekoyume.Data.Table;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Item;
+using Nekoyume.Game.Skill;
 using Nekoyume.Model;
 using Nekoyume.UI;
 using UnityEngine;
@@ -22,12 +25,16 @@ namespace Nekoyume
         public Button BtnOpen;
         public Button buttonBase;
         public ScrollRect list;
+        public ScrollRect skillList;
+        public HorizontalLayoutGroup skillPanel;
 
         private Transform _modal;
         private float _updateTime = 0.0f;
         private StringBuilder _logString = new StringBuilder();
         private BattleLog.Result _result;
         private int[,] _stageRange;
+        private SkillBase[] _skills;
+        private SkillBase _selectedSkill;
 
         private class DebugRandom : IRandom
         {
@@ -97,6 +104,24 @@ namespace Nekoyume
                 newButton.onClick.AddListener(() => DummyBattle(i));
                 newButton.gameObject.SetActive(true);
             }
+
+            var skills = new List<SkillBase>();
+            var values = Enum.GetValues(typeof(Elemental.ElementalType));
+            foreach (var row in Tables.instance.SkillEffect.Values)
+            {
+                foreach (Elemental.ElementalType elemental in values)
+                {
+                    var skill = SkillFactory.Get(1.0f, row, elemental);
+                    skills.Add(skill);
+                    Button newButton = Instantiate(buttonBase, skillList.content);
+                    newButton.GetComponentInChildren<Text>().text = $"{skill.GetType().Name}_{elemental}";
+                    newButton.onClick.AddListener(() => SelectSkill(skill));
+                    newButton.gameObject.SetActive(true);
+                }
+            }
+
+            _skills = skills.ToArray();
+
             base.Show();
         }
 
@@ -107,6 +132,7 @@ namespace Nekoyume
                 Destroy(child.gameObject);
             }
             list.gameObject.SetActive(false);
+            skillPanel.gameObject.SetActive(false);
 
             _modal.gameObject.SetActive(false);
             BtnOpen.gameObject.SetActive(true);
@@ -165,7 +191,7 @@ namespace Nekoyume
         {
             Find<BattleResult>()?.Close();
             
-            var simulator = new Simulator(new DebugRandom(), States.Instance.currentAvatarState.Value, new List<Food>(), stageId);
+            var simulator = new Simulator(new DebugRandom(), States.Instance.currentAvatarState.Value, new List<Food>(), stageId, _selectedSkill);
             simulator.Simulate();
             simulator.Log.result = _result;
             
@@ -173,6 +199,17 @@ namespace Nekoyume
             stage.Play(simulator.Log);
             
             Close();
+        }
+
+        private void DummySkill()
+        {
+            skillPanel.gameObject.SetActive(true);
+        }
+
+        private void SelectSkill(SkillBase skill)
+        {
+            _selectedSkill = skill;
+            DummyBattle(1);
         }
     }
 }
