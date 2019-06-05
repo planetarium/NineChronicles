@@ -5,6 +5,7 @@ using Nekoyume.Battle;
 using Nekoyume.Data;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Item;
+using Nekoyume.Game.Skill;
 using Nekoyume.State;
 
 namespace Nekoyume.Model
@@ -289,6 +290,13 @@ namespace Nekoyume.Model
                 food.Use(this);
                 inventory.Remove(food);
             }
+        }
+
+        public void OverrideSkill(SkillBase skill)
+        {
+            Skills.Clear();
+            skill.caster = this;
+            Skills.Add(skill);
         }
     }
 

@@ -153,6 +153,11 @@ namespace Nekoyume.Model
             _skills.Add(s);
         }
 
+        public void Clear()
+        {
+            _skills.Clear();
+        }
+
         public IEnumerator<SkillBase> GetEnumerator()
         {
             return _skills.GetEnumerator();

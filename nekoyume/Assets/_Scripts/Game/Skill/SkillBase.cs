@@ -24,6 +24,11 @@ namespace Nekoyume.Game.Skill
             return Effect.type;
         }
 
+        public SkillEffect.Category GetCategory()
+        {
+            return Effect.category;
+        }
+
         public abstract Model.Skill Use();
         protected SkillBase(float chance, SkillEffect effect)
         {
