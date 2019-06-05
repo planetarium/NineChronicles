@@ -29,8 +29,8 @@ namespace Nekoyume.Model
 
         public readonly Inventory inventory;
         public List<Inventory.InventoryItem> Items => inventory.items;
-        public List<Equipment> Equipments =>
-            inventory.items.Select(i => i.Item).OfType<Equipment>().Where(e => e.equipped).ToList();
+        public List<Game.Item.Equipment> Equipments =>
+            inventory.items.Select(i => i.Item).OfType<Game.Item.Equipment>().Where(e => e.equipped).ToList();
         
         public Player(AvatarState avatarState, Simulator simulator = null)
         {
@@ -157,7 +157,7 @@ namespace Nekoyume.Model
 
         public void Equip(List<Inventory.InventoryItem> items)
         {
-            var equipments = items.Select(i => i.Item).OfType<Equipment>().Where(e => e.equipped);
+            var equipments = items.Select(i => i.Item).OfType<Game.Item.Equipment>().Where(e => e.equipped);
             foreach (var equipment in equipments)
             {
                 switch (equipment.Data.cls.ToEnumItemType())

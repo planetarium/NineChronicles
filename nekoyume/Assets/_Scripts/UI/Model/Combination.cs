@@ -12,16 +12,16 @@ namespace Nekoyume.UI.Model
     {
         private static readonly string[] DimmedTypes =
         {
-            ItemBase.ItemType.Weapon.ToString(),
-            ItemBase.ItemType.RangedWeapon.ToString(),
-            ItemBase.ItemType.Armor.ToString(),
-            ItemBase.ItemType.Belt.ToString(),
-            ItemBase.ItemType.Necklace.ToString(),
-            ItemBase.ItemType.Ring.ToString(),
-            ItemBase.ItemType.Helm.ToString(),
-            ItemBase.ItemType.Set.ToString(),
-            ItemBase.ItemType.Food.ToString(),
-            ItemBase.ItemType.Shoes.ToString(),
+            nameof(ItemBase.ItemType.Weapon),
+            nameof(ItemBase.ItemType.RangedWeapon),
+            nameof(ItemBase.ItemType.Armor),
+            nameof(ItemBase.ItemType.Belt),
+            nameof(ItemBase.ItemType.Necklace),
+            nameof(ItemBase.ItemType.Ring),
+            nameof(ItemBase.ItemType.Helm),
+            nameof(ItemBase.ItemType.Set),
+            nameof(ItemBase.ItemType.Food),
+            nameof(ItemBase.ItemType.Shoes),
         };
 
         public readonly ReactiveProperty<Inventory> inventory
@@ -32,8 +32,9 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<SimpleItemCountPopup> itemCountPopup =
             new ReactiveProperty<SimpleItemCountPopup>();
 
-        public readonly ReactiveCollection<CountEditableItem> stagedItems =
-            new ReactiveCollection<CountEditableItem>();
+        public readonly ReactiveCollection<CombinationMaterial> materials =
+            new ReactiveCollection<CombinationMaterial>();
+        public readonly ReactiveProperty<int> openedMaterialCount = new ReactiveProperty<int>();
 
         public readonly ReactiveProperty<bool> readyForCombination = new ReactiveProperty<bool>();
 
@@ -43,14 +44,10 @@ namespace Nekoyume.UI.Model
         public readonly Subject<Combination> onClickCombination = new Subject<Combination>();
         public readonly Subject<CombinationResultPopup> onShowResultVFX = new Subject<CombinationResultPopup>();
 
-        private readonly int _stagedItemsLimit;
+        public bool IsMaterialsFulled => materials.Count >= openedMaterialCount.Value;
 
-        public bool IsStagedItemsFulled => stagedItems.Count >= _stagedItemsLimit;
-
-        public Combination(List<Game.Item.Inventory.InventoryItem> items, int stagedItemsLimit)
+        public Combination(List<Game.Item.Inventory.InventoryItem> items, int materialCount)
         {
-            _stagedItemsLimit = stagedItemsLimit;
-
             inventory.Value = new Inventory(items);
             inventory.Value.dimmedFunc.Value = DimmedFunc;
             itemInfo.Value = new ItemInfo();
@@ -58,11 +55,12 @@ namespace Nekoyume.UI.Model
             itemInfo.Value.buttonEnabledFunc.Value = ButtonEnabledFunc;
             itemCountPopup.Value = new SimpleItemCountPopup();
             itemCountPopup.Value.titleText.Value = "재료 수량 선택";
+            openedMaterialCount.Value = materialCount;
 
             inventory.Value.selectedItem.Subscribe(OnInventorySelectedItem);
             itemCountPopup.Value.onClickSubmit.Subscribe(OnClickSubmitItemCountPopup);
-            stagedItems.ObserveAdd().Subscribe(OnStagedItemsAdd);
-            stagedItems.ObserveRemove().Subscribe(OnStagedItemsRemove);
+            materials.ObserveAdd().Subscribe(OnMaterialsAdd);
+            materials.ObserveRemove().Subscribe(OnMaterialsRemove);
             resultPopup.Subscribe(OnResultPopup);
         }
 
@@ -71,7 +69,8 @@ namespace Nekoyume.UI.Model
             inventory.DisposeAll();
             itemInfo.DisposeAll();
             itemCountPopup.DisposeAll();
-            stagedItems.DisposeAll();
+            materials.DisposeAll();
+            openedMaterialCount.Dispose();
             readyForCombination.Dispose();
             resultPopup.DisposeAll();
 
@@ -122,39 +121,40 @@ namespace Nekoyume.UI.Model
                 return false;
             }
             
-            foreach (var stagedItem in stagedItems)
+            foreach (var material in materials)
             {
-                if (stagedItem.item.Value.Data.id != countEditableItem.item.Value.Data.id)
+                if (material.item.Value.Data.id != countEditableItem.item.Value.Data.id)
                 {
                     continue;
                 }
 
                 if (countEditableItem.count.Value == 0)
                 {
-                    stagedItems.Remove(stagedItem);
+                    materials.Remove(material);
                 }
                 else
                 {
-                    stagedItem.count.Value = countEditableItem.count.Value;                    
+                    material.count.Value = countEditableItem.count.Value;                    
                 }
                 
                 return true;
             }
 
-            if (stagedItems.Count >= _stagedItemsLimit)
+            if (materials.Count >= openedMaterialCount.Value)
             {
                 return false;
             }
 
-            stagedItems.Add(new CountEditableItem(
+            materials.Add(new CombinationMaterial(
                 countEditableItem.item.Value,
                 1,
                 0,
-                countEditableItem.count.Value));
+                countEditableItem.count.Value,
+                false));
             return true;
         }
 
-        private void OnStagedItemsAdd(CollectionAddEvent<CountEditableItem> e)
+        private void OnMaterialsAdd(CollectionAddEvent<CombinationMaterial> e)
         {
             var data = e.Value;
             data.count.Subscribe(count => UpdateReadyForCombination());
@@ -171,12 +171,12 @@ namespace Nekoyume.UI.Model
             });
             data.onDelete.Subscribe(obj =>
             {
-                if (ReferenceEquals(obj, null))
+                if (!(obj is CombinationMaterial material))
                 {
                     return;
                 }
-
-                stagedItems.Remove(obj);
+                
+                materials.Remove(material);
                 AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickCombinationRemoveMaterialItem);
             });
 
@@ -184,7 +184,7 @@ namespace Nekoyume.UI.Model
             UpdateReadyForCombination();
         }
 
-        private void OnStagedItemsRemove(CollectionRemoveEvent<CountEditableItem> e)
+        private void OnMaterialsRemove(CollectionRemoveEvent<CombinationMaterial> e)
         {
             var data = e.Value;
             data.Dispose();
@@ -215,9 +215,9 @@ namespace Nekoyume.UI.Model
                 inventory.Value.SubscribeOnClick(addedItem);
             }
 
-            while (stagedItems.Count > 0)
+            while (materials.Count > 0)
             {
-                stagedItems.RemoveAt(0);
+                materials.RemoveAt(0);
             }
             
             onShowResultVFX.OnNext(resultPopup.Value);
@@ -248,7 +248,7 @@ namespace Nekoyume.UI.Model
 
         private void UpdateReadyForCombination()
         {
-            using (var e = stagedItems.GetEnumerator())
+            using (var e = materials.GetEnumerator())
             {
                 var count = 0;
 

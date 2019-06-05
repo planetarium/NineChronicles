@@ -147,8 +147,7 @@ namespace Nekoyume.Battle
             {
                 for (int i = 0; i < monsterData.count; i++)
                 {
-                    Character characterData;
-                    if (!monsterTable.TryGetValue(monsterData.id, out characterData))
+                    if (!monsterTable.TryGetValue(monsterData.id, out var characterData))
                     {
                         Debug.Log(monsterData.id);
                     }
@@ -180,8 +179,7 @@ namespace Nekoyume.Battle
                     }
                     itemSelector.Add(r.id, r.ratio);
                     var itemId = itemSelector.Pop();
-                    Item itemData;
-                    if (itemTable.TryGetValue(itemId, out itemData))
+                    if (itemTable.TryGetValue(itemId, out var itemData))
                     {
                         var count = Random.Next(r.range[0], r.range[1]);
                         for (int i = 0; i < count; i++)

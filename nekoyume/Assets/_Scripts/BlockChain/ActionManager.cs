@@ -68,7 +68,7 @@ namespace Nekoyume.BlockChain
         }
         
         public IObservable<ActionBase.ActionEvaluation<Combination>> Combination(
-            List<UI.Model.CountEditableItem> materials)
+            List<UI.Model.CombinationMaterial> materials)
         {
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionCombination);
             
