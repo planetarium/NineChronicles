@@ -22,6 +22,7 @@ namespace Nekoyume.Game.Entrance
             var clearPlayers = GetComponentsInChildren<Player>(true);
             foreach (var clearPlayer in clearPlayers)
             {
+                clearPlayer.DisableHUD();
                 objectPool.Remove<Player>(clearPlayer.gameObject);
             }
 

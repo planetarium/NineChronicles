@@ -237,6 +237,7 @@ namespace Nekoyume.Game
 
             var playerCharacter = RunPlayer();
             playerCharacter.Init(character);
+            playerCharacter.ShowSpeech("PLAYER_INIT");
             var player = playerCharacter.gameObject;
 
             var status = Widget.Find<Status>();

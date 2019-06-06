@@ -138,7 +138,7 @@ namespace Nekoyume.UI
 
                 foreach (var speechBubble in SpeechBubbles)
                 {
-                    yield return StartCoroutine(speechBubble.Show());
+                    yield return StartCoroutine(speechBubble.CoShowText());
                     yield return new WaitForSeconds(Random.Range(2.0f, 4.0f));
                 }
             }

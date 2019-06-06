@@ -53,6 +53,8 @@ namespace Nekoyume.Game.Trigger
             for (var index = 0; index < monsters.Count; index++)
             {
                 var monster = monsters[index];
+                monster.spawnIndex = index;
+
                 var player = stage.GetComponentInChildren<Character.Player>();
                 var offsetX = player.transform.position.x + SpawnOffset;
                 {

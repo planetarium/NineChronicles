@@ -11,6 +11,8 @@ namespace Nekoyume.Model
         public Character data;
         public sealed override float TurnSpeed { get; set; }
 
+        public int spawnIndex = -1; 
+
         public Monster(Character data, int monsterLevel, Player player)
         {
             var stats = data.GetStats(monsterLevel);
