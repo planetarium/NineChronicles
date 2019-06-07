@@ -7,7 +7,7 @@ namespace Nekoyume.UI.Model
     public class CombinationResultPopup : CountableItem
     {
         public bool isSuccess;
-        public ICollection<CountEditableItem> materialItems;
+        public ICollection<CombinationMaterial> materialItems;
 
         public readonly Subject<CombinationResultPopup> onClickSubmit = new Subject<CombinationResultPopup>();
         

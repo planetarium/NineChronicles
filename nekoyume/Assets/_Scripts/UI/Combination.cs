@@ -23,8 +23,8 @@ namespace Nekoyume.UI
     {
         private Model.Combination _data;
 
-        public Module.InventoryAndItemInfo inventoryAndItemInfo;
-        public CombinationStagedItemView[] stagedItems;
+        public InventoryAndItemInfo inventoryAndItemInfo;
+        public CombinationMaterialView[] materialViews;
         public Button combinationButton;
         public Image combinationButtonImage;
         public Button closeButton;
@@ -112,7 +112,9 @@ namespace Nekoyume.UI
             }
             _player.gameObject.SetActive(false);
 
-            SetData(new Model.Combination(States.Instance.currentAvatarState.Value.items, stagedItems.Length));
+            SetData(new Model.Combination(
+                States.Instance.currentAvatarState.Value.items,
+                materialViews.Length));
             
             AudioController.instance.PlayMusic(AudioController.MusicCode.Combination);
         }
@@ -145,9 +147,9 @@ namespace Nekoyume.UI
             _data.itemInfo.Value.item.Subscribe(OnItemInfoItem).AddTo(_disposablesForSetData);
             _data.itemCountPopup.Value.item.Subscribe(OnPopupItem).AddTo(_disposablesForSetData);
             _data.itemCountPopup.Value.onClickClose.Subscribe(OnClickClosePopup).AddTo(_disposablesForSetData);
-            _data.stagedItems.ObserveAdd().Subscribe(OnAddStagedItems).AddTo(_disposablesForSetData);
-            _data.stagedItems.ObserveRemove().Subscribe(OnRemoveStagedItems).AddTo(_disposablesForSetData);
-            _data.stagedItems.ObserveReplace().Subscribe(_ => UpdateStagedItems()).AddTo(_disposablesForSetData);
+            _data.materials.ObserveAdd().Subscribe(OnAddStagedItems).AddTo(_disposablesForSetData);
+            _data.materials.ObserveRemove().Subscribe(OnRemoveStagedItems).AddTo(_disposablesForSetData);
+            _data.materials.ObserveReplace().Subscribe(_ => UpdateStagedItems()).AddTo(_disposablesForSetData);
             _data.readyForCombination.Subscribe(SetActiveCombinationButton).AddTo(_disposablesForSetData);
             _data.resultPopup.Subscribe(SubscribeResultPopup).AddTo(_disposablesForSetData);
             _data.onClickCombination.Subscribe(RequestCombination).AddTo(_disposablesForSetData);
@@ -163,7 +165,7 @@ namespace Nekoyume.UI
             _data = null;
             _disposablesForSetData.DisposeAllAndClear();
             
-            foreach (var item in stagedItems)
+            foreach (var item in materialViews)
             {
                 item.Clear();
             }
@@ -171,13 +173,13 @@ namespace Nekoyume.UI
         
         private void UpdateStagedItems(int startIndex = 0)
         {
-            var dataCount = _data.stagedItems.Count;
-            for (var i = startIndex; i < stagedItems.Length; i++)
+            var dataCount = _data.materials.Count;
+            for (var i = startIndex; i < materialViews.Length; i++)
             {
-                var item = stagedItems[i];
+                var item = materialViews[i];
                 if (i < dataCount)
                 {
-                    item.SetData(_data.stagedItems[i]);
+                    item.SetData(_data.materials[i]);
                 }
                 else
                 {
@@ -190,7 +192,7 @@ namespace Nekoyume.UI
         {
             if (ReferenceEquals(data, null) ||
                 data.dimmed.Value ||
-                _data.IsStagedItemsFulled)
+                _data.IsMaterialsFulled)
             {
                 _data.itemInfo.Value.buttonEnabled.Value = false;
             }
@@ -217,33 +219,33 @@ namespace Nekoyume.UI
             _simpleItemCountPopup.Close();
         }
 
-        private void OnAddStagedItems(CollectionAddEvent<CountEditableItem> e)
+        private void OnAddStagedItems(CollectionAddEvent<CombinationMaterial> e)
         {
-            if (e.Index >= stagedItems.Length)
+            if (e.Index >= materialViews.Length)
             {
-                _data.stagedItems.RemoveAt(e.Index);
+                _data.materials.RemoveAt(e.Index);
                 throw new AddOutOfSpecificRangeException<CollectionAddEvent<CountEditableItem>>(
-                    stagedItems.Length);
+                    materialViews.Length);
             }
 
-            stagedItems[e.Index].SetData(e.Value);
+            materialViews[e.Index].SetData(e.Value);
         }
 
-        private void OnRemoveStagedItems(CollectionRemoveEvent<CountEditableItem> e)
+        private void OnRemoveStagedItems(CollectionRemoveEvent<CombinationMaterial> e)
         {
-            if (e.Index >= stagedItems.Length)
+            if (e.Index >= materialViews.Length)
             {
                 return;
             }
 
-            var dataCount = _data.stagedItems.Count;
+            var dataCount = _data.materials.Count;
             for (var i = e.Index; i <= dataCount; i++)
             {
-                var item = stagedItems[i];
+                var item = materialViews[i];
 
                 if (i < dataCount)
                 {
-                    item.SetData(_data.stagedItems[i]);
+                    item.SetData(_data.materials[i]);
                 }
                 else
                 {
@@ -269,7 +271,7 @@ namespace Nekoyume.UI
         private void RequestCombination(Model.Combination data)
         {
             _loadingScreen.Show();
-            ActionManager.instance.Combination(_data.stagedItems.ToList())
+            ActionManager.instance.Combination(_data.materials.ToList())
                 .Subscribe(ResponseCombination)
                 .AddTo(this);
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickCombinationCombination);
@@ -286,7 +288,7 @@ namespace Nekoyume.UI
                 _data.resultPopup.Value = new Model.CombinationResultPopup(null, 0)
                 {
                     isSuccess = false,
-                    materialItems = _data.stagedItems
+                    materialItems = _data.materials
                 };
                 
                 AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionCombinationFail);
@@ -304,7 +306,7 @@ namespace Nekoyume.UI
             _data.resultPopup.Value = new Model.CombinationResultPopup(ItemBase.ItemFactory(itemEquipment), result.Item.count)
             {
                 isSuccess = true,
-                materialItems = _data.stagedItems
+                materialItems = _data.materials
             };
             
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionCombinationSuccess);
