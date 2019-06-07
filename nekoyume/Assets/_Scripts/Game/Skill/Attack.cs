@@ -21,12 +21,13 @@ namespace Nekoyume.Game.Skill
         {
             var infos = new List<Model.Skill.SkillInfo>();
             var targetList = targets.ToArray();
+            var elemental = Elemental.Create(_elemental);
             for (var i = 0; i < Effect.hitCount; i++)
             {
                 foreach (var target in targetList)
                 {
                     var critical = caster.IsCritical();
-                    var dmg = caster.atkElement.CalculateDmg(caster.atk, target.defElement);
+                    var dmg = elemental.CalculateDmg(caster.atk, target.defElement);
                     // https://gamedev.stackexchange.com/questions/129319/rpg-formula-attack-and-defense
                     dmg = Math.Max((dmg * dmg) / (dmg + target.def), 1);
                     dmg = Convert.ToInt32(dmg * Effect.multiplier);
