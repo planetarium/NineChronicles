@@ -20,22 +20,26 @@ namespace Nekoyume.Game.Skill
         protected List<Model.Skill.SkillInfo> ProcessDamage(IEnumerable<CharacterBase> targets)
         {
             var infos = new List<Model.Skill.SkillInfo>();
-            foreach (var target in targets.ToList())
+            var targetList = targets.ToArray();
+            for (var i = 0; i < Effect.hitCount; i++)
             {
-                var critical = caster.IsCritical();
-                var dmg = caster.atkElement.CalculateDmg(caster.atk, target.defElement);
-                // https://gamedev.stackexchange.com/questions/129319/rpg-formula-attack-and-defense
-                dmg = Math.Max((dmg * dmg) / (dmg + target.def), 1);
-                dmg = Convert.ToInt32(dmg * Effect.multiplier);
-                if (critical)
+                foreach (var target in targetList)
                 {
-                    dmg = Convert.ToInt32(dmg * CharacterBase.CriticalMultiplier);
+                    var critical = caster.IsCritical();
+                    var dmg = caster.atkElement.CalculateDmg(caster.atk, target.defElement);
+                    // https://gamedev.stackexchange.com/questions/129319/rpg-formula-attack-and-defense
+                    dmg = Math.Max((dmg * dmg) / (dmg + target.def), 1);
+                    dmg = Convert.ToInt32(dmg * Effect.multiplier);
+                    if (critical)
+                    {
+                        dmg = Convert.ToInt32(dmg * CharacterBase.CriticalMultiplier);
+                    }
+
+                    target.OnDamage(dmg);
+
+                    infos.Add(new Model.Skill.SkillInfo((CharacterBase) target.Clone(), dmg, critical, Effect.category,
+                        _elemental));
                 }
-
-                target.OnDamage(dmg);
-
-                infos.Add(new Model.Skill.SkillInfo((CharacterBase) target.Clone(), dmg, critical, Effect.category,
-                    _elemental));
             }
 
             return infos;
