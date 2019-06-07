@@ -33476,6 +33476,7 @@ GameObject:
   - component: {fileID: 3797285177440721857}
   - component: {fileID: 7868304385673501513}
   - component: {fileID: 3657880590745770194}
+  - component: {fileID: -7289372708808022941}
   m_Layer: 12
   m_Name: casting_water
   m_TagString: Untagged
@@ -38254,3 +38255,16 @@ ParticleSystemRenderer:
   m_Mesh2: {fileID: 0}
   m_Mesh3: {fileID: 0}
   m_MaskInteraction: 0
+--- !u!114 &-7289372708808022941
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9048569074009989082}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30255f6d59b74b859774a813c2ce93de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 0}

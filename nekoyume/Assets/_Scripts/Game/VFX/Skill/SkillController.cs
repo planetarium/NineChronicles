@@ -33,7 +33,15 @@ namespace Nekoyume.Game.VFX.Skill
                 var pos = ActionCamera.instance.Cam.ScreenToWorldPoint(
                     new Vector2((float) Screen.width / 2, 0));
                 position.x = pos.x + 0.5f;
-                elemental = Data.Table.Elemental.ElementalType.Fire;
+                switch (elemental)
+                {
+                    case Data.Table.Elemental.ElementalType.Fire:
+                    case Data.Table.Elemental.ElementalType.Water:
+                        break;
+                    default:
+                        elemental = Data.Table.Elemental.ElementalType.Fire;
+                        break;
+                }
             }
             var skillName = $"{skillInfo.Category}_{size}_{elemental}".ToLower();
             var go = _pool.Get(skillName, false, position);
@@ -49,6 +57,8 @@ namespace Nekoyume.Game.VFX.Skill
             var elemental = Data.Table.Elemental.ElementalType.Normal;
             if (skillInfo.Elemental == Data.Table.Elemental.ElementalType.Fire)
                 elemental = Data.Table.Elemental.ElementalType.Fire;
+            else if (skillInfo.Elemental == Data.Table.Elemental.ElementalType.Water)
+                elemental = Data.Table.Elemental.ElementalType.Water;
             var skillName = $"casting_{elemental}".ToLower();
             var go = _pool.Get(skillName, false, position);
             var effect = go.GetComponent<SkillCastingVFX>();

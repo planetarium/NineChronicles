@@ -18817,6 +18817,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 0}
+  finisher: {fileID: 6760588814219436691}
 --- !u!1 &1470669819288093046
 GameObject:
   m_ObjectHideFlags: 0
@@ -155905,6 +155906,12 @@ PrefabInstance:
 --- !u!4 &738513856093552226 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2549835466115496012, guid: eba3c0f75dca6af4c8020ee3bc5c0d66,
+    type: 3}
+  m_PrefabInstance: {fileID: 2980661298949867054}
+  m_PrefabAsset: {fileID: 0}
+--- !u!198 &6760588814219436691 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 8398931957436523709, guid: eba3c0f75dca6af4c8020ee3bc5c0d66,
     type: 3}
   m_PrefabInstance: {fileID: 2980661298949867054}
   m_PrefabAsset: {fileID: 0}
