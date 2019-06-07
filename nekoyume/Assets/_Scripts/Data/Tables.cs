@@ -19,6 +19,7 @@ namespace Nekoyume.Data
         public Table<StageReward> StageReward { get; private set; }
         public Table<SetEffect> SetEffect { get; private set; }
         public Table<SkillEffect> SkillEffect { get; private set; }
+        public Table<Setting> Settings { get; private set; }
 
         protected override void Awake()
         {
@@ -53,6 +54,8 @@ namespace Nekoyume.Data
             SkillEffect = new Table<SkillEffect>();
             Load(SkillEffect, "DataTable/skill_effect");
 
+            Settings = new Table<Setting>();
+            Load(Settings, "DataTable/settings");
         }
 
         private void Load(ITable table, string filename)

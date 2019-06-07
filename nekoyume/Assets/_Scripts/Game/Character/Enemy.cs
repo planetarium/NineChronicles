@@ -47,6 +47,11 @@ namespace Nekoyume.Game.Character
             InitStats(spawnCharacter);
             id = spawnCharacter.id;
             StartRun();
+
+            if (!ShowSpeech("ENEMY", spawnCharacter.data.id))
+            {
+                ShowSpeech("ENEMY_INIT", spawnCharacter.spawnIndex);
+            }
         }
         
         public override IEnumerator CoProcessDamage(Model.Skill.SkillInfo info)
@@ -56,7 +61,6 @@ namespace Nekoyume.Game.Character
             var force = DamageTextForce;
             animator.Hit();
             PopUpDmg(position, force, info);
-
         }
         
         protected override bool CanRun()

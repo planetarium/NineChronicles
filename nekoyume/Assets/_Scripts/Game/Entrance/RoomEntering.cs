@@ -23,10 +23,11 @@ namespace Nekoyume.Game.Entrance
             stage.id = 0;
             stage.LoadBackground("room");
 
-            var players = stage.GetComponentsInChildren<Character.Player>();
-            foreach (var p in players)
+            var clearPlayers = stage.GetComponentsInChildren<Character.Player>();
+            foreach (var clearPlayer in clearPlayers)
             {
-                objectPool.Remove<Character.Player>(p.gameObject);
+                clearPlayer.DisableHUD();
+                objectPool.Remove<Character.Player>(clearPlayer.gameObject);
             }
             objectPool.ReleaseAll();
 

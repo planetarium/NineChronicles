@@ -34,6 +34,7 @@ namespace Nekoyume.Game.Character
 
         private ProgressBar _hpBar;
         private ProgressBar _castingBar;
+        protected SpeechBubble _speechBubble;
 
         public abstract Guid Id { get; }
         public abstract float Speed { get; }
@@ -59,7 +60,6 @@ namespace Nekoyume.Game.Character
         {
             RunSpeed = 0.0f;
             Root = null;
-            DisableHUD();
         }
 
         public bool IsDead()
@@ -124,6 +124,10 @@ namespace Nekoyume.Game.Character
             {
                 _hpBar.UpdatePosition(gameObject, HUDOffset);
             }
+            if (!ReferenceEquals(_speechBubble, null))
+            {
+                _speechBubble.UpdatePosition(gameObject, HUDOffset);
+            }
         }
 
         public int CalcAtk()
@@ -141,6 +145,37 @@ namespace Nekoyume.Game.Character
             _hpBar.UpdatePosition(gameObject, HUDOffset);
             _hpBar.SetText($"{HP} / {HPMax}");
             _hpBar.SetValue((float)HP / HPMax);
+        }
+
+        public bool ShowSpeech(string key, params int[] list)
+        {
+            if (ReferenceEquals(_speechBubble, null))
+            {
+                _speechBubble = Widget.Create<SpeechBubble>();
+            }
+
+            if (_speechBubble.gameObject.activeSelf)
+            {
+                return false;
+            }
+
+            if (list.Length > 0)
+            {
+                string join = string.Join(",", list.Select(x => x.ToString()).ToArray());
+                key = $"{key}_{join}_";
+            }
+            else
+            {
+                key = $"{key}_";
+            }
+
+            if (!_speechBubble.SetKey(key))
+            {
+                return false;
+            }
+
+            StartCoroutine(_speechBubble.CoShowText());
+            return true;
         }
 
         private float GetDamageFactor(AttackType attackType)
@@ -265,14 +300,24 @@ namespace Nekoyume.Game.Character
         {
             if (!ReferenceEquals(_hpBar, null))
             {
-                Destroy(_hpBar.gameObject);
+                if (!ReferenceEquals(_hpBar.gameObject, null))
+                    Destroy(_hpBar.gameObject);
                 _hpBar = null;
             }
             
             if (!ReferenceEquals(_castingBar, null))
             {
-                Destroy(_castingBar.gameObject);
+                if (!ReferenceEquals(_castingBar.gameObject, null))
+                    Destroy(_castingBar.gameObject);
                 _castingBar = null;
+            }
+
+            if (!ReferenceEquals(_speechBubble, null))
+            {
+                _speechBubble.gameObject.SetActive(false);
+                if (!ReferenceEquals(_speechBubble.gameObject, null))
+                    Destroy(_speechBubble.gameObject, _speechBubble.destroyTime);
+                _speechBubble = null;
             }
         }
 
