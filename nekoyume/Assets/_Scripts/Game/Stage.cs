@@ -72,11 +72,6 @@ namespace Nekoyume.Game
             Play(_battleLog);
         }
 
-        private void Start()
-        {
-            OnNestEnter();
-        }
-
         private void OnNestEnter()
         {
             gameObject.AddComponent<NestEntering>();
