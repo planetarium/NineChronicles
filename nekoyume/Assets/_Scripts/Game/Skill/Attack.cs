@@ -32,8 +32,9 @@ namespace Nekoyume.Game.Skill
                     var critical = caster.IsCritical();
                     var dmg = elemental.CalculateDmg(caster.atk, target.defElement);
                     // https://gamedev.stackexchange.com/questions/129319/rpg-formula-attack-and-defense
-                    dmg = Math.Max((dmg * dmg) / (dmg + target.def), 1);
+                    dmg = (dmg * dmg) / (dmg + target.def);
                     dmg = Convert.ToInt32(dmg * multiply);
+                    dmg = Math.Max(dmg, 1);
                     if (critical)
                     {
                         dmg = Convert.ToInt32(dmg * CharacterBase.CriticalMultiplier);
