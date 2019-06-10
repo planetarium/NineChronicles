@@ -20,7 +20,9 @@ namespace Nekoyume.UI
 
             Canvas = GetComponent<Canvas>();
             RectTransform = GetComponent<RectTransform>();
-            
+
+            Widget.Create<Title>();
+            Widget.Create<Synopsis>();
             Widget.Create<Login>();
             Widget.Create<LoginDetail>();
             Widget.Create<Menu>();

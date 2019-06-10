@@ -47,7 +47,7 @@ namespace Nekoyume.Game
         private void AgentInitialized(bool succeed)
         {
             Widget.Find<LoadingScreen>()?.Close();
-            Widget.Find<Login>()?.Show();
+            Widget.Find<Title>()?.Show();
         }
     }
 }

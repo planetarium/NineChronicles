@@ -10,9 +10,9 @@ namespace Nekoyume.Game.Tween
         {
             Forward,
             Reverse,
-            Yoyo,
-            Refeat,
-            PingPong,
+            Repeat,
+            PingPongOnce,
+            PingPongRepeat,
         }
 
         public float Duration = 0.0f;
@@ -28,15 +28,15 @@ namespace Nekoyume.Game.Tween
         private void PlayForward()
         {
             transform.DOLocalMove(BeginValue, 0.0f);
-            if (TweenType.Yoyo == TweenType_)
-            {
-                transform.DOLocalMove(EndValue, Duration).onComplete = PlayReverse;
-            }
-            else if (TweenType.Refeat == TweenType_)
+            if (TweenType.Repeat == TweenType_)
             {
                 transform.DOLocalMove(EndValue, Duration).onComplete = PlayForward;
             }
-            else if (TweenType.PingPong == TweenType_)
+            else if (TweenType.PingPongOnce == TweenType_)
+            {
+                transform.DOLocalMove(EndValue, Duration).onComplete = PlayReverse;
+            }
+            else if (TweenType.PingPongRepeat == TweenType_)
             {
                 transform.DOLocalMove(EndValue, Duration).onComplete = PlayReverse;
             }
@@ -49,7 +49,7 @@ namespace Nekoyume.Game.Tween
         private void PlayReverse()
         {
             transform.DOLocalMove(EndValue, 0.0f);
-            if (TweenType.PingPong == TweenType_)
+            if (TweenType.PingPongRepeat == TweenType_)
             {
                 transform.DOLocalMove(BeginValue, Duration).onComplete = PlayForward;
             }
@@ -59,17 +59,17 @@ namespace Nekoyume.Game.Tween
             }
         }
 
-        private void PlayYoyo()
-        {
-            PlayForward();
-        }
-
         private void PlayRepeat()
         {
             PlayForward();
         }
 
-        private void PlayPingPong()
+        private void PlayPingPongOnce()
+        {
+            PlayForward();
+        }
+
+        private void PlayPingPongRepeat()
         {
             PlayForward();
         }
