@@ -43,12 +43,7 @@ namespace Nekoyume.Action
                 return states.SetState(avatarAddress, MarkChanged);
             }
             
-            var agentState = (AgentState)states.GetState(ctx.Signer);
-            if (agentState == null)
-            {
-                return SimpleError(ctx, ErrorCode.AgentNotFound);
-            }
-            
+            var agentState = (AgentState)states.GetState(ctx.Signer) ?? new AgentState(ctx.Signer);            
             var avatarState = (AvatarState)states.GetState(avatarAddress);
             if (avatarState != null)
             {
