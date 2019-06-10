@@ -10,6 +10,7 @@ namespace Nekoyume.Game.Skill
     public class AttackBase: SkillBase
     {
         private readonly Data.Table.Elemental.ElementalType _elemental;
+
         protected AttackBase(float chance, SkillEffect effect,
             Data.Table.Elemental.ElementalType elemental) : base(chance, effect)
         {
@@ -20,25 +21,49 @@ namespace Nekoyume.Game.Skill
         protected List<Model.Skill.SkillInfo> ProcessDamage(IEnumerable<CharacterBase> targets)
         {
             var infos = new List<Model.Skill.SkillInfo>();
-            foreach (var target in targets.ToList())
+            var targetList = targets.ToArray();
+            var elemental = Elemental.Create(_elemental);
+            var multiplier = GetMultiplier(Effect.hitCount, Effect.multiplier);
+            for (var i = 0; i < Effect.hitCount; i++)
             {
-                var critical = caster.IsCritical();
-                var dmg = caster.atkElement.CalculateDmg(caster.atk, target.defElement);
-                // https://gamedev.stackexchange.com/questions/129319/rpg-formula-attack-and-defense
-                dmg = Math.Max((dmg * dmg) / (dmg + target.def), 1);
-                dmg = Convert.ToInt32(dmg * Effect.multiplier);
-                if (critical)
+                foreach (var target in targetList)
                 {
-                    dmg = Convert.ToInt32(dmg * CharacterBase.CriticalMultiplier);
+                    var multiply = multiplier[i];
+                    var critical = caster.IsCritical();
+                    var dmg = elemental.CalculateDmg(caster.atk, target.defElement);
+                    // https://gamedev.stackexchange.com/questions/129319/rpg-formula-attack-and-defense
+                    dmg = Math.Max((dmg * dmg) / (dmg + target.def), 1);
+                    dmg = Convert.ToInt32(dmg * multiply);
+                    if (critical)
+                    {
+                        dmg = Convert.ToInt32(dmg * CharacterBase.CriticalMultiplier);
+                    }
+
+                    target.OnDamage(dmg);
+
+                    infos.Add(new Model.Skill.SkillInfo((CharacterBase) target.Clone(), dmg, critical, Effect.category,
+                        _elemental));
                 }
-
-                target.OnDamage(dmg);
-
-                infos.Add(new Model.Skill.SkillInfo((CharacterBase) target.Clone(), dmg, critical, Effect.category,
-                    _elemental));
             }
 
             return infos;
+        }
+
+        private float[] GetMultiplier(int count, float total)
+        {
+            if (count == 1) return new[] {total};
+            var multiplier = new List<float>();
+            var avg = total / count;
+            var last = avg * 1.3f;
+            var remain = count - 1;
+            var dist = (total - last) / remain;
+            for (int i = 0; i < count; i++)
+            {
+                var result = i == remain ? last : dist;
+                multiplier.Add(result);
+            }
+
+            return multiplier.ToArray();
         }
 
         public override Model.Skill Use()

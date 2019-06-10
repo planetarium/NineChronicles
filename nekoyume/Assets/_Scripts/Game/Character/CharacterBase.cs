@@ -323,8 +323,7 @@ namespace Nekoyume.Game.Character
 
         private void ProcessAttack(CharacterBase target, Model.Skill.SkillInfo skill)
         {
-            if (TargetInRange(target))
-                target.StopRun();
+            target.StopRun();
             StartCoroutine(target.CoProcessDamage(skill));
         }
 
@@ -416,16 +415,26 @@ namespace Nekoyume.Game.Character
             var effectTarget = Game.instance.stage.GetCharacter(skillInfo.Target);
             var effect = Game.instance.stage.SkillController.Get<SkillAreaVFX>(effectTarget, skillInfo);
             effect.Play();
+            yield return new WaitForSeconds(0.5f);
 
             foreach (var info in skillInfos)
             {
                 var target = Game.instance.stage.GetCharacter(info.Target);
-                yield return new WaitForSeconds(0.5f);
+                yield return new WaitForSeconds(0.1f);
+                if (skillInfos.Last() == info && effect.finisher)
+                {
+                    yield return new WaitForSeconds(0.4f);
+                    effect.Finisher();
+                }
                 ProcessAttack(target, info);
+            }
+
+            foreach (var info in skillInfos)
+            {
+                var target = Game.instance.stage.GetCharacter(info.Target);
                 if (target.IsDead())
                     StartCoroutine(target.Dying());
             }
-
             yield return new WaitWhile(() => effect.isActiveAndEnabled);
         }
 

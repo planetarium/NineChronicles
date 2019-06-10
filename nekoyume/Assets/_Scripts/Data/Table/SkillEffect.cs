@@ -32,5 +32,6 @@ namespace Nekoyume.Data.Table
         public Category category = Category.Normal;
         public Target target = Target.Enemy;
         public float multiplier = 1.0f;
+        public int hitCount = 1;
     }
 }

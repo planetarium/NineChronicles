@@ -17,7 +17,6 @@ namespace Nekoyume.Game.Skill
         {
             var target = GetTarget().ToArray();
             var infos = ProcessDamage(target);
-            infos.AddRange(ProcessDamage(target));
             return new Model.DoubleAttack
             {
                 character = (CharacterBase) caster.Clone(),
