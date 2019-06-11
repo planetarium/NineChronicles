@@ -29,8 +29,11 @@ namespace Nekoyume.Helper
     {
         public static CommandLineOptions GetCommandLineOptions()
         {
-            string[] args = Environment.GetCommandLineArgs().Where(s => s.StartsWith("--")).ToArray();
-            ParserResult<CommandLineOptions> result = Parser.Default.ParseArguments<CommandLineOptions>(args);
+            string[] args = Environment.GetCommandLineArgs();
+
+            var parser = new Parser(with => with.IgnoreUnknownArguments = true);
+
+            ParserResult<CommandLineOptions> result = parser.ParseArguments<CommandLineOptions>(args);
 
             if (result.Tag == ParserResultType.Parsed)
             {
