@@ -5,6 +5,7 @@ namespace Nekoyume.Game.VFX.Skill
     public class SkillAreaVFX : SkillVFX
     {
         public ParticleSystem finisher;
+        public ParticleSystem last;
 
         public override void Play()
         {

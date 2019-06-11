@@ -414,6 +414,12 @@ namespace Nekoyume.Game.Character
 
             var effectTarget = Game.instance.stage.GetCharacter(skillInfo.Target);
             var effect = Game.instance.stage.SkillController.Get<SkillAreaVFX>(effectTarget, skillInfo);
+            Model.Skill.SkillInfo trigger = null;
+            if (effect.finisher)
+            {
+                var count = FindObjectsOfType(effectTarget.GetType()).Length;
+                trigger = skillInfos.Skip(skillInfos.Count - count).First();
+            }
             effect.Play();
             yield return new WaitForSeconds(0.5f);
 
@@ -421,9 +427,10 @@ namespace Nekoyume.Game.Character
             {
                 var target = Game.instance.stage.GetCharacter(info.Target);
                 yield return new WaitForSeconds(0.1f);
-                if (skillInfos.Last() == info && effect.finisher)
+                if (trigger == info)
                 {
-                    yield return new WaitForSeconds(0.4f);
+                    yield return new WaitUntil(() => effect.last.isStopped);
+                    yield return new WaitForSeconds(0.3f);
                     effect.Finisher();
                 }
                 ProcessAttack(target, info);
