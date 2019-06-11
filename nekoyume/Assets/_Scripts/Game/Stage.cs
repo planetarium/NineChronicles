@@ -29,6 +29,7 @@ namespace Nekoyume.Game
         public EnemyFactory enemyFactory;
         public DropItemFactory dropItemFactory;
         public SkillController SkillController;
+        public SkillController skillController;
         
         public MonsterSpawner spawner;
         
