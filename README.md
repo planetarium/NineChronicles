@@ -37,3 +37,15 @@ $ /Applications/Unity/Hub/Editor/2019.1.0f2/Unity.app/Contents/MacOS/Unity -quit
 ```
 
 [Unity Hub]: https://unity3d.com/get-unity/download
+
+
+### Docker-compose 마이너 테스트
+
+로컬에서 테스트 하는 것을 전제로 Seed 의 개인키와 노드들의 Host가 하드코딩 되어 있습니다.
+
+- `LinuxHeadless` 빌드 후 아래 명령 실행
+
+```bash
+cd nekoyume/compose
+docker-compose up --build
+```
