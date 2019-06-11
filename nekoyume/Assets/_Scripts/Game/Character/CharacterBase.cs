@@ -429,6 +429,7 @@ namespace Nekoyume.Game.Character
                 yield return new WaitForSeconds(0.1f);
                 if (trigger == info)
                 {
+                    effect.StopLoop();
                     yield return new WaitUntil(() => effect.last.isStopped);
                     yield return new WaitForSeconds(0.3f);
                     effect.Finisher();
@@ -442,7 +443,7 @@ namespace Nekoyume.Game.Character
                 if (target.IsDead())
                     StartCoroutine(target.Dying());
             }
-            yield return new WaitWhile(() => effect.isActiveAndEnabled);
+            yield return new WaitForSeconds(0.5f);
         }
 
         public IEnumerator CoDoubleAttack(IEnumerable<Model.Skill.SkillInfo> infos)

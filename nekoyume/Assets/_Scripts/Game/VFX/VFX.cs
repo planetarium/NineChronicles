@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using UnityEngine;
 
@@ -18,7 +17,7 @@ namespace Nekoyume.Game.VFX
 
         #region Mono
 
-        private void Awake()
+        public virtual void Awake()
         {
             _particles = GetComponentsInChildren<ParticleSystem>();
             _particlesLength = _particles.Length;
