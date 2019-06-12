@@ -374,7 +374,7 @@ namespace Nekoyume.Game.Character
 
             animator.Cast();
             var pos = transform.position;
-            var effect = Game.instance.stage.SkillController.Get(pos, info);
+            var effect = Game.instance.stage.skillController.Get(pos, info);
             effect.Play();
             yield return new WaitForSeconds(0.6f);
 
@@ -413,7 +413,7 @@ namespace Nekoyume.Game.Character
             yield return StartCoroutine(CoAnimationCast(skillInfo));
 
             var effectTarget = Game.instance.stage.GetCharacter(skillInfo.Target);
-            var effect = Game.instance.stage.SkillController.Get<SkillAreaVFX>(effectTarget, skillInfo);
+            var effect = Game.instance.stage.skillController.Get<SkillAreaVFX>(effectTarget, skillInfo);
             Model.Skill.SkillInfo trigger = null;
             if (effect.finisher)
             {
@@ -429,6 +429,7 @@ namespace Nekoyume.Game.Character
                 yield return new WaitForSeconds(0.1f);
                 if (trigger == info)
                 {
+                    effect.StopLoop();
                     yield return new WaitUntil(() => effect.last.isStopped);
                     yield return new WaitForSeconds(0.3f);
                     effect.Finisher();
@@ -442,7 +443,7 @@ namespace Nekoyume.Game.Character
                 if (target.IsDead())
                     StartCoroutine(target.Dying());
             }
-            yield return new WaitWhile(() => effect.isActiveAndEnabled);
+            yield return new WaitForSeconds(0.5f);
         }
 
         public IEnumerator CoDoubleAttack(IEnumerable<Model.Skill.SkillInfo> infos)
@@ -452,7 +453,7 @@ namespace Nekoyume.Game.Character
             {
                 var target = Game.instance.stage.GetCharacter(info.Target);
                 var first = skillInfos.First() == info;
-                var effect = Game.instance.stage.SkillController.Get<SkillDoubleVFX>(target, info);
+                var effect = Game.instance.stage.skillController.Get<SkillDoubleVFX>(target, info);
 
                 yield return StartCoroutine(CoAnimationAttack());
                 if (first)
@@ -487,7 +488,7 @@ namespace Nekoyume.Game.Character
             foreach (var info in skillInfos)
             {
                 var target = Game.instance.stage.GetCharacter(info.Target);
-                var effect = Game.instance.stage.SkillController.Get<SkillBlowVFX>(target, info);
+                var effect = Game.instance.stage.skillController.Get<SkillBlowVFX>(target, info);
                 effect.Play();
                 ProcessAttack(target, info);
             }

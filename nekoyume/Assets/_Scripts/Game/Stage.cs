@@ -21,14 +21,13 @@ namespace Nekoyume.Game
 {
     public class Stage : MonoBehaviour, IStage
     {
+        public const float StageStartPosition = -1.2f;
         private const float SkillDelay = 0.1f;
-        private const float StageStartPosition = -1.2f;
-        
         public ObjectPool objectPool;
         public PlayerFactory playerFactory;
         public EnemyFactory enemyFactory;
         public DropItemFactory dropItemFactory;
-        public SkillController SkillController;
+        public SkillController skillController;
         
         public MonsterSpawner spawner;
         
