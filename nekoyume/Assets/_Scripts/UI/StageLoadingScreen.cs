@@ -10,7 +10,7 @@ namespace Nekoyume.UI
     {
         private const string Bg1Format = "images/{0}_1";
         private const string Bg2Format = "images/{0}_2";
-        private const string DefaultBgString = "zone_0_0";
+        private const string DefaultBgString = "chapter_1_1";
 
         public List<Image> images;
         public bool closeEnd;
