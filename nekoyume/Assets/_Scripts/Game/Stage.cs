@@ -188,14 +188,20 @@ namespace Nekoyume.Game
 
                 switch (zone)
                 {
-                    case "zone_0_0":
+                    case "chapter_1_1":
                         AudioController.instance.PlayMusic(AudioController.MusicCode.StageGreen);
                         break;
-                    case "zone_0_1":
+                    case "chapter_1_2":
                         AudioController.instance.PlayMusic(AudioController.MusicCode.StageOrange);
                         break;
-                    case "zone_0_2":
+                    case "chapter_1_3":
                         AudioController.instance.PlayMusic(AudioController.MusicCode.StageBlue);
+                        break;
+                    case "chapter_2_1":
+                        AudioController.instance.PlayMusic(AudioController.MusicCode.StageOrange);
+                        break;
+                    default:
+                        AudioController.instance.PlayMusic(AudioController.MusicCode.StageGreen);
                         break;
                 }
             }
