@@ -160,11 +160,11 @@ namespace Nekoyume.BlockChain
         {
             while (true)
             {
-                var tx = RewardGold();
-                var txs = new HashSet<Transaction<PolymorphicAction<ActionBase>>> { tx };
+                var rewardGoldTx = RewardGold();
+                var rewardGoldTxs = new HashSet<Transaction<PolymorphicAction<ActionBase>>> { rewardGoldTx };
                 var task = Task.Run(() =>
                 {
-                    _blocks.StageTransactions(txs);
+                    _blocks.StageTransactions(rewardGoldTxs);
                     var block = _blocks.MineBlock(Address);
                     _swarm.BroadcastBlocks(new[] {block});
                     return block;
@@ -181,24 +181,39 @@ namespace Nekoyume.BlockChain
                 }
                 else
                 {
-                    var invalidTxs = new HashSet<Transaction<PolymorphicAction<ActionBase>>>(txs);
+                    var invalidTxs = new HashSet<Transaction<PolymorphicAction<ActionBase>>>(rewardGoldTxs);
+                    var retryActions = new HashSet<IImmutableList<PolymorphicAction<ActionBase>>>();
+
                     if (task.IsFaulted)
                     {
-                        foreach (var ex in task.Exception.InnerExceptions) 
+                        foreach (var ex in task.Exception.InnerExceptions)
                         {
-                            if (ex is InvalidTxException invalidTxException) 
+                            if (ex is InvalidTxNonceException invalidTxNonceException)
+                            {
+                                var invalidNonceTx = _blocks.Transactions[invalidTxNonceException.TxId];
+
+                                if (invalidNonceTx.Signer == Address && invalidNonceTx.Id != rewardGoldTx.Id)
+                                {
+                                    Debug.Log($"Tx[{invalidTxNonceException.TxId}] nonce is invalid. Retry it.");
+                                    retryActions.Add(invalidNonceTx.Actions);
+                                }
+                            }
+
+                            if (ex is InvalidTxException invalidTxException)
                             {
                                 Debug.Log($"Tx[{invalidTxException.TxId}] is invalid. mark to unstage.");
-                                Debug.LogException(ex);
                                 invalidTxs.Add(_blocks.Transactions[invalidTxException.TxId]);
                             }
-                            else
-                            {
-                                Debug.LogException(task.Exception);
-                            }
+
+                            Debug.LogException(ex);
                         }
                     }
                     _blocks.UnstageTransactions(invalidTxs);
+
+                    foreach (var retryAction in retryActions)
+                    {
+                        StageAgentActions(retryAction);
+                    }
                 }
             }
         }
