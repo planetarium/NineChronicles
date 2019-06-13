@@ -2041,9 +2041,9 @@
             Request to query transactions.
             </summary>
         </member>
-        <member name="F:Libplanet.Net.Messages.Message.MessageType.Block">
+        <member name="F:Libplanet.Net.Messages.Message.MessageType.Blocks">
             <summary>
-            Message containing serialized block.
+            Message containing serialized blocks.
             </summary>
         </member>
         <member name="F:Libplanet.Net.Messages.Message.MessageType.Tx">
@@ -2358,6 +2358,87 @@
             <paramref name="sourceNamespace"/> does not exist.</exception>
             <seealso cref="M:Libplanet.Store.IStore.GetTxNonce(System.String,Libplanet.Address)"/>
             <seealso cref="M:Libplanet.Store.IStore.IncreaseTxNonce``1(System.String,Libplanet.Blocks.Block{``0})"/>
+        </member>
+        <member name="M:Libplanet.Store.LiteDBStore.ListNamespaces">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.LiteDBStore.CountIndex(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.LiteDBStore.IterateIndex(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.LiteDBStore.IndexBlockHash(System.String,System.Int64)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.LiteDBStore.AppendIndex(System.String,Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.LiteDBStore.DeleteIndex(System.String,Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.LiteDBStore.StageTransactionIds(System.Collections.Generic.ISet{Libplanet.Tx.TxId})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.LiteDBStore.UnstageTransactionIds(System.Collections.Generic.ISet{Libplanet.Tx.TxId})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.LiteDBStore.IterateStagedTransactionIds">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.LiteDBStore.IterateTransactionIds">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.LiteDBStore.GetTransaction``1(Libplanet.Tx.TxId)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.LiteDBStore.PutTransaction``1(Libplanet.Tx.Transaction{``0})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.LiteDBStore.DeleteTransaction(Libplanet.Tx.TxId)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.LiteDBStore.IterateBlockHashes">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.LiteDBStore.GetBlock``1(Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.LiteDBStore.PutBlock``1(Libplanet.Blocks.Block{``0})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.LiteDBStore.DeleteBlock(Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.LiteDBStore.GetBlockStates(Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.LiteDBStore.SetBlockStates(Libplanet.HashDigest{System.Security.Cryptography.SHA256},Libplanet.Action.AddressStateMap)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.LiteDBStore.LookupStateReference``1(System.String,Libplanet.Address,Libplanet.Blocks.Block{``0})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.LiteDBStore.StoreStateReference``1(System.String,System.Collections.Immutable.IImmutableSet{Libplanet.Address},Libplanet.Blocks.Block{``0})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.LiteDBStore.ForkStateReferences``1(System.String,System.String,Libplanet.Blocks.Block{``0},System.Collections.Immutable.IImmutableSet{Libplanet.Address})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.LiteDBStore.GetTxNonce(System.String,Libplanet.Address)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.LiteDBStore.IncreaseTxNonce``1(System.String,Libplanet.Blocks.Block{``0})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.LiteDBStore.ForkTxNonce``1(System.String,System.String,Libplanet.Blocks.Block{``0},System.Collections.Immutable.IImmutableSet{Libplanet.Address})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.LiteDBStore.CountTransactions">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.LiteDBStore.CountBlocks">
+            <inheritdoc/>
         </member>
         <member name="T:Libplanet.Store.NamespaceNotFoundException">
             <summary>
