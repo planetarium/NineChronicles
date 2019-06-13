@@ -186,24 +186,7 @@ namespace Nekoyume.Game
 
                 yield return StartCoroutine(title.CoClose());
 
-                switch (zone)
-                {
-                    case "chapter_1_1":
-                        AudioController.instance.PlayMusic(AudioController.MusicCode.StageGreen);
-                        break;
-                    case "chapter_1_2":
-                        AudioController.instance.PlayMusic(AudioController.MusicCode.StageOrange);
-                        break;
-                    case "chapter_1_3":
-                        AudioController.instance.PlayMusic(AudioController.MusicCode.StageBlue);
-                        break;
-                    case "chapter_2_1":
-                        AudioController.instance.PlayMusic(AudioController.MusicCode.StageOrange);
-                        break;
-                    default:
-                        AudioController.instance.PlayMusic(AudioController.MusicCode.StageGreen);
-                        break;
-                }
+                AudioController.instance.PlayMusic(data.bgm);
             }
         }
 
