@@ -30,6 +30,8 @@ namespace Nekoyume.Game.VFX.Skill
             if (skillInfo.Category == SkillEffect.Category.Area)
             {
                 size = "l";
+                if (elemental == Data.Table.Elemental.ElementalType.Normal)
+                    elemental = Data.Table.Elemental.ElementalType.Fire;
                 var pos = ActionCamera.instance.Cam.ScreenToWorldPoint(
                     new Vector2((float) Screen.width / 2, 0));
                 position.x = pos.x + 0.5f;
