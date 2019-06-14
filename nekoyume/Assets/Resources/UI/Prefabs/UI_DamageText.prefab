@@ -168,8 +168,9 @@ GameObject:
   m_Component:
   - component: {fileID: 6935314542029318722}
   - component: {fileID: 7113303677715335124}
+  - component: {fileID: 6771143559647826450}
   m_Layer: 5
-  m_Name: UI_DamageText 1
+  m_Name: UI_DamageText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -209,6 +210,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   label: {fileID: 7114220038201761374}
+  shadow: {fileID: 733363460945159012}
+  group: {fileID: 6771143559647826450}
+--- !u!225 &6771143559647826450
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7143942412660777690}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 0
+  m_BlocksRaycasts: 0
+  m_IgnoreParentGroups: 0
 --- !u!1 &8919553223933341717
 GameObject:
   m_ObjectHideFlags: 0
@@ -243,7 +258,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -1.1}
+  m_AnchoredPosition: {x: 0, y: -1.0999985}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4053716317530980998
