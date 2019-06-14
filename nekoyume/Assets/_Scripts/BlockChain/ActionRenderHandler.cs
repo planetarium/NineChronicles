@@ -132,13 +132,16 @@ namespace Nekoyume.BlockChain
         private void Sell()
         {
             ActionBase.EveryRender<Sell>()
-                .Where(eval => eval.InputContext.Signer == States.Instance.currentAvatarState.Value.address
-                               && eval.Action.Succeed)
+                .Where(eval => eval.Action.Succeed)
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
                 {
                     var result = eval.Action.result;
-                    States.Instance.currentAvatarState.Value.RemoveEquipmentItemFromItems(result.shopItem.item.Data.id, result.shopItem.count);
+                    if (eval.InputContext.Signer == States.Instance.currentAvatarState.Value.address)
+                    {
+                        States.Instance.currentAvatarState.Value.RemoveEquipmentItemFromItems(result.shopItem.item.Data.id, result.shopItem.count);
+                    }
+                    
                     ShopState.Register(ReactiveShopState.Items, States.Instance.currentAvatarState.Value.address,
                         result.shopItem);
                 }).AddTo(_disposables);
@@ -147,13 +150,16 @@ namespace Nekoyume.BlockChain
         private void SellCancellation()
         {
             ActionBase.EveryRender<SellCancellation>()
-                .Where(eval => eval.InputContext.Signer == States.Instance.currentAvatarState.Value.address
-                               && eval.Action.Succeed)
+                .Where(eval => eval.Action.Succeed)
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
                 {
                     var result = eval.Action.result;
-                    States.Instance.currentAvatarState.Value.AddEquipmentItemToItems(result.shopItem.item.Data.id, result.shopItem.count);
+                    if (eval.InputContext.Signer == States.Instance.currentAvatarState.Value.address)
+                    {
+                        States.Instance.currentAvatarState.Value.AddEquipmentItemToItems(result.shopItem.item.Data.id, result.shopItem.count);
+                    }
+                    
                     ShopState.Unregister(ReactiveShopState.Items, result.owner, result.shopItem.productId);
                 }).AddTo(_disposables);
         }
@@ -161,27 +167,32 @@ namespace Nekoyume.BlockChain
         private void Buy()
         {
             ActionBase.EveryRender<Buy>()
-                .Where(eval => eval.InputContext.Signer == States.Instance.currentAvatarState.Value.address
-                               && eval.Action.Succeed)
+                .Where(eval => eval.Action.Succeed)
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
                 {
                     var result = eval.Action.result;
-                    States.Instance.currentAvatarState.Value.AddEquipmentItemToItems(result.shopItem.item.Data.id, result.shopItem.count);
+                    if (eval.InputContext.Signer == States.Instance.currentAvatarState.Value.address)
+                    {
+                        States.Instance.currentAvatarState.Value.AddEquipmentItemToItems(result.shopItem.item.Data.id, result.shopItem.count);
+                    }
+                    
                     ShopState.Unregister(ReactiveShopState.Items, result.owner, result.shopItem.productId);
                 }).AddTo(_disposables);
         }
 
         private void Ranking()
         {
-            ActionBase.EveryRender<HackAndSlash>()
-                .Where(eval => eval.InputContext.Signer == States.Instance.currentAvatarState.Value.address
-                               && eval.Action.Succeed)
+            ActionBase.EveryRender(RankingState.Address)
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
                 {
-                    var state = (RankingState) AgentController.Agent.GetState(RankingState.Address);
-                    ReactiveRankingState.RankingState.Value = States.Instance.rankingState.Value = state;
+                    var asGameAction = eval.Action as GameAction;
+                    if (asGameAction is null || asGameAction.Succeed) 
+                    {
+                        var state = (RankingState) eval.OutputStates.GetState(RankingState.Address);
+                        ReactiveRankingState.RankingState.Value = States.Instance.rankingState.Value = state;
+                    }
                 })
                 .AddTo(_disposables);
         }
