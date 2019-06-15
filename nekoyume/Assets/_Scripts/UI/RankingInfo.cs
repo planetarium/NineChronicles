@@ -25,8 +25,8 @@ namespace Nekoyume.UI
             level.text = avatarState.level.ToString();
             id.text = avatarState.name;
             stage.text = avatarState.worldStage.ToString();
-            tweenMove.StartDelay = ranking * 0.2f;
-            tweenAlpha.StartDelay = ranking * 0.2f;
+            tweenMove.StartDelay = ranking * 0.16f;
+            tweenAlpha.StartDelay = ranking * 0.16f;
             //TODO 국가설정에 따라 국기가 변해야함
         }
     }
