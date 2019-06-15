@@ -13,6 +13,8 @@ namespace Nekoyume.UI
         public Text id;
         public Text stage;
         public Image flag;
+        public Tween.DOTweenRectTransformMoveBy tweenMove;
+        public Tween.DOTweenGroupAlpha tweenAlpha;
 
         public void Set(int ranking, State.AvatarState avatarState)
         {
@@ -23,6 +25,8 @@ namespace Nekoyume.UI
             level.text = avatarState.level.ToString();
             id.text = avatarState.name;
             stage.text = avatarState.worldStage.ToString();
+            tweenMove.StartDelay = ranking * 0.2f;
+            tweenAlpha.StartDelay = ranking * 0.2f;
             //TODO 국가설정에 따라 국기가 변해야함
         }
     }

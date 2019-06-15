@@ -39,7 +39,7 @@ namespace Nekoyume.UI
             }
 
             _player.gameObject.SetActive(false);
-            GetFilteredRanking();
+            // Call from animation GetFilteredRanking(); 
 
             AudioController.instance.PlayMusic(AudioController.MusicCode.Ranking);
         }

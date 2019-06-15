@@ -17,6 +17,7 @@ namespace Nekoyume.UI.Tween
         }
 
         public bool StartWithPlay = true;
+        public float StartDelay = 0.0f;
         public float Duration = 1.0f;
         public TweenType TweenType_ = TweenType.Forward;
         public Ease Ease_ = Ease.Linear;
@@ -29,10 +30,14 @@ namespace Nekoyume.UI.Tween
         [HideInInspector]
         public float CompleteDelay = 0.0f;
 
-        protected virtual void Start()
+        protected virtual IEnumerator Start()
         {
+            yield return null;
             if (StartWithPlay)
+            {
+                yield return new WaitForSeconds(StartDelay);
                 Invoke($"Play{TweenType_.ToString()}", 0.0f);
+            }
         }
 
         public virtual void PlayForward()
