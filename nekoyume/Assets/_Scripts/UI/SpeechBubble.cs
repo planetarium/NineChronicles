@@ -10,14 +10,15 @@ namespace Nekoyume.UI
 {
     public class SpeechBubble : HudWidget
     {
-        public enum Type
+        public enum ImageType : int
         {
-            Room,
-            World,
+            Normal,
+            Emphasis,
         }
 
         public string localizationKey;
-        public Image bubbleImage;
+        public Transform bubbleContainer;
+        public Image[] bubbleImages;
         public Text textSize;
         public Text text;
         public float speechSpeedInterval = 0.04f;
@@ -48,6 +49,14 @@ namespace Nekoyume.UI
             return _speechCount > 0;
         }
 
+        public void SetBubbleImage(int index)
+        {
+            for (int i = 0; i < bubbleImages.Length; ++i)
+            {
+                bubbleImages[i].gameObject.SetActive(index == i);
+            }
+        }
+
         public IEnumerator CoShowText()
         {
             if (_speechCount == 0)
@@ -58,9 +67,23 @@ namespace Nekoyume.UI
             string speech = LocalizationManager.Localize($"{localizationKey}{Random.Range(0, _speechCount)}");
             if (!string.IsNullOrEmpty(speech))
             {
+                if (speech.StartsWith("!"))
+                {
+                    speech = speech.Substring(1);
+                    SetBubbleImage(1);
+                }
+                else
+                    SetBubbleImage(0);
+
                 textSize.text = speech;
                 textSize.rectTransform.DOScale(0.0f, 0.0f);
                 textSize.rectTransform.DOScale(1.0f, bubbleTweenTime).SetEase(Ease.OutBack);
+                
+                var seq = DOTween.Sequence();
+                seq.Append(bubbleContainer.DOScale(1.05f, 2.0f));
+                seq.Append(bubbleContainer.DOScale(1.0f, 2.0f));
+                seq.Play();
+
                 yield return new WaitForSeconds(bubbleTweenTime);
                 for (int i = 1; i <= speech.Length; ++i)
                 {
@@ -86,6 +109,7 @@ namespace Nekoyume.UI
             
             yield return new WaitForSeconds(speechBreakTime);
 
+            bubbleContainer.DOKill();
             gameObject.SetActive(false);
         }
 

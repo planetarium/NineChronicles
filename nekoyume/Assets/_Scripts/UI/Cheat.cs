@@ -190,6 +190,8 @@ namespace Nekoyume
         private void DummyBattle(int stageId)
         {
             Find<BattleResult>()?.Close();
+            Find<Menu>()?.Close();
+            Find<Menu>()?.ShowWorld();
             
             var simulator = new Simulator(new DebugRandom(), States.Instance.currentAvatarState.Value, new List<Food>(), stageId, _selectedSkill);
             simulator.Simulate();
