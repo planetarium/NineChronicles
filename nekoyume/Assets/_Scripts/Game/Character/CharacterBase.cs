@@ -51,6 +51,14 @@ namespace Nekoyume.Game.Character
         protected virtual Vector3 HUDOffset => new Vector3();
         protected virtual Vector3 DamageTextForce => default;
 
+#if UNITY_EDITOR
+        private bool applicationQuitting = false;
+        private void OnApplicationQuit ()
+        {
+            applicationQuitting = true;
+        }
+#endif
+
         protected virtual void Awake()
         {
             Event.OnAttackEnd.AddListener(AttackEnd);
@@ -60,6 +68,10 @@ namespace Nekoyume.Game.Character
         {
             RunSpeed = 0.0f;
             Root = null;
+#if UNITY_EDITOR
+            if (!applicationQuitting)
+#endif
+            DisableHUD();
         }
 
         public bool IsDead()
