@@ -120,9 +120,9 @@ namespace Nekoyume.UI
                 return;
             }
             slot.Unequip();
-            if (slot.type == ItemBase.ItemType.Set)
+            if (slot.type == ItemBase.ItemType.Armor)
             {
-                _player.UpdateSet((SetItem) slot.item);
+                _player.UpdateArmor((Armor) slot.item);
             }
 
             AudioController.instance.PlaySfx(slot.type == ItemBase.ItemType.Food
@@ -143,7 +143,7 @@ namespace Nekoyume.UI
         {
             _stage.LoadBackground("room");
             _player = _stage.GetPlayer(_stage.roomPosition);
-            _player.UpdateSet(_player.model.set);
+            _player.UpdateArmor(_player.model.armor);
             Find<Menu>().ShowRoom();
             Close();
             AudioController.PlayClick();
@@ -197,9 +197,9 @@ namespace Nekoyume.UI
                 ? AudioController.SfxCode.ChainMail2
                 : AudioController.SfxCode.Equipment);
 
-            if (type == ItemBase.ItemType.Set)
+            if (type == ItemBase.ItemType.Armor)
             {
-                _player.UpdateSet((SetItem)itemInfo.item.Value.item.Value);
+                _player.UpdateArmor((Armor) itemInfo.item.Value.item.Value);
             }
         }
 

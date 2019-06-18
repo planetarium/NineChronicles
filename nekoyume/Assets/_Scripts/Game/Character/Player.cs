@@ -84,7 +84,7 @@ namespace Nekoyume.Game.Character
         public void Init(Model.Player character)
         {
             model = character;
-            UpdateSet(model.set);
+            UpdateArmor(model.armor);
             InitStats(character);
 
             if (ReferenceEquals(_speechBubble, null))
@@ -103,7 +103,7 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        public void UpdateSet(SetItem item)
+        public void UpdateArmor(Armor item)
         {
             var itemId = item?.Data.resourceId ?? DefaultSetId;
             if (!ReferenceEquals(animator.Target, null))
