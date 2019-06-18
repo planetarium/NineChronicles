@@ -13,10 +13,10 @@ namespace Nekoyume.Game.Item
         public bool equipped = false;
         private int _level = 0;
         private int _enchantCount = 0;
-        private readonly SkillEffect _skillEffect;
 
-        public Equipment(Data.Table.Item data, SkillBase skillBase = null)
-            : base(data, skillBase)
+        public Equipment(Data.Table.Item data, float skillChance = 0f, SkillEffect skillEffect = null,
+            Data.Table.Elemental.ElementalType skillElementalType = Nekoyume.Data.Table.Elemental.ElementalType.Normal)
+            : base(data, skillChance, skillEffect, skillElementalType)
         {
             var stat1 = new StatsMap
             {
@@ -41,7 +41,6 @@ namespace Nekoyume.Game.Item
                 Value = Data.attackRange,
             };
             Stats = new[] {stat1, stat2, stat3, stat4};
-            Tables.instance.SkillEffect.TryGetValue(Data.skillId, out _skillEffect);
         }
 
         public bool Equip()
@@ -66,15 +65,6 @@ namespace Nekoyume.Game.Item
         {
             _level++;
             return true;
-        }
-
-        public override void UpdatePlayer(Player player)
-        {
-            base.UpdatePlayer(player);
-
-            var skill = SkillFactory.Get(Data.skillChance, _skillEffect, player.GetRandomElemental());
-            skill.caster = player;
-            player.Skills.Add(skill);
         }
 
         public override string ToItemInfo()

@@ -18,9 +18,9 @@ namespace Nekoyume.Game.Skill
             foreach (var target in GetTarget())
             {
                 var maxHp = target.hp;
-                var healHp = Convert.ToInt32(maxHp * Effect.multiplier);
+                var healHp = Convert.ToInt32(maxHp * effect.multiplier);
                 target.Heal(healHp);
-                infos.Add(new Model.Skill.SkillInfo(target, healHp, caster.IsCritical(), Effect.category));
+                infos.Add(new Model.Skill.SkillInfo(target, healHp, caster.IsCritical(), effect.category));
             }
 
             return new Model.Heal

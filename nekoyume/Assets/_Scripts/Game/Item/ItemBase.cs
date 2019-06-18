@@ -1,4 +1,5 @@
 using System;
+using Nekoyume.Data.Table;
 using Nekoyume.Game.Skill;
 using UnityEngine;
 
@@ -51,7 +52,9 @@ namespace Nekoyume.Game.Item
             Shoes,
         }
 
-        public static ItemBase ItemFactory(Data.Table.Item itemData, SkillBase skillBase = null)
+        public static ItemBase ItemFactory(Data.Table.Item itemData, float skillChance = 0f,
+            SkillEffect skillEffect = null,
+            Data.Table.Elemental.ElementalType skillElementalType = Nekoyume.Data.Table.Elemental.ElementalType.Normal)
         {
             var type = itemData.cls.ToEnumItemType();
             switch (type)
@@ -59,25 +62,25 @@ namespace Nekoyume.Game.Item
                 case ItemType.Material:
                     return new Material(itemData);
                 case ItemType.Weapon:
-                    return new Weapon(itemData, skillBase);
+                    return new Weapon(itemData, skillChance, skillEffect, skillElementalType);
                 case ItemType.RangedWeapon:
-                    return new RangedWeapon(itemData, skillBase);
+                    return new RangedWeapon(itemData, skillChance, skillEffect, skillElementalType);
                 case ItemType.Armor:
-                    return new Armor(itemData, skillBase);
+                    return new Armor(itemData, skillChance, skillEffect, skillElementalType);
                 case ItemType.Belt:
-                    return new Belt(itemData, skillBase);
+                    return new Belt(itemData, skillChance, skillEffect, skillElementalType);
                 case ItemType.Necklace:
-                    return new Necklace(itemData, skillBase);
+                    return new Necklace(itemData, skillChance, skillEffect, skillElementalType);
                 case ItemType.Ring:
-                    return new Ring(itemData, skillBase);
+                    return new Ring(itemData, skillChance, skillEffect, skillElementalType);
                 case ItemType.Helm:
-                    return new Helm(itemData, skillBase);
+                    return new Helm(itemData, skillChance, skillEffect, skillElementalType);
                 case ItemType.Set:
-                    return new SetItem(itemData, skillBase);
+                    return new SetItem(itemData, skillChance, skillEffect, skillElementalType);
                 case ItemType.Food:
-                    return new Food(itemData, skillBase);
+                    return new Food(itemData, skillChance, skillEffect, skillElementalType);
                 case ItemType.Shoes:
-                    return new Shoes(itemData, skillBase);
+                    return new Shoes(itemData, skillChance, skillEffect, skillElementalType);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);
             }

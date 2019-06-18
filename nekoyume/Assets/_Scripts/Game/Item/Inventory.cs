@@ -12,23 +12,17 @@ namespace Nekoyume.Game.Item
         {
             public ItemBase Item;
             public int Count = 0;
-
-            public InventoryItem(int id, int count = 1)
+            
+            public InventoryItem(ItemBase itemBase, int count = 1)
             {
-                Item = Tables.instance.CreateItemBase(id);
+                Item = ItemBase.ItemFactory(itemBase.Data);
                 Count = count;
             }
             
-            public InventoryItem(ItemBase item, int count = 1)
+            public InventoryItem(ItemUsable itemUsable, int count = 1)
             {
-                Item = ItemBase.ItemFactory(item.Data);
+                Item = itemUsable;
                 Count = count;
-            }
-
-            public InventoryItem(InventoryItem item)
-            {
-                Item = item.Item;
-                Count = item.Count;
             }
         }
 
