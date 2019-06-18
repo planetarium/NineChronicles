@@ -4,6 +4,7 @@ using DG.Tweening;
 
 namespace Nekoyume.UI.Tween
 {
+    [RequireComponent(typeof(Text))]
     public class DOTweenTextAlpha : DOTweenBase
     {
         public float BeginValue = 0.0f;

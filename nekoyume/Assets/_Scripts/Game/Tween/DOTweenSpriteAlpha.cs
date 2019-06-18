@@ -4,6 +4,7 @@ using DG.Tweening;
 
 namespace Nekoyume.Game.Tween
 {
+    [RequireComponent(typeof(SpriteRenderer))]
     public class DOTweenSpriteAlpha : MonoBehaviour
     {
         public enum TweenType : int
