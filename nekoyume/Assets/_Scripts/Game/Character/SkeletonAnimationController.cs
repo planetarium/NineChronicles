@@ -1,83 +1,110 @@
 using System;
 using System.Collections.Generic;
-using Nekoyume.Game.Controller;
 using Spine;
 using Spine.Unity;
-using UniRx;
+using Spine.Unity.Modules.AttachmentTools;
 using UnityEngine;
 
 namespace Nekoyume.Game.Character
 {
-	[RequireComponent(typeof(SkeletonAnimation))]
+    [RequireComponent(typeof(SkeletonAnimation))]
     public class SkeletonAnimationController: MonoBehaviour
     {
-	    [Serializable]
-	    public class StateNameToAnimationReference {
-		    public string stateName;
-		    public AnimationReferenceAsset animation;
-	    }
-	    
-		public List<StateNameToAnimationReference> statesAndAnimations = new List<StateNameToAnimationReference>();
+        [Serializable]
+        public class StateNameToAnimationReference {
+            public string stateName;
+            public AnimationReferenceAsset animation;
+        }
 
-        private SkeletonAnimation _skeletonAnimation;
+        public List<StateNameToAnimationReference> statesAndAnimations = new List<StateNameToAnimationReference>();
 
-		private Spine.Animation targetAnimation { get; set; }
+        public SkeletonAnimation skeletonAnimation;
 
-		#region Mono
+        private Spine.Animation TargetAnimation { get; set; }
 
-		private void Awake ()
-		{
-			foreach (var entry in statesAndAnimations) {
-				entry.animation.Initialize();
-			}
+        [SpineSlot] public string weaponSlot = "sword_0001";
 
-			_skeletonAnimation = GetComponent<SkeletonAnimation>();
-		}
+        [SpineAttachment(slotField: "weaponSlot")] public string weaponAttachment;
 
-		#endregion
-		
-		/// <summary>Sets the horizontal flip state of the skeleton based on a nonzero float. If negative, the skeleton is flipped. If positive, the skeleton is not flipped.</summary>
-		public void SetFlip (float horizontal) {
-			if (Math.Abs(horizontal) > 0f) {
-				_skeletonAnimation.Skeleton.ScaleX = horizontal > 0 ? 1f : -1f;
-			}
-		}
+        #region Mono
 
-		/// <summary>Plays an  animation based on the hash of the state name.</summary>
-		public void PlayAnimationForState (int shortNameHash, int layerIndex) {
-			var foundAnimation = GetAnimationForState(shortNameHash);
-			if (foundAnimation == null)
-				return;
+        private void Awake ()
+        {
+            foreach (var entry in statesAndAnimations) {
+                entry.animation.Initialize();
+            }
 
-			PlayNewAnimation(foundAnimation, layerIndex);
-		}
+            skeletonAnimation = GetComponent<SkeletonAnimation>();
+			var skeleton = skeletonAnimation.skeleton;
+        }
 
-		/// <summary>Gets a Spine Animation based on the hash of the state name.</summary>
-		public Spine.Animation GetAnimationForState (int shortNameHash) {
-			var foundState = statesAndAnimations.Find(entry => StringToHash(entry.stateName) == shortNameHash);
-			return foundState?.animation;
-		}
+        #endregion
 
-		/// <summary>Play an animation. If a transition animation is defined, the transition is played before the target animation being passed.</summary>
-		public void PlayNewAnimation (Spine.Animation target, int layerIndex)
-		{
-			var loop = target.Name == nameof(CharacterAnimation.Type.Idle)
-			           || target.Name == nameof(CharacterAnimation.Type.Run)
-			           || target.Name == nameof(CharacterAnimation.Type.Casting);
+        /// <summary>Sets the horizontal flip state of the skeleton based on a nonzero float. If negative, the skeleton is flipped. If positive, the skeleton is not flipped.</summary>
+        public void SetFlip (float horizontal) {
+            if (Math.Abs(horizontal) > 0f) {
+                skeletonAnimation.Skeleton.ScaleX = horizontal > 0 ? 1f : -1f;
+            }
+        }
 
-			_skeletonAnimation.AnimationState.SetAnimation(layerIndex, target, loop);
-			targetAnimation = target;
-		}
+        /// <summary>Plays an  animation based on the hash of the state name.</summary>
+        public void PlayAnimationForState (int shortNameHash, int layerIndex) {
+            var foundAnimation = GetAnimationForState(shortNameHash);
+            if (foundAnimation == null)
+                return;
 
-		/// <summary>Play a non-looping animation once then continue playing the state animation.</summary>
-		public void PlayOneShot (Spine.Animation oneShot, int layerIndex) {
-			var state = _skeletonAnimation.AnimationState;
-			state.SetAnimation(0, oneShot, false);
-			state.AddAnimation(0, targetAnimation, true, 0f);
-		}
+            PlayNewAnimation(foundAnimation, layerIndex);
+        }
 
-		private int StringToHash (string s) {
-			return Animator.StringToHash(s);
-		}
+        /// <summary>Gets a Spine Animation based on the hash of the state name.</summary>
+        public Spine.Animation GetAnimationForState (int shortNameHash) {
+            var foundState = statesAndAnimations.Find(entry => StringToHash(entry.stateName) == shortNameHash);
+            return foundState?.animation;
+        }
+
+        /// <summary>Play an animation. If a transition animation is defined, the transition is played before the target animation being passed.</summary>
+        public void PlayNewAnimation (Spine.Animation target, int layerIndex)
+        {
+            var loop = target.Name == nameof(CharacterAnimation.Type.Idle)
+                       || target.Name == nameof(CharacterAnimation.Type.Run)
+                       || target.Name == nameof(CharacterAnimation.Type.Casting);
+
+            skeletonAnimation.AnimationState.SetAnimation(layerIndex, target, loop);
+            TargetAnimation = target;
+        }
+
+        /// <summary>Play a non-looping animation once then continue playing the state animation.</summary>
+        public void PlayOneShot (Spine.Animation oneShot, int layerIndex) {
+            var state = skeletonAnimation.AnimationState;
+            state.SetAnimation(0, oneShot, false);
+            state.AddAnimation(0, TargetAnimation, true, 0f);
+        }
+
+        private int StringToHash (string s) {
+            return Animator.StringToHash(s);
+        }
+
+        public void UpdateWeapon(Sprite sprite)
+        {
+            var skeleton = skeletonAnimation.skeleton;
+            int weaponIndex = skeleton.FindSlotIndex(weaponSlot);
+            var weapon = skeletonAnimation.skeleton.GetAttachment(weaponSlot, weaponSlot);
+            var skin = new Skin("weapon switch");
+            if (sprite != null)
+            {
+                var rend = GetComponentInParent<MeshRenderer>();
+                var material = rend.material;
+                var newWeapon = weapon.GetRemappedClone(sprite, material);
+                skin.AddAttachment(weaponIndex, weaponSlot, newWeapon);
+            }
+            else
+            {
+                skin = skeleton.Data.FindSkin("default");
+            }
+
+            skeleton.SetSkin(skin);
+            skeleton.SetSlotsToSetupPose();
+            skeletonAnimation.Update(0);
+        }
     }
 }

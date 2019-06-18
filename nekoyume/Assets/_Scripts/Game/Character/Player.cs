@@ -84,7 +84,7 @@ namespace Nekoyume.Game.Character
         public void Init(Model.Player character)
         {
             model = character;
-            UpdateArmor(model.armor);
+            UpdateSet(model.armor);
             InitStats(character);
 
             if (ReferenceEquals(_speechBubble, null))
@@ -103,25 +103,37 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        public void UpdateArmor(Armor item)
+
+        public void UpdateSet(Armor armor, Weapon weapon = null)
         {
-            var itemId = item?.Data.resourceId ?? DefaultSetId;
+            if (weapon == null)
+                weapon = model.weapon;
+
+            var itemId = armor?.Data.resourceId ?? DefaultSetId;
             if (!ReferenceEquals(animator.Target, null))
             {
-                if (!animator.Target.name.Contains(itemId.ToString()))
-                {
-                    animator.DestroyTarget();
-                }
-                else
+                if (animator.Target.name.Contains(itemId.ToString()))
                 {
                     return;
                 }
+                animator.DestroyTarget();
             }
-
             var origin = Resources.Load<GameObject>($"Character/Player/{itemId}");
             var go = Instantiate(origin, gameObject.transform);
             animator.ResetTarget(go);
+            UpdateWeapon(weapon);
         }
+
+        public void UpdateWeapon(Weapon weapon)
+        {
+            var controller = GetComponentInChildren<SkeletonAnimationController>();
+            if (controller != null)
+            {
+                var sprite = Weapon.GetSprite(weapon);
+                controller.UpdateWeapon(sprite);
+            }
+        }
+
 
         public IEnumerator CoGetExp(long exp)
         {

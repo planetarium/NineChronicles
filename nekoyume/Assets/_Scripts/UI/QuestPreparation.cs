@@ -122,8 +122,15 @@ namespace Nekoyume.UI
             slot.Unequip();
             if (slot.type == ItemBase.ItemType.Armor)
             {
-                _player.UpdateArmor((Armor) slot.item);
+                var armor = (Armor) slot.item;
+                var weapon = (Weapon) _weaponSlot.item;
+                _player.UpdateSet(armor, weapon);
             }
+            else if (slot.type == ItemBase.ItemType.Weapon)
+            {
+                _player.UpdateWeapon((Weapon) slot.item);
+            }
+
 
             AudioController.instance.PlaySfx(slot.type == ItemBase.ItemType.Food
                 ? AudioController.SfxCode.ChainMail2
@@ -143,7 +150,7 @@ namespace Nekoyume.UI
         {
             _stage.LoadBackground("room");
             _player = _stage.GetPlayer(_stage.roomPosition);
-            _player.UpdateArmor(_player.model.armor);
+            _player.UpdateSet(_player.model.armor);
             Find<Menu>().ShowRoom();
             Close();
             AudioController.PlayClick();
@@ -199,7 +206,13 @@ namespace Nekoyume.UI
 
             if (type == ItemBase.ItemType.Armor)
             {
-                _player.UpdateArmor((Armor) itemInfo.item.Value.item.Value);
+                var armor = (Armor) itemInfo.item.Value.item.Value;
+                var weapon = (Weapon) _weaponSlot.item;
+                _player.UpdateSet(armor, weapon);
+            }
+            else if (type == ItemBase.ItemType.Weapon)
+            {
+                _player.UpdateWeapon((Weapon) itemInfo.item.Value.item.Value);
             }
         }
 
