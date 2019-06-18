@@ -56,7 +56,8 @@ namespace Nekoyume.BlockChain
         private readonly ConcurrentQueue<PolymorphicAction<ActionBase>> _queuedActions = new ConcurrentQueue<PolymorphicAction<ActionBase>>();
         private readonly BlockChain<PolymorphicAction<ActionBase>> _blocks;
         private readonly Swarm _swarm;
-        
+        private readonly LiteDBStore _store;
+
         
         public PrivateKey PrivateKey { get; }
         public Address Address { get; }
@@ -87,9 +88,10 @@ namespace Nekoyume.BlockChain
             var policy = GetPolicy();
             PrivateKey = privateKey;
             Address = privateKey.PublicKey.ToAddress();
+            _store = new LiteDBStore($"{path}.ldb");
             _blocks = new BlockChain<PolymorphicAction<ActionBase>>(
                 policy,
-                new FileStore(path),
+                _store,
                 chainId);
 #if BLOCK_LOG_USE
             FileHelper.WriteAllText("Block.log", "");
@@ -114,6 +116,7 @@ namespace Nekoyume.BlockChain
 
         public void Dispose()
         {
+            _store?.Dispose();
             _swarm?.StopAsync().Wait(0);
         }
         
