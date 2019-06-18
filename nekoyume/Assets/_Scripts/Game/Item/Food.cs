@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Nekoyume.Data.Table;
+using Nekoyume.Game.Skill;
 using Nekoyume.Model;
 
 namespace Nekoyume.Game.Item
@@ -8,8 +9,7 @@ namespace Nekoyume.Game.Item
     [Serializable]
     public class Food : ItemUsable
     {
-        private readonly StatsMap[] _stats;
-        public Food(Data.Table.Item data) : base(data)
+        public Food(Data.Table.Item data, SkillBase skillBase = null) : base(data, skillBase)
         {
             var stat1 = new StatsMap
             {
@@ -21,20 +21,12 @@ namespace Nekoyume.Game.Item
                 Key = Data.ability2,
                 Value = Data.value2,
             };
-            _stats = new[] {stat1, stat2};
-        }
-
-        public void Use(Player player)
-        {
-            foreach (var stat in _stats)
-            {
-                stat.UpdatePlayer(player);
-            }
+            Stats = new[] {stat1, stat2};
         }
 
         public override string ToItemInfo()
         {
-            var infos = _stats
+            var infos = Stats
                 .Select(stat => stat.GetInformation())
                 .Where(info => !string.IsNullOrEmpty(info));
             return string.Join(Environment.NewLine, infos);

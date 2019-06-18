@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
+using Nekoyume.Game.Skill;
 
 namespace Nekoyume.Game.Item
 {
     [Serializable]
     public class SetItem : Equipment
     {
-        public SetItem(Data.Table.Item data) : base(data)
+        public SetItem(Data.Table.Item data, SkillBase skillBase = null) : base(data, skillBase)
         {
         }
 
