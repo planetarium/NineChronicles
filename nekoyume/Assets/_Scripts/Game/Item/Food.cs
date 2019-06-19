@@ -25,13 +25,5 @@ namespace Nekoyume.Game.Item
             };
             Stats = new[] {stat1, stat2};
         }
-
-        public override string ToItemInfo()
-        {
-            var infos = Stats
-                .Select(stat => stat.GetInformation())
-                .Where(info => !string.IsNullOrEmpty(info));
-            return string.Join(Environment.NewLine, infos);
-        }
     }
 }

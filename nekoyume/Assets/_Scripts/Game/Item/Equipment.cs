@@ -11,8 +11,6 @@ namespace Nekoyume.Game.Item
     public class Equipment : ItemUsable
     {
         public bool equipped = false;
-        private int _level = 0;
-        private int _enchantCount = 0;
 
         public Equipment(Data.Table.Item data, float skillChance = 0f, SkillEffect skillEffect = null,
             Data.Table.Elemental.ElementalType skillElementalType = Nekoyume.Data.Table.Elemental.ElementalType.Normal)
@@ -54,27 +52,6 @@ namespace Nekoyume.Game.Item
             equipped = false;
             return true;
         }
-
-        public bool Enchant()
-        {
-            _enchantCount++;
-            return true;
-        }
-
-        public bool LevelUp()
-        {
-            _level++;
-            return true;
-        }
-
-        public override string ToItemInfo()
-        {
-            var infos = Stats
-                .Select(stat => stat.GetInformation())
-                .Where(info => !string.IsNullOrEmpty(info));
-            return string.Join(Environment.NewLine, infos);
-        }
-
     }
 
     [Serializable]

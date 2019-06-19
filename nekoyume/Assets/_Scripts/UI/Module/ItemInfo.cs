@@ -99,24 +99,11 @@ namespace Nekoyume.UI.Module
             item.count.Where(value => value == 0).Subscribe(_ => _data.item.Value = null).AddTo(_disposablesForUpdateView);
             nameText.text = item.item.Value.Data.name;
             infoText.text = item.item.Value.ToItemInfo();
-            UpdateDescription();
+            descriptionText.text = _data.item.Value.item.Value.Data.description;
             SetButtonText(_data.buttonText.Value);
             SetButtonActive(_data.buttonEnabled.Value);
             
             itemView.SetData(_data.item.Value);
-        }
-
-        private void UpdateDescription()
-        {
-            _stringBuilder.AppendLine(_data.item.Value.item.Value.Data.description);
-            if (_data.item.Value.item.Value is ItemUsable itemUsable &&
-                itemUsable.SkillEffect != null)
-            {
-                var effect = itemUsable.SkillEffect;
-                _stringBuilder.AppendLine($"{effect.target}에게 {effect.multiplier * 100}% 위력으로 {effect.type}");
-            }
-            descriptionText.text = _stringBuilder.ToString();
-            _stringBuilder.Clear();
         }
         
         private void SetButtonActive(bool isActive)

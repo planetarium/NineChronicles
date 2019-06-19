@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using System.Text;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Skill;
 using Nekoyume.Model;
@@ -22,6 +24,28 @@ namespace Nekoyume.Game.Item
             SkillChance = skillChance;
             SkillEffect = skillEffect;
             SkillElementalType = skillElementalType;
+        }
+        
+        public override string ToItemInfo()
+        {
+            var sb = new StringBuilder();
+            foreach (var statsMap in Stats)
+            {
+                var info = statsMap.GetInformation();
+                if (string.IsNullOrEmpty(info))
+                {
+                    continue;
+                }
+
+                sb.AppendLine(info);
+            }
+            
+            if (SkillEffect != null)
+            {
+                sb.AppendLine($"{SkillEffect.target}에게 {SkillEffect.multiplier * 100}% 위력으로 {SkillEffect.type}");
+            }
+
+            return sb.ToString();
         }
 
         public void UpdatePlayer(Player player)
