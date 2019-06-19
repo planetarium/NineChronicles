@@ -4,6 +4,7 @@ using DG.Tweening;
 
 namespace Nekoyume.UI.Tween
 {
+    [RequireComponent(typeof(CanvasGroup))]
     public class DOTweenGroupAlpha : DOTweenBase
     {
         public float BeginValue = 0.0f;

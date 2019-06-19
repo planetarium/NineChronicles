@@ -68,12 +68,14 @@ namespace Nekoyume.UI
         {
             base.Show();
 
+            var stage = Nekoyume.Game.Game.instance.stage;
             for (var i = 0; i < slots.Length; i++)
             {
                 var slot = slots[i];
                 var playerSlot = slot.GetComponent<LoginPlayerSlot>();
                 var slotRect = slot.GetComponent<RectTransform>();
-                var targetPosition = new Vector3(-2.2f + i * 2.22f, 0.0f, 0.0f);
+                var targetPosition = stage.selectPositionEnd(i);
+                targetPosition.y = 0.0f;
                 slotRect.anchoredPosition = targetPosition.ToCanvasPosition(Game.ActionCamera.instance.Cam,
                     MainCanvas.instance.Canvas);
 
