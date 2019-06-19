@@ -84,7 +84,7 @@ namespace Nekoyume.Game.Character
         public void Init(Model.Player character)
         {
             model = character;
-            UpdateSet(model.armor);
+            StartCoroutine(CoUpdateSet(model.armor));
             InitStats(character);
 
             if (ReferenceEquals(_speechBubble, null))
@@ -104,7 +104,7 @@ namespace Nekoyume.Game.Character
         }
 
 
-        public void UpdateSet(Armor armor, Weapon weapon = null)
+        public IEnumerator CoUpdateSet(Armor armor, Weapon weapon = null)
         {
             if (weapon == null)
                 weapon = model.weapon;
@@ -114,9 +114,12 @@ namespace Nekoyume.Game.Character
             {
                 if (animator.Target.name.Contains(itemId.ToString()))
                 {
-                    return;
+                    yield break;
                 }
                 animator.DestroyTarget();
+                // 오브젝트가 파괴될때까지 기다립니다.
+                // https://docs.unity3d.com/ScriptReference/Object.Destroy.html
+                yield return new WaitForEndOfFrame();
             }
             var origin = Resources.Load<GameObject>($"Character/Player/{itemId}");
             var go = Instantiate(origin, gameObject.transform);

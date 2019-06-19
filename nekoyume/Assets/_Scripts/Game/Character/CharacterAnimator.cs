@@ -43,8 +43,7 @@ namespace Nekoyume.Game.Character
                 throw new ArgumentNullException();
             }
 
-            //애니메이터 초기화시 타이밍이 꼬이는 문제를 회피하기 위해 즉시 파괴시킵니다.
-            Object.DestroyImmediate(Target);
+            Object.Destroy(Target);
             Target = null;
         }
 
