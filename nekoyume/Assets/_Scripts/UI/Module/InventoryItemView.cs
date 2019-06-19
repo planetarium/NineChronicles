@@ -45,7 +45,6 @@ namespace Nekoyume.UI.Module
                 .Where(_ => _.Count >= 2)
                 .Subscribe(_ =>
                 {
-                    AudioController.PlaySelect();
                     Data.onDoubleClick.OnNext(Data);
                 }).AddTo(_disposablesForAwake);
         }
