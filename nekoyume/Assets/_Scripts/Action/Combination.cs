@@ -140,7 +140,7 @@ namespace Nekoyume.Action
             {
                 for (var i = 0; i < resultCount; i++)
                 {
-                    var itemUsable = GetItemUsableWithRandomSkill(itemEquipment, ctx.Random.Next(int.MaxValue));
+                    var itemUsable = GetItemUsableWithRandomSkill(itemEquipment, ctx.Random.Next());
                     avatarState.items.Add(new Inventory.InventoryItem(itemUsable));
                     Results.Add(itemUsable);
                 }
