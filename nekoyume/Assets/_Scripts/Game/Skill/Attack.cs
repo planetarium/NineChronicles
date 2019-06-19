@@ -23,8 +23,8 @@ namespace Nekoyume.Game.Skill
             var infos = new List<Model.Skill.SkillInfo>();
             var targetList = targets.ToArray();
             var elemental = Elemental.Create(_elemental);
-            var multiplier = GetMultiplier(Effect.hitCount, Effect.multiplier);
-            for (var i = 0; i < Effect.hitCount; i++)
+            var multiplier = GetMultiplier(effect.hitCount, effect.multiplier);
+            for (var i = 0; i < effect.hitCount; i++)
             {
                 foreach (var target in targetList)
                 {
@@ -42,7 +42,7 @@ namespace Nekoyume.Game.Skill
 
                     target.OnDamage(dmg);
 
-                    infos.Add(new Model.Skill.SkillInfo((CharacterBase) target.Clone(), dmg, critical, Effect.category,
+                    infos.Add(new Model.Skill.SkillInfo((CharacterBase) target.Clone(), dmg, critical, effect.category,
                         _elemental));
                 }
             }

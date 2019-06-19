@@ -9,7 +9,8 @@ namespace Nekoyume.Game.Item
     [Serializable]
     public class Food : ItemUsable
     {
-        public Food(Data.Table.Item data, SkillBase skillBase = null) : base(data, skillBase)
+        public Food(Data.Table.Item data, SkillBase skillBase = null)
+            : base(data, skillBase)
         {
             var stat1 = new StatsMap
             {
@@ -22,14 +23,6 @@ namespace Nekoyume.Game.Item
                 Value = Data.value2,
             };
             Stats = new[] {stat1, stat2};
-        }
-
-        public override string ToItemInfo()
-        {
-            var infos = Stats
-                .Select(stat => stat.GetInformation())
-                .Where(info => !string.IsNullOrEmpty(info));
-            return string.Join(Environment.NewLine, infos);
         }
     }
 }

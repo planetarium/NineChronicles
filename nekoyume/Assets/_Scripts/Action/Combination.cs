@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Data;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Item;
+using Nekoyume.Game.Skill;
 using Nekoyume.State;
 using UnityEngine;
 
@@ -78,7 +78,7 @@ namespace Nekoyume.Action
             {
                 return states.SetState(ctx.Signer, MarkChanged);
             }
-            
+
             var avatarState = (AvatarState) states.GetState(ctx.Signer);
             if (avatarState == null)
             {
@@ -123,22 +123,15 @@ namespace Nekoyume.Action
                 }
             }
 
-            // 제거 전.
-            avatarState.items.ForEach(item => Debug.Log($"제거 전 // Id:{item.Item.Data.id}, Count:{item.Count}"));
-            
             // 사용한 재료를 인벤토리에서 제거.
             pairs.ForEach(pair =>
             {
-                Debug.Log($"제거 // pair.InventoryItem.Count:{pair.InventoryItem.Count}, pair.ItemModel.Count:{pair.ItemModel.count}");
                 pair.InventoryItem.Count -= pair.ItemModel.count;
                 if (pair.InventoryItem.Count == 0)
                 {
                     avatarState.items.Remove(pair.InventoryItem);
                 }
             });
-            
-            // 제거 후.
-            avatarState.items.ForEach(item => Debug.Log($"제거 후 // Id:{item.Item.Data.id}, Count:{item.Count}"));
 
             // 뽀각!!
             if (ReferenceEquals(resultItem, null) ||
@@ -149,27 +142,16 @@ namespace Nekoyume.Action
             
             // 조합 결과 획득.
             {
-                if (Tables.instance.TryGetItemEquipment(resultItem.Id, out var itemData))
+                if (Tables.instance.TryGetItemEquipment(resultItem.Id, out var itemEquipment))
                 {
-                    try
-                    {
-                        var inventoryItem = avatarState.items.First(item => item.Item.Data.id == resultItem.Id);
-                        inventoryItem.Count += resultCount;
-                    }
-                    catch (InvalidOperationException)
-                    {
-                        var itemBase = ItemBase.ItemFactory(itemData);
-                        avatarState.items.Add(new Inventory.InventoryItem(itemBase, resultCount));   
-                    }
+                    var itemUsable = GetItemUsableWithRandomSkill(itemEquipment, ctx.Random.Next());
+                    avatarState.items.Add(new Inventory.InventoryItem(itemUsable, resultCount));
                 }
                 else
                 {
                     return SimpleError(ctx, ErrorCode.KeyNotFoundInTable);
                 }
             }
-            
-            // 획득이 잘 됐는지 로그 찍기.
-            avatarState.items.ForEach(item => Debug.Log($"획득 후 // Id:{item.Item.Data.id}, Count:{item.Count}"));
 
             Result = new ResultModel()
             {
@@ -178,6 +160,17 @@ namespace Nekoyume.Action
 
             avatarState.updatedAt = DateTimeOffset.UtcNow;
             return states.SetState(ctx.Signer, avatarState);
+        }
+        
+        // ToDo. 순수 랜덤이 아닌 조합식이 적용되어야 함. 
+        private ItemUsable GetItemUsableWithRandomSkill(ItemEquipment itemEquipment, int randomValue)
+        {
+            var table = Tables.instance.SkillEffect;
+            var skillEffect = table.ElementAt(randomValue % table.Count);   
+            var elementalValues = Enum.GetValues(typeof(Elemental.ElementalType));
+            var elementalType = (Elemental.ElementalType) elementalValues.GetValue(randomValue % elementalValues.Length);
+            var skill = SkillFactory.Get(0.05f, skillEffect.Value, elementalType); // FixMe. 테스트를 위해서 5% 확률로 발동되도록 함.
+            return (ItemUsable) ItemBase.ItemFactory(itemEquipment, skill);
         }
     }
 }

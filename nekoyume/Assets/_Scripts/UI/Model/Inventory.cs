@@ -11,7 +11,7 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveCollection<InventoryItem> items = new ReactiveCollection<InventoryItem>();
         public readonly ReactiveProperty<InventoryItem> selectedItem = new ReactiveProperty<InventoryItem>(null);
         public readonly ReactiveProperty<Func<InventoryItem, bool>> dimmedFunc = new ReactiveProperty<Func<InventoryItem, bool>>();
-        public readonly ReactiveProperty<Func<InventoryItem, Game.Item.ItemBase.ItemType, bool>> glowedFunc = new ReactiveProperty<Func<InventoryItem, Game.Item.ItemBase.ItemType, bool>>();
+        public readonly ReactiveProperty<Func<InventoryItem, ItemBase.ItemType, bool>> glowedFunc = new ReactiveProperty<Func<InventoryItem, ItemBase.ItemType, bool>>();
 
         public Inventory(List<Game.Item.Inventory.InventoryItem> items)
         {
@@ -51,12 +51,12 @@ namespace Nekoyume.UI.Model
             selectedItem.DisposeAll();
         }
         
-        public InventoryItem AddItem(ItemBase addItemBase, int count)
+        public InventoryItem AddItem(ItemBase itemBase, int count)
         {
-            var addedItem = items.FirstOrDefault(item => item.item.Value.Data.id == addItemBase.Data.id);
+            var addedItem = items.FirstOrDefault(item => item.item.Value.Data.id == itemBase.Data.id);
             if (ReferenceEquals(addedItem, null))
             {
-                var result = new InventoryItem(addItemBase, count); 
+                var result = new InventoryItem(itemBase, count); 
                 items.Add(result);
                 return result;
             }

@@ -1,4 +1,5 @@
 using System;
+using Nekoyume.Data.Table;
 using Nekoyume.Game.Skill;
 using UnityEngine;
 

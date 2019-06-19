@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Text;
 using Nekoyume.Game.Controller;
+using Nekoyume.Game.Item;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -95,7 +97,7 @@ namespace Nekoyume.UI.Module
             item.count.Where(value => value == 0).Subscribe(_ => _data.item.Value = null).AddTo(_disposablesForUpdateView);
             nameText.text = item.item.Value.Data.name;
             infoText.text = item.item.Value.ToItemInfo();
-            descriptionText.text = item.item.Value.Data.description;
+            descriptionText.text = _data.item.Value.item.Value.Data.description;
             SetButtonText(_data.buttonText.Value);
             SetButtonActive(_data.buttonEnabled.Value);
             

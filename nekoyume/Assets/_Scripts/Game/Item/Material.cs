@@ -11,7 +11,7 @@ namespace Nekoyume.Game.Item
 
         public override string ToItemInfo()
         {
-            return "";
+            return string.Empty;
         }
     }
 }
