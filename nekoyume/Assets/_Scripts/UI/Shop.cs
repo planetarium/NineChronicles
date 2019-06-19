@@ -134,7 +134,7 @@ namespace Nekoyume.UI
             _data.itemCountAndPricePopup.Value.item.Subscribe(OnPopup).AddTo(_disposablesForSetData);
             _data.itemCountAndPricePopup.Value.onClickSubmit.Subscribe(OnClickSubmitItemCountAndPricePopup)
                 .AddTo(_disposablesForSetData);
-            _data.itemCountAndPricePopup.Value.onClickClose.Subscribe(OnClickCloseItemCountAndPricePopup)
+            _data.itemCountAndPricePopup.Value.onClickCancel.Subscribe(OnClickCloseItemCountAndPricePopup)
                 .AddTo(_disposablesForSetData);
             _data.onClickClose.Subscribe(_ => Close()).AddTo(_disposablesForSetData);
 

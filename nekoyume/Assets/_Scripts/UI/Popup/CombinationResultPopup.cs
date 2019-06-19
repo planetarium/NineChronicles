@@ -108,7 +108,7 @@ namespace Nekoyume.UI
             resultItemVfx.SetActive(false);
             if (_data.isSuccess)
             {
-                var item = new Equipment(_data.item.Value.Data);
+                var item = (ItemUsable) _data.item.Value;
                 
                 titleText.text = "제작 성공!";
                 resultItemView.SetData(_data);

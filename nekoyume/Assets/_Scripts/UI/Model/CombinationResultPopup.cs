@@ -11,7 +11,7 @@ namespace Nekoyume.UI.Model
 
         public readonly Subject<CombinationResultPopup> onClickSubmit = new Subject<CombinationResultPopup>();
         
-        public CombinationResultPopup(ItemBase value, int count) : base(value, count)
+        public CombinationResultPopup(ItemBase value) : base(value, 1)
         {
         }
         
