@@ -15,7 +15,7 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<Func<InventoryItem, bool>> buttonEnabledFunc =
             new ReactiveProperty<Func<InventoryItem, bool>>();
 
-        public readonly Subject<ItemInfo> onClick = new Subject<ItemInfo>();
+        public readonly Subject<InventoryItem> onClick = new Subject<InventoryItem>();
 
         private readonly List<IDisposable> _disposablesForItem = new List<IDisposable>();
 

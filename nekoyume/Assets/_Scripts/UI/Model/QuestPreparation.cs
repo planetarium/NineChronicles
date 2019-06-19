@@ -21,7 +21,7 @@ namespace Nekoyume.UI.Model
             itemInfo.Value.buttonText.Value = "장착하기";
             itemInfo.Value.buttonEnabledFunc.Value = null;
             
-            inventory.Value.selectedItem.Subscribe(OnInventorySelectedItem);
+            inventory.Value.selectedItem.Subscribe(SubscribeInventorySelectedItem);
         }
         
         public void Dispose()
@@ -40,9 +40,9 @@ namespace Nekoyume.UI.Model
             return inventoryItem.item.Value.Data.cls.ToEnumItemType() == type;
         }
         
-        private void OnInventorySelectedItem(InventoryItem data)
+        private void SubscribeInventorySelectedItem(InventoryItem value)
         {
-            itemInfo.Value.item.Value = data;
+            itemInfo.Value.item.Value = value;
         }
     }
 }

@@ -108,39 +108,38 @@ namespace Nekoyume.UI.Model
             Debug.Log("OnItemInfoItem");
         }
         
-        private void OnClickItemInfo(ItemInfo itemInfo)
+        private void OnClickItemInfo(InventoryItem inventoryItem)
         {
-            if (ReferenceEquals(itemInfo, null) ||
-                ReferenceEquals(itemInfo.item.Value, null))
+            switch (inventoryItem)
             {
-                return;
-            }
-            
-            if (itemInfo.item.Value is ShopItem shopItem)
-            {
-                if (state.Value == State.Buy)
+                case null:
+                    return;
+                case ShopItem shopItem:
                 {
-                    // 구매하겠습니까?
-                    itemCountAndPricePopup.Value.titleText.Value = "구매";
-                    itemCountAndPricePopup.Value.submitText.Value = "확인";
-                }
-                else
-                {
-                    // 판매 취소하겠습니까?
-                    itemCountAndPricePopup.Value.titleText.Value = "판매 취소";
-                    itemCountAndPricePopup.Value.submitText.Value = "확인";
-                }
+                    if (state.Value == State.Buy)
+                    {
+                        // 구매하겠습니까?
+                        itemCountAndPricePopup.Value.titleText.Value = "구매";
+                        itemCountAndPricePopup.Value.submitText.Value = "확인";
+                    }
+                    else
+                    {
+                        // 판매 취소하겠습니까?
+                        itemCountAndPricePopup.Value.titleText.Value = "판매 취소";
+                        itemCountAndPricePopup.Value.submitText.Value = "확인";
+                    }
                 
-                itemCountAndPricePopup.Value.countEnabled.Value = false;
-                itemCountAndPricePopup.Value.price.Value = shopItem.price.Value;
-                itemCountAndPricePopup.Value.priceInteractable.Value = false;
-                itemCountAndPricePopup.Value.item.Value = new CountEditableItem(
-                    itemInfo.item.Value.item.Value,
-                    shopItem.count.Value,
-                    shopItem.count.Value,
-                    shopItem.count.Value);
+                    itemCountAndPricePopup.Value.countEnabled.Value = false;
+                    itemCountAndPricePopup.Value.price.Value = shopItem.price.Value;
+                    itemCountAndPricePopup.Value.priceInteractable.Value = false;
+                    itemCountAndPricePopup.Value.item.Value = new CountEditableItem(
+                        inventoryItem.item.Value,
+                        shopItem.count.Value,
+                        shopItem.count.Value,
+                        shopItem.count.Value);
 
-                return;
+                    return;
+                }
             }
 
             // 판매하겠습니까?
@@ -150,13 +149,13 @@ namespace Nekoyume.UI.Model
             itemCountAndPricePopup.Value.price.Value = 1;
             itemCountAndPricePopup.Value.priceInteractable.Value = true;
             itemCountAndPricePopup.Value.item.Value = new CountEditableItem(
-                itemInfo.item.Value.item.Value,
+                inventoryItem.item.Value,
                 1,
                 1,
-                itemInfo.item.Value.count.Value);
+                inventoryItem.count.Value);
         }
 
-        public void OnSelectInventoryItem(InventoryItem inventoryItem)
+        private void OnSelectInventoryItem(InventoryItem inventoryItem)
         {
             if (itemInfo.Value.item.Value is ShopItem)
             {
@@ -175,7 +174,7 @@ namespace Nekoyume.UI.Model
             itemInfo.Value.priceEnabled.Value = false;
         }
 
-        public void OnSelectShopItem(ShopItem shopItem)
+        private void OnSelectShopItem(ShopItem shopItem)
         {
             if (!(itemInfo.Value.item.Value is ShopItem))
             {
