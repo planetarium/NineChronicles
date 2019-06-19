@@ -246,7 +246,7 @@ namespace Nekoyume.Game
             var character = GetCharacter(caster);
             var infos = skillInfos.ToList();
 
-            yield return StartCoroutine(BeforeSkill(character, infos));
+            yield return StartCoroutine(BeforeSkill(character));
 
             yield return StartCoroutine(character.CoAttack(infos));
 
@@ -258,7 +258,7 @@ namespace Nekoyume.Game
             var character = GetCharacter(caster);
             var infos = skillInfos.ToList();
 
-            yield return StartCoroutine(BeforeSkill(character, infos));
+            yield return StartCoroutine(BeforeSkill(character));
 
             yield return StartCoroutine(character.CoAreaAttack(infos));
 
@@ -270,7 +270,7 @@ namespace Nekoyume.Game
             var character = GetCharacter(caster);
             var infos = skillInfos.ToList();
 
-            yield return StartCoroutine(BeforeSkill(character, infos));
+            yield return StartCoroutine(BeforeSkill(character));
 
             yield return StartCoroutine(character.CoDoubleAttack(infos));
 
@@ -282,7 +282,7 @@ namespace Nekoyume.Game
             var character = GetCharacter(caster);
             var infos = skillInfos.ToList();
 
-            yield return StartCoroutine(BeforeSkill(character, infos));
+            yield return StartCoroutine(BeforeSkill(character));
 
             yield return StartCoroutine(character.CoBlow(infos));
 
@@ -294,7 +294,7 @@ namespace Nekoyume.Game
             var character = GetCharacter(caster);
             var infos = skillInfos.ToList();
 
-            yield return StartCoroutine(BeforeSkill(character, infos));
+            yield return StartCoroutine(BeforeSkill(character));
 
             yield return StartCoroutine(character.CoHeal(infos));
 
@@ -388,15 +388,15 @@ namespace Nekoyume.Game
         public Character.CharacterBase GetCharacter(CharacterBase caster) =>
             GetComponentsInChildren<Character.CharacterBase>().FirstOrDefault(c => c.Id == caster.id);
 
-        private IEnumerator BeforeSkill(Character.CharacterBase character, IEnumerable<Model.Skill.SkillInfo> infos)
+        private IEnumerator BeforeSkill(Character.CharacterBase character)
         {
             var enemy = GetComponentsInChildren<Character.CharacterBase>()
                 .Where(c => c.gameObject.CompareTag(character.targetTag) && c.IsAlive())
-                .OrderBy(c => c.transform.position.x).First();
-            if (!character.TargetInRange(enemy))
-                character.StartRun();
-
+                .OrderBy(c => c.transform.position.x).FirstOrDefault();
+            if (enemy == null || character.TargetInRange(enemy)) yield break;
+            character.StartRun();
             yield return new WaitUntil(() => character.TargetInRange(enemy));
+
         }
 
         private IEnumerator AfterSkill(Character.CharacterBase character)
