@@ -21,7 +21,7 @@ namespace Nekoyume.UI
         public Module.InventoryAndItemInfo inventoryAndItemInfo;
         
         public EquipSlot[] consumableSlots;
-        public GameObject[] equipmentSlots;
+        public EquipSlot[] equipmentSlots;
         public Dropdown dropdown;
         public GameObject btnQuest;
         public GameObject equipSlotGlow;
@@ -30,6 +30,7 @@ namespace Nekoyume.UI
         private Stage _stage;
         private Player _player;
         private int[] _stages;
+        private EquipSlot _weaponSlot;
 
         private Model.QuestPreparation _data;
         private readonly List<IDisposable> _disposablesForSetData = new List<IDisposable>();
@@ -60,9 +61,8 @@ namespace Nekoyume.UI
             foreach (var equipment in _player.equipments)
             {
                 var type = equipment.Data.cls.ToEnumItemType();
-                foreach (var slot in equipmentSlots)
+                foreach (var es in equipmentSlots)
                 {
-                    var es = slot.GetComponent<EquipSlot>();
                     if (es.type == type)
                     {
                         es.Set(equipment);
@@ -77,6 +77,8 @@ namespace Nekoyume.UI
             var list = _stages.Select(i => $"Stage {i}").ToList();
             dropdown.AddOptions(list);
             dropdown.value = _stages.Length - 1;
+
+            _weaponSlot = equipmentSlots.First(es => es.type == ItemBase.ItemType.Weapon);
             base.Show();
         }
 
@@ -89,9 +91,8 @@ namespace Nekoyume.UI
                 slot.Unequip();
             }
 
-            foreach (var slot in equipmentSlots)
+            foreach (var es in equipmentSlots)
             {
-                var es = slot.GetComponent<EquipSlot>();
                 es.Unequip();
             }
             
@@ -225,9 +226,8 @@ namespace Nekoyume.UI
             ActionCamera.instance.ChaseX(_player.transform);
 
             var equipments = new List<Equipment>();
-            foreach (var slot in equipmentSlots)
+            foreach (var es in equipmentSlots)
             {
-                var es = slot.GetComponent<EquipSlot>();
                 if (es.item?.Data != null)
                 {
                     equipments.Add((Equipment)es.item);
@@ -276,9 +276,8 @@ namespace Nekoyume.UI
                 return slot;
             }
 
-            foreach (var slot in equipmentSlots)
+            foreach (var es in equipmentSlots)
             {
-                var es = slot.GetComponent<EquipSlot>();
                 if (es.type == type)
                 {
                     return es;
