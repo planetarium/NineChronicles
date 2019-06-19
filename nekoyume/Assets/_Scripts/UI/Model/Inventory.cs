@@ -59,6 +59,13 @@ namespace Nekoyume.UI.Model
         
         public InventoryItem AddItem(ItemBase itemBase, int count)
         {
+            if (itemBase is ItemUsable)
+            {
+                var result = new InventoryItem(itemBase, count); 
+                items.Add(result);
+                return result;
+            }
+            
             var addedItem = items.FirstOrDefault(item => item.item.Value.Data.id == itemBase.Data.id);
             if (ReferenceEquals(addedItem, null))
             {

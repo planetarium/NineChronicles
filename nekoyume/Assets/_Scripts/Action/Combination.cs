@@ -31,29 +31,23 @@ namespace Nekoyume.Action
             {
                 id = item.item.Value.Data.id;
                 count = item.count.Value;
-                Debug.Log($"ItemModel | Id:{id}, Count:{count}");
             }
         }
 
         private struct ItemModelInventoryItemPair
         {
-            public readonly ItemModel ItemModel;
-            public readonly Inventory.InventoryItem InventoryItem;
+            public readonly ItemModel itemModel;
+            public readonly Inventory.InventoryItem inventoryItem;
 
             public ItemModelInventoryItemPair(ItemModel itemModel, Inventory.InventoryItem inventoryItem)
             {
-                ItemModel = itemModel;
-                InventoryItem = inventoryItem;
+                this.itemModel = itemModel;
+                this.inventoryItem = inventoryItem;
             }
         }
 
-        public struct ResultModel
-        {
-            public ItemModel Item;
-        }
-
         public List<ItemModel> Materials { get; private set; }
-        public ResultModel Result { get; private set; }
+        public List<ItemUsable> Results { get; }
 
         protected override IImmutableDictionary<string, object> PlainValueInternal =>
             new Dictionary<string, object>
@@ -64,6 +58,7 @@ namespace Nekoyume.Action
         public Combination()
         {
             Materials = new List<ItemModel>();
+            Results = new List<ItemUsable>();
         }
 
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, object> plainValue)
@@ -126,10 +121,10 @@ namespace Nekoyume.Action
             // 사용한 재료를 인벤토리에서 제거.
             pairs.ForEach(pair =>
             {
-                pair.InventoryItem.Count -= pair.ItemModel.count;
-                if (pair.InventoryItem.Count == 0)
+                pair.inventoryItem.Count -= pair.itemModel.count;
+                if (pair.inventoryItem.Count == 0)
                 {
-                    avatarState.items.Remove(pair.InventoryItem);
+                    avatarState.items.Remove(pair.inventoryItem);
                 }
             });
 
@@ -141,22 +136,19 @@ namespace Nekoyume.Action
             }
             
             // 조합 결과 획득.
+            if (Tables.instance.TryGetItemEquipment(resultItem.Id, out var itemEquipment))
             {
-                if (Tables.instance.TryGetItemEquipment(resultItem.Id, out var itemEquipment))
+                for (var i = 0; i < resultCount; i++)
                 {
                     var itemUsable = GetItemUsableWithRandomSkill(itemEquipment, ctx.Random.Next());
-                    avatarState.items.Add(new Inventory.InventoryItem(itemUsable, resultCount));
-                }
-                else
-                {
-                    return SimpleError(ctx, ErrorCode.KeyNotFoundInTable);
+                    avatarState.items.Add(new Inventory.InventoryItem(itemUsable));
+                    Results.Add(itemUsable);
                 }
             }
-
-            Result = new ResultModel()
+            else
             {
-                Item = new ItemModel(resultItem.Id, resultCount)
-            };
+                return SimpleError(ctx, ErrorCode.KeyNotFoundInTable);
+            }
 
             avatarState.updatedAt = DateTimeOffset.UtcNow;
             return states.SetState(ctx.Signer, avatarState);

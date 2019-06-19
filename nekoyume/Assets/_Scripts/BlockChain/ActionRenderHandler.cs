@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Nekoyume.Action;
+using Nekoyume.Game.Item;
 using Nekoyume.Model;
 using Nekoyume.State;
 using UniRx;
@@ -124,8 +125,10 @@ namespace Nekoyume.BlockChain
                         return;
                     }
                     
-                    var result = eval.Action.Result;
-                    States.Instance.currentAvatarState.Value.AddEquipmentItemToItems(result.Item.id, result.Item.count);
+                    foreach (var itemUsable in eval.Action.Results)
+                    {
+                        States.Instance.currentAvatarState.Value.items.Add(new Inventory.InventoryItem(itemUsable));    
+                    }
                 }).AddTo(_disposables);
         }
 

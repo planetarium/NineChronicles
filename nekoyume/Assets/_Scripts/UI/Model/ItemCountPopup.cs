@@ -13,31 +13,46 @@ namespace Nekoyume.UI.Model
         public readonly Subject<T> onClickMinus = new Subject<T>();
         public readonly Subject<T> onClickPlus = new Subject<T>();
         public readonly Subject<T> onClickSubmit = new Subject<T>();
-        public readonly Subject<T> onClickClose = new Subject<T>();
+        public readonly Subject<T> onClickCancel = new Subject<T>();
+
+        private int _originalCount;
 
         public ItemCountPopup()
         {
-            onClickMinus.Subscribe(obj =>
+            item.Subscribe(value =>
             {
-                if (ReferenceEquals(obj, null) ||
-                    obj.item.Value.count.Value <= item.Value.minCount.Value)
+                if (ReferenceEquals(value, null))
                 {
+                    _originalCount = 0;
                     return;
                 }
-
-                obj.item.Value.count.Value--;
+                
+                _originalCount = value.count.Value;
             });
             
-            onClickPlus.Subscribe(obj =>
+            onClickMinus.Subscribe(value =>
             {
-                if (ReferenceEquals(obj, null) ||
-                    obj.item.Value.count.Value >= item.Value.maxCount.Value)
+                if (ReferenceEquals(value, null) ||
+                    value.item.Value.count.Value <= item.Value.minCount.Value)
                 {
                     return;
                 }
 
-                obj.item.Value.count.Value++;
+                value.item.Value.count.Value--;
             });
+            
+            onClickPlus.Subscribe(value =>
+            {
+                if (ReferenceEquals(value, null) ||
+                    value.item.Value.count.Value >= item.Value.maxCount.Value)
+                {
+                    return;
+                }
+
+                value.item.Value.count.Value++;
+            });
+
+            onClickCancel.Subscribe(value => value.item.Value.count.Value = _originalCount);
         }
         
         public virtual void Dispose()
@@ -50,7 +65,7 @@ namespace Nekoyume.UI.Model
             onClickMinus.Dispose();
             onClickPlus.Dispose();
             onClickSubmit.Dispose();
-            onClickClose.Dispose();
+            onClickCancel.Dispose();
         }
     }
 }

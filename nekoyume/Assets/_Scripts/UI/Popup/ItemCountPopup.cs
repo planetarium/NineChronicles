@@ -51,7 +51,7 @@ namespace Nekoyume.UI
             cancelButton.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
-                    _data.onClickClose.OnNext(_data);
+                    _data.onClickCancel.OnNext(_data);
                     AudioController.PlayCancel();
                 })
                 .AddTo(_disposablesForAwake);

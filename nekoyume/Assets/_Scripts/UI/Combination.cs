@@ -103,6 +103,7 @@ namespace Nekoyume.UI
             {
                 throw new NotFoundComponentException<Stage>();
             }
+
             _stage.LoadBackground("combination");
 
             _player = _stage.GetPlayer();
@@ -110,15 +111,16 @@ namespace Nekoyume.UI
             {
                 throw new NotFoundComponentException<Player>();
             }
+
             _player.gameObject.SetActive(false);
 
             SetData(new Model.Combination(
                 States.Instance.currentAvatarState.Value.items,
                 materialViews.Length));
-            
+
             AudioController.instance.PlayMusic(AudioController.MusicCode.Combination);
         }
-        
+
         public override void Close()
         {
             Clear();
@@ -130,10 +132,10 @@ namespace Nekoyume.UI
             Find<Menu>()?.ShowRoom();
 
             base.Close();
-            
+
             AudioController.instance.PlayMusic(AudioController.MusicCode.Main);
         }
-        
+
         private void SetData(Model.Combination value)
         {
             if (ReferenceEquals(value, null))
@@ -141,12 +143,12 @@ namespace Nekoyume.UI
                 Clear();
                 return;
             }
-            
+
             _disposablesForSetData.DisposeAllAndClear();
             _data = value;
             _data.itemInfo.Value.item.Subscribe(OnItemInfoItem).AddTo(_disposablesForSetData);
             _data.itemCountPopup.Value.item.Subscribe(OnPopupItem).AddTo(_disposablesForSetData);
-            _data.itemCountPopup.Value.onClickClose.Subscribe(OnClickClosePopup).AddTo(_disposablesForSetData);
+            _data.itemCountPopup.Value.onClickCancel.Subscribe(OnClickClosePopup).AddTo(_disposablesForSetData);
             _data.materials.ObserveAdd().Subscribe(OnAddStagedItems).AddTo(_disposablesForSetData);
             _data.materials.ObserveRemove().Subscribe(OnRemoveStagedItems).AddTo(_disposablesForSetData);
             _data.materials.ObserveReplace().Subscribe(_ => UpdateStagedItems()).AddTo(_disposablesForSetData);
@@ -155,7 +157,7 @@ namespace Nekoyume.UI
             _data.onClickCombination.Subscribe(RequestCombination).AddTo(_disposablesForSetData);
             _data.onShowResultVFX.Subscribe(ShowResultVFX).AddTo(_disposablesForSetData);
             inventoryAndItemInfo.SetData(_data.inventory.Value, _data.itemInfo.Value);
-            
+
             UpdateStagedItems();
         }
 
@@ -164,13 +166,13 @@ namespace Nekoyume.UI
             inventoryAndItemInfo.Clear();
             _data = null;
             _disposablesForSetData.DisposeAllAndClear();
-            
+
             foreach (var item in materialViews)
             {
                 item.Clear();
             }
         }
-        
+
         private void UpdateStagedItems(int startIndex = 0)
         {
             var dataCount = _data.materials.Count;
@@ -285,30 +287,29 @@ namespace Nekoyume.UI
         {
             if (eval.Action.errorCode != GameAction.ErrorCode.Success)
             {
-                _data.resultPopup.Value = new Model.CombinationResultPopup(null, 0)
+                _data.resultPopup.Value = new Model.CombinationResultPopup(null)
                 {
                     isSuccess = false,
                     materialItems = _data.materials
                 };
-                
+
                 AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionCombinationFail);
                 _loadingScreen.Close();
                 return;
             }
-            
-            var result = eval.Action.Result;
-            if (!Tables.instance.TryGetItemEquipment(result.Item.id, out var itemEquipment))
+
+            if (eval.Action.Results.Count == 0)
             {
                 _loadingScreen.Close();
                 throw new InvalidActionException("`Combination` action's `Result` is invalid.");
             }
 
-            _data.resultPopup.Value = new Model.CombinationResultPopup(ItemBase.ItemFactory(itemEquipment), result.Item.count)
+            _data.resultPopup.Value = new Model.CombinationResultPopup(eval.Action.Results[0])
             {
                 isSuccess = true,
                 materialItems = _data.materials
             };
-            
+
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionCombinationSuccess);
             _loadingScreen.Close();
         }
@@ -320,7 +321,7 @@ namespace Nekoyume.UI
                 _resultPopup.Close();
                 return;
             }
-            
+
             _resultPopup.Pop(data);
         }
 
@@ -335,17 +336,18 @@ namespace Nekoyume.UI
             {
                 yield break;
             }
-            
+
             yield return null;
             particleVFX.SetActive(false);
             resultItemVFX.SetActive(false);
-            
-            var inventoryItem = _data.inventory.Value.items.Single(i => i.item.Value.Data.id == data.item.Value.Data.id);
+
+            // ToDo. 지금은 조합의 결과가 마지막에 더해지기 때문에 마지막 아이템을 갖고 오지만, 복수의 아이템을 한 번에 얻을 때에 대한 처리나 정렬 기능이 추가 되면 itemGuid로 갖고 와야함.
+            var inventoryItem = _data.inventory.Value.items.Last();
             if (ReferenceEquals(inventoryItem, null))
             {
                 yield break;
             }
-            
+
             var index = _data.inventory.Value.items.IndexOf(inventoryItem);
             var inventoryItemView = inventoryAndItemInfo.inventory.scrollerController.GetByIndex(index);
             if (ReferenceEquals(inventoryItemView, null))
@@ -354,13 +356,11 @@ namespace Nekoyume.UI
             }
 
             var position = inventoryItemView.transform.position;
-            
+
             particleVFX.transform.position = _resultPopup.resultItem.transform.position;
             particleVFX.transform.DOMoveX(position.x, 0.6f);
             particleVFX.transform.DOMoveY(position.y, 0.6f).SetEase(Ease.InCubic)
-                .onComplete = () =>{
-                resultItemVFX.SetActive(true);
-            };
+                .onComplete = () => { resultItemVFX.SetActive(true); };
             particleVFX.SetActive(true);
             resultItemVFX.transform.position = position;
         }
