@@ -144,7 +144,7 @@ namespace Nekoyume.Action
             {
                 if (Tables.instance.TryGetItemEquipment(resultItem.Id, out var itemEquipment))
                 {
-                    var itemUsable = GetItemUsableWithRandomSkill(itemEquipment, ctx.Random.Next(int.MaxValue));
+                    var itemUsable = GetItemUsableWithRandomSkill(itemEquipment, ctx.Random.Next());
                     avatarState.items.Add(new Inventory.InventoryItem(itemUsable, resultCount));
                 }
                 else
@@ -162,13 +162,14 @@ namespace Nekoyume.Action
             return states.SetState(ctx.Signer, avatarState);
         }
         
+        // ToDo. 순수 랜덤이 아닌 조합식이 적용되어야 함. 
         private ItemUsable GetItemUsableWithRandomSkill(ItemEquipment itemEquipment, int randomValue)
         {
             var table = Tables.instance.SkillEffect;
             var skillEffect = table.ElementAt(randomValue % table.Count);   
             var elementalValues = Enum.GetValues(typeof(Elemental.ElementalType));
             var elementalType = (Elemental.ElementalType) elementalValues.GetValue(randomValue % elementalValues.Length);
-            var skill = SkillFactory.Get(1f, skillEffect.Value, elementalType);
+            var skill = SkillFactory.Get(0.05f, skillEffect.Value, elementalType); // FixMe. 테스트를 위해서 5% 확률로 발동되도록 함.
             return (ItemUsable) ItemBase.ItemFactory(itemEquipment, skill);
         }
     }

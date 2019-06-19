@@ -35,9 +35,9 @@ namespace Nekoyume.Game.Item
                 sb.AppendLine(info);
             }
             
-            if (SkillBase.effect != null)
+            if (SkillBase?.effect != null)
             {
-                sb.AppendLine($"{SkillBase.effect.target}에게 {SkillBase.effect.multiplier * 100}% 위력으로 {SkillBase.effect.type}");
+                sb.AppendLine($"{SkillBase.chance * 100}% 확률로 {SkillBase.effect.target}에게 {SkillBase.effect.multiplier * 100}% 위력으로 {SkillBase.effect.type}");
             }
 
             return sb.ToString();
@@ -50,7 +50,7 @@ namespace Nekoyume.Game.Item
                 stat.UpdatePlayer(player);
             }
 
-            if (SkillBase.effect == null)
+            if (SkillBase == null)
             {
                 return;
             }

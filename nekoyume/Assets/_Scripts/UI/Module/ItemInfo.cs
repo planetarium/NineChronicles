@@ -27,8 +27,6 @@ namespace Nekoyume.UI.Module
         private readonly List<IDisposable> _disposablesForSetData = new List<IDisposable>();
         private readonly List<IDisposable> _disposablesForUpdateView = new List<IDisposable>();
         
-        private StringBuilder _stringBuilder = new StringBuilder();
-        
         #region Mono
 
         protected void Awake()
