@@ -35,7 +35,6 @@ namespace Nekoyume.Game.Character
             }
 
             skeletonAnimation = GetComponent<SkeletonAnimation>();
-			var skeleton = skeletonAnimation.skeleton;
         }
 
         #endregion
