@@ -6,6 +6,7 @@ using Libplanet.Action;
 using Nekoyume.Data;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Item;
+using Nekoyume.Game.Skill;
 using Nekoyume.State;
 using UnityEngine;
 
@@ -167,7 +168,8 @@ namespace Nekoyume.Action
             var skillEffect = table.ElementAt(randomValue % table.Count);   
             var elementalValues = Enum.GetValues(typeof(Elemental.ElementalType));
             var elementalType = (Elemental.ElementalType) elementalValues.GetValue(randomValue % elementalValues.Length);
-            return (ItemUsable) ItemBase.ItemFactory(itemEquipment, 1f, skillEffect.Value, elementalType);
+            var skill = SkillFactory.Get(1f, skillEffect.Value, elementalType);
+            return (ItemUsable) ItemBase.ItemFactory(itemEquipment, skill);
         }
     }
 }

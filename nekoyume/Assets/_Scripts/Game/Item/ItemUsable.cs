@@ -11,19 +11,14 @@ namespace Nekoyume.Game.Item
     public abstract class ItemUsable : ItemBase
     {
         public new ItemEquipment Data { get; }
-        public float SkillChance { get; }
-        public SkillEffect SkillEffect { get; }
-        public Data.Table.Elemental.ElementalType SkillElementalType { get; }
         protected StatsMap[] Stats { get; set; }
+        public SkillBase SkillBase { get; }
 
-        protected ItemUsable(Data.Table.Item data, float skillChance = 0f, SkillEffect skillEffect = null,
-            Data.Table.Elemental.ElementalType skillElementalType = Nekoyume.Data.Table.Elemental.ElementalType.Normal)
+        protected ItemUsable(Data.Table.Item data, SkillBase skillBase = null)
             : base(data)
         {
             Data = (ItemEquipment) data;
-            SkillChance = skillChance;
-            SkillEffect = skillEffect;
-            SkillElementalType = skillElementalType;
+            SkillBase = skillBase;
         }
         
         public override string ToItemInfo()
@@ -40,9 +35,9 @@ namespace Nekoyume.Game.Item
                 sb.AppendLine(info);
             }
             
-            if (SkillEffect != null)
+            if (SkillBase.effect != null)
             {
-                sb.AppendLine($"{SkillEffect.target}에게 {SkillEffect.multiplier * 100}% 위력으로 {SkillEffect.type}");
+                sb.AppendLine($"{SkillBase.effect.target}에게 {SkillBase.effect.multiplier * 100}% 위력으로 {SkillBase.effect.type}");
             }
 
             return sb.ToString();
@@ -55,14 +50,13 @@ namespace Nekoyume.Game.Item
                 stat.UpdatePlayer(player);
             }
 
-            if (SkillEffect == null)
+            if (SkillBase.effect == null)
             {
                 return;
             }
 
-            var skill = SkillFactory.Get(SkillChance, SkillEffect, SkillElementalType);
-            skill.caster = player;
-            player.Skills.Add(skill);
+            SkillBase.caster = player;
+            player.Skills.Add(SkillBase);
         }
     }
 }
