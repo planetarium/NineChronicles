@@ -13,6 +13,8 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<Func<InventoryItem, bool>> dimmedFunc = new ReactiveProperty<Func<InventoryItem, bool>>();
         public readonly ReactiveProperty<Func<InventoryItem, ItemBase.ItemType, bool>> glowedFunc = new ReactiveProperty<Func<InventoryItem, ItemBase.ItemType, bool>>();
 
+        public readonly Subject<InventoryItem> onDoubleClickItem = new Subject<InventoryItem>();
+        
         public Inventory(List<Game.Item.Inventory.InventoryItem> items)
         {
             dimmedFunc.Value = DimmedFunc;
@@ -49,6 +51,10 @@ namespace Nekoyume.UI.Model
         {
             items.DisposeAll();
             selectedItem.DisposeAll();
+            dimmedFunc.Dispose();
+            glowedFunc.Dispose();
+            
+            onDoubleClickItem.Dispose();
         }
         
         public InventoryItem AddItem(ItemBase itemBase, int count)
@@ -121,6 +127,7 @@ namespace Nekoyume.UI.Model
         {
             item.dimmed.Value = dimmedFunc.Value(item);
             item.onClick.Subscribe(SubscribeOnClick);
+            item.onDoubleClick.Subscribe(onDoubleClickItem);
         }
 
         public void SubscribeOnClick(InventoryItem inventoryItem)
@@ -128,12 +135,6 @@ namespace Nekoyume.UI.Model
             if (!ReferenceEquals(selectedItem.Value, null))
             {
                 selectedItem.Value.selected.Value = false;
-                
-                if (selectedItem.Value.item.Value.Data.id == inventoryItem.item.Value.Data.id)
-                {
-                    selectedItem.Value = null;
-                    return;
-                }
             }
 
             selectedItem.Value = inventoryItem;

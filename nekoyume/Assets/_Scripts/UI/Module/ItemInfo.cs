@@ -36,7 +36,7 @@ namespace Nekoyume.UI.Module
             button.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
-                    _data.onClick.OnNext(_data);
+                    _data.onClick.OnNext(_data.item.Value);
                     AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
                 })
                 .AddTo(_disposablesForAwake);

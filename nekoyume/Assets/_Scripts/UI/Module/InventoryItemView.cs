@@ -15,26 +15,37 @@ namespace Nekoyume.UI.Module
         public Image selectionImage;
         public Image glowImage;
         public TextMeshProUGUI equipmentText;
-        
+
         private Button _button;
 
         private readonly List<IDisposable> _disposablesForAwake = new List<IDisposable>();
         private readonly List<IDisposable> _disposablesForSetData = new List<IDisposable>();
+
+        private readonly TimeSpan _timeSpan200Milliseconds = TimeSpan.FromMilliseconds(200);
 
         #region Mono
 
         protected override void Awake()
         {
             base.Awake();
-            
+
             this.ComponentFieldsNotNullTest();
 
             _button = GetComponent<Button>();
-            _button.OnClickAsObservable()
+            var buttonClickStream = _button.OnClickAsObservable();
+            buttonClickStream
                 .Subscribe(_ =>
                 {
                     AudioController.PlaySelect();
                     Data.onClick.OnNext(Data);
+                })
+                .AddTo(_disposablesForAwake);
+            buttonClickStream
+                .Buffer(buttonClickStream.Throttle(_timeSpan200Milliseconds))
+                .Where(_ => _.Count >= 2)
+                .Subscribe(_ =>
+                {
+                    Data.onDoubleClick.OnNext(Data);
                 }).AddTo(_disposablesForAwake);
         }
 
@@ -55,7 +66,7 @@ namespace Nekoyume.UI.Module
                 Clear();
                 return;
             }
-            
+
             base.SetData(value);
             _disposablesForSetData.DisposeAllAndClear();
             Data.covered.Subscribe(SetCover).AddTo(_disposablesForSetData);
@@ -63,7 +74,7 @@ namespace Nekoyume.UI.Module
             Data.selected.Subscribe(SetSelect).AddTo(_disposablesForSetData);
             Data.glowed.Subscribe(SetGlow).AddTo(_disposablesForSetData);
             Data.count.Subscribe(SetCount).AddTo(_disposablesForSetData);
-            
+
             UpdateView();
         }
 
@@ -71,14 +82,14 @@ namespace Nekoyume.UI.Module
         {
             _disposablesForSetData.DisposeAllAndClear();
             base.Clear();
-            
+
             UpdateView();
         }
-        
+
         protected override void SetDim(bool isDim)
         {
             base.SetDim(isDim);
-            
+
             selectionImage.color = isDim ? DimColor : DefaultColor;
         }
 
@@ -89,10 +100,10 @@ namespace Nekoyume.UI.Module
             if (ReferenceEquals(Data, null))
             {
                 selectionImage.enabled = false;
-                
+
                 return;
             }
-            
+
             coverImage.enabled = Data.covered.Value;
             selectionImage.enabled = Data.selected.Value;
             SetDim(Data.dimmed.Value);

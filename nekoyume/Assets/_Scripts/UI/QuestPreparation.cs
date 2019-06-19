@@ -2,13 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Manager;
-using Nekoyume.Action;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
-using Nekoyume.State;
 using Nekoyume.UI.Model;
 using UniRx;
 using UnityEngine;
@@ -19,7 +17,7 @@ namespace Nekoyume.UI
     public class QuestPreparation : Widget
     {
         public Module.InventoryAndItemInfo inventoryAndItemInfo;
-        
+
         public EquipSlot[] consumableSlots;
         public EquipSlot[] equipmentSlots;
         public Dropdown dropdown;
@@ -44,20 +42,21 @@ namespace Nekoyume.UI
             {
                 throw new NotFoundComponentException<Stage>();
             }
+
             _stage.LoadBackground("dungeon");
-            
+
             _player = _stage.GetPlayer(_stage.questPreparationPosition);
             if (ReferenceEquals(_player, null))
             {
                 throw new NotFoundComponentException<Player>();
             }
-            
+
             SetData(new Model.QuestPreparation(States.Instance.currentAvatarState.Value.items));
-            
+
             // stop run immediately.
             _player.gameObject.SetActive(false);
             _player.gameObject.SetActive(true);
-            
+
             foreach (var equipment in _player.equipments)
             {
                 var type = equipment.Data.cls.ToEnumItemType();
@@ -85,7 +84,7 @@ namespace Nekoyume.UI
         public override void Close()
         {
             Clear();
-            
+
             foreach (var slot in consumableSlots)
             {
                 slot.Unequip();
@@ -95,12 +94,12 @@ namespace Nekoyume.UI
             {
                 es.Unequip();
             }
-            
+
             base.Close();
         }
 
         #endregion
-        
+
         public void QuestClick(bool repeat)
         {
             Quest(repeat);
@@ -118,8 +117,10 @@ namespace Nekoyume.UI
                 {
                     item.glowed.Value = _data.inventory.Value.glowedFunc.Value(item, slot.type);
                 }
+
                 return;
             }
+
             slot.Unequip();
             if (slot.type == ItemBase.ItemType.Armor)
             {
@@ -137,7 +138,7 @@ namespace Nekoyume.UI
                 ? AudioController.SfxCode.ChainMail2
                 : AudioController.SfxCode.Equipment);
         }
-        
+
         public void SelectItem(Toggle item)
         {
             if (item.isOn)
@@ -161,9 +162,11 @@ namespace Nekoyume.UI
         {
             _disposablesForSetData.DisposeAllAndClear();
             _data = value;
+            _data.inventory.Value.onDoubleClickItem.Subscribe(OnClickEquip)
+                .AddTo(_disposablesForSetData);
             _data.itemInfo.Value.item.Subscribe(OnItemInfoItem).AddTo(_disposablesForSetData);
             _data.itemInfo.Value.onClick.Subscribe(OnClickEquip).AddTo(_disposablesForSetData);
-            
+
             inventoryAndItemInfo.SetData(_data.inventory.Value, _data.itemInfo.Value);
         }
 
@@ -173,11 +176,11 @@ namespace Nekoyume.UI
             _data = null;
             _disposablesForSetData.DisposeAllAndClear();
         }
-        
+
         private void OnItemInfoItem(InventoryItem data)
         {
             AudioController.PlaySelect();
-            
+
             // Fix me. 이미 장착한 아이템일 경우 장착 버튼 비활성화 필요.
             // 현재는 왼쪽 부분인 인벤토리와 아이템 정보 부분만 뷰모델을 적용했는데, 오른쪽 까지 뷰모델이 확장되면 가능.
             if (ReferenceEquals(data, null) ||
@@ -191,29 +194,29 @@ namespace Nekoyume.UI
             }
         }
 
-        private void OnClickEquip(ItemInfo itemInfo)
+        private void OnClickEquip(InventoryItem inventoryItem)
         {
             var slot = FindSelectedItemSlot();
             if (slot != null)
             {
-                slot.Set(itemInfo.item.Value.item.Value as ItemUsable);
+                slot.Set(inventoryItem.item.Value as ItemUsable);
                 SetGlowEquipSlot(false);
             }
-            
-            var type = itemInfo.item.Value.item.Value.Data.cls.ToEnumItemType();
+
+            var type = inventoryItem.item.Value.Data.cls.ToEnumItemType();
             AudioController.instance.PlaySfx(type == ItemBase.ItemType.Food
                 ? AudioController.SfxCode.ChainMail2
                 : AudioController.SfxCode.Equipment);
 
             if (type == ItemBase.ItemType.Armor)
             {
-                var armor = (Armor) itemInfo.item.Value.item.Value;
+                var armor = (Armor) inventoryItem.item.Value;
                 var weapon = (Weapon) _weaponSlot.item;
                 StartCoroutine(_player.CoUpdateSet(armor, weapon));
             }
             else if (type == ItemBase.ItemType.Weapon)
             {
-                _player.UpdateWeapon((Weapon) itemInfo.item.Value.item.Value);
+                _player.UpdateWeapon((Weapon) inventoryItem.item.Value);
             }
         }
 
@@ -230,7 +233,7 @@ namespace Nekoyume.UI
             {
                 if (es.item?.Data != null)
                 {
-                    equipments.Add((Equipment)es.item);
+                    equipments.Add((Equipment) es.item);
                 }
             }
 
@@ -239,10 +242,10 @@ namespace Nekoyume.UI
             {
                 if (slot.item?.Data != null)
                 {
-                    foods.Add((Food)slot.item);
+                    foods.Add((Food) slot.item);
                 }
             }
-            
+
             ActionManager.instance.HackAndSlash(equipments, foods, _stages[dropdown.value])
                 .Subscribe(eval =>
                 {
@@ -303,7 +306,7 @@ namespace Nekoyume.UI
             else
             {
                 equipSlotGlow.SetActive(false);
-			}
-		}
+            }
+        }
     }
 }

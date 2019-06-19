@@ -5,19 +5,16 @@ namespace Nekoyume
 {
     public static class EnumExtension
     {
-        private const string ToEnumItemTypeException = "Invalid string.";
+        private const string ExceptionFormat = "Invalid string. {0}";
         
         public static ItemBase.ItemType ToEnumItemType(this string s)
         {
-            ItemBase.ItemType result;
-            if (Enum.TryParse(s, out result))
+            if (Enum.TryParse(s, out ItemBase.ItemType result))
             {
                 return result;
             }
-            else
-            {
-                throw new InvalidCastException(ToEnumItemTypeException);   
-            }
+            
+            throw new InvalidCastException(string.Format(ExceptionFormat, s));
         }
     }
 }

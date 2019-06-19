@@ -12,6 +12,7 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<bool> glowed = new ReactiveProperty<bool>(false);
 
         public readonly Subject<InventoryItem> onClick = new Subject<InventoryItem>();
+        public readonly Subject<InventoryItem> onDoubleClick = new Subject<InventoryItem>();
 
         public InventoryItem(ItemBase item, int count) : base(item, count)
         {
@@ -27,6 +28,7 @@ namespace Nekoyume.UI.Model
             glowed.Dispose();
 
             onClick.Dispose();
+            onDoubleClick.Dispose();
         }
     }
 }
