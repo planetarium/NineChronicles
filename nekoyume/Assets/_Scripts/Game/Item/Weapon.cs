@@ -1,5 +1,6 @@
 using System;
 using Nekoyume.Game.Skill;
+using UnityEngine;
 
 namespace Nekoyume.Game.Item
 {
@@ -10,6 +11,13 @@ namespace Nekoyume.Game.Item
             : base(data, skillBase)
         {
 
+        }
+        private const string SpritePath = "images/equipment/{0}";
+
+        public static Sprite GetSprite(Equipment equipment = null)
+        {
+            var id = equipment?.Data.resourceId;
+            return Resources.Load<Sprite>(string.Format(SpritePath, id));
         }
 
     }

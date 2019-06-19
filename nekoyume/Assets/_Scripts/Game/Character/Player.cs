@@ -84,7 +84,7 @@ namespace Nekoyume.Game.Character
         public void Init(Model.Player character)
         {
             model = character;
-            UpdateSet(model.set);
+            StartCoroutine(CoUpdateSet(model.armor));
             InitStats(character);
 
             if (ReferenceEquals(_speechBubble, null))
@@ -103,25 +103,40 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        public void UpdateSet(SetItem item)
+
+        public IEnumerator CoUpdateSet(Armor armor, Weapon weapon = null)
         {
-            var itemId = item?.Data.resourceId ?? DefaultSetId;
+            if (weapon == null)
+                weapon = model.weapon;
+
+            var itemId = armor?.Data.resourceId ?? DefaultSetId;
             if (!ReferenceEquals(animator.Target, null))
             {
-                if (!animator.Target.name.Contains(itemId.ToString()))
+                if (animator.Target.name.Contains(itemId.ToString()))
                 {
-                    animator.DestroyTarget();
+                    yield break;
                 }
-                else
-                {
-                    return;
-                }
+                animator.DestroyTarget();
+                // 오브젝트가 파괴될때까지 기다립니다.
+                // https://docs.unity3d.com/ScriptReference/Object.Destroy.html
+                yield return new WaitForEndOfFrame();
             }
-
             var origin = Resources.Load<GameObject>($"Character/Player/{itemId}");
             var go = Instantiate(origin, gameObject.transform);
             animator.ResetTarget(go);
+            UpdateWeapon(weapon);
         }
+
+        public void UpdateWeapon(Weapon weapon)
+        {
+            var controller = GetComponentInChildren<SkeletonAnimationController>();
+            if (controller != null)
+            {
+                var sprite = Weapon.GetSprite(weapon);
+                controller.UpdateWeapon(sprite);
+            }
+        }
+
 
         public IEnumerator CoGetExp(long exp)
         {
