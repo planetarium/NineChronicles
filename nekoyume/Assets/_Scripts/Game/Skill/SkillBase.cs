@@ -8,7 +8,6 @@ namespace Nekoyume.Game.Skill
 {
     public interface ISkill
     {
-        SkillEffect.SkillType GetSkillType();
         Model.Skill Use();
     }
 
@@ -19,15 +18,6 @@ namespace Nekoyume.Game.Skill
         public float chance;
         public readonly SkillEffect effect;
 
-        public SkillEffect.SkillType GetSkillType()
-        {
-            return effect.type;
-        }
-
-        public SkillEffect.Category GetCategory()
-        {
-            return effect.category;
-        }
 
         public abstract Model.Skill Use();
         protected SkillBase(float chance, SkillEffect effect)
