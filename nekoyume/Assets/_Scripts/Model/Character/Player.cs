@@ -17,7 +17,7 @@ namespace Nekoyume.Model
         public long exp;
         public long expMax;
         public long expNeed;
-        public int stage;
+        public int worldStage;
         public Weapon weapon;
         public Armor armor;
         public Belt belt;
@@ -29,17 +29,17 @@ namespace Nekoyume.Model
 
         public readonly Inventory inventory;
         public List<Inventory.Item> Items => inventory.items;
-        public List<Game.Item.Equipment> Equipments =>
-            inventory.items.Select(i => i.item).OfType<Game.Item.Equipment>().Where(e => e.equipped).ToList();
+        public List<Equipment> Equipments =>
+            inventory.items.Select(i => i.item).OfType<Equipment>().Where(e => e.equipped).ToList();
         
         public Player(AvatarState avatarState, Simulator simulator = null)
         {
             Simulator = simulator;
             
+            characterId = avatarState.characterId;
             level = avatarState.level;
             exp = avatarState.exp;
-            characterId = avatarState.characterId;
-            stage = avatarState.worldStage;
+            worldStage = avatarState.worldStage;
             
             inventory = new Inventory();
             atkElement = Game.Elemental.Create(Elemental.ElementalType.Normal);
@@ -61,7 +61,7 @@ namespace Nekoyume.Model
             level = 1;
             exp = 0;
             characterId = 100010;
-            stage = 1;
+            worldStage = 1;
         }
 
         public void RemoveTarget(Monster monster)

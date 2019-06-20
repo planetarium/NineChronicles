@@ -78,9 +78,9 @@ namespace Nekoyume.Battle
 
                         if (index == lastWave)
                         {
-                            if (_stage == Player.stage)
+                            if (_stage == Player.worldStage)
                             {
-                                Player.stage++;
+                                Player.worldStage++;
                             }
 
                             _result = BattleLog.Result.Win;

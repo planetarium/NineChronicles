@@ -66,7 +66,7 @@ namespace Nekoyume.State
             level = player.level;
             exp = player.exp;
             items = player.Items;
-            worldStage = player.stage;
+            worldStage = player.worldStage;
         }
 
         public void RemoveItemFromItems(int itemId, int count)
