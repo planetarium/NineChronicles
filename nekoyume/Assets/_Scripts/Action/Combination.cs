@@ -34,18 +34,6 @@ namespace Nekoyume.Action
             }
         }
 
-        private struct ItemModelInventoryItemPair
-        {
-            public readonly Material material;
-            public readonly Inventory.Item item;
-
-            public ItemModelInventoryItemPair(Material material, Inventory.Item item)
-            {
-                this.material = material;
-                this.item = item;
-            }
-        }
-
         public List<Material> Materials { get; private set; }
         public List<ItemUsable> Results { get; }
 
@@ -108,7 +96,7 @@ namespace Nekoyume.Action
                     }
 
                     resultItem = e.Current.Value;
-                    resultCount = e.Current.Value.CalculateCount(Materials) > 0 ? 1 : 0; // 무조건 한 개만 나오도록.
+                    resultCount = e.Current.Value.CalculateCount(Materials) > 0 ? 1 : 0; // 1개 이상일 때 1개만 나오도록.
                     break;
                 }
             }
@@ -148,6 +136,23 @@ namespace Nekoyume.Action
         // ToDo. 순수 랜덤이 아닌 조합식이 적용되어야 함.
         private ItemUsable GetItemUsableWithRandomSkill(ItemEquipment itemEquipment, int randomValue)
         {
+            // FixMe. 소모품에 랜덤 스킬을 할당했을 때, `HackAndSlash` 액션에서 예외 발생. 그래서 소모품은 랜덤 스킬을 할당하지 않음.
+            /*
+             * InvalidTxSignatureException: 8383de6800f00416bfec1be66745895134083b431bd48766f1f6c50b699f6708: The signature (3045022100c2fffb0e28150fd6ddb53116cc790f15ca595b19ba82af8c6842344bd9f6aae10220705c37401ff35c3eb471f01f384ea6a110dd7e192d436ca99b91c9bed9b6db17) is failed to verify.
+             * Libplanet.Tx.Transaction`1[T].Validate () (at <7284bf7c1f1547329a0963c7fa3ab23e>:0)
+             * Libplanet.Blocks.Block`1[T].Validate (System.DateTimeOffset currentTime) (at <7284bf7c1f1547329a0963c7fa3ab23e>:0)
+             * Libplanet.Store.BlockSet`1[T].set_Item (Libplanet.HashDigest`1[T] key, Libplanet.Blocks.Block`1[T] value) (at <7284bf7c1f1547329a0963c7fa3ab23e>:0)
+             * Libplanet.Blockchain.BlockChain`1[T].Append (Libplanet.Blocks.Block`1[T] block, System.DateTimeOffset currentTime, System.Boolean render) (at <7284bf7c1f1547329a0963c7fa3ab23e>:0)
+             * Libplanet.Blockchain.BlockChain`1[T].Append (Libplanet.Blocks.Block`1[T] block, System.DateTimeOffset currentTime) (at <7284bf7c1f1547329a0963c7fa3ab23e>:0)
+             * Libplanet.Blockchain.BlockChain`1[T].MineBlock (Libplanet.Address miner, System.DateTimeOffset currentTime) (at <7284bf7c1f1547329a0963c7fa3ab23e>:0)
+             * Libplanet.Blockchain.BlockChain`1[T].MineBlock (Libplanet.Address miner) (at <7284bf7c1f1547329a0963c7fa3ab23e>:0)
+             * Nekoyume.BlockChain.Agent+<>c__DisplayClass31_0.<CoMiner>b__0 () (at Assets/_Scripts/BlockChain/Agent.cs:168)
+             * System.Threading.Tasks.Task`1[TResult].InnerInvoke () (at <1f0c1ef1ad524c38bbc5536809c46b48>:0)
+             * System.Threading.Tasks.Task.Execute () (at <1f0c1ef1ad524c38bbc5536809c46b48>:0)
+             * UnityEngine.Debug:LogException(Exception)
+             * Nekoyume.BlockChain.<CoMiner>d__31:MoveNext() (at Assets/_Scripts/BlockChain/Agent.cs:208)
+             * UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+             */
             if (itemEquipment.cls.ToEnumItemType() == ItemBase.ItemType.Food)
             {
                 return (ItemUsable) ItemBase.ItemFactory(itemEquipment);

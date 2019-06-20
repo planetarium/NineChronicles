@@ -70,7 +70,7 @@ namespace Nekoyume.UI.Model
             return inventoryItem;
         }
         
-        // Todo. UnfungibleItem 개발 후 `ItemBase itemBase` 인자를 `UnfungibleItem unfungibleItem`로 수정.
+        // Todo. UnfungibleItem 개발 후 `ItemUsable itemBase` 인자를 `UnfungibleItem unfungibleItem`로 수정.
         public InventoryItem AddUnfungibleItem(ItemUsable itemBase)
         {
             var inventoryItem = new InventoryItem(itemBase, 1);

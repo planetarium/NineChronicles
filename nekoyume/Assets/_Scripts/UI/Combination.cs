@@ -348,7 +348,7 @@ namespace Nekoyume.UI
                 yield break;
             }
 
-            var index = _data.inventory.Value.items.IndexOf(inventoryItem);
+            var index = _data.inventory.Value.items.Count - 1;
             var inventoryItemView = inventoryAndItemInfo.inventory.scrollerController.GetByIndex(index);
             if (ReferenceEquals(inventoryItemView, null))
             {

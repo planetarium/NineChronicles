@@ -316,12 +316,12 @@ namespace Nekoyume.UI
             
             // ToDo. 지금은 구매의 결과가 마지막에 더해지기 때문에 마지막 아이템을 갖고 오지만, 복수의 아이템을 한 번에 얻을 때에 대한 처리나 정렬 기능이 추가 되면 itemGuid로 갖고 와야함.
             var inventoryItem = _data.inventory.Value.items.Last();
-            var index = _data.inventory.Value.items.IndexOf(inventoryItem);
             if (ReferenceEquals(inventoryItem, null))
             {
                 yield break;
             }
             
+            var index = _data.inventory.Value.items.Count - 1;
             var inventoryItemView = inventoryAndItemInfo.inventory.scrollerController.GetByIndex(index);
             if (ReferenceEquals(inventoryItemView, null))
             {

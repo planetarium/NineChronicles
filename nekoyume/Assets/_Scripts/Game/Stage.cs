@@ -168,7 +168,7 @@ namespace Nekoyume.Game
 
         private IEnumerator PlayAsync(BattleLog log)
         {
-            yield return StartCoroutine(CoStageEnter(log.stage));
+            yield return StartCoroutine(CoStageEnter(log.worldStage));
             foreach (EventBase e in log)
             {
                 {
