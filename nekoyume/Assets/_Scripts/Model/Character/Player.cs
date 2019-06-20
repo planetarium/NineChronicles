@@ -295,7 +295,6 @@ namespace Nekoyume.Model
         public void OverrideSkill(SkillBase skill)
         {
             Skills.Clear();
-            skill.caster = this;
             Skills.Add(skill);
         }
     }

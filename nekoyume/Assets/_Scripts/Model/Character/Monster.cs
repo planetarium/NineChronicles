@@ -47,7 +47,6 @@ namespace Nekoyume.Model
             foreach (var effect in Tables.instance.SkillEffect.Values)
             {
                 var skill = SkillFactory.Get(0.1f, effect, GetRandomElemental());
-                skill.caster = this;
                 Skills.Add(skill);
             }
         }

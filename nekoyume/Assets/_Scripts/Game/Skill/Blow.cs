@@ -11,10 +11,9 @@ namespace Nekoyume.Game.Skill
         {
         }
 
-        public override Model.Skill Use()
+        public override Model.Skill Use(CharacterBase caster)
         {
-            var target = GetTarget();
-            var info = ProcessDamage(target);
+            var info = ProcessDamage(caster);
 
             return new Model.Blow
             {

@@ -12,13 +12,13 @@ namespace Nekoyume.Game.Skill
         {
         }
 
-        public override Model.Skill Use()
+        public override Model.Skill Use(CharacterBase caster)
         {
 
             return new Model.AreaAttack
             {
                 character = (CharacterBase) caster.Clone(),
-                skillInfos = ProcessDamage(GetTarget()),
+                skillInfos = ProcessDamage(caster),
             };
         }
     }
