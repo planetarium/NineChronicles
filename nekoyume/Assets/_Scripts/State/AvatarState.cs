@@ -20,7 +20,7 @@ namespace Nekoyume.State
         public long exp;
         public int hpMax;
         public int currentHP;
-        public List<Inventory.InventoryItem> items;
+        public List<Inventory.Item> items;
         public int worldStage;
         public int id;
         public BattleLog battleLog;
@@ -37,7 +37,7 @@ namespace Nekoyume.State
             this.name = name ?? "";
             level = 1;
             exp = 0;
-            items = new List<Inventory.InventoryItem>();
+            items = new List<Inventory.Item>();
             hpMax = 0;
             currentHP = 0;
             worldStage = 1;
@@ -84,20 +84,20 @@ namespace Nekoyume.State
                 throw new KeyNotFoundException($"itemId: {itemId}");
             }
             
-            var inventoryItem = items.FirstOrDefault(item => item.Item.Data.id == itemId);
+            var inventoryItem = items.FirstOrDefault(item => item.item.Data.id == itemId);
             if (ReferenceEquals(inventoryItem, null))
             {
                 throw new KeyNotFoundException($"itemId: {itemId}");
             }
 
-            if (inventoryItem.Count < count)
+            if (inventoryItem.count < count)
             {
                 throw new InvalidOperationException("Reduce more than the quantity of inventoryItem.");
             }
             
-            inventoryItem.Count -= count;
+            inventoryItem.count -= count;
 
-            if (inventoryItem.Count == 0)
+            if (inventoryItem.count == 0)
             {
                 items.Remove(inventoryItem);
             }
@@ -110,15 +110,15 @@ namespace Nekoyume.State
                 throw new KeyNotFoundException($"itemId: {itemId}");
             }
             
-            var inventoryItem = items.FirstOrDefault(item => item.Item.Data.id == itemId);
+            var inventoryItem = items.FirstOrDefault(item => item.item.Data.id == itemId);
             if (ReferenceEquals(inventoryItem, null))
             {
                 var itemBase = ItemBase.ItemFactory(itemData);
-                items.Add(new Inventory.InventoryItem(itemBase, count));
+                items.Add(new Inventory.Item(itemBase, count));
             }
             else
             {
-                inventoryItem.Count += count;
+                inventoryItem.count += count;
             }
         }
 
@@ -129,20 +129,20 @@ namespace Nekoyume.State
                 throw new KeyNotFoundException($"itemId: {itemId}");
             }
             
-            var inventoryItem = items.FirstOrDefault(item => item.Item.Data.id == itemId);
+            var inventoryItem = items.FirstOrDefault(item => item.item.Data.id == itemId);
             if (ReferenceEquals(inventoryItem, null))
             {
                 throw new KeyNotFoundException($"itemId: {itemId}");
             }
 
-            if (inventoryItem.Count < count)
+            if (inventoryItem.count < count)
             {
                 throw new InvalidOperationException("Reduce more than the quantity of inventoryItem.");
             }
             
-            inventoryItem.Count -= count;
+            inventoryItem.count -= count;
 
-            if (inventoryItem.Count == 0)
+            if (inventoryItem.count == 0)
             {
                 items.Remove(inventoryItem);
             }

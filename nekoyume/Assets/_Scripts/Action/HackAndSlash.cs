@@ -46,7 +46,7 @@ namespace Nekoyume.Action
                 return SimpleError(ctx, ErrorCode.AvatarNotFound);
             }
             
-            var items = avatarState.items.Select(i => i.Item).ToImmutableHashSet();
+            var items = avatarState.items.Select(i => i.item).ToImmutableHashSet();
             var currentEquipments = items.OfType<Equipment>().ToImmutableHashSet();
             foreach (var equipment in currentEquipments)
             {

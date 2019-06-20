@@ -8,66 +8,66 @@ namespace Nekoyume.Game.Item
     public class Inventory
     {
         [Serializable]
-        public class InventoryItem
+        public class Item
         {
-            public ItemBase Item;
-            public int Count = 0;
+            public ItemBase item;
+            public int count = 0;
             
-            public InventoryItem(ItemBase itemBase, int count = 1)
+            public Item(ItemBase itemBase, int count = 1)
             {
-                Item = ItemBase.ItemFactory(itemBase.Data);
-                Count = count;
+                item = ItemBase.ItemFactory(itemBase.Data);
+                this.count = count;
             }
             
-            public InventoryItem(ItemUsable itemUsable, int count = 1)
+            public Item(ItemUsable itemUsable, int count = 1)
             {
-                Item = itemUsable;
-                Count = count;
+                item = itemUsable;
+                this.count = count;
             }
         }
 
-        public List<InventoryItem> items;
+        public List<Item> items;
 
         public Inventory()
         {
-            items = new List<InventoryItem> {Capacity = 40};
+            items = new List<Item> {Capacity = 40};
         }
 
-        public InventoryItem Add(ItemBase item)
+        public Item Add(ItemBase item)
         {
             var i = items.FindIndex(
-                a => a.Item.Equals(item)
+                a => a.item.Equals(item)
                      && !(item is Equipment)
             );
             if (i < 0)
             {
-                var inventoryItem = new InventoryItem(item);
+                var inventoryItem = new Item(item);
                 items.Add(inventoryItem);
                 return inventoryItem;
             }
             else
             {
-                items[i].Count += 1;
+                items[i].count += 1;
                 return items[i];
             }
         }
 
         public void Remove(ItemBase item)
         {
-            var i = items.FindIndex(ii => ii.Item.Equals(item));
+            var i = items.FindIndex(ii => ii.item.Equals(item));
             RemoveAt(i);
         }
 
         public void RemoveAt(int index)
         {
             var inventoryItem = items[index];
-            if (inventoryItem.Count <= 1)
+            if (inventoryItem.count <= 1)
             {
                 items.RemoveAt(index);
             }
             else
             {
-                inventoryItem.Count--;
+                inventoryItem.count--;
             }
         }
 
@@ -76,7 +76,7 @@ namespace Nekoyume.Game.Item
             return null;
         }
 
-        public void Set(List<InventoryItem> items)
+        public void Set(List<Item> items)
         {
             this.items = items;
         }

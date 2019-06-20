@@ -46,7 +46,7 @@ namespace Nekoyume.UI.Model
 
         public bool IsMaterialsFulled => materials.Count >= openedMaterialCount.Value;
 
-        public Combination(List<Game.Item.Inventory.InventoryItem> items, int materialCount)
+        public Combination(List<Game.Item.Inventory.Item> items, int materialCount)
         {
             inventory.Value = new Inventory(items);
             inventory.Value.dimmedFunc.Value = DimmedFunc;

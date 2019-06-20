@@ -12,7 +12,7 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<Inventory> inventory = new ReactiveProperty<Inventory>();
         public readonly ReactiveProperty<ItemInfo> itemInfo = new ReactiveProperty<ItemInfo>();
 
-        public QuestPreparation(List<Game.Item.Inventory.InventoryItem> items)
+        public QuestPreparation(List<Game.Item.Inventory.Item> items)
         {
             inventory.Value = new Inventory(items);
             inventory.Value.dimmedFunc.Value = DimmedFunc;

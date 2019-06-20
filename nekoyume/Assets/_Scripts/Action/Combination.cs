@@ -37,12 +37,12 @@ namespace Nekoyume.Action
         private struct ItemModelInventoryItemPair
         {
             public readonly ItemModel itemModel;
-            public readonly Inventory.InventoryItem inventoryItem;
+            public readonly Inventory.Item item;
 
-            public ItemModelInventoryItemPair(ItemModel itemModel, Inventory.InventoryItem inventoryItem)
+            public ItemModelInventoryItemPair(ItemModel itemModel, Inventory.Item item)
             {
                 this.itemModel = itemModel;
-                this.inventoryItem = inventoryItem;
+                this.item = item;
             }
         }
 
@@ -88,7 +88,7 @@ namespace Nekoyume.Action
                 try
                 {
                     var inventoryItem =
-                        avatarState.items.First(item => item.Item.Data.id == m.id && item.Count >= m.count);
+                        avatarState.items.First(item => item.item.Data.id == m.id && item.count >= m.count);
                     pairs.Add(new ItemModelInventoryItemPair(m, inventoryItem));
                 }
                 catch (InvalidOperationException)
@@ -121,10 +121,10 @@ namespace Nekoyume.Action
             // 사용한 재료를 인벤토리에서 제거.
             pairs.ForEach(pair =>
             {
-                pair.inventoryItem.Count -= pair.itemModel.count;
-                if (pair.inventoryItem.Count == 0)
+                pair.item.count -= pair.itemModel.count;
+                if (pair.item.count == 0)
                 {
-                    avatarState.items.Remove(pair.inventoryItem);
+                    avatarState.items.Remove(pair.item);
                 }
             });
 
@@ -141,7 +141,7 @@ namespace Nekoyume.Action
                 for (var i = 0; i < resultCount; i++)
                 {
                     var itemUsable = GetItemUsableWithRandomSkill(itemEquipment, ctx.Random.Next());
-                    avatarState.items.Add(new Inventory.InventoryItem(itemUsable));
+                    avatarState.items.Add(new Inventory.Item(itemUsable));
                     Results.Add(itemUsable);
                 }
             }

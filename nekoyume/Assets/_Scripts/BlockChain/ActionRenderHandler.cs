@@ -127,7 +127,7 @@ namespace Nekoyume.BlockChain
                     
                     foreach (var itemUsable in eval.Action.Results)
                     {
-                        States.Instance.currentAvatarState.Value.items.Add(new Inventory.InventoryItem(itemUsable));    
+                        States.Instance.currentAvatarState.Value.items.Add(new Inventory.Item(itemUsable));    
                     }
                 }).AddTo(_disposables);
         }

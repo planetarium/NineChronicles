@@ -28,9 +28,9 @@ namespace Nekoyume.Model
         public sealed override float TurnSpeed { get; set; }
 
         public readonly Inventory inventory;
-        public List<Inventory.InventoryItem> Items => inventory.items;
+        public List<Inventory.Item> Items => inventory.items;
         public List<Game.Item.Equipment> Equipments =>
-            inventory.items.Select(i => i.Item).OfType<Game.Item.Equipment>().Where(e => e.equipped).ToList();
+            inventory.items.Select(i => i.item).OfType<Game.Item.Equipment>().Where(e => e.equipped).ToList();
         
         public Player(AvatarState avatarState, Simulator simulator = null)
         {
@@ -155,9 +155,9 @@ namespace Nekoyume.Model
             }
         }
 
-        public void Equip(List<Inventory.InventoryItem> items)
+        public void Equip(List<Inventory.Item> items)
         {
-            var equipments = items.Select(i => i.Item).OfType<Game.Item.Equipment>().Where(e => e.equipped);
+            var equipments = items.Select(i => i.item).OfType<Game.Item.Equipment>().Where(e => e.equipped);
             foreach (var equipment in equipments)
             {
                 switch (equipment.Data.cls.ToEnumItemType())

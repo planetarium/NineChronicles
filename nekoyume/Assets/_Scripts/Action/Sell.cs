@@ -64,21 +64,21 @@ namespace Nekoyume.Action
             var shopState = (ShopState) states.GetState(ShopState.Address) ?? new ShopState();
 
             // 인벤토리에서 판매할 아이템을 선택하고 수량을 조절한다.
-            Inventory.InventoryItem target = null;
+            Inventory.Item target = null;
             foreach (var item in avatarState.items)
             {
-                if (item.Item.Data.id != itemId ||
-                    item.Count == 0)
+                if (item.item.Data.id != itemId ||
+                    item.count == 0)
                 {
                     continue;
                 }
 
                 target = item;
-                if (target.Count < count)
+                if (target.count < count)
                 {
                     return SimpleError(ctx, ErrorCode.SellItemCountNotEnoughInInventory);
                 }
-                target.Count -= count;
+                target.count -= count;
             }
 
             // 인벤토리에 판매할 아이템이 없는 경우.
@@ -88,7 +88,7 @@ namespace Nekoyume.Action
             }
 
             // 인벤토리에서 판매할 아이템을 뺀 후에 수량이 0일 경우.
-            if (target.Count == 0)
+            if (target.count == 0)
             {
                 avatarState.items.Remove(target);
             }
@@ -98,7 +98,7 @@ namespace Nekoyume.Action
             {
                 sellerAgentAddress = sellerAgentAddress,
                 productId = productId,
-                item = target.Item,
+                item = target.item,
                 count = count,
                 price = price
             };

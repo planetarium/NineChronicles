@@ -69,7 +69,7 @@ namespace Nekoyume.Action
             foreach (var data in table.Select(i => i.Value).Where(e => e.setId == DefaultItemEquipmentSetId))
             {
                 var equipment = ItemBase.ItemFactory(data);
-                avatarState.items.Add(new Inventory.InventoryItem(equipment));
+                avatarState.items.Add(new Inventory.Item(equipment));
             }
             return avatarState;
         }

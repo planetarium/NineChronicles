@@ -28,7 +28,7 @@ namespace Nekoyume.UI.Model
         public readonly Subject<Shop> onClickSwitchSell = new Subject<Shop>();
         public readonly Subject<Shop> onClickClose = new Subject<Shop>();
 
-        public Shop(List<Game.Item.Inventory.InventoryItem> items, IDictionary<Address, List<Game.Item.ShopItem>> shopItems)
+        public Shop(List<Game.Item.Inventory.Item> items, IDictionary<Address, List<Game.Item.ShopItem>> shopItems)
         {
             inventory.Value = new Inventory(items);
             this.shopItems.Value = new ShopItems(shopItems);

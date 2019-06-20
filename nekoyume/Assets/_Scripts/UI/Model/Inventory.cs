@@ -15,14 +15,14 @@ namespace Nekoyume.UI.Model
 
         public readonly Subject<InventoryItem> onDoubleClickItem = new Subject<InventoryItem>();
         
-        public Inventory(List<Game.Item.Inventory.InventoryItem> items)
+        public Inventory(List<Game.Item.Inventory.Item> items)
         {
             dimmedFunc.Value = DimmedFunc;
             glowedFunc.Value = GlowedFunc;
             
             items.ForEach(item =>
             {
-                var inventoryItem = new InventoryItem(item.Item, item.Count);
+                var inventoryItem = new InventoryItem(item.item, item.count);
                 InitInventoryItem(inventoryItem);
                 this.items.Add(inventoryItem);
             });
