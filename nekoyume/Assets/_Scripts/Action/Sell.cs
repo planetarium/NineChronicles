@@ -22,8 +22,8 @@ namespace Nekoyume.Action
 
         public Address sellerAgentAddress;
         public Guid productId;
-        public int itemId;
-        public int count;
+        public ItemUsable itemUsable;
+        
         public decimal price;
 
         public ResultModel result;
@@ -32,8 +32,7 @@ namespace Nekoyume.Action
         {
             ["sellerAgentAddress"] = sellerAgentAddress.ToByteArray(),
             ["productId"] = productId.ToByteArray(),
-            ["itemId"] = itemId.ToString(),
-            ["count"] = count.ToString(),
+            ["itemUsable"] = ByteSerializer.Serialize(itemUsable),
             ["price"] = price.ToString(CultureInfo.InvariantCulture),
         }.ToImmutableDictionary();
 
@@ -41,8 +40,7 @@ namespace Nekoyume.Action
         {
             sellerAgentAddress = new Address((byte[]) plainValue["sellerAgentAddress"]);
             productId = new Guid((byte[]) plainValue["productId"]);
-            itemId = int.Parse(plainValue["itemId"].ToString());
-            count = int.Parse(plainValue["count"].ToString());
+            itemUsable = ByteSerializer.Deserialize<ItemUsable>((byte[]) plainValue["itemUsable"]);
             price = decimal.Parse(plainValue["price"].ToString());
         }
 
@@ -64,42 +62,19 @@ namespace Nekoyume.Action
             var shopState = (ShopState) states.GetState(ShopState.Address) ?? new ShopState();
 
             // 인벤토리에서 판매할 아이템을 선택하고 수량을 조절한다.
-            Inventory.Item target = null;
-            foreach (var item in avatarState.items)
-            {
-                if (item.item.Data.id != itemId ||
-                    item.count == 0)
-                {
-                    continue;
-                }
-
-                target = item;
-                if (target.count < count)
-                {
-                    return SimpleError(ctx, ErrorCode.SellItemCountNotEnoughInInventory);
-                }
-                target.count -= count;
-            }
-
-            // 인벤토리에 판매할 아이템이 없는 경우.
-            if (ReferenceEquals(target, null))
+            if (!avatarState.inventory.TryGetUnfungibleItem(itemUsable, out ItemUsable unfungibleItem))
             {
                 return SimpleError(ctx, ErrorCode.SellItemNotFoundInInventory);
             }
 
-            // 인벤토리에서 판매할 아이템을 뺀 후에 수량이 0일 경우.
-            if (target.count == 0)
-            {
-                avatarState.items.Remove(target);
-            }
-
+            avatarState.inventory.RemoveUnfungibleItem(unfungibleItem);
+            
             // 상점에 아이템을 등록한다.
             var shopItem = new ShopItem
             {
                 sellerAgentAddress = sellerAgentAddress,
                 productId = productId,
-                item = target.item,
-                count = count,
+                itemUsable = unfungibleItem,
                 price = price
             };
             shopItem = shopState.Register(ctx.Signer, shopItem);

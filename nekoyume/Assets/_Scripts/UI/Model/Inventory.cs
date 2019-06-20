@@ -15,23 +15,23 @@ namespace Nekoyume.UI.Model
 
         public readonly Subject<InventoryItem> onDoubleClickItem = new Subject<InventoryItem>();
         
-        public Inventory(List<Game.Item.Inventory.Item> items)
+        public Inventory(Game.Item.Inventory inventory)
         {
             dimmedFunc.Value = DimmedFunc;
             glowedFunc.Value = GlowedFunc;
-            
-            items.ForEach(item =>
+
+            foreach (var item in inventory.Items)
             {
                 var inventoryItem = new InventoryItem(item.item, item.count);
                 InitInventoryItem(inventoryItem);
-                this.items.Add(inventoryItem);
-            });
-
-            this.items.ObserveAdd().Subscribe(added =>
+                items.Add(inventoryItem);
+            }
+            
+            items.ObserveAdd().Subscribe(added =>
             {
                 InitInventoryItem(added.Value);
             });
-            this.items.ObserveRemove().Subscribe(removed => removed.Value.Dispose());
+            items.ObserveRemove().Subscribe(removed => removed.Value.Dispose());
             
             dimmedFunc.Subscribe(func =>
             {
@@ -40,7 +40,7 @@ namespace Nekoyume.UI.Model
                     dimmedFunc.Value = DimmedFunc;
                 }
                 
-                foreach (var item in this.items)
+                foreach (var item in items)
                 {
                     item.dimmed.Value = dimmedFunc.Value(item);
                 }
@@ -56,29 +56,29 @@ namespace Nekoyume.UI.Model
             
             onDoubleClickItem.Dispose();
         }
-        
-        public InventoryItem AddItem(ItemBase itemBase, int count)
+
+        public InventoryItem AddFungibleItem(ItemBase itemBase, int count)
         {
-            if (itemBase is ItemUsable)
+            if (TryGetFungibleItem(itemBase, out var inventoryItem))
             {
-                var result = new InventoryItem(itemBase, count); 
-                items.Add(result);
-                return result;
+                inventoryItem.count.Value += count;
+                return inventoryItem;
             }
-            
-            var addedItem = items.FirstOrDefault(item => item.item.Value.Data.id == itemBase.Data.id);
-            if (ReferenceEquals(addedItem, null))
-            {
-                var result = new InventoryItem(itemBase, count); 
-                items.Add(result);
-                return result;
-            }
-            
-            addedItem.count.Value += count;
-            return addedItem;
+
+            inventoryItem = new InventoryItem(itemBase, count);
+            items.Add(inventoryItem);
+            return inventoryItem;
+        }
+        
+        // Todo. UnfungibleItem 개발 후 `ItemBase itemBase` 인자를 `UnfungibleItem unfungibleItem`로 수정.
+        public InventoryItem AddUnfungibleItem(ItemUsable itemBase)
+        {
+            var inventoryItem = new InventoryItem(itemBase, 1);
+            items.Add(inventoryItem);
+            return inventoryItem;
         }
 
-        public void RemoveItems(IEnumerable<CountEditableItem> collection)
+        public void RemoveFungibleItems(IEnumerable<CountEditableItem> collection)
         {
             foreach (var countEditableItem in collection)
             {
@@ -87,36 +87,31 @@ namespace Nekoyume.UI.Model
                     continue;
                 }
 
-                RemoveItem(countEditableItem.item.Value.Data.id, countEditableItem.count.Value);
+                RemoveFungibleItem(countEditableItem.item.Value.Data.id, countEditableItem.count.Value);
             }
         }
 
-        public void RemoveItem(int id, int count)
+        public bool RemoveFungibleItem(int id, int count = 1)
         {
-            var inventoryItem = items.FirstOrDefault(item => item.item.Value.Data.id == id);
-
-            if (ReferenceEquals(inventoryItem, null))
+            if (!TryGetFungibleItem(id, out var outFungibleItem) ||
+                outFungibleItem.count.Value < count)
             {
-                return;
-            }
-            
-            if (inventoryItem.count.Value > count)
-            {
-                inventoryItem.count.Value -= count;
-            }
-            else if (inventoryItem.count.Value == count)
-            {
-                items.Remove(inventoryItem);
-            }
-            else
-            {
-                throw new InvalidOperationException($"item({id}) count is lesser then {count}");
+                return false;
             }
 
-            if (inventoryItem.count.Value > count)
+            outFungibleItem.count.Value -= count;
+            if (outFungibleItem.count.Value == 0)
             {
-                inventoryItem.count.Value -= count;
+                items.Remove(outFungibleItem);
             }
+
+            return true;
+        }
+        
+        // Todo. UnfungibleItem 개발 후 `ItemUsable itemUsable` 인자를 `UnfungibleItem unfungibleItem`로 수정.
+        public bool RemoveUnfungibleItem(ItemUsable itemUsable)
+        {
+            return TryGetUnfungibleItem(itemUsable, out var outFungibleItem) && items.Remove(outFungibleItem);
         }
 
         public void DeselectAll()
@@ -129,14 +124,7 @@ namespace Nekoyume.UI.Model
             selectedItem.Value.selected.Value = false;
             selectedItem.Value = null;
         }
-
-        private void InitInventoryItem(InventoryItem item)
-        {
-            item.dimmed.Value = dimmedFunc.Value(item);
-            item.onClick.Subscribe(SubscribeOnClick);
-            item.onDoubleClick.Subscribe(onDoubleClickItem);
-        }
-
+        
         public void SubscribeOnClick(InventoryItem inventoryItem)
         {
             if (!ReferenceEquals(selectedItem.Value, null))
@@ -151,6 +139,53 @@ namespace Nekoyume.UI.Model
             {
                 item.glowed.Value = false;
             }
+        }
+        
+        private bool TryGetFungibleItem(ItemBase itemBase, out InventoryItem outInventoryItem)
+        {
+            return TryGetFungibleItem(itemBase.Data.id, out outInventoryItem);
+        }
+        
+        private bool TryGetFungibleItem(int id, out InventoryItem outFungibleItem)
+        {
+            foreach (var fungibleItem in items)
+            {
+                if (fungibleItem.item.Value.Data.id != id)
+                {
+                    continue;
+                }
+                
+                outFungibleItem = fungibleItem;
+                return true;
+            }
+
+            outFungibleItem = null;
+            return false;
+        }
+        
+        // Todo. UnfungibleItem 개발 후 `ItemUsable itemUsable` 인자를 `UnfungibleItem unfungibleItem`로 수정.
+        private bool TryGetUnfungibleItem(ItemUsable itemUsable, out InventoryItem outUnfungibleItem)
+        {
+            foreach (var fungibleItem in items)
+            {
+                if (fungibleItem.item.Value.Data.id != itemUsable.Data.id)
+                {
+                    continue;
+                }
+                
+                outUnfungibleItem = fungibleItem;
+                return true;
+            }
+
+            outUnfungibleItem = null;
+            return false;
+        }
+
+        private void InitInventoryItem(InventoryItem item)
+        {
+            item.dimmed.Value = dimmedFunc.Value(item);
+            item.onClick.Subscribe(SubscribeOnClick);
+            item.onDoubleClick.Subscribe(onDoubleClickItem);
         }
         
         private bool DimmedFunc(InventoryItem inventoryItem)

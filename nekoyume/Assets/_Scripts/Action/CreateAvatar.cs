@@ -68,8 +68,8 @@ namespace Nekoyume.Action
             var table = Tables.instance.ItemEquipment;
             foreach (var data in table.Select(i => i.Value).Where(e => e.setId == DefaultItemEquipmentSetId))
             {
-                var equipment = ItemBase.ItemFactory(data);
-                avatarState.items.Add(new Inventory.Item(equipment));
+                var equipment = (ItemUsable) ItemBase.ItemFactory(data);
+                avatarState.inventory.AddUnfungibleItem(equipment);
             }
             return avatarState;
         }

@@ -26,12 +26,11 @@ namespace Nekoyume.Model
         public Helm helm;
         public SetItem set;
         public sealed override float TurnSpeed { get; set; }
-
-        public readonly Inventory inventory;
-        public List<Inventory.Item> Items => inventory.items;
-        public List<Equipment> Equipments =>
-            inventory.items.Select(i => i.item).OfType<Equipment>().Where(e => e.equipped).ToList();
         
+        public readonly Inventory inventory;
+        
+        private List<Equipment> Equipments { get; set; }
+
         public Player(AvatarState avatarState, Simulator simulator = null)
         {
             Simulator = simulator;
@@ -40,19 +39,13 @@ namespace Nekoyume.Model
             level = avatarState.level;
             exp = avatarState.exp;
             worldStage = avatarState.worldStage;
-            
-            inventory = new Inventory();
+
             atkElement = Game.Elemental.Create(Elemental.ElementalType.Normal);
             defElement = Game.Elemental.Create(Elemental.ElementalType.Normal);
             TurnSpeed = 1.8f;
-
-            var inventoryItems = avatarState.items;
-            if (inventoryItems != null)
-            {
-                Equip(inventoryItems);
-                inventory.Set(inventoryItems);
-            }
-
+            
+            inventory = avatarState.inventory;
+            Equip(inventory.Items);
             CalcStats(level);
         }
 
@@ -147,18 +140,19 @@ namespace Nekoyume.Model
 
         }
 
+        // ToDo. 지금은 스테이지에서 재료 아이템만 주고 있음. 추후 대체 불가능 아이템도 줄 경우 수정 대상.
         public void GetRewards(List<ItemBase> items)
         {
             foreach (var item in items)
             {
-                inventory.Add(item);
+                inventory.AddFungibleItem(item);
             }
         }
 
-        public void Equip(List<Inventory.Item> items)
+        public void Equip(IEnumerable<Inventory.Item> items)
         {
-            var equipments = items.Select(i => i.item).OfType<Game.Item.Equipment>().Where(e => e.equipped);
-            foreach (var equipment in equipments)
+            Equipments = items.Select(i => i.item).OfType<Game.Item.Equipment>().Where(e => e.equipped).ToList();
+            foreach (var equipment in Equipments)
             {
                 switch (equipment.Data.cls.ToEnumItemType())
                 {
@@ -288,7 +282,7 @@ namespace Nekoyume.Model
             foreach (var food in foods)
             {
                 food.UpdatePlayer(this);
-                inventory.Remove(food);
+                inventory.RemoveUnfungibleItem(food);
             }
         }
 

@@ -8,8 +8,7 @@ namespace Nekoyume.Game.Item
     {
         public Address sellerAgentAddress;
         public Guid productId;
-        public ItemBase item;
-        public int count;
+        public ItemUsable itemUsable;
         public decimal price;
     }
 }

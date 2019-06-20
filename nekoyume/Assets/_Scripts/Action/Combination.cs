@@ -16,18 +16,18 @@ namespace Nekoyume.Action
     public class Combination : GameAction
     {
         [Serializable]
-        public struct ItemModel
+        public struct Material
         {
             public int id;
             public int count;
 
-            public ItemModel(int id, int count)
+            public Material(int id, int count)
             {
                 this.id = id;
                 this.count = count;
             }
 
-            public ItemModel(UI.Model.CountableItem item)
+            public Material(UI.Model.CountableItem item)
             {
                 id = item.item.Value.Data.id;
                 count = item.count.Value;
@@ -36,17 +36,17 @@ namespace Nekoyume.Action
 
         private struct ItemModelInventoryItemPair
         {
-            public readonly ItemModel itemModel;
+            public readonly Material material;
             public readonly Inventory.Item item;
 
-            public ItemModelInventoryItemPair(ItemModel itemModel, Inventory.Item item)
+            public ItemModelInventoryItemPair(Material material, Inventory.Item item)
             {
-                this.itemModel = itemModel;
+                this.material = material;
                 this.item = item;
             }
         }
 
-        public List<ItemModel> Materials { get; private set; }
+        public List<Material> Materials { get; private set; }
         public List<ItemUsable> Results { get; }
 
         protected override IImmutableDictionary<string, object> PlainValueInternal =>
@@ -57,13 +57,13 @@ namespace Nekoyume.Action
 
         public Combination()
         {
-            Materials = new List<ItemModel>();
+            Materials = new List<Material>();
             Results = new List<ItemUsable>();
         }
 
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, object> plainValue)
         {
-            Materials = ByteSerializer.Deserialize<List<ItemModel>>((byte[]) plainValue["Materials"]);
+            Materials = ByteSerializer.Deserialize<List<Material>>((byte[]) plainValue["Materials"]);
         }
 
         public override IAccountStateDelta Execute(IActionContext ctx)
@@ -81,26 +81,21 @@ namespace Nekoyume.Action
             }
 
             // 인벤토리에 재료를 갖고 있는지 검증.
-            var pairs = new List<ItemModelInventoryItemPair>();
-            for (var i = Materials.Count - 1; i >= 0; i--)
+            foreach (var material in Materials)
             {
-                var m = Materials[i];
-                try
+                if (avatarState.inventory.TryGetFungibleItem(material.id, out var outFungibleItem))
                 {
-                    var inventoryItem =
-                        avatarState.items.First(item => item.item.Data.id == m.id && item.count >= m.count);
-                    pairs.Add(new ItemModelInventoryItemPair(m, inventoryItem));
+                    continue;
                 }
-                catch (InvalidOperationException)
-                {
-                    return SimpleError(ctx, ErrorCode.CombinationNotFoundMaterials);
-                }
+                
+                return SimpleError(ctx, ErrorCode.CombinationNotFoundMaterials);
             }
 
             // 조합식 테이블 로드.
             var recipeTable = Tables.instance.Recipe;
 
             // 조합식 검증.
+            // ToDo. 조합식 재개발 필요.
             Recipe resultItem = null;
             var resultCount = 0;
             using (var e = recipeTable.GetEnumerator())
@@ -113,20 +108,16 @@ namespace Nekoyume.Action
                     }
 
                     resultItem = e.Current.Value;
-                    resultCount = e.Current.Value.CalculateCount(Materials);
+                    resultCount = e.Current.Value.CalculateCount(Materials) > 0 ? 1 : 0; // 무조건 한 개만 나오도록.
                     break;
                 }
             }
 
             // 사용한 재료를 인벤토리에서 제거.
-            pairs.ForEach(pair =>
+            foreach (var material in Materials)
             {
-                pair.item.count -= pair.itemModel.count;
-                if (pair.item.count == 0)
-                {
-                    avatarState.items.Remove(pair.item);
-                }
-            });
+                avatarState.inventory.RemoveFungibleItem(material.id, material.count);
+            }
 
             // 뽀각!!
             if (ReferenceEquals(resultItem, null) ||
@@ -141,7 +132,7 @@ namespace Nekoyume.Action
                 for (var i = 0; i < resultCount; i++)
                 {
                     var itemUsable = GetItemUsableWithRandomSkill(itemEquipment, ctx.Random.Next());
-                    avatarState.items.Add(new Inventory.Item(itemUsable));
+                    avatarState.inventory.AddUnfungibleItem(itemUsable);
                     Results.Add(itemUsable);
                 }
             }
@@ -154,9 +145,14 @@ namespace Nekoyume.Action
             return states.SetState(ctx.Signer, avatarState);
         }
         
-        // ToDo. 순수 랜덤이 아닌 조합식이 적용되어야 함. 
+        // ToDo. 순수 랜덤이 아닌 조합식이 적용되어야 함.
         private ItemUsable GetItemUsableWithRandomSkill(ItemEquipment itemEquipment, int randomValue)
         {
+            if (itemEquipment.cls.ToEnumItemType() == ItemBase.ItemType.Food)
+            {
+                return (ItemUsable) ItemBase.ItemFactory(itemEquipment);
+            }
+            
             var table = Tables.instance.SkillEffect;
             var skillEffect = table.ElementAt(randomValue % table.Count);   
             var elementalValues = Enum.GetValues(typeof(Elemental.ElementalType));

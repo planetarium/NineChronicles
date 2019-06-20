@@ -169,9 +169,8 @@ namespace Nekoyume.Battle
             var rewardTable = Tables.instance.StageReward;
             var itemTable = Tables.instance.Item;
             var itemSelector = new WeightedSelector<int>(Random);
-            StageReward reward;
             var items = new List<ItemBase>();
-            if (rewardTable.TryGetValue(id, out reward))
+            if (rewardTable.TryGetValue(id, out var reward))
             {
                 var rewards = reward.Rewards();
                 foreach (var r in rewards)

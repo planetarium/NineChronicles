@@ -115,7 +115,7 @@ namespace Nekoyume.UI
             _player.gameObject.SetActive(false);
 
             SetData(new Model.Combination(
-                States.Instance.currentAvatarState.Value.items,
+                States.Instance.currentAvatarState.Value.inventory,
                 materialViews.Length));
 
             AudioController.instance.PlayMusic(AudioController.MusicCode.Combination);

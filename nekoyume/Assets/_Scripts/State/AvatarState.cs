@@ -19,7 +19,6 @@ namespace Nekoyume.State
         public int characterId;
         public int level;
         public long exp;
-        public List<Inventory.Item> items; // ToDo. 아래의 inventory 필드로 대체하기.
         public Inventory inventory;
         public int worldStage;
         public BattleLog battleLog;
@@ -37,7 +36,6 @@ namespace Nekoyume.State
             characterId = 100010;
             level = 1;
             exp = 0;
-            items = new List<Inventory.Item>(); // ToDo. 아래의 inventory로 대체하기.
             inventory = new Inventory();
             worldStage = 1;
             battleLog = null;
@@ -55,7 +53,6 @@ namespace Nekoyume.State
             characterId = avatarState.characterId;
             level = avatarState.level;
             exp = avatarState.exp;
-            items = avatarState.items; // ToDo. 아래의 inventory로 대체하기.
             inventory = avatarState.inventory;
             worldStage = avatarState.worldStage;
             battleLog = avatarState.battleLog;
@@ -68,80 +65,8 @@ namespace Nekoyume.State
             characterId = player.characterId;
             level = player.level;
             exp = player.exp;
-            items = player.Items; // ToDo. 아래의 inventory로 대체하기.
             inventory = player.inventory;
             worldStage = player.worldStage;
-        }
-
-        public void RemoveItemFromItems(int itemId, int count)
-        {
-            if (!Tables.instance.TryGetItem(itemId, out var itemData))
-            {
-                throw new KeyNotFoundException($"itemId: {itemId}");
-            }
-            
-            var inventoryItem = items.FirstOrDefault(item => item.item.Data.id == itemId);
-            if (ReferenceEquals(inventoryItem, null))
-            {
-                throw new KeyNotFoundException($"itemId: {itemId}");
-            }
-
-            if (inventoryItem.count < count)
-            {
-                throw new InvalidOperationException("Reduce more than the quantity of inventoryItem.");
-            }
-            
-            inventoryItem.count -= count;
-
-            if (inventoryItem.count == 0)
-            {
-                items.Remove(inventoryItem);
-            }
-        }
-
-        public void AddEquipmentItemToItems(int itemId, int count)
-        {
-            if (!Tables.instance.TryGetItemEquipment(itemId, out var itemData))
-            {
-                throw new KeyNotFoundException($"itemId: {itemId}");
-            }
-            
-            var inventoryItem = items.FirstOrDefault(item => item.item.Data.id == itemId);
-            if (ReferenceEquals(inventoryItem, null))
-            {
-                var itemBase = ItemBase.ItemFactory(itemData);
-                items.Add(new Inventory.Item(itemBase, count));
-            }
-            else
-            {
-                inventoryItem.count += count;
-            }
-        }
-
-        public void RemoveEquipmentItemFromItems(int itemId, int count)
-        {
-            if (!Tables.instance.TryGetItemEquipment(itemId, out var itemData))
-            {
-                throw new KeyNotFoundException($"itemId: {itemId}");
-            }
-            
-            var inventoryItem = items.FirstOrDefault(item => item.item.Data.id == itemId);
-            if (ReferenceEquals(inventoryItem, null))
-            {
-                throw new KeyNotFoundException($"itemId: {itemId}");
-            }
-
-            if (inventoryItem.count < count)
-            {
-                throw new InvalidOperationException("Reduce more than the quantity of inventoryItem.");
-            }
-            
-            inventoryItem.count -= count;
-
-            if (inventoryItem.count == 0)
-            {
-                items.Remove(inventoryItem);
-            }
         }
     }
 }

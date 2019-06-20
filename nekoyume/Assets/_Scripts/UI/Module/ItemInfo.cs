@@ -85,7 +85,6 @@ namespace Nekoyume.UI.Module
                 nameText.text = "아이템 정보";
                 infoText.text = "아이템을 선택하세요";
                 descriptionText.text = "";
-                button.gameObject.SetActive(false);
                 
                 itemView.Clear();
                 
@@ -97,7 +96,7 @@ namespace Nekoyume.UI.Module
             item.count.Where(value => value == 0).Subscribe(_ => _data.item.Value = null).AddTo(_disposablesForUpdateView);
             nameText.text = item.item.Value.Data.name;
             infoText.text = item.item.Value.ToItemInfo();
-            descriptionText.text = _data.item.Value.item.Value.Data.description;
+            descriptionText.text = item.item.Value.Data.description;
             SetButtonText(_data.buttonText.Value);
             SetButtonActive(_data.buttonEnabled.Value);
             

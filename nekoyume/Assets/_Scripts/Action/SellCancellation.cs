@@ -64,7 +64,7 @@ namespace Nekoyume.Action
             }
             
             // 인벤토리에 아이템을 넣는다.
-            avatarState.AddEquipmentItemToItems(target.item.Data.id, target.count);
+            avatarState.inventory.AddUnfungibleItem(target.itemUsable);
             avatarState.updatedAt = DateTimeOffset.UtcNow;
             
             result = new ResultModel

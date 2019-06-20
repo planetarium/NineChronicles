@@ -52,9 +52,9 @@ namespace Nekoyume.BlockChain
         {
             var action = new HackAndSlash
             {
-                Equipments = equipments,
-                Foods = foods,
-                Stage = stage,
+                equipments = equipments,
+                foods = foods,
+                stage = stage,
             };
             ProcessAction(action);
 
@@ -73,7 +73,7 @@ namespace Nekoyume.BlockChain
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionCombination);
             
             var action = new Combination();
-            materials.ForEach(m => action.Materials.Add(new Combination.ItemModel(m)));
+            materials.ForEach(m => action.Materials.Add(new Combination.Material(m)));
             ProcessAction(action);
 
             return ActionBase.EveryRender<Combination>()
@@ -83,14 +83,13 @@ namespace Nekoyume.BlockChain
                 .ObserveOnMainThread();
         }
 
-        public IObservable<ActionBase.ActionEvaluation<Sell>> Sell(int itemId, int count, decimal price)
+        public IObservable<ActionBase.ActionEvaluation<Sell>> Sell(ItemUsable itemUsable, decimal price)
         {
             var action = new Sell
             {
                 sellerAgentAddress = States.Instance.agentState.Value.address,
                 productId = Guid.NewGuid(),
-                itemId = itemId,
-                count = count,
+                itemUsable = itemUsable,
                 price = price
             };
             ProcessAction(action);
