@@ -19,7 +19,8 @@ namespace Nekoyume.State
         public int characterId;
         public int level;
         public long exp;
-        public List<Inventory.Item> items;
+        public List<Inventory.Item> items; // ToDo. 아래의 inventory 필드로 대체하기.
+        public Inventory inventory;
         public int worldStage;
         public BattleLog battleLog;
         public DateTimeOffset updatedAt;
@@ -36,7 +37,8 @@ namespace Nekoyume.State
             characterId = 100010;
             level = 1;
             exp = 0;
-            items = new List<Inventory.Item>();
+            items = new List<Inventory.Item>(); // ToDo. 아래의 inventory로 대체하기.
+            inventory = new Inventory();
             worldStage = 1;
             battleLog = null;
             updatedAt = DateTimeOffset.UtcNow;
@@ -53,7 +55,8 @@ namespace Nekoyume.State
             characterId = avatarState.characterId;
             level = avatarState.level;
             exp = avatarState.exp;
-            items = avatarState.items;
+            items = avatarState.items; // ToDo. 아래의 inventory로 대체하기.
+            inventory = avatarState.inventory;
             worldStage = avatarState.worldStage;
             battleLog = avatarState.battleLog;
             updatedAt = avatarState.updatedAt;
@@ -65,7 +68,8 @@ namespace Nekoyume.State
             characterId = player.characterId;
             level = player.level;
             exp = player.exp;
-            items = player.Items;
+            items = player.Items; // ToDo. 아래의 inventory로 대체하기.
+            inventory = player.inventory;
             worldStage = player.worldStage;
         }
 
