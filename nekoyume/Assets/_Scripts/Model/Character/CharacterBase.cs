@@ -67,7 +67,7 @@ namespace Nekoyume.Model
 
         private void UseSkill()
         {
-            var attack = _selectedSkill.Use();
+            var attack = _selectedSkill.Use(this);
             Simulator.Log.Add(attack);
             _selectedSkill = null;
         }
@@ -110,7 +110,6 @@ namespace Nekoyume.Model
         {
             //기본공격 설정
             var attack = SkillFactory.Get(1.0f, new SkillEffect(), Elemental.ElementalType.Normal);
-            attack.caster = this;
             Skills.Add(attack);
         }
 
