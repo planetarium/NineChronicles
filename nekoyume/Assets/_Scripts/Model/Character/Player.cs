@@ -13,6 +13,7 @@ namespace Nekoyume.Model
     [Serializable]
     public class Player : CharacterBase
     {
+        public int characterId;
         public long exp;
         public long expMax;
         public long expNeed;
@@ -24,7 +25,6 @@ namespace Nekoyume.Model
         public Ring ring;
         public Helm helm;
         public SetItem set;
-        public int job;
         public sealed override float TurnSpeed { get; set; }
 
         public readonly Inventory inventory;
@@ -38,7 +38,7 @@ namespace Nekoyume.Model
             
             level = avatarState.level;
             exp = avatarState.exp;
-            job = avatarState.id;
+            characterId = avatarState.characterId;
             stage = avatarState.worldStage;
             
             inventory = new Inventory();
@@ -60,7 +60,7 @@ namespace Nekoyume.Model
         {
             level = 1;
             exp = 0;
-            job = 100010;
+            characterId = 100010;
             stage = 1;
         }
 
@@ -80,7 +80,7 @@ namespace Nekoyume.Model
         {
             var stats = Tables.instance.Character;
             var levelTable = Tables.instance.Level;
-            stats.TryGetValue(job, out var data);
+            stats.TryGetValue(characterId, out var data);
             if (data == null)
             {
                 throw new InvalidActionException();
@@ -222,10 +222,10 @@ namespace Nekoyume.Model
             var stats = Tables.instance.Character;
             var levelTable = Tables.instance.Level;
             Character data;
-            stats.TryGetValue(job, out data);
+            stats.TryGetValue(characterId, out data);
             if (data == null)
             {
-                throw new KeyNotFoundException($"invalid character id: `{job}`.");
+                throw new KeyNotFoundException($"invalid character id: `{characterId}`.");
             }
 
             Level expData;

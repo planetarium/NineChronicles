@@ -16,13 +16,11 @@ namespace Nekoyume.State
     public class AvatarState : State
     {
         public string name;
+        public int characterId;
         public int level;
         public long exp;
-        public int hpMax;
-        public int currentHP;
         public List<Inventory.Item> items;
         public int worldStage;
-        public int id;
         public BattleLog battleLog;
         public DateTimeOffset updatedAt;
         public DateTimeOffset? clearedAt;
@@ -35,13 +33,11 @@ namespace Nekoyume.State
             }
             
             this.name = name ?? "";
+            characterId = 100010;
             level = 1;
             exp = 0;
             items = new List<Inventory.Item>();
-            hpMax = 0;
-            currentHP = 0;
             worldStage = 1;
-            id = 100010;
             battleLog = null;
             updatedAt = DateTimeOffset.UtcNow;
         }
@@ -54,13 +50,11 @@ namespace Nekoyume.State
             }
             
             name = avatarState.name;
+            characterId = avatarState.characterId;
             level = avatarState.level;
             exp = avatarState.exp;
             items = avatarState.items;
-            hpMax = avatarState.hpMax;
-            currentHP = avatarState.currentHP;
             worldStage = avatarState.worldStage;
-            id = avatarState.id;
             battleLog = avatarState.battleLog;
             updatedAt = avatarState.updatedAt;
             clearedAt = avatarState.clearedAt;
@@ -68,13 +62,11 @@ namespace Nekoyume.State
         
         public void Update(Player player)
         {
+            characterId = player.characterId;
             level = player.level;
             exp = player.exp;
-            hpMax = player.hp;
-            currentHP = hpMax;
             items = player.Items;
             worldStage = player.stage;
-            id = player.job;
         }
 
         public void RemoveItemFromItems(int itemId, int count)
