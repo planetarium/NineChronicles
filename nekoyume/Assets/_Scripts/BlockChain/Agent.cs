@@ -164,10 +164,8 @@ namespace Nekoyume.BlockChain
             while (true)
             {
                 var rewardGoldTx = RewardGold();
-                var rewardGoldTxs = new HashSet<Transaction<PolymorphicAction<ActionBase>>> { rewardGoldTx };
                 var task = Task.Run(() =>
                 {
-                    _blocks.StageTransactions(rewardGoldTxs);
                     var block = _blocks.MineBlock(Address);
                     _swarm.BroadcastBlocks(new[] {block});
                     return block;
@@ -184,7 +182,7 @@ namespace Nekoyume.BlockChain
                 }
                 else
                 {
-                    var invalidTxs = new HashSet<Transaction<PolymorphicAction<ActionBase>>>(rewardGoldTxs);
+                    var invalidTxs = new HashSet<Transaction<PolymorphicAction<ActionBase>>> { rewardGoldTx };
                     var retryActions = new HashSet<IImmutableList<PolymorphicAction<ActionBase>>>();
 
                     if (task.IsFaulted)
@@ -281,43 +279,26 @@ namespace Nekoyume.BlockChain
 
         private Transaction<PolymorphicAction<ActionBase>> RewardGold()
         {
-            return MakeTransaction(new List<PolymorphicAction<ActionBase>>
+            var actions = new List<PolymorphicAction<ActionBase>>
             {
                 new RewardGold
                 {
                     gold = RewardAmount
                 }
-            });
+            };
+            return _blocks.MakeTransaction(PrivateKey, actions);
         }
         
         private void StageAgentActions(IEnumerable<PolymorphicAction<ActionBase>> actions)
         {
-            var tx = MakeTransaction(actions);
-            StageTransaction(tx);
+            var tx = _blocks.MakeTransaction(PrivateKey, actions);
+            _swarm.BroadcastTxs(new[] { tx });
         }
         
         private void StageAvatarActions(IEnumerable<PolymorphicAction<ActionBase>> actions)
         {
             var tx = AvatarManager.MakeTransaction(actions, _blocks);
-            StageTransaction(tx);
-        }
-
-        private void StageTransaction(Transaction<PolymorphicAction<ActionBase>> tx)
-        {
-            _blocks.StageTransactions(new HashSet<Transaction<PolymorphicAction<ActionBase>>> {tx});
             _swarm.BroadcastTxs(new[] { tx });
-        }
-        
-        private Transaction<PolymorphicAction<ActionBase>> MakeTransaction(
-            IEnumerable<PolymorphicAction<ActionBase>> actions
-        )
-        {
-            return Transaction<PolymorphicAction<ActionBase>>.Create(
-                _blocks.GetNonce(Address),
-                PrivateKey,
-                actions,
-                timestamp: DateTime.UtcNow
-            );
         }
     }
 }

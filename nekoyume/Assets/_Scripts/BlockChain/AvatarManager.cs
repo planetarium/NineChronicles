@@ -95,12 +95,7 @@ namespace Nekoyume.BlockChain
             BlockChain<PolymorphicAction<ActionBase>> chain
         )
         {
-            return Transaction<PolymorphicAction<ActionBase>>.Create(
-                chain.GetNonce(_privateKey.PublicKey.ToAddress()),
-                _privateKey,
-                actions,
-                timestamp: DateTime.UtcNow
-            );
+            return chain.MakeTransaction(_privateKey, actions);
         }
     }
 }
