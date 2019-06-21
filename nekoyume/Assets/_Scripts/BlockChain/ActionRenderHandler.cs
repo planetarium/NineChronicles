@@ -127,7 +127,7 @@ namespace Nekoyume.BlockChain
                     
                     foreach (var itemUsable in eval.Action.Results)
                     {
-                        States.Instance.currentAvatarState.Value.inventory.AddUnfungibleItem(itemUsable);
+                        States.Instance.currentAvatarState.Value.inventory.AddNonFungibleItem(itemUsable);
                     }
                 }).AddTo(_disposables);
         }
@@ -142,7 +142,7 @@ namespace Nekoyume.BlockChain
                     var result = eval.Action.result;
                     if (eval.InputContext.Signer == States.Instance.currentAvatarState.Value.address)
                     {
-                        States.Instance.currentAvatarState.Value.inventory.RemoveUnfungibleItem(result.shopItem.itemUsable);
+                        States.Instance.currentAvatarState.Value.inventory.RemoveNonFungibleItem(result.shopItem.itemUsable);
                     }
                     
                     ShopState.Register(ReactiveShopState.Items, States.Instance.currentAvatarState.Value.address,
@@ -160,7 +160,7 @@ namespace Nekoyume.BlockChain
                     var result = eval.Action.result;
                     if (eval.InputContext.Signer == States.Instance.currentAvatarState.Value.address)
                     {
-                        States.Instance.currentAvatarState.Value.inventory.AddUnfungibleItem(result.shopItem.itemUsable);
+                        States.Instance.currentAvatarState.Value.inventory.AddNonFungibleItem(result.shopItem.itemUsable);
                     }
                     
                     ShopState.Unregister(ReactiveShopState.Items, result.owner, result.shopItem.productId);
@@ -177,7 +177,7 @@ namespace Nekoyume.BlockChain
                     var result = eval.Action.result;
                     if (eval.InputContext.Signer == States.Instance.currentAvatarState.Value.address)
                     {
-                        States.Instance.currentAvatarState.Value.inventory.AddUnfungibleItem(result.shopItem.itemUsable);
+                        States.Instance.currentAvatarState.Value.inventory.AddNonFungibleItem(result.shopItem.itemUsable);
                     }
                     
                     ShopState.Unregister(ReactiveShopState.Items, result.owner, result.shopItem.productId);

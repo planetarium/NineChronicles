@@ -71,12 +71,10 @@ namespace Nekoyume.Action
             // 인벤토리에 재료를 갖고 있는지 검증.
             foreach (var material in Materials)
             {
-                if (avatarState.inventory.TryGetFungibleItem(material.id, out var outFungibleItem))
+                if (!avatarState.inventory.TryGetFungibleItem(material.id, out var outFungibleItem))
                 {
-                    continue;
+                    return SimpleError(ctx, ErrorCode.CombinationNotFoundMaterials);
                 }
-                
-                return SimpleError(ctx, ErrorCode.CombinationNotFoundMaterials);
             }
 
             // 조합식 테이블 로드.
@@ -96,7 +94,9 @@ namespace Nekoyume.Action
                     }
 
                     resultItem = e.Current.Value;
-                    resultCount = e.Current.Value.CalculateCount(Materials) > 0 ? 1 : 0; // 1개 이상일 때 1개만 나오도록.
+                    // FixMe. 1개 이상일 때 1개만 나오도록 임시 수정함.
+                    // 추후 조합식 적용 시 조합의 결과는 하나만 나오게 될 예정임.
+                    resultCount = e.Current.Value.CalculateCount(Materials) > 0 ? 1 : 0;
                     break;
                 }
             }
@@ -120,7 +120,7 @@ namespace Nekoyume.Action
                 for (var i = 0; i < resultCount; i++)
                 {
                     var itemUsable = GetItemUsableWithRandomSkill(itemEquipment, ctx.Random.Next());
-                    avatarState.inventory.AddUnfungibleItem(itemUsable);
+                    avatarState.inventory.AddNonFungibleItem(itemUsable);
                     Results.Add(itemUsable);
                 }
             }

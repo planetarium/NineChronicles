@@ -95,7 +95,7 @@ namespace Nekoyume.Action
                 sellerAgentState.gold += target.Value.price;
 
                 // 구매자의 인벤토리에 구매한 아이템을 넣는다.
-                buyerAvatarState.inventory.AddUnfungibleItem(target.Value.itemUsable);
+                buyerAvatarState.inventory.AddNonFungibleItem(target.Value.itemUsable);
                 buyerAvatarState.updatedAt = DateTimeOffset.UtcNow;
 
                 result = new ResultModel

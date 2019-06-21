@@ -211,7 +211,7 @@ namespace Nekoyume.UI.Model
             // 결과 아이템이 있다면, 인벤토리에 추가하고 해당 아이템을 선택하기.
             if (!ReferenceEquals(data.item.Value, null))
             {
-                var addedItem = inventory.Value.AddUnfungibleItem((ItemUsable) data.item.Value);
+                var addedItem = inventory.Value.AddNonFungibleItem((ItemUsable) data.item.Value);
                 inventory.Value.SubscribeOnClick(addedItem);
             }
 

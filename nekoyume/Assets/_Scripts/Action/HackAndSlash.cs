@@ -57,12 +57,12 @@ namespace Nekoyume.Action
 
             foreach (var equipment in equipments)
             {
-                if (!avatarState.inventory.TryGetUnfungibleItem(equipment, out ItemUsable outUnfungibleItem))
+                if (!avatarState.inventory.TryGetNonFungibleItem(equipment, out ItemUsable outNonFungibleItem))
                 {
                     return SimpleError(ctx, ErrorCode.HackAndSlashNotFoundEquipment);
                 }
                 
-                ((Equipment) outUnfungibleItem).Equip();
+                ((Equipment) outNonFungibleItem).Equip();
             }
             
             var simulator = new Simulator(ctx.Random, avatarState, foods, stage);
