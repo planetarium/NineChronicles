@@ -47,7 +47,6 @@ namespace Nekoyume.BlockChain
         }
         
         private const float TxProcessInterval = 3.0f;
-        private const int RewardAmount = 1;
         private const int SwarmDialTimeout = 5000;
         
         private static readonly TimeSpan BlockInterval = TimeSpan.FromSeconds(10);
@@ -279,13 +278,7 @@ namespace Nekoyume.BlockChain
 
         private Transaction<PolymorphicAction<ActionBase>> RewardGold()
         {
-            var actions = new List<PolymorphicAction<ActionBase>>
-            {
-                new RewardGold
-                {
-                    gold = RewardAmount
-                }
-            };
+            var actions = new List<PolymorphicAction<ActionBase>> { new RewardGold() };
             return _blocks.MakeTransaction(PrivateKey, actions);
         }
         

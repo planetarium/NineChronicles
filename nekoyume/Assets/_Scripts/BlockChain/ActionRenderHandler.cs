@@ -1,13 +1,21 @@
 using System;
 using System.Collections.Generic;
+using Libplanet.Action;
 using Nekoyume.Action;
-using Nekoyume.Game.Item;
 using Nekoyume.Model;
 using Nekoyume.State;
 using UniRx;
 
 namespace Nekoyume.BlockChain
 {
+    /// <summary>
+    /// 현상태 : 각 액션의 랜더 단계에서 즉시 게임 정보에 반영시킴. 아바타를 선택하지 않은 상태에서 이전에 성공시키지 못한 액션을 재수행하고
+    ///       이를 핸들링하면, 즉시 게임 정보에 반영시길 수 없기 때문에 에러가 발생함.
+    /// 참고 : 이후 언랜더 처리를 고려한 해법이 필요함.
+    /// 해법 1: 랜더 단계에서 얻는 `eval` 자체 혹은 변경점을 queue에 넣고, 게임의 상태에 따라 꺼내 쓰도록.
+    ///
+    /// ToDo. `ActionRenderHandler`의 형태가 완성되면, `ActionUnrenderHandler`도 작성해야 함.
+    /// </summary>
     public class ActionRenderHandler
     {
         private static class Singleton
@@ -40,16 +48,18 @@ namespace Nekoyume.BlockChain
         {
             _disposables.DisposeAllAndClear();
         }
+
+        private void UpdateAgentState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
+        {
+            States.Instance.agentState.Value = (AgentState) evaluation.OutputStates.GetState(States.Instance.agentState.Value.address);
+        }
         
         private void RewardGold()
         {
             ActionBase.EveryRender<RewardGold>()
                 .Where(eval => eval.InputContext.Signer == States.Instance.agentState.Value.address)
                 .ObserveOnMainThread()
-                .Subscribe(eval =>
-                {
-                    ReactiveAgentState.Gold.Value = States.Instance.agentState.Value.gold += eval.Action.gold;
-                }).AddTo(_disposables);
+                .Subscribe(UpdateAgentState).AddTo(_disposables);
         }
 
         private void CreateAvatar()
