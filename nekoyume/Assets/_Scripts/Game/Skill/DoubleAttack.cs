@@ -13,10 +13,9 @@ namespace Nekoyume.Game.Skill
         {
         }
 
-        public override Model.Skill Use()
+        public override Model.Skill Use(CharacterBase caster)
         {
-            var target = GetTarget().ToArray();
-            var infos = ProcessDamage(target);
+            var infos = ProcessDamage(caster);
             return new Model.DoubleAttack
             {
                 character = (CharacterBase) caster.Clone(),

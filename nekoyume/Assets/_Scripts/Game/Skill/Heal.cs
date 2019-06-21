@@ -12,10 +12,10 @@ namespace Nekoyume.Game.Skill
         {
         }
 
-        public override Model.Skill Use()
+        public override Model.Skill Use(CharacterBase caster)
         {
             var infos = new List<Model.Skill.SkillInfo>();
-            foreach (var target in GetTarget())
+            foreach (var target in GetTarget(caster))
             {
                 var maxHp = target.hp;
                 var healHp = Convert.ToInt32(maxHp * effect.multiplier);

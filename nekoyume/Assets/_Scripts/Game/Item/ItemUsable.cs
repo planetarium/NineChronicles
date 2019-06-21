@@ -55,7 +55,6 @@ namespace Nekoyume.Game.Item
                 return;
             }
 
-            SkillBase.caster = player;
             player.Skills.Add(SkillBase);
         }
     }

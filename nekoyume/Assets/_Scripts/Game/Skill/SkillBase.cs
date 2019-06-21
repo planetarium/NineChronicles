@@ -8,28 +8,16 @@ namespace Nekoyume.Game.Skill
 {
     public interface ISkill
     {
-        SkillEffect.SkillType GetSkillType();
-        Model.Skill Use();
+        Model.Skill Use(CharacterBase caster);
     }
 
     [Serializable]
     public abstract class SkillBase: ISkill
     {
-        public CharacterBase caster;
         public float chance;
         public readonly SkillEffect effect;
 
-        public SkillEffect.SkillType GetSkillType()
-        {
-            return effect.type;
-        }
-
-        public SkillEffect.Category GetCategory()
-        {
-            return effect.category;
-        }
-
-        public abstract Model.Skill Use();
+        public abstract Model.Skill Use(CharacterBase caster);
         protected SkillBase(float chance, SkillEffect effect)
         {
             this.effect = effect;
@@ -37,7 +25,7 @@ namespace Nekoyume.Game.Skill
         }
 
 
-        protected IEnumerable<CharacterBase> GetTarget()
+        protected IEnumerable<CharacterBase> GetTarget(CharacterBase caster)
         {
             var targets = caster.targets;
             IEnumerable<CharacterBase> target;

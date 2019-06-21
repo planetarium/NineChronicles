@@ -18,8 +18,9 @@ namespace Nekoyume.Game.Skill
             _elemental = elemental;
         }
 
-        protected List<Model.Skill.SkillInfo> ProcessDamage(IEnumerable<CharacterBase> targets)
+        protected List<Model.Skill.SkillInfo> ProcessDamage(CharacterBase caster)
         {
+            var targets = GetTarget(caster);
             var infos = new List<Model.Skill.SkillInfo>();
             var targetList = targets.ToArray();
             var elemental = Elemental.Create(_elemental);
@@ -67,7 +68,7 @@ namespace Nekoyume.Game.Skill
             return multiplier.ToArray();
         }
 
-        public override Model.Skill Use()
+        public override Model.Skill Use(CharacterBase caster)
         {
             throw new NotImplementedException();
         }
@@ -81,10 +82,9 @@ namespace Nekoyume.Game.Skill
         {
         }
 
-        public override Model.Skill Use()
+        public override Model.Skill Use(CharacterBase caster)
         {
-            var target = GetTarget();
-            var info = ProcessDamage(target);
+            var info = ProcessDamage(caster);
 
             return new Model.Attack
             {
