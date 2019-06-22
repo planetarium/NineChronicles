@@ -20,14 +20,12 @@ namespace Nekoyume.UI
 
         public EquipSlot[] consumableSlots;
         public EquipSlot[] equipmentSlots;
-        public Dropdown dropdown;
         public GameObject btnQuest;
         public GameObject equipSlotGlow;
-
+        public Text labelStage;
 
         private Stage _stage;
         private Player _player;
-        private int[] _stages;
         private EquipSlot _weaponSlot;
 
         private Model.QuestPreparation _data;
@@ -71,11 +69,9 @@ namespace Nekoyume.UI
 
             btnQuest.SetActive(true);
 
-            dropdown.ClearOptions();
-            _stages = Enumerable.Range(1, States.Instance.currentAvatarState.Value.worldStage).ToArray();
-            var list = _stages.Select(i => $"Stage {i}").ToList();
-            dropdown.AddOptions(list);
-            dropdown.value = _stages.Length - 1;
+            var worldMap = Find<WorldMap>();
+            worldMap.SelectedStage = States.Instance.currentAvatarState.Value.worldStage;
+            OnChangeStage();
 
             _weaponSlot = equipmentSlots.First(es => es.type == ItemBase.ItemType.Weapon);
             base.Show();
@@ -246,7 +242,8 @@ namespace Nekoyume.UI
                 }
             }
 
-            ActionManager.instance.HackAndSlash(equipments, foods, _stages[dropdown.value])
+            var selectedStage = Find<WorldMap>().SelectedStage;
+            ActionManager.instance.HackAndSlash(equipments, foods, selectedStage)
                 .Subscribe(eval =>
                 {
                     Game.Event.OnStageStart.Invoke();
@@ -307,6 +304,17 @@ namespace Nekoyume.UI
             {
                 equipSlotGlow.SetActive(false);
             }
+        }
+
+        public void OpenWorldMap()
+        {
+            Find<WorldMap>().Show();
+        }
+
+        public void OnChangeStage()
+        {
+            var worldMap = Find<WorldMap>();
+            labelStage.text = $"Stage {worldMap.SelectedStage}";
         }
     }
 }
