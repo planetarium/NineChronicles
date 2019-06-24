@@ -71,7 +71,7 @@ namespace Nekoyume.BlockChain
             List<UI.Model.CombinationMaterial> materials)
         {
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionCombination);
-            
+
             var action = new Combination();
             materials.ForEach(m => action.Materials.Add(new Combination.Material(m)));
             ProcessAction(action);

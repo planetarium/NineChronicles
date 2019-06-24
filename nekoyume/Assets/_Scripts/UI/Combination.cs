@@ -273,8 +273,9 @@ namespace Nekoyume.UI
         private void RequestCombination(Model.Combination data)
         {
             _loadingScreen.Show();
+            var inventory = States.Instance.currentAvatarState.Value.inventory;
             ActionManager.instance.Combination(_data.materials.ToList())
-                .Subscribe(ResponseCombination)
+                .Subscribe(eval => ResponseCombination(inventory))
                 .AddTo(this);
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickCombinationCombination);
         }
@@ -283,9 +284,12 @@ namespace Nekoyume.UI
         /// 결과를 직접 받아서 데이타에 넣어주는 방법 보다는,
         /// 네트워크 결과를 핸들링하는 곳에 핸들링 인터페이스를 구현한 데이타 모델을 등록하는 방법이 좋겠다. 
         /// </summary>
-        private void ResponseCombination(ActionBase.ActionEvaluation<Action.Combination> eval)
+        private void ResponseCombination(Game.Item.Inventory inventory)
         {
-            if (eval.Action.errorCode != GameAction.ErrorCode.Success)
+            _loadingScreen.Close();
+            
+            if (!States.Instance.currentAvatarState.Value.inventory.TryGetAddedItemFrom(inventory, out var outAddedItem) ||
+                outAddedItem == null)
             {
                 _data.resultPopup.Value = new Model.CombinationResultPopup(null)
                 {
@@ -294,24 +298,16 @@ namespace Nekoyume.UI
                 };
 
                 AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionCombinationFail);
-                _loadingScreen.Close();
                 return;
             }
-
-            if (eval.Action.Results.Count == 0)
-            {
-                _loadingScreen.Close();
-                throw new InvalidActionException("`Combination` action's `Result` is invalid.");
-            }
-
-            _data.resultPopup.Value = new Model.CombinationResultPopup(eval.Action.Results[0])
+            
+            _data.resultPopup.Value = new Model.CombinationResultPopup(outAddedItem)
             {
                 isSuccess = true,
                 materialItems = _data.materials
             };
 
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionCombinationSuccess);
-            _loadingScreen.Close();
         }
 
         private void SubscribeResultPopup(Model.CombinationResultPopup data)

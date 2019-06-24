@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Action;
+using Nekoyume.Game.Item;
 using Nekoyume.Model;
 using Nekoyume.State;
 using UniRx;
@@ -70,11 +71,31 @@ namespace Nekoyume.BlockChain
             return evaluation.InputContext.Signer == States.Instance.currentAvatarState.Value.address;
         }
 
-        private void UpdateAgentState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
+        private AgentState GetAgentState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
         {
             var agentAddress = States.Instance.agentState.Value.address;
-            var agentState = (AgentState) evaluation.OutputStates.GetState(agentAddress);
-            States.Instance.agentState.Value = agentState;
+            return (AgentState) evaluation.OutputStates.GetState(agentAddress);
+        }
+        
+        private AvatarState GetAvatarState<T>(ActionBase.ActionEvaluation<T> evaluation, int index) where T : ActionBase
+        {
+            if (!States.Instance.agentState.Value.avatarAddresses.ContainsKey(index))
+            {
+                return null;
+            }
+            
+            var avatarAddress = States.Instance.agentState.Value.avatarAddresses[index];
+            return (AvatarState) evaluation.OutputStates.GetState(avatarAddress);
+        }
+        
+        private AvatarState GetCurrentAvatarState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
+        {
+            return GetAvatarState(evaluation, States.Instance.currentAvatarKey.Value);
+        }
+
+        private void UpdateAgentState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
+        {
+            States.Instance.agentState.Value = GetAgentState(evaluation);
         }
 
         private void UpdateAvatarState<T>(ActionBase.ActionEvaluation<T> evaluation, int index) where T : ActionBase
@@ -101,6 +122,11 @@ namespace Nekoyume.BlockChain
             {
                 States.Instance.avatarStates.Add(index, avatarState);
             }
+        }
+        
+        private void UpdateCurrentAvatarState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
+        {
+            UpdateAvatarState(evaluation, States.Instance.currentAvatarKey.Value);
         }
 
         private void RewardGold()
@@ -140,37 +166,15 @@ namespace Nekoyume.BlockChain
             ActionBase.EveryRender<HackAndSlash>()
                 .Where(EvaluationValidationForCurrentAvatarState)
                 .ObserveOnMainThread()
-                .Subscribe(eval =>
-                {
-                    UpdateAvatarState(eval, States.Instance.currentAvatarKey.Value);
-                }).AddTo(_disposables);
+                .Subscribe(UpdateCurrentAvatarState).AddTo(_disposables);
         }
 
         private void Combination()
         {
             ActionBase.EveryRender<Combination>()
-                .Where(eval => eval.InputContext.Signer == States.Instance.currentAvatarState.Value.address
-                               && (eval.Action.Succeed ||
-                                   eval.Action.errorCode == GameAction.ErrorCode.CombinationNoResultItem))
+                .Where(EvaluationValidationForCurrentAvatarState)
                 .ObserveOnMainThread()
-                .Subscribe(eval =>
-                {
-                    foreach (var material in eval.Action.Materials)
-                    {
-                        States.Instance.currentAvatarState.Value.inventory.RemoveFungibleItem(material.id,
-                            material.count);
-                    }
-
-                    if (eval.Action.errorCode == GameAction.ErrorCode.CombinationNoResultItem)
-                    {
-                        return;
-                    }
-
-                    foreach (var itemUsable in eval.Action.Results)
-                    {
-                        States.Instance.currentAvatarState.Value.inventory.AddUnfungibleItem(itemUsable);
-                    }
-                }).AddTo(_disposables);
+                .Subscribe(UpdateCurrentAvatarState).AddTo(_disposables);
         }
 
         private void Sell()
