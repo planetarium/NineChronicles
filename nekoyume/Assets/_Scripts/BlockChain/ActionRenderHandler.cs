@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Action;
 using Nekoyume.Model;
@@ -24,7 +25,7 @@ namespace Nekoyume.BlockChain
         }
 
         public static readonly ActionRenderHandler Instance = Singleton.Value;
-        
+
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
         private ActionRenderHandler()
@@ -49,17 +50,66 @@ namespace Nekoyume.BlockChain
             _disposables.DisposeAllAndClear();
         }
 
-        private void UpdateAgentState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
+        private AgentState UpdateAgentState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
         {
-            States.Instance.agentState.Value = (AgentState) evaluation.OutputStates.GetState(States.Instance.agentState.Value.address);
+            var address = States.Instance.agentState.Value.address;
+            var agentState = (AgentState) evaluation.OutputStates.GetState(address);
+            States.Instance.agentState.Value = agentState;
+            return agentState;
+        }
+
+        // ToDo. 딕셔너리의 인덱스에 바로 할당하는 지금의 방법과 삭제 후 더하는 방법 사이에서 이벤트 핸들링에 용이한 쪽으로 수정하기.
+        private void UpdateAvatarState<T>(ActionBase.ActionEvaluation<T> evaluation, int index) where T : ActionBase
+        {
+            if (!States.Instance.agentState.Value.avatarAddresses.ContainsKey(index))
+            {
+                return;
+            }
+
+            var address = States.Instance.agentState.Value.avatarAddresses[index];
+            var avatarState = (AvatarState) evaluation.OutputStates.GetState(address);
+            if (avatarState == null)
+            {
+                States.Instance.avatarStates.Remove(index);
+                AvatarManager.DeleteAvatarPrivateKey(index);
+                return;
+            }
+            
+            if (States.Instance.avatarStates.ContainsKey(index))
+            {
+                States.Instance.avatarStates[index] = avatarState;
+            }
+            else
+            {
+                States.Instance.avatarStates.Add(index, avatarState);
+            }
         }
         
+        private void UpdateAvatarState<T>(ActionBase.ActionEvaluation<T> evaluation, AgentState agentState, int index) where T : ActionBase
+        {
+            if (!agentState.avatarAddresses.ContainsKey(index))
+            {
+                States.Instance.avatarStates.Remove(index);
+                AvatarManager.DeleteAvatarPrivateKey(index);
+                return;
+            }
+            
+            var avatarAddress = agentState.avatarAddresses[index];
+            var avatarState = (AvatarState) evaluation.OutputStates.GetState(avatarAddress);
+            if (avatarState == null)
+            {
+                return;
+            }
+            
+            States.Instance.avatarStates.Add(index, avatarState);
+        }
+
         private void RewardGold()
         {
             ActionBase.EveryRender<RewardGold>()
                 .Where(eval => eval.InputContext.Signer == States.Instance.agentState.Value.address)
                 .ObserveOnMainThread()
-                .Subscribe(UpdateAgentState).AddTo(_disposables);
+                .Subscribe(eval => UpdateAgentState(eval)).AddTo(_disposables);
         }
 
         private void CreateAvatar()
@@ -70,14 +120,11 @@ namespace Nekoyume.BlockChain
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
                 {
-                    var index = eval.Action.index;
-                    var avatarAddress = AvatarManager.GetOrCreateAvatarAddress(index);
-                    States.Instance.agentState.Value.avatarAddresses.Add(index, avatarAddress);
-                    States.Instance.avatarStates.Add(index,
-                        (AvatarState) AgentController.Agent.GetState(avatarAddress));
+                    var agentState = UpdateAgentState(eval);
+                    UpdateAvatarState(eval, agentState, eval.Action.index);
                 }).AddTo(_disposables);
         }
-        
+
         private void DeleteAvatar()
         {
             ActionBase.EveryRender<DeleteAvatar>()
@@ -86,13 +133,11 @@ namespace Nekoyume.BlockChain
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
                 {
-                    var index = eval.Action.index;
-                    States.Instance.agentState.Value.avatarAddresses.Remove(index);
-                    States.Instance.avatarStates.Remove(index);
-                    AvatarManager.DeleteAvatarPrivateKey(index);
+                    var agentState = UpdateAgentState(eval);
+                    UpdateAvatarState(eval, agentState, eval.Action.index);
                 }).AddTo(_disposables);
         }
-        
+
         private void HackAndSlash()
         {
             ActionBase.EveryRender<HackAndSlash>()
@@ -101,19 +146,7 @@ namespace Nekoyume.BlockChain
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
                 {
-                    var state = (AvatarState) AgentController.Agent.GetState(States.Instance.currentAvatarState.Value.address);
-                    foreach (var item in States.Instance.avatarStates)
-                    {
-                        if (item.Value.address != state.address)
-                        {
-                            continue;
-                        }
-                        
-                        States.Instance.avatarStates[item.Key] = state;
-                        break;
-                    }
-                    
-                    ReactiveCurrentAvatarState.AvatarState.Value = States.Instance.currentAvatarState.Value = state;
+                    UpdateAvatarState(eval, States.Instance.currentAvatarKey.Value);
                 }).AddTo(_disposables);
         }
 
@@ -121,20 +154,22 @@ namespace Nekoyume.BlockChain
         {
             ActionBase.EveryRender<Combination>()
                 .Where(eval => eval.InputContext.Signer == States.Instance.currentAvatarState.Value.address
-                               && (eval.Action.Succeed || eval.Action.errorCode == GameAction.ErrorCode.CombinationNoResultItem))
+                               && (eval.Action.Succeed ||
+                                   eval.Action.errorCode == GameAction.ErrorCode.CombinationNoResultItem))
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
                 {
                     foreach (var material in eval.Action.Materials)
                     {
-                        States.Instance.currentAvatarState.Value.inventory.RemoveFungibleItem(material.id, material.count);
+                        States.Instance.currentAvatarState.Value.inventory.RemoveFungibleItem(material.id,
+                            material.count);
                     }
 
                     if (eval.Action.errorCode == GameAction.ErrorCode.CombinationNoResultItem)
                     {
                         return;
                     }
-                    
+
                     foreach (var itemUsable in eval.Action.Results)
                     {
                         States.Instance.currentAvatarState.Value.inventory.AddUnfungibleItem(itemUsable);
@@ -152,9 +187,10 @@ namespace Nekoyume.BlockChain
                     var result = eval.Action.result;
                     if (eval.InputContext.Signer == States.Instance.currentAvatarState.Value.address)
                     {
-                        States.Instance.currentAvatarState.Value.inventory.RemoveUnfungibleItem(result.shopItem.itemUsable);
+                        States.Instance.currentAvatarState.Value.inventory.RemoveUnfungibleItem(result.shopItem
+                            .itemUsable);
                     }
-                    
+
                     ShopState.Register(ReactiveShopState.Items, States.Instance.currentAvatarState.Value.address,
                         result.shopItem);
                 }).AddTo(_disposables);
@@ -170,9 +206,10 @@ namespace Nekoyume.BlockChain
                     var result = eval.Action.result;
                     if (eval.InputContext.Signer == States.Instance.currentAvatarState.Value.address)
                     {
-                        States.Instance.currentAvatarState.Value.inventory.AddUnfungibleItem(result.shopItem.itemUsable);
+                        States.Instance.currentAvatarState.Value.inventory
+                            .AddUnfungibleItem(result.shopItem.itemUsable);
                     }
-                    
+
                     ShopState.Unregister(ReactiveShopState.Items, result.owner, result.shopItem.productId);
                 }).AddTo(_disposables);
         }
@@ -187,9 +224,10 @@ namespace Nekoyume.BlockChain
                     var result = eval.Action.result;
                     if (eval.InputContext.Signer == States.Instance.currentAvatarState.Value.address)
                     {
-                        States.Instance.currentAvatarState.Value.inventory.AddUnfungibleItem(result.shopItem.itemUsable);
+                        States.Instance.currentAvatarState.Value.inventory
+                            .AddUnfungibleItem(result.shopItem.itemUsable);
                     }
-                    
+
                     ShopState.Unregister(ReactiveShopState.Items, result.owner, result.shopItem.productId);
                 }).AddTo(_disposables);
         }
@@ -201,7 +239,7 @@ namespace Nekoyume.BlockChain
                 .Subscribe(eval =>
                 {
                     var asGameAction = eval.Action as GameAction;
-                    if (asGameAction is null || asGameAction.Succeed) 
+                    if (asGameAction is null || asGameAction.Succeed)
                     {
                         var state = (RankingState) eval.OutputStates.GetState(RankingState.Address);
                         ReactiveRankingState.RankingState.Value = States.Instance.rankingState.Value = state;

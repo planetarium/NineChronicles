@@ -13,7 +13,6 @@ namespace Nekoyume.Action
     [ActionType("create_avatar")]
     public class CreateAvatar : GameAction
     {
-        public const int DefaultId = 100010;
         private const int DefaultItemEquipmentSetId = 1;
 
         public Address avatarAddress;

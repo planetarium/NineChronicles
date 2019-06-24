@@ -19,7 +19,6 @@ namespace Nekoyume.BlockChain
     {
         private const string PrivateKeyFormat = "private_key_{0}";
         
-        private static int _currentAvatarIndex = -1;
         private static PrivateKey _privateKey;
         
         public static PrivateKey GetOrCreateAvatarPrivateKey(int index)
@@ -58,7 +57,7 @@ namespace Nekoyume.BlockChain
                 return false;
             }
             
-            if (_currentAvatarIndex == index)
+            if (States.Instance.currentAvatarKey.Value == index)
             {
                 ResetIndex();
             }
@@ -78,16 +77,13 @@ namespace Nekoyume.BlockChain
                 return null;
             }
             
-            _currentAvatarIndex = index;
-            
-            States.Instance.currentAvatarState.Value = States.Instance.avatarStates[index];
+            States.Instance.currentAvatarKey.Value = index;
             return States.Instance.currentAvatarState.Value;
         }
 
-        public static void ResetIndex()
+        private static void ResetIndex()
         {
-            _currentAvatarIndex = -1;
-            States.Instance.currentAvatarState.Value = null;
+            States.Instance.currentAvatarKey.Value = -1;
         }
 
         public static Transaction<PolymorphicAction<ActionBase>> MakeTransaction(
