@@ -49,29 +49,47 @@ namespace Nekoyume.BlockChain
         {
             _disposables.DisposeAllAndClear();
         }
-
-        private AgentState UpdateAgentState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
+        
+        private bool EvaluationValidationForAgentState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
         {
-            var address = States.Instance.agentState.Value.address;
-            var agentState = (AgentState) evaluation.OutputStates.GetState(address);
-            States.Instance.agentState.Value = agentState;
-            return agentState;
+            if (States.Instance.agentState.Value == null)
+            {
+                return false;
+            }
+            
+            return evaluation.InputContext.Signer == States.Instance.agentState.Value.address;
+        }
+        
+        private bool EvaluationValidationForCurrentAvatarState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
+        {
+            if (States.Instance.currentAvatarState.Value == null)
+            {
+                return false;
+            }
+            
+            return evaluation.InputContext.Signer == States.Instance.currentAvatarState.Value.address;
         }
 
-        // ToDo. 딕셔너리의 인덱스에 바로 할당하는 지금의 방법과 삭제 후 더하는 방법 사이에서 이벤트 핸들링에 용이한 쪽으로 수정하기.
+        private void UpdateAgentState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
+        {
+            var agentAddress = States.Instance.agentState.Value.address;
+            var agentState = (AgentState) evaluation.OutputStates.GetState(agentAddress);
+            States.Instance.agentState.Value = agentState;
+        }
+
         private void UpdateAvatarState<T>(ActionBase.ActionEvaluation<T> evaluation, int index) where T : ActionBase
         {
             if (!States.Instance.agentState.Value.avatarAddresses.ContainsKey(index))
             {
+                States.Instance.avatarStates.Remove(index);
+                AvatarManager.DeleteAvatarPrivateKey(index);
                 return;
             }
 
-            var address = States.Instance.agentState.Value.avatarAddresses[index];
-            var avatarState = (AvatarState) evaluation.OutputStates.GetState(address);
+            var avatarAddress = States.Instance.agentState.Value.avatarAddresses[index];
+            var avatarState = (AvatarState) evaluation.OutputStates.GetState(avatarAddress);
             if (avatarState == null)
             {
-                States.Instance.avatarStates.Remove(index);
-                AvatarManager.DeleteAvatarPrivateKey(index);
                 return;
             }
             
@@ -84,65 +102,43 @@ namespace Nekoyume.BlockChain
                 States.Instance.avatarStates.Add(index, avatarState);
             }
         }
-        
-        private void UpdateAvatarState<T>(ActionBase.ActionEvaluation<T> evaluation, AgentState agentState, int index) where T : ActionBase
-        {
-            if (!agentState.avatarAddresses.ContainsKey(index))
-            {
-                States.Instance.avatarStates.Remove(index);
-                AvatarManager.DeleteAvatarPrivateKey(index);
-                return;
-            }
-            
-            var avatarAddress = agentState.avatarAddresses[index];
-            var avatarState = (AvatarState) evaluation.OutputStates.GetState(avatarAddress);
-            if (avatarState == null)
-            {
-                return;
-            }
-            
-            States.Instance.avatarStates.Add(index, avatarState);
-        }
 
         private void RewardGold()
         {
             ActionBase.EveryRender<RewardGold>()
-                .Where(eval => eval.InputContext.Signer == States.Instance.agentState.Value.address)
+                .Where(EvaluationValidationForAgentState)
                 .ObserveOnMainThread()
-                .Subscribe(eval => UpdateAgentState(eval)).AddTo(_disposables);
+                .Subscribe(UpdateAgentState).AddTo(_disposables);
         }
 
         private void CreateAvatar()
         {
             ActionBase.EveryRender<CreateAvatar>()
-                .Where(eval => eval.InputContext.Signer == States.Instance.agentState.Value.address
-                               && eval.Action.Succeed)
+                .Where(EvaluationValidationForAgentState)
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
                 {
-                    var agentState = UpdateAgentState(eval);
-                    UpdateAvatarState(eval, agentState, eval.Action.index);
+                    UpdateAgentState(eval);
+                    UpdateAvatarState(eval, eval.Action.index);
                 }).AddTo(_disposables);
         }
 
         private void DeleteAvatar()
         {
             ActionBase.EveryRender<DeleteAvatar>()
-                .Where(eval => eval.InputContext.Signer == States.Instance.agentState.Value.address
-                               && eval.Action.Succeed)
+                .Where(EvaluationValidationForAgentState)
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
                 {
-                    var agentState = UpdateAgentState(eval);
-                    UpdateAvatarState(eval, agentState, eval.Action.index);
+                    UpdateAgentState(eval);
+                    UpdateAvatarState(eval, eval.Action.index);
                 }).AddTo(_disposables);
         }
 
         private void HackAndSlash()
         {
             ActionBase.EveryRender<HackAndSlash>()
-                .Where(eval => eval.InputContext.Signer == States.Instance.currentAvatarState.Value.address
-                               && eval.Action.Succeed)
+                .Where(EvaluationValidationForCurrentAvatarState)
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
                 {
