@@ -287,27 +287,19 @@ namespace Nekoyume.UI
         private void ResponseCombination(Game.Item.Inventory inventory)
         {
             _loadingScreen.Close();
-            
-            if (!States.Instance.currentAvatarState.Value.inventory.TryGetAddedItemFrom(inventory, out var outAddedItem) ||
-                outAddedItem == null)
-            {
-                _data.resultPopup.Value = new Model.CombinationResultPopup(null)
-                {
-                    isSuccess = false,
-                    materialItems = _data.materials
-                };
 
-                AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionCombinationFail);
-                return;
-            }
-            
-            _data.resultPopup.Value = new Model.CombinationResultPopup(outAddedItem)
+            var isSuccess = States.Instance.currentAvatarState.Value.inventory.TryGetAddedItemFrom(inventory,
+                out var outAddedItem);
+
+            _data.resultPopup.Value = new Model.CombinationResultPopup(isSuccess ? outAddedItem : null)
             {
-                isSuccess = true,
+                isSuccess = isSuccess,
                 materialItems = _data.materials
             };
 
-            AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionCombinationSuccess);
+            AnalyticsManager.Instance.OnEvent(isSuccess
+                ? AnalyticsManager.EventName.ActionCombinationSuccess
+                : AnalyticsManager.EventName.ActionCombinationFail);
         }
 
         private void SubscribeResultPopup(Model.CombinationResultPopup data)

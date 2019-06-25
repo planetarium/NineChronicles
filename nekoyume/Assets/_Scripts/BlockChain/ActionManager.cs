@@ -105,7 +105,6 @@ namespace Nekoyume.BlockChain
         {
             var action = new SellCancellation
             {
-                sellerAvatarAddress = sellerAvatarAddress,
                 productId = productId
             };
             ProcessAction(action);

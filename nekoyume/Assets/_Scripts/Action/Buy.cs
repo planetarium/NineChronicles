@@ -11,19 +11,10 @@ namespace Nekoyume.Action
     [ActionType("buy")]
     public class Buy : GameAction
     {
-        [Serializable]
-        public class ResultModel
-        {
-            public Address owner;
-            public ShopItem shopItem;
-        }
-
         public Address buyerAgentAddress;
         public Address sellerAgentAddress;
         public Address sellerAvatarAddress;
         public Guid productId;
-
-        public ResultModel result;
 
         protected override IImmutableDictionary<string, object> PlainValueInternal => new Dictionary<string, object>
         {
@@ -55,68 +46,55 @@ namespace Nekoyume.Action
             var buyerAgentState = (AgentState) states.GetState(buyerAgentAddress);
             if (buyerAgentState == null)
             {
-                return SimpleError(ctx, ErrorCode.BuyBuyerAgentNotFound);
+                return states;
             }
             
             var buyerAvatarState = (AvatarState) states.GetState(ctx.Signer);
             if (buyerAvatarState == null)
             {
-                return SimpleError(ctx, ErrorCode.BuyBuyerAvatarNotFound);
+                return states;
             }
             
             var shopState = (ShopState) states.GetState(ShopState.Address) ?? new ShopState();
+
+            // 상점에서 구매할 아이템을 찾는다.
+            if (!shopState.TryGet(sellerAvatarAddress, productId, out var outPair))
+            {
+                return states;
+            }
             
-            try
+            var sellerAgentState = (AgentState) states.GetState(outPair.Value.sellerAgentAddress);
+            if (sellerAgentState == null)
             {
-                // 상점에서 구매할 아이템을 찾는다.
-                var target = shopState.Find(sellerAvatarAddress, productId);
-                var sellerAgentState = (AgentState) states.GetState(target.Value.sellerAgentAddress);
-                if (sellerAgentState == null)
-                {
-                    return SimpleError(ctx, ErrorCode.BuySellerAgentNotFound);
-                }
-                
-                // 돈은 있냐?
-                if (buyerAgentState.gold < target.Value.price)
-                {
-                    return SimpleError(ctx, ErrorCode.BuyGoldNotEnough);
-                }
-
-                // 상점에서 구매할 아이템을 제거한다.
-                if (!shopState.Unregister(target.Key, target.Value))
-                {
-                    return SimpleError(ctx, ErrorCode.UnexpectedCaseInActionExecute);
-                }
-                
-                // 구매자의 돈을 감소 시킨다.
-                buyerAgentState.gold -= target.Value.price;
-                
-                // 판매자의 돈을 증가 시킨다.
-                sellerAgentState.gold += target.Value.price;
-
-                // 구매자의 인벤토리에 구매한 아이템을 넣는다.
-                buyerAvatarState.inventory.AddUnfungibleItem(target.Value.itemUsable);
-                buyerAvatarState.updatedAt = DateTimeOffset.UtcNow;
-
-                result = new ResultModel
-                {
-                    owner = target.Key,
-                    shopItem = target.Value,
-                };
-
-                states = states.SetState(buyerAgentAddress, buyerAgentState);
-                states = states.SetState(ctx.Signer, buyerAvatarState);
-                states = states.SetState(target.Value.sellerAgentAddress, sellerAgentState);
-                return states.SetState(ShopState.Address, shopState);
+                return states;
             }
-            catch (KeyNotFoundException)
+            
+            // 돈은 있냐?
+            if (buyerAgentState.gold < outPair.Value.price)
             {
-                return SimpleError(ctx, ErrorCode.BuySoldOut);
+                return states;
             }
-            catch
+            
+            // 상점에서 구매할 아이템을 제거한다.
+            if (!shopState.Unregister(outPair.Key, outPair.Value))
             {
-                return SimpleError(ctx, ErrorCode.UnexpectedCaseInActionExecute);
+                return states;
             }
+            
+            // 구매자의 돈을 감소 시킨다.
+            buyerAgentState.gold -= outPair.Value.price;
+                
+            // 판매자의 돈을 증가 시킨다.
+            sellerAgentState.gold += outPair.Value.price;
+            
+            // 구매자의 인벤토리에 구매한 아이템을 넣는다.
+            buyerAvatarState.inventory.AddUnfungibleItem(outPair.Value.itemUsable);
+            buyerAvatarState.updatedAt = DateTimeOffset.UtcNow;
+
+            states = states.SetState(buyerAgentAddress, buyerAgentState);
+            states = states.SetState(ctx.Signer, buyerAvatarState);
+            states = states.SetState(outPair.Value.sellerAgentAddress, sellerAgentState);
+            return states.SetState(ShopState.Address, shopState);
         }
     }
 }

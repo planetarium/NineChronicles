@@ -35,6 +35,9 @@ namespace Nekoyume.BlockChain
 
         public void Start()
         {
+            Shop();
+            Ranking();
+            
             RewardGold();
             CreateAvatar();
             DeleteAvatar();
@@ -43,7 +46,6 @@ namespace Nekoyume.BlockChain
             Sell();
             SellCancellation();
             Buy();
-            Ranking();
         }
 
         public void Stop()
@@ -128,6 +130,30 @@ namespace Nekoyume.BlockChain
         {
             UpdateAvatarState(evaluation, States.Instance.currentAvatarKey.Value);
         }
+        
+        private void UpdateShopState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
+        {
+            States.Instance.shopState.Value = (ShopState) evaluation.OutputStates.GetState(ShopState.Address);
+        }
+        
+        private void UpdateRankingState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
+        {
+            States.Instance.rankingState.Value = (RankingState) evaluation.OutputStates.GetState(RankingState.Address);
+        }
+
+        private void Shop()
+        {
+            ActionBase.EveryRender(ShopState.Address)
+                .ObserveOnMainThread()
+                .Subscribe(UpdateShopState).AddTo(_disposables);
+        }
+        
+        private void Ranking()
+        {
+            ActionBase.EveryRender(RankingState.Address)
+                .ObserveOnMainThread()
+                .Subscribe(UpdateRankingState).AddTo(_disposables);
+        }
 
         private void RewardGold()
         {
@@ -180,72 +206,25 @@ namespace Nekoyume.BlockChain
         private void Sell()
         {
             ActionBase.EveryRender<Sell>()
-                .Where(eval => eval.Action.Succeed)
+                .Where(EvaluationValidationForCurrentAvatarState)
                 .ObserveOnMainThread()
-                .Subscribe(eval =>
-                {
-                    var result = eval.Action.result;
-                    if (eval.InputContext.Signer == States.Instance.currentAvatarState.Value.address)
-                    {
-                        States.Instance.currentAvatarState.Value.inventory.RemoveUnfungibleItem(result.shopItem
-                            .itemUsable);
-                    }
-
-                    ShopState.Register(ReactiveShopState.Items, States.Instance.currentAvatarState.Value.address,
-                        result.shopItem);
-                }).AddTo(_disposables);
+                .Subscribe(UpdateCurrentAvatarState).AddTo(_disposables);
         }
 
         private void SellCancellation()
         {
             ActionBase.EveryRender<SellCancellation>()
-                .Where(eval => eval.Action.Succeed)
+                .Where(EvaluationValidationForCurrentAvatarState)
                 .ObserveOnMainThread()
-                .Subscribe(eval =>
-                {
-                    var result = eval.Action.result;
-                    if (eval.InputContext.Signer == States.Instance.currentAvatarState.Value.address)
-                    {
-                        States.Instance.currentAvatarState.Value.inventory
-                            .AddUnfungibleItem(result.shopItem.itemUsable);
-                    }
-
-                    ShopState.Unregister(ReactiveShopState.Items, result.owner, result.shopItem.productId);
-                }).AddTo(_disposables);
+                .Subscribe(UpdateCurrentAvatarState).AddTo(_disposables);
         }
 
         private void Buy()
         {
             ActionBase.EveryRender<Buy>()
-                .Where(eval => eval.Action.Succeed)
+                .Where(EvaluationValidationForCurrentAvatarState)
                 .ObserveOnMainThread()
-                .Subscribe(eval =>
-                {
-                    var result = eval.Action.result;
-                    if (eval.InputContext.Signer == States.Instance.currentAvatarState.Value.address)
-                    {
-                        States.Instance.currentAvatarState.Value.inventory
-                            .AddUnfungibleItem(result.shopItem.itemUsable);
-                    }
-
-                    ShopState.Unregister(ReactiveShopState.Items, result.owner, result.shopItem.productId);
-                }).AddTo(_disposables);
-        }
-
-        private void Ranking()
-        {
-            ActionBase.EveryRender(RankingState.Address)
-                .ObserveOnMainThread()
-                .Subscribe(eval =>
-                {
-                    var asGameAction = eval.Action as GameAction;
-                    if (asGameAction is null || asGameAction.Succeed)
-                    {
-                        var state = (RankingState) eval.OutputStates.GetState(RankingState.Address);
-                        ReactiveRankingState.RankingState.Value = States.Instance.rankingState.Value = state;
-                    }
-                })
-                .AddTo(_disposables);
+                .Subscribe(UpdateCurrentAvatarState).AddTo(_disposables);
         }
     }
 }

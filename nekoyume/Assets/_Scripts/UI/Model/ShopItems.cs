@@ -4,6 +4,7 @@ using System.Linq;
 using Libplanet;
 using Nekoyume.BlockChain;
 using UniRx;
+using UnityEngine;
 
 namespace Nekoyume.UI.Model
 {
@@ -16,14 +17,9 @@ namespace Nekoyume.UI.Model
         public readonly Subject<ShopItems> onClickRefresh = new Subject<ShopItems>();
 
         private readonly IDictionary<Address, List<Game.Item.ShopItem>> _shopItems;
-
+        
         public ShopItems(IDictionary<Address, List<Game.Item.ShopItem>> shopItems)
         {
-            if (ReferenceEquals(shopItems, null))
-            {
-                throw new ArgumentNullException();
-            }
-
             _shopItems = shopItems;
 
             products.ObserveAdd().Subscribe(OnAddShopItem);
@@ -56,16 +52,45 @@ namespace Nekoyume.UI.Model
             selectedItem.Value = null;
         }
 
-        public void RemoveProduct(Guid productId)
+        public void AddShopItem(Address sellerAvatarAddress, Game.Item.ShopItem shopItem)
         {
-            RemoveItem(products, productId);
+            if (!_shopItems.ContainsKey(sellerAvatarAddress))
+            {
+                _shopItems.Add(sellerAvatarAddress, new List<Game.Item.ShopItem>());
+            }
+            
+            _shopItems[sellerAvatarAddress].Add(shopItem);
         }
-
+        
         public ShopItem AddRegisteredProduct(Address sellerAvatarAddress, Game.Item.ShopItem shopItem)
         {
             var result = new ShopItem(sellerAvatarAddress, shopItem);
             registeredProducts.Add(result);
             return result;
+        }
+        
+        public void RemoveShopItem(Address sellerAvatarAddress, Guid productId)
+        {
+            if (!_shopItems.ContainsKey(sellerAvatarAddress))
+            {
+                return;
+            }
+
+            foreach (var shopItem in _shopItems[sellerAvatarAddress])
+            {
+                if (shopItem.productId != productId)
+                {
+                    continue;
+                }
+                
+                _shopItems[sellerAvatarAddress].Remove(shopItem);
+                break;
+            }
+        }
+
+        public void RemoveProduct(Guid productId)
+        {
+            RemoveItem(products, productId);
         }
         
         public void RemoveRegisteredProduct(Guid productId)

@@ -23,10 +23,7 @@ namespace Nekoyume.Action
         public Address sellerAgentAddress;
         public Guid productId;
         public ItemUsable itemUsable;
-        
         public decimal price;
-
-        public ResultModel result;
 
         protected override IImmutableDictionary<string, object> PlainValueInternal => new Dictionary<string, object>
         {
@@ -56,7 +53,7 @@ namespace Nekoyume.Action
             var avatarState = (AvatarState) states.GetState(ctx.Signer);
             if (avatarState == null)
             {
-                return SimpleError(ctx, ErrorCode.AvatarNotFound);
+                return states;
             }
             
             var shopState = (ShopState) states.GetState(ShopState.Address) ?? new ShopState();
@@ -64,27 +61,21 @@ namespace Nekoyume.Action
             // 인벤토리에서 판매할 아이템을 선택하고 수량을 조절한다.
             if (!avatarState.inventory.TryGetUnfungibleItem(itemUsable, out ItemUsable unfungibleItem))
             {
-                return SimpleError(ctx, ErrorCode.SellItemNotFoundInInventory);
+                return states;
             }
 
             avatarState.inventory.RemoveUnfungibleItem(unfungibleItem);
             
             // 상점에 아이템을 등록한다.
-            var shopItem = new ShopItem
+            var shopItem = shopState.Register(ctx.Signer, new ShopItem
             {
                 sellerAgentAddress = sellerAgentAddress,
                 productId = productId,
                 itemUsable = unfungibleItem,
                 price = price
-            };
-            shopItem = shopState.Register(ctx.Signer, shopItem);
+            });
 
             avatarState.updatedAt = DateTimeOffset.UtcNow;
-            result = new ResultModel
-            {
-                sellerAvatarAddress = ctx.Signer,
-                shopItem = shopItem
-            };
 
             states = states.SetState(ctx.Signer, avatarState);
             return states.SetState(ShopState.Address, shopState);

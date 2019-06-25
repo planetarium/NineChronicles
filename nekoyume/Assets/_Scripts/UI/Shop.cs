@@ -5,7 +5,6 @@ using System.Linq;
 using DG.Tweening;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
-using Nekoyume.Data;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
 using Nekoyume.Model;
@@ -113,7 +112,7 @@ namespace Nekoyume.UI
         public override void Close()
         {
             Clear();
-            
+
             _stage.GetPlayer(_stage.roomPosition);
             if (!ReferenceEquals(_player, null))
             {
@@ -165,7 +164,7 @@ namespace Nekoyume.UI
                     switchSellButton.image.sprite = Resources.Load<Sprite>("UI/Textures/button_blue_01");
                     break;
             }
-            
+
             shopItems.SetState(state);
         }
 
@@ -189,10 +188,13 @@ namespace Nekoyume.UI
             {
                 if (_data.state.Value == Model.Shop.State.Buy)
                 {
+                    var inventory = States.Instance.currentAvatarState.Value.inventory;
                     // 구매하겠습니다.
                     ActionManager.instance
-                        .Buy(shopItem.sellerAgentAddress.Value, shopItem.sellerAvatarAddress.Value, shopItem.productId.Value)
-                        .Subscribe(ResponseBuy)
+                        .Buy(shopItem.sellerAgentAddress.Value, shopItem.sellerAvatarAddress.Value,
+                            shopItem.productId.Value)
+                        .Subscribe(eval =>
+                            ResponseBuy(eval, inventory, shopItem.productId.Value, (ItemUsable) shopItem.item.Value))
                         .AddTo(this);
                 }
                 else
@@ -200,7 +202,8 @@ namespace Nekoyume.UI
                     // 판매 취소하겠습니다.
                     ActionManager.instance
                         .SellCancellation(shopItem.sellerAvatarAddress.Value, shopItem.productId.Value)
-                        .Subscribe(ResponseSellCancellation)
+                        .Subscribe(eval =>
+                            ResponseSellCancellation(eval, shopItem.productId.Value, (ItemUsable) shopItem.item.Value))
                         .AddTo(this);
                 }
 
@@ -216,128 +219,96 @@ namespace Nekoyume.UI
 
         private void ResponseSell(ActionBase.ActionEvaluation<Sell> eval)
         {
-            if (eval.Action.errorCode != GameAction.ErrorCode.Success)
+            var sellerAvatarAddress = eval.InputContext.Signer;
+            var productId = eval.Action.productId;
+            if (!States.Instance.shopState.Value.TryGet(sellerAvatarAddress, productId, out var outPair))
             {
-                _data.itemCountAndPricePopup.Value.item.Value = null;
-                _loadingScreen.Close();
-                
-                // ToDo. 액션 실패 팝업!
-                Debug.LogWarning($"액션 실패!! id: {eval.Action.itemUsable.Data.id}");
-                
                 return;
             }
-            
-            var result = eval.Action.result;
-            if (ReferenceEquals(result, null))
-            {
-                throw new GameActionResultNullException();
-            }
-        
+
+            var shopItem = outPair.Value;
+
             _data.itemCountAndPricePopup.Value.item.Value = null;
-            _data.inventory.Value.RemoveUnfungibleItem(result.shopItem.itemUsable);
-            var registeredProduct = _data.shopItems.Value.AddRegisteredProduct(result.sellerAvatarAddress, result.shopItem);
+            _data.inventory.Value.RemoveUnfungibleItem(shopItem.itemUsable);
+            _data.shopItems.Value.AddShopItem(sellerAvatarAddress, shopItem);
+            var registeredProduct = _data.shopItems.Value.AddRegisteredProduct(sellerAvatarAddress, shopItem);
             _data.shopItems.Value.OnClickShopItem(registeredProduct);
             _loadingScreen.Close();
         }
 
-        private void ResponseSellCancellation(ActionBase.ActionEvaluation<SellCancellation> eval)
+        private void ResponseSellCancellation(ActionBase.ActionEvaluation<SellCancellation> eval, Guid productId,
+            ItemUsable shopItem)
         {
-            if (eval.Action.errorCode != GameAction.ErrorCode.Success)
-            {
-                _data.itemCountAndPricePopup.Value.item.Value = null;
-                _loadingScreen.Close();
-                
-                // ToDo. 액션 실패 팝업!
-                Debug.LogWarning($"액션 실패!! productId: {eval.Action.productId}");
-                
-                return;
-            }
-            
-            var result = eval.Action.result;
-            if (ReferenceEquals(result, null))
-            {
-                throw new GameActionResultNullException();
-            }
+            var sellerAvatarAddress = eval.InputContext.Signer;
 
             _data.itemCountAndPricePopup.Value.item.Value = null;
-            _data.shopItems.Value.RemoveProduct(result.shopItem.productId);
-            _data.shopItems.Value.RemoveRegisteredProduct(result.shopItem.productId);
-            var addedItem = _data.inventory.Value.AddUnfungibleItem(result.shopItem.itemUsable);
+            _data.shopItems.Value.RemoveShopItem(sellerAvatarAddress, productId);
+            _data.shopItems.Value.RemoveProduct(productId);
+            _data.shopItems.Value.RemoveRegisteredProduct(productId);
+
+            var addedItem = _data.inventory.Value.AddUnfungibleItem(shopItem);
             _data.inventory.Value.SubscribeOnClick(addedItem);
             _loadingScreen.Close();
         }
 
-        private void ResponseBuy(ActionBase.ActionEvaluation<Buy> eval)
+        private void ResponseBuy(ActionBase.ActionEvaluation<Buy> eval, Game.Item.Inventory inventory, Guid productId,
+            ItemUsable shopItem)
         {
-            if (eval.Action.errorCode != GameAction.ErrorCode.Success)
-            {
-                _data.itemCountAndPricePopup.Value.item.Value = null;
-                _loadingScreen.Close();
-                
-                if (eval.Action.errorCode == GameAction.ErrorCode.BuySoldOut)
-                {
-                    // ToDo. 매진 팝업!
-                    Debug.LogWarning($"매진!! productId: {eval.Action.productId}");
-                    _data.shopItems.Value.RemoveProduct(eval.Action.productId);
-                }
-                
-                return;
-            }
-            
-            var result = eval.Action.result;
-            if (ReferenceEquals(result, null))
-            {
-                throw new GameActionResultNullException();
-            }
+            var sellerAvatarAddress = eval.InputContext.Signer;
 
             _data.itemCountAndPricePopup.Value.item.Value = null;
+            _data.shopItems.Value.RemoveShopItem(sellerAvatarAddress, productId);
+            _data.shopItems.Value.RemoveProduct(productId);
+            _data.shopItems.Value.RemoveRegisteredProduct(productId);
 
-            StartCoroutine(CoShowBuyResultVFX(result));
+            if (!States.Instance.currentAvatarState.Value.inventory.TryGetAddedItemFrom(inventory,
+                    out var outAddedItem) ||
+                outAddedItem == null)
+            {
+                return;
+            }
 
-            _data.shopItems.Value.RemoveProduct(result.shopItem.productId);
-            _data.shopItems.Value.RemoveRegisteredProduct(result.shopItem.productId);
-            var addedItem = _data.inventory.Value.AddUnfungibleItem(result.shopItem.itemUsable);
+            StartCoroutine(CoShowBuyResultVFX(productId));
+            var addedItem = _data.inventory.Value.AddUnfungibleItem(shopItem);
             _data.inventory.Value.SubscribeOnClick(addedItem);
             _loadingScreen.Close();
         }
 
-        private IEnumerator CoShowBuyResultVFX(Buy.ResultModel result)
+        private IEnumerator CoShowBuyResultVFX(Guid productId)
         {
-            Module.ShopItemView shopView = shopItems.GetByProductId(result.shopItem.productId);
-            if (ReferenceEquals(shopView, null))
+            var shopItemView = shopItems.GetByProductId(productId);
+            if (ReferenceEquals(shopItemView, null))
             {
                 yield break;
             }
-            
+
             yield return new WaitForSeconds(0.1f);
 
             particleVFX.SetActive(false);
             resultItemVFX.SetActive(false);
-            
+
             // ToDo. 지금은 구매의 결과가 마지막에 더해지기 때문에 마지막 아이템을 갖고 오지만, 복수의 아이템을 한 번에 얻을 때에 대한 처리나 정렬 기능이 추가 되면 itemGuid로 갖고 와야함.
             var inventoryItem = _data.inventory.Value.items.Last();
             if (ReferenceEquals(inventoryItem, null))
             {
                 yield break;
             }
-            
+
             var index = _data.inventory.Value.items.Count - 1;
             var inventoryItemView = inventoryAndItemInfo.inventory.scrollerController.GetByIndex(index);
             if (ReferenceEquals(inventoryItemView, null))
             {
                 yield break;
             }
-            
-            particleVFX.transform.position = shopView.transform.position;
+
+            particleVFX.transform.position = shopItemView.transform.position;
             particleVFX.transform.DOMoveX(inventoryItemView.transform.position.x, 0.6f);
             particleVFX.transform.DOMoveY(inventoryItemView.transform.position.y, 0.6f).SetEase(Ease.InCubic)
-                .onComplete = () =>{
-                resultItemVFX.SetActive(true);
-            };
+                .onComplete = () => { resultItemVFX.SetActive(true); };
             particleVFX.SetActive(true);
             resultItemVFX.transform.position = inventoryItemView.transform.position;
         }
-        
+
         private void OnClickCloseItemCountAndPricePopup(Model.ItemCountAndPricePopup data)
         {
             _data.itemCountAndPricePopup.Value.item.Value = null;

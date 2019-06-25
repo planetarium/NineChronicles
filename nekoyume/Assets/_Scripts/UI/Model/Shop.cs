@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Libplanet;
 using Nekoyume.Game.Item;
 using Nekoyume.Model;
-using Nekoyume.State;
 using UniRx;
 using UnityEngine;
 
