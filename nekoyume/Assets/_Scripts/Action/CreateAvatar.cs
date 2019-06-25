@@ -71,6 +71,14 @@ namespace Nekoyume.Action
                 var equipment = ItemBase.ItemFactory(data);
                 avatarState.items.Add(new Inventory.InventoryItem(equipment));
             }
+
+            // TODO. 조합 디버깅용 나중에 삭제할것.
+            foreach (var row in Tables.instance.Item.Values)
+            {
+                var item = ItemBase.ItemFactory(row);
+                avatarState.items.Add(new Inventory.InventoryItem(item));
+
+            }
             return avatarState;
         }
     }
