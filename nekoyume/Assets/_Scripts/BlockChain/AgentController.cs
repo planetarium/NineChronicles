@@ -181,9 +181,8 @@ namespace Nekoyume.BlockChain
             var pubKey = new PublicKey(ByteUtil.ParseHex(tokens[0]));
             string host = tokens[1];
             int port = int.Parse(tokens[2]);
-            int version = int.Parse(tokens[3]);
 
-            return new Peer(pubKey, new DnsEndPoint(host, port), version);
+            return new Peer(pubKey, new DnsEndPoint(host, port));
         }
 
         private static IEnumerable<string> LoadConfigLines(string fileName)
