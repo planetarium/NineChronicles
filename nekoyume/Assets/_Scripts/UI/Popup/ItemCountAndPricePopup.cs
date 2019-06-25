@@ -28,7 +28,7 @@ namespace Nekoyume.UI
                 {
                     if (!int.TryParse(_, out var price))
                     {
-                        throw new InvalidCastException();
+                        price = 0;
                     }
                     _data.price.Value = price;
                 }).AddTo(_disposablesForAwake);
