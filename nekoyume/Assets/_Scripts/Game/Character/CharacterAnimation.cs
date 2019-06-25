@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace Nekoyume.Game.Character
@@ -11,23 +12,28 @@ namespace Nekoyume.Game.Character
             Run,
             Attack,
             Casting,
+            CastingAttack,
             Hit,
             Die,
             Disappear
         }
-        
+
         public static readonly List<Type> List = new List<Type>();
 
         static CharacterAnimation()
         {
-            List.Add(Type.Appear);
-            List.Add(Type.Idle);
-            List.Add(Type.Run);
-            List.Add(Type.Attack);
-            List.Add(Type.Casting);
-            List.Add(Type.Hit);
-            List.Add(Type.Die);
-            List.Add(Type.Disappear);
+            var values = Enum.GetValues(typeof(Type));
+            foreach (var value in values)
+            {
+                List.Add((Type) value);
+            }
         } 
+    }
+
+    public class InvalidCharacterAnimationTypeException : Exception
+    {
+        public InvalidCharacterAnimationTypeException(string message) : base(message)
+        {
+        }
     }
 }

@@ -70,11 +70,19 @@ namespace Planetarium.Nekoyume.Editor
                 var asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(assetPath);
                 if (ReferenceEquals(asset, null))
                 {
-                    if (animationType == CharacterAnimation.Type.Appear ||
-                        animationType == CharacterAnimation.Type.Disappear)
+                    switch (animationType)
                     {
-                        assetPath = Path.Combine(animationAssetsPath, $"{nameof(CharacterAnimation.Type.Idle)}.asset");
-                        asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(assetPath);
+                        case CharacterAnimation.Type.Appear:
+                        case CharacterAnimation.Type.Disappear:
+                            assetPath = Path.Combine(animationAssetsPath, $"{nameof(CharacterAnimation.Type.Idle)}.asset");
+                            asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(assetPath);
+                            break;
+                        case CharacterAnimation.Type.CastingAttack:
+                            assetPath = Path.Combine(animationAssetsPath, $"{nameof(CharacterAnimation.Type.Attack)}.asset");
+                            asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(assetPath);
+                            break;
+                        default:
+                            throw new AssetNotFoundException(assetPath);
                     }
 
                     if (ReferenceEquals(asset, null))
