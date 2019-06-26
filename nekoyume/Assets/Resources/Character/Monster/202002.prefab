@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &1999956164292091484
+--- !u!1 &3205807475894475779
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,12 +8,12 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 3142586880278588}
-  - component: {fileID: 1679895906952369573}
-  - component: {fileID: 1154184591947981785}
-  - component: {fileID: 7389394222707981804}
-  - component: {fileID: 2775494760741003749}
-  - component: {fileID: 2040701772205683528}
+  - component: {fileID: 536689346345505590}
+  - component: {fileID: 3861264564609789532}
+  - component: {fileID: 8619393490491912656}
+  - component: {fileID: 6244011380808832898}
+  - component: {fileID: 4676628033335724694}
+  - component: {fileID: 5669711899199383038}
   m_Layer: 8
   m_Name: 202002
   m_TagString: Untagged
@@ -21,13 +21,13 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &3142586880278588
+--- !u!4 &536689346345505590
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1999956164292091484}
+  m_GameObject: {fileID: 3205807475894475779}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.64, y: 0.64, z: 1}
@@ -35,21 +35,21 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &1679895906952369573
+--- !u!33 &3861264564609789532
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1999956164292091484}
+  m_GameObject: {fileID: 3205807475894475779}
   m_Mesh: {fileID: 0}
---- !u!23 &1154184591947981785
+--- !u!23 &8619393490491912656
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1999956164292091484}
+  m_GameObject: {fileID: 3205807475894475779}
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
@@ -78,15 +78,15 @@ MeshRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -385277771
-  m_SortingLayer: 2
+  m_SortingLayer: 3
   m_SortingOrder: 0
---- !u!114 &7389394222707981804
+--- !u!114 &6244011380808832898
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1999956164292091484}
+  m_GameObject: {fileID: 3205807475894475779}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d247ba06193faa74d9335f5481b2b56c, type: 3}
@@ -115,14 +115,14 @@ MonoBehaviour:
   _animationName: Idle
   loop: 1
   timeScale: 1
---- !u!95 &2775494760741003749
+--- !u!95 &4676628033335724694
 Animator:
   serializedVersion: 3
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1999956164292091484}
+  m_GameObject: {fileID: 3205807475894475779}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: 21ad0e93f82d940989ca46e7a61db8ac, type: 2}
@@ -134,13 +134,13 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &2040701772205683528
+--- !u!114 &5669711899199383038
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1999956164292091484}
+  m_GameObject: {fileID: 3205807475894475779}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6ea4943521264f4fb16186014e900c1f, type: 3}
@@ -157,9 +157,14 @@ MonoBehaviour:
     animation: {fileID: 11400000, guid: eeda32c444c65416a889651e03ec392f, type: 2}
   - stateName: Casting
     animation: {fileID: 11400000, guid: 2aa69326bfc284d6abd827d34978fbf9, type: 2}
+  - stateName: CastingAttack
+    animation: {fileID: 11400000, guid: eeda32c444c65416a889651e03ec392f, type: 2}
   - stateName: Hit
     animation: {fileID: 11400000, guid: de807b572f1eb4f0a84c8f33595d195e, type: 2}
   - stateName: Die
     animation: {fileID: 11400000, guid: ca95dc43ac37b40b49ae5504e9d2b51c, type: 2}
   - stateName: Disappear
     animation: {fileID: 11400000, guid: 53a012377e00b49f99a6d4820e881794, type: 2}
+  skeletonAnimation: {fileID: 0}
+  weaponSlot: sword_0001
+  weaponAttachment: 
