@@ -36,7 +36,12 @@ namespace Nekoyume.UI.Model
 
         private bool CountEnabledFunc(CountableItem countableItem)
         {
-            return item.Value.Data.cls == nameof(ItemBase.ItemType.Material);
+            if (countableItem.item.Value == null)
+            {
+                return false;
+            }
+            
+            return countableItem.item.Value.Data.cls == nameof(ItemBase.ItemType.Material);
         }
     }
 }
