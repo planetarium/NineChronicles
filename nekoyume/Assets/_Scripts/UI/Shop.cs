@@ -219,6 +219,8 @@ namespace Nekoyume.UI
 
         private void ResponseSell(ActionBase.ActionEvaluation<Sell> eval)
         {
+            _data.itemCountAndPricePopup.Value.item.Value = null;
+            
             var sellerAvatarAddress = eval.InputContext.Signer;
             var productId = eval.Action.productId;
             if (!States.Instance.shopState.Value.TryGet(sellerAvatarAddress, productId, out var outPair))
@@ -227,8 +229,6 @@ namespace Nekoyume.UI
             }
 
             var shopItem = outPair.Value;
-
-            _data.itemCountAndPricePopup.Value.item.Value = null;
             
             _data.inventory.Value.RemoveNonFungibleItem(shopItem.itemUsable);
             
@@ -242,10 +242,10 @@ namespace Nekoyume.UI
         private void ResponseSellCancellation(ActionBase.ActionEvaluation<SellCancellation> eval, Guid productId,
             ItemUsable shopItem)
         {
-            var sellerAvatarAddress = eval.InputContext.Signer;
-
             _data.itemCountAndPricePopup.Value.item.Value = null;
             
+            var sellerAvatarAddress = eval.InputContext.Signer;
+
             _data.shopItems.Value.RemoveShopItem(sellerAvatarAddress, productId);
             _data.shopItems.Value.RemoveProduct(productId);
             _data.shopItems.Value.RemoveRegisteredProduct(productId);
@@ -259,9 +259,10 @@ namespace Nekoyume.UI
         private void ResponseBuy(ActionBase.ActionEvaluation<Buy> eval, Game.Item.Inventory inventory, Guid productId,
             ItemUsable shopItem)
         {
-            var sellerAvatarAddress = eval.InputContext.Signer;
-
             _data.itemCountAndPricePopup.Value.item.Value = null;
+            
+            var sellerAvatarAddress = eval.InputContext.Signer;
+            
             _data.shopItems.Value.RemoveShopItem(sellerAvatarAddress, productId);
             _data.shopItems.Value.RemoveProduct(productId);
             _data.shopItems.Value.RemoveRegisteredProduct(productId);
