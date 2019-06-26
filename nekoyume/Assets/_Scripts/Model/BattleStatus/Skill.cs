@@ -16,7 +16,7 @@ namespace Nekoyume.Model
             public readonly int Effect;
             public readonly bool Critical;
             public readonly SkillEffect.Category Category;
-            public readonly Elemental.ElementalType? Elemental;
+            public Elemental.ElementalType? Elemental;
 
             public SkillInfo(CharacterBase character, int effect, bool critical, SkillEffect.Category category,
                 Elemental.ElementalType? elemental = null)

@@ -67,7 +67,7 @@ namespace Nekoyume.Data.Table
                     int index = header.FindIndex(i => i == fieldName.ToLower());
                     if (index == -1)
                     {
-                        Debug.Log($"Header not found: {fieldName}");
+//                        Debug.Log($"Header not found: {fieldName}");
                         continue;
                     }
 

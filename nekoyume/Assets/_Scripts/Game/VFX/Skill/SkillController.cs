@@ -41,6 +41,10 @@ namespace Nekoyume.Game.VFX.Skill
             var skillName = $"{skillInfo.Category}_{size}_{elemental}".ToLower();
             var go = _pool.Get(skillName, false, position);
             var effect = go.GetComponent<T>();
+            if (effect == null)
+            {
+                Debug.LogError(skillName);
+            }
             effect.target = target;
             effect.Stop();
             return effect;
