@@ -76,7 +76,7 @@ namespace Nekoyume.Action
             foreach (var row in Tables.instance.Item.Values)
             {
                 var item = ItemBase.ItemFactory(row);
-                avatarState.items.Add(new Inventory.InventoryItem(item));
+                avatarState.inventory.AddFungibleItem(item);
 
             }
             return avatarState;
