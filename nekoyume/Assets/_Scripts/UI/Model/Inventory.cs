@@ -70,8 +70,8 @@ namespace Nekoyume.UI.Model
             return inventoryItem;
         }
         
-        // Todo. UnfungibleItem 개발 후 `ItemUsable itemBase` 인자를 `UnfungibleItem unfungibleItem`로 수정.
-        public InventoryItem AddUnfungibleItem(ItemUsable itemBase)
+        // Todo. NonFungibleItem 개발 후 `ItemUsable itemBase` 인자를 `NonFungibleItem nonFungibleItem`로 수정.
+        public InventoryItem AddNonFungibleItem(ItemUsable itemBase)
         {
             var inventoryItem = new InventoryItem(itemBase, 1);
             items.Add(inventoryItem);
@@ -108,10 +108,10 @@ namespace Nekoyume.UI.Model
             return true;
         }
         
-        // Todo. UnfungibleItem 개발 후 `ItemUsable itemUsable` 인자를 `UnfungibleItem unfungibleItem`로 수정.
-        public bool RemoveUnfungibleItem(ItemUsable itemUsable)
+        // Todo. NonFungibleItem 개발 후 `ItemUsable itemUsable` 인자를 `NonFungibleItem nonFungibleItem`로 수정.
+        public bool RemoveNonFungibleItem(ItemUsable itemUsable)
         {
-            return TryGetUnfungibleItem(itemUsable, out var outFungibleItem) && items.Remove(outFungibleItem);
+            return TryGetNonFungibleItem(itemUsable, out var outFungibleItem) && items.Remove(outFungibleItem);
         }
 
         public void DeselectAll()
@@ -163,8 +163,8 @@ namespace Nekoyume.UI.Model
             return false;
         }
         
-        // Todo. UnfungibleItem 개발 후 `ItemUsable itemUsable` 인자를 `UnfungibleItem unfungibleItem`로 수정.
-        private bool TryGetUnfungibleItem(ItemUsable itemUsable, out InventoryItem outUnfungibleItem)
+        // Todo. NonFungibleItem 개발 후 `ItemUsable itemUsable` 인자를 `NonFungibleItem nonFungibleItem`로 수정.
+        private bool TryGetNonFungibleItem(ItemUsable itemUsable, out InventoryItem outNonFungibleItem)
         {
             foreach (var fungibleItem in items)
             {
@@ -173,11 +173,11 @@ namespace Nekoyume.UI.Model
                     continue;
                 }
                 
-                outUnfungibleItem = fungibleItem;
+                outNonFungibleItem = fungibleItem;
                 return true;
             }
 
-            outUnfungibleItem = null;
+            outNonFungibleItem = null;
             return false;
         }
 

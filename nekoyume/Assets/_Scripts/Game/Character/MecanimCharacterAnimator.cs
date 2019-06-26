@@ -86,7 +86,15 @@ namespace Nekoyume.Game.Character
                 return;
             }
 
-            Animator.Play(nameof(CharacterAnimation.Type.Attack), _baseLayerIndex, 0f);
+            var currentState = Animator.GetCurrentAnimatorStateInfo(_baseLayerIndex);
+            if (currentState.IsName(nameof(CharacterAnimation.Type.Casting)))
+            {
+                Animator.Play(nameof(CharacterAnimation.Type.CastingAttack), _baseLayerIndex, 0f);
+            }
+            else
+            {
+                Animator.Play(nameof(CharacterAnimation.Type.Attack), _baseLayerIndex, 0f);
+            }
         }
 
         /// <summary>

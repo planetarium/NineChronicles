@@ -32,6 +32,7 @@ namespace Nekoyume.UI
             Widget.Create<QuestPreparation>();
             Widget.Create<Combination>();
             Widget.Create<RankingBoard>();
+            Widget.Create<WorldMap>();
 
             // 모듈류.
             Widget.Create<StatusDetail>();

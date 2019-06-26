@@ -68,7 +68,15 @@ namespace Nekoyume.Action
             foreach (var data in table.Select(i => i.Value).Where(e => e.setId == DefaultItemEquipmentSetId))
             {
                 var equipment = (ItemUsable) ItemBase.ItemFactory(data);
-                avatarState.inventory.AddUnfungibleItem(equipment);
+                avatarState.inventory.AddNonFungibleItem(equipment);
+            }
+
+            // TODO. 조합 디버깅용 나중에 삭제할것.
+            foreach (var row in Tables.instance.Item.Values)
+            {
+                var item = ItemBase.ItemFactory(row);
+                avatarState.inventory.AddFungibleItem(item);
+
             }
             return avatarState;
         }

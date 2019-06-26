@@ -8,10 +8,11 @@ using UnityEngine;
 namespace Nekoyume.Game.Character
 {
     [RequireComponent(typeof(SkeletonAnimation))]
-    public class SkeletonAnimationController: MonoBehaviour
+    public class SkeletonAnimationController : MonoBehaviour
     {
         [Serializable]
-        public class StateNameToAnimationReference {
+        public class StateNameToAnimationReference
+        {
             public string stateName;
             public AnimationReferenceAsset animation;
         }
@@ -24,13 +25,15 @@ namespace Nekoyume.Game.Character
 
         [SpineSlot] public string weaponSlot = "sword_0001";
 
-        [SpineAttachment(slotField: "weaponSlot")] public string weaponAttachment;
+        [SpineAttachment(slotField: "weaponSlot")]
+        public string weaponAttachment;
 
         #region Mono
 
-        private void Awake ()
+        private void Awake()
         {
-            foreach (var entry in statesAndAnimations) {
+            foreach (var entry in statesAndAnimations)
+            {
                 entry.animation.Initialize();
             }
 
@@ -40,14 +43,17 @@ namespace Nekoyume.Game.Character
         #endregion
 
         /// <summary>Sets the horizontal flip state of the skeleton based on a nonzero float. If negative, the skeleton is flipped. If positive, the skeleton is not flipped.</summary>
-        public void SetFlip (float horizontal) {
-            if (Math.Abs(horizontal) > 0f) {
+        public void SetFlip(float horizontal)
+        {
+            if (Math.Abs(horizontal) > 0f)
+            {
                 skeletonAnimation.Skeleton.ScaleX = horizontal > 0 ? 1f : -1f;
             }
         }
 
         /// <summary>Plays an  animation based on the hash of the state name.</summary>
-        public void PlayAnimationForState (int shortNameHash, int layerIndex) {
+        public void PlayAnimationForState(int shortNameHash, int layerIndex)
+        {
             var foundAnimation = GetAnimationForState(shortNameHash);
             if (foundAnimation == null)
                 return;
@@ -55,31 +61,16 @@ namespace Nekoyume.Game.Character
             PlayNewAnimation(foundAnimation, layerIndex);
         }
 
-        /// <summary>Gets a Spine Animation based on the hash of the state name.</summary>
-        public Spine.Animation GetAnimationForState (int shortNameHash) {
-            var foundState = statesAndAnimations.Find(entry => StringToHash(entry.stateName) == shortNameHash);
-            return foundState?.animation;
-        }
-
-        /// <summary>Play an animation. If a transition animation is defined, the transition is played before the target animation being passed.</summary>
-        public void PlayNewAnimation (Spine.Animation target, int layerIndex)
-        {
-            var loop = target.Name == nameof(CharacterAnimation.Type.Idle)
-                       || target.Name == nameof(CharacterAnimation.Type.Run)
-                       || target.Name == nameof(CharacterAnimation.Type.Casting);
-
-            skeletonAnimation.AnimationState.SetAnimation(layerIndex, target, loop);
-            TargetAnimation = target;
-        }
-
         /// <summary>Play a non-looping animation once then continue playing the state animation.</summary>
-        public void PlayOneShot (Spine.Animation oneShot, int layerIndex) {
+        public void PlayOneShot(Spine.Animation oneShot, int layerIndex)
+        {
             var state = skeletonAnimation.AnimationState;
             state.SetAnimation(0, oneShot, false);
             state.AddAnimation(0, TargetAnimation, true, 0f);
         }
 
-        private int StringToHash (string s) {
+        private int StringToHash(string s)
+        {
             return Animator.StringToHash(s);
         }
 
@@ -104,6 +95,24 @@ namespace Nekoyume.Game.Character
             skeleton.SetSkin(skin);
             skeleton.SetSlotsToSetupPose();
             skeletonAnimation.Update(0);
+        }
+
+        /// <summary>Gets a Spine Animation based on the hash of the state name.</summary>
+        private Spine.Animation GetAnimationForState(int shortNameHash)
+        {
+            var foundState = statesAndAnimations.Find(entry => StringToHash(entry.stateName) == shortNameHash);
+            return foundState?.animation;
+        }
+
+        /// <summary>Play an animation. If a transition animation is defined, the transition is played before the target animation being passed.</summary>
+        private void PlayNewAnimation(Spine.Animation target, int layerIndex)
+        {
+            var loop = target.Name == nameof(CharacterAnimation.Type.Idle)
+                       || target.Name == nameof(CharacterAnimation.Type.Run)
+                       || target.Name == nameof(CharacterAnimation.Type.Casting);
+
+            skeletonAnimation.AnimationState.SetAnimation(layerIndex, target, loop);
+            TargetAnimation = target;
         }
     }
 }

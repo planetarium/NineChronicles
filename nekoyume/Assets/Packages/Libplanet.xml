@@ -264,6 +264,27 @@
              represented as fields or properties in an action class, and bound
              argument values to these parameters should be received through
              a constructor parameters of that class.</para>
+             <para>From a perspective of security, an action class belongs to
+             the network protocol, and property values in an action belong to
+             a node's will (i.e., a user/player's choice).
+             That means if you define an action class it also defines what every
+             honest node can do in the network.  Even if a malicious node changes
+             their own action code it won't affect other honest nodes in
+             the network.</para>
+             <para>For example, where honest nodes share the common action
+             <c>Heal(Target) => PreviousStates[Target] + 1</c>, suppose a malicious
+             node <c>m</c> changes their own <c>Heal</c> action code to
+             <c>Heal(Target) => PreviousStates[Target] + 2</c> (2 instead of 1),
+             and then send an action <c>Heal(m)</c>.
+             Fortunately, this action does not work as <c>m</c>'s intention,
+             because the changed code in itself is not used by other honest nodes,
+             so they still increase only 1, not 2.  The effect of that double healing
+             is a sort of &#x201c;illusion&#x201d; only visible to the malicious node
+             alone.</para>
+             <para>In conclusion, action code is a part of the protocol and it works with
+             consensus in the network, so only things each node can affect the network
+             in general is property values of each action they sign and send,
+             not code of an action.</para>
              </summary>
              <example>
              The following example shows how to implement an action of three types
@@ -1129,7 +1150,7 @@
         <member name="P:Libplanet.Blockchain.BlockChain`1.Item(System.Int32)">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain`1.GetStates(System.Collections.Generic.IEnumerable{Libplanet.Address},System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}})">
+        <member name="M:Libplanet.Blockchain.BlockChain`1.GetStates(System.Collections.Generic.IEnumerable{Libplanet.Address},System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.Boolean)">
             <summary>
             Gets the state of the given <paramref name="addresses"/> in the
             <see cref="T:Libplanet.Blockchain.BlockChain`1"/> from <paramref name="offset"/>.
@@ -1139,8 +1160,25 @@
             <param name="offset">The <see cref="T:Libplanet.HashDigest`1"/> of the block to
             start finding the state. It will be The tip of the
             <see cref="T:Libplanet.Blockchain.BlockChain`1"/> if it is <c>null</c>.</param>
+            <param name="completeStates">When the <see cref="T:Libplanet.Blockchain.BlockChain`1"/>
+            instance does not contain states dirty of the block which lastly
+            updated states of a requested address, this option makes
+            the incomplete states calculated and filled on the fly.
+            If this option is turned off (which is default) this method throws
+            <see cref="T:Libplanet.Blockchain.IncompleteBlockStatesException"/> instead
+            for the same situation.
+            Just-in-time calculation of states could take a long time so that
+            the overall latency of an application may rise.</param>
             <returns>The <see cref="T:Libplanet.Action.AddressStateMap"/> of given
             <paramref name="addresses"/>.</returns>
+            <exception cref="T:Libplanet.Blockchain.IncompleteBlockStatesException">Thrown when
+            the <see cref="T:Libplanet.Blockchain.BlockChain`1"/> instance does not contain
+            states dirty of the block which lastly updated states of a requested
+            address, because actions in the block have never been executed.
+            If <paramref name="completeStates"/> option is turned on
+            this exception is not thrown and incomplete states are calculated
+            and filled on the fly instead.
+            </exception>
         </member>
         <member name="M:Libplanet.Blockchain.BlockChain`1.Append(Libplanet.Blocks.Block{`0})">
             <summary>
@@ -1158,7 +1196,7 @@
             the <see cref="P:Libplanet.Blockchain.BlockChain`1.Policy"/>.</exception>
             <exception cref="T:Libplanet.Tx.InvalidTxNonceException">Thrown when the
             <see cref="P:Libplanet.Tx.Transaction`1.Nonce"/> is different from
-            <see cref="M:Libplanet.Blockchain.BlockChain`1.GetNonce(Libplanet.Address)"/> result of the
+            <see cref="M:Libplanet.Blockchain.BlockChain`1.GetNextTxNonce(Libplanet.Address)"/> result of the
             <see cref="P:Libplanet.Tx.Transaction`1.Signer"/>.</exception>
         </member>
         <member name="M:Libplanet.Blockchain.BlockChain`1.Append(Libplanet.Blocks.Block{`0},System.DateTimeOffset)">
@@ -1178,7 +1216,7 @@
             the <see cref="P:Libplanet.Blockchain.BlockChain`1.Policy"/>.</exception>
             <exception cref="T:Libplanet.Tx.InvalidTxNonceException">Thrown when the
             <see cref="P:Libplanet.Tx.Transaction`1.Nonce"/> is different from
-            <see cref="M:Libplanet.Blockchain.BlockChain`1.GetNonce(Libplanet.Address)"/> result of the
+            <see cref="M:Libplanet.Blockchain.BlockChain`1.GetNextTxNonce(Libplanet.Address)"/> result of the
             <see cref="P:Libplanet.Tx.Transaction`1.Signer"/>.</exception>
         </member>
         <member name="M:Libplanet.Blockchain.BlockChain`1.StageTransactions(System.Collections.Generic.ISet{Libplanet.Tx.Transaction{`0}})">
@@ -1197,6 +1235,54 @@
             <param name="transactions"><see cref="T:Libplanet.Tx.Transaction`1"/>s
             to remove from the pending list.</param>
             <seealso cref="M:Libplanet.Blockchain.BlockChain`1.StageTransactions(System.Collections.Generic.ISet{Libplanet.Tx.Transaction{`0}})"/>
+        </member>
+        <member name="M:Libplanet.Blockchain.BlockChain`1.GetNextTxNonce(Libplanet.Address)">
+            <summary>
+            Gets next <see cref="P:Libplanet.Tx.Transaction`1.Nonce"/> of the address.
+            </summary>
+            <param name="address">The <see cref="T:Libplanet.Address"/> from which to obtain the
+            <see cref="P:Libplanet.Tx.Transaction`1.Nonce"/> value.</param>
+            <returns>The next <see cref="P:Libplanet.Tx.Transaction`1.Nonce"/> value of the
+            <paramref name="address"/>.</returns>
+        </member>
+        <member name="M:Libplanet.Blockchain.BlockChain`1.MakeTransaction(Libplanet.Crypto.PrivateKey,System.Collections.Generic.IEnumerable{`0},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Nullable{System.DateTimeOffset})">
+            <summary>
+            Creates a new <see cref="T:Libplanet.Tx.Transaction`1"/> and stage the transaction.
+            </summary>
+            <param name="privateKey">A <see cref="T:Libplanet.Crypto.PrivateKey"/> of the account who creates and
+            signs a new transaction.</param>
+            <param name="actions">A list of <see cref="T:Libplanet.Action.IAction"/>s to include to a new transaction.
+            </param>
+            <param name="updatedAddresses"><see cref="T:Libplanet.Address"/>es whose states affected by
+            <paramref name="actions"/>.</param>
+            <param name="timestamp">The time this <see cref="T:Libplanet.Tx.Transaction`1"/> is created and
+            signed.</param>
+            <returns>A created new <see cref="T:Libplanet.Tx.Transaction`1"/> signed by the given
+            <paramref name="privateKey"/>.</returns>
+            <seealso cref="M:Libplanet.Tx.Transaction`1.Create(System.Int64,Libplanet.Crypto.PrivateKey,System.Collections.Generic.IEnumerable{`0},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Nullable{System.DateTimeOffset})" />
+        </member>
+        <member name="T:Libplanet.Blockchain.IncompleteBlockStatesException">
+            <summary>
+            The exception that is thrown when a <see cref="T:Libplanet.Blockchain.BlockChain`1"/> have
+            not calculated the complete states for all blocks, but an operation
+            that needs some lacked states is requested.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Blockchain.IncompleteBlockStatesException.#ctor(Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.String)">
+            <summary>
+            Creates a new <see cref="T:Libplanet.Blockchain.IncompleteBlockStatesException"/> object.
+            </summary>
+            <param name="blockHash">Specifies <see cref="P:Libplanet.Blockchain.IncompleteBlockStatesException.BlockHash"/>.
+            It is automatically included to the <see cref="P:System.Exception.Message"/>
+            string.</param>
+            <param name="message">Specifies the <see cref="P:System.Exception.Message"/>.
+            </param>
+        </member>
+        <member name="P:Libplanet.Blockchain.IncompleteBlockStatesException.BlockHash">
+            <summary>
+            The <see cref="P:Libplanet.Blocks.Block`1.Hash"/> of <see cref="T:Libplanet.Blocks.Block`1"/> that
+            a <see cref="T:Libplanet.Blockchain.BlockChain`1"/> lacks the states.
+            </summary>
         </member>
         <member name="T:Libplanet.Blockchain.Policies.BlockPolicy`1">
             <summary>
@@ -2057,7 +2143,17 @@
             </summary>
             <seealso cref="T:Libplanet.Net.Swarm"/>
         </member>
-        <member name="M:Libplanet.Net.Peer.#ctor(Libplanet.Crypto.PublicKey,System.Net.DnsEndPoint,System.Int32)">
+        <member name="M:Libplanet.Net.Peer.#ctor(Libplanet.Crypto.PublicKey,System.Net.DnsEndPoint)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Libplanet.Net.Peer"/> class
+            with omitting <see cref="P:Libplanet.Net.Peer.AppProtocolVersion"/>.
+            </summary>
+            <param name="publicKey">A <see cref="P:Libplanet.Net.Peer.PublicKey"/> of the
+            <see cref="T:Libplanet.Net.Peer"/>.</param>
+            <param name="endPoint">A <see cref="T:System.Net.DnsEndPoint"/> consisting of the
+            host and port of the <see cref="T:Libplanet.Net.Peer"/>.</param>
+        </member>
+        <member name="M:Libplanet.Net.Peer.#ctor(Libplanet.Crypto.PublicKey,System.Net.DnsEndPoint,System.Nullable{System.Int32})">
             <summary>
             Initializes a new instance of the <see cref="T:Libplanet.Net.Peer"/> class.
             </summary>
@@ -2184,6 +2280,9 @@
         <member name="M:Libplanet.Store.BaseStore.ListNamespaces">
             <inheritdoc />
         </member>
+        <member name="M:Libplanet.Store.BaseStore.ListAddresses(System.String)">
+            <inheritdoc />
+        </member>
         <member name="M:Libplanet.Store.BaseStore.PutBlock``1(Libplanet.Blocks.Block{``0})">
             <inheritdoc />
         </member>
@@ -2206,6 +2305,9 @@
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Store.FileStore.ListNamespaces">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.FileStore.ListAddresses(System.String)">
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Store.FileStore.PutBlock``1(Libplanet.Blocks.Block{``0})">
@@ -2235,6 +2337,14 @@
             </summary>
             <returns>Existing namespaces.</returns>
         </member>
+        <member name="M:Libplanet.Store.IStore.ListAddresses(System.String)">
+            <summary>
+            Lists all addresses that have ever had states.
+            </summary>
+            <param name="namespace">The namespace to list addresses.</param>
+            <returns>All addresses in an arbitrary order.  The order might
+            be vary for each call.</returns>
+        </member>
         <member name="M:Libplanet.Store.IStore.PutBlock``1(Libplanet.Blocks.Block{``0})">
             <summary>
             Puts the given <paramref name="block"/> in to the store.
@@ -2243,6 +2353,29 @@
             </param>
             <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> class used with
             <paramref name="block"/>.</typeparam>
+        </member>
+        <member name="M:Libplanet.Store.IStore.GetBlockStates(Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
+            <summary>
+            Gets the states updated by actions in the inquired block.
+            </summary>
+            <param name="blockHash"><see cref="P:Libplanet.Blocks.Block`1.Hash"/> to query.
+            </param>
+            <returns>The states updated by actions in the inquired block.
+            If actions definitely do not update any addresses it returns
+            an empty map.  If there is no record for the inquired block
+            (because actions in it have never been evaluated yet) it returns
+            <c>null</c> instead.
+            </returns>
+            <remarks>It does not return all states built up from the genesis
+            block nor delta, but only dirty states by actions the inquired
+            block.
+            <para>For example, if actions in the genesis block do
+            <c>a++; b++</c>, /// and actions in the second block do
+            <c>b++; c++</c>, this method /// for the second block returns
+            <c>b = 2; c = 1</c> (dirty), not
+            <c>a = 1; b = 2; c = 1</c> (all states) nor
+            <c>b = 1; c = 1</c> (delta).</para>
+            </remarks>
         </member>
         <member name="M:Libplanet.Store.IStore.LookupStateReference``1(System.String,Libplanet.Address,Libplanet.Blocks.Block{``0})">
             <summary>
@@ -2359,6 +2492,22 @@
             <seealso cref="M:Libplanet.Store.IStore.GetTxNonce(System.String,Libplanet.Address)"/>
             <seealso cref="M:Libplanet.Store.IStore.IncreaseTxNonce``1(System.String,Libplanet.Blocks.Block{``0})"/>
         </member>
+        <member name="T:Libplanet.Store.LiteDBStore">
+            <summary>
+            <see cref="T:Libplanet.Store.IStore"/> implementation using <a href="https://www.litedb.org/">LiteDB</a>.
+            </summary>
+            <seealso cref="T:Libplanet.Store.IStore"/>
+        </member>
+        <member name="M:Libplanet.Store.LiteDBStore.#ctor(System.String,System.Boolean,System.Int32)">
+            <summary>
+            Creates a new <seealso cref="T:Libplanet.Store.LiteDBStore"/>.
+            </summary>
+            <param name="path">The path where the storage file will be saved.</param>
+            <param name="journal">
+            Enables or disables double write check to ensure durability.
+            </param>
+            <param name="cacheSize">Max number of pages in the cache.</param>
+        </member>
         <member name="M:Libplanet.Store.LiteDBStore.ListNamespaces">
             <inheritdoc/>
         </member>
@@ -2375,6 +2524,9 @@
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Store.LiteDBStore.DeleteIndex(System.String,Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.LiteDBStore.ListAddresses(System.String)">
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Store.LiteDBStore.StageTransactionIds(System.Collections.Generic.ISet{Libplanet.Tx.TxId})">
@@ -2502,7 +2654,7 @@
         <member name="T:Libplanet.Tx.InvalidTxNonceException">
             <summary>
             The exception that is thrown when the <see cref="P:Libplanet.Tx.Transaction`1.Nonce"/>
-            is different from <see cref="M:Libplanet.Blockchain.BlockChain`1.GetNonce(Libplanet.Address)"/> result of
+            is different from <see cref="M:Libplanet.Blockchain.BlockChain`1.GetNextTxNonce(Libplanet.Address)"/> result of
             the <see cref="P:Libplanet.Tx.Transaction`1.Signer"/>.
             </summary>
         </member>
@@ -2514,7 +2666,7 @@
             <param name="txid">The invalid <see cref="T:Libplanet.Tx.Transaction`1"/>'s
             <see cref="P:Libplanet.Tx.Transaction`1.Id"/>.  It is automatically included to
             the <see cref="P:System.Exception.Message"/> string.</param>
-            <param name="expectedNonce"><see cref="M:Libplanet.Blockchain.BlockChain`1.GetNonce(Libplanet.Address)"/>
+            <param name="expectedNonce"><see cref="M:Libplanet.Blockchain.BlockChain`1.GetNextTxNonce(Libplanet.Address)"/>
             result of the <see cref="P:Libplanet.Tx.Transaction`1.Signer"/>.</param>
             <param name="improperNonce">The actual
             <see cref="P:Libplanet.Tx.Transaction`1.Nonce"/>.</param>
@@ -2522,7 +2674,7 @@
         </member>
         <member name="P:Libplanet.Tx.InvalidTxNonceException.ExpectedNonce">
             <summary>
-            <see cref="M:Libplanet.Blockchain.BlockChain`1.GetNonce(Libplanet.Address)"/> result of the
+            <see cref="M:Libplanet.Blockchain.BlockChain`1.GetNextTxNonce(Libplanet.Address)"/> result of the
             <see cref="P:Libplanet.Tx.Transaction`1.Signer"/>.
             </summary>
         </member>
@@ -2586,9 +2738,9 @@
             the <see cref="P:System.Exception.Message"/> string.</param>
             <param name="updatableAddresses">Specifies the
             <see cref="P:Libplanet.Tx.InvalidTxUpdatedAddressesException.UpdatableAddresses"/>.</param>
-            <param name="updatedAddresses">Specified the
+            <param name="updatedAddresses">Specifies the
             <see cref="P:Libplanet.Tx.InvalidTxUpdatedAddressesException.UpdatedAddresses"/>.</param>
-            <param name="message">Specifies a <see cref="P:System.Exception.Message"/>.
+            <param name="message">Specifies the <see cref="P:System.Exception.Message"/>.
             </param>
         </member>
         <member name="P:Libplanet.Tx.InvalidTxUpdatedAddressesException.UpdatableAddresses">

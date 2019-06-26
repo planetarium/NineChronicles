@@ -282,7 +282,7 @@ namespace Nekoyume.Model
             foreach (var food in foods)
             {
                 food.UpdatePlayer(this);
-                inventory.RemoveUnfungibleItem(food);
+                inventory.RemoveNonFungibleItem(food);
             }
         }
 

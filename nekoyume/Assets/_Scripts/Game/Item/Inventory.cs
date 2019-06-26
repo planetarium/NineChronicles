@@ -7,7 +7,7 @@ namespace Nekoyume.Game.Item
     [Serializable]
     public class Inventory
     {
-        // ToDo. Item 클래스를 FungibleItem과 UnfungibleItem으로 분리하기.
+        // ToDo. Item 클래스를 FungibleItem과 NonFungibleItem으로 분리하기.
         [Serializable]
         public class Item
         {
@@ -62,24 +62,24 @@ namespace Nekoyume.Game.Item
             _items.Add(new Item(newFungibleItem, count));
         }
         
-        // Todo. UnfungibleItem 개발 후 `ItemBase itemBase` 인자를 `UnfungibleItem unfungibleItem`로 수정.
-        public Item AddUnfungibleItem(ItemUsable itemBase)
+        // Todo. NonFungibleItem 개발 후 `ItemBase itemBase` 인자를 `NonFungibleItem nonFungibleItem`로 수정.
+        public Item AddNonFungibleItem(ItemUsable itemBase)
         {
-            var unfungibleItem = new Item(itemBase);
-            _items.Add(unfungibleItem);
-            return unfungibleItem;
+            var nonFungibleItem = new Item(itemBase);
+            _items.Add(nonFungibleItem);
+            return nonFungibleItem;
         }
         
-        // Todo. UnfungibleItem 개발 후 `int id` 인자를 `UnfungibleItem unfungibleItem`로 수정.
-        public void AddUnfungibleItem(int id)
+        // Todo. NonFungibleItem 개발 후 `int id` 인자를 `NonFungibleItem nonFungibleItem`로 수정.
+        public void AddNonFungibleItem(int id)
         {
             if (!Tables.instance.TryGetItemEquipment(id, out var itemEquipmentRow))
             {
                 throw new KeyNotFoundException($"itemId: {id}");
             }
 
-            var unfungibleItem = ItemBase.ItemFactory(itemEquipmentRow);
-            _items.Add(new Item(unfungibleItem));
+            var nonFungibleItem = ItemBase.ItemFactory(itemEquipmentRow);
+            _items.Add(new Item(nonFungibleItem));
         }
 
         public bool RemoveFungibleItem(ItemBase itemBase, int count = 1)
@@ -104,10 +104,10 @@ namespace Nekoyume.Game.Item
             return true;
         }
         
-        // Todo. UnfungibleItem 개발 후 `ItemUsable itemUsable` 인자를 `UnfungibleItem unfungibleItem`로 수정.
-        public bool RemoveUnfungibleItem(ItemUsable itemUsable)
+        // Todo. NonFungibleItem 개발 후 `ItemUsable itemUsable` 인자를 `NonFungibleItem nonFungibleItem`로 수정.
+        public bool RemoveNonFungibleItem(ItemUsable itemUsable)
         {
-            return TryGetUnfungibleItem(itemUsable, out Item item) && _items.Remove(item);
+            return TryGetNonFungibleItem(itemUsable, out Item item) && _items.Remove(item);
         }
         
         public bool TryGetFungibleItem(ItemBase itemBase, out Item outFungibleItem)
@@ -132,38 +132,38 @@ namespace Nekoyume.Game.Item
             return false;
         }
 
-        // Todo. UnfungibleItem 개발 후 `ItemUsable itemUsable` 인자를 `UnfungibleItem unfungibleItem`로 수정.
-        public bool TryGetUnfungibleItem(ItemUsable itemUsable, out ItemUsable outUnfungibleItem)
+        // Todo. NonFungibleItem 개발 후 `ItemUsable itemUsable` 인자를 `NonFungibleItem nonFungibleItem`로 수정.
+        public bool TryGetNonFungibleItem(ItemUsable itemUsable, out ItemUsable outNonFungibleItem)
         {
-            foreach (var unfungibleItem in _items)
+            foreach (var nonFungibleItem in _items)
             {
-                if (unfungibleItem.item.Data.id != itemUsable.Data.id)
+                if (nonFungibleItem.item.Data.id != itemUsable.Data.id)
                 {
                     continue;
                 }
                 
-                outUnfungibleItem = (ItemUsable) unfungibleItem.item;
+                outNonFungibleItem = (ItemUsable) nonFungibleItem.item;
                 return true;
             }
 
-            outUnfungibleItem = null;
+            outNonFungibleItem = null;
             return false;
         }
         
-        public bool TryGetUnfungibleItem(ItemUsable itemUsable, out Item outUnfungibleItem)
+        public bool TryGetNonFungibleItem(ItemUsable itemUsable, out Item outNonFungibleItem)
         {
-            foreach (var unfungibleItem in _items)
+            foreach (var nonFungibleItem in _items)
             {
-                if (unfungibleItem.item.Data.id != itemUsable.Data.id)
+                if (nonFungibleItem.item.Data.id != itemUsable.Data.id)
                 {
                     continue;
                 }
                 
-                outUnfungibleItem = unfungibleItem;
+                outNonFungibleItem = nonFungibleItem;
                 return true;
             }
 
-            outUnfungibleItem = null;
+            outNonFungibleItem = null;
             return false;
         }
 
@@ -179,7 +179,7 @@ namespace Nekoyume.Game.Item
                 }
 
                 // 원래 갖고 있었나?
-                if (inventory.TryGetUnfungibleItem(itemUsable, out ItemUsable outUnfungibleItem))
+                if (inventory.TryGetNonFungibleItem(itemUsable, out ItemUsable outUnfungibleItem))
                 {
                     continue;
                 }

@@ -59,19 +59,19 @@ namespace Nekoyume.Action
             var shopState = (ShopState) states.GetState(ShopState.Address) ?? new ShopState();
 
             // 인벤토리에서 판매할 아이템을 선택하고 수량을 조절한다.
-            if (!avatarState.inventory.TryGetUnfungibleItem(itemUsable, out ItemUsable unfungibleItem))
+            if (!avatarState.inventory.TryGetNonFungibleItem(itemUsable, out ItemUsable nonFungibleItem))
             {
                 return states;
             }
 
-            avatarState.inventory.RemoveUnfungibleItem(unfungibleItem);
+            avatarState.inventory.RemoveNonFungibleItem(nonFungibleItem);
             
             // 상점에 아이템을 등록한다.
             var shopItem = shopState.Register(ctx.Signer, new ShopItem
             {
                 sellerAgentAddress = sellerAgentAddress,
                 productId = productId,
-                itemUsable = unfungibleItem,
+                itemUsable = nonFungibleItem,
                 price = price
             });
 

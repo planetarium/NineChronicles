@@ -48,7 +48,7 @@ namespace Nekoyume.Action
             }
             
             // 인벤토리에 아이템을 넣는다.
-            avatarState.inventory.AddUnfungibleItem(outUnregisteredItem.itemUsable);
+            avatarState.inventory.AddNonFungibleItem(outUnregisteredItem.itemUsable);
             avatarState.updatedAt = DateTimeOffset.UtcNow;
             
             states = states.SetState(ctx.Signer, avatarState);
