@@ -115,7 +115,7 @@ namespace Nekoyume.UI
             _player.gameObject.SetActive(false);
 
             SetData(new Model.Combination(
-                States.Instance.currentAvatarState.Value.items,
+                States.Instance.currentAvatarState.Value.inventory,
                 materialViews.Length));
 
             AudioController.instance.PlayMusic(AudioController.MusicCode.Combination);
@@ -348,7 +348,7 @@ namespace Nekoyume.UI
                 yield break;
             }
 
-            var index = _data.inventory.Value.items.IndexOf(inventoryItem);
+            var index = _data.inventory.Value.items.Count - 1;
             var inventoryItemView = inventoryAndItemInfo.inventory.scrollerController.GetByIndex(index);
             if (ReferenceEquals(inventoryItemView, null))
             {

@@ -16,13 +16,11 @@ namespace Nekoyume.State
     public class AvatarState : State
     {
         public string name;
+        public int characterId;
         public int level;
         public long exp;
-        public int hpMax;
-        public int currentHP;
-        public List<Inventory.InventoryItem> items;
+        public Inventory inventory;
         public int worldStage;
-        public int id;
         public BattleLog battleLog;
         public DateTimeOffset updatedAt;
         public DateTimeOffset? clearedAt;
@@ -35,13 +33,11 @@ namespace Nekoyume.State
             }
             
             this.name = name ?? "";
+            characterId = 100010;
             level = 1;
             exp = 0;
-            items = new List<Inventory.InventoryItem>();
-            hpMax = 0;
-            currentHP = 0;
+            inventory = new Inventory();
             worldStage = 1;
-            id = 100010;
             battleLog = null;
             updatedAt = DateTimeOffset.UtcNow;
         }
@@ -54,13 +50,11 @@ namespace Nekoyume.State
             }
             
             name = avatarState.name;
+            characterId = avatarState.characterId;
             level = avatarState.level;
             exp = avatarState.exp;
-            items = avatarState.items;
-            hpMax = avatarState.hpMax;
-            currentHP = avatarState.currentHP;
+            inventory = avatarState.inventory;
             worldStage = avatarState.worldStage;
-            id = avatarState.id;
             battleLog = avatarState.battleLog;
             updatedAt = avatarState.updatedAt;
             clearedAt = avatarState.clearedAt;
@@ -68,84 +62,11 @@ namespace Nekoyume.State
         
         public void Update(Player player)
         {
+            characterId = player.characterId;
             level = player.level;
             exp = player.exp;
-            hpMax = player.hp;
-            currentHP = hpMax;
-            items = player.Items;
-            worldStage = player.stage;
-            id = player.job;
-        }
-
-        public void RemoveItemFromItems(int itemId, int count)
-        {
-            if (!Tables.instance.TryGetItem(itemId, out var itemData))
-            {
-                throw new KeyNotFoundException($"itemId: {itemId}");
-            }
-            
-            var inventoryItem = items.FirstOrDefault(item => item.Item.Data.id == itemId);
-            if (ReferenceEquals(inventoryItem, null))
-            {
-                throw new KeyNotFoundException($"itemId: {itemId}");
-            }
-
-            if (inventoryItem.Count < count)
-            {
-                throw new InvalidOperationException("Reduce more than the quantity of inventoryItem.");
-            }
-            
-            inventoryItem.Count -= count;
-
-            if (inventoryItem.Count == 0)
-            {
-                items.Remove(inventoryItem);
-            }
-        }
-
-        public void AddEquipmentItemToItems(int itemId, int count)
-        {
-            if (!Tables.instance.TryGetItemEquipment(itemId, out var itemData))
-            {
-                throw new KeyNotFoundException($"itemId: {itemId}");
-            }
-            
-            var inventoryItem = items.FirstOrDefault(item => item.Item.Data.id == itemId);
-            if (ReferenceEquals(inventoryItem, null))
-            {
-                var itemBase = ItemBase.ItemFactory(itemData);
-                items.Add(new Inventory.InventoryItem(itemBase, count));
-            }
-            else
-            {
-                inventoryItem.Count += count;
-            }
-        }
-
-        public void RemoveEquipmentItemFromItems(int itemId, int count)
-        {
-            if (!Tables.instance.TryGetItemEquipment(itemId, out var itemData))
-            {
-                throw new KeyNotFoundException($"itemId: {itemId}");
-            }
-            
-            var inventoryItem = items.FirstOrDefault(item => item.Item.Data.id == itemId);
-            if (ReferenceEquals(inventoryItem, null))
-            {
-                throw new KeyNotFoundException($"itemId: {itemId}");
-            }
-
-            if (inventoryItem.Count < count)
-            {
-                throw new InvalidOperationException("Reduce more than the quantity of inventoryItem.");
-            }
-            
-            inventoryItem.Count -= count;
-
-            if (inventoryItem.Count == 0)
-            {
-                items.Remove(inventoryItem);
-            }
+            inventory = player.inventory;
+            worldStage = player.worldStage;
         }
     }
 }

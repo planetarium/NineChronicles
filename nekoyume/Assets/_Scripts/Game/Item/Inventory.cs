@@ -7,78 +7,164 @@ namespace Nekoyume.Game.Item
     [Serializable]
     public class Inventory
     {
+        // ToDo. Item 클래스를 FungibleItem과 NonFungibleItem으로 분리하기.
         [Serializable]
-        public class InventoryItem
+        public class Item
         {
-            public ItemBase Item;
-            public int Count = 0;
+            public ItemBase item;
+            public int count = 0;
             
-            public InventoryItem(ItemBase itemBase, int count = 1)
+            public Item(ItemBase itemBase, int count = 1)
             {
-                Item = ItemBase.ItemFactory(itemBase.Data);
-                Count = count;
+                item = ItemBase.ItemFactory(itemBase.Data);
+                this.count = count;
             }
             
-            public InventoryItem(ItemUsable itemUsable, int count = 1)
+            public Item(ItemUsable itemUsable, int count = 1)
             {
-                Item = itemUsable;
-                Count = count;
+                item = itemUsable;
+                this.count = count;
             }
         }
 
-        public List<InventoryItem> items;
+        private readonly List<Item> _items = new List<Item>();
 
-        public Inventory()
+        public IEnumerable<Item> Items => _items;
+        
+        public Item AddFungibleItem(ItemBase itemBase, int count = 1)
         {
-            items = new List<InventoryItem> {Capacity = 40};
-        }
-
-        public InventoryItem Add(ItemBase item)
-        {
-            var i = items.FindIndex(
-                a => a.Item.Equals(item)
-                     && !(item is Equipment)
-            );
-            if (i < 0)
+            if (TryGetFungibleItem(itemBase, out var fungibleItem))
             {
-                var inventoryItem = new InventoryItem(item);
-                items.Add(inventoryItem);
-                return inventoryItem;
+                fungibleItem.count += count;
+                return fungibleItem;
             }
-            else
+            
+            fungibleItem = new Item(itemBase, count);
+            _items.Add(fungibleItem);
+            return fungibleItem;
+        }
+        
+        public void AddFungibleItem(int id, int count = 1)
+        {
+            if (TryGetFungibleItem(id, out var fungibleItem))
             {
-                items[i].Count += 1;
-                return items[i];
+                fungibleItem.count += count;
+                
+                return;
             }
-        }
-
-        public void Remove(ItemBase item)
-        {
-            var i = items.FindIndex(ii => ii.Item.Equals(item));
-            RemoveAt(i);
-        }
-
-        public void RemoveAt(int index)
-        {
-            var inventoryItem = items[index];
-            if (inventoryItem.Count <= 1)
+            
+            if (!Tables.instance.TryGetItem(id, out var itemRow))
             {
-                items.RemoveAt(index);
+                throw new KeyNotFoundException($"itemId: {id}");
             }
-            else
+
+            var newFungibleItem = ItemBase.ItemFactory(itemRow);
+            _items.Add(new Item(newFungibleItem, count));
+        }
+        
+        // Todo. NonFungibleItem 개발 후 `ItemBase itemBase` 인자를 `NonFungibleItem nonFungibleItem`로 수정.
+        public Item AddNonFungibleItem(ItemUsable itemBase)
+        {
+            var nonFungibleItem = new Item(itemBase);
+            _items.Add(nonFungibleItem);
+            return nonFungibleItem;
+        }
+        
+        // Todo. NonFungibleItem 개발 후 `int id` 인자를 `NonFungibleItem nonFungibleItem`로 수정.
+        public void AddNonFungibleItem(int id)
+        {
+            if (!Tables.instance.TryGetItemEquipment(id, out var itemEquipmentRow))
             {
-                inventoryItem.Count--;
+                throw new KeyNotFoundException($"itemId: {id}");
             }
+
+            var nonFungibleItem = ItemBase.ItemFactory(itemEquipmentRow);
+            _items.Add(new Item(nonFungibleItem));
         }
 
-        public ItemBase GetItem(int index)
+        public bool RemoveFungibleItem(ItemBase itemBase, int count = 1)
         {
-            return null;
+            return RemoveFungibleItem(itemBase.Data.id, count);
+        }
+        
+        public bool RemoveFungibleItem(int id, int count = 1)
+        {
+            if (!TryGetFungibleItem(id, out var item) ||
+                item.count < count)
+            {
+                return false;
+            }
+            
+            item.count -= count;
+            if (item.count == 0)
+            {
+                _items.Remove(item);
+            }
+
+            return true;
+        }
+        
+        // Todo. NonFungibleItem 개발 후 `ItemUsable itemUsable` 인자를 `NonFungibleItem nonFungibleItem`로 수정.
+        public bool RemoveNonFungibleItem(ItemUsable itemUsable)
+        {
+            return TryGetNonFungibleItem(itemUsable, out Item item) && _items.Remove(item);
+        }
+        
+        public bool TryGetFungibleItem(ItemBase itemBase, out Item outFungibleItem)
+        {
+            return TryGetFungibleItem(itemBase.Data.id, out outFungibleItem);
+        }
+        
+        public bool TryGetFungibleItem(int id, out Item outFungibleItem)
+        {
+            foreach (var fungibleItem in _items)
+            {
+                if (fungibleItem.item.Data.id != id)
+                {
+                    continue;
+                }
+                
+                outFungibleItem = fungibleItem;
+                return true;
+            }
+
+            outFungibleItem = null;
+            return false;
         }
 
-        public void Set(List<InventoryItem> items)
+        // Todo. NonFungibleItem 개발 후 `ItemUsable itemUsable` 인자를 `NonFungibleItem nonFungibleItem`로 수정.
+        public bool TryGetNonFungibleItem(ItemUsable itemUsable, out ItemUsable outNonFungibleItem)
         {
-            this.items = items;
+            foreach (var nonFungibleItem in _items)
+            {
+                if (nonFungibleItem.item.Data.id != itemUsable.Data.id)
+                {
+                    continue;
+                }
+                
+                outNonFungibleItem = (ItemUsable) nonFungibleItem.item;
+                return true;
+            }
+
+            outNonFungibleItem = null;
+            return false;
+        }
+        
+        public bool TryGetNonFungibleItem(ItemUsable itemUsable, out Item outNonFungibleItem)
+        {
+            foreach (var nonFungibleItem in _items)
+            {
+                if (nonFungibleItem.item.Data.id != itemUsable.Data.id)
+                {
+                    continue;
+                }
+                
+                outNonFungibleItem = nonFungibleItem;
+                return true;
+            }
+
+            outNonFungibleItem = null;
+            return false;
         }
     }
 }

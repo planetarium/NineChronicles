@@ -99,12 +99,6 @@ namespace Nekoyume.UI.Model
             if (!ReferenceEquals(selectedItem.Value, null))
             {
                 selectedItem.Value.selected.Value = false;
-                
-                if (selectedItem.Value.productId == shopItem.productId)
-                {
-                    selectedItem.Value = null;
-                    return;
-                }
             }
 
             selectedItem.Value = shopItem;

@@ -16,7 +16,7 @@ namespace Nekoyume.Model
 
         public List<EventBase> events = new List<EventBase>();
         public int Count => events.Count;
-        public int stage;
+        public int worldStage;
         public Result result;
 
         public void Add(EventBase e)

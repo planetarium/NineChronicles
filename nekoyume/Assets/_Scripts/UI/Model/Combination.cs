@@ -46,10 +46,10 @@ namespace Nekoyume.UI.Model
 
         public bool IsMaterialsFulled => materials.Count >= openedMaterialCount.Value;
 
-        public Combination(List<Game.Item.Inventory.InventoryItem> items, int materialCount)
+        public Combination(Game.Item.Inventory inventory, int materialCount)
         {
-            inventory.Value = new Inventory(items);
-            inventory.Value.dimmedFunc.Value = DimmedFunc;
+            this.inventory.Value = new Inventory(inventory);
+            this.inventory.Value.dimmedFunc.Value = DimmedFunc;
             itemInfo.Value = new ItemInfo();
             itemInfo.Value.buttonText.Value = "재료 선택";
             itemInfo.Value.buttonEnabledFunc.Value = ButtonEnabledFunc;
@@ -57,7 +57,7 @@ namespace Nekoyume.UI.Model
             itemCountPopup.Value.titleText.Value = "재료 수량 선택";
             openedMaterialCount.Value = materialCount;
 
-            inventory.Value.selectedItem.Subscribe(OnInventorySelectedItem);
+            this.inventory.Value.selectedItem.Subscribe(OnInventorySelectedItem);
             itemCountPopup.Value.onClickSubmit.Subscribe(OnClickSubmitItemCountPopup);
             materials.ObserveAdd().Subscribe(OnMaterialsAdd);
             materials.ObserveRemove().Subscribe(OnMaterialsRemove);
@@ -206,12 +206,12 @@ namespace Nekoyume.UI.Model
         private void OnResultPopupOnClickSubmit(CombinationResultPopup data)
         {
             // 재료 아이템들을 인벤토리에서 제거하기.
-            inventory.Value.RemoveItems(data.materialItems);
+            inventory.Value.RemoveFungibleItems(data.materialItems);
 
             // 결과 아이템이 있다면, 인벤토리에 추가하고 해당 아이템을 선택하기.
             if (!ReferenceEquals(data.item.Value, null))
             {
-                var addedItem = inventory.Value.AddItem(data.item.Value, data.count.Value);
+                var addedItem = inventory.Value.AddNonFungibleItem((ItemUsable) data.item.Value);
                 inventory.Value.SubscribeOnClick(addedItem);
             }
 

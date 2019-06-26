@@ -39,6 +39,12 @@ namespace Nekoyume.Action
 
             #endregion
 
+            #region HackAndSlash
+
+            public const int HackAndSlashNotFoundEquipment = -100;
+
+            #endregion
+            
             #region Combination
 
             public const int CombinationNotFoundMaterials = -100;

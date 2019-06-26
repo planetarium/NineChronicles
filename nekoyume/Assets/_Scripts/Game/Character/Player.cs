@@ -27,7 +27,7 @@ namespace Nekoyume.Game.Character
         public override float Speed => RunSpeedMax;
         
         public List<Equipment> equipments =>
-            Inventory.items.Select(i => i.Item).OfType<Equipment>().Where(e => e.equipped).ToList();
+            Inventory.Items.Select(i => i.item).OfType<Equipment>().Where(e => e.equipped).ToList();
 
         public Model.Player model;
         public Item.Inventory Inventory;

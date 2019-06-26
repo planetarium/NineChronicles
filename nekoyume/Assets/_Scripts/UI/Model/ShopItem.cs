@@ -15,11 +15,11 @@ namespace Nekoyume.UI.Model
         
         public new readonly Subject<ShopItem> onClick = new Subject<ShopItem>();
         
-        public ShopItem(Address sellerAvatarAddress, Game.Item.ShopItem item) : this(sellerAvatarAddress, item.sellerAgentAddress, item.price, item.productId, item.item, item.count)
+        public ShopItem(Address sellerAvatarAddress, Game.Item.ShopItem item) : this(sellerAvatarAddress, item.sellerAgentAddress, item.price, item.productId, item.itemUsable)
         {
         }
         
-        public ShopItem(Address sellerAvatarAddress, Address sellerAgentAddress, decimal price, Guid productId, ItemBase item, int count) : base(item, count)
+        public ShopItem(Address sellerAvatarAddress, Address sellerAgentAddress, decimal price, Guid productId, ItemBase item) : base(item, 1)
         {
             this.sellerAvatarAddress.Value = sellerAvatarAddress;
             this.sellerAgentAddress.Value = sellerAgentAddress;

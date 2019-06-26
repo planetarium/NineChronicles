@@ -49,7 +49,7 @@ namespace Nekoyume.UI
                 throw new NotFoundComponentException<Player>();
             }
 
-            SetData(new Model.QuestPreparation(States.Instance.currentAvatarState.Value.items));
+            SetData(new Model.QuestPreparation(States.Instance.currentAvatarState.Value.inventory));
 
             // stop run immediately.
             _player.gameObject.SetActive(false);

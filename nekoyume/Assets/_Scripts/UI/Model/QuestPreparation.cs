@@ -12,16 +12,16 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<Inventory> inventory = new ReactiveProperty<Inventory>();
         public readonly ReactiveProperty<ItemInfo> itemInfo = new ReactiveProperty<ItemInfo>();
 
-        public QuestPreparation(List<Game.Item.Inventory.InventoryItem> items)
+        public QuestPreparation(Game.Item.Inventory inventory)
         {
-            inventory.Value = new Inventory(items);
-            inventory.Value.dimmedFunc.Value = DimmedFunc;
-            inventory.Value.glowedFunc.Value = GlowedFunc;
+            this.inventory.Value = new Inventory(inventory);
+            this.inventory.Value.dimmedFunc.Value = DimmedFunc;
+            this.inventory.Value.glowedFunc.Value = GlowedFunc;
             itemInfo.Value = new ItemInfo();
             itemInfo.Value.buttonText.Value = "장착하기";
             itemInfo.Value.buttonEnabledFunc.Value = null;
             
-            inventory.Value.selectedItem.Subscribe(SubscribeInventorySelectedItem);
+            this.inventory.Value.selectedItem.Subscribe(SubscribeInventorySelectedItem);
         }
         
         public void Dispose()

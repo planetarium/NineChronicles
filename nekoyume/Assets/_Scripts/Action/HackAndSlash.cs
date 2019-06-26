@@ -12,24 +12,24 @@ namespace Nekoyume.Action
     [ActionType("hack_and_slash")]
     public class HackAndSlash : GameAction
     {
-        public List<Equipment> Equipments;
-        public List<Food> Foods;
-        public int Stage;
+        public List<Equipment> equipments;
+        public List<Food> foods;
+        public int stage;
 
         protected override IImmutableDictionary<string, object> PlainValueInternal =>
             new Dictionary<string, object>
             {
-                ["equipments"] = ByteSerializer.Serialize(Equipments),
-                ["foods"] = ByteSerializer.Serialize(Foods),
-                ["stage"] = ByteSerializer.Serialize(Stage),
+                ["equipments"] = ByteSerializer.Serialize(equipments),
+                ["foods"] = ByteSerializer.Serialize(foods),
+                ["stage"] = ByteSerializer.Serialize(stage),
             }.ToImmutableDictionary();
 
 
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, object> plainValue)
         {
-            Equipments = ByteSerializer.Deserialize<List<Equipment>>((byte[]) plainValue["equipments"]);
-            Foods = ByteSerializer.Deserialize<List<Food>>((byte[]) plainValue["foods"]);
-            Stage = ByteSerializer.Deserialize<int>((byte[]) plainValue["stage"]);
+            equipments = ByteSerializer.Deserialize<List<Equipment>>((byte[]) plainValue["equipments"]);
+            foods = ByteSerializer.Deserialize<List<Food>>((byte[]) plainValue["foods"]);
+            stage = ByteSerializer.Deserialize<int>((byte[]) plainValue["stage"]);
         }
 
         public override IAccountStateDelta Execute(IActionContext ctx)
@@ -46,45 +46,31 @@ namespace Nekoyume.Action
                 return SimpleError(ctx, ErrorCode.AvatarNotFound);
             }
             
-            var items = avatarState.items.Select(i => i.Item).ToImmutableHashSet();
-            var currentEquipments = items.OfType<Equipment>().ToImmutableHashSet();
-            foreach (var equipment in currentEquipments)
+            var inventoryEquipments = avatarState.inventory.Items
+                .Select(i => i.item)
+                .OfType<Equipment>()
+                .ToImmutableHashSet();
+            foreach (var equipment in inventoryEquipments)
             {
                 equipment.Unequip();
             }
 
-            if (Equipments.Count > 0)
+            foreach (var equipment in equipments)
             {
-                foreach (var equipment in Equipments)
+                if (!avatarState.inventory.TryGetNonFungibleItem(equipment, out ItemUsable outNonFungibleItem))
                 {
-                    if (!currentEquipments.Contains(equipment))
-                    {
-                        throw new InvalidActionException();
-                    }
-
-                    var equip = currentEquipments.First(e => e.Data.id == equipment.Data.id);
-                    equip.Equip();
+                    return SimpleError(ctx, ErrorCode.HackAndSlashNotFoundEquipment);
                 }
-            }
-
-            if (Foods.Count > 0)
-            {
-                var currentFoods = items.OfType<Food>().ToImmutableHashSet();
-                foreach (var food in Foods)
-                {
-                    if (!currentFoods.Contains(food))
-                    {
-                        Foods.Remove(food);
-                    }
-                }
+                
+                ((Equipment) outNonFungibleItem).Equip();
             }
             
-            var simulator = new Simulator(ctx.Random, avatarState, Foods, Stage);
+            var simulator = new Simulator(ctx.Random, avatarState, foods, stage);
             var player = simulator.Simulate();
             avatarState.Update(player);
             avatarState.battleLog = simulator.Log;
             avatarState.updatedAt = DateTimeOffset.UtcNow;
-            if (avatarState.worldStage > Stage)
+            if (avatarState.worldStage > stage)
             {
                 var ranking = (RankingState) states.GetState(RankingState.Address) ?? new RankingState();
                 avatarState.clearedAt = DateTimeOffset.UtcNow;

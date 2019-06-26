@@ -13,10 +13,11 @@ namespace Nekoyume.Model
     [Serializable]
     public class Player : CharacterBase
     {
+        public int characterId;
         public long exp;
         public long expMax;
         public long expNeed;
-        public int stage;
+        public int worldStage;
         public Weapon weapon;
         public Armor armor;
         public Belt belt;
@@ -24,35 +25,27 @@ namespace Nekoyume.Model
         public Ring ring;
         public Helm helm;
         public SetItem set;
-        public int job;
         public sealed override float TurnSpeed { get; set; }
-
-        public readonly Inventory inventory;
-        public List<Inventory.InventoryItem> Items => inventory.items;
-        public List<Game.Item.Equipment> Equipments =>
-            inventory.items.Select(i => i.Item).OfType<Game.Item.Equipment>().Where(e => e.equipped).ToList();
         
+        public readonly Inventory inventory;
+        
+        private List<Equipment> Equipments { get; set; }
+
         public Player(AvatarState avatarState, Simulator simulator = null)
         {
             Simulator = simulator;
             
+            characterId = avatarState.characterId;
             level = avatarState.level;
             exp = avatarState.exp;
-            job = avatarState.id;
-            stage = avatarState.worldStage;
-            
-            inventory = new Inventory();
+            worldStage = avatarState.worldStage;
+
             atkElement = Game.Elemental.Create(Elemental.ElementalType.Normal);
             defElement = Game.Elemental.Create(Elemental.ElementalType.Normal);
             TurnSpeed = 1.8f;
-
-            var inventoryItems = avatarState.items;
-            if (inventoryItems != null)
-            {
-                Equip(inventoryItems);
-                inventory.Set(inventoryItems);
-            }
-
+            
+            inventory = avatarState.inventory;
+            Equip(inventory.Items);
             CalcStats(level);
         }
 
@@ -60,8 +53,8 @@ namespace Nekoyume.Model
         {
             level = 1;
             exp = 0;
-            job = 100010;
-            stage = 1;
+            characterId = 100010;
+            worldStage = 1;
         }
 
         public void RemoveTarget(Monster monster)
@@ -80,7 +73,7 @@ namespace Nekoyume.Model
         {
             var stats = Tables.instance.Character;
             var levelTable = Tables.instance.Level;
-            stats.TryGetValue(job, out var data);
+            stats.TryGetValue(characterId, out var data);
             if (data == null)
             {
                 throw new InvalidActionException();
@@ -147,18 +140,19 @@ namespace Nekoyume.Model
 
         }
 
+        // ToDo. 지금은 스테이지에서 재료 아이템만 주고 있음. 추후 대체 불가능 아이템도 줄 경우 수정 대상.
         public void GetRewards(List<ItemBase> items)
         {
             foreach (var item in items)
             {
-                inventory.Add(item);
+                inventory.AddFungibleItem(item);
             }
         }
 
-        public void Equip(List<Inventory.InventoryItem> items)
+        public void Equip(IEnumerable<Inventory.Item> items)
         {
-            var equipments = items.Select(i => i.Item).OfType<Game.Item.Equipment>().Where(e => e.equipped);
-            foreach (var equipment in equipments)
+            Equipments = items.Select(i => i.item).OfType<Game.Item.Equipment>().Where(e => e.equipped).ToList();
+            foreach (var equipment in Equipments)
             {
                 switch (equipment.Data.cls.ToEnumItemType())
                 {
@@ -222,10 +216,10 @@ namespace Nekoyume.Model
             var stats = Tables.instance.Character;
             var levelTable = Tables.instance.Level;
             Character data;
-            stats.TryGetValue(job, out data);
+            stats.TryGetValue(characterId, out data);
             if (data == null)
             {
-                throw new KeyNotFoundException($"invalid character id: `{job}`.");
+                throw new KeyNotFoundException($"invalid character id: `{characterId}`.");
             }
 
             Level expData;
@@ -288,7 +282,7 @@ namespace Nekoyume.Model
             foreach (var food in foods)
             {
                 food.UpdatePlayer(this);
-                inventory.Remove(food);
+                inventory.RemoveNonFungibleItem(food);
             }
         }
 

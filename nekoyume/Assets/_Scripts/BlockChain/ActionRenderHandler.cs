@@ -117,7 +117,7 @@ namespace Nekoyume.BlockChain
                 {
                     foreach (var material in eval.Action.Materials)
                     {
-                        States.Instance.currentAvatarState.Value.RemoveItemFromItems(material.id, material.count);   
+                        States.Instance.currentAvatarState.Value.inventory.RemoveFungibleItem(material.id, material.count);
                     }
 
                     if (eval.Action.errorCode == GameAction.ErrorCode.CombinationNoResultItem)
@@ -127,7 +127,7 @@ namespace Nekoyume.BlockChain
                     
                     foreach (var itemUsable in eval.Action.Results)
                     {
-                        States.Instance.currentAvatarState.Value.items.Add(new Inventory.InventoryItem(itemUsable));    
+                        States.Instance.currentAvatarState.Value.inventory.AddNonFungibleItem(itemUsable);
                     }
                 }).AddTo(_disposables);
         }
@@ -142,7 +142,7 @@ namespace Nekoyume.BlockChain
                     var result = eval.Action.result;
                     if (eval.InputContext.Signer == States.Instance.currentAvatarState.Value.address)
                     {
-                        States.Instance.currentAvatarState.Value.RemoveEquipmentItemFromItems(result.shopItem.item.Data.id, result.shopItem.count);
+                        States.Instance.currentAvatarState.Value.inventory.RemoveNonFungibleItem(result.shopItem.itemUsable);
                     }
                     
                     ShopState.Register(ReactiveShopState.Items, States.Instance.currentAvatarState.Value.address,
@@ -160,7 +160,7 @@ namespace Nekoyume.BlockChain
                     var result = eval.Action.result;
                     if (eval.InputContext.Signer == States.Instance.currentAvatarState.Value.address)
                     {
-                        States.Instance.currentAvatarState.Value.AddEquipmentItemToItems(result.shopItem.item.Data.id, result.shopItem.count);
+                        States.Instance.currentAvatarState.Value.inventory.AddNonFungibleItem(result.shopItem.itemUsable);
                     }
                     
                     ShopState.Unregister(ReactiveShopState.Items, result.owner, result.shopItem.productId);
@@ -177,7 +177,7 @@ namespace Nekoyume.BlockChain
                     var result = eval.Action.result;
                     if (eval.InputContext.Signer == States.Instance.currentAvatarState.Value.address)
                     {
-                        States.Instance.currentAvatarState.Value.AddEquipmentItemToItems(result.shopItem.item.Data.id, result.shopItem.count);
+                        States.Instance.currentAvatarState.Value.inventory.AddNonFungibleItem(result.shopItem.itemUsable);
                     }
                     
                     ShopState.Unregister(ReactiveShopState.Items, result.owner, result.shopItem.productId);

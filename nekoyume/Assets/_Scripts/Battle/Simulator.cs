@@ -17,7 +17,7 @@ namespace Nekoyume.Battle
     public class Simulator
     {
         public readonly IRandom Random;
-        private readonly int _stage;
+        private readonly int _worldStage;
         private readonly List<MonsterWave> _waves;
         public readonly BattleLog Log;
         public bool Lose = false;
@@ -28,10 +28,10 @@ namespace Nekoyume.Battle
         private readonly List<List<ItemBase>> _waveRewards;
         public const float TurnPriority = 100f;
 
-        public Simulator(IRandom random, AvatarState avatarState, List<Food> foods, int stage, SkillBase skill=null)
+        public Simulator(IRandom random, AvatarState avatarState, List<Food> foods, int worldStage, SkillBase skill=null)
         {
             Random = random;
-            _stage = stage;
+            _worldStage = worldStage;
             Log = new BattleLog();
             _waves = new List<MonsterWave>();
             Player = new Player(avatarState, this);
@@ -44,7 +44,7 @@ namespace Nekoyume.Battle
 
         public Player Simulate()
         {
-            Log.stage = _stage;
+            Log.worldStage = _worldStage;
             Player.Spawn();
             foreach (var wave in _waves)
             {
@@ -78,9 +78,9 @@ namespace Nekoyume.Battle
 
                         if (index == lastWave)
                         {
-                            if (_stage == Player.stage)
+                            if (_worldStage == Player.worldStage)
                             {
-                                Player.stage++;
+                                Player.worldStage++;
                             }
 
                             _result = BattleLog.Result.Win;
@@ -127,7 +127,7 @@ namespace Nekoyume.Battle
             var waves = new List<Stage>();
             foreach (var row in stageTable)
             {
-                if (row.Value.stage == _stage)
+                if (row.Value.stage == _worldStage)
                 {
                     waves.Add(row.Value);
                 }
@@ -169,9 +169,8 @@ namespace Nekoyume.Battle
             var rewardTable = Tables.instance.StageReward;
             var itemTable = Tables.instance.Item;
             var itemSelector = new WeightedSelector<int>(Random);
-            StageReward reward;
             var items = new List<ItemBase>();
-            if (rewardTable.TryGetValue(id, out reward))
+            if (rewardTable.TryGetValue(id, out var reward))
             {
                 var rewards = reward.Rewards();
                 foreach (var r in rewards)

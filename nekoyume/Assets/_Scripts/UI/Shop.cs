@@ -7,6 +7,7 @@ using Nekoyume.Action;
 using Nekoyume.BlockChain;
 using Nekoyume.Data;
 using Nekoyume.Game.Controller;
+using Nekoyume.Game.Item;
 using Nekoyume.Model;
 using Nekoyume.UI.Model;
 using UniRx;
@@ -103,7 +104,7 @@ namespace Nekoyume.UI
                 throw new NotFoundComponentException<LoadingScreen>();
             }
 
-            SetData(new Model.Shop(States.Instance.currentAvatarState.Value.items, ReactiveShopState.Items));
+            SetData(new Model.Shop(States.Instance.currentAvatarState.Value.inventory, ReactiveShopState.Items));
             base.Show();
 
             AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
@@ -208,9 +209,7 @@ namespace Nekoyume.UI
 
             // 판매하겠습니다.
             ActionManager.instance
-                .Sell(data.item.Value.item.Value.Data.id,
-                    data.item.Value.count.Value,
-                    data.price.Value)
+                .Sell((ItemUsable) data.item.Value.item.Value, data.price.Value)
                 .Subscribe(ResponseSell)
                 .AddTo(this);
         }
@@ -223,7 +222,7 @@ namespace Nekoyume.UI
                 _loadingScreen.Close();
                 
                 // ToDo. 액션 실패 팝업!
-                Debug.LogWarning($"액션 실패!! productId: {eval.Action.itemId}");
+                Debug.LogWarning($"액션 실패!! id: {eval.Action.itemUsable.Data.id}");
                 
                 return;
             }
@@ -234,13 +233,8 @@ namespace Nekoyume.UI
                 throw new GameActionResultNullException();
             }
         
-            if (!Tables.instance.TryGetItemEquipment(result.shopItem.item.Data.id, out var itemEquipment))
-            {
-                throw new KeyNotFoundException(result.shopItem.item.Data.id.ToString());
-            }
-
             _data.itemCountAndPricePopup.Value.item.Value = null;
-            _data.inventory.Value.RemoveItem(result.shopItem.item.Data.id, result.shopItem.count);
+            _data.inventory.Value.RemoveNonFungibleItem(result.shopItem.itemUsable);
             var registeredProduct = _data.shopItems.Value.AddRegisteredProduct(result.sellerAvatarAddress, result.shopItem);
             _data.shopItems.Value.OnClickShopItem(registeredProduct);
             _loadingScreen.Close();
@@ -268,7 +262,7 @@ namespace Nekoyume.UI
             _data.itemCountAndPricePopup.Value.item.Value = null;
             _data.shopItems.Value.RemoveProduct(result.shopItem.productId);
             _data.shopItems.Value.RemoveRegisteredProduct(result.shopItem.productId);
-            var addedItem = _data.inventory.Value.AddItem(result.shopItem.item, result.shopItem.count);
+            var addedItem = _data.inventory.Value.AddNonFungibleItem(result.shopItem.itemUsable);
             _data.inventory.Value.SubscribeOnClick(addedItem);
             _loadingScreen.Close();
         }
@@ -302,7 +296,7 @@ namespace Nekoyume.UI
 
             _data.shopItems.Value.RemoveProduct(result.shopItem.productId);
             _data.shopItems.Value.RemoveRegisteredProduct(result.shopItem.productId);
-            var addedItem = _data.inventory.Value.AddItem(result.shopItem.item, result.shopItem.count);
+            var addedItem = _data.inventory.Value.AddNonFungibleItem(result.shopItem.itemUsable);
             _data.inventory.Value.SubscribeOnClick(addedItem);
             _loadingScreen.Close();
         }
@@ -310,30 +304,38 @@ namespace Nekoyume.UI
         private IEnumerator CoShowBuyResultVFX(Buy.ResultModel result)
         {
             Module.ShopItemView shopView = shopItems.GetByProductId(result.shopItem.productId);
-            if (!ReferenceEquals(shopView, null))
+            if (ReferenceEquals(shopView, null))
             {
-                yield return new WaitForSeconds(0.1f);
-
-                particleVFX.SetActive(false);
-                resultItemVFX.SetActive(false);
-                InventoryItem invenItem = _data.inventory.Value.items.Single(i => i.item.Value.Data.id == result.shopItem.item.Data.id);
-                var index = _data.inventory.Value.items.IndexOf(invenItem);
-                if (!ReferenceEquals(invenItem, null))
-                {
-                    Module.InventoryItemView itemView = inventoryAndItemInfo.inventory.scrollerController.GetByIndex(index);
-                    if (!ReferenceEquals(itemView, null))
-                    {
-                        particleVFX.transform.position = shopView.transform.position;
-                        particleVFX.transform.DOMoveX(itemView.transform.position.x, 0.6f);
-                        particleVFX.transform.DOMoveY(itemView.transform.position.y, 0.6f).SetEase(Ease.InCubic)
-                        .onComplete = () =>{
-                            resultItemVFX.SetActive(true);
-                        };
-                        particleVFX.SetActive(true);
-                        resultItemVFX.transform.position = itemView.transform.position;
-                    }
-                }
+                yield break;
             }
+            
+            yield return new WaitForSeconds(0.1f);
+
+            particleVFX.SetActive(false);
+            resultItemVFX.SetActive(false);
+            
+            // ToDo. 지금은 구매의 결과가 마지막에 더해지기 때문에 마지막 아이템을 갖고 오지만, 복수의 아이템을 한 번에 얻을 때에 대한 처리나 정렬 기능이 추가 되면 itemGuid로 갖고 와야함.
+            var inventoryItem = _data.inventory.Value.items.Last();
+            if (ReferenceEquals(inventoryItem, null))
+            {
+                yield break;
+            }
+            
+            var index = _data.inventory.Value.items.Count - 1;
+            var inventoryItemView = inventoryAndItemInfo.inventory.scrollerController.GetByIndex(index);
+            if (ReferenceEquals(inventoryItemView, null))
+            {
+                yield break;
+            }
+            
+            particleVFX.transform.position = shopView.transform.position;
+            particleVFX.transform.DOMoveX(inventoryItemView.transform.position.x, 0.6f);
+            particleVFX.transform.DOMoveY(inventoryItemView.transform.position.y, 0.6f).SetEase(Ease.InCubic)
+                .onComplete = () =>{
+                resultItemVFX.SetActive(true);
+            };
+            particleVFX.SetActive(true);
+            resultItemVFX.transform.position = inventoryItemView.transform.position;
         }
         
         private void OnClickCloseItemCountAndPricePopup(Model.ItemCountAndPricePopup data)
