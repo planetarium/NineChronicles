@@ -286,7 +286,10 @@ namespace Nekoyume.BlockChain
                     gold = RewardAmount
                 }
             };
-            return _blocks.MakeTransaction(PrivateKey, actions);
+            return _blocks.MakeTransaction(
+                PrivateKey,
+                actions,
+                broadcast: false);
         }
         
         private void StageAgentActions(IEnumerable<PolymorphicAction<ActionBase>> actions)
