@@ -107,5 +107,28 @@ namespace Tests
                 yield return _player.CoHeal(new []{info});
             }
         }
+
+        [UnityTest]
+        public IEnumerator GetSkillVFXWithCreate()
+        {
+            var go = Game.instance.stage.playerFactory.Create(_avatarState);
+            _player = go.GetComponent<Nekoyume.Game.Character.Player>();
+            _player.model.targets.Add(_player.model);
+            Assert.NotNull(_player);
+            Assert.NotNull(_player.model);
+
+            var pool = Game.instance.stage.objectPool;
+            var objects = pool.objects["area_l_water"];
+            var current = objects.Count;
+            foreach (var effect in objects)
+            {
+                effect.SetActive(true);
+            }
+
+            var info = new Skill.SkillInfo(_player.model, 0, false, SkillEffect.Category.Area,
+                Nekoyume.Data.Table.Elemental.ElementalType.Water);
+            yield return _player.CoAreaAttack(new[] {info});
+            Assert.Greater(pool.objects["area_l_water"].Count, current);
+        }
     }
 }

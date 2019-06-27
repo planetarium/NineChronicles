@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 
 
@@ -17,7 +19,7 @@ namespace Nekoyume.Game.Util
     {
         public List<PoolData> list = new List<PoolData>();
 
-        private Dictionary<string, List<GameObject>> objects = new Dictionary<string, List<GameObject>>();
+        public Dictionary<string, List<GameObject>> objects = new Dictionary<string, List<GameObject>>();
         private Dictionary<string, PoolData> dicts = new Dictionary<string, PoolData>();
 
         public void Start()
@@ -117,7 +119,9 @@ namespace Nekoyume.Game.Util
                 foreach (var go in gameObjects)
                 {
                     if (go.activeSelf)
+                    {
                         continue;
+                    }
 
                     go.transform.position = position;
                     go.SetActive(true);
@@ -128,17 +132,35 @@ namespace Nekoyume.Game.Util
 
         }
 
-        public GameObject Create(string objName, Vector3 position)
+        private GameObject Create(string objName, Vector3 position)
         {
-            PoolData poolData;
-            if (dicts.TryGetValue(objName, out poolData))
+            var go = dicts.TryGetValue(objName, out var poolData) ? Add(poolData.Prefab, poolData.AddCount)
+                : Add(objName);
+
+            if (go != null)
             {
-                GameObject go = Add(poolData.Prefab, poolData.AddCount);
                 go.transform.position = position;
                 go.SetActive(true);
                 return go;
             }
+
             throw new NullReferenceException($"Set `{objName}` first in ObjectPool.");
         }
+
+        private GameObject Add(string prefabName)
+        {
+            GameObject first = null;
+            if (objects.TryGetValue(prefabName, out var objectsList))
+            {
+                var go = Instantiate(objectsList.First(), transform);
+                go.name = prefabName;
+                go.SetActive(false);
+                objectsList.Add(go);
+                return go;
+            }
+
+            return null;
+        }
+
     }
 }
