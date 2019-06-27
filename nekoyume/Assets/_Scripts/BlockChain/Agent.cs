@@ -278,7 +278,12 @@ namespace Nekoyume.BlockChain
 
         private Transaction<PolymorphicAction<ActionBase>> RewardGold()
         {
-            var actions = new List<PolymorphicAction<ActionBase>> { new RewardGold() };
+            var actions = new List<PolymorphicAction<ActionBase>> {
+                new RewardGold
+                {
+                    gold = 1
+                }
+            };
             return _blocks.MakeTransaction(PrivateKey, actions);
         }
         
