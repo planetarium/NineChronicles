@@ -273,9 +273,23 @@ namespace Nekoyume.UI
         private void RequestCombination(Model.Combination data)
         {
             _loadingScreen.Show();
-            var inventory = States.Instance.currentAvatarState.Value.inventory;
-            ActionManager.instance.Combination(_data.materials.ToList())
-                .Subscribe(eval => ResponseCombination(inventory))
+            var inventoryItemCount = States.Instance.currentAvatarState.Value.inventory.Items.Count();
+            var materials = data.materials.ToList();
+            foreach (var material in materials)
+            {
+                if (!States.Instance.currentAvatarState.Value.inventory.TryGetFungibleItem(material.item.Value.Data.id,
+                    out var outFungibleItem))
+                {
+                    continue;
+                }
+
+                if (outFungibleItem.count == material.count.Value)
+                {
+                    inventoryItemCount--;
+                }
+            }
+            ActionManager.instance.Combination(materials)
+                .Subscribe(eval => ResponseCombination(inventoryItemCount))
                 .AddTo(this);
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickCombinationCombination);
         }
@@ -284,14 +298,17 @@ namespace Nekoyume.UI
         /// 결과를 직접 받아서 데이타에 넣어주는 방법 보다는,
         /// 네트워크 결과를 핸들링하는 곳에 핸들링 인터페이스를 구현한 데이타 모델을 등록하는 방법이 좋겠다. 
         /// </summary>
-        private void ResponseCombination(Game.Item.Inventory inventory)
+        private void ResponseCombination(int inventoryItemCount)
         {
             _loadingScreen.Close();
 
-            var isSuccess = States.Instance.currentAvatarState.Value.inventory.TryGetAddedItemFrom(inventory,
-                out var outAddedItem);
-
-            _data.resultPopup.Value = new Model.CombinationResultPopup(isSuccess ? outAddedItem : null)
+            var isSuccess = States.Instance.currentAvatarState.Value.inventory.Items.Count() > inventoryItemCount;
+            
+            _data.resultPopup.Value = new Model.CombinationResultPopup(isSuccess
+                ? States.Instance.currentAvatarState.Value.inventory.TryGetNonFungibleItemFromLast(out var outNonFungibleItem)
+                    ? outNonFungibleItem
+                    : null
+                : null)
             {
                 isSuccess = isSuccess,
                 materialItems = _data.materials

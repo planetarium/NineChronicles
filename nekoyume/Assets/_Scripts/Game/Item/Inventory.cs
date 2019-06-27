@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Nekoyume.Data;
 
 namespace Nekoyume.Game.Item
@@ -13,13 +14,13 @@ namespace Nekoyume.Game.Item
         {
             public ItemBase item;
             public int count = 0;
-            
+
             public Item(ItemBase itemBase, int count = 1)
             {
                 item = ItemBase.ItemFactory(itemBase.Data);
                 this.count = count;
             }
-            
+
             public Item(ItemUsable itemUsable, int count = 1)
             {
                 item = itemUsable;
@@ -30,7 +31,7 @@ namespace Nekoyume.Game.Item
         private readonly List<Item> _items = new List<Item>();
 
         public IEnumerable<Item> Items => _items;
-        
+
         public Item AddFungibleItem(ItemBase itemBase, int count = 1)
         {
             if (TryGetFungibleItem(itemBase, out var fungibleItem))
@@ -38,21 +39,21 @@ namespace Nekoyume.Game.Item
                 fungibleItem.count += count;
                 return fungibleItem;
             }
-            
+
             fungibleItem = new Item(itemBase, count);
             _items.Add(fungibleItem);
             return fungibleItem;
         }
-        
+
         public void AddFungibleItem(int id, int count = 1)
         {
             if (TryGetFungibleItem(id, out var fungibleItem))
             {
                 fungibleItem.count += count;
-                
+
                 return;
             }
-            
+
             if (!Tables.instance.TryGetItem(id, out var itemRow))
             {
                 throw new KeyNotFoundException($"itemId: {id}");
@@ -61,7 +62,7 @@ namespace Nekoyume.Game.Item
             var newFungibleItem = ItemBase.ItemFactory(itemRow);
             _items.Add(new Item(newFungibleItem, count));
         }
-        
+
         // Todo. NonFungibleItem 개발 후 `ItemBase itemBase` 인자를 `NonFungibleItem nonFungibleItem`로 수정.
         public Item AddNonFungibleItem(ItemUsable itemBase)
         {
@@ -69,7 +70,7 @@ namespace Nekoyume.Game.Item
             _items.Add(nonFungibleItem);
             return nonFungibleItem;
         }
-        
+
         // Todo. NonFungibleItem 개발 후 `int id` 인자를 `NonFungibleItem nonFungibleItem`로 수정.
         public void AddNonFungibleItem(int id)
         {
@@ -86,7 +87,7 @@ namespace Nekoyume.Game.Item
         {
             return RemoveFungibleItem(itemBase.Data.id, count);
         }
-        
+
         public bool RemoveFungibleItem(int id, int count = 1)
         {
             if (!TryGetFungibleItem(id, out var item) ||
@@ -94,7 +95,7 @@ namespace Nekoyume.Game.Item
             {
                 return false;
             }
-            
+
             item.count -= count;
             if (item.count == 0)
             {
@@ -103,18 +104,18 @@ namespace Nekoyume.Game.Item
 
             return true;
         }
-        
+
         // Todo. NonFungibleItem 개발 후 `ItemUsable itemUsable` 인자를 `NonFungibleItem nonFungibleItem`로 수정.
         public bool RemoveNonFungibleItem(ItemUsable itemUsable)
         {
             return TryGetNonFungibleItem(itemUsable, out Item item) && _items.Remove(item);
         }
-        
+
         public bool TryGetFungibleItem(ItemBase itemBase, out Item outFungibleItem)
         {
             return TryGetFungibleItem(itemBase.Data.id, out outFungibleItem);
         }
-        
+
         public bool TryGetFungibleItem(int id, out Item outFungibleItem)
         {
             foreach (var fungibleItem in _items)
@@ -123,7 +124,7 @@ namespace Nekoyume.Game.Item
                 {
                     continue;
                 }
-                
+
                 outFungibleItem = fungibleItem;
                 return true;
             }
@@ -135,14 +136,20 @@ namespace Nekoyume.Game.Item
         // Todo. NonFungibleItem 개발 후 `ItemUsable itemUsable` 인자를 `NonFungibleItem nonFungibleItem`로 수정.
         public bool TryGetNonFungibleItem(ItemUsable itemUsable, out ItemUsable outNonFungibleItem)
         {
-            foreach (var nonFungibleItem in _items)
+            foreach (var item in _items)
             {
-                if (nonFungibleItem.item.Data.id != itemUsable.Data.id)
+                if (!(item.item is ItemUsable nonFungibleItem))
+                {
+                    continue;
+                }
+
+                if (nonFungibleItem.Data.id != itemUsable.Data.id ||
+                    !nonFungibleItem.Stats.Equals(itemUsable.Stats))
                 {
                     continue;
                 }
                 
-                outNonFungibleItem = (ItemUsable) nonFungibleItem.item;
+                outNonFungibleItem = nonFungibleItem;
                 return true;
             }
 
@@ -150,6 +157,23 @@ namespace Nekoyume.Game.Item
             return false;
         }
         
+        public bool TryGetNonFungibleItemFromLast(out ItemUsable outNonFungibleItem)
+        {
+            foreach (var item in Enumerable.Reverse(_items))
+            {
+                if (!(item.item is ItemUsable nonFungibleItem))
+                {
+                    continue;
+                }
+
+                outNonFungibleItem = nonFungibleItem;
+                return true;
+            }
+
+            outNonFungibleItem = null;
+            return false;
+        }
+
         public bool TryGetNonFungibleItem(ItemUsable itemUsable, out Item outNonFungibleItem)
         {
             foreach (var nonFungibleItem in _items)
@@ -158,7 +182,7 @@ namespace Nekoyume.Game.Item
                 {
                     continue;
                 }
-                
+
                 outNonFungibleItem = nonFungibleItem;
                 return true;
             }
