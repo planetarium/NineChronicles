@@ -132,7 +132,7 @@ namespace Nekoyume.UI.Model
                 selectedItem.Value.selected.Value = false;
             }
 
-            selectedItem.Value = inventoryItem;
+            selectedItem.SetValueAndForceNotify(inventoryItem);
             selectedItem.Value.selected.Value = true;
 
             foreach (var item in items)
