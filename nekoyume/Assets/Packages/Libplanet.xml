@@ -1219,14 +1219,14 @@
             <see cref="M:Libplanet.Blockchain.BlockChain`1.GetNextTxNonce(Libplanet.Address)"/> result of the
             <see cref="P:Libplanet.Tx.Transaction`1.Signer"/>.</exception>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain`1.StageTransactions(System.Collections.Generic.ISet{Libplanet.Tx.Transaction{`0}})">
+        <member name="M:Libplanet.Blockchain.BlockChain`1.StageTransactions(System.Collections.Generic.IDictionary{Libplanet.Tx.Transaction{`0},System.Boolean})">
             <summary>
             Adds <paramref name="transactions"/> to the pending list so that
             a next <see cref="T:Libplanet.Blocks.Block`1"/> to be mined contains these
             <paramref name="transactions"/>.
             </summary>
-            <param name="transactions">
-            <see cref="T:Libplanet.Tx.Transaction`1"/>s to add to the pending list.</param>
+            <param name="transactions"> <see cref="T:Libplanet.Tx.Transaction`1"/>s to add to the pending list.
+            Keys are <see cref="P:Libplanet.Blockchain.BlockChain`1.Transactions"/>s and values are whether to broadcast.</param>
         </member>
         <member name="M:Libplanet.Blockchain.BlockChain`1.UnstageTransactions(System.Collections.Generic.ISet{Libplanet.Tx.Transaction{`0}})">
             <summary>
@@ -1234,7 +1234,7 @@
             </summary>
             <param name="transactions"><see cref="T:Libplanet.Tx.Transaction`1"/>s
             to remove from the pending list.</param>
-            <seealso cref="M:Libplanet.Blockchain.BlockChain`1.StageTransactions(System.Collections.Generic.ISet{Libplanet.Tx.Transaction{`0}})"/>
+            <seealso cref="M:Libplanet.Blockchain.BlockChain`1.StageTransactions(System.Collections.Generic.IDictionary{Libplanet.Tx.Transaction{`0},System.Boolean})"/>
         </member>
         <member name="M:Libplanet.Blockchain.BlockChain`1.GetNextTxNonce(Libplanet.Address)">
             <summary>
@@ -1245,7 +1245,7 @@
             <returns>The next <see cref="P:Libplanet.Tx.Transaction`1.Nonce"/> value of the
             <paramref name="address"/>.</returns>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain`1.MakeTransaction(Libplanet.Crypto.PrivateKey,System.Collections.Generic.IEnumerable{`0},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Nullable{System.DateTimeOffset})">
+        <member name="M:Libplanet.Blockchain.BlockChain`1.MakeTransaction(Libplanet.Crypto.PrivateKey,System.Collections.Generic.IEnumerable{`0},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Nullable{System.DateTimeOffset},System.Boolean)">
             <summary>
             Creates a new <see cref="T:Libplanet.Tx.Transaction`1"/> and stage the transaction.
             </summary>
@@ -1257,6 +1257,7 @@
             <paramref name="actions"/>.</param>
             <param name="timestamp">The time this <see cref="T:Libplanet.Tx.Transaction`1"/> is created and
             signed.</param>
+            <param name="broadcast">Whether to broadcast created transaction.</param>
             <returns>A created new <see cref="T:Libplanet.Tx.Transaction`1"/> signed by the given
             <paramref name="privateKey"/>.</returns>
             <seealso cref="M:Libplanet.Tx.Transaction`1.Create(System.Int64,Libplanet.Crypto.PrivateKey,System.Collections.Generic.IEnumerable{`0},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Nullable{System.DateTimeOffset})" />
@@ -2283,6 +2284,12 @@
         <member name="M:Libplanet.Store.BaseStore.ListAddresses(System.String)">
             <inheritdoc />
         </member>
+        <member name="M:Libplanet.Store.BaseStore.StageTransactionIds(System.Collections.Generic.IDictionary{Libplanet.Tx.TxId,System.Boolean})">
+            <inheritdoc />
+        </member>
+        <member name="M:Libplanet.Store.BaseStore.IterateStagedTransactionIds(System.Boolean)">
+            <inheritdoc />
+        </member>
         <member name="M:Libplanet.Store.BaseStore.PutBlock``1(Libplanet.Blocks.Block{``0})">
             <inheritdoc />
         </member>
@@ -2310,7 +2317,13 @@
         <member name="M:Libplanet.Store.FileStore.ListAddresses(System.String)">
             <inheritdoc/>
         </member>
+        <member name="M:Libplanet.Store.FileStore.IterateStagedTransactionIds(System.Boolean)">
+            <inheritdoc />
+        </member>
         <member name="M:Libplanet.Store.FileStore.PutBlock``1(Libplanet.Blocks.Block{``0})">
+            <inheritdoc />
+        </member>
+        <member name="M:Libplanet.Store.FileStore.StageTransactionIds(System.Collections.Generic.IDictionary{Libplanet.Tx.TxId,System.Boolean})">
             <inheritdoc />
         </member>
         <member name="M:Libplanet.Store.FileStore.LookupStateReference``1(System.String,Libplanet.Address,Libplanet.Blocks.Block{``0})">
@@ -2344,6 +2357,23 @@
             <param name="namespace">The namespace to list addresses.</param>
             <returns>All addresses in an arbitrary order.  The order might
             be vary for each call.</returns>
+        </member>
+        <member name="M:Libplanet.Store.IStore.StageTransactionIds(System.Collections.Generic.IDictionary{Libplanet.Tx.TxId,System.Boolean})">
+            <summary>
+            Adds <see cref="T:Libplanet.Tx.TxId"/>s to the pending list so that
+            a next <see cref="T:Libplanet.Blocks.Block`1"/> to be mined contains the corresponding
+            <see cref="T:Libplanet.Tx.Transaction`1"/>s.
+            </summary>
+            <param name="txids"><see cref="T:Libplanet.Tx.TxId"/>s to add to pending list. Keys are
+            <see cref="T:Libplanet.Tx.TxId"/>s and values are whether to broadcast.</param>
+        </member>
+        <member name="M:Libplanet.Store.IStore.IterateStagedTransactionIds(System.Boolean)">
+            <summary>
+            Iterates staged <see cref="T:Libplanet.Tx.TxId"/>s.
+            </summary>
+            <param name="toBroadcast">Whether to iterate only the <see cref="T:Libplanet.Tx.TxId"/>s set to
+            broadcast.</param>
+            <returns>Staged <see cref="T:Libplanet.Tx.TxId"/>s.</returns>
         </member>
         <member name="M:Libplanet.Store.IStore.PutBlock``1(Libplanet.Blocks.Block{``0})">
             <summary>
@@ -2529,13 +2559,13 @@
         <member name="M:Libplanet.Store.LiteDBStore.ListAddresses(System.String)">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Store.LiteDBStore.StageTransactionIds(System.Collections.Generic.ISet{Libplanet.Tx.TxId})">
+        <member name="M:Libplanet.Store.LiteDBStore.StageTransactionIds(System.Collections.Generic.IDictionary{Libplanet.Tx.TxId,System.Boolean})">
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Store.LiteDBStore.UnstageTransactionIds(System.Collections.Generic.ISet{Libplanet.Tx.TxId})">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Store.LiteDBStore.IterateStagedTransactionIds">
+        <member name="M:Libplanet.Store.LiteDBStore.IterateStagedTransactionIds(System.Boolean)">
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Store.LiteDBStore.IterateTransactionIds">
