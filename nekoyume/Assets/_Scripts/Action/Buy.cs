@@ -64,7 +64,7 @@ namespace Nekoyume.Action
             }
             
             var sellerAgentState = (AgentState) states.GetState(outPair.Value.sellerAgentAddress);
-            if (sellerAgentState == null)
+            if (sellerAgentState is null)
             {
                 return states;
             }
