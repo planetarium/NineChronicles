@@ -63,7 +63,7 @@ namespace Nekoyume.BlockChain
             return evaluation.InputContext.Signer == States.Instance.agentState.Value.address;
         }
         
-        private bool EvaluationValidationForCurrentAvatarState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
+        private bool ValidateEvaluationForCurrentAvatarState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
         {
             if (States.Instance.currentAvatarState.Value == null)
             {
