@@ -53,7 +53,7 @@ namespace Nekoyume.BlockChain
             _disposables.DisposeAllAndClear();
         }
         
-        private bool EvaluationValidationForAgentState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
+        private bool ValidateEvaluationForAgentState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
         {
             if (States.Instance.agentState.Value == null)
             {
