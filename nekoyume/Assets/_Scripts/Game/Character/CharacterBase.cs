@@ -451,7 +451,7 @@ namespace Nekoyume.Game.Character
                 if (target.IsDead())
                     StartCoroutine(target.Dying());
             }
-//            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(0.5f);
         }
 
         public IEnumerator CoDoubleAttack(IEnumerable<Model.Skill.SkillInfo> infos)
