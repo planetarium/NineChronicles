@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Item;
+using Nekoyume.Model;
 using UnityEngine;
 
 namespace Nekoyume.Data
@@ -82,9 +83,9 @@ namespace Nekoyume.Data
             return ItemEquipment.TryGetValue(itemEquipmentId, out itemEquipment);
         }
 
-        public IEnumerable<SetEffect.SetEffectMap> GetSetEffect(int id, int count)
+        public IEnumerable<IStatMap> GetSetEffect(int id, int count)
         {
-            var effects = new List<SetEffect.SetEffectMap>();
+            var effects = new List<IStatMap>();
             foreach (var row in SetEffect)
             {
                 if (row.Value.setId == id)

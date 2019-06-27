@@ -15,29 +15,22 @@ namespace Nekoyume.Game.Item
         public Equipment(Data.Table.Item data, SkillBase skillBase = null)
             : base(data, skillBase)
         {
-            var stat1 = new StatsMap
+            if (!string.IsNullOrEmpty(Data.ability1)
+                && Data.value1 > 0)
             {
-                Key = Data.ability1,
-                Value = Data.value1,
-            };
-            var stat2 = new StatsMap
+                Stats.SetStatValue(Data.ability1, Data.value1);
+            }
+
+            if (!string.IsNullOrEmpty(Data.ability2)
+                && Data.value2 > 0)
             {
-                Key = Data.ability2,
-                Value = Data.value2,
-            };
+                Stats.SetStatValue(Data.ability2, Data.value2);
+            }
+
             //TODO 논의후 테이블에 제대로 설정되야함.
-            var stat3 = new StatsMap
-            {
-                Key = "turnSpeed",
-                Value = Data.turnSpeed,
-            };
+            Stats.SetStatValue("turnSpeed", Data.turnSpeed);
             //TODO 장비대신 스킬별 사거리를 사용해야함.
-            var stat4 = new StatsMap
-            {
-                Key = "attackRange",
-                Value = Data.attackRange,
-            };
-            Stats = new[] {stat1, stat2, stat3, stat4};
+            Stats.SetStatValue("attackRange", Data.attackRange);
         }
 
         public bool Equip()
@@ -51,61 +44,5 @@ namespace Nekoyume.Game.Item
             equipped = false;
             return true;
         }
-    }
-
-    [Serializable]
-    public class StatsMap : IStatsMap
-    {
-        public string Key;
-        public float Value;
-
-        public void UpdatePlayer(Player player)
-        {
-            switch (Key)
-            {
-                case "damage":
-                    player.atk += (int)Value;
-                    break;
-                case "defense":
-                    player.def += (int)Value;
-                    break;
-                case "health":
-                    player.currentHP += (int)Value;
-                    player.hp += (int)Value;
-                    break;
-                case "luck":
-                    player.luck += Value / 100;
-                    break;
-                case "turnSpeed":
-                    player.TurnSpeed = Value;
-                    break;
-                case "attackRange":
-                    player.attackRange = Value;
-                    break;
-            }
-        }
-
-        public string GetInformation()
-        {
-            switch (Key)
-            {
-                case "damage":
-                    return $"공격력 +{Value}";
-                case "defense":
-                    return $"방어력 +{Value}";
-                case "health":
-                    return $"체력 +{Value}";
-                case "luck":
-                    return $"행운 +{Value}";
-                default:
-                    return "";
-            }
-        }
-    }
-
-    public interface IStatsMap
-    {
-        void UpdatePlayer(Player player);
-        string GetInformation();
     }
 }
