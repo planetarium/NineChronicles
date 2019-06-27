@@ -158,7 +158,7 @@ namespace Nekoyume.BlockChain
         private void RewardGold()
         {
             ActionBase.EveryRender<RewardGold>()
-                .Where(EvaluationValidationForAgentState)
+                .Where(ValidateEvaluationForAgentState)
                 .ObserveOnMainThread()
                 .Subscribe(UpdateAgentState).AddTo(_disposables);
         }
@@ -166,7 +166,7 @@ namespace Nekoyume.BlockChain
         private void CreateAvatar()
         {
             ActionBase.EveryRender<CreateAvatar>()
-                .Where(EvaluationValidationForAgentState)
+                .Where(ValidateEvaluationForAgentState)
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
                 {
@@ -178,7 +178,7 @@ namespace Nekoyume.BlockChain
         private void DeleteAvatar()
         {
             ActionBase.EveryRender<DeleteAvatar>()
-                .Where(EvaluationValidationForAgentState)
+                .Where(ValidateEvaluationForAgentState)
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
                 {
@@ -190,7 +190,7 @@ namespace Nekoyume.BlockChain
         private void HackAndSlash()
         {
             ActionBase.EveryRender<HackAndSlash>()
-                .Where(EvaluationValidationForCurrentAvatarState)
+                .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
                 .Subscribe(UpdateCurrentAvatarState).AddTo(_disposables);
         }
@@ -198,7 +198,7 @@ namespace Nekoyume.BlockChain
         private void Combination()
         {
             ActionBase.EveryRender<Combination>()
-                .Where(EvaluationValidationForCurrentAvatarState)
+                .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
                 .Subscribe(UpdateCurrentAvatarState).AddTo(_disposables);
         }
@@ -206,7 +206,7 @@ namespace Nekoyume.BlockChain
         private void Sell()
         {
             ActionBase.EveryRender<Sell>()
-                .Where(EvaluationValidationForCurrentAvatarState)
+                .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
                 .Subscribe(UpdateCurrentAvatarState).AddTo(_disposables);
         }
@@ -214,7 +214,7 @@ namespace Nekoyume.BlockChain
         private void SellCancellation()
         {
             ActionBase.EveryRender<SellCancellation>()
-                .Where(EvaluationValidationForCurrentAvatarState)
+                .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
                 .Subscribe(UpdateCurrentAvatarState).AddTo(_disposables);
         }
@@ -222,7 +222,7 @@ namespace Nekoyume.BlockChain
         private void Buy()
         {
             ActionBase.EveryRender<Buy>()
-                .Where(EvaluationValidationForCurrentAvatarState)
+                .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
                 .Subscribe(UpdateCurrentAvatarState).AddTo(_disposables);
         }
