@@ -151,7 +151,7 @@ namespace Nekoyume.Model
 
         public void Equip(IEnumerable<Inventory.Item> items)
         {
-            Equipments = items.Select(i => i.item).OfType<Game.Item.Equipment>().Where(e => e.equipped).ToList();
+            Equipments = items.Select(i => i.item).OfType<Equipment>().Where(e => e.equipped).ToList();
             foreach (var equipment in Equipments)
             {
                 switch (equipment.Data.cls.ToEnumItemType())
