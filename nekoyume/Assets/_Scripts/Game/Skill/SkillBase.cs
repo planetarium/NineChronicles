@@ -14,17 +14,18 @@ namespace Nekoyume.Game.Skill
     [Serializable]
     public abstract class SkillBase: ISkill
     {
-        public float chance;
+        public readonly float chance;
         public readonly SkillEffect effect;
+        public readonly Data.Table.Elemental.ElementalType elementalType;
 
         public abstract Model.Skill Use(CharacterBase caster);
-        protected SkillBase(float chance, SkillEffect effect)
+        protected SkillBase(float chance, SkillEffect effect, Data.Table.Elemental.ElementalType elementalType)
         {
             this.effect = effect;
             this.chance = chance;
+            this.elementalType = elementalType;
         }
-
-
+        
         protected IEnumerable<CharacterBase> GetTarget(CharacterBase caster)
         {
             var targets = caster.targets;

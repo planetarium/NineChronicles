@@ -34,11 +34,16 @@ namespace Nekoyume.Game.Item
 
                 sb.AppendLine(info);
             }
-            
-            if (SkillBase?.effect != null)
+
+            if (SkillBase?.effect == null)
             {
-                sb.AppendLine($"{SkillBase.chance * 100}% 확률로 {SkillBase.effect.target}에게 {SkillBase.effect.multiplier * 100}% 위력으로 {SkillBase.effect.type}");
+                return sb.ToString();
             }
+            
+            sb.Append($"{SkillBase.chance * 100}% 확률로");
+            sb.Append($" {SkillBase.effect.target}에게");
+            sb.Append($" {SkillBase.effect.multiplier * 100}% 위력의");
+            sb.Append($" {SkillBase.elementalType}속성 {SkillBase.effect.type}");
 
             return sb.ToString();
         }

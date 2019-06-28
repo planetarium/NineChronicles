@@ -137,7 +137,6 @@ namespace Nekoyume.Model
 
             LevelUp();
             CalcStats(level);
-
         }
 
         // ToDo. 지금은 스테이지에서 재료 아이템만 주고 있음. 추후 대체 불가능 아이템도 줄 경우 수정 대상.
