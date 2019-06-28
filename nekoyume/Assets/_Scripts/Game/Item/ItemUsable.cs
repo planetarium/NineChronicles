@@ -24,12 +24,11 @@ namespace Nekoyume.Game.Item
         public override string ToItemInfo()
         {
             var sb = new StringBuilder();
-            sb.AppendLine(Stats.GetInformation());
-            if (SkillBase?.effect != null)
-            {
-                sb.AppendLine(
-                    $"{SkillBase.chance * 100}% 확률로 {SkillBase.effect.target}에게 {SkillBase.effect.multiplier * 100}% 위력으로 {SkillBase.effect.type}");
-            }
+            sb.AppendLine(Stats.GetInformation());            
+            sb.Append($"{SkillBase.chance * 100}% 확률로");
+            sb.Append($" {SkillBase.effect.target}에게");
+            sb.Append($" {SkillBase.effect.multiplier * 100}% 위력의");
+            sb.Append($" {SkillBase.elementalType}속성 {SkillBase.effect.type}");
 
             return sb.ToString().TrimEnd();
         }

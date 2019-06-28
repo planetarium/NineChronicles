@@ -16,7 +16,6 @@ namespace Nekoyume.Game.VFX.Skill
             {
                 child.gameObject.SetActive(true);
             }
-            Debug.Log("First");
             second.gameObject.SetActive(false);
             Play();
         }
@@ -30,7 +29,6 @@ namespace Nekoyume.Game.VFX.Skill
             {
                 child.gameObject.SetActive(false);
             }
-            Debug.Log("Second");
             second.gameObject.SetActive(true);
             Play();
         }

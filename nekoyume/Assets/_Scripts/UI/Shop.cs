@@ -220,7 +220,7 @@ namespace Nekoyume.UI
         private void ResponseSell(ActionBase.ActionEvaluation<Sell> eval)
         {
             _data.itemCountAndPricePopup.Value.item.Value = null;
-            
+
             var sellerAvatarAddress = eval.InputContext.Signer;
             var productId = eval.Action.productId;
             if (!States.Instance.shopState.Value.TryGet(sellerAvatarAddress, productId, out var outPair))
@@ -229,13 +229,13 @@ namespace Nekoyume.UI
             }
 
             var shopItem = outPair.Value;
-            
+
             _data.inventory.Value.RemoveNonFungibleItem(shopItem.itemUsable);
-            
+
             _data.shopItems.Value.AddShopItem(sellerAvatarAddress, shopItem);
             var registeredProduct = _data.shopItems.Value.AddRegisteredProduct(sellerAvatarAddress, shopItem);
             _data.shopItems.Value.OnClickShopItem(registeredProduct);
-            
+
             _loadingScreen.Close();
         }
 
@@ -243,7 +243,7 @@ namespace Nekoyume.UI
             ItemUsable shopItem)
         {
             _data.itemCountAndPricePopup.Value.item.Value = null;
-            
+
             var sellerAvatarAddress = eval.InputContext.Signer;
 
             _data.shopItems.Value.RemoveShopItem(sellerAvatarAddress, productId);
@@ -252,7 +252,7 @@ namespace Nekoyume.UI
 
             var addedItem = _data.inventory.Value.AddNonFungibleItem(shopItem);
             _data.inventory.Value.SubscribeOnClick(addedItem);
-            
+
             _loadingScreen.Close();
         }
 
@@ -260,20 +260,19 @@ namespace Nekoyume.UI
             ItemUsable shopItem)
         {
             _data.itemCountAndPricePopup.Value.item.Value = null;
-            
+
             var sellerAvatarAddress = eval.InputContext.Signer;
-            
+
             _data.shopItems.Value.RemoveShopItem(sellerAvatarAddress, productId);
             _data.shopItems.Value.RemoveProduct(productId);
             _data.shopItems.Value.RemoveRegisteredProduct(productId);
 
             if (!States.Instance.currentAvatarState.Value.inventory.TryGetAddedItemFrom(inventory,
-                    out var outAddedItem) ||
-                outAddedItem == null)
+                out var outAddedItem))
             {
                 return;
             }
-            
+
             StartCoroutine(CoShowBuyResultVFX(productId));
             var addedItem = _data.inventory.Value.AddNonFungibleItem(shopItem);
             _data.inventory.Value.SubscribeOnClick(addedItem);

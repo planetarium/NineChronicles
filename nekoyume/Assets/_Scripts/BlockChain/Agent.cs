@@ -152,7 +152,7 @@ namespace Nekoyume.BlockChain
 
                 if (actions.Any())
                 {
-                    var task = Task.Run(() => StageAvatarActions(actions));
+                    var task = Task.Run(() => AvatarManager.MakeTransaction(actions, _blocks));
                     yield return new WaitUntil(() => task.IsCompleted);
                 }
             }
@@ -212,7 +212,7 @@ namespace Nekoyume.BlockChain
 
                     foreach (var retryAction in retryActions)
                     {
-                        StageAgentActions(retryAction);
+                        _blocks.MakeTransaction(PrivateKey, retryAction);
                     }
                 }
             }
@@ -242,8 +242,8 @@ namespace Nekoyume.BlockChain
             {
                 createAvatar
             };
-            Task.Run(() => StageAgentActions(actions));
-            
+            Task.Run(() => _blocks.MakeTransaction(PrivateKey, actions));
+
             return createAvatar;
         }
         
@@ -258,8 +258,8 @@ namespace Nekoyume.BlockChain
             {
                 deleteAvatar
             };
-            Task.Run(() => StageAgentActions(actions));
-            
+            Task.Run(() => _blocks.MakeTransaction(PrivateKey, actions));
+
             return deleteAvatar;
         }
 
@@ -278,20 +278,16 @@ namespace Nekoyume.BlockChain
 
         private Transaction<PolymorphicAction<ActionBase>> RewardGold()
         {
-            var actions = new List<PolymorphicAction<ActionBase>> { new RewardGold() };
-            return _blocks.MakeTransaction(PrivateKey, actions);
-        }
-        
-        private void StageAgentActions(IEnumerable<PolymorphicAction<ActionBase>> actions)
-        {
-            var tx = _blocks.MakeTransaction(PrivateKey, actions);
-            _swarm.BroadcastTxs(new[] { tx });
-        }
-        
-        private void StageAvatarActions(IEnumerable<PolymorphicAction<ActionBase>> actions)
-        {
-            var tx = AvatarManager.MakeTransaction(actions, _blocks);
-            _swarm.BroadcastTxs(new[] { tx });
+            var actions = new List<PolymorphicAction<ActionBase>> {
+                new RewardGold
+                {
+                    gold = 1
+                }
+            };
+            return _blocks.MakeTransaction(
+                PrivateKey,
+                actions,
+                broadcast: false);
         }
     }
 }

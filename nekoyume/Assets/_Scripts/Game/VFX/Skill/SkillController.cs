@@ -7,6 +7,8 @@ namespace Nekoyume.Game.VFX.Skill
 {
     public class SkillController : MonoBehaviour
     {
+        private const int InitCount = 5;
+
         public SkillVFX[] skills;
         private ObjectPool _pool;
 
@@ -16,7 +18,7 @@ namespace Nekoyume.Game.VFX.Skill
             skills = Resources.LoadAll<SkillVFX>("VFX/Prefabs");
             foreach (var skill in skills)
             {
-                _pool.Add(skill.gameObject, 5);
+                _pool.Add(skill.gameObject, InitCount);
             }
         }
 
@@ -40,7 +42,15 @@ namespace Nekoyume.Game.VFX.Skill
             }
             var skillName = $"{skillInfo.Category}_{size}_{elemental}".ToLower();
             var go = _pool.Get(skillName, false, position);
+            if (go == null)
+            {
+                go = _pool.Get(skillName, true, position);
+            }
             var effect = go.GetComponent<T>();
+            if (effect == null)
+            {
+                Debug.LogError(skillName);
+            }
             effect.target = target;
             effect.Stop();
             return effect;
@@ -48,7 +58,6 @@ namespace Nekoyume.Game.VFX.Skill
 
         public SkillCastingVFX Get(Vector3 position, Model.Skill.SkillInfo skillInfo)
         {
-            //TODO 속성별 캐스팅 마법진이 달라야함.
             var elemental = skillInfo.Elemental ?? Data.Table.Elemental.ElementalType.Normal;
             var skillName = $"casting_{elemental}".ToLower();
             var go = _pool.Get(skillName, false, position);
