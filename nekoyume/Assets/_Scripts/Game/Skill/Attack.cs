@@ -7,15 +7,11 @@ using Nekoyume.Model;
 namespace Nekoyume.Game.Skill
 {
     [Serializable]
-    public class AttackBase: SkillBase
+    public class AttackBase : SkillBase
     {
-        private readonly Data.Table.Elemental.ElementalType _elemental;
-
         protected AttackBase(float chance, SkillEffect effect,
-            Data.Table.Elemental.ElementalType elemental) : base(chance, effect)
+            Data.Table.Elemental.ElementalType elemental) : base(chance, effect, elemental)
         {
-            this.chance = chance;
-            _elemental = elemental;
         }
 
         protected List<Model.Skill.SkillInfo> ProcessDamage(CharacterBase caster)
@@ -23,7 +19,7 @@ namespace Nekoyume.Game.Skill
             var targets = GetTarget(caster);
             var infos = new List<Model.Skill.SkillInfo>();
             var targetList = targets.ToArray();
-            var elemental = Elemental.Create(_elemental);
+            var elemental = Elemental.Create(elementalType);
             var multiplier = GetMultiplier(effect.hitCount, effect.multiplier);
             for (var i = 0; i < effect.hitCount; i++)
             {
@@ -44,7 +40,7 @@ namespace Nekoyume.Game.Skill
                     target.OnDamage(dmg);
 
                     infos.Add(new Model.Skill.SkillInfo((CharacterBase) target.Clone(), dmg, critical, effect.category,
-                        _elemental));
+                        elementalType));
                 }
             }
 

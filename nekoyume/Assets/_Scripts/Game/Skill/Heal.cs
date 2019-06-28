@@ -8,7 +8,7 @@ namespace Nekoyume.Game.Skill
     [Serializable]
     public class Heal : SkillBase
     {
-        public Heal(float chance, SkillEffect effect) : base(chance, effect)
+        public Heal(float chance, SkillEffect effect) : base(chance, effect, Data.Table.Elemental.ElementalType.Normal)
         {
         }
 
