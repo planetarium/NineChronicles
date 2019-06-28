@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Libplanet;
 using Libplanet.Action;
@@ -17,7 +16,7 @@ namespace Nekoyume.BlockChain
     /// </summary>
     public static class AvatarManager
     {
-        private const string PrivateKeyFormat = "private_key_{0}";
+        public const string PrivateKeyFormat = "private_key_{0}";
         
         private static int _currentAvatarIndex = -1;
         private static PrivateKey _privateKey;
