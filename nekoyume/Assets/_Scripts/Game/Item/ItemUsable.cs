@@ -24,7 +24,13 @@ namespace Nekoyume.Game.Item
         public override string ToItemInfo()
         {
             var sb = new StringBuilder();
-            sb.AppendLine(Stats.GetInformation());            
+            sb.AppendLine(Stats.GetInformation());
+
+            if (SkillBase == null)
+            {
+                return sb.ToString().TrimEnd();
+            }
+            
             sb.Append($"{SkillBase.chance * 100}% 확률로");
             sb.Append($" {SkillBase.effect.target}에게");
             sb.Append($" {SkillBase.effect.multiplier * 100}% 위력의");
