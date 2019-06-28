@@ -12,8 +12,17 @@ namespace Nekoyume.Game.Item
         public Food(Data.Table.Item data, SkillBase skillBase = null)
             : base(data, skillBase)
         {
-            Stats.SetStatValue(Data.ability1, Data.value1);
-            Stats.SetStatValue(Data.ability2, Data.value2);
+            if (!string.IsNullOrEmpty(Data.ability1)
+                && Data.value1 > 0)
+            {
+                Stats.SetStatValue(Data.ability1, Data.value1);
+            }
+
+            if (!string.IsNullOrEmpty(Data.ability2)
+                && Data.value2 > 0)
+            {
+                Stats.SetStatValue(Data.ability2, Data.value2);
+            }
         }
     }
 }
