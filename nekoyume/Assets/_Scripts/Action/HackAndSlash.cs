@@ -43,7 +43,7 @@ namespace Nekoyume.Action
             var avatarState = (AvatarState) states.GetState(ctx.Signer);
             if (avatarState == null)
             {
-                return SimpleError(ctx, ErrorCode.AvatarNotFound);
+                return states;
             }
             
             var inventoryEquipments = avatarState.inventory.Items
@@ -59,7 +59,7 @@ namespace Nekoyume.Action
             {
                 if (!avatarState.inventory.TryGetNonFungibleItem(equipment, out ItemUsable outNonFungibleItem))
                 {
-                    return SimpleError(ctx, ErrorCode.HackAndSlashNotFoundEquipment);
+                    return states;
                 }
                 
                 ((Equipment) outNonFungibleItem).Equip();

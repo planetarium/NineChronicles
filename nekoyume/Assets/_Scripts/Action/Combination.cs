@@ -35,7 +35,6 @@ namespace Nekoyume.Action
         }
 
         public List<Material> Materials { get; private set; }
-        public List<ItemUsable> Results { get; }
 
         protected override IImmutableDictionary<string, object> PlainValueInternal =>
             new Dictionary<string, object>
@@ -46,7 +45,6 @@ namespace Nekoyume.Action
         public Combination()
         {
             Materials = new List<Material>();
-            Results = new List<ItemUsable>();
         }
 
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, object> plainValue)
@@ -65,7 +63,7 @@ namespace Nekoyume.Action
             var avatarState = (AvatarState) states.GetState(ctx.Signer);
             if (avatarState == null)
             {
-                return SimpleError(ctx, ErrorCode.AvatarNotFound);
+                return states;
             }
 
             // 인벤토리에 재료를 갖고 있는지 검증.
@@ -73,7 +71,7 @@ namespace Nekoyume.Action
             {
                 if (!avatarState.inventory.TryGetFungibleItem(material.id, out var outFungibleItem))
                 {
-                    return SimpleError(ctx, ErrorCode.CombinationNotFoundMaterials);
+                    return states;
                 }
             }
 
@@ -111,7 +109,7 @@ namespace Nekoyume.Action
             if (ReferenceEquals(resultItem, null) ||
                 resultCount == 0)
             {
-                return SimpleAvatarError(ctx, ctx.Signer, avatarState, ErrorCode.CombinationNoResultItem);
+                return states.SetState(ctx.Signer, avatarState);
             }
             
             // 조합 결과 획득.
@@ -121,12 +119,11 @@ namespace Nekoyume.Action
                 {
                     var itemUsable = GetItemUsableWithRandomSkill(itemEquipment, ctx.Random.Next());
                     avatarState.inventory.AddNonFungibleItem(itemUsable);
-                    Results.Add(itemUsable);
                 }
             }
             else
             {
-                return SimpleError(ctx, ErrorCode.KeyNotFoundInTable);
+                return states;
             }
 
             avatarState.updatedAt = DateTimeOffset.UtcNow;

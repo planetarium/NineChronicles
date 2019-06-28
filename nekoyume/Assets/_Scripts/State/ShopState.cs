@@ -29,81 +29,74 @@ namespace Nekoyume.State
                 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0
             }
         );
-        
+
         public readonly Dictionary<Address, List<ShopItem>> items = new Dictionary<Address, List<ShopItem>>();
 
-        public static ShopItem Register(IDictionary<Address, List<ShopItem>> dictionary, Address address, ShopItem item)
-        {
-            if (!dictionary.ContainsKey(address))
-            {
-                dictionary.Add(address, new List<ShopItem>());
-            }
-            
-            dictionary[address].Add(item);
-            return item;
-        }
-        
-        public static KeyValuePair<Address, ShopItem> Find(IDictionary<Address, List<ShopItem>> dictionary, Address address, Guid productId)
-        {
-            if (!dictionary.ContainsKey(address))
-            {
-                throw new KeyNotFoundException($"address: {address}");
-            }
-
-            var list = dictionary[address];
-            
-            foreach (var shopItem in list)
-            {
-                if (shopItem.productId != productId) continue;
-                
-                return new KeyValuePair<Address, ShopItem>(address, shopItem);
-            }
-
-            throw new KeyNotFoundException($"productId: {productId}");
-        }
-        
-        public static ShopItem Unregister(IDictionary<Address, List<ShopItem>> dictionary, Address address, Guid productId)
-        {
-            var pair = Find(dictionary, address, productId);
-            dictionary[pair.Key].Remove(pair.Value);
-
-            return pair.Value;
-        }
-        
-        public static bool Unregister(IDictionary<Address, List<ShopItem>> dictionary, Address address, ShopItem shopItem)
-        {
-            if (!dictionary[address].Contains(shopItem))
-            {
-                return false;
-            }
-            
-            dictionary[address].Remove(shopItem);
-            
-            return true;
-        }
-        
         public ShopState() : base(Address)
         {
         }
         
-        public ShopItem Register(Address address, ShopItem item)
+        public ShopItem Register(Address sellerAvatarAddress, ShopItem item)
         {
-            return Register(items, address, item);
+            if (!items.ContainsKey(sellerAvatarAddress))
+            {
+                items.Add(sellerAvatarAddress, new List<ShopItem>());
+            }
+
+            items[sellerAvatarAddress].Add(item);
+            return item;
         }
 
-        public KeyValuePair<Address, ShopItem> Find(Address address, Guid productId)
+        public bool Unregister(Address sellerAvatarAddress,
+            ShopItem shopItem)
         {
-            return Find(items, address, productId);
+            if (!items[sellerAvatarAddress].Contains(shopItem))
+            {
+                return false;
+            }
+
+            items[sellerAvatarAddress].Remove(shopItem);
+
+            return true;
+        }
+
+        public bool TryGet(Address sellerAvatarAddress, Guid productId,
+            out KeyValuePair<Address, ShopItem> outPair)
+        {
+            if (!items.ContainsKey(sellerAvatarAddress))
+            {
+                return false;
+            }
+
+            var list = items[sellerAvatarAddress];
+
+            foreach (var shopItem in list)
+            {
+                if (shopItem.productId != productId)
+                {
+                    continue;
+                }
+
+                outPair = new KeyValuePair<Address, ShopItem>(sellerAvatarAddress, shopItem);
+                return true;
+            }
+
+            return false;
         }
         
-        public ShopItem Unregister(Address address, Guid productId)
+        public bool TryUnregister(Address sellerAvatarAddress,
+            Guid productId, out ShopItem outUnregisteredItem)
         {
-            return Unregister(items, address, productId);
-        }
-        
-        public bool Unregister(Address address, ShopItem shopItem)
-        {
-            return Unregister(items, address, shopItem);
+            if (!TryGet(sellerAvatarAddress, productId, out var outPair))
+            {
+                outUnregisteredItem = null;
+                return false;
+            }
+            
+            items[outPair.Key].Remove(outPair.Value);
+
+            outUnregisteredItem = outPair.Value;
+            return true;
         }
     }
 }

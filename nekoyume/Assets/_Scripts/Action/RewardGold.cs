@@ -11,12 +11,13 @@ namespace Nekoyume.Action
     public class RewardGold : ActionBase
     {
         public decimal gold;
-
-        public override IImmutableDictionary<string, object> PlainValue => new Dictionary<string, object>
-        {
-            ["gold"] = gold.ToString(CultureInfo.InvariantCulture),
-        }.ToImmutableDictionary();
         
+        public override IImmutableDictionary<string, object> PlainValue =>
+            new Dictionary<string, object>
+            {
+                ["gold"] = gold.ToString(CultureInfo.InvariantCulture),
+            }.ToImmutableDictionary();
+
         public override void LoadPlainValue(IImmutableDictionary<string, object> plainValue)
         {
             gold = decimal.Parse(plainValue["gold"].ToString());
@@ -29,7 +30,7 @@ namespace Nekoyume.Action
             {
                 return states.SetState(ctx.Miner, MarkChanged);
             }
-            
+
             var agentState = (AgentState) states.GetState(ctx.Signer) ?? new AgentState(ctx.Signer);
             agentState.gold += gold;
 

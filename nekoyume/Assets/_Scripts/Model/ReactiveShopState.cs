@@ -19,7 +19,7 @@ namespace Nekoyume.Model
             {
                 return;
             }
-            
+
             Items = new ReactiveDictionary<Address, List<ShopItem>>(shopState.items);
         }
     }

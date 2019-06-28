@@ -166,5 +166,30 @@ namespace Nekoyume.Game.Item
             outNonFungibleItem = null;
             return false;
         }
+
+        public bool TryGetAddedItemFrom(Inventory inventory, out ItemUsable outAddedItem)
+        {
+            // 인벤토리에서 추가된 아이템 확인.
+            foreach (var item in _items)
+            {
+                // 장비나 소모품이 아닌가?
+                if (!(item.item is ItemUsable itemUsable))
+                {
+                    continue;
+                }
+
+                // 원래 갖고 있었나?
+                if (inventory.TryGetNonFungibleItem(itemUsable, out ItemUsable outUnfungibleItem))
+                {
+                    continue;
+                }
+
+                outAddedItem = itemUsable;
+                return true;
+            }
+
+            outAddedItem = null;
+            return false;
+        }
     }
 }

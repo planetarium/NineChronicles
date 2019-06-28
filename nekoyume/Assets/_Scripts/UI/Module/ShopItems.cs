@@ -123,6 +123,11 @@ namespace Nekoyume.UI.Module
         {
             foreach (var shopItemView in items)
             {
+                if (shopItemView.Data == null)
+                {
+                    break;
+                }
+                
                 if (shopItemView.Data.productId.Value == id)
                 {
                     return shopItemView;

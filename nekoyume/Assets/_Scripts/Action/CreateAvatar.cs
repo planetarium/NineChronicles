@@ -13,7 +13,6 @@ namespace Nekoyume.Action
     [ActionType("create_avatar")]
     public class CreateAvatar : GameAction
     {
-        public const int DefaultId = 100010;
         private const int DefaultItemEquipmentSetId = 1;
 
         public Address avatarAddress;
@@ -47,12 +46,12 @@ namespace Nekoyume.Action
             var avatarState = (AvatarState)states.GetState(avatarAddress);
             if (avatarState != null)
             {
-                return SimpleError(ctx, ErrorCode.CreateAvatarAlreadyExistAvatarAddress);
+                return states;
             }
 
             if (agentState.avatarAddresses.ContainsKey(index))
             {
-                return SimpleError(ctx, ErrorCode.CreateAvatarAlreadyExistKeyAvatarAddress);
+                return states;
             }
 
             agentState.avatarAddresses.Add(index, avatarAddress);

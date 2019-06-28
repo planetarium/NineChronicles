@@ -1,6 +1,6 @@
-using System;
 using Nekoyume.State;
 using UniRx;
+using Inventory = Nekoyume.Game.Item.Inventory;
 
 namespace Nekoyume.Model
 {
@@ -9,8 +9,8 @@ namespace Nekoyume.Model
     /// </summary>
     public static class ReactiveCurrentAvatarState
     {
-        public static readonly ReactiveProperty<AvatarState> AvatarState = new ReactiveProperty<AvatarState>();
-        
+        public static readonly ReactiveProperty<Inventory> Inventory = new ReactiveProperty<Inventory>();
+
         public static void Initialize(AvatarState avatarState)
         {
             if (ReferenceEquals(avatarState, null))
@@ -18,7 +18,7 @@ namespace Nekoyume.Model
                 return;
             }
 
-            AvatarState.Value = avatarState;
+            Inventory.Value = avatarState.inventory;
         }
     }
 }

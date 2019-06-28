@@ -37,17 +37,17 @@ namespace Nekoyume.Action
             var agentState = (AgentState) states.GetState(ctx.Signer);
             if (agentState == null)
             {
-                return SimpleError(ctx, ErrorCode.AgentNotFound);
+                return states;
             }
 
             if (!agentState.avatarAddresses.ContainsKey(index))
             {
-                return SimpleError(ctx, ErrorCode.DeleteAvatarNotFoundKeyInAvatarAddresses);
+                return states;
             }
 
             if (!agentState.avatarAddresses[index].Equals(avatarAddress))
             {
-                return SimpleError(ctx, ErrorCode.DeleteAvatarNotEqualsAvatarAddressToValueInAvatarAddresses);
+                return states;
             }
 
             agentState.avatarAddresses.Remove(index);

@@ -11,27 +11,15 @@ namespace Nekoyume.Action
     [ActionType("sell_cancellation")]
     public class SellCancellation : GameAction
     {
-        [Serializable]
-        public class ResultModel
-        {
-            public Address owner;
-            public ShopItem shopItem;
-        }
-
-        public Address sellerAvatarAddress;
         public Guid productId;
-
-        public ResultModel result;
 
         protected override IImmutableDictionary<string, object> PlainValueInternal => new Dictionary<string, object>
         {
-            ["sellerAvatarAddress"] = sellerAvatarAddress.ToByteArray(),
             ["productId"] = productId.ToByteArray(),
         }.ToImmutableDictionary();
 
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, object> plainValue)
         {
-            sellerAvatarAddress = new Address((byte[]) plainValue["sellerAvatarAddress"]);
             productId = new Guid((byte[]) plainValue["productId"]);
         }
 
@@ -47,32 +35,22 @@ namespace Nekoyume.Action
             var avatarState = (AvatarState) states.GetState(ctx.Signer);
             if (avatarState == null)
             {
-                return SimpleError(ctx, ErrorCode.AvatarNotFound);
+                return states;
             }
-            
-            var shopState = (ShopState) states.GetState(ShopState.Address) ?? new ShopState();
 
-            ShopItem target;
-            try
+            var shopState = (ShopState) states.GetState(ShopState.Address) ?? new ShopState();
+            var sellerAvatarAddress = ctx.Signer;
+
+            // 상점에서 아이템을 빼온다.
+            if (!shopState.TryUnregister(sellerAvatarAddress, productId, out var outUnregisteredItem))
             {
-                // 상점에서 아이템을 빼온다.
-                target = shopState.Unregister(sellerAvatarAddress, productId);
-            }
-            catch
-            {
-                return SimpleError(ctx, ErrorCode.UnexpectedCaseInActionExecute);
+                return states;
             }
             
             // 인벤토리에 아이템을 넣는다.
-            avatarState.inventory.AddNonFungibleItem(target.itemUsable);
+            avatarState.inventory.AddNonFungibleItem(outUnregisteredItem.itemUsable);
             avatarState.updatedAt = DateTimeOffset.UtcNow;
             
-            result = new ResultModel
-            {
-                owner = sellerAvatarAddress,
-                shopItem = target
-            };
-
             states = states.SetState(ctx.Signer, avatarState);
             return states.SetState(ShopState.Address, shopState);
         }
