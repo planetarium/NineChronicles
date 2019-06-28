@@ -21,6 +21,30 @@ namespace Nekoyume.Game.Item
             SkillBase = skillBase;
         }
 
+        protected bool Equals(ItemUsable other)
+        {
+            return base.Equals(other) &&
+                   Data.id == other.Data.id &&
+                   Equals(Stats, other.Stats) &&
+                   Equals(SkillBase, other.SkillBase);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((ItemUsable) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return (base.GetHashCode() * 397) ^ (Stats != null ? Stats.GetHashCode() : 0);
+            }
+        }
+
         public override string ToItemInfo()
         {
             var sb = new StringBuilder();
@@ -30,7 +54,7 @@ namespace Nekoyume.Game.Item
             {
                 return sb.ToString().TrimEnd();
             }
-            
+
             sb.Append($"{SkillBase.chance * 100}% 확률로");
             sb.Append($" {SkillBase.effect.target}에게");
             sb.Append($" {SkillBase.effect.multiplier * 100}% 위력의");
