@@ -61,11 +61,25 @@ namespace Nekoyume.Game.Character
             var force = DamageTextForce;
             animator.Hit();
             PopUpDmg(position, force, info);
+
+            if (!IsDead())
+                ShowSpeech("ENEMY_DAMAGE");
         }
         
         protected override bool CanRun()
         {
             return base.CanRun() && !TargetInRange(_player);
+        }
+
+        protected override IEnumerator Dying()
+        {
+            ShowSpeech("ENEMY_DEAD");
+            StopRun();
+            animator.Die();
+            yield return new WaitForSeconds(1.2f);
+            DisableHUD();
+            yield return new WaitForSeconds(.8f);
+            OnDead();
         }
 
         protected override void OnDead()
@@ -99,6 +113,19 @@ namespace Nekoyume.Game.Character
                 case "footstep":
                     break;
             }
+        }
+
+        protected override void ProcessAttack(CharacterBase target, Model.Skill.SkillInfo skill)
+        {
+            ShowSpeech("ENEMY_SKILL", (int)(skill.Elemental ?? 0), (int)skill.Category);
+            base.ProcessAttack(target, skill);
+            ShowSpeech("ENEMY_ATTACK");
+        }
+
+        protected override IEnumerator CoAnimationCast(Model.Skill.SkillInfo info)
+        {
+            ShowSpeech("ENEMY_SKILL", (int)(info.Elemental ?? 0), (int)info.Category);
+            yield return StartCoroutine(base.CoAnimationCast(info));
         }
     }
 }
