@@ -22,7 +22,7 @@ namespace Nekoyume.BlockChain
     /// </summary>
     public class AgentController : MonoSingleton<AgentController>
     {
-        public const string PrivateKeyFormat = "private_key_{0}";
+        public const string PlayerPrefsKeyOfAgentPrivateKey = "private_key_agent";
 #if UNITY_EDITOR
         private const string AgentStoreDirName = "planetarium_dev";
         private const string DefaultHost = "127.0.0.1";
@@ -32,22 +32,22 @@ namespace Nekoyume.BlockChain
         private const string AgentStoreDirName = "planetarium";
 #endif
         private const string ChainIdKey = "chain_id";
-        
+
         private static readonly string StorePath = Path.Combine(Application.persistentDataPath, AgentStoreDirName);
-        
+
         public static Agent Agent { get; private set; }
-        
+
         private static IEnumerator _miner;
         private static IEnumerator _txProcessor;
         private static IEnumerator _swarmRunner;
-        
+
         public static void Initialize(Action<bool> callback)
         {
             if (!ReferenceEquals(Agent, null))
             {
                 return;
-            }   
-            
+            }
+
             instance.InitAgent(callback);
         }
 
@@ -62,31 +62,30 @@ namespace Nekoyume.BlockChain
             int? port = options.Port;
 
             Agent = new Agent(
-                privateKey: privateKey, 
-                path: StorePath, 
-                chainId: chainId, 
-                peers: peers, 
+                privateKey: privateKey,
+                path: StorePath,
+                chainId: chainId,
+                peers: peers,
                 iceServers: iceServers,
                 host: host,
                 port: port
             );
-            Agent.PreloadStarted += (_, __) =>
-            {
-                UI.Widget.Find<UI.LoadingScreen>()?.Show();
-            };
+            Agent.PreloadStarted += (_, __) => { UI.Widget.Find<UI.LoadingScreen>()?.Show(); };
             Agent.PreloadEnded += (_, __) =>
             {
                 // 에이전트의 준비단계가 끝나면 에이전트의 상태를 한 번 동기화 한다.
                 States.Instance.agentState.Value = (AgentState) Agent.GetState(Agent.Address) ??
-                                     new AgentState(Agent.Address);
+                                                   new AgentState(Agent.Address);
                 // 에이전트에 포함된 모든 아바타의 상태를 한 번씩 동기화 한다.
                 foreach (var pair in States.Instance.agentState.Value.avatarAddresses)
                 {
                     var avatarState = (AvatarState) Agent.GetState(pair.Value);
                     States.Instance.avatarStates.Add(pair.Key, avatarState);
                 }
+
                 // 랭킹의 상태를 한 번 동기화 한다.
-                States.Instance.rankingState.Value = (RankingState) Agent.GetState(RankingState.Address) ?? new RankingState();
+                States.Instance.rankingState.Value =
+                    (RankingState) Agent.GetState(RankingState.Address) ?? new RankingState();
                 // 상점의 상태를 한 번 동기화 한다.
                 States.Instance.shopState.Value = (ShopState) Agent.GetState(ShopState.Address) ?? new ShopState();
                 // 그리고 모든 액션에 대한 랜더를 핸들링하기 시작한다.
@@ -96,10 +95,10 @@ namespace Nekoyume.BlockChain
                 callback(true);
             };
             _miner = options.NoMiner ? null : Agent.CoMiner();
-            
+
             StartSystemCoroutines(Agent);
         }
-        
+
         private static CommandLineOptions GetOptions()
         {
 #if UNITY_EDITOR
@@ -112,13 +111,12 @@ namespace Nekoyume.BlockChain
         private static PrivateKey GetPrivateKey(CommandLineOptions options)
         {
             PrivateKey privateKey;
-            var key = string.Format(PrivateKeyFormat, "agent");
-            var privateKeyHex = options.PrivateKey ?? PlayerPrefs.GetString(key, "");
+            var privateKeyHex = options.PrivateKey ?? PlayerPrefs.GetString(PlayerPrefsKeyOfAgentPrivateKey, "");
 
             if (string.IsNullOrEmpty(privateKeyHex))
             {
                 privateKey = new PrivateKey();
-                PlayerPrefs.SetString(key, ByteUtil.Hex(privateKey.ByteArray));
+                PlayerPrefs.SetString(PlayerPrefsKeyOfAgentPrivateKey, ByteUtil.Hex(privateKey.ByteArray));
             }
             else
             {
@@ -148,7 +146,7 @@ namespace Nekoyume.BlockChain
         private static IEnumerable<Peer> GetPeers(CommandLineOptions options)
         {
 #if UNITY_EDITOR
-            return new Peer[]{ };
+            return new Peer[] { };
 #else
             return options.Peers?.Any() ?? false
                 ? options.Peers.Select(LoadPeer)
@@ -173,7 +171,7 @@ namespace Nekoyume.BlockChain
             return options.Host;
 #endif
         }
-        
+
 #if !UNITY_EDITOR
         private static Peer LoadPeer(string peerInfo)
         {
@@ -233,23 +231,24 @@ namespace Nekoyume.BlockChain
             {
                 PlayerPrefs.SetString(ChainIdKey, Agent.ChainId.ToString());
                 Agent.Dispose();
-            }            
+            }
+
             NetMQConfig.Cleanup(false);
-            
+
             base.OnDestroy();
         }
 
         #endregion
-        
+
         private void StartSystemCoroutines(Agent agent)
         {
             _txProcessor = agent.CoTxProcessor();
             _swarmRunner = agent.CoSwarmRunner();
-            
+
             StartNullableCoroutine(_txProcessor);
             StartNullableCoroutine(_swarmRunner);
         }
-        
+
         private Coroutine StartNullableCoroutine(IEnumerator routine)
         {
             return ReferenceEquals(routine, null) ? null : StartCoroutine(routine);

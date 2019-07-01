@@ -28,11 +28,60 @@ SPEECH_DUNGEON_1,Meow Meow,똑같은 재료를 많이 모으고 싶다고?[newli
 SPEECH_DUNGEON_2,Meow Meow Meow,몬스터가 떨어뜨리는 것들은[newline]하찮아 보이지만 좋은 재작 재료가 된다옹
 SPEECH_DUNGEON_3,Meow Meow Meow,여신님은 예로부터[newline]우리 고양이들을 좋아하셨다옹
 SPEECH_DUNGEON_4,Meow Meow Meow,신계는 4가지 원소의 힘으로[newline]균형이 이루어지고 있다옹
-PLAYER_INIT_0,Hello,출발!
-PLAYER_INIT_1,Hello,가볼까?
-PLAYER_ATTACK_0,Hello,얍
-PLAYER_ATTACK_1,Hello,이얍
-ENEMY_INIT_0_0,Hello,이 앞은 못지나간다!
-ENEMY_INIT_0_1,Hello,누구냐!
-ENEMY_201003_0,Hello,옹옹
-ENEMY_201003_1,,
+PLAYER_INIT_0,Hello,여기도 우글우글하군
+PLAYER_INIT_1,Hello,시작해볼까?
+PLAYER_ATTACK_0,Hello,받아라!
+PLAYER_ATTACK_1,Hello,이얍!
+ENEMY_INIT_0_0,Hello,누구냐!
+ENEMY_INIT_0_1,Hello,본때를 보여줘라!
+ENEMY_INIT_0_2,Hello,이 앞은 못 지나간다!
+PLAYER_SKILL_1_3_0,불_일격,!불꽃 일격
+PLAYER_SKILL_1_1_0,불_연사,!불꽃 연사
+PLAYER_SKILL_1_2_0,불_범위,!다 불태워버려라!
+PLAYER_SKILL_3_3_0,물_일격,!얼음 일격
+PLAYER_SKILL_3_1_0,물_연사,!얼음 연사
+PLAYER_SKILL_3_2_0,물_범위,!다 쓸어버려라!
+PLAYER_SKILL_4_3_0,바람_일격,!바람 일격
+PLAYER_SKILL_4_1_0,바람_연사,!바람 연사
+PLAYER_SKILL_4_2_0,바람_범위,!모두 날려버리겠다!
+PLAYER_SKILL_2_3_0,대지_일격,!대지의 일격
+PLAYER_SKILL_2_1_0,대지_연사,!대지의 연사
+PLAYER_SKILL_2_2_0,대지_범위,!다 부셔버리겠다!
+PLAYER_SKILL_0_3_0,무속성_일격,!통한의 일격
+PLAYER_SKILL_0_1_0,무속성_연사,!연사
+PLAYER_SKILL_0_2_0,무속성_범위,!이것 못 피할 걸?
+PLAYER_BOSS_STAGE_0,보스가 있는 스테이지 진입 직후,불안한 느낌이 드는군..
+PLAYER_BOSS_STAGE_1,,왠지 불길한데..?
+PLAYER_BOSS_ENCOUNTER_0,보스 조우,더 재미있어지겠군
+PLAYER_BOSS_ENCOUNTER_1,,와라!
+PLAYER_WIN_0,승리,역시!
+PLAYER_WIN_1,,좋았어!
+PLAYER_LOSE_0,사망,으악!
+PLAYER_LOSE_1,,크흑!
+ENEMY_ATTACK_0,공격,
+ENEMY_ATTACK_1,,
+ENEMY_SKILL_1_3_0,불_일격,!불꽃 일격
+ENEMY_SKILL_1_1_0,불_연사,!불꽃 연사
+ENEMY_SKILL_1_2_0,불_범위,!다 불태워버려라!
+ENEMY_SKILL_3_3_0,물_일격,!얼음 일격
+ENEMY_SKILL_3_1_0,물_연사,!얼음 연사
+ENEMY_SKILL_3_2_0,물_범위,!다 쓸어버려라!
+ENEMY_SKILL_4_3_0,바람_일격,!바람 일격
+ENEMY_SKILL_4_1_0,바람_연사,!바람 연사
+ENEMY_SKILL_4_2_0,바람_범위,!모두 날려버리겠다!
+ENEMY_SKILL_2_3_0,대지_일격,!대지의 일격
+ENEMY_SKILL_2_1_0,대지_연사,!대지의 연사
+ENEMY_SKILL_2_2_0,대지_범위,!다 부셔버리겠다!
+ENEMY_SKILL_0_3_0,무속성_일격,!통한의 일격
+ENEMY_SKILL_0_1_0,무속성_연사,!연사
+ENEMY_SKILL_0_2_0,무속성_범위,!이것 못 피할 걸?
+ENEMY_DAMAGE_0,,으악!
+ENEMY_DAMAGE_1,,끄아악!
+ENEMY_DEAD_0,,크흑...
+ENEMY_DEAD_1,,으아악!
+ENEMY_201003_0,,때리지 마 ㅠㅠ
+ENEMY_201003_1,,아파 ㅠㅠ
+ENEMY_201003_2,,
+ENEMY_201005_0,,온 몸이 아파..씩씩
+ENEMY_201005_1,,그만 자랐으면 좋겠어..
+ENEMY_201005_2,,
