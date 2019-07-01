@@ -7,6 +7,7 @@ using Nekoyume.Data;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Skill;
+using Nekoyume.Model;
 using Nekoyume.State;
 
 namespace Nekoyume.Action
@@ -114,7 +115,7 @@ namespace Nekoyume.Action
                 var normalizedRandomValue = ctx.Random.Next(0, 100000) * 0.00001f;
                 var roll = GetRoll(monsterPartsMaterial.count, 0, normalizedRandomValue);
                 var stat = GetStat(outMonsterPartsMaterialRow, roll);
-                itemUsable.Stats.SetStatAdditionalValue(stat.Key, (float) stat.Value);
+                itemUsable.Stats.SetStatAdditionalValue(stat.Key, stat.Value);
 
                 avatarState.inventory.AddNonFungibleItem(itemUsable);
             }
@@ -193,7 +194,7 @@ namespace Nekoyume.Action
             return false;
         }
 
-        private double GetRoll(int monsterPartsCount, int deltaLevel, float normalizedRandomValue)
+        private float GetRoll(int monsterPartsCount, int deltaLevel, float normalizedRandomValue)
         {
             var rollMax = Math.Pow(1f / (1f + GameConfig.CombinationValueP1 / monsterPartsCount),
                               GameConfig.CombinationValueP2) *
@@ -202,14 +203,14 @@ namespace Nekoyume.Action
                               : Math.Pow(1f / (1f + GameConfig.CombinationValueL1 / deltaLevel),
                                   GameConfig.CombinationValueL2));
             var rollMin = rollMax * 0.5f;
-            return rollMin + (rollMax - rollMin) * Math.Pow(normalizedRandomValue, GameConfig.CombinationValueR1);
+            return (float) (rollMin + (rollMax - rollMin) * Math.Pow(normalizedRandomValue, GameConfig.CombinationValueR1));
         }
 
-        private KeyValuePair<string, double> GetStat(Item itemRow, double roll)
+        private StatMap GetStat(Item itemRow, float roll)
         {
             var key = itemRow.stat;
-            var value = Math.Floor(itemRow.minStat + (itemRow.maxStat - itemRow.minStat) * roll);
-            return new KeyValuePair<string, double>(key, value);
+            var value = (float) Math.Floor(itemRow.minStat + (itemRow.maxStat - itemRow.minStat) * roll);
+            return new StatMap(key, value);
         }
 
         // ToDo. 순수 랜덤이 아닌 조합식이 적용되어야 함.

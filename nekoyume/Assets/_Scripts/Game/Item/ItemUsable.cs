@@ -19,6 +19,16 @@ namespace Nekoyume.Game.Item
             Data = (ItemEquipment) data;
             Stats = new Stats();
             SkillBase = skillBase;
+            
+            if (AbilityValidation(Data.ability1, Data.value1))
+            {
+                Stats.SetStatValue(Data.ability1, Data.value1);
+            }
+
+            if (AbilityValidation(Data.ability2, Data.value2))
+            {
+                Stats.SetStatValue(Data.ability2, Data.value2);
+            }
         }
 
         protected bool Equals(ItemUsable other)
@@ -67,6 +77,11 @@ namespace Nekoyume.Game.Item
         {
             Stats.UpdatePlayer(player);
             player.Skills.Add(SkillBase);
+        }
+
+        protected bool AbilityValidation(string key, int value)
+        {
+            return !string.IsNullOrEmpty(key) && value > 0;
         }
     }
 }
