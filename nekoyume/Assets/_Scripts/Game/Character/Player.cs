@@ -126,6 +126,7 @@ namespace Nekoyume.Game.Character
             {
                 if (animator.Target.name.Contains(itemId.ToString()))
                 {
+                    UpdateWeapon(weapon);
                     yield break;
                 }
                 animator.DestroyTarget();
