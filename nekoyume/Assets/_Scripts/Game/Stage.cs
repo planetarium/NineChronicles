@@ -201,15 +201,19 @@ namespace Nekoyume.Game
 
         public IEnumerator CoStageEnd(BattleLog.Result result)
         {
-            Widget.Find<BattleResult>().Show(result, repeatStage);
+            yield return new WaitForSeconds(2.0f);
             if (result == BattleLog.Result.Win)
             {
+                var playerCharacter = GetPlayer();
+                playerCharacter.ShowSpeech("PLAYER_WIN");
+                yield return new WaitForSeconds(1.0f);
                 StartCoroutine(CoSlideBg());
             }
             else
             {
                 objectPool.ReleaseAll();
             }
+            Widget.Find<BattleResult>().Show(result, repeatStage);
 
             yield return null;
         }
@@ -332,12 +336,16 @@ namespace Nekoyume.Game
 
             if (isBoss)
             {
+                yield return new WaitForSeconds(1.5f);
+                playerCharacter.ShowSpeech("PLAYER_BOSS_STAGE");
+                yield return new WaitForSeconds(1.5f);
                 AudioController.instance.PlayMusic(AudioController.MusicCode.Boss1);
                 VFXController.instance.Create<BattleBossTitleVFX>(Vector3.zero);
                 StartCoroutine(Widget.Find<Blind>().FadeIn(0.4f, "", 0.2f));
                 yield return new WaitForSeconds(2.0f);
                 StartCoroutine(Widget.Find<Blind>().FadeOut(0.2f));
-                yield return new WaitForSeconds(1.0f);
+                yield return new WaitForSeconds(2.0f);
+                playerCharacter.ShowSpeech("PLAYER_BOSS_ENCOUNTER");
             }
 
             yield return StartCoroutine(spawner.CoSetData(id, monsters));

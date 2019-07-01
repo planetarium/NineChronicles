@@ -115,7 +115,7 @@ namespace Nekoyume.Game.Character
             transform.position = position;
         }
 
-        private IEnumerator Dying()
+        protected virtual IEnumerator Dying()
         {
             StopRun();
             animator.Die();
@@ -169,7 +169,7 @@ namespace Nekoyume.Game.Character
 
             if (list.Length > 0)
             {
-                string join = string.Join(",", list.Select(x => x.ToString()).ToArray());
+                string join = string.Join("_", list.Select(x => x.ToString()).ToArray());
                 key = $"{key}_{join}_";
             }
             else
@@ -181,6 +181,9 @@ namespace Nekoyume.Game.Character
             {
                 return false;
             }
+
+            if (!gameObject.activeSelf)
+                return true;
 
             StartCoroutine(_speechBubble.CoShowText());
             return true;
@@ -322,6 +325,7 @@ namespace Nekoyume.Game.Character
 
             if (!ReferenceEquals(_speechBubble, null))
             {
+                _speechBubble.StopAllCoroutines();
                 _speechBubble.gameObject.SetActive(false);
                 if (!ReferenceEquals(_speechBubble.gameObject, null))
                     Destroy(_speechBubble.gameObject, _speechBubble.destroyTime);
@@ -329,7 +333,7 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        private void ProcessAttack(CharacterBase target, Model.Skill.SkillInfo skill)
+        protected virtual void ProcessAttack(CharacterBase target, Model.Skill.SkillInfo skill)
         {
             target.StopRun();
             StartCoroutine(target.CoProcessDamage(skill));
@@ -375,7 +379,7 @@ namespace Nekoyume.Game.Character
                 RunSpeed = Speed;
         }
         
-        private IEnumerator CoAnimationCast(Model.Skill.SkillInfo info)
+        protected virtual IEnumerator CoAnimationCast(Model.Skill.SkillInfo info)
         {
             attackEnd = false;
             RunSpeed = 0.0f;
