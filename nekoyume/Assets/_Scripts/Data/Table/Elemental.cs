@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 namespace Nekoyume.Data.Table
 {
@@ -38,6 +39,25 @@ namespace Nekoyume.Data.Table
                     return "물속성";
                 case ElementalType.Wind:
                     return "바람속성";
+                default:
+                    throw new Game.Elemental.InvalidElementalException();
+            }
+        }
+
+        public static Sprite GetSprite(ElementalType type)
+        {
+            switch (type)
+            {
+                case ElementalType.Normal:
+                    return null;
+                case ElementalType.Fire:
+                    return Resources.Load<Sprite>("UI/Textures/icon_elemental_fire");
+                case ElementalType.Land:
+                    return Resources.Load<Sprite>("UI/Textures/icon_elemental_land");
+                case ElementalType.Water:
+                    return Resources.Load<Sprite>("UI/Textures/icon_elemental_water");
+                case ElementalType.Wind:
+                    return Resources.Load<Sprite>("UI/Textures/icon_elemental_wind");
                 default:
                     throw new Game.Elemental.InvalidElementalException();
             }

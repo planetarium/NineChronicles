@@ -11,7 +11,7 @@ namespace Nekoyume.Game.Item
     public abstract class ItemUsable : ItemBase
     {
         public new ItemEquipment Data { get; }
-        protected StatsMap[] Stats { get; set; }
+        public StatsMap[] Stats { get; set; }
         public SkillBase SkillBase { get; }
 
         protected ItemUsable(Data.Table.Item data, SkillBase skillBase = null)

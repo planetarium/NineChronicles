@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DefaultNamespace;
 using UnityEngine;
 
 
@@ -32,32 +33,41 @@ namespace Nekoyume.UI
             {
                 var go = Instantiate(res, MainCanvas.instance.transform);
                 var widget = go.GetComponent<T>();
-                if (widget is PopupWidget)
+                switch (widget)
                 {
-                    go.transform.SetParent(MainCanvas.instance.popup.transform);
-                    go.SetActive(activate);
-                }
-                else if (widget is HudWidget)
-                {
-                    go.transform.SetParent(MainCanvas.instance.hud.transform);
-                    go.SetActive(activate);
-                }
-                else
-                {
-                    if (Dict.ContainsKey(t))
+                    case TooltipWidget _:
+                        go.transform.SetParent(MainCanvas.instance.tooltip.transform);
+                        go.SetActive(activate);
+                        break;
+                    case PopupWidget _:
+                        go.transform.SetParent(MainCanvas.instance.popup.transform);
+                        go.SetActive(activate);
+                        break;
+                    case HudWidget _:
+                        go.transform.SetParent(MainCanvas.instance.hud.transform);
+                        go.SetActive(activate);
+                        break;
+                    default:
                     {
-                        Debug.LogWarning($"Duplicated create widget: {t}");
-                        Destroy(go);
-                        Dict[t].SetActive(activate);
-                        return Dict[t].GetComponent<T>();
+                        if (Dict.ContainsKey(t))
+                        {
+                            Debug.LogWarning($"Duplicated create widget: {t}");
+                            Destroy(go);
+                            Dict[t].SetActive(activate);
+                            return Dict[t].GetComponent<T>();
+                        }
+                        go.transform.SetParent(MainCanvas.instance.widget.transform);
+                        go.SetActive(activate);
+                        Dict.Add(t, go);
+                        break;
                     }
-                    go.transform.SetParent(MainCanvas.instance.widget.transform);
-                    go.SetActive(activate);
-                    Dict.Add(t, go);
                 }
+                
                 return widget;
             }
+            
             Debug.LogWarning(($"widget not exist: {t}"));
+            
             return null;
         }
 

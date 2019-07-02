@@ -150,23 +150,7 @@ namespace Nekoyume.UI
 
         private void SetElemental(Elemental.ElementalType type, int count)
         {
-            Sprite sprite = null;
-            switch (type)
-            {
-                case Elemental.ElementalType.Fire:
-                    sprite = Resources.Load<Sprite>("");
-                    break;
-                case Elemental.ElementalType.Land:
-                    sprite = Resources.Load<Sprite>("");
-                    break;
-                case Elemental.ElementalType.Wind:
-                    sprite = Resources.Load<Sprite>("");
-                    break;
-                case Elemental.ElementalType.Water:
-                    sprite = Resources.Load<Sprite>("");
-                    break;
-            }
-            
+            var sprite = Elemental.GetSprite(type);
             if (ReferenceEquals(sprite, null))
             {
                 foreach (var image in resultItemElementalImages)

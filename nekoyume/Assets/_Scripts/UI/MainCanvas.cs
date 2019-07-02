@@ -8,6 +8,7 @@ namespace Nekoyume.UI
         public GameObject hud;
         public GameObject widget;
         public GameObject popup;
+        public GameObject tooltip;
         
         public Canvas Canvas { get; private set; }
         public RectTransform RectTransform { get; private set; }
@@ -45,6 +46,9 @@ namespace Nekoyume.UI
             Widget.Create<ItemCountAndPricePopup>();
             Widget.Create<CombinationResultPopup>();
             Widget.Create<StageTitle>();
+            
+            // 툴팁류.
+            Widget.Create<ItemInformationTooltip>();
 
             // 로딩창류.
             Widget.Create<GrayLoadingScreen>();
