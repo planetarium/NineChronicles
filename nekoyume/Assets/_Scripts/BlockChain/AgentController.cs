@@ -2,11 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-#if !UNITY_EDITOR
 using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
-#endif
 using Libplanet;
 using Libplanet.Crypto;
 using Libplanet.Net;
@@ -25,12 +23,12 @@ namespace Nekoyume.BlockChain
         public const string PlayerPrefsKeyOfAgentPrivateKey = "private_key_agent";
 #if UNITY_EDITOR
         private const string AgentStoreDirName = "planetarium_dev";
-        private const string DefaultHost = "127.0.0.1";
+        private static readonly string CommandLineOptionsJsonPath = Path.Combine(Application.dataPath, "clo.json");
 #else
-        private const string PeersFileName = "peers.dat";
-        private const string IceServersFileName = "ice_servers.dat";
         private const string AgentStoreDirName = "planetarium";
 #endif
+        private const string PeersFileName = "peers.dat";
+        private const string IceServersFileName = "ice_servers.dat";
         private const string ChainIdKey = "chain_id";
 
         private static readonly string StorePath = Path.Combine(Application.persistentDataPath, AgentStoreDirName);
@@ -102,7 +100,16 @@ namespace Nekoyume.BlockChain
         private static CommandLineOptions GetOptions()
         {
 #if UNITY_EDITOR
-            return new CommandLineOptions();
+            if (File.Exists(CommandLineOptionsJsonPath))
+            {
+                return JsonUtility.FromJson<CommandLineOptions>(
+                    File.ReadAllText(CommandLineOptionsJsonPath )
+                );
+            }
+            else 
+            {
+                return new CommandLineOptions();
+            }
 #else
             return CommnadLineParser.GetCommandLineOptions() ?? new CommandLineOptions();
 #endif
@@ -145,34 +152,21 @@ namespace Nekoyume.BlockChain
 
         private static IEnumerable<Peer> GetPeers(CommandLineOptions options)
         {
-#if UNITY_EDITOR
-            return new Peer[] { };
-#else
             return options.Peers?.Any() ?? false
                 ? options.Peers.Select(LoadPeer)
                 : LoadConfigLines(PeersFileName).Select(LoadPeer);
-#endif
         }
 
         private static IEnumerable<IceServer> GetIceServers()
         {
-#if UNITY_EDITOR
-            return null;
-#else
             return LoadIceServers();
-#endif
         }
 
         private static string GetHost(CommandLineOptions options)
         {
-#if UNITY_EDITOR
-            return DefaultHost;
-#else
             return options.Host;
-#endif
         }
 
-#if !UNITY_EDITOR
         private static Peer LoadPeer(string peerInfo)
         {
             string[] tokens = peerInfo.Split(',');
@@ -220,7 +214,6 @@ namespace Nekoyume.BlockChain
                 yield return new IceServer(new[] {uri}, userInfo[0], userInfo[1]);
             }
         }
-#endif
 
         #region Mono
 
