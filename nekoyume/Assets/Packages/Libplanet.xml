@@ -2293,7 +2293,7 @@
         <member name="M:Libplanet.Store.BaseStore.PutBlock``1(Libplanet.Blocks.Block{``0})">
             <inheritdoc />
         </member>
-        <member name="M:Libplanet.Store.BaseStore.LookupStateReference``1(System.String,Libplanet.Address,Libplanet.Blocks.Block{``0})">
+        <member name="M:Libplanet.Store.BaseStore.IterateStateReferences(System.String,Libplanet.Address)">
             <inheritdoc />
         </member>
         <member name="M:Libplanet.Store.BaseStore.StoreStateReference``1(System.String,System.Collections.Immutable.IImmutableSet{Libplanet.Address},Libplanet.Blocks.Block{``0})">
@@ -2302,13 +2302,13 @@
         <member name="M:Libplanet.Store.BaseStore.ForkStateReferences``1(System.String,System.String,Libplanet.Blocks.Block{``0},System.Collections.Immutable.IImmutableSet{Libplanet.Address})">
             <inheritdoc />
         </member>
+        <member name="M:Libplanet.Store.BaseStore.ListTxNonces(System.String)">
+            <inheritdoc/>
+        </member>
         <member name="M:Libplanet.Store.BaseStore.GetTxNonce(System.String,Libplanet.Address)">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Store.BaseStore.IncreaseTxNonce``1(System.String,Libplanet.Blocks.Block{``0})">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.BaseStore.ForkTxNonce``1(System.String,System.String,Libplanet.Blocks.Block{``0},System.Collections.Immutable.IImmutableSet{Libplanet.Address})">
+        <member name="M:Libplanet.Store.BaseStore.IncreaseTxNonce(System.String,Libplanet.Address,System.Int64)">
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Store.FileStore.ListNamespaces">
@@ -2326,7 +2326,7 @@
         <member name="M:Libplanet.Store.FileStore.StageTransactionIds(System.Collections.Generic.IDictionary{Libplanet.Tx.TxId,System.Boolean})">
             <inheritdoc />
         </member>
-        <member name="M:Libplanet.Store.FileStore.LookupStateReference``1(System.String,Libplanet.Address,Libplanet.Blocks.Block{``0})">
+        <member name="M:Libplanet.Store.FileStore.IterateStateReferences(System.String,Libplanet.Address)">
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Store.FileStore.StoreStateReference``1(System.String,System.Collections.Immutable.IImmutableSet{Libplanet.Address},Libplanet.Blocks.Block{``0})">
@@ -2335,13 +2335,13 @@
         <member name="M:Libplanet.Store.FileStore.ForkStateReferences``1(System.String,System.String,Libplanet.Blocks.Block{``0},System.Collections.Immutable.IImmutableSet{Libplanet.Address})">
             <inheritdoc/>
         </member>
+        <member name="M:Libplanet.Store.FileStore.ListTxNonces(System.String)">
+            <inheritdoc/>
+        </member>
         <member name="M:Libplanet.Store.FileStore.GetTxNonce(System.String,Libplanet.Address)">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Store.FileStore.IncreaseTxNonce``1(System.String,Libplanet.Blocks.Block{``0})">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.FileStore.ForkTxNonce``1(System.String,System.String,Libplanet.Blocks.Block{``0},System.Collections.Immutable.IImmutableSet{Libplanet.Address})">
+        <member name="M:Libplanet.Store.FileStore.IncreaseTxNonce(System.String,Libplanet.Address,System.Int64)">
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Store.IStore.ListNamespaces">
@@ -2407,22 +2407,16 @@
             <c>b = 1; c = 1</c> (delta).</para>
             </remarks>
         </member>
-        <member name="M:Libplanet.Store.IStore.LookupStateReference``1(System.String,Libplanet.Address,Libplanet.Blocks.Block{``0})">
+        <member name="M:Libplanet.Store.IStore.IterateStateReferences(System.String,Libplanet.Address)">
             <summary>
-            Looks up a state reference, which is a <see cref="P:Libplanet.Blocks.Block`1.Hash"/>
-            that has the state of the <paramref name="address"/>.
+            Gets pairs of a state reference and a corresponding <see cref="P:Libplanet.Blocks.Block`1.Index"/> of
+            the requested <paramref name="address"/> in the specified <paramref name="namespace"/>.
             </summary>
-            <param name="namespace">The namespace to look up a state reference.
-            </param>
-            <param name="address">The <see cref="T:Libplanet.Address"/> to look up.
-            </param>
-            <param name="lookupUntil">The upper bound (i.e., the latest block)
-            of the search range. <see cref="T:Libplanet.Blocks.Block`1"/>s after
-            <paramref name="lookupUntil"/> are ignored.</param>
-            <returns>A <see cref="P:Libplanet.Blocks.Block`1.Hash"/> which has the state of the
-            <paramref name="address"/>.</returns>
-            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> class used with
-            <paramref name="lookupUntil"/>.</typeparam>
+            <param name="namespace">The chain namespace.</param>
+            <param name="address">The <see cref="T:Libplanet.Address"/> to get state references.</param>
+            <returns><em>Ordered</em> pairs of a state reference and a corresponding
+            <see cref="P:Libplanet.Blocks.Block`1.Index"/>.  The highest index (i.e., the closest to the tip) go last,
+            and the lowest index (i.e., the closest to the genesis) go first.</returns>
             <seealso cref="M:Libplanet.Store.IStore.StoreStateReference``1(System.String,System.Collections.Immutable.IImmutableSet{Libplanet.Address},Libplanet.Blocks.Block{``0})"/>
         </member>
         <member name="M:Libplanet.Store.IStore.StoreStateReference``1(System.String,System.Collections.Immutable.IImmutableSet{Libplanet.Address},Libplanet.Blocks.Block{``0})">
@@ -2439,7 +2433,7 @@
             of the <see cref="T:Libplanet.Address"/>.</param>
             <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> class used with
             <paramref name="block"/>.</typeparam>
-            <seealso cref="M:Libplanet.Store.IStore.LookupStateReference``1(System.String,Libplanet.Address,Libplanet.Blocks.Block{``0})"/>
+            <seealso cref="M:Libplanet.Store.IStore.IterateStateReferences(System.String,Libplanet.Address)"/>
         </member>
         <member name="M:Libplanet.Store.IStore.ForkStateReferences``1(System.String,System.String,Libplanet.Blocks.Block{``0},System.Collections.Immutable.IImmutableSet{Libplanet.Address})">
             <summary>
@@ -2465,8 +2459,20 @@
             <paramref name="branchPoint"/>.</typeparam>
             <exception cref="T:Libplanet.Store.NamespaceNotFoundException">Thrown when the given
             <paramref name="sourceNamespace"/> does not exist.</exception>
-            <seealso cref="M:Libplanet.Store.IStore.LookupStateReference``1(System.String,Libplanet.Address,Libplanet.Blocks.Block{``0})"/>
+            <seealso cref="M:Libplanet.Store.IStore.IterateStateReferences(System.String,Libplanet.Address)"/>
             <seealso cref="M:Libplanet.Store.IStore.StoreStateReference``1(System.String,System.Collections.Immutable.IImmutableSet{Libplanet.Address},Libplanet.Blocks.Block{``0})"/>
+        </member>
+        <member name="M:Libplanet.Store.IStore.ListTxNonces(System.String)">
+            <summary>
+            Lists all <see cref="T:Libplanet.Address"/>es that have ever signed <see cref="T:Libplanet.Tx.Transaction`1"/>,
+            and their corresponding <see cref="T:Libplanet.Tx.Transaction`1"/> nonces.
+            </summary>
+            <param name="namespace">The namespace to list <see cref="T:Libplanet.Address"/>es and their
+            <see cref="T:Libplanet.Tx.Transaction`1"/> nonces.</param>
+            <returns>Pairs of an <see cref="T:Libplanet.Address"/> and its tx nonce.  All nonces are greater
+            than 0.  (If there are underlying entries having zero nonces these must be hidden.)
+            </returns>
+            <seealso cref="M:Libplanet.Store.IStore.GetTxNonce(System.String,Libplanet.Address)"/>
         </member>
         <member name="M:Libplanet.Store.IStore.GetTxNonce(System.String,Libplanet.Address)">
             <summary>
@@ -2481,46 +2487,19 @@
             </param>
             <returns>A <see cref="T:Libplanet.Tx.Transaction`1"/> nonce. If there is no
             previous <see cref="T:Libplanet.Tx.Transaction`1"/>, return 0.</returns>
-            <seealso cref="M:Libplanet.Store.IStore.IncreaseTxNonce``1(System.String,Libplanet.Blocks.Block{``0})"/>
+            <seealso cref="M:Libplanet.Store.IStore.IncreaseTxNonce(System.String,Libplanet.Address,System.Int64)"/>
         </member>
-        <member name="M:Libplanet.Store.IStore.IncreaseTxNonce``1(System.String,Libplanet.Blocks.Block{``0})">
+        <member name="M:Libplanet.Store.IStore.IncreaseTxNonce(System.String,Libplanet.Address,System.Int64)">
             <summary>
-            Increases <see cref="T:Libplanet.Tx.Transaction`1"/> of
-            <see cref="P:Libplanet.Tx.Transaction`1.Signer"/> in the <paramref name="block"/>.
+            Increases (or decreases if a negative <paramref name="delta"/> is given)
+            the tx nonce counter for <paramref name="signer"/>.
             </summary>
             <param name="namespace">The namespace to increase
             <see cref="T:Libplanet.Tx.Transaction`1"/> nonce.</param>
-            <param name="block">The <see cref="T:Libplanet.Blocks.Block`1"/> which has the
-            <see cref="T:Libplanet.Tx.Transaction`1"/>s.</param>
-            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> class used with
-            <paramref name="block"/>.</typeparam>
+            <param name="signer">The address of the account to increase tx nonce.</param>
+            <param name="delta">How many to incrase the counter.  A negative number decreases
+            the counter.  1 by default.</param>
             <seealso cref="M:Libplanet.Store.IStore.GetTxNonce(System.String,Libplanet.Address)"/>
-        </member>
-        <member name="M:Libplanet.Store.IStore.ForkTxNonce``1(System.String,System.String,Libplanet.Blocks.Block{``0},System.Collections.Immutable.IImmutableSet{Libplanet.Address})">
-            <summary>
-            Forks <see cref="T:Libplanet.Tx.Transaction`1"/> nonces from
-            <paramref name="sourceNamespace"/> to
-            <paramref name="destinationNamespace"/>.
-            <para>This method copies <see cref="T:Libplanet.Tx.Transaction`1"/> nonces from
-            <paramref name="sourceNamespace"/> to
-            <paramref name="destinationNamespace"/> and strips
-            <paramref name="addressesToStrip"/> of nonces after
-            <paramref name="branchPoint"/>.</para>
-            </summary>
-            <param name="sourceNamespace">The namespace of
-            <see cref="T:Libplanet.Tx.Transaction`1"/> nonces to fork.</param>
-            <param name="destinationNamespace">The namespace of destination
-            <see cref="T:Libplanet.Tx.Transaction`1"/> nonces.</param>
-            <param name="branchPoint">The branch point <see cref="T:Libplanet.Blocks.Block`1"/>
-            to fork.</param>
-            <param name="addressesToStrip">The set of <see cref="T:Libplanet.Address"/>es
-            to strip <see cref="T:Libplanet.Tx.Transaction`1"/> nonces after forking.</param>
-            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> class used with
-            <paramref name="branchPoint"/>.</typeparam>
-            <exception cref="T:Libplanet.Store.NamespaceNotFoundException">Thrown when the given
-            <paramref name="sourceNamespace"/> does not exist.</exception>
-            <seealso cref="M:Libplanet.Store.IStore.GetTxNonce(System.String,Libplanet.Address)"/>
-            <seealso cref="M:Libplanet.Store.IStore.IncreaseTxNonce``1(System.String,Libplanet.Blocks.Block{``0})"/>
         </member>
         <member name="T:Libplanet.Store.LiteDBStore">
             <summary>
@@ -2598,7 +2577,7 @@
         <member name="M:Libplanet.Store.LiteDBStore.SetBlockStates(Libplanet.HashDigest{System.Security.Cryptography.SHA256},Libplanet.Action.AddressStateMap)">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Store.LiteDBStore.LookupStateReference``1(System.String,Libplanet.Address,Libplanet.Blocks.Block{``0})">
+        <member name="M:Libplanet.Store.LiteDBStore.IterateStateReferences(System.String,Libplanet.Address)">
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Store.LiteDBStore.StoreStateReference``1(System.String,System.Collections.Immutable.IImmutableSet{Libplanet.Address},Libplanet.Blocks.Block{``0})">
@@ -2607,13 +2586,13 @@
         <member name="M:Libplanet.Store.LiteDBStore.ForkStateReferences``1(System.String,System.String,Libplanet.Blocks.Block{``0},System.Collections.Immutable.IImmutableSet{Libplanet.Address})">
             <inheritdoc/>
         </member>
+        <member name="M:Libplanet.Store.LiteDBStore.ListTxNonces(System.String)">
+            <inheritdoc/>
+        </member>
         <member name="M:Libplanet.Store.LiteDBStore.GetTxNonce(System.String,Libplanet.Address)">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Store.LiteDBStore.IncreaseTxNonce``1(System.String,Libplanet.Blocks.Block{``0})">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.LiteDBStore.ForkTxNonce``1(System.String,System.String,Libplanet.Blocks.Block{``0},System.Collections.Immutable.IImmutableSet{Libplanet.Address})">
+        <member name="M:Libplanet.Store.LiteDBStore.IncreaseTxNonce(System.String,Libplanet.Address,System.Int64)">
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Store.LiteDBStore.CountTransactions">
@@ -2640,6 +2619,24 @@
             <summary>
             Gets the namespace not found.
             </summary>
+        </member>
+        <member name="M:Libplanet.Store.StoreExtension.LookupStateReference``1(Libplanet.Store.IStore,System.String,Libplanet.Address,Libplanet.Blocks.Block{``0})">
+            <summary>
+            Looks up a state reference, which is a block's <see cref="P:Libplanet.Blocks.Block`1.Hash"/> that contains
+            an action mutating the <paramref name="address"/>' state.
+            </summary>
+            <param name="store">The store object expected to contain the state reference.</param>
+            <param name="namespace">The namespace to look up a state reference.</param>
+            <param name="address">The <see cref="T:Libplanet.Address"/> to look up.</param>
+            <param name="lookupUntil">The upper bound (i.e., the latest block) of the search range.
+            <see cref="T:Libplanet.Blocks.Block`1"/>s after <paramref name="lookupUntil"/> are ignored.</param>
+            <returns>A <see cref="P:Libplanet.Blocks.Block`1.Hash"/> which has the state of
+            the <paramref name="address"/>.</returns>
+            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> class used with
+            <paramref name="lookupUntil"/>.</typeparam>
+            <seealso
+            cref="M:Libplanet.Store.IStore.StoreStateReference``1(System.String,System.Collections.Immutable.IImmutableSet{Libplanet.Address},Libplanet.Blocks.Block{``0})"/>
+            <seealso cref="M:Libplanet.Store.IStore.IterateStateReferences(System.String,Libplanet.Address)"/>
         </member>
         <member name="T:Libplanet.Tx.InvalidTxException">
             <summary>
