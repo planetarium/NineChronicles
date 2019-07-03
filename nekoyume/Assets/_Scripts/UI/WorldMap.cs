@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Nekoyume.BlockChain;
+using Nekoyume.EnumType;
 
 
 namespace Nekoyume.UI

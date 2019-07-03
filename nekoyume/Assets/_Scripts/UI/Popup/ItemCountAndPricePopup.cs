@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using UniRx;
 using UnityEngine;

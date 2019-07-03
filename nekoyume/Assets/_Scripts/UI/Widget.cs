@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using DefaultNamespace;
+using Nekoyume.EnumType;
 using UnityEngine;
 
 
@@ -17,6 +17,7 @@ namespace Nekoyume.UI
         private bool _animCloseEnd;
         
         public RectTransform RectTransform { get; private set; }
+        public virtual WidgetType WidgetType => WidgetType.Widget;
 
         protected virtual void Awake()
         {
@@ -33,21 +34,21 @@ namespace Nekoyume.UI
             {
                 var go = Instantiate(res, MainCanvas.instance.transform);
                 var widget = go.GetComponent<T>();
-                switch (widget)
+                switch (widget.WidgetType)
                 {
-                    case TooltipWidget _:
+                    case WidgetType.Tooltip:
                         go.transform.SetParent(MainCanvas.instance.tooltip.transform);
                         go.SetActive(activate);
                         break;
-                    case PopupWidget _:
+                    case WidgetType.Popup:
                         go.transform.SetParent(MainCanvas.instance.popup.transform);
                         go.SetActive(activate);
                         break;
-                    case HudWidget _:
+                    case WidgetType.Hud:
                         go.transform.SetParent(MainCanvas.instance.hud.transform);
                         go.SetActive(activate);
                         break;
-                    default:
+                    case WidgetType.Widget:
                     {
                         if (Dict.ContainsKey(t))
                         {

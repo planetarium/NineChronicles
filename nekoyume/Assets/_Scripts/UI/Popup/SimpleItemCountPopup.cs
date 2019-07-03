@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using Nekoyume.UI.Module;
 using UniRx;
@@ -9,6 +10,5 @@ namespace Nekoyume.UI
 {
     public class SimpleItemCountPopup : ItemCountPopup<Model.SimpleItemCountPopup>
     {
-        
     }
 }

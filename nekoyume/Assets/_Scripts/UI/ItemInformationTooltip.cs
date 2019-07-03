@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using DefaultNamespace;
+using Nekoyume.EnumType;
 using Nekoyume.UI.Module;
 using UniRx;
 using UnityEngine;
@@ -8,7 +8,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
-    public class ItemInformationTooltip : TooltipWidget
+    public class ItemInformationTooltip : TooltipWidget<Model.ItemInformationTooltip>
     {
         public Text titleText;
         public ItemInformation itemInformation;
@@ -19,11 +19,9 @@ namespace Nekoyume.UI
         public Button submitButton;
         public Text submitButtonText;
         
-        public Model.ItemInformationTooltip Model { get; private set; }
-        
         private readonly List<IDisposable> _disposablesForAwake = new List<IDisposable>();
         private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
-
+        
         protected override void Awake()
         {
             base.Awake();
@@ -35,14 +33,6 @@ namespace Nekoyume.UI
         private void OnDestroy()
         {
             _disposablesForAwake.DisposeAllAndClear();
-        }
-
-        public void Show(Model.ItemInformationTooltip value)
-        {
-            _disposablesForModel.DisposeAllAndClear();
-            Model = value;
-            
-            Show();
         }
 
         public override void Show()
@@ -81,14 +71,8 @@ namespace Nekoyume.UI
         public override void Close()
         {
             _disposablesForModel.DisposeAllAndClear();
-            Model = null;
             
             base.Close();
-        }
-
-        private void MoveInsideOf()
-        {
-            
         }
     }
 }
