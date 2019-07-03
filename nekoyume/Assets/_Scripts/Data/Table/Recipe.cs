@@ -13,7 +13,7 @@ namespace Nekoyume.Data.Table
         public int Material4;
         public int Material5;
 
-        public bool IsMatch(List<Combination.Material> materials)
+        public bool IsMatchForConsumable(List<Combination.Material> materials)
         {
             var dic = GetRecipe();
 
@@ -40,7 +40,7 @@ namespace Nekoyume.Data.Table
             return dic.Count == 0;
         }
 
-        public int CalculateCount(List<Combination.Material> materials)
+        public int GetCombinationResultCountForConsumable(List<Combination.Material> materials)
         {
 
             var dic = GetRecipe();
