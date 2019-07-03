@@ -15,7 +15,7 @@ namespace Nekoyume.UI
         private Animator _animator;
         private Material _glass;
         private bool _animCloseEnd;
-        
+
         public RectTransform RectTransform { get; private set; }
         public virtual WidgetType WidgetType => WidgetType.Widget;
 
@@ -36,39 +36,32 @@ namespace Nekoyume.UI
                 var widget = go.GetComponent<T>();
                 switch (widget.WidgetType)
                 {
-                    case WidgetType.Tooltip:
-                        go.transform.SetParent(MainCanvas.instance.tooltip.transform);
-                        go.SetActive(activate);
-                        break;
                     case WidgetType.Popup:
-                        go.transform.SetParent(MainCanvas.instance.popup.transform);
-                        go.SetActive(activate);
-                        break;
-                    case WidgetType.Hud:
-                        go.transform.SetParent(MainCanvas.instance.hud.transform);
-                        go.SetActive(activate);
-                        break;
+                    case WidgetType.Tooltip:
                     case WidgetType.Widget:
-                    {
                         if (Dict.ContainsKey(t))
                         {
                             Debug.LogWarning($"Duplicated create widget: {t}");
                             Destroy(go);
                             Dict[t].SetActive(activate);
+                            
                             return Dict[t].GetComponent<T>();
                         }
+
                         go.transform.SetParent(MainCanvas.instance.widget.transform);
                         go.SetActive(activate);
                         Dict.Add(t, go);
                         break;
-                    }
                 }
-                
+
+                go.transform.SetParent(MainCanvas.instance.GetTransform(widget.WidgetType));
+                go.SetActive(activate);
+
                 return widget;
             }
-            
+
             Debug.LogWarning(($"widget not exist: {t}"));
-            
+
             return null;
         }
 
@@ -79,6 +72,7 @@ namespace Nekoyume.UI
             return Dict.TryGetValue(t, out go) ? go.GetComponent<T>() : null;
         }
 
+
         private void FindGlassMaterial(GameObject go)
         {
             var image = go.GetComponent<UnityEngine.UI.Image>();
@@ -86,7 +80,7 @@ namespace Nekoyume.UI
             {
                 return;
             }
-            
+
             _glass = image.material;
         }
 
@@ -97,14 +91,17 @@ namespace Nekoyume.UI
             {
                 _animator = GetComponent<Animator>();
             }
+
             if (_animator)
             {
                 _animator.Play("Show");
             }
+
             if (!_glass)
             {
                 FindGlassMaterial(gameObject);
             }
+
             if (_glass)
             {
                 StartCoroutine(Blur());
@@ -141,7 +138,7 @@ namespace Nekoyume.UI
                 if (!gameObject.activeInHierarchy)
                     break;
             }
-            
+
             _glass.SetFloat(Radius, 6f);
         }
 
@@ -183,7 +180,6 @@ namespace Nekoyume.UI
             {
                 Show();
             }
-
         }
 
         public void AnimCloseEnd()

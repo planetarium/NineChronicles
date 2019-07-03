@@ -12,8 +12,16 @@ namespace Nekoyume.UI.Model
         public ItemInformationTooltip()
         {
             itemInformation.Value = new ItemInformation();
-            
-            itemInformation.Value.item.Value.countEnabledFunc.Value = item => false;
+
+            itemInformation.Value.item.Subscribe(item =>
+            {
+                if (item is null)
+                {
+                    return;
+                }
+                
+                item.countEnabledFunc.Value = item2 => false;
+            });
         }
     }
 }

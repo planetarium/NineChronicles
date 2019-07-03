@@ -3,12 +3,10 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
-    public class StageTitle : Widget
+    public class StageTitle : PopupWidget
     {
         public Text textStage;
         
-        public override WidgetType WidgetType => WidgetType.Popup;
-
         public void Show(int stage)
         {
             textStage.text = $"STAGE {stage}";

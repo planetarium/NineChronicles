@@ -12,7 +12,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
-    public class CombinationResultPopup : Widget
+    public class CombinationResultPopup : PopupWidget
     {
         public Text titleText;
         public GameObject resultItem;

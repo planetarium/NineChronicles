@@ -12,10 +12,5 @@ namespace Nekoyume.UI
             base.Show();
             AudioController.PlayPopup();
         }
-
-        public override void Close()
-        {
-            Destroy(gameObject);
-        }
     }
 }

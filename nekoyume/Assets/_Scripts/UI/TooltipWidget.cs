@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Nekoyume.EnumType;
+using Nekoyume.Game;
 using UniRx;
 using Unity.Mathematics;
 using UnityEngine;
@@ -9,7 +10,10 @@ namespace Nekoyume.UI
 {
     public abstract class TooltipWidget<T> : Widget where T : Model.Tooltip
     {
-        private readonly List<IDisposable> _disposablesForAwake = new List<IDisposable>();
+        public static readonly float3 DefaultOffset = new float3(10f, 0f, 0f);
+        
+        public RectTransform panel;
+    
         private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
         
         public override WidgetType WidgetType => WidgetType.Tooltip;
@@ -36,8 +40,6 @@ namespace Nekoyume.UI
             }
 
             Model.target.Subscribe(SubscribeTarget).AddTo(_disposablesForModel);
-            Model.anchorPresetType.Subscribe(SubscribeAnchorPresetType).AddTo(_disposablesForModel);
-            Model.offset.Subscribe(SubscribeOffset).AddTo(_disposablesForModel);
         }
         
         public override void Close()
@@ -48,19 +50,19 @@ namespace Nekoyume.UI
             base.Close();
         }
         
-        private void SubscribeTarget(RectTransform value)
+        private void SubscribeTarget(RectTransform target)
         {
-            
-        }
-
-        private void SubscribeAnchorPresetType(AnchorPresetType value)
-        {
-            
-        }
-
-        private void SubscribeOffset(float3 value)
-        {
-            
+            var position = target.position;
+            var targetRect = target.rect;
+            var tooltipRect = RectTransform.rect;
+            position.x += (targetRect.x + tooltipRect.size.x) * 0.5f;
+            position.y -= (targetRect.y + tooltipRect.size.y) * 0.5f;
+            RectTransform.position = position;
+            var anchoredPosition = RectTransform.anchoredPosition; 
+            anchoredPosition.x += DefaultOffset.x;
+            anchoredPosition.y += DefaultOffset.y;
+            RectTransform.anchoredPosition = anchoredPosition;
+            RectTransform.MoveInsideOfScreen(ActionCamera.instance.Cam, PivotPresetType.BottomRight);
         }
     }
 }

@@ -24,10 +24,10 @@ namespace Nekoyume.UI
             result.shadow.text = text;
             
             var rect = result.RectTransform;
-            rect.anchoredPosition = position.ToCanvasPosition(ActionCamera.instance.Cam, MainCanvas.instance.Canvas);
+            rect.anchoredPosition = position.WorldToScreen(ActionCamera.instance.Cam, MainCanvas.instance.Canvas);
             rect.localScale = LocalScaleBefore;
 
-            var tweenPos = (position + force).ToCanvasPosition(ActionCamera.instance.Cam, MainCanvas.instance.Canvas);
+            var tweenPos = (position + force).WorldToScreen(ActionCamera.instance.Cam, MainCanvas.instance.Canvas);
             rect.DOScale(LocalScaleAfter, TweenDuration).SetEase(Ease.OutCubic);
             rect.DOAnchorPos(tweenPos, TweenDuration * 2.0f).SetEase(Ease.InOutQuad).SetDelay(TweenDuration);
             result.group.DOFade(0.0f, TweenDuration * 2.0f).SetDelay(TweenDuration).SetEase(Ease.InCirc);

@@ -46,7 +46,7 @@ namespace Nekoyume.UI
         public void UpdatePosition(GameObject target, Vector3 offset = new Vector3())
         {
             var targetPosition = target.transform.position + offset;
-            RectTransform.anchoredPosition = targetPosition.ToCanvasPosition(ActionCamera.instance.Cam, MainCanvas.instance.Canvas);
+            RectTransform.anchoredPosition = targetPosition.WorldToScreen(ActionCamera.instance.Cam, MainCanvas.instance.Canvas);
         }
 
         public bool SetKey(string value)

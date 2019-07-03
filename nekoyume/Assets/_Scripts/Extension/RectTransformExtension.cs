@@ -1,3 +1,4 @@
+using System;
 using Nekoyume.EnumType;
 using Unity.Mathematics;
 using UnityEngine;
@@ -6,183 +7,238 @@ namespace Nekoyume
 {
     public static class RectTransformExtensions
     {
-        public static void SetAnchor(this RectTransform source, AnchorPresetType align, int offsetX = 0, int offsetY = 0)
+        public static readonly float2 ZeroZeroFloat2 = new float2(0f, 0f);
+        public static readonly float2 ZeroHalfFloat2 = new float2(0f, 0.5f);
+        public static readonly float2 ZeroOneFloat2 = new float2(0f, 1f);
+        public static readonly float2 HalfZeroFloat2 = new float2(0.5f, 0f);
+        public static readonly float2 HalfHalfFloat2 = new float2(0.5f, 0.5f);
+        public static readonly float2 HalfOneFloat2 = new float2(0.5f, 1f);
+        public static readonly float2 OneZeroFloat2 = new float2(1f, 0f);
+        public static readonly float2 OneHalfFloat2 = new float2(1f, 0.5f);
+        public static readonly float2 OneOneFloat2 = new float2(1f, 1f);
+        
+        public static void SetAnchor(this RectTransform rectTransform, AnchorPresetType align, int offsetX = 0, int offsetY = 0)
         {
-            source.anchoredPosition = new Vector3(offsetX, offsetY, 0);
+            rectTransform.anchoredPosition = new float2(offsetX, offsetY);
 
             switch (align)
             {
                 case AnchorPresetType.TopLeft:
                 {
-                    source.anchorMin = new float2(0, 1);
-                    source.anchorMax = new Vector2(0, 1);
+                    rectTransform.anchorMin = ZeroOneFloat2;
+                    rectTransform.anchorMax = ZeroOneFloat2;
                     break;
                 }
 
                 case AnchorPresetType.TopCenter:
                 {
-                    source.anchorMin = new Vector2(0.5f, 1);
-                    source.anchorMax = new Vector2(0.5f, 1);
+                    rectTransform.anchorMin = HalfOneFloat2;
+                    rectTransform.anchorMax = HalfOneFloat2;
                     break;
                 }
 
                 case AnchorPresetType.TopRight:
                 {
-                    source.anchorMin = new Vector2(1, 1);
-                    source.anchorMax = new Vector2(1, 1);
+                    rectTransform.anchorMin = OneOneFloat2;
+                    rectTransform.anchorMax = OneOneFloat2;
                     break;
                 }
 
                 case AnchorPresetType.MiddleLeft:
                 {
-                    source.anchorMin = new Vector2(0, 0.5f);
-                    source.anchorMax = new Vector2(0, 0.5f);
+                    rectTransform.anchorMin = ZeroHalfFloat2;
+                    rectTransform.anchorMax = ZeroHalfFloat2;
                     break;
                 }
 
                 case AnchorPresetType.MiddleCenter:
                 {
-                    source.anchorMin = new Vector2(0.5f, 0.5f);
-                    source.anchorMax = new Vector2(0.5f, 0.5f);
+                    rectTransform.anchorMin = HalfHalfFloat2;
+                    rectTransform.anchorMax = HalfHalfFloat2;
                     break;
                 }
 
                 case AnchorPresetType.MiddleRight:
                 {
-                    source.anchorMin = new Vector2(1, 0.5f);
-                    source.anchorMax = new Vector2(1, 0.5f);
+                    rectTransform.anchorMin = OneHalfFloat2;
+                    rectTransform.anchorMax = OneHalfFloat2;
                     break;
                 }
 
                 case AnchorPresetType.BottomLeft:
                 {
-                    source.anchorMin = new Vector2(0, 0);
-                    source.anchorMax = new Vector2(0, 0);
+                    rectTransform.anchorMin = ZeroZeroFloat2;
+                    rectTransform.anchorMax = ZeroZeroFloat2;
                     break;
                 }
 
                 case AnchorPresetType.BottomCenter:
                 {
-                    source.anchorMin = new Vector2(0.5f, 0);
-                    source.anchorMax = new Vector2(0.5f, 0);
+                    rectTransform.anchorMin = HalfZeroFloat2;
+                    rectTransform.anchorMax = HalfZeroFloat2;
                     break;
                 }
 
                 case AnchorPresetType.BottomRight:
                 {
-                    source.anchorMin = new Vector2(1, 0);
-                    source.anchorMax = new Vector2(1, 0);
+                    rectTransform.anchorMin = OneZeroFloat2;
+                    rectTransform.anchorMax = OneZeroFloat2;
                     break;
                 }
 
                 case AnchorPresetType.HorStretchTop:
                 {
-                    source.anchorMin = new Vector2(0, 1);
-                    source.anchorMax = new Vector2(1, 1);
+                    rectTransform.anchorMin = ZeroOneFloat2;
+                    rectTransform.anchorMax = OneOneFloat2;
                     break;
                 }
 
                 case AnchorPresetType.HorStretchMiddle:
                 {
-                    source.anchorMin = new Vector2(0, 0.5f);
-                    source.anchorMax = new Vector2(1, 0.5f);
+                    rectTransform.anchorMin = ZeroHalfFloat2;
+                    rectTransform.anchorMax = OneHalfFloat2;
                     break;
                 }
 
                 case AnchorPresetType.HorStretchBottom:
                 {
-                    source.anchorMin = new Vector2(0, 0);
-                    source.anchorMax = new Vector2(1, 0);
+                    rectTransform.anchorMin = ZeroZeroFloat2;
+                    rectTransform.anchorMax = OneZeroFloat2;
                     break;
                 }
 
                 case AnchorPresetType.VertStretchLeft:
                 {
-                    source.anchorMin = new Vector2(0, 0);
-                    source.anchorMax = new Vector2(0, 1);
+                    rectTransform.anchorMin = ZeroZeroFloat2;
+                    rectTransform.anchorMax = ZeroOneFloat2;
                     break;
                 }
 
                 case AnchorPresetType.VertStretchCenter:
                 {
-                    source.anchorMin = new Vector2(0.5f, 0);
-                    source.anchorMax = new Vector2(0.5f, 1);
+                    rectTransform.anchorMin = HalfZeroFloat2;
+                    rectTransform.anchorMax = HalfOneFloat2;
                     break;
                 }
 
                 case AnchorPresetType.VertStretchRight:
                 {
-                    source.anchorMin = new Vector2(1, 0);
-                    source.anchorMax = new Vector2(1, 1);
+                    rectTransform.anchorMin = OneZeroFloat2;
+                    rectTransform.anchorMax = OneOneFloat2;
                     break;
                 }
 
                 case AnchorPresetType.StretchAll:
                 {
-                    source.anchorMin = new Vector2(0, 0);
-                    source.anchorMax = new Vector2(1, 1);
+                    rectTransform.anchorMin = ZeroZeroFloat2;
+                    rectTransform.anchorMax = OneOneFloat2;
                     break;
                 }
             }
         }
 
-        public static void SetPivot(this RectTransform source, PivotPresetType presetType)
+        public static void SetPivot(this RectTransform rectTransform, PivotPresetType presetType)
         {
             switch (presetType)
             {
                 case PivotPresetType.TopLeft:
                 {
-                    source.pivot = new Vector2(0, 1);
+                    rectTransform.pivot = ZeroOneFloat2;
                     break;
                 }
 
                 case PivotPresetType.TopCenter:
                 {
-                    source.pivot = new Vector2(0.5f, 1);
+                    rectTransform.pivot = HalfOneFloat2;
                     break;
                 }
 
                 case PivotPresetType.TopRight:
                 {
-                    source.pivot = new Vector2(1, 1);
+                    rectTransform.pivot = OneOneFloat2;
                     break;
                 }
 
                 case PivotPresetType.MiddleLeft:
                 {
-                    source.pivot = new Vector2(0, 0.5f);
+                    rectTransform.pivot = ZeroHalfFloat2;
                     break;
                 }
 
                 case PivotPresetType.MiddleCenter:
                 {
-                    source.pivot = new Vector2(0.5f, 0.5f);
+                    rectTransform.pivot = HalfHalfFloat2;
                     break;
                 }
 
                 case PivotPresetType.MiddleRight:
                 {
-                    source.pivot = new Vector2(1, 0.5f);
+                    rectTransform.pivot = OneHalfFloat2;
                     break;
                 }
 
                 case PivotPresetType.BottomLeft:
                 {
-                    source.pivot = new Vector2(0, 0);
+                    rectTransform.pivot = ZeroZeroFloat2;
                     break;
                 }
 
                 case PivotPresetType.BottomCenter:
                 {
-                    source.pivot = new Vector2(0.5f, 0);
+                    rectTransform.pivot = HalfZeroFloat2;
                     break;
                 }
 
                 case PivotPresetType.BottomRight:
                 {
-                    source.pivot = new Vector2(1, 0);
+                    rectTransform.pivot = OneZeroFloat2;
                     break;
                 }
+            }
+        }
+
+        public static void MoveInsideOfScreen(this RectTransform rectTransform, Camera camera, PivotPresetType pivotPresetType)
+        {
+            if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(rectTransform,
+                new float2(Screen.width, Screen.height), camera, out var localPoint))
+            {
+                return;
+            }
+            
+            var x = rectTransform.anchorMax.x;
+            var y = rectTransform.anchorMin.y;
+            
+            switch (pivotPresetType)
+            {
+                case PivotPresetType.TopLeft:
+                    if (x > 1f)
+                    {
+                        x = (x - 1f) * Screen.width;
+                    }
+
+                    if (y < 0f)
+                    {
+                        
+                    }
+                    break;
+                case PivotPresetType.TopCenter:
+                    break;
+                case PivotPresetType.TopRight:
+                    break;
+                case PivotPresetType.MiddleLeft:
+                    break;
+                case PivotPresetType.MiddleCenter:
+                    break;
+                case PivotPresetType.MiddleRight:
+                    break;
+                case PivotPresetType.BottomLeft:
+                    break;
+                case PivotPresetType.BottomCenter:
+                    break;
+                case PivotPresetType.BottomRight:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(pivotPresetType), pivotPresetType, null);
             }
         }
     }

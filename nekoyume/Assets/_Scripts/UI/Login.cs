@@ -76,7 +76,7 @@ namespace Nekoyume.UI
                 var slotRect = slot.GetComponent<RectTransform>();
                 var targetPosition = stage.selectPositionEnd(i);
                 targetPosition.y = 0.0f;
-                slotRect.anchoredPosition = targetPosition.ToCanvasPosition(Game.ActionCamera.instance.Cam,
+                slotRect.anchoredPosition = targetPosition.WorldToScreen(Game.ActionCamera.instance.Cam,
                     MainCanvas.instance.Canvas);
 
                 if (States.Instance.avatarStates.TryGetValue(i, out var avatarState))

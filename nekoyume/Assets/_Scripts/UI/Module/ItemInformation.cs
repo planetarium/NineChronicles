@@ -43,6 +43,13 @@ namespace Nekoyume.UI.Module
 
         public void SetData(Model.ItemInformation data)
         {
+            if (data is null)
+            {
+                Clear();
+                
+                return;
+            }
+            
             _disposables.DisposeAllAndClear();
             Model = data;
 
@@ -66,7 +73,7 @@ namespace Nekoyume.UI.Module
 
         private void UpdateViewIconArea()
         {
-            if (Model == null)
+            if (Model?.item.Value is null)
             {
                 // 아이콘.
                 iconArea.itemView.Clear();
@@ -95,7 +102,7 @@ namespace Nekoyume.UI.Module
             for (var i = 0; i < iconArea.elementalTypeImages.Count; i++)
             {
                 var image = iconArea.elementalTypeImages[i];
-                if (sprite == null ||
+                if (sprite is null ||
                     i >= elementalCount)
                 {
                     image.enabled = false;
@@ -123,7 +130,7 @@ namespace Nekoyume.UI.Module
 
         private void UpdateStatsArea()
         {
-            if (Model == null)
+            if (Model?.item.Value is null)
             {
                 statsArea.dividerImage.enabled = false;
                 statsArea.keysText.enabled = false;
@@ -142,7 +149,7 @@ namespace Nekoyume.UI.Module
 
         private void UpdateDescriptionArea()
         {
-            if (Model == null)
+            if (Model?.item.Value is null)
             {
                 descriptionArea.dividerImage.enabled = false;
                 descriptionArea.text.enabled = false;

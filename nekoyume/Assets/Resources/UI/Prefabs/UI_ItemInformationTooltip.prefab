@@ -541,6 +541,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c7e87c5a4b9c4b958640d61b4e270d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  panel: {fileID: 8313621984949060367}
   titleText: {fileID: 6301010036563888177}
   itemInformation: {fileID: 238886007077387377}
   closeGameObject: {fileID: 2536769193633182583}
