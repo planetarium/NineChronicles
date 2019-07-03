@@ -23,6 +23,24 @@
  - `--no-miner`    : 마이닝을 사용하지 않습니다.
  - `--peer`        : Peer 를 추가합니다. 추가하려는 Peer가 여럿일 경우 --peer peerA peerB ... 와 같이 추가할 수 있습니다.
 
+#### Unity Editor 에서 커맨드라인 옵션 사용
+
+위의 커맨드라인 옵션을 Unity Editor 에서 사용하려면 `Assets/clo.json` 파일을 작성하면 됩니다. 아래는 작성 예시입니다.
+
+```
+{
+   "privateKey": "",
+   "host": "127.0.0.1",
+   "port": 5555,
+   "noMiner": true,
+   "peers": ["02ed49dbe0f2c34d9dff8335d6dd9097f7a3ef17dfb5f048382eebc7f451a50aa1,nekoyume1.koreacentral.cloudapp.azure.com,58598"]
+}
+```
+
+- `Assets/clo.json` 파일은 버전 관리에서 제외되어 있습니다.
+  - 필요에 따라 `Assets/clo.json.p2p` 와 같이 프리셋을 제공하는 경우가 있습니다. 이러한 프리셋 파일을 `clo.json`으로 이름을 바꾸면 바로 사용하실 수 있습니다.
+- `Assets/clo.json` 파일은 에디터(`UNITY_EDITOR`)에서만 읽어들입니다.
+
 
 ### 커맨드라인 빌드
 

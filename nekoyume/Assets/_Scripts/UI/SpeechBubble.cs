@@ -21,8 +21,8 @@ namespace Nekoyume.UI
         public Image[] bubbleImages;
         public Text textSize;
         public Text text;
-        public float speechSpeedInterval = 0.04f;
-        public float speechWaitTime = 2.0f;
+        public float speechSpeedInterval = 0.02f;
+        public float speechWaitTime = 1.0f;
         public float bubbleTweenTime = 0.2f;
 
         public float speechBreakTime = 0.0f;
@@ -33,6 +33,13 @@ namespace Nekoyume.UI
         public void Init()
         {
             _speechCount = LocalizationManager.LocalizedCount(localizationKey);
+            gameObject.SetActive(false);
+        }
+
+        public void Clear()
+        {
+            StopAllCoroutines();
+            DOTween.Kill(this);
             gameObject.SetActive(false);
         }
 

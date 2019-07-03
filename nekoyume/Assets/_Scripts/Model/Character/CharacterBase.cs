@@ -149,6 +149,11 @@ namespace Nekoyume.Model
 
         public void Add(SkillBase s)
         {
+            if (s is null)
+            {
+                return;
+            }
+            
             _skills.Add(s);
         }
 

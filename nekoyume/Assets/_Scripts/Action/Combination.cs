@@ -7,8 +7,8 @@ using Nekoyume.Data;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Skill;
+using Nekoyume.Model;
 using Nekoyume.State;
-using UnityEngine;
 
 namespace Nekoyume.Action
 {
@@ -20,12 +20,6 @@ namespace Nekoyume.Action
         {
             public int id;
             public int count;
-
-            public Material(int id, int count)
-            {
-                this.id = id;
-                this.count = count;
-            }
 
             public Material(UI.Model.CountableItem item)
             {
@@ -66,10 +60,10 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            // 인벤토리에 재료를 갖고 있는지 검증.
+            // 사용한 재료를 인벤토리에서 제거.
             foreach (var material in Materials)
             {
-                if (!avatarState.inventory.TryGetFungibleItem(material.id, out var outFungibleItem))
+                if (!avatarState.inventory.RemoveFungibleItem(material.id, material.count))
                 {
                     return states;
                 }
@@ -78,58 +72,147 @@ namespace Nekoyume.Action
             // 조합식 테이블 로드.
             var recipeTable = Tables.instance.Recipe;
 
-            // 조합식 검증.
-            // ToDo. 조합식 재개발 필요.
-            Recipe resultItem = null;
-            var resultCount = 0;
-            using (var e = recipeTable.GetEnumerator())
+            // 조합 재료 정렬.
+            var orderedMaterials = Materials.OrderBy(order => order.id).ToList();
+
+            // 장비인지 소모품인지 확인.
+            var equipmentMaterials = orderedMaterials.Where(item => GameConfig.EquipmentMaterials.Contains(item.id))
+                .ToList();
+            if (equipmentMaterials.Any())
             {
-                while (e.MoveNext())
+                // 장비
+                orderedMaterials.RemoveAll(item => equipmentMaterials.Contains(item));
+                if (orderedMaterials.Count == 0)
                 {
-                    if (!e.Current.Value.IsMatch(Materials))
+                    return states;
+                }
+
+                var equipmentMaterial = equipmentMaterials[0];
+                var monsterPartsMaterial = orderedMaterials[0];
+
+                if (!Tables.instance.Item.TryGetValue(equipmentMaterial.id, out var outEquipmentMaterialRow) ||
+                    !Tables.instance.Item.TryGetValue(monsterPartsMaterial.id, out var outMonsterPartsMaterialRow))
+                {
+                    return states;
+                }
+
+                if (!TryGetItemType(outEquipmentMaterialRow.name, out var outItemType))
+                {
+                    return states;
+                }
+
+                if (!TryGetItemEquipmentRow(outItemType, outMonsterPartsMaterialRow.elemental,
+                    outEquipmentMaterialRow.grade,
+                    out var itemEquipmentRow))
+                {
+                    return states;
+                }
+
+                // 조합 결과 획득.
+                var itemUsable = GetItemUsableWithRandomSkill(itemEquipmentRow, ctx.Random.Next());
+
+                // 추가 스탯 적용.
+                var normalizedRandomValue = ctx.Random.Next(0, 100000) * 0.00001f;
+                var roll = GetRoll(monsterPartsMaterial.count, 0, normalizedRandomValue);
+                var stat = GetStat(outMonsterPartsMaterialRow, roll);
+                itemUsable.Stats.SetStatAdditionalValue(stat.Key, stat.Value);
+
+                avatarState.inventory.AddNonFungibleItem(itemUsable);
+            }
+            else
+            {
+                // 소모품
+                foreach (var recipe in recipeTable)
+                {
+                    if (!recipe.Value.IsMatchForConsumable(orderedMaterials))
                     {
                         continue;
                     }
 
-                    resultItem = e.Current.Value;
-                    // FixMe. 1개 이상일 때 1개만 나오도록 임시 수정함.
-                    // 추후 조합식 적용 시 조합의 결과는 하나만 나오게 될 예정임.
-                    resultCount = e.Current.Value.CalculateCount(Materials) > 0 ? 1 : 0;
+                    if (!Tables.instance.ItemEquipment.TryGetValue(recipe.Value.Id, out var itemEquipmentRow))
+                    {
+                        return states;
+                    }
+
+                    if (recipe.Value.GetCombinationResultCountForConsumable(orderedMaterials) == 0)
+                    {
+                        return states.SetState(ctx.Signer, avatarState);
+                    }
+
+                    // 조합 결과 획득.
+                    var itemUsable = GetItemUsableWithRandomSkill(itemEquipmentRow, ctx.Random.Next());
+                    avatarState.inventory.AddNonFungibleItem(itemUsable);
+
                     break;
                 }
-            }
-
-            // 사용한 재료를 인벤토리에서 제거.
-            foreach (var material in Materials)
-            {
-                avatarState.inventory.RemoveFungibleItem(material.id, material.count);
-            }
-
-            // 뽀각!!
-            if (ReferenceEquals(resultItem, null) ||
-                resultCount == 0)
-            {
-                return states.SetState(ctx.Signer, avatarState);
-            }
-            
-            // 조합 결과 획득.
-            if (Tables.instance.TryGetItemEquipment(resultItem.Id, out var itemEquipment))
-            {
-                for (var i = 0; i < resultCount; i++)
-                {
-                    var itemUsable = GetItemUsableWithRandomSkill(itemEquipment, ctx.Random.Next());
-                    avatarState.inventory.AddNonFungibleItem(itemUsable);
-                }
-            }
-            else
-            {
-                return states;
             }
 
             avatarState.updatedAt = DateTimeOffset.UtcNow;
             return states.SetState(ctx.Signer, avatarState);
         }
-        
+
+        private bool TryGetItemType(string itemName, out ItemBase.ItemType outItemType)
+        {
+            if (itemName.Contains("검"))
+            {
+                outItemType = ItemBase.ItemType.Weapon;
+            }
+            else if (itemName.Contains("옷"))
+            {
+                outItemType = ItemBase.ItemType.Armor;
+            }
+            else if (itemName.Contains("끈"))
+            {
+                outItemType = ItemBase.ItemType.Belt;
+            }
+            else
+            {
+                outItemType = ItemBase.ItemType.Material;
+                return false;
+            }
+
+            return true;
+        }
+
+        private bool TryGetItemEquipmentRow(ItemBase.ItemType itemType, Elemental.ElementalType elementalType,
+            int grade, out ItemEquipment outItemEquipmentRow)
+        {
+            foreach (var pair in Tables.instance.ItemEquipment)
+            {
+                if ((ItemBase.ItemType) Enum.Parse(typeof(ItemBase.ItemType), pair.Value.cls) != itemType ||
+                    pair.Value.elemental != elementalType ||
+                    pair.Value.grade != grade)
+                {
+                    continue;
+                }
+
+                outItemEquipmentRow = pair.Value;
+                return true;
+            }
+
+            outItemEquipmentRow = null;
+            return false;
+        }
+
+        private float GetRoll(int monsterPartsCount, int deltaLevel, float normalizedRandomValue)
+        {
+            var rollMax = Math.Pow(1f / (1f + GameConfig.CombinationValueP1 / monsterPartsCount),
+                              GameConfig.CombinationValueP2) *
+                          (deltaLevel <= 0
+                              ? 1f
+                              : Math.Pow(1f / (1f + GameConfig.CombinationValueL1 / deltaLevel),
+                                  GameConfig.CombinationValueL2));
+            var rollMin = rollMax * 0.5f;
+            return (float) (rollMin + (rollMax - rollMin) * Math.Pow(normalizedRandomValue, GameConfig.CombinationValueR1));
+        }
+
+        private StatMap GetStat(Item itemRow, float roll)
+        {
+            var key = itemRow.stat;
+            var value = (float) Math.Floor(itemRow.minStat + (itemRow.maxStat - itemRow.minStat) * roll);
+            return new StatMap(key, value);
+        }
+
         // ToDo. 순수 랜덤이 아닌 조합식이 적용되어야 함.
         private ItemUsable GetItemUsableWithRandomSkill(ItemEquipment itemEquipment, int randomValue)
         {
@@ -154,11 +237,12 @@ namespace Nekoyume.Action
             {
                 return (ItemUsable) ItemBase.ItemFactory(itemEquipment);
             }
-            
+
             var table = Tables.instance.SkillEffect;
-            var skillEffect = table.ElementAt(randomValue % table.Count);   
+            var skillEffect = table.ElementAt(randomValue % table.Count);
             var elementalValues = Enum.GetValues(typeof(Elemental.ElementalType));
-            var elementalType = (Elemental.ElementalType) elementalValues.GetValue(randomValue % elementalValues.Length);
+            var elementalType =
+                (Elemental.ElementalType) elementalValues.GetValue(randomValue % elementalValues.Length);
             var skill = SkillFactory.Get(0.05f, skillEffect.Value, elementalType); // FixMe. 테스트를 위해서 5% 확률로 발동되도록 함.
             return (ItemUsable) ItemBase.ItemFactory(itemEquipment, skill);
         }

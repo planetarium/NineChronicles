@@ -75,6 +75,18 @@ namespace Nekoyume.Game.Character
             Event.OnUpdateStatus.Invoke();
         }
 
+        protected override IEnumerator Dying()
+        {
+            _speechBubble?.Clear();
+            ShowSpeech("PLAYER_LOSE");
+            StopRun();
+            animator.Die();
+            yield return new WaitForSeconds(1.2f);
+            DisableHUD();
+            yield return new WaitForSeconds(.8f);
+            OnDead();
+        }
+
         protected override void OnDead()
         {
             gameObject.SetActive(false);
@@ -114,6 +126,7 @@ namespace Nekoyume.Game.Character
             {
                 if (animator.Target.name.Contains(itemId.ToString()))
                 {
+                    UpdateWeapon(weapon);
                     yield break;
                 }
                 animator.DestroyTarget();
@@ -192,7 +205,6 @@ namespace Nekoyume.Game.Character
             {
                 case "attackStart":
                     AudioController.PlaySwing();
-                    ShowSpeech("PLAYER_ATTACK");
                     break;
                 case "attackPoint":
                     Event.OnAttackEnd.Invoke(this);
@@ -215,6 +227,19 @@ namespace Nekoyume.Game.Character
             }
 
             return canRun;
+        }
+
+        protected override void ProcessAttack(CharacterBase target, Model.Skill.SkillInfo skill)
+        {
+            ShowSpeech("PLAYER_SKILL", (int)(skill.Elemental ?? 0), (int)skill.Category);
+            base.ProcessAttack(target, skill);
+            ShowSpeech("PLAYER_ATTACK");
+        }
+
+        protected override IEnumerator CoAnimationCast(Model.Skill.SkillInfo info)
+        {
+            ShowSpeech("PLAYER_SKILL", (int)(info.Elemental ?? 0), (int)info.Category);
+            yield return StartCoroutine(base.CoAnimationCast(info));
         }
     }
 }

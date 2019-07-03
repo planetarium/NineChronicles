@@ -12,20 +12,47 @@ namespace Nekoyume.Game.Skill
     }
 
     [Serializable]
-    public abstract class SkillBase: ISkill
+    public abstract class SkillBase : ISkill
     {
         public readonly float chance;
         public readonly SkillEffect effect;
         public readonly Data.Table.Elemental.ElementalType elementalType;
 
         public abstract Model.Skill Use(CharacterBase caster);
+
         protected SkillBase(float chance, SkillEffect effect, Data.Table.Elemental.ElementalType elementalType)
         {
             this.effect = effect;
             this.chance = chance;
             this.elementalType = elementalType;
         }
-        
+
+        protected bool Equals(SkillBase other)
+        {
+            return chance.Equals(other.chance) &&
+                   Equals(effect, other.effect) &&
+                   elementalType == other.elementalType;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((SkillBase) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = chance.GetHashCode();
+                hashCode = (hashCode * 397) ^ (effect != null ? effect.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (int) elementalType;
+                return hashCode;
+            }
+        }
+
         protected IEnumerable<CharacterBase> GetTarget(CharacterBase caster)
         {
             var targets = caster.targets;
