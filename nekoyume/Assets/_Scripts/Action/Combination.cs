@@ -236,7 +236,7 @@ namespace Nekoyume.Action
             return (ItemUsable) ItemBase.ItemFactory(itemEquipment);
         }
 
-        private static Equipment GetEquipment(ItemEquipment itemEquipment, Item monsterParts, float roll)
+        public static Equipment GetEquipment(ItemEquipment itemEquipment, Item monsterParts, float roll)
         {
             var table = Tables.instance.SkillEffect;
             SkillBase skill;
