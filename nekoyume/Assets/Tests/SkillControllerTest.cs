@@ -6,8 +6,6 @@ using Nekoyume.Game;
 using Nekoyume.Model;
 using Nekoyume.State;
 using NUnit.Framework;
-using UnityEditor;
-using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 
 namespace Tests
@@ -18,11 +16,9 @@ namespace Tests
         private readonly Nekoyume.Data.Table.Elemental.ElementalType[] _elementalTypes;
         private Address _address;
         private AvatarState _avatarState;
-        private string _initSceneName;
 
         public SkillControllerTest()
         {
-            SceneManager.LoadScene("Game");
             _elementalTypes = (Nekoyume.Data.Table.Elemental.ElementalType[])
                 Enum.GetValues(typeof(Nekoyume.Data.Table.Elemental.ElementalType));
         }
