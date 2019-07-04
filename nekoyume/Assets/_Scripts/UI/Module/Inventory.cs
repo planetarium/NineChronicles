@@ -31,11 +31,6 @@ namespace Nekoyume.UI.Module
             }
             
             scrollerController.SetData(data.items);
-
-            var target = scrollerController.scroller.GetCellViewAtDataIndex(0);
-            var model = new Model.ItemInformationTooltip();
-            model.target.Value = target.GetComponent<RectTransform>();
-            Widget.Find<ItemInformationTooltip>()?.Show(model);
         }
 
         public void Clear()

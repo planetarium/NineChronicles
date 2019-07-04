@@ -17,11 +17,12 @@ namespace Nekoyume
         public static readonly float2 OneHalfFloat2 = new float2(1f, 0.5f);
         public static readonly float2 OneOneFloat2 = new float2(1f, 1f);
         
-        public static void SetAnchor(this RectTransform rectTransform, AnchorPresetType align, int offsetX = 0, int offsetY = 0)
+        public static void SetAnchor(this RectTransform rectTransform, AnchorPresetType anchorPresetType,
+            int offsetX = 0, int offsetY = 0)
         {
             rectTransform.anchoredPosition = new float2(offsetX, offsetY);
 
-            switch (align)
+            switch (anchorPresetType)
             {
                 case AnchorPresetType.TopLeft:
                 {
@@ -137,9 +138,9 @@ namespace Nekoyume
             }
         }
 
-        public static void SetPivot(this RectTransform rectTransform, PivotPresetType presetType)
+        public static void SetPivot(this RectTransform rectTransform, PivotPresetType pivotPresetType)
         {
-            switch (presetType)
+            switch (pivotPresetType)
             {
                 case PivotPresetType.TopLeft:
                 {
@@ -197,49 +198,132 @@ namespace Nekoyume
             }
         }
 
-        public static void MoveInsideOfScreen(this RectTransform rectTransform, Camera camera, PivotPresetType pivotPresetType)
+        public static float2 GetPivotPositionFromAnchor(this RectTransform rectTransform, PivotPresetType pivotPresetType)
         {
-            if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(rectTransform,
-                new float2(Screen.width, Screen.height), camera, out var localPoint))
-            {
-                return;
-            }
-            
-            var x = rectTransform.anchorMax.x;
-            var y = rectTransform.anchorMin.y;
+            var anchoredPosition = new float2();
+            var pivot = rectTransform.pivot;
+            var size = rectTransform.rect.size;
             
             switch (pivotPresetType)
             {
                 case PivotPresetType.TopLeft:
-                    if (x > 1f)
-                    {
-                        x = (x - 1f) * Screen.width;
-                    }
-
-                    if (y < 0f)
-                    {
-                        
-                    }
+                    anchoredPosition.x -= pivot.x * size.x;
+                    anchoredPosition.y += (1f - pivot.y) * size.y;
                     break;
                 case PivotPresetType.TopCenter:
+                    anchoredPosition.x += (0.5f - pivot.x) * size.x;
+                    anchoredPosition.y += (1f - pivot.y) * size.y;
                     break;
                 case PivotPresetType.TopRight:
+                    anchoredPosition.x += (1f - pivot.x) * size.x;
+                    anchoredPosition.y += (1f - pivot.y) * size.y;
                     break;
                 case PivotPresetType.MiddleLeft:
+                    anchoredPosition.x -= pivot.x * size.x;
+                    anchoredPosition.y += (0.5f - pivot.y) * size.y;
                     break;
                 case PivotPresetType.MiddleCenter:
+                    anchoredPosition.x += (0.5f - pivot.x) * size.x;
+                    anchoredPosition.y += (0.5f - pivot.y) * size.y;
                     break;
                 case PivotPresetType.MiddleRight:
+                    anchoredPosition.x += (1f - pivot.x) * size.x;
+                    anchoredPosition.y += (0.5f - pivot.y) * size.y;
                     break;
                 case PivotPresetType.BottomLeft:
+                    anchoredPosition.x -= pivot.x * size.x;
+                    anchoredPosition.y -= pivot.y * size.y;
                     break;
                 case PivotPresetType.BottomCenter:
+                    anchoredPosition.x += (0.5f - pivot.x) * size.x;
+                    anchoredPosition.y -= pivot.y * size.y;
                     break;
                 case PivotPresetType.BottomRight:
+                    anchoredPosition.x += (1f - pivot.x) * size.x;
+                    anchoredPosition.y -= pivot.y * size.y;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(pivotPresetType), pivotPresetType, null);
             }
+
+            return anchoredPosition;
+        }
+        
+        public static float2 GetAnchoredPositionOfPivot(this RectTransform rectTransform, PivotPresetType pivotPresetType)
+        {
+            float2 anchoredPosition = rectTransform.anchoredPosition;
+            return anchoredPosition + rectTransform.GetPivotPositionFromAnchor(pivotPresetType);
+        }
+
+        public static void GetPositions(this RectTransform rectTransform, float2 pivot,
+            out float2 bottomLeft, out float2 topRight)
+        {
+            var size = rectTransform.rect.size;
+            bottomLeft = new float2(size.x * pivot.x, -(size.y * pivot.y));
+            topRight = new float2(size.x * (1f - pivot.x), size.y * (1f - pivot.y));
+        }
+        
+        public static void MoveToRelatedPosition(this RectTransform rectTransform, RectTransform target,
+            PivotPresetType pivotPresetType, float2 offset)
+        {
+            if (target is null)
+            {
+                return;
+            }
+            
+            rectTransform.position = target.position;
+            float2 anchoredPosition = rectTransform.anchoredPosition;
+            anchoredPosition += target.GetPivotPositionFromAnchor(pivotPresetType) + offset;
+            rectTransform.anchoredPosition = anchoredPosition;
+        }
+
+        public static void MoveInsideOfParent(this RectTransform rectTransform)
+        {
+            MoveInsideOfParent(rectTransform, ZeroZeroFloat2);
+        }
+
+        public static void MoveInsideOfParent(this RectTransform rectTransform, float2 margin)
+        {
+            if (!(rectTransform.parent is RectTransform parent))
+            {
+                return;
+            }
+            
+            parent.GetPositions(rectTransform.pivot, out var bottomLeft, out var topRight);
+            
+            var anchoredPosition = rectTransform.anchoredPosition;
+            var anchoredPositionBottomLeft = rectTransform.GetAnchoredPositionOfPivot(PivotPresetType.BottomLeft);
+            var anchoredPositionTopRight = rectTransform.GetAnchoredPositionOfPivot(PivotPresetType.TopRight);
+
+            // Bottom.
+            var value = bottomLeft.y + margin.y - anchoredPositionBottomLeft.y;
+            if (value > 0f)
+            {
+                anchoredPosition.y += value;
+            }
+            
+            // Top.
+            value = topRight.y - margin.y - anchoredPositionTopRight.y;
+            if (value < 0f)
+            {
+                anchoredPosition.y += value;
+            }
+            
+            // Right.
+            value = topRight.x - margin.x - anchoredPositionTopRight.x;
+            if (value < 0f)
+            {
+                anchoredPosition.x += value;
+            }
+            
+            // Left.
+            value = bottomLeft.x + margin.x - anchoredPositionBottomLeft.x;
+            if (value > 0f)
+            {
+                anchoredPosition.x += value;
+            }
+
+            rectTransform.anchoredPosition = anchoredPosition;
         }
     }
 }

@@ -23,7 +23,6 @@ namespace Nekoyume.UI.Module
         {
             public Image dividerImage;
             public Text keysText;
-            public Text valuesText;
         }
 
         [Serializable]
@@ -134,17 +133,22 @@ namespace Nekoyume.UI.Module
             {
                 statsArea.dividerImage.enabled = false;
                 statsArea.keysText.enabled = false;
-                statsArea.valuesText.enabled = false;
+                
+                return;
+            }
+
+            var itemInfo = Model.item.Value.item.Value.ToItemInfo();
+            if (string.IsNullOrEmpty(itemInfo))
+            {
+                statsArea.dividerImage.enabled = false;
+                statsArea.keysText.enabled = false;
                 
                 return;
             }
             
-//            var stats = ((ItemUsable) Data.item.Value).
             statsArea.dividerImage.enabled = true;
-            statsArea.keysText.text = "key 1\nkey 2";
+            statsArea.keysText.text = itemInfo;
             statsArea.keysText.enabled = true;
-            statsArea.valuesText.text = "value 1\nvalue 2";
-            statsArea.valuesText.enabled = true;
         }
 
         private void UpdateDescriptionArea()

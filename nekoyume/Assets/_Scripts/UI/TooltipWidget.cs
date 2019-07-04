@@ -10,7 +10,8 @@ namespace Nekoyume.UI
 {
     public abstract class TooltipWidget<T> : Widget where T : Model.Tooltip
     {
-        public static readonly float3 DefaultOffset = new float3(10f, 0f, 0f);
+        public static readonly float2 DefaultOffsetFromTarget = new float2(10f, 0f);
+        public static readonly float2 DefaultOffsetFromParent = new float2(10f, 10f);
         
         public RectTransform panel;
     
@@ -22,24 +23,18 @@ namespace Nekoyume.UI
         
         public void Show(T value)
         {
-            _disposablesForModel.DisposeAllAndClear();
-            Model = value;
-            
-            Show();
-        }
-
-        public override void Show()
-        {
-            base.Show();
-            
-            if (Model is null)
+            if (value is null)
             {
                 Close();
                 
                 return;
             }
-
+            
+            _disposablesForModel.DisposeAllAndClear();
+            Model = value;
             Model.target.Subscribe(SubscribeTarget).AddTo(_disposablesForModel);
+            
+            Show();
         }
         
         public override void Close()
@@ -50,19 +45,15 @@ namespace Nekoyume.UI
             base.Close();
         }
         
-        private void SubscribeTarget(RectTransform target)
+        protected virtual void SubscribeTarget(RectTransform target)
         {
-            var position = target.position;
-            var targetRect = target.rect;
-            var tooltipRect = RectTransform.rect;
-            position.x += (targetRect.x + tooltipRect.size.x) * 0.5f;
-            position.y -= (targetRect.y + tooltipRect.size.y) * 0.5f;
-            RectTransform.position = position;
-            var anchoredPosition = RectTransform.anchoredPosition; 
-            anchoredPosition.x += DefaultOffset.x;
-            anchoredPosition.y += DefaultOffset.y;
-            RectTransform.anchoredPosition = anchoredPosition;
-            RectTransform.MoveInsideOfScreen(ActionCamera.instance.Cam, PivotPresetType.BottomRight);
+            panel.MoveToRelatedPosition(target, PivotPresetType.TopRight, DefaultOffsetFromTarget);
+            UpdateAnchoredPosition();
+        }
+
+        protected virtual void UpdateAnchoredPosition()
+        {
+            panel.MoveInsideOfParent(DefaultOffsetFromParent);
         }
     }
 }

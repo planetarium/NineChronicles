@@ -62,7 +62,7 @@ namespace Nekoyume.Game.Item
 
             if (SkillBase == null)
             {
-                return sb.ToString().TrimEnd();
+                return sb.ToString().Trim();
             }
 
             sb.Append($"{SkillBase.chance * 100}% 확률로");
@@ -70,7 +70,7 @@ namespace Nekoyume.Game.Item
             sb.Append($" {SkillBase.effect.multiplier * 100}% 위력의");
             sb.Append($" {SkillBase.elementalType}속성 {SkillBase.effect.type}");
 
-            return sb.ToString().TrimEnd();
+            return sb.ToString().Trim();
         }
 
         public void UpdatePlayer(Player player)

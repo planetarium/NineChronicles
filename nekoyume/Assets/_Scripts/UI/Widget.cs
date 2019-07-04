@@ -44,7 +44,7 @@ namespace Nekoyume.UI
                             Debug.LogWarning($"Duplicated create widget: {t}");
                             Destroy(go);
                             Dict[t].SetActive(activate);
-                            
+
                             return Dict[t].GetComponent<T>();
                         }
 
@@ -76,7 +76,7 @@ namespace Nekoyume.UI
         private void FindGlassMaterial(GameObject go)
         {
             var image = go.GetComponent<UnityEngine.UI.Image>();
-            if (!image || !image.material || image.material.name != "Glass")
+            if (!image || !image.material || image.material.shader.name != "UI/Unlit/FrostedGlass")
             {
                 return;
             }
@@ -124,22 +124,27 @@ namespace Nekoyume.UI
                 yield break;
             }
 
-            _glass.SetFloat(Radius, 0f);
-            var time = 0.0f;
+            var from = 0f;
+            var to = _glass.GetFloat(Radius);
+
+            _glass.SetFloat(Radius, from);
+            var time = 0f;
             while (true)
             {
-                var radius = Mathf.Lerp(0f, 6f, time);
-                time += Time.deltaTime * 2f;
-                yield return null;
-                _glass.SetFloat(Radius, radius);
-                if (time > 1.0f)
+                var current = Mathf.Lerp(from, to, time);
+                _glass.SetFloat(Radius, current);
+                
+                time += Time.deltaTime * 3f;
+                if (time > 1f ||
+                    !gameObject.activeInHierarchy)
+                {
                     break;
+                }
 
-                if (!gameObject.activeInHierarchy)
-                    break;
+                yield return null;
             }
 
-            _glass.SetFloat(Radius, 6f);
+            _glass.SetFloat(Radius, to);
         }
 
         public virtual void Close()
