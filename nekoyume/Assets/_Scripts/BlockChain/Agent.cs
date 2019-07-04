@@ -54,7 +54,7 @@ namespace Nekoyume.BlockChain
         
         private readonly ConcurrentQueue<PolymorphicAction<ActionBase>> _queuedActions = new ConcurrentQueue<PolymorphicAction<ActionBase>>();
         private readonly BlockChain<PolymorphicAction<ActionBase>> _blocks;
-        private readonly Swarm _swarm;
+        private readonly Swarm<PolymorphicAction<ActionBase>> _swarm;
         private readonly LiteDBStore _store;
 
         
@@ -96,7 +96,8 @@ namespace Nekoyume.BlockChain
             FileHelper.WriteAllText("Block.log", "");
 #endif
 
-            _swarm = new Swarm(
+            _swarm = new Swarm<PolymorphicAction<ActionBase>>(
+                _blocks,
                 privateKey,
                 appProtocolVersion: 1,
                 millisecondsDialTimeout: SwarmDialTimeout,
@@ -104,13 +105,8 @@ namespace Nekoyume.BlockChain
                 listenPort: port,
                 iceServers: iceServers);
 
-            foreach (var peer in peers)
-            {
-                if (peer.PublicKey != privateKey.PublicKey)
-                {
-                    _swarm.Add(peer);
-                }
-            }
+            var otherPeers = peers.Where(peer => peer.PublicKey != privateKey.PublicKey).ToList();
+            _swarm.AddPeersAsync(otherPeers);
         }
 
         public void Dispose()
@@ -127,14 +123,14 @@ namespace Nekoyume.BlockChain
             // Task.Run(async ()) 로 감쌉니다.
             var swarmPreloadTask = Task.Run(async () =>
             {
-                await _swarm.PreloadAsync(_blocks,
+                await _swarm.PreloadAsync(
                     new Progress<BlockDownloadState>(state => PreloadProcessed?.Invoke(this, state)));
             });
             yield return new WaitUntil(() => swarmPreloadTask.IsCompleted);
 
             PreloadEnded?.Invoke(this, null);
 
-            var swarmStartTask = Task.Run(async () => await _swarm.StartAsync(_blocks));
+            var swarmStartTask = Task.Run(async () => await _swarm.StartAsync());
             yield return new WaitUntil(() => swarmStartTask.IsCompleted);
         }
 
