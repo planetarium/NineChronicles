@@ -30,8 +30,6 @@ namespace Tests
         [SetUp]
         public void Setup()
         {
-            if (SceneManager.GetActiveScene().name != "Game")
-                _initSceneName = SceneManager.GetActiveScene().name;
             _address = new Address();
             _avatarState = new AvatarState(_address);
         }
@@ -40,7 +38,6 @@ namespace Tests
         public void TearDown()
         {
             UnityEngine.Object.Destroy(_player);
-            FileUtil.DeleteFileOrDirectory($"Assets/{_initSceneName}");
         }
 
         [UnityTest]
