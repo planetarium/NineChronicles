@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Nekoyume.Game.Item;
 using UniRx;
+using UnityEngine;
 
 namespace Nekoyume.UI.Model
 {

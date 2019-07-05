@@ -21,8 +21,6 @@ namespace Nekoyume.UI
 {
     public class Combination : Widget
     {
-        private Model.Combination _data;
-
         public InventoryAndItemInfo inventoryAndItemInfo;
         public CombinationMaterialView[] materialViews;
         public Button combinationButton;
@@ -41,6 +39,8 @@ namespace Nekoyume.UI
         private SimpleItemCountPopup _simpleItemCountPopup;
         private CombinationResultPopup _resultPopup;
         private GrayLoadingScreen _loadingScreen;
+        
+        public Model.Combination Model { get; private set; }
 
         #region Mono
 
@@ -53,7 +53,7 @@ namespace Nekoyume.UI
             combinationButton.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
-                    _data.onClickCombination.OnNext(_data);
+                    Model.onClickCombination.OnNext(Model);
                     AudioController.PlayClick();
                 })
                 .AddTo(_disposablesForAwake);
@@ -98,12 +98,7 @@ namespace Nekoyume.UI
 
             base.Show();
 
-            _stage = GameObject.Find("Stage").GetComponent<Stage>();
-            if (ReferenceEquals(_stage, null))
-            {
-                throw new NotFoundComponentException<Stage>();
-            }
-
+            _stage = Game.Game.instance.stage;
             _stage.LoadBackground("combination");
 
             _player = _stage.GetPlayer();
@@ -111,7 +106,6 @@ namespace Nekoyume.UI
             {
                 throw new NotFoundComponentException<Player>();
             }
-
             _player.gameObject.SetActive(false);
 
             SetData(new Model.Combination(
@@ -145,18 +139,20 @@ namespace Nekoyume.UI
             }
 
             _disposablesForSetData.DisposeAllAndClear();
-            _data = value;
-            _data.itemInfo.Value.item.Subscribe(OnItemInfoItem).AddTo(_disposablesForSetData);
-            _data.itemCountPopup.Value.item.Subscribe(OnPopupItem).AddTo(_disposablesForSetData);
-            _data.itemCountPopup.Value.onClickCancel.Subscribe(OnClickClosePopup).AddTo(_disposablesForSetData);
-            _data.materials.ObserveAdd().Subscribe(OnAddStagedItems).AddTo(_disposablesForSetData);
-            _data.materials.ObserveRemove().Subscribe(OnRemoveStagedItems).AddTo(_disposablesForSetData);
-            _data.materials.ObserveReplace().Subscribe(_ => UpdateStagedItems()).AddTo(_disposablesForSetData);
-            _data.readyForCombination.Subscribe(SetActiveCombinationButton).AddTo(_disposablesForSetData);
-            _data.resultPopup.Subscribe(SubscribeResultPopup).AddTo(_disposablesForSetData);
-            _data.onClickCombination.Subscribe(RequestCombination).AddTo(_disposablesForSetData);
-            _data.onShowResultVFX.Subscribe(ShowResultVFX).AddTo(_disposablesForSetData);
-            inventoryAndItemInfo.SetData(_data.inventory.Value, _data.itemInfo.Value);
+            Model = value;
+            Model.inventory.Value.selectedItem.Subscribe(inventoryAndItemInfo.inventory.ShowTooltip)
+                .AddTo(_disposablesForSetData);
+            Model.itemInfo.Value.item.Subscribe(OnItemInfoItem).AddTo(_disposablesForSetData);
+            Model.itemCountPopup.Value.item.Subscribe(OnPopupItem).AddTo(_disposablesForSetData);
+            Model.itemCountPopup.Value.onClickCancel.Subscribe(OnClickClosePopup).AddTo(_disposablesForSetData);
+            Model.materials.ObserveAdd().Subscribe(OnAddStagedItems).AddTo(_disposablesForSetData);
+            Model.materials.ObserveRemove().Subscribe(OnRemoveStagedItems).AddTo(_disposablesForSetData);
+            Model.materials.ObserveReplace().Subscribe(_ => UpdateStagedItems()).AddTo(_disposablesForSetData);
+            Model.readyForCombination.Subscribe(SetActiveCombinationButton).AddTo(_disposablesForSetData);
+            Model.resultPopup.Subscribe(SubscribeResultPopup).AddTo(_disposablesForSetData);
+            Model.onClickCombination.Subscribe(RequestCombination).AddTo(_disposablesForSetData);
+            Model.onShowResultVFX.Subscribe(ShowResultVFX).AddTo(_disposablesForSetData);
+            inventoryAndItemInfo.SetData(Model.inventory.Value, Model.itemInfo.Value);
 
             UpdateStagedItems();
         }
@@ -164,7 +160,7 @@ namespace Nekoyume.UI
         private void Clear()
         {
             inventoryAndItemInfo.Clear();
-            _data = null;
+            Model = null;
             _disposablesForSetData.DisposeAllAndClear();
 
             foreach (var item in materialViews)
@@ -175,13 +171,13 @@ namespace Nekoyume.UI
 
         private void UpdateStagedItems(int startIndex = 0)
         {
-            var dataCount = _data.materials.Count;
+            var dataCount = Model.materials.Count;
             for (var i = startIndex; i < materialViews.Length; i++)
             {
                 var item = materialViews[i];
                 if (i < dataCount)
                 {
-                    item.SetData(_data.materials[i]);
+                    item.SetData(Model.materials[i]);
                 }
                 else
                 {
@@ -194,13 +190,13 @@ namespace Nekoyume.UI
         {
             if (ReferenceEquals(data, null) ||
                 data.dimmed.Value ||
-                _data.IsMaterialsFulled)
+                Model.IsMaterialsFulled)
             {
-                _data.itemInfo.Value.buttonEnabled.Value = false;
+                Model.itemInfo.Value.buttonEnabled.Value = false;
             }
             else
             {
-                _data.itemInfo.Value.buttonEnabled.Value = true;
+                Model.itemInfo.Value.buttonEnabled.Value = true;
             }
         }
 
@@ -212,12 +208,12 @@ namespace Nekoyume.UI
                 return;
             }
 
-            _simpleItemCountPopup.Pop(_data.itemCountPopup.Value);
+            _simpleItemCountPopup.Pop(Model.itemCountPopup.Value);
         }
 
         private void OnClickClosePopup(Model.SimpleItemCountPopup data)
         {
-            _data.itemCountPopup.Value.item.Value = null;
+            Model.itemCountPopup.Value.item.Value = null;
             _simpleItemCountPopup.Close();
         }
 
@@ -225,7 +221,7 @@ namespace Nekoyume.UI
         {
             if (e.Index >= materialViews.Length)
             {
-                _data.materials.RemoveAt(e.Index);
+                Model.materials.RemoveAt(e.Index);
                 throw new AddOutOfSpecificRangeException<CollectionAddEvent<CountEditableItem>>(
                     materialViews.Length);
             }
@@ -240,14 +236,14 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var dataCount = _data.materials.Count;
+            var dataCount = Model.materials.Count;
             for (var i = e.Index; i <= dataCount; i++)
             {
                 var item = materialViews[i];
 
                 if (i < dataCount)
                 {
-                    item.SetData(_data.materials[i]);
+                    item.SetData(Model.materials[i]);
                 }
                 else
                 {
@@ -304,14 +300,14 @@ namespace Nekoyume.UI
 
             var isSuccess = States.Instance.currentAvatarState.Value.inventory.Items.Count() > inventoryItemCount;
             
-            _data.resultPopup.Value = new Model.CombinationResultPopup(isSuccess
+            Model.resultPopup.Value = new Model.CombinationResultPopup(isSuccess
                 ? States.Instance.currentAvatarState.Value.inventory.TryGetNonFungibleItemFromLast(out var outNonFungibleItem)
                     ? outNonFungibleItem
                     : null
                 : null)
             {
                 isSuccess = isSuccess,
-                materialItems = _data.materials
+                materialItems = Model.materials
             };
 
             AnalyticsManager.Instance.OnEvent(isSuccess
@@ -347,13 +343,13 @@ namespace Nekoyume.UI
             resultItemVFX.SetActive(false);
 
             // ToDo. 지금은 조합의 결과가 마지막에 더해지기 때문에 마지막 아이템을 갖고 오지만, 복수의 아이템을 한 번에 얻을 때에 대한 처리나 정렬 기능이 추가 되면 itemGuid로 갖고 와야함.
-            var inventoryItem = _data.inventory.Value.items.Last();
+            var inventoryItem = Model.inventory.Value.items.Last();
             if (ReferenceEquals(inventoryItem, null))
             {
                 yield break;
             }
 
-            var index = _data.inventory.Value.items.Count - 1;
+            var index = Model.inventory.Value.items.Count - 1;
             var inventoryItemView = inventoryAndItemInfo.inventory.scrollerController.GetByIndex(index);
             if (ReferenceEquals(inventoryItemView, null))
             {

@@ -27,5 +27,14 @@ namespace Nekoyume.UI.Model
                 item.countEnabledFunc.Value = item2 => false;
             });
         }
+
+        public override void Dispose()
+        {
+            titleText.Dispose();
+            closeButtonText.Dispose();
+            submitButtonText.Dispose();
+            
+            base.Dispose();
+        }
     }
 }
