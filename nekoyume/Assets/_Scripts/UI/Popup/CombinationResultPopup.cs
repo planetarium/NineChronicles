@@ -114,7 +114,7 @@ namespace Nekoyume.UI
                 titleText.text = "제작 성공!";
                 resultItemView.SetData(_data);
                 resultItemNameText.text = item.Data.name;
-                SetElemental(item.Data.elemental, 5);
+                SetElemental(item.Data.elemental, item.Data.grade);
                 resultItemDescriptionText.text = item.ToItemInfo();
                 resultItem.SetActive(true);
                 materialText.text = "제작 재료";
