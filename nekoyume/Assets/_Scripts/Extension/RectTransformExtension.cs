@@ -25,116 +25,71 @@ namespace Nekoyume
             switch (anchorPresetType)
             {
                 case AnchorPresetType.TopLeft:
-                {
                     rectTransform.anchorMin = ZeroOneFloat2;
                     rectTransform.anchorMax = ZeroOneFloat2;
                     break;
-                }
-
                 case AnchorPresetType.TopCenter:
-                {
                     rectTransform.anchorMin = HalfOneFloat2;
                     rectTransform.anchorMax = HalfOneFloat2;
                     break;
-                }
-
                 case AnchorPresetType.TopRight:
-                {
                     rectTransform.anchorMin = OneOneFloat2;
                     rectTransform.anchorMax = OneOneFloat2;
                     break;
-                }
-
                 case AnchorPresetType.MiddleLeft:
-                {
                     rectTransform.anchorMin = ZeroHalfFloat2;
                     rectTransform.anchorMax = ZeroHalfFloat2;
                     break;
-                }
-
                 case AnchorPresetType.MiddleCenter:
-                {
                     rectTransform.anchorMin = HalfHalfFloat2;
                     rectTransform.anchorMax = HalfHalfFloat2;
                     break;
-                }
-
                 case AnchorPresetType.MiddleRight:
-                {
                     rectTransform.anchorMin = OneHalfFloat2;
                     rectTransform.anchorMax = OneHalfFloat2;
                     break;
-                }
-
                 case AnchorPresetType.BottomLeft:
-                {
                     rectTransform.anchorMin = ZeroZeroFloat2;
                     rectTransform.anchorMax = ZeroZeroFloat2;
                     break;
-                }
-
                 case AnchorPresetType.BottomCenter:
-                {
                     rectTransform.anchorMin = HalfZeroFloat2;
                     rectTransform.anchorMax = HalfZeroFloat2;
                     break;
-                }
-
                 case AnchorPresetType.BottomRight:
-                {
                     rectTransform.anchorMin = OneZeroFloat2;
                     rectTransform.anchorMax = OneZeroFloat2;
                     break;
-                }
-
                 case AnchorPresetType.HorStretchTop:
-                {
                     rectTransform.anchorMin = ZeroOneFloat2;
                     rectTransform.anchorMax = OneOneFloat2;
                     break;
-                }
-
                 case AnchorPresetType.HorStretchMiddle:
-                {
                     rectTransform.anchorMin = ZeroHalfFloat2;
                     rectTransform.anchorMax = OneHalfFloat2;
                     break;
-                }
-
                 case AnchorPresetType.HorStretchBottom:
-                {
                     rectTransform.anchorMin = ZeroZeroFloat2;
                     rectTransform.anchorMax = OneZeroFloat2;
                     break;
-                }
-
                 case AnchorPresetType.VertStretchLeft:
-                {
                     rectTransform.anchorMin = ZeroZeroFloat2;
                     rectTransform.anchorMax = ZeroOneFloat2;
                     break;
-                }
-
                 case AnchorPresetType.VertStretchCenter:
-                {
                     rectTransform.anchorMin = HalfZeroFloat2;
                     rectTransform.anchorMax = HalfOneFloat2;
                     break;
-                }
-
                 case AnchorPresetType.VertStretchRight:
-                {
                     rectTransform.anchorMin = OneZeroFloat2;
                     rectTransform.anchorMax = OneOneFloat2;
                     break;
-                }
-
                 case AnchorPresetType.StretchAll:
-                {
                     rectTransform.anchorMin = ZeroZeroFloat2;
                     rectTransform.anchorMax = OneOneFloat2;
                     break;
-                }
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(anchorPresetType), anchorPresetType, null);
             }
         }
 
@@ -143,58 +98,34 @@ namespace Nekoyume
             switch (pivotPresetType)
             {
                 case PivotPresetType.TopLeft:
-                {
                     rectTransform.pivot = ZeroOneFloat2;
                     break;
-                }
-
                 case PivotPresetType.TopCenter:
-                {
                     rectTransform.pivot = HalfOneFloat2;
                     break;
-                }
-
                 case PivotPresetType.TopRight:
-                {
                     rectTransform.pivot = OneOneFloat2;
                     break;
-                }
-
                 case PivotPresetType.MiddleLeft:
-                {
                     rectTransform.pivot = ZeroHalfFloat2;
                     break;
-                }
-
                 case PivotPresetType.MiddleCenter:
-                {
                     rectTransform.pivot = HalfHalfFloat2;
                     break;
-                }
-
                 case PivotPresetType.MiddleRight:
-                {
                     rectTransform.pivot = OneHalfFloat2;
                     break;
-                }
-
                 case PivotPresetType.BottomLeft:
-                {
                     rectTransform.pivot = ZeroZeroFloat2;
                     break;
-                }
-
                 case PivotPresetType.BottomCenter:
-                {
                     rectTransform.pivot = HalfZeroFloat2;
                     break;
-                }
-
                 case PivotPresetType.BottomRight:
-                {
                     rectTransform.pivot = OneZeroFloat2;
                     break;
-                }
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(pivotPresetType), pivotPresetType, null);
             }
         }
 

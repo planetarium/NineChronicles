@@ -1,4 +1,3 @@
-using Nekoyume.EnumType;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI

@@ -1,9 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using Nekoyume.BlockChain;
-using Nekoyume.EnumType;
-
 
 namespace Nekoyume.UI
 {

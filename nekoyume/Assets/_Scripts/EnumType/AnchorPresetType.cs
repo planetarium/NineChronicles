@@ -13,8 +13,7 @@ namespace Nekoyume.EnumType
         BottomLeft,
         BottomCenter,
         BottomRight,
-        BottomStretch,
- 
+        
         VertStretchLeft,
         VertStretchRight,
         VertStretchCenter,

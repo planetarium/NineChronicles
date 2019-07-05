@@ -1,7 +1,5 @@
 using System;
-using Nekoyume.EnumType;
 using UniRx;
-using Unity.Mathematics;
 using UnityEngine;
 
 namespace Nekoyume.UI.Model

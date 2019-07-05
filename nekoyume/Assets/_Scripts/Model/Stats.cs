@@ -16,6 +16,7 @@ namespace Nekoyume.Model
         public string Key { get; }
         public float Value { get; set; }
         public float AdditionalValue { get; set; }
+        // FixMe. 추후에 float형을 사용하도록 수정해야 함.
         public int TotalValue => (int) (Value + AdditionalValue);
 
         public StatMap(string key)

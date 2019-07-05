@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
 using Nekoyume.Data.Table;
-using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
-using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using UniRx;
 using UnityEngine;

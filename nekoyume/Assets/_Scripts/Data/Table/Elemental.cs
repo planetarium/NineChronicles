@@ -19,6 +19,11 @@ namespace Nekoyume.Data.Table
             Land,
             Wind,
         }
+        
+        public const string FireIconResourcePath = "UI/Textures/icon_elemental_fire";
+        public const string WaterIconResourcePath = "UI/Textures/icon_elemental_water";
+        public const string LandIconResourcePath = "UI/Textures/icon_elemental_land";
+        public const string WindIconResourcePath = "UI/Textures/icon_elemental_wind";
 
         public ElementalType id;
         public ElementalType strong;
@@ -51,13 +56,13 @@ namespace Nekoyume.Data.Table
                 case ElementalType.Normal:
                     return null;
                 case ElementalType.Fire:
-                    return Resources.Load<Sprite>("UI/Textures/icon_elemental_fire");
+                    return Resources.Load<Sprite>(FireIconResourcePath);
                 case ElementalType.Water:
-                    return Resources.Load<Sprite>("UI/Textures/icon_elemental_water");
+                    return Resources.Load<Sprite>(WaterIconResourcePath);
                 case ElementalType.Land:
-                    return Resources.Load<Sprite>("UI/Textures/icon_elemental_land");
+                    return Resources.Load<Sprite>(LandIconResourcePath);
                 case ElementalType.Wind:
-                    return Resources.Load<Sprite>("UI/Textures/icon_elemental_wind");
+                    return Resources.Load<Sprite>(WindIconResourcePath);
                 default:
                     throw new Game.Elemental.InvalidElementalException();
             }
