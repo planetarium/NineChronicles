@@ -52,6 +52,11 @@ namespace Nekoyume.UI
         
         private void SubscribeSelectedItem(InventoryItem value)
         {
+            if (value is null)
+            {
+                return;
+            }
+            
             var model = new Model.ItemInformationTooltip(value);
             model.target.Value = GetComponent<RectTransform>();
             Find<ItemInformationTooltip>()?.Show(model);

@@ -8,15 +8,15 @@ namespace Nekoyume.Data.Table
     {
         // 0 : Normal
         // 1 : Fire
-        // 2 : Land
-        // 3 : Water
+        // 2 : Water
+        // 3 : Land
         // 4 : Wind
         public enum ElementalType
         {
             Normal,
             Fire,
-            Land,
             Water,
+            Land,
             Wind,
         }
 
@@ -33,10 +33,10 @@ namespace Nekoyume.Data.Table
                     return "무속성";
                 case ElementalType.Fire:
                     return "불속성";
-                case ElementalType.Land:
-                    return "땅속성";
                 case ElementalType.Water:
                     return "물속성";
+                case ElementalType.Land:
+                    return "땅속성";
                 case ElementalType.Wind:
                     return "바람속성";
                 default:
@@ -52,10 +52,10 @@ namespace Nekoyume.Data.Table
                     return null;
                 case ElementalType.Fire:
                     return Resources.Load<Sprite>("UI/Textures/icon_elemental_fire");
-                case ElementalType.Land:
-                    return Resources.Load<Sprite>("UI/Textures/icon_elemental_land");
                 case ElementalType.Water:
                     return Resources.Load<Sprite>("UI/Textures/icon_elemental_water");
+                case ElementalType.Land:
+                    return Resources.Load<Sprite>("UI/Textures/icon_elemental_land");
                 case ElementalType.Wind:
                     return Resources.Load<Sprite>("UI/Textures/icon_elemental_wind");
                 default:
