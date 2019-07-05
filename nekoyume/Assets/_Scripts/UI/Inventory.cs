@@ -19,6 +19,8 @@ namespace Nekoyume.UI
 
         public Model.Inventory Model { get; private set; }
 
+        private ItemInformationTooltip _tooltip;
+
         protected override void Awake()
         {
             base.Awake();
@@ -34,6 +36,8 @@ namespace Nekoyume.UI
 
         public override void Show()
         {
+            _tooltip = Find<ItemInformationTooltip>();
+            
             Model = new Model.Inventory(States.Instance.currentAvatarState.Value.inventory);
             Model.selectedItem.Subscribe(SubscribeSelectedItem);
             
@@ -44,6 +48,8 @@ namespace Nekoyume.UI
 
         public override void Close()
         {
+            _tooltip.Close();
+        
             Model?.Dispose();
             Model = null;
             
@@ -59,7 +65,7 @@ namespace Nekoyume.UI
             
             var model = new Model.ItemInformationTooltip(value);
             model.target.Value = GetComponent<RectTransform>();
-            Find<ItemInformationTooltip>()?.Show(model);
+            _tooltip.Show(model);
         }
     }
 }
