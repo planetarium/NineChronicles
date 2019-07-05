@@ -41,5 +41,10 @@ namespace Nekoyume.Data.Table
         public string stat = "";
         public int minStat = 0;
         public int maxStat = 0;
+        public int skillId = 0;
+        public int minDamage = 0;
+        public int maxDamage = 0;
+        public float minChance = 0f;
+        public float maxChance = 0f;
     }
 }
