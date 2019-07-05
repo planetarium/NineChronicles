@@ -103,13 +103,13 @@ namespace Nekoyume.UI.Model
             itemInfo.Value.item.Value = view.Model;
 
             // FixMe. 아이템 툴팁 테스트를 위해서, 아이템 선택 시 자동으로 재료로 등록되는 UX를 꺼둔다.
-            if (!ReferenceEquals(view.Model, null)
-                && view.Model.dimmed.Value)
-            {
-                return;
-            }
-
-            RegisterToStagedItems(view.Model);
+//            if (!ReferenceEquals(view.Model, null)
+//                && view.Model.dimmed.Value)
+//            {
+//                return;
+//            }
+//
+//            RegisterToStagedItems(view.Model);
         }
 
         private void OnClickSubmitItemCountPopup(SimpleItemCountPopup data)

@@ -191,7 +191,7 @@ namespace Nekoyume.UI
                 inventoryAndItemInfo.inventory.Tooltip.Show(
                     view.RectTransform,
                     view.Model,
-                    null,
+                    value => Model.itemInfo.Value.buttonEnabledFunc.Value(view.Model),
                     "판매하기",
                     tooltip =>
                     {

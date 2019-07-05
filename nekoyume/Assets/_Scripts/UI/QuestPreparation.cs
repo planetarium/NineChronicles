@@ -184,7 +184,7 @@ namespace Nekoyume.UI
             inventoryAndItemInfo.inventory.Tooltip.Show(
                 view.RectTransform,
                 view.Model,
-                null,
+                value => !view.Model.dimmed.Value,
                 "장착하기",
                 tooltip =>
                 {
