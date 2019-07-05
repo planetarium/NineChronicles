@@ -9,6 +9,7 @@ using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
 using Nekoyume.Model;
 using Nekoyume.UI.Model;
+using Nekoyume.UI.Module;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -131,7 +132,7 @@ namespace Nekoyume.UI
             Model = model;
             Model.state.Value = UI.Model.Shop.State.Buy;
             Model.state.Subscribe(OnState).AddTo(_disposablesForSetData);
-            Model.inventory.Value.selectedItem.Subscribe(SubscribeInventorySelectedItem)
+            Model.inventory.Value.selectedItemView.Subscribe(SubscribeInventorySelectedItem)
                 .AddTo(_disposablesForSetData);
             Model.shopItems.Value.selectedItem.Subscribe(SubscribeShopItemsSelectedItem)
                 .AddTo(_disposablesForSetData);
@@ -172,20 +173,25 @@ namespace Nekoyume.UI
             shopItems.SetState(state);
         }
 
-        private void SubscribeInventorySelectedItem(InventoryItem model)
+        private void SubscribeInventorySelectedItem(InventoryItemView view)
         {
-            if (model is null)
+            if (view is null)
             {
                 return;
             }
 
             if (Model.state.Value == UI.Model.Shop.State.Buy)
             {
-                inventoryAndItemInfo.inventory.Tooltip.Show(inventoryAndItemInfo.inventory.RectTransform, model);
+                inventoryAndItemInfo.inventory.Tooltip.Show(
+                    view.RectTransform,
+                    view.Model);
             }
             else
             {
-                inventoryAndItemInfo.inventory.Tooltip.Show(inventoryAndItemInfo.inventory.RectTransform, model, null,
+                inventoryAndItemInfo.inventory.Tooltip.Show(
+                    view.RectTransform,
+                    view.Model,
+                    null,
                     "판매하기",
                     tooltip =>
                     {
@@ -300,9 +306,7 @@ namespace Nekoyume.UI
             Model.shopItems.Value.RemoveShopItem(sellerAvatarAddress, productId);
             Model.shopItems.Value.RemoveProduct(productId);
             Model.shopItems.Value.RemoveRegisteredProduct(productId);
-
-            var addedItem = Model.inventory.Value.AddNonFungibleItem(shopItem);
-            Model.inventory.Value.SubscribeOnClick(addedItem);
+            Model.inventory.Value.AddNonFungibleItem(shopItem);
 
             _loadingScreen.Close();
         }
@@ -325,8 +329,8 @@ namespace Nekoyume.UI
             }
 
             StartCoroutine(CoShowBuyResultVFX(productId));
-            var addedItem = Model.inventory.Value.AddNonFungibleItem(shopItem);
-            Model.inventory.Value.SubscribeOnClick(addedItem);
+            Model.inventory.Value.AddNonFungibleItem(shopItem);
+            
             _loadingScreen.Close();
         }
 

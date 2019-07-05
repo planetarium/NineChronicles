@@ -8,6 +8,7 @@ using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
 using Nekoyume.UI.Model;
+using Nekoyume.UI.Module;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -155,7 +156,7 @@ namespace Nekoyume.UI
         {
             _disposablesForSetData.DisposeAllAndClear();
             Model = model;
-            Model.inventory.Value.selectedItem.Subscribe(SubscribeInventorySelectedItem)
+            Model.inventory.Value.selectedItemView.Subscribe(SubscribeInventorySelectedItem)
                 .AddTo(_disposablesForSetData);
             // FixMe. 아이템 툴팁 테스트를 위해서, 아이템 더블 클릭 시 자동으로 장착되는 UX를 꺼둔다.
 //            Model.inventory.Value.onDoubleClickItem.Subscribe(OnClickEquip)
@@ -173,14 +174,17 @@ namespace Nekoyume.UI
             _disposablesForSetData.DisposeAllAndClear();
         }
 
-        private void SubscribeInventorySelectedItem(InventoryItem model)
+        private void SubscribeInventorySelectedItem(InventoryItemView view)
         {
-            if (model is null)
+            if (view is null)
             {
                 return;
             }
 
-            inventoryAndItemInfo.inventory.Tooltip.Show(inventoryAndItemInfo.inventory.RectTransform, model, null,
+            inventoryAndItemInfo.inventory.Tooltip.Show(
+                view.RectTransform,
+                view.Model,
+                null,
                 "장착하기",
                 tooltip =>
                 {

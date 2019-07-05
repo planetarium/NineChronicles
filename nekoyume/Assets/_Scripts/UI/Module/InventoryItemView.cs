@@ -22,6 +22,8 @@ namespace Nekoyume.UI.Module
         private readonly List<IDisposable> _disposablesForSetData = new List<IDisposable>();
 
         private readonly TimeSpan _timeSpan200Milliseconds = TimeSpan.FromMilliseconds(200);
+        
+        public RectTransform RectTransform { get; private set; }
 
         #region Mono
 
@@ -31,13 +33,15 @@ namespace Nekoyume.UI.Module
 
             this.ComponentFieldsNotNullTest();
 
+            RectTransform = GetComponent<RectTransform>();
+
             _button = GetComponent<Button>();
             var buttonClickStream = _button.OnClickAsObservable();
             buttonClickStream
                 .Subscribe(_ =>
                 {
                     AudioController.PlaySelect();
-                    Data.onClick.OnNext(Data);
+                    Model.onClick.OnNext(this);
                 })
                 .AddTo(_disposablesForAwake);
             buttonClickStream
@@ -45,7 +49,7 @@ namespace Nekoyume.UI.Module
                 .Where(_ => _.Count >= 2)
                 .Subscribe(_ =>
                 {
-                    Data.onDoubleClick.OnNext(Data);
+                    Model.onDoubleClick.OnNext(this);
                 }).AddTo(_disposablesForAwake);
         }
 
@@ -59,21 +63,21 @@ namespace Nekoyume.UI.Module
 
         #region override
 
-        public override void SetData(Model.InventoryItem value)
+        public override void SetData(Model.InventoryItem model)
         {
-            if (ReferenceEquals(value, null))
+            if (ReferenceEquals(model, null))
             {
                 Clear();
                 return;
             }
 
-            base.SetData(value);
+            base.SetData(model);
             _disposablesForSetData.DisposeAllAndClear();
-            Data.covered.Subscribe(SetCover).AddTo(_disposablesForSetData);
-            Data.dimmed.Subscribe(SetDim).AddTo(_disposablesForSetData);
-            Data.selected.Subscribe(SetSelect).AddTo(_disposablesForSetData);
-            Data.glowed.Subscribe(SetGlow).AddTo(_disposablesForSetData);
-            Data.count.Subscribe(SetCount).AddTo(_disposablesForSetData);
+            Model.covered.Subscribe(SetCover).AddTo(_disposablesForSetData);
+            Model.dimmed.Subscribe(SetDim).AddTo(_disposablesForSetData);
+            Model.selected.Subscribe(SetSelect).AddTo(_disposablesForSetData);
+            Model.glowed.Subscribe(SetGlow).AddTo(_disposablesForSetData);
+            Model.count.Subscribe(SetCount).AddTo(_disposablesForSetData);
 
             UpdateView();
         }
@@ -97,16 +101,16 @@ namespace Nekoyume.UI.Module
 
         private void UpdateView()
         {
-            if (ReferenceEquals(Data, null))
+            if (ReferenceEquals(Model, null))
             {
                 selectionImage.enabled = false;
 
                 return;
             }
 
-            coverImage.enabled = Data.covered.Value;
-            selectionImage.enabled = Data.selected.Value;
-            SetDim(Data.dimmed.Value);
+            coverImage.enabled = Model.covered.Value;
+            selectionImage.enabled = Model.selected.Value;
+            SetDim(Model.dimmed.Value);
         }
 
         private void SetCover(bool isCover)

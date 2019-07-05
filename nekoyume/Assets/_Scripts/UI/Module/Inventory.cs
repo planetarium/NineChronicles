@@ -1,3 +1,4 @@
+using Nekoyume.UI.Model;
 using Nekoyume.UI.Scroller;
 using UnityEngine;
 

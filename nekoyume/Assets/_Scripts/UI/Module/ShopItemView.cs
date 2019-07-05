@@ -23,7 +23,7 @@ namespace Nekoyume.UI.Module
 
             button.OnClickAsObservable().Subscribe(_ =>
             {
-                Data?.onClick.OnNext(Data);
+                Model?.onClick.OnNext(Model);
                 AudioController.instance.PlaySfx(AudioController.SfxCode.Click);
             }).AddTo(_disposablesForAwake);
         }
@@ -36,17 +36,17 @@ namespace Nekoyume.UI.Module
 
         #endregion
 
-        public override void SetData(ShopItem value)
+        public override void SetData(ShopItem model)
         {
-            if (ReferenceEquals(value, null))
+            if (ReferenceEquals(model, null))
             {
                 Clear();
                 return;
             }
             
-            base.SetData(value);
+            base.SetData(model);
             _disposablesForSetData.DisposeAllAndClear();
-            Data.selected.Subscribe(_ => selectedImage.enabled = _).AddTo(_disposablesForSetData);
+            Model.selected.Subscribe(_ => selectedImage.enabled = _).AddTo(_disposablesForSetData);
 
             UpdateView();
         }
@@ -61,14 +61,14 @@ namespace Nekoyume.UI.Module
         
         private void UpdateView()
         {
-            if (ReferenceEquals(Data, null))
+            if (ReferenceEquals(Model, null))
             {
                 selectedImage.enabled = false;
                 button.enabled = false;
                 return;
             }
 
-            selectedImage.enabled = Data.selected.Value;
+            selectedImage.enabled = Model.selected.Value;
             button.enabled = true;
         }
     }

@@ -141,7 +141,7 @@ namespace Nekoyume.UI
 
             _disposablesForSetData.DisposeAllAndClear();
             Model = model;
-            Model.inventory.Value.selectedItem.Subscribe(SubscribeInventorySelectedItem)
+            Model.inventory.Value.selectedItemView.Subscribe(SubscribeInventorySelectedItem)
                 .AddTo(_disposablesForSetData);
             Model.itemInfo.Value.item.Subscribe(OnItemInfoItem).AddTo(_disposablesForSetData);
             Model.itemCountPopup.Value.item.Subscribe(OnPopupItem).AddTo(_disposablesForSetData);
@@ -188,14 +188,17 @@ namespace Nekoyume.UI
             }
         }
 
-        private void SubscribeInventorySelectedItem(InventoryItem model)
+        private void SubscribeInventorySelectedItem(InventoryItemView view)
         {
-            if (model is null)
+            if (view is null)
             {
                 return;
             }
 
-            inventoryAndItemInfo.inventory.Tooltip.Show(inventoryAndItemInfo.inventory.RectTransform, model, null,
+            inventoryAndItemInfo.inventory.Tooltip.Show(
+                view.RectTransform,
+                view.Model,
+                null,
                 "재료 올리기",
                 tooltip =>
                 {
