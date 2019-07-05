@@ -2043,7 +2043,7 @@
         <member name="T:Libplanet.Net.DifferentAppProtocolVersionException">
             <summary>
             The exception that is thrown when the version of the
-            <see cref="T:Libplanet.Net.Peer" /> that <see cref="T:Libplanet.Net.Swarm" /> is trying to connect
+            <see cref="T:Libplanet.Net.Peer" /> that <see cref="T:Libplanet.Net.Swarm`1" /> is trying to connect
             to is different.
             </summary>
         </member>
@@ -2053,39 +2053,39 @@
             <see cref="T:Libplanet.Net.DifferentAppProtocolVersionException"/> class.
             </summary>
             <param name="expectedVersion">The protocol version of the current
-            <see cref="T:Libplanet.Net.Swarm"/>.</param>
+            <see cref="T:Libplanet.Net.Swarm`1"/>.</param>
             <param name="actualVersion">The protocol version of the
-            <see cref="T:Libplanet.Net.Peer"/> that <see cref="T:Libplanet.Net.Swarm" /> is trying to connect
+            <see cref="T:Libplanet.Net.Peer"/> that <see cref="T:Libplanet.Net.Swarm`1" /> is trying to connect
             to.</param>
             <param name="message">Specifies an <see cref="P:System.Exception.Message"/>.
             </param>
         </member>
         <member name="P:Libplanet.Net.DifferentAppProtocolVersionException.ExpectedVersion">
             <summary>
-            The protocol version of the current <see cref="T:Libplanet.Net.Swarm"/>.
+            The protocol version of the current <see cref="T:Libplanet.Net.Swarm`1"/>.
             </summary>
         </member>
         <member name="P:Libplanet.Net.DifferentAppProtocolVersionException.ActualVersion">
             <summary>
             The protocol version of the <see cref="T:Libplanet.Net.Peer"/> that the
-            <see cref="T:Libplanet.Net.Swarm" /> is trying to connect to.
+            <see cref="T:Libplanet.Net.Swarm`1" /> is trying to connect to.
             </summary>
         </member>
         <member name="T:Libplanet.Net.DifferentProtocolVersionEventArgs">
             <summary>
             The event data that provides a value when
-            <see cref="E:Libplanet.Net.Swarm.DifferentVersionPeerEncountered" /> is occured.
+            <see cref="E:Libplanet.Net.Swarm`1.DifferentVersionPeerEncountered" /> is occured.
             </summary>
         </member>
         <member name="P:Libplanet.Net.DifferentProtocolVersionEventArgs.ExpectedVersion">
             <summary>
-            The protocol version of the current <see cref="T:Libplanet.Net.Swarm"/>.
+            The protocol version of the current <see cref="T:Libplanet.Net.Swarm`1"/>.
             </summary>
         </member>
         <member name="P:Libplanet.Net.DifferentProtocolVersionEventArgs.ActualVersion">
             <summary>
             The protocol version of the <see cref="T:Libplanet.Net.Peer"/> that the
-            <see cref="T:Libplanet.Net.Swarm" /> is trying to connect to.
+            <see cref="T:Libplanet.Net.Swarm`1" /> is trying to connect to.
             </summary>
         </member>
         <member name="F:Libplanet.Net.Messages.Message.MessageType.Ping">
@@ -2142,7 +2142,7 @@
             <summary>
             A representation of peer node.
             </summary>
-            <seealso cref="T:Libplanet.Net.Swarm"/>
+            <seealso cref="T:Libplanet.Net.Swarm`1"/>
         </member>
         <member name="M:Libplanet.Net.Peer.#ctor(Libplanet.Crypto.PublicKey,System.Net.DnsEndPoint)">
             <summary>
@@ -2180,7 +2180,7 @@
             <summary>
             The corresponding application protocol version of this peer.
             </summary>
-            <seealso cref="E:Libplanet.Net.Swarm.DifferentVersionPeerEncountered"/>
+            <seealso cref="E:Libplanet.Net.Swarm`1.DifferentVersionPeerEncountered"/>
         </member>
         <member name="P:Libplanet.Net.Peer.Address">
             <summary>The peer's address which is derived from
@@ -2194,31 +2194,28 @@
         <member name="M:Libplanet.Net.Peer.ToString">
             <inheritdoc/>
         </member>
-        <member name="E:Libplanet.Net.Swarm.DifferentVersionPeerEncountered">
+        <member name="E:Libplanet.Net.Swarm`1.DifferentVersionPeerEncountered">
             <summary>
             The <see cref="T:System.EventHandler" /> called when the different version of
             <see cref="T:Libplanet.Net.Peer" /> is discovered.
             </summary>
         </member>
-        <member name="P:Libplanet.Net.Swarm.Running">
+        <member name="P:Libplanet.Net.Swarm`1.Running">
             <summary>
-            Whether this <see cref="T:Libplanet.Net.Swarm"/> instance is running.
+            Whether this <see cref="T:Libplanet.Net.Swarm`1"/> instance is running.
             </summary>
         </member>
-        <member name="M:Libplanet.Net.Swarm.WaitForRunningAsync">
+        <member name="M:Libplanet.Net.Swarm`1.WaitForRunningAsync">
             <summary>
-            Waits until this <see cref="T:Libplanet.Net.Swarm"/> instance gets started to run.
+            Waits until this <see cref="T:Libplanet.Net.Swarm`1"/> instance gets started to run.
             </summary>
-            <returns>A <see cref="T:System.Threading.Tasks.Task"/> completed when <see cref="P:Libplanet.Net.Swarm.Running"/>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> completed when <see cref="P:Libplanet.Net.Swarm`1.Running"/>
             property becomes <c>true</c>.</returns>
         </member>
-        <member name="M:Libplanet.Net.Swarm.PreloadAsync``1(Libplanet.Blockchain.BlockChain{``0},System.IProgress{Libplanet.Net.BlockDownloadState},System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Net.Swarm`1.PreloadAsync(System.IProgress{Libplanet.Net.BlockDownloadState},System.Threading.CancellationToken)">
             <summary>
             Preemptively downloads blocks from registered <see cref="T:Libplanet.Net.Peer"/>s.
             </summary>
-            <param name="blockChain">
-            A <see cref="T:Libplanet.Blockchain.BlockChain`1"/> instance to synchronize.
-            </param>
             <param name="progress">
             An instance that receives progress updates for block downloads.
             </param>
@@ -2226,8 +2223,6 @@
             A cancellation token used to propagate notification that this
             operation should be canceled.
             </param>
-            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type. It should match
-            to <see cref="T:Libplanet.Blockchain.BlockChain`1"/>'s type parameter.</typeparam>
             <returns>
             A task without value.
             You only can <c>await</c> until the method is completed.
@@ -2311,7 +2306,13 @@
         <member name="M:Libplanet.Store.BaseStore.IncreaseTxNonce(System.String,Libplanet.Address,System.Int64)">
             <inheritdoc/>
         </member>
+        <member name="M:Libplanet.Store.BaseStore.DeleteNamespace(System.String)">
+            <inheritdoc/>
+        </member>
         <member name="M:Libplanet.Store.FileStore.ListNamespaces">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.FileStore.DeleteNamespace(System.String)">
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Store.FileStore.ListAddresses(System.String)">
@@ -2349,6 +2350,24 @@
             Lists existing namespaces.
             </summary>
             <returns>Existing namespaces.</returns>
+        </member>
+        <member name="M:Libplanet.Store.IStore.IterateIndex(System.String)">
+            <summary>
+            Iterate indexes of the namespaces.
+            </summary>
+            <param name="namespace">The namespace to iterate indexes.</param>
+            <returns>All indexes in descending order by height.</returns>
+        </member>
+        <member name="M:Libplanet.Store.IStore.DeleteNamespace(System.String)">
+            <summary>
+            Deletes an index, tx nonces, and state references in the given
+            <paramref name="namespace"/>.
+            It also deletes namespace itself.
+            </summary>
+            <param name="namespace">The namespace to delete.</param>
+            <remarks>This does not delete blocks or transactions that belong to
+            the index of the <paramref name="namespace"/>, but only the index,
+            tx nonces, and state references.</remarks>
         </member>
         <member name="M:Libplanet.Store.IStore.ListAddresses(System.String)">
             <summary>
@@ -2433,6 +2452,9 @@
             of the <see cref="T:Libplanet.Address"/>.</param>
             <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> class used with
             <paramref name="block"/>.</typeparam>
+            <remarks>State reference must be stored in the same order as the blocks. For now,
+            it is assumed that this is only called by
+            <see cref="M:Libplanet.Blockchain.BlockChain`1.Append(Libplanet.Blocks.Block{`0},System.DateTimeOffset,System.Boolean)"/> method.</remarks>
             <seealso cref="M:Libplanet.Store.IStore.IterateStateReferences(System.String,Libplanet.Address)"/>
         </member>
         <member name="M:Libplanet.Store.IStore.ForkStateReferences``1(System.String,System.String,Libplanet.Blocks.Block{``0},System.Collections.Immutable.IImmutableSet{Libplanet.Address})">
@@ -2518,6 +2540,9 @@
             <param name="cacheSize">Max number of pages in the cache.</param>
         </member>
         <member name="M:Libplanet.Store.LiteDBStore.ListNamespaces">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.LiteDBStore.DeleteNamespace(System.String)">
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Store.LiteDBStore.CountIndex(System.String)">

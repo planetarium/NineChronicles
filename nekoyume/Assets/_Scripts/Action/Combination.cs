@@ -108,12 +108,13 @@ namespace Nekoyume.Action
                     return states;
                 }
 
-                // 조합 결과 획득.
-                var itemUsable = GetItemUsableWithRandomSkill(itemEquipmentRow, ctx.Random.Next());
-
-                // 추가 스탯 적용.
                 var normalizedRandomValue = ctx.Random.Next(0, 100000) * 0.00001f;
                 var roll = GetRoll(monsterPartsMaterial.count, 0, normalizedRandomValue);
+
+                // 조합 결과 획득.
+                var itemUsable = GetEquipment(itemEquipmentRow, outMonsterPartsMaterialRow, roll);
+
+                // 추가 스탯 적용.
                 var stat = GetStat(outMonsterPartsMaterialRow, roll);
                 itemUsable.Stats.SetStatAdditionalValue(stat.Key, stat.Value);
 
@@ -140,7 +141,7 @@ namespace Nekoyume.Action
                     }
 
                     // 조합 결과 획득.
-                    var itemUsable = GetItemUsableWithRandomSkill(itemEquipmentRow, ctx.Random.Next());
+                    var itemUsable = GetFood(itemEquipmentRow);
                     avatarState.inventory.AddNonFungibleItem(itemUsable);
 
                     break;
@@ -213,8 +214,7 @@ namespace Nekoyume.Action
             return new StatMap(key, value);
         }
 
-        // ToDo. 순수 랜덤이 아닌 조합식이 적용되어야 함.
-        private ItemUsable GetItemUsableWithRandomSkill(ItemEquipment itemEquipment, int randomValue)
+        private static ItemUsable GetFood(ItemEquipment itemEquipment)
         {
             // FixMe. 소모품에 랜덤 스킬을 할당했을 때, `HackAndSlash` 액션에서 예외 발생. 그래서 소모품은 랜덤 스킬을 할당하지 않음.
             /*
@@ -233,18 +233,27 @@ namespace Nekoyume.Action
              * Nekoyume.BlockChain.<CoMiner>d__31:MoveNext() (at Assets/_Scripts/BlockChain/Agent.cs:208)
              * UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
              */
-            if (itemEquipment.cls.ToEnumItemType() == ItemBase.ItemType.Food)
-            {
-                return (ItemUsable) ItemBase.ItemFactory(itemEquipment);
-            }
+            return (ItemUsable) ItemBase.ItemFactory(itemEquipment);
+        }
 
+        public static Equipment GetEquipment(ItemEquipment itemEquipment, Item monsterParts, float roll)
+        {
             var table = Tables.instance.SkillEffect;
-            var skillEffect = table.ElementAt(randomValue % table.Count);
-            var elementalValues = Enum.GetValues(typeof(Elemental.ElementalType));
-            var elementalType =
-                (Elemental.ElementalType) elementalValues.GetValue(randomValue % elementalValues.Length);
-            var skill = SkillFactory.Get(0.05f, skillEffect.Value, elementalType); // FixMe. 테스트를 위해서 5% 확률로 발동되도록 함.
-            return (ItemUsable) ItemBase.ItemFactory(itemEquipment, skill);
+            SkillBase skill;
+            try
+            {
+                var skillEffect = table.First(r => r.Value.id == monsterParts.skillId);
+                var elementalType = monsterParts.elemental;
+                var chance = (float) Math.Floor(monsterParts.minChance +
+                                                (monsterParts.maxChance - monsterParts.minChance) * roll);
+                chance = Math.Max(monsterParts.maxChance, chance);
+                skill = SkillFactory.Get(chance, skillEffect.Value, elementalType);
+            }
+            catch (InvalidOperationException)
+            {
+                skill = null;
+            }
+            return (Equipment) ItemBase.ItemFactory(itemEquipment, skill);
         }
     }
 }

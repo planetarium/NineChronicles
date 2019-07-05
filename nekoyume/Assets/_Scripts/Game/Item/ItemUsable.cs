@@ -11,7 +11,7 @@ namespace Nekoyume.Game.Item
     {
         public new ItemEquipment Data { get; }
         public Stats Stats { get; }
-        private SkillBase SkillBase { get; }
+        public SkillBase SkillBase { get; }
 
         protected ItemUsable(Data.Table.Item data, SkillBase skillBase = null)
             : base(data)

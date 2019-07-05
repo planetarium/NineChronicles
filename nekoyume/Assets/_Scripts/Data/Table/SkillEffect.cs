@@ -28,6 +28,7 @@ namespace Nekoyume.Data.Table
             Blow,
         }
 
+        public int id = 0;
         public SkillType type = SkillType.Attack;
         public Category category = Category.Normal;
         public Target target = Target.Enemy;
@@ -40,7 +41,8 @@ namespace Nekoyume.Data.Table
                    category == other.category &&
                    target == other.target &&
                    multiplier.Equals(other.multiplier) &&
-                   hitCount == other.hitCount;
+                   hitCount == other.hitCount &&
+                   id == other.id;
         }
 
         public override bool Equals(object obj)
@@ -60,6 +62,7 @@ namespace Nekoyume.Data.Table
                 hashCode = (hashCode * 397) ^ (int) target;
                 hashCode = (hashCode * 397) ^ multiplier.GetHashCode();
                 hashCode = (hashCode * 397) ^ hitCount;
+                hashCode = (hashCode * 397) ^ id;
                 return hashCode;
             }
         }

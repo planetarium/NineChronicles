@@ -97,7 +97,10 @@ namespace Nekoyume.Game.Character
             Power = 0;
             HPMax = HP;
             Range = character.attackRange;
-            _runSpeed = -character.runSpeed;
+            //FIXME 캐릭터 순서에 영향을 받아서 전투가 멈추는 버그가 있음
+            // https://app.asana.com/0/958521740385861/1129316006113668
+            //_runSpeed = -character.runSpeed;
+            _runSpeed = -1f;
             characterSize = character.characterSize;
         }
         
