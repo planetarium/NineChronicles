@@ -4,7 +4,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using AsyncIO;
@@ -60,7 +59,6 @@ namespace Nekoyume.BlockChain
         
         public PrivateKey PrivateKey { get; }
         public Address Address { get; }
-        public Guid ChainId => _blocks.Id;
         
         public event EventHandler PreloadStarted;
         public event EventHandler<BlockDownloadState> PreloadProcessed;
@@ -78,7 +76,6 @@ namespace Nekoyume.BlockChain
         public Agent(
             PrivateKey privateKey,
             string path,
-            Guid chainId,
             IEnumerable<Peer> peers,
             IEnumerable<IceServer> iceServers,
             string host,
@@ -88,10 +85,7 @@ namespace Nekoyume.BlockChain
             PrivateKey = privateKey;
             Address = privateKey.PublicKey.ToAddress();
             _store = new LiteDBStore($"{path}.ldb");
-            _blocks = new BlockChain<PolymorphicAction<ActionBase>>(
-                policy,
-                _store,
-                chainId);
+            _blocks = new BlockChain<PolymorphicAction<ActionBase>>(policy, _store);
 #if BLOCK_LOG_USE
             FileHelper.WriteAllText("Block.log", "");
 #endif
