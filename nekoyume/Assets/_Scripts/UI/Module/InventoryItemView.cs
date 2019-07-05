@@ -38,9 +38,6 @@ namespace Nekoyume.UI.Module
                 {
                     AudioController.PlaySelect();
                     Data.onClick.OnNext(Data);
-                    var model = new Model.ItemInformationTooltip(Data);
-                    model.target.Value = GetComponent<RectTransform>();
-                    Widget.Find<ItemInformationTooltip>()?.Show(model);
                 })
                 .AddTo(_disposablesForAwake);
             buttonClickStream
