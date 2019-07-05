@@ -92,6 +92,7 @@ namespace Nekoyume.UI.Model
         {
             itemInfo.Value.item.Value = data;
 
+            // FixMe. 아이템 툴팁 테스트를 위해서, 아이템 선택 시 자동으로 재료로 등록되는 UX를 꺼둔다.
             if (!ReferenceEquals(data, null)
                 && data.dimmed.Value)
             {
@@ -114,7 +115,7 @@ namespace Nekoyume.UI.Model
             itemCountPopup.Value.item.Value = null;
         }
 
-        private bool RegisterToStagedItems(CountableItem countEditableItem)
+        public bool RegisterToStagedItems(CountableItem countEditableItem)
         {
             if (ReferenceEquals(countEditableItem, null))
             {

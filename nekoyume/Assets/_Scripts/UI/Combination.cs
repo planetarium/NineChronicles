@@ -39,7 +39,7 @@ namespace Nekoyume.UI
         private SimpleItemCountPopup _simpleItemCountPopup;
         private CombinationResultPopup _resultPopup;
         private GrayLoadingScreen _loadingScreen;
-        
+
         public Model.Combination Model { get; private set; }
 
         #region Mono
@@ -106,6 +106,7 @@ namespace Nekoyume.UI
             {
                 throw new NotFoundComponentException<Player>();
             }
+
             _player.gameObject.SetActive(false);
 
             SetData(new Model.Combination(
@@ -130,17 +131,17 @@ namespace Nekoyume.UI
             AudioController.instance.PlayMusic(AudioController.MusicCode.Main);
         }
 
-        private void SetData(Model.Combination value)
+        private void SetData(Model.Combination model)
         {
-            if (ReferenceEquals(value, null))
+            if (ReferenceEquals(model, null))
             {
                 Clear();
                 return;
             }
 
             _disposablesForSetData.DisposeAllAndClear();
-            Model = value;
-            Model.inventory.Value.selectedItem.Subscribe(inventoryAndItemInfo.inventory.ShowTooltip)
+            Model = model;
+            Model.inventory.Value.selectedItem.Subscribe(SubscribeInventorySelectedItem)
                 .AddTo(_disposablesForSetData);
             Model.itemInfo.Value.item.Subscribe(OnItemInfoItem).AddTo(_disposablesForSetData);
             Model.itemCountPopup.Value.item.Subscribe(OnPopupItem).AddTo(_disposablesForSetData);
@@ -152,6 +153,7 @@ namespace Nekoyume.UI
             Model.resultPopup.Subscribe(SubscribeResultPopup).AddTo(_disposablesForSetData);
             Model.onClickCombination.Subscribe(RequestCombination).AddTo(_disposablesForSetData);
             Model.onShowResultVFX.Subscribe(ShowResultVFX).AddTo(_disposablesForSetData);
+
             inventoryAndItemInfo.SetData(Model.inventory.Value, Model.itemInfo.Value);
 
             UpdateStagedItems();
@@ -184,6 +186,22 @@ namespace Nekoyume.UI
                     item.Clear();
                 }
             }
+        }
+
+        private void SubscribeInventorySelectedItem(InventoryItem model)
+        {
+            if (model is null)
+            {
+                return;
+            }
+
+            inventoryAndItemInfo.inventory.Tooltip.Show(inventoryAndItemInfo.inventory.RectTransform, model, null,
+                "재료 올리기",
+                tooltip =>
+                {
+                    Model.RegisterToStagedItems(tooltip.itemInformation.Model.item.Value);
+                    inventoryAndItemInfo.inventory.Tooltip.Close();
+                });
         }
 
         private void OnItemInfoItem(InventoryItem data)
@@ -284,6 +302,7 @@ namespace Nekoyume.UI
                     inventoryItemCount--;
                 }
             }
+
             ActionManager.instance.Combination(materials)
                 .Subscribe(eval => ResponseCombination(inventoryItemCount))
                 .AddTo(this);
@@ -299,9 +318,10 @@ namespace Nekoyume.UI
             _loadingScreen.Close();
 
             var isSuccess = States.Instance.currentAvatarState.Value.inventory.Items.Count() > inventoryItemCount;
-            
+
             Model.resultPopup.Value = new Model.CombinationResultPopup(isSuccess
-                ? States.Instance.currentAvatarState.Value.inventory.TryGetNonFungibleItemFromLast(out var outNonFungibleItem)
+                ? States.Instance.currentAvatarState.Value.inventory.TryGetNonFungibleItemFromLast(
+                    out var outNonFungibleItem)
                     ? outNonFungibleItem
                     : null
                 : null)

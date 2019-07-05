@@ -38,7 +38,7 @@ namespace Nekoyume.UI
         private Player _player;
         private ItemCountAndPricePopup _itemCountAndPricePopup;
         private GrayLoadingScreen _loadingScreen;
-        
+
         public Model.Shop Model { get; private set; }
 
         #region Mono
@@ -125,14 +125,16 @@ namespace Nekoyume.UI
             AudioController.instance.PlayMusic(AudioController.MusicCode.Main);
         }
 
-        private void SetData(Model.Shop data)
+        private void SetData(Model.Shop model)
         {
             _disposablesForSetData.DisposeAllAndClear();
-            Model = data;
-            Model.inventory.Value.selectedItem.Subscribe(inventoryAndItemInfo.inventory.ShowTooltip)
-                .AddTo(_disposablesForSetData);
+            Model = model;
             Model.state.Value = UI.Model.Shop.State.Buy;
             Model.state.Subscribe(OnState).AddTo(_disposablesForSetData);
+            Model.inventory.Value.selectedItem.Subscribe(SubscribeInventorySelectedItem)
+                .AddTo(_disposablesForSetData);
+            Model.shopItems.Value.selectedItem.Subscribe(SubscribeShopItemsSelectedItem)
+                .AddTo(_disposablesForSetData);
             Model.itemCountAndPricePopup.Value.item.Subscribe(OnPopup).AddTo(_disposablesForSetData);
             Model.itemCountAndPricePopup.Value.onClickSubmit.Subscribe(OnClickSubmitItemCountAndPricePopup)
                 .AddTo(_disposablesForSetData);
@@ -168,6 +170,53 @@ namespace Nekoyume.UI
             }
 
             shopItems.SetState(state);
+        }
+
+        private void SubscribeInventorySelectedItem(InventoryItem model)
+        {
+            if (model is null)
+            {
+                return;
+            }
+
+            if (Model.state.Value == UI.Model.Shop.State.Buy)
+            {
+                inventoryAndItemInfo.inventory.Tooltip.Show(inventoryAndItemInfo.inventory.RectTransform, model);
+            }
+            else
+            {
+                inventoryAndItemInfo.inventory.Tooltip.Show(inventoryAndItemInfo.inventory.RectTransform, model, null,
+                    "판매하기",
+                    tooltip =>
+                    {
+                        Model.OnClickItemInfo(tooltip.itemInformation.Model.item.Value);
+                        inventoryAndItemInfo.inventory.Tooltip.Close();
+                    });
+            }
+        }
+
+        private void SubscribeShopItemsSelectedItem(ShopItem model)
+        {
+            // ToDo. 상점 측의 아이템을 눌렀을 경우 해당 아이템의 툴팁을 띄운다. 지금은 금액 처리가 안 되어 있어서 꺼둠.
+            return;
+            if (Model.state.Value == UI.Model.Shop.State.Buy)
+            {
+                inventoryAndItemInfo.inventory.Tooltip.Show(RectTransform, model, null, "구매하기",
+                    tooltip =>
+                    {
+                        Model.OnClickItemInfo(tooltip.itemInformation.Model.item.Value);
+                        inventoryAndItemInfo.inventory.Tooltip.Close();
+                    });
+            }
+            else
+            {
+                inventoryAndItemInfo.inventory.Tooltip.Show(RectTransform, model, null, "판매 취소하기",
+                    tooltip =>
+                    {
+                        Model.OnClickItemInfo(tooltip.itemInformation.Model.item.Value);
+                        inventoryAndItemInfo.inventory.Tooltip.Close();
+                    });
+            }
         }
 
         private void OnPopup(CountableItem data)

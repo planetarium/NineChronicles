@@ -37,7 +37,6 @@ namespace Nekoyume.UI.Model
             state.Subscribe(OnState);
             this.inventory.Value.selectedItem.Subscribe(OnSelectInventoryItem);
             this.shopItems.Value.selectedItem.Subscribe(OnSelectShopItem);
-            itemInfo.Value.item.Subscribe(OnItemInfoItem);
             itemInfo.Value.onClick.Subscribe(OnClickItemInfo);
 
             onClickSwitchBuy.Subscribe(_ => state.Value = State.Buy);
@@ -101,13 +100,8 @@ namespace Nekoyume.UI.Model
                     return !inventoryItem.dimmed.Value;
             }
         }
-
-        private void OnItemInfoItem(InventoryItem inventoryItem)
-        {
-            Debug.Log("OnItemInfoItem");
-        }
         
-        private void OnClickItemInfo(InventoryItem inventoryItem)
+        public void OnClickItemInfo(CountableItem inventoryItem)
         {
             switch (inventoryItem)
             {
