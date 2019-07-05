@@ -61,6 +61,11 @@ namespace Nekoyume.UI
             Model.submitButtonEnabledFunc.Value = submitEnabledFunc;
             Model.submitButtonText.Value = submitText;
             
+            // Show(Model)을 먼저 호출함으로써 Widget.Show()가 호출되고, 게임 오브젝트가 활성화 됨. 그래야 레이아웃 정리가 가능함.
+            Show(Model);
+            // itemInformation UI의 모든 요소에 적절한 값이 들어가야 레이아웃 정리가 유효함.
+            itemInformation.SetData(Model.itemInformation);
+            
             Model.titleText.SubscribeToText(titleText).AddTo(_disposablesForModel);
             Model.itemInformation.item.Subscribe(value => base.SubscribeTarget(Model.target.Value))
                 .AddTo(_disposablesForModel);
@@ -85,22 +90,6 @@ namespace Nekoyume.UI
             Model.submitButtonEnabled.Subscribe(value => submitGameObject.SetActive(value))
                 .AddTo(_disposablesForModel);
             Model.onSubmit.Subscribe(onSubmit).AddTo(_disposablesForModel);
-            
-            Show(Model);
-        }
-
-        public override void Show()
-        {
-            if (Model is null)
-            {
-                Close();
-                
-                return;
-            }
-            
-            base.Show();
-
-            itemInformation.SetData(Model.itemInformation);
         }
 
         public override void Close()
