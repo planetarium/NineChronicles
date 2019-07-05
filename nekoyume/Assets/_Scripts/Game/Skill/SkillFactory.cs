@@ -6,7 +6,7 @@ namespace Nekoyume.Game.Skill
 {
     public static class SkillFactory
     {
-        public static SkillBase Get(float chance, SkillEffect effect, Data.Table.Elemental.ElementalType elemental)
+        public static SkillBase Get(float chance, SkillEffect effect, Data.Table.Elemental.ElementalType elemental, int value)
         {
             switch (effect.type)
             {
@@ -17,23 +17,23 @@ namespace Nekoyume.Game.Skill
                             switch (effect.category)
                             {
                                 case SkillEffect.Category.Normal:
-                                    return new Attack(chance, effect, elemental);
+                                    return new Attack(chance, effect, elemental, value);
                                 case SkillEffect.Category.Double:
-                                    return new DoubleAttack(chance, effect, elemental);
+                                    return new DoubleAttack(chance, effect, elemental, value);
                                 case SkillEffect.Category.Blow:
-                                    return new Blow(chance, effect, elemental);
+                                    return new Blow(chance, effect, elemental, value);
                                 default:
-                                    return new Attack(chance, effect, elemental);
+                                    return new Attack(chance, effect, elemental, value);
                             }
                         case SkillEffect.Target.Enemies:
-                            return new AreaAttack(chance, effect, elemental);
+                            return new AreaAttack(chance, effect, elemental, value);
                     }
                     break;
                 case SkillEffect.SkillType.Buff:
                     switch (effect.target)
                     {
                         case SkillEffect.Target.Self:
-                            return new Heal(chance, effect);
+                            return new Heal(chance, effect, value);
                     }
                     break;
                 case SkillEffect.SkillType.Debuff:

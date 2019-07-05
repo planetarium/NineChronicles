@@ -247,7 +247,9 @@ namespace Nekoyume.Action
                 var chance = (float) Math.Floor(monsterParts.minChance +
                                                 (monsterParts.maxChance - monsterParts.minChance) * roll);
                 chance = Math.Max(monsterParts.minChance, chance);
-                skill = SkillFactory.Get(chance, skillEffect.Value, elementalType);
+                var value = (int) Math.Floor(monsterParts.minDamage +
+                                             (monsterParts.maxDamage - monsterParts.minDamage) * roll);
+                skill = SkillFactory.Get(chance, skillEffect.Value, elementalType, value);
             }
             catch (InvalidOperationException)
             {

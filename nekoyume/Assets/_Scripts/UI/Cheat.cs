@@ -36,7 +36,7 @@ namespace Nekoyume
         private SkillBase[] _skills;
         private SkillBase _selectedSkill;
 
-        private class DebugRandom : IRandom
+        public class DebugRandom : IRandom
         {
             private readonly System.Random _random = new System.Random();
             public int Next()
@@ -111,7 +111,7 @@ namespace Nekoyume
             {
                 foreach (Elemental.ElementalType elemental in values)
                 {
-                    var skill = SkillFactory.Get(1.0f, row, elemental);
+                    var skill = SkillFactory.Get(1.0f, row, elemental, 50);
                     skills.Add(skill);
                     Button newButton = Instantiate(buttonBase, skillList.content);
                     newButton.GetComponentInChildren<Text>().text = $"{skill.GetType().Name}_{elemental}";

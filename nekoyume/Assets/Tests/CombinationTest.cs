@@ -29,6 +29,7 @@ namespace Tests
             Assert.NotNull(result);
             Assert.AreEqual(parts.minChance, result.SkillBase.chance);
             Assert.AreEqual(parts.elemental, result.SkillBase.elementalType);
+            Assert.AreEqual(parts.minDamage, result.SkillBase.value);
         }
 
     }

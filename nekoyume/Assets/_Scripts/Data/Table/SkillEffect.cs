@@ -32,17 +32,12 @@ namespace Nekoyume.Data.Table
         public SkillType type = SkillType.Attack;
         public Category category = Category.Normal;
         public Target target = Target.Enemy;
-        public float multiplier = 1.0f;
         public int hitCount = 1;
 
         protected bool Equals(SkillEffect other)
         {
-            return type == other.type &&
-                   category == other.category &&
-                   target == other.target &&
-                   multiplier.Equals(other.multiplier) &&
-                   hitCount == other.hitCount &&
-                   id == other.id;
+            return id == other.id && type == other.type && category == other.category && target == other.target &&
+                   hitCount == other.hitCount;
         }
 
         public override bool Equals(object obj)
@@ -57,12 +52,11 @@ namespace Nekoyume.Data.Table
         {
             unchecked
             {
-                var hashCode = (int) type;
+                var hashCode = id;
+                hashCode = (hashCode * 397) ^ (int) type;
                 hashCode = (hashCode * 397) ^ (int) category;
                 hashCode = (hashCode * 397) ^ (int) target;
-                hashCode = (hashCode * 397) ^ multiplier.GetHashCode();
                 hashCode = (hashCode * 397) ^ hitCount;
-                hashCode = (hashCode * 397) ^ id;
                 return hashCode;
             }
         }

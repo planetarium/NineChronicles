@@ -8,7 +8,7 @@ namespace Nekoyume.Game.Skill
     public class AreaAttack: AttackBase
     {
         public AreaAttack(float chance, SkillEffect effect,
-            Data.Table.Elemental.ElementalType elemental) : base(chance, effect, elemental)
+            Data.Table.Elemental.ElementalType elemental, int value) : base(chance, effect, elemental, value)
         {
         }
 
