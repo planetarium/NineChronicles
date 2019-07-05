@@ -5,16 +5,16 @@ namespace Nekoyume
 {
     public static class VectorExtension
     {
-        public static float2 WorldToScreen(this Vector3 position, Camera camera, Canvas canvas)
+        public static float2 ToCanvasPosition(this Vector3 worldPosition, Camera camera, Canvas canvas)
         {
-            return WorldToScreen((float3) position, camera, canvas);
+            return ToCanvasPosition((float3) worldPosition, camera, canvas);
         }
         
-        public static float2 WorldToScreen(this float3 position, Camera camera, Canvas canvas)
+        public static float2 ToCanvasPosition(this float3 worldPosition, Camera camera, Canvas canvas)
         {
             var canvasRect = canvas.GetComponent<RectTransform>();
             var canvasRectSizeDelta = canvasRect.sizeDelta;
-            var viewportPoint = camera.WorldToViewportPoint(position);
+            var viewportPoint = camera.WorldToViewportPoint(worldPosition);
             var screenPosition = new float2(
                 (viewportPoint.x - 0.5f) * canvasRectSizeDelta.x,
                 (viewportPoint.y - 0.5f) * canvasRectSizeDelta.y);

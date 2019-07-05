@@ -53,8 +53,8 @@ namespace Nekoyume.UI
 
         private void Show(Vector3 position, Vector3 force)
         {
-            var pos = position.WorldToScreen(ActionCamera.instance.Cam, MainCanvas.instance.Canvas);
-            var tweenPos = (position + force).WorldToScreen(ActionCamera.instance.Cam, MainCanvas.instance.Canvas);
+            var pos = position.ToCanvasPosition(ActionCamera.instance.Cam, MainCanvas.instance.Canvas);
+            var tweenPos = (position + force).ToCanvasPosition(ActionCamera.instance.Cam, MainCanvas.instance.Canvas);
             
             _rectTransform.anchoredPosition = pos;
             _sequence = _rectTransform.DOJumpAnchorPos(tweenPos, 30.0f, 1, 1.0f).SetEase(Ease.OutCirc);

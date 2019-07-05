@@ -166,11 +166,13 @@ namespace Nekoyume.UI.Module
             descriptionArea.text.enabled = true;
         }
         
+        // ToDo. 아이템에 따라 다른 정보를 그려줘야 함.
         private string GetOptionalTitleText(string cls)
         {
             return "OptionalTitleText";
         }
         
+        // ToDo. 아이템에 따라 다른 정보를 그려줘야 함.
         private string GetOptionalDescriptionText(string cls)
         {
             return "OptionalDescriptionText";

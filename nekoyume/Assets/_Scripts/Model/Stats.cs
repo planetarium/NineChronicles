@@ -69,13 +69,13 @@ namespace Nekoyume.Model
         {
             if (Key == "turnSpeed" || Key == "attackRange")
             {
-                return null;
+                return "";
             }
 
             var translatedText = TranslateKeyToString();
             if (string.IsNullOrEmpty(translatedText))
             {
-                return null;
+                return "";
             }
 
             if (Value > 0f)
@@ -94,8 +94,8 @@ namespace Nekoyume.Model
         {
             if (Key == "turnSpeed" || Key == "attackRange")
             {
-                key = null;
-                value = null;
+                key = "";
+                value = "";
 
                 return;
             }
@@ -103,7 +103,7 @@ namespace Nekoyume.Model
             key = TranslateKeyToString();
             if (string.IsNullOrEmpty(key))
             {
-                value = null;
+                value = "";
 
                 return;
             }
@@ -119,7 +119,7 @@ namespace Nekoyume.Model
 
             value = AdditionalValue > 0f
                 ? $"<color=#00FF00>(+{AdditionalValue})</color>"
-                : null;
+                : "";
         }
 
         public string TranslateKeyToString()
@@ -139,7 +139,7 @@ namespace Nekoyume.Model
                 case "attackRange":
                     return "공격";
                 default:
-                    return null;
+                    return "";
             }
         }
 
