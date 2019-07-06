@@ -11,6 +11,7 @@ namespace Nekoyume.Data
     {
         public Table<Level> Level { get; private set; }
         public Table<Stage> Stage { get; private set; }
+        public Table<World> World { get; private set; }
         public Table<Character> Character { get; private set; }
         public Table<Item> Item { get; private set; }
         public Table<Recipe> Recipe { get; private set; }
@@ -31,6 +32,9 @@ namespace Nekoyume.Data
 
             Stage = new Table<Stage>();
             Load(Stage, "DataTable/stage");
+
+            World = new Table<World>();
+            Load(World, "DataTable/world");
 
             Character = new Table<Character>();
             Load(Character, "DataTable/character");

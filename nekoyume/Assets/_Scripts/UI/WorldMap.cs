@@ -1,8 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using Nekoyume.BlockChain;
-
+using Nekoyume.Data;
+using System.Linq;
 
 namespace Nekoyume.UI
 {
@@ -11,6 +10,8 @@ namespace Nekoyume.UI
         public GameObject world;
         public GameObject chapter;
         public Transform stages;
+        public GameObject btnPrevChapter;
+        public GameObject btnNextChapter;
 
         private int _selectedStage = -1;
         public int SelectedStage { 
@@ -27,6 +28,7 @@ namespace Nekoyume.UI
                 _selectedStage = value;
             }
         }
+        private int _currentChapter;
 
         public override void Show()
         {
@@ -43,29 +45,13 @@ namespace Nekoyume.UI
 
         public void ShowChapter()
         {
-            world.SetActive(false);
-            chapter.SetActive(true);
-
-            int maxStage = States.Instance.currentAvatarState.Value.worldStage;
-            for (int i = 0; i < stages.childCount; ++i)
+            var worldTable = Tables.instance.World;
+            foreach (var worldData in worldTable)
             {
-                var child = stages.GetChild(i);
-                var stage = child.GetComponent<WorldMapStage>();
-                if (stage)
+                if (worldData.Value.stageEnd > SelectedStage)
                 {
-                    stage.Parent = this;
-                    stage.Value = i + 1;
-                    stage.label.text = stage.Value.ToString();
-                    stage.icon.enabled = false;
-                    stage.button.enabled = maxStage >= stage.Value;
-                    if (SelectedStage == stage.Value)
-                        stage.SetImage(stage.selectedImage);
-                    else if (maxStage > stage.Value)
-                        stage.SetImage(stage.clearedImage);
-                    else if (!stage.button.enabled)
-                        stage.SetImage(stage.disabledImage);
-                    else
-                        stage.SetImage(stage.normalImage);
+                    LoadChapter(worldData.Value.id);
+                    break;
                 }
             }
         }
@@ -77,6 +63,13 @@ namespace Nekoyume.UI
             base.Close();
         }
 
+        public void CloseAll()
+        {
+            Find<Gold>().Show();
+            base.Close();
+            Find<QuestPreparation>().BackClick();
+        }
+
         public void OnCloseWorld()
         {
             Close();
@@ -85,6 +78,87 @@ namespace Nekoyume.UI
         public void OnCloseChapter()
         {
             Close();
+        }
+
+        public void OnPrevChapter()
+        {
+            if (!Tables.instance.World.ContainsKey(_currentChapter - 1))
+                return;
+
+            LoadChapter(_currentChapter - 1);
+        }
+
+        public void OnNextChapter()
+        {
+            if (!Tables.instance.World.ContainsKey(_currentChapter + 1))
+                return;
+
+            LoadChapter(_currentChapter + 1);
+        }
+
+        public void LoadChapter(int chapterId)
+        {
+            if (!Tables.instance.World.TryGetValue(chapterId, out var worldData))
+                return;
+
+            world.SetActive(false);
+            chapter.SetActive(true);
+
+            if (stages.childCount > 0)
+                Destroy(stages.GetChild(0).gameObject);
+
+            _currentChapter = worldData.id;
+
+            btnPrevChapter.SetActive(_currentChapter > 1);
+            btnNextChapter.SetActive(_currentChapter < Tables.instance.World.Count);
+
+            var res = Resources.Load<GameObject>($"UI/Prefabs/WorldMap/Chapter_{worldData.chapter}");
+            if (!res)
+                return;
+
+            var stageData = Tables.instance.Stage.Values.ToList().GetEnumerator();
+            stageData.MoveNext();
+
+            var list = Instantiate(res, stages).transform;
+            int maxStage = States.Instance.currentAvatarState.Value.worldStage;
+            for (int i = 0; i < list.childCount; ++i)
+            {
+                var child = list.GetChild(i);
+                var stage = child.GetComponent<WorldMapStage>();
+                if (!stage)
+                    continue;
+
+                stage.Parent = this;
+                stage.Value = worldData.stageBegin + i;
+                stage.label.text = stage.Value.ToString();
+                stage.icon.enabled = false;
+                stage.button.enabled = maxStage >= stage.Value;
+
+                while (stageData.Current != null
+                       && !stageData.Current.isBoss)
+                {
+                    if (!stageData.MoveNext())
+                        break;
+                }
+                if (stageData.Current != null
+                    && stageData.Current.stage == stage.Value)
+                {
+                    stage.icon.enabled = true;
+                    stageData.MoveNext();
+                }
+
+                if (SelectedStage == stage.Value)
+                    stage.SetImage(stage.selectedImage);
+                else if (maxStage > stage.Value)
+                    stage.SetImage(stage.clearedImage);
+                else if (!stage.button.enabled)
+                    stage.SetImage(stage.disabledImage);
+                else
+                    stage.SetImage(stage.normalImage);
+
+                stage.tweenMove.StartDelay = i * 0.08f;
+                stage.tweenAlpha.StartDelay = i * 0.08f;
+            }
         }
     }
 }

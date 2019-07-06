@@ -8,8 +8,6 @@ namespace Nekoyume.UI
 {
     public class WorldMapStage : MonoBehaviour
     {
-        private readonly Color DisabledColor = new Color(255.0f, 255.0f, 255.0f, 200.0f);
-
         public Button button;
         public Image icon;
         public Text label;
@@ -18,6 +16,9 @@ namespace Nekoyume.UI
         public Image selectedImage;
         public Image clearedImage;
         public Image disabledImage;
+
+        public Tween.DOTweenRectTransformMoveBy tweenMove;
+        public Tween.DOTweenGroupAlpha tweenAlpha;
 
         public WorldMap Parent { get; set; }
         public int Value { get; set; }
@@ -35,7 +36,7 @@ namespace Nekoyume.UI
         public void OnClick()
         {
             Parent.SelectedStage = Value;
-            Parent.Close();
+            Parent.OnCloseChapter();
         }
     }
 }
