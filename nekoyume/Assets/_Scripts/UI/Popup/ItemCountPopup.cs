@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
-    public class ItemCountPopup<T> : Widget where T : Model.ItemCountPopup<T>
+    public class ItemCountPopup<T> : PopupWidget where T : Model.ItemCountPopup<T>
     {
         private const string CountStringFormat = "총 {0}개";
 

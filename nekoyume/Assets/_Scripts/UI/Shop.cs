@@ -31,8 +31,6 @@ namespace Nekoyume.UI
         public GameObject particleVFX;
         public GameObject resultItemVFX;
 
-        private Model.Shop _data;
-
         private readonly List<IDisposable> _disposablesForAwake = new List<IDisposable>();
         private readonly List<IDisposable> _disposablesForSetData = new List<IDisposable>();
 
@@ -40,6 +38,8 @@ namespace Nekoyume.UI
         private Player _player;
         private ItemCountAndPricePopup _itemCountAndPricePopup;
         private GrayLoadingScreen _loadingScreen;
+        
+        public Model.Shop Model { get; private set; }
 
         #region Mono
 
@@ -52,19 +52,19 @@ namespace Nekoyume.UI
             switchBuyButton.onClick.AsObservable().Subscribe(_ =>
                 {
                     AudioController.PlayClick();
-                    _data?.onClickSwitchBuy.OnNext(_data);
+                    Model?.onClickSwitchBuy.OnNext(Model);
                 })
                 .AddTo(_disposablesForAwake);
             switchSellButton.onClick.AsObservable().Subscribe(_ =>
                 {
                     AudioController.PlayClick();
-                    _data?.onClickSwitchSell.OnNext(_data);
+                    Model?.onClickSwitchSell.OnNext(Model);
                 })
                 .AddTo(_disposablesForAwake);
             closeButton.onClick.AsObservable().Subscribe(_ =>
                 {
                     AudioController.PlayClick();
-                    _data?.onClickClose.OnNext(_data);
+                    Model?.onClickClose.OnNext(Model);
                 })
                 .AddTo(_disposablesForAwake);
         }
@@ -128,19 +128,21 @@ namespace Nekoyume.UI
         private void SetData(Model.Shop data)
         {
             _disposablesForSetData.DisposeAllAndClear();
-            _data = data;
-            _data.state.Value = Model.Shop.State.Buy;
-            _data.state.Subscribe(OnState).AddTo(_disposablesForSetData);
-            _data.itemCountAndPricePopup.Value.item.Subscribe(OnPopup).AddTo(_disposablesForSetData);
-            _data.itemCountAndPricePopup.Value.onClickSubmit.Subscribe(OnClickSubmitItemCountAndPricePopup)
+            Model = data;
+            Model.inventory.Value.selectedItem.Subscribe(inventoryAndItemInfo.inventory.ShowTooltip)
                 .AddTo(_disposablesForSetData);
-            _data.itemCountAndPricePopup.Value.onClickCancel.Subscribe(OnClickCloseItemCountAndPricePopup)
+            Model.state.Value = UI.Model.Shop.State.Buy;
+            Model.state.Subscribe(OnState).AddTo(_disposablesForSetData);
+            Model.itemCountAndPricePopup.Value.item.Subscribe(OnPopup).AddTo(_disposablesForSetData);
+            Model.itemCountAndPricePopup.Value.onClickSubmit.Subscribe(OnClickSubmitItemCountAndPricePopup)
                 .AddTo(_disposablesForSetData);
-            _data.onClickClose.Subscribe(_ => Close()).AddTo(_disposablesForSetData);
+            Model.itemCountAndPricePopup.Value.onClickCancel.Subscribe(OnClickCloseItemCountAndPricePopup)
+                .AddTo(_disposablesForSetData);
+            Model.onClickClose.Subscribe(_ => Close()).AddTo(_disposablesForSetData);
 
-            inventoryAndItemInfo.SetData(_data.inventory.Value, _data.itemInfo.Value);
-            shopItems.SetState(_data.state.Value);
-            shopItems.SetData(_data.shopItems.Value);
+            inventoryAndItemInfo.SetData(Model.inventory.Value, Model.itemInfo.Value);
+            shopItems.SetState(Model.state.Value);
+            shopItems.SetData(Model.shopItems.Value);
         }
 
         private void Clear()
@@ -148,18 +150,18 @@ namespace Nekoyume.UI
             shopItems.Clear();
             inventoryAndItemInfo.Clear();
             _disposablesForSetData.DisposeAllAndClear();
-            _data = null;
+            Model = null;
         }
 
         private void OnState(Model.Shop.State state)
         {
             switch (state)
             {
-                case Model.Shop.State.Buy:
+                case UI.Model.Shop.State.Buy:
                     switchBuyButton.image.sprite = Resources.Load<Sprite>("UI/Textures/button_blue_01");
                     switchSellButton.image.sprite = Resources.Load<Sprite>("UI/Textures/button_black_01");
                     break;
-                case Model.Shop.State.Sell:
+                case UI.Model.Shop.State.Sell:
                     switchBuyButton.image.sprite = Resources.Load<Sprite>("UI/Textures/button_black_01");
                     switchSellButton.image.sprite = Resources.Load<Sprite>("UI/Textures/button_blue_01");
                     break;
@@ -176,7 +178,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            _itemCountAndPricePopup.Pop(_data.itemCountAndPricePopup.Value);
+            _itemCountAndPricePopup.Pop(Model.itemCountAndPricePopup.Value);
         }
 
         private void OnClickSubmitItemCountAndPricePopup(Model.ItemCountAndPricePopup data)
@@ -184,9 +186,9 @@ namespace Nekoyume.UI
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
             _loadingScreen.Show();
 
-            if (_data.itemInfo.Value.item.Value is ShopItem shopItem)
+            if (Model.itemInfo.Value.item.Value is ShopItem shopItem)
             {
-                if (_data.state.Value == Model.Shop.State.Buy)
+                if (Model.state.Value == UI.Model.Shop.State.Buy)
                 {
                     var inventory = States.Instance.currentAvatarState.Value.inventory;
                     // 구매하겠습니다.
@@ -219,7 +221,7 @@ namespace Nekoyume.UI
 
         private void ResponseSell(ActionBase.ActionEvaluation<Sell> eval)
         {
-            _data.itemCountAndPricePopup.Value.item.Value = null;
+            Model.itemCountAndPricePopup.Value.item.Value = null;
 
             var sellerAvatarAddress = eval.InputContext.Signer;
             var productId = eval.Action.productId;
@@ -230,11 +232,11 @@ namespace Nekoyume.UI
 
             var shopItem = outPair.Value;
 
-            _data.inventory.Value.RemoveNonFungibleItem(shopItem.itemUsable);
+            Model.inventory.Value.RemoveNonFungibleItem(shopItem.itemUsable);
 
-            _data.shopItems.Value.AddShopItem(sellerAvatarAddress, shopItem);
-            var registeredProduct = _data.shopItems.Value.AddRegisteredProduct(sellerAvatarAddress, shopItem);
-            _data.shopItems.Value.OnClickShopItem(registeredProduct);
+            Model.shopItems.Value.AddShopItem(sellerAvatarAddress, shopItem);
+            var registeredProduct = Model.shopItems.Value.AddRegisteredProduct(sellerAvatarAddress, shopItem);
+            Model.shopItems.Value.OnClickShopItem(registeredProduct);
 
             _loadingScreen.Close();
         }
@@ -242,16 +244,16 @@ namespace Nekoyume.UI
         private void ResponseSellCancellation(ActionBase.ActionEvaluation<SellCancellation> eval, Guid productId,
             ItemUsable shopItem)
         {
-            _data.itemCountAndPricePopup.Value.item.Value = null;
+            Model.itemCountAndPricePopup.Value.item.Value = null;
 
             var sellerAvatarAddress = eval.InputContext.Signer;
 
-            _data.shopItems.Value.RemoveShopItem(sellerAvatarAddress, productId);
-            _data.shopItems.Value.RemoveProduct(productId);
-            _data.shopItems.Value.RemoveRegisteredProduct(productId);
+            Model.shopItems.Value.RemoveShopItem(sellerAvatarAddress, productId);
+            Model.shopItems.Value.RemoveProduct(productId);
+            Model.shopItems.Value.RemoveRegisteredProduct(productId);
 
-            var addedItem = _data.inventory.Value.AddNonFungibleItem(shopItem);
-            _data.inventory.Value.SubscribeOnClick(addedItem);
+            var addedItem = Model.inventory.Value.AddNonFungibleItem(shopItem);
+            Model.inventory.Value.SubscribeOnClick(addedItem);
 
             _loadingScreen.Close();
         }
@@ -259,13 +261,13 @@ namespace Nekoyume.UI
         private void ResponseBuy(ActionBase.ActionEvaluation<Buy> eval, Game.Item.Inventory inventory, Guid productId,
             ItemUsable shopItem)
         {
-            _data.itemCountAndPricePopup.Value.item.Value = null;
+            Model.itemCountAndPricePopup.Value.item.Value = null;
 
             var sellerAvatarAddress = eval.InputContext.Signer;
 
-            _data.shopItems.Value.RemoveShopItem(sellerAvatarAddress, productId);
-            _data.shopItems.Value.RemoveProduct(productId);
-            _data.shopItems.Value.RemoveRegisteredProduct(productId);
+            Model.shopItems.Value.RemoveShopItem(sellerAvatarAddress, productId);
+            Model.shopItems.Value.RemoveProduct(productId);
+            Model.shopItems.Value.RemoveRegisteredProduct(productId);
 
             if (!States.Instance.currentAvatarState.Value.inventory.TryGetAddedItemFrom(inventory,
                 out var outAddedItem))
@@ -274,8 +276,8 @@ namespace Nekoyume.UI
             }
 
             StartCoroutine(CoShowBuyResultVFX(productId));
-            var addedItem = _data.inventory.Value.AddNonFungibleItem(shopItem);
-            _data.inventory.Value.SubscribeOnClick(addedItem);
+            var addedItem = Model.inventory.Value.AddNonFungibleItem(shopItem);
+            Model.inventory.Value.SubscribeOnClick(addedItem);
             _loadingScreen.Close();
         }
 
@@ -293,13 +295,13 @@ namespace Nekoyume.UI
             resultItemVFX.SetActive(false);
 
             // ToDo. 지금은 구매의 결과가 마지막에 더해지기 때문에 마지막 아이템을 갖고 오지만, 복수의 아이템을 한 번에 얻을 때에 대한 처리나 정렬 기능이 추가 되면 itemGuid로 갖고 와야함.
-            var inventoryItem = _data.inventory.Value.items.Last();
+            var inventoryItem = Model.inventory.Value.items.Last();
             if (ReferenceEquals(inventoryItem, null))
             {
                 yield break;
             }
 
-            var index = _data.inventory.Value.items.Count - 1;
+            var index = Model.inventory.Value.items.Count - 1;
             var inventoryItemView = inventoryAndItemInfo.inventory.scrollerController.GetByIndex(index);
             if (ReferenceEquals(inventoryItemView, null))
             {
@@ -316,7 +318,7 @@ namespace Nekoyume.UI
 
         private void OnClickCloseItemCountAndPricePopup(Model.ItemCountAndPricePopup data)
         {
-            _data.itemCountAndPricePopup.Value.item.Value = null;
+            Model.itemCountAndPricePopup.Value.item.Value = null;
             _itemCountAndPricePopup.Close();
         }
     }

@@ -92,7 +92,7 @@ namespace Nekoyume.UI.Model
         {
             itemInfo.Value.item.Value = data;
 
-            if (!ReferenceEquals(data, null) 
+            if (!ReferenceEquals(data, null)
                 && data.dimmed.Value)
             {
                 return;

@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using Nekoyume.BlockChain;
 using Nekoyume.Data;
 using System.Linq;

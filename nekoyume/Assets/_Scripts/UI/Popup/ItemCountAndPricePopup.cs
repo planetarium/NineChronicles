@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Nekoyume.Game.Controller;
 using UniRx;
-using UnityEngine;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI

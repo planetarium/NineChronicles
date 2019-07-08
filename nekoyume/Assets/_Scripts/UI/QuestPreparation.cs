@@ -28,26 +28,24 @@ namespace Nekoyume.UI
         private Player _player;
         private EquipSlot _weaponSlot;
 
-        private Model.QuestPreparation _data;
         private readonly List<IDisposable> _disposablesForSetData = new List<IDisposable>();
+
+        public Model.QuestPreparation Model { get; private set; }
 
         #region override
 
         public override void Show()
         {
-            _stage = GameObject.Find("Stage").GetComponent<Stage>();
-            if (ReferenceEquals(_stage, null))
-            {
-                throw new NotFoundComponentException<Stage>();
-            }
-
+            _stage = Game.Game.instance.stage;
             _stage.LoadBackground("dungeon");
-
+            
             _player = _stage.GetPlayer(_stage.questPreparationPosition);
             if (ReferenceEquals(_player, null))
             {
                 throw new NotFoundComponentException<Player>();
             }
+
+            _weaponSlot = equipmentSlots.First(es => es.type == ItemBase.ItemType.Weapon);
 
             SetData(new Model.QuestPreparation(States.Instance.currentAvatarState.Value.inventory));
 
@@ -73,7 +71,6 @@ namespace Nekoyume.UI
             worldMap.SelectedStage = States.Instance.currentAvatarState.Value.worldStage;
             OnChangeStage();
 
-            _weaponSlot = equipmentSlots.First(es => es.type == ItemBase.ItemType.Weapon);
             base.Show();
         }
 
@@ -109,9 +106,9 @@ namespace Nekoyume.UI
             if (slot.item == null)
             {
                 equipSlotGlow.SetActive(false);
-                foreach (var item in _data.inventory.Value.items)
+                foreach (var item in Model.inventory.Value.items)
                 {
-                    item.glowed.Value = _data.inventory.Value.glowedFunc.Value(item, slot.type);
+                    item.glowed.Value = Model.inventory.Value.glowedFunc.Value(item, slot.type);
                 }
 
                 return;
@@ -157,19 +154,21 @@ namespace Nekoyume.UI
         private void SetData(Model.QuestPreparation value)
         {
             _disposablesForSetData.DisposeAllAndClear();
-            _data = value;
-            _data.inventory.Value.onDoubleClickItem.Subscribe(OnClickEquip)
+            Model = value;
+            Model.inventory.Value.selectedItem.Subscribe(inventoryAndItemInfo.inventory.ShowTooltip)
                 .AddTo(_disposablesForSetData);
-            _data.itemInfo.Value.item.Subscribe(OnItemInfoItem).AddTo(_disposablesForSetData);
-            _data.itemInfo.Value.onClick.Subscribe(OnClickEquip).AddTo(_disposablesForSetData);
+            Model.inventory.Value.onDoubleClickItem.Subscribe(OnClickEquip)
+                .AddTo(_disposablesForSetData);
+            Model.itemInfo.Value.item.Subscribe(OnItemInfoItem).AddTo(_disposablesForSetData);
+            Model.itemInfo.Value.onClick.Subscribe(OnClickEquip).AddTo(_disposablesForSetData);
 
-            inventoryAndItemInfo.SetData(_data.inventory.Value, _data.itemInfo.Value);
+            inventoryAndItemInfo.SetData(Model.inventory.Value, Model.itemInfo.Value);
         }
 
         private void Clear()
         {
             inventoryAndItemInfo.Clear();
-            _data = null;
+            Model = null;
             _disposablesForSetData.DisposeAllAndClear();
         }
 
@@ -255,14 +254,14 @@ namespace Nekoyume.UI
 
         private EquipSlot FindSelectedItemSlot()
         {
-            var type = _data.itemInfo.Value.item.Value.item.Value.Data.cls.ToEnumItemType();
+            var type = Model.itemInfo.Value.item.Value.item.Value.Data.cls.ToEnumItemType();
             if (type == ItemBase.ItemType.Food)
             {
                 var count = consumableSlots
                     .Select(s => s.item)
                     .OfType<Food>()
-                    .Count(f => f.Data.id == _data.itemInfo.Value.item.Value.item.Value.Data.id);
-                if (count >= _data.itemInfo.Value.item.Value.count.Value)
+                    .Count(f => f.Data.id == Model.itemInfo.Value.item.Value.item.Value.Data.id);
+                if (count >= Model.itemInfo.Value.item.Value.count.Value)
                 {
                     return null;
                 }

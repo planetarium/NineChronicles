@@ -1,3 +1,5 @@
+using System;
+using Nekoyume.EnumType;
 using UnityEngine;
 
 namespace Nekoyume.UI
@@ -8,9 +10,27 @@ namespace Nekoyume.UI
         public GameObject hud;
         public GameObject widget;
         public GameObject popup;
+        public GameObject tooltip;
         
         public Canvas Canvas { get; private set; }
         public RectTransform RectTransform { get; private set; }
+        
+        public Transform GetTransform(WidgetType widgetType)
+        {
+            switch (widgetType)
+            {
+                case WidgetType.Hud:
+                    return MainCanvas.instance.hud.transform;
+                case WidgetType.Widget:
+                    return MainCanvas.instance.widget.transform;
+                case WidgetType.Popup:
+                    return MainCanvas.instance.popup.transform;
+                case WidgetType.Tooltip:
+                    return MainCanvas.instance.tooltip.transform;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(widgetType), widgetType, null);
+            }
+        }
         
         protected override void Awake()
         {
@@ -45,6 +65,11 @@ namespace Nekoyume.UI
             Widget.Create<ItemCountAndPricePopup>();
             Widget.Create<CombinationResultPopup>();
             Widget.Create<StageTitle>();
+            Widget.Create<Alert>();
+            Widget.Create<Confirm>();
+            
+            // 툴팁류.
+            Widget.Create<ItemInformationTooltip>();
 
             // 로딩창류.
             Widget.Create<GrayLoadingScreen>();

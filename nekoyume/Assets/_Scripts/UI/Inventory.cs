@@ -1,6 +1,8 @@
 using Nekoyume.BlockChain;
 using Nekoyume.Game.Controller;
+using Nekoyume.UI.Model;
 using UniRx;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
@@ -15,7 +17,7 @@ namespace Nekoyume.UI
         public Module.Inventory inventory;
         public Button closeButton;
 
-        private Model.Inventory _data;
+        public Model.Inventory Model { get; private set; }
 
         protected override void Awake()
         {
@@ -32,16 +34,18 @@ namespace Nekoyume.UI
 
         public override void Show()
         {
-            _data = new Model.Inventory(States.Instance.currentAvatarState.Value.inventory);
-            inventory.SetData(_data);
+            Model = new Model.Inventory(States.Instance.currentAvatarState.Value.inventory);
+            Model.selectedItem.Subscribe(inventory.ShowTooltip);
+            
+            inventory.SetData(Model);
 
             base.Show();
         }
 
         public override void Close()
         {
-            _data?.Dispose();
-            _data = null;
+            Model?.Dispose();
+            Model = null;
             
             base.Close();
         }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Nekoyume.EnumType;
 using UnityEngine;
 
 
@@ -14,8 +15,9 @@ namespace Nekoyume.UI
         private Animator _animator;
         private Material _glass;
         private bool _animCloseEnd;
-        
+
         public RectTransform RectTransform { get; private set; }
+        public virtual WidgetType WidgetType => WidgetType.Widget;
 
         protected virtual void Awake()
         {
@@ -32,32 +34,34 @@ namespace Nekoyume.UI
             {
                 var go = Instantiate(res, MainCanvas.instance.transform);
                 var widget = go.GetComponent<T>();
-                if (widget is PopupWidget)
+                switch (widget.WidgetType)
                 {
-                    go.transform.SetParent(MainCanvas.instance.popup.transform);
-                    go.SetActive(activate);
+                    case WidgetType.Popup:
+                    case WidgetType.Tooltip:
+                    case WidgetType.Widget:
+                        if (Dict.ContainsKey(t))
+                        {
+                            Debug.LogWarning($"Duplicated create widget: {t}");
+                            Destroy(go);
+                            Dict[t].SetActive(activate);
+
+                            return Dict[t].GetComponent<T>();
+                        }
+
+                        go.transform.SetParent(MainCanvas.instance.widget.transform);
+                        go.SetActive(activate);
+                        Dict.Add(t, go);
+                        break;
                 }
-                else if (widget is HudWidget)
-                {
-                    go.transform.SetParent(MainCanvas.instance.hud.transform);
-                    go.SetActive(activate);
-                }
-                else
-                {
-                    if (Dict.ContainsKey(t))
-                    {
-                        Debug.LogWarning($"Duplicated create widget: {t}");
-                        Destroy(go);
-                        Dict[t].SetActive(activate);
-                        return Dict[t].GetComponent<T>();
-                    }
-                    go.transform.SetParent(MainCanvas.instance.widget.transform);
-                    go.SetActive(activate);
-                    Dict.Add(t, go);
-                }
+
+                go.transform.SetParent(MainCanvas.instance.GetTransform(widget.WidgetType));
+                go.SetActive(activate);
+
                 return widget;
             }
+
             Debug.LogWarning(($"widget not exist: {t}"));
+
             return null;
         }
 
@@ -68,14 +72,15 @@ namespace Nekoyume.UI
             return Dict.TryGetValue(t, out go) ? go.GetComponent<T>() : null;
         }
 
+
         private void FindGlassMaterial(GameObject go)
         {
             var image = go.GetComponent<UnityEngine.UI.Image>();
-            if (!image || !image.material || image.material.name != "Glass")
+            if (!image || !image.material || image.material.shader.name != "UI/Unlit/FrostedGlass")
             {
                 return;
             }
-            
+
             _glass = image.material;
         }
 
@@ -86,14 +91,17 @@ namespace Nekoyume.UI
             {
                 _animator = GetComponent<Animator>();
             }
+
             if (_animator)
             {
                 _animator.Play("Show");
             }
+
             if (!_glass)
             {
                 FindGlassMaterial(gameObject);
             }
+
             if (_glass)
             {
                 StartCoroutine(Blur());
@@ -116,22 +124,27 @@ namespace Nekoyume.UI
                 yield break;
             }
 
-            _glass.SetFloat(Radius, 0f);
-            var time = 0.0f;
+            var from = 0f;
+            var to = _glass.GetFloat(Radius);
+
+            _glass.SetFloat(Radius, from);
+            var time = 0f;
             while (true)
             {
-                var radius = Mathf.Lerp(0f, 6f, time);
-                time += Time.deltaTime * 2f;
-                yield return null;
-                _glass.SetFloat(Radius, radius);
-                if (time > 1.0f)
+                var current = Mathf.Lerp(from, to, time);
+                _glass.SetFloat(Radius, current);
+                
+                time += Time.deltaTime * 3f;
+                if (time > 1f ||
+                    !gameObject.activeInHierarchy)
+                {
                     break;
+                }
 
-                if (!gameObject.activeInHierarchy)
-                    break;
+                yield return null;
             }
-            
-            _glass.SetFloat(Radius, 6f);
+
+            _glass.SetFloat(Radius, to);
         }
 
         public virtual void Close()
@@ -172,7 +185,6 @@ namespace Nekoyume.UI
             {
                 Show();
             }
-
         }
 
         public void AnimCloseEnd()

@@ -16,6 +16,7 @@ namespace Nekoyume.Model
         public string Key { get; }
         public float Value { get; set; }
         public float AdditionalValue { get; set; }
+        // FixMe. 추후에 float형을 사용하도록 수정해야 함.
         public int TotalValue => (int) (Value + AdditionalValue);
 
         public StatMap(string key)
@@ -38,7 +39,7 @@ namespace Nekoyume.Model
             Value = value;
             AdditionalValue = additionalValue;
         }
-        
+
         private bool Equals(StatMap other)
         {
             return string.Equals(Key, other.Key) &&
@@ -87,6 +88,38 @@ namespace Nekoyume.Model
 
             return AdditionalValue > 0f
                 ? $"{translatedText} <color=#00FF00>(+{AdditionalValue})</color>"
+                : null;
+        }
+
+        public void GetInformation(out string key, out string value)
+        {
+            if (Key == "turnSpeed" || Key == "attackRange")
+            {
+                key = "";
+                value = "";
+
+                return;
+            }
+
+            key = TranslateKeyToString();
+            if (string.IsNullOrEmpty(key))
+            {
+                value = "";
+
+                return;
+            }
+
+            if (Value > 0f)
+            {
+                value = AdditionalValue > 0f
+                    ? $"{Value} <color=#00FF00>(+{AdditionalValue})</color>"
+                    : $"{Value}";
+
+                return;
+            }
+
+            value = AdditionalValue > 0f
+                ? $"<color=#00FF00>(+{AdditionalValue})</color>"
                 : "";
         }
 
@@ -107,7 +140,7 @@ namespace Nekoyume.Model
                 case "attackRange":
                     return "공격";
                 default:
-                    return null;
+                    return "";
             }
         }
 
@@ -147,14 +180,14 @@ namespace Nekoyume.Model
         {
             StatMaps = new Dictionary<string, StatMap>();
         }
-        
+
         private bool Equals(Stats other)
         {
             if (StatMaps.Count != other.StatMaps.Count)
             {
                 return false;
             }
-            
+
             foreach (var pair in StatMaps)
             {
                 if (!other.StatMaps.ContainsKey(pair.Key) ||
@@ -163,7 +196,7 @@ namespace Nekoyume.Model
                     return false;
                 }
             }
-            
+
             return true;
         }
 
@@ -221,10 +254,30 @@ namespace Nekoyume.Model
                     continue;
                 }
 
-                sb.AppendLine(pair.Value.GetInformation());
+                sb.AppendLine(information);
             }
 
-            return sb.ToString().TrimEnd();
+            return sb.ToString().Trim();
+        }
+
+        public void GetInformation(out string keys, out string values)
+        {
+            var sbKeys = new StringBuilder();
+            var sbValues = new StringBuilder();
+            foreach (var pair in StatMaps)
+            {
+                pair.Value.GetInformation(out var key, out var value);
+                if (string.IsNullOrEmpty(key))
+                {
+                    continue;
+                }
+
+                sbKeys.AppendLine(key);
+                sbValues.AppendLine(value);
+            }
+
+            keys = sbKeys.ToString().Trim();
+            values = sbValues.ToString().Trim();
         }
 
         public void UpdatePlayer(Player player)

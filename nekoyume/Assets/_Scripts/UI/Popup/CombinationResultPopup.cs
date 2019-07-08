@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
-using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using UniRx;
 using UnityEngine;
@@ -11,7 +10,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
-    public class CombinationResultPopup : Widget
+    public class CombinationResultPopup : PopupWidget
     {
         public Text titleText;
         public GameObject resultItem;
@@ -113,7 +112,7 @@ namespace Nekoyume.UI
                 titleText.text = "제작 성공!";
                 resultItemView.SetData(_data);
                 resultItemNameText.text = item.Data.name;
-                SetElemental(item.Data.elemental, 5);
+                SetElemental(item.Data.elemental, item.Data.grade);
                 resultItemDescriptionText.text = item.ToItemInfo();
                 resultItem.SetActive(true);
                 materialText.text = "제작 재료";
@@ -150,23 +149,7 @@ namespace Nekoyume.UI
 
         private void SetElemental(Elemental.ElementalType type, int count)
         {
-            Sprite sprite = null;
-            switch (type)
-            {
-                case Elemental.ElementalType.Fire:
-                    sprite = Resources.Load<Sprite>("");
-                    break;
-                case Elemental.ElementalType.Land:
-                    sprite = Resources.Load<Sprite>("");
-                    break;
-                case Elemental.ElementalType.Wind:
-                    sprite = Resources.Load<Sprite>("");
-                    break;
-                case Elemental.ElementalType.Water:
-                    sprite = Resources.Load<Sprite>("");
-                    break;
-            }
-            
+            var sprite = Elemental.GetSprite(type);
             if (ReferenceEquals(sprite, null))
             {
                 foreach (var image in resultItemElementalImages)
