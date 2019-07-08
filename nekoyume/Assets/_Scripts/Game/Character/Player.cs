@@ -115,8 +115,12 @@ namespace Nekoyume.Game.Character
             }
         }
 
+        public void UpdateSet(Armor armor, Weapon weapon = null)
+        {
+            StartCoroutine(CoUpdateSet(armor, weapon));
+        }
 
-        public IEnumerator CoUpdateSet(Armor armor, Weapon weapon = null)
+        private IEnumerator CoUpdateSet(Armor armor, Weapon weapon = null)
         {
             if (weapon == null)
                 weapon = model.weapon;
