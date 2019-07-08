@@ -10,7 +10,7 @@ namespace Nekoyume.Game.Skill
     public class AttackBase : SkillBase
     {
         protected AttackBase(float chance, SkillEffect effect,
-            Data.Table.Elemental.ElementalType elemental, int value) : base(chance, effect, elemental, value)
+            Data.Table.Elemental.ElementalType elemental, int power) : base(chance, effect, elemental, power)
         {
         }
 
@@ -27,7 +27,7 @@ namespace Nekoyume.Game.Skill
                 {
                     var multiply = multiplier[i];
                     var critical = caster.IsCritical();
-                    var dmg = elemental.CalculateDmg(value, target.defElement);
+                    var dmg = elemental.CalculateDmg(power, target.defElement);
                     // https://gamedev.stackexchange.com/questions/129319/rpg-formula-attack-and-defense
                     dmg = (dmg * dmg) / (dmg + target.def);
                     dmg = Convert.ToInt32(dmg * multiply);
@@ -74,7 +74,7 @@ namespace Nekoyume.Game.Skill
     public class Attack : AttackBase
     {
         public Attack(float chance, SkillEffect effect,
-            Data.Table.Elemental.ElementalType elemental, int value) : base(chance, effect, elemental, value)
+            Data.Table.Elemental.ElementalType elemental, int power) : base(chance, effect, elemental, power)
         {
         }
 

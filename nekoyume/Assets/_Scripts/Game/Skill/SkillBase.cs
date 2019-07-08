@@ -17,23 +17,23 @@ namespace Nekoyume.Game.Skill
         public readonly float chance;
         public readonly SkillEffect effect;
         public readonly Data.Table.Elemental.ElementalType elementalType;
-        public readonly int value;
+        public readonly int power;
 
         public abstract Model.Skill Use(CharacterBase caster);
 
         protected SkillBase(float chance, SkillEffect effect, Data.Table.Elemental.ElementalType elementalType,
-            int value)
+            int power)
         {
             this.chance = chance;
             this.effect = effect;
             this.elementalType = elementalType;
-            this.value = value;
+            this.power = power;
         }
 
         protected bool Equals(SkillBase other)
         {
             return chance.Equals(other.chance) && Equals(effect, other.effect) &&
-                   elementalType == other.elementalType && value == other.value;
+                   elementalType == other.elementalType && power == other.power;
         }
 
         public override bool Equals(object obj)
@@ -51,7 +51,7 @@ namespace Nekoyume.Game.Skill
                 var hashCode = chance.GetHashCode();
                 hashCode = (hashCode * 397) ^ (effect != null ? effect.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (int) elementalType;
-                hashCode = (hashCode * 397) ^ value;
+                hashCode = (hashCode * 397) ^ power;
                 return hashCode;
             }
         }
