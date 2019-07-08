@@ -28,7 +28,6 @@ namespace Tests
             var target = (CharacterBase) caster.Clone();
             caster.InitAI();
             caster.targets.Add(target);
-            target.hp = 100;
             target.def = 0;
         }
 
@@ -44,7 +43,9 @@ namespace Tests
             var caster = _simulator.Player;
             var attack = caster.Skills.First(s => s is Nekoyume.Game.Skill.Attack);
             var result = attack.Use(caster);
+            var target = caster.targets.First();
 
+            Assert.AreEqual(target.hp - caster.atk, target.currentHP);
             Assert.AreEqual(1, result.skillInfos.Count());
             var info = result.skillInfos.First();
             Assert.AreEqual(caster.atk, info.Effect);
@@ -60,7 +61,9 @@ namespace Tests
             var effect = Tables.instance.SkillEffect.Values.First(r => r.category == SkillEffect.Category.Blow);
             var blow = new Nekoyume.Game.Skill.Blow(1, effect, Elemental.ElementalType.Normal, caster.atk);
             var result = blow.Use(caster);
+            var target = caster.targets.First();
 
+            Assert.AreEqual(target.hp - caster.atk, target.currentHP);
             Assert.AreEqual(1, result.skillInfos.Count());
             var info = result.skillInfos.First();
             Assert.AreEqual(caster.atk, info.Effect);
@@ -76,7 +79,9 @@ namespace Tests
             var effect = Tables.instance.SkillEffect.Values.First(r => r.category == SkillEffect.Category.Double);
             var doubleAttack = new Nekoyume.Game.Skill.DoubleAttack(1, effect, Elemental.ElementalType.Normal, caster.atk);
             var result = doubleAttack.Use(caster);
+            var target = caster.targets.First();
 
+            Assert.AreEqual(target.hp - caster.atk, target.currentHP);
             Assert.AreEqual(2, result.skillInfos.Count());
             Assert.AreEqual(caster.atk, result.skillInfos.Sum(i => i.Effect));
             foreach (var info in result.skillInfos)
@@ -94,7 +99,9 @@ namespace Tests
             var effect = Tables.instance.SkillEffect.Values.First(r => r.category == SkillEffect.Category.Area);
             var area = new Nekoyume.Game.Skill.AreaAttack(1, effect, Elemental.ElementalType.Normal, caster.atk);
             var result = area.Use(caster);
+            var target = caster.targets.First();
 
+            Assert.AreEqual(target.hp - caster.atk, target.currentHP);
             Assert.AreEqual(effect.hitCount, result.skillInfos.Count());
             Assert.LessOrEqual(result.skillInfos.Sum(i => i.Effect), caster.atk);
             foreach (var info in result.skillInfos)
