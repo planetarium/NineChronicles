@@ -58,7 +58,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.6}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 0
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -286,6 +286,9 @@ GameObject:
   - component: {fileID: 2272024444835968329}
   - component: {fileID: 2272024444835968332}
   - component: {fileID: 2272024444835968330}
+  - component: {fileID: 7872036309746843368}
+  - component: {fileID: 6123535575802596112}
+  - component: {fileID: 3315795248164019073}
   m_Layer: 5
   m_Name: UI_WorldMapStage
   m_TagString: Untagged
@@ -345,6 +348,66 @@ MonoBehaviour:
   selectedImage: {fileID: 373110796216940071}
   clearedImage: {fileID: 7887285296554300787}
   disabledImage: {fileID: 1686480967307579188}
+  tweenMove: {fileID: 7872036309746843368}
+  tweenAlpha: {fileID: 3315795248164019073}
+--- !u!114 &7872036309746843368
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2272024444835968328}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd0df520a7cfa4e43b71dc9887311fa8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  StartWithPlay: 1
+  StartDelay: 0
+  Duration: 1
+  TweenType_: 0
+  Ease_: 21
+  CompleteMethod: 
+  ComponentIndex: 0
+  Target: {fileID: 0}
+  CompleteDelay: 0
+  StartFromDelta: 0
+  DeltaValue: {x: 0, y: -30, z: 0}
+--- !u!225 &6123535575802596112
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2272024444835968328}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
+--- !u!114 &3315795248164019073
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2272024444835968328}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e20b377b90b84274db63bc9c14107473, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  StartWithPlay: 1
+  StartDelay: 0
+  Duration: 1
+  TweenType_: 0
+  Ease_: 21
+  CompleteMethod: 
+  ComponentIndex: 0
+  Target: {fileID: 0}
+  CompleteDelay: 0
+  BeginValue: 0
+  EndValue: 1
 --- !u!1 &2272024445161519696
 GameObject:
   m_ObjectHideFlags: 0
