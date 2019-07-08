@@ -8,7 +8,8 @@ namespace Nekoyume.Game.Skill
     [Serializable]
     public class Heal : SkillBase
     {
-        public Heal(float chance, SkillEffect effect) : base(chance, effect, Data.Table.Elemental.ElementalType.Normal)
+        public Heal(float chance, SkillEffect effect, int power)
+            : base(chance, effect, Data.Table.Elemental.ElementalType.Normal, power)
         {
         }
 
@@ -17,10 +18,8 @@ namespace Nekoyume.Game.Skill
             var infos = new List<Model.Skill.SkillInfo>();
             foreach (var target in GetTarget(caster))
             {
-                var maxHp = target.hp;
-                var healHp = Convert.ToInt32(maxHp * effect.multiplier);
-                target.Heal(healHp);
-                infos.Add(new Model.Skill.SkillInfo(target, healHp, caster.IsCritical(), effect.category));
+                target.Heal(power);
+                infos.Add(new Model.Skill.SkillInfo(target, power, caster.IsCritical(), effect.category));
             }
 
             return new Model.Heal

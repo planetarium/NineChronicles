@@ -22,13 +22,14 @@ namespace Tests
         public void GetEquipmentWithSkill()
         {
             var equipment = Tables.instance.ItemEquipment.First().Value;
-            var parts = Tables.instance.Item.Select(i => i.Value).First(r => r.skillId != 0);
+            var parts = Tables.instance.Item.Select(i => i.Value)
+                .First(r => r.skillId != 0 && r.minChance > 0.01f);
 
             var result = Combination.GetEquipment(equipment, parts, 0);
             Assert.NotNull(result);
-            Assert.GreaterOrEqual(result.SkillBase.chance, parts.minChance);
-            Assert.LessOrEqual(result.SkillBase.chance, parts.maxChance);
+            Assert.AreEqual(parts.minChance, result.SkillBase.chance);
             Assert.AreEqual(parts.elemental, result.SkillBase.elementalType);
+            Assert.AreEqual(parts.minDamage, result.SkillBase.power);
         }
 
     }
