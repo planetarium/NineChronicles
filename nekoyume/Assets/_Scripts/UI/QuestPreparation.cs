@@ -122,7 +122,7 @@ namespace Nekoyume.UI
             {
                 var armor = (Armor) slot.item;
                 var weapon = (Weapon) _weaponSlot.item;
-                StartCoroutine(_player.CoUpdateSet(armor, weapon));
+                _player.UpdateSet(armor, weapon);
             }
             else if (slot.type == ItemBase.ItemType.Weapon)
             {
@@ -148,7 +148,7 @@ namespace Nekoyume.UI
         {
             _stage.LoadBackground("room");
             _player = _stage.GetPlayer(_stage.roomPosition);
-            StartCoroutine(_player.CoUpdateSet(_player.model.armor));
+            _player.UpdateSet(_player.model.armor);
             Find<Menu>().ShowRoom();
             Close();
             AudioController.PlayClick();
@@ -208,7 +208,7 @@ namespace Nekoyume.UI
             {
                 var armor = (Armor) inventoryItem.item.Value;
                 var weapon = (Weapon) _weaponSlot.item;
-                StartCoroutine(_player.CoUpdateSet(armor, weapon));
+                _player.UpdateSet(armor, weapon);
             }
             else if (type == ItemBase.ItemType.Weapon)
             {
