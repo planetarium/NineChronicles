@@ -67,7 +67,6 @@ namespace Nekoyume.Game.Character
 
             var position = transform.TransformPoint(0f, 1.7f, 0f);
             var force = DamageTextForce;
-            animator.Hit();
             PopUpDmg(position, force, info);
 
             Event.OnUpdateStatus.Invoke();

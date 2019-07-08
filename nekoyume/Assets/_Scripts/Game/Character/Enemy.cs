@@ -59,7 +59,6 @@ namespace Nekoyume.Game.Character
             yield return StartCoroutine(base.CoProcessDamage(info));
             var position = transform.TransformPoint(0f, 1f, 0f);
             var force = DamageTextForce;
-            animator.Hit();
             PopUpDmg(position, force, info);
 
             if (!IsDead())

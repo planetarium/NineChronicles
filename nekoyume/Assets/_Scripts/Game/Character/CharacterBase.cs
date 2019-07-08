@@ -230,7 +230,14 @@ namespace Nekoyume.Game.Character
             HP -= dmg;
             UpdateHpBar();
 
-            animator.Hit();
+            if (IsDead())
+            {
+                StartCoroutine(Dying());
+            }
+            else
+            {
+                animator.Hit();
+            }
         }
 
         protected virtual void OnDead()
@@ -407,14 +414,6 @@ namespace Nekoyume.Game.Character
                 var target = Game.instance.stage.GetCharacter(info.Target);
                 ProcessAttack(target, info);
             }
-
-            foreach (var info in skillInfos)
-            {
-                var target = Game.instance.stage.GetCharacter(info.Target);
-                if (target.IsDead())
-                    StartCoroutine(target.Dying());
-            }
-
         }
 
         public IEnumerator CoAreaAttack(IEnumerable<Model.Skill.SkillInfo> infos)
@@ -448,13 +447,6 @@ namespace Nekoyume.Game.Character
                 }
                 ProcessAttack(target, info);
             }
-
-            foreach (var info in skillInfos)
-            {
-                var target = Game.instance.stage.GetCharacter(info.Target);
-                if (target.IsDead())
-                    StartCoroutine(target.Dying());
-            }
             yield return new WaitForSeconds(0.5f);
         }
 
@@ -478,14 +470,6 @@ namespace Nekoyume.Game.Character
                 }
                 ProcessAttack(target, info);
             }
-
-            foreach (var info in skillInfos)
-            {
-                var target = Game.instance.stage.GetCharacter(info.Target);
-                if (target.IsDead())
-                    StartCoroutine(target.Dying());
-            }
-
             yield return new WaitForSeconds(1.2f);
         }
 
@@ -503,13 +487,6 @@ namespace Nekoyume.Game.Character
                 var effect = Game.instance.stage.skillController.Get<SkillBlowVFX>(target, info);
                 effect.Play();
                 ProcessAttack(target, info);
-            }
-
-            foreach (var info in skillInfos)
-            {
-                var target = Game.instance.stage.GetCharacter(info.Target);
-                if (target.IsDead())
-                    StartCoroutine(target.Dying());
             }
         }
 
