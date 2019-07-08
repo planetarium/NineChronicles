@@ -29,7 +29,6 @@ namespace Nekoyume.BlockChain
 #endif
         private const string PeersFileName = "peers.dat";
         private const string IceServersFileName = "ice_servers.dat";
-        private const string ChainIdKey = "chain_id";
 
         private static readonly string StorePath = Path.Combine(Application.persistentDataPath, AgentStoreDirName);
 
@@ -53,7 +52,6 @@ namespace Nekoyume.BlockChain
         {
             var options = GetOptions();
             var privateKey = GetPrivateKey(options);
-            var chainId = GetChainId();
             var peers = GetPeers(options);
             var iceServers = GetIceServers();
             var host = GetHost(options);
@@ -62,7 +60,6 @@ namespace Nekoyume.BlockChain
             Agent = new Agent(
                 privateKey: privateKey,
                 path: StorePath,
-                chainId: chainId,
                 peers: peers,
                 iceServers: iceServers,
                 host: host,
@@ -131,23 +128,6 @@ namespace Nekoyume.BlockChain
             }
 
             return privateKey;
-        }
-
-        private static Guid GetChainId()
-        {
-            Guid chainId;
-            var chainIdStr = PlayerPrefs.GetString(ChainIdKey, "");
-            if (string.IsNullOrEmpty(chainIdStr))
-            {
-                chainId = Guid.NewGuid();
-                PlayerPrefs.SetString(ChainIdKey, chainId.ToString());
-            }
-            else
-            {
-                chainId = Guid.Parse(chainIdStr);
-            }
-
-            return chainId;
         }
 
         private static IEnumerable<Peer> GetPeers(CommandLineOptions options)
@@ -220,12 +200,8 @@ namespace Nekoyume.BlockChain
         protected override void OnDestroy()
         {
             ActionRenderHandler.Instance.Stop();
-            if (Agent != null)
-            {
-                PlayerPrefs.SetString(ChainIdKey, Agent.ChainId.ToString());
-                Agent.Dispose();
-            }
-
+            Agent?.Dispose();
+            
             NetMQConfig.Cleanup(false);
 
             base.OnDestroy();
