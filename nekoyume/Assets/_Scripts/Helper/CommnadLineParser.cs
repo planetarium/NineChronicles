@@ -15,11 +15,11 @@ namespace Nekoyume.Helper
 
         public string host;
 
-        public int? port;
+        public int port;
 
         public bool noMiner;
 
-        public string[] peers;
+        public string[] peers = new string[]{ };
 
 
         [Option("private-key", Required = false, HelpText = "The private key to use.")]
@@ -29,7 +29,7 @@ namespace Nekoyume.Helper
         public string Host { get => host; set => host = value; }
 
         [Option("port", Required = false, HelpText = "The source port to use.")]
-        public int? Port { get => port; set => port = value; }
+        public int? Port { get => port == 0 ? default(int?) : port; set => port = value ?? 0; }
 
         [Option("no-miner", Required = false, HelpText = "Do not mine block.")]
         public bool NoMiner { get => noMiner; set => noMiner = value; }

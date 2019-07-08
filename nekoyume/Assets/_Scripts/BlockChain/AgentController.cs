@@ -23,10 +23,10 @@ namespace Nekoyume.BlockChain
         public const string PlayerPrefsKeyOfAgentPrivateKey = "private_key_agent";
 #if UNITY_EDITOR
         private const string AgentStoreDirName = "planetarium_dev";
-        private static readonly string CommandLineOptionsJsonPath = Path.Combine(Application.dataPath, "clo.json");
 #else
         private const string AgentStoreDirName = "planetarium";
 #endif
+        private static readonly string CommandLineOptionsJsonPath = Path.Combine(Application.dataPath, "clo.json");
         private const string PeersFileName = "peers.dat";
         private const string IceServersFileName = "ice_servers.dat";
 
@@ -50,7 +50,7 @@ namespace Nekoyume.BlockChain
 
         private void InitAgent(Action<bool> callback)
         {
-            var options = GetOptions();
+            var options = GetOptions(CommandLineOptionsJsonPath);
             var privateKey = GetPrivateKey(options);
             var peers = GetPeers(options);
             var iceServers = GetIceServers();
@@ -94,22 +94,18 @@ namespace Nekoyume.BlockChain
             StartSystemCoroutines(Agent);
         }
 
-        private static CommandLineOptions GetOptions()
+        public static CommandLineOptions GetOptions(string jsonPath)
         {
-#if UNITY_EDITOR
-            if (File.Exists(CommandLineOptionsJsonPath))
+            if (File.Exists(jsonPath))
             {
                 return JsonUtility.FromJson<CommandLineOptions>(
-                    File.ReadAllText(CommandLineOptionsJsonPath )
+                    File.ReadAllText(jsonPath)
                 );
             }
             else 
             {
-                return new CommandLineOptions();
+                return CommnadLineParser.GetCommandLineOptions() ?? new CommandLineOptions();
             }
-#else
-            return CommnadLineParser.GetCommandLineOptions() ?? new CommandLineOptions();
-#endif
         }
 
         private static PrivateKey GetPrivateKey(CommandLineOptions options)
