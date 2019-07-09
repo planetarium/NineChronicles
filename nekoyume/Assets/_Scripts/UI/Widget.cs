@@ -21,6 +21,9 @@ namespace Nekoyume.UI
 
         protected virtual void Awake()
         {
+            _animator = GetComponent<Animator>();
+            FindGlassMaterial(gameObject);
+            
             RectTransform = GetComponent<RectTransform>();
         }
 
@@ -87,25 +90,7 @@ namespace Nekoyume.UI
         public virtual void Show()
         {
             gameObject.SetActive(true);
-            if (!_animator)
-            {
-                _animator = GetComponent<Animator>();
-            }
-
-            if (_animator)
-            {
-                _animator.Play("Show");
-            }
-
-            if (!_glass)
-            {
-                FindGlassMaterial(gameObject);
-            }
-
-            if (_glass)
-            {
-                StartCoroutine(Blur());
-            }
+            StartCoroutine(Blur());
         }
 
         public virtual IEnumerator WaitForShow()
