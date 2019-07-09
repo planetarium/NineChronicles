@@ -39,7 +39,7 @@ namespace Tests
             var slot = _widget.FindSelectedItemSlot(ItemBase.ItemType.Ring);
             slot.Set(_ring);
 
-            Assert.AreEqual(_widget.equipmentSlots.First(es => es.type == ItemBase.ItemType.Ring), slot);
+            Assert.AreEqual(slot, _widget.equipmentSlots.First(es => es.type == ItemBase.ItemType.Ring));
         }
 
         [Test]

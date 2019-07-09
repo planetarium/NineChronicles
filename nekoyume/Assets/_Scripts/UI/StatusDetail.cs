@@ -1,5 +1,6 @@
-using Nekoyume.Data.Table;
+using System.Linq;
 using Nekoyume.Game.Controller;
+using Nekoyume.Game.Item;
 using Nekoyume.Model;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,7 +14,7 @@ namespace Nekoyume.UI
     /// </summary>
     public class StatusDetail : Widget
     {
-        public GameObject[] equipSlots;
+        public EquipSlot[] equipSlots;
         public GameObject textOption;
         public GameObject group;
         public GameObject statusInfo;
@@ -50,14 +51,9 @@ namespace Nekoyume.UI
             foreach (var equipment in _player.equipments)
             {
                 var type = equipment.Data.cls.ToEnumItemType();
-                foreach (var slot in equipSlots)
-                {
-                    var es = slot.GetComponent<EquipSlot>();
-                    if (es.type == type)
-                    {
-                        es.Set(equipment);
-                    }
-                }
+                var slot = FindSlot(type);
+                if (slot)
+                    slot.Set(equipment);
             }
 
             // status info
@@ -88,6 +84,18 @@ namespace Nekoyume.UI
         {
             AudioController.PlayClick();
             Find<Status>()?.CloseStatusDetail();
+        }
+
+        private EquipSlot FindSlot(ItemBase.ItemType type)
+        {
+            if (type == ItemBase.ItemType.Ring)
+            {
+                return equipSlots.FirstOrDefault(es =>
+                           es.type == ItemBase.ItemType.Ring && es.item?.Data is null)
+                       ?? equipSlots.First(es => es.type == ItemBase.ItemType.Ring);
+            }
+
+            return equipSlots.FirstOrDefault(es => es.type == type);
         }
     }
 }
