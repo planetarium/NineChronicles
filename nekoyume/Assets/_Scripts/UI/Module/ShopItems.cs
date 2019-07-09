@@ -28,7 +28,7 @@ namespace Nekoyume.UI.Module
             refreshButton.onClick.AsObservable().Subscribe(_ =>
             {
                 AudioController.PlayClick();
-                _data?.onClickRefresh.OnNext(_data);
+                _data?.onRefresh.OnNext(_data);
             }).AddTo(_disposablesForAwake);
         }
 

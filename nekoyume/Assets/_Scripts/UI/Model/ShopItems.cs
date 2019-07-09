@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Libplanet;
 using Nekoyume.BlockChain;
+using Nekoyume.UI.Module;
 using UniRx;
 using UnityEngine;
 
@@ -12,9 +13,9 @@ namespace Nekoyume.UI.Model
     {
         public readonly ReactiveCollection<ShopItem> products = new ReactiveCollection<ShopItem>();
         public readonly ReactiveCollection<ShopItem> registeredProducts = new ReactiveCollection<ShopItem>();
-        public readonly ReactiveProperty<ShopItem> selectedItem = new ReactiveProperty<ShopItem>();
+        public readonly ReactiveProperty<ShopItemView> selectedItemView = new ReactiveProperty<ShopItemView>();
         
-        public readonly Subject<ShopItems> onClickRefresh = new Subject<ShopItems>();
+        public readonly Subject<ShopItems> onRefresh = new Subject<ShopItems>();
 
         private readonly IDictionary<Address, List<Game.Item.ShopItem>> _shopItems;
         
@@ -26,7 +27,7 @@ namespace Nekoyume.UI.Model
             products.ObserveRemove().Subscribe(OnRemoveShopItem);
             registeredProducts.ObserveAdd().Subscribe(OnAddShopItem);
             registeredProducts.ObserveRemove().Subscribe(OnRemoveShopItem);
-            onClickRefresh.Subscribe(_ => ResetBuyItems());
+            onRefresh.Subscribe(_ => ResetBuyItems());
             
             ResetBuyItems();
             ResetSellItems();
@@ -36,20 +37,20 @@ namespace Nekoyume.UI.Model
         {
             products.DisposeAll();
             registeredProducts.DisposeAll();
-            selectedItem.DisposeAll();
+            selectedItemView.Dispose();
             
-            onClickRefresh.Dispose();
+            onRefresh.Dispose();
         }
 
         public void DeselectAll()
         {
-            if (ReferenceEquals(selectedItem.Value, null))
+            if (ReferenceEquals(selectedItemView.Value, null))
             {
                 return;
             }
 
-            selectedItem.Value.selected.Value = false;
-            selectedItem.Value = null;
+            selectedItemView.Value.Model.selected.Value = false;
+            selectedItemView.Value = null;
         }
 
         public void AddShopItem(Address sellerAvatarAddress, Game.Item.ShopItem shopItem)
@@ -119,15 +120,15 @@ namespace Nekoyume.UI.Model
             e.Value.onClick.Dispose();
         }
         
-        public void OnClickShopItem(ShopItem shopItem)
+        public void OnClickShopItem(ShopItemView shopItemView)
         {
-            if (!ReferenceEquals(selectedItem.Value, null))
+            if (!ReferenceEquals(selectedItemView.Value, null))
             {
-                selectedItem.Value.selected.Value = false;
+                selectedItemView.Value.Model.selected.Value = false;
             }
 
-            selectedItem.SetValueAndForceNotify(shopItem);
-            selectedItem.Value.selected.Value = true;
+            selectedItemView.SetValueAndForceNotify(shopItemView);
+            selectedItemView.Value.Model.selected.Value = true;
         }
 
         private void ResetBuyItems()
