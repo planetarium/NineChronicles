@@ -25,7 +25,7 @@
 
 #### Unity Editor 에서 커맨드라인 옵션 사용
 
-위의 커맨드라인 옵션을 Unity Editor 에서 사용하려면 `Assets/clo.json` 파일을 작성하면 됩니다. 아래는 작성 예시입니다.
+위의 커맨드라인 옵션을 Unity 에디터나 빌드한 플레이어에서 사용하려면 `Assets/StreamingAssets/clo.json` 파일을 작성하면 됩니다. 아래는 작성 예시입니다.
 
 ```
 {
@@ -37,9 +37,8 @@
 }
 ```
 
-- `Assets/clo.json` 파일은 버전 관리에서 제외되어 있습니다.
-  - 필요에 따라 `Assets/clo.json.p2p` 와 같이 프리셋을 제공하는 경우가 있습니다. 이러한 프리셋 파일을 `clo.json`으로 이름을 바꾸면 바로 사용하실 수 있습니다.
-- `Assets/clo.json` 파일은 에디터(`UNITY_EDITOR`)에서만 읽어들입니다.
+- `Assets/StreamingAssets/clo.json` 파일은 버전 관리에서 제외되어 있습니다.
+  - 필요에 따라 `Assets/StreamingAssets/clo_nekoalpha_nominer.json` 와 같이 프리셋을 제공하는 경우가 있습니다. 이러한 프리셋 파일을 `clo.json`으로 이름을 바꾸면 바로 사용하실 수 있습니다.
 
 
 ### 커맨드라인 빌드
