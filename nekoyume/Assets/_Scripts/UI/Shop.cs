@@ -192,7 +192,7 @@ namespace Nekoyume.UI
                 inventoryAndItemInfo.inventory.Tooltip.Show(
                     view.RectTransform,
                     view.Model,
-                    value => Model.itemInfo.Value.buttonEnabledFunc.Value(view.Model),
+                    value => !Model.DimmedFuncForSell(view.Model),
                     "판매하기",
                     tooltip =>
                     {
@@ -214,7 +214,7 @@ namespace Nekoyume.UI
                 inventoryAndItemInfo.inventory.Tooltip.Show(
                     view.RectTransform,
                     view.Model,
-                    null,
+                    value => Model.ButtonEnabledFuncForBuy(view.Model),
                     "구매하기",
                     tooltip =>
                     {
@@ -227,7 +227,7 @@ namespace Nekoyume.UI
                 inventoryAndItemInfo.inventory.Tooltip.Show(
                     view.RectTransform, 
                     view.Model,
-                    null,
+                    value => Model.ButtonEnabledFuncForSell(view.Model),
                     "판매 취소하기",
                     tooltip =>
                     {

@@ -76,18 +76,18 @@ namespace Nekoyume.UI.Model
             }
         }
         
-        private static bool DimmedFuncForSell(InventoryItem inventoryItem)
+        public bool DimmedFuncForSell(InventoryItem inventoryItem)
         {
             return inventoryItem.item.Value.Data.cls == DimmedString;
         }
 
-        private static bool ButtonEnabledFuncForBuy(InventoryItem inventoryItem)
+        public bool ButtonEnabledFuncForBuy(InventoryItem inventoryItem)
         {
             return inventoryItem is ShopItem shopItem &&
                    ReactiveAgentState.Gold.Value >= shopItem.price.Value;
         }
 
-        private bool ButtonEnabledFuncForSell(InventoryItem inventoryItem)
+        public bool ButtonEnabledFuncForSell(InventoryItem inventoryItem)
         {
             switch (inventoryItem)
             {

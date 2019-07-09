@@ -44,7 +44,8 @@ namespace Nekoyume.UI.Model
 
         public void DeselectAll()
         {
-            if (ReferenceEquals(selectedItemView.Value, null))
+            if (ReferenceEquals(selectedItemView.Value, null)
+                || ReferenceEquals(selectedItemView.Value.Model, null))
             {
                 return;
             }
@@ -122,7 +123,8 @@ namespace Nekoyume.UI.Model
         
         public void OnClickShopItem(ShopItemView shopItemView)
         {
-            if (!ReferenceEquals(selectedItemView.Value, null))
+            if (!ReferenceEquals(selectedItemView.Value, null)
+                && !ReferenceEquals(selectedItemView.Value.Model, null))
             {
                 selectedItemView.Value.Model.selected.Value = false;
             }
