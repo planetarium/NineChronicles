@@ -12,18 +12,18 @@ namespace Nekoyume.UI
         private static readonly Dictionary<Type, GameObject> Dict = new Dictionary<Type, GameObject>();
         private static readonly int Radius = Shader.PropertyToID("_Radius");
 
-        private Animator _animator;
         private Material _glass;
         private bool _animCloseEnd;
 
+        private Animator Animator { get; set; }
         public RectTransform RectTransform { get; private set; }
         public virtual WidgetType WidgetType => WidgetType.Widget;
 
         protected virtual void Awake()
         {
-            _animator = GetComponent<Animator>();
             FindGlassMaterial(gameObject);
-            
+
+            Animator = GetComponent<Animator>();
             RectTransform = GetComponent<RectTransform>();
         }
 
@@ -90,6 +90,12 @@ namespace Nekoyume.UI
         public virtual void Show()
         {
             gameObject.SetActive(true);
+            if (Animator)
+            {
+                Animator.enabled = true;
+                Animator.Play("Show");
+            }
+
             StartCoroutine(Blur());
         }
 
@@ -118,7 +124,7 @@ namespace Nekoyume.UI
             {
                 var current = Mathf.Lerp(from, to, time);
                 _glass.SetFloat(Radius, current);
-                
+
                 time += Time.deltaTime * 3f;
                 if (time > 1f ||
                     !gameObject.activeInHierarchy)
@@ -145,10 +151,11 @@ namespace Nekoyume.UI
 
         public virtual IEnumerator CoClose()
         {
-            if (_animator)
+            if (Animator)
             {
                 _animCloseEnd = false;
-                _animator.Play("Close");
+                Animator.enabled = true;
+                Animator.Play("Close");
                 yield return new WaitUntil(() => _animCloseEnd);
             }
 
@@ -172,7 +179,12 @@ namespace Nekoyume.UI
             }
         }
 
-        public void AnimCloseEnd()
+        public void OnCompleteOfShowAnimation()
+        {
+            Animator.enabled = false;
+        }
+
+        public void OnCompleteOfCloseAnimation()
         {
             _animCloseEnd = true;
         }

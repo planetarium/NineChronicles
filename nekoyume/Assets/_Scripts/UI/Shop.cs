@@ -22,6 +22,8 @@ namespace Nekoyume.UI
 {
     public class Shop : Widget
     {
+        public RectTransform bg1;
+        public RectTransform right;
         public Button switchBuyButton;
         public Button switchSellButton;
         public InventoryAndItemInfo inventoryAndItemInfo;
@@ -34,20 +36,27 @@ namespace Nekoyume.UI
         private readonly List<IDisposable> _disposablesForAwake = new List<IDisposable>();
         private readonly List<IDisposable> _disposablesForSetData = new List<IDisposable>();
 
+        private float _defaultAnchoredPositionXOfBg1;
+        private float _defaultAnchoredPositionXOfRight;
+        private float _goOutTweenX = 800f;
         private Stage _stage;
+
         private Player _player;
         private ItemCountAndPricePopup _itemCountAndPricePopup;
         private GrayLoadingScreen _loadingScreen;
-        
+
+        private bool _isFirstSubscribeState;
+        private Sequence _sequenceOfShopItems;
+
         public Model.Shop Model { get; private set; }
 
         #region Mono
 
         protected override void Awake()
         {
+            _defaultAnchoredPositionXOfBg1 = bg1.anchoredPosition.x;
+            _defaultAnchoredPositionXOfRight = right.anchoredPosition.x;
             base.Awake();
-
-            this.ComponentFieldsNotNullTest();
 
             switchBuyButton.onClick.AsObservable().Subscribe(_ =>
                 {
@@ -79,11 +88,7 @@ namespace Nekoyume.UI
 
         public override void Show()
         {
-            _stage = GameObject.Find("Stage").GetComponent<Stage>();
-            if (ReferenceEquals(_stage, null))
-            {
-                throw new NotFoundComponentException<Stage>();
-            }
+            _stage = Game.Game.instance.stage;
 
             _player = _stage.GetPlayer();
             if (!ReferenceEquals(_player, null))
@@ -102,7 +107,7 @@ namespace Nekoyume.UI
             {
                 throw new NotFoundComponentException<LoadingScreen>();
             }
-
+            
             SetData(new Model.Shop(States.Instance.currentAvatarState.Value.inventory, ReactiveShopState.Items));
             base.Show();
 
@@ -127,12 +132,13 @@ namespace Nekoyume.UI
 
         private void SetData(Model.Shop data)
         {
+            _isFirstSubscribeState = true;
             _disposablesForSetData.DisposeAllAndClear();
             Model = data;
             Model.inventory.Value.selectedItem.Subscribe(inventoryAndItemInfo.inventory.ShowTooltip)
                 .AddTo(_disposablesForSetData);
             Model.state.Value = UI.Model.Shop.State.Buy;
-            Model.state.Subscribe(OnState).AddTo(_disposablesForSetData);
+            Model.state.Subscribe(SubscribeState).AddTo(_disposablesForSetData);
             Model.itemCountAndPricePopup.Value.item.Subscribe(OnPopup).AddTo(_disposablesForSetData);
             Model.itemCountAndPricePopup.Value.onClickSubmit.Subscribe(OnClickSubmitItemCountAndPricePopup)
                 .AddTo(_disposablesForSetData);
@@ -147,13 +153,17 @@ namespace Nekoyume.UI
 
         private void Clear()
         {
+            _sequenceOfShopItems?.Kill();
+            bg1.anchoredPosition = new Vector2(_defaultAnchoredPositionXOfBg1, bg1.anchoredPosition.y);
+            right.anchoredPosition = new Vector2(_defaultAnchoredPositionXOfRight , right.anchoredPosition.y);
+            
             shopItems.Clear();
             inventoryAndItemInfo.Clear();
             _disposablesForSetData.DisposeAllAndClear();
             Model = null;
         }
 
-        private void OnState(Model.Shop.State state)
+        private void SubscribeState(Model.Shop.State state)
         {
             switch (state)
             {
@@ -167,7 +177,62 @@ namespace Nekoyume.UI
                     break;
             }
 
-            shopItems.SetState(state);
+            if (_isFirstSubscribeState)
+            {
+                _isFirstSubscribeState = false;
+                shopItems.SetState(state);
+
+                return;
+            }
+
+            _sequenceOfShopItems?.Kill();
+            _sequenceOfShopItems = DOTween.Sequence();
+            SetSequenceOfShopItems(true, ref _sequenceOfShopItems);
+            _sequenceOfShopItems.AppendCallback(() => shopItems.SetState(state));
+            SetSequenceOfShopItems(false, ref _sequenceOfShopItems);
+        }
+
+        private void SetSequenceOfShopItems(bool isGoOut, ref Sequence sequence)
+        {
+            var goOutTweenXAbs = Math.Abs(_goOutTweenX);
+            sequence.Append(DOTween
+                .To(
+                    () => bg1.anchoredPosition.x,
+                    value =>
+                    {
+                        var p = bg1.anchoredPosition;
+                        p.x = value;
+                        bg1.anchoredPosition = p;
+                    },
+                    isGoOut
+                        ? _defaultAnchoredPositionXOfBg1 + _goOutTweenX
+                        : _defaultAnchoredPositionXOfBg1,
+                    isGoOut
+                        ? Math.Abs(goOutTweenXAbs - Math.Abs(bg1.anchoredPosition.x - _defaultAnchoredPositionXOfBg1)) /
+                          goOutTweenXAbs
+                        : Math.Abs(goOutTweenXAbs - Math.Abs(_defaultAnchoredPositionXOfBg1 - bg1.anchoredPosition.x)) /
+                          goOutTweenXAbs)
+                .SetEase(isGoOut ? Ease.InQuint : Ease.OutQuint));
+            sequence.Join(DOTween
+                .To(
+                    () => right.anchoredPosition.x,
+                    value =>
+                    {
+                        var p = right.anchoredPosition;
+                        p.x = value;
+                        right.anchoredPosition = p;
+                    },
+                    isGoOut
+                        ? _defaultAnchoredPositionXOfRight + _goOutTweenX
+                        : _defaultAnchoredPositionXOfRight,
+                    isGoOut
+                        ? Math.Abs(goOutTweenXAbs -
+                                   Math.Abs(right.anchoredPosition.x - _defaultAnchoredPositionXOfRight)) /
+                          goOutTweenXAbs
+                        : Math.Abs(goOutTweenXAbs -
+                                   Math.Abs(_defaultAnchoredPositionXOfRight - right.anchoredPosition.x)) /
+                          goOutTweenXAbs)
+                .SetEase(isGoOut ? Ease.InQuint : Ease.OutQuint));
         }
 
         private void OnPopup(CountableItem data)
