@@ -26,7 +26,12 @@ namespace Nekoyume.BlockChain
 #else
         private const string AgentStoreDirName = "planetarium";
 #endif
+
+#if NEKOALPHA_NOMINER
+        private static readonly string CommandLineOptionsJsonPath = Path.Combine(Application.dataPath, "clo_nekoalpha_nominer.json");
+#else
         private static readonly string CommandLineOptionsJsonPath = Path.Combine(Application.dataPath, "clo.json");
+#endif
         private const string PeersFileName = "peers.dat";
         private const string IceServersFileName = "ice_servers.dat";
 
