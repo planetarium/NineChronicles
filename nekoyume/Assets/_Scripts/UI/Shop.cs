@@ -45,7 +45,6 @@ namespace Nekoyume.UI
         private ItemCountAndPricePopup _itemCountAndPricePopup;
         private GrayLoadingScreen _loadingScreen;
 
-        private bool _isFirstSubscribeState;
         private Sequence _sequenceOfShopItems;
 
         public Model.Shop Model { get; private set; }
@@ -132,12 +131,11 @@ namespace Nekoyume.UI
 
         private void SetData(Model.Shop data)
         {
-            _isFirstSubscribeState = true;
             _disposablesForSetData.DisposeAllAndClear();
             Model = data;
             Model.inventory.Value.selectedItem.Subscribe(inventoryAndItemInfo.inventory.ShowTooltip)
                 .AddTo(_disposablesForSetData);
-            Model.state.Value = UI.Model.Shop.State.Buy;
+            Model.state.Value = UI.Model.Shop.State.Show;
             Model.state.Subscribe(SubscribeState).AddTo(_disposablesForSetData);
             Model.itemCountAndPricePopup.Value.item.Subscribe(OnPopup).AddTo(_disposablesForSetData);
             Model.itemCountAndPricePopup.Value.onClickSubmit.Subscribe(OnClickSubmitItemCountAndPricePopup)
@@ -167,6 +165,10 @@ namespace Nekoyume.UI
         {
             switch (state)
             {
+                case UI.Model.Shop.State.Show:
+                    shopItems.SetState(state);
+                    Model.state.Value = UI.Model.Shop.State.Buy;
+                    return;
                 case UI.Model.Shop.State.Buy:
                     switchBuyButton.image.sprite = Resources.Load<Sprite>("UI/Textures/button_blue_01");
                     switchSellButton.image.sprite = Resources.Load<Sprite>("UI/Textures/button_black_01");
@@ -175,14 +177,6 @@ namespace Nekoyume.UI
                     switchBuyButton.image.sprite = Resources.Load<Sprite>("UI/Textures/button_black_01");
                     switchSellButton.image.sprite = Resources.Load<Sprite>("UI/Textures/button_blue_01");
                     break;
-            }
-
-            if (_isFirstSubscribeState)
-            {
-                _isFirstSubscribeState = false;
-                shopItems.SetState(state);
-
-                return;
             }
 
             _sequenceOfShopItems?.Kill();

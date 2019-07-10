@@ -14,7 +14,7 @@ namespace Nekoyume.UI.Model
         
         public enum State
         {
-            Buy, Sell
+            Show, Buy, Sell
         }
         
         public readonly ReactiveProperty<State> state = new ReactiveProperty<State>();
