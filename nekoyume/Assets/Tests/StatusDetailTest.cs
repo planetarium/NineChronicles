@@ -44,7 +44,7 @@ namespace Tests
             _ring.Equip();
             Assert.AreEqual(1, _player.equipments.Count(i => i is Ring));
             _widget.Show();
-            var ringSlots = _widget.equipSlots.Where(i => i.type == ItemBase.ItemType.Ring).ToList();
+            var ringSlots = _widget.equipmentSlots.Where(i => i.type == ItemBase.ItemType.Ring).ToList();
             Assert.AreEqual(2, ringSlots.Count);
             Assert.AreEqual(1, ringSlots.Count(i => i.item is Ring));
         }
@@ -59,7 +59,7 @@ namespace Tests
             _player.Inventory.AddNonFungibleItem(ring);
             Assert.AreEqual(2, _player.equipments.Count(i => i is Ring));
             _widget.Show();
-            var ringSlots = _widget.equipSlots.Where(i => i.type == ItemBase.ItemType.Ring).ToList();
+            var ringSlots = _widget.equipmentSlots.Where(i => i.type == ItemBase.ItemType.Ring).ToList();
             Assert.AreEqual(2, ringSlots.Count);
             Assert.AreEqual(2, ringSlots.Count(i => i.item is Ring));
         }

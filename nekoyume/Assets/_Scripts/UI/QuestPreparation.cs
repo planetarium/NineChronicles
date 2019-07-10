@@ -20,7 +20,7 @@ namespace Nekoyume.UI
         public InventoryAndItemInfo inventoryAndItemInfo;
 
         public EquipSlot[] consumableSlots;
-        public EquipSlot[] equipmentSlots;
+        public EquipmentSlots equipmentSlots;
         public GameObject btnQuest;
         public GameObject equipSlotGlow;
         public Text labelStage;
@@ -57,13 +57,9 @@ namespace Nekoyume.UI
             foreach (var equipment in _player.equipments)
             {
                 var type = equipment.Data.cls.ToEnumItemType();
-                foreach (var es in equipmentSlots)
-                {
-                    if (es.type == type)
-                    {
-                        es.Set(equipment);
-                    }
-                }
+                var es = equipmentSlots.FindSlot(type);
+                if (es)
+                    es.Set(equipment);
             }
 
             btnQuest.SetActive(true);
@@ -84,10 +80,7 @@ namespace Nekoyume.UI
                 slot.Unequip();
             }
 
-            foreach (var es in equipmentSlots)
-            {
-                es.Unequip();
-            }
+            equipmentSlots.Clear();
 
             base.Close();
         }
@@ -275,14 +268,7 @@ namespace Nekoyume.UI
                 return slot;
             }
 
-            if (type == ItemBase.ItemType.Ring)
-            {
-                return equipmentSlots.FirstOrDefault(es =>
-                           es.type == ItemBase.ItemType.Ring && es.item?.Data is null)
-                       ?? equipmentSlots.First(es => es.type == ItemBase.ItemType.Ring);
-            }
-
-            return equipmentSlots.FirstOrDefault(es => es.type == type);
+            return equipmentSlots.FindSlot(type);
         }
 
         private void SetGlowEquipSlot(bool isActive)

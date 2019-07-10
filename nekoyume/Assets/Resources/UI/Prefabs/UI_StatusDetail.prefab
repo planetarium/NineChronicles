@@ -537,6 +537,7 @@ GameObject:
   m_Component:
   - component: {fileID: 224770161334793002}
   - component: {fileID: 178836723}
+  - component: {fileID: 3922493806198397068}
   m_Layer: 0
   m_Name: Slots
   m_TagString: Untagged
@@ -593,6 +594,25 @@ MonoBehaviour:
   m_Spacing: {x: 75, y: 30}
   m_Constraint: 1
   m_ConstraintCount: 2
+--- !u!114 &3922493806198397068
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1183569391967006}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1147426057a140b4ac8e402a02113e66, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  slots:
+  - {fileID: 114251819476231452}
+  - {fileID: 114927856771885820}
+  - {fileID: 114107061293335166}
+  - {fileID: 114517948193490702}
+  - {fileID: 114906802428102500}
+  - {fileID: 114324202881565294}
 --- !u!1 &1254493498455248
 GameObject:
   m_ObjectHideFlags: 0
@@ -830,13 +850,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3cc3fdbf55a40f6a4e21d492ccdbdff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  equipSlots:
-  - {fileID: 114251819476231452}
-  - {fileID: 114927856771885820}
-  - {fileID: 114107061293335166}
-  - {fileID: 114517948193490702}
-  - {fileID: 114906802428102500}
-  - {fileID: 114324202881565294}
+  equipmentSlots: {fileID: 3922493806198397068}
   textOption: {fileID: 1625631650512858}
   group: {fileID: 1093658089476738}
   statusInfo: {fileID: 1005824079979346}
@@ -1769,7 +1783,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3cc3fdbf55a40f6a4e21d492ccdbdff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  equipSlots: []
+  equipmentSlots: {fileID: 0}
   textOption: {fileID: 0}
   group: {fileID: 0}
   statusInfo: {fileID: 0}
@@ -2828,7 +2842,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3cc3fdbf55a40f6a4e21d492ccdbdff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  equipSlots: []
+  equipmentSlots: {fileID: 0}
   textOption: {fileID: 0}
   group: {fileID: 0}
   statusInfo: {fileID: 0}

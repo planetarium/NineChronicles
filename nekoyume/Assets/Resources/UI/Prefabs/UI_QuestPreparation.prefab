@@ -1339,6 +1339,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2662057172536409356}
   - component: {fileID: 4936796273980303011}
+  - component: {fileID: 7883566207052153685}
   m_Layer: 5
   m_Name: Slots
   m_TagString: Untagged
@@ -1395,6 +1396,25 @@ MonoBehaviour:
   m_Spacing: {x: 309, y: 30}
   m_Constraint: 1
   m_ConstraintCount: 2
+--- !u!114 &7883566207052153685
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2875661934259434506}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1147426057a140b4ac8e402a02113e66, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  slots:
+  - {fileID: 2772982206222807810}
+  - {fileID: 2772525018473208178}
+  - {fileID: 2772523350428728114}
+  - {fileID: 2772856066441582024}
+  - {fileID: 2772269277850854088}
+  - {fileID: 2772447570647655862}
 --- !u!1 &2875662100416624550
 GameObject:
   m_ObjectHideFlags: 0
@@ -3113,13 +3133,7 @@ MonoBehaviour:
   - {fileID: 2772253265032080558}
   - {fileID: 2772465281640199008}
   - {fileID: 2772515690147498990}
-  equipmentSlots:
-  - {fileID: 2772856066441582024}
-  - {fileID: 2772447570647655862}
-  - {fileID: 2772269277850854088}
-  - {fileID: 2772525018473208178}
-  - {fileID: 2772523350428728114}
-  - {fileID: 2772982206222807810}
+  equipmentSlots: {fileID: 7883566207052153685}
   btnQuest: {fileID: 2875723563834365008}
   equipSlotGlow: {fileID: 715250240963545995}
   labelStage: {fileID: 2772363463383041534}
