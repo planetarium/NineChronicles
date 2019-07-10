@@ -33,7 +33,7 @@ namespace Nekoyume.UI
         public GameObject resultItemVFX;
 
         private readonly List<IDisposable> _disposablesForAwake = new List<IDisposable>();
-        private readonly List<IDisposable> _disposablesForSetData = new List<IDisposable>();
+        private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
 
         private Stage _stage;
         private Player _player;
@@ -128,20 +128,21 @@ namespace Nekoyume.UI
 
         private void SetData(Model.Shop model)
         {
-            _disposablesForSetData.DisposeAllAndClear();
+            _disposablesForModel.DisposeAllAndClear();
             Model = model;
             Model.state.Value = UI.Model.Shop.State.Buy;
-            Model.state.Subscribe(OnState).AddTo(_disposablesForSetData);
+            Model.state.Subscribe(OnState).AddTo(_disposablesForModel);
             Model.inventory.Value.selectedItemView.Subscribe(SubscribeInventorySelectedItem)
-                .AddTo(_disposablesForSetData);
+                .AddTo(_disposablesForModel);
+            Model.itemInfo.Value.onClick.Subscribe(_ => inventoryAndItemInfo.inventory.Tooltip.Close()).AddTo(_disposablesForModel);
             Model.shopItems.Value.selectedItemView.Subscribe(SubscribeShopItemsSelectedItem)
-                .AddTo(_disposablesForSetData);
-            Model.itemCountAndPricePopup.Value.item.Subscribe(OnPopup).AddTo(_disposablesForSetData);
+                .AddTo(_disposablesForModel);
+            Model.itemCountAndPricePopup.Value.item.Subscribe(OnPopup).AddTo(_disposablesForModel);
             Model.itemCountAndPricePopup.Value.onClickSubmit.Subscribe(OnClickSubmitItemCountAndPricePopup)
-                .AddTo(_disposablesForSetData);
+                .AddTo(_disposablesForModel);
             Model.itemCountAndPricePopup.Value.onClickCancel.Subscribe(OnClickCloseItemCountAndPricePopup)
-                .AddTo(_disposablesForSetData);
-            Model.onClickClose.Subscribe(_ => Close()).AddTo(_disposablesForSetData);
+                .AddTo(_disposablesForModel);
+            Model.onClickClose.Subscribe(_ => Close()).AddTo(_disposablesForModel);
 
             inventoryAndItemInfo.SetData(Model.inventory.Value, Model.itemInfo.Value);
             shopItems.SetState(Model.state.Value);
@@ -152,7 +153,7 @@ namespace Nekoyume.UI
         {
             shopItems.Clear();
             inventoryAndItemInfo.Clear();
-            _disposablesForSetData.DisposeAllAndClear();
+            _disposablesForModel.DisposeAllAndClear();
             Model = null;
         }
 
