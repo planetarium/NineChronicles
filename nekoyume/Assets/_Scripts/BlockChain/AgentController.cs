@@ -35,7 +35,8 @@ namespace Nekoyume.BlockChain
         private const string PeersFileName = "peers.dat";
         private const string IceServersFileName = "ice_servers.dat";
 
-        private static readonly string StorePath = Path.Combine(Application.persistentDataPath, AgentStoreDirName);
+        private static readonly string DefaultStoragePath =
+            Path.Combine(Application.persistentDataPath, AgentStoreDirName);
 
         public static Agent Agent { get; private set; }
 
@@ -61,10 +62,11 @@ namespace Nekoyume.BlockChain
             var iceServers = GetIceServers();
             var host = GetHost(options);
             int? port = options.Port;
+            var storagePath = options.StoragePath ?? DefaultStoragePath;
 
             Agent = new Agent(
                 privateKey: privateKey,
-                path: StorePath,
+                path: storagePath,
                 peers: peers,
                 iceServers: iceServers,
                 host: host,
