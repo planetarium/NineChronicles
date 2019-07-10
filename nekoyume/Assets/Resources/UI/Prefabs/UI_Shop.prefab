@@ -447,6 +447,7 @@ GameObject:
   - component: {fileID: 2239108142594206111}
   - component: {fileID: 9114739693388860453}
   - component: {fileID: 5874525038533338079}
+  - component: {fileID: 4755661912159286488}
   m_Layer: 5
   m_Name: UI_Shop
   m_TagString: Untagged
@@ -494,6 +495,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1d19f7f1b9e49209f83aa49e62c4764, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  canvasGroup: {fileID: 4755661912159286488}
   bg1: {fileID: 8643037815396336942}
   right: {fileID: 5352140714965919159}
   switchBuyButton: {fileID: 5854075116785922314}
@@ -522,6 +524,18 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!225 &4755661912159286488
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3037945344740449194}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &3129922593836722168
 GameObject:
   m_ObjectHideFlags: 0

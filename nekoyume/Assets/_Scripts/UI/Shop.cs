@@ -23,6 +23,7 @@ namespace Nekoyume.UI
 {
     public class Shop : Widget
     {
+        public CanvasGroup canvasGroup;
         public RectTransform bg1;
         public RectTransform right;
         public Button switchBuyButton;
@@ -182,11 +183,13 @@ namespace Nekoyume.UI
                     break;
             }
 
+            canvasGroup.interactable = false;
             _sequenceOfShopItems?.Kill();
             _sequenceOfShopItems = DOTween.Sequence();
             SetSequenceOfShopItems(true, ref _sequenceOfShopItems);
             _sequenceOfShopItems.AppendCallback(() => shopItems.SetState(state));
             SetSequenceOfShopItems(false, ref _sequenceOfShopItems);
+            _sequenceOfShopItems.OnComplete(() => canvasGroup.interactable = true);
         }
 
         private void SetSequenceOfShopItems(bool isGoOut, ref Sequence sequence)
