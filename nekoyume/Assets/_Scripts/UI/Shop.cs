@@ -135,7 +135,7 @@ namespace Nekoyume.UI
             _disposablesForSetData.DisposeAllAndClear();
             Model = model;
             Model.state.Value = UI.Model.Shop.State.Show;
-            Model.state.Subscribe(OnState).AddTo(_disposablesForSetData);
+            Model.state.Subscribe(SubscribeState).AddTo(_disposablesForSetData);
             Model.inventory.Value.selectedItemView.Subscribe(SubscribeInventorySelectedItem)
                 .AddTo(_disposablesForSetData);
             Model.shopItems.Value.selectedItem.Subscribe(SubscribeShopItemsSelectedItem)
