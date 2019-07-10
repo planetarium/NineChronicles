@@ -53,8 +53,7 @@ namespace Nekoyume.UI
             foreach (var equipment in _player.equipments)
             {
                 var type = equipment.Data.cls.ToEnumItemType();
-                var slot = equipmentSlots.FindSlot(type);
-                if (slot)
+                if (equipmentSlots.TryGet(type, out var slot));
                     slot.Set(equipment);
             }
 

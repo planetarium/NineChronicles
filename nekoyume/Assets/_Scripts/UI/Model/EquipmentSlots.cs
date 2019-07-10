@@ -16,16 +16,18 @@ namespace Nekoyume.UI.Model
                 throw new NotFoundComponentException<EquipSlot>();
         }
 
-        public EquipSlot FindSlot(ItemBase.ItemType type)
+        public bool TryGet(ItemBase.ItemType type, out EquipSlot slot)
         {
             if (type == ItemBase.ItemType.Ring)
             {
-                return slots.FirstOrDefault(es =>
+                slot = slots.FirstOrDefault(es =>
                            es.type == ItemBase.ItemType.Ring && es.item?.Data is null)
                        ?? slots.First(es => es.type == ItemBase.ItemType.Ring);
+                return slot;
             }
 
-            return slots.FirstOrDefault(es => es.type == type);
+            slot = slots.FirstOrDefault(es => es.type == type);
+            return slot;
         }
 
         public void Clear()

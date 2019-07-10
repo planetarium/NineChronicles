@@ -57,8 +57,7 @@ namespace Nekoyume.UI
             foreach (var equipment in _player.equipments)
             {
                 var type = equipment.Data.cls.ToEnumItemType();
-                var es = equipmentSlots.FindSlot(type);
-                if (es)
+                if (equipmentSlots.TryGet(type, out var es))
                     es.Set(equipment);
             }
 
@@ -268,7 +267,8 @@ namespace Nekoyume.UI
                 return slot;
             }
 
-            return equipmentSlots.FindSlot(type);
+            equipmentSlots.TryGet(type, out var es);
+            return es;
         }
 
         private void SetGlowEquipSlot(bool isActive)
