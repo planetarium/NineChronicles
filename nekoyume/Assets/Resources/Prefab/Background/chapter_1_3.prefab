@@ -147,7 +147,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1432510589
-  m_SortingLayer: 3
+  m_SortingLayer: 5
   m_SortingOrder: 1002
   m_Sprite: {fileID: 21300000, guid: b238c9c5b1881ee4a963b7b859e02a8d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -4762,7 +4762,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1432510589
-  m_SortingLayer: 3
+  m_SortingLayer: 5
   m_SortingOrder: 5
   m_RenderMode: 0
   m_SortMode: 0
@@ -5085,7 +5085,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   autoParallaxSize: 0
   parallaxSize: 9.3625
-  parallaxSpeed: 0.1
+  parallaxSpeed: 0.3
 --- !u!1 &1461096427018574
 GameObject:
   m_ObjectHideFlags: 0
@@ -5133,7 +5133,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   autoParallaxSize: 0
   parallaxSize: 9.3625
-  parallaxSpeed: 0.04
+  parallaxSpeed: 0.21
 --- !u!1 &1465048947505780
 GameObject:
   m_ObjectHideFlags: 0
@@ -5260,7 +5260,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   autoParallaxSize: 1
   parallaxSize: 0
-  parallaxSpeed: -0.9
+  parallaxSpeed: -0.1
 --- !u!1 &1504946222888544
 GameObject:
   m_ObjectHideFlags: 0
@@ -5308,7 +5308,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   autoParallaxSize: 1
   parallaxSize: 0
-  parallaxSpeed: -0.9
+  parallaxSpeed: -0.1
 --- !u!1 &1521366463302228
 GameObject:
   m_ObjectHideFlags: 0
@@ -5612,7 +5612,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1432510589
-  m_SortingLayer: 3
+  m_SortingLayer: 5
   m_SortingOrder: 1002
   m_Sprite: {fileID: 21300000, guid: b238c9c5b1881ee4a963b7b859e02a8d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -5772,7 +5772,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1432510589
-  m_SortingLayer: 3
+  m_SortingLayer: 5
   m_SortingOrder: 1001
   m_Sprite: {fileID: 21300000, guid: 3f687c130be404e4f9eff0b9105fc957, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -5992,7 +5992,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   autoParallaxSize: 1
   parallaxSize: 0
-  parallaxSpeed: 0
+  parallaxSpeed: 0.05
 --- !u!1 &1801470713026040
 GameObject:
   m_ObjectHideFlags: 0
@@ -6161,7 +6161,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4579273280480512}
   m_Layer: 10
-  m_Name: zone_0_2
+  m_Name: chapter_1_3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6253,7 +6253,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1432510589
-  m_SortingLayer: 3
+  m_SortingLayer: 5
   m_SortingOrder: 1001
   m_Sprite: {fileID: 21300000, guid: 3f687c130be404e4f9eff0b9105fc957, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
