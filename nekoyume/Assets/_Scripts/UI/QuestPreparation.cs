@@ -8,6 +8,7 @@ using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
 using Nekoyume.UI.Model;
+using Nekoyume.UI.Module;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -38,7 +39,7 @@ namespace Nekoyume.UI
         {
             _stage = Game.Game.instance.stage;
             _stage.LoadBackground("dungeon");
-            
+
             _player = _stage.GetPlayer(_stage.questPreparationPosition);
             if (ReferenceEquals(_player, null))
             {
@@ -151,14 +152,15 @@ namespace Nekoyume.UI
             AudioController.PlayClick();
         }
 
-        private void SetData(Model.QuestPreparation value)
+        private void SetData(Model.QuestPreparation model)
         {
             _disposablesForSetData.DisposeAllAndClear();
-            Model = value;
-            Model.inventory.Value.selectedItem.Subscribe(inventoryAndItemInfo.inventory.ShowTooltip)
+            Model = model;
+            Model.inventory.Value.selectedItemView.Subscribe(SubscribeInventorySelectedItem)
                 .AddTo(_disposablesForSetData);
-            Model.inventory.Value.onDoubleClickItem.Subscribe(OnClickEquip)
-                .AddTo(_disposablesForSetData);
+            // FixMe. 아이템 툴팁 테스트를 위해서, 아이템 더블 클릭 시 자동으로 장착되는 UX를 꺼둔다.
+//            Model.inventory.Value.onDoubleClickItem.Subscribe(OnClickEquip)
+//                .AddTo(_disposablesForSetData);
             Model.itemInfo.Value.item.Subscribe(OnItemInfoItem).AddTo(_disposablesForSetData);
             Model.itemInfo.Value.onClick.Subscribe(OnClickEquip).AddTo(_disposablesForSetData);
 
@@ -170,6 +172,25 @@ namespace Nekoyume.UI
             inventoryAndItemInfo.Clear();
             Model = null;
             _disposablesForSetData.DisposeAllAndClear();
+        }
+
+        private void SubscribeInventorySelectedItem(InventoryItemView view)
+        {
+            if (view is null)
+            {
+                return;
+            }
+
+            inventoryAndItemInfo.inventory.Tooltip.Show(
+                view.RectTransform,
+                view.Model,
+                value => !view.Model.dimmed.Value,
+                "장착하기",
+                tooltip =>
+                {
+                    OnClickEquip(tooltip.itemInformation.Model.item.Value);
+                    inventoryAndItemInfo.inventory.Tooltip.Close();
+                });
         }
 
         private void OnItemInfoItem(InventoryItem data)
@@ -189,7 +210,7 @@ namespace Nekoyume.UI
             }
         }
 
-        private void OnClickEquip(InventoryItem inventoryItem)
+        private void OnClickEquip(CountableItem inventoryItem)
         {
             var slot = FindSelectedItemSlot();
             if (slot != null)

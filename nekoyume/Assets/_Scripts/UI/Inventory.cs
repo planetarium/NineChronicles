@@ -35,7 +35,15 @@ namespace Nekoyume.UI
         public override void Show()
         {
             Model = new Model.Inventory(States.Instance.currentAvatarState.Value.inventory);
-            Model.selectedItem.Subscribe(inventory.ShowTooltip);
+            Model.selectedItemView.Subscribe(view =>
+            {
+                if (view is null)
+                {
+                    return;
+                }
+                
+                inventory.Tooltip.Show(view.RectTransform, view.Model);
+            });
             
             inventory.SetData(Model);
 

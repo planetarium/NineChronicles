@@ -126,7 +126,7 @@ namespace Nekoyume.UI.Model
                 selectedItem.Value.selected.Value = false;
             }
 
-            selectedItem.Value = shopItem;
+            selectedItem.SetValueAndForceNotify(shopItem);
             selectedItem.Value.selected.Value = true;
         }
 

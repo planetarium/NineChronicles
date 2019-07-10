@@ -15,18 +15,18 @@ namespace Nekoyume.UI.Module
 
         #region override
 
-        public override void SetData(T value)
+        public override void SetData(T model)
         {
-            if (ReferenceEquals(value, null))
+            if (ReferenceEquals(model, null))
             {
                 Clear();
                 return;
             }
 
             _disposablesForSetData.DisposeAllAndClear();
-            base.SetData(value);
-            Data.count.Subscribe(SetCount).AddTo(_disposablesForSetData);
-            Data.countEnabled.Subscribe(countEnabled => countText.enabled = countEnabled).AddTo(_disposablesForSetData);
+            base.SetData(model);
+            Model.count.Subscribe(SetCount).AddTo(_disposablesForSetData);
+            Model.countEnabled.Subscribe(countEnabled => countText.enabled = countEnabled).AddTo(_disposablesForSetData);
 
             UpdateView();
         }
@@ -55,13 +55,13 @@ namespace Nekoyume.UI.Module
 
         private void UpdateView()
         {
-            if (ReferenceEquals(Data, null))
+            if (ReferenceEquals(Model, null))
             {
                 countText.enabled = false;
                 return;
             }
 
-            SetCount(Data.count.Value);
+            SetCount(Model.count.Value);
         }
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Nekoyume.Game.Item;
+using Nekoyume.UI.Module;
 using UniRx;
 using UnityEngine;
 
@@ -22,7 +23,7 @@ namespace Nekoyume.UI.Model
             itemInfo.Value.buttonText.Value = "장착하기";
             itemInfo.Value.buttonEnabledFunc.Value = null;
             
-            this.inventory.Value.selectedItem.Subscribe(SubscribeInventorySelectedItem);
+            this.inventory.Value.selectedItemView.Subscribe(SubscribeInventorySelectedItem);
         }
         
         public void Dispose()
@@ -41,9 +42,16 @@ namespace Nekoyume.UI.Model
             return inventoryItem.item.Value.Data.cls.ToEnumItemType() == type;
         }
         
-        private void SubscribeInventorySelectedItem(InventoryItem value)
+        private void SubscribeInventorySelectedItem(InventoryItemView view)
         {
-            itemInfo.Value.item.Value = value;
+            if (view is null)
+            {
+                itemInfo.Value.item.Value = null;
+                
+                return;
+            }
+            
+            itemInfo.Value.item.Value = view.Model;
         }
     }
 }

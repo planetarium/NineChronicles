@@ -123,12 +123,12 @@ namespace Nekoyume.UI.Module
         {
             foreach (var shopItemView in items)
             {
-                if (shopItemView.Data == null)
+                if (shopItemView.Model == null)
                 {
                     break;
                 }
                 
-                if (shopItemView.Data.productId.Value == id)
+                if (shopItemView.Model.productId.Value == id)
                 {
                     return shopItemView;
                 }
