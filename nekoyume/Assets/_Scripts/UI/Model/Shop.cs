@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Libplanet;
 using Nekoyume.Game.Item;
 using Nekoyume.Model;
+using Nekoyume.UI.Module;
 using UniRx;
 using UnityEngine;
 
@@ -35,9 +36,8 @@ namespace Nekoyume.UI.Model
             itemCountAndPricePopup.Value = new ItemCountAndPricePopup();
 
             state.Subscribe(OnState);
-            this.inventory.Value.selectedItem.Subscribe(OnSelectInventoryItem);
+            this.inventory.Value.selectedItemView.Subscribe(OnSelectInventoryItem);
             this.shopItems.Value.selectedItem.Subscribe(OnSelectShopItem);
-            itemInfo.Value.item.Subscribe(OnItemInfoItem);
             itemInfo.Value.onClick.Subscribe(OnClickItemInfo);
 
             onClickSwitchBuy.Subscribe(_ => state.Value = State.Buy);
@@ -101,13 +101,8 @@ namespace Nekoyume.UI.Model
                     return !inventoryItem.dimmed.Value;
             }
         }
-
-        private void OnItemInfoItem(InventoryItem inventoryItem)
-        {
-            Debug.Log("OnItemInfoItem");
-        }
         
-        private void OnClickItemInfo(InventoryItem inventoryItem)
+        public void OnClickItemInfo(CountableItem inventoryItem)
         {
             switch (inventoryItem)
             {
@@ -154,11 +149,11 @@ namespace Nekoyume.UI.Model
                 inventoryItem.count.Value);
         }
 
-        private void OnSelectInventoryItem(InventoryItem inventoryItem)
+        private void OnSelectInventoryItem(InventoryItemView view)
         {
             if (itemInfo.Value.item.Value is ShopItem)
             {
-                if (ReferenceEquals(inventoryItem, null))
+                if (view is null)
                 {
                     // 초기화 단계에서 `inventory.Value.selectedItem.Subscribe(OnSelectInventoryItem);` 라인을 통해
                     // 구독할 때, 한 번 반드시 이 라인에 들어옵니다.
@@ -169,7 +164,7 @@ namespace Nekoyume.UI.Model
                 shopItems.Value.DeselectAll();
             }
             
-            itemInfo.Value.item.Value = inventoryItem;
+            itemInfo.Value.item.Value = view?.Model;
             itemInfo.Value.priceEnabled.Value = false;
         }
 

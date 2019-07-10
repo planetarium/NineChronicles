@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using Nekoyume.EnumType;
-using Nekoyume.UI.Module;
+using Nekoyume.UI.Model;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
+using ItemInformation = Nekoyume.UI.Module.ItemInformation;
 
 namespace Nekoyume.UI
 {
@@ -22,61 +23,73 @@ namespace Nekoyume.UI
         private readonly List<IDisposable> _disposablesForAwake = new List<IDisposable>();
         private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
         
+        public new Model.ItemInformationTooltip Model { get; private set; }
+        
         protected override void Awake()
         {
             base.Awake();
+            
+            Model = new Model.ItemInformationTooltip();
 
-            closeButton.OnClickAsObservable().Subscribe(_ => { Close(); }).AddTo(_disposablesForAwake);
-            submitButton.OnClickAsObservable().Subscribe(_ => { Close(); }).AddTo(_disposablesForAwake);
+            closeButton.OnClickAsObservable().Subscribe(_ => Close()).AddTo(_disposablesForAwake);
+            submitButton.OnClickAsObservable().Subscribe(_ => Model.onSubmit.OnNext(this)).AddTo(_disposablesForAwake);
         }
 
         private void OnDestroy()
         {
+            Model.Dispose();
+            Model = null;
+            
             _disposablesForAwake.DisposeAllAndClear();
         }
 
-        public override void Show()
+        public void Show(RectTransform target, InventoryItem item)
         {
-            if (Model is null)
+            Show(target, item, null, null, null);
+        }
+        
+        public void Show(RectTransform target, InventoryItem item, Func<CountableItem, bool> submitEnabledFunc, string submitText, Action<ItemInformationTooltip> onSubmit)
+        {
+            if (item is null)
             {
-                Close();
-                
                 return;
             }
             
-            base.Show();
-
+            _disposablesForModel.DisposeAllAndClear();
+            Model.target.Value = target;
+            Model.itemInformation.item.Value = item;
+            Model.submitButtonEnabledFunc.Value = submitEnabledFunc;
+            Model.submitButtonText.Value = submitText;
+            
+            // Show(Model)을 먼저 호출함으로써 Widget.Show()가 호출되고, 게임 오브젝트가 활성화 됨. 그래야 레이아웃 정리가 가능함.
+            Show(Model);
+            // itemInformation UI의 모든 요소에 적절한 값이 들어가야 레이아웃 정리가 유효함.
             itemInformation.SetData(Model.itemInformation);
             
             Model.titleText.SubscribeToText(titleText).AddTo(_disposablesForModel);
-            Model.itemInformation.item.Subscribe(value =>
-            {
-                base.SubscribeTarget(Model.target.Value);
-            }).AddTo(_disposablesForModel);
+            Model.itemInformation.item.Subscribe(value => base.SubscribeTarget(Model.target.Value))
+                .AddTo(_disposablesForModel);
             Model.closeButtonText.Subscribe(value =>
             {
                 if (string.IsNullOrEmpty(value))
                 {
-                    closeGameObject.SetActive(false);
-
                     return;
                 }
                 
                 closeButtonText.text = value;
-                closeGameObject.SetActive(true);
             }).AddTo(_disposablesForModel);
             Model.submitButtonText.Subscribe(value =>
             {
                 if (string.IsNullOrEmpty(value))
                 {
-                    submitGameObject.SetActive(false);
-
                     return;
                 }
                 
                 submitButtonText.text = value;
-                submitGameObject.SetActive(true);
             }).AddTo(_disposablesForModel);
+            Model.submitButtonEnabled.Subscribe(value => submitGameObject.SetActive(value))
+                .AddTo(_disposablesForModel);
+            Model.onSubmit.Subscribe(onSubmit).AddTo(_disposablesForModel);
         }
 
         public override void Close()

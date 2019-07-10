@@ -13,7 +13,7 @@ namespace Nekoyume.UI.Module
 
         public Image iconImage;
 
-        public T Data { get; private set; }
+        public T Model { get; private set; }
 
         #region Mono
         
@@ -29,22 +29,22 @@ namespace Nekoyume.UI.Module
 
         #endregion
 
-        public virtual void SetData(T value)
+        public virtual void SetData(T model)
         {
-            if (ReferenceEquals(value, null))
+            if (ReferenceEquals(model, null))
             {
                 Clear();
                 return;
             }
 
-            Data = value;
+            Model = model;
 
             UpdateView();
         }
 
         public virtual void Clear()
         {
-            Data = null;
+            Model = null;
 
             UpdateView();
         }
@@ -56,14 +56,14 @@ namespace Nekoyume.UI.Module
 
         private void UpdateView()
         {
-            if (ReferenceEquals(Data, null))
+            if (ReferenceEquals(Model, null))
             {
                 iconImage.enabled = false;
                 
                 return;
             }
             
-            var sprite = ItemBase.GetSprite(Data.item.Value);
+            var sprite = ItemBase.GetSprite(Model.item.Value);
             if (ReferenceEquals(sprite, null))
             {
                 throw new FailedToLoadResourceException<Sprite>();

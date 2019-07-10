@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Manager;
 using Nekoyume.Game.Item;
+using Nekoyume.UI.Module;
 using UniRx;
 
 namespace Nekoyume.UI.Model
@@ -26,6 +27,7 @@ namespace Nekoyume.UI.Model
 
         public readonly ReactiveProperty<Inventory> inventory
             = new ReactiveProperty<Inventory>();
+
         public readonly ReactiveProperty<ItemInfo> itemInfo
             = new ReactiveProperty<ItemInfo>();
 
@@ -34,6 +36,7 @@ namespace Nekoyume.UI.Model
 
         public readonly ReactiveCollection<CombinationMaterial> materials =
             new ReactiveCollection<CombinationMaterial>();
+
         public readonly ReactiveProperty<int> openedMaterialCount = new ReactiveProperty<int>();
 
         public readonly ReactiveProperty<bool> readyForCombination = new ReactiveProperty<bool>();
@@ -57,7 +60,7 @@ namespace Nekoyume.UI.Model
             itemCountPopup.Value.titleText.Value = "재료 수량 선택";
             openedMaterialCount.Value = materialCount;
 
-            this.inventory.Value.selectedItem.Subscribe(OnInventorySelectedItem);
+            this.inventory.Value.selectedItemView.Subscribe(OnInventorySelectedItem);
             itemCountPopup.Value.onClickSubmit.Subscribe(OnClickSubmitItemCountPopup);
             materials.ObserveAdd().Subscribe(OnMaterialsAdd);
             materials.ObserveRemove().Subscribe(OnMaterialsRemove);
@@ -87,24 +90,32 @@ namespace Nekoyume.UI.Model
         {
             return false;
         }
-        
-        private void OnInventorySelectedItem(InventoryItem data)
-        {
-            itemInfo.Value.item.Value = data;
 
-            if (!ReferenceEquals(data, null)
-                && data.dimmed.Value)
+        private void OnInventorySelectedItem(InventoryItemView view)
+        {
+            if (view is null)
             {
+                itemInfo.Value.item.Value = null;
+                
                 return;
             }
             
-            RegisterToStagedItems(data);
+            itemInfo.Value.item.Value = view.Model;
+
+            // FixMe. 아이템 툴팁 테스트를 위해서, 아이템 선택 시 자동으로 재료로 등록되는 UX를 꺼둔다.
+//            if (!ReferenceEquals(view.Model, null)
+//                && view.Model.dimmed.Value)
+//            {
+//                return;
+//            }
+//
+//            RegisterToStagedItems(view.Model);
         }
 
         private void OnClickSubmitItemCountPopup(SimpleItemCountPopup data)
         {
-            if (ReferenceEquals(data, null) ||
-                ReferenceEquals(data.item.Value, null))
+            if (ReferenceEquals(data, null)
+                || ReferenceEquals(data.item.Value, null))
             {
                 itemCountPopup.Value.item.Value = null;
                 return;
@@ -114,13 +125,13 @@ namespace Nekoyume.UI.Model
             itemCountPopup.Value.item.Value = null;
         }
 
-        private bool RegisterToStagedItems(CountableItem countEditableItem)
+        public bool RegisterToStagedItems(CountableItem countEditableItem)
         {
             if (ReferenceEquals(countEditableItem, null))
             {
                 return false;
             }
-            
+
             foreach (var material in materials)
             {
                 if (material.item.Value.Data.id != countEditableItem.item.Value.Data.id)
@@ -134,9 +145,9 @@ namespace Nekoyume.UI.Model
                 }
                 else
                 {
-                    material.count.Value = countEditableItem.count.Value;                    
+                    material.count.Value = countEditableItem.count.Value;
                 }
-                
+
                 return true;
             }
 
@@ -175,7 +186,7 @@ namespace Nekoyume.UI.Model
                 {
                     return;
                 }
-                
+
                 materials.Remove(material);
                 AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickCombinationRemoveMaterialItem);
             });
@@ -212,20 +223,19 @@ namespace Nekoyume.UI.Model
             if (!ReferenceEquals(data.item.Value, null))
             {
                 var addedItem = inventory.Value.AddNonFungibleItem((ItemUsable) data.item.Value);
-                inventory.Value.SubscribeOnClick(addedItem);
             }
 
             while (materials.Count > 0)
             {
                 materials.RemoveAt(0);
             }
-            
+
             onShowResultVFX.OnNext(resultPopup.Value);
 
             resultPopup.Value.Dispose();
             resultPopup.Value = null;
         }
-        
+
         private void SetStaged(int id, bool isStaged)
         {
             foreach (var item in inventory.Value.items)
@@ -238,7 +248,7 @@ namespace Nekoyume.UI.Model
                 item.covered.Value = isStaged;
                 item.dimmed.Value = isStaged;
             }
-            
+
             if (!ReferenceEquals(itemInfo.Value.item.Value, null) &&
                 itemInfo.Value.item.Value.item.Value.Data.id == id)
             {

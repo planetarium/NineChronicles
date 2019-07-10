@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Nekoyume.Game.Item;
+using Nekoyume.UI.Module;
 using UniRx;
 
 namespace Nekoyume.UI.Model
@@ -9,11 +9,11 @@ namespace Nekoyume.UI.Model
     public class Inventory : IDisposable
     {
         public readonly ReactiveCollection<InventoryItem> items = new ReactiveCollection<InventoryItem>();
-        public readonly ReactiveProperty<InventoryItem> selectedItem = new ReactiveProperty<InventoryItem>(null);
+        public readonly ReactiveProperty<InventoryItemView> selectedItemView = new ReactiveProperty<InventoryItemView>(null);
         public readonly ReactiveProperty<Func<InventoryItem, bool>> dimmedFunc = new ReactiveProperty<Func<InventoryItem, bool>>();
         public readonly ReactiveProperty<Func<InventoryItem, ItemBase.ItemType, bool>> glowedFunc = new ReactiveProperty<Func<InventoryItem, ItemBase.ItemType, bool>>();
 
-        public readonly Subject<InventoryItem> onDoubleClickItem = new Subject<InventoryItem>();
+        public readonly Subject<InventoryItemView> onDoubleClickItemView = new Subject<InventoryItemView>();
         
         public Inventory(Game.Item.Inventory inventory)
         {
@@ -50,11 +50,11 @@ namespace Nekoyume.UI.Model
         public void Dispose()
         {
             items.DisposeAll();
-            selectedItem.DisposeAll();
+            selectedItemView.Dispose();
             dimmedFunc.Dispose();
             glowedFunc.Dispose();
             
-            onDoubleClickItem.Dispose();
+            onDoubleClickItemView.Dispose();
         }
 
         public InventoryItem AddFungibleItem(ItemBase itemBase, int count)
@@ -116,24 +116,25 @@ namespace Nekoyume.UI.Model
 
         public void DeselectAll()
         {
-            if (ReferenceEquals(selectedItem.Value, null))
+            if (ReferenceEquals(selectedItemView.Value, null))
             {
                 return;
             }
 
-            selectedItem.Value.selected.Value = false;
-            selectedItem.Value = null;
+            selectedItemView.Value.Model.selected.Value = false;
+            selectedItemView.Value = null;
         }
         
-        public void SubscribeOnClick(InventoryItem inventoryItem)
+        public void SubscribeOnClick(InventoryItemView view)
         {
-            if (!ReferenceEquals(selectedItem.Value, null))
+            if (!ReferenceEquals(selectedItemView.Value, null) &&
+                !ReferenceEquals(selectedItemView.Value.Model, null))
             {
-                selectedItem.Value.selected.Value = false;
+                selectedItemView.Value.Model.selected.Value = false;
             }
 
-            selectedItem.SetValueAndForceNotify(inventoryItem);
-            selectedItem.Value.selected.Value = true;
+            selectedItemView.SetValueAndForceNotify(view);
+            selectedItemView.Value.Model.selected.Value = true;
 
             foreach (var item in items)
             {
@@ -185,7 +186,7 @@ namespace Nekoyume.UI.Model
         {
             item.dimmed.Value = dimmedFunc.Value(item);
             item.onClick.Subscribe(SubscribeOnClick);
-            item.onDoubleClick.Subscribe(onDoubleClickItem);
+            item.onDoubleClick.Subscribe(onDoubleClickItemView);
         }
         
         private bool DimmedFunc(InventoryItem inventoryItem)

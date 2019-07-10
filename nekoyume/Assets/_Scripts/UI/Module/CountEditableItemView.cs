@@ -25,7 +25,7 @@ namespace Nekoyume.UI.Module
             editButton.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
-                    Data?.onEdit.OnNext(Data);
+                    Model?.onEdit.OnNext(Model);
                     AudioController.PlayClick();
                 })
                 .AddTo(_disposablesForAwake);
@@ -33,7 +33,7 @@ namespace Nekoyume.UI.Module
             deleteButton.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
-                    Data?.onDelete.OnNext(Data);
+                    Model?.onDelete.OnNext(Model);
                     AudioController.PlayClick();
                 })
                 .AddTo(_disposablesForAwake);
@@ -48,17 +48,17 @@ namespace Nekoyume.UI.Module
 
         #endregion
 
-        public override void SetData(T value)
+        public override void SetData(T model)
         {
-            if (ReferenceEquals(value, null))
+            if (ReferenceEquals(model, null))
             {
                 Clear();
                 return;
             }
 
             _disposablesForSetData.DisposeAllAndClear();
-            base.SetData(value);
-            Data.count.Subscribe(SetCount).AddTo(_disposablesForSetData);
+            base.SetData(model);
+            Model.count.Subscribe(SetCount).AddTo(_disposablesForSetData);
         }
 
         public override void Clear()

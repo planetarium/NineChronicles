@@ -1,4 +1,3 @@
-using System;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Scroller;
 using UnityEngine;
@@ -7,70 +6,53 @@ namespace Nekoyume.UI.Module
 {
     public class Inventory : MonoBehaviour
     {
+        public RectTransform RectTransform { get; private set; }
         public InventoryScrollerController scrollerController;
         
-        private ItemInformationTooltip _tooltip;
-        private Model.ItemInformationTooltip _tooltipModel;
+        public ItemInformationTooltip Tooltip { get; private set; }
         
         #region Mono
 
         protected void Awake()
         {
             this.ComponentFieldsNotNullTest();
-            _tooltipModel = new Model.ItemInformationTooltip();
+            RectTransform = GetComponent<RectTransform>();
         }
 
         private void OnEnable()
         {
-            _tooltip = Widget.Find<ItemInformationTooltip>();
+            Tooltip = Widget.Find<ItemInformationTooltip>();
         }
 
         private void OnDisable()
         {
-            if (!ReferenceEquals(_tooltip, null))
+            if (!ReferenceEquals(Tooltip, null))
             {
-                _tooltip.Close();   
+                Tooltip.Close();   
             }
         }
 
         private void OnDestroy()
         {
-            _tooltipModel.Dispose();
-            _tooltipModel = null;
             Clear();
         }
 
         #endregion
         
-        public void SetData(Model.Inventory data)
+        public void SetData(Model.Inventory model)
         {
-            if (ReferenceEquals(data, null))
+            if (ReferenceEquals(model, null))
             {
                 Clear();
                 return;
             }
             
-            scrollerController.SetData(data.items);
+            scrollerController.SetData(model.items);
         }
 
         public void Clear()
         {
             scrollerController.Clear();
-        }
-
-        public void ShowTooltip(InventoryItem value)
-        {
-            if (value is null)
-            {
-                return;
-            }
-            
-            _tooltipModel.itemInformation.item.Value = value;
-            _tooltipModel.target.Value = GetComponent<RectTransform>();
-            if (!ReferenceEquals(_tooltip, null))
-            {
-                _tooltip.Show(_tooltipModel);   
-            }
         }
     }
 }
