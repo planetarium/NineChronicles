@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
-    public class GrayLoadingScreen : Widget
+    public class GrayLoadingScreen : ScreenWidget
     {
         private const float AlphaToBeginning = 0.5f;
         

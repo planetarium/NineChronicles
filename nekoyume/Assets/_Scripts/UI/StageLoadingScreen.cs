@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
-    public class StageLoadingScreen : Widget
+    public class StageLoadingScreen : ScreenWidget
     {
         private const string Bg1Format = "images/{0}_1";
         private const string Bg2Format = "images/{0}_2";

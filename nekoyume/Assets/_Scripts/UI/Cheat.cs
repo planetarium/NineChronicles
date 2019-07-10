@@ -17,7 +17,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume
 {
-    public class Cheat : Widget
+    public class Cheat : ScreenWidget
     {
         private static Cheat Instance;
 

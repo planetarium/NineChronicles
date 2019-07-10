@@ -4,6 +4,7 @@ namespace Nekoyume.EnumType
     {
         Hud,
         Popup,
+        Screen,
         Tooltip,
         Widget
     }

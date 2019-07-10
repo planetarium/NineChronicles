@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
-    public class LoadingScreen : Widget
+    public class LoadingScreen : ScreenWidget
     {
         public Image loadingImage;
         public Text loadingText;
