@@ -6,6 +6,8 @@ ENV ULF=$ulf
 
 ADD nekoyume /src
 ADD scripts /scripts
+RUN chmod +x /scripts/*.sh
+
 RUN /scripts/build.sh
 
 FROM bitnami/minideb:stretch
