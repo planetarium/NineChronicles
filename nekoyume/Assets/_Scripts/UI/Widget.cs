@@ -40,6 +40,7 @@ namespace Nekoyume.UI
                 switch (widget.WidgetType)
                 {
                     case WidgetType.Popup:
+                    case WidgetType.Screen:
                     case WidgetType.Tooltip:
                     case WidgetType.Widget:
                         if (Dict.ContainsKey(t))

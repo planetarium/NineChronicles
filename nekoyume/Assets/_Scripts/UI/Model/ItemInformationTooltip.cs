@@ -8,6 +8,8 @@ namespace Nekoyume.UI.Model
         public readonly ItemInformation itemInformation;
         
         public readonly ReactiveProperty<string> titleText = new ReactiveProperty<string>();
+        public readonly ReactiveProperty<bool> priceEnabled = new ReactiveProperty<bool>(false);
+        public readonly ReactiveProperty<decimal> price = new ReactiveProperty<decimal>(0m);
         public readonly ReactiveProperty<string> closeButtonText = new ReactiveProperty<string>("닫기");
         public readonly ReactiveProperty<Func<CountableItem, bool>> submitButtonEnabledFunc =
             new ReactiveProperty<Func<CountableItem, bool>>();
@@ -24,11 +26,22 @@ namespace Nekoyume.UI.Model
                 if (item is null)
                 {
                     titleText.Value = "";
+                    
                     return;
                 }
 
                 titleText.Value = item.item.Value.Data.name;
                 item.countEnabledFunc.Value = item2 => false;
+
+                if (!(item is ShopItem shopItem))
+                {
+                    priceEnabled.Value = false;
+                    
+                    return;
+                }
+
+                priceEnabled.Value = true;
+                price.Value = shopItem.price.Value;
             });
             
             submitButtonEnabledFunc.Value = SubmitButtonEnabledFunc;

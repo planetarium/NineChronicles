@@ -23,8 +23,6 @@ namespace Nekoyume.UI.Module
 
         private readonly TimeSpan _timeSpan200Milliseconds = TimeSpan.FromMilliseconds(200);
         
-        public RectTransform RectTransform { get; private set; }
-
         #region Mono
 
         protected override void Awake()
@@ -32,8 +30,6 @@ namespace Nekoyume.UI.Module
             base.Awake();
 
             this.ComponentFieldsNotNullTest();
-
-            RectTransform = GetComponent<RectTransform>();
 
             _button = GetComponent<Button>();
             var buttonClickStream = _button.OnClickAsObservable();

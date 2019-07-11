@@ -1,6 +1,6 @@
-using Nekoyume.Data.Table;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model;
+using Nekoyume.UI.Model;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,7 +13,7 @@ namespace Nekoyume.UI
     /// </summary>
     public class StatusDetail : Widget
     {
-        public GameObject[] equipSlots;
+        public EquipmentSlots equipmentSlots;
         public GameObject textOption;
         public GameObject group;
         public GameObject statusInfo;
@@ -47,17 +47,14 @@ namespace Nekoyume.UI
             var player = _player.model;
 
             // equip slot
+            if (equipmentSlots is null)
+                throw new NotFoundComponentException<EquipmentSlots>();
+
             foreach (var equipment in _player.equipments)
             {
                 var type = equipment.Data.cls.ToEnumItemType();
-                foreach (var slot in equipSlots)
-                {
-                    var es = slot.GetComponent<EquipSlot>();
-                    if (es.type == type)
-                    {
-                        es.Set(equipment);
-                    }
-                }
+                if (equipmentSlots.TryGet(type, out var slot))
+                    slot.Set(equipment);
             }
 
             // status info

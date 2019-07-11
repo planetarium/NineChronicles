@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Nekoyume.Manager;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
+using Nekoyume.Manager;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using UniRx;
@@ -17,10 +17,10 @@ namespace Nekoyume.UI
 {
     public class QuestPreparation : Widget
     {
-        public Module.InventoryAndItemInfo inventoryAndItemInfo;
+        public InventoryAndItemInfo inventoryAndItemInfo;
 
         public EquipSlot[] consumableSlots;
-        public EquipSlot[] equipmentSlots;
+        public EquipmentSlots equipmentSlots;
         public GameObject btnQuest;
         public GameObject equipSlotGlow;
         public Text labelStage;
@@ -31,7 +31,7 @@ namespace Nekoyume.UI
 
         private readonly List<IDisposable> _disposablesForSetData = new List<IDisposable>();
 
-        public Model.QuestPreparation Model { get; private set; }
+        private Model.QuestPreparation Model { get; set; }
 
         #region override
 
@@ -57,13 +57,8 @@ namespace Nekoyume.UI
             foreach (var equipment in _player.equipments)
             {
                 var type = equipment.Data.cls.ToEnumItemType();
-                foreach (var es in equipmentSlots)
-                {
-                    if (es.type == type)
-                    {
-                        es.Set(equipment);
-                    }
-                }
+                if (equipmentSlots.TryGet(type, out var es))
+                    es.Set(equipment);
             }
 
             btnQuest.SetActive(true);
@@ -84,10 +79,7 @@ namespace Nekoyume.UI
                 slot.Unequip();
             }
 
-            foreach (var es in equipmentSlots)
-            {
-                es.Unequip();
-            }
+            equipmentSlots.Clear();
 
             base.Close();
         }
@@ -158,9 +150,6 @@ namespace Nekoyume.UI
             Model = model;
             Model.inventory.Value.selectedItemView.Subscribe(SubscribeInventorySelectedItem)
                 .AddTo(_disposablesForSetData);
-            // FixMe. 아이템 툴팁 테스트를 위해서, 아이템 더블 클릭 시 자동으로 장착되는 UX를 꺼둔다.
-//            Model.inventory.Value.onDoubleClickItem.Subscribe(OnClickEquip)
-//                .AddTo(_disposablesForSetData);
             Model.itemInfo.Value.item.Subscribe(OnItemInfoItem).AddTo(_disposablesForSetData);
             Model.itemInfo.Value.onClick.Subscribe(OnClickEquip).AddTo(_disposablesForSetData);
 
@@ -212,14 +201,14 @@ namespace Nekoyume.UI
 
         private void OnClickEquip(CountableItem inventoryItem)
         {
-            var slot = FindSelectedItemSlot();
+            var type = inventoryItem.item.Value.Data.cls.ToEnumItemType();
+            var slot = FindSelectedItemSlot(type);
             if (slot != null)
             {
                 slot.Set(inventoryItem.item.Value as ItemUsable);
                 SetGlowEquipSlot(false);
             }
 
-            var type = inventoryItem.item.Value.Data.cls.ToEnumItemType();
             AudioController.instance.PlaySfx(type == ItemBase.ItemType.Food
                 ? AudioController.SfxCode.ChainMail2
                 : AudioController.SfxCode.Equipment);
@@ -273,9 +262,8 @@ namespace Nekoyume.UI
                 }).AddTo(this);
         }
 
-        private EquipSlot FindSelectedItemSlot()
+        public EquipSlot FindSelectedItemSlot(ItemBase.ItemType type)
         {
-            var type = Model.itemInfo.Value.item.Value.item.Value.Data.cls.ToEnumItemType();
             if (type == ItemBase.ItemType.Food)
             {
                 var count = consumableSlots
@@ -296,15 +284,8 @@ namespace Nekoyume.UI
                 return slot;
             }
 
-            foreach (var es in equipmentSlots)
-            {
-                if (es.type == type)
-                {
-                    return es;
-                }
-            }
-
-            return null;
+            equipmentSlots.TryGet(type, out var es);
+            return es;
         }
 
         private void SetGlowEquipSlot(bool isActive)
@@ -314,7 +295,8 @@ namespace Nekoyume.UI
             if (!isActive)
                 return;
 
-            var slot = FindSelectedItemSlot();
+            var type = Model.itemInfo.Value.item.Value.item.Value.Data.cls.ToEnumItemType();
+            var slot = FindSelectedItemSlot(type);
             if (slot && slot.transform.parent)
             {
                 equipSlotGlow.transform.SetParent(slot.transform);

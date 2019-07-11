@@ -53,7 +53,7 @@ namespace Nekoyume.Model
         {
             level = 1;
             exp = 0;
-            characterId = 100010;
+            characterId = GameConfig.DefaultAvatarCharacterId;
             worldStage = 1;
         }
 

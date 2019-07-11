@@ -12,6 +12,8 @@ namespace Nekoyume.UI
     public class ItemInformationTooltip : VerticalTooltipWidget<Model.ItemInformationTooltip>
     {
         public Text titleText;
+        public GameObject coinImageContainer;
+        public Text priceText;
         public ItemInformation itemInformation;
         public GameObject closeGameObject;
         public Button closeButton;
@@ -60,15 +62,21 @@ namespace Nekoyume.UI
             Model.itemInformation.item.Value = item;
             Model.submitButtonEnabledFunc.Value = submitEnabledFunc;
             Model.submitButtonText.Value = submitText;
-            
+
             // Show(Model)을 먼저 호출함으로써 Widget.Show()가 호출되고, 게임 오브젝트가 활성화 됨. 그래야 레이아웃 정리가 가능함.
             Show(Model);
             // itemInformation UI의 모든 요소에 적절한 값이 들어가야 레이아웃 정리가 유효함.
             itemInformation.SetData(Model.itemInformation);
             
-            Model.titleText.SubscribeToText(titleText).AddTo(_disposablesForModel);
             Model.itemInformation.item.Subscribe(value => base.SubscribeTarget(Model.target.Value))
                 .AddTo(_disposablesForModel);
+            Model.titleText.SubscribeToText(titleText).AddTo(_disposablesForModel);
+            Model.priceEnabled.Subscribe(value =>
+            {
+                coinImageContainer.SetActive(value);
+                priceText.enabled = value;
+            }).AddTo(_disposablesForModel);
+            Model.price.SubscribeToText(priceText).AddTo(_disposablesForModel);
             Model.closeButtonText.Subscribe(value =>
             {
                 if (string.IsNullOrEmpty(value))

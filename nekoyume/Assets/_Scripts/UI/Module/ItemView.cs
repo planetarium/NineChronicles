@@ -13,6 +13,7 @@ namespace Nekoyume.UI.Module
 
         public Image iconImage;
 
+        public RectTransform RectTransform { get; private set; }
         public T Model { get; private set; }
 
         #region Mono
@@ -20,6 +21,8 @@ namespace Nekoyume.UI.Module
         protected virtual void Awake()
         {
             this.ComponentFieldsNotNullTest();
+            
+            RectTransform = GetComponent<RectTransform>();
         }
 
         protected virtual void OnDestroy()

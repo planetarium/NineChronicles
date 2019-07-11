@@ -253,7 +253,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   autoParallaxSize: 0
   parallaxSize: 15.525
-  parallaxSpeed: 0.04
+  parallaxSpeed: 0.21
 --- !u!1 &1695771540652245621
 GameObject:
   m_ObjectHideFlags: 0
@@ -696,7 +696,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   autoParallaxSize: 0
   parallaxSize: 15.525
-  parallaxSpeed: 0.1
+  parallaxSpeed: 0.3
 --- !u!1 &1696152048006139829
 GameObject:
   m_ObjectHideFlags: 0
@@ -1627,7 +1627,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   autoParallaxSize: 1
   parallaxSize: 0
-  parallaxSpeed: -0.4
+  parallaxSpeed: -0.1
 --- !u!1 &4839351893133056716
 GameObject:
   m_ObjectHideFlags: 0

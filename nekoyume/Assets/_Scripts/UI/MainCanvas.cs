@@ -8,9 +8,10 @@ namespace Nekoyume.UI
     public class MainCanvas : MonoSingleton<MainCanvas>
     {   
         public GameObject hud;
-        public GameObject widget;
         public GameObject popup;
+        public GameObject screen;
         public GameObject tooltip;
+        public GameObject widget;
         
         public Canvas Canvas { get; private set; }
         public RectTransform RectTransform { get; private set; }
@@ -20,13 +21,15 @@ namespace Nekoyume.UI
             switch (widgetType)
             {
                 case WidgetType.Hud:
-                    return MainCanvas.instance.hud.transform;
-                case WidgetType.Widget:
-                    return MainCanvas.instance.widget.transform;
+                    return hud.transform;
                 case WidgetType.Popup:
-                    return MainCanvas.instance.popup.transform;
+                    return popup.transform;
+                case WidgetType.Screen:
+                    return screen.transform;
                 case WidgetType.Tooltip:
-                    return MainCanvas.instance.tooltip.transform;
+                    return tooltip.transform;
+                case WidgetType.Widget:
+                    return widget.transform;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(widgetType), widgetType, null);
             }
@@ -71,7 +74,7 @@ namespace Nekoyume.UI
             // 툴팁류.
             Widget.Create<ItemInformationTooltip>();
 
-            // 로딩창류.
+            // 스크린 영역. 로딩창류.
             Widget.Create<GrayLoadingScreen>();
             Widget.Create<LoadingScreen>(true);
             Widget.Create<StageLoadingScreen>();
