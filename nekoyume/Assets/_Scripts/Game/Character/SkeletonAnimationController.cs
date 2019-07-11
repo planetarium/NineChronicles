@@ -23,7 +23,7 @@ namespace Nekoyume.Game.Character
 
         private Spine.Animation TargetAnimation { get; set; }
 
-        [SpineSlot] public string weaponSlot = "sword_0001";
+        [SpineSlot] public string weaponSlot = "weapon";
 
         [SpineAttachment(slotField: "weaponSlot")]
         public string weaponAttachment;

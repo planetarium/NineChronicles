@@ -5,12 +5,20 @@ namespace Nekoyume
 {
     public class GameConfig
     {
+        public const int SlotCount = 3;
+        
+        #region action
+
+        public const int DefaultAvatarCharacterId = 100010;
+        public const int DefaultAvatarArmorId = 10210000;
+        
         public const float CombinationValueP1 = 30f;
         public const float CombinationValueP2 = 1.2f;
         public const float CombinationValueL1 = 10f;
         public const float CombinationValueL2 = 1f;
         public const float CombinationValueR1 = 2f;
-        public const int SlotCount = 3;
+        
+        #endregion
         
         public static readonly List<int> EquipmentMaterials = new List<int>
         {

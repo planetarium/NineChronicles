@@ -33,7 +33,7 @@ namespace Nekoyume.State
             }
             
             this.name = name ?? "";
-            characterId = 100010;
+            characterId = GameConfig.DefaultAvatarCharacterId;
             level = 1;
             exp = 0;
             inventory = new Inventory();
