@@ -150,9 +150,6 @@ namespace Nekoyume.UI
             Model = model;
             Model.inventory.Value.selectedItemView.Subscribe(SubscribeInventorySelectedItem)
                 .AddTo(_disposablesForSetData);
-            // FixMe. 아이템 툴팁 테스트를 위해서, 아이템 더블 클릭 시 자동으로 장착되는 UX를 꺼둔다.
-//            Model.inventory.Value.onDoubleClickItem.Subscribe(OnClickEquip)
-//                .AddTo(_disposablesForSetData);
             Model.itemInfo.Value.item.Subscribe(OnItemInfoItem).AddTo(_disposablesForSetData);
             Model.itemInfo.Value.onClick.Subscribe(OnClickEquip).AddTo(_disposablesForSetData);
 

@@ -1,6 +1,7 @@
 using System;
 using Libplanet;
 using Nekoyume.Game.Item;
+using Nekoyume.UI.Module;
 using UniRx;
 using UnityEngine;
 
@@ -13,7 +14,7 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<decimal> price = new ReactiveProperty<decimal>();
         public readonly ReactiveProperty<Guid> productId = new ReactiveProperty<Guid>();
         
-        public new readonly Subject<ShopItem> onClick = new Subject<ShopItem>();
+        public new readonly Subject<ShopItemView> onClick = new Subject<ShopItemView>();
         
         public ShopItem(Address sellerAvatarAddress, Game.Item.ShopItem item) : this(sellerAvatarAddress, item.sellerAgentAddress, item.price, item.productId, item.itemUsable)
         {
