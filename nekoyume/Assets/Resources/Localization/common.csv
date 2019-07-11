@@ -13,11 +13,11 @@ SPEECH_COMBINE_2,You want to build a stronger weapon?[newline] Gather a lot of m
 SPEECH_COMBINE_3,Do you know the fact that[newline]there is 4 elemental in the world?,속성이 있다는[newline]사실을 알고 있나?
 SPEECH_COMBINE_4,Don't be too upset.[newline]have you ever heard of a consumable item?,속성무기를 못 만든다고[newline]너무 상심하지 말게.[newline]소모템이라고 들어보았나?
 SPEECH_COMBINE_5,Consumable item disappears once you use it[newline]but it works just as well.,소모템은 한번 쓰면 사라지지만[newline]그만큼 효과가 강력하다오
-SPEECH_COMBINE_6,You want more weapons?[Newline] Make a weapon and synthesize it.,무기를 더 강화하고 싶다고?[newline]같은 무기를 만들어서 합성해보게
+SPEECH_COMBINE_6,You want more weapons?[newline] Make a weapon and synthesize it.,무기를 더 강화하고 싶다고?[newline]같은 무기를 만들어서 합성해보게
 SPEECH_COMBINE_7,The higher the grade. the more options there are…[newline]What? You already know that? Whoo!,높은 등급의 무기일수록[newline]많은 옵션이 붙지..[newline]뭐? 그것까지 알려줄 필욘 없다고? 흥!
 SPEECH_COMBINE_8,They say there's a huge pig who won't die.,죽어도 죽지 않는[newline]돼지가 있다고 하더군..
 SPEECH_RANK_0,Put your name on the Hall of Fame!,영예의 전당에[newline]이름을 올려라!
-SPEECH_RANK_1,To prepare for war[Newline]you have to be stronger!,전쟁에 대비하려면[newline]더욱 강해져야 한다!
+SPEECH_RANK_1,To prepare for war[newline]you have to be stronger!,전쟁에 대비하려면[newline]더욱 강해져야 한다!
 SPEECH_RANK_2,You haven't been in the rankings yet? Hmm... I'm in trouble.,아직 랭킹에 올라본 적이 없다고?[newline]흠… 곤란하군..
 SPEECH_RANK_3,For the glorious cats[newline]the Frey is giving you the prize!,영예로운 고양이들에게는[newline]여신님께서 상을 주신다!
 SPEECH_RANK_4,If Odin hadn't let go of[newline]Rocky's children like that..[newline]Oh! It’s nothing!,오딘님이 로키님의 자식들을[newline]그렇게 내치지만 않았어도…[newline]앗 아무것도 아니다!
@@ -37,6 +37,7 @@ ENEMY_INIT_0_0,Who’s that?,누구냐!
 ENEMY_INIT_0_1,You can't get through here!,이 앞은 못 지나간다!
 ENEMY_INIT_0_2,,
 ENEMY_INIT_0_3,,
+ENEMY_INIT_0_4,,
 PLAYER_SKILL_1_2_0,!Burn them all!,!다 불태워버려라!
 PLAYER_SKILL_3_2_0,!Get rid of it all!,!다 쓸어버려라!
 PLAYER_SKILL_4_2_0,!I'm gonna blow them all up!,!모두 날려버리겠다!
@@ -47,8 +48,8 @@ PLAYER_BOSS_STAGE_1,,
 PLAYER_BOSS_ENCOUNTER_0,Come on!,와라!
 PLAYER_BOSS_ENCOUNTER_1,,
 PLAYER_WIN_0,Great!,좋았어!
-PLAYER_WIN_1,,
-PLAYER_WIN_2,,
+PLAYER_WIN_1,It was hard..,힘들었어..
+PLAYER_WIN_2,Yeah!,야호!
 PLAYER_LOSE_0,Ugh…,으악!
 PLAYER_LOSE_1,,
 ENEMY_SKILL_1_2_0,!Burn them all!,!다 불태워버려라!
@@ -58,12 +59,11 @@ ENEMY_SKILL_2_2_0,!I'm going to destroy it all!,!다 부셔버리겠다!
 ENEMY_SKILL_0_2_0,!You can't avoid this!,!이건 못 피할 걸?
 ENEMY_DAMAGE_0,Ugh!,으악!
 ENEMY_DAMAGE_1,,
-ENEMY_DEAD_0,Ugh…,크흑..
+ENEMY_DEAD_0,Ugh…,으윽…
 ENEMY_DEAD_1,,
 ENEMY_DEAD_2,,
+ENEMY_DEAD_3,,
 ENEMY_201003_0,My head is itchy…,머리가 너무 간지러워..
 ENEMY_201003_1,,
-ENEMY_201003_2,,
 ENEMY_201005_0,I'm sick all over…,온 몸이 아파… 씩씩
 ENEMY_201005_1,,
-ENEMY_201005_2,,
