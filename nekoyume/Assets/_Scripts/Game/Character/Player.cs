@@ -15,8 +15,6 @@ namespace Nekoyume.Game.Character
 {
     public class Player : CharacterBase
     {
-        private const int DefaultSetId = 101000;
-        
         protected override Vector3 DamageTextForce => new Vector3(-0.1f, 0.5f);
         
         public int MP = 0;
@@ -125,7 +123,7 @@ namespace Nekoyume.Game.Character
             if (weapon == null)
                 weapon = model.weapon;
 
-            var itemId = armor?.Data.resourceId ?? DefaultSetId;
+            var itemId = armor?.Data.resourceId ?? GameConfig.DefaultAvatarArmorId;
             if (!ReferenceEquals(animator.Target, null))
             {
                 if (animator.Target.name.Contains(itemId.ToString()))
