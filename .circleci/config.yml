@@ -10,12 +10,12 @@ jobs:
       - run:
           name: Set env
           command: &set_docker_env |
-            echo 'export DOCKER_IMAGE_NAME=$DOCKER_SERVER/$CIRCLE_PROJECT_REPONAME' >> $BASH_ENV
-            echo 'export DOCKER_IMAGE_NAME_WITH_TAG=$DOCKER_IMAGE_NAME:git-$CIRCLE_SHA1' >> $BASH_ENV
+            echo 'export DOCKER_IMAGE_NAME="$DOCKER_SERVER/$CIRCLE_PROJECT_REPONAME"' >> $BASH_ENV
+            echo 'export DOCKER_IMAGE_NAME_WITH_TAG="$DOCKER_IMAGE_NAME:git-$CIRCLE_SHA1"' >> $BASH_ENV
       - run:
           name: Build docker image
           command:
-            docker build -t $DOCKER_IMAGE_NAME_WITH_TAG --build-arg ulf=$ULF .
+            docker build -t "$DOCKER_IMAGE_NAME_WITH_TAG" --build-arg ulf="$ULF" .
   deploy:
     machine:
       image: circleci/classic:edge
@@ -28,12 +28,12 @@ jobs:
       - run:
           name : Login docker server
           command:
-            echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin $DOCKER_SERVER
+            echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin "$DOCKER_SERVER"
       - run:
           name: Push docker image
           command: |
-            docker tag $DOCKER_IMAGE_NAME_WITH_TAG $DOCKER_IMAGE_NAME:latest
-            docker push $DOCKER_IMAGE_NAME
+            docker tag "$DOCKER_IMAGE_NAME_WITH_TAG" "$DOCKER_IMAGE_NAME:latest"
+            docker push "$DOCKER_IMAGE_NAME"
 
 
 workflows:
