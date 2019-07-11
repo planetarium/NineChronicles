@@ -7,6 +7,7 @@ namespace Nekoyume.Data.Table
     public class Recipe : Row
     {
         public int Id;
+        public int ResultId;
         public int Material1;
         public int Material2;
         public int Material3;
