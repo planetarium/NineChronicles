@@ -14,26 +14,35 @@ namespace Nekoyume.UI.Module
         {
             public SimpleCountableItemView itemView;
             public List<Image> elementalTypeImages;
-            public Text optionTitleText;
-            public Text optionDescriptionText;
+            public Text commonText;
         }
 
         [Serializable]
         public struct StatsArea
         {
-            public Image dividerImage;
-            public Text keysText;
+            public RectTransform root;
+            public ItemInformationStat prefab;
+            public List<ItemInformationStat> stats;
+        }
+
+        [Serializable]
+        public struct SkillsArea
+        {
+            public RectTransform root;
+            public ItemInformationSkill prefab;
+            public List<ItemInformationSkill> skills;
         }
 
         [Serializable]
         public struct DescriptionArea
         {
-            public Image dividerImage;
+            public RectTransform root;
             public Text text;
         }
 
         public IconArea iconArea;
         public StatsArea statsArea;
+        public SkillsArea skillsArea;
         public DescriptionArea descriptionArea;
 
         public Model.ItemInformation Model { get; private set; }
@@ -60,6 +69,7 @@ namespace Nekoyume.UI.Module
         {
             UpdateViewIconArea();
             UpdateStatsArea();
+            UpdateSkillsArea();
             UpdateDescriptionArea();
         }
 
@@ -69,25 +79,24 @@ namespace Nekoyume.UI.Module
             {
                 // 아이콘.
                 iconArea.itemView.Clear();
-                
+
                 // 속성.
                 foreach (var image in iconArea.elementalTypeImages)
                 {
                     image.enabled = false;
                 }
-                
-                // 스킬..?
-                iconArea.optionTitleText.enabled = false;
-                iconArea.optionDescriptionText.enabled = false;
-                
+
+                // 텍스트.
+                iconArea.commonText.enabled = false;
+
                 return;
             }
-            
+
             var itemRow = Model.item.Value.item.Value.Data;
-            
+
             // 아이콘.
             iconArea.itemView.SetData(Model.item.Value);
-            
+
             // 속성.
             var sprite = Elemental.GetSprite(itemRow.elemental);
             var elementalCount = itemRow.grade;
@@ -105,18 +114,15 @@ namespace Nekoyume.UI.Module
                 image.enabled = true;
             }
 
-            // 스킬.
-            if (Model.optionalEnabled.Value)
+            // 텍스트.
+            if (Model.item.Value.item.Value.Data.cls.ToEnumItemType() == ItemBase.ItemType.Material)
             {
-                iconArea.optionTitleText.text = GetOptionalTitleText(itemRow.cls);
-                iconArea.optionTitleText.enabled = true;
-                iconArea.optionDescriptionText.text = GetOptionalDescriptionText(itemRow.cls);
-                iconArea.optionDescriptionText.enabled = true;
+                iconArea.commonText.text = "아이템 제작 시 다음 효과 부여";
+                iconArea.commonText.enabled = true;
             }
             else
             {
-                iconArea.optionTitleText.enabled = false;
-                iconArea.optionDescriptionText.enabled = false;
+                iconArea.commonText.enabled = false;
             }
         }
 
@@ -124,51 +130,153 @@ namespace Nekoyume.UI.Module
         {
             if (Model?.item.Value is null)
             {
-                statsArea.dividerImage.enabled = false;
-                statsArea.keysText.enabled = false;
-                
+                statsArea.root.gameObject.SetActive(false);
+
                 return;
             }
 
-            var itemInfo = Model.item.Value.item.Value.ToItemInfo();
-            if (string.IsNullOrEmpty(itemInfo))
+            RemoveStatAll();
+            var statCount = 0;
+            if (Model.item.Value.item.Value is ItemUsable itemUsable)
             {
-                statsArea.dividerImage.enabled = false;
-                statsArea.keysText.enabled = false;
-                
+                foreach (var statMap in itemUsable.Stats.StatMaps)
+                {
+                    if (statMap.Key.Equals("turnSpeed")
+                        || statMap.Key.Equals("attackRange"))
+                    {
+                        continue;
+                    }
+
+                    AddStat(new Model.ItemInformationStat(statMap.Value));
+                    statCount++;
+                }
+            }
+            else
+            {
+                var data = Model.item.Value.item.Value.Data;
+                if (!string.IsNullOrEmpty(data.stat))
+                {
+                    AddStat(new Model.ItemInformationStat(data));
+                    statCount++;
+                }
+            }
+
+            if (statCount <= 0)
+            {
+                statsArea.root.gameObject.SetActive(false);
+
                 return;
             }
-            
-            statsArea.dividerImage.enabled = true;
-            statsArea.keysText.text = itemInfo;
-            statsArea.keysText.enabled = true;
+
+            statsArea.root.gameObject.SetActive(true);
+        }
+
+        private void UpdateSkillsArea()
+        {
+            if (Model?.item.Value is null)
+            {
+                skillsArea.root.gameObject.SetActive(false);
+
+                return;
+            }
+
+            RemoveSkillAll();
+            var statCount = 0;
+            if (Model.item.Value.item.Value is ItemUsable itemUsable)
+            {
+                if (itemUsable.SkillBase != null)
+                {
+                    AddSkill(new Model.ItemInformationSkill(itemUsable.SkillBase));
+                    statCount++;   
+                }
+            }
+            else
+            {
+                var data = Model.item.Value.item.Value.Data;
+                if (data.skillId > 0)
+                {
+                    AddSkill(new Model.ItemInformationSkill(data));
+                    statCount++;
+                }
+            }
+
+            if (statCount <= 0)
+            {
+                skillsArea.root.gameObject.SetActive(false);
+
+                return;
+            }
+
+            skillsArea.root.gameObject.SetActive(true);
         }
 
         private void UpdateDescriptionArea()
         {
             if (Model?.item.Value is null)
             {
-                descriptionArea.dividerImage.enabled = false;
-                descriptionArea.text.enabled = false;
-                
+                descriptionArea.root.gameObject.SetActive(false);
+
                 return;
             }
-            
-            descriptionArea.dividerImage.enabled = true;
+
             descriptionArea.text.text = Model.item.Value.item.Value.Data.description;
-            descriptionArea.text.enabled = true;
+            descriptionArea.root.gameObject.SetActive(true);
         }
-        
-        // ToDo. 아이템에 따라 다른 정보를 그려줘야 함.
-        private string GetOptionalTitleText(string cls)
+
+        private void RemoveStatAll()
         {
-            return "OptionalTitleText";
+            foreach (var stat in statsArea.stats)
+            {
+                stat.Hide();
+            }
         }
-        
-        // ToDo. 아이템에 따라 다른 정보를 그려줘야 함.
-        private string GetOptionalDescriptionText(string cls)
+
+        private void AddStat(Model.ItemInformationStat model)
         {
-            return "OptionalDescriptionText";
+            foreach (var stat in statsArea.stats)
+            {
+                if (stat.IsShow)
+                {
+                    continue;
+                }
+
+                stat.Show(model);
+
+                return;
+            }
+
+            var go = Instantiate(statsArea.prefab.gameObject, statsArea.root);
+            var comp = go.GetComponent<ItemInformationStat>();
+            statsArea.stats.Add(comp);
+            comp.Show(model);
+        }
+
+        private void RemoveSkillAll()
+        {
+            foreach (var skill in skillsArea.skills)
+            {
+                skill.Hide();
+            }
+        }
+
+        private void AddSkill(Model.ItemInformationSkill model)
+        {
+            foreach (var skill in skillsArea.skills)
+            {
+                if (skill.IsShow)
+                {
+                    continue;
+                }
+
+                skill.Show(model);
+
+                return;
+            }
+
+            var go = Instantiate(skillsArea.prefab.gameObject, skillsArea.root);
+            var comp = go.GetComponent<ItemInformationSkill>();
+            skillsArea.skills.Add(comp);
+            comp.Show(model);
         }
     }
 }

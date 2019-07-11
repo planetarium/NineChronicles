@@ -16,7 +16,10 @@ namespace Nekoyume.Game.Item
         public override string ToItemInfo()
         {
             var sb = new StringBuilder();
-            sb.AppendLine($"{Data.elemental} 속성. {Data.stat} 을 최소 {Data.minStat} ~ 최대 {Data.maxStat} 까지 상승시켜준다.");
+            if (!string.IsNullOrEmpty(Data.stat))
+            {
+                sb.AppendLine($"{Data.elemental} 속성. {Data.stat} 을 최소 {Data.minStat} ~ 최대 {Data.maxStat} 까지 상승시켜준다.");   
+            }
 
             if (Data.skillId == 0)
             {

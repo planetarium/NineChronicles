@@ -6,7 +6,12 @@ namespace Nekoyume.Model
 {
     public interface IStatMap
     {
+        string Key { get; }
+        float Value { get; set; }
+        float AdditionalValue { get; set; }
+        int TotalValue { get; }
         string GetInformation();
+        void GetInformation(out string key, out string value);
         void UpdatePlayer(Player player);
     }
 
@@ -16,7 +21,6 @@ namespace Nekoyume.Model
         public string Key { get; }
         public float Value { get; set; }
         public float AdditionalValue { get; set; }
-        // FixMe. 추후에 float형을 사용하도록 수정해야 함.
         public int TotalValue => (int) (Value + AdditionalValue);
 
         public StatMap(string key)
@@ -138,7 +142,7 @@ namespace Nekoyume.Model
                 case "turnSpeed":
                     return "행동력";
                 case "attackRange":
-                    return "공격";
+                    return "공격 거리";
                 default:
                     return "";
             }
@@ -172,26 +176,23 @@ namespace Nekoyume.Model
     }
 
     [Serializable]
-    public class Stats : IStatMap
+    public class Stats
     {
-        private Dictionary<string, StatMap> StatMaps { get; }
+        public IReadOnlyDictionary<string, IStatMap> StatMaps => _statMaps;
 
-        public Stats()
-        {
-            StatMaps = new Dictionary<string, StatMap>();
-        }
+        private readonly Dictionary<string, IStatMap> _statMaps = new Dictionary<string, IStatMap>();
 
         private bool Equals(Stats other)
         {
-            if (StatMaps.Count != other.StatMaps.Count)
+            if (_statMaps.Count != other._statMaps.Count)
             {
                 return false;
             }
 
-            foreach (var pair in StatMaps)
+            foreach (var pair in _statMaps)
             {
-                if (!other.StatMaps.ContainsKey(pair.Key) ||
-                    !other.StatMaps[pair.Key].Equals(pair.Value))
+                if (!other._statMaps.ContainsKey(pair.Key) ||
+                    !other._statMaps[pair.Key].Equals(pair.Value))
                 {
                     return false;
                 }
@@ -210,7 +211,7 @@ namespace Nekoyume.Model
 
         public override int GetHashCode()
         {
-            return (StatMaps != null ? StatMaps.GetHashCode() : 0);
+            return (_statMaps != null ? _statMaps.GetHashCode() : 0);
         }
 
         public void SetStatValue(string key, float value)
@@ -220,12 +221,12 @@ namespace Nekoyume.Model
                 return;
             }
 
-            if (!StatMaps.ContainsKey(key))
+            if (!_statMaps.ContainsKey(key))
             {
-                StatMaps.Add(key, new StatMap(key));
+                _statMaps.Add(key, new StatMap(key));
             }
 
-            StatMaps[key].Value = value;
+            _statMaps[key].Value = value;
         }
 
         public void SetStatAdditionalValue(string key, float additionalValue)
@@ -235,18 +236,18 @@ namespace Nekoyume.Model
                 return;
             }
 
-            if (!StatMaps.ContainsKey(key))
+            if (!_statMaps.ContainsKey(key))
             {
-                StatMaps.Add(key, new StatMap(key));
+                _statMaps.Add(key, new StatMap(key));
             }
 
-            StatMaps[key].AdditionalValue = additionalValue;
+            _statMaps[key].AdditionalValue = additionalValue;
         }
 
         public string GetInformation()
         {
             var sb = new StringBuilder();
-            foreach (var pair in StatMaps)
+            foreach (var pair in _statMaps)
             {
                 var information = pair.Value.GetInformation();
                 if (string.IsNullOrEmpty(information))
@@ -264,7 +265,7 @@ namespace Nekoyume.Model
         {
             var sbKeys = new StringBuilder();
             var sbValues = new StringBuilder();
-            foreach (var pair in StatMaps)
+            foreach (var pair in _statMaps)
             {
                 pair.Value.GetInformation(out var key, out var value);
                 if (string.IsNullOrEmpty(key))
@@ -282,7 +283,7 @@ namespace Nekoyume.Model
 
         public void UpdatePlayer(Player player)
         {
-            foreach (var stat in StatMaps)
+            foreach (var stat in _statMaps)
             {
                 stat.Value.UpdatePlayer(player);
             }
