@@ -22,6 +22,7 @@
  - `--port`        : 사용할 Port를 지정합니다.
  - `--no-miner`    : 마이닝을 사용하지 않습니다.
  - `--peer`        : Peer 를 추가합니다. 추가하려는 Peer가 여럿일 경우 --peer peerA peerB ... 와 같이 추가할 수 있습니다.
+ - `--storage-path`: 데이터를 저장할 경로를 지정합니다.
 
 #### Unity Editor 에서 커맨드라인 옵션 사용
 

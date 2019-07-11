@@ -17,6 +17,7 @@ namespace Tests
             Assert.IsFalse(opt.NoMiner);
             Assert.IsEmpty(opt.Peers);
             Assert.Null(opt.PrivateKey);
+            Assert.Null(opt.StoragePath);
         }
 
         [Test]
@@ -28,6 +29,7 @@ namespace Tests
             Assert.IsFalse(opt.NoMiner);
             Assert.IsEmpty(opt.Peers);
             Assert.AreEqual("abcdefg", opt.PrivateKey);
+            Assert.AreEqual(@"C:\Data", opt.StoragePath);
         }
 
         [Test]
@@ -39,6 +41,7 @@ namespace Tests
             Assert.IsTrue(opt.NoMiner);
             Assert.AreEqual(opt.Peers, new[] { "02ed49dbe0f2c34d9dff8335d6dd9097f7a3ef17dfb5f048382eebc7f451a50aa1,nekoalpha-tester0.koreacentral.cloudapp.azure.com,58598" });
             Assert.AreEqual("abcdefg", opt.PrivateKey);
+            Assert.Null(opt.StoragePath);
         }
     }
 }

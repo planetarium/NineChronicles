@@ -21,6 +21,8 @@ namespace Nekoyume.Helper
 
         public string[] peers = new string[]{ };
 
+        public string storagePath;
+
 
         [Option("private-key", Required = false, HelpText = "The private key to use.")]
         public string PrivateKey { get => privateKey; set => privateKey = value; }
@@ -36,6 +38,9 @@ namespace Nekoyume.Helper
 
         [Option("peer", Required = false, HelpText = "Peers to add. (Usage: --peer peerA peerB ...)")]
         public IEnumerable<string> Peers { get => peers; set => peers = value.ToArray(); }
+
+        [Option("storage-path", Required = false, HelpText = "The path to store game data.")]
+        public string StoragePath { get => storagePath; set => storagePath = value; }
     }
 
     public static class CommnadLineParser
