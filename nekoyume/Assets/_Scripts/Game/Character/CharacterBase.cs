@@ -435,7 +435,8 @@ namespace Nekoyume.Game.Character
             }
             effect.Play();
             yield return new WaitForSeconds(0.5f);
-            
+
+            var isTriggerOn = false;
             for (var i = 0; i < skillInfosCount; i++)
             {
                 var info = skillInfos[i];
@@ -447,8 +448,10 @@ namespace Nekoyume.Game.Character
                     yield return new WaitUntil(() => effect.last.isStopped);
                     yield return new WaitForSeconds(0.3f);
                     effect.Finisher();
+                    isTriggerOn = true;
                 }
-                ProcessAttack(target, info, i == skillInfosCount - 1);
+                
+                ProcessAttack(target, info, isTriggerOn);
             }
             yield return new WaitForSeconds(0.5f);
         }
