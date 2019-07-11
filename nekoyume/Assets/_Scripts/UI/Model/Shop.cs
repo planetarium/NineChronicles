@@ -37,7 +37,7 @@ namespace Nekoyume.UI.Model
 
             state.Subscribe(OnState);
             this.inventory.Value.selectedItemView.Subscribe(OnSelectInventoryItem);
-            this.shopItems.Value.selectedItem.Subscribe(OnSelectShopItem);
+            this.shopItems.Value.selectedItemView.Subscribe(OnSelectShopItem);
             itemInfo.Value.onClick.Subscribe(OnClickItemInfo);
 
             onClickSwitchBuy.Subscribe(_ => state.Value = State.Buy);
@@ -76,18 +76,18 @@ namespace Nekoyume.UI.Model
             }
         }
         
-        private static bool DimmedFuncForSell(InventoryItem inventoryItem)
+        public bool DimmedFuncForSell(InventoryItem inventoryItem)
         {
             return inventoryItem.item.Value.Data.cls == DimmedString;
         }
 
-        private static bool ButtonEnabledFuncForBuy(InventoryItem inventoryItem)
+        public bool ButtonEnabledFuncForBuy(InventoryItem inventoryItem)
         {
             return inventoryItem is ShopItem shopItem &&
                    ReactiveAgentState.Gold.Value >= shopItem.price.Value;
         }
 
-        private bool ButtonEnabledFuncForSell(InventoryItem inventoryItem)
+        public bool ButtonEnabledFuncForSell(InventoryItem inventoryItem)
         {
             switch (inventoryItem)
             {
@@ -168,30 +168,32 @@ namespace Nekoyume.UI.Model
             itemInfo.Value.priceEnabled.Value = false;
         }
 
-        private void OnSelectShopItem(ShopItem shopItem)
+        private void OnSelectShopItem(ShopItemView view)
         {
             if (!(itemInfo.Value.item.Value is ShopItem))
             {
-                if (ReferenceEquals(shopItem, null))
+                if (ReferenceEquals(view, null)
+                    || ReferenceEquals(view.Model, null))
                 {
                     // 초기화 단계에서 `shopItems.Value.selectedItem.Subscribe(OnSelectShopItem);` 라인을 통해
                     // 구독할 때, 한 번 반드시 이 라인에 들어옵니다.
                     // 이때 예외가 발생하지 않아야 해서 수정합니다.
                     return; // throw new UnexpectedOperationException();
                 }
-                
+
                 inventory.Value.DeselectAll();
             }
             
-            itemInfo.Value.item.Value = shopItem;
+            itemInfo.Value.item.Value = view?.Model;
 
-            if (ReferenceEquals(shopItem, null))
+            if (ReferenceEquals(view, null)
+                || ReferenceEquals(view.Model, null))
             {
                 itemInfo.Value.priceEnabled.Value = false;    
             }
             else
             {
-                itemInfo.Value.price.Value = shopItem.price.Value;
+                itemInfo.Value.price.Value = view.Model.price.Value;
                 itemInfo.Value.priceEnabled.Value = true;
             }
         }

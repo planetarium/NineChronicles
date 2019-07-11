@@ -23,7 +23,7 @@ namespace Nekoyume.UI.Module
 
             button.OnClickAsObservable().Subscribe(_ =>
             {
-                Model?.onClick.OnNext(Model);
+                Model?.onClick.OnNext(this);
                 AudioController.instance.PlaySfx(AudioController.SfxCode.Click);
             }).AddTo(_disposablesForAwake);
         }

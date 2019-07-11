@@ -33,7 +33,7 @@ namespace Nekoyume.UI
         public GameObject resultItemVFX;
 
         private readonly List<IDisposable> _disposablesForAwake = new List<IDisposable>();
-        private readonly List<IDisposable> _disposablesForSetData = new List<IDisposable>();
+        private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
 
         private Stage _stage;
         private Player _player;
@@ -128,20 +128,21 @@ namespace Nekoyume.UI
 
         private void SetData(Model.Shop model)
         {
-            _disposablesForSetData.DisposeAllAndClear();
+            _disposablesForModel.DisposeAllAndClear();
             Model = model;
             Model.state.Value = UI.Model.Shop.State.Buy;
-            Model.state.Subscribe(OnState).AddTo(_disposablesForSetData);
+            Model.state.Subscribe(OnState).AddTo(_disposablesForModel);
             Model.inventory.Value.selectedItemView.Subscribe(SubscribeInventorySelectedItem)
-                .AddTo(_disposablesForSetData);
-            Model.shopItems.Value.selectedItem.Subscribe(SubscribeShopItemsSelectedItem)
-                .AddTo(_disposablesForSetData);
-            Model.itemCountAndPricePopup.Value.item.Subscribe(OnPopup).AddTo(_disposablesForSetData);
+                .AddTo(_disposablesForModel);
+            Model.itemInfo.Value.onClick.Subscribe(_ => inventoryAndItemInfo.inventory.Tooltip.Close()).AddTo(_disposablesForModel);
+            Model.shopItems.Value.selectedItemView.Subscribe(SubscribeShopItemsSelectedItem)
+                .AddTo(_disposablesForModel);
+            Model.itemCountAndPricePopup.Value.item.Subscribe(OnPopup).AddTo(_disposablesForModel);
             Model.itemCountAndPricePopup.Value.onClickSubmit.Subscribe(OnClickSubmitItemCountAndPricePopup)
-                .AddTo(_disposablesForSetData);
+                .AddTo(_disposablesForModel);
             Model.itemCountAndPricePopup.Value.onClickCancel.Subscribe(OnClickCloseItemCountAndPricePopup)
-                .AddTo(_disposablesForSetData);
-            Model.onClickClose.Subscribe(_ => Close()).AddTo(_disposablesForSetData);
+                .AddTo(_disposablesForModel);
+            Model.onClickClose.Subscribe(_ => Close()).AddTo(_disposablesForModel);
 
             inventoryAndItemInfo.SetData(Model.inventory.Value, Model.itemInfo.Value);
             shopItems.SetState(Model.state.Value);
@@ -152,7 +153,7 @@ namespace Nekoyume.UI
         {
             shopItems.Clear();
             inventoryAndItemInfo.Clear();
-            _disposablesForSetData.DisposeAllAndClear();
+            _disposablesForModel.DisposeAllAndClear();
             Model = null;
         }
 
@@ -171,6 +172,7 @@ namespace Nekoyume.UI
             }
 
             shopItems.SetState(state);
+            inventoryAndItemInfo.inventory.Tooltip?.Close();
         }
 
         private void SubscribeInventorySelectedItem(InventoryItemView view)
@@ -191,7 +193,7 @@ namespace Nekoyume.UI
                 inventoryAndItemInfo.inventory.Tooltip.Show(
                     view.RectTransform,
                     view.Model,
-                    value => Model.itemInfo.Value.buttonEnabledFunc.Value(view.Model),
+                    value => !Model.DimmedFuncForSell(view.Model),
                     "판매하기",
                     tooltip =>
                     {
@@ -201,13 +203,20 @@ namespace Nekoyume.UI
             }
         }
 
-        private void SubscribeShopItemsSelectedItem(ShopItem model)
+        private void SubscribeShopItemsSelectedItem(ShopItemView view)
         {
-            // ToDo. 상점 측의 아이템을 눌렀을 경우 해당 아이템의 툴팁을 띄운다. 지금은 금액 처리가 안 되어 있어서 꺼둠.
-            return;
+            if (view is null)
+            {
+                return;
+            }
+            
             if (Model.state.Value == UI.Model.Shop.State.Buy)
             {
-                inventoryAndItemInfo.inventory.Tooltip.Show(RectTransform, model, null, "구매하기",
+                inventoryAndItemInfo.inventory.Tooltip.Show(
+                    view.RectTransform,
+                    view.Model,
+                    value => Model.ButtonEnabledFuncForBuy(view.Model),
+                    "구매하기",
                     tooltip =>
                     {
                         Model.OnClickItemInfo(tooltip.itemInformation.Model.item.Value);
@@ -216,7 +225,11 @@ namespace Nekoyume.UI
             }
             else
             {
-                inventoryAndItemInfo.inventory.Tooltip.Show(RectTransform, model, null, "판매 취소하기",
+                inventoryAndItemInfo.inventory.Tooltip.Show(
+                    view.RectTransform, 
+                    view.Model,
+                    value => Model.ButtonEnabledFuncForSell(view.Model),
+                    "판매 취소하기",
                     tooltip =>
                     {
                         Model.OnClickItemInfo(tooltip.itemInformation.Model.item.Value);
@@ -290,8 +303,7 @@ namespace Nekoyume.UI
             Model.inventory.Value.RemoveNonFungibleItem(shopItem.itemUsable);
 
             Model.shopItems.Value.AddShopItem(sellerAvatarAddress, shopItem);
-            var registeredProduct = Model.shopItems.Value.AddRegisteredProduct(sellerAvatarAddress, shopItem);
-            Model.shopItems.Value.OnClickShopItem(registeredProduct);
+            Model.shopItems.Value.AddRegisteredProduct(sellerAvatarAddress, shopItem);
 
             _loadingScreen.Close();
         }
