@@ -23,6 +23,9 @@ namespace Nekoyume.UI
 {
     public class Shop : Widget
     {
+        public CanvasGroup canvasGroup;
+        public RectTransform bg1;
+        public RectTransform right;
         public Button switchBuyButton;
         public Button switchSellButton;
         public InventoryAndItemInfo inventoryAndItemInfo;
@@ -35,10 +38,16 @@ namespace Nekoyume.UI
         private readonly List<IDisposable> _disposablesForAwake = new List<IDisposable>();
         private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
 
+        private float _defaultAnchoredPositionXOfBg1;
+        private float _defaultAnchoredPositionXOfRight;
+        private float _goOutTweenX = 800f;
         private Stage _stage;
+
         private Player _player;
         private ItemCountAndPricePopup _itemCountAndPricePopup;
         private GrayLoadingScreen _loadingScreen;
+
+        private Sequence _sequenceOfShopItems;
 
         public Model.Shop Model { get; private set; }
 
@@ -46,9 +55,9 @@ namespace Nekoyume.UI
 
         protected override void Awake()
         {
+            _defaultAnchoredPositionXOfBg1 = bg1.anchoredPosition.x;
+            _defaultAnchoredPositionXOfRight = right.anchoredPosition.x;
             base.Awake();
-
-            this.ComponentFieldsNotNullTest();
 
             switchBuyButton.onClick.AsObservable().Subscribe(_ =>
                 {
@@ -80,11 +89,7 @@ namespace Nekoyume.UI
 
         public override void Show()
         {
-            _stage = GameObject.Find("Stage").GetComponent<Stage>();
-            if (ReferenceEquals(_stage, null))
-            {
-                throw new NotFoundComponentException<Stage>();
-            }
+            _stage = Game.Game.instance.stage;
 
             _player = _stage.GetPlayer();
             if (!ReferenceEquals(_player, null))
@@ -103,7 +108,7 @@ namespace Nekoyume.UI
             {
                 throw new NotFoundComponentException<LoadingScreen>();
             }
-
+            
             SetData(new Model.Shop(States.Instance.currentAvatarState.Value.inventory, ReactiveShopState.Items));
             base.Show();
 
@@ -130,8 +135,8 @@ namespace Nekoyume.UI
         {
             _disposablesForModel.DisposeAllAndClear();
             Model = model;
-            Model.state.Value = UI.Model.Shop.State.Buy;
-            Model.state.Subscribe(OnState).AddTo(_disposablesForModel);
+            Model.state.Value = UI.Model.Shop.State.Show;
+            Model.state.Subscribe(SubscribeState).AddTo(_disposablesForModel);
             Model.inventory.Value.selectedItemView.Subscribe(SubscribeInventorySelectedItem)
                 .AddTo(_disposablesForModel);
             Model.itemInfo.Value.onClick.Subscribe(_ => inventoryAndItemInfo.inventory.Tooltip.Close()).AddTo(_disposablesForModel);
@@ -151,16 +156,24 @@ namespace Nekoyume.UI
 
         private void Clear()
         {
+            _sequenceOfShopItems?.Kill();
+            bg1.anchoredPosition = new Vector2(_defaultAnchoredPositionXOfBg1, bg1.anchoredPosition.y);
+            right.anchoredPosition = new Vector2(_defaultAnchoredPositionXOfRight , right.anchoredPosition.y);
+            
             shopItems.Clear();
             inventoryAndItemInfo.Clear();
             _disposablesForModel.DisposeAllAndClear();
             Model = null;
         }
 
-        private void OnState(Model.Shop.State state)
+        private void SubscribeState(Model.Shop.State state)
         {
             switch (state)
             {
+                case UI.Model.Shop.State.Show:
+                    shopItems.SetState(state);
+                    Model.state.Value = UI.Model.Shop.State.Buy;
+                    return;
                 case UI.Model.Shop.State.Buy:
                     switchBuyButton.image.sprite = Resources.Load<Sprite>("UI/Textures/button_blue_01");
                     switchSellButton.image.sprite = Resources.Load<Sprite>("UI/Textures/button_black_01");
@@ -171,8 +184,57 @@ namespace Nekoyume.UI
                     break;
             }
 
-            shopItems.SetState(state);
             inventoryAndItemInfo.inventory.Tooltip?.Close();
+            canvasGroup.interactable = false;
+            _sequenceOfShopItems?.Kill();
+            _sequenceOfShopItems = DOTween.Sequence();
+            SetSequenceOfShopItems(true, ref _sequenceOfShopItems);
+            _sequenceOfShopItems.AppendCallback(() => shopItems.SetState(state));
+            SetSequenceOfShopItems(false, ref _sequenceOfShopItems);
+            _sequenceOfShopItems.OnComplete(() => canvasGroup.interactable = true);
+        }
+
+        private void SetSequenceOfShopItems(bool isGoOut, ref Sequence sequence)
+        {
+            var goOutTweenXAbs = Math.Abs(_goOutTweenX);
+            sequence.Append(DOTween
+                .To(
+                    () => bg1.anchoredPosition.x,
+                    value =>
+                    {
+                        var p = bg1.anchoredPosition;
+                        p.x = value;
+                        bg1.anchoredPosition = p;
+                    },
+                    isGoOut
+                        ? _defaultAnchoredPositionXOfBg1 + _goOutTweenX
+                        : _defaultAnchoredPositionXOfBg1,
+                    isGoOut
+                        ? Math.Abs(goOutTweenXAbs - Math.Abs(bg1.anchoredPosition.x - _defaultAnchoredPositionXOfBg1)) /
+                          goOutTweenXAbs
+                        : Math.Abs(goOutTweenXAbs - Math.Abs(_defaultAnchoredPositionXOfBg1 - bg1.anchoredPosition.x)) /
+                          goOutTweenXAbs)
+                .SetEase(isGoOut ? Ease.InQuint : Ease.OutQuint));
+            sequence.Join(DOTween
+                .To(
+                    () => right.anchoredPosition.x,
+                    value =>
+                    {
+                        var p = right.anchoredPosition;
+                        p.x = value;
+                        right.anchoredPosition = p;
+                    },
+                    isGoOut
+                        ? _defaultAnchoredPositionXOfRight + _goOutTweenX
+                        : _defaultAnchoredPositionXOfRight,
+                    isGoOut
+                        ? Math.Abs(goOutTweenXAbs -
+                                   Math.Abs(right.anchoredPosition.x - _defaultAnchoredPositionXOfRight)) /
+                          goOutTweenXAbs
+                        : Math.Abs(goOutTweenXAbs -
+                                   Math.Abs(_defaultAnchoredPositionXOfRight - right.anchoredPosition.x)) /
+                          goOutTweenXAbs)
+                .SetEase(isGoOut ? Ease.InQuint : Ease.OutQuint));
         }
 
         private void SubscribeInventorySelectedItem(InventoryItemView view)
