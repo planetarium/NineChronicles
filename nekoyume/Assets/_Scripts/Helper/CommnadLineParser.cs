@@ -39,7 +39,7 @@ namespace Nekoyume.Helper
         [Option("peer", Required = false, HelpText = "Peers to add. (Usage: --peer peerA peerB ...)")]
         public IEnumerable<string> Peers { get => peers; set => peers = value.ToArray(); }
 
-        [Option("storage-path", Required = false, HelpText = "The path to store a game data.")]
+        [Option("storage-path", Required = false, HelpText = "The path to store game data.")]
         public string StoragePath { get => storagePath; set => storagePath = value; }
     }
 

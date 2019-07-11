@@ -29,7 +29,7 @@ namespace Tests
             Assert.IsFalse(opt.NoMiner);
             Assert.IsEmpty(opt.Peers);
             Assert.AreEqual("abcdefg", opt.PrivateKey);
-            Assert.AreEqual("C:\\Data", opt.StoragePath);
+            Assert.AreEqual(@"C:\Data", opt.StoragePath);
         }
 
         [Test]
