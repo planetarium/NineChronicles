@@ -70,7 +70,17 @@ namespace Nekoyume.Data.Table
                         continue;
                     }
 
-                    string value = arr[index];
+                    string value = String.Empty;
+                    try
+                    {
+                        value = arr[index];
+
+                    }
+                    catch (IndexOutOfRangeException e)
+                    {
+                        Debug.LogError($"Invalid Table: {GetType()}");
+                        throw;
+                    }
                     // 필드 기본값이 설정되지 않으면 NullReferenceException이 발생함.
                     Type fieldType;
                     try

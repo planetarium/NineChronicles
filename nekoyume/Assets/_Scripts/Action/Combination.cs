@@ -130,7 +130,7 @@ namespace Nekoyume.Action
                         continue;
                     }
 
-                    if (!Tables.instance.ItemEquipment.TryGetValue(recipe.Value.Id, out var itemEquipmentRow))
+                    if (!Tables.instance.ItemEquipment.TryGetValue(recipe.Value.ResultId, out var itemEquipmentRow))
                     {
                         return states;
                     }
