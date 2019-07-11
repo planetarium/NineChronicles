@@ -34,8 +34,6 @@ namespace Nekoyume.UI.Module
             Model.secondLineKey.SubscribeToText(secondLineKeyText).AddTo(_disposablesForModel);
             Model.secondLineValue.SubscribeToText(secondLineValueText).AddTo(_disposablesForModel);
 
-            UpdateView();
-            
             gameObject.SetActive(true);
         }
 
@@ -45,10 +43,6 @@ namespace Nekoyume.UI.Module
             
             _disposablesForModel.DisposeAllAndClear();
             Model = null;
-        }
-
-        private void UpdateView()
-        {
         }
     }
 }

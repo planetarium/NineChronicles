@@ -23,8 +23,6 @@ namespace Nekoyume.UI.Module
             Model = model;
             Model.key.SubscribeToText(keyText).AddTo(_disposablesForModel);
             Model.value.SubscribeToText(valueText).AddTo(_disposablesForModel);
-
-            UpdateView();
             
             gameObject.SetActive(true);
         }
@@ -35,10 +33,6 @@ namespace Nekoyume.UI.Module
             
             _disposablesForModel.DisposeAllAndClear();
             Model = null;
-        }
-
-        private void UpdateView()
-        {
         }
     }
 }

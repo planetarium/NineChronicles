@@ -1,5 +1,3 @@
-
-
 using Nekoyume.Model;
 using UniRx;
 using UnityEngine;

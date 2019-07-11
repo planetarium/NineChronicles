@@ -1,15 +1,20 @@
+using System;
 using UniRx;
 
 namespace Nekoyume.UI.Model
 {
-    public class ItemInformation
+    public class ItemInformation : IDisposable
     {
         public readonly ReactiveProperty<CountableItem> item = new ReactiveProperty<CountableItem>();
-        public readonly ReactiveProperty<bool> optionalEnabled = new ReactiveProperty<bool>();
 
         public ItemInformation(CountableItem countableItem = null)
         {
             item.Value = countableItem;
+        }
+
+        public void Dispose()
+        {
+            item.Dispose();
         }
     }
 }
