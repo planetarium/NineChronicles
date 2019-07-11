@@ -37,9 +37,10 @@ namespace Nekoyume.UI
 
         public override void Show()
         {
+            base.Show();
+
             _stage = Game.Game.instance.stage;
             _stage.LoadBackground("dungeon");
-
             _player = _stage.GetPlayer(_stage.questPreparationPosition);
             if (ReferenceEquals(_player, null))
             {
@@ -53,6 +54,7 @@ namespace Nekoyume.UI
             // stop run immediately.
             _player.gameObject.SetActive(false);
             _player.gameObject.SetActive(true);
+            _player.DoFade(1f, 0.3f);
 
             foreach (var equipment in _player.equipments)
             {
@@ -66,8 +68,6 @@ namespace Nekoyume.UI
             var worldMap = Find<WorldMap>();
             worldMap.SelectedStage = States.Instance.currentAvatarState.Value.worldStage;
             OnChangeStage();
-
-            base.Show();
         }
 
         public override void Close()

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using DG.Tweening;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
@@ -242,6 +243,21 @@ namespace Nekoyume.Game.Character
         {
             ShowSpeech("PLAYER_SKILL", (int)(info.Elemental ?? 0), (int)info.Category);
             yield return StartCoroutine(base.CoAnimationCast(info));
+        }
+
+        public void DoFade(float endValue, float sec)
+        {
+            var controller = GetComponentInChildren<SkeletonAnimationController>();
+            DOTween.Sequence()
+                .Append(DOTween.To(
+                    () => controller.skeletonAnimation.skeleton.A,
+                    co => controller.skeletonAnimation.skeleton.A = co, 0, 0f
+                ))
+                .Append(DOTween.To(
+                    () => controller.skeletonAnimation.skeleton.A,
+                    co => controller.skeletonAnimation.skeleton.A = co, endValue, sec
+                ))
+                .Play();
         }
     }
 }
