@@ -331,6 +331,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f01c36e99a948b7adef81942f405cc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  titleText: {fileID: 114979451873184724}
   scrollerController: {fileID: 114800951347434824}
 --- !u!1 &1609947053932822
 GameObject:
@@ -347,7 +348,7 @@ GameObject:
   - component: {fileID: 1061520613905396735}
   - component: {fileID: 8029795721886343986}
   m_Layer: 5
-  m_Name: Title
+  m_Name: TitleText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -16,15 +16,18 @@ using UnityEngine;
 using UnityEngine.UI;
 using Stage = Nekoyume.Game.Stage;
 using System.Collections;
+using Assets.SimpleLocalization;
 
 namespace Nekoyume.UI
 {
     public class Combination : Widget
     {
         public InventoryAndItemInfo inventoryAndItemInfo;
+        public Text materialsTitleText;
         public CombinationMaterialView[] materialViews;
         public Button combinationButton;
         public Image combinationButtonImage;
+        public Text combinationButtonText;
         public Button closeButton;
 
         public GameObject particleVFX;
@@ -49,6 +52,9 @@ namespace Nekoyume.UI
             base.Awake();
 
             this.ComponentFieldsNotNullTest();
+
+            materialsTitleText.text = LocalizationManager.Localize("UI_COMBINATION_MATERIALS");
+            combinationButtonText.text = LocalizationManager.Localize("UI_COMBINATION_ITEM");
 
             combinationButton.OnClickAsObservable()
                 .Subscribe(_ =>
@@ -198,7 +204,7 @@ namespace Nekoyume.UI
                 view.RectTransform,
                 view.Model,
                 value => !view.Model.dimmed.Value,
-                "재료 올리기",
+                LocalizationManager.Localize("UI_COMBINATION_REGISTER_MATERIAL"),
                 tooltip =>
                 {
                     Model.RegisterToStagedItems(tooltip.itemInformation.Model.item.Value);

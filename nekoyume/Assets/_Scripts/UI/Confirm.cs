@@ -20,7 +20,7 @@ namespace Nekoyume.UI
         public Text labelNo;
         public ConfirmDelegate CloseCallback { get; set; }
 
-        public void Show(string title, string content, string btnYes = "UI_YES", string btnNo = "UI_NO",
+        public void Show(string title, string content, string btnYes = "UI_OK", string btnNo = "UI_CANCEL",
             bool localize = false)
         {
             if (localize)

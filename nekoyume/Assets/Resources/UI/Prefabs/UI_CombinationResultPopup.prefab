@@ -2648,7 +2648,8 @@ MonoBehaviour:
   - {fileID: 114839377939859024}
   - {fileID: 114053628835293456}
   - {fileID: 114590833824197778}
-  okButton: {fileID: 114289733729642582}
+  submitButton: {fileID: 114289733729642582}
+  submitButtonText: {fileID: 114231470689273700}
   resultItemVfx: {fileID: 7723229855582671440}
 --- !u!1 &1636495486902114
 GameObject:
@@ -4809,15 +4810,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6943defa54d9f1a46a51bb41a9d0d325, type: 3}
---- !u!1 &7723229855582671440 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2190558253493181965, guid: 6943defa54d9f1a46a51bb41a9d0d325,
-    type: 3}
-  m_PrefabInstance: {fileID: 8451006359757950045}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &7720369806858661938 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2192200704893303919, guid: 6943defa54d9f1a46a51bb41a9d0d325,
+    type: 3}
+  m_PrefabInstance: {fileID: 8451006359757950045}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &7723229855582671440 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2190558253493181965, guid: 6943defa54d9f1a46a51bb41a9d0d325,
     type: 3}
   m_PrefabInstance: {fileID: 8451006359757950045}
   m_PrefabAsset: {fileID: 0}

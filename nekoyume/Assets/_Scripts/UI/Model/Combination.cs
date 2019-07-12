@@ -171,6 +171,30 @@ namespace Nekoyume.UI.Model
                 itemCountPopup.Value.item.Value.minCount.Value = 1;
                 AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickCombinationEditMaterialItem);
             });
+            data.onMinus.Subscribe(obj =>
+            {
+                if (ReferenceEquals(obj, null))
+                {
+                    return;
+                }
+
+                if (obj.count.Value > 1)
+                {
+                    obj.count.Value--;
+                }
+            });
+            data.onPlus.Subscribe(obj =>
+            {
+                if (ReferenceEquals(obj, null))
+                {
+                    return;
+                }
+                
+                if (obj.count.Value < obj.maxCount.Value)
+                {
+                    obj.count.Value++;
+                }
+            });
             data.onDelete.Subscribe(obj =>
             {
                 if (!(obj is CombinationMaterial material))

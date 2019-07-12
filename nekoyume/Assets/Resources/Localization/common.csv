@@ -78,6 +78,15 @@ UI_BATTLE_RETRY,Retry,다시 도전
 UI_BATTLE_RETRY_FORMAT,Do you retry?,다시 도전하겠습니까?
 UI_BATTLE_LOSE,Battle Lose,전투 패배
 UI_N_SECONDS_LATER,{0:0}seconds later,{0:0}초 후,
-UI_YES,YES,확인
-UI_NO,NO,취소
-
+UI_YES,YES,네
+UI_NO,NO,아니오
+UI_OK,OK,확인
+UI_CANCEL,CANCEL,취소
+UI_INVENTORY,Inventory,인벤토리
+UI_COMBINATION_MATERIALS,Materials,재료 리스트
+UI_COMBINATION_REGISTER_MATERIAL,Register Material,재료 올리기
+UI_DELETE,Delete,삭제하기
+UI_COMBINATION_ITEM,Combination Item,아이템 제작하기
+UI_COMBINATION_ERROR,Combination Error,조합 에러
+UI_COMBINATION_SUCCESS,Combination Success!,조합 성공!
+UI_COMBINATION_FAIL,Combination Fail,조합 실패
