@@ -170,6 +170,13 @@ namespace Nekoyume.UI
                 return;
             }
 
+            if (inventoryAndItemInfo.inventory.Tooltip.Model.target.Value == view.RectTransform)
+            {
+                inventoryAndItemInfo.inventory.Tooltip.Close();
+
+                return;
+            }
+
             inventoryAndItemInfo.inventory.Tooltip.Show(
                 view.RectTransform,
                 view.Model,

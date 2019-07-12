@@ -103,6 +103,8 @@ namespace Nekoyume.UI
         public override void Close()
         {
             _disposablesForModel.DisposeAllAndClear();
+            Model.target.Value = null;
+            Model.itemInformation.item.Value = null;
             
             base.Close();
         }

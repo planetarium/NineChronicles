@@ -243,6 +243,13 @@ namespace Nekoyume.UI
             {
                 return;
             }
+            
+            if (inventoryAndItemInfo.inventory.Tooltip.Model.target.Value == view.RectTransform)
+            {
+                inventoryAndItemInfo.inventory.Tooltip.Close();
+
+                return;
+            }
 
             if (Model.state.Value == UI.Model.Shop.State.Buy)
             {
@@ -269,6 +276,13 @@ namespace Nekoyume.UI
         {
             if (view is null)
             {
+                return;
+            }
+            
+            if (inventoryAndItemInfo.inventory.Tooltip.Model.target.Value == view.RectTransform)
+            {
+                inventoryAndItemInfo.inventory.Tooltip.Close();
+
                 return;
             }
             
