@@ -28,19 +28,24 @@ namespace Nekoyume.Game
 
     public class Game : MonoSingleton<Game>
     {
+        public LocalizationManager.LanguageType languageType = LocalizationManager.LanguageType.English;
         public Stage stage;
-        
+
         protected override void Awake()
         {
             base.Awake();
-            
+
             Screen.SetResolution(GameConfig.ScreenSize.x, GameConfig.ScreenSize.y, FullScreenMode.Windowed);
             Tables.instance.EmptyMethod();
-            AgentController.Initialize(AgentInitialized);
-            
+#if UNITY_EDITOR
+            LocalizationManager.Read(languageType);
+#else
             LocalizationManager.Read();
+#endif
+            MainCanvas.instance.Initialize();
+            AgentController.Initialize(AgentInitialized);
             AudioController.instance.Initialize();
-            
+
             Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
         }
 

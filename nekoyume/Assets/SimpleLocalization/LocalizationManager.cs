@@ -6,48 +6,77 @@ using UnityEngine;
 
 namespace Assets.SimpleLocalization
 {
-	/// <summary>
-	/// Localization manager.
-	/// </summary>
+    /// <summary>
+    /// Localization manager.
+    /// </summary>
     public static class LocalizationManager
     {
-		/// <summary>
-		/// Fired when localization changed.
-		/// </summary>
-        public static event Action LocalizationChanged = () => { }; 
-
-        private static readonly Dictionary<string, Dictionary<string, string>> Dictionary = new Dictionary<string, Dictionary<string, string>>();
-        private static string _language = "English";
-
-		/// <summary>
-		/// Get or set language.
-		/// </summary>
-        public static string Language
+        public enum LanguageType
         {
-            get { return _language; }
-            set { _language = value; LocalizationChanged(); }
+            English,
+            Korean
         }
 
-		/// <summary>
-		/// Set default language.
-		/// </summary>
-        public static void AutoLanguage()
+        /// <summary>
+        /// Fired when localization changed.
+        /// </summary>
+        public static event Action LocalizationChanged = delegate { };
+
+        public const LanguageType DefaultLanguage = LanguageType.English; 
+        private static readonly Dictionary<LanguageType, Dictionary<string, string>> Dictionary =
+            new Dictionary<LanguageType, Dictionary<string, string>>();
+
+        private static LanguageType _language = DefaultLanguage;
+
+        /// <summary>
+        /// Get or set language.
+        /// </summary>
+        public static LanguageType Language
         {
-            string systemLang = Application.systemLanguage.ToString();
-            if (Dictionary.ContainsKey(systemLang))
+            get => _language;
+            set
             {
-                Language = systemLang;
-            }
-            else
-            {
-                Language = "English";
+                _language = value;
+                LocalizationChanged();
             }
         }
 
-		/// <summary>
-		/// Read localization spreadsheets.
-		/// </summary>
-		public static void Read(string path = "Localization")
+        public static LanguageType SystemLanguage
+        {
+            get
+            {
+                var systemLang = Application.systemLanguage.ToString();
+                return !Enum.TryParse<LanguageType>(systemLang, out var languageType)
+                    ? DefaultLanguage
+                    : languageType;
+            }
+        }
+
+        /// <summary>
+        /// Read localization spreadsheets.
+        /// </summary>
+        public static void Read(string path = "Localization")
+        {
+            if (Dictionary.Count > 0) return;
+
+            ReadInternal();
+            var languageType = SystemLanguage;
+            Language = Dictionary.ContainsKey(languageType)
+                ? languageType
+                : DefaultLanguage;
+        }
+        
+        public static void Read(LanguageType languageType, string path = "Localization")
+        {
+            if (Dictionary.Count > 0) return;
+
+            ReadInternal();
+            Language = Dictionary.ContainsKey(languageType)
+                ? languageType
+                : DefaultLanguage;
+        }
+        
+        private static void ReadInternal(string path = "Localization")
         {
             if (Dictionary.Count > 0) return;
 
@@ -60,38 +89,55 @@ namespace Assets.SimpleLocalization
 
                 foreach (Match match in matches)
                 {
-					text = text.Replace(match.Value, match.Value.Replace("\"", null).Replace(",", "[comma]").Replace("\n", "[newline]"));
+                    text = text.Replace(match.Value,
+                        match.Value.Replace("\"", null).Replace(",", "[comma]").Replace("\n", "[newline]"));
                 }
 
-                var lines = text.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
-				var languages = lines[0].Split(',').Select(i => i.Trim()).ToList();
-
-				for (var i = 1; i < languages.Count; i++)
-                {
-                    if (!Dictionary.ContainsKey(languages[i]))
+                var lines = text.Split(new[] {Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries);
+                var languages = lines[0]
+                    .Split(',')
+                    .Where((value, index) => index > 0)
+                    .Select(value =>
                     {
-                        Dictionary.Add(languages[i], new Dictionary<string, string>());
+                        value = value.Trim();
+                        if (!Enum.TryParse<LanguageType>(value, out var languageType))
+                        {
+                            throw new InvalidCastException(value);
+                        }
+
+                        return languageType;
+                    })
+                    .ToList();
+
+                foreach (var languageType in languages)
+                {
+                    if (!Dictionary.ContainsKey(languageType))
+                    {
+                        Dictionary.Add(languageType, new Dictionary<string, string>());
                     }
                 }
-				
+
                 for (var i = 1; i < lines.Length; i++)
                 {
-					var columns = lines[i].Split(',').Select(j => j.Trim()).Select(j => j.Replace("[comma]", ",").Replace("[newline]", "\n")).ToList();
-					var key = columns[0];
-
-                    for (var j = 1; j < languages.Count; j++)
+                    var columns = lines[i]
+                        .Split(',')
+                        .Select(j => j
+                            .Trim()
+                            .Replace("[comma]", ",")
+                            .Replace("[newline]", "\n"))
+                        .ToList();
+                    var key = columns[0];
+                    for (var j = 0; j < languages.Count; j++)
                     {
-                        Dictionary[languages[j]].Add(key, columns[j]);
+                        Dictionary[languages[j]].Add(key, columns[j + 1]);
                     }
                 }
             }
-
-            AutoLanguage();
         }
 
-		/// <summary>
-		/// Get localized value by localization key.
-		/// </summary>
+        /// <summary>
+        /// Get localized value by localization key.
+        /// </summary>
         public static string Localize(string localizationKey)
         {
             if (Dictionary.Count == 0)
@@ -100,15 +146,16 @@ namespace Assets.SimpleLocalization
             }
 
             if (!Dictionary.ContainsKey(Language)) throw new KeyNotFoundException("Language not found: " + Language);
-            if (!Dictionary[Language].ContainsKey(localizationKey)) throw new KeyNotFoundException("Translation not found: " + localizationKey);
+            if (!Dictionary[Language].ContainsKey(localizationKey))
+                throw new KeyNotFoundException("Translation not found: " + localizationKey);
 
             return Dictionary[Language][localizationKey];
         }
 
-	    /// <summary>
-	    /// Get localized value by localization key.
-	    /// </summary>
-		public static string Localize(string localizationKey, params object[] args)
+        /// <summary>
+        /// Get localized value by localization key.
+        /// </summary>
+        public static string Localize(string localizationKey, params object[] args)
         {
             var pattern = Localize(localizationKey);
 
@@ -132,13 +179,14 @@ namespace Assets.SimpleLocalization
 
             if (!Dictionary.ContainsKey(Language)) throw new KeyNotFoundException("Language not found: " + Language);
 
-            int count = 0;
+            var count = 0;
             while (true)
             {
                 if (!Dictionary[Language].ContainsKey($"{localizationKey}{count}"))
                 {
                     return count;
                 }
+
                 count++;
             }
         }
