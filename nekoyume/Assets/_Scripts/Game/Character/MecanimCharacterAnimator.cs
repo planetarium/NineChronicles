@@ -128,7 +128,7 @@ namespace Nekoyume.Game.Character
                 return;
             }
             
-            Animator.SetBool(nameof(CharacterAnimation.Type.Die), true);
+            Animator.Play(nameof(CharacterAnimation.Type.Die), _baseLayerIndex, 0f);
         }
 
         public override void Disappear()

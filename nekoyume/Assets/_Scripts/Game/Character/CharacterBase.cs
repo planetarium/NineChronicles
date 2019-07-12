@@ -220,7 +220,7 @@ namespace Nekoyume.Game.Character
             );
         }
 
-        public virtual IEnumerator CoProcessDamage(Model.Skill.SkillInfo info)
+        public virtual IEnumerator CoProcessDamage(Model.Skill.SkillInfo info, bool isConsiderDie)
         {
             var dmg = info.Effect;
 
@@ -229,8 +229,14 @@ namespace Nekoyume.Game.Character
 
             HP -= dmg;
             UpdateHpBar();
-
-            animator.Hit();
+            if (isConsiderDie && IsDead())
+            {
+                StartCoroutine(Dying());
+            }
+            else
+            {
+                animator.Hit();
+            }
         }
 
         protected virtual void OnDead()
@@ -333,10 +339,10 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        protected virtual void ProcessAttack(CharacterBase target, Model.Skill.SkillInfo skill)
+        protected virtual void ProcessAttack(CharacterBase target, Model.Skill.SkillInfo skill, bool isConsiderDie)
         {
             target.StopRun();
-            StartCoroutine(target.CoProcessDamage(skill));
+            StartCoroutine(target.CoProcessDamage(skill, isConsiderDie));
         }
 
         private void ProcessHeal(CharacterBase target, Model.Skill.SkillInfo info)
@@ -402,41 +408,38 @@ namespace Nekoyume.Game.Character
             yield return StartCoroutine(CoAnimationAttack());
 
             var skillInfos = infos.ToList();
-            foreach (var info in skillInfos)
+            var skillInfosCount = skillInfos.Count;
+            for (var i = 0; i < skillInfosCount; i++)
             {
+                var info = skillInfos[i];
                 var target = Game.instance.stage.GetCharacter(info.Target);
-                ProcessAttack(target, info);
+                ProcessAttack(target, info, i == skillInfosCount - 1);
             }
-
-            foreach (var info in skillInfos)
-            {
-                var target = Game.instance.stage.GetCharacter(info.Target);
-                if (target.IsDead())
-                    StartCoroutine(target.Dying());
-            }
-
         }
 
         public IEnumerator CoAreaAttack(IEnumerable<Model.Skill.SkillInfo> infos)
         {
             var skillInfos = infos.ToList();
-            var skillInfo = skillInfos.First();
+            var skillInfosFirst = skillInfos.First();
+            var skillInfosCount = skillInfos.Count;
 
-            yield return StartCoroutine(CoAnimationCast(skillInfo));
+            yield return StartCoroutine(CoAnimationCast(skillInfosFirst));
 
-            var effectTarget = Game.instance.stage.GetCharacter(skillInfo.Target);
-            var effect = Game.instance.stage.skillController.Get<SkillAreaVFX>(effectTarget, skillInfo);
+            var effectTarget = Game.instance.stage.GetCharacter(skillInfosFirst.Target);
+            var effect = Game.instance.stage.skillController.Get<SkillAreaVFX>(effectTarget, skillInfosFirst);
             Model.Skill.SkillInfo trigger = null;
             if (effect.finisher)
             {
                 var count = FindObjectsOfType(effectTarget.GetType()).Length;
-                trigger = skillInfos.Skip(skillInfos.Count - count).First();
+                trigger = skillInfos.Skip(skillInfosCount - count).First();
             }
             effect.Play();
             yield return new WaitForSeconds(0.5f);
 
-            foreach (var info in skillInfos)
+            var isTriggerOn = false;
+            for (var i = 0; i < skillInfosCount; i++)
             {
+                var info = skillInfos[i];
                 var target = Game.instance.stage.GetCharacter(info.Target);
                 yield return new WaitForSeconds(0.1f);
                 if (trigger == info)
@@ -445,15 +448,10 @@ namespace Nekoyume.Game.Character
                     yield return new WaitUntil(() => effect.last.isStopped);
                     yield return new WaitForSeconds(0.3f);
                     effect.Finisher();
+                    isTriggerOn = true;
                 }
-                ProcessAttack(target, info);
-            }
-
-            foreach (var info in skillInfos)
-            {
-                var target = Game.instance.stage.GetCharacter(info.Target);
-                if (target.IsDead())
-                    StartCoroutine(target.Dying());
+                
+                ProcessAttack(target, info, isTriggerOn);
             }
             yield return new WaitForSeconds(0.5f);
         }
@@ -461,10 +459,13 @@ namespace Nekoyume.Game.Character
         public IEnumerator CoDoubleAttack(IEnumerable<Model.Skill.SkillInfo> infos)
         {
             var skillInfos = infos.ToList();
-            foreach (var info in skillInfos)
+            var skillInfosFirst = skillInfos.First();
+            var skillInfosCount = skillInfos.Count;
+            for (var i = 0; i < skillInfosCount; i++)
             {
+                var info = skillInfos[i];
                 var target = Game.instance.stage.GetCharacter(info.Target);
-                var first = skillInfos.First() == info;
+                var first = skillInfosFirst == info;
                 var effect = Game.instance.stage.skillController.Get<SkillDoubleVFX>(target, info);
 
                 yield return StartCoroutine(CoAnimationAttack());
@@ -476,40 +477,27 @@ namespace Nekoyume.Game.Character
                 {
                     effect.SecondStrike();
                 }
-                ProcessAttack(target, info);
+                ProcessAttack(target, info, i == skillInfosCount - 1);
             }
-
-            foreach (var info in skillInfos)
-            {
-                var target = Game.instance.stage.GetCharacter(info.Target);
-                if (target.IsDead())
-                    StartCoroutine(target.Dying());
-            }
-
             yield return new WaitForSeconds(1.2f);
         }
 
         public IEnumerator CoBlow(IEnumerable<Model.Skill.SkillInfo> infos)
         {
             var skillInfos = infos.ToList();
+            var skillInfosCount = skillInfos.Count;
 
             yield return StartCoroutine(CoAnimationCast(skillInfos.First()));
 
             yield return StartCoroutine(CoAnimationAttack());
 
-            foreach (var info in skillInfos)
+            for (var i = 0; i < skillInfosCount; i++)
             {
+                var info = skillInfos[i];
                 var target = Game.instance.stage.GetCharacter(info.Target);
                 var effect = Game.instance.stage.skillController.Get<SkillBlowVFX>(target, info);
                 effect.Play();
-                ProcessAttack(target, info);
-            }
-
-            foreach (var info in skillInfos)
-            {
-                var target = Game.instance.stage.GetCharacter(info.Target);
-                if (target.IsDead())
-                    StartCoroutine(target.Dying());
+                ProcessAttack(target, info, i == skillInfosCount - 1);
             }
         }
 
