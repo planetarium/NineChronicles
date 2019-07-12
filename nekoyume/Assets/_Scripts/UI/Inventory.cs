@@ -42,6 +42,13 @@ namespace Nekoyume.UI
                     return;
                 }
                 
+                if (inventory.Tooltip.Model.target.Value == view.RectTransform)
+                {
+                    inventory.Tooltip.Close();
+
+                    return;
+                }
+                
                 inventory.Tooltip.Show(view.RectTransform, view.Model);
             });
             

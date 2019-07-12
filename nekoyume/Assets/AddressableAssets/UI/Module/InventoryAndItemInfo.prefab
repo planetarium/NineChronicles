@@ -67,7 +67,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &8650325326368388531
 RectTransform:
   m_ObjectHideFlags: 0
@@ -245,6 +245,11 @@ PrefabInstance:
       propertyPath: m_Text
       value: "\uC7A5\uCC29\uD558\uAE30"
       objectReference: {fileID: 0}
+    - target: {fileID: 114428009120201846, guid: 24be3cca04e714bcfb34f73bac53010d,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 24be3cca04e714bcfb34f73bac53010d, type: 3}
 --- !u!224 &2836705271473988834 stripped
@@ -395,6 +400,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Color.b
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7020134870470808525, guid: a30f6d5b592354710aaf714b378249c2,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7020134870470808525, guid: a30f6d5b592354710aaf714b378249c2,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a30f6d5b592354710aaf714b378249c2, type: 3}
