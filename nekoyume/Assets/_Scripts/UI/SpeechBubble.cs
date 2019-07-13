@@ -86,10 +86,17 @@ namespace Nekoyume.UI
                 textSize.rectTransform.DOScale(0.0f, 0.0f);
                 textSize.rectTransform.DOScale(1.0f, bubbleTweenTime).SetEase(Ease.OutBack);
                 
-                var seq = DOTween.Sequence();
-                seq.Append(bubbleContainer.DOScale(1.05f, 2.0f));
-                seq.Append(bubbleContainer.DOScale(1.0f, 2.0f));
-                seq.Play();
+                var tweenScale = DOTween.Sequence();
+                tweenScale.Append(bubbleContainer.DOScale(1.1f, 1.4f));
+                tweenScale.Append(bubbleContainer.DOScale(1.0f, 1.4f));
+                tweenScale.SetLoops(3);
+                tweenScale.Play();
+
+                var tweenMoveBy = DOTween.Sequence();
+                tweenMoveBy.Append(textSize.transform.DOBlendableLocalMoveBy(new Vector3(0.0f, 6.0f), 1.4f));
+                tweenMoveBy.Append(textSize.transform.DOBlendableLocalMoveBy(new Vector3(0.0f, -6.0f), 1.4f));
+                tweenMoveBy.SetLoops(3);
+                tweenMoveBy.Play();
 
                 yield return new WaitForSeconds(bubbleTweenTime);
                 for (int i = 1; i <= speech.Length; ++i)
@@ -117,6 +124,7 @@ namespace Nekoyume.UI
             yield return new WaitForSeconds(speechBreakTime);
 
             bubbleContainer.DOKill();
+            textSize.transform.DOKill();
             gameObject.SetActive(false);
         }
 
