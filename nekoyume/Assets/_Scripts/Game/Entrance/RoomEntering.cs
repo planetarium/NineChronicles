@@ -59,6 +59,9 @@ namespace Nekoyume.Game.Entrance
             playerComp.RunSpeed = 0.0f;
             playerComp.animator.Idle();
 
+            var dialog = Widget.Find<Dialog>();
+            dialog.Show(1);
+
             Destroy(this);
         }
     }
