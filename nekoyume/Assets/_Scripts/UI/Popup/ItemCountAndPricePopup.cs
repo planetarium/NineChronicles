@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Assets.SimpleLocalization;
 using UniRx;
 using UnityEngine.UI;
 
@@ -8,17 +9,17 @@ namespace Nekoyume.UI
     public class ItemCountAndPricePopup : ItemCountPopup<Model.ItemCountAndPricePopup>
     {
         public InputField priceInputField;
-        
+
         private Model.ItemCountAndPricePopup _data;
         private readonly List<IDisposable> _disposablesForAwake = new List<IDisposable>();
         private readonly List<IDisposable> _disposablesForSetData = new List<IDisposable>();
-        
+
         #region Mono
 
         protected override void Awake()
         {
             base.Awake();
-            
+
             this.ComponentFieldsNotNullTest();
 
             priceInputField.onValueChanged.AsObservable()
@@ -28,6 +29,7 @@ namespace Nekoyume.UI
                     {
                         price = 0;
                     }
+
                     _data.price.Value = price;
                 }).AddTo(_disposablesForAwake);
         }
@@ -35,17 +37,17 @@ namespace Nekoyume.UI
         protected override void OnDestroy()
         {
             base.OnDestroy();
-            
+
             _disposablesForAwake.DisposeAllAndClear();
             Clear();
         }
-        
+
         #endregion
 
         public override void Pop(Model.ItemCountAndPricePopup data)
         {
             base.Pop(data);
-            
+
             if (ReferenceEquals(data, null))
             {
                 return;
@@ -61,14 +63,15 @@ namespace Nekoyume.UI
                 Clear();
                 return;
             }
-            
+
             _disposablesForSetData.DisposeAllAndClear();
             _data = data;
-            _data.priceInteractable.Subscribe(interactable => priceInputField.interactable = interactable).AddTo(_disposablesForSetData);
+            _data.priceInteractable.Subscribe(interactable => priceInputField.interactable = interactable)
+                .AddTo(_disposablesForSetData);
 
             UpdateView();
         }
-        
+
         private void Clear()
         {
             _disposablesForSetData.DisposeAllAndClear();

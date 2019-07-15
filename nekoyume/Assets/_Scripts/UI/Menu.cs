@@ -5,15 +5,20 @@ using Nekoyume.UI.Module;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using Assets.SimpleLocalization;
 
 namespace Nekoyume.UI
 {
     public class Menu : Widget
     {
         public GameObject btnQuest;
-        public GameObject btnCombine;
+        public Text btnQuestText;
+        public GameObject btnCombination;
+        public Text btnCombinationText;
         public GameObject btnShop;
-        public GameObject btnTemple;
+        public Text btnShopText;
+        public GameObject btnRanking;
+        public Text btnRankingText;
         public Text LabelInfo;
         public SpeechBubble[] SpeechBubbles;
 
@@ -22,6 +27,11 @@ namespace Nekoyume.UI
         protected override void Awake()
         {
             base.Awake();
+            
+            btnQuestText.text = LocalizationManager.Localize("UI_QUEST");
+            btnCombinationText.text = LocalizationManager.Localize("UI_COMBINATION");
+            btnShopText.text = LocalizationManager.Localize("UI_SHOP");
+            btnRankingText.text = LocalizationManager.Localize("UI_RANKING");
 
             Stage = GameObject.Find("Stage").GetComponent<Stage>();
             SpeechBubbles = GetComponentsInChildren<SpeechBubble>();
@@ -30,9 +40,9 @@ namespace Nekoyume.UI
         public void ShowButtons(bool value)
         {
             btnQuest.SetActive(value);
-            btnCombine.SetActive(value);
+            btnCombination.SetActive(value);
             btnShop.SetActive(value);
-            btnTemple.SetActive(value);
+            btnRanking.SetActive(value);
         }
 
         public void ShowRoom()

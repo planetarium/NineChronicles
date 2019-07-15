@@ -58,7 +58,7 @@ namespace Nekoyume.UI
             }
             
             _inventory = Find<Inventory>();
-            if (ReferenceEquals(_statusDetail, null))
+            if (ReferenceEquals(_inventory, null))
             {
                 throw new NotFoundComponentException<Inventory>();
             }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Assets.SimpleLocalization;
 using Nekoyume.Game.Controller;
 using Nekoyume.UI.Model;
 using UniRx;
@@ -12,6 +13,7 @@ namespace Nekoyume.UI.Module
     {
         public List<ShopItemView> items;
         public Button refreshButton;
+        public Text refreshButtonText;
 
         private Model.Shop.State _state;
         private Model.ShopItems _data;
@@ -24,6 +26,8 @@ namespace Nekoyume.UI.Module
         private void Awake()
         {
             this.ComponentFieldsNotNullTest();
+
+            refreshButtonText.text = LocalizationManager.Localize("UI_REFRESH");
 
             refreshButton.onClick.AsObservable().Subscribe(_ =>
             {

@@ -1,4 +1,5 @@
 using System;
+using Assets.SimpleLocalization;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
 using Nekoyume.Game.Character;
@@ -15,14 +16,19 @@ namespace Nekoyume.UI
         public ScrollRect board;
         public GameObject filterHeader;
         public GameObject allHeader;
+        public Text rankingButtonText;
+        public Text filteredRankingButtonText;
 
         private Stage _stage;
         private Player _player;
-        private State.AvatarState[] _avatarStates;
+        private AvatarState[] _avatarStates;
 
         protected override void Awake()
         {
             base.Awake();
+            
+            rankingButtonText.text = LocalizationManager.Localize("UI_ALL_USERS");
+            filteredRankingButtonText.text = LocalizationManager.Localize("UI_USERS_WHO_CONNECTED_WITHIN_24HOURS");
 
             _stage = GameObject.Find("Stage").GetComponent<Stage>();
         }

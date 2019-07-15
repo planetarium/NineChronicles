@@ -2095,7 +2095,7 @@ GameObject:
   - component: {fileID: 2771678795283492092}
   - component: {fileID: 2772938784147799784}
   m_Layer: 5
-  m_Name: QuestButton
+  m_Name: QuestContinuousButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3222,14 +3222,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inventoryAndItemInfo: {fileID: 536932070380235905}
+  consumableTitleText: {fileID: 2773027478772182234}
   consumableSlots:
   - {fileID: 2772025579390678240}
   - {fileID: 2771644416924393720}
   - {fileID: 2772253265032080558}
   - {fileID: 2772465281640199008}
   - {fileID: 2772515690147498990}
+  equipmentTitleText: {fileID: 2772277285839741450}
   equipmentSlots: {fileID: 7883566207052153685}
-  btnQuest: {fileID: 2875723563834365008}
+  questBtn: {fileID: 2876461971111643554}
+  questBtnText: {fileID: 2772400265833825504}
+  questContinuousBtnText: {fileID: 2772880395519613844}
   equipSlotGlow: {fileID: 715250240963545995}
   labelStage: {fileID: 2772363463383041534}
 --- !u!95 &1720378640888706023
@@ -4586,7 +4590,7 @@ GameObject:
   - component: {fileID: 2773057989526300008}
   - component: {fileID: 2772116308993777282}
   m_Layer: 5
-  m_Name: QuestContinuousButton
+  m_Name: QuestButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8327,6 +8331,11 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 2726615299138016824, guid: 905008506fa31439cb4b9b11c6471937,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5766477976789552737, guid: 905008506fa31439cb4b9b11c6471937,
         type: 3}
       propertyPath: m_AnchorMax.x
@@ -8456,6 +8465,36 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2262342271883109432, guid: 905008506fa31439cb4b9b11c6471937,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1138586256778304378, guid: 905008506fa31439cb4b9b11c6471937,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3526812256938255177, guid: 905008506fa31439cb4b9b11c6471937,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2745053460704322522, guid: 905008506fa31439cb4b9b11c6471937,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5960454178431662566, guid: 905008506fa31439cb4b9b11c6471937,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4810494457528423091, guid: 905008506fa31439cb4b9b11c6471937,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 905008506fa31439cb4b9b11c6471937, type: 3}

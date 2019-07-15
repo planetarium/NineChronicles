@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Assets.SimpleLocalization;
 using DG.Tweening;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
@@ -27,7 +28,9 @@ namespace Nekoyume.UI
         public RectTransform bg1;
         public RectTransform right;
         public Button switchBuyButton;
+        public Text switchBuyButtonText;
         public Button switchSellButton;
+        public Text switchSellButtonText;
         public InventoryAndItemInfo inventoryAndItemInfo;
         public ShopItems shopItems;
         public Button closeButton;
@@ -58,6 +61,9 @@ namespace Nekoyume.UI
             _defaultAnchoredPositionXOfBg1 = bg1.anchoredPosition.x;
             _defaultAnchoredPositionXOfRight = right.anchoredPosition.x;
             base.Awake();
+            
+            switchBuyButtonText.text = LocalizationManager.Localize("UI_BUY");
+            switchSellButtonText.text = LocalizationManager.Localize("UI_SELL");
 
             switchBuyButton.onClick.AsObservable().Subscribe(_ =>
                 {

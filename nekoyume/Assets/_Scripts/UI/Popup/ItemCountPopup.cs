@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Assets.SimpleLocalization;
 using Nekoyume.Game.Controller;
 using Nekoyume.UI.Module;
 using UniRx;
@@ -9,13 +10,12 @@ namespace Nekoyume.UI
 {
     public class ItemCountPopup<T> : PopupWidget where T : Model.ItemCountPopup<T>
     {
-        private const string CountStringFormat = "총 {0}개";
-
         public Text titleText;
         public Text countText;
         public Button minusButton;
         public Button plusButton;
         public Button cancelButton;
+        public Text cancelButtonText;
         public Button submitButton;
         public Text submitButtonText;
         public SimpleCountableItemView itemView;
@@ -24,6 +24,8 @@ namespace Nekoyume.UI
         private readonly List<IDisposable> _disposablesForAwake = new List<IDisposable>();
         private readonly List<IDisposable> _disposablesForSetData = new List<IDisposable>();
 
+        private string _countStringFormat;
+        
         #region Mono
 
         protected override void Awake()
@@ -31,6 +33,10 @@ namespace Nekoyume.UI
             base.Awake();
 
             this.ComponentFieldsNotNullTest();
+            
+            _countStringFormat = LocalizationManager.Localize("UI_TOTAL_COUNT_N");
+            cancelButtonText.text = LocalizationManager.Localize("UI_CANCEL");
+            submitButtonText.text = LocalizationManager.Localize("UI_OK");
             
             minusButton.OnClickAsObservable()
                 .Subscribe(_ =>
@@ -130,7 +136,7 @@ namespace Nekoyume.UI
         
         private void SetCount(int count)
         {
-            countText.text = string.Format(CountStringFormat, count);
+            countText.text = string.Format(_countStringFormat, count);
         }
     }
 }

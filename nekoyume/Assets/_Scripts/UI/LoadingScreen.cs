@@ -1,3 +1,4 @@
+using Assets.SimpleLocalization;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,10 +10,10 @@ namespace Nekoyume.UI
         public Image loadingImage;
         public Text loadingText;
         public Text toolTip;
-        public string[] tips;
 
         private Color _color;
         private Sequence[] _sequences;
+        private string[] _tips;
 
         private const float AlphaToBeginning = 0.5f;
 
@@ -21,6 +22,14 @@ namespace Nekoyume.UI
         protected override void Awake()
         {
             base.Awake();
+
+            loadingText.text = LocalizationManager.Localize("UI_IN_MINING_A_BLOCK");
+            _tips = new []
+            {
+                LocalizationManager.Localize("UI_TIPS_0"),
+                LocalizationManager.Localize("UI_TIPS_1"),
+                LocalizationManager.Localize("UI_TIPS_2"),
+            };
 
             var pos = transform.localPosition;
             pos.z = -1f;
@@ -39,7 +48,7 @@ namespace Nekoyume.UI
 
         private void OnEnable()
         {
-            toolTip.text = tips[new System.Random().Next(0, tips.Length)];
+            toolTip.text = _tips[new System.Random().Next(0, _tips.Length)];
             loadingImage.color = _color;
             _sequences = new[]
             {
@@ -60,6 +69,7 @@ namespace Nekoyume.UI
             {
                 sequence.Kill();
             }
+
             _sequences = null;
         }
 

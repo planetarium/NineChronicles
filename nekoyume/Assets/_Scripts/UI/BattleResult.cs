@@ -142,7 +142,7 @@ namespace Nekoyume.UI
                 submitText.text = LocalizationManager.Localize("UI_BATTLE_RETRY");
                 title.text = LocalizationManager.Localize("UI_BATTLE_RETRY_FORMAT");
                 header.text = LocalizationManager.Localize("UI_BATTLE_LOSE");
-                ;
+                
                 _repeat = false;
                 _stage.repeatStage = _repeat;
                 _autoNext = false;

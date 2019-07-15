@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Assets.SimpleLocalization;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
 using Nekoyume.Game.Character;
@@ -19,9 +20,13 @@ namespace Nekoyume.UI
     {
         public InventoryAndItemInfo inventoryAndItemInfo;
 
+        public Text consumableTitleText;
         public EquipSlot[] consumableSlots;
+        public Text equipmentTitleText;
         public EquipmentSlots equipmentSlots;
-        public GameObject btnQuest;
+        public GameObject questBtn;
+        public Text questBtnText;
+        public Text questContinuousBtnText;
         public GameObject equipSlotGlow;
         public Text labelStage;
 
@@ -39,6 +44,11 @@ namespace Nekoyume.UI
         {
             base.Show();
 
+            consumableTitleText.text = LocalizationManager.Localize("UI_EQUIP_CONSUMABLES");
+            equipmentTitleText.text = LocalizationManager.Localize("UI_EQUIP_EQUIPMENTS");
+            questBtnText.text = LocalizationManager.Localize("UI_BATTLE");
+            questContinuousBtnText.text = LocalizationManager.Localize("UI_BATTLE_CONTINUOUS");
+            
             _stage = Game.Game.instance.stage;
             _stage.LoadBackground("dungeon");
             _player = _stage.GetPlayer(_stage.questPreparationPosition);
@@ -63,7 +73,7 @@ namespace Nekoyume.UI
                     es.Set(equipment);
             }
 
-            btnQuest.SetActive(true);
+            questBtn.SetActive(true);
 
             var worldMap = Find<WorldMap>();
             worldMap.SelectedStage = States.Instance.currentAvatarState.Value.worldStage;
@@ -181,7 +191,7 @@ namespace Nekoyume.UI
                 view.RectTransform,
                 view.Model,
                 value => !view.Model.dimmed.Value,
-                "장착하기",
+                LocalizationManager.Localize("UI_EQUIP"),
                 tooltip =>
                 {
                     OnClickEquip(tooltip.itemInformation.Model.item.Value);
@@ -236,7 +246,7 @@ namespace Nekoyume.UI
         {
             Find<LoadingScreen>().Show();
 
-            btnQuest.SetActive(false);
+            questBtn.SetActive(false);
             _player.StartRun();
             ActionCamera.instance.ChaseX(_player.transform);
 

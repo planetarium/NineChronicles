@@ -1,3 +1,5 @@
+using System;
+using Assets.SimpleLocalization;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
@@ -22,6 +24,18 @@ namespace Nekoyume.UI
             if (tweenAlphaImage == null)
             {
                 return;
+            }
+
+            switch (LocalizationManager.Language)
+            {
+                case LocalizationManager.LanguageType.English:
+                    // ToDo. 영어 이미지.
+                    break;
+                case LocalizationManager.LanguageType.Korean:
+                    // ToDo. 한글 이미지.
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
 
             _color = tweenAlphaImage.color;
