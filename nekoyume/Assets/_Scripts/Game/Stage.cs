@@ -99,6 +99,9 @@ namespace Nekoyume.Game
                     if (!ReferenceEquals(anim, null) && !anim.Target.activeSelf)
                     {
                         anim.Target.SetActive(true);
+                        var skeleton = anim.Target.GetComponentInChildren<Spine.Unity.SkeletonAnimation>().skeleton;
+                        skeleton.A = 0.0f;
+                        DOTween.To(() => skeleton.A, x=> skeleton.A = x, 1.0f, 1.0f);
                         anim.Appear();
                     }
 
