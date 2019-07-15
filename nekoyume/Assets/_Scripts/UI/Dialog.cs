@@ -47,8 +47,8 @@ namespace Nekoyume.UI
         public void Show(int dialogId)
         {
             _playerPrefsKey = GetPlayerPrefsKeyOfCurrentAvatarState(dialogId);
-//            if (PlayerPrefs.GetInt(_playerPrefsKey, 0) > 0)
-//                return;
+            if (PlayerPrefs.GetInt(_playerPrefsKey, 0) > 0)
+                return;
 
             base.Show();
 
