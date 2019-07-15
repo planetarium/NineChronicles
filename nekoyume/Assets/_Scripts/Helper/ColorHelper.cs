@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Nekoyume.Helper
 {
-    public class ColorHelper
+    public static class ColorHelper
     {
         public static Color RGBToColor(float r, float g, float b)
         {
@@ -16,7 +16,7 @@ namespace Nekoyume.Helper
 
         public static string ColorToHexRGBA(Color32 color)
         {
-            return $"{color.r:X2}{color.g:X2)}{color.b:X2}{color.a:X2}";
+            return $"{color.r:X2}{color.g:X2}{color.b:X2}{color.a:X2}";
         }
 
         public static Color32 HexToColorRGB(string hex)
