@@ -4,13 +4,12 @@ import csv
 from collections import Counter, OrderedDict
 from operator import itemgetter
 
-## EDIT THIS ##
+### EDIT THIS ###
 FULL_NORMAL_MONSTER_LIST = [201000, 201001, 201002, 201003, 202000, 202001, 201000, 201001, 201002, 201003, 201000, 201001]
 SMALL_NORMAL_MONSTER_LIST = [201000, 201001, 201002, 201003, 201000, 201001, 201002, 201003, 201000, 201001]
 STAGE_ID_TO_BOSS_ID = {
     4: 202020
 }
-
 # monster_id -> parts_id
 MONSTER_ID_TO_PARTS_ID = {
     201000: 234,
@@ -21,10 +20,16 @@ MONSTER_ID_TO_PARTS_ID = {
     202001: 234,
     202020: 234,
 }
-
 # non parts materials for each stage
 STAGE_ID_TO_NON_PARTS_MATERIAL_ID = {
     4: 101010
+}
+FIXED_DROP_RATE = 0.15 # doesn't apply for bosses
+
+WORLD_ID_TO_MONSTER_ID = {
+    1: [],
+    2: [],
+    3: [],
 }
 
 ## OTHER CONSTS ##
@@ -119,7 +124,7 @@ for stage in range(1, 200):
     parts_sorted_by_count = OrderedDict(sorted(parts.items(), key=itemgetter(1)))
     for parts_id in parts_sorted_by_count:
         if len(reward_row) < len(REWARD_FIELD_NAMES):
-            parts_cnt = parts_sorted_by_count[parts_id]
+            parts_cnt = max(FIXED_DROP_RATE * parts_sorted_by_count[parts_id], 1)
             reward_row += [parts_id, 1, parts_cnt, parts_cnt+1]
     reward_csv.writerow(reward_row)
     stage_id += 1
