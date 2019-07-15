@@ -59,6 +59,7 @@ namespace Nekoyume.UI
             Widget.Create<Combination>();
             Widget.Create<RankingBoard>();
             Widget.Create<WorldMap>();
+            Widget.Create<Dialog>();
 
             // 모듈류.
             Widget.Create<StatusDetail>();
