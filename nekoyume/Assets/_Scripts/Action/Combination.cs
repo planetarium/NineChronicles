@@ -154,15 +154,19 @@ namespace Nekoyume.Action
 
         private bool TryGetItemType(string itemName, out ItemBase.ItemType outItemType)
         {
-            if (itemName.Contains("검"))
+            if (itemName.Contains("칼")
+                || itemName.Contains("검"))
             {
                 outItemType = ItemBase.ItemType.Weapon;
             }
-            else if (itemName.Contains("옷"))
+            else if (itemName.Contains("갑옷")
+                     || itemName.Contains("갑주"))
             {
                 outItemType = ItemBase.ItemType.Armor;
             }
-            else if (itemName.Contains("끈"))
+            else if (itemName.Contains("끈")
+                     || itemName.Contains("허리띠")
+                     || itemName.Contains("벨트"))
             {
                 outItemType = ItemBase.ItemType.Belt;
             }
@@ -204,7 +208,8 @@ namespace Nekoyume.Action
                               : Math.Pow(1f / (1f + GameConfig.CombinationValueL1 / deltaLevel),
                                   GameConfig.CombinationValueL2));
             var rollMin = rollMax * 0.5f;
-            return (float) (rollMin + (rollMax - rollMin) * Math.Pow(normalizedRandomValue, GameConfig.CombinationValueR1));
+            return (float) (rollMin + (rollMax - rollMin) *
+                            Math.Pow(normalizedRandomValue, GameConfig.CombinationValueR1));
         }
 
         private StatMap GetStat(Item itemRow, float roll)
@@ -255,6 +260,7 @@ namespace Nekoyume.Action
             {
                 skill = null;
             }
+
             return (Equipment) ItemBase.ItemFactory(itemEquipment, skill);
         }
     }
