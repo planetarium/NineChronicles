@@ -321,6 +321,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inventoryAndItemInfo: {fileID: 3187534672603102492}
+  materialsTitleText: {fileID: 114386815829919258}
   materialViews:
   - {fileID: 114523354056634166}
   - {fileID: 7513327273334352964}
@@ -329,6 +330,7 @@ MonoBehaviour:
   - {fileID: 4476979199317628804}
   combinationButton: {fileID: 114847425125702140}
   combinationButtonImage: {fileID: 114185176891769154}
+  combinationButtonText: {fileID: 114286197654352630}
   closeButton: {fileID: 114011821723084054}
   particleVFX: {fileID: 6550431825297283683}
   resultItemVFX: {fileID: 8740546357306838343}

@@ -1,3 +1,4 @@
+using Assets.SimpleLocalization;
 using Nekoyume.Game.Controller;
 using UnityEngine.UI;
 
@@ -18,14 +19,16 @@ namespace Nekoyume.UI
         public Text labelYes;
         public Text labelNo;
         public ConfirmDelegate CloseCallback { get; set; }
-        public void Show(string title, string content, string btnYes="YES", string btnNo="NO", bool localize=false)
+
+        public void Show(string title, string content, string btnYes = "UI_OK", string btnNo = "UI_CANCEL",
+            bool localize = false)
         {
             if (localize)
             {
-                this.title.text = Assets.SimpleLocalization.LocalizationManager.Localize(title);
-                this.content.text = Assets.SimpleLocalization.LocalizationManager.Localize(content);
-                labelYes.text = Assets.SimpleLocalization.LocalizationManager.Localize(btnYes);
-                labelNo.text = Assets.SimpleLocalization.LocalizationManager.Localize(btnNo);
+                this.title.text = LocalizationManager.Localize(title);
+                this.content.text = LocalizationManager.Localize(content);
+                labelYes.text = LocalizationManager.Localize(btnYes);
+                labelNo.text = LocalizationManager.Localize(btnNo);
             }
             else
             {
@@ -46,6 +49,7 @@ namespace Nekoyume.UI
             {
                 CloseCallback(ConfirmResult.Yes);
             }
+
             base.Close();
             AudioController.PlayClick();
         }
@@ -56,6 +60,7 @@ namespace Nekoyume.UI
             {
                 CloseCallback(ConfirmResult.No);
             }
+
             base.Close();
             AudioController.PlayClick();
         }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Assets.SimpleLocalization;
 using Nekoyume.Game.Controller;
 using UniRx;
 using UnityEngine.UI;
@@ -9,7 +10,10 @@ namespace Nekoyume.UI.Module
     public class CountEditableItemView<T> : CountableItemView<T> where T : Model.CountEditableItem
     {
         public Button editButton;
+        public Button minusButton;
+        public Button plusButton;
         public Button deleteButton;
+        public Text deleteButtonText;
 
         private readonly List<IDisposable> _disposablesForAwake = new List<IDisposable>();
         private readonly List<IDisposable> _disposablesForSetData = new List<IDisposable>();
@@ -22,6 +26,8 @@ namespace Nekoyume.UI.Module
 
             this.ComponentFieldsNotNullTest();
 
+            deleteButtonText.text = LocalizationManager.Localize("UI_DELETE");
+
             editButton.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
@@ -30,6 +36,22 @@ namespace Nekoyume.UI.Module
                 })
                 .AddTo(_disposablesForAwake);
 
+            minusButton.OnClickAsObservable()
+                .Subscribe(_ =>
+                {
+                    Model?.onMinus.OnNext(Model);
+                    AudioController.PlayClick();
+                })
+                .AddTo(_disposablesForAwake);
+            
+            plusButton.OnClickAsObservable()
+                .Subscribe(_ =>
+                {
+                    Model?.onPlus.OnNext(Model);
+                    AudioController.PlayClick();
+                })
+                .AddTo(_disposablesForAwake);
+            
             deleteButton.OnClickAsObservable()
                 .Subscribe(_ =>
                 {

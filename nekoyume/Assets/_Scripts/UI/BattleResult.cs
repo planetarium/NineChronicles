@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Assets.SimpleLocalization;
 using Nekoyume.Manager;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
@@ -19,8 +20,9 @@ namespace Nekoyume.UI
     {
         private static readonly Vector3 VfxBattleWinOffset = new Vector3(-3.43f, -0.28f, 10f);
         private const float Timer = 5.0f;
-        
+
         public BattleLog.Result result;
+        public Text backText;
         public Text submitText;
         public Text header;
         public Text title;
@@ -29,6 +31,7 @@ namespace Nekoyume.UI
         public Transform grid;
         public GameObject modal;
         public bool actionEnd;
+
         private List<InventorySlot> _slots;
         private Stage _stage;
         private bool _repeat;
@@ -42,17 +45,19 @@ namespace Nekoyume.UI
         protected override void Awake()
         {
             base.Awake();
-            
+
             _slots = new List<InventorySlot>();
             _stage = GameObject.Find("Stage").GetComponent<Stage>();
             _image = GetComponent<Image>();
+
+            backText.text = LocalizationManager.Localize("UI_GO_OUT");
         }
 
         public void SubmitClick()
         {
             Submit();
             AudioController.PlayClick();
-            
+
             if (result == BattleLog.Result.Win)
             {
                 AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickBattleResultNext);
@@ -87,15 +92,16 @@ namespace Nekoyume.UI
 
             Hide();
         }
+
         public void BackClick()
-        {   
+        {
             if (!ReferenceEquals(_battleWinVFX, null))
             {
                 _battleWinVFX.Stop();
             }
 
             _stage.repeatStage = false;
-            
+
             Game.Event.OnRoomEnter.Invoke();
             Close();
             AudioController.PlayClick();
@@ -112,28 +118,31 @@ namespace Nekoyume.UI
 
             if (result == BattleLog.Result.Win)
             {
-                string submit = "다음 스테이지";
-                _timeText = "{0} 다음 스테이지로 이동합니다.";
+                string submit = LocalizationManager.Localize("UI_NEXT_STAGE");
+                _timeText = LocalizationManager.Localize("UI_NEXT_STAGE_FORMAT");
                 if (_repeat)
                 {
-                    submit = "다시 전투";
-                    _timeText = "{0} 다시 전투를 시작합니다.";
+                    submit = LocalizationManager.Localize("UI_BATTLE_AGAIN");
+                    _timeText = LocalizationManager.Localize("UI_BATTLE_AGAIN_FORMAT");
                 }
+
                 submitText.text = submit;
-                header.text = "전투 승리!";
-                title.text = "획득한 아이템";
+                header.text = LocalizationManager.Localize("UI_BATTLE_WIN");
+                title.text = LocalizationManager.Localize("UI_REWARDS");
                 grid.gameObject.SetActive(true);
                 _timer = Timer;
 
                 AudioController.instance.PlayMusic(AudioController.MusicCode.Win, 0.3f);
-                _battleWinVFX = VFXController.instance.Create<BattleWinVFX>(ActionCamera.instance.transform, VfxBattleWinOffset);
+                _battleWinVFX =
+                    VFXController.instance.Create<BattleWinVFX>(ActionCamera.instance.transform, VfxBattleWinOffset);
                 AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionBattleWin);
             }
             else
             {
-                submitText.text = "다시 하기";
-                title.text = "다시 도전 하시겠습니까?";
-                header.text = "전투 패배";
+                submitText.text = LocalizationManager.Localize("UI_BATTLE_RETRY");
+                title.text = LocalizationManager.Localize("UI_BATTLE_RETRY_FORMAT");
+                header.text = LocalizationManager.Localize("UI_BATTLE_LOSE");
+                ;
                 _repeat = false;
                 _stage.repeatStage = _repeat;
                 _autoNext = false;
@@ -141,6 +150,7 @@ namespace Nekoyume.UI
                 AudioController.instance.PlayMusic(AudioController.MusicCode.Lose);
                 AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionBattleLose);
             }
+
             timeText.gameObject.SetActive(_autoNext);
 
             base.Show();
@@ -162,12 +172,12 @@ namespace Nekoyume.UI
         public override void Close()
         {
             _slots.Clear();
-            
+
             foreach (Transform child in grid)
             {
                 Destroy(child.gameObject);
             }
-            
+
             base.Close();
         }
 
@@ -193,17 +203,23 @@ namespace Nekoyume.UI
 
         private void Update()
         {
-            if (_autoNext)
+            if (!_autoNext)
             {
-                _timer -= Time.deltaTime;
-                timeText.text = string.Format(_timeText, $"{_timer:0}초 후");
-                if (_timer <= 0)
-                {
-                    _repeat = false;
-                    Submit();
-                    AnalyticsManager.Instance.BattleContinueAutomatically();
-                }
+                return;
             }
+
+            _timer -= Time.deltaTime;
+            var timerText = string.Format(LocalizationManager.Localize("UI_N_SECONDS_LATER"), _timer); 
+            timeText.text = string.Format(_timeText, timerText);
+            
+            if (_timer > 0)
+            {
+                return;
+            }
+
+            _repeat = false;
+            Submit();
+            AnalyticsManager.Instance.BattleContinueAutomatically();
         }
 
         private void Hide()

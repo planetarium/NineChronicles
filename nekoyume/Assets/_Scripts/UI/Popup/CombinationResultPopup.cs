@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Assets.SimpleLocalization;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
@@ -20,7 +21,8 @@ namespace Nekoyume.UI
         public Text resultItemDescriptionText;
         public Text materialText;
         public SimpleCountableItemView[] materialItems;
-        public Button okButton;
+        public Button submitButton;
+        public Text submitButtonText;
         public GameObject resultItemVfx;
         
         private readonly List<IDisposable> _disposablesForAwake = new List<IDisposable>();
@@ -33,7 +35,10 @@ namespace Nekoyume.UI
             base.Awake();
 
             this.ComponentFieldsNotNullTest();
-            okButton.OnClickAsObservable()
+
+            submitButtonText.text = LocalizationManager.Localize("UI_OK");
+            
+            submitButton.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
                     _data.onClickSubmit.OnNext(_data);
@@ -87,7 +92,7 @@ namespace Nekoyume.UI
         {
             if (ReferenceEquals(_data, null))
             {
-                titleText.text = "조합 에러";
+                titleText.text = LocalizationManager.Localize("UI_COMBINATION_ERROR");
                 resultItemView.Clear();
                 resultItemView.gameObject.SetActive(true);
                 resultItemNameText.gameObject.SetActive(false);
@@ -109,22 +114,22 @@ namespace Nekoyume.UI
             {
                 var item = (ItemUsable) _data.item.Value;
                 
-                titleText.text = "제작 성공!";
+                titleText.text = LocalizationManager.Localize("UI_COMBINATION_SUCCESS");
                 resultItemView.SetData(_data);
                 resultItemNameText.text = item.Data.name;
                 SetElemental(item.Data.elemental, item.Data.grade);
                 resultItemDescriptionText.text = item.ToItemInfo();
                 resultItem.SetActive(true);
-                materialText.text = "제작 재료";
+                materialText.text = LocalizationManager.Localize("UI_COMBINATION_MATERIALS");
                 resultItemVfx.SetActive(true);
 
                 AudioController.instance.PlaySfx(AudioController.SfxCode.Success);
             }
             else
             {
-                titleText.text = "제작 실패";
+                titleText.text = LocalizationManager.Localize("UI_COMBINATION_FAIL");
                 resultItem.SetActive(false);
-                materialText.text = "파괴된 재료";
+                materialText.text = LocalizationManager.Localize("UI_COMBINATION_MATERIALS");
                 
                 AudioController.instance.PlaySfx(AudioController.SfxCode.Failed);
             }

@@ -1,13 +1,17 @@
+using Assets.SimpleLocalization;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Scroller;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
     public class Inventory : MonoBehaviour
     {
-        public RectTransform RectTransform { get; private set; }
+        public Text titleText;
         public InventoryScrollerController scrollerController;
+        
+        public RectTransform RectTransform { get; private set; }
         
         public ItemInformationTooltip Tooltip { get; private set; }
         
@@ -16,6 +20,9 @@ namespace Nekoyume.UI.Module
         protected void Awake()
         {
             this.ComponentFieldsNotNullTest();
+
+            titleText.text = LocalizationManager.Localize("UI_INVENTORY");
+            
             RectTransform = GetComponent<RectTransform>();
         }
 

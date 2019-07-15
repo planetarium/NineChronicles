@@ -8,8 +8,10 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<int> minCount = new ReactiveProperty<int>(0);
         public readonly ReactiveProperty<int> maxCount = new ReactiveProperty<int>(1);
 
-        public readonly Subject<CountEditableItem> onDelete = new Subject<CountEditableItem>();
         public readonly Subject<CountEditableItem> onEdit = new Subject<CountEditableItem>();
+        public readonly Subject<CountEditableItem> onMinus = new Subject<CountEditableItem>();
+        public readonly Subject<CountEditableItem> onPlus = new Subject<CountEditableItem>();
+        public readonly Subject<CountEditableItem> onDelete = new Subject<CountEditableItem>();
         
         public CountEditableItem(ItemBase item, int count, int minCount, int maxCount) : base(item, count)
         {
