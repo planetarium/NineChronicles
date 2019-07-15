@@ -442,7 +442,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   textInterval: 0.06
-  itemColor: blue
+  itemTextColor: {r: 0, g: 0.8679245, b: 0.30615816, a: 1}
   txtContainer: {fileID: 5863449781628178918}
   txtName: {fileID: 8958640410488377552}
   txtDialog: {fileID: 5863000549845746954}
