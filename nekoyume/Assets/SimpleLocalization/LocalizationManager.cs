@@ -93,10 +93,11 @@ namespace Assets.SimpleLocalization
                         match.Value.Replace("\"", null).Replace(",", "[comma]").Replace("\n", "[newline]"));
                 }
 
-                var lines = text.Split(new[] {Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries);
+                // csv파일 저장형식이 라인피드로만 처리되고 있어서 윈도우에서 줄바꿈이 제대로 안되는 문제가 있음
+                var lines = text.Split(new[] {"\n"}, StringSplitOptions.RemoveEmptyEntries);
                 var languages = lines[0]
                     .Split(',')
-                    .Where((value, index) => index > 0)
+                    .Skip(1)
                     .Select(value =>
                     {
                         value = value.Trim();
