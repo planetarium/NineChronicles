@@ -31,7 +31,6 @@ namespace Nekoyume.UI.Model
                 }
 
                 titleText.Value = item.item.Value.Data.name;
-                item.countEnabledFunc.Value = item2 => false;
 
                 if (!(item is ShopItem shopItem))
                 {
