@@ -1,3 +1,4 @@
+using Assets.SimpleLocalization;
 using Nekoyume.Game.Item;
 using UnityEngine;
 using UnityEngine.UI;
@@ -58,9 +59,9 @@ namespace Nekoyume.UI
         public void Clear()
         {
             item = null;
-            itemName.text = "아이템 정보";
+            itemName.text = LocalizationManager.Localize("UI_ITEM_INFORMATION");
             icon.enabled = false;
-            info.text = "아이템을 선택하세요";
+            info.text = LocalizationManager.Localize("UI_SELECT_AN_ITEM");
             flavour.text = "";
 
             if (_considerPrice)

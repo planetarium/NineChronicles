@@ -67,7 +67,7 @@ namespace Nekoyume.UI.Model
             {
                 case State.Buy:
                     inventory.Value.dimmedFunc.Value = null;
-                    itemInfo.Value.buttonText.Value = "구매하기";
+                    itemInfo.Value.buttonText.Value = LocalizationManager.Localize("UI_BUY");
                     itemInfo.Value.buttonEnabledFunc.Value = ButtonEnabledFuncForBuy;
                     break;
                 case State.Sell:
@@ -95,10 +95,10 @@ namespace Nekoyume.UI.Model
                 case null:
                     return false;
                 case ShopItem _:
-                    itemInfo.Value.buttonText.Value = "판매 취소";
+                    itemInfo.Value.buttonText.Value = LocalizationManager.Localize("UI_SELL_CANCELLATION");
                     return true;
                 default:
-                    itemInfo.Value.buttonText.Value = "판매하기";
+                    itemInfo.Value.buttonText.Value = LocalizationManager.Localize("UI_SELL");
                     return !inventoryItem.dimmed.Value;
             }
         }
@@ -115,13 +115,11 @@ namespace Nekoyume.UI.Model
                     {
                         // 구매하겠습니까?
                         itemCountAndPricePopup.Value.titleText.Value = LocalizationManager.Localize("UI_BUY");
-                        itemCountAndPricePopup.Value.submitText.Value = LocalizationManager.Localize("UI_OK");
                     }
                     else
                     {
                         // 판매 취소하겠습니까?
                         itemCountAndPricePopup.Value.titleText.Value = LocalizationManager.Localize("UI_SELL_CANCELLATION");
-                        itemCountAndPricePopup.Value.submitText.Value = LocalizationManager.Localize("UI_OK");
                     }
                 
                     itemCountAndPricePopup.Value.countEnabled.Value = false;
@@ -139,7 +137,6 @@ namespace Nekoyume.UI.Model
 
             // 판매하겠습니까?
             itemCountAndPricePopup.Value.titleText.Value = LocalizationManager.Localize("UI_SELL");
-            itemCountAndPricePopup.Value.submitText.Value = LocalizationManager.Localize("UI_SELL");
             itemCountAndPricePopup.Value.countEnabled.Value = true;
             itemCountAndPricePopup.Value.price.Value = 1;
             itemCountAndPricePopup.Value.priceInteractable.Value = true;

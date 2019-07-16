@@ -269,7 +269,7 @@ namespace Nekoyume.UI
                     view.RectTransform,
                     view.Model,
                     value => !Model.DimmedFuncForSell(view.Model),
-                    "판매하기",
+                    LocalizationManager.Localize("UI_SELL"),
                     tooltip =>
                     {
                         Model.OnClickItemInfo(tooltip.itemInformation.Model.item.Value);
@@ -298,7 +298,7 @@ namespace Nekoyume.UI
                     view.RectTransform,
                     view.Model,
                     value => Model.ButtonEnabledFuncForBuy(view.Model),
-                    "구매하기",
+                    LocalizationManager.Localize("UI_BUY"),
                     tooltip =>
                     {
                         Model.OnClickItemInfo(tooltip.itemInformation.Model.item.Value);
@@ -311,7 +311,7 @@ namespace Nekoyume.UI
                     view.RectTransform, 
                     view.Model,
                     value => Model.ButtonEnabledFuncForSell(view.Model),
-                    "판매 취소하기",
+                    LocalizationManager.Localize("UI_SELL_CANCELLATION"),
                     tooltip =>
                     {
                         Model.OnClickItemInfo(tooltip.itemInformation.Model.item.Value);

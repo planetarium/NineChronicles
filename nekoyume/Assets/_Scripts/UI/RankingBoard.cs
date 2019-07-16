@@ -16,8 +16,8 @@ namespace Nekoyume.UI
         public ScrollRect board;
         public GameObject filterHeader;
         public GameObject allHeader;
-        public Text rankingButtonText;
-        public Text filteredRankingButtonText;
+        public Text[] rankingButtonTexts;
+        public Text[] filteredRankingButtonTexts;
 
         private Stage _stage;
         private Player _player;
@@ -26,10 +26,17 @@ namespace Nekoyume.UI
         protected override void Awake()
         {
             base.Awake();
-            
-            rankingButtonText.text = LocalizationManager.Localize("UI_ALL_USERS");
-            filteredRankingButtonText.text = LocalizationManager.Localize("UI_USERS_WHO_CONNECTED_WITHIN_24HOURS");
 
+            foreach (var rankingButtonText in rankingButtonTexts)
+            {
+                rankingButtonText.text = LocalizationManager.Localize("UI_ALL_USERS");    
+            }
+
+            foreach (var filteredRankingButtonText in filteredRankingButtonTexts)
+            {
+                filteredRankingButtonText.text = LocalizationManager.Localize("UI_USERS_WHO_CONNECTED_WITHIN_24HOURS");    
+            }
+            
             _stage = GameObject.Find("Stage").GetComponent<Stage>();
         }
 

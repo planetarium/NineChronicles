@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
+using Assets.SimpleLocalization;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
 using UniRx;
@@ -82,8 +83,8 @@ namespace Nekoyume.UI.Module
             if (ReferenceEquals(_data, null) ||
                 ReferenceEquals(_data.item.Value, null))
             {
-                nameText.text = "아이템 정보";
-                infoText.text = "아이템을 선택하세요";
+                nameText.text = LocalizationManager.Localize("UI_ITEM_INFORMATION");
+                infoText.text = LocalizationManager.Localize("UI_SELECT_AN_ITEM");
                 descriptionText.text = "";
                 
                 itemView.Clear();

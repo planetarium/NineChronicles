@@ -249,8 +249,12 @@ MonoBehaviour:
   board: {fileID: 9112409923216322653}
   filterHeader: {fileID: 9112409923254306677}
   allHeader: {fileID: 9112409923547244666}
-  rankingButtonText: {fileID: 9112409922641066364}
-  filteredRankingButtonText: {fileID: 9112409924341272827}
+  rankingButtonTexts:
+  - {fileID: 9112409922641066364}
+  - {fileID: 9112409924148835083}
+  filteredRankingButtonTexts:
+  - {fileID: 9112409924341272827}
+  - {fileID: 9112409924082634685}
 --- !u!95 &7653072119548997407
 Animator:
   serializedVersion: 3
