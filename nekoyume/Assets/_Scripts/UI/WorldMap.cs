@@ -2,6 +2,7 @@ using UnityEngine;
 using Nekoyume.BlockChain;
 using Nekoyume.Data;
 using System.Linq;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
@@ -10,8 +11,9 @@ namespace Nekoyume.UI
         public GameObject world;
         public GameObject chapter;
         public Transform stages;
-        public GameObject btnPrevChapter;
-        public GameObject btnNextChapter;
+        public Button btnPrevChapter;
+        public Button btnNextChapter;
+        public Text txtChapter;
 
         private int _selectedStage = -1;
         public int SelectedStage { 
@@ -109,8 +111,9 @@ namespace Nekoyume.UI
 
             _currentChapter = worldData.id;
 
-            btnPrevChapter.SetActive(_currentChapter > 1);
-            btnNextChapter.SetActive(_currentChapter < Tables.instance.World.Count);
+            btnPrevChapter.enabled = _currentChapter > 1;
+            btnNextChapter.enabled = _currentChapter < Tables.instance.World.Count;
+            txtChapter.text = $"{_currentChapter} / {Tables.instance.World.Count}";
 
             var res = Resources.Load<GameObject>($"UI/Prefabs/WorldMap/Chapter_{worldData.chapter}");
             if (!res)
