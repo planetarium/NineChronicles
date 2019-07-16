@@ -70,7 +70,7 @@ STAGE_FIELD_NAMES = [
 ]
 
 REWARD_FIELD_NAMES = [
-    "id","",
+    "id",
     "item1","item1_ratio","item1_min","item1_max",
     "item2","item2_ratio","item2_min","item2_max",
     "item3","item3_ratio","item3_min","item3_max",
@@ -139,7 +139,7 @@ for world, monster_list in WORLD_MONSTERS.items():
             stage_csv.writerow(row)
 
         # setup stage reward
-        reward_row = [stage_id, ""]
+        reward_row = [stage_id]
         parts = Counter(monster_parts)
         # five rows, prioritize stage specific reward and boss parts reward
         additional_mat = MATERIAL_LOCATION.get(world, {}).get(stage)
