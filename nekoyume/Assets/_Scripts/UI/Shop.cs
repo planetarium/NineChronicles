@@ -173,6 +173,8 @@ namespace Nekoyume.UI
                 case UI.Model.Shop.State.Show:
                     shopItems.SetState(state);
                     Model.state.Value = UI.Model.Shop.State.Buy;
+                    switchBuyButton.image.sprite = Resources.Load<Sprite>("UI/Textures/button_blue_01");
+                    switchSellButton.image.sprite = Resources.Load<Sprite>("UI/Textures/button_black_01");
                     return;
                 case UI.Model.Shop.State.Buy:
                     switchBuyButton.image.sprite = Resources.Load<Sprite>("UI/Textures/button_blue_01");
@@ -184,7 +186,11 @@ namespace Nekoyume.UI
                     break;
             }
 
-            inventoryAndItemInfo.inventory.Tooltip?.Close();
+            if (inventoryAndItemInfo.inventory.Tooltip)
+            {
+                inventoryAndItemInfo.inventory.Tooltip.Close();   
+            }
+            
             canvasGroup.interactable = false;
             _sequenceOfShopItems?.Kill();
             _sequenceOfShopItems = DOTween.Sequence();
