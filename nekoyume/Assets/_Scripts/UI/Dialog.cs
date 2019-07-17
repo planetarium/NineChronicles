@@ -89,6 +89,7 @@ namespace Nekoyume.UI
 
             _characterId = 0;
             _npc = null;
+            _effects.Clear();
             _text = ParseText(text);
 
             if (Data.Tables.instance.Character.TryGetValue(_characterId, out var characterData))
