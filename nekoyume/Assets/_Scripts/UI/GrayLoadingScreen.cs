@@ -10,7 +10,9 @@ namespace Nekoyume.UI
     {
         private const float AlphaToBeginning = 0.5f;
         
-        public Image tweenAlphaImage;
+        public Image koreanImage;
+        public GameObject englishImageContainer;
+        public Text englishText;
         
         private Color _color;
         private Sequence _sequence = null;
@@ -21,7 +23,7 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
-            if (tweenAlphaImage == null)
+            if (koreanImage == null)
             {
                 return;
             }
@@ -29,31 +31,36 @@ namespace Nekoyume.UI
             switch (LocalizationManager.Language)
             {
                 case LocalizationManager.LanguageType.English:
-                    // ToDo. 영어 이미지.
+                    koreanImage.gameObject.SetActive(false);
+                    englishImageContainer.gameObject.SetActive(true);
+                    englishText.gameObject.SetActive(true);
                     break;
                 case LocalizationManager.LanguageType.Korean:
-                    // ToDo. 한글 이미지.
+                    koreanImage.gameObject.SetActive(true);
+                    englishImageContainer.gameObject.SetActive(false);
+                    englishText.gameObject.SetActive(false);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
 
-            _color = tweenAlphaImage.color;
+            _color = koreanImage.color;
             _color.a = AlphaToBeginning;
         }
 
         private void OnEnable()
         {
-            if (!tweenAlphaImage)
+            switch (LocalizationManager.Language)
             {
-                return;
+                case LocalizationManager.LanguageType.English:
+                    OnEnableAsEnglish();
+                    break;
+                case LocalizationManager.LanguageType.Korean:
+                    OnEnableAsKorean();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
-
-            tweenAlphaImage.color = _color;
-            _sequence = DOTween.Sequence()
-                .Append(tweenAlphaImage.DOFade(1f, 0.3f))
-                .Append(tweenAlphaImage.DOFade(AlphaToBeginning, 0.6f))
-                .SetLoops(-1);
         }
 
         private void OnDisable()
@@ -63,5 +70,24 @@ namespace Nekoyume.UI
         }
 
         #endregion
+
+        private void OnEnableAsEnglish()
+        {
+            // ToDo. 연출은 피드백 받은 후에 진행.            
+        }
+        
+        private void OnEnableAsKorean()
+        {
+            if (!koreanImage)
+            {
+                return;
+            }
+            
+            koreanImage.color = _color;
+            _sequence = DOTween.Sequence()
+                .Append(koreanImage.DOFade(1f, 0.3f))
+                .Append(koreanImage.DOFade(AlphaToBeginning, 0.6f))
+                .SetLoops(-1);
+        }
     }
 }
