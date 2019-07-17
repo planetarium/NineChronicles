@@ -33,7 +33,7 @@ namespace Nekoyume.UI.Model
             firstLineValue.Value = $"{itemRow.minDamage} - {itemRow.maxDamage}";
             secondLineEnabled.Value = true;
             secondLineKey.Value = "  - 확률";
-            secondLineValue.Value = $"{itemRow.minChance}% - {itemRow.maxChance}%";
+            secondLineValue.Value = $"{itemRow.minChance * 100f}% - {itemRow.maxChance * 100f}%";
         }
 
         public ItemInformationSkill(SkillBase skillBase)
@@ -44,7 +44,7 @@ namespace Nekoyume.UI.Model
             
             headerKey.Value = "스킬";
             headerValue.Value = "";
-            firstLineKey.Value = $"{skillName} ({skillBase.chance * 100}%확률로 데미지 {skillBase.power})";
+            firstLineKey.Value = $"{skillName} ({skillBase.chance * 100f}%확률로 데미지 {skillBase.power})";
             firstLineValue.Value = "";
             secondLineEnabled.Value = false;
         }
