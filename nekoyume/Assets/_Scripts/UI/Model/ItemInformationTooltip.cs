@@ -35,7 +35,7 @@ namespace Nekoyume.UI.Model
                     return;
                 }
 
-                titleText.Value = item.item.Value.Data.name;
+                titleText.Value = item.item.Value.Data.LocalizedName;
 
                 if (!(item is ShopItem shopItem))
                 {

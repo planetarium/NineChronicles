@@ -94,16 +94,7 @@ namespace Nekoyume.UI
 
             if (Data.Tables.instance.Character.TryGetValue(_characterId, out var characterData))
             {
-                string localizedName;
-                try
-                {
-                    localizedName = LocalizationManager.Localize($"CHARACTER_{_characterId}_NAME");
-                }
-                catch (KeyNotFoundException)
-                {
-                    localizedName = characterData.characterName;
-                }
-
+                var localizedName = LocalizationManager.LocalizeCharacterName(_characterId);
                 var res = Resources.Load<Sprite>($"Images/character_{characterData.characterResource}");
                 imgCharacter.sprite = res;
                 imgCharacter.SetNativeSize();
@@ -214,32 +205,16 @@ namespace Nekoyume.UI
                             case "item":
                                 if (Data.Tables.instance.Item.TryGetValue(pairValue, out var itemData))
                                 {
-                                    // TODO: Localization
-                                    try
-                                    {
-                                        var localizedItemName = LocalizationManager.Localize($"ITEM_{itemData.id}_NAME");
-                                        left = $"{left}<color={_itemTextColor}>{localizedItemName}</color>";
-                                    }
-                                    catch
-                                    {
-                                        left = $"{left}<color={_itemTextColor}>{itemData.name}</color>";
-                                    }
+                                    var localizedItemName = itemData.LocalizedName;
+                                    left = $"{left}<color={_itemTextColor}>{localizedItemName}</color>";
                                 }
 
                                 break;
                             case "item_equip":
                                 if (Data.Tables.instance.ItemEquipment.TryGetValue(pairValue, out var itemEquipData))
                                 {
-                                    // TODO: Localization
-                                    try
-                                    {
-                                        var localizedItemName = LocalizationManager.Localize($"ITEM_{itemEquipData.id}_NAME");
-                                        left = $"{left}<color={_itemTextColor}>{localizedItemName}</color>";
-                                    }
-                                    catch
-                                    {
-                                        left = $"{left}<color={_itemTextColor}>{itemEquipData.name}</color>";
-                                    }
+                                    var localizedItemName = itemEquipData.LocalizedName;
+                                    left = $"{left}<color={_itemTextColor}>{localizedItemName}</color>";
                                 }
 
                                 break;
