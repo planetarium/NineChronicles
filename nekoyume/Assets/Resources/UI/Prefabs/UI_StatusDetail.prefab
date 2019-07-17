@@ -850,6 +850,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3cc3fdbf55a40f6a4e21d492ccdbdff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  statusTitleText: {fileID: 114705645049913882}
+  equipmentTitleText: {fileID: 114949645273364620}
   equipmentSlots: {fileID: 3922493806198397068}
   textOption: {fileID: 1625631650512858}
   group: {fileID: 1093658089476738}
@@ -1704,7 +1706,6 @@ GameObject:
   - component: {fileID: 224765494188493106}
   - component: {fileID: 222680880890802584}
   - component: {fileID: 114305462487448742}
-  - component: {fileID: 114900485957298332}
   m_Layer: 5
   m_Name: Modal
   m_TagString: Untagged
@@ -1771,23 +1772,6 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
---- !u!114 &114900485957298332
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1624562244193788}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a3cc3fdbf55a40f6a4e21d492ccdbdff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  equipmentSlots: {fileID: 0}
-  textOption: {fileID: 0}
-  group: {fileID: 0}
-  statusInfo: {fileID: 0}
-  optionGroup: {fileID: 0}
 --- !u!1 &1625631650512858
 GameObject:
   m_ObjectHideFlags: 0
@@ -2766,7 +2750,6 @@ GameObject:
   - component: {fileID: 2364327975371488434}
   - component: {fileID: 6141350338461353820}
   - component: {fileID: 7753465562430970548}
-  - component: {fileID: 8393645124624781872}
   m_Layer: 5
   m_Name: Bg
   m_TagString: Untagged
@@ -2830,20 +2813,3 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
---- !u!114 &8393645124624781872
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7285704132077124647}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a3cc3fdbf55a40f6a4e21d492ccdbdff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  equipmentSlots: {fileID: 0}
-  textOption: {fileID: 0}
-  group: {fileID: 0}
-  statusInfo: {fileID: 0}
-  optionGroup: {fileID: 0}

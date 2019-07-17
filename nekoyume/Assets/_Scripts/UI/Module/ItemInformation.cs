@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Assets.SimpleLocalization;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Item;
 using UnityEngine;
@@ -117,7 +118,7 @@ namespace Nekoyume.UI.Module
             // 텍스트.
             if (Model.item.Value.item.Value.Data.cls.ToEnumItemType() == ItemBase.ItemType.Material)
             {
-                iconArea.commonText.text = "아이템 제작 시 다음 효과 부여";
+                iconArea.commonText.text = LocalizationManager.Localize("UI_ADDITIONAL_ABILITIES_WHEN_COMBINED");
                 iconArea.commonText.enabled = true;
             }
             else

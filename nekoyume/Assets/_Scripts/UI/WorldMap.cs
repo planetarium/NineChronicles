@@ -2,6 +2,7 @@ using UnityEngine;
 using Nekoyume.BlockChain;
 using Nekoyume.Data;
 using System.Linq;
+using Assets.SimpleLocalization;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
@@ -13,6 +14,8 @@ namespace Nekoyume.UI
         public Transform stages;
         public Button btnPrevChapter;
         public Button btnNextChapter;
+        public Text mainButtonText;
+        public Text worldButtonText;
         public Text txtChapter;
 
         private int _selectedStage = -1;
@@ -32,6 +35,18 @@ namespace Nekoyume.UI
         }
         private int _currentChapter;
 
+        #region Mono
+
+        protected override void Awake()
+        {
+            base.Awake();
+            
+            mainButtonText.text = LocalizationManager.Localize("UI_MAIN");
+            worldButtonText.text = LocalizationManager.Localize("UI_WORLD");
+        }
+
+        #endregion
+        
         public override void Show()
         {
             Find<Gold>().Close();

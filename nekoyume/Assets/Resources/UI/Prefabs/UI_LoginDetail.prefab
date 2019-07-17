@@ -976,7 +976,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   btnLogin: {fileID: 1640640594512234}
+  btnLoginText: {fileID: 114886770778877786}
   btnCreate: {fileID: 1782599295002398}
+  btnCreateText: {fileID: 114699050802562126}
   nameField: {fileID: 114617036401837486}
   namePlaceHolder: {fileID: 114727456274002474}
   textHp: {fileID: 114216088172467656}
@@ -991,6 +993,9 @@ MonoBehaviour:
   optionGrid: {fileID: 1973499818608872}
   optionRow: {fileID: 1552331632277922}
   palette: {fileID: 1963496526303204}
+  paletteHairText: {fileID: 114003479626789554}
+  paletteLensText: {fileID: 114150559554149966}
+  paletteTopText: {fileID: 114304014102633316}
 --- !u!95 &95374830036940920
 Animator:
   serializedVersion: 3
@@ -3582,8 +3587,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 130, y: 0}
-  m_SizeDelta: {x: 260, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &114975273896341190
 MonoBehaviour:
@@ -6424,8 +6429,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 130, y: 0}
-  m_SizeDelta: {x: 260, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1202916954022730258
 MonoBehaviour:
@@ -6501,8 +6506,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 130, y: 0}
-  m_SizeDelta: {x: 260, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &222581731829114528
 CanvasRenderer:

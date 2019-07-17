@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Assets.SimpleLocalization;
 using Nekoyume.Game.Item;
 using Nekoyume.UI.Module;
 using UniRx;
@@ -20,7 +21,7 @@ namespace Nekoyume.UI.Model
             this.inventory.Value.dimmedFunc.Value = DimmedFunc;
             this.inventory.Value.glowedFunc.Value = GlowedFunc;
             itemInfo.Value = new ItemInfo();
-            itemInfo.Value.buttonText.Value = "장착하기";
+            itemInfo.Value.buttonText.Value = LocalizationManager.Localize("UI_EQUIP");
             itemInfo.Value.buttonEnabledFunc.Value = null;
             
             this.inventory.Value.selectedItemView.Subscribe(SubscribeInventorySelectedItem);

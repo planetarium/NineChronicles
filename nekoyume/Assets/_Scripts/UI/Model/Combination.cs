@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Assets.SimpleLocalization;
 using Nekoyume.Manager;
 using Nekoyume.Game.Item;
 using Nekoyume.UI.Module;
@@ -54,10 +55,10 @@ namespace Nekoyume.UI.Model
             this.inventory.Value = new Inventory(inventory);
             this.inventory.Value.dimmedFunc.Value = DimmedFunc;
             itemInfo.Value = new ItemInfo();
-            itemInfo.Value.buttonText.Value = "재료 선택";
+            itemInfo.Value.buttonText.Value = LocalizationManager.Localize("UI_COMBINATION_SELECT_MATERIAL");
             itemInfo.Value.buttonEnabledFunc.Value = ButtonEnabledFunc;
             itemCountPopup.Value = new SimpleItemCountPopup();
-            itemCountPopup.Value.titleText.Value = "재료 수량 선택";
+            itemCountPopup.Value.titleText.Value = LocalizationManager.Localize("UI_COMBINATION_SELECT_COUNT_OF_MATERIAL");;
             openedMaterialCount.Value = materialCount;
 
             this.inventory.Value.selectedItemView.Subscribe(OnInventorySelectedItem);

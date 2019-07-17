@@ -436,6 +436,7 @@ MonoBehaviour:
   - {fileID: 4195034906447456116}
   - {fileID: 6069143768414449925}
   refreshButton: {fileID: 5500970299350302899}
+  refreshButtonText: {fileID: 998447857175675173}
 --- !u!1 &3037945344740449194
 GameObject:
   m_ObjectHideFlags: 0
@@ -499,7 +500,9 @@ MonoBehaviour:
   bg1: {fileID: 8643037815396336942}
   right: {fileID: 5352140714965919159}
   switchBuyButton: {fileID: 5854075116785922314}
+  switchBuyButtonText: {fileID: 6955932722107753814}
   switchSellButton: {fileID: 1545348238283310629}
+  switchSellButtonText: {fileID: 7341299580190347408}
   inventoryAndItemInfo: {fileID: 4732710554557474768}
   shopItems: {fileID: 5975893674301845933}
   closeButton: {fileID: 2441304007609466322}

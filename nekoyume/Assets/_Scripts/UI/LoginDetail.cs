@@ -1,4 +1,5 @@
 using System;
+using Assets.SimpleLocalization;
 using DG.Tweening;
 using Nekoyume.BlockChain;
 using Nekoyume.State;
@@ -13,7 +14,9 @@ namespace Nekoyume.UI
     public class LoginDetail : Widget
     {
         public GameObject btnLogin;
+        public Text btnLoginText;
         public GameObject btnCreate;
+        public Text btnCreateText;
         public InputField nameField;
         public Text namePlaceHolder;
         public Text textHp;
@@ -28,6 +31,9 @@ namespace Nekoyume.UI
         public GameObject optionGrid;
         public GameObject optionRow;
         public GameObject palette;
+        public Text paletteHairText;
+        public Text paletteLensText;
+        public Text paletteTopText;
         
         private int _selectedIndex;
 
@@ -37,6 +43,13 @@ namespace Nekoyume.UI
         protected override void Awake()
         {
             base.Awake();
+
+            btnCreateText.text = LocalizationManager.Localize("UI_CREATE_CHARACTER");
+            btnLoginText.text = LocalizationManager.Localize("UI_GAME_START");
+            namePlaceHolder.text = LocalizationManager.Localize("UI_INPUT_NAME");
+            paletteHairText.text = LocalizationManager.Localize("UI_HAIR");
+            paletteLensText.text = LocalizationManager.Localize("UI_LENS");
+            paletteTopText.text = LocalizationManager.Localize("UI_ETC");
 
             nameField.gameObject.SetActive(false);
             Game.Event.OnLoginDetail.AddListener(Init);

@@ -146,9 +146,15 @@ namespace Assets.SimpleLocalization
                 Read();
             }
 
-            if (!Dictionary.ContainsKey(Language)) throw new KeyNotFoundException("Language not found: " + Language);
+            if (!Dictionary.ContainsKey(Language))
+            {
+                throw new KeyNotFoundException("Language not found: " + Language);
+            }
+
             if (!Dictionary[Language].ContainsKey(localizationKey))
+            {
                 throw new KeyNotFoundException("Translation not found: " + localizationKey);
+            }
 
             return Dictionary[Language][localizationKey];
         }
@@ -163,11 +169,6 @@ namespace Assets.SimpleLocalization
             return string.Format(pattern, args);
         }
 
-        private static string ReplaceMarkers(string text)
-        {
-            return text.Replace("[Newline]", "\n");
-        }
-
         /// <summary>
         /// Get localized string count by localization key with numbering.
         /// </summary>
@@ -178,8 +179,12 @@ namespace Assets.SimpleLocalization
                 Read();
             }
 
-            if (!Dictionary.ContainsKey(Language)) throw new KeyNotFoundException("Language not found: " + Language);
+            if (!Dictionary.ContainsKey(Language))
+            {
+                throw new KeyNotFoundException("Language not found: " + Language);
+            }
 
+            // FixMe. 무한루프 가능성이 열려 있음.
             var count = 0;
             while (true)
             {
@@ -190,6 +195,34 @@ namespace Assets.SimpleLocalization
 
                 count++;
             }
+        }
+
+        public static Dictionary<string, string> LocalizePattern(string pattern)
+        {
+            var result = new Dictionary<string, string>();
+
+            if (Dictionary.Count == 0)
+            {
+                Read();
+            }
+
+            var dict = Dictionary[Language];
+            foreach (var pair in dict)
+            {
+                if (Regex.IsMatch(pair.Key, pattern))
+                {
+                    result.Add(pair.Key, pair.Value);
+                }
+            }
+            
+            return result;
+        }
+        
+        private static string ReplaceMarkers(string text)
+        {
+            return text
+                .Replace("[Newline]", "[newline]")
+                .Replace("[Comma]", "[comma]");
         }
     }
 }

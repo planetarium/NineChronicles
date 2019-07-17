@@ -103,7 +103,7 @@ GameObject:
   - component: {fileID: 114251822891201942}
   - component: {fileID: 4877393150678171673}
   m_Layer: 5
-  m_Name: Btn
+  m_Name: CombinationBtn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -252,7 +252,7 @@ GameObject:
   - component: {fileID: 114485802770953696}
   - component: {fileID: 3450333501486923500}
   m_Layer: 5
-  m_Name: Btn
+  m_Name: ShopBtn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -951,9 +951,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   btnQuest: {fileID: 1690004906704222}
-  btnCombine: {fileID: 1054939152201896}
+  btnQuestText: {fileID: 114646154997950382}
+  btnCombination: {fileID: 1054939152201896}
+  btnCombinationText: {fileID: 114565825789870166}
   btnShop: {fileID: 1057739395603766}
-  btnTemple: {fileID: 1853928540865328}
+  btnShopText: {fileID: 114173093363422916}
+  btnRanking: {fileID: 1853928540865328}
+  btnRankingText: {fileID: 114641387476661024}
   LabelInfo: {fileID: 114407027513806374}
   SpeechBubbles: []
   Stage: {fileID: 0}
@@ -1873,7 +1877,7 @@ GameObject:
   - component: {fileID: 114562187411683950}
   - component: {fileID: 7983721594100104734}
   m_Layer: 5
-  m_Name: Btn
+  m_Name: QuestBtn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2117,7 +2121,7 @@ GameObject:
   - component: {fileID: 114903063250779554}
   - component: {fileID: 5615811817025174728}
   m_Layer: 5
-  m_Name: Btn
+  m_Name: RankingBtn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

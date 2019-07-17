@@ -1,3 +1,4 @@
+using Assets.SimpleLocalization;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model;
 using Nekoyume.UI.Model;
@@ -13,6 +14,8 @@ namespace Nekoyume.UI
     /// </summary>
     public class StatusDetail : Widget
     {
+        public Text statusTitleText;
+        public Text equipmentTitleText;
         public EquipmentSlots equipmentSlots;
         public GameObject textOption;
         public GameObject group;
@@ -22,6 +25,14 @@ namespace Nekoyume.UI
         private Game.Character.Player _player;
         
         #region Mono
+
+        protected override void Awake()
+        {
+            base.Awake();
+            
+            statusTitleText.text = LocalizationManager.Localize("UI_STATUS");
+            equipmentTitleText.text = LocalizationManager.Localize("UI_EQUIPMENTS");
+        }
 
         private void OnDisable()
         {
