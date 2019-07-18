@@ -11,8 +11,8 @@ namespace Nekoyume.Game.Item
         private const string SpritePath = "images/icon/equipment/{0}";
         private const int DefaultResourceId = 10210000;
 
-        public Armor(Data.Table.Item data, SkillBase skillBase = null)
-            : base(data, skillBase)
+        public Armor(Data.Table.Item data, SkillBase skillBase = null, string id = null)
+            : base(data, skillBase, id)
         {
         }
 

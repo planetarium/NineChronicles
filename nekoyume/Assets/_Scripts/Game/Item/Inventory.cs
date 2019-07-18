@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Nekoyume.BlockChain;
 using Nekoyume.Data;
-using UniRx.Async;
 
 namespace Nekoyume.Game.Item
 {
@@ -27,6 +25,27 @@ namespace Nekoyume.Game.Item
             {
                 item = itemUsable;
                 this.count = count;
+            }
+
+            protected bool Equals(Item other)
+            {
+                return Equals(item, other.item) && count == other.count;
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (ReferenceEquals(null, obj)) return false;
+                if (ReferenceEquals(this, obj)) return true;
+                if (obj.GetType() != this.GetType()) return false;
+                return Equals((Item) obj);
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+                    return ((item != null ? item.GetHashCode() : 0) * 397) ^ count;
+                }
             }
         }
 
