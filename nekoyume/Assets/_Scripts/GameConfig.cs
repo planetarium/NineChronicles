@@ -17,6 +17,7 @@ namespace Nekoyume
         public const float CombinationValueL1 = 10f;
         public const float CombinationValueL2 = 1f;
         public const float CombinationValueR1 = 2f;
+        public const int CombinationDefaultFoodId = 200000;
         
         #endregion
         
