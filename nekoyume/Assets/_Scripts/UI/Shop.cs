@@ -317,7 +317,7 @@ namespace Nekoyume.UI
                     view.RectTransform, 
                     view.Model,
                     value => Model.ButtonEnabledFuncForSell(view.Model),
-                    LocalizationManager.Localize("UI_SELL_CANCELLATION"),
+                    LocalizationManager.Localize("UI_RETRIEVE"),
                     tooltip =>
                     {
                         Model.OnClickItemInfo(tooltip.itemInformation.Model.item.Value);

@@ -50,7 +50,7 @@ namespace Nekoyume.UI
             _stage = GameObject.Find("Stage").GetComponent<Stage>();
             _image = GetComponent<Image>();
 
-            backText.text = LocalizationManager.Localize("UI_GO_OUT");
+            backText.text = LocalizationManager.Localize("UI_MAIN");
         }
 
         public void SubmitClick()
