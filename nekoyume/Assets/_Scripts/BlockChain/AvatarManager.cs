@@ -90,7 +90,7 @@ namespace Nekoyume.BlockChain
             BlockChain<PolymorphicAction<ActionBase>> chain
         )
         {
-            return chain.MakeTransaction(_privateKey, actions);
+            return chain.MakeTransaction(AgentController.Agent.PrivateKey, actions);
         }
     }
 }

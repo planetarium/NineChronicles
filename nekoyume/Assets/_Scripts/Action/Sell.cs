@@ -6,7 +6,6 @@ using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Game.Item;
 using Nekoyume.State;
-using UnityEngine;
 
 namespace Nekoyume.Action
 {
@@ -20,14 +19,14 @@ namespace Nekoyume.Action
             public ShopItem shopItem;
         }
 
-        public Address sellerAgentAddress;
+        public Address sellerAvatarAddress;
         public Guid productId;
         public ItemUsable itemUsable;
         public decimal price;
 
         protected override IImmutableDictionary<string, object> PlainValueInternal => new Dictionary<string, object>
         {
-            ["sellerAgentAddress"] = sellerAgentAddress.ToByteArray(),
+            ["sellerAvatarAddress"] = sellerAvatarAddress.ToByteArray(),
             ["productId"] = productId.ToByteArray(),
             ["itemUsable"] = ByteSerializer.Serialize(itemUsable),
             ["price"] = price.ToString(CultureInfo.InvariantCulture),
@@ -35,7 +34,7 @@ namespace Nekoyume.Action
 
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, object> plainValue)
         {
-            sellerAgentAddress = new Address((byte[]) plainValue["sellerAgentAddress"]);
+            sellerAvatarAddress = new Address((byte[]) plainValue["sellerAvatarAddress"]);
             productId = new Guid((byte[]) plainValue["productId"]);
             itemUsable = ByteSerializer.Deserialize<ItemUsable>((byte[]) plainValue["itemUsable"]);
             price = decimal.Parse(plainValue["price"].ToString());
@@ -47,10 +46,15 @@ namespace Nekoyume.Action
             if (ctx.Rehearsal)
             {
                 states = states.SetState(ShopState.Address, MarkChanged);
+                states = states.SetState(sellerAvatarAddress, MarkChanged);
                 return states.SetState(ctx.Signer, MarkChanged);
             }
 
-            var avatarState = (AvatarState) states.GetState(ctx.Signer);
+            var agentState = (AgentState) states.GetState(ctx.Signer);
+            if (!agentState.avatarAddresses.ContainsValue(sellerAvatarAddress))
+                return states;
+
+            var avatarState = (AvatarState) states.GetState(sellerAvatarAddress);
             if (avatarState == null)
             {
                 return states;
@@ -69,7 +73,7 @@ namespace Nekoyume.Action
             // 상점에 아이템을 등록한다.
             var shopItem = shopState.Register(ctx.Signer, new ShopItem
             {
-                sellerAgentAddress = sellerAgentAddress,
+                sellerAvatarAddress = sellerAvatarAddress,
                 productId = productId,
                 itemUsable = nonFungibleItem,
                 price = price
@@ -77,7 +81,8 @@ namespace Nekoyume.Action
 
             avatarState.updatedAt = DateTimeOffset.UtcNow;
 
-            states = states.SetState(ctx.Signer, avatarState);
+            states = states.SetState(sellerAvatarAddress, avatarState);
+            states = states.SetState(ctx.Signer, agentState);
             return states.SetState(ShopState.Address, shopState);
         }
     }

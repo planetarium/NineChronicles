@@ -3,7 +3,6 @@ using Libplanet;
 using Nekoyume.Game.Item;
 using Nekoyume.UI.Module;
 using UniRx;
-using UnityEngine;
 
 namespace Nekoyume.UI.Model
 {
@@ -16,11 +15,13 @@ namespace Nekoyume.UI.Model
         
         public new readonly Subject<ShopItemView> onClick = new Subject<ShopItemView>();
         
-        public ShopItem(Address sellerAvatarAddress, Game.Item.ShopItem item) : this(sellerAvatarAddress, item.sellerAgentAddress, item.price, item.productId, item.itemUsable)
+        public ShopItem(Address sellerAgentAddress, Game.Item.ShopItem item)
+            : this(sellerAgentAddress, item.sellerAvatarAddress, item.price, item.productId, item.itemUsable)
         {
         }
-        
-        public ShopItem(Address sellerAvatarAddress, Address sellerAgentAddress, decimal price, Guid productId, ItemBase item) : base(item, 1)
+
+        private ShopItem(Address sellerAgentAddress, Address sellerAvatarAddress, decimal price, Guid productId,
+            ItemBase item) : base(item, 1)
         {
             this.sellerAvatarAddress.Value = sellerAvatarAddress;
             this.sellerAgentAddress.Value = sellerAgentAddress;
