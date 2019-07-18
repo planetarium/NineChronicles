@@ -108,6 +108,7 @@ namespace Tests
             var current = AgentController.Agent.Transactions.Count;
             _widget.QuestClick(false);
             yield return new WaitUntil(() => AgentController.Agent.Transactions.Count > current);
+            // Transaction.Id 가 랜덤하게 생성되어 순서가 보장이 되지 않기때문에 정렬처리
             var tx = AgentController.Agent.Transactions.Values.OrderByDescending(t => t.Timestamp).First();
             yield return _miner.CoMine(tx);
             yield return new WaitWhile(() => _widget.gameObject.activeSelf);

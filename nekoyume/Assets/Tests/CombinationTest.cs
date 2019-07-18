@@ -14,6 +14,7 @@ namespace Tests
     public class CombinationTest
     {
         private MinerFixture _miner;
+
         [Test]
         public void GetEquipmentWithoutSkill()
         {

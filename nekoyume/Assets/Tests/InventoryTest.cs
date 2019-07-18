@@ -15,8 +15,10 @@ namespace Tests
             var inventory2 = new Inventory();
             inventory.AddNonFungibleItem(id);
             inventory2.AddNonFungibleItem(id);
-            Assert.IsTrue(inventory2.TryGetAddedItemFrom(inventory, out _));
-            Assert.IsFalse(inventory2.TryGetAddedItemFrom(inventory2, out _));
+            Assert.IsTrue(inventory2.TryGetAddedItemFrom(inventory, out var item));
+            Assert.IsInstanceOf<ItemUsable>(item);
+            Assert.IsFalse(inventory2.TryGetAddedItemFrom(inventory2, out var result));
+            Assert.IsNull(result);
         }
     }
 }
