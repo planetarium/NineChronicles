@@ -127,8 +127,8 @@ namespace Nekoyume.UI
 
             _currentChapter = worldData.id;
 
-            btnPrevChapter.enabled = _currentChapter > 1;
-            btnNextChapter.enabled = _currentChapter < Tables.instance.World.Count;
+            btnPrevChapter.interactable = _currentChapter > 1;
+            btnNextChapter.interactable = _currentChapter < Tables.instance.World.Count;
             txtChapter.text = $"{_currentChapter} / {Tables.instance.World.Count}";
             txtStage.text = $"Stage {SelectedStage}";
 
