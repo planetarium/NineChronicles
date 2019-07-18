@@ -41,7 +41,7 @@ namespace Nekoyume.UI.Model
                 return false;
             }
             
-            return countableItem.item.Value.Data.cls == nameof(ItemBase.ItemType.Material);
+            return countableItem.item.Value.Data.cls.ToEnumItemType() == ItemBase.ItemType.Material;
         }
     }
 }

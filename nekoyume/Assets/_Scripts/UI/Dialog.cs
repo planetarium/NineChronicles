@@ -13,7 +13,6 @@ namespace Nekoyume.UI
         public float textInterval = 0.06f;
         public Color itemTextColor;
 
-        public Text txtContainer;
         public Text txtName;
         public Text txtDialog;
         public Image imgCharacter;
@@ -23,9 +22,11 @@ namespace Nekoyume.UI
         private int _dialogIndex;
         private int _dialogNum;
         private int _characterId;
+        private string _npc;
         private Coroutine _coroutine = null;
         private string _text;
         private string _itemTextColor;
+        private Dictionary<int, DialogEffect> _effects = new Dictionary<int, DialogEffect>();
 
         public static string GetPlayerPrefsKeyOfCurrentAvatarState(int dialogId)
         {
@@ -86,6 +87,9 @@ namespace Nekoyume.UI
             if (string.IsNullOrEmpty(text))
                 yield break;
 
+            _characterId = 0;
+            _npc = null;
+            _effects.Clear();
             _text = ParseText(text);
 
             if (Data.Tables.instance.Character.TryGetValue(_characterId, out var characterData))
@@ -95,15 +99,35 @@ namespace Nekoyume.UI
                 {
                     localizedName = LocalizationManager.Localize($"CHARACTER_{_characterId}_NAME");
                 }
-                catch (KeyNotFoundException e)
+                catch (KeyNotFoundException)
                 {
                     localizedName = characterData.characterName;
                 }
 
                 var res = Resources.Load<Sprite>($"Images/character_{characterData.characterResource}");
                 imgCharacter.sprite = res;
+                imgCharacter.SetNativeSize();
                 imgCharacter.enabled = imgCharacter.sprite != null;
-                txtContainer.text = localizedName;
+                txtName.text = localizedName;
+            }
+
+            // TODO: npc
+            if (!string.IsNullOrEmpty(_npc))
+            {
+                string localizedName;
+                try
+                {
+                    localizedName = LocalizationManager.Localize($"NPC_{_npc}_NAME");
+                }
+                catch (KeyNotFoundException)
+                {
+                    localizedName = "???";
+                }
+
+                var res = Resources.Load<Sprite>($"Images/npc/NPC_{_npc}");
+                imgCharacter.sprite = res;
+                imgCharacter.SetNativeSize();
+                imgCharacter.enabled = imgCharacter.sprite != null;
                 txtName.text = localizedName;
             }
 
@@ -135,6 +159,11 @@ namespace Nekoyume.UI
                     txtDialog.text = $"{_text.Substring(0, textIndex)}";
                 else
                     txtDialog.text = $"{_text.Substring(0, textIndex)}</color>";
+
+                if (_effects.TryGetValue(textIndex, out var effect))
+                {
+                    effect.Execute(this);
+                }
 
                 yield return new WaitForSeconds(textInterval);
             }
@@ -170,21 +199,59 @@ namespace Nekoyume.UI
                         string left = text.Substring(0, openIndex);
                         string right = text.Substring(i + 1);
                         string[] pair = text.Substring(openIndex + 1, i - openIndex - 1).Split(':');
-                        int pairValue = int.Parse(pair[1]);
-                        Debug.LogWarning($"{pair[0]}:{pairValue}");
-                        switch (pair[0])
+                        string pairKey = pair[0].ToLower();
+                        int.TryParse(pair[1], out int pairValue);
+                        switch (pairKey)
                         {
                             case "character":
                                 _characterId = pairValue;
 
                                 break;
+                            case "npc":
+                                _npc = pair[1];
+
+                                break;
                             case "item":
                                 if (Data.Tables.instance.Item.TryGetValue(pairValue, out var itemData))
                                 {
-                                    var localizedItemName = LocalizationManager.Localize($"ITEM_{itemData.id}_NAME");
-                                    
-                                    left = $"{left}<color={_itemTextColor}>{localizedItemName}</color>";
+                                    // TODO: Localization
+                                    try
+                                    {
+                                        var localizedItemName = LocalizationManager.Localize($"ITEM_{itemData.id}_NAME");
+                                        left = $"{left}<color={_itemTextColor}>{localizedItemName}</color>";
+                                    }
+                                    catch
+                                    {
+                                        left = $"{left}<color={_itemTextColor}>{itemData.name}</color>";
+                                    }
                                 }
+
+                                break;
+                            case "item_equip":
+                                if (Data.Tables.instance.ItemEquipment.TryGetValue(pairValue, out var itemEquipData))
+                                {
+                                    // TODO: Localization
+                                    try
+                                    {
+                                        var localizedItemName = LocalizationManager.Localize($"ITEM_{itemEquipData.id}_NAME");
+                                        left = $"{left}<color={_itemTextColor}>{localizedItemName}</color>";
+                                    }
+                                    catch
+                                    {
+                                        left = $"{left}<color={_itemTextColor}>{itemEquipData.name}</color>";
+                                    }
+                                }
+
+                                break;
+                            case "shake_vertical":
+                                // TODO: 좀더 좋은 방법
+                                var values = pair[1].Split('|');
+                                _effects.Add(left.Length - 1, new DialogEffectShake()
+                                {
+                                    value = new Vector3(0.0f, -int.Parse(values[0])),
+                                    duration = int.Parse(values[1]),
+                                    loops = int.Parse(values[2]),
+                                });
 
                                 break;
                         }
