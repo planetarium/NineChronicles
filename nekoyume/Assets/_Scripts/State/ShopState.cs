@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Libplanet;
 using Nekoyume.Game.Item;
 
@@ -36,39 +35,39 @@ namespace Nekoyume.State
         {
         }
         
-        public ShopItem Register(Address sellerAvatarAddress, ShopItem item)
+        public ShopItem Register(Address sellerAgentAddress, ShopItem item)
         {
-            if (!items.ContainsKey(sellerAvatarAddress))
+            if (!items.ContainsKey(sellerAgentAddress))
             {
-                items.Add(sellerAvatarAddress, new List<ShopItem>());
+                items.Add(sellerAgentAddress, new List<ShopItem>());
             }
 
-            items[sellerAvatarAddress].Add(item);
+            items[sellerAgentAddress].Add(item);
             return item;
         }
 
-        public bool Unregister(Address sellerAvatarAddress,
+        public bool Unregister(Address sellerAgentAddress,
             ShopItem shopItem)
         {
-            if (!items[sellerAvatarAddress].Contains(shopItem))
+            if (!items[sellerAgentAddress].Contains(shopItem))
             {
                 return false;
             }
 
-            items[sellerAvatarAddress].Remove(shopItem);
+            items[sellerAgentAddress].Remove(shopItem);
 
             return true;
         }
 
-        public bool TryGet(Address sellerAvatarAddress, Guid productId,
+        public bool TryGet(Address sellerAgentAddress, Guid productId,
             out KeyValuePair<Address, ShopItem> outPair)
         {
-            if (!items.ContainsKey(sellerAvatarAddress))
+            if (!items.ContainsKey(sellerAgentAddress))
             {
                 return false;
             }
 
-            var list = items[sellerAvatarAddress];
+            var list = items[sellerAgentAddress];
 
             foreach (var shopItem in list)
             {
@@ -77,17 +76,17 @@ namespace Nekoyume.State
                     continue;
                 }
 
-                outPair = new KeyValuePair<Address, ShopItem>(sellerAvatarAddress, shopItem);
+                outPair = new KeyValuePair<Address, ShopItem>(sellerAgentAddress, shopItem);
                 return true;
             }
 
             return false;
         }
         
-        public bool TryUnregister(Address sellerAvatarAddress,
+        public bool TryUnregister(Address sellerAgentAddress,
             Guid productId, out ShopItem outUnregisteredItem)
         {
-            if (!TryGet(sellerAvatarAddress, productId, out var outPair))
+            if (!TryGet(sellerAgentAddress, productId, out var outPair))
             {
                 outUnregisteredItem = null;
                 return false;

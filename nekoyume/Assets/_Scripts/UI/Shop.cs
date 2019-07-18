@@ -31,6 +31,8 @@ namespace Nekoyume.UI
         public InventoryAndItemInfo inventoryAndItemInfo;
         public ShopItems shopItems;
         public Button closeButton;
+        public ItemCountAndPricePopup itemCountAndPricePopup;
+
 
         public GameObject particleVFX;
         public GameObject resultItemVFX;
@@ -44,7 +46,6 @@ namespace Nekoyume.UI
         private Stage _stage;
 
         private Player _player;
-        private ItemCountAndPricePopup _itemCountAndPricePopup;
         private GrayLoadingScreen _loadingScreen;
 
         private Sequence _sequenceOfShopItems;
@@ -97,8 +98,8 @@ namespace Nekoyume.UI
                 _player.gameObject.SetActive(false);
             }
 
-            _itemCountAndPricePopup = Find<ItemCountAndPricePopup>();
-            if (ReferenceEquals(_itemCountAndPricePopup, null))
+            itemCountAndPricePopup = Find<ItemCountAndPricePopup>();
+            if (ReferenceEquals(itemCountAndPricePopup, null))
             {
                 throw new NotFoundComponentException<ItemCountAndPricePopup>();
             }
@@ -318,11 +319,11 @@ namespace Nekoyume.UI
         {
             if (ReferenceEquals(data, null))
             {
-                _itemCountAndPricePopup.Close();
+                itemCountAndPricePopup.Close();
                 return;
             }
 
-            _itemCountAndPricePopup.Pop(Model.itemCountAndPricePopup.Value);
+            itemCountAndPricePopup.Pop(Model.itemCountAndPricePopup.Value);
         }
 
         private void OnClickSubmitItemCountAndPricePopup(Model.ItemCountAndPricePopup data)
@@ -367,9 +368,9 @@ namespace Nekoyume.UI
         {
             Model.itemCountAndPricePopup.Value.item.Value = null;
 
-            var sellerAvatarAddress = eval.InputContext.Signer;
+            var sellerAgentAddress = eval.InputContext.Signer;
             var productId = eval.Action.productId;
-            if (!States.Instance.shopState.Value.TryGet(sellerAvatarAddress, productId, out var outPair))
+            if (!States.Instance.shopState.Value.TryGet(sellerAgentAddress, productId, out var outPair))
             {
                 return;
             }
@@ -378,8 +379,8 @@ namespace Nekoyume.UI
 
             Model.inventory.Value.RemoveNonFungibleItem(shopItem.itemUsable);
 
-            Model.shopItems.Value.AddShopItem(sellerAvatarAddress, shopItem);
-            Model.shopItems.Value.AddRegisteredProduct(sellerAvatarAddress, shopItem);
+            Model.shopItems.Value.AddShopItem(sellerAgentAddress, shopItem);
+            Model.shopItems.Value.AddRegisteredProduct(sellerAgentAddress, shopItem);
 
             _loadingScreen.Close();
         }
@@ -389,9 +390,9 @@ namespace Nekoyume.UI
         {
             Model.itemCountAndPricePopup.Value.item.Value = null;
 
-            var sellerAvatarAddress = eval.InputContext.Signer;
+            var sellerAgentAddress = eval.InputContext.Signer;
 
-            Model.shopItems.Value.RemoveShopItem(sellerAvatarAddress, productId);
+            Model.shopItems.Value.RemoveShopItem(sellerAgentAddress, productId);
             Model.shopItems.Value.RemoveProduct(productId);
             Model.shopItems.Value.RemoveRegisteredProduct(productId);
             Model.inventory.Value.AddNonFungibleItem(shopItem);
@@ -411,7 +412,7 @@ namespace Nekoyume.UI
             Model.shopItems.Value.RemoveRegisteredProduct(productId);
 
             if (!States.Instance.currentAvatarState.Value.inventory.TryGetAddedItemFrom(inventory,
-                out var outAddedItem))
+                out _))
             {
                 return;
             }
@@ -460,7 +461,7 @@ namespace Nekoyume.UI
         private void OnClickCloseItemCountAndPricePopup(Model.ItemCountAndPricePopup data)
         {
             Model.itemCountAndPricePopup.Value.item.Value = null;
-            _itemCountAndPricePopup.Close();
+            itemCountAndPricePopup.Close();
         }
     }
 }

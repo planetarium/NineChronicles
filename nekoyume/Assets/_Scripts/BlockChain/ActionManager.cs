@@ -55,6 +55,7 @@ namespace Nekoyume.BlockChain
                 equipments = equipments,
                 foods = foods,
                 stage = stage,
+                avatarAddress = States.Instance.currentAvatarState.Value.address,
             };
             ProcessAction(action);
 
@@ -74,6 +75,7 @@ namespace Nekoyume.BlockChain
 
             var action = new Combination();
             materials.ForEach(m => action.Materials.Add(new Combination.Material(m)));
+            action.avatarAddress = States.Instance.currentAvatarState.Value.address;
             ProcessAction(action);
 
             return ActionBase.EveryRender<Combination>()
@@ -87,7 +89,7 @@ namespace Nekoyume.BlockChain
         {
             var action = new Sell
             {
-                sellerAgentAddress = States.Instance.agentState.Value.address,
+                sellerAvatarAddress = States.Instance.currentAvatarState.Value.address,
                 productId = Guid.NewGuid(),
                 itemUsable = itemUsable,
                 price = price
@@ -105,7 +107,8 @@ namespace Nekoyume.BlockChain
         {
             var action = new SellCancellation
             {
-                productId = productId
+                productId = productId,
+                sellerAvatarAddress = States.Instance.currentAvatarState.Value.address,
             };
             ProcessAction(action);
 
@@ -120,7 +123,7 @@ namespace Nekoyume.BlockChain
         {
             var action = new Buy
             {
-                buyerAgentAddress = States.Instance.agentState.Value.address,
+                buyerAvatarAddress = States.Instance.currentAvatarState.Value.address,
                 sellerAgentAddress = sellerAgentAddress,
                 sellerAvatarAddress = sellerAvatarAddress,
                 productId = productId

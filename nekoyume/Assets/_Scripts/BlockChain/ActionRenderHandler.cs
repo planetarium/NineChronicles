@@ -1,10 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Libplanet;
-using Libplanet.Action;
 using Nekoyume.Action;
-using Nekoyume.Game.Item;
-using Nekoyume.Model;
 using Nekoyume.State;
 using UniRx;
 
@@ -62,37 +58,11 @@ namespace Nekoyume.BlockChain
             
             return evaluation.InputContext.Signer == States.Instance.agentState.Value.address;
         }
-        
-        private bool ValidateEvaluationForCurrentAvatarState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
-        {
-            if (States.Instance.currentAvatarState.Value == null)
-            {
-                return false;
-            }
-            
-            return evaluation.InputContext.Signer == States.Instance.currentAvatarState.Value.address;
-        }
 
         private AgentState GetAgentState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
         {
             var agentAddress = States.Instance.agentState.Value.address;
             return (AgentState) evaluation.OutputStates.GetState(agentAddress);
-        }
-        
-        private AvatarState GetAvatarState<T>(ActionBase.ActionEvaluation<T> evaluation, int index) where T : ActionBase
-        {
-            if (!States.Instance.agentState.Value.avatarAddresses.ContainsKey(index))
-            {
-                return null;
-            }
-            
-            var avatarAddress = States.Instance.agentState.Value.avatarAddresses[index];
-            return (AvatarState) evaluation.OutputStates.GetState(avatarAddress);
-        }
-        
-        private AvatarState GetCurrentAvatarState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
-        {
-            return GetAvatarState(evaluation, States.Instance.currentAvatarKey.Value);
         }
 
         private void UpdateAgentState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
@@ -190,7 +160,7 @@ namespace Nekoyume.BlockChain
         private void HackAndSlash()
         {
             ActionBase.EveryRender<HackAndSlash>()
-                .Where(ValidateEvaluationForCurrentAvatarState)
+                .Where(ValidateEvaluationForAgentState)
                 .ObserveOnMainThread()
                 .Subscribe(UpdateCurrentAvatarState).AddTo(_disposables);
         }
@@ -198,7 +168,7 @@ namespace Nekoyume.BlockChain
         private void Combination()
         {
             ActionBase.EveryRender<Combination>()
-                .Where(ValidateEvaluationForCurrentAvatarState)
+                .Where(ValidateEvaluationForAgentState)
                 .ObserveOnMainThread()
                 .Subscribe(UpdateCurrentAvatarState).AddTo(_disposables);
         }
@@ -206,7 +176,7 @@ namespace Nekoyume.BlockChain
         private void Sell()
         {
             ActionBase.EveryRender<Sell>()
-                .Where(ValidateEvaluationForCurrentAvatarState)
+                .Where(ValidateEvaluationForAgentState)
                 .ObserveOnMainThread()
                 .Subscribe(UpdateCurrentAvatarState).AddTo(_disposables);
         }
@@ -214,7 +184,7 @@ namespace Nekoyume.BlockChain
         private void SellCancellation()
         {
             ActionBase.EveryRender<SellCancellation>()
-                .Where(ValidateEvaluationForCurrentAvatarState)
+                .Where(ValidateEvaluationForAgentState)
                 .ObserveOnMainThread()
                 .Subscribe(UpdateCurrentAvatarState).AddTo(_disposables);
         }
@@ -222,7 +192,7 @@ namespace Nekoyume.BlockChain
         private void Buy()
         {
             ActionBase.EveryRender<Buy>()
-                .Where(ValidateEvaluationForCurrentAvatarState)
+                .Where(ValidateEvaluationForAgentState)
                 .ObserveOnMainThread()
                 .Subscribe(UpdateCurrentAvatarState).AddTo(_disposables);
         }

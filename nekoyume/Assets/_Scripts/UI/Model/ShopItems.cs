@@ -54,38 +54,38 @@ namespace Nekoyume.UI.Model
             selectedItemView.Value = null;
         }
 
-        public void AddShopItem(Address sellerAvatarAddress, Game.Item.ShopItem shopItem)
+        public void AddShopItem(Address sellerAgentAddress, Game.Item.ShopItem shopItem)
         {
-            if (!_shopItems.ContainsKey(sellerAvatarAddress))
+            if (!_shopItems.ContainsKey(sellerAgentAddress))
             {
-                _shopItems.Add(sellerAvatarAddress, new List<Game.Item.ShopItem>());
+                _shopItems.Add(sellerAgentAddress, new List<Game.Item.ShopItem>());
             }
             
-            _shopItems[sellerAvatarAddress].Add(shopItem);
+            _shopItems[sellerAgentAddress].Add(shopItem);
         }
         
-        public ShopItem AddRegisteredProduct(Address sellerAvatarAddress, Game.Item.ShopItem shopItem)
+        public ShopItem AddRegisteredProduct(Address sellerAgentAddress, Game.Item.ShopItem shopItem)
         {
-            var result = new ShopItem(sellerAvatarAddress, shopItem);
+            var result = new ShopItem(sellerAgentAddress, shopItem);
             registeredProducts.Add(result);
             return result;
         }
         
-        public void RemoveShopItem(Address sellerAvatarAddress, Guid productId)
+        public void RemoveShopItem(Address sellerAgentAddress, Guid productId)
         {
-            if (!_shopItems.ContainsKey(sellerAvatarAddress))
+            if (!_shopItems.ContainsKey(sellerAgentAddress))
             {
                 return;
             }
 
-            foreach (var shopItem in _shopItems[sellerAvatarAddress])
+            foreach (var shopItem in _shopItems[sellerAgentAddress])
             {
                 if (shopItem.productId != productId)
                 {
                     continue;
                 }
                 
-                _shopItems[sellerAvatarAddress].Remove(shopItem);
+                _shopItems[sellerAgentAddress].Remove(shopItem);
                 break;
             }
         }

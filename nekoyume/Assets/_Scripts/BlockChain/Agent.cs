@@ -56,7 +56,9 @@ namespace Nekoyume.BlockChain
         private readonly Swarm<PolymorphicAction<ActionBase>> _swarm;
         private readonly LiteDBStore _store;
 
-        
+        public IDictionary<TxId, Transaction<PolymorphicAction<ActionBase>>> Transactions => _blocks.Transactions;
+        public IBlockPolicy<PolymorphicAction<ActionBase>> Policy => _blocks.Policy;
+
         public PrivateKey PrivateKey { get; }
         public Address Address { get; }
         
@@ -278,6 +280,11 @@ namespace Nekoyume.BlockChain
                 PrivateKey,
                 actions,
                 broadcast: false);
+        }
+
+        public void AppendBlock(Block<PolymorphicAction<ActionBase>> block)
+        {
+            _blocks.Append(block);
         }
     }
 }
