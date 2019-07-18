@@ -58,7 +58,7 @@ namespace Nekoyume.UI.Model
             itemInfo.Value.buttonText.Value = LocalizationManager.Localize("UI_COMBINATION_SELECT_MATERIAL");
             itemInfo.Value.buttonEnabledFunc.Value = ButtonEnabledFunc;
             itemCountPopup.Value = new SimpleItemCountPopup();
-            itemCountPopup.Value.titleText.Value = LocalizationManager.Localize("UI_COMBINATION_SELECT_COUNT_OF_MATERIAL");;
+            itemCountPopup.Value.titleText.Value = LocalizationManager.Localize("UI_COMBINATION_MATERIAL_COUNT_SELECTION");;
             openedMaterialCount.Value = materialCount;
 
             this.inventory.Value.selectedItemView.Subscribe(OnInventorySelectedItem);

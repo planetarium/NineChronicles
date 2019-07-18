@@ -34,7 +34,7 @@ namespace Nekoyume.UI
 
             foreach (var filteredRankingButtonText in filteredRankingButtonTexts)
             {
-                filteredRankingButtonText.text = LocalizationManager.Localize("UI_USERS_WHO_CONNECTED_WITHIN_24HOURS");    
+                filteredRankingButtonText.text = LocalizationManager.Localize("UI_RANKING_IN__24HOURS");    
             }
             
             _stage = GameObject.Find("Stage").GetComponent<Stage>();
