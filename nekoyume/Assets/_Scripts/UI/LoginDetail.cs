@@ -44,7 +44,7 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
-            btnCreateText.text = LocalizationManager.Localize("UI_CREATE_CHARACTER");
+            btnCreateText.text = LocalizationManager.Localize("UI_CREATE_CHARACTER_CONFIRM");
             btnLoginText.text = LocalizationManager.Localize("UI_GAME_START");
             namePlaceHolder.text = LocalizationManager.Localize("UI_INPUT_NAME");
             paletteHairText.text = LocalizationManager.Localize("UI_HAIR");
