@@ -189,7 +189,7 @@ namespace Nekoyume.UI.Model
                 return;
             }
 
-            var key = States.Instance.currentAvatarState.Value.address;
+            var key = States.Instance.agentState.Value.address;
             if (!_shopItems.ContainsKey(key))
             {
                 return;
