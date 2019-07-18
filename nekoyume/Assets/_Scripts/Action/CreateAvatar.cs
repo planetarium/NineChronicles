@@ -13,7 +13,7 @@ namespace Nekoyume.Action
     [ActionType("create_avatar")]
     public class CreateAvatar : GameAction
     {
-        private static readonly int[] DefaultItemEquipmentSetId = {1, 2, 3};
+        private static readonly int[] DefaultEquipmentIds = {10110000, 10210000, 10310000};
 
         public Address avatarAddress;
         public int index;
@@ -65,17 +65,10 @@ namespace Nekoyume.Action
         {
             var avatarState = new AvatarState(avatarAddress, name);
             var table = Tables.instance.ItemEquipment;
-            foreach (var data in table.Select(i => i.Value).Where(e => DefaultItemEquipmentSetId.Contains(e.setId)))
+            foreach (var data in table.Where(pair => DefaultEquipmentIds.Contains(pair.Value.id)).Select(pair => pair.Value))
             {
                 var equipment = (ItemUsable) ItemBase.ItemFactory(data);
                 avatarState.inventory.AddNonFungibleItem(equipment);
-            }
-
-            // TODO. 조합 디버깅용 나중에 삭제할것.
-            foreach (var row in Tables.instance.Item.Values)
-            {
-                var item = ItemBase.ItemFactory(row);
-                avatarState.inventory.AddFungibleItem(item);
             }
 
             return avatarState;
