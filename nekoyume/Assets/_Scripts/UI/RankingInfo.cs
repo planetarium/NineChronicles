@@ -19,8 +19,8 @@ namespace Nekoyume.UI
         public void Set(int ranking, State.AvatarState avatarState)
         {
             rank.text = ranking.ToString();
-            var set = avatarState.inventory.Items.Select(i => i.item).OfType<SetItem>().FirstOrDefault(e => e.equipped);
-            icon.overrideSprite = ItemBase.GetSprite(set);
+            var armor = avatarState.inventory.Items.Select(i => i.item).OfType<Armor>().FirstOrDefault(e => e.equipped);
+            icon.overrideSprite = Armor.GetIcon(armor);
             icon.SetNativeSize();
             level.text = avatarState.level.ToString();
             id.text = avatarState.name;
