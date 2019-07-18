@@ -17,6 +17,7 @@ namespace Nekoyume.UI
         public Text mainButtonText;
         public Text worldButtonText;
         public Text txtChapter;
+        public Text txtStage;
 
         private int _selectedStage = -1;
         public int SelectedStage { 
@@ -129,6 +130,7 @@ namespace Nekoyume.UI
             btnPrevChapter.enabled = _currentChapter > 1;
             btnNextChapter.enabled = _currentChapter < Tables.instance.World.Count;
             txtChapter.text = $"{_currentChapter} / {Tables.instance.World.Count}";
+            txtStage.text = $"Stage {SelectedStage}";
 
             var res = Resources.Load<GameObject>($"UI/Prefabs/WorldMap/Chapter_{worldData.chapter}");
             if (!res)
