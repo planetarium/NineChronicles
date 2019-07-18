@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Nekoyume.Action;
 using Nekoyume.State;
 using UniRx;
+using UnityEngine;
 
 namespace Nekoyume.BlockChain
 {
@@ -55,8 +56,7 @@ namespace Nekoyume.BlockChain
             {
                 return false;
             }
-            
-            return evaluation.InputContext.Signer == States.Instance.agentState.Value.address;
+            return evaluation.OutputStates.UpdatedAddresses.Contains(States.Instance.agentState.Value.address);
         }
 
         private AgentState GetAgentState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
@@ -194,7 +194,11 @@ namespace Nekoyume.BlockChain
             ActionBase.EveryRender<Buy>()
                 .Where(ValidateEvaluationForAgentState)
                 .ObserveOnMainThread()
-                .Subscribe(UpdateCurrentAvatarState).AddTo(_disposables);
+                .Subscribe(eval =>
+                {
+                    UpdateAgentState(eval);
+                    UpdateCurrentAvatarState(eval);
+                }).AddTo(_disposables);
         }
     }
 }
