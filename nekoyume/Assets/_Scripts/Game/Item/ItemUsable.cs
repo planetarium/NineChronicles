@@ -12,14 +12,15 @@ namespace Nekoyume.Game.Item
         public new ItemEquipment Data { get; }
         public Stats Stats { get; }
         public SkillBase SkillBase { get; }
+        public string ItemId { get; }
 
-        protected ItemUsable(Data.Table.Item data, SkillBase skillBase = null)
+        protected ItemUsable(Data.Table.Item data, SkillBase skillBase = null, string id = null)
             : base(data)
         {
             Data = (ItemEquipment) data;
             Stats = new Stats();
             SkillBase = skillBase;
-            
+
             if (ValidateAbility(Data.ability1, Data.value1))
             {
                 Stats.SetStatValue(Data.ability1, Data.value1);
@@ -29,14 +30,13 @@ namespace Nekoyume.Game.Item
             {
                 Stats.SetStatValue(Data.ability2, Data.value2);
             }
+            var guid = Guid.NewGuid();
+            ItemId = id ?? guid.ToString();
         }
 
         protected bool Equals(ItemUsable other)
         {
-            return base.Equals(other) &&
-                   Data.id == other.Data.id &&
-                   Equals(Stats, other.Stats) &&
-                   Equals(SkillBase, other.SkillBase);
+            return base.Equals(other) && string.Equals(ItemId, other.ItemId);
         }
 
         public override bool Equals(object obj)
@@ -51,7 +51,7 @@ namespace Nekoyume.Game.Item
         {
             unchecked
             {
-                return (base.GetHashCode() * 397) ^ (Stats != null ? Stats.GetHashCode() : 0);
+                return (base.GetHashCode() * 397) ^ (ItemId != null ? ItemId.GetHashCode() : 0);
             }
         }
 

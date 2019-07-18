@@ -7,8 +7,8 @@ namespace Nekoyume.Game.Item
     [Serializable]
     public class Armor : Equipment
     {
-        public Armor(Data.Table.Item data, SkillBase skillBase = null)
-            : base(data, skillBase)
+        public Armor(Data.Table.Item data, SkillBase skillBase = null, string id = null)
+            : base(data, skillBase, id)
         {
         }
     }
