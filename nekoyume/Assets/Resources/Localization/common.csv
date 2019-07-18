@@ -93,28 +93,29 @@ UI_COMBINATION_FAIL,Failed..,조합 실패
 UI_COMBINATION_MATERIAL_COUNT_SELECTION,Material Amounts,재료 수량 선택
 UI_TOTAL_COUNT_N,Total {0},총 {0}개
 UI_SELL,Sell,판매
-UI_SELL_CANCELLATION,Cancel,판매 취소
+UI_RETRIEVE,Retrieve,판매 취소
 UI_BUY,Buy,구매
 UI_EQUIP,Equip,장착
 UI_IN_MINING_A_BLOCK,Mining a block..,블록을 생성하고 있습니다..
 UI_TIPS_0,If you want to your character to be more powerful? Try to use set item.,세트 아이템을 장착하면 캐릭터의 능력치가 더욱 상승합니다.
-UI_TIPS_1,You just go to the shop when you feel difficult to make a nice weapon.,좋은 무기를 만들기 너무 어려우신가요? 상점에서 물건을 골라보세요.
+UI_TIPS_1,You just go to the auction when you feel difficult to make a nice weapon.,좋은 무기를 만들기 너무 어려우신가요? 경매장에서 물건을 골라보세요.
 UI_TIPS_2,Don't mistake when prepare the battle. Fire fears a fire truck full of water.,전열을 가다듬을 때에는 장비의 속성을 확인하세요. 특정 속성의 몬스터에게는 무용지물일 수도 있습니다.
-UI_CREATE_CHARACTER,CREATE,캐릭터 생성
-UI_GAME_START,START,게임 시작
-UI_HAIR,Hair,헤어
-UI_LENS,Eyes,렌즈
-UI_ETC,ETC,기타
+UI_CREATE_CHARACTER,NEW CHRACTER,캐릭터 생성
+UI_CREATE_CHARACTER_CONFIRM,CREATE,생성하기
+UI_GAME_START,GAME START,게임 시작
+UI_HAIR,Hair,머리카락
+UI_LENS,Eyes,눈
+UI_ETC,ETC,"귀, 꼬리"
 UI_INPUT_NAME,Input your name..,이름을 입력하세요..
 UI_QUEST,DUNGEON,던전
-UI_COMBINATION,CRAFT SHOP,조합
-UI_SHOP,AUCTION,상점
+UI_COMBINATION,CRAFT SHOP,공방
+UI_SHOP,AUCTION,경매장
 UI_RANKING,RANKING,랭킹
 UI_EQUIP_CONSUMABLES,Food to eat,소모품을 장착하세요.
 UI_EQUIP_EQUIPMENTS,Equipments,장비를 장착하세요.
 UI_BATTLE,Battle Start!,전투
 UI_BATTLE_CONTINUOUS,Auto Repeat,반복 전투
-UI_ALL_USERS,Overall Ranking,전체 유저
+UI_OVERALL_RANKING,Overall Ranking,전체 랭킹
 UI_RANKING_IN_24HOURS,Ranking in 24 hours,24시간 내 랭킹
 UI_REFRESH,Refresh,새로고침
 UI_COMBINATION_SELECT_MATERIAL,Select Material,재료 선택
