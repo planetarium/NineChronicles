@@ -33,6 +33,7 @@ namespace Nekoyume.Game.VFX.Skill
             {
                 finisher.gameObject.SetActive(true);
                 finisher.Play();
+                ActionCamera.instance.Shake();
             }
         }
 
