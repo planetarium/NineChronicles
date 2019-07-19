@@ -220,7 +220,7 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            descriptionArea.text.text = Model.item.Value.item.Value.Data.description;
+            descriptionArea.text.text = Model.item.Value.item.Value.Data.LocalizedDescription;
             descriptionArea.root.gameObject.SetActive(true);
         }
 

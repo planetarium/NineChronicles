@@ -116,7 +116,7 @@ namespace Nekoyume.UI
                 
                 titleText.text = LocalizationManager.Localize("UI_COMBINATION_SUCCESS");
                 resultItemView.SetData(_data);
-                resultItemNameText.text = item.Data.name;
+                resultItemNameText.text = item.Data.LocalizedName;
                 SetElemental(item.Data.elemental, item.Data.grade);
                 resultItemDescriptionText.text = item.ToItemInfo();
                 resultItem.SetActive(true);

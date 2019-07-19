@@ -95,9 +95,9 @@ namespace Nekoyume.UI.Module
             _disposablesForUpdateView.DisposeAllAndClear();
             var item = _data.item.Value;
             item.count.Where(value => value == 0).Subscribe(_ => _data.item.Value = null).AddTo(_disposablesForUpdateView);
-            nameText.text = item.item.Value.Data.name;
+            nameText.text = item.item.Value.Data.LocalizedName;
             infoText.text = item.item.Value.ToItemInfo();
-            descriptionText.text = item.item.Value.Data.description;
+            descriptionText.text = item.item.Value.Data.LocalizedDescription;
             SetButtonText(_data.buttonText.Value);
             SetButtonActive(_data.buttonEnabled.Value);
             
