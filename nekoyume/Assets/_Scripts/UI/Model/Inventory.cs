@@ -222,7 +222,8 @@ namespace Nekoyume.UI.Model
         
         public void DeselectAll()
         {
-            if (ReferenceEquals(selectedItemView.Value, null))
+            if (selectedItemView.Value == null
+                || selectedItemView.Value.Model == null)
             {
                 return;
             }

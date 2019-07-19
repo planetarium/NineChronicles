@@ -10,8 +10,8 @@ namespace Nekoyume.UI.Model
 {
     public class QuestPreparation : IDisposable
     {
-        private static readonly string TypeString = ItemBase.ItemType.Material.ToString();
-        
+        private const string DimmedType = nameof(ItemBase.ItemType.Material);
+
         public readonly ReactiveProperty<Inventory> inventory = new ReactiveProperty<Inventory>();
         public readonly ReactiveProperty<ItemInfo> itemInfo = new ReactiveProperty<ItemInfo>();
 
@@ -34,7 +34,7 @@ namespace Nekoyume.UI.Model
 
         private bool DimmedFunc(InventoryItem inventoryItem)
         {
-            return inventoryItem.item.Value.Data.cls == TypeString;
+            return inventoryItem.item.Value.Data.cls == DimmedType;
         }
         
         private void SubscribeInventorySelectedItem(InventoryItemView view)

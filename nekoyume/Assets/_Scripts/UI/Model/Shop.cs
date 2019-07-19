@@ -57,7 +57,7 @@ namespace Nekoyume.UI.Model
             onClickSwitchSell.Dispose();
             onClickClose.Dispose();
         }
-
+        
         private void OnState(State value)
         {
             inventory.Value.DeselectAll();
@@ -66,7 +66,7 @@ namespace Nekoyume.UI.Model
             switch (value)
             {
                 case State.Buy:
-                    inventory.Value.dimmedFunc.Value = null;
+                    inventory.Value.dimmedFunc.Value = DimmedFuncForBuy;
                     itemInfo.Value.buttonText.Value = LocalizationManager.Localize("UI_BUY");
                     itemInfo.Value.buttonEnabledFunc.Value = ButtonEnabledFuncForBuy;
                     break;
@@ -75,6 +75,16 @@ namespace Nekoyume.UI.Model
                     itemInfo.Value.buttonEnabledFunc.Value = ButtonEnabledFuncForSell;
                     break;
             }
+        }
+        
+        public bool DimmedFuncForBuy(InventoryItem inventoryItem)
+        {
+            if (!(inventoryItem.item.Value is Equipment equipment))
+            {
+                return false;
+            }
+
+            return equipment.equipped;
         }
         
         public bool DimmedFuncForSell(InventoryItem inventoryItem)

@@ -70,12 +70,6 @@ namespace Nekoyume.Action
                 avatarState.inventory.AddNonFungibleItem(equipment);
             }
 
-            foreach (var pair in Tables.instance.Item)
-            {
-                var material = ItemBase.ItemFactory(pair.Value);
-                avatarState.inventory.AddFungibleItem(material);
-            }
-
             return avatarState;
         }
     }
