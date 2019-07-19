@@ -26,8 +26,9 @@ namespace Nekoyume.UI.Model
 
         public readonly Subject<InventoryItemView> onDoubleClickItemView = new Subject<InventoryItemView>();
         
-        public Inventory(Game.Item.Inventory inventory)
+        public Inventory(Game.Item.Inventory inventory, State state = State.Equipments)
         {
+            this.state.Value = state;
             dimmedFunc.Value = DimmedFunc;
             
             UpdateItems(inventory.Items);

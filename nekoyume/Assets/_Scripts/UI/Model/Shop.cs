@@ -66,7 +66,7 @@ namespace Nekoyume.UI.Model
             switch (value)
             {
                 case State.Buy:
-                    inventory.Value.dimmedFunc.Value = DimmedFuncForBuy;
+                    inventory.Value.dimmedFunc.Value = null;
                     itemInfo.Value.buttonText.Value = LocalizationManager.Localize("UI_BUY");
                     itemInfo.Value.buttonEnabledFunc.Value = ButtonEnabledFuncForBuy;
                     break;
@@ -77,19 +77,18 @@ namespace Nekoyume.UI.Model
             }
         }
         
-        public bool DimmedFuncForBuy(InventoryItem inventoryItem)
+        public bool DimmedFuncForSell(InventoryItem inventoryItem)
         {
+            if (inventoryItem.item.Value.Data.cls == DimmedString)
+            {
+                return true;
+            }
             if (!(inventoryItem.item.Value is Equipment equipment))
             {
                 return false;
             }
 
             return equipment.equipped;
-        }
-        
-        public bool DimmedFuncForSell(InventoryItem inventoryItem)
-        {
-            return inventoryItem.item.Value.Data.cls == DimmedString;
         }
 
         public bool ButtonEnabledFuncForBuy(InventoryItem inventoryItem)

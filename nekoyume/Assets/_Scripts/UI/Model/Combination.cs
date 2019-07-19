@@ -52,7 +52,7 @@ namespace Nekoyume.UI.Model
 
         public Combination(Game.Item.Inventory inventory, int materialCount)
         {
-            this.inventory.Value = new Inventory(inventory);
+            this.inventory.Value = new Inventory(inventory, Inventory.State.Materials);
             this.inventory.Value.dimmedFunc.Value = DimmedFunc;
             itemInfo.Value = new ItemInfo();
             itemInfo.Value.buttonText.Value = LocalizationManager.Localize("UI_COMBINATION_SELECT_MATERIAL");

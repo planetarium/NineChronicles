@@ -157,8 +157,7 @@ namespace Nekoyume.UI
             Model.readyForCombination.Subscribe(SetActiveCombinationButton).AddTo(_disposablesForSetData);
             Model.resultPopup.Subscribe(SubscribeResultPopup).AddTo(_disposablesForSetData);
             Model.onClickCombination.Subscribe(RequestCombination).AddTo(_disposablesForSetData);
-            // ToDo. 획득연출이 정해지면 활성화.
-            // Model.onShowResultVFX.Subscribe(ShowResultVFX).AddTo(_disposablesForSetData);
+            Model.onShowResultVFX.Subscribe(ShowResultVFX).AddTo(_disposablesForSetData);
 
             inventoryAndItemInfo.SetData(Model.inventory.Value, Model.itemInfo.Value);
 
@@ -363,22 +362,8 @@ namespace Nekoyume.UI
             yield return null;
             particleVFX.SetActive(false);
             resultItemVFX.SetActive(false);
-
-            // ToDo. 지금은 조합의 결과가 마지막에 더해지기 때문에 마지막 아이템을 갖고 오지만, 복수의 아이템을 한 번에 얻을 때에 대한 처리나 정렬 기능이 추가 되면 itemGuid로 갖고 와야함.
-            var inventoryItem = Model.inventory.Value.equipments.Last();
-            if (ReferenceEquals(inventoryItem, null))
-            {
-                yield break;
-            }
-
-            var index = Model.inventory.Value.equipments.Count - 1;
-            var inventoryItemView = inventoryAndItemInfo.inventory.scrollerController.GetByIndex(index);
-            if (ReferenceEquals(inventoryItemView, null))
-            {
-                yield break;
-            }
-
-            var position = inventoryItemView.transform.position;
+            
+            var position = inventoryAndItemInfo.inventory.equipmentsButton.transform.position;
 
             particleVFX.transform.position = _resultPopup.resultItem.transform.position;
             particleVFX.transform.DOMoveX(position.x, 0.6f);
