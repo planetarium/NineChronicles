@@ -136,11 +136,13 @@ namespace Nekoyume.BlockChain
                 throw exc;
             }
 
+            var index = _blocks?.Tip?.Index ?? 0;
             Debug.LogFormat(
                 "Preloading finished; elapsed time: {0}; blocks: {1}",
                 ended - started,
-                _blocks.Tip.Index - existingBlocks
+                index - existingBlocks
             );
+
 
             PreloadEnded?.Invoke(this, null);
 
