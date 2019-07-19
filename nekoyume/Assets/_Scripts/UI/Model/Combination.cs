@@ -233,12 +233,12 @@ namespace Nekoyume.UI.Model
         private void OnResultPopupOnClickSubmit(CombinationResultPopup data)
         {
             // 재료 아이템들을 인벤토리에서 제거하기.
-            inventory.Value.RemoveFungibleItems(data.materialItems);
+            inventory.Value.RemoveItems(data.materialItems);
 
             // 결과 아이템이 있다면, 인벤토리에 추가하고 해당 아이템을 선택하기.
             if (!ReferenceEquals(data.item.Value, null))
             {
-                var addedItem = inventory.Value.AddNonFungibleItem((ItemUsable) data.item.Value);
+                inventory.Value.AddItem((ItemUsable) data.item.Value);
             }
 
             while (materials.Count > 0)
@@ -252,11 +252,11 @@ namespace Nekoyume.UI.Model
             resultPopup.Value = null;
         }
 
-        private void SetStaged(int id, bool isStaged)
+        private void SetStaged(int materialId, bool isStaged)
         {
-            foreach (var item in inventory.Value.items)
+            foreach (var item in inventory.Value.materials)
             {
-                if (item.item.Value.Data.id != id)
+                if (item.item.Value.Data.id != materialId)
                 {
                     continue;
                 }
@@ -266,7 +266,7 @@ namespace Nekoyume.UI.Model
             }
 
             if (!ReferenceEquals(itemInfo.Value.item.Value, null) &&
-                itemInfo.Value.item.Value.item.Value.Data.id == id)
+                itemInfo.Value.item.Value.item.Value.Data.id == materialId)
             {
                 itemInfo.Value.buttonEnabled.Value = itemInfo.Value.buttonEnabledFunc.Value(itemInfo.Value.item.Value);
             }

@@ -1,8 +1,6 @@
 using Nekoyume.BlockChain;
 using Nekoyume.Game.Controller;
-using Nekoyume.UI.Model;
 using UniRx;
-using UnityEngine;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI

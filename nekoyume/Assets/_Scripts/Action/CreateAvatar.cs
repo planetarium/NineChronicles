@@ -64,11 +64,16 @@ namespace Nekoyume.Action
         private static AvatarState CreateAvatarState(string name, Address avatarAddress)
         {
             var avatarState = new AvatarState(avatarAddress, name);
-            var table = Tables.instance.ItemEquipment;
-            foreach (var data in table.Where(pair => DefaultEquipmentIds.Contains(pair.Value.id)).Select(pair => pair.Value))
+            foreach (var data in Tables.instance.ItemEquipment.Where(pair => DefaultEquipmentIds.Contains(pair.Value.id)).Select(pair => pair.Value))
             {
                 var equipment = (ItemUsable) ItemBase.ItemFactory(data);
                 avatarState.inventory.AddNonFungibleItem(equipment);
+            }
+
+            foreach (var pair in Tables.instance.Item)
+            {
+                var material = ItemBase.ItemFactory(pair.Value);
+                avatarState.inventory.AddFungibleItem(material);
             }
 
             return avatarState;

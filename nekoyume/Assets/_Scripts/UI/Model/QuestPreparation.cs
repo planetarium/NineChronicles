@@ -19,7 +19,6 @@ namespace Nekoyume.UI.Model
         {
             this.inventory.Value = new Inventory(inventory);
             this.inventory.Value.dimmedFunc.Value = DimmedFunc;
-            this.inventory.Value.glowedFunc.Value = GlowedFunc;
             itemInfo.Value = new ItemInfo();
             itemInfo.Value.buttonText.Value = LocalizationManager.Localize("UI_EQUIP");
             itemInfo.Value.buttonEnabledFunc.Value = null;
@@ -36,11 +35,6 @@ namespace Nekoyume.UI.Model
         private bool DimmedFunc(InventoryItem inventoryItem)
         {
             return inventoryItem.item.Value.Data.cls == TypeString;
-        }
-
-        private bool GlowedFunc(InventoryItem inventoryItem, ItemBase.ItemType type)
-        {
-            return inventoryItem.item.Value.Data.cls.ToEnumItemType() == type;
         }
         
         private void SubscribeInventorySelectedItem(InventoryItemView view)

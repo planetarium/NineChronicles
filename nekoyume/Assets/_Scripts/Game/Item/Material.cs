@@ -9,6 +9,19 @@ namespace Nekoyume.Game.Item
     [Serializable]
     public class Material : ItemBase
     {
+        protected bool Equals(Material other)
+        {
+            return Data.id == other.Data.id;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((Material) obj);
+        }
+
         public Material(Data.Table.Item data) : base(data)
         {
         }

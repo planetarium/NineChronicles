@@ -389,7 +389,7 @@ namespace Nekoyume.UI
 
             var shopItem = outPair.Value;
 
-            Model.inventory.Value.RemoveNonFungibleItem(shopItem.itemUsable);
+            Model.inventory.Value.RemoveItem(shopItem.itemUsable);
 
             Model.shopItems.Value.AddShopItem(sellerAgentAddress, shopItem);
             Model.shopItems.Value.AddRegisteredProduct(sellerAgentAddress, shopItem);
@@ -407,7 +407,7 @@ namespace Nekoyume.UI
             Model.shopItems.Value.RemoveShopItem(sellerAgentAddress, productId);
             Model.shopItems.Value.RemoveProduct(productId);
             Model.shopItems.Value.RemoveRegisteredProduct(productId);
-            Model.inventory.Value.AddNonFungibleItem(shopItem);
+            Model.inventory.Value.AddItem(shopItem);
 
             _loadingScreen.Close();
         }
@@ -429,8 +429,9 @@ namespace Nekoyume.UI
                 return;
             }
 
-            StartCoroutine(CoShowBuyResultVFX(productId));
-            Model.inventory.Value.AddNonFungibleItem(shopItem);
+            // ToDo. 획득연출이 정해지면 활성화.
+            // StartCoroutine(CoShowBuyResultVFX(productId));
+            Model.inventory.Value.AddItem(shopItem);
             
             _loadingScreen.Close();
         }
@@ -449,13 +450,13 @@ namespace Nekoyume.UI
             resultItemVFX.SetActive(false);
 
             // ToDo. 지금은 구매의 결과가 마지막에 더해지기 때문에 마지막 아이템을 갖고 오지만, 복수의 아이템을 한 번에 얻을 때에 대한 처리나 정렬 기능이 추가 되면 itemGuid로 갖고 와야함.
-            var inventoryItem = Model.inventory.Value.items.Last();
+            var inventoryItem = Model.inventory.Value.equipments.Last();
             if (ReferenceEquals(inventoryItem, null))
             {
                 yield break;
             }
 
-            var index = Model.inventory.Value.items.Count - 1;
+            var index = Model.inventory.Value.equipments.Count - 1;
             var inventoryItemView = inventoryAndItemInfo.inventory.scrollerController.GetByIndex(index);
             if (ReferenceEquals(inventoryItemView, null))
             {
