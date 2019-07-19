@@ -114,19 +114,64 @@ namespace Nekoyume.BlockChain
         public IEnumerator CoSwarmRunner()
         {
             PreloadStarted?.Invoke(this, null);
-            
-            // Unity 플레이어에서 성능 문제로 Async를 직접 쓰지 않고 
-            // Task.Run(async ()) 로 감쌉니다.
-            var swarmPreloadTask = Task.Run(async () =>
-            {
-                await _swarm.PreloadAsync(
-                    new Progress<BlockDownloadState>(state => PreloadProcessed?.Invoke(this, state)));
-            });
+            Debug.Log("PreloadingStarted event was invoked");
+
+            DateTimeOffset started = DateTimeOffset.UtcNow;
+            long existingBlocks = _blocks?.Tip?.Index ?? 0;
+            Debug.Log("Preloading starts");
+            Task swarmPreloadTask = _swarm.PreloadAsync(
+                new Progress<BlockDownloadState>(state =>
+                    PreloadProcessed?.Invoke(this, state)
+                )
+            );
             yield return new WaitUntil(() => swarmPreloadTask.IsCompleted);
+            DateTimeOffset ended = DateTimeOffset.UtcNow;
+
+            if (swarmPreloadTask.Exception is Exception exc)
+            {
+                Debug.LogErrorFormat(
+                    "Preloading terminated with an exception: {0}",
+                    exc
+                );
+                throw exc;
+            }
+
+            Debug.LogFormat(
+                "Preloading finished; elapsed time: {0}; blocks: {1}",
+                ended - started,
+                _blocks.Tip.Index - existingBlocks
+            );
 
             PreloadEnded?.Invoke(this, null);
 
-            var swarmStartTask = Task.Run(async () => await _swarm.StartAsync());
+            var swarmStartTask = Task.Run(async () =>
+            {
+                try
+                {
+                    await _swarm.StartAsync();
+                }
+                catch (Exception e)
+                {
+                    Debug.LogErrorFormat(
+                        "Swarm terminated with an exception: {0}",
+                        e
+                    );
+                    throw;
+                }
+            });
+
+            Task.Run(async () =>
+            {
+                await _swarm.WaitForRunningAsync();
+
+                Debug.LogFormat(
+                    "The address of this node: {0},{1},{2}",
+                    ByteUtil.Hex(PrivateKey.PublicKey.Format(true)),
+                    _swarm.EndPoint.Host,
+                    _swarm.EndPoint.Port
+                );
+            });
+
             yield return new WaitUntil(() => swarmStartTask.IsCompleted);
         }
 
