@@ -7,7 +7,7 @@ namespace Nekoyume.UI.Module
 {
     public class CountableItemView<T> : ItemView<T> where T : Model.CountableItem
     {
-        private const string CountTextFormat = "x{0}";
+        private const string CountTextFormat = "{0}";
 
         public TextMeshProUGUI countText;
 

@@ -12,8 +12,8 @@ namespace Nekoyume.Game.Item
     {
         public bool equipped = false;
 
-        public Equipment(Data.Table.Item data, SkillBase skillBase = null)
-            : base(data, skillBase)
+        public Equipment(Data.Table.Item data, SkillBase skillBase = null, string id = null)
+            : base(data, skillBase, id)
         {
             //TODO 논의후 테이블에 제대로 설정되야함.
             Stats.SetStatValue("turnSpeed", Data.turnSpeed);

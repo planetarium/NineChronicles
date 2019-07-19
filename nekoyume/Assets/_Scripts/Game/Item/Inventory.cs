@@ -26,6 +26,27 @@ namespace Nekoyume.Game.Item
                 item = itemUsable;
                 this.count = count;
             }
+
+            protected bool Equals(Item other)
+            {
+                return Equals(item, other.item) && count == other.count;
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (ReferenceEquals(null, obj)) return false;
+                if (ReferenceEquals(this, obj)) return true;
+                if (obj.GetType() != this.GetType()) return false;
+                return Equals((Item) obj);
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+                    return ((item != null ? item.GetHashCode() : 0) * 397) ^ count;
+                }
+            }
         }
 
         private readonly List<Item> _items = new List<Item>();
@@ -193,27 +214,11 @@ namespace Nekoyume.Game.Item
 
         public bool TryGetAddedItemFrom(Inventory inventory, out ItemUsable outAddedItem)
         {
-            // 인벤토리에서 추가된 아이템 확인.
-            foreach (var item in _items)
-            {
-                // 장비나 소모품이 아닌가?
-                if (!(item.item is ItemUsable itemUsable))
-                {
-                    continue;
-                }
-
-                // 원래 갖고 있었나?
-                if (inventory.TryGetNonFungibleItem(itemUsable, out ItemUsable outUnfungibleItem))
-                {
-                    continue;
-                }
-
-                outAddedItem = itemUsable;
-                return true;
-            }
-
-            outAddedItem = null;
-            return false;
+            //FIXME TryGetNonFungibleItem 내부에서 사용되는 아이템 비교방식때문에 오동작처리됨.
+            //https://app.asana.com/0/958521740385861/1131813492738090/
+            var newItem = _items.FirstOrDefault(i => !inventory.Items.Contains(i));
+            outAddedItem = (ItemUsable) newItem?.item;
+            return !(outAddedItem is null);
         }
     }
 }

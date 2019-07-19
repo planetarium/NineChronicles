@@ -1,4 +1,5 @@
 using System;
+using Assets.SimpleLocalization;
 
 namespace Nekoyume.Data.Table
 {
@@ -51,5 +52,8 @@ namespace Nekoyume.Data.Table
         public float attackRange = 1.0f;
         public int skillId = 0;
         public float skillChance = 0.0f;
+        
+        public override string LocalizedName => LocalizationManager.LocalizeEquipmentName(id);
+        public override string LocalizedDescription => LocalizationManager.LocalizeEquipmentDescription(id);
     }
 }

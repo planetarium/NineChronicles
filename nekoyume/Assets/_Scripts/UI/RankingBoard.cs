@@ -29,12 +29,12 @@ namespace Nekoyume.UI
 
             foreach (var rankingButtonText in rankingButtonTexts)
             {
-                rankingButtonText.text = LocalizationManager.Localize("UI_ALL_USERS");    
+                rankingButtonText.text = LocalizationManager.Localize("UI_OVERALL_RANKING");    
             }
 
             foreach (var filteredRankingButtonText in filteredRankingButtonTexts)
             {
-                filteredRankingButtonText.text = LocalizationManager.Localize("UI_USERS_WHO_CONNECTED_WITHIN_24HOURS");    
+                filteredRankingButtonText.text = LocalizationManager.Localize("UI_RANKING_IN_24HOURS");    
             }
             
             _stage = GameObject.Find("Stage").GetComponent<Stage>();

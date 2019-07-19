@@ -1,4 +1,5 @@
 using System;
+using Assets.SimpleLocalization;
 
 namespace Nekoyume.Data.Table
 {
@@ -46,5 +47,8 @@ namespace Nekoyume.Data.Table
         public int maxDamage = 0;
         public float minChance = 0f;
         public float maxChance = 0f;
+
+        public virtual string LocalizedName => LocalizationManager.LocalizeItemName(id);
+        public virtual string LocalizedDescription => LocalizationManager.LocalizeItemDescription(id);
     }
 }

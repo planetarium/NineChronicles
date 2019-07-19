@@ -5,8 +5,8 @@ namespace Nekoyume.Game.Item
 {
     public class RangedWeapon : Weapon
     {
-        public RangedWeapon(Data.Table.Item data, SkillBase skillBase = null)
-            : base(data, skillBase)
+        public RangedWeapon(Data.Table.Item data, SkillBase skillBase = null, string id = null)
+            : base(data, skillBase, id)
         {
         }
     }

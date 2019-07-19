@@ -95,7 +95,7 @@ namespace Nekoyume.UI.Model
                 case null:
                     return false;
                 case ShopItem _:
-                    itemInfo.Value.buttonText.Value = LocalizationManager.Localize("UI_SELL_CANCELLATION");
+                    itemInfo.Value.buttonText.Value = LocalizationManager.Localize("UI_RETRIEVE");
                     return true;
                 default:
                     itemInfo.Value.buttonText.Value = LocalizationManager.Localize("UI_SELL");

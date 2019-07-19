@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Data;
 using Nekoyume.Data.Table;
@@ -9,6 +10,7 @@ using Nekoyume.Game.Item;
 using Nekoyume.Game.Skill;
 using Nekoyume.Model;
 using Nekoyume.State;
+using UniRx.Async;
 
 namespace Nekoyume.Action
 {
@@ -29,11 +31,13 @@ namespace Nekoyume.Action
         }
 
         public List<Material> Materials { get; private set; }
+        public Address avatarAddress;
 
         protected override IImmutableDictionary<string, object> PlainValueInternal =>
             new Dictionary<string, object>
             {
                 ["Materials"] = ByteSerializer.Serialize(Materials),
+                ["avatarAddress"] = avatarAddress.ToByteArray(),
             }.ToImmutableDictionary();
 
         public Combination()
@@ -44,6 +48,7 @@ namespace Nekoyume.Action
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, object> plainValue)
         {
             Materials = ByteSerializer.Deserialize<List<Material>>((byte[]) plainValue["Materials"]);
+            avatarAddress = new Address((byte[]) plainValue["avatarAddress"]);
         }
 
         public override IAccountStateDelta Execute(IActionContext ctx)
@@ -51,10 +56,15 @@ namespace Nekoyume.Action
             var states = ctx.PreviousStates;
             if (ctx.Rehearsal)
             {
+                states = states.SetState(avatarAddress, MarkChanged);
                 return states.SetState(ctx.Signer, MarkChanged);
             }
 
-            var avatarState = (AvatarState) states.GetState(ctx.Signer);
+            var agentState = (AgentState) states.GetState(ctx.Signer);
+            if (!agentState.avatarAddresses.ContainsValue(avatarAddress))
+                return states;
+
+            var avatarState = (AvatarState) states.GetState(avatarAddress);
             if (avatarState == null)
             {
                 return states;
@@ -154,7 +164,8 @@ namespace Nekoyume.Action
             }
 
             avatarState.updatedAt = DateTimeOffset.UtcNow;
-            return states.SetState(ctx.Signer, avatarState);
+            states = states.SetState(avatarAddress, avatarState);
+            return states.SetState(ctx.Signer, agentState);
         }
 
         private bool TryGetItemType(string itemName, out ItemBase.ItemType outItemType)

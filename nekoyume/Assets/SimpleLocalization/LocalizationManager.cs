@@ -89,12 +89,17 @@ namespace Assets.SimpleLocalization
 
                 foreach (Match match in matches)
                 {
-                    text = text.Replace(match.Value,
-                        match.Value.Replace("\"", null).Replace(",", "[comma]").Replace("\n", "[newline]"));
+                    text = text.Replace(
+                        match.Value,
+                        match.Value
+                            .Replace("\"", null)
+                            .Replace(",", "[comma]")
+                            .Replace("\n", "[newline]")
+                            .Replace("\r\n", "[newline]"));
                 }
 
                 // csv파일 저장형식이 라인피드로만 처리되고 있어서 윈도우에서 줄바꿈이 제대로 안되는 문제가 있음
-                var lines = text.Split(new[] {"\n"}, StringSplitOptions.RemoveEmptyEntries);
+                var lines = text.Split(new[] {"\n", "\r\n"}, StringSplitOptions.RemoveEmptyEntries);
                 var languages = lines[0]
                     .Split(',')
                     .Skip(1)
@@ -157,6 +162,36 @@ namespace Assets.SimpleLocalization
             }
 
             return Dictionary[Language][localizationKey];
+        }
+        
+        public static string LocalizeCharacterName(int characterId)
+        {
+            var localizationKey = $"CHARACTER_NAME_{characterId}";
+            return Localize(localizationKey);
+        }
+        
+        public static string LocalizeItemName(int itemId)
+        {
+            var localizationKey = $"ITEM_NAME_{itemId}";
+            return Localize(localizationKey);
+        }
+        
+        public static string LocalizeItemDescription(int itemId)
+        {
+            var localizationKey = $"ITEM_DESCRIPTION_{itemId}";
+            return Localize(localizationKey);
+        }
+        
+        public static string LocalizeEquipmentName(int itemId)
+        {
+            var localizationKey = $"EQUIPMENT_NAME_{itemId}";
+            return Localize(localizationKey);
+        }
+        
+        public static string LocalizeEquipmentDescription(int itemId)
+        {
+            var localizationKey = $"EQUIPMENT_DESCRIPTION_{itemId}";
+            return Localize(localizationKey);
         }
 
         /// <summary>
