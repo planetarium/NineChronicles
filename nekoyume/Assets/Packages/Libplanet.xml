@@ -2095,7 +2095,7 @@
         </member>
         <member name="F:Libplanet.Net.Messages.Message.MessageType.Pong">
             <summary>
-            Reply of `Ping`.
+            A reply to <see cref="F:Libplanet.Net.Messages.Message.MessageType.Ping"/>.
             </summary>
         </member>
         <member name="F:Libplanet.Net.Messages.Message.MessageType.PeerSetDelta">
@@ -2136,6 +2136,24 @@
         <member name="F:Libplanet.Net.Messages.Message.MessageType.Tx">
             <summary>
             Message containing serialized transaction.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.Messages.Message.MessageType.GetRecentStates">
+            <summary>
+            Request to query calculated states.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.Messages.Message.MessageType.RecentStates">
+            <summary>
+            A reply to <see cref="F:Libplanet.Net.Messages.Message.MessageType.GetRecentStates"/>.
+            Contains the calculated recent states and state references.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Messages.RecentStates.StateReferences">
+            <summary>
+            State references of all available accounts.  Each value has a list of
+            state references in ascending order; the closest to the genesis block
+            goes first, and the closest to the tip goes last.
             </summary>
         </member>
         <member name="T:Libplanet.Net.Peer">
@@ -2200,6 +2218,12 @@
             <see cref="T:Libplanet.Net.Peer" /> is discovered.
             </summary>
         </member>
+        <member name="P:Libplanet.Net.Swarm`1.BlockChain">
+            <summary>
+            The <see cref="T:Libplanet.Blockchain.BlockChain`1"/> instance this <see cref="T:Libplanet.Net.Swarm`1"/> instance
+            synchronizes with.
+            </summary>
+        </member>
         <member name="P:Libplanet.Net.Swarm`1.Running">
             <summary>
             Whether this <see cref="T:Libplanet.Net.Swarm`1"/> instance is running.
@@ -2212,12 +2236,43 @@
             <returns>A <see cref="T:System.Threading.Tasks.Task"/> completed when <see cref="P:Libplanet.Net.Swarm`1.Running"/>
             property becomes <c>true</c>.</returns>
         </member>
-        <member name="M:Libplanet.Net.Swarm`1.PreloadAsync(System.IProgress{Libplanet.Net.BlockDownloadState},System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Net.Swarm`1.StartAsync(System.TimeSpan,System.TimeSpan,System.Threading.CancellationToken)">
+            <summary>
+            Joins to the peer-to-peer network and starts to periodically synchronize
+            the <see cref="P:Libplanet.Net.Swarm`1.BlockChain"/>.
+            </summary>
+            <param name="distributeInterval">The time period of peer exchange.</param>
+            <param name="broadcastTxInterval">The time period of exchange of staged transactions.
+            </param>
+            <param name="cancellationToken">A cancellation token used to propagate notification
+            that this operation should be canceled.</param>
+            <returns>An awaitable task without value.</returns>
+            <exception cref="T:Libplanet.Net.SwarmException">Thrown when this <see cref="T:Libplanet.Net.Swarm`1"/> instance is
+            already <see cref="P:Libplanet.Net.Swarm`1.Running"/>.</exception>
+            <remarks>If the <see cref="P:Libplanet.Net.Swarm`1.BlockChain"/> has no blocks at all or there are long behind
+            blocks to caught in the network this method could lead to unexpected behaviors, because
+            this tries to <see cref="M:Libplanet.Action.IAction.Render(Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/> <em>all</em> actions in the behind blocks
+            so that there are a lot of calls to <see cref="M:Libplanet.Action.IAction.Render(Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/> method in a short
+            period of time.  This can lead a game startup slow.  If you want to omit rendering of
+            these actions in the behind blocks use <see cref=
+            "M:Libplanet.Net.Swarm`1.PreloadAsync(System.IProgress{Libplanet.Net.BlockDownloadState},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Threading.CancellationToken)"
+            /> method too.</remarks>
+        </member>
+        <member name="M:Libplanet.Net.Swarm`1.PreloadAsync(System.IProgress{Libplanet.Net.BlockDownloadState},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Threading.CancellationToken)">
             <summary>
             Preemptively downloads blocks from registered <see cref="T:Libplanet.Net.Peer"/>s.
             </summary>
             <param name="progress">
             An instance that receives progress updates for block downloads.
+            </param>
+            <param name="trustedStateValidators">
+            If any peer in this set is reachable and there are no built-up
+            blocks in a current node, <see cref="T:Libplanet.Net.Swarm`1"/> receives the latest
+            states of the major blockchain from that trusted peer,
+            which is also calculated by that peer, instead of autonomously
+            calculating the states from scratch. Note that this option is
+            intended to be exposed to end users through a feasible user
+            interface so that they can decide whom to trust for themselves.
             </param>
             <param name="cancellationToken">
             A cancellation token used to propagate notification that this
@@ -2227,6 +2282,10 @@
             A task without value.
             You only can <c>await</c> until the method is completed.
             </returns>
+            <remarks>This does not render downloaded <see cref="T:Libplanet.Action.IAction"/>s, but fills states only.
+            If you want to render all <see cref="T:Libplanet.Action.IAction"/>s from the genesis block to the recent
+            blocks use <see cref="M:Libplanet.Net.Swarm`1.StartAsync(System.TimeSpan,System.TimeSpan,System.Threading.CancellationToken)"/> method
+            instead.</remarks>
         </member>
         <member name="T:Libplanet.Nonce">
             <summary>
@@ -2436,8 +2495,8 @@
             <param name="namespace">The chain namespace.</param>
             <param name="address">The <see cref="T:Libplanet.Address"/> to get state references.</param>
             <returns><em>Ordered</em> pairs of a state reference and a corresponding
-            <see cref="P:Libplanet.Blocks.Block`1.Index"/>.  The highest index (i.e., the closest to the tip) go last,
-            and the lowest index (i.e., the closest to the genesis) go first.</returns>
+            <see cref="P:Libplanet.Blocks.Block`1.Index"/>.  The highest index (i.e., the closest to the tip) go
+            first and the lowest index (i.e., the closest to the genesis) go last.</returns>
             <seealso cref="M:Libplanet.Store.IStore.StoreStateReference``1(System.String,System.Collections.Immutable.IImmutableSet{Libplanet.Address},Libplanet.Blocks.Block{``0})"/>
         </member>
         <member name="M:Libplanet.Store.IStore.StoreStateReference``1(System.String,System.Collections.Immutable.IImmutableSet{Libplanet.Address},Libplanet.Blocks.Block{``0})">
@@ -2456,7 +2515,7 @@
             <paramref name="block"/>.</typeparam>
             <remarks>State reference must be stored in the same order as the blocks. For now,
             it is assumed that this is only called by
-            <see cref="M:Libplanet.Blockchain.BlockChain`1.Append(Libplanet.Blocks.Block{`0},System.DateTimeOffset,System.Boolean)"/> method.</remarks>
+            <see cref="M:Libplanet.Blockchain.BlockChain`1.Append(Libplanet.Blocks.Block{`0})"/> method.</remarks>
             <seealso cref="M:Libplanet.Store.IStore.IterateStateReferences(System.String,Libplanet.Address)"/>
         </member>
         <member name="M:Libplanet.Store.IStore.ForkStateReferences``1(System.String,System.String,Libplanet.Blocks.Block{``0},System.Collections.Immutable.IImmutableSet{Libplanet.Address})">
@@ -2521,7 +2580,7 @@
             <param name="namespace">The namespace to increase
             <see cref="T:Libplanet.Tx.Transaction`1"/> nonce.</param>
             <param name="signer">The address of the account to increase tx nonce.</param>
-            <param name="delta">How many to incrase the counter.  A negative number decreases
+            <param name="delta">How many to increase the counter.  A negative number decreases
             the counter.  1 by default.</param>
             <seealso cref="M:Libplanet.Store.IStore.GetTxNonce(System.String,Libplanet.Address)"/>
         </member>
@@ -2657,8 +2716,9 @@
             <param name="address">The <see cref="T:Libplanet.Address"/> to look up.</param>
             <param name="lookupUntil">The upper bound (i.e., the latest block) of the search range.
             <see cref="T:Libplanet.Blocks.Block`1"/>s after <paramref name="lookupUntil"/> are ignored.</param>
-            <returns>A <see cref="P:Libplanet.Blocks.Block`1.Hash"/> which has the state of
-            the <paramref name="address"/>.</returns>
+            <returns>Returns a nullable tuple consisting of <see cref="P:Libplanet.Blocks.Block`1.Hash"/> and
+            <see cref="P:Libplanet.Blocks.Block`1.Index"/> of the <see cref="T:Libplanet.Blocks.Block`1"/> with the state of the
+            address.</returns>
             <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> class used with
             <paramref name="lookupUntil"/>.</typeparam>
             <seealso
