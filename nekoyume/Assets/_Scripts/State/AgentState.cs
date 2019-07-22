@@ -10,8 +10,8 @@ namespace Nekoyume.State
     [Serializable]
     public class AgentState : State
     {
-        //노마이너 상점 구매 테스트를 위한 기본 골드
-        public decimal gold = 1;
+        //F&F 테스트용 노마이너 기본 소지 골드
+        public decimal gold = 100;
         public readonly Dictionary<int, Address> avatarAddresses;
 
         public AgentState(Address address) : base(address)
