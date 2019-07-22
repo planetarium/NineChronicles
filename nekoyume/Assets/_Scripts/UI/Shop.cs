@@ -389,7 +389,7 @@ namespace Nekoyume.UI
 
             var shopItem = outPair.Value;
 
-            Model.inventory.Value.RemoveNonFungibleItem(shopItem.itemUsable);
+            Model.inventory.Value.RemoveItem(shopItem.itemUsable);
 
             Model.shopItems.Value.AddShopItem(sellerAgentAddress, shopItem);
             Model.shopItems.Value.AddRegisteredProduct(sellerAgentAddress, shopItem);
@@ -407,7 +407,7 @@ namespace Nekoyume.UI
             Model.shopItems.Value.RemoveShopItem(sellerAgentAddress, productId);
             Model.shopItems.Value.RemoveProduct(productId);
             Model.shopItems.Value.RemoveRegisteredProduct(productId);
-            Model.inventory.Value.AddNonFungibleItem(shopItem);
+            Model.inventory.Value.AddItem(shopItem);
 
             _loadingScreen.Close();
         }
@@ -431,7 +431,7 @@ namespace Nekoyume.UI
             }
 
             StartCoroutine(CoShowBuyResultVFX(productId));
-            Model.inventory.Value.AddNonFungibleItem(shopItem);
+            Model.inventory.Value.AddItem(shopItem);
             
             _loadingScreen.Close();
         }
@@ -449,26 +449,14 @@ namespace Nekoyume.UI
             particleVFX.SetActive(false);
             resultItemVFX.SetActive(false);
 
-            // ToDo. 지금은 구매의 결과가 마지막에 더해지기 때문에 마지막 아이템을 갖고 오지만, 복수의 아이템을 한 번에 얻을 때에 대한 처리나 정렬 기능이 추가 되면 itemGuid로 갖고 와야함.
-            var inventoryItem = Model.inventory.Value.items.Last();
-            if (ReferenceEquals(inventoryItem, null))
-            {
-                yield break;
-            }
-
-            var index = Model.inventory.Value.items.Count - 1;
-            var inventoryItemView = inventoryAndItemInfo.inventory.scrollerController.GetByIndex(index);
-            if (ReferenceEquals(inventoryItemView, null))
-            {
-                yield break;
-            }
+            var position = inventoryAndItemInfo.inventory.equipmentsButton.transform.position;
 
             particleVFX.transform.position = shopItemView.transform.position;
-            particleVFX.transform.DOMoveX(inventoryItemView.transform.position.x, 0.6f);
-            particleVFX.transform.DOMoveY(inventoryItemView.transform.position.y, 0.6f).SetEase(Ease.InCubic)
+            particleVFX.transform.DOMoveX(position.x, 0.6f);
+            particleVFX.transform.DOMoveY(position.y, 0.6f).SetEase(Ease.InCubic)
                 .onComplete = () => { resultItemVFX.SetActive(true); };
             particleVFX.SetActive(true);
-            resultItemVFX.transform.position = inventoryItemView.transform.position;
+            resultItemVFX.transform.position = position;
         }
 
         private void OnClickCloseItemCountAndPricePopup(Model.ItemCountAndPricePopup data)

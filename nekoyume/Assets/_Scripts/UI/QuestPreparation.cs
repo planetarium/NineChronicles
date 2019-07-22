@@ -109,9 +109,9 @@ namespace Nekoyume.UI
             if (slot.item == null)
             {
                 equipSlotGlow.SetActive(false);
-                foreach (var item in Model.inventory.Value.items)
+                foreach (var item in Model.inventory.Value.equipments)
                 {
-                    item.glowed.Value = Model.inventory.Value.glowedFunc.Value(item, slot.type);
+                    item.glowed.Value = item.item.Value.Data.cls.ToEnumItemType() == slot.type;
                 }
 
                 return;

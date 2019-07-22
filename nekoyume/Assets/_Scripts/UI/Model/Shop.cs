@@ -57,7 +57,7 @@ namespace Nekoyume.UI.Model
             onClickSwitchSell.Dispose();
             onClickClose.Dispose();
         }
-
+        
         private void OnState(State value)
         {
             inventory.Value.DeselectAll();
@@ -79,7 +79,16 @@ namespace Nekoyume.UI.Model
         
         public bool DimmedFuncForSell(InventoryItem inventoryItem)
         {
-            return inventoryItem.item.Value.Data.cls == DimmedString;
+            if (inventoryItem.item.Value.Data.cls == DimmedString)
+            {
+                return true;
+            }
+            if (!(inventoryItem.item.Value is Equipment equipment))
+            {
+                return false;
+            }
+
+            return equipment.equipped;
         }
 
         public bool ButtonEnabledFuncForBuy(InventoryItem inventoryItem)
