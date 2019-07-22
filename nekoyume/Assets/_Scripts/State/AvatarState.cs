@@ -24,8 +24,9 @@ namespace Nekoyume.State
         public BattleLog battleLog;
         public DateTimeOffset updatedAt;
         public DateTimeOffset? clearedAt;
-        
-        public AvatarState(Address address, string name = null) : base(address)
+        public Address agentAddress;
+
+        public AvatarState(Address address, Address agentAddress, string name = null) : base(address)
         {
             if (address == null)
             {
@@ -40,6 +41,7 @@ namespace Nekoyume.State
             worldStage = 1;
             battleLog = null;
             updatedAt = DateTimeOffset.UtcNow;
+            this.agentAddress = agentAddress;
         }
         
         public AvatarState(AvatarState avatarState) : base(avatarState.address)

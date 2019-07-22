@@ -19,7 +19,8 @@ namespace Tests
         public StatusDetailTest()
         {
             var address = new Address();
-            var avatarState = new AvatarState(address);
+            var agentAddress = new Address();
+            var avatarState = new AvatarState(address, agentAddress);
             var go = Game.instance.stage.playerFactory.Create(avatarState);
             _player = go.GetComponent<Player>();
 

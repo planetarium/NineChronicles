@@ -27,7 +27,8 @@ namespace Tests
         public void Setup()
         {
             _address = new Address();
-            _avatarState = new AvatarState(_address);
+            var agentAddress = new Address();
+            _avatarState = new AvatarState(_address, agentAddress);
         }
 
         [TearDown]

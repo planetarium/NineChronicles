@@ -15,7 +15,8 @@ namespace Tests
         public IEnumerator DoFade()
         {
             var address = new Address();
-            var avatarState = new AvatarState(address);
+            var agentAddress = new Address();
+            var avatarState = new AvatarState(address, agentAddress);
             var go = Game.instance.stage.playerFactory.Create(avatarState);
             var player = go.GetComponent<Player>();
             var skeleton = player.GetComponentInChildren<SkeletonAnimationController>().skeletonAnimation.skeleton;
