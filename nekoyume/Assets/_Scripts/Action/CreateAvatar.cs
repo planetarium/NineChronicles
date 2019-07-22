@@ -62,19 +62,6 @@ namespace Nekoyume.Action
         private static AvatarState CreateAvatarState(string name, Address avatarAddress)
         {
             var avatarState = new AvatarState(avatarAddress, name);
-            var defaultEquipmentIds = new[]
-            {
-                GameConfig.DefaultAvatarWeaponId,
-                GameConfig.DefaultAvatarArmorId,
-                GameConfig.DefaultAvatarBeltId
-            };
-            foreach (var data in Tables.instance.ItemEquipment.Where(pair => defaultEquipmentIds.Contains(pair.Value.id)).Select(pair => pair.Value))
-            {
-                var equipment = (Equipment) ItemBase.ItemFactory(data);
-                equipment.equipped = true;
-                avatarState.inventory.AddNonFungibleItem(equipment);
-            }
-
             return avatarState;
         }
     }
