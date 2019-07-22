@@ -84,9 +84,9 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\uC591\uC790 \uB85C\uD0A4\uC758 \uC138 \uC790\uB140\uB4E4\uC774 \uD0DC\uC5B4\uB09C
-    \uD6C4,\n\n\uC624\uB518\uC740 \uC704\uD5D8\uC758 \uC2F9\uC744 \uC790\uB978\uB2E4\uB294
-    \uBA85\uBD84\uC73C\uB85C \uADF8\uB4E4\uC744 \uBFD4\uBFD4\uC774 \uD769\uC5B4\uB193\uC558\uB2E4."
+  m_Text: "\uD3C9\uD654\uC640 \uC870\uD654, \uADF8\uB9AC\uACE0 \uAE0D\uC9C0.\n\n\uC774
+    \uC138 \uAC00\uC9C0\uB294 \uC774\uBBF8 \uC2E0\uACC4\uC5D0\uB294 \uC5C6\uC5B4\uC838,
+    \uAECD\uB370\uAE30\uB9CC \uB0A8\uC740 \uB2E8\uC5B4\uAC00 \uB418\uACE0 \uB9D0\uC558\uB2E4. "
 --- !u!114 &1478228873
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -277,9 +277,10 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\uC2E0\uB4E4\uC758 \uAC08\uB4F1\uC774 \uACE0\uC870\uB420\uC218\uB85D, \uC544\uC2A4\uAC00\uB974\uB4DC\uC5D0\uB294
-    \uC810\uCC28 \uC5B4\uC218\uC120\uD55C \uAE30\uC6B4\uC774 \uAC10\uC9C0\uB418\uAE30
-    \uC2DC\uC791\uD55C\uB2E4."
+  m_Text: "\uAC00\uC871\uC774\uC9C0\uB9CC \uAC00\uC871\uC77C \uC218 \uC5C6\uC5C8\uAE30\uC5D0,
+    \uC2DC\uC791\uB420 \uC218\uBC16\uC5D0 \uC5C6\uC5C8\uB358 \uC2E0\uB4E4\uC758 \uAC08\uB4F1..\n\n\uC774
+    \uC988\uC74C, \uC544\uC2A4\uAC00\uB974\uB4DC\uC5D0\uB294 \uC810\uCC28 \uC5B4\uC218\uC120\uD55C
+    \uAE30\uC6B4\uC774 \uAC10\uC9C0\uB418\uAE30 \uC2DC\uC791\uD55C\uB2E4. "
 --- !u!114 &2007075159974204979
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -382,7 +383,7 @@ MonoBehaviour:
   Ease_: 1
   CompleteMethod: PlayForward
   ComponentIndex: 7
-  Target: {fileID: 7585816964682774005}
+  Target: {fileID: 4133904127335251041}
   CompleteDelay: 1
   BeginValue: 1
   EndValue: 0
@@ -470,9 +471,12 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\"\uC138\uACC4\uC218\uAC00 \uB178\uD558\uBA74 \uC2E0\uACC4\uC5D0 \uAC70\uB300\uD55C
-    \uC704\uD611\uC774 \uB2E5\uCE58\uB9AC\uB77C\"\n\n\uC774\uB294 \uC774\uBBF8 \uC608\uBD80\uD130
-    \uC815\uD574\uC838 \uC788\uB358 \uC2DC\uB828\uC774\uC5C8\uB2E4."
+  m_Text: "\uC138\uACC4\uC218\uAC00 \uB178\uD558\uBA74 \uC138\uACC4\uC5D0 \uAC70\uB300\uD55C
+    \uC704\uD611\uC774 \uB2E5\uCE58\uB9AC\uB77C!\n\n\uC774\uB294 \uC774\uBBF8 \uC608\uBD80\uD130
+    \uC815\uD574\uC838 \uB0B4\uB824\uC624\uB358 \uC2DC\uB828\uC774\uC5C8\uB2E4.\n\n\uD53C\uD560
+    \uC218 \uC5C6\uB294 \uBA78\uB9DD\uC758 \uC9D5\uC870 \uC55E\uC5D0, \uC2E0\uB4E4\uC740
+    \uAC01\uC790\uC758 \uC0DD\uAC01\uB300\uB85C \uBA78\uB9DD\uC744 \uD53C\uD558\uAE30
+    \uC704\uD55C \uD589\uB3D9\uC744 \uC2DC\uC791\uD55C\uB2E4. "
 --- !u!114 &8523373710390534243
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -663,9 +667,12 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\uD3C9\uD654\uC640 \uC870\uD654, \uADF8\uB9AC\uACE0 \uAE0D\uC9C0\n\n\uC774
-    \uC138\uAC00\uC9C0\uB294 \uC774\uBBF8 \uC2E0\uACC4\uC5D0\uB294 \uC5C6\uC5B4\uC838,
-    \uAECD\uB370\uAE30\uB9CC \uB0A8\uC740 \uB2E8\uC5B4\uAC00 \uB418\uACE0 \uB9D0\uC558\uB2E4."
+  m_Text: "\uC77C\uC8FC\uC77C\uAC04 Nine Chronicles \uAC8C\uC784 \uD14C\uC2A4\uD2B8\uC5D0
+    \uCC38\uC5EC\uD574\uC8FC\uC2E0 \uC5EC\uB7EC\uBD84, \uAC10\uC0AC\uD569\uB2C8\uB2E4.
+    \n\n\uCD08\uB300 \uB4DC\uB9B0 \uC624\uD508 \uCE74\uD1A1\uBC29\uC5D0\uC11C \uC790\uC720\uB86D\uAC8C
+    \uAC8C\uC784\uC5D0 \uB300\uD55C \uC815\uBCF4\uB97C \uB098\uB204\uC5B4 \uC8FC\uC138\uC694.
+    \n\uC77C\uC8FC\uC77C \uB4A4\uC5D0\uB294 15\uBD84 \uB0B4\uC678\uB85C \uC791\uC131
+    \uAC00\uB2A5\uD55C \uC124\uBB38\uC744 \uBC1C\uC1A1 \uB4DC\uB9B4 \uC608\uC815\uC785\uB2C8\uB2E4. "
 --- !u!114 &5016851816641390249
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -740,7 +747,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   StartWithPlay: 0
   StartDelay: 0
-  Duration: 1
+  Duration: 2
   TweenType_: 0
   Ease_: 1
   CompleteMethod: PlayForward
@@ -748,7 +755,7 @@ MonoBehaviour:
   Target: {fileID: 5016851816641390254}
   CompleteDelay: 2
   BeginValue: 0
-  EndValue: 1
+  EndValue: 3
 --- !u!114 &1351621571
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1327,8 +1334,11 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\uAC00\uC871\uC774\uC9C0\uB9CC \uAC00\uC871\uC77C \uC218 \uC5C6\uC5C8\uAE30\uC5D0
-    \uC2DC\uC791\uB420 \uC218\uBC16\uC5D0 \uC5C6\uC5C8\uB358 \uC2E0\uB4E4\uC758 \uAC08\uB4F1 "
+  m_Text: "9\uC138\uACC4\uC758 \uC218\uD638\uC790\uC774\uC790 \uC2E0\uB4E4\uC758 \uC655\uC778
+    \uC624\uB518. \n\n\uADF8\uB294 \uB77C\uADF8\uB098\uB85C\uD06C, \uC608\uACAC\uB418\uC5B4
+    \uC788\uB358 \uC138\uACC4\uC758 \uBA78\uB9DD\uC744 \uB9C9\uAE30 \uC704\uD574 \n\uC591\uC790
+    \uB85C\uD0A4\uC758 \uC138 \uC790\uB140\uB4E4\uC744 \uC704\uD5D8\uC758 \uC2F9\uC744
+    \uC790\uB978\uB2E4\uB294 \uBA85\uBD84\uC73C\uB85C \uBFD4\uBFD4\uC774 \uD769\uC5B4\uB193\uC558\uB2E4. "
 --- !u!114 &8568558130168359170
 MonoBehaviour:
   m_ObjectHideFlags: 0
