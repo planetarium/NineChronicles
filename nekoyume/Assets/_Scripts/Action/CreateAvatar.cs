@@ -13,8 +13,6 @@ namespace Nekoyume.Action
     [ActionType("create_avatar")]
     public class CreateAvatar : GameAction
     {
-        private static readonly int[] DefaultEquipmentIds = {10110000, 10210000, 10310000};
-
         public Address avatarAddress;
         public int index;
         public string name;
@@ -64,9 +62,16 @@ namespace Nekoyume.Action
         private static AvatarState CreateAvatarState(string name, Address avatarAddress)
         {
             var avatarState = new AvatarState(avatarAddress, name);
-            foreach (var data in Tables.instance.ItemEquipment.Where(pair => DefaultEquipmentIds.Contains(pair.Value.id)).Select(pair => pair.Value))
+            var defaultEquipmentIds = new[]
             {
-                var equipment = (ItemUsable) ItemBase.ItemFactory(data);
+                GameConfig.DefaultAvatarWeaponId,
+                GameConfig.DefaultAvatarArmorId,
+                GameConfig.DefaultAvatarBeltId
+            };
+            foreach (var data in Tables.instance.ItemEquipment.Where(pair => defaultEquipmentIds.Contains(pair.Value.id)).Select(pair => pair.Value))
+            {
+                var equipment = (Equipment) ItemBase.ItemFactory(data);
+                equipment.equipped = true;
                 avatarState.inventory.AddNonFungibleItem(equipment);
             }
 
