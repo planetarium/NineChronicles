@@ -42,6 +42,9 @@ namespace Nekoyume.Action
                 return states.SetState(ShopState.Address, MarkChanged);
             }
 
+            if (ctx.Signer.Equals(sellerAgentAddress))
+                return states;
+
             var buyerAgentState = (AgentState) states.GetState(ctx.Signer);
             if (buyerAgentState == null)
             {

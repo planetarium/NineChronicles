@@ -157,6 +157,10 @@ namespace Nekoyume.UI.Model
 
                 foreach (var shopItem in keyValuePair.Value)
                 {
+                    if (keyValuePair.Key.Equals(States.Instance.agentState.Value.address))
+                    {
+                        continue;
+                    }
                     products.Add(new ShopItem(keyValuePair.Key, shopItem));
                     if (products.Count == total)
                     {
