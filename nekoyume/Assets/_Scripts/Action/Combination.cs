@@ -132,6 +132,7 @@ namespace Nekoyume.Action
             }
             else
             {
+                ItemEquipment itemEquipmentRow = null;
                 // 소모품
                 foreach (var recipe in recipeTable)
                 {
@@ -140,23 +141,26 @@ namespace Nekoyume.Action
                         continue;
                     }
 
-                    if (!Tables.instance.ItemEquipment.TryGetValue(recipe.Value.ResultId, out var itemEquipmentRow))
+                    if (!Tables.instance.ItemEquipment.TryGetValue(recipe.Value.ResultId, out itemEquipmentRow))
                     {
-                        return states;
+                        break;
                     }
 
                     if (recipe.Value.GetCombinationResultCountForConsumable(orderedMaterials) == 0)
                     {
-                        states = states.SetState(avatarAddress, avatarState);
-                        return states.SetState(ctx.Signer, agentState);
+                        break;
                     }
-
-                    // 조합 결과 획득.
-                    var itemUsable = GetFood(itemEquipmentRow);
-                    avatarState.inventory.AddNonFungibleItem(itemUsable);
-
-                    break;
                 }
+
+                if (itemEquipmentRow == null
+                    && !Tables.instance.ItemEquipment.TryGetValue(GameConfig.CombinationDefaultFoodId, out itemEquipmentRow))
+                {
+                    return states;
+                }
+                
+                // 조합 결과 획득.
+                var itemUsable = GetFood(itemEquipmentRow);
+                avatarState.inventory.AddNonFungibleItem(itemUsable);
             }
 
             avatarState.updatedAt = DateTimeOffset.UtcNow;
