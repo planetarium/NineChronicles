@@ -1,8 +1,61 @@
 Key,English,Korean
 DIALOG_1_1_0,[npc:01] Welcome. you’re a new cat too.[newline]It's starting to get crowded here!,"[npc:01] 잘 왔어, 너는 또 새로운 녀석이구나옹.[newline]여기도 슬슬 고양이들로 붐비기 시작하는군."
 DIALOG_1_1_1,Oh! who am I? ..if you think I am.[newline]A very important person that connects you with the godness?,"아, 난 누구냐고? .. [shake_vertical:20|1|2]나로 말할 것 같으면.[newline]여신님과 너를 잇는 역할을 하는 아주 중요한 몸이랄까?"
-DIALOG_1_1_2,"Who's the Goddess? Oh my God, it's too complicated to explain it all at once.[newline]Well.. first of all[comma] get some of this.[newline]This place is so unstable that you can't even pick up the bones if you walk around the place.",여신님은 또 누구냐고? 이런이런.. 한꺼번에 다 설명하려면 너무 복잡하다옹[newline]우선 이걸 좀 챙겨입어. 이곳은 불안정해서 그 몰골로 돌아다니다가는 뼈도 못 추린다옹
+DIALOG_1_1_2,"Who's the Goddess? Oh my God, it's too complicated to explain it all at once.[newline]Well.. first of all[comma] get some of this.",여신님은 또 누구냐고? 이런이런.. 한꺼번에 다 설명하려면 너무 복잡하다고.
 DIALOG_1_1_3,(Received equipment [item_equip:101100][comma] [item_equip:10210000] and [item_equip:10310000].),([item_equip:10110000][comma] [item_equip:10210000][comma] [item_equip:10310000] 장비를 받았다.)
 DIALOG_1_1_4,Let's warm up for a second before we hear anything else.[newline]You can move to another world by climbing the platform below me.,일단 다른 설명을 듣기 전에 잠깐 몸을 풀고 와볼까?[newline]내 아래쪽에 있는 단상에 올라가면 다른 세계로 이동할 수 있다옹
 DIALOG_1_1_5,Go to Alfheim and catch a few troublesome ones.[newline]There are so many kids like you right now[newline] so I'll come back and explain it to you.,알프헤임에 가서 골치 아픈 녀석들을 몇 마리만 잡고 있어보라옹.[newline]너같은 애들이 지금 너무 많아서 조금 있다 다시 와서 설명해줄게
-DIALOG_1_1_6,(The black cat disappeared somewhere.),(검은 고양이는 어디론가 사라졌다)
+DIALOG_1_1_6,(The black cat disappeared somewhere.),(하얀 고양이는 어디론가 사라졌다)
+DIALOG_2_1_0,[npc:01] Hugh[comma] you're a little off right now.,[npc:01] 휴 당장은 좀 사그러든건가...
+DIALOG_2_1_1,The ones you just removed are the ones that came out of Yggdrasill.[newline]They’re vicious.,네가 조금 전에 없앤 녀석들은 세계수[comma] 이그드라실에서 떨어져나온 생명체들이야. 악랄한 녀석들이지.
+DIALOG_2_1_2,If you leave them alone[comma][newline]they'll grow up and they'll go all over the world.,가만히 놔두면 점점 자라서 온 세계를 헤집어다닐 녀석들이야.
+DIALOG_2_1_3,These guys are so crowded in the Alps that I can't stand on my feet.,알프헤임에는 이 녀석들이 너무 창궐해서 도저히 발을 디딜 수가 없을 정도라고.
+DIALOG_2_1_4,I think we're using a different way to multiply[comma] given that it's increasing at this rate.[newline]Go deeper into the Alfheim and find out why!,아무래도 이런 속도로 늘어나는 것을 보니[comma] 증식을 위한 다른 방법을 쓰고 있는 것 같아. 좀 더 알프헤임 깊숙히 들어가서 원인을 찾아봐줘!
+DIALOG_2_1_5,(White cat disappeared somewhere),(하얀 고양이는 어디론가 사라졌다)
+DIALOG_3_1_0,(A voice comes from far away.),(허공 먼 곳에서 목소리가 들려온다.)
+DIALOG_3_1_1,I congratulate you on this world safely.[newline]Here is Asgard. It is a world of gods that can freely go into nine worlds.,무사히 이 세계에 안착한 것을 축하합니다.[newline]여기는 아스가르드. 9개의 세계로 자유로이 드나들 수 있는[comma] 신들의 세계입니다.
+DIALOG_3_1_2,You are a human world[comma] a cat that was a cat of Midgard.[newline]I brought here what had been a short life and wandered around.,당신은 인간의 세계[comma] 미드가르드의 고양이였던 존재.[newline]짧은 생을 살고 부유하는 혼이 되어있던 것을 제가 이리로 데려왔습니다.
+DIALOG_3_1_3,The memories of the past have almost disappeared[comma][newline]and it will be blurred about who you were and where you were.,이미 예전의 기억은 거의 소실되어서 본디 당신이 어디에 있던 누구였는지는 희미할 테지요.
+DIALOG_3_1_4,Asgard here is in danger.[newline]The gigantic world of nine worlds[comma] Iggdrasil[comma] is creating strange creatures all over the world.,이곳 아스가르드는 위험에 빠져있습니다.[newline]아홉개의 세계를 지탱하는 거목[comma] 이그드라실이 전 세계에 이상한 생명체를 만들어내고 있어요.
+DIALOG_3_1_5,Other gods are struggling to fight each other and are not able to defeat this confusion.[newline]I need your help.,다른 신들은 서로 싸우느라 정신이 없어[comma] 이 혼란을 수습할 겨를이 없습니다.[newline] 당신의 도움이 필요해요.
+DIALOG_3_1_6,(After a moment of silence[comma] a cool voice is heard again.),(잠시 정적이 있던 후[comma] 서늘한 목소리가 다시 들려온다.)
+DIALOG_3_1_7,.... You are just holding on to my shape now.[newline]If you can help save this world[comma] I’ll give you a new life and send it down to Midgard.,.... 당신은 지금 저의 힘으로 겨우 형체를 유지하고 있습니다.[newline]당신이 이 세계를 구하는 데 도움을 준다면[comma][newline]당신에게 새 생명을 주어 미드가르드로 내려보내 드리겠습니다.
+DIALOG_3_1_8,But if you do not help me... you are not alive.[newline]I’m trapped in eternal darkness.,하지만 저를 도와주시지 않는다면.. 당신은 이미 살아있지 않은 몸.[newline]영원한 어둠 속에 갇힐테지요.
+DIALOG_3_1_9,(The voice is no longer heard.),(목소리는 더이상 들리지 않는다.)
+DIALOG_4_1_0,[npc:05] You've already gathered a lot of useful stuff.,[npc:05] 자네[comma] 벌써 쓸만한 재료를 꽤 모았구만.
+DIALOG_4_1_1,What? These can’t even eat it[comma] and can]t use it. What is it worth?[Newline] haha!!,뭐? 먹지도 못하고 쓰지도 못하는데 뭐가 쓸만한 거냐고?[newline]핫하하!!
+DIALOG_4_1_2,You can’t use right now that creature from the Midgard like you have picked up new things.[Newline] But if you get the pure ingredients[comma] you can make the item by melting other things there.,자네처럼 미드가르드에서 온 자들은 신계의 물건을 주웠다고 바로 쓰거나 할 수는 없다네.[newline]다만 순수한 재료를 구하면[comma] 거기에 다른 것들을 녹여내어 장비를 만들 수 있지.
+DIALOG_4_1_3,You already have gathered the things you need[comma] so come find me once. Haha …,이미 필요한 것들을 모은 것 같으니[comma] 내게 한 번 찾아오시게. 허허허…
+DIALOG_5_1_0,[npc:01] It was a really weird creature…[newline]I even thought that the Yggdrasill would create strange creatures.[newline]I didn't expect these guys to grow on their own.,[npc:01] 정말 괴상하게 생긴 녀석이었어…[newline]세계수 이그드라실이 이상한 생명체를 만들어 낸다는 것 까지는 생각했지만[comma][newline]이 녀석들이 스스로 증식을 하게 될 줄은 몰랐어.
+DIALOG_5_1_1,Did you see that guy with flowers on his head?[newline]If they can blossom[comma] they can reproduce on their own![newline]If they go on like this[comma] the whole world will be covered[newline]with the monsters that Yggdrasill created.,아까 머리에 꽃이 달린 녀석 봤어?[newline]꽃을 피울 수 있다는 건 스스로 번식을 할 수 있다는 거야.[newline]이대로 가다가는 온 세계가 이그드라실이 만들어낸 저 괴물들로 뒤덮여 버리고 말거야.
+DIALOG_5_1_2,...you have an appointment with the goddess Freya[comma] right?[newline]I need you to dig deeper in here to keep your promise.[newline]I want you to go into the woods a little bit[newline]and find out if there is a way to destroy these creatures.,... 너[comma] 프레이야 여신님과 약속한 게 있지?[newline]약속을 지키려면 여기서 좀 더 내막을 깊게 파줘야겠어.[newline]좀 더 숲 속 깊숙히 들어가서 이녀석들을 섬멸할 수 있는 방법이 없을지 알아봐주면 좋겠어.
+DIALOG_5_1_3,Don't worry.[newline]I’ll tell the goddess that you're working hard.,걱정마.[newline]네가 수고하고 있다는 건 여신님께 내가 잘 말씀드려둘 테니까.
+DIALOG_5_1_4,(The white cat disappeared again somewhere),(하얀 고양이는 또다시 어디론가 사라졌다)
+DIALOG_6_1_0,[npc:02] Stop![shake_vertical:20|1|2][Newline] Why do you come in here without permission and kill these forest creatures?,[npc:02] 멈춰![shake_vertical:20|1|2][newline]왜 허락도 없이 마음대로 들어와서 이 숲의 생명들을 죽이는거냐!
+DIALOG_6_1_1,You can't go any further than this way![newline]We will certainly stop you on the honor of our fox tribe!,이 앞으로는 더이상 못 지나간다![newline]우리 여우부족의 명예를 걸고 기필코 너를 저지할 것이다!
+DIALOG_7_1_0,[npc:01] You've already met a fox tribe.[newline] Now that I don't have to introduce them[comma] it's been simple.,[npc:01] 여우부족을 만났구나. 따로 소개해줄 필요가 없게 되었으니[comma] 일이 간단해졌는걸?
+DIALOG_7_1_1,The fox tribe was originally a tribe[newline]that lived quietly in the deep forests of the Alfheim.[newline] When Yggdrasill began to create the monster[comma][newline]they suddenly began to worship the Yggdrasill and became violent.,여우부족은 원래 알프헤임의 깊은 숲 속에서 조용히 살고 있던 종족이었는데[comma] 이그드라실이 부산물을 만들어내기 시작하자 갑자기 세계수를 숭배하기 시작하며 난폭해져 버렸지 뭐야.
+DIALOG_7_1_2,Living under the protection of the gods[newline] worshiping something other than God. This is a challenge for the goddess!,신들의 보호 아래 살고 있으면서 신이 아닌 다른 것을 숭배하다니..[newline]이건 여신님에 대한 도전이야..!
+DIALOG_8_1_0,[npc:06] There you ~,[npc:06] 거기 너~
+DIALOG_8_1_1,Yeah[comma] you.[newline]I think I've made quite a few things that look good.,그래 너 말야. 괜찮아 보이는 물건들을 꽤나 만든 것 같아보여서 말이야.
+DIALOG_8_1_2,I work here as a link between cats who want to return to Midgard like you.[newline]If you have something you don't use anymore[comma][newline]or you want to sell it to another cat[comma] leave it to me.[newline]I'll find the right owner.,나는 이곳에서 너처럼 미드가르드로 돌아가려는 고양이들을 잇는 역할을 하지.[newline]더이상 안 쓰는 물건이 있거나[comma] 다른 고양이에게 팔고 싶은 물건이 있을 때는 나한테 맡겨줘. 내가 딱 맞는 주인을 잘 찾아 줄게.
+DIALOG_8_1_3,Of course[comma] it's possible for you to take the stuff that other cats have left me with.[newline]But it just can not be.[newline]You can take my favorite gold as much as I want to.,물론 다른 고양이들이 내게 맡긴 물건을 네가 가져가는 것도 가능해.[newline]하지만 그냥은 당연히 안되지. 내가 좋아하는 골드를 원하는 만큼 줘야 물건을 가져갈 수 있어.
+DIALOG_8_1_4,Ugh! Another guest came in the store.[newline]Then come play with me anytime~,헉! 가게에 또 손님이 들어왔어. 그럼 언제든 놀러와~
+DIALOG_8_1_5,(The cat that lighted the money faded away.),(유독 돈을 좋아하는 고양이는 쏜살같이 사라졌다)
+DIALOG_9_1_0,[npc:02] Ugh.. Ugh..[newline] Do you know what you're trying to do and wield this knife..?,[npc:02] 크흑..[newline]네가 무슨 짓을 하려는 건지 알고서 이 칼을 휘두르는 것이냐?
+DIALOG_9_1_1,You can do everything you wantnewline].[Just… please[comma] the roots of Yggdrasill…[newline] (Flashing),다른 것은 다 네 마음대로 해도 좋다..[newline]다만..[newline]제발 이그드라실의 뿌리 만큼은…[newline](털썩)
+DIALOG_10_1_0,[npc:01] Well done.[newline]Now that the warrior of the warrior begins to be used?[newline]I'm here to deliver a message from the goddess.,[npc:01] 잘 했어. 이제 슬슬 전사의 위용이 나기 시작하는걸? 여신님의 메시지를 전하러 왔어.
+DIALOG_10_1_1,Listen[comma][newline]it’s the root of Yggdrasill that the fox tribe is trying to defend to the end.,잘 들어. 여우부족이 마지막까지 사수하려고 하는 건 이그드라실의 뿌리야.
+DIALOG_10_1_2,The roots of Yggdrasill extend to all nine worlds.[newline]For now[comma] we have no choice but to cut off the roots of each world[newline]in order to silence Yggdrasill.[newline]There’s no other way.,이그드라실의 뿌리는 아홉 세계에 모두 뻗어 있어. 지금으로서는 이그드라실을 잠재우기 위해 각 세계의 뿌리를 잘라내는 수밖에.. 다른 방법이 없어.
+DIALOG_10_1_3,This is the only way to save this world.[newline]It is said that the leader of the fox tribe has a powerful ingredient to cut down the roots of the Alfheim.,이것이 유일하게 이 세계를 구하는 길. 알프헤임의 뿌리를 베어낼 수 있는 강력한 재료는 여우부족의 대장이 가지고 있다고 해.
+DIALOG_10_1_4,If you go to the deepest forest in the Alfheim[comma] you'll see the fox captain.[newline]Come on[comma] let's go!,알프헤임의 가장 깊은 숲까지 들어가면 여우대장을 만날 수 있을거야. 자 어서 가보자구!
+DIALOG_10_1_5,(White cat jumped into the forest and disappeared.),(하얀 고양이는 숲 속으로 뛰어들어가 사라졌다)
+DIALOG_11_1_0,[npc:03] Why do you want to touch the roots of the sacred Yggdrasill?,[npc:03] 어찌하여 너는 신성한 이그드라실의 뿌리를 건드리려 하는 것이냐..
+DIALOG_11_1_1,...,...
+DIALOG_11_1_2,What? To silence the world? I don't know where you here...,뭐..? 세계수를 잠재우기 위해서라고..? 어디서 그런 이야기를....
+DIALOG_11_1_3,I can imagine who told you that... and you're not living here.,훗.. 누가 그런 이야기를 했는지 짐작이 가는군..... 너도 본디 이곳에서 난 생명은 아닌 것을 보니..
+DIALOG_11_1_4,…,…
+DIALOG_11_1_5,I'm afraid.,두렵군..
+DIALOG_11_1_6,The fact that we haven't been able to protect the roots of this place... What will bring to this world...,이곳의 뿌리를 사수하지 못한 것이.. 이 세계에 어떠한 일을 가져올지....
+DIALOG_11_1_7,What the goddess said... Don't be so blind. Poor life.,여신의 말을.. 너무 맹신하지는 말거라 가여운 생명이여.....
+DIALOG_11_1_8,(The fox captain breathed out his last breath.),(여우대장은 마지막 숨을 몰아내쉬었다.)
