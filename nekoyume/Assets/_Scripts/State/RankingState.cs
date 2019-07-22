@@ -56,5 +56,19 @@ namespace Nekoyume.State
 
             return map.ToArray();
         }
+
+        public Address[] GetAgentAddresses(int count, DateTimeOffset? dt)
+        {
+            var avatars = GetAvatars(dt);
+            var result = new HashSet<Address>();
+            foreach (var avatar in avatars)
+            {
+                result.Add(avatar.agentAddress);
+                if (result.Count == count)
+                    break;
+            }
+
+            return result.ToArray();
+        }
     }
 }
