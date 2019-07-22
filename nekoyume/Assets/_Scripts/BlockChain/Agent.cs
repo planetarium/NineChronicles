@@ -55,6 +55,7 @@ namespace Nekoyume.BlockChain
         protected readonly BlockChain<PolymorphicAction<ActionBase>> _blocks;
         private readonly Swarm<PolymorphicAction<ActionBase>> _swarm;
         protected readonly LiteDBStore _store;
+        private readonly IImmutableSet<Address> _trustedPeers;
 
         public IDictionary<TxId, Transaction<PolymorphicAction<ActionBase>>> Transactions => _blocks.Transactions;
         public IBlockPolicy<PolymorphicAction<ActionBase>> Policy => _blocks.Policy;
@@ -103,6 +104,9 @@ namespace Nekoyume.BlockChain
 
             var otherPeers = peers.Where(peer => peer.PublicKey != privateKey.PublicKey).ToList();
             _swarm.AddPeersAsync(otherPeers);
+
+            // FIXME: Trusted peers should be configurable
+            _trustedPeers = otherPeers.Select(peer => peer.Address).ToImmutableHashSet();
         }
 
         public void Dispose()
@@ -122,7 +126,8 @@ namespace Nekoyume.BlockChain
             Task swarmPreloadTask = _swarm.PreloadAsync(
                 new Progress<BlockDownloadState>(state =>
                     PreloadProcessed?.Invoke(this, state)
-                )
+                ),
+                trustedStateValidators: _trustedPeers
             );
             yield return new WaitUntil(() => swarmPreloadTask.IsCompleted);
             DateTimeOffset ended = DateTimeOffset.UtcNow;
