@@ -119,7 +119,7 @@ namespace Nekoyume.UI.Model
                     else
                     {
                         // 판매 취소하겠습니까?
-                        itemCountAndPricePopup.Value.titleText.Value = LocalizationManager.Localize("UI_SELL_CANCELLATION");
+                        itemCountAndPricePopup.Value.titleText.Value = LocalizationManager.Localize("UI_RETRIEVE");
                     }
                 
                     itemCountAndPricePopup.Value.countEnabled.Value = false;

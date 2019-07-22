@@ -426,6 +426,7 @@ namespace Nekoyume.UI
             if (!States.Instance.currentAvatarState.Value.inventory.TryGetAddedItemFrom(inventory,
                 out _))
             {
+                _loadingScreen.Close();
                 return;
             }
 

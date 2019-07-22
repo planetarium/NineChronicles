@@ -33,7 +33,10 @@ namespace Tests
             File.Delete(_path);
             File.Delete(_path + ".meta");
             if (File.Exists(_backup))
+            {
                 File.Move(_backup, _path);
+                File.Delete(_backup + ".meta");
+            }
             LibplanetEditor.DeleteAllEditor();
         }
     }

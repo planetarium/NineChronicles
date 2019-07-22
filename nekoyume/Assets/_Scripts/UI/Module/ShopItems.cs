@@ -16,7 +16,7 @@ namespace Nekoyume.UI.Module
         public Text refreshButtonText;
 
         private Model.Shop.State _state;
-        private Model.ShopItems _data;
+        public Model.ShopItems data;
         
         private readonly List<IDisposable> _disposablesForAwake = new List<IDisposable>();
         private readonly List<IDisposable> _disposablesForSetData = new List<IDisposable>();
@@ -32,7 +32,7 @@ namespace Nekoyume.UI.Module
             refreshButton.onClick.AsObservable().Subscribe(_ =>
             {
                 AudioController.PlayClick();
-                _data?.onRefresh.OnNext(_data);
+                data?.onRefresh.OnNext(data);
             }).AddTo(_disposablesForAwake);
         }
 
@@ -58,11 +58,11 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            _data = data;
-            _data.products.ObserveAdd().Subscribe(_ => UpdateView()).AddTo(_disposablesForSetData);
-            _data.products.ObserveRemove().Subscribe(_ => UpdateView()).AddTo(_disposablesForSetData);
-            _data.registeredProducts.ObserveAdd().Subscribe(_ => UpdateView()).AddTo(_disposablesForSetData);
-            _data.registeredProducts.ObserveRemove().Subscribe(_ => UpdateView()).AddTo(_disposablesForSetData);
+            this.data = data;
+            this.data.products.ObserveAdd().Subscribe(_ => UpdateView()).AddTo(_disposablesForSetData);
+            this.data.products.ObserveRemove().Subscribe(_ => UpdateView()).AddTo(_disposablesForSetData);
+            this.data.registeredProducts.ObserveAdd().Subscribe(_ => UpdateView()).AddTo(_disposablesForSetData);
+            this.data.registeredProducts.ObserveRemove().Subscribe(_ => UpdateView()).AddTo(_disposablesForSetData);
             
             UpdateView();
         }
@@ -70,14 +70,14 @@ namespace Nekoyume.UI.Module
         public void Clear()
         {
             _disposablesForSetData.DisposeAllAndClear();
-            _data = null;
+            data = null;
             
             UpdateView();
         }
 
         private void UpdateView()
         {
-            if (ReferenceEquals(_data, null))
+            if (ReferenceEquals(data, null))
             {
                 foreach (var item in items)
                 {
@@ -90,11 +90,11 @@ namespace Nekoyume.UI.Module
             switch (_state)
             {
                 case Model.Shop.State.Buy:
-                    UpdateViewWithItems(_data.products);
+                    UpdateViewWithItems(data.products);
                     refreshButton.gameObject.SetActive(true);
                     break;
                 case Model.Shop.State.Sell:
-                    UpdateViewWithItems(_data.registeredProducts);
+                    UpdateViewWithItems(data.registeredProducts);
                     refreshButton.gameObject.SetActive(false);
                     break;
             }

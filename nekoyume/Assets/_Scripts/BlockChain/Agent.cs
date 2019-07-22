@@ -52,9 +52,9 @@ namespace Nekoyume.BlockChain
         private static readonly TimeSpan SleepInterval = TimeSpan.FromSeconds(3);
         
         private readonly ConcurrentQueue<PolymorphicAction<ActionBase>> _queuedActions = new ConcurrentQueue<PolymorphicAction<ActionBase>>();
-        private readonly BlockChain<PolymorphicAction<ActionBase>> _blocks;
+        protected readonly BlockChain<PolymorphicAction<ActionBase>> _blocks;
         private readonly Swarm<PolymorphicAction<ActionBase>> _swarm;
-        private readonly LiteDBStore _store;
+        protected readonly LiteDBStore _store;
 
         public IDictionary<TxId, Transaction<PolymorphicAction<ActionBase>>> Transactions => _blocks.Transactions;
         public IBlockPolicy<PolymorphicAction<ActionBase>> Policy => _blocks.Policy;

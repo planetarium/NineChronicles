@@ -4,9 +4,9 @@ using System.IO;
 using System.Threading.Tasks;
 using Libplanet;
 using Libplanet.Action;
-using Libplanet.Blockchain;
 using Libplanet.Crypto;
-using Libplanet.Store;
+using Libplanet.Net;
+
 using Libplanet.Tx;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
@@ -19,49 +19,64 @@ namespace Tests
     public class MinerFixture
     {
         private readonly string _storePath;
-        private readonly PrivateKey _privateKey;
-        private readonly LiteDBStore _store;
-        private readonly BlockChain<PolymorphicAction<ActionBase>> _block;
+        private readonly TestAgent _agent;
 
         public MinerFixture()
         {
         }
         public MinerFixture(string storeName)
         {
-            _storePath = $"{storeName}.ldb";
+            _storePath = $"{storeName}";
             const string hex = "02ed49dbe0f2c34d9dff8335d6dd9097f7a3ef17dfb5f048382eebc7f451a50aa1";
-            _privateKey =
-                new PrivateKey(ByteUtil.ParseHex(hex));
+            var privateKey = new PrivateKey(ByteUtil.ParseHex(hex));
             if (File.Exists(_storePath))
                 File.Delete(_storePath);
-            _store = new LiteDBStore(_storePath);
-            _block = new BlockChain<PolymorphicAction<ActionBase>>(AgentController.Agent.Policy, _store);
+            _agent = new TestAgent(privateKey, storeName, new List<Peer>(), new List<IceServer>(),  "", null);
         }
 
         public IEnumerator CoMine(Transaction<PolymorphicAction<ActionBase>> transaction)
         {
-            var task = Task.Run(() =>
-                _block.StageTransactions(new Dictionary<Transaction<PolymorphicAction<ActionBase>>, bool>()
-                    {
-                        {
-                            transaction,
-                            true
-                        }
-                    }
-                )
-            );
-            yield return new WaitUntil(() => task.IsCompleted);
-            var mine = Task.Run(() => _block.MineBlock(_privateKey.PublicKey.ToAddress()));
-            yield return new WaitUntil(() => mine.IsCompleted);
-            var block = mine.Result;
-            AgentController.Agent.AppendBlock(block);
+            yield return _agent.CoMine(transaction);
         }
 
         public void TearDown()
         {
-            _store.Dispose();
+            _agent.TearDown();
             if (File.Exists(_storePath))
                 File.Delete(_storePath);
+        }
+
+        private class TestAgent: Agent
+        {
+            public TestAgent(PrivateKey privateKey, string path, IEnumerable<Peer> peers,
+                IEnumerable<IceServer> iceServers, string host, int? port)
+                : base(privateKey, path, peers, iceServers, host, port)
+            {
+            }
+
+            public void TearDown()
+            {
+                _store.Dispose();
+            }
+
+            public IEnumerator CoMine(Transaction<PolymorphicAction<ActionBase>> transaction)
+            {
+                var task = Task.Run(() =>
+                    _blocks.StageTransactions(new Dictionary<Transaction<PolymorphicAction<ActionBase>>, bool>()
+                        {
+                            {
+                                transaction,
+                                true
+                            }
+                        }
+                    )
+                );
+                yield return new WaitUntil(() => task.IsCompleted);
+                var mine = Task.Run(() => _blocks.MineBlock(PrivateKey.PublicKey.ToAddress()));
+                yield return new WaitUntil(() => mine.IsCompleted);
+                var block = mine.Result;
+                AgentController.Agent.AppendBlock(block);
+            }
         }
     }
 }
