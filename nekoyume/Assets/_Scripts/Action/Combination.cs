@@ -222,7 +222,7 @@ namespace Nekoyume.Action
                               ? 1f
                               : Math.Pow(1f / (1f + GameConfig.CombinationValueL1 / deltaLevel),
                                   GameConfig.CombinationValueL2));
-            var rollMin = rollMax * 0.5f;
+            var rollMin = rollMax * 0.7f;
             return (float) (rollMin + (rollMax - rollMin) *
                             Math.Pow(normalizedRandomValue, GameConfig.CombinationValueR1));
         }

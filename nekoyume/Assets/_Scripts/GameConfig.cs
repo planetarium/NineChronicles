@@ -14,11 +14,11 @@ namespace Nekoyume
         public const int DefaultAvatarArmorId = 10200000;
         public const int DefaultAvatarBeltId = 10310000;
         
-        public const float CombinationValueP1 = 30f;
-        public const float CombinationValueP2 = 1.2f;
+        public const float CombinationValueP1 = 3f; // 30f;
+        public const float CombinationValueP2 = 1f; // 1.2f;
         public const float CombinationValueL1 = 10f;
         public const float CombinationValueL2 = 1f;
-        public const float CombinationValueR1 = 2f;
+        public const float CombinationValueR1 = 1.5f; // 2f;
         public const int CombinationDefaultFoodId = 200000;
         
         #endregion
