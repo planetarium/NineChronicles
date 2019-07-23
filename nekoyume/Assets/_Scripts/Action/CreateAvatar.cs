@@ -1,7 +1,10 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using Libplanet;
 using Libplanet.Action;
+using Nekoyume.Data;
+using Nekoyume.Game.Item;
 using Nekoyume.State;
 
 namespace Nekoyume.Action
@@ -58,6 +61,14 @@ namespace Nekoyume.Action
         private static AvatarState CreateAvatarState(string name, Address avatarAddress, Address agentAddress)
         {
             var avatarState = new AvatarState(avatarAddress, agentAddress, name);
+            foreach (var pair in Tables.instance.Item)
+            {
+                avatarState.inventory.AddFungibleItem(ItemBase.ItemFactory(pair.Value));
+            }
+            foreach (var pair in Tables.instance.ItemEquipment.Where(e => e.Value.id > 10100000))
+            {
+                avatarState.inventory.AddFungibleItem(ItemBase.ItemFactory(pair.Value));
+            }
             return avatarState;
         }
     }

@@ -11,13 +11,13 @@ namespace Nekoyume.UI
     {
         public GameObject world;
         public GameObject chapter;
+        public Image worldNameImage;
         public Transform stages;
         public Button btnPrevChapter;
         public Button btnNextChapter;
         public Text mainButtonText;
         public Text worldButtonText;
         public Text txtChapter;
-        public Text txtStage;
 
         private int _selectedStage = -1;
         public int SelectedStage { 
@@ -130,7 +130,6 @@ namespace Nekoyume.UI
             btnPrevChapter.interactable = _currentChapter > 1;
             btnNextChapter.interactable = _currentChapter < Tables.instance.World.Count;
             txtChapter.text = $"{_currentChapter} / {Tables.instance.World.Count}";
-            txtStage.text = $"Stage {SelectedStage}";
 
             var res = Resources.Load<GameObject>($"UI/Prefabs/WorldMap/Chapter_{worldData.chapter}");
             if (!res)
@@ -176,8 +175,8 @@ namespace Nekoyume.UI
                 else
                     stage.SetImage(stage.normalImage);
 
-                stage.tweenMove.StartDelay = i * 0.08f;
-                stage.tweenAlpha.StartDelay = i * 0.08f;
+                stage.tweenMove.StartDelay = i * 0.03f;
+                stage.tweenAlpha.StartDelay = i * 0.03f;
             }
         }
     }

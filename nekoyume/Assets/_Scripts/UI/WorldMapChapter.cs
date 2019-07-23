@@ -15,6 +15,7 @@ namespace Nekoyume.UI
         [ContextMenu ("Reposition")]
         private void Reposition()
         {
+            return;
             var rect = GetComponent<RectTransform>();
             int x = 1;
             int y = 1;
