@@ -155,6 +155,8 @@ namespace Nekoyume.UI.Module
                 default:
                     throw new ArgumentOutOfRangeException(nameof(state), state, null);
             }
+            
+            Tooltip.Close();
         }
     }
 }

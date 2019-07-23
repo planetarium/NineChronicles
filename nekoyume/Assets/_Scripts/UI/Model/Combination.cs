@@ -36,48 +36,6 @@ namespace Nekoyume.UI.Model
             nameof(ItemBase.ItemType.Shoes)
         };
         
-        private static readonly int[] DimmedMaterialIds =
-        {
-            100000,
-            301000,
-            304000,
-            304002,
-            304001,
-            304003,
-            305000,
-            305001,
-            305002,
-            305003,
-            305004
-        };
-
-        private static readonly int[] ConsumableMaterialIds =
-        {
-            302000,
-            302001,
-            302002,
-            302003,
-            302004,
-            302005,
-            302006,
-            302007,
-            302008,
-            302009
-        };
-        
-        private static readonly int[] EquipmentMaterialIds =
-        {
-            303000,
-            303001,
-            303002,
-            303100,
-            303101,
-            303102,
-            303200,
-            303201,
-            303202
-        };
-
         public readonly ReactiveProperty<ConsumablesOrEquipments> consumablesOrEquipments =
             new ReactiveProperty<ConsumablesOrEquipments>(ConsumablesOrEquipments.Equipments);
 
@@ -149,31 +107,26 @@ namespace Nekoyume.UI.Model
                     throw new ArgumentOutOfRangeException(nameof(value), value, null);
             }
 
-            if (equipmentMaterial.Value != null)
-            {
-                var temp = equipmentMaterial.Value;
-                equipmentMaterial.Value = null;
-                OnMaterialRemove(temp);
-            }
+            RemoveEquipmentMaterial();
             
             while (materials.Count > 0)
             {
                 materials.RemoveAt(0);
             }
         }
-
+        
         private bool DimmedFuncForConsumables(InventoryItem inventoryItem)
         {
             return DimmedTypes.Contains(inventoryItem.item.Value.Data.cls)
-                   || DimmedMaterialIds.Contains(inventoryItem.item.Value.Data.id)
-                   || !ConsumableMaterialIds.Contains(inventoryItem.item.Value.Data.id);
+                   || GameConfig.PaintMaterials.Contains(inventoryItem.item.Value.Data.id)
+                   || !GameConfig.ConsumableMaterials.Contains(inventoryItem.item.Value.Data.id);
         }
         
         private bool DimmedFuncForEquipments(InventoryItem inventoryItem)
         {
             return DimmedTypes.Contains(inventoryItem.item.Value.Data.cls)
-                   || DimmedMaterialIds.Contains(inventoryItem.item.Value.Data.id)
-                   || ConsumableMaterialIds.Contains(inventoryItem.item.Value.Data.id);
+                   || GameConfig.PaintMaterials.Contains(inventoryItem.item.Value.Data.id)
+                   || GameConfig.ConsumableMaterials.Contains(inventoryItem.item.Value.Data.id);
         }
 
         private void OnClickSubmitItemCountPopup(SimpleItemCountPopup data)
@@ -188,6 +141,18 @@ namespace Nekoyume.UI.Model
             RegisterToStagedItems(data.item.Value);
             itemCountPopup.Value.item.Value = null;
         }
+        
+        private void RemoveEquipmentMaterial()
+        {
+            if (equipmentMaterial.Value == null)
+            {
+                return;
+            }
+            
+            var temp = equipmentMaterial.Value;
+            equipmentMaterial.Value = null;
+            OnMaterialRemove(temp);
+        }
 
         public bool RegisterToStagedItems(CountableItem countEditableItem)
         {
@@ -197,12 +162,9 @@ namespace Nekoyume.UI.Model
             }
 
             if (consumablesOrEquipments.Value == ConsumablesOrEquipments.Equipments
-                && EquipmentMaterialIds.Contains(countEditableItem.item.Value.Data.id))
+                && GameConfig.EquipmentMaterials.Contains(countEditableItem.item.Value.Data.id))
             {
-                if (equipmentMaterial.Value != null)
-                {
-                    OnMaterialRemove(equipmentMaterial.Value);
-                }
+                RemoveEquipmentMaterial();
                 
                 equipmentMaterial.Value = new CombinationMaterial(
                     countEditableItem.item.Value,
@@ -296,9 +258,7 @@ namespace Nekoyume.UI.Model
                     && equipmentMaterial.Value != null
                     && equipmentMaterial.Value.item.Value.Data.id == obj.item.Value.Data.id)
                 {
-                    var temp = equipmentMaterial.Value;
-                    equipmentMaterial.Value = null;
-                    OnMaterialRemove(temp);
+                    RemoveEquipmentMaterial();
                 }
                 else
                 {
@@ -375,7 +335,8 @@ namespace Nekoyume.UI.Model
             {
                 inventory.Value.AddItem((ItemUsable) data.item.Value);
             }
-
+            
+            RemoveEquipmentMaterial();
             while (materials.Count > 0)
             {
                 materials.RemoveAt(0);

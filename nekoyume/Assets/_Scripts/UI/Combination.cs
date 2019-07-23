@@ -390,7 +390,16 @@ namespace Nekoyume.UI
         {
             _loadingScreen.Show();
             var inventoryItemCount = States.Instance.currentAvatarState.Value.inventory.Items.Count();
-            var materials = data.materials.ToList();
+            var materials = new List<CombinationMaterial>();
+            if (data.equipmentMaterial.Value != null)
+            {
+                materials.Add(data.equipmentMaterial.Value);
+            }
+            foreach (var combinationMaterial in data.materials)
+            {
+                materials.Add(combinationMaterial);
+            }
+            
             foreach (var material in materials)
             {
                 if (!States.Instance.currentAvatarState.Value.inventory.TryGetFungibleItem(material.item.Value.Data.id,
@@ -406,7 +415,7 @@ namespace Nekoyume.UI
             }
 
             ActionManager.instance.Combination(materials)
-                .Subscribe(eval => ResponseCombination(inventoryItemCount))
+                .Subscribe(eval => ResponseCombination(materials, inventoryItemCount))
                 .AddTo(this);
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickCombinationCombination);
         }
@@ -415,7 +424,7 @@ namespace Nekoyume.UI
         /// 결과를 직접 받아서 데이타에 넣어주는 방법 보다는,
         /// 네트워크 결과를 핸들링하는 곳에 핸들링 인터페이스를 구현한 데이타 모델을 등록하는 방법이 좋겠다. 
         /// </summary>
-        private void ResponseCombination(int inventoryItemCount)
+        private void ResponseCombination(ICollection<CombinationMaterial> materials, int inventoryItemCount)
         {
             _loadingScreen.Close();
 
@@ -429,7 +438,7 @@ namespace Nekoyume.UI
                 : null)
             {
                 isSuccess = isSuccess,
-                materialItems = Model.materials
+                materialItems = materials
             };
 
             AnalyticsManager.Instance.OnEvent(isSuccess
@@ -463,8 +472,10 @@ namespace Nekoyume.UI
             yield return null;
             particleVFX.SetActive(false);
             resultItemVFX.SetActive(false);
-            
-            var position = inventory.equipmentsButton.transform.position;
+
+            var position = data.item.Value.Data.cls.ToEnumItemType() == ItemBase.ItemType.Food
+                ? inventory.consumablesButton.transform.position
+                : inventory.equipmentsButton.transform.position;
 
             particleVFX.transform.position = _resultPopup.resultItem.transform.position;
             particleVFX.transform.DOMoveX(position.x, 0.6f);

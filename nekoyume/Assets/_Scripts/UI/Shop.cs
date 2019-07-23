@@ -449,7 +449,9 @@ namespace Nekoyume.UI
             particleVFX.SetActive(false);
             resultItemVFX.SetActive(false);
 
-            var position = inventoryAndItemInfo.inventory.equipmentsButton.transform.position;
+            var position = shopItemView.Model.item.Value.Data.cls.ToEnumItemType() == ItemBase.ItemType.Food
+                ? inventoryAndItemInfo.inventory.consumablesButton.transform.position
+                : inventoryAndItemInfo.inventory.equipmentsButton.transform.position;
 
             particleVFX.transform.position = shopItemView.transform.position;
             particleVFX.transform.DOMoveX(position.x, 0.6f);
