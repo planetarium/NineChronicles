@@ -5,11 +5,10 @@ namespace Nekoyume.UI.Model
 {
     public class CombinationMaterial : CountEditableItem
     {
-        public readonly ReactiveProperty<bool> opened = new ReactiveProperty<bool>();
+        public readonly ReactiveProperty<bool> opened = new ReactiveProperty<bool>(true);
         
-        public CombinationMaterial(ItemBase item, int count, int minCount, int maxCount, bool opened) : base(item, count, minCount, maxCount)
+        public CombinationMaterial(ItemBase item, int count, int minCount, int maxCount) : base(item, count, minCount, maxCount)
         {
-            this.opened.Value = opened;
         }
 
         public override void Dispose()

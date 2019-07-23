@@ -106,7 +106,7 @@ namespace Nekoyume.Action
                     return states;
                 }
 
-                if (!TryGetItemType(outEquipmentMaterialRow.name, out var outItemType))
+                if (!TryGetItemType(outEquipmentMaterialRow.id, out var outItemType))
                 {
                     return states;
                 }
@@ -168,31 +168,30 @@ namespace Nekoyume.Action
             return states.SetState(ctx.Signer, agentState);
         }
 
-        private bool TryGetItemType(string itemName, out ItemBase.ItemType outItemType)
+        private bool TryGetItemType(int itemId, out ItemBase.ItemType outItemType)
         {
-            if (itemName.Contains("칼")
-                || itemName.Contains("검"))
+            var type = itemId.ToString().Substring(0, 4);
+            switch (type)
             {
-                outItemType = ItemBase.ItemType.Weapon;
+                case "3030":
+                    outItemType = ItemBase.ItemType.Weapon;
+                    return true;
+                case "3031":
+                    outItemType = ItemBase.ItemType.Armor;
+                    return true;
+                case "3032":
+                    outItemType = ItemBase.ItemType.Belt;
+                    return true;
+                case "3033":
+                    outItemType = ItemBase.ItemType.Necklace;
+                    return true;
+                case "3034":
+                    outItemType = ItemBase.ItemType.Ring;
+                    return true;
+                default:
+                    outItemType = ItemBase.ItemType.Material;
+                    return false;
             }
-            else if (itemName.Contains("갑옷")
-                     || itemName.Contains("갑주"))
-            {
-                outItemType = ItemBase.ItemType.Armor;
-            }
-            else if (itemName.Contains("끈")
-                     || itemName.Contains("허리띠")
-                     || itemName.Contains("벨트"))
-            {
-                outItemType = ItemBase.ItemType.Belt;
-            }
-            else
-            {
-                outItemType = ItemBase.ItemType.Material;
-                return false;
-            }
-
-            return true;
         }
 
         private bool TryGetItemEquipmentRow(ItemBase.ItemType itemType, Elemental.ElementalType elementalType,
@@ -200,7 +199,7 @@ namespace Nekoyume.Action
         {
             foreach (var pair in Tables.instance.ItemEquipment)
             {
-                if ((ItemBase.ItemType) Enum.Parse(typeof(ItemBase.ItemType), pair.Value.cls) != itemType ||
+                if (pair.Value.cls.ToEnumItemType() != itemType ||
                     pair.Value.elemental != elementalType ||
                     pair.Value.grade != grade)
                 {

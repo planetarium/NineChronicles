@@ -69,7 +69,7 @@ namespace Nekoyume.UI.Module
             var sprite = ItemBase.GetSprite(Model.item.Value);
             if (ReferenceEquals(sprite, null))
             {
-                throw new FailedToLoadResourceException<Sprite>();
+                throw new FailedToLoadResourceException<Sprite>(Model.item.Value.Data.id.ToString());
             }
 
             iconImage.overrideSprite = sprite;

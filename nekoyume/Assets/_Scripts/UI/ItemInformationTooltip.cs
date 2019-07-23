@@ -102,6 +102,11 @@ namespace Nekoyume.UI
 
         public override void Close()
         {
+            if (Model.itemInformation.item.Value is InventoryItem inventoryItem)
+            {
+                inventoryItem.selected.Value = false;
+            }
+            
             _disposablesForModel.DisposeAllAndClear();
             Model.target.Value = null;
             Model.itemInformation.item.Value = null;
