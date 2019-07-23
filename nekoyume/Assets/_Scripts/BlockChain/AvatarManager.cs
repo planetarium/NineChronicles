@@ -16,13 +16,15 @@ namespace Nekoyume.BlockChain
     /// </summary>
     public static class AvatarManager
     {
-        public const string PrivateKeyFormat = "private_key_{0}";
+        // {Agent.PrivateKey}_private_key_{index} 구조로 로컬에 계정 정보 저장
+        public const string PrivateKeyFormat = "{0}_private_key_avatar_{1}";
         
         private static PrivateKey _privateKey;
         
         public static PrivateKey GetOrCreateAvatarPrivateKey(int index)
         {
-            var key = string.Format(PrivateKeyFormat, index);
+            var agentKey = ByteUtil.Hex(AgentController.Agent.PrivateKey.ByteArray);
+            var key = string.Format(PrivateKeyFormat, agentKey, index);
             
             if (PlayerPrefs.HasKey(key))
             {
@@ -50,7 +52,8 @@ namespace Nekoyume.BlockChain
 
         public static bool DeleteAvatarPrivateKey(int index)
         {
-            var key = string.Format(PrivateKeyFormat, index);
+            var agentKey = ByteUtil.Hex(AgentController.Agent.PrivateKey.ByteArray);
+            var key = string.Format(PrivateKeyFormat, agentKey, index);
             if (!PlayerPrefs.HasKey(key))
             {
                 return false;
