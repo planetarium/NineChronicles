@@ -14,6 +14,7 @@ using UnityEngine.UI;
 using Stage = Nekoyume.Game.Stage;
 using System.Collections;
 using Assets.SimpleLocalization;
+using Nekoyume.Game.Item;
 using Nekoyume.Helper;
 using UniRx.Triggers;
 
@@ -470,7 +471,7 @@ namespace Nekoyume.UI
             particleVFX.SetActive(false);
             resultItemVFX.SetActive(false);
 
-            var position = data.item.Value.Data.cls.ToEnumItemType() == ItemBase.ItemType.Food
+            var position = data.itemInformation.Value.item.Value.item.Value.Data.cls.ToEnumItemType() == ItemBase.ItemType.Food
                 ? inventory.consumablesButton.transform.position
                 : inventory.equipmentsButton.transform.position;
 

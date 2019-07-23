@@ -1,4 +1,5 @@
 using System;
+using Assets.SimpleLocalization;
 using Nekoyume.Data.Table;
 
 namespace Nekoyume
@@ -15,12 +16,12 @@ namespace Nekoyume
                     switch (category)
                     {
                         case SkillEffect.Category.Normal:
-                            return "불";
+                            return LocalizationManager.Localize("UI_SKILL_FIRE_NORMAL");
                         case SkillEffect.Category.Blow:
                         case SkillEffect.Category.Double:
-                            return "불꽃";
+                            return LocalizationManager.Localize("UI_SKILL_FIRE_BLOW");
                         case SkillEffect.Category.Area:
-                            return "용암";
+                            return LocalizationManager.Localize("UI_SKILL_FIRE_AREA");
                         default:
                             throw new ArgumentOutOfRangeException(nameof(category), category, null);
                     }
@@ -28,11 +29,11 @@ namespace Nekoyume
                     switch (category)
                     {
                         case SkillEffect.Category.Normal:
-                            return "물";
+                            return LocalizationManager.Localize("UI_SKILL_WATER_NORMAL");
                         case SkillEffect.Category.Blow:
                         case SkillEffect.Category.Double:
                         case SkillEffect.Category.Area:
-                            return "얼음";
+                            return LocalizationManager.Localize("UI_SKILL_WATER_BLOW");
                         default:
                             throw new ArgumentOutOfRangeException(nameof(category), category, null);
                     }
@@ -40,11 +41,11 @@ namespace Nekoyume
                     switch (category)
                     {
                         case SkillEffect.Category.Normal:
-                            return "대지";
+                            return LocalizationManager.Localize("UI_SKILL_LAND_NORMAL");
                         case SkillEffect.Category.Blow:
                         case SkillEffect.Category.Double:
                         case SkillEffect.Category.Area:
-                            return "모래";
+                            return LocalizationManager.Localize("UI_SKILL_LAND_BLOW");
                         default:
                             throw new ArgumentOutOfRangeException(nameof(category), category, null);
                     }
@@ -54,9 +55,9 @@ namespace Nekoyume
                         case SkillEffect.Category.Normal:
                         case SkillEffect.Category.Blow:
                         case SkillEffect.Category.Double:
-                            return "바람";
+                            return LocalizationManager.Localize("UI_SKILL_WIND_NORMAL");
                         case SkillEffect.Category.Area:
-                            return "거대";
+                            return LocalizationManager.Localize("UI_SKILL_WIND_AREA");
                         default:
                             throw new ArgumentOutOfRangeException(nameof(category), category, null);
                     }
@@ -77,26 +78,26 @@ namespace Nekoyume
                         case Elemental.ElementalType.Water:
                         case Elemental.ElementalType.Land:
                         case Elemental.ElementalType.Wind:
-                            return "공격";
+                            return LocalizationManager.Localize("UI_SKILL_NORMAL");
                         default:
                             throw new ArgumentOutOfRangeException(nameof(elementalType), elementalType, null);
                     }
                 case SkillEffect.Category.Blow:
-                    return "일격";
+                    return LocalizationManager.Localize("UI_SKILL_BLOW");
                 case SkillEffect.Category.Double:
-                    return "연사";
+                    return LocalizationManager.Localize("UI_SKILL_DOUBLE");
                 case SkillEffect.Category.Area:
                     switch (elementalType)
                     {
                         case Elemental.ElementalType.Normal:
-                            return "광역 난사";
+                            return LocalizationManager.Localize("UI_SKILL_AREA_NORMAL");
                         case Elemental.ElementalType.Fire:
                         case Elemental.ElementalType.Water:
-                            return "해일";
+                            return LocalizationManager.Localize("UI_SKILL_AREA_FIRE_OR_WATER");
                         case Elemental.ElementalType.Land:
-                            return "폭풍";
+                            return LocalizationManager.Localize("UI_SKILL_AREA_LAND");
                         case Elemental.ElementalType.Wind:
-                            return "태풍";
+                            return LocalizationManager.Localize("UI_SKILL_AREA_WIND");
                         default:
                             throw new ArgumentOutOfRangeException(nameof(elementalType), elementalType, null);
                     }
