@@ -60,6 +60,7 @@ namespace Nekoyume.State
             battleLog = avatarState.battleLog;
             updatedAt = avatarState.updatedAt;
             clearedAt = avatarState.clearedAt;
+            agentAddress = avatarState.agentAddress;
         }
         
         public void Update(Player player)
