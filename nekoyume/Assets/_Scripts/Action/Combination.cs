@@ -111,27 +111,11 @@ namespace Nekoyume.Action
                     return states;
                 }
 
-                ItemEquipment itemEquipmentRow;
-                switch (outItemType)
+                if (!TryGetItemEquipmentRow(outItemType, outMonsterPartsMaterialRow.elemental,
+                    outEquipmentMaterialRow.grade,
+                    out var itemEquipmentRow))
                 {
-                    case ItemBase.ItemType.Necklace:
-                    case ItemBase.ItemType.Ring:
-                        if (!TryGetItemEquipmentRow(outItemType, outEquipmentMaterialRow.grade,
-                            out itemEquipmentRow))
-                        {
-                            return states;
-                        }
-
-                        break;
-                    default:
-                        if (!TryGetItemEquipmentRow(outItemType, outMonsterPartsMaterialRow.elemental,
-                            outEquipmentMaterialRow.grade,
-                            out itemEquipmentRow))
-                        {
-                            return states;
-                        }
-
-                        break;
+                    return states;
                 }
 
                 var normalizedRandomValue = ctx.Random.Next(0, 100000) * 0.00001f;
@@ -210,25 +194,6 @@ namespace Nekoyume.Action
             }
         }
 
-        private bool TryGetItemEquipmentRow(ItemBase.ItemType itemType, int grade,
-            out ItemEquipment outItemEquipmentRow)
-        {
-            foreach (var pair in Tables.instance.ItemEquipment)
-            {
-                if (pair.Value.cls.ToEnumItemType() != itemType ||
-                    pair.Value.grade != grade)
-                {
-                    continue;
-                }
-
-                outItemEquipmentRow = pair.Value;
-                return true;
-            }
-
-            outItemEquipmentRow = null;
-            return false;
-        }
-        
         private bool TryGetItemEquipmentRow(ItemBase.ItemType itemType, Elemental.ElementalType elementalType,
             int grade, out ItemEquipment outItemEquipmentRow)
         {
