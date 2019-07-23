@@ -178,7 +178,29 @@ namespace Nekoyume.Game
                     yield return StartCoroutine(e.CoExecute(this));
                 }
             }
+
+            yield return StartCoroutine(CoDialog(log.worldStage));
             yield return StartCoroutine(CoStageEnd(log.result));
+        }
+
+        private IEnumerator CoDialog(int worldStage)
+        {
+            var stageDialogs = Tables.instance.StageDialogs.Values
+                .Where(i => i.stageId == worldStage)
+                .OrderBy(i => i.dialogId)
+                .ToArray();
+            if (stageDialogs.Any())
+            {
+                var dialog = Widget.Find<Dialog>();
+
+                foreach (var stageDialog in stageDialogs)
+                {
+                    dialog.Show(stageDialog.dialogId);
+                    yield return new WaitWhile(() => dialog.gameObject.activeSelf);
+                }
+            }
+
+            yield return null;
         }
 
         private IEnumerator CoStageEnter(int stage)
