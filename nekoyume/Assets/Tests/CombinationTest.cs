@@ -69,7 +69,7 @@ namespace Tests
 
             //Combination
             var row = Tables.instance.Recipe.Values.First();
-            var rect = w.inventoryAndItemInfo.inventory.scrollerController.GetComponentInChildren<ScrollRect>();
+            var rect = w.inventory.scrollerController.GetComponentInChildren<ScrollRect>();
             foreach (var material in new [] {row.Material1, row.Material2})
             {
                 var index = States.Instance.currentAvatarState.Value.inventory.Items.ToList()
@@ -77,7 +77,7 @@ namespace Tests
                 InventoryItemView item;
                 while (true)
                 {
-                    item = w.inventoryAndItemInfo.inventory.scrollerController.GetByIndex(index);
+                    item = w.inventory.scrollerController.GetByIndex(index);
                     if (item is null)
                     {
                         rect.GetComponent<ScrollRect>().verticalNormalizedPosition -= 0.1f;
@@ -90,7 +90,7 @@ namespace Tests
 
                 }
                 item.GetComponent<Button>().onClick.Invoke();
-                w.inventoryAndItemInfo.inventory.Tooltip.submitButton.onClick.Invoke();
+                w.inventory.Tooltip.submitButton.onClick.Invoke();
             }
             var current = AgentController.Agent.Transactions.Count;
             w.combinationButton.onClick.Invoke();

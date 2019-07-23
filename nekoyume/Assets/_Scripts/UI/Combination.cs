@@ -17,24 +17,38 @@ using UnityEngine.UI;
 using Stage = Nekoyume.Game.Stage;
 using System.Collections;
 using Assets.SimpleLocalization;
+using Nekoyume.Helper;
+using UniRx.Triggers;
 
 namespace Nekoyume.UI
 {
     public class Combination : Widget
     {
-        public InventoryAndItemInfo inventoryAndItemInfo;
+        public Button switchEquipmentsButton;
+        public Image switchEquipmentsButtonImage;
+        public Text switchEquipmentsButtonText;
+        public Button switchConsumableButton;
+        public Image switchConsumableButtonImage;
+        public Text switchConsumableButtonText;
+        public Module.Inventory inventory;
+        public Button recipeButton;
+        public Image recipeButtonImage;
+        public Text recipeButtonText;
+        public GameObject manualCombination;
         public Text materialsTitleText;
+        public CombinationMaterialView equipmentMaterialView;
         public CombinationMaterialView[] materialViews;
+        public GameObject materialViewsPlusImageContainer;
         public Button combinationButton;
         public Image combinationButtonImage;
         public Text combinationButtonText;
+        public GameObject recipeCombination;
         public Button closeButton;
 
         public GameObject particleVFX;
         public GameObject resultItemVFX;
 
-        private readonly List<IDisposable> _disposablesForAwake = new List<IDisposable>();
-        private readonly List<IDisposable> _disposablesForSetData = new List<IDisposable>();
+        private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
 
         private Stage _stage;
         private Player _player;
@@ -53,31 +67,52 @@ namespace Nekoyume.UI
 
             this.ComponentFieldsNotNullTest();
 
+            switchEquipmentsButtonText.text = LocalizationManager.Localize("UI_COMBINE_EQUIPMENTS");
+            switchConsumableButtonText.text = LocalizationManager.Localize("UI_COMBINE_CONSUMABLES");
+            recipeButtonText.text = LocalizationManager.Localize("UI_RECIPE");
             materialsTitleText.text = LocalizationManager.Localize("UI_COMBINATION_MATERIALS");
             combinationButtonText.text = LocalizationManager.Localize("UI_COMBINATION_ITEM");
-
+            
+            switchEquipmentsButton.OnClickAsObservable()
+                .Subscribe(_ =>
+                {
+                    AudioController.PlayClick();
+                    Model.consumablesOrEquipments.Value = UI.Model.Combination.ConsumablesOrEquipments.Equipments;
+                })
+                .AddTo(gameObject);
+            switchConsumableButton.OnClickAsObservable()
+                .Subscribe(_ =>
+                {
+                    AudioController.PlayClick();
+                    Model.consumablesOrEquipments.Value = UI.Model.Combination.ConsumablesOrEquipments.Consumables;
+                })
+                .AddTo(gameObject);
+            recipeButton.OnClickAsObservable()
+                .Subscribe(_ =>
+                {
+                    AudioController.PlayClick();
+                    Model.manualOrRecipe.Value =
+                        Model.manualOrRecipe.Value == UI.Model.Combination.ManualOrRecipe.Manual
+                            ? UI.Model.Combination.ManualOrRecipe.Recipe
+                            : UI.Model.Combination.ManualOrRecipe.Manual;
+                })
+                .AddTo(gameObject);
             combinationButton.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
-                    Model.onClickCombination.OnNext(Model);
                     AudioController.PlayClick();
+                    RequestCombination(Model);
                 })
-                .AddTo(_disposablesForAwake);
-
+                .AddTo(gameObject);
             closeButton.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
-                    Close();
                     AudioController.PlayClick();
+                    Close();
                 })
-                .AddTo(_disposablesForAwake);
-        }
+                .AddTo(gameObject);
 
-        private void OnDestroy()
-        {
-            _disposablesForAwake.DisposeAllAndClear();
-
-            Clear();
+            recipeButton.enabled = false;
         }
 
         #endregion
@@ -116,8 +151,7 @@ namespace Nekoyume.UI
             _player.gameObject.SetActive(false);
 
             SetData(new Model.Combination(
-                States.Instance.currentAvatarState.Value.inventory,
-                materialViews.Length));
+                States.Instance.currentAvatarState.Value.inventory));
 
             AudioController.instance.PlayMusic(AudioController.MusicCode.Combination);
         }
@@ -145,30 +179,33 @@ namespace Nekoyume.UI
                 return;
             }
 
-            _disposablesForSetData.DisposeAllAndClear();
+            _disposablesForModel.DisposeAllAndClear();
             Model = model;
+            Model.consumablesOrEquipments.Subscribe(Subscribe).AddTo(_disposablesForModel);
+            Model.manualOrRecipe.Subscribe(Subscribe).AddTo(_disposablesForModel);
             Model.inventory.Value.selectedItemView.Subscribe(SubscribeInventorySelectedItem)
-                .AddTo(_disposablesForSetData);
-            Model.itemCountPopup.Value.item.Subscribe(OnPopupItem).AddTo(_disposablesForSetData);
-            Model.itemCountPopup.Value.onClickCancel.Subscribe(OnClickClosePopup).AddTo(_disposablesForSetData);
-            Model.materials.ObserveAdd().Subscribe(OnAddStagedItems).AddTo(_disposablesForSetData);
-            Model.materials.ObserveRemove().Subscribe(OnRemoveStagedItems).AddTo(_disposablesForSetData);
-            Model.materials.ObserveReplace().Subscribe(_ => UpdateStagedItems()).AddTo(_disposablesForSetData);
-            Model.readyForCombination.Subscribe(SetActiveCombinationButton).AddTo(_disposablesForSetData);
-            Model.resultPopup.Subscribe(SubscribeResultPopup).AddTo(_disposablesForSetData);
-            Model.onClickCombination.Subscribe(RequestCombination).AddTo(_disposablesForSetData);
-            Model.onShowResultVFX.Subscribe(ShowResultVFX).AddTo(_disposablesForSetData);
+                .AddTo(_disposablesForModel);
+            Model.itemCountPopup.Value.item.Subscribe(OnPopupItem).AddTo(_disposablesForModel);
+            Model.itemCountPopup.Value.onClickCancel.Subscribe(OnClickClosePopup).AddTo(_disposablesForModel);
+            Model.equipmentMaterial.Subscribe(equipmentMaterialView.SetData).AddTo(_disposablesForModel);
+            Model.materials.ObserveAdd().Subscribe(OnAddStagedItems).AddTo(_disposablesForModel);
+            Model.materials.ObserveRemove().Subscribe(OnRemoveStagedItems).AddTo(_disposablesForModel);
+            Model.materials.ObserveReplace().Subscribe(_ => UpdateStagedItems()).AddTo(_disposablesForModel);
+            Model.showMaterialsCount.Subscribe(SubscribeShowMaterialsCount).AddTo(_disposablesForModel);
+            Model.readyForCombination.Subscribe(SetActiveCombinationButton).AddTo(_disposablesForModel);
+            Model.resultPopup.Subscribe(SubscribeResultPopup).AddTo(_disposablesForModel);
+            Model.onShowResultVFX.Subscribe(ShowResultVFX).AddTo(_disposablesForModel);
 
-            inventoryAndItemInfo.SetData(Model.inventory.Value, Model.itemInfo.Value);
+            inventory.SetData(Model.inventory.Value);
 
             UpdateStagedItems();
         }
 
         private void Clear()
         {
-            inventoryAndItemInfo.Clear();
+            inventory.Clear();
             Model = null;
-            _disposablesForSetData.DisposeAllAndClear();
+            _disposablesForModel.DisposeAllAndClear();
 
             foreach (var item in materialViews)
             {
@@ -176,8 +213,62 @@ namespace Nekoyume.UI
             }
         }
 
+        private void Subscribe(Model.Combination.ConsumablesOrEquipments value)
+        {
+            switch (value)
+            {
+                case UI.Model.Combination.ConsumablesOrEquipments.Consumables:
+                    switchEquipmentsButtonImage.sprite = Resources.Load<Sprite>("UI/Textures/button_black_02");
+                    switchConsumableButtonImage.sprite = Resources.Load<Sprite>("UI/Textures/button_blue_01");
+                    equipmentMaterialView.gameObject.SetActive(false);
+                    materialViewsPlusImageContainer.SetActive(false);
+                    break;
+                case UI.Model.Combination.ConsumablesOrEquipments.Equipments:
+                    switchEquipmentsButtonImage.sprite = Resources.Load<Sprite>("UI/Textures/button_blue_01");
+                    switchConsumableButtonImage.sprite = Resources.Load<Sprite>("UI/Textures/button_black_02");
+                    equipmentMaterialView.gameObject.SetActive(true);
+                    materialViewsPlusImageContainer.SetActive(true);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(value), value, null);
+            }
+            
+            inventory.Tooltip.Close();
+        }
+        
+        private void Subscribe(Model.Combination.ManualOrRecipe value)
+        {
+            switch (value)
+            {
+                case UI.Model.Combination.ManualOrRecipe.Manual:
+                    recipeButtonImage.sprite = Resources.Load<Sprite>("UI/Textures/button_black_02");
+                    manualCombination.SetActive(true);
+                    recipeCombination.SetActive(false);
+                    break;
+                case UI.Model.Combination.ManualOrRecipe.Recipe:
+                    recipeButtonImage.sprite = Resources.Load<Sprite>("UI/Textures/button_blue_01");
+                    manualCombination.SetActive(false);
+                    recipeCombination.SetActive(true);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(value), value, null);
+            }
+        }
+
         private void UpdateStagedItems(int startIndex = 0)
         {
+            if (Model.consumablesOrEquipments.Value == UI.Model.Combination.ConsumablesOrEquipments.Equipments)
+            {
+                if (Model.equipmentMaterial.Value == null)
+                {
+                    equipmentMaterialView.Clear();    
+                }
+                else
+                {
+                    equipmentMaterialView.SetData(Model.equipmentMaterial.Value);
+                }
+            }
+            
             var dataCount = Model.materials.Count;
             for (var i = startIndex; i < materialViews.Length; i++)
             {
@@ -200,14 +291,14 @@ namespace Nekoyume.UI
                 return;
             }
             
-            if (inventoryAndItemInfo.inventory.Tooltip.Model.target.Value == view.RectTransform)
+            if (inventory.Tooltip.Model.target.Value == view.RectTransform)
             {
-                inventoryAndItemInfo.inventory.Tooltip.Close();
+                inventory.Tooltip.Close();
 
                 return;
             }
 
-            inventoryAndItemInfo.inventory.Tooltip.Show(
+            inventory.Tooltip.Show(
                 view.RectTransform,
                 view.Model,
                 value => !view.Model.dimmed.Value,
@@ -215,7 +306,7 @@ namespace Nekoyume.UI
                 tooltip =>
                 {
                     Model.RegisterToStagedItems(tooltip.itemInformation.Model.item.Value);
-                    inventoryAndItemInfo.inventory.Tooltip.Close();
+                    inventory.Tooltip.Close();
                 });
         }
 
@@ -271,17 +362,27 @@ namespace Nekoyume.UI
             }
         }
 
+        private void SubscribeShowMaterialsCount(int value)
+        {
+            for (var i = 0; i < materialViews.Length; i++)
+            {
+                materialViews[i].gameObject.SetActive(i < value);
+            }
+        }
+
         private void SetActiveCombinationButton(bool isActive)
         {
             if (isActive)
             {
                 combinationButton.enabled = true;
                 combinationButtonImage.sprite = Resources.Load<Sprite>("UI/Textures/button_blue_01");
+                combinationButtonText.color = Color.white;
             }
             else
             {
                 combinationButton.enabled = false;
-                combinationButtonImage.sprite = Resources.Load<Sprite>("UI/Textures/button_black_01");
+                combinationButtonImage.sprite = Resources.Load<Sprite>("UI/Textures/button_gray_01");
+                combinationButtonText.color = ColorHelper.HexToColorRGB("92A3B5");
             }
         }
 
@@ -363,7 +464,7 @@ namespace Nekoyume.UI
             particleVFX.SetActive(false);
             resultItemVFX.SetActive(false);
             
-            var position = inventoryAndItemInfo.inventory.equipmentsButton.transform.position;
+            var position = inventory.equipmentsButton.transform.position;
 
             particleVFX.transform.position = _resultPopup.resultItem.transform.position;
             particleVFX.transform.DOMoveX(position.x, 0.6f);

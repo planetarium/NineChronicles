@@ -181,7 +181,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.63529414, g: 0.7058824, b: 0.8392157, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -433,7 +433,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: 91379fc7deccc4844b5b264f26b5c4c7, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 05217609a23df489a8a22d4447faa0c7, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -664,6 +664,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   iconImage: {fileID: 6810873669883129079}
   countText: {fileID: 6810814303074840121}
+  backgroundImage: {fileID: 6811526936287957493}
   editButton: {fileID: 8517881368494002061}
   minusButton: {fileID: 4881653107994014286}
   plusButton: {fileID: 5989712946912153782}

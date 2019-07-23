@@ -9,6 +9,7 @@ namespace Nekoyume.UI.Module
 {
     public class CountEditableItemView<T> : CountableItemView<T> where T : Model.CountEditableItem
     {
+        public Image backgroundImage;
         public Button editButton;
         public Button minusButton;
         public Button plusButton;
