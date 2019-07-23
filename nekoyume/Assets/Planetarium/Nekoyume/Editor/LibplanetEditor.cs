@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using Libplanet;
 using Nekoyume.BlockChain;
 using UnityEditor;
 using UnityEngine;
@@ -33,9 +34,10 @@ namespace Planetarium.Nekoyume.Editor
             // Todo. PlayerPrefs에 비밀키를 저장하는 방식을 파일에 쓰는 방식으로 바꾸는 것이 좋겠음.
             // Player 모드에서 관리되는 PlayerPrefs 보다는 파일을 관리하는 방식이 쉬워서?  
             PlayerPrefs.DeleteKey(AgentController.PlayerPrefsKeyOfAgentPrivateKey);
+            var agentKey = ByteUtil.Hex(AgentController.Agent.PrivateKey.ByteArray);
             for (var i = 0; i < 3; i++)
             {
-                PlayerPrefs.DeleteKey(string.Format(AvatarManager.PrivateKeyFormat, i));                
+                PlayerPrefs.DeleteKey(string.Format(AvatarManager.PrivateKeyFormat, agentKey, i));
             }
         }
     }   
