@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Nekoyume.Action;
 using Nekoyume.State;
 using UniRx;
-using UnityEngine;
 
 namespace Nekoyume.BlockChain
 {
@@ -34,7 +33,6 @@ namespace Nekoyume.BlockChain
         {
             Shop();
             Ranking();
-            
             RewardGold();
             CreateAvatar();
             DeleteAvatar();
@@ -43,6 +41,7 @@ namespace Nekoyume.BlockChain
             Sell();
             SellCancellation();
             Buy();
+            RankingReward();
         }
 
         public void Stop()
@@ -199,6 +198,14 @@ namespace Nekoyume.BlockChain
                     UpdateAgentState(eval);
                     UpdateCurrentAvatarState(eval);
                 }).AddTo(_disposables);
+        }
+
+        private void RankingReward()
+        {
+            ActionBase.EveryRender<RankingReward>()
+                .Where(ValidateEvaluationForAgentState)
+                .ObserveOnMainThread()
+                .Subscribe(UpdateAgentState).AddTo(_disposables);
         }
     }
 }

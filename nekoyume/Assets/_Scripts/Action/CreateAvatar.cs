@@ -1,11 +1,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
 using Libplanet;
 using Libplanet.Action;
-using Nekoyume.Data;
-using Nekoyume.Game.Item;
-using Nekoyume.Model;
 using Nekoyume.State;
 
 namespace Nekoyume.Action
@@ -53,15 +49,15 @@ namespace Nekoyume.Action
             }
 
             agentState.avatarAddresses.Add(index, avatarAddress);
-            avatarState = CreateAvatarState(name, avatarAddress);
+            avatarState = CreateAvatarState(name, avatarAddress, ctx.Signer);
 
             states = states.SetState(ctx.Signer, agentState);
             return states.SetState(avatarAddress, avatarState);
         }
 
-        private static AvatarState CreateAvatarState(string name, Address avatarAddress)
+        private static AvatarState CreateAvatarState(string name, Address avatarAddress, Address agentAddress)
         {
-            var avatarState = new AvatarState(avatarAddress, name);
+            var avatarState = new AvatarState(avatarAddress, agentAddress, name);
             return avatarState;
         }
     }

@@ -207,6 +207,17 @@ namespace Nekoyume.BlockChain
             while (true)
             {
                 var rewardGoldTx = RewardGold();
+
+                // 하루 블록 생성 개수를 2880개로 예상하고 하루 한번 보상을 제공
+                // 60 * 60 * 24 / 30 = 2880
+                var txs = new HashSet<Transaction<PolymorphicAction<ActionBase>>> {rewardGoldTx};
+                if ((_blocks?.Tip?.Index + 1) % 2880 == 0)
+                {
+                    Debug.LogWarning(_blocks?.Tip?.Index + 1);
+                    var rankingRewardTx = RankingReward();
+                    txs.Add(rankingRewardTx);
+                }
+
                 var task = Task.Run(() =>
                 {
                     var block = _blocks.MineBlock(Address);
@@ -225,7 +236,7 @@ namespace Nekoyume.BlockChain
                 }
                 else
                 {
-                    var invalidTxs = new HashSet<Transaction<PolymorphicAction<ActionBase>>> { rewardGoldTx };
+                    var invalidTxs = txs;
                     var retryActions = new HashSet<IImmutableList<PolymorphicAction<ActionBase>>>();
 
                     if (task.IsFaulted)
@@ -326,6 +337,24 @@ namespace Nekoyume.BlockChain
                 new RewardGold
                 {
                     gold = 1
+                }
+            };
+            return _blocks.MakeTransaction(
+                PrivateKey,
+                actions,
+                broadcast: false);
+        }
+
+        private Transaction<PolymorphicAction<ActionBase>> RankingReward()
+        {
+            var actions = new List<PolymorphicAction<ActionBase>>
+            {
+                new RankingReward
+                {
+                    gold1 = 10,
+                    gold2 = 5,
+                    gold3 = 3,
+                    agentAddresses = States.Instance.rankingState.Value.GetAgentAddresses(3, null),
                 }
             };
             return _blocks.MakeTransaction(
