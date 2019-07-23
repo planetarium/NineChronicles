@@ -3,12 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Manager;
-using Nekoyume.Action;
 using Nekoyume.BlockChain;
-using Nekoyume.Data;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
-using Nekoyume.Game.Item;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using UniRx;
@@ -433,7 +430,7 @@ namespace Nekoyume.UI
             Model.resultPopup.Value = new Model.CombinationResultPopup(isSuccess
                 ? States.Instance.currentAvatarState.Value.inventory.TryGetNonFungibleItemFromLast(
                     out var outNonFungibleItem)
-                    ? outNonFungibleItem
+                    ? new CountableItem(outNonFungibleItem, 1)
                     : null
                 : null)
             {
@@ -477,7 +474,7 @@ namespace Nekoyume.UI
                 ? inventory.consumablesButton.transform.position
                 : inventory.equipmentsButton.transform.position;
 
-            particleVFX.transform.position = _resultPopup.resultItem.transform.position;
+            particleVFX.transform.position = _resultPopup.itemInformation.iconArea.itemView.transform.position;
             particleVFX.transform.DOMoveX(position.x, 0.6f);
             particleVFX.transform.DOMoveY(position.y, 0.6f).SetEase(Ease.InCubic)
                 .onComplete = () => { resultItemVFX.SetActive(true); };

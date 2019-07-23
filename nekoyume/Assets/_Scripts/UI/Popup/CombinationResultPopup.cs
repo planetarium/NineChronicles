@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Assets.SimpleLocalization;
-using Nekoyume.Data.Table;
 using Nekoyume.Game.Controller;
-using Nekoyume.Game.Item;
 using Nekoyume.UI.Module;
 using UniRx;
 using UnityEngine;
@@ -14,19 +12,16 @@ namespace Nekoyume.UI
     public class CombinationResultPopup : PopupWidget
     {
         public Text titleText;
-        public GameObject resultItem;
-        public SimpleCountableItemView resultItemView;
-        public Text resultItemNameText;
-        public Image[] resultItemElementalImages;
-        public Text resultItemDescriptionText;
+        public ItemInformation itemInformation;
         public Text materialText;
         public SimpleCountableItemView[] materialItems;
         public Button submitButton;
         public Text submitButtonText;
         public GameObject resultItemVfx;
         
-        private readonly List<IDisposable> _disposablesForAwake = new List<IDisposable>();
-        private Model.CombinationResultPopup _data;
+        private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
+        
+        public Model.CombinationResultPopup Model { get; private set; }
 
         #region Mono
 
@@ -36,20 +31,20 @@ namespace Nekoyume.UI
 
             this.ComponentFieldsNotNullTest();
 
+            materialText.text = LocalizationManager.Localize("UI_COMBINATION_MATERIALS");
             submitButtonText.text = LocalizationManager.Localize("UI_OK");
             
             submitButton.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
-                    _data.onClickSubmit.OnNext(_data);
+                    Model.onClickSubmit.OnNext(Model);
                     AudioController.PlayClick();
                 })
-                .AddTo(_disposablesForAwake);
+                .AddTo(gameObject);
         }
 
         private void OnDestroy()
         {
-            _disposablesForAwake.DisposeAllAndClear();
             Clear();
         }
 
@@ -76,65 +71,47 @@ namespace Nekoyume.UI
                 return;
             }
             
-            _data = data;
+            _disposablesForModel.DisposeAllAndClear();
+            Model = data;
+            Model.itemInformation.Subscribe(itemInformation.SetData).AddTo(_disposablesForModel);
             
             UpdateView();
         }
         
         private void Clear()
         {
-            _data = null;
+            _disposablesForModel.DisposeAllAndClear();
+            Model = null;
             
             UpdateView();
         }
 
         private void UpdateView()
         {
-            if (ReferenceEquals(_data, null))
+            if (ReferenceEquals(Model, null))
             {
                 titleText.text = LocalizationManager.Localize("UI_COMBINATION_ERROR");
-                resultItemView.Clear();
-                resultItemView.gameObject.SetActive(true);
-                resultItemNameText.gameObject.SetActive(false);
-                foreach (var image in resultItemElementalImages)
-                {
-                    image.gameObject.SetActive(false);
-                }
-                resultItemDescriptionText.text = "";
-                foreach (var item in materialItems)
-                {
-                    item.Clear();
-                }
-
+                itemInformation.gameObject.SetActive(false);
+                
                 return;
             }
             
             resultItemVfx.SetActive(false);
-            if (_data.isSuccess)
+            if (Model.isSuccess)
             {
-                var item = (ItemUsable) _data.item.Value;
-                
                 titleText.text = LocalizationManager.Localize("UI_COMBINATION_SUCCESS");
-                resultItemView.SetData(_data);
-                resultItemNameText.text = item.Data.LocalizedName;
-                SetElemental(item.Data.elemental, item.Data.grade);
-                resultItemDescriptionText.text = item.ToItemInfo();
-                resultItem.SetActive(true);
-                materialText.text = LocalizationManager.Localize("UI_COMBINATION_MATERIALS");
+                itemInformation.gameObject.SetActive(true);
                 resultItemVfx.SetActive(true);
-
                 AudioController.instance.PlaySfx(AudioController.SfxCode.Success);
             }
             else
             {
                 titleText.text = LocalizationManager.Localize("UI_COMBINATION_FAIL");
-                resultItem.SetActive(false);
-                materialText.text = LocalizationManager.Localize("UI_COMBINATION_MATERIALS");
-                
+                itemInformation.gameObject.SetActive(false);
                 AudioController.instance.PlaySfx(AudioController.SfxCode.Failed);
             }
 
-            using (var e = _data.materialItems.GetEnumerator())
+            using (var e = Model.materialItems.GetEnumerator())
             {
                 foreach (var item in materialItems)
                 {
@@ -149,35 +126,6 @@ namespace Nekoyume.UI
                         item.SetData(data);
                     }
                 }
-            }
-        }
-
-        private void SetElemental(Elemental.ElementalType type, int count)
-        {
-            var sprite = Elemental.GetSprite(type);
-            if (ReferenceEquals(sprite, null))
-            {
-                foreach (var image in resultItemElementalImages)
-                {
-                    image.gameObject.SetActive(false);
-                }
-                
-                return;
-            }
-            
-            for (var i = 0; i < resultItemElementalImages.Length; i++)
-            {
-                var image = resultItemElementalImages[i];
-                if (i < count)
-                {
-                    image.overrideSprite = sprite;
-                    image.SetNativeSize();
-                    image.gameObject.SetActive(true);
-                    
-                    continue;
-                }
-                
-                image.gameObject.SetActive(false);
             }
         }
     }
