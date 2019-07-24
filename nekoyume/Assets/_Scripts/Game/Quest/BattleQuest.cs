@@ -17,7 +17,7 @@ namespace Nekoyume.Game.Quest
         {
             if (Complete)
                 return;
-            Complete = player.worldStage >= goal;
+            Complete = player.worldStage > goal;
         }
 
         public override string ToInfo()
