@@ -37,7 +37,7 @@ namespace Nekoyume.UI.Module
                 .Subscribe(_ =>
                 {
                     AudioController.PlaySelect();
-                    Model.onClick.OnNext(this);
+                    Model?.onClick.OnNext(this);
                 })
                 .AddTo(_disposablesForAwake);
             buttonClickStream
@@ -45,7 +45,7 @@ namespace Nekoyume.UI.Module
                 .Where(_ => _.Count >= 2)
                 .Subscribe(_ =>
                 {
-                    Model.onDoubleClick.OnNext(this);
+                    Model?.onDoubleClick.OnNext(this);
                 }).AddTo(_disposablesForAwake);
         }
 
@@ -66,7 +66,7 @@ namespace Nekoyume.UI.Module
                 Clear();
                 return;
             }
-
+            
             base.SetData(model);
             _disposablesForSetData.DisposeAllAndClear();
             Model.covered.Subscribe(SetCover).AddTo(_disposablesForSetData);

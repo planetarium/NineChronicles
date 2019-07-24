@@ -38,15 +38,9 @@ namespace Nekoyume.UI.Scroller
             {
                 var index = firstIndex + i;
                 var item = items[i];
-                if (index < dataCount)
-                {
-                    item.SetData(dataList[index]);
-                    item.gameObject.SetActive(true);
-                }
-                else
-                {
-                    item.gameObject.SetActive(false);
-                }
+
+                item.SetData((index < dataCount) ? dataList[index] : null);
+                item.gameObject.SetActive(true);
             }
         }
 
