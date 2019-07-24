@@ -179,11 +179,10 @@ namespace Nekoyume.Game
                 }
             }
 
-            yield return StartCoroutine(CoDialog(log.worldStage));
-            yield return StartCoroutine(CoStageEnd(log.result));
+            yield return StartCoroutine(CoStageEnd(log));
         }
 
-        private IEnumerator CoDialog(int worldStage)
+        private static IEnumerator CoDialog(int worldStage)
         {
             var stageDialogs = Tables.instance.StageDialogs.Values
                 .Where(i => i.stageId == worldStage)
@@ -224,11 +223,13 @@ namespace Nekoyume.Game
             }
         }
 
-        public IEnumerator CoStageEnd(BattleLog.Result result)
+        private IEnumerator CoStageEnd(BattleLog log)
         {
             yield return new WaitForSeconds(2.0f);
-            if (result == BattleLog.Result.Win)
+            if (log.result == BattleLog.Result.Win)
             {
+                yield return StartCoroutine(CoDialog(log.worldStage));
+
                 var playerCharacter = GetPlayer();
                 playerCharacter.ShowSpeech("PLAYER_WIN");
                 yield return new WaitForSeconds(1.0f);
@@ -238,7 +239,7 @@ namespace Nekoyume.Game
             {
                 objectPool.ReleaseAll();
             }
-            Widget.Find<BattleResult>().Show(result, repeatStage);
+            Widget.Find<BattleResult>().Show(log.result, repeatStage);
 
             yield return null;
         }
