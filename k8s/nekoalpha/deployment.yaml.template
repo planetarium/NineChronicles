@@ -1,0 +1,32 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: miner
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: miner
+    spec:
+      nodeSelector:
+        "beta.kubernetes.io/os": linux
+      containers:
+      - name: miner
+        image: DOCKER_IMAGE_NAME
+        command:
+          - "/app/nekoyume"
+          - "--host=MINER_IP"
+          - "--port=31234"
+          - "--private-key=NEKOALPHA_PRIVATE_KEY"
+          - "--storage-path=/data/planetarium-VERSION_INFO_VALUE"
+        ports:
+        - containerPort: 31234
+          name: miner
+        volumeMounts:
+          - name: volume
+            mountPath: /data
+      volumes:
+        - name: volume
+          persistentVolumeClaim:
+            claimName: azurefile

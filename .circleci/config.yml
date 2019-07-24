@@ -1,49 +1,95 @@
-version: 2
-jobs:
-  build:
+version: 2.1
+orbs:
+  azure-acr: circleci/azure-acr@0.1.2
+  azure-aks: circleci/azure-aks@0.2.0
+  kubernetes: circleci/kubernetes@0.3.0
+
+executors:
+  default:
     machine:
-      image: circleci/classic:edge
       docker_layer_caching: true
 
+jobs:
+  deploy-application:
+    executor: azure-aks/default
+    parameters:
+      cluster-name:
+        description: |
+          Name of the AKS cluster
+        type: string
+      docker-image-name:
+        description: |
+          Name of the docker image to be deployed
+        type: string
+      version-info:
+        description: |
+          App version information
+        type: string
+      resource-group:
+        description: |
+          Resource group
+        type: string
+        default: ""
     steps:
       - checkout
+      - azure-aks/update-kubeconfig-with-credentials:
+          perform-login: true
+          install-kubectl: true
+          cluster-name: << parameters.cluster-name >>
+          resource-group: << parameters.resource-group >>
       - run:
-          name: Set env
-          command: &set_docker_env |
-            echo 'export DOCKER_IMAGE_NAME="$DOCKER_SERVER/$CIRCLE_PROJECT_REPONAME"' >> $BASH_ENV
-            echo 'export DOCKER_IMAGE_NAME_WITH_TAG="$DOCKER_IMAGE_NAME:git-$CIRCLE_SHA1"' >> $BASH_ENV
-      - run:
-          name: Build docker image
-          command:
-            docker build -t "$DOCKER_IMAGE_NAME_WITH_TAG" --build-arg ulf="$ULF" .
-  deploy:
-    machine:
-      image: circleci/classic:edge
-      docker_layer_caching: true
-
-    steps:
-      - run:
-          name: Set env
-          command: *set_docker_env
-      - run:
-          name : Login docker server
-          command:
-            echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin "$DOCKER_SERVER"
-      - run:
-          name: Push docker image
+          name: Create deployment & service manifest
           command: |
-            docker tag $DOCKER_IMAGE_NAME_WITH_TAG $DOCKER_IMAGE_NAME:latest
-            docker push $DOCKER_IMAGE_NAME_WITH_TAG
-            docker push $DOCKER_IMAGE_NAME:latest
+            CLUSTER_RG=$(az aks show --resource-group << parameters.resource-group >> --name << parameters.cluster-name >> --query nodeResourceGroup -o tsv)
+            MINER_IP=$(az network public-ip show --resource-group "$CLUSTER_RG" --name nekoalpha-miner-ip --query ipAddress --output tsv )
+            < k8s/nekoalpha/deployment.yaml.template \
+            sed "\
+            s|DOCKER_IMAGE_NAME|<< parameters.docker-image-name >>|g;\
+            s|VERSION_INFO_VALUE|<< parameters.version-info >>|g;\
+            s|MINER_IP|$MINER_IP|g;\
+            s|NEKOALPHA_PRIVATE_KEY|$NEKOALPHA_PRIVATE_KEY|g" > k8s/nekoalpha/deployment.yaml
+            < k8s/nekoalpha/service.yaml.template \
+            sed "s|MINER_IP|$MINER_IP|g" > k8s/nekoalpha/service.yaml
+      - kubernetes/create-or-update-resource:
+          resource-file-path: "k8s/nekoalpha/storageclass.yaml"
+      - kubernetes/create-or-update-resource:
+          resource-file-path: "k8s/nekoalpha/pvc-role.yaml"
+      - kubernetes/create-or-update-resource:
+          resource-file-path: "k8s/nekoalpha/pvc.yaml"
+      - kubernetes/create-or-update-resource:
+          resource-file-path: "k8s/nekoalpha/deployment.yaml"
+          get-rollout-status: true
+          resource-name: deployment/miner
+      - kubernetes/create-or-update-resource:
+          resource-file-path: "k8s/nekoalpha/service.yaml"
 
 workflows:
   version: 2
   build_and_deploy:
     jobs:
-      - build
-      - deploy:
+      - azure-acr/build-and-push-image:
+          name: build-and-push-image
+          tag: "git-$CIRCLE_SHA1"
+          login-server-name: "$DOCKER_SERVER"
+          registry-name: "planetariumtest"
+          repo: $CIRCLE_PROJECT_REPONAME
+          extra-build-args: '--build-arg ulf="$ULF"'
+          executor: default
+
+      - azure-aks/create-cluster:
+          name: create-cluster
+          cluster-name: "nekoyume-alpha"
+          resource-group: "nekoyume-alpha"
           requires:
-            - build
+            - build-and-push-image
           filters:
             branches:
               only: master
+
+      - deploy-application:
+          cluster-name: "nekoyume-alpha"
+          resource-group: "nekoyume-alpha"
+          docker-image-name: "$DOCKER_SERVER/$CIRCLE_PROJECT_REPONAME:git-$CIRCLE_SHA1"
+          version-info: "$CIRCLE_SHA1"
+          requires:
+            - create-cluster
