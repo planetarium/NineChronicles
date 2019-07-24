@@ -13,7 +13,7 @@ namespace Nekoyume.Game.Quest
         {
         }
 
-        public override void Check(Player player, List<List<ItemBase>> rewards)
+        public override void Check(Player player, List<ItemBase> items)
         {
             if (Complete)
                 return;

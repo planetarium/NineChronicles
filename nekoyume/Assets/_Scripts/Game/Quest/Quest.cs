@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Nekoyume.Data;
 using Nekoyume.Game.Item;
 using Nekoyume.Model;
@@ -20,7 +21,7 @@ namespace Nekoyume.Game.Quest
         public decimal reward;
         public bool Complete { get; protected set; }
 
-        public abstract void Check(Player player, List<List<ItemBase>> rewards);
+        public abstract void Check(Player player, List<ItemBase> items);
         public abstract string ToInfo();
     }
 
@@ -41,15 +42,21 @@ namespace Nekoyume.Game.Quest
                 var quest = new CollectQuest(collectData);
                 quests.Add(quest);
             }
+
+            foreach (var combinationData in Tables.instance.CombinationQuest.Values)
+            {
+                var quest = new CombinationQuest(combinationData);
+                quests.Add(quest);
+            }
         }
 
         private readonly List<Quest> quests;
 
-        public void Update(Player player, List<List<ItemBase>> rewards)
+        public void Update(Player player, List<ItemBase> items)
         {
             foreach (var quest in quests)
             {
-                quest.Check(player, rewards);
+                quest.Check(player, items);
             }
         }
 
@@ -61,6 +68,13 @@ namespace Nekoyume.Game.Quest
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        public void UpdateCombinationQuest(ItemUsable itemUsable)
+        {
+            var quest = quests.OfType<CombinationQuest>()
+                .FirstOrDefault(i => i.cls == itemUsable.Data.cls && !i.Complete);
+            quest?.Check(null, new List<ItemBase> {itemUsable});
         }
     }
 }

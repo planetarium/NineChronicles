@@ -8,15 +8,15 @@ using Nekoyume.Model;
 namespace Nekoyume.Game.Quest
 {
     [Serializable]
-    public class CollectQuest : Quest
+    public class CombinationQuest : Quest
     {
-        public int itemId;
         public int current;
+        public string cls;
 
-        public CollectQuest(Data.Table.Quest data) : base(data)
+        public CombinationQuest(Data.Table.Quest data) : base(data)
         {
-            var collectQuest = (Data.Table.CollectQuest) data;
-            itemId = collectQuest.itemId;
+            var questData = (Data.Table.CombinationQuest) data;
+            cls = questData.cls;
         }
 
         public override void Check(Player player, List<ItemBase> items)
@@ -29,12 +29,12 @@ namespace Nekoyume.Game.Quest
 
         public override string ToInfo()
         {
-            return LocalizationManager.LocalizeCollectQuestInfo(itemId, current, goal);
+            return LocalizationManager.LocalizeCombinationQuestInfo(cls, current, goal);
         }
 
-        private void Update(List<ItemBase> rewards)
+        private void Update(List<ItemBase> items)
         {
-            current += rewards.Count(i => i.Data.id == itemId);
+            current += items.Count(i => i.Data.cls == cls);
         }
     }
 }

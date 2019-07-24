@@ -26,6 +26,7 @@ namespace Nekoyume.Data
         public Table<StageDialog> StageDialogs { get; private set; }
         public Table<Quest> Quest { get; private set; }
         public Table<CollectQuest> CollectQuest { get; private set; }
+        public Table<CombinationQuest> CombinationQuest { get; private set; }
 
         protected override void Awake()
         {
@@ -71,6 +72,8 @@ namespace Nekoyume.Data
             Load(Quest, "DataTable/battle_quest");
             CollectQuest = new Table<CollectQuest>();
             Load(CollectQuest, "DataTable/collect_quest");
+            CombinationQuest = new Table<CombinationQuest>();
+            Load(CombinationQuest, "DataTable/combination_quest");
         }
 
         private void Load(ITable table, string filename)

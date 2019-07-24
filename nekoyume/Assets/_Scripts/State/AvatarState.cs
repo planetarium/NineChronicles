@@ -63,14 +63,14 @@ namespace Nekoyume.State
             agentAddress = avatarState.agentAddress;
         }
         
-        public void Update(Player player, List<List<ItemBase>> rewards)
+        public void Update(Player player, List<ItemBase> items)
         {
             characterId = player.characterId;
             level = player.level;
             exp = player.exp;
             inventory = player.inventory;
             worldStage = player.worldStage;
-            questList.Update(player, rewards);
+            questList.Update(player, items);
         }
     }
 }

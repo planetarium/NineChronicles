@@ -25,7 +25,8 @@ namespace Nekoyume.Battle
         private BattleLog.Result _result;
         private int _totalWave;
         public SimplePriorityQueue<CharacterBase> Characters;
-        public readonly List<List<ItemBase>> waveRewards;
+        private readonly List<List<ItemBase>> _waveRewards;
+        public List<ItemBase> rewards => _waveRewards.SelectMany(i => i).ToList();
         public const float TurnPriority = 100f;
 
         public Simulator(IRandom random, AvatarState avatarState, List<Food> foods, int worldStage, SkillBase skill=null)
@@ -38,7 +39,7 @@ namespace Nekoyume.Battle
             Player.Use(foods);
             if (!ReferenceEquals(skill, null))
                 Player.OverrideSkill(skill);
-            waveRewards = new List<List<ItemBase>>();
+            _waveRewards = new List<List<ItemBase>>();
             SetWave();
         }
 
@@ -67,7 +68,7 @@ namespace Nekoyume.Battle
                     if (!Player.targets.Any())
                     {
                         var index = Math.Min(_waves.IndexOf(wave), lastWave);
-                        var items = waveRewards[index];
+                        var items = _waveRewards[index];
                         Player.GetExp(wave.EXP, true);
 
                         var dropBox = new DropBox
@@ -84,7 +85,7 @@ namespace Nekoyume.Battle
                             }
 
                             _result = BattleLog.Result.Win;
-                            var rewards = waveRewards.SelectMany(i => i).ToList();
+                            var rewards = _waveRewards.SelectMany(i => i).ToList();
                             Player.GetRewards(rewards);
                             var getReward = new GetReward
                             {
@@ -192,7 +193,7 @@ namespace Nekoyume.Battle
                     }
                 }
             }
-            waveRewards.Add(items);
+            _waveRewards.Add(items);
         }
     }
 }

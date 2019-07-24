@@ -209,6 +209,19 @@ namespace Assets.SimpleLocalization
             return string.Format(pattern, itemName, current, goal);
         }
 
+        public static string LocalizeCombinationQuestInfo(string type, int current, int goal)
+        {
+            var localizationKey = "QUEST_COMBINATION_INFO";
+            var pattern = Localize(localizationKey);
+            var itemType = LocalizeItemType(type);
+            return string.Format(pattern, itemType, current, goal);
+        }
+
+        private static string LocalizeItemType(string type)
+        {
+            return Localize($"ITEM_TYPE_{type}");
+        }
+
         /// <summary>
         /// Get localized value by localization key.
         /// </summary>
@@ -274,6 +287,5 @@ namespace Assets.SimpleLocalization
                 .Replace("[Newline]", "[newline]")
                 .Replace("[Comma]", "[comma]");
         }
-
     }
 }
