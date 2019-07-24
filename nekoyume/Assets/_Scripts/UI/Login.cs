@@ -4,6 +4,7 @@ using Nekoyume.BlockChain;
 using Nekoyume.Game.Controller;
 using UniRx;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
@@ -58,6 +59,11 @@ namespace Nekoyume.UI
                         Game.Event.OnNestEnter.Invoke();
                         Show();
                         Find<GrayLoadingScreen>()?.Close();
+
+                        // 강제로 레이아웃 정렬 (업데이트)
+                        var layout = slots[index].GetComponentInChildren<HorizontalLayoutGroup>();
+                        layout.CalculateLayoutInputHorizontal();
+                        layout.SetLayoutHorizontal();
                     });
             };
 
