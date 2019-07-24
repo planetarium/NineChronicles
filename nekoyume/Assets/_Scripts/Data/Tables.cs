@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Item;
 using Nekoyume.Model;
@@ -24,6 +25,7 @@ namespace Nekoyume.Data
         public Table<Setting> Settings { get; private set; }
         public Table<StageDialog> StageDialogs { get; private set; }
         public Table<Quest> Quest { get; private set; }
+        public Table<CollectQuest> CollectQuest { get; private set; }
 
         protected override void Awake()
         {
@@ -67,6 +69,8 @@ namespace Nekoyume.Data
             Load(StageDialogs, "DataTable/stage_dialog");
             Quest = new Table<Quest>();
             Load(Quest, "DataTable/battle_quest");
+            CollectQuest = new Table<CollectQuest>();
+            Load(CollectQuest, "DataTable/collect_quest");
         }
 
         private void Load(ITable table, string filename)

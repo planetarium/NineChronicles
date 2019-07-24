@@ -2,17 +2,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Nekoyume.Data;
+using Nekoyume.Game.Item;
 using Nekoyume.Model;
 
 namespace Nekoyume.Game.Quest
 {
-    public interface IQuest
-    {
-        void Check(Player player);
-    }
-
     [Serializable]
-    public abstract class Quest : IQuest
+    public abstract class Quest
     {
         protected Quest(Data.Table.Quest data)
         {
@@ -24,7 +20,7 @@ namespace Nekoyume.Game.Quest
         public decimal reward;
         public bool Complete { get; protected set; }
 
-        public abstract void Check(Player player);
+        public abstract void Check(Player player, List<List<ItemBase>> rewards);
         public abstract string ToInfo();
     }
 
@@ -39,15 +35,21 @@ namespace Nekoyume.Game.Quest
                 var quest = new BattleQuest(data);
                 quests.Add(quest);
             }
+
+            foreach (var collectData in Tables.instance.CollectQuest.Values)
+            {
+                var quest = new CollectQuest(collectData);
+                quests.Add(quest);
+            }
         }
 
         private readonly List<Quest> quests;
 
-        public void Update(Player player)
+        public void Update(Player player, List<List<ItemBase>> rewards)
         {
             foreach (var quest in quests)
             {
-                quest.Check(player);
+                quest.Check(player, rewards);
             }
         }
 

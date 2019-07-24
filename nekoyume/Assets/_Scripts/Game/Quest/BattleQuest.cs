@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using Assets.SimpleLocalization;
+using Nekoyume.Game.Item;
 using Nekoyume.Model;
 
 namespace Nekoyume.Game.Quest
@@ -11,7 +13,7 @@ namespace Nekoyume.Game.Quest
         {
         }
 
-        public override void Check(Player player)
+        public override void Check(Player player, List<List<ItemBase>> rewards)
         {
             if (Complete)
                 return;

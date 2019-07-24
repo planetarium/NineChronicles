@@ -196,9 +196,17 @@ namespace Assets.SimpleLocalization
 
         public static string LocalizeBattleQuestInfo(int stage)
         {
-            var localizationKey = "Info";
+            var localizationKey = "QUEST_BATTLE_INFO";
             var pattern = Localize(localizationKey);
             return string.Format(pattern, stage);
+        }
+
+        public static string LocalizeCollectQuestInfo(int itemId, int current, int goal)
+        {
+            var localizationKey = "QUEST_COLLECT_INFO";
+            var pattern = Localize(localizationKey);
+            var itemName = LocalizeItemName(itemId);
+            return string.Format(pattern, itemName, current, goal);
         }
 
         /// <summary>
@@ -266,5 +274,6 @@ namespace Assets.SimpleLocalization
                 .Replace("[Newline]", "[newline]")
                 .Replace("[Comma]", "[comma]");
         }
+
     }
 }

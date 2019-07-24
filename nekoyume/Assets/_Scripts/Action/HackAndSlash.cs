@@ -77,7 +77,7 @@ namespace Nekoyume.Action
             
             var simulator = new Simulator(ctx.Random, avatarState, foods, stage);
             var player = simulator.Simulate();
-            avatarState.Update(player);
+            avatarState.Update(player, simulator.waveRewards);
             avatarState.battleLog = simulator.Log;
             avatarState.updatedAt = DateTimeOffset.UtcNow;
             if (avatarState.worldStage > stage)

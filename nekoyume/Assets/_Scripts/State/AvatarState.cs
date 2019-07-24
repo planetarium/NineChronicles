@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Libplanet;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Quest;
@@ -62,14 +63,14 @@ namespace Nekoyume.State
             agentAddress = avatarState.agentAddress;
         }
         
-        public void Update(Player player)
+        public void Update(Player player, List<List<ItemBase>> rewards)
         {
             characterId = player.characterId;
             level = player.level;
             exp = player.exp;
             inventory = player.inventory;
             worldStage = player.worldStage;
-            questList.Update(player);
+            questList.Update(player, rewards);
         }
     }
 }
