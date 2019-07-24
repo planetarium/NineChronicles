@@ -150,12 +150,6 @@ namespace Nekoyume.UI
 
         private void ChangeChapter(int chapterId)
         {
-            if (_currentChapter != null
-                && _currentChapter.id == chapterId)
-            {
-                return;
-            }
-
             if (!Tables.instance.WorldChapter.TryGetValue(chapterId, out _currentChapter))
             {
                 throw new KeyNotFoundException($"chapterId({chapterId})");
