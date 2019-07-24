@@ -8,7 +8,7 @@ from operator import itemgetter
 MONSTER_PARTS_DROP_RATE = 0.05
 STAGES_PER_WORLD = 50
 STAGES_PER_MONSTER_LV = 1
-BASE_EXP = 30
+BASE_EXP = 50
 ADDITIONAL_EXP_PER_STAGE = 7
 MIN_WAVES = 3
 MAX_WAVES = 6
@@ -21,9 +21,9 @@ MAX_WAVES = 6
 # 203000, 203001, 203002, 203003, 203004, 203005, 203006 멧돼지 (W2)
 # 
 WORLD_MONSTERS = {
-    1: [204000, 204001, 204002, 204003, 204004, 201000, 201001, 201002, 201004, 202000, 202001, 202002, 202003, 202004, 202005, 202006],
-    2: [204000, 204001, 204002, 204003, 204004, 203000, 203001, 203002, 203003, 203004, 203005, 203006],
-    3: [204000, 204001, 204002, 204003, 204004, 201000, 201001, 201002, 201003, 202000, 202001, 201000, 201001, 201002, 201003, 201000, 201001],
+    1: [204000, 204001, 204002, 204003, 204004, 201000, 201001, 201002, 201004, 202001, 202002, 202003, 202004, 202005],
+    2: [204000, 204001, 204002, 204003, 204004, 203002, 203003, 203005],
+    3: [204000, 204001, 204002, 204003, 204004, 203002, 202003,  203003, 202004, 202005, 203005],
 }
 
 # monster_id -> parts_id
@@ -60,19 +60,53 @@ MONSTER_PARTS = {
 # extra material drops
 MATERIAL_LOCATION = {
     1: {
-        5:  303000,
-        10: 303100,
-        15: 303200,
-        20: 303001,
-        25: 303101,
-        30: 303201,
-        35: 303002,
-        40: 303102,
-        45: 303202
+        3: 303000,
+        5: 302000,
+        6: 303100,
+        9: 303200,
+        10: 302001,
+        12: 303300,
+        15: 303400,
+        18: 303001,
+        20: 302002,
+        21: 303101,
+        24: 303201,
+        25: 302003,
+        27: 303301,
+        30: 303401,
+        34: 303102,
+        35: 302004,
+        38: 303202,
+        40: 302005,
+        42: 303302,
+        44: 303402,
+        45: 302006,
+        48: 303002,
+        50: 302009
     },
     2: {
+        9: 303102,
+        10: 302007,
+        19: 303202,
+        20: 302008,
+        29: 303302,
+        30: 302009,
+        39: 303402,
+        40: 302009,
+        49: 303002,
+        50: 302009
     },
     3: {
+        9: 303102,
+        10: 302000,
+        19: 303202,
+        20: 302003,
+        29: 303302,
+        30: 302004,
+        39: 303402,
+        40: 302005,
+        49: 303002,
+        50: 302006
     }
 }
 
@@ -91,12 +125,18 @@ BOSS_LOCATION = {
         50:202007
     },
     2: {
-        5: 203005,
         10: 203005,
-        20: 203007
+        20: 203005,
+        30: 203007,
+        40: 203007,
+        50: 203007        
     },
     3: {
-        10: 202007
+        10: 202007,
+        20: 203007,
+        30: 203007,
+        40: 203007,
+        50: 203007
     },
 }
 
@@ -161,17 +201,10 @@ for world, monster_list in WORLD_MONSTERS.items():
                 if (idx == 0) and is_boss_wave:
                     monster_picked.append(boss_id)
                 else:
-                    random_monster = random.choice(
-                        monster_list[
-                            0
-                            :
-                            math.ceil(
-                                len(monster_list) * (
-                                    float(stage)/(STAGES_PER_WORLD+1)
-                                )
-                            )
-                        ]
+                    last_monster = math.ceil(
+                        len(monster_list) * (float(stage)/(STAGES_PER_WORLD+1))
                     )
+                    random_monster = random.choice(monster_list[max(0, last_monster - 6):last_monster])
                     monster_picked.append(random_monster)
                     monster_parts.append(MONSTER_PARTS[random_monster])
 
@@ -186,7 +219,7 @@ for world, monster_list in WORLD_MONSTERS.items():
             for i in range(0, 4):
                 if (i < len(monster_ids)):
                     mid = monster_ids[i]
-                    row += [mid, level, '', monster_count[mid]]
+                    row += [mid, level + (1 if is_boss_wave else 0), '', monster_count[mid]]
                 else:
                     row += ['', '', '', '']
             if is_last_wave: # if last wave, check if boss, add exp and reward
