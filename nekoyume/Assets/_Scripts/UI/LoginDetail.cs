@@ -216,15 +216,16 @@ namespace Nekoyume.UI
         private void OnDidAvatarStateLoaded(AvatarState avatarState)
         {
             if (palette.activeInHierarchy)
-            {
-                BackClick();
-            }
-            else
-            {
-                Game.Event.OnRoomEnter.Invoke();
-                Find<Login>().Close();
                 Close();
-            }
+            
+            EnterRoom();
+        }
+        
+        private void EnterRoom()
+        {
+            Game.Event.OnRoomEnter.Invoke();
+            Find<Login>()?.Close();
+            Close();
         }
     }
 }
