@@ -194,6 +194,13 @@ namespace Assets.SimpleLocalization
             return Localize(localizationKey);
         }
 
+        public static string LocalizeBattleQuestInfo(int stage)
+        {
+            var localizationKey = "Info";
+            var pattern = Localize(localizationKey);
+            return string.Format(pattern, stage);
+        }
+
         /// <summary>
         /// Get localized value by localization key.
         /// </summary>

@@ -1,4 +1,5 @@
 using System;
+using Assets.SimpleLocalization;
 using Nekoyume.Model;
 
 namespace Nekoyume.Game.Quest
@@ -19,7 +20,7 @@ namespace Nekoyume.Game.Quest
 
         public override string ToInfo()
         {
-            return $"스테이지 {goal} 클리어 하기";
+            return LocalizationManager.LocalizeBattleQuestInfo(goal);
         }
     }
 }
