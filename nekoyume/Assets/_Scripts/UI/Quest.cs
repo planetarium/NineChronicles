@@ -1,12 +1,13 @@
 using Nekoyume.BlockChain;
 using Nekoyume.Game.Character;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
     public class Quest : Widget
     {
-        public VerticalLayoutGroup verticalLayoutGroup;
+        public ScrollRect list;
         public QuestInfo questInfo;
 
         private Player _player;
@@ -15,11 +16,10 @@ namespace Nekoyume.UI
         {
             var questList = States.Instance.currentAvatarState.Value.questList;
             _player = Game.Game.instance.stage.GetPlayer();
-            var parent = verticalLayoutGroup.transform;
             questInfo.gameObject.SetActive(true);
             foreach (var quest in questList)
             {
-                var newInfo = Instantiate(questInfo, parent);
+                var newInfo = Instantiate(questInfo, list.content);
                 newInfo.Set(quest);
             }
             questInfo.gameObject.SetActive(false);
@@ -28,9 +28,8 @@ namespace Nekoyume.UI
 
         public override void Close()
         {
-            for (var i = 0; i < verticalLayoutGroup.transform.childCount; i++)
+            foreach (Transform child in  list.content.transform)
             {
-                var child = verticalLayoutGroup.transform.GetChild(i);
                 Destroy(child.gameObject);
             }
 
