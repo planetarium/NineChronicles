@@ -10,9 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 471357627994987364}
   - component: {fileID: 471357627994987363}
-  - component: {fileID: 8169737509857081154}
+  - component: {fileID: 1006011199731457288}
   m_Layer: 5
-  m_Name: Chapter_1
+  m_Name: Svartalfaheimr_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -29,6 +29,7 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
+  - {fileID: 741945855921095102}
   - {fileID: 169126845923773886}
   - {fileID: 4452497070565155410}
   - {fileID: 3666658822840393988}
@@ -95,7 +96,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 471357627994987365}
   m_CullTransparentMesh: 0
---- !u!114 &8169737509857081154
+--- !u!114 &1006011199731457288
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -104,12 +105,134 @@ MonoBehaviour:
   m_GameObject: {fileID: 471357627994987365}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9a55851d241d7f54caf4c2fac0475192, type: 3}
+  m_Script: {fileID: 11500000, guid: 2494ec012e7e4323914eefc8190d0605, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  colCount: 5
-  spacing: {x: 150, y: 200}
-  rand: {x: -30, y: 30}
+  stages:
+  - {fileID: 169126845923773885}
+  - {fileID: 4452497070565155409}
+  - {fileID: 3666658822840393991}
+  - {fileID: 2431248088864510811}
+  - {fileID: 5942265740249541561}
+  - {fileID: 1470552239863354964}
+  - {fileID: 8588298635791212317}
+  - {fileID: 7528483315173420851}
+  - {fileID: 6583829414711257979}
+  - {fileID: 944113078626472178}
+  - {fileID: 7451226420061931958}
+  - {fileID: 6219830724891654506}
+  - {fileID: 1541425644967272424}
+  - {fileID: 8795978138473379791}
+  - {fileID: 7475388387851055515}
+  - {fileID: 4666200659159083333}
+  - {fileID: 2616798794921180291}
+  - {fileID: 6027536883190761348}
+  - {fileID: 3806977696265073087}
+  - {fileID: 6612387464995412118}
+  - {fileID: 7407400553216653030}
+  - {fileID: 5853009857573002584}
+  - {fileID: 237779229673106643}
+  - {fileID: 1981238896893595757}
+  - {fileID: 7663349458166688570}
+  - {fileID: 8210734666526959668}
+  - {fileID: 2636408253018427113}
+  - {fileID: 7877930388314158533}
+  - {fileID: 6210023025700692737}
+  - {fileID: 206478102599096497}
+  - {fileID: 2964131318758569146}
+  - {fileID: 4357966793148226230}
+  - {fileID: 5638962186737760085}
+  - {fileID: 8789539299454089929}
+  - {fileID: 8020835370083035190}
+  - {fileID: 2978646880076857521}
+  - {fileID: 4521461829977225318}
+  - {fileID: 3408442361410275148}
+  - {fileID: 8312016928553131194}
+  - {fileID: 7133089683956059472}
+  - {fileID: 3290060333668421272}
+  - {fileID: 5282853855527541604}
+  - {fileID: 8666601176945722146}
+  - {fileID: 4001813414446813584}
+  - {fileID: 1851665921218360768}
+  - {fileID: 8426209971428967561}
+  - {fileID: 1479083252102282730}
+  - {fileID: 9014962577120940732}
+  - {fileID: 2545415081849165310}
+  - {fileID: 7857612536891819613}
+--- !u!1 &741945855921095103
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 741945855921095102}
+  - component: {fileID: 741945855921095100}
+  - component: {fileID: 741945855921095101}
+  m_Layer: 5
+  m_Name: WorldNameImage
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &741945855921095102
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 741945855921095103}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 471357627994987364}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: 0, y: -40}
+  m_SizeDelta: {x: 180, y: 24}
+  m_Pivot: {x: 0.5, y: 1}
+--- !u!222 &741945855921095100
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 741945855921095103}
+  m_CullTransparentMesh: 0
+--- !u!114 &741945855921095101
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 741945855921095103}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -765806418, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 0
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
+      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+  m_Sprite: {fileID: 21300000, guid: f13be0ff6cf9c401698ced49ab2e35da, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
 --- !u!1001 &358348940563981607
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -120,7 +243,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968328, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_Name
-      value: UI_WorldMapStage (23)
+      value: WorldMapStage (23)
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -160,7 +283,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_RootOrder
-      value: 23
+      value: 24
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -227,8 +350,36 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: spriteSet.cleared
+      value: 
+      objectReference: {fileID: 21300000, guid: 514ce64d8b84848a2b2801e1e81d20db,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 32a50ff4043fed34fb26e635e079cfe0, type: 3}
+--- !u!114 &1981238896893595757 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+    type: 3}
+  m_PrefabInstance: {fileID: 358348940563981607}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f73ebf531c9408e41bf2335b23b12c2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &1981238896893595758 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
@@ -245,7 +396,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968328, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_Name
-      value: UI_WorldMapStage (44)
+      value: WorldMapStage (44)
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -285,7 +436,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_RootOrder
-      value: 44
+      value: 45
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -352,6 +503,22 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: spriteSet.cleared
+      value: 
+      objectReference: {fileID: 21300000, guid: 514ce64d8b84848a2b2801e1e81d20db,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 32a50ff4043fed34fb26e635e079cfe0, type: 3}
 --- !u!224 &1851665921218360771 stripped
@@ -360,6 +527,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 447451108753342602}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1851665921218360768 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+    type: 3}
+  m_PrefabInstance: {fileID: 447451108753342602}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f73ebf531c9408e41bf2335b23b12c2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &784721744769329826
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -370,7 +549,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968328, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_Name
-      value: UI_WorldMapStage (12)
+      value: WorldMapStage (12)
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -410,7 +589,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_RootOrder
-      value: 12
+      value: 13
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -477,8 +656,36 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: spriteSet.cleared
+      value: 
+      objectReference: {fileID: 21300000, guid: 514ce64d8b84848a2b2801e1e81d20db,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 32a50ff4043fed34fb26e635e079cfe0, type: 3}
+--- !u!114 &1541425644967272424 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+    type: 3}
+  m_PrefabInstance: {fileID: 784721744769329826}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f73ebf531c9408e41bf2335b23b12c2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &1541425644967272427 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
@@ -495,7 +702,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968328, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_Name
-      value: UI_WorldMapStage (46)
+      value: WorldMapStage (46)
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -535,7 +742,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_RootOrder
-      value: 46
+      value: 47
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -602,8 +809,36 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: spriteSet.cleared
+      value: 
+      objectReference: {fileID: 21300000, guid: 514ce64d8b84848a2b2801e1e81d20db,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 32a50ff4043fed34fb26e635e079cfe0, type: 3}
+--- !u!114 &1479083252102282730 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+    type: 3}
+  m_PrefabInstance: {fileID: 792941743312636064}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f73ebf531c9408e41bf2335b23b12c2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &1479083252102282729 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
@@ -620,7 +855,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968328, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_Name
-      value: UI_WorldMapStage (5)
+      value: WorldMapStage (5)
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -660,7 +895,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_RootOrder
-      value: 5
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -727,6 +962,22 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: spriteSet.cleared
+      value: 
+      objectReference: {fileID: 21300000, guid: 514ce64d8b84848a2b2801e1e81d20db,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 32a50ff4043fed34fb26e635e079cfe0, type: 3}
 --- !u!224 &1470552239863354967 stripped
@@ -735,6 +986,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 860092186656924446}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1470552239863354964 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+    type: 3}
+  m_PrefabInstance: {fileID: 860092186656924446}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f73ebf531c9408e41bf2335b23b12c2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1341496433800865208
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -745,7 +1008,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968328, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_Name
-      value: UI_WorldMapStage (9)
+      value: WorldMapStage (9)
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -785,7 +1048,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_RootOrder
-      value: 9
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -852,6 +1115,22 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: spriteSet.cleared
+      value: 
+      objectReference: {fileID: 21300000, guid: 514ce64d8b84848a2b2801e1e81d20db,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 32a50ff4043fed34fb26e635e079cfe0, type: 3}
 --- !u!224 &944113078626472177 stripped
@@ -860,6 +1139,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 1341496433800865208}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &944113078626472178 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+    type: 3}
+  m_PrefabInstance: {fileID: 1341496433800865208}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f73ebf531c9408e41bf2335b23b12c2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &2074779278944377241
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -870,7 +1161,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968328, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_Name
-      value: UI_WorldMapStage (22)
+      value: WorldMapStage (22)
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -910,7 +1201,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_RootOrder
-      value: 22
+      value: 23
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -977,8 +1268,36 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: spriteSet.cleared
+      value: 
+      objectReference: {fileID: 21300000, guid: 514ce64d8b84848a2b2801e1e81d20db,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 32a50ff4043fed34fb26e635e079cfe0, type: 3}
+--- !u!114 &237779229673106643 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+    type: 3}
+  m_PrefabInstance: {fileID: 2074779278944377241}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f73ebf531c9408e41bf2335b23b12c2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &237779229673106640 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
@@ -995,7 +1314,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968328, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_Name
-      value: UI_WorldMapStage (29)
+      value: WorldMapStage (29)
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -1035,7 +1354,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_RootOrder
-      value: 29
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -1102,6 +1421,22 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: spriteSet.cleared
+      value: 
+      objectReference: {fileID: 21300000, guid: 514ce64d8b84848a2b2801e1e81d20db,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 32a50ff4043fed34fb26e635e079cfe0, type: 3}
 --- !u!224 &206478102599096498 stripped
@@ -1110,6 +1445,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 2115095936956067323}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &206478102599096497 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+    type: 3}
+  m_PrefabInstance: {fileID: 2115095936956067323}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f73ebf531c9408e41bf2335b23b12c2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &2152441111958223095
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1120,7 +1467,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968328, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_Name
-      value: UI_WorldMapStage (0)
+      value: WorldMapStage (0)
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -1160,7 +1507,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_RootOrder
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -1227,6 +1574,22 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: spriteSet.cleared
+      value: 
+      objectReference: {fileID: 21300000, guid: 514ce64d8b84848a2b2801e1e81d20db,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 32a50ff4043fed34fb26e635e079cfe0, type: 3}
 --- !u!224 &169126845923773886 stripped
@@ -1235,6 +1598,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 2152441111958223095}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &169126845923773885 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+    type: 3}
+  m_PrefabInstance: {fileID: 2152441111958223095}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f73ebf531c9408e41bf2335b23b12c2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &2393856328410074412
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1245,7 +1620,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968328, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_Name
-      value: UI_WorldMapStage (36)
+      value: WorldMapStage (36)
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -1285,7 +1660,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_RootOrder
-      value: 36
+      value: 37
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -1310,7 +1685,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -22.300018
+      value: -22.300049
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -1352,6 +1727,22 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: spriteSet.cleared
+      value: 
+      objectReference: {fileID: 21300000, guid: 514ce64d8b84848a2b2801e1e81d20db,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 32a50ff4043fed34fb26e635e079cfe0, type: 3}
 --- !u!224 &4521461829977225317 stripped
@@ -1360,6 +1751,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 2393856328410074412}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &4521461829977225318 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+    type: 3}
+  m_PrefabInstance: {fileID: 2393856328410074412}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f73ebf531c9408e41bf2335b23b12c2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &2471816828523075355
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1370,7 +1773,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968328, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_Name
-      value: UI_WorldMapStage (1)
+      value: WorldMapStage (1)
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -1410,7 +1813,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_RootOrder
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -1477,8 +1880,36 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: spriteSet.cleared
+      value: 
+      objectReference: {fileID: 21300000, guid: 514ce64d8b84848a2b2801e1e81d20db,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 32a50ff4043fed34fb26e635e079cfe0, type: 3}
+--- !u!114 &4452497070565155409 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+    type: 3}
+  m_PrefabInstance: {fileID: 2471816828523075355}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f73ebf531c9408e41bf2335b23b12c2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &4452497070565155410 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
@@ -1495,7 +1926,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968328, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_Name
-      value: UI_WorldMapStage (31)
+      value: WorldMapStage (31)
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -1535,7 +1966,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_RootOrder
-      value: 31
+      value: 32
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -1602,6 +2033,22 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: spriteSet.cleared
+      value: 
+      objectReference: {fileID: 21300000, guid: 514ce64d8b84848a2b2801e1e81d20db,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 32a50ff4043fed34fb26e635e079cfe0, type: 3}
 --- !u!224 &4357966793148226229 stripped
@@ -1610,6 +2057,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 2593300998244003836}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &4357966793148226230 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+    type: 3}
+  m_PrefabInstance: {fileID: 2593300998244003836}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f73ebf531c9408e41bf2335b23b12c2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &2886409513794888922
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1620,7 +2079,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968328, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_Name
-      value: UI_WorldMapStage (43)
+      value: WorldMapStage (43)
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -1660,7 +2119,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_RootOrder
-      value: 43
+      value: 44
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -1727,8 +2186,36 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: spriteSet.cleared
+      value: 
+      objectReference: {fileID: 21300000, guid: 514ce64d8b84848a2b2801e1e81d20db,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 32a50ff4043fed34fb26e635e079cfe0, type: 3}
+--- !u!114 &4001813414446813584 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+    type: 3}
+  m_PrefabInstance: {fileID: 2886409513794888922}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f73ebf531c9408e41bf2335b23b12c2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &4001813414446813587 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
@@ -1745,7 +2232,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968328, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_Name
-      value: UI_WorldMapStage (18)
+      value: WorldMapStage (18)
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -1785,7 +2272,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_RootOrder
-      value: 18
+      value: 19
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -1852,6 +2339,22 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: spriteSet.cleared
+      value: 
+      objectReference: {fileID: 21300000, guid: 514ce64d8b84848a2b2801e1e81d20db,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 32a50ff4043fed34fb26e635e079cfe0, type: 3}
 --- !u!224 &3806977696265073084 stripped
@@ -1860,6 +2363,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 3121768849322886389}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &3806977696265073087 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+    type: 3}
+  m_PrefabInstance: {fileID: 3121768849322886389}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f73ebf531c9408e41bf2335b23b12c2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &3271105315823129677
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1870,7 +2385,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968328, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_Name
-      value: UI_WorldMapStage (2)
+      value: WorldMapStage (2)
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -1910,7 +2425,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_RootOrder
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -1977,8 +2492,36 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: spriteSet.cleared
+      value: 
+      objectReference: {fileID: 21300000, guid: 514ce64d8b84848a2b2801e1e81d20db,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 32a50ff4043fed34fb26e635e079cfe0, type: 3}
+--- !u!114 &3666658822840393991 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+    type: 3}
+  m_PrefabInstance: {fileID: 3271105315823129677}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f73ebf531c9408e41bf2335b23b12c2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &3666658822840393988 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
@@ -1995,7 +2538,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968328, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_Name
-      value: UI_WorldMapStage (37)
+      value: WorldMapStage (37)
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -2035,7 +2578,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_RootOrder
-      value: 37
+      value: 38
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -2102,8 +2645,36 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: spriteSet.cleared
+      value: 
+      objectReference: {fileID: 21300000, guid: 514ce64d8b84848a2b2801e1e81d20db,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 32a50ff4043fed34fb26e635e079cfe0, type: 3}
+--- !u!114 &3408442361410275148 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+    type: 3}
+  m_PrefabInstance: {fileID: 3515871452298703366}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f73ebf531c9408e41bf2335b23b12c2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &3408442361410275151 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
@@ -2120,7 +2691,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968328, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_Name
-      value: UI_WorldMapStage (40)
+      value: WorldMapStage (40)
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -2160,7 +2731,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_RootOrder
-      value: 40
+      value: 41
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -2227,6 +2798,22 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: spriteSet.cleared
+      value: 
+      objectReference: {fileID: 21300000, guid: 514ce64d8b84848a2b2801e1e81d20db,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 32a50ff4043fed34fb26e635e079cfe0, type: 3}
 --- !u!224 &3290060333668421275 stripped
@@ -2235,6 +2822,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 3616247842476882898}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &3290060333668421272 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+    type: 3}
+  m_PrefabInstance: {fileID: 3616247842476882898}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f73ebf531c9408e41bf2335b23b12c2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &3937676092823126512
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2245,7 +2844,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968328, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_Name
-      value: UI_WorldMapStage (30)
+      value: WorldMapStage (30)
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -2285,7 +2884,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_RootOrder
-      value: 30
+      value: 31
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -2352,8 +2951,36 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: spriteSet.cleared
+      value: 
+      objectReference: {fileID: 21300000, guid: 514ce64d8b84848a2b2801e1e81d20db,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 32a50ff4043fed34fb26e635e079cfe0, type: 3}
+--- !u!114 &2964131318758569146 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+    type: 3}
+  m_PrefabInstance: {fileID: 3937676092823126512}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f73ebf531c9408e41bf2335b23b12c2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &2964131318758569145 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
@@ -2370,7 +2997,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968328, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_Name
-      value: UI_WorldMapStage (35)
+      value: WorldMapStage (35)
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -2410,7 +3037,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_RootOrder
-      value: 35
+      value: 36
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -2477,8 +3104,36 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: spriteSet.cleared
+      value: 
+      objectReference: {fileID: 21300000, guid: 514ce64d8b84848a2b2801e1e81d20db,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 32a50ff4043fed34fb26e635e079cfe0, type: 3}
+--- !u!114 &2978646880076857521 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+    type: 3}
+  m_PrefabInstance: {fileID: 3950111794751419899}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f73ebf531c9408e41bf2335b23b12c2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &2978646880076857522 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
@@ -2495,7 +3150,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968328, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_Name
-      value: UI_WorldMapStage (26)
+      value: WorldMapStage (26)
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -2535,7 +3190,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_RootOrder
-      value: 26
+      value: 27
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -2602,8 +3257,36 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: spriteSet.cleared
+      value: 
+      objectReference: {fileID: 21300000, guid: 514ce64d8b84848a2b2801e1e81d20db,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 32a50ff4043fed34fb26e635e079cfe0, type: 3}
+--- !u!114 &2636408253018427113 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+    type: 3}
+  m_PrefabInstance: {fileID: 4256391375595109283}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f73ebf531c9408e41bf2335b23b12c2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &2636408253018427114 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
@@ -2620,7 +3303,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968328, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_Name
-      value: UI_WorldMapStage (16)
+      value: WorldMapStage (16)
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -2660,7 +3343,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_RootOrder
-      value: 16
+      value: 17
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -2727,6 +3410,22 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: spriteSet.cleared
+      value: 
+      objectReference: {fileID: 21300000, guid: 514ce64d8b84848a2b2801e1e81d20db,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 32a50ff4043fed34fb26e635e079cfe0, type: 3}
 --- !u!224 &2616798794921180288 stripped
@@ -2735,6 +3434,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 4312027946966698441}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &2616798794921180291 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+    type: 3}
+  m_PrefabInstance: {fileID: 4312027946966698441}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f73ebf531c9408e41bf2335b23b12c2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &4383405097463914676
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2745,7 +3456,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968328, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_Name
-      value: UI_WorldMapStage (48)
+      value: WorldMapStage (48)
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -2785,7 +3496,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_RootOrder
-      value: 48
+      value: 49
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -2852,8 +3563,36 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: spriteSet.cleared
+      value: 
+      objectReference: {fileID: 21300000, guid: 514ce64d8b84848a2b2801e1e81d20db,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 32a50ff4043fed34fb26e635e079cfe0, type: 3}
+--- !u!114 &2545415081849165310 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+    type: 3}
+  m_PrefabInstance: {fileID: 4383405097463914676}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f73ebf531c9408e41bf2335b23b12c2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &2545415081849165309 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
@@ -2870,7 +3609,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968328, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_Name
-      value: UI_WorldMapStage (3)
+      value: WorldMapStage (3)
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -2910,7 +3649,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_RootOrder
-      value: 3
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -2977,6 +3716,22 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: spriteSet.cleared
+      value: 
+      objectReference: {fileID: 21300000, guid: 514ce64d8b84848a2b2801e1e81d20db,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 32a50ff4043fed34fb26e635e079cfe0, type: 3}
 --- !u!224 &2431248088864510808 stripped
@@ -2985,6 +3740,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 4483999116949349905}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &2431248088864510811 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+    type: 3}
+  m_PrefabInstance: {fileID: 4483999116949349905}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f73ebf531c9408e41bf2335b23b12c2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &4919111034855206364
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2995,7 +3762,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968328, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_Name
-      value: UI_WorldMapStage (19)
+      value: WorldMapStage (19)
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -3035,7 +3802,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_RootOrder
-      value: 19
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -3102,6 +3869,22 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: spriteSet.cleared
+      value: 
+      objectReference: {fileID: 21300000, guid: 514ce64d8b84848a2b2801e1e81d20db,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 32a50ff4043fed34fb26e635e079cfe0, type: 3}
 --- !u!224 &6612387464995412117 stripped
@@ -3110,6 +3893,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 4919111034855206364}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &6612387464995412118 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+    type: 3}
+  m_PrefabInstance: {fileID: 4919111034855206364}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f73ebf531c9408e41bf2335b23b12c2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &4961189745415839281
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3120,7 +3915,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968328, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_Name
-      value: UI_WorldMapStage (8)
+      value: WorldMapStage (8)
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -3160,7 +3955,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_RootOrder
-      value: 8
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -3227,6 +4022,22 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: spriteSet.cleared
+      value: 
+      objectReference: {fileID: 21300000, guid: 514ce64d8b84848a2b2801e1e81d20db,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 32a50ff4043fed34fb26e635e079cfe0, type: 3}
 --- !u!224 &6583829414711257976 stripped
@@ -3235,6 +4046,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 4961189745415839281}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &6583829414711257979 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+    type: 3}
+  m_PrefabInstance: {fileID: 4961189745415839281}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f73ebf531c9408e41bf2335b23b12c2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &5307972904306169419
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3245,7 +4068,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968328, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_Name
-      value: UI_WorldMapStage (28)
+      value: WorldMapStage (28)
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -3285,7 +4108,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_RootOrder
-      value: 28
+      value: 29
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -3352,6 +4175,22 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: spriteSet.cleared
+      value: 
+      objectReference: {fileID: 21300000, guid: 514ce64d8b84848a2b2801e1e81d20db,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 32a50ff4043fed34fb26e635e079cfe0, type: 3}
 --- !u!224 &6210023025700692738 stripped
@@ -3360,6 +4199,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 5307972904306169419}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &6210023025700692737 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+    type: 3}
+  m_PrefabInstance: {fileID: 5307972904306169419}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f73ebf531c9408e41bf2335b23b12c2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &5320612800535039008
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3370,7 +4221,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968328, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_Name
-      value: UI_WorldMapStage (11)
+      value: WorldMapStage (11)
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -3410,7 +4261,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_RootOrder
-      value: 11
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -3477,6 +4328,22 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: spriteSet.cleared
+      value: 
+      objectReference: {fileID: 21300000, guid: 514ce64d8b84848a2b2801e1e81d20db,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 32a50ff4043fed34fb26e635e079cfe0, type: 3}
 --- !u!224 &6219830724891654505 stripped
@@ -3485,6 +4352,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 5320612800535039008}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &6219830724891654506 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+    type: 3}
+  m_PrefabInstance: {fileID: 5320612800535039008}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f73ebf531c9408e41bf2335b23b12c2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &5485884545718104782
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3495,7 +4374,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968328, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_Name
-      value: UI_WorldMapStage (17)
+      value: WorldMapStage (17)
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -3535,7 +4414,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_RootOrder
-      value: 17
+      value: 18
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -3602,6 +4481,22 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: spriteSet.cleared
+      value: 
+      objectReference: {fileID: 21300000, guid: 514ce64d8b84848a2b2801e1e81d20db,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 32a50ff4043fed34fb26e635e079cfe0, type: 3}
 --- !u!224 &6027536883190761351 stripped
@@ -3610,6 +4505,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 5485884545718104782}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &6027536883190761348 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+    type: 3}
+  m_PrefabInstance: {fileID: 5485884545718104782}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f73ebf531c9408e41bf2335b23b12c2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &5616253738906787571
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3620,7 +4527,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968328, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_Name
-      value: UI_WorldMapStage (4)
+      value: WorldMapStage (4)
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -3660,7 +4567,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_RootOrder
-      value: 4
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -3727,8 +4634,36 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: spriteSet.cleared
+      value: 
+      objectReference: {fileID: 21300000, guid: 514ce64d8b84848a2b2801e1e81d20db,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 32a50ff4043fed34fb26e635e079cfe0, type: 3}
+--- !u!114 &5942265740249541561 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+    type: 3}
+  m_PrefabInstance: {fileID: 5616253738906787571}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f73ebf531c9408e41bf2335b23b12c2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &5942265740249541562 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
@@ -3745,7 +4680,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968328, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_Name
-      value: UI_WorldMapStage (21)
+      value: WorldMapStage (21)
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -3785,7 +4720,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_RootOrder
-      value: 21
+      value: 22
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -3852,6 +4787,22 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: spriteSet.cleared
+      value: 
+      objectReference: {fileID: 21300000, guid: 514ce64d8b84848a2b2801e1e81d20db,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 32a50ff4043fed34fb26e635e079cfe0, type: 3}
 --- !u!224 &5853009857573002587 stripped
@@ -3860,6 +4811,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 5673914605186590738}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &5853009857573002584 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+    type: 3}
+  m_PrefabInstance: {fileID: 5673914605186590738}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f73ebf531c9408e41bf2335b23b12c2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &5892471974771196447
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3870,7 +4833,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968328, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_Name
-      value: UI_WorldMapStage (32)
+      value: WorldMapStage (32)
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -3910,7 +4873,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_RootOrder
-      value: 32
+      value: 33
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -3977,8 +4940,36 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: spriteSet.cleared
+      value: 
+      objectReference: {fileID: 21300000, guid: 514ce64d8b84848a2b2801e1e81d20db,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 32a50ff4043fed34fb26e635e079cfe0, type: 3}
+--- !u!114 &5638962186737760085 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+    type: 3}
+  m_PrefabInstance: {fileID: 5892471974771196447}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f73ebf531c9408e41bf2335b23b12c2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &5638962186737760086 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
@@ -3995,7 +4986,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968328, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_Name
-      value: UI_WorldMapStage (41)
+      value: WorldMapStage (41)
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -4035,7 +5026,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_RootOrder
-      value: 41
+      value: 42
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -4102,8 +5093,36 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: spriteSet.cleared
+      value: 
+      objectReference: {fileID: 21300000, guid: 514ce64d8b84848a2b2801e1e81d20db,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 32a50ff4043fed34fb26e635e079cfe0, type: 3}
+--- !u!114 &5282853855527541604 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+    type: 3}
+  m_PrefabInstance: {fileID: 6257661137349127726}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f73ebf531c9408e41bf2335b23b12c2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &5282853855527541607 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
@@ -4120,7 +5139,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968328, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_Name
-      value: UI_WorldMapStage (15)
+      value: WorldMapStage (15)
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -4160,7 +5179,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_RootOrder
-      value: 15
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -4227,8 +5246,36 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: spriteSet.cleared
+      value: 
+      objectReference: {fileID: 21300000, guid: 514ce64d8b84848a2b2801e1e81d20db,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 32a50ff4043fed34fb26e635e079cfe0, type: 3}
+--- !u!114 &4666200659159083333 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+    type: 3}
+  m_PrefabInstance: {fileID: 6865305485213260815}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f73ebf531c9408e41bf2335b23b12c2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &4666200659159083334 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
@@ -4245,7 +5292,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968328, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_Name
-      value: UI_WorldMapStage (47)
+      value: WorldMapStage (47)
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -4285,7 +5332,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_RootOrder
-      value: 47
+      value: 48
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -4352,6 +5399,22 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: spriteSet.cleared
+      value: 
+      objectReference: {fileID: 21300000, guid: 514ce64d8b84848a2b2801e1e81d20db,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 32a50ff4043fed34fb26e635e079cfe0, type: 3}
 --- !u!224 &9014962577120940735 stripped
@@ -4360,6 +5423,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 7105640635486988278}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &9014962577120940732 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+    type: 3}
+  m_PrefabInstance: {fileID: 7105640635486988278}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f73ebf531c9408e41bf2335b23b12c2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &7320123672994054789
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4370,7 +5445,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968328, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_Name
-      value: UI_WorldMapStage (13)
+      value: WorldMapStage (13)
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -4410,7 +5485,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_RootOrder
-      value: 13
+      value: 14
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -4477,8 +5552,36 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: spriteSet.cleared
+      value: 
+      objectReference: {fileID: 21300000, guid: 514ce64d8b84848a2b2801e1e81d20db,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 32a50ff4043fed34fb26e635e079cfe0, type: 3}
+--- !u!114 &8795978138473379791 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+    type: 3}
+  m_PrefabInstance: {fileID: 7320123672994054789}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f73ebf531c9408e41bf2335b23b12c2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &8795978138473379788 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
@@ -4495,7 +5598,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968328, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_Name
-      value: UI_WorldMapStage (33)
+      value: WorldMapStage (33)
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -4535,7 +5638,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_RootOrder
-      value: 33
+      value: 34
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -4602,6 +5705,22 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: spriteSet.cleared
+      value: 
+      objectReference: {fileID: 21300000, guid: 514ce64d8b84848a2b2801e1e81d20db,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 32a50ff4043fed34fb26e635e079cfe0, type: 3}
 --- !u!224 &8789539299454089930 stripped
@@ -4610,6 +5729,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 7385179211771170691}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &8789539299454089929 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+    type: 3}
+  m_PrefabInstance: {fileID: 7385179211771170691}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f73ebf531c9408e41bf2335b23b12c2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &7476584423679768168
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4620,7 +5751,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968328, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_Name
-      value: UI_WorldMapStage (42)
+      value: WorldMapStage (42)
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -4660,7 +5791,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_RootOrder
-      value: 42
+      value: 43
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -4727,8 +5858,36 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: spriteSet.cleared
+      value: 
+      objectReference: {fileID: 21300000, guid: 514ce64d8b84848a2b2801e1e81d20db,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 32a50ff4043fed34fb26e635e079cfe0, type: 3}
+--- !u!114 &8666601176945722146 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+    type: 3}
+  m_PrefabInstance: {fileID: 7476584423679768168}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f73ebf531c9408e41bf2335b23b12c2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &8666601176945722145 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
@@ -4745,7 +5904,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968328, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_Name
-      value: UI_WorldMapStage (6)
+      value: WorldMapStage (6)
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -4785,7 +5944,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_RootOrder
-      value: 6
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -4852,8 +6011,36 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: spriteSet.cleared
+      value: 
+      objectReference: {fileID: 21300000, guid: 514ce64d8b84848a2b2801e1e81d20db,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 32a50ff4043fed34fb26e635e079cfe0, type: 3}
+--- !u!114 &8588298635791212317 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+    type: 3}
+  m_PrefabInstance: {fileID: 7541310744457718359}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f73ebf531c9408e41bf2335b23b12c2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &8588298635791212318 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
@@ -4870,7 +6057,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968328, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_Name
-      value: UI_WorldMapStage (45)
+      value: WorldMapStage (45)
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -4910,7 +6097,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_RootOrder
-      value: 45
+      value: 46
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -4977,8 +6164,36 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: spriteSet.cleared
+      value: 
+      objectReference: {fileID: 21300000, guid: 514ce64d8b84848a2b2801e1e81d20db,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 32a50ff4043fed34fb26e635e079cfe0, type: 3}
+--- !u!114 &8426209971428967561 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+    type: 3}
+  m_PrefabInstance: {fileID: 7739492459235996099}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f73ebf531c9408e41bf2335b23b12c2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &8426209971428967562 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
@@ -4995,7 +6210,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968328, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_Name
-      value: UI_WorldMapStage (38)
+      value: WorldMapStage (38)
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -5035,7 +6250,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_RootOrder
-      value: 38
+      value: 39
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -5060,7 +6275,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -22.300018
+      value: -22.300049
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -5102,8 +6317,36 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: spriteSet.cleared
+      value: 
+      objectReference: {fileID: 21300000, guid: 514ce64d8b84848a2b2801e1e81d20db,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 32a50ff4043fed34fb26e635e079cfe0, type: 3}
+--- !u!114 &8312016928553131194 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+    type: 3}
+  m_PrefabInstance: {fileID: 7844687167250164208}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f73ebf531c9408e41bf2335b23b12c2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &8312016928553131193 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
@@ -5120,7 +6363,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968328, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_Name
-      value: UI_WorldMapStage (25)
+      value: WorldMapStage (25)
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -5160,7 +6403,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_RootOrder
-      value: 25
+      value: 26
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -5227,8 +6470,36 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: spriteSet.cleared
+      value: 
+      objectReference: {fileID: 21300000, guid: 514ce64d8b84848a2b2801e1e81d20db,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 32a50ff4043fed34fb26e635e079cfe0, type: 3}
+--- !u!114 &8210734666526959668 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+    type: 3}
+  m_PrefabInstance: {fileID: 7959471998866857342}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f73ebf531c9408e41bf2335b23b12c2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &8210734666526959671 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
@@ -5245,7 +6516,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968328, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_Name
-      value: UI_WorldMapStage (34)
+      value: WorldMapStage (34)
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -5285,7 +6556,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_RootOrder
-      value: 34
+      value: 35
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -5352,8 +6623,36 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: spriteSet.cleared
+      value: 
+      objectReference: {fileID: 21300000, guid: 514ce64d8b84848a2b2801e1e81d20db,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 32a50ff4043fed34fb26e635e079cfe0, type: 3}
+--- !u!114 &8020835370083035190 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+    type: 3}
+  m_PrefabInstance: {fileID: 8126852679386504572}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f73ebf531c9408e41bf2335b23b12c2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &8020835370083035189 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
@@ -5370,7 +6669,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968328, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_Name
-      value: UI_WorldMapStage (49)
+      value: WorldMapStage (49)
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -5410,7 +6709,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_RootOrder
-      value: 49
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -5477,8 +6776,36 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: spriteSet.cleared
+      value: 
+      objectReference: {fileID: 21300000, guid: 514ce64d8b84848a2b2801e1e81d20db,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 32a50ff4043fed34fb26e635e079cfe0, type: 3}
+--- !u!114 &7857612536891819613 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+    type: 3}
+  m_PrefabInstance: {fileID: 8253975281243812631}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f73ebf531c9408e41bf2335b23b12c2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &7857612536891819614 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
@@ -5495,7 +6822,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968328, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_Name
-      value: UI_WorldMapStage (27)
+      value: WorldMapStage (27)
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -5535,7 +6862,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_RootOrder
-      value: 27
+      value: 28
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -5602,8 +6929,36 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: spriteSet.cleared
+      value: 
+      objectReference: {fileID: 21300000, guid: 514ce64d8b84848a2b2801e1e81d20db,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 32a50ff4043fed34fb26e635e079cfe0, type: 3}
+--- !u!114 &7877930388314158533 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+    type: 3}
+  m_PrefabInstance: {fileID: 8274200770464432271}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f73ebf531c9408e41bf2335b23b12c2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &7877930388314158534 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
@@ -5620,7 +6975,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968328, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_Name
-      value: UI_WorldMapStage (24)
+      value: WorldMapStage (24)
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -5660,7 +7015,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_RootOrder
-      value: 24
+      value: 25
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -5727,8 +7082,36 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: spriteSet.cleared
+      value: 
+      objectReference: {fileID: 21300000, guid: 514ce64d8b84848a2b2801e1e81d20db,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 32a50ff4043fed34fb26e635e079cfe0, type: 3}
+--- !u!114 &7663349458166688570 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+    type: 3}
+  m_PrefabInstance: {fileID: 8493355187141254768}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f73ebf531c9408e41bf2335b23b12c2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &7663349458166688569 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
@@ -5745,7 +7128,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968328, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_Name
-      value: UI_WorldMapStage (7)
+      value: WorldMapStage (7)
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -5785,7 +7168,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_RootOrder
-      value: 7
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -5852,8 +7235,36 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: spriteSet.cleared
+      value: 
+      objectReference: {fileID: 21300000, guid: 514ce64d8b84848a2b2801e1e81d20db,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 32a50ff4043fed34fb26e635e079cfe0, type: 3}
+--- !u!114 &7528483315173420851 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+    type: 3}
+  m_PrefabInstance: {fileID: 8646156477891762809}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f73ebf531c9408e41bf2335b23b12c2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &7528483315173420848 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
@@ -5870,7 +7281,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968328, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_Name
-      value: UI_WorldMapStage (14)
+      value: WorldMapStage (14)
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -5910,7 +7321,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_RootOrder
-      value: 14
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -5977,6 +7388,22 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: spriteSet.cleared
+      value: 
+      objectReference: {fileID: 21300000, guid: 514ce64d8b84848a2b2801e1e81d20db,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 32a50ff4043fed34fb26e635e079cfe0, type: 3}
 --- !u!224 &7475388387851055512 stripped
@@ -5985,6 +7412,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 8663289678553842897}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &7475388387851055515 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+    type: 3}
+  m_PrefabInstance: {fileID: 8663289678553842897}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f73ebf531c9408e41bf2335b23b12c2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &8714404541811899644
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5995,7 +7434,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968328, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_Name
-      value: UI_WorldMapStage (10)
+      value: WorldMapStage (10)
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -6035,7 +7474,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_RootOrder
-      value: 10
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -6102,6 +7541,22 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: spriteSet.cleared
+      value: 
+      objectReference: {fileID: 21300000, guid: 514ce64d8b84848a2b2801e1e81d20db,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 32a50ff4043fed34fb26e635e079cfe0, type: 3}
 --- !u!224 &7451226420061931957 stripped
@@ -6110,6 +7565,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 8714404541811899644}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &7451226420061931958 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+    type: 3}
+  m_PrefabInstance: {fileID: 8714404541811899644}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f73ebf531c9408e41bf2335b23b12c2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &8740226559256888236
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6120,7 +7587,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968328, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_Name
-      value: UI_WorldMapStage (20)
+      value: WorldMapStage (20)
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -6160,7 +7627,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_RootOrder
-      value: 20
+      value: 21
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -6227,8 +7694,36 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: spriteSet.cleared
+      value: 
+      objectReference: {fileID: 21300000, guid: 514ce64d8b84848a2b2801e1e81d20db,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 32a50ff4043fed34fb26e635e079cfe0, type: 3}
+--- !u!114 &7407400553216653030 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+    type: 3}
+  m_PrefabInstance: {fileID: 8740226559256888236}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f73ebf531c9408e41bf2335b23b12c2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &7407400553216653029 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
@@ -6245,7 +7740,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968328, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_Name
-      value: UI_WorldMapStage (39)
+      value: WorldMapStage (39)
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -6285,7 +7780,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_RootOrder
-      value: 39
+      value: 40
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -6310,7 +7805,7 @@ PrefabInstance:
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -4.100006
+      value: -4.0999756
       objectReference: {fileID: 0}
     - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
@@ -6352,8 +7847,36 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: spriteSet.cleared
+      value: 
+      objectReference: {fileID: 21300000, guid: 514ce64d8b84848a2b2801e1e81d20db,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 32a50ff4043fed34fb26e635e079cfe0, type: 3}
+--- !u!114 &7133089683956059472 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2272024444835968330, guid: 32a50ff4043fed34fb26e635e079cfe0,
+    type: 3}
+  m_PrefabInstance: {fileID: 9041549611697174554}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f73ebf531c9408e41bf2335b23b12c2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &7133089683956059475 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2272024444835968329, guid: 32a50ff4043fed34fb26e635e079cfe0,

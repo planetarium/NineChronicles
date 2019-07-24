@@ -166,3 +166,7 @@ public class AssetNotFoundException : Exception
     {
     }
 }
+
+public class SheetRowNotFoundException : Exception
+{
+}
