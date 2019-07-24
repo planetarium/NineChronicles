@@ -20,6 +20,7 @@ namespace Nekoyume.UI
         public Slider ExpBar;
         public Toggle BtnStatus;
         public Toggle BtnInventory;
+        public Toggle BtnQuest;
         public DropItemInventoryVFX InventoryVfx;
 
         private string _avatarName = "";
@@ -27,6 +28,7 @@ namespace Nekoyume.UI
 
         private StatusDetail _statusDetail;
         private Inventory _inventory;
+        private Quest _quest;
 
         #region Mono
 
@@ -62,6 +64,13 @@ namespace Nekoyume.UI
             {
                 throw new NotFoundComponentException<Inventory>();
             }
+
+            _quest = Find<Quest>();
+            if (ReferenceEquals(_quest, null))
+            {
+                throw new NotFoundComponentException<Quest>();
+            }
+
         }
 
         public override void Close()
@@ -113,19 +122,7 @@ namespace Nekoyume.UI
 
         public void ToggleInventory()
         {
-            AudioController.PlayClick();
-
-            _inventory.Toggle();
-            
-            if (!_inventory.IsActive())
-            {
-                return;
-            }
-            
-            if (_statusDetail.IsActive())
-            {
-                _statusDetail.Close();   
-            }
+            Toggle(_inventory);
                 
             AnalyticsManager.Instance.OnEvent(Find<Menu>().gameObject.activeSelf
                 ? AnalyticsManager.EventName.ClickMainInventory
@@ -149,18 +146,7 @@ namespace Nekoyume.UI
 
         public void ToggleStatus()
         {
-            AudioController.PlayClick();
-            
-            _statusDetail.Toggle();
-            if (!_statusDetail.IsActive())
-            {
-                return;
-            }
-
-            if (_inventory.IsActive())
-            {
-                _inventory.Close();
-            }
+            Toggle(_statusDetail);
 
             AnalyticsManager.Instance.OnEvent(Find<Menu>().gameObject.activeSelf
                 ? AnalyticsManager.EventName.ClickMainEquipment
@@ -185,6 +171,27 @@ namespace Nekoyume.UI
         public void ShowStage(int stage)
         {
             stageTitle.Show(stage);
+        }
+
+        public void ToggleQuest()
+        {
+            Toggle(_quest);
+        }
+
+        private void Toggle(Widget selected)
+        {
+            AudioController.PlayClick();
+
+            selected.Toggle();
+            if (!selected.IsActive())
+            {
+                return;
+            }
+            foreach (var widget in new Widget[] {_inventory, _statusDetail})
+            {
+                if (selected != widget)
+                    widget.Close();
+            }
         }
         
         private void OnRoomEnter()

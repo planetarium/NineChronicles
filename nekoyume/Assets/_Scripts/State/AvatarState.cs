@@ -1,10 +1,7 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using Libplanet;
-using Nekoyume.Action;
-using Nekoyume.Data;
 using Nekoyume.Game.Item;
+using Nekoyume.Game.Quest;
 using Nekoyume.Model;
 
 namespace Nekoyume.State
@@ -25,6 +22,7 @@ namespace Nekoyume.State
         public DateTimeOffset updatedAt;
         public DateTimeOffset? clearedAt;
         public Address agentAddress;
+        public QuestList questList;
 
         public AvatarState(Address address, Address agentAddress, string name = null) : base(address)
         {
@@ -42,6 +40,7 @@ namespace Nekoyume.State
             battleLog = null;
             updatedAt = DateTimeOffset.UtcNow;
             this.agentAddress = agentAddress;
+            questList = new QuestList();
         }
         
         public AvatarState(AvatarState avatarState) : base(avatarState.address)
@@ -70,6 +69,7 @@ namespace Nekoyume.State
             exp = player.exp;
             inventory = player.inventory;
             worldStage = player.worldStage;
+            questList.Update(player);
         }
     }
 }
