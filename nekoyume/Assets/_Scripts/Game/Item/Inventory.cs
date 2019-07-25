@@ -164,8 +164,7 @@ namespace Nekoyume.Game.Item
                     continue;
                 }
 
-                if (nonFungibleItem.Data.id != itemUsable.Data.id ||
-                    !nonFungibleItem.Stats.Equals(itemUsable.Stats))
+                if (nonFungibleItem.ItemId != itemUsable.ItemId)
                 {
                     continue;
                 }
@@ -197,14 +196,19 @@ namespace Nekoyume.Game.Item
 
         public bool TryGetNonFungibleItem(ItemUsable itemUsable, out Item outNonFungibleItem)
         {
-            foreach (var nonFungibleItem in _items)
+            foreach (var item in _items)
             {
-                if (nonFungibleItem.item.Data.id != itemUsable.Data.id)
+                if (!(item.item is ItemUsable nonFungibleItem))
                 {
                     continue;
                 }
 
-                outNonFungibleItem = nonFungibleItem;
+                if (nonFungibleItem.ItemId != itemUsable.ItemId)
+                {
+                    continue;
+                }
+
+                outNonFungibleItem = item;
                 return true;
             }
 
