@@ -209,10 +209,12 @@ namespace Nekoyume.BlockChain
                 var rewardGoldTx = RewardGold();
 
                 var txs = new HashSet<Transaction<PolymorphicAction<ActionBase>>> {rewardGoldTx};
-                // 하루 한번 보상을 제공
+
                 var timeStamp = DateTimeOffset.UtcNow;
-                var currentTimeStamp = _blocks?.Tip?.Timestamp;
-                if (!(currentTimeStamp is null) && (timeStamp - currentTimeStamp.Value).Days == 1)
+                var prevTimeStamp = _blocks?.Tip?.Timestamp;
+                //FIXME 년도가 바뀌면 깨지는 계산 방식. 테스트 끝나면 변경해야함
+                // 하루 한번 보상을 제공
+                if (prevTimeStamp is DateTimeOffset t && timeStamp.DayOfYear - t.DayOfYear == 1)
                 {
                     var rankingRewardTx = RankingReward();
                     txs.Add(rankingRewardTx);
