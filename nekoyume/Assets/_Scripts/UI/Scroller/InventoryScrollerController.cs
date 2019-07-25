@@ -12,6 +12,7 @@ namespace Nekoyume.UI.Scroller
         public EnhancedScroller scroller;
         public InventoryCellView cellViewPrefab;
         public int numberOfInnerItemPerCell = 1;
+        public int capacity = 48;
 
         /// <summary>
         /// `_scroller.Delegate`를 할당할 때, `_scroller` 내부에서 `_reloadData = true`가 된다.
@@ -41,7 +42,10 @@ namespace Nekoyume.UI.Scroller
 
         public int GetNumberOfCells(EnhancedScroller scr)
         {
-            return Mathf.CeilToInt((float) _dataList.Count / numberOfInnerItemPerCell);
+            return Mathf.Max(
+                Mathf.CeilToInt((float) capacity / numberOfInnerItemPerCell),
+                Mathf.CeilToInt((float) _dataList.Count / numberOfInnerItemPerCell)
+                );
         }
 
         public float GetCellViewSize(EnhancedScroller scr, int dataIndex)
