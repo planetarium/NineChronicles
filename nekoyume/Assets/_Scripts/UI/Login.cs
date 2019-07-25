@@ -91,15 +91,14 @@ namespace Nekoyume.UI
                     playerSlot.LabelName.text = $"{avatarState.name}";
                     playerSlot.CreateView.SetActive(false);
                     playerSlot.DeleteView.SetActive(true);
+                    playerSlot.NameView.SetActive(true);
                 }
                 else
                 {
-                    playerSlot.LabelLevel.text = "LV.1";
-                    playerSlot.LabelName.text = "";
                     playerSlot.CreateView.SetActive(true);
-                    playerSlot.DeleteView.SetActive(false);   
+                    playerSlot.DeleteView.SetActive(false);
+                    playerSlot.NameView.SetActive(false);
                 }
-                playerSlot.NameView.SetActive(true);
             }
 
             AudioController.instance.PlayMusic(AudioController.MusicCode.SelectCharacter);
