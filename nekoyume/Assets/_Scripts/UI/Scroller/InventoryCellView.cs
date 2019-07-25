@@ -29,7 +29,6 @@ namespace Nekoyume.UI.Scroller
         
         public void SetData(ReactiveCollection<Model.InventoryItem> dataList, int firstIndex)
         {
-            GetComponent<HorizontalLayoutGroup>().childAlignment = TextAnchor.UpperCenter;
             if (ReferenceEquals(dataList, null))
             {
                 Clear();
