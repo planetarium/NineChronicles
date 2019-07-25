@@ -130,7 +130,8 @@ namespace Nekoyume.UI
             btnCreate.SetActive(isCreateMode);
             palette.SetActive(isCreateMode);
 
-            profileImage.SetActive(!isCreateMode);
+            // 현재 프로필 사진의 용도가 불투명하기 때문에 가려둠.
+            // profileImage.SetActive(!isCreateMode);
             btnLogin.SetActive(!isCreateMode);
             optionGrid.SetActive(!isCreateMode);
             
