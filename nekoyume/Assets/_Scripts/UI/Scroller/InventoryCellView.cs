@@ -3,7 +3,6 @@ using EnhancedUI.EnhancedScroller;
 using Nekoyume.UI.Module;
 using UniRx;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Nekoyume.UI.Scroller
 {
