@@ -174,11 +174,16 @@ namespace Nekoyume.UI.Model
         {
             foreach (var item in equipments)
             {
-                if (item.item.Value.Data.id != itemUsable.Data.id)
+                if (!(item.item.Value is Equipment equipment))
                 {
                     continue;
                 }
-                
+
+                if (equipment.ItemId != itemUsable.ItemId)
+                {
+                    continue;
+                }
+
                 inventoryItem = item;
                 return true;
             }
@@ -191,11 +196,16 @@ namespace Nekoyume.UI.Model
         {
             foreach (var item in consumables)
             {
-                if (item.item.Value.Data.id != consumable.Data.id)
+                if (!(item.item.Value is Equipment equipment))
                 {
                     continue;
                 }
-                
+
+                if (equipment.ItemId != consumable.ItemId)
+                {
+                    continue;
+                }
+
                 inventoryItem = item;
                 return true;
             }
