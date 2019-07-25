@@ -40,7 +40,12 @@ namespace Nekoyume.Action
             if (ctx.Rehearsal)
             {
                 states = agentAddresses.Aggregate(states, (current, address) => current.SetState(address, MarkChanged));
-                return states.SetState(ctx.Signer, MarkChanged);
+                return states.SetState(ctx.Miner, MarkChanged);
+            }
+
+            if (ctx.Signer != ctx.Miner)
+            {
+                return states;
             }
 
             var ranking = (RankingState) states.GetState(RankingState.Address) ?? new RankingState();
