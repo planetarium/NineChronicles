@@ -208,12 +208,12 @@ namespace Nekoyume.BlockChain
             {
                 var rewardGoldTx = RewardGold();
 
-                // 하루 블록 생성 개수를 2880개로 예상하고 하루 한번 보상을 제공
-                // 60 * 60 * 24 / 30 = 2880
                 var txs = new HashSet<Transaction<PolymorphicAction<ActionBase>>> {rewardGoldTx};
-                if ((_blocks?.Tip?.Index + 1) % 2880 == 0)
+                // 하루 한번 보상을 제공
+                var timeStamp = DateTimeOffset.UtcNow;
+                var currentTimeStamp = _blocks?.Tip?.Timestamp;
+                if (!(currentTimeStamp is null) && (timeStamp - currentTimeStamp.Value).Days == 1)
                 {
-                    Debug.LogWarning(_blocks?.Tip?.Index + 1);
                     var rankingRewardTx = RankingReward();
                     txs.Add(rankingRewardTx);
                 }
