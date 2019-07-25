@@ -93,7 +93,6 @@ namespace Nekoyume.Model
             expMax = expData.exp + expData.expNeed;
             expNeed = expData.expNeed;
             luck = statsData.Luck;
-            attackRange = data.attackRange;
             runSpeed = data.runSpeed;
             characterSize = data.size;
             var setMap = new Dictionary<int, int>();
@@ -108,6 +107,9 @@ namespace Nekoyume.Model
                 setMap[key] += 1;
                 equipment.UpdatePlayer(this);
             }
+
+            // 플레이어 사거리가 장비에 영향을 안받도록 고정시킴.
+            attackRange = data.attackRange;
 
             foreach (var pair in setMap)
             {
@@ -163,6 +165,7 @@ namespace Nekoyume.Model
                         break;
                     case ItemBase.ItemType.Armor:
                         armor = equipment as Armor;
+                        defElement = Game.Elemental.Create((Elemental.ElementalType) equipment?.Data.elemental);
                         break;
                     case ItemBase.ItemType.Belt:
                         belt = equipment as Belt;
@@ -178,8 +181,6 @@ namespace Nekoyume.Model
                         break;
                     case ItemBase.ItemType.Set:
                         set = equipment as SetItem;
-                        atkElement = Game.Elemental.Create((Elemental.ElementalType) equipment?.Data.elemental);
-                        defElement = Game.Elemental.Create((Elemental.ElementalType) equipment?.Data.elemental);
                         break;
                     default:
                         throw new InvalidEquipmentException();
