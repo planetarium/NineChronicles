@@ -3,6 +3,7 @@ using EnhancedUI.EnhancedScroller;
 using Nekoyume.UI.Module;
 using UniRx;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI.Scroller
 {
@@ -10,6 +11,7 @@ namespace Nekoyume.UI.Scroller
     public class InventoryCellView : EnhancedScrollerCellView
     {
         public InventoryItemView[] items;
+        
 
         #region Mono
 
@@ -27,6 +29,7 @@ namespace Nekoyume.UI.Scroller
         
         public void SetData(ReactiveCollection<Model.InventoryItem> dataList, int firstIndex)
         {
+            GetComponent<HorizontalLayoutGroup>().childAlignment = TextAnchor.UpperCenter;
             if (ReferenceEquals(dataList, null))
             {
                 Clear();

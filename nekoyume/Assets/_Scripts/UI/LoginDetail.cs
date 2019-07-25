@@ -25,6 +25,8 @@ namespace Nekoyume.UI
         public Slider expBar;
         public Text levelInfo;
         public Text nameInfo;
+        public RectTransform content;
+        public GameObject contentPivot;
         public GameObject profileImage;
         public GameObject statusGrid;
         public GameObject statusRow;
@@ -34,8 +36,9 @@ namespace Nekoyume.UI
         public Text paletteHairText;
         public Text paletteLensText;
         public Text paletteTopText;
-        
+
         private int _selectedIndex;
+        private bool _isCreateMode;
 
         private Color _namePlaceHolderOriginColor;
         private Color _namePlaceHolderFocusedColor;
@@ -111,8 +114,8 @@ namespace Nekoyume.UI
             _selectedIndex = index;
             AvatarManager.GetOrCreateAvatarAddress(_selectedIndex);
             Player player;
-            var isCreateMode = !States.Instance.avatarStates.ContainsKey(index);
-            if (isCreateMode)
+            _isCreateMode = !States.Instance.avatarStates.ContainsKey(index);
+            if (_isCreateMode)
             {
                 player = new Player();
                 nameField.text = "";
@@ -126,14 +129,14 @@ namespace Nekoyume.UI
             }
             
             // create new or login
-            nameField.gameObject.SetActive(isCreateMode);
-            btnCreate.SetActive(isCreateMode);
-            palette.SetActive(isCreateMode);
+            nameField.gameObject.SetActive(_isCreateMode);
+            btnCreate.SetActive(_isCreateMode);
+            palette.SetActive(_isCreateMode);
 
             // 현재 프로필 사진의 용도가 불투명하기 때문에 가려둠.
             // profileImage.SetActive(!isCreateMode);
-            btnLogin.SetActive(!isCreateMode);
-            optionGrid.SetActive(!isCreateMode);
+            btnLogin.SetActive(!_isCreateMode);
+            optionGrid.SetActive(!_isCreateMode);
             
             SetInformation(player);
 
@@ -195,6 +198,12 @@ namespace Nekoyume.UI
             }
         }
 
+        public override void Show()
+        {
+            base.Show();
+            contentPivot.SetActive(!_isCreateMode);
+        }
+
         public override void Close()
         {
             Clear();
@@ -216,7 +225,7 @@ namespace Nekoyume.UI
 
         private void OnDidAvatarStateLoaded(AvatarState avatarState)
         {
-            if (palette.activeInHierarchy)
+            if (_isCreateMode)
                 Close();
             
             EnterRoom();
