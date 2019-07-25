@@ -38,6 +38,7 @@ namespace Nekoyume.Action
             {   
                 states = states.SetState(buyerAvatarAddress, MarkChanged);
                 states = states.SetState(ctx.Signer, MarkChanged);
+                states = states.SetState(sellerAvatarAddress, MarkChanged);
                 states = states.SetState(sellerAgentAddress, MarkChanged);
                 return states.SetState(ShopState.Address, MarkChanged);
             }
@@ -102,10 +103,18 @@ namespace Nekoyume.Action
             
             // 구매자의 인벤토리에 구매한 아이템을 넣는다.
             buyerAvatarState.inventory.AddNonFungibleItem(outPair.Value.itemUsable);
-            buyerAvatarState.updatedAt = DateTimeOffset.UtcNow;
+
+            // 퀘스트 업데이트
+            buyerAvatarState.questList.UpdateTradeQuest("buy");
+            sellerAvatarState.questList.UpdateTradeQuest("sell");
+
+            var timestamp = DateTimeOffset.UtcNow;
+            buyerAvatarState.updatedAt = timestamp;
+            sellerAvatarState.updatedAt = timestamp;
 
             states = states.SetState(buyerAvatarAddress, buyerAvatarState);
             states = states.SetState(ctx.Signer, buyerAgentState);
+            states = states.SetState(sellerAvatarAddress, sellerAvatarState);
             states = states.SetState(sellerAgentAddress, sellerAgentState);
             return states.SetState(ShopState.Address, shopState);
         }

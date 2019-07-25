@@ -70,7 +70,7 @@ namespace Nekoyume.State
             exp = player.exp;
             inventory = player.inventory;
             worldStage = player.worldStage;
-            questList.Update(player, items);
+            questList.UpdateStageQuest(player, items);
         }
     }
 }

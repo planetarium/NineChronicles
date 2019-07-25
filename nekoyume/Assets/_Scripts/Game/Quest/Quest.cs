@@ -48,13 +48,20 @@ namespace Nekoyume.Game.Quest
                 var quest = new CombinationQuest(combinationData);
                 quests.Add(quest);
             }
+
+            foreach (var tradeQuestData in Tables.instance.TradeQuest.Values)
+            {
+                var quest = new TradeQuest(tradeQuestData);
+                quests.Add(quest);
+            }
         }
 
         private readonly List<Quest> quests;
 
-        public void Update(Player player, List<ItemBase> items)
+        public void UpdateStageQuest(Player player, List<ItemBase> items)
         {
-            foreach (var quest in quests)
+            var questList = quests.Where(q => q is BattleQuest || q is CollectQuest).ToArray();
+            foreach (var quest in questList)
             {
                 quest.Check(player, items);
             }
@@ -75,6 +82,13 @@ namespace Nekoyume.Game.Quest
             var quest = quests.OfType<CombinationQuest>()
                 .FirstOrDefault(i => i.cls == itemUsable.Data.cls && !i.Complete);
             quest?.Check(null, new List<ItemBase> {itemUsable});
+        }
+
+        public void UpdateTradeQuest(string type)
+        {
+            var quest = quests.OfType<TradeQuest>()
+                .FirstOrDefault(i => i.type == type && !i.Complete);
+            quest?.Check(null, null);
         }
     }
 }

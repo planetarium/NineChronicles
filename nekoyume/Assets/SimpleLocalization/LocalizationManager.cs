@@ -222,6 +222,14 @@ namespace Assets.SimpleLocalization
             return Localize($"ITEM_TYPE_{type}");
         }
 
+        public static string LocalizeTradeQuest(string type, int current, int goal)
+        {
+            var localizationKey = "QUEST_TRADE_INFO";
+            var pattern = Localize(localizationKey);
+            var tradeType = Localize($"UI_{type.ToUpper()}");
+            return string.Format(pattern, tradeType, current, goal);
+        }
+
         /// <summary>
         /// Get localized value by localization key.
         /// </summary>

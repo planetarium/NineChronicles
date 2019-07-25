@@ -27,6 +27,7 @@ namespace Nekoyume.Data
         public Table<Quest> Quest { get; private set; }
         public Table<CollectQuest> CollectQuest { get; private set; }
         public Table<CombinationQuest> CombinationQuest { get; private set; }
+        public Table<TradeQuest> TradeQuest { get; private set; }
 
         protected override void Awake()
         {
@@ -74,6 +75,8 @@ namespace Nekoyume.Data
             Load(CollectQuest, "DataTable/collect_quest");
             CombinationQuest = new Table<CombinationQuest>();
             Load(CombinationQuest, "DataTable/combination_quest");
+            TradeQuest = new Table<TradeQuest>();
+            Load(TradeQuest, "DataTable/trade_quest");
         }
 
         private void Load(ITable table, string filename)
