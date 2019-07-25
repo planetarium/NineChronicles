@@ -21,7 +21,7 @@ namespace Nekoyume.Data.Table
         public int lvHp = 0;
         public int lvDamage = 0;
         public int lvDefense = 0;
-        public float lvLuck = 0f;
+        public float lvLuck = 0.1f;
         public string skill0 = "";
         public string skill1 = "";
         public string skill2 = "";
