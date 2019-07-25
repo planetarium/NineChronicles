@@ -23,6 +23,7 @@ namespace Nekoyume.Data
         public Table<SkillEffect> SkillEffect { get; private set; }
         public Table<Setting> Settings { get; private set; }
         public Table<StageDialog> StageDialogs { get; private set; }
+        public Table<Quest> Quest { get; private set; }
 
         protected override void Awake()
         {
@@ -64,6 +65,8 @@ namespace Nekoyume.Data
             Load(Settings, "DataTable/settings");
             StageDialogs = new Table<StageDialog>();
             Load(StageDialogs, "DataTable/stage_dialog");
+            Quest = new Table<Quest>();
+            Load(Quest, "DataTable/battle_quest");
         }
 
         private void Load(ITable table, string filename)

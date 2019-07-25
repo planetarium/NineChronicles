@@ -66,6 +66,7 @@ namespace Nekoyume.UI
             Widget.Create<BattleResult>();
             Widget.Create<Inventory>();
             Widget.Create<Gold>();
+            Widget.Create<Quest>();
 
             // 팝업류.
             Widget.Create<SimpleItemCountPopup>();
