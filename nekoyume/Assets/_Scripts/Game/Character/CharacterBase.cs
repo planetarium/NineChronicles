@@ -341,6 +341,7 @@ namespace Nekoyume.Game.Character
 
         protected virtual void ProcessAttack(CharacterBase target, Model.Skill.SkillInfo skill, bool isConsiderDie)
         {
+            if (!target) return;
             target.StopRun();
             StartCoroutine(target.CoProcessDamage(skill, isConsiderDie));
         }
