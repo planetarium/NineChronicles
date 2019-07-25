@@ -1,11 +1,11 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using Nekoyume.EnumType;
 using Nekoyume.UI.Model;
 using UniRx;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using ItemInformation = Nekoyume.UI.Module.ItemInformation;
 
 namespace Nekoyume.UI
 {
@@ -14,8 +14,7 @@ namespace Nekoyume.UI
         public Text titleText;
         public GameObject coinImageContainer;
         public Text priceText;
-        public ItemInformation itemInformation;
-        public GameObject closeGameObject;
+        public Module.ItemInformation itemInformation;
         public Button closeButton;
         public Text closeButtonText;
         public GameObject submitGameObject;
@@ -62,14 +61,12 @@ namespace Nekoyume.UI
             Model.itemInformation.item.Value = item;
             Model.submitButtonEnabledFunc.Value = submitEnabledFunc;
             Model.submitButtonText.Value = submitText;
-
+            
             // Show(Model)을 먼저 호출함으로써 Widget.Show()가 호출되고, 게임 오브젝트가 활성화 됨. 그래야 레이아웃 정리가 가능함.
             Show(Model);
             // itemInformation UI의 모든 요소에 적절한 값이 들어가야 레이아웃 정리가 유효함.
             itemInformation.SetData(Model.itemInformation);
             
-            Model.itemInformation.item.Subscribe(value => base.SubscribeTarget(Model.target.Value))
-                .AddTo(_disposablesForModel);
             Model.titleText.SubscribeToText(titleText).AddTo(_disposablesForModel);
             Model.priceEnabled.Subscribe(value =>
             {
@@ -98,6 +95,11 @@ namespace Nekoyume.UI
             Model.submitButtonEnabled.Subscribe(value => submitGameObject.SetActive(value))
                 .AddTo(_disposablesForModel);
             Model.onSubmit.Subscribe(onSubmit).AddTo(_disposablesForModel);
+            // Model.itemInformation.item을 마지막으로 구독해야 위에서의 구독으로 인해 바뀌는 레이아웃 상태를 모두 반영할 수 있음.
+            Model.itemInformation.item.Subscribe(value => base.SubscribeTarget(Model.target.Value))
+                .AddTo(_disposablesForModel);
+
+            StartCoroutine(CoUpdate());
         }
 
         public override void Close()
@@ -117,6 +119,29 @@ namespace Nekoyume.UI
         protected override void SubscribeTarget(RectTransform target)
         {
             // 타겟이 바뀔 때, 아이템도 바뀌니 아이템을 구독하는 쪽 한 곳에 로직을 구현한다. 
+        }
+
+        private IEnumerator CoUpdate()
+        {
+            var temp = EventSystem.current.currentSelectedGameObject;
+            
+            while (enabled)
+            {
+                if (EventSystem.current.currentSelectedGameObject != temp)
+                {
+                    var current = EventSystem.current.currentSelectedGameObject;
+                    if (current == submitButton.gameObject)
+                    {
+                        yield break;
+                    }
+                    
+                    Close();
+                    
+                    yield break;
+                }
+                
+                yield return null;
+            }
         }
     }
 }
