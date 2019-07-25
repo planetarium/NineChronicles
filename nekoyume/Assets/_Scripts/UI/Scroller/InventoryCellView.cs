@@ -10,6 +10,7 @@ namespace Nekoyume.UI.Scroller
     public class InventoryCellView : EnhancedScrollerCellView
     {
         public InventoryItemView[] items;
+        
 
         #region Mono
 
