@@ -52,6 +52,13 @@ namespace Nekoyume.UI.Module
 
         public void SetData(Model.ItemInformation data)
         {
+            if (data == null)
+            {
+                Clear();
+                
+                return;
+            }
+            
             _disposables.DisposeAllAndClear();
             Model = data;
 

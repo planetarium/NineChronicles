@@ -143,3 +143,23 @@ NPC_06_NAME,Auction Cat,경매장 주인
 UI_COMBINE_EQUIPMENTS,Combine Equipments,장비 제작
 UI_COMBINE_CONSUMABLES,Combine Consumables,소모품 제작
 UI_RECIPE,Recipe,레시피
+UI_SKILL,Skill,스킬
+UI_POWER,Power,위력
+UI_CHANCE,Chance,확률
+UI_SKILL_DESCRIPTION_FORMAT,{0} ({1:0%} chance to damage {2}),{0} ({1:0%} 확률로 데미지 {2})
+UI_SKILL_FIRE_NORMAL,Fire,불
+UI_SKILL_FIRE_BLOW,Flame,불꽃
+UI_SKILL_FIRE_AREA,Magma,용암
+UI_SKILL_WATER_NORMAL,Water,물
+UI_SKILL_WATER_BLOW,Ice,얼음
+UI_SKILL_LAND_NORMAL,Land,대지
+UI_SKILL_LAND_BLOW,Sand,모래
+UI_SKILL_WIND_NORMAL,Wind,바람
+UI_SKILL_WIND_AREA,Huge,거대
+UI_SKILL_NORMAL,Attack,공격
+UI_SKILL_BLOW,Blow Attack,일격
+UI_SKILL_DOUBLE,Double Attack,연사
+UI_SKILL_AREA_NORMAL,Wide Area Attack,광역 난사
+UI_SKILL_AREA_FIRE_OR_WATER,Tsunami,해일
+UI_SKILL_AREA_LAND,Storm,폭풍
+UI_SKILL_AREA_WIND,Typhoon,태풍

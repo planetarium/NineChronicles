@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Assets.SimpleLocalization;
 using Nekoyume.Data;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Skill;
@@ -25,15 +26,15 @@ namespace Nekoyume.UI.Model
                 throw new KeyNotFoundException(itemRow.skillId.ToString());
             }
 
-            headerKey.Value = "스킬";
+            headerKey.Value = LocalizationManager.Localize("UI_SKILL");
             headerValue.Value = itemRow.elemental == Elemental.ElementalType.Normal
                 ? $"{skillEffect.category.Translate(itemRow.elemental)}"
                 : $"{itemRow.elemental.Translate(skillEffect.category)} {skillEffect.category.Translate(itemRow.elemental)}";
-            firstLineKey.Value = "  - 위력";
+            firstLineKey.Value = $"  - {LocalizationManager.Localize("UI_POWER")}";
             firstLineValue.Value = $"{itemRow.minDamage} - {itemRow.maxDamage}";
             secondLineEnabled.Value = true;
-            secondLineKey.Value = "  - 확률";
-            secondLineValue.Value = $"{itemRow.minChance * 100f}% - {itemRow.maxChance * 100f}%";
+            secondLineKey.Value = $"  - {LocalizationManager.Localize("UI_CHANCE")}";
+            secondLineValue.Value = $"{itemRow.minChance:0%} - {itemRow.maxChance:0%}";
         }
 
         public ItemInformationSkill(SkillBase skillBase)
@@ -42,9 +43,9 @@ namespace Nekoyume.UI.Model
                 ? $"{skillBase.effect.category.Translate(skillBase.elementalType)}"
                 : $"{skillBase.elementalType.Translate(skillBase.effect.category)} {skillBase.effect.category.Translate(skillBase.elementalType)}";
             
-            headerKey.Value = "스킬";
+            headerKey.Value = LocalizationManager.Localize("UI_SKILL");;
             headerValue.Value = "";
-            firstLineKey.Value = $"{skillName} ({skillBase.chance * 100f}%확률로 데미지 {skillBase.power})";
+            firstLineKey.Value = string.Format(LocalizationManager.Localize("UI_SKILL_DESCRIPTION_FORMAT"), skillName, skillBase.chance, skillBase.power);
             firstLineValue.Value = "";
             secondLineEnabled.Value = false;
         }

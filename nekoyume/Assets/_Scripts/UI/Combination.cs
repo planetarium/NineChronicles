@@ -3,12 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Manager;
-using Nekoyume.Action;
 using Nekoyume.BlockChain;
-using Nekoyume.Data;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
-using Nekoyume.Game.Item;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using UniRx;
@@ -17,6 +14,7 @@ using UnityEngine.UI;
 using Stage = Nekoyume.Game.Stage;
 using System.Collections;
 using Assets.SimpleLocalization;
+using Nekoyume.Game.Item;
 using Nekoyume.Helper;
 using UniRx.Triggers;
 
@@ -433,7 +431,7 @@ namespace Nekoyume.UI
             Model.resultPopup.Value = new Model.CombinationResultPopup(isSuccess
                 ? States.Instance.currentAvatarState.Value.inventory.TryGetNonFungibleItemFromLast(
                     out var outNonFungibleItem)
-                    ? outNonFungibleItem
+                    ? new CountableItem(outNonFungibleItem, 1)
                     : null
                 : null)
             {
@@ -473,11 +471,11 @@ namespace Nekoyume.UI
             particleVFX.SetActive(false);
             resultItemVFX.SetActive(false);
 
-            var position = data.item.Value.Data.cls.ToEnumItemType() == ItemBase.ItemType.Food
+            var position = data.itemInformation.Value.item.Value.item.Value.Data.cls.ToEnumItemType() == ItemBase.ItemType.Food
                 ? inventory.consumablesButton.transform.position
                 : inventory.equipmentsButton.transform.position;
 
-            particleVFX.transform.position = _resultPopup.resultItem.transform.position;
+            particleVFX.transform.position = _resultPopup.itemInformation.iconArea.itemView.transform.position;
             particleVFX.transform.DOMoveX(position.x, 0.6f);
             particleVFX.transform.DOMoveY(position.y, 0.6f).SetEase(Ease.InCubic)
                 .onComplete = () => { resultItemVFX.SetActive(true); };

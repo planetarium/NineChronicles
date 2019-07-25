@@ -331,9 +331,9 @@ namespace Nekoyume.UI.Model
             inventory.Value.RemoveItems(data.materialItems);
 
             // 결과 아이템이 있다면, 인벤토리에 추가하고 해당 아이템을 선택하기.
-            if (!ReferenceEquals(data.item.Value, null))
+            if (!ReferenceEquals(data.itemInformation.Value.item.Value, null))
             {
-                inventory.Value.AddItem((ItemUsable) data.item.Value);
+                inventory.Value.AddItem((ItemUsable) data.itemInformation.Value.item.Value.item.Value);
             }
             
             RemoveEquipmentMaterial();
