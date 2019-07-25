@@ -89,6 +89,7 @@ namespace Nekoyume.UI
 
             priceInputField.text = _data.price.Value.ToString("N0");
             priceInputField.interactable = _data.priceInteractable.Value;
+            priceInputField.Select();
         }
     }
 }
