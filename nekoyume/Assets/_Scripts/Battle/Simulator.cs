@@ -26,6 +26,7 @@ namespace Nekoyume.Battle
         private int _totalWave;
         public SimplePriorityQueue<CharacterBase> Characters;
         private readonly List<List<ItemBase>> _waveRewards;
+        public List<ItemBase> rewards => _waveRewards.SelectMany(i => i).ToList();
         public const float TurnPriority = 100f;
 
         public Simulator(IRandom random, AvatarState avatarState, List<Food> foods, int worldStage, SkillBase skill=null)

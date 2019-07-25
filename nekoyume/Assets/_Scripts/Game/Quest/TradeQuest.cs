@@ -7,22 +7,28 @@ using Nekoyume.Model;
 namespace Nekoyume.Game.Quest
 {
     [Serializable]
-    public class BattleQuest : Quest
+    public class TradeQuest : Quest
     {
-        public BattleQuest(Data.Table.Quest data) : base(data)
+        private int _current;
+        public readonly string type;
+
+        public TradeQuest(Data.Table.Quest data) : base(data)
         {
+            var tradeData = (Data.Table.TradeQuest) data;
+            type = tradeData.type;
         }
 
         public override void Check(Player player, List<ItemBase> items)
         {
             if (Complete)
                 return;
-            Complete = player.worldStage > goal;
+            _current += 1;
+            Complete = _current >= goal;
         }
 
         public override string ToInfo()
         {
-            return LocalizationManager.LocalizeBattleQuestInfo(goal);
+            return LocalizationManager.LocalizeTradeQuest(type, _current, goal);
         }
     }
 }

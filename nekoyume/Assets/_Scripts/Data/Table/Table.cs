@@ -127,7 +127,16 @@ namespace Nekoyume.Data.Table
                     }
                     index++;
                 }
-                Add(arr[0], row);
+
+                try
+                {
+                    Add(arr[0], row);
+                }
+                catch (ArgumentException)
+                {
+                    Debug.LogError(arr[0]);
+                    throw;
+                }
             }
         }
     }

@@ -1,18 +1,15 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Nekoyume.Data;
+using Nekoyume.Game.Item;
 using Nekoyume.Model;
 
 namespace Nekoyume.Game.Quest
 {
-    public interface IQuest
-    {
-        void Check(Player player);
-    }
-
     [Serializable]
-    public abstract class Quest : IQuest
+    public abstract class Quest
     {
         protected Quest(Data.Table.Quest data)
         {
@@ -24,7 +21,7 @@ namespace Nekoyume.Game.Quest
         public decimal reward;
         public bool Complete { get; protected set; }
 
-        public abstract void Check(Player player);
+        public abstract void Check(Player player, List<ItemBase> items);
         public abstract string ToInfo();
     }
 
@@ -39,15 +36,34 @@ namespace Nekoyume.Game.Quest
                 var quest = new BattleQuest(data);
                 quests.Add(quest);
             }
+
+            foreach (var collectData in Tables.instance.CollectQuest.Values)
+            {
+                var quest = new CollectQuest(collectData);
+                quests.Add(quest);
+            }
+
+            foreach (var combinationData in Tables.instance.CombinationQuest.Values)
+            {
+                var quest = new CombinationQuest(combinationData);
+                quests.Add(quest);
+            }
+
+            foreach (var tradeQuestData in Tables.instance.TradeQuest.Values)
+            {
+                var quest = new TradeQuest(tradeQuestData);
+                quests.Add(quest);
+            }
         }
 
         private readonly List<Quest> quests;
 
-        public void Update(Player player)
+        public void UpdateStageQuest(Player player, List<ItemBase> items)
         {
-            foreach (var quest in quests)
+            var questList = quests.Where(q => q is BattleQuest || q is CollectQuest).ToArray();
+            foreach (var quest in questList)
             {
-                quest.Check(player);
+                quest.Check(player, items);
             }
         }
 
@@ -59,6 +75,20 @@ namespace Nekoyume.Game.Quest
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        public void UpdateCombinationQuest(ItemUsable itemUsable)
+        {
+            var quest = quests.OfType<CombinationQuest>()
+                .FirstOrDefault(i => i.cls == itemUsable.Data.cls && !i.Complete);
+            quest?.Check(null, new List<ItemBase> {itemUsable});
+        }
+
+        public void UpdateTradeQuest(string type)
+        {
+            var quest = quests.OfType<TradeQuest>()
+                .FirstOrDefault(i => i.type == type && !i.Complete);
+            quest?.Check(null, null);
         }
     }
 }

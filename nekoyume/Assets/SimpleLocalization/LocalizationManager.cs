@@ -194,6 +194,42 @@ namespace Assets.SimpleLocalization
             return Localize(localizationKey);
         }
 
+        public static string LocalizeBattleQuestInfo(int stage)
+        {
+            var localizationKey = "QUEST_BATTLE_INFO";
+            var pattern = Localize(localizationKey);
+            return string.Format(pattern, stage);
+        }
+
+        public static string LocalizeCollectQuestInfo(int itemId, int current, int goal)
+        {
+            var localizationKey = "QUEST_COLLECT_INFO";
+            var pattern = Localize(localizationKey);
+            var itemName = LocalizeItemName(itemId);
+            return string.Format(pattern, itemName, current, goal);
+        }
+
+        public static string LocalizeCombinationQuestInfo(string type, int current, int goal)
+        {
+            var localizationKey = "QUEST_COMBINATION_INFO";
+            var pattern = Localize(localizationKey);
+            var itemType = LocalizeItemType(type);
+            return string.Format(pattern, itemType, current, goal);
+        }
+
+        private static string LocalizeItemType(string type)
+        {
+            return Localize($"ITEM_TYPE_{type}");
+        }
+
+        public static string LocalizeTradeQuest(string type, int current, int goal)
+        {
+            var localizationKey = "QUEST_TRADE_INFO";
+            var pattern = Localize(localizationKey);
+            var tradeType = Localize($"UI_{type.ToUpper()}");
+            return string.Format(pattern, tradeType, current, goal);
+        }
+
         /// <summary>
         /// Get localized value by localization key.
         /// </summary>

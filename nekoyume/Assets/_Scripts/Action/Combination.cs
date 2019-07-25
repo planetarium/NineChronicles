@@ -129,6 +129,7 @@ namespace Nekoyume.Action
                 itemUsable.Stats.SetStatAdditionalValue(stat.Key, stat.Value);
 
                 avatarState.inventory.AddNonFungibleItem(itemUsable);
+                avatarState.questList.UpdateCombinationQuest(itemUsable);
             }
             else
             {
@@ -161,6 +162,7 @@ namespace Nekoyume.Action
                 // 조합 결과 획득.
                 var itemUsable = GetFood(itemEquipmentRow);
                 avatarState.inventory.AddNonFungibleItem(itemUsable);
+                avatarState.questList.UpdateCombinationQuest(itemUsable);
             }
 
             avatarState.updatedAt = DateTimeOffset.UtcNow;
