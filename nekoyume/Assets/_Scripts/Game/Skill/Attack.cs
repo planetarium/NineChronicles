@@ -21,13 +21,14 @@ namespace Nekoyume.Game.Skill
             var targetList = targets.ToArray();
             var elemental = Elemental.Create(elementalType);
             var multiplier = GetMultiplier(effect.hitCount, 1);
+            var skillPower = CalcSkillPower(caster);
             for (var i = 0; i < effect.hitCount; i++)
             {
                 foreach (var target in targetList)
                 {
                     var multiply = multiplier[i];
                     var critical = caster.IsCritical();
-                    var dmg = elemental.CalculateDmg(power, target.defElement);
+                    var dmg = elemental.CalculateDmg(skillPower, target.defElement);
                     // https://gamedev.stackexchange.com/questions/129319/rpg-formula-attack-and-defense
                     dmg = (dmg * dmg) / (dmg + target.def);
                     dmg = Convert.ToInt32(dmg * multiply);
@@ -45,6 +46,20 @@ namespace Nekoyume.Game.Skill
             }
 
             return infos;
+        }
+
+        private int CalcSkillPower(CharacterBase caster)
+        {
+            // 플레이어가 사용하는 스킬은 기본 공격력 + 스킬 위력으로 스킬이 나가도록 설정합니다.
+            if (caster is Player)
+            {
+                if (effect.category != SkillEffect.Category.Normal)
+                {
+                    return power + caster.atk;
+                }
+            }
+
+            return power;
         }
 
         private float[] GetMultiplier(int count, float total)
