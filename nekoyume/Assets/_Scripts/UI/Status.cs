@@ -29,6 +29,7 @@ namespace Nekoyume.UI
         private StatusDetail _statusDetail;
         private Inventory _inventory;
         private Quest _quest;
+        private ToggleGroup _toggleGroup;
 
         #region Mono
 
@@ -71,17 +72,17 @@ namespace Nekoyume.UI
                 throw new NotFoundComponentException<Quest>();
             }
 
+            _toggleGroup = GetComponentInChildren<ToggleGroup>();
+            if (ReferenceEquals(_toggleGroup, null))
+            {
+                throw new NotFoundComponentException<ToggleGroup>();
+            }
+
         }
 
         public override void Close()
         {
-            foreach (var toggle in new[] {BtnStatus, BtnInventory})
-            {
-                if (toggle.isOn)
-                {
-                    toggle.isOn = false;
-                }
-            }
+            _toggleGroup.SetAllTogglesOff();
             stageTitle.Close();
 
             base.Close();

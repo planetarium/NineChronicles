@@ -33,6 +33,8 @@ namespace Nekoyume.UI
                 Destroy(child.gameObject);
             }
 
+            list.verticalNormalizedPosition = 1f;
+
             base.Close();
         }
     }
