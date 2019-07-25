@@ -61,6 +61,9 @@ namespace Nekoyume.Action
         private static AvatarState CreateAvatarState(string name, Address avatarAddress, Address agentAddress)
         {
             var avatarState = new AvatarState(avatarAddress, agentAddress, name);
+#if UNITY_EDITOR
+            AddItemsForTest(avatarState);
+#endif
             return avatarState;
         }
 
