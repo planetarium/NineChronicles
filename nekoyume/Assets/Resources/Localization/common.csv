@@ -22,13 +22,13 @@ SPEECH_RANK_2,You haven't been[newline]in the rankings yet?[newline]Hmm.. I'm in
 SPEECH_RANK_3,For the glorious cats[newline]the Frey is giving you the prize!,영예로운 고양이들에게는[newline]여신님께서 상을 주신다!
 SPEECH_RANK_4,If Odin hadn't let go of[newline]Rocky's children like that..[newline]Oh! It’s nothing!,오딘님이 로키님의 자식들을[newline]그렇게 내치지만 않았어도..[newline]앗 아무것도 아니다!
 SPEECH_RANK_5,Don't be afraid of[newline]the enemy in front of you[newline]and trust your own inner self!,눈 앞의 적을 두려워 하지 말고[newline]자신의 내면을 믿어라!
-SPEECH_RANK_6,Every life has a property!,신계의 생명은 모두 속성을 갖고 있다!
+SPEECH_RANK_6,Every life has an elemental property!,신계의 생명은 모두 속성을 갖고 있다!
 SPEECH_DUNGEON_0,You can begin the expedition[newline]through the magicians below.,아래 마법진을 누르면[newline]탐험을 시작할 수 있다옹
 SPEECH_DUNGEON_1,You want to collect[newline]a lot of the same ingredients?[newline]Have you fought it[newline]over and over again?,똑같은 재료를 많이 모으고 싶다고?[newline]반복전투는 해봤나옹?
 SPEECH_DUNGEON_2,What monsters drop looks trivial[newline]but it makes a good material.,몬스터가 떨어뜨리는 것들은[newline]하찮아 보이지만 좋은 재작 재료가 된다옹
 SPEECH_DUNGEON_3,The Frey has always liked our cats.,여신님은 예로부터[newline]우리 고양이들을 좋아하셨다옹
 SPEECH_DUNGEON_4,The new world is balanced[newline]by the forces of 4 elements.,신계는 4가지 원소의 힘으로[newline]균형이 이루어지고 있다옹
-PLAYER_INIT_0,This place is full of shit.,여기도 우글우글하군
+PLAYER_INIT_0,This place is filled with little monsters.,여기도 우글우글하군
 PLAYER_INIT_1,Let's get started.,시작해볼까?
 PLAYER_ATTACK_0,Oops!,이얍!
 PLAYER_ATTACK_1,,
@@ -72,7 +72,7 @@ UI_NEXT_STAGE_FORMAT,{0} you’ll be taken to the next stage.,{0} 다음 스테�
 UI_BATTLE_AGAIN,Again,다시 전투
 UI_BATTLE_AGAIN_FORMAT,{0} Start a battle again.,{0} 다시 전투를 시작합니다.
 UI_BATTLE_WIN,Battle Win!,전투 승리!
-UI_REWARDS,Rewords,획득한 아이템
+UI_REWARDS,Rewards,획득한 아이템
 UI_BATTLE_RETRY,Retry,다시 도전
 UI_BATTLE_RETRY_FORMAT,Do you want to retry?,다시 도전하겠습니까?
 UI_BATTLE_LOSE,Battle Lose..,전투 패배
@@ -90,13 +90,13 @@ UI_COMBINATION_ITEM,Combine,아이템 제작
 UI_COMBINATION_ERROR,Error,조합 에러
 UI_COMBINATION_SUCCESS,Success!,조합 성공!
 UI_COMBINATION_FAIL,Failed..,조합 실패
-UI_COMBINATION_MATERIAL_COUNT_SELECTION,Material Amounts,재료 수량 선택
+UI_COMBINATION_MATERIAL_COUNT_SELECTION,Material Amount,재료 수량 선택
 UI_TOTAL_COUNT_N,Total {0},총 {0}개
 UI_SELL,Sell,판매
 UI_RETRIEVE,Retrieve,판매 취소
 UI_BUY,Buy,구매
 UI_EQUIP,Equip,장착
-UI_IN_MINING_A_BLOCK,Mining a block..,블록을 생성하고 있습니다..
+UI_IN_MINING_A_BLOCK,Mining blocks...,블록을 생성하고 있습니다..
 UI_TIPS_0,If you want to your character to be more powerful? Try to use set item.,세트 아이템을 장착하면 캐릭터의 능력치가 더욱 상승합니다.
 UI_TIPS_1,You just go to the auction when you feel difficult to make a nice weapon.,좋은 무기를 만들기 너무 어려우신가요? 경매장에서 물건을 골라보세요.
 UI_TIPS_2,Don't mistake when prepare the battle. Fire fears a fire truck full of water.,전열을 가다듬을 때에는 장비의 속성을 확인하세요. 특정 속성의 몬스터에게는 무용지물일 수도 있습니다.
@@ -106,9 +106,9 @@ UI_GAME_START,GAME START,게임 시작
 UI_HAIR,Hair,머리카락
 UI_LENS,Eyes,눈
 UI_ETC,ETC,"귀, 꼬리"
-UI_INPUT_NAME,Input your name..,이름을 입력하세요..
+UI_INPUT_NAME,Input your name...,이름을 입력하세요..
 UI_QUEST,DUNGEON,던전
-UI_COMBINATION,CRAFT SHOP,공방
+UI_COMBINATION,WORKSHOP,공방
 UI_SHOP,AUCTION,경매장
 UI_RANKING,RANKING,랭킹
 UI_EQUIP_CONSUMABLES,Food to eat,소모품을 장착하세요.
@@ -116,29 +116,29 @@ UI_EQUIP_EQUIPMENTS,Equipments,장비를 장착하세요.
 UI_BATTLE,Battle Start!,전투
 UI_BATTLE_CONTINUOUS,Auto Repeat,반복 전투
 UI_OVERALL_RANKING,Overall Ranking,전체 랭킹
-UI_RANKING_IN_24HOURS,Ranking in 24 hours,24시간 내 랭킹
+UI_RANKING_IN_24HOURS,24 Hour Ranking,24시간 내 랭킹
 UI_REFRESH,Refresh,새로고침
 UI_COMBINATION_SELECT_MATERIAL,Select Material,재료 선택
 UI_STATUS,Status,상태
 UI_EQUIPMENTS,Equipments,장비
 UI_CONSUMABLES,Consumables,소모품
 UI_MATERIALS,Materials,재료
-UI_SYNOPSIS_0,일주일간 Nine Chronicles 게임 테스트에 참여해주신 여러분[comma] 감사합니다.[newline][newline]초대 드린 오픈 카톡방에서 자유롭게 게임에 대한 정보를 나누어 주세요.[newline][newline]일주일 뒤에는 15분 내외로 작성 가능한 설문을 발송 드릴 예정입니다.,일주일간 Nine Chronicles 게임 테스트에 참여해주신 여러분[comma] 감사합니다.[newline][newline]초대 드린 오픈 카톡방에서 자유롭게 게임에 대한 정보를 나누어 주세요.[newline][newline]일주일 뒤에는 15분 내외로 작성 가능한 설문을 발송 드릴 예정입니다.
-UI_SYNOPSIS_1,"Peace and harmony[comma] and pride.. [newline][newline]These three things have already been lost in the world, and only the shell remains.","평화와 조화[comma] 그리고 긍지[newline][newline]이 세 가지는 이미 신계에는 없어져, 껍데기만 남은 단어가 되고 말았다. "
-UI_SYNOPSIS_2,"Odin, the guardian of the nine worlds and king of the gods..[newline][newline]After the birth of the three children of Quantum Rocky[comma][newline][newline]Odin scattered them in the name of cutting the buds of danger.","아홉 세계의 수호자이자 신들의 왕인 오딘. [newline][newline]그는 라그나로크, 예견되어 있던 세계의 멸망을 막기 위해 [newline][newline]양자 로키의 세 자녀들을 위험의 싹을 자른다는 명분으로 뿔뿔이 흩어놓았다. "
-UI_SYNOPSIS_3,The conflict between the gods[comma] who had to start because they couldn't be family..[newline][newline]As the conflicts between the gods escalate[comma][newline][newline]a chaotic energy gradually begins to be felt in Asgard.,가족이지만 가족일 수 없었기에[comma] 시작될 수밖에 없었던 신들의 갈등.. [newline][newline]이 즈음[comma] 아스가르드에는 점차 어수선한 기운이 감지되기 시작한다. 
-UI_SYNOPSIS_4,If the world's giant tree is angry[comma] there will be a great threat to the world![newline][newline]This was a fate that had been handed down from the past. [newline][newline]Before the inevitable sign of destruction[comma] the gods begin their own actions to avoid destruction.,세계수가 노하면 세계에 거대한 위협이 닥치리라![newline][newline]이는 이미 예부터 정해져 내려오던 시련이었다.[newline][newline]피할 수 없는 멸망의 징조 앞에[comma] 신들은 각자 멸망을 피하기 위한 행동을 시작한다. 
+UI_SYNOPSIS_0,First of all[comma] we want to thank you for helping us test Nine Chronicles.[newline][newline]Please feel free to use our group chat to ask questions and share your experience with each other.[newline][newline]We will be sending out a 15 minute survey at the end of the week to collect your feedback.,일주일간 Nine Chronicles 게임 테스트에 참여해주신 여러분[comma] 감사합니다.[newline][newline]초대 드린 오픈 카톡방에서 자유롭게 게임에 대한 정보를 나누어 주세요.[newline][newline]일주일 뒤에는 15분 내외로 작성 가능한 설문을 발송 드릴 예정입니다.
+UI_SYNOPSIS_1,"Peace[comma] harmony[comma] and honor...[newline][newline] Long lost treasures of this bygone world, where only their shells remain to be felt.","평화와 조화[comma] 그리고 긍지[newline][newline]이 세 가지는 이미 신계에는 없어져, 껍데기만 남은 단어가 되고 말았다. "
+UI_SYNOPSIS_2,"Odin, the Guardian of the Nine Worlds...[newline][newline]To prevent the Great Battle foretold, he scattered the three children of his adopted son Loki[newline][newline]without his consent and hid them.","아홉 세계의 수호자이자 신들의 왕인 오딘. [newline][newline]그는 라그나로크, 예견되어 있던 세계의 멸망을 막기 위해 [newline][newline]양자 로키의 세 자녀들을 위험의 싹을 자른다는 명분으로 뿔뿔이 흩어놓았다. "
+UI_SYNOPSIS_3,The prophecy took the family and the Nine Worlds apart...[newline][newline]And as the conflicts between the Gods escalate[comma][newline][newline]a strange tremor is felt in Asgard.,가족이지만 가족일 수 없었기에[comma] 시작될 수밖에 없었던 신들의 갈등.. [newline][newline]이 즈음[comma] 아스가르드에는 점차 어수선한 기운이 감지되기 시작한다.
+UI_SYNOPSIS_4,The World Tree was shivering...[newline][newline]This marked the beginning of a fate handed down from the past. [newline][newline]Facing the inevitable sign of destruction[comma] the Gods withdraw from each other and take actions to avoid their impending fate.,세계수가 노하면 세계에 거대한 위협이 닥치리라![newline][newline]이는 이미 예부터 정해져 내려오던 시련이었다.[newline][newline]피할 수 없는 멸망의 징조 앞에[comma] 신들은 각자 멸망을 피하기 위한 행동을 시작한다.
 UI_SYNOPSIS_5,And now..,그리고 지금..
 UI_MAIN,Main,메인
 UI_WORLD,World,월드
 UI_ITEM_INFORMATION,Information,아이템 정보
 UI_SELECT_AN_ITEM,Select an Item,아이템을 선택하세요.
-UI_ADDITIONAL_ABILITIES_WHEN_COMBINED,The following effects are granted when combine items.,아이템 제작 시 다음 효과 부여
+UI_ADDITIONAL_ABILITIES_WHEN_COMBINED,The following effects are granted when crafted,아이템 제작 시 다음 효과 부여
 NPC_01_NAME,Frey's Cat,프레이야의 하수인
 NPC_02_NAME,Fox Wizard,여우부족 마도사
 NPC_03_NAME,Fox Thief,여우부족 대장
 NPC_04_NAME,Gerimnir,제림니르
-NPC_05_NAME,Craft shop Cat,공방 주인
+NPC_05_NAME,Craft Shop Cat,공방 주인
 NPC_06_NAME,Auction Cat,경매장 주인
 UI_COMBINE_EQUIPMENTS,Combine Equipments,장비 제작
 UI_COMBINE_CONSUMABLES,Combine Consumables,소모품 제작
