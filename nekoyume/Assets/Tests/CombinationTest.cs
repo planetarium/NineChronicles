@@ -2,6 +2,8 @@ using System.Collections;
 using System.Linq;
 using Nekoyume.BlockChain;
 using Nekoyume.Data;
+using Nekoyume.Game;
+using Nekoyume.Game.Entrance;
 using Nekoyume.UI;
 using Nekoyume.UI.Module;
 using NUnit.Framework;
@@ -21,7 +23,7 @@ namespace Tests
             var equipment = Tables.instance.ItemEquipment.First().Value;
             var parts = Tables.instance.Item.Select(i => i.Value).First(r => r.skillId == 0);
 
-            var result = Nekoyume.Action.Combination.GetEquipment(equipment, parts, 0);
+            var result = Nekoyume.Action.Combination.GetEquipment(equipment, parts, 0, default);
             Assert.NotNull(result);
             Assert.Null(result.SkillBase);
         }
@@ -33,7 +35,7 @@ namespace Tests
             var parts = Tables.instance.Item.Select(i => i.Value)
                 .First(r => r.skillId != 0 && r.minChance > 0.01f);
 
-            var result = Nekoyume.Action.Combination.GetEquipment(equipment, parts, 0);
+            var result = Nekoyume.Action.Combination.GetEquipment(equipment, parts, 0, default);
             Assert.NotNull(result);
             Assert.AreEqual(parts.minChance, result.SkillBase.chance);
             Assert.AreEqual(parts.elemental, result.SkillBase.elementalType);
@@ -61,7 +63,6 @@ namespace Tests
             Widget.Find<Login>().SlotClick(2);
             Widget.Find<LoginDetail>().LoginClick();
             yield return new WaitUntil(() => GameObject.Find("room"));
-
 
             var w = Widget.Find<Combination>();
             w.Show();

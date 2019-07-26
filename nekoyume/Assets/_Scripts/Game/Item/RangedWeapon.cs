@@ -1,12 +1,12 @@
-using Nekoyume.Data.Table;
+using System;
 using Nekoyume.Game.Skill;
 
 namespace Nekoyume.Game.Item
 {
     public class RangedWeapon : Weapon
     {
-        public RangedWeapon(Data.Table.Item data, SkillBase skillBase = null, string id = null)
-            : base(data, skillBase, id)
+        public RangedWeapon(Data.Table.Item data, Guid id, SkillBase skillBase = null)
+            : base(data, id, skillBase)
         {
         }
     }

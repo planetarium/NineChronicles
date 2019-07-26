@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Linq;
 using Nekoyume.BlockChain;
@@ -21,7 +22,7 @@ namespace Tests
             _widget = Widget.Find<QuestPreparation>();
             var data = Tables.instance.ItemEquipment.Values.First();
             data.cls = "Ring";
-            var ring = new Ring(data);
+            var ring = new Ring(data, Guid.NewGuid());
             _ring = ring;
         }
 

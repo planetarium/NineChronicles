@@ -26,7 +26,7 @@ namespace Tests
         }
         public MinerFixture(string storeName)
         {
-            _storePath = $"{storeName}";
+            _storePath = $"{storeName}.ldb";
             const string hex = "02ed49dbe0f2c34d9dff8335d6dd9097f7a3ef17dfb5f048382eebc7f451a50aa1";
             var privateKey = new PrivateKey(ByteUtil.ParseHex(hex));
             if (File.Exists(_storePath))
