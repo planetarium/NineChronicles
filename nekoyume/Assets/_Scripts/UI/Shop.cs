@@ -340,7 +340,6 @@ namespace Nekoyume.UI
 
         private void OnClickSubmitItemCountAndPricePopup(Model.ItemCountAndPricePopup data)
         {
-            AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
             _loadingScreen.Show();
 
             if (Model.itemInfo.Value.item.Value is ShopItem shopItem)
@@ -353,7 +352,10 @@ namespace Nekoyume.UI
                         .Buy(shopItem.sellerAgentAddress.Value, shopItem.sellerAvatarAddress.Value,
                             shopItem.productId.Value)
                         .Subscribe(eval =>
-                            ResponseBuy(eval, inventory, shopItem.productId.Value, (ItemUsable) shopItem.item.Value))
+                        {
+                            ResponseBuy(eval, inventory, shopItem.productId.Value, (ItemUsable)shopItem.item.Value);
+                            AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
+                        })
                         .AddTo(this);
                 }
                 else
@@ -362,7 +364,10 @@ namespace Nekoyume.UI
                     ActionManager.instance
                         .SellCancellation(shopItem.sellerAvatarAddress.Value, shopItem.productId.Value)
                         .Subscribe(eval =>
-                            ResponseSellCancellation(eval, shopItem.productId.Value, (ItemUsable) shopItem.item.Value))
+                        {
+                            ResponseSellCancellation(eval, shopItem.productId.Value, (ItemUsable)shopItem.item.Value);
+                            AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
+                        })
                         .AddTo(this);
                 }
 
@@ -372,7 +377,11 @@ namespace Nekoyume.UI
             // 판매하겠습니다.
             ActionManager.instance
                 .Sell((ItemUsable) data.item.Value.item.Value, data.price.Value)
-                .Subscribe(ResponseSell)
+                .Subscribe(eval =>
+                {
+                    ResponseSell(eval);
+                    AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
+                })
                 .AddTo(this);
         }
 
