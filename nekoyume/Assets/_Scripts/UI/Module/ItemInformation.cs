@@ -119,7 +119,7 @@ namespace Nekoyume.UI.Module
                 }
 
                 image.enabled = true;
-                image.sprite = sprite;
+                image.overrideSprite = sprite;
             }
 
             // 텍스트.

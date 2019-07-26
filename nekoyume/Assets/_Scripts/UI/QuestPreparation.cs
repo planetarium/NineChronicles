@@ -223,13 +223,18 @@ namespace Nekoyume.UI
             }
         }
 
-        private void OnClickEquip(CountableItem inventoryItem)
+        private void OnClickEquip(CountableItem countableItem)
         {
-            var type = inventoryItem.item.Value.Data.cls.ToEnumItemType();
+            var type = countableItem.item.Value.Data.cls.ToEnumItemType();
             var slot = FindSelectedItemSlot(type);
             if (slot != null)
             {
-                slot.Set(inventoryItem.item.Value as ItemUsable);
+                if (inventoryAndItemInfo.inventory.Model.TryGetEquipment(slot.item, out var inventoryItem))
+                {
+                    inventoryItem.equipped.Value = false;
+                }
+                
+                slot.Set(countableItem.item.Value as ItemUsable);
                 SetGlowEquipSlot(false);
             }
 
@@ -239,16 +244,16 @@ namespace Nekoyume.UI
 
             if (type == ItemBase.ItemType.Armor)
             {
-                var armor = (Armor) inventoryItem.item.Value;
+                var armor = (Armor) countableItem.item.Value;
                 var weapon = (Weapon) _weaponSlot.item;
                 _player.UpdateSet(armor, weapon);
             }
             else if (type == ItemBase.ItemType.Weapon)
             {
-                _player.UpdateWeapon((Weapon) inventoryItem.item.Value);
+                _player.UpdateWeapon((Weapon) countableItem.item.Value);
             }
 
-            if(inventoryItem is InventoryItem item)
+            if(countableItem is InventoryItem item)
             {
                 item.equipped.Value = true;
             }

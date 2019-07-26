@@ -73,7 +73,7 @@ namespace Nekoyume.UI.Module
             }
 
             iconImage.enabled = true;
-            iconImage.sprite = sprite;
+            iconImage.overrideSprite = sprite;
             iconImage.SetNativeSize();
         }
     }

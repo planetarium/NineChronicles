@@ -173,6 +173,12 @@ namespace Nekoyume.UI.Model
         
         public bool TryGetEquipment(ItemUsable itemUsable, out InventoryItem inventoryItem)
         {
+            if (itemUsable is null)
+            {
+                inventoryItem = null;
+                return false;
+            }
+            
             foreach (var item in equipments)
             {
                 if (!(item.item.Value is Equipment equipment))
