@@ -107,6 +107,7 @@ namespace Nekoyume.UI.Module
             if (ReferenceEquals(Model, null))
             {
                 selectionImage.enabled = false;
+                SetEquipped(false);
 
                 return;
             }

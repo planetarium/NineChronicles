@@ -34,7 +34,7 @@ namespace Nekoyume.UI
                 defaultImage.enabled = false;
             }
             itemImage.enabled = true;
-            itemImage.sprite = sprite;
+            itemImage.overrideSprite = sprite;
             itemImage.SetNativeSize();
             item = equipment;
             if (button != null)
