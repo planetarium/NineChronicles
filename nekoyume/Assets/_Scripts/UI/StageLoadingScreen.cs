@@ -29,8 +29,8 @@ namespace Nekoyume.UI
                 var image = images[index];
                 var format = index % 2 == 0 ? Bg1Format : Bg2Format;
                 var sprite = Load(format, background);
-                image.overrideSprite = sprite;
                 image.gameObject.SetActive(true);
+                image.sprite = sprite;
                 image.SetNativeSize();
                 var rect = image.GetComponent<RectTransform>();
                 rect.anchoredPosition = position;

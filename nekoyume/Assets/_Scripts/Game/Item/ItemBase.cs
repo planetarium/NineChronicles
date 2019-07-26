@@ -89,11 +89,10 @@ namespace Nekoyume.Game.Item
         {
             string path;
             int? id;
-            var casting = item as ItemUsable;
-            if (!ReferenceEquals(casting, null))
+            if (item is ItemUsable itemUsable)
             {
                 path = EquipmentPath;
-                id = casting.Data.resourceId;
+                id = itemUsable.Data.resourceId;
             }
             else
             {

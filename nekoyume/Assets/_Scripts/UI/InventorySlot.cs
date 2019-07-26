@@ -29,9 +29,9 @@ namespace Nekoyume.UI
         public void Set(ItemBase item, int count)
         {
             Item = item;
-            Icon.overrideSprite = ItemBase.GetSprite(item);
-            Icon.SetNativeSize();
+            Icon.sprite = ItemBase.GetSprite(item);
             Icon.gameObject.SetActive(true);
+            Icon.SetNativeSize();
 
             LabelCount.text = count.ToString();
             LabelEquip.text = "";
