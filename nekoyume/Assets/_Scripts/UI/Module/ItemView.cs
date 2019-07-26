@@ -67,14 +67,14 @@ namespace Nekoyume.UI.Module
             }
             
             var sprite = ItemBase.GetSprite(Model.item.Value);
-            if (ReferenceEquals(sprite, null))
+            if (sprite is null)
             {
                 throw new FailedToLoadResourceException<Sprite>(Model.item.Value.Data.id.ToString());
             }
 
+            iconImage.enabled = true;
             iconImage.sprite = sprite;
             iconImage.SetNativeSize();
-            iconImage.enabled = true;
         }
     }
 }

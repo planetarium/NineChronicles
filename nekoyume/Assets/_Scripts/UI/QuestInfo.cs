@@ -26,7 +26,7 @@ namespace Nekoyume.UI
                 sprite = Resources.Load<Sprite>("UI/Textures/UI_icon_quest_01");
             }
 
-            icon.overrideSprite = sprite;
+            icon.sprite = sprite;
             icon.SetNativeSize();
             label.text = text;
             label.color = color;

@@ -7,14 +7,18 @@ namespace Nekoyume.UI
     public class EquipSlot : MonoBehaviour
     {
         public GameObject button;
-        public Image icon;
+        public Image defaultImage;
+        public Image itemImage;
         public ItemUsable item;
         public ItemBase.ItemType type;
 
         public void Unequip()
         {
-            icon.overrideSprite = null;
-            icon.SetNativeSize();
+            if (defaultImage)
+            {
+                defaultImage.enabled = true;    
+            }
+            itemImage.enabled = false;
             item = null;
             if (button != null)
             {
@@ -25,9 +29,13 @@ namespace Nekoyume.UI
         public void Set(ItemUsable equipment)
         {
             var sprite = ItemBase.GetSprite(equipment);
-            icon.overrideSprite = sprite;
-            icon.gameObject.SetActive(true);
-            icon.SetNativeSize();
+            if (defaultImage)
+            {
+                defaultImage.enabled = false;
+            }
+            itemImage.enabled = true;
+            itemImage.sprite = sprite;
+            itemImage.SetNativeSize();
             item = equipment;
             if (button != null)
             {
