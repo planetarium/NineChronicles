@@ -187,7 +187,10 @@ namespace Nekoyume.Battle
                         var count = Random.Next(r.range[0], r.range[1]);
                         for (int i = 0; i < count; i++)
                         {
-                            var item = ItemBase.ItemFactory(itemData);
+                            var b = new byte[16];
+                            Random.NextBytes(b);
+                            var guid = new Guid(b);
+                            var item = ItemBase.ItemFactory(itemData, guid);
                             items.Add(item);
                         }
                     }

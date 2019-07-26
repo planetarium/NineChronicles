@@ -8,8 +8,8 @@ namespace Nekoyume.Game.Item
     [Serializable]
     public class SetItem : Equipment
     {
-        public SetItem(Data.Table.Item data, SkillBase skillBase = null, string id = null)
-            : base(data, skillBase, id)
+        public SetItem(Data.Table.Item data, Guid id, SkillBase skillBase = null)
+            : base(data, id, skillBase)
         {
         }
 

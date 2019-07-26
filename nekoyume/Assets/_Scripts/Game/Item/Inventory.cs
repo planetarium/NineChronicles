@@ -17,7 +17,7 @@ namespace Nekoyume.Game.Item
 
             public Item(ItemBase itemBase, int count = 1)
             {
-                item = ItemBase.ItemFactory(itemBase.Data);
+                item = ItemBase.ItemFactory(itemBase.Data, default);
                 this.count = count;
             }
 
@@ -80,7 +80,7 @@ namespace Nekoyume.Game.Item
                 throw new KeyNotFoundException($"itemId: {id}");
             }
 
-            var newFungibleItem = ItemBase.ItemFactory(itemRow);
+            var newFungibleItem = ItemBase.ItemFactory(itemRow, default);
             _items.Add(new Item(newFungibleItem, count));
         }
 
@@ -90,18 +90,6 @@ namespace Nekoyume.Game.Item
             var nonFungibleItem = new Item(itemBase);
             _items.Add(nonFungibleItem);
             return nonFungibleItem;
-        }
-
-        // Todo. NonFungibleItem 개발 후 `int id` 인자를 `NonFungibleItem nonFungibleItem`로 수정.
-        public void AddNonFungibleItem(int id)
-        {
-            if (!Tables.instance.TryGetItemEquipment(id, out var itemEquipmentRow))
-            {
-                throw new KeyNotFoundException($"itemId: {id}");
-            }
-
-            var nonFungibleItem = ItemBase.ItemFactory(itemEquipmentRow);
-            _items.Add(new Item(nonFungibleItem));
         }
 
         public bool RemoveFungibleItem(ItemBase itemBase, int count = 1)

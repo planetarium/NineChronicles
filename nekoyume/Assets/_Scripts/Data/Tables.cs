@@ -94,7 +94,7 @@ namespace Nekoyume.Data
 
         public ItemBase CreateItemBase(int itemId)
         {
-            return !Item.TryGetValue(itemId, out var item) ? null : ItemBase.ItemFactory(item);
+            return !Item.TryGetValue(itemId, out var item) ? null : ItemBase.ItemFactory(item, default);
         }
         
         public bool TryGetItem(int itemId, out Item item)

@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Libplanet;
 using Nekoyume.Data;
@@ -26,7 +27,7 @@ namespace Tests
 
             var data = Tables.instance.ItemEquipment.Values.First();
             data.cls = "Ring";
-            _ring = new Ring(data);
+            _ring = new Ring(data, Guid.NewGuid());
             _player.Inventory.AddNonFungibleItem(_ring);
             _widget = Widget.Find<StatusDetail>();
 
@@ -55,7 +56,7 @@ namespace Tests
         {
             Assert.IsEmpty(_player.equipments.Where(i => i is Ring));
             _ring.Equip();
-            var ring = new Ring(_ring.Data);
+            var ring = new Ring(_ring.Data, Guid.NewGuid());
             ring.Equip();
             _player.Inventory.AddNonFungibleItem(ring);
             Assert.AreEqual(2, _player.equipments.Count(i => i is Ring));

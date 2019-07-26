@@ -11,6 +11,7 @@ using Nekoyume.Game.Skill;
 using Nekoyume.Model;
 using Nekoyume.State;
 using UniRx.Async;
+using UnityEngine;
 
 namespace Nekoyume.Action
 {
@@ -122,7 +123,11 @@ namespace Nekoyume.Action
                 var roll = GetRoll(monsterPartsMaterial.count, 0, normalizedRandomValue);
 
                 // 조합 결과 획득.
-                var itemUsable = GetEquipment(itemEquipmentRow, outMonsterPartsMaterialRow, roll);
+                var b = new byte[16];
+                ctx.Random.NextBytes(b);
+                var itemId = new Guid(b);
+                var itemUsable = GetEquipment(itemEquipmentRow, outMonsterPartsMaterialRow, roll, itemId);
+                Debug.LogError(itemId);
 
                 // 추가 스탯 적용.
                 var stat = GetStat(outMonsterPartsMaterialRow, roll);
@@ -160,7 +165,10 @@ namespace Nekoyume.Action
                 }
                 
                 // 조합 결과 획득.
-                var itemUsable = GetFood(itemEquipmentRow);
+                var b = new byte[16];
+                ctx.Random.NextBytes(b);
+                var itemId = new Guid(b);
+                var itemUsable = GetFood(itemEquipmentRow, itemId);
                 avatarState.inventory.AddNonFungibleItem(itemUsable);
                 avatarState.questList.UpdateCombinationQuest(itemUsable);
             }
@@ -236,7 +244,7 @@ namespace Nekoyume.Action
             return new StatMap(key, value);
         }
 
-        private static ItemUsable GetFood(ItemEquipment itemEquipment)
+        private static ItemUsable GetFood(ItemEquipment itemEquipment, Guid itemId)
         {
             // FixMe. 소모품에 랜덤 스킬을 할당했을 때, `HackAndSlash` 액션에서 예외 발생. 그래서 소모품은 랜덤 스킬을 할당하지 않음.
             /*
@@ -255,10 +263,10 @@ namespace Nekoyume.Action
              * Nekoyume.BlockChain.<CoMiner>d__31:MoveNext() (at Assets/_Scripts/BlockChain/Agent.cs:208)
              * UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
              */
-            return (ItemUsable) ItemBase.ItemFactory(itemEquipment);
+            return (ItemUsable) ItemBase.ItemFactory(itemEquipment, itemId);
         }
 
-        public static Equipment GetEquipment(ItemEquipment itemEquipment, Item monsterParts, float roll)
+        public static Equipment GetEquipment(ItemEquipment itemEquipment, Item monsterParts, float roll, Guid itemId)
         {
             var table = Tables.instance.SkillEffect;
             SkillBase skill;
@@ -278,7 +286,7 @@ namespace Nekoyume.Action
                 skill = null;
             }
 
-            return (Equipment) ItemBase.ItemFactory(itemEquipment, skill);
+            return (Equipment) ItemBase.ItemFactory(itemEquipment, itemId, skill);
         }
     }
 }

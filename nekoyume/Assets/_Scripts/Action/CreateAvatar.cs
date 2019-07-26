@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -52,31 +53,34 @@ namespace Nekoyume.Action
             }
 
             agentState.avatarAddresses.Add(index, avatarAddress);
-            avatarState = CreateAvatarState(name, avatarAddress, ctx.Signer);
+            avatarState = CreateAvatarState(name, avatarAddress, ctx.Signer, ctx.Random);
 
             states = states.SetState(ctx.Signer, agentState);
             return states.SetState(avatarAddress, avatarState);
         }
 
-        private static AvatarState CreateAvatarState(string name, Address avatarAddress, Address agentAddress)
+        private static AvatarState CreateAvatarState(string name, Address avatarAddress, Address agentAddress, IRandom random)
         {
             var avatarState = new AvatarState(avatarAddress, agentAddress, name);
 #if UNITY_EDITOR
-            AddItemsForTest(avatarState);
+            AddItemsForTest(avatarState, random);
 #endif
             return avatarState;
         }
 
-        private static void AddItemsForTest(AvatarState avatarState)
+        private static void AddItemsForTest(AvatarState avatarState, IRandom random)
         {
             foreach (var pair in Tables.instance.Item)
             {
-                avatarState.inventory.AddFungibleItem(ItemBase.ItemFactory(pair.Value));
+                avatarState.inventory.AddFungibleItem(ItemBase.ItemFactory(pair.Value, default));
             }
             
             foreach (var pair in Tables.instance.ItemEquipment.Where(pair => pair.Value.id > 10100000))
             {
-                avatarState.inventory.AddNonFungibleItem((ItemUsable) ItemBase.ItemFactory(pair.Value));
+                var b = new byte[16];
+                random.NextBytes(b);
+                var itemId = new Guid(b);
+                avatarState.inventory.AddNonFungibleItem((ItemUsable) ItemBase.ItemFactory(pair.Value, itemId));
             }
         }
     }

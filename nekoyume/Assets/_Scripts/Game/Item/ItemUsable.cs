@@ -12,9 +12,9 @@ namespace Nekoyume.Game.Item
         public new ItemEquipment Data { get; }
         public Stats Stats { get; }
         public SkillBase SkillBase { get; }
-        public string ItemId { get; }
+        public Guid ItemId { get; }
 
-        protected ItemUsable(Data.Table.Item data, SkillBase skillBase = null, string id = null)
+        protected ItemUsable(Data.Table.Item data, Guid id, SkillBase skillBase = null)
             : base(data)
         {
             Data = (ItemEquipment) data;
@@ -30,8 +30,7 @@ namespace Nekoyume.Game.Item
             {
                 Stats.SetStatValue(Data.ability2, Data.value2);
             }
-            var guid = Guid.NewGuid();
-            ItemId = id ?? guid.ToString();
+            ItemId = id;
         }
 
         protected bool Equals(ItemUsable other)

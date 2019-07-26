@@ -51,7 +51,7 @@ namespace Nekoyume.Game.Item
             Shoes,
         }
 
-        public static ItemBase ItemFactory(Data.Table.Item itemData, SkillBase skillBase = null, string id = null)
+        public static ItemBase ItemFactory(Data.Table.Item itemData, Guid id, SkillBase skillBase = null)
         {
             var type = itemData.cls.ToEnumItemType();
             switch (type)
@@ -59,25 +59,25 @@ namespace Nekoyume.Game.Item
                 case ItemType.Material:
                     return new Material(itemData);
                 case ItemType.Weapon:
-                    return new Weapon(itemData, skillBase, id);
+                    return new Weapon(itemData, id, skillBase);
                 case ItemType.RangedWeapon:
-                    return new RangedWeapon(itemData, skillBase, id);
+                    return new RangedWeapon(itemData, id, skillBase);
                 case ItemType.Armor:
-                    return new Armor(itemData, skillBase, id);
+                    return new Armor(itemData, id, skillBase);
                 case ItemType.Belt:
-                    return new Belt(itemData, skillBase, id);
+                    return new Belt(itemData, id, skillBase);
                 case ItemType.Necklace:
-                    return new Necklace(itemData, skillBase, id);
+                    return new Necklace(itemData, id, skillBase);
                 case ItemType.Ring:
-                    return new Ring(itemData, skillBase, id);
+                    return new Ring(itemData, id, skillBase);
                 case ItemType.Helm:
-                    return new Helm(itemData, skillBase, id);
+                    return new Helm(itemData, id, skillBase);
                 case ItemType.Set:
-                    return new SetItem(itemData, skillBase, id);
+                    return new SetItem(itemData, id, skillBase);
                 case ItemType.Food:
-                    return new Food(itemData, skillBase, id);
+                    return new Food(itemData, id, skillBase);
                 case ItemType.Shoes:
-                    return new Shoes(itemData, skillBase, id);
+                    return new Shoes(itemData, id, skillBase);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);
             }

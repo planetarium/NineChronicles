@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Nekoyume.Data;
 using Nekoyume.Game.Item;
@@ -13,7 +14,7 @@ namespace Tests
             var inventory = new Inventory();
             var updatedInventory = new Inventory();
             var row = Tables.instance.ItemEquipment.Values.First();
-            var itemUsable = (ItemUsable) ItemBase.ItemFactory(row, id: "1");
+            var itemUsable = (ItemUsable) ItemBase.ItemFactory(row, new Guid());
             updatedInventory.AddNonFungibleItem(itemUsable);
             Assert.IsTrue(updatedInventory.TryGetAddedItemFrom(inventory, out var result1));
             Assert.AreEqual(itemUsable, result1);
@@ -25,7 +26,7 @@ namespace Tests
             var inventory = new Inventory();
             var updatedInventory = new Inventory();
             var row = Tables.instance.ItemEquipment.Values.First();
-            var itemUsable = (ItemUsable) ItemBase.ItemFactory(row, id: "1");
+            var itemUsable = (ItemUsable) ItemBase.ItemFactory(row, new Guid());
             inventory.AddNonFungibleItem(itemUsable);
             updatedInventory.AddNonFungibleItem(itemUsable);
             updatedInventory.AddNonFungibleItem(itemUsable);
@@ -38,7 +39,7 @@ namespace Tests
         public void Item()
         {
             var row = Tables.instance.ItemEquipment.Values.First();
-            var itemUsable1 = (ItemUsable) ItemBase.ItemFactory(row, id: "1");
+            var itemUsable1 = (ItemUsable) ItemBase.ItemFactory(row, new Guid());
 
             var item1 = new Inventory.Item(itemUsable1);
             var item2 = new Inventory.Item(itemUsable1);
