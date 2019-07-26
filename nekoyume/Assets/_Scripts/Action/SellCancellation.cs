@@ -47,7 +47,7 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            var shopState = (ShopState) states.GetState(ShopState.Address) ?? new ShopState();
+            var shopState = (ShopState) states.GetState(ShopState.Address);
 
             // 상점에서 아이템을 빼온다.
             if (!shopState.TryUnregister(ctx.Signer, productId, out var outUnregisteredItem))

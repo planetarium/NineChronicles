@@ -74,7 +74,7 @@ namespace Nekoyume.UI
 
         private void GetAvatars(DateTimeOffset? dt)
         {
-            var rankingBoard = States.Instance.rankingState.Value;
+            var rankingBoard = (RankingState) AgentController.Agent.GetState(RankingState.Address);
             Debug.LogWarningFormat("rankingBoard: {0}", rankingBoard);
             _avatarStates = rankingBoard?.GetAvatars(dt) ?? new AvatarState[0];
         }

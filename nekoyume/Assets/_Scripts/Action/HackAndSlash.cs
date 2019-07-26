@@ -82,7 +82,7 @@ namespace Nekoyume.Action
             avatarState.updatedAt = DateTimeOffset.UtcNow;
             if (avatarState.worldStage > stage)
             {
-                var ranking = (RankingState) states.GetState(RankingState.Address) ?? new RankingState();
+                var ranking = (RankingState) states.GetState(RankingState.Address);
                 avatarState.clearedAt = DateTimeOffset.UtcNow;
                 ranking.Update(avatarState);
                 states = states.SetState(RankingState.Address, ranking);
