@@ -123,12 +123,19 @@ namespace Nekoyume.BlockChain
             DateTimeOffset started = DateTimeOffset.UtcNow;
             long existingBlocks = _blocks?.Tip?.Index ?? 0;
             Debug.Log("Preloading starts");
-            Task swarmPreloadTask = _swarm.PreloadAsync(
-                new Progress<BlockDownloadState>(state =>
-                    PreloadProcessed?.Invoke(this, state)
-                ),
-                trustedStateValidators: _trustedPeers
-            );
+
+            // _swarm.PreloadAsync() 에서 대기가 발생하기 때문에 
+            // 이를 다른 스레드에서 실행하여 우회하기 위해 Task로 감쌉니다.
+            var swarmPreloadTask = Task.Run(async () =>
+            {
+                await _swarm.PreloadAsync(
+                    new Progress<BlockDownloadState>(state =>
+                        PreloadProcessed?.Invoke(this, state)
+                    ),
+                    trustedStateValidators: _trustedPeers
+                );
+            });
+
             yield return new WaitUntil(() => swarmPreloadTask.IsCompleted);
             DateTimeOffset ended = DateTimeOffset.UtcNow;
 
