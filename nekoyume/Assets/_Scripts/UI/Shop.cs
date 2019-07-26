@@ -46,9 +46,7 @@ namespace Nekoyume.UI
         private float _defaultAnchoredPositionXOfBg1;
         private float _defaultAnchoredPositionXOfRight;
         private float _goOutTweenX = 800f;
-        private Stage _stage;
 
-        private Player _player;
         private GrayLoadingScreen _loadingScreen;
 
         private Sequence _sequenceOfShopItems;
@@ -62,7 +60,7 @@ namespace Nekoyume.UI
             _defaultAnchoredPositionXOfBg1 = bg1.anchoredPosition.x;
             _defaultAnchoredPositionXOfRight = right.anchoredPosition.x;
             base.Awake();
-            
+
             switchBuyButtonText.text = LocalizationManager.Localize("UI_BUY");
             switchSellButtonText.text = LocalizationManager.Localize("UI_SELL");
 
@@ -96,40 +94,46 @@ namespace Nekoyume.UI
 
         public override void Show()
         {
-            _stage = Game.Game.instance.stage;
-
-            _player = _stage.GetPlayer();
-            if (!ReferenceEquals(_player, null))
+            var stage = Game.Game.instance.stage;
+            var player = stage.GetPlayer();
+            if (player)
             {
-                _player.gameObject.SetActive(false);
+                player.gameObject.SetActive(false);
             }
 
             itemCountAndPricePopup = Find<ItemCountAndPricePopup>();
-            if (ReferenceEquals(itemCountAndPricePopup, null))
+            if (!itemCountAndPricePopup)
             {
                 throw new NotFoundComponentException<ItemCountAndPricePopup>();
             }
 
             _loadingScreen = Find<GrayLoadingScreen>();
-            if (ReferenceEquals(_loadingScreen, null))
+            if (!_loadingScreen)
             {
                 throw new NotFoundComponentException<LoadingScreen>();
             }
-            
+
             SetData(new Model.Shop(States.Instance.currentAvatarState.Value.inventory, ReactiveShopState.Items));
             base.Show();
 
             AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
         }
 
+        public override void OnCompleteOfShowAnimation()
+        {
+            base.OnCompleteOfShowAnimation();
+            canvasGroup.interactable = true;
+        }
+
         public override void Close()
         {
             Clear();
 
-            _stage.GetPlayer(_stage.roomPosition);
-            if (!ReferenceEquals(_player, null))
+            var stage = Game.Game.instance.stage;
+            var player = stage.GetPlayer(stage.roomPosition);
+            if (player)
             {
-                _player.gameObject.SetActive(true);
+                player.gameObject.SetActive(true);
             }
 
             Find<Menu>()?.ShowRoom();
@@ -146,7 +150,8 @@ namespace Nekoyume.UI
             Model.state.Subscribe(SubscribeState).AddTo(_disposablesForModel);
             Model.inventory.Value.selectedItemView.Subscribe(SubscribeInventorySelectedItem)
                 .AddTo(_disposablesForModel);
-            Model.itemInfo.Value.onClick.Subscribe(_ => inventoryAndItemInfo.inventory.Tooltip.Close()).AddTo(_disposablesForModel);
+            Model.itemInfo.Value.onClick.Subscribe(_ => inventoryAndItemInfo.inventory.Tooltip.Close())
+                .AddTo(_disposablesForModel);
             Model.shopItems.Value.selectedItemView.Subscribe(SubscribeShopItemsSelectedItem)
                 .AddTo(_disposablesForModel);
             Model.itemCountAndPricePopup.Value.item.Subscribe(OnPopup).AddTo(_disposablesForModel);
@@ -165,8 +170,8 @@ namespace Nekoyume.UI
         {
             _sequenceOfShopItems?.Kill();
             bg1.anchoredPosition = new Vector2(_defaultAnchoredPositionXOfBg1, bg1.anchoredPosition.y);
-            right.anchoredPosition = new Vector2(_defaultAnchoredPositionXOfRight , right.anchoredPosition.y);
-            
+            right.anchoredPosition = new Vector2(_defaultAnchoredPositionXOfRight, right.anchoredPosition.y);
+
             shopItems.Clear();
             inventoryAndItemInfo.Clear();
             _disposablesForModel.DisposeAllAndClear();
@@ -191,13 +196,15 @@ namespace Nekoyume.UI
                     switchBuyButton.image.sprite = Resources.Load<Sprite>("UI/Textures/button_black_01");
                     switchSellButton.image.sprite = Resources.Load<Sprite>("UI/Textures/button_blue_01");
                     break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(state), state, null);
             }
 
             if (inventoryAndItemInfo.inventory.Tooltip)
             {
-                inventoryAndItemInfo.inventory.Tooltip.Close();   
+                inventoryAndItemInfo.inventory.Tooltip.Close();
             }
-            
+
             canvasGroup.interactable = false;
             _sequenceOfShopItems?.Kill();
             _sequenceOfShopItems = DOTween.Sequence();
@@ -252,11 +259,11 @@ namespace Nekoyume.UI
 
         private void SubscribeInventorySelectedItem(InventoryItemView view)
         {
-            if (view is null)
+            if (!view)
             {
                 return;
             }
-            
+
             if (inventoryAndItemInfo.inventory.Tooltip.Model.target.Value == view.RectTransform)
             {
                 inventoryAndItemInfo.inventory.Tooltip.Close();
@@ -287,18 +294,18 @@ namespace Nekoyume.UI
 
         private void SubscribeShopItemsSelectedItem(ShopItemView view)
         {
-            if (view is null)
+            if (!view)
             {
                 return;
             }
-            
+
             if (inventoryAndItemInfo.inventory.Tooltip.Model.target.Value == view.RectTransform)
             {
                 inventoryAndItemInfo.inventory.Tooltip.Close();
 
                 return;
             }
-            
+
             if (Model.state.Value == UI.Model.Shop.State.Buy)
             {
                 inventoryAndItemInfo.inventory.Tooltip.Show(
@@ -315,7 +322,7 @@ namespace Nekoyume.UI
             else
             {
                 inventoryAndItemInfo.inventory.Tooltip.Show(
-                    view.RectTransform, 
+                    view.RectTransform,
                     view.Model,
                     value => Model.ButtonEnabledFuncForSell(view.Model),
                     LocalizationManager.Localize("UI_RETRIEVE"),
@@ -329,7 +336,7 @@ namespace Nekoyume.UI
 
         private void OnPopup(CountableItem data)
         {
-            if (ReferenceEquals(data, null))
+            if (data is null)
             {
                 itemCountAndPricePopup.Close();
                 return;
@@ -353,7 +360,7 @@ namespace Nekoyume.UI
                             shopItem.productId.Value)
                         .Subscribe(eval =>
                         {
-                            ResponseBuy(eval, inventory, shopItem.productId.Value, (ItemUsable)shopItem.item.Value);
+                            ResponseBuy(eval, inventory, shopItem.productId.Value, (ItemUsable) shopItem.item.Value);
                             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
                         })
                         .AddTo(this);
@@ -365,7 +372,7 @@ namespace Nekoyume.UI
                         .SellCancellation(shopItem.sellerAvatarAddress.Value, shopItem.productId.Value)
                         .Subscribe(eval =>
                         {
-                            ResponseSellCancellation(eval, shopItem.productId.Value, (ItemUsable)shopItem.item.Value);
+                            ResponseSellCancellation(eval, shopItem.productId.Value, (ItemUsable) shopItem.item.Value);
                             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
                         })
                         .AddTo(this);
@@ -441,14 +448,14 @@ namespace Nekoyume.UI
 
             StartCoroutine(CoShowBuyResultVFX(productId));
             Model.inventory.Value.AddItem(shopItem);
-            
+
             _loadingScreen.Close();
         }
 
         private IEnumerator CoShowBuyResultVFX(Guid productId)
         {
             var shopItemView = shopItems.GetByProductId(productId);
-            if (ReferenceEquals(shopItemView, null))
+            if (!shopItemView)
             {
                 yield break;
             }

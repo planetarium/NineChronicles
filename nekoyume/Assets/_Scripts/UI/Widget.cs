@@ -180,12 +180,12 @@ namespace Nekoyume.UI
             }
         }
 
-        public void OnCompleteOfShowAnimation()
+        public virtual void OnCompleteOfShowAnimation()
         {
             Animator.enabled = false;
         }
 
-        public void OnCompleteOfCloseAnimation()
+        public virtual void OnCompleteOfCloseAnimation()
         {
             _animCloseEnd = true;
         }
