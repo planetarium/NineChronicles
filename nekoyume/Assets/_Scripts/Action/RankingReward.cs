@@ -48,7 +48,7 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            var ranking = (RankingState) states.GetState(RankingState.Address) ?? new RankingState();
+            var ranking = (RankingState) states.GetState(RankingState.Address);
             var rewards = new List<decimal>
             {
                 gold1,
