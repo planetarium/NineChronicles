@@ -356,7 +356,6 @@ namespace Nekoyume.Game
 
         public IEnumerator CoGetReward(List<ItemBase> rewards)
         {
-            _battleResultModel.rewards.Clear();
             foreach (var item in rewards)
             {
                 var countableItem = new CountableItem(item, 1);
