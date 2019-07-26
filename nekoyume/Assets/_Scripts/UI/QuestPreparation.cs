@@ -117,6 +117,8 @@ namespace Nekoyume.UI
                 return;
             }
 
+            var slotItem = slot.item;
+
             slot.Unequip();
             if (slot.type == ItemBase.ItemType.Armor)
             {
@@ -133,6 +135,11 @@ namespace Nekoyume.UI
             AudioController.instance.PlaySfx(slot.type == ItemBase.ItemType.Food
                 ? AudioController.SfxCode.ChainMail2
                 : AudioController.SfxCode.Equipment);
+
+            if (inventoryAndItemInfo.inventory.Model.TryGetEquipment(slotItem, out var inventoryItem))
+            {
+                inventoryItem.equipped.Value = false;
+            }
         }
 
         public void SelectItem(Toggle item)
@@ -239,6 +246,11 @@ namespace Nekoyume.UI
             else if (type == ItemBase.ItemType.Weapon)
             {
                 _player.UpdateWeapon((Weapon) inventoryItem.item.Value);
+            }
+
+            if(inventoryItem is InventoryItem item)
+            {
+                item.equipped.Value = true;
             }
         }
 

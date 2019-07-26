@@ -72,6 +72,7 @@ namespace Nekoyume.UI.Model
                     break;
                 case State.Sell:
                     inventory.Value.dimmedFunc.Value = DimmedFuncForSell;
+                    inventory.Value.equippedFunc.Value = EquippedFuncForSell;
                     itemInfo.Value.buttonEnabledFunc.Value = ButtonEnabledFuncForSell;
                     break;
             }
@@ -79,15 +80,15 @@ namespace Nekoyume.UI.Model
         
         public bool DimmedFuncForSell(InventoryItem inventoryItem)
         {
-            if (inventoryItem.item.Value.Data.cls == DimmedString)
-            {
-                return true;
-            }
-            if (!(inventoryItem.item.Value is Equipment equipment))
+            return inventoryItem.item.Value.Data.cls == DimmedString;
+        }
+
+        public bool EquippedFuncForSell(InventoryItem inventoryItem)
+        {
+            if(!(inventoryItem.item.Value is Equipment equipment))
             {
                 return false;
             }
-
             return equipment.equipped;
         }
 
