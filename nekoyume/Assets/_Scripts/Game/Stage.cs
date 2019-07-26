@@ -276,11 +276,14 @@ namespace Nekoyume.Game
             var character = GetCharacter(caster);
             var infos = skillInfos.ToList();
 
-            yield return StartCoroutine(BeforeSkill(character));
+            if (character)
+            {
+                yield return StartCoroutine(BeforeSkill(character));
 
-            yield return StartCoroutine(character.CoAttack(infos));
+                yield return StartCoroutine(character.CoAttack(infos));
 
-            yield return StartCoroutine(AfterSkill(character));
+                yield return StartCoroutine(AfterSkill(character));
+            }
         }
 
         public IEnumerator CoAreaAttack(CharacterBase caster, IEnumerable<Model.Skill.SkillInfo> skillInfos)
@@ -288,11 +291,14 @@ namespace Nekoyume.Game
             var character = GetCharacter(caster);
             var infos = skillInfos.ToList();
 
-            yield return StartCoroutine(BeforeSkill(character));
+            if (character)
+            {
+                yield return StartCoroutine(BeforeSkill(character));
 
-            yield return StartCoroutine(character.CoAreaAttack(infos));
+                yield return StartCoroutine(character.CoAreaAttack(infos));
 
-            yield return StartCoroutine(AfterSkill(character));
+                yield return StartCoroutine(AfterSkill(character));
+            }
         }
 
         public IEnumerator CoDoubleAttack(CharacterBase caster, IEnumerable<Model.Skill.SkillInfo> skillInfos)
@@ -300,11 +306,14 @@ namespace Nekoyume.Game
             var character = GetCharacter(caster);
             var infos = skillInfos.ToList();
 
-            yield return StartCoroutine(BeforeSkill(character));
+            if (character)
+            {
+                yield return StartCoroutine(BeforeSkill(character));
 
-            yield return StartCoroutine(character.CoDoubleAttack(infos));
+                yield return StartCoroutine(character.CoDoubleAttack(infos));
 
-            yield return StartCoroutine(AfterSkill(character));
+                yield return StartCoroutine(AfterSkill(character));
+            }
         }
 
         public IEnumerator CoBlow(CharacterBase caster, IEnumerable<Model.Skill.SkillInfo> skillInfos)
@@ -312,11 +321,14 @@ namespace Nekoyume.Game
             var character = GetCharacter(caster);
             var infos = skillInfos.ToList();
 
-            yield return StartCoroutine(BeforeSkill(character));
+            if (character)
+            {
+                yield return StartCoroutine(BeforeSkill(character));
 
-            yield return StartCoroutine(character.CoBlow(infos));
+                yield return StartCoroutine(character.CoBlow(infos));
 
-            yield return StartCoroutine(AfterSkill(character));
+                yield return StartCoroutine(AfterSkill(character));
+            }
         }
 
         public IEnumerator CoHeal(CharacterBase caster, IEnumerable<Model.Skill.SkillInfo> skillInfos)
@@ -324,11 +336,14 @@ namespace Nekoyume.Game
             var character = GetCharacter(caster);
             var infos = skillInfos.ToList();
 
-            yield return StartCoroutine(BeforeSkill(character));
+            if (character)
+            {
+                yield return StartCoroutine(BeforeSkill(character));
 
-            yield return StartCoroutine(character.CoHeal(infos));
+                yield return StartCoroutine(character.CoHeal(infos));
 
-            yield return StartCoroutine(AfterSkill(character));
+                yield return StartCoroutine(AfterSkill(character));
+            }
         }
 
         public IEnumerator CoDropBox(List<ItemBase> items)
@@ -424,23 +439,28 @@ namespace Nekoyume.Game
 
         private IEnumerator BeforeSkill(Character.CharacterBase character)
         {
-            var enemy = GetComponentsInChildren<Character.CharacterBase>()
-                .Where(c => c.gameObject.CompareTag(character.targetTag) && c.IsAlive())
-                .OrderBy(c => c.transform.position.x).FirstOrDefault();
-            if (enemy == null || character.TargetInRange(enemy)) yield break;
-            character.StartRun();
-            yield return new WaitUntil(() => character.TargetInRange(enemy));
-
+            if (character)
+            {
+                var enemy = GetComponentsInChildren<Character.CharacterBase>()
+                    .Where(c => c.gameObject.CompareTag(character.targetTag) && c.IsAlive())
+                    .OrderBy(c => c.transform.position.x).FirstOrDefault();
+                if (enemy == null || character.TargetInRange(enemy)) yield break;
+                character.StartRun();
+                yield return new WaitUntil(() => character.TargetInRange(enemy));
+            }
         }
 
         private IEnumerator AfterSkill(Character.CharacterBase character)
         {
-            yield return new WaitForSeconds(SkillDelay);
-            var enemy = GetComponentsInChildren<Character.CharacterBase>()
-                .Where(c => c.gameObject.CompareTag(character.targetTag) && c.IsAlive())
-                .OrderBy(c => c.transform.position.x).FirstOrDefault();
-            if (enemy != null && !character.TargetInRange(enemy))
-                character.StartRun();
+            if (character)
+            {
+                yield return new WaitForSeconds(SkillDelay);
+                var enemy = GetComponentsInChildren<Character.CharacterBase>()
+                    .Where(c => c.gameObject.CompareTag(character.targetTag) && c.IsAlive())
+                    .OrderBy(c => c.transform.position.x).FirstOrDefault();
+                if (enemy != null && !character.TargetInRange(enemy))
+                    character.StartRun();
+            }
         }
     }
 }

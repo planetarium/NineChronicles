@@ -348,19 +348,23 @@ namespace Nekoyume.Game.Character
 
         private void ProcessHeal(CharacterBase target, Model.Skill.SkillInfo info)
         {
-            var calc = info.Effect - target.HP;
-            if (calc <= 0)
+            if (target)
             {
-                calc = 0;
+                var calc = info.Effect - target.HP;
+                if (calc <= 0)
+                {
+                    calc = 0;
+                }
+                target.HP += calc;
+
+                var position = transform.TransformPoint(0f, 1.7f, 0f);
+                var force = new Vector3(-0.1f, 0.5f);
+                var txt = calc.ToString();
+                PopUpHeal(position, force, txt, info.Critical);
+
+                UpdateHpBar();
+
             }
-            target.HP += calc;
-
-            var position = transform.TransformPoint(0f, 1.7f, 0f);
-            var force = new Vector3(-0.1f, 0.5f);
-            var txt = calc.ToString();
-            PopUpHeal(position, force, txt, info.Critical);
-
-            UpdateHpBar();
 
             Event.OnUpdateStatus.Invoke();
         }
