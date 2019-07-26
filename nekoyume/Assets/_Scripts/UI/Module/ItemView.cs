@@ -72,7 +72,7 @@ namespace Nekoyume.UI.Module
                 throw new FailedToLoadResourceException<Sprite>(Model.item.Value.Data.id.ToString());
             }
 
-            iconImage.overrideSprite = sprite;
+            iconImage.sprite = sprite;
             iconImage.SetNativeSize();
             iconImage.enabled = true;
         }
