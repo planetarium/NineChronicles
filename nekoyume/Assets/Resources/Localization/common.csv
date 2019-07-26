@@ -76,7 +76,7 @@ UI_REWARDS,Rewards,획득한 아이템
 UI_BATTLE_RETRY,Retry,다시 도전
 UI_BATTLE_RETRY_FORMAT,You can be stronger[newline]by playing the last stage to level up[newline]or build the equipment.,지난 스테이지를 플레이하여 레벨을 올리거나[newline]장비를 제작하면 더 강해질 수 있습니다.
 UI_BATTLE_LOSE,Battle Lose..,전투 패배
-UI_N_SECONDS_LATER,After {0:0} seconds[comma],{0:0}초 후
+UI_AFTER_N_SECONDS,After {0:0} seconds[comma],{0:0}초 후
 UI_YES,Yes,네
 UI_NO,No,아니오
 UI_OK,OK,확인
@@ -164,3 +164,12 @@ UI_SKILL_AREA_NORMAL,Wide Area Attack,광역 난사
 UI_SKILL_AREA_FIRE_OR_WATER,Tsunami,해일
 UI_SKILL_AREA_LAND,Storm,폭풍
 UI_SKILL_AREA_WIND,Typhoon,태풍
+UI_EXP,Exp,경험치
+UI_BATTLE_RESULT_VICTORY_MESSAGE,A전투에서 승리하였습니다.,전투에서 승리하였습니다.
+UI_BATTLE_RESULT_DEFEAT_MESSAGE,A당신은 더욱 강해져야 합니다.,당신은 더욱 강해져야 합니다.
+UI_ADDITIONAL_REWARDS,Additional Rewards,추가 보상
+UI_BATTLE_RESULT_DEFEAT_SUGGESTION_1,A반복 전투로 레벨업!,반복 전투로 레벨업!
+UI_BATTLE_RESULT_DEFEAT_SUGGESTION_1_BUTTON,A월드맵으로 가기,월드맵으로 가기
+UI_BATTLE_RESULT_DEFEAT_SUGGESTION_2,A장비를 만들어 장착!,장비를 만들어 장착!
+UI_BATTLE_RESULT_DEFEAT_SUGGESTION_2_BUTTON,A조합하러 가기,조합하러 가기
+UI_EXIT,Exit,나가기

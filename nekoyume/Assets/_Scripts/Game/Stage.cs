@@ -15,6 +15,7 @@ using Nekoyume.Model;
 using Nekoyume.UI;
 using Nekoyume.Game.VFX;
 using Nekoyume.Game.VFX.Skill;
+using Nekoyume.UI.Model;
 using UnityEngine;
 
 namespace Nekoyume.Game
@@ -46,6 +47,7 @@ namespace Nekoyume.Game
         
         private Camera _camera;
         private BattleLog _battleLog;
+        private BattleResult.Model _battleResultModel;
 
         protected void Awake()
         {
@@ -204,23 +206,27 @@ namespace Nekoyume.Game
 
         private IEnumerator CoStageEnter(int stage)
         {
-            if (Tables.instance.Background.TryGetValue(stage, out Data.Table.Background data))
+            if (!Tables.instance.Background.TryGetValue(stage, out Data.Table.Background data))
             {
-                id = stage;
-                zone = data.background;
-                LoadBackground(zone, 3.0f);
-                RunPlayer();
-                Widget.Find<Gold>().Close();
-
-                var title = Widget.Find<StageTitle>();
-                title.Show(stage);
-
-                yield return new WaitForSeconds(2.0f);
-
-                yield return StartCoroutine(title.CoClose());
-
-                AudioController.instance.PlayMusic(data.bgm);
+                yield break;
             }
+            
+            _battleResultModel = new BattleResult.Model();
+            
+            id = stage;
+            zone = data.background;
+            LoadBackground(zone, 3.0f);
+            RunPlayer();
+            Widget.Find<Gold>().Close();
+
+            var title = Widget.Find<StageTitle>();
+            title.Show(stage);
+
+            yield return new WaitForSeconds(2.0f);
+
+            yield return StartCoroutine(title.CoClose());
+
+            AudioController.instance.PlayMusic(data.bgm);
         }
 
         private IEnumerator CoStageEnd(BattleLog log)
@@ -239,7 +245,10 @@ namespace Nekoyume.Game
             {
                 objectPool.ReleaseAll();
             }
-            Widget.Find<BattleResult>().Show(log.result, repeatStage);
+
+            _battleResultModel.state = log.result;
+            _battleResultModel.shouldRepeat = repeatStage;
+            Widget.Find<BattleResult>().Show(_battleResultModel);
 
             yield return null;
         }
@@ -347,9 +356,11 @@ namespace Nekoyume.Game
 
         public IEnumerator CoGetReward(List<ItemBase> rewards)
         {
+            _battleResultModel.rewards.Clear();
             foreach (var item in rewards)
             {
-                Widget.Find<BattleResult>().Add(item);
+                var countableItem = new CountableItem(item, 1);
+                _battleResultModel.rewards.Add(countableItem);
             }
 
             yield return null;
@@ -380,6 +391,7 @@ namespace Nekoyume.Game
 
         public IEnumerator CoGetExp(long exp)
         {
+            _battleResultModel.exp += exp;
             var player = GetPlayer();
             yield return StartCoroutine(player.CoGetExp(exp));
         }
