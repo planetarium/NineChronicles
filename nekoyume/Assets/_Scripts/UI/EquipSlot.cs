@@ -13,7 +13,8 @@ namespace Nekoyume.UI
 
         public void Unequip()
         {
-            icon.gameObject.SetActive(false);
+            icon.overrideSprite = null;
+            icon.SetNativeSize();
             item = null;
             if (button != null)
             {
