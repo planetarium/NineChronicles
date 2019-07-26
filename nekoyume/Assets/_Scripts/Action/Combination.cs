@@ -11,7 +11,6 @@ using Nekoyume.Game.Skill;
 using Nekoyume.Model;
 using Nekoyume.State;
 using UniRx.Async;
-using UnityEngine;
 
 namespace Nekoyume.Action
 {
@@ -127,7 +126,6 @@ namespace Nekoyume.Action
                 ctx.Random.NextBytes(b);
                 var itemId = new Guid(b);
                 var itemUsable = GetEquipment(itemEquipmentRow, outMonsterPartsMaterialRow, roll, itemId);
-                Debug.LogError(itemId);
 
                 // 추가 스탯 적용.
                 var stat = GetStat(outMonsterPartsMaterialRow, roll);
