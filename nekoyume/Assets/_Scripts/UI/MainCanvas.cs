@@ -63,12 +63,12 @@ namespace Nekoyume.UI
 
             // 모듈류.
             Widget.Create<StatusDetail>();
-            Widget.Create<BattleResult>();
             Widget.Create<Inventory>();
             Widget.Create<Gold>();
             Widget.Create<Quest>();
 
             // 팝업류.
+            Widget.Create<BattleResult>();
             Widget.Create<SimpleItemCountPopup>();
             Widget.Create<ItemCountAndPricePopup>();
             Widget.Create<CombinationResultPopup>();

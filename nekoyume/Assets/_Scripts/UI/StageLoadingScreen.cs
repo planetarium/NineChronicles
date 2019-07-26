@@ -11,17 +11,30 @@ namespace Nekoyume.UI
         private const string Bg1Format = "images/{0}_1";
         private const string Bg2Format = "images/{0}_2";
         private const string DefaultBgString = "chapter_1_1";
+        private const float ImageMargin = 700f;
 
         public List<Image> images;
         public bool closeEnd;
 
-        private BattleResult _battleResult;
+        private bool _shouldClose;
         private List<RectTransform> _rects;
-        private const float ImageMargin = 700f;
 
-        public void Show(BattleResult result, string background)
+        private static Sprite Load(string format, string background)
         {
-            _battleResult = result;
+            var path = string.Format(format, background);
+            var sprite = Resources.Load<Sprite>(path);
+            if (ReferenceEquals(sprite, null))
+            {
+                path = string.Format(format, DefaultBgString);
+                sprite = Resources.Load<Sprite>(path);
+            }
+
+            return sprite;
+        }
+        
+        public void Show(string background)
+        {
+            _shouldClose = false;
             _rects = new List<RectTransform>();
             var position = new Vector2(MainCanvas.instance.RectTransform.rect.width, 0f);
             for (var index = 0; index < images.Count; index++)
@@ -41,7 +54,14 @@ namespace Nekoyume.UI
             base.Show();
             StartCoroutine(CoRun());
         }
-
+        
+        public override IEnumerator CoClose()
+        {
+            _shouldClose = true;
+            yield return new WaitUntil(() => closeEnd);
+            yield return StartCoroutine(base.CoClose());
+        }
+        
         private IEnumerator CoRun()
         {
             var delta = _rects.Average(r => r.rect.width);
@@ -54,7 +74,7 @@ namespace Nekoyume.UI
                     var value = pos.x - ImageMargin * Time.deltaTime;
                     if (value < -rect.rect.width - delta)
                     {
-                        if (!_battleResult.actionEnd)
+                        if (!_shouldClose)
                         {
                             pos.x = -rect.rect.width + ImageMargin * images.Count;
                             rect.anchoredPosition = pos;
@@ -77,25 +97,6 @@ namespace Nekoyume.UI
             }
 
             yield return null;
-        }
-
-        private static Sprite Load(string format, string background)
-        {
-            var path = string.Format(format, background);
-            var sprite = Resources.Load<Sprite>(path);
-            if (ReferenceEquals(sprite, null))
-            {
-                path = string.Format(format, DefaultBgString);
-                sprite = Resources.Load<Sprite>(path);
-            }
-
-            return sprite;
-        }
-
-        public override IEnumerator CoClose()
-        {
-            yield return new WaitUntil(() => closeEnd);
-            yield return StartCoroutine(base.CoClose());
         }
     }
 }
