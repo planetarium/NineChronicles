@@ -23,6 +23,7 @@ namespace Nekoyume.UI.Model
         
         public readonly ReactiveProperty<InventoryItemView> selectedItemView = new ReactiveProperty<InventoryItemView>(null);
         public readonly ReactiveProperty<Func<InventoryItem, bool>> dimmedFunc = new ReactiveProperty<Func<InventoryItem, bool>>();
+        public readonly ReactiveProperty<Func<InventoryItem, bool>> equippedFunc = new ReactiveProperty<Func<InventoryItem, bool>>();
 
         public readonly Subject<InventoryItemView> onDoubleClickItemView = new Subject<InventoryItemView>();
         
@@ -287,7 +288,8 @@ namespace Nekoyume.UI.Model
                 
                 switch (item.item)
                 {
-                    case Equipment _:
+                    case Equipment equipment:
+                        inventoryItem.equipped.Value = equipment.equipped;
                         equipments.Add(inventoryItem);
                         break;
                     case Food _:

@@ -11,6 +11,7 @@ namespace Nekoyume.UI.Module
     [RequireComponent(typeof(Button))]
     public class InventoryItemView : CountableItemView<Model.InventoryItem>
     {
+        public GameObject equippedIcon;
         public Image coverImage;
         public Image selectionImage;
         public Image glowImage;
@@ -74,6 +75,7 @@ namespace Nekoyume.UI.Module
             Model.selected.Subscribe(SetSelect).AddTo(_disposablesForSetData);
             Model.glowed.Subscribe(SetGlow).AddTo(_disposablesForSetData);
             Model.count.Subscribe(SetCount).AddTo(_disposablesForSetData);
+            Model.equipped.Subscribe(SetEquipped).AddTo(_disposablesForSetData);
 
             UpdateView();
         }
@@ -93,6 +95,11 @@ namespace Nekoyume.UI.Module
             selectionImage.color = isDim ? DimColor : DefaultColor;
         }
 
+        protected void SetEquipped(bool isEquipped)
+        {
+            equippedIcon.SetActive(isEquipped);
+        }
+
         #endregion
 
         private void UpdateView()
@@ -107,6 +114,7 @@ namespace Nekoyume.UI.Module
             coverImage.enabled = Model.covered.Value;
             selectionImage.enabled = Model.selected.Value;
             SetDim(Model.dimmed.Value);
+            SetEquipped(Model.equipped.Value);
         }
 
         private void SetCover(bool isCover)

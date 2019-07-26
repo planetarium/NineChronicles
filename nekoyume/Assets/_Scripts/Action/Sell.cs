@@ -69,6 +69,10 @@ namespace Nekoyume.Action
             }
 
             avatarState.inventory.RemoveNonFungibleItem(nonFungibleItem);
+            if(nonFungibleItem is Equipment equipment)
+            {
+                equipment.equipped = false;
+            }
             
             // 상점에 아이템을 등록한다.
             var shopItem = shopState.Register(ctx.Signer, new ShopItem
