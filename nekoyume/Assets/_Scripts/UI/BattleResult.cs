@@ -218,8 +218,9 @@ namespace Nekoyume.UI
 
         private IEnumerator CoUpdateBottomText(int limitSeconds)
         {
-            var format = LocalizationManager.Localize("UI_AFTER_N_SECONDS");
-            bottomText.text = string.Format(format, limitSeconds);
+            var secondsFormat = LocalizationManager.Localize("UI_AFTER_N_SECONDS");
+            var fullFormat = LocalizationManager.Localize("UI_NEXT_STAGE_FORMAT");
+            bottomText.text = string.Format(fullFormat, string.Format(secondsFormat, limitSeconds));
             
             var floatTime = (float) limitSeconds;
             var floatTimeMinusOne = limitSeconds - 1f;
@@ -234,7 +235,7 @@ namespace Nekoyume.UI
                 }
 
                 limitSeconds--;
-                bottomText.text = string.Format(format, limitSeconds);
+                bottomText.text = string.Format(fullFormat, string.Format(secondsFormat, limitSeconds));
                 floatTimeMinusOne = limitSeconds - 1f;
             }
 
