@@ -106,7 +106,9 @@ namespace Nekoyume.UI.Module
         {
             if (ReferenceEquals(Model, null))
             {
+                coverImage.enabled = false;
                 selectionImage.enabled = false;
+                SetDim(false);
                 SetEquipped(false);
 
                 return;
