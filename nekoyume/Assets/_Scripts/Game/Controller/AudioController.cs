@@ -1,7 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Nekoyume.BlockChain;
+using Nekoyume.Model;
 using Nekoyume.Pattern;
+using UniRx;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -23,6 +26,8 @@ namespace Nekoyume.Game.Controller
         
         public struct MusicCode
         {
+            public const string Title = "bgm_title";
+            public const string Prologue = "bgm_prologue";
             public const string SelectCharacter = "bgm_selectcharacter";
             public const string Main = "bgm_main";
             public const string Shop = "bgm_shop";
@@ -57,7 +62,14 @@ namespace Nekoyume.Game.Controller
             public const string Swing = "sfx_swing";
             public const string Swing2 = "sfx_swing2";
             public const string Swing3 = "sfx_swing3";
+            public const string BattleCast = "sfx_battle_cast";
+            public const string RewardItem = "sfx_reward_item";
+            public const string BuyItem = "sfx_buy_item";
         }
+
+//        4. 스킬 sfx
+//        - 무속성/물/불/바람/대지 일격/연사/범위공격 15가지 경우의 수 있음
+//        - 연사나 범위공격의 경우, 히트 시마다 별도의 sfx를 삽입할 수 있어야함
 
         private enum State
         {
@@ -102,9 +114,9 @@ namespace Nekoyume.Game.Controller
 
             CurrentState = State.None;
 
-            // Fix me.
-            // 너무 짤랑 거려서 게임을 못하겠어요.
-            // RewardGold.RewardGoldMyselfSubject.ObserveOnMainThread().Subscribe(_ => PlaySfx(SfxCode.Cash)).AddTo(this);
+#if !UNITY_EDITOR
+            ReactiveAgentState.Gold.ObserveOnMainThread().Subscribe(_ => PlaySfx(SfxCode.Cash)).AddTo(this);
+#endif
         }
 
         private void Update()

@@ -136,7 +136,7 @@ namespace Nekoyume.UI
             switch (SharedModel.state)
             {
                 case BattleLog.Result.Win:
-                    UpdateViewAsVictory();
+                    StartCoroutine(CoUpdateViewAsVictory());
                     break;
                 case BattleLog.Result.Lose:
                     UpdateViewAsDefeat();
@@ -146,37 +146,18 @@ namespace Nekoyume.UI
             }
         }
 
-        private void UpdateViewAsVictory()
+        private IEnumerator CoUpdateViewAsVictory()
         {
+            AudioController.instance.PlayMusic(AudioController.MusicCode.Win, 0.3f);
+            _battleWinVFX =
+                VFXController.instance.Create<BattleWinVFX>(ActionCamera.instance.transform, VfxBattleWinOffset);
+            AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionBattleWin);
+            
             victoryImageContainer.SetActive(true);
             defeatImageContainer.SetActive(false);
             topArea.topText.text = LocalizationManager.Localize("UI_BATTLE_RESULT_VICTORY_MESSAGE");
             topArea.expValueText.text = SharedModel.exp.ToString();
             topArea.expContainer.SetActive(true);
-            if (SharedModel.rewards.Count > 0)
-            {
-                for (var i = 0; i < rewardsArea.rewards.Length; i++)
-                {
-                    var view = rewardsArea.rewards[i];
-                    if (SharedModel.rewards.Count <= i)
-                    {
-                        view.gameObject.SetActive(false);
-
-                        continue;
-                    }
-
-                    var model = SharedModel.rewards[i];
-                    view.SetData(model);
-                    view.gameObject.SetActive(true);
-                }
-
-                rewardsArea.root.SetActive(true);
-            }
-            else
-            {
-                rewardsArea.root.SetActive(false);
-            }
-
             suggestionsArea.root.SetActive(false);
             bottomText.gameObject.SetActive(true);
             closeButton.interactable = true;
@@ -186,24 +167,22 @@ namespace Nekoyume.UI
                 ? LocalizationManager.Localize("UI_BATTLE_AGAIN")
                 : LocalizationManager.Localize("UI_NEXT_STAGE");
             submitButton.gameObject.SetActive(true);
-
-            _coUpdateBottomText = StartCoroutine(CoUpdateBottomText(Timer));
             
-            AudioController.instance.PlayMusic(AudioController.MusicCode.Win, 0.3f);
-            _battleWinVFX =
-                VFXController.instance.Create<BattleWinVFX>(ActionCamera.instance.transform, VfxBattleWinOffset);
-            AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionBattleWin);
+            yield return StartCoroutine(CoUpdateRewards());
+            _coUpdateBottomText = StartCoroutine(CoUpdateBottomText(Timer));
         }
 
         private void UpdateViewAsDefeat()
         {
+            AudioController.instance.PlayMusic(AudioController.MusicCode.Lose);
+            AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionBattleLose);
+            
             SetShouldRepeatFalse();
             
             victoryImageContainer.SetActive(false);
             defeatImageContainer.SetActive(true);
             topArea.topText.text = LocalizationManager.Localize("UI_BATTLE_RESULT_DEFEAT_MESSAGE");
             topArea.expContainer.SetActive(false);
-            rewardsArea.root.SetActive(false);
             suggestionsArea.root.SetActive(true);
             suggestionsArea.submitButton1.interactable = true;
             suggestionsArea.submitButton2.interactable = true;
@@ -212,8 +191,42 @@ namespace Nekoyume.UI
             closeButtonText.text = LocalizationManager.Localize("UI_EXIT");
             submitButton.gameObject.SetActive(false);
             
-            AudioController.instance.PlayMusic(AudioController.MusicCode.Lose);
-            AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionBattleLose);
+            StartCoroutine(CoUpdateRewards());
+        }
+
+        private IEnumerator CoUpdateRewards()
+        {
+            if (SharedModel.rewards.Count > 0)
+            {
+                rewardsArea.root.SetActive(true);
+                
+                foreach (var view in rewardsArea.rewards)
+                {
+                    view.gameObject.SetActive(false);
+                }
+                
+                for (var i = 0; i < rewardsArea.rewards.Length; i++)
+                {
+                    var view = rewardsArea.rewards[i];
+                    if (SharedModel.rewards.Count <= i)
+                    {
+                        break;
+                    }
+                    
+                    yield return new WaitForSeconds(0.5f);
+
+                    var model = SharedModel.rewards[i];
+                    view.SetData(model);
+                    view.gameObject.SetActive(true);
+                    AudioController.instance.PlaySfx(AudioController.SfxCode.RewardItem);
+                }
+                
+                yield return new WaitForSeconds(0.5f);
+            }
+            else
+            {
+                rewardsArea.root.SetActive(false);
+            }
         }
 
         private IEnumerator CoUpdateBottomText(int limitSeconds)
