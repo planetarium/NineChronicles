@@ -1,11 +1,11 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
+using EnhancedUI.EnhancedScroller;
 using Nekoyume.Game.Item;
 using Nekoyume.UI.Module;
 using UniRx;
-using UnityEngine.UI;
+using UnityEngine;
+using Material = Nekoyume.Game.Item.Material;
 
 namespace Nekoyume.UI.Model
 {
@@ -281,6 +281,17 @@ namespace Nekoyume.UI.Model
 
             selectedItemView.SetValueAndForceNotify(view);
             selectedItemView.Value.Model.selected.Value = true;
+
+            var scroller = view.GetComponentInParent<EnhancedScroller>();
+            int idx = -Mathf.CeilToInt(view.transform.parent.localPosition.y / 64);
+            if (scroller.StartCellViewIndex + 4 < idx)
+            {
+                scroller.ScrollPosition = scroller.GetScrollPositionForCellViewIndex(idx - 4, EnhancedScroller.CellViewPositionEnum.Before);
+            }
+            else if(scroller.StartCellViewIndex == idx)
+            {
+                scroller.ScrollPosition = scroller.GetScrollPositionForCellViewIndex(idx, EnhancedScroller.CellViewPositionEnum.Before);
+            }
 
             SetGlowedAll(false);
         }
