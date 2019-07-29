@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Assets.SimpleLocalization;
+using EnhancedUI.EnhancedScroller;
 using Nekoyume.Game.Controller;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Scroller;
@@ -112,6 +113,25 @@ namespace Nekoyume.UI.Module
             _disposablesForModel.DisposeAllAndClear();
             Model = model;
             Model.state.Subscribe(SubscribeState).AddTo(_disposablesForModel);
+            Model.selectedItemView.Subscribe(view =>
+            {
+                if (!view) return;
+
+                var scroller = scrollerController.scroller;
+                var cellHeight = scrollerController.GetCellViewSize(scroller, 0);
+                var skipCount = Mathf.FloorToInt(scrollerController.scrollRectTransform.rect.height / cellHeight) - 1;
+                int idx = -Mathf.CeilToInt(view.inventoryCellView.transform.localPosition.y / cellHeight);
+
+                // 인벤토리에서 가려지지 않고 온전히 보이는 슬롯은 5줄
+                if (scroller.StartCellViewIndex + skipCount < idx)
+                {
+                    scroller.ScrollPosition = scroller.GetScrollPositionForCellViewIndex(idx - skipCount, EnhancedScroller.CellViewPositionEnum.Before);
+                }
+                else if (scroller.StartCellViewIndex == idx)
+                {
+                    scroller.ScrollPosition = scroller.GetScrollPositionForCellViewIndex(idx, EnhancedScroller.CellViewPositionEnum.Before);
+                }
+            }).AddTo(_disposablesForModel);
         }
 
         public void Clear()

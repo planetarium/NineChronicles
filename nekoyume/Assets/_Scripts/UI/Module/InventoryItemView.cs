@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using EnhancedUI.EnhancedScroller;
 using Nekoyume.Game.Controller;
+using Nekoyume.UI.Scroller;
 using TMPro;
 using UniRx;
 using UnityEngine;
@@ -23,7 +25,9 @@ namespace Nekoyume.UI.Module
         private readonly List<IDisposable> _disposablesForSetData = new List<IDisposable>();
 
         private readonly TimeSpan _timeSpan200Milliseconds = TimeSpan.FromMilliseconds(200);
-        
+
+        public InventoryCellView inventoryCellView { get; private set; }
+
         #region Mono
 
         protected override void Awake()
@@ -33,9 +37,10 @@ namespace Nekoyume.UI.Module
             this.ComponentFieldsNotNullTest();
 
             _button = GetComponent<Button>();
+            inventoryCellView = transform.parent.GetComponent<InventoryCellView>();
             var buttonClickStream = _button.OnClickAsObservable();
             buttonClickStream
-                .Subscribe(_ =>
+                .Subscribe(_=>
                 {
                     AudioController.PlaySelect();
                     Model?.onClick.OnNext(this);
