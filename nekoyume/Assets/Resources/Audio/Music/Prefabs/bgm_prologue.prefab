@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7090887107860638901}
   - component: {fileID: 5057153067956490895}
   m_Layer: 0
-  m_Name: bgm_selectcharacter
+  m_Name: bgm_prologue
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -42,7 +42,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 243079531108902290, guid: f84234ca553c443c69f5457997eda065,
     type: 2}
-  m_audioClip: {fileID: 8300000, guid: 3dc5ba9c91aa7474e8622137ce4263f8, type: 3}
+  m_audioClip: {fileID: 8300000, guid: f11665200dc194befa838c42687a9be8, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
