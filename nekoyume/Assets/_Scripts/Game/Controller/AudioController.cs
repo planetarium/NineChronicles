@@ -67,10 +67,6 @@ namespace Nekoyume.Game.Controller
             public const string BuyItem = "sfx_buy_item";
         }
 
-//        4. 스킬 sfx
-//        - 무속성/물/불/바람/대지 일격/연사/범위공격 15가지 경우의 수 있음
-//        - 연사나 범위공격의 경우, 히트 시마다 별도의 sfx를 삽입할 수 있어야함
-
         private enum State
         {
             None = -1,
