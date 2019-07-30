@@ -20,35 +20,32 @@ namespace Nekoyume.State
             }
         );
         
-        private readonly HashSet<AvatarState> _map;
+        private readonly Dictionary<Address, AvatarState> _map;
 
         public RankingState() : base(Address)
         {
-            _map = new HashSet<AvatarState>();
+            _map = new Dictionary<Address, AvatarState>();
         }
         
         public void Update(AvatarState state)
         {
-            var current = _map.FirstOrDefault(c => c.address == state.address);
-            if (!ReferenceEquals(current, null))
+            if (_map.TryGetValue(state.address, out var current))
             {
                 if (current.worldStage < state.worldStage)
                 {
-                    _map.Remove(current);
-                }
-                else
-                {
-                    return;
+                    _map[state.address] = (AvatarState) state.Clone();
                 }
             }
-
-            _map.Add(state);
+            else
+            {
+                _map[state.address] = (AvatarState) state.Clone();
+            }
         }
 
         public AvatarState[] GetAvatars(DateTimeOffset? dt)
         {
             IEnumerable<AvatarState> map =
-                _map.OrderByDescending(c => c.worldStage).ThenBy(c => c.clearedAt);
+                _map.Values.OrderByDescending(c => c.worldStage).ThenBy(c => c.clearedAt);
             if (dt != null)
             {
                 map = map.Where(context => ((TimeSpan) (dt - context.updatedAt)).Days <= 1);
