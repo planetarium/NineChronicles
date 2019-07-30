@@ -72,7 +72,7 @@ namespace Nekoyume.UI
             recipeButtonText.text = LocalizationManager.Localize("UI_RECIPE");
             materialsTitleText.text = LocalizationManager.Localize("UI_COMBINATION_MATERIALS");
             combinationButtonText.text = LocalizationManager.Localize("UI_COMBINATION_ITEM");
-            
+
             switchEquipmentsButton.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
@@ -91,16 +91,11 @@ namespace Nekoyume.UI
                 .Subscribe(_ =>
                 {
                     AudioController.PlayClick();
-                    if (Model.manualOrRecipe.Value == UI.Model.Combination.ManualOrRecipe.Manual)
-                    {
-                        Model.manualOrRecipe.Value = UI.Model.Combination.ManualOrRecipe.Recipe;
-                        recipe.Show();
-                    }
-                    else
-                    {
-                        Model.manualOrRecipe.Value = UI.Model.Combination.ManualOrRecipe.Manual;
-                        recipe.Close();
-                    }
+
+                    Model.manualOrRecipe.Value =
+                        Model.manualOrRecipe.Value == UI.Model.Combination.ManualOrRecipe.Manual ?
+                            UI.Model.Combination.ManualOrRecipe.Recipe :
+                            UI.Model.Combination.ManualOrRecipe.Manual;
                 })
                 .AddTo(gameObject);
             combinationButton.OnClickAsObservable()
@@ -122,7 +117,6 @@ namespace Nekoyume.UI
                 {
                     AudioController.PlayClick();
                     Model.manualOrRecipe.Value = UI.Model.Combination.ManualOrRecipe.Manual;
-                    recipe.Close();
                 })
                 .AddTo(gameObject);
         }
@@ -261,6 +255,7 @@ namespace Nekoyume.UI
                     recipeButtonImage.sprite = Resources.Load<Sprite>("UI/Textures/button_blue_01");
                     manualCombination.SetActive(false);
                     recipeCombination.SetActive(true);
+                    recipe.Show();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(value), value, null);
