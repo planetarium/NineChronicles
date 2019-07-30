@@ -361,7 +361,7 @@ namespace Nekoyume.UI
                         .Subscribe(eval =>
                         {
                             ResponseBuy(eval, inventory, shopItem.productId.Value, (ItemUsable) shopItem.item.Value);
-                            AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
+                            AudioController.instance.PlaySfx(AudioController.SfxCode.BuyItem);
                         })
                         .AddTo(this);
                 }

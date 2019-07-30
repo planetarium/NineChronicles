@@ -395,6 +395,7 @@ namespace Nekoyume.Game.Character
             attackEnd = false;
             RunSpeed = 0.0f;
 
+            AudioController.instance.PlaySfx(AudioController.SfxCode.BattleCast);
             animator.Cast();
             var pos = transform.position;
             var effect = Game.instance.stage.skillController.Get(pos, info);

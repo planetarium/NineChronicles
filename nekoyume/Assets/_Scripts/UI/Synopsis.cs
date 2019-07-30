@@ -1,4 +1,5 @@
 ﻿using Assets.SimpleLocalization;
+using Nekoyume.Game.Controller;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
@@ -15,6 +16,12 @@ namespace Nekoyume.UI
             {
                 texts[i].text = LocalizationManager.Localize($"UI_SYNOPSIS_{i}");
             }
+        }
+
+        public override void Show()
+        {
+            base.Show();
+            AudioController.instance.PlayMusic(AudioController.MusicCode.Prologue);
         }
 
         public void End()
