@@ -11,7 +11,7 @@ namespace Nekoyume.State
     /// Agent가 포함하는 각 Avatar의 상태 모델이다.
     /// </summary>
     [Serializable]
-    public class AvatarState : State
+    public class AvatarState : State, ICloneable
     {
         public string name;
         public int characterId;
@@ -71,6 +71,11 @@ namespace Nekoyume.State
             inventory = player.inventory;
             worldStage = player.worldStage;
             questList.UpdateStageQuest(player, items);
+        }
+
+        public object Clone()
+        {
+            return MemberwiseClone();
         }
     }
 }

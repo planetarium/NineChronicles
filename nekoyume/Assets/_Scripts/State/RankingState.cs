@@ -33,14 +33,13 @@ namespace Nekoyume.State
             {
                 if (current.worldStage < state.worldStage)
                 {
-                    _map[state.address] = state;
+                    _map[state.address] = (AvatarState) state.Clone();
                 }
             }
             else
             {
-                _map[state.address] = state;
+                _map[state.address] = (AvatarState) state.Clone();
             }
-
         }
 
         public AvatarState[] GetAvatars(DateTimeOffset? dt)
