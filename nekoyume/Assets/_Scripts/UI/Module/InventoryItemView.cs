@@ -38,6 +38,11 @@ namespace Nekoyume.UI.Module
 
             _button = GetComponent<Button>();
             inventoryCellView = transform.parent.GetComponent<InventoryCellView>();
+            if(ReferenceEquals(inventoryCellView, null))
+            {
+                Debug.LogError("InventoryCellView not attached to the parent GameObject!");
+            }
+
             var buttonClickStream = _button.OnClickAsObservable();
             buttonClickStream
                 .Subscribe(_=>
