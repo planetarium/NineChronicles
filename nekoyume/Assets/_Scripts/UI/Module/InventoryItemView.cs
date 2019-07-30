@@ -102,15 +102,19 @@ namespace Nekoyume.UI.Module
 
         #endregion
 
+        public void ClearHighlights()
+        {
+            coverImage.enabled = false;
+            selectionImage.enabled = false;
+            SetDim(false);
+            SetEquipped(false);
+        }
+
         private void UpdateView()
         {
             if (ReferenceEquals(Model, null))
             {
-                coverImage.enabled = false;
-                selectionImage.enabled = false;
-                SetDim(false);
-                SetEquipped(false);
-
+                ClearHighlights();
                 return;
             }
 
