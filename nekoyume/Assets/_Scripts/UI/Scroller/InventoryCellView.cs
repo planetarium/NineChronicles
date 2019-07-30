@@ -10,7 +10,6 @@ namespace Nekoyume.UI.Scroller
     public class InventoryCellView : EnhancedScrollerCellView
     {
         public InventoryItemView[] items;
-        
 
         #region Mono
 
@@ -26,7 +25,7 @@ namespace Nekoyume.UI.Scroller
 
         #endregion
         
-        public void SetData(ReactiveCollection<Model.InventoryItem> dataList, int firstIndex)
+        public void SetData(EnhancedScroller scroller, ReactiveCollection<Model.InventoryItem> dataList, int firstIndex)
         {
             if (ReferenceEquals(dataList, null))
             {

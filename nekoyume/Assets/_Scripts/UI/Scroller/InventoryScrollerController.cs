@@ -4,11 +4,13 @@ using EnhancedUI.EnhancedScroller;
 using Nekoyume.UI.Module;
 using UniRx;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI.Scroller
 {
     public class InventoryScrollerController : MonoBehaviour, IEnhancedScrollerDelegate
     {
+        public RectTransform scrollRectTransform;
         public EnhancedScroller scroller;
         public InventoryCellView cellViewPrefab;
         public int numberOfInnerItemPerCell = 1;
@@ -64,7 +66,7 @@ namespace Nekoyume.UI.Scroller
             var di = dataIndex * numberOfInnerItemPerCell;
 
             cellView.name = $"Cell {di} to {di + numberOfInnerItemPerCell - 1}";
-            cellView.SetData(_dataList, di);
+            cellView.SetData(scroller, _dataList, di);
 
             return cellView;
         }
