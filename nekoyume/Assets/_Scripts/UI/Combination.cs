@@ -42,6 +42,7 @@ namespace Nekoyume.UI
         public Text combinationButtonText;
         public GameObject recipeCombination;
         public Button closeButton;
+        public Button recipeCloseButton;
 
         public GameObject particleVFX;
         public GameObject resultItemVFX;
@@ -109,8 +110,13 @@ namespace Nekoyume.UI
                     Close();
                 })
                 .AddTo(gameObject);
-
-            recipeButton.enabled = false;
+            recipeCloseButton.OnClickAsObservable()
+                .Subscribe(_ =>
+                {
+                    AudioController.PlayClick();
+                    Model.manualOrRecipe.Value = UI.Model.Combination.ManualOrRecipe.Manual;
+                })
+                .AddTo(gameObject);
         }
 
         #endregion
