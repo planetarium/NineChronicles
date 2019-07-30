@@ -122,7 +122,6 @@ namespace Nekoyume.UI.Module
                 var skipCount = Mathf.FloorToInt(scrollerController.scrollRectTransform.rect.height / cellHeight) - 1;
                 int idx = -Mathf.CeilToInt(view.inventoryCellView.transform.localPosition.y / cellHeight);
 
-                // 인벤토리에서 가려지지 않고 온전히 보이는 슬롯은 5줄
                 if (scroller.StartCellViewIndex + skipCount < idx)
                 {
                     scroller.ScrollPosition = scroller.GetScrollPositionForCellViewIndex(idx - skipCount, EnhancedScroller.CellViewPositionEnum.Before);
