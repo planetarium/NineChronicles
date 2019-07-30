@@ -43,6 +43,7 @@ namespace Nekoyume.UI
         public GameObject recipeCombination;
         public Button closeButton;
         public Button recipeCloseButton;
+        public Recipe recipe;
 
         public GameObject particleVFX;
         public GameObject resultItemVFX;
@@ -90,10 +91,16 @@ namespace Nekoyume.UI
                 .Subscribe(_ =>
                 {
                     AudioController.PlayClick();
-                    Model.manualOrRecipe.Value =
-                        Model.manualOrRecipe.Value == UI.Model.Combination.ManualOrRecipe.Manual
-                            ? UI.Model.Combination.ManualOrRecipe.Recipe
-                            : UI.Model.Combination.ManualOrRecipe.Manual;
+                    if (Model.manualOrRecipe.Value == UI.Model.Combination.ManualOrRecipe.Manual)
+                    {
+                        Model.manualOrRecipe.Value = UI.Model.Combination.ManualOrRecipe.Recipe;
+                        recipe.Show();
+                    }
+                    else
+                    {
+                        Model.manualOrRecipe.Value = UI.Model.Combination.ManualOrRecipe.Manual;
+                        recipe.Close();
+                    }
                 })
                 .AddTo(gameObject);
             combinationButton.OnClickAsObservable()
@@ -115,6 +122,7 @@ namespace Nekoyume.UI
                 {
                     AudioController.PlayClick();
                     Model.manualOrRecipe.Value = UI.Model.Combination.ManualOrRecipe.Manual;
+                    recipe.Close();
                 })
                 .AddTo(gameObject);
         }

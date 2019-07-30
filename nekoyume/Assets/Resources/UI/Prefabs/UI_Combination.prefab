@@ -281,6 +281,7 @@ MonoBehaviour:
   recipeCombination: {fileID: 4498657592008978819}
   closeButton: {fileID: 114011821723084054}
   recipeCloseButton: {fileID: 7927803905021421417}
+  recipe: {fileID: 8819289059398640881}
   particleVFX: {fileID: 6550431825297283683}
   resultItemVFX: {fileID: 8740546357306838343}
 --- !u!1 &1430868861582578
@@ -6814,6 +6815,7 @@ GameObject:
   - component: {fileID: 1167375464169587787}
   - component: {fileID: 5950448372593802252}
   - component: {fileID: 1492638853752291936}
+  - component: {fileID: 8819289059398640881}
   m_Layer: 5
   m_Name: Scroller
   m_TagString: Untagged
@@ -6838,8 +6840,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 9.999996}
-  m_SizeDelta: {x: -25, y: -120.00001}
+  m_AnchoredPosition: {x: 0, y: 10}
+  m_SizeDelta: {x: -25, y: -120}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &3380279088941482520
 MonoBehaviour:
@@ -6861,7 +6863,7 @@ MonoBehaviour:
   m_Inertia: 1
   m_DecelerationRate: 0.135
   m_ScrollSensitivity: 10
-  m_Viewport: {fileID: 0}
+  m_Viewport: {fileID: 2175664296517022941}
   m_HorizontalScrollbar: {fileID: 0}
   m_VerticalScrollbar: {fileID: 0}
   m_HorizontalScrollbarVisibility: 0
@@ -6923,6 +6925,27 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
+--- !u!114 &8819289059398640881
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6187522145713420811}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ed5affd0048258e449e7f6d3307a4c38, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  content: {fileID: 5200817158719521217}
+  slots:
+  - {fileID: 1382550358497370196}
+  - {fileID: 5456163474189647424}
+  - {fileID: 2958148535403905262}
+  - {fileID: 2239077209449314167}
+  - {fileID: 8645088638973502484}
+  - {fileID: 4118486937424243438}
+  - {fileID: 135403007434119811}
 --- !u!1 &6266410226800639553
 GameObject:
   m_ObjectHideFlags: 0
@@ -11281,9 +11304,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5200817158719521217}
-  - component: {fileID: 5777399879974247371}
+  - component: {fileID: 8318412285604443732}
   m_Layer: 5
-  m_Name: VerticalLayout
+  m_Name: Content
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11315,7 +11338,7 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &5777399879974247371
+--- !u!114 &8318412285604443732
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
