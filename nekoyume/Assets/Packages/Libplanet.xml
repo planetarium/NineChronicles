@@ -40,17 +40,15 @@
             <returns>The account state if exists.  Otherwise <c>null</c>.
             </returns>
         </member>
-        <member name="T:Libplanet.Action.ActionEvaluation`1">
+        <member name="T:Libplanet.Action.ActionEvaluation">
             <summary>
             A record type to represent an evaluation plan and result of
-            a single action (<typeparamref name="T"/>).
+            a single action.
             </summary>
-            <typeparam name="T">A concrete type that implements
-            <see cref="T:Libplanet.Action.IAction"/>.</typeparam>
         </member>
-        <member name="M:Libplanet.Action.ActionEvaluation`1.#ctor(`0,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)">
+        <member name="M:Libplanet.Action.ActionEvaluation.#ctor(Libplanet.Action.IAction,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)">
             <summary>
-            Creates an <see cref="T:Libplanet.Action.ActionEvaluation`1"/> instance
+            Creates an <see cref="T:Libplanet.Action.ActionEvaluation"/> instance
             with filling properties.
             </summary>
             <param name="action">An action to evaluate.</param>
@@ -59,23 +57,59 @@
             <param name="outputStates">The result states that
             <paramref name="action"/> makes.</param>
         </member>
-        <member name="P:Libplanet.Action.ActionEvaluation`1.Action">
+        <member name="P:Libplanet.Action.ActionEvaluation.Action">
             <summary>
             An action to evaluate.
             </summary>
         </member>
-        <member name="P:Libplanet.Action.ActionEvaluation`1.InputContext">
+        <member name="P:Libplanet.Action.ActionEvaluation.InputContext">
             <summary>
             An input <see cref="T:Libplanet.Action.IActionContext"/> to evaluate
-            <see cref="P:Libplanet.Action.ActionEvaluation`1.Action"/>.
+            <see cref="P:Libplanet.Action.ActionEvaluation.Action"/>.
             </summary>
             <remarks>Its <see cref="P:Libplanet.Action.IActionContext.Random"/> property
             is not consumed yet.</remarks>
         </member>
-        <member name="P:Libplanet.Action.ActionEvaluation`1.OutputStates">
+        <member name="P:Libplanet.Action.ActionEvaluation.OutputStates">
             <summary>
-            The result states that <see cref="P:Libplanet.Action.ActionEvaluation`1.Action"/> makes.
+            The result states that <see cref="P:Libplanet.Action.ActionEvaluation.Action"/> makes.
             </summary>
+        </member>
+        <member name="M:Libplanet.Action.ActionEvaluation.EvaluateActionsGradually(Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Int64,Libplanet.Action.IAccountStateDelta,Libplanet.Address,Libplanet.Address,System.Byte[],System.Collections.Immutable.IImmutableList{Libplanet.Action.IAction},System.Boolean)">
+            <summary>
+            Executes the <paramref name="actions"/> step by step, and emits
+            <see cref="T:Libplanet.Action.ActionEvaluation"/> for each step.
+            </summary>
+            <param name="blockHash">The <see cref="P:Libplanet.Blocks.Block`1.Hash"/> of
+            <see cref="T:Libplanet.Blocks.Block`1"/> that this <see cref="T:Libplanet.Tx.Transaction`1"/> will
+            belong to.</param>
+            <param name="blockIndex">The <see cref="P:Libplanet.Blocks.Block`1.Index"/> of
+            <see cref="T:Libplanet.Blocks.Block`1"/> that this <see cref="T:Libplanet.Tx.Transaction`1"/> will
+            belong to.</param>
+            <param name="previousStates">The states immediately before <paramref name="actions"/>
+            being executed.  Note that its <see cref="P:Libplanet.Action.IAccountStateDelta.UpdatedAddresses"/> are
+            remained to the returned next states.</param>
+            <param name="minerAddress">An address of block miner.</param>
+            <param name="signer">Signer of the <paramref name="actions"/>.</param>
+            <param name="signature"><see cref="T:Libplanet.Tx.Transaction`1"/> signature used to generate random
+            seeds.</param>
+            <param name="actions">Actions to evaluate.</param>
+            <param name="rehearsal">Pass <c>true</c> if it is intended
+            to be dry-run (i.e., the returned result will be never used).
+            The default value is <c>false</c>.</param>
+            <returns>Enumerates <see cref="T:Libplanet.Action.ActionEvaluation"/>s for each one in
+            <paramref name="actions"/>.  The order is the same to the <paramref name="actions"/>.
+            Note that each <see cref="P:Libplanet.Action.IActionContext.Random"/> object
+            has a unconsumed state.
+            </returns>
+            <exception cref="T:Libplanet.Tx.UnexpectedlyTerminatedTxRehearsalException">
+            Thrown when one of <paramref name="actions"/> throws some
+            exception during <paramref name="rehearsal"/> mode.
+            The actual exception that an <see cref="T:Libplanet.Action.IAction"/> threw
+            is stored in its <see cref="P:System.Exception.InnerException"/> property.
+            It is never thrown if the <paramref name="rehearsal"/> option is
+            <c>false</c>.
+            </exception>
         </member>
         <member name="T:Libplanet.Action.ActionTypeAttribute">
             <summary>
@@ -1262,6 +1296,19 @@
             <paramref name="privateKey"/>.</returns>
             <seealso cref="M:Libplanet.Tx.Transaction`1.Create(System.Int64,Libplanet.Crypto.PrivateKey,System.Collections.Generic.IEnumerable{`0},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Nullable{System.DateTimeOffset})" />
         </member>
+        <member name="M:Libplanet.Blockchain.BlockChain`1.ExecuteActions(Libplanet.Blocks.Block{`0},System.Boolean)">
+            <summary>
+            Evaluates actions in the given <paramref name="block"/> and fills states with the
+            results, and renders them if <paramref name="render"/> is turned on.
+            </summary>
+            <param name="block">A block to execute.</param>
+            <param name="render">Whether to render actions.  This is not idempotent; even if
+            the given <paramref name="block"/> has executed before in the blockchain,
+            its actions are rendered anyway.</param>
+            <remarks>This method is idempotent (except for rendering).  If the given
+            <paramref name="block"/> has executed before, it does not execute it nor mutate states.
+            </remarks>
+        </member>
         <member name="T:Libplanet.Blockchain.IncompleteBlockStatesException">
             <summary>
             The exception that is thrown when a <see cref="T:Libplanet.Blockchain.BlockChain`1"/> have
@@ -1292,13 +1339,15 @@
             <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match
             to <see cref="T:Libplanet.Blocks.Block`1"/>'s type parameter.</typeparam>
         </member>
-        <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.#ctor(System.Int32,System.Int64,System.Int32)">
+        <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.#ctor(Libplanet.Action.IAction,System.Int32,System.Int64,System.Int32)">
             <summary>
             Creates a <see cref="T:Libplanet.Blockchain.Policies.BlockPolicy`1"/> with configuring
             <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.BlockInterval"/> in milliseconds,
             <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.MinimumDifficulty"/> and
             <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.DifficultyBoundDivisor"/>.
             </summary>
+            <param name="blockAction">A block action to execute and be rendered for every block.
+            </param>
             <param name="blockIntervalMilliseconds">Configures
             <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.BlockInterval"/> in milliseconds.
             5000 milliseconds by default.
@@ -1308,18 +1357,23 @@
             <param name="difficultyBoundDivisor">Configures
             <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.DifficultyBoundDivisor"/>. 128 by default.</param>
         </member>
-        <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.#ctor(System.TimeSpan,System.Int64,System.Int32)">
+        <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.#ctor(Libplanet.Action.IAction,System.TimeSpan,System.Int64,System.Int32)">
             <summary>
             Creates a <see cref="T:Libplanet.Blockchain.Policies.BlockPolicy`1"/> with configuring
             <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.BlockInterval"/>, <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.MinimumDifficulty"/> and
             <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.DifficultyBoundDivisor"/>.
             </summary>
+            <param name="blockAction">A block action to execute and be rendered for every block.
+            </param>
             <param name="blockInterval">Configures <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.BlockInterval"/>.
             </param>
             <param name="minimumDifficulty">Configures
             <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.MinimumDifficulty"/>.</param>
             <param name="difficultyBoundDivisor">Configures
             <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.DifficultyBoundDivisor"/>.</param>
+        </member>
+        <member name="P:Libplanet.Blockchain.Policies.BlockPolicy`1.BlockAction">
+            <inheritdoc/>
         </member>
         <member name="P:Libplanet.Blockchain.Policies.BlockPolicy`1.BlockInterval">
             <summary>
@@ -1376,6 +1430,11 @@
             to <see cref="T:Libplanet.Blocks.Block`1"/>'s type parameter.</typeparam>
             <seealso cref="T:Libplanet.Blockchain.Policies.BlockPolicyExtension"/>
         </member>
+        <member name="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.BlockAction">
+            <summary>
+            A block action to execute and be rendered for every block.
+            </summary>
+        </member>
         <member name="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.ValidateNextBlock(System.Collections.Generic.IReadOnlyList{Libplanet.Blocks.Block{`0}},Libplanet.Blocks.Block{`0})">
             <summary>
             Checks if <paramref name="nextBlock"/> is invalid, and if that
@@ -1407,7 +1466,7 @@
             <summary>
             Executes every <see cref="T:Libplanet.Action.IAction"/> in the
             <see cref="P:Libplanet.Blocks.Block`1.Transactions"/> step by step, and emits a pair of
-            a transaction, and an <see cref="T:Libplanet.Action.ActionEvaluation`1"/>
+            a transaction, and an <see cref="T:Libplanet.Action.ActionEvaluation"/>
             for each step.
             </summary>
             <param name="accountStateGetter">An <see cref="T:Libplanet.Action.AccountStateGetter"/>
@@ -1415,7 +1474,7 @@
             A <c>null</c> value, which is default, means a constant function
             that returns <c>null</c>.</param>
             <returns>Enumerates pair of a transaction, and
-            <see cref="T:Libplanet.Action.ActionEvaluation`1"/> for each action.
+            <see cref="T:Libplanet.Action.ActionEvaluation"/> for each action.
             The order of pairs are the same to
             the <see cref="P:Libplanet.Blocks.Block`1.Transactions"/> and their
             <see cref="P:Libplanet.Tx.Transaction`1.Actions"/> (e.g., tx&#xb9;-act&#xb9;,
@@ -1433,7 +1492,7 @@
             <para>It throws an <see cref="T:Libplanet.Blocks.InvalidBlockException"/> or
             an <see cref="T:Libplanet.Tx.InvalidTxException"/> if there is any
             integrity error.</para>
-            <para>Otherwise it enumerates an <see cref="T:Libplanet.Action.ActionEvaluation`1"/>
+            <para>Otherwise it enumerates an <see cref="T:Libplanet.Action.ActionEvaluation"/>
             for each <see cref="T:Libplanet.Action.IAction"/>.</para>
             </summary>
             <param name="currentTime">The current time to validate
@@ -1441,7 +1500,7 @@
             <param name="accountStateGetter">The getter of previous states.
             This affects the execution of <see cref="P:Libplanet.Tx.Transaction`1.Actions"/>.
             </param>
-            <returns>An <see cref="T:Libplanet.Action.ActionEvaluation`1"/> for each
+            <returns>An <see cref="T:Libplanet.Action.ActionEvaluation"/> for each
             <see cref="T:Libplanet.Action.IAction"/>.</returns>
             <exception cref="T:Libplanet.Blocks.InvalidBlockTimestampException">Thrown when
             the <see cref="P:Libplanet.Blocks.Block`1.Timestamp"/> is invalid, for example, it is the far
@@ -2495,8 +2554,8 @@
             <param name="namespace">The chain namespace.</param>
             <param name="address">The <see cref="T:Libplanet.Address"/> to get state references.</param>
             <returns><em>Ordered</em> pairs of a state reference and a corresponding
-            <see cref="P:Libplanet.Blocks.Block`1.Index"/>.  The highest index (i.e., the closest to the tip) go
-            first and the lowest index (i.e., the closest to the genesis) go last.</returns>
+            <see cref="P:Libplanet.Blocks.Block`1.Index"/>.  The highest index (i.e., the closest to the tip) goes
+            first and the lowest index (i.e., the closest to the genesis) goes last.</returns>
             <seealso cref="M:Libplanet.Store.IStore.StoreStateReference``1(System.String,System.Collections.Immutable.IImmutableSet{Libplanet.Address},Libplanet.Blocks.Block{``0})"/>
         </member>
         <member name="M:Libplanet.Store.IStore.StoreStateReference``1(System.String,System.Collections.Immutable.IImmutableSet{Libplanet.Address},Libplanet.Blocks.Block{``0})">
@@ -2724,6 +2783,17 @@
             <seealso
             cref="M:Libplanet.Store.IStore.StoreStateReference``1(System.String,System.Collections.Immutable.IImmutableSet{Libplanet.Address},Libplanet.Blocks.Block{``0})"/>
             <seealso cref="M:Libplanet.Store.IStore.IterateStateReferences(System.String,Libplanet.Address)"/>
+        </member>
+        <member name="M:Libplanet.Store.StoreExtension.ListAllStateReferences(Libplanet.Store.IStore,System.String)">
+            <summary>
+            Lists all accounts, that have any states, in the given <paramref name="namespace"/> and
+            their state references.
+            </summary>
+            <param name="store">A store object.</param>
+            <param name="namespace">The namespace to look up state references.</param>
+            <returns>A dictionary of account addresses to lists of their corresponding state
+            references.  Each list of state references is in ascending order, i.e., the block
+            closest to the genesis goes first and the block closest to the tip goes last.</returns>
         </member>
         <member name="T:Libplanet.Tx.InvalidTxException">
             <summary>
@@ -3120,7 +3190,7 @@
         <member name="M:Libplanet.Tx.Transaction`1.EvaluateActionsGradually(Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Int64,Libplanet.Action.IAccountStateDelta,Libplanet.Address,System.Boolean)">
             <summary>
             Executes the <see cref="P:Libplanet.Tx.Transaction`1.Actions"/> step by step, and emits
-            an action, input context, and output states for each step.
+            <see cref="T:Libplanet.Action.ActionEvaluation"/> for each step.
             <para>If the needed value is only the final states,
             use <see cref="M:Libplanet.Tx.Transaction`1.EvaluateActions(Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Int64,Libplanet.Action.IAccountStateDelta,Libplanet.Address,System.Boolean)"/> method instead.</para>
             </summary>
@@ -3140,8 +3210,8 @@
             <param name="rehearsal">Pass <c>true</c> if it is intended
             to be dry-run (i.e., the returned result will be never used).
             The default value is <c>false</c>.</param>
-            <returns>Enumerates an action, input context, and
-            output states for each one in <see cref="P:Libplanet.Tx.Transaction`1.Actions"/>.
+            <returns>Enumerates <see cref="T:Libplanet.Action.ActionEvaluation"/>s for each one in
+            <see cref="P:Libplanet.Tx.Transaction`1.Actions"/>.
             The order is the same to the <see cref="P:Libplanet.Tx.Transaction`1.Actions"/>.
             Note that each <see cref="P:Libplanet.Action.IActionContext.Random"/> object has
             a unconsumed state.

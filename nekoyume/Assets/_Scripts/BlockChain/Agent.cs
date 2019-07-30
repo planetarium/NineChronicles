@@ -33,6 +33,8 @@ namespace Nekoyume.BlockChain
     {
         private class DebugPolicy : IBlockPolicy<PolymorphicAction<ActionBase>>
         {
+            public IAction BlockAction { get; } = new RewardGold { gold = 1 };
+
             public InvalidBlockException ValidateNextBlock(IReadOnlyList<Block<PolymorphicAction<ActionBase>>> blocks, Block<PolymorphicAction<ActionBase>> nextBlock)
             {
                 return null;
@@ -213,9 +215,7 @@ namespace Nekoyume.BlockChain
         {
             while (true)
             {
-                var rewardGoldTx = RewardGold();
-
-                var txs = new HashSet<Transaction<PolymorphicAction<ActionBase>>> {rewardGoldTx};
+                var txs = new HashSet<Transaction<PolymorphicAction<ActionBase>>>();
 
                 var timeStamp = DateTimeOffset.UtcNow;
                 var prevTimeStamp = _blocks?.Tip?.Timestamp;
@@ -256,7 +256,7 @@ namespace Nekoyume.BlockChain
                             {
                                 var invalidNonceTx = _blocks.Transactions[invalidTxNonceException.TxId];
 
-                                if (invalidNonceTx.Signer == Address && invalidNonceTx.Id != rewardGoldTx.Id)
+                                if (invalidNonceTx.Signer == Address)
                                 {
                                     Debug.Log($"Tx[{invalidTxNonceException.TxId}] nonce is invalid. Retry it.");
                                     retryActions.Add(invalidNonceTx.Actions);
@@ -333,25 +333,12 @@ namespace Nekoyume.BlockChain
             return new DebugPolicy();
 # else
             return new BlockPolicy<PolymorphicAction<ActionBase>>(
+                new RewardGold { gold = 1 },
                 BlockInterval,
                 0x2000,
                 256
             );
 #endif
-        }
-
-        private Transaction<PolymorphicAction<ActionBase>> RewardGold()
-        {
-            var actions = new List<PolymorphicAction<ActionBase>> {
-                new RewardGold
-                {
-                    gold = 1
-                }
-            };
-            return _blocks.MakeTransaction(
-                PrivateKey,
-                actions,
-                broadcast: false);
         }
 
         private Transaction<PolymorphicAction<ActionBase>> RankingReward()
