@@ -9,8 +9,6 @@ namespace Nekoyume.UI.Module
     public class Recipe : MonoBehaviour
     {
         public RecipeScrollerController scrollerController;
-        public RectTransform content;
-        public RecipeCellView[] slots;
 
         public void Show()
         {
