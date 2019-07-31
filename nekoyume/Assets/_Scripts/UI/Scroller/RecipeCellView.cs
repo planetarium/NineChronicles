@@ -12,8 +12,8 @@ namespace Nekoyume.UI.Scroller
         public Text resultNameText;
         public Image resultItemIcon;
         public Text resultMark;
-        public Image[] materialIcons = new Image[5];
-        public Text[] materialMarks = new Text[5];
+        public Image[] materialIcons;
+        public Text[] materialMarks;
 
         private const float ResultIconScaleFactor = 1.2f;
         private const float MaterialIconScaleFactor = 1.2f;
