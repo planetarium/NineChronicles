@@ -374,34 +374,46 @@ namespace Nekoyume.Game.Character
             DamageText.Show(position, force, dmg);
             VFXController.instance.Create<BattleHeal01VFX>(transform, HUDOffset - new Vector3(0f, 0.4f));
         }
-
-        private IEnumerator CoAnimationAttack(bool isCritical)
+        
+        private void PreAnimation()
         {
             attackEnd = false;
             RunSpeed = 0.0f;
+        }
 
+        private IEnumerator CoAnimationAttack(bool isCritical)
+        {
+            PreAnimation();
             if (isCritical)
             {
                 animator.CriticalAttack();
             }
             else
             {
-                animator.Attack();   
+                animator.Attack();
             }
-            
             yield return new WaitUntil(() => attackEnd);
-
-            var enemy = GetComponentsInChildren<CharacterBase>()
-                .Where(c => c.gameObject.CompareTag(targetTag))
-                .OrderBy(c => c.transform.position.x).FirstOrDefault();
-            if (enemy != null && !TargetInRange(enemy))
-                RunSpeed = Speed;
+            PostAnimation();
+        }
+        
+        private IEnumerator CoAnimationCastAttack(bool isCritical)
+        {
+            PreAnimation();
+            if (isCritical)
+            {
+                animator.CriticalAttack();
+            }
+            else
+            {
+                animator.CastAttack();
+            }
+            yield return new WaitUntil(() => attackEnd);
+            PostAnimation();
         }
         
         protected virtual IEnumerator CoAnimationCast(Model.Skill.SkillInfo info)
         {
-            attackEnd = false;
-            RunSpeed = 0.0f;
+            PreAnimation();
 
             AudioController.instance.PlaySfx(AudioController.SfxCode.BattleCast);
             animator.Cast();
@@ -410,6 +422,11 @@ namespace Nekoyume.Game.Character
             effect.Play();
             yield return new WaitForSeconds(0.6f);
 
+            PostAnimation();
+        }
+
+        private void PostAnimation()
+        {
             var enemy = GetComponentsInChildren<CharacterBase>()
                 .Where(c => c.gameObject.CompareTag(targetTag))
                 .OrderBy(c => c.transform.position.x).FirstOrDefault();
@@ -421,7 +438,7 @@ namespace Nekoyume.Game.Character
         {
             var skillInfos = infos.ToList();
             var skillInfosCount = skillInfos.Count;
-            
+
             yield return StartCoroutine(CoAnimationAttack(skillInfos.Any(skillInfo => skillInfo.Critical)));
             
             for (var i = 0; i < skillInfosCount; i++)
@@ -461,8 +478,7 @@ namespace Nekoyume.Game.Character
                 {
                     effect.StopLoop();
                     yield return new WaitUntil(() => effect.last.isStopped);
-                    StartCoroutine(CoAnimationAttack());
-                    yield return new WaitForSeconds(0.3f);
+                    yield return StartCoroutine(CoAnimationAttack(info.Critical));
                     effect.Finisher();
                     isTriggerOn = true;
                 }
@@ -504,8 +520,8 @@ namespace Nekoyume.Game.Character
             var skillInfosCount = skillInfos.Count;
 
             yield return StartCoroutine(CoAnimationCast(skillInfos.First()));
-
-            yield return StartCoroutine(CoAnimationAttack(skillInfos.Any(info => info.Critical)));
+            
+            yield return StartCoroutine(CoAnimationCastAttack(skillInfos.Any(skillInfo => skillInfo.Critical)));
 
             for (var i = 0; i < skillInfosCount; i++)
             {
