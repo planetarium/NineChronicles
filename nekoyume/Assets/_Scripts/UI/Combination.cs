@@ -42,6 +42,8 @@ namespace Nekoyume.UI
         public Text combinationButtonText;
         public GameObject recipeCombination;
         public Button closeButton;
+        public Button recipeCloseButton;
+        public Recipe recipe;
 
         public GameObject particleVFX;
         public GameObject resultItemVFX;
@@ -70,7 +72,7 @@ namespace Nekoyume.UI
             recipeButtonText.text = LocalizationManager.Localize("UI_RECIPE");
             materialsTitleText.text = LocalizationManager.Localize("UI_COMBINATION_MATERIALS");
             combinationButtonText.text = LocalizationManager.Localize("UI_COMBINATION_ITEM");
-            
+
             switchEquipmentsButton.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
@@ -89,10 +91,11 @@ namespace Nekoyume.UI
                 .Subscribe(_ =>
                 {
                     AudioController.PlayClick();
+
                     Model.manualOrRecipe.Value =
-                        Model.manualOrRecipe.Value == UI.Model.Combination.ManualOrRecipe.Manual
-                            ? UI.Model.Combination.ManualOrRecipe.Recipe
-                            : UI.Model.Combination.ManualOrRecipe.Manual;
+                        Model.manualOrRecipe.Value == UI.Model.Combination.ManualOrRecipe.Manual ?
+                            UI.Model.Combination.ManualOrRecipe.Recipe :
+                            UI.Model.Combination.ManualOrRecipe.Manual;
                 })
                 .AddTo(gameObject);
             combinationButton.OnClickAsObservable()
@@ -109,8 +112,13 @@ namespace Nekoyume.UI
                     Close();
                 })
                 .AddTo(gameObject);
-
-            recipeButton.enabled = false;
+            recipeCloseButton.OnClickAsObservable()
+                .Subscribe(_ =>
+                {
+                    AudioController.PlayClick();
+                    Model.manualOrRecipe.Value = UI.Model.Combination.ManualOrRecipe.Manual;
+                })
+                .AddTo(gameObject);
         }
 
         #endregion
@@ -247,6 +255,7 @@ namespace Nekoyume.UI
                     recipeButtonImage.sprite = Resources.Load<Sprite>("UI/Textures/button_blue_01");
                     manualCombination.SetActive(false);
                     recipeCombination.SetActive(true);
+                    recipe.Show();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(value), value, null);
