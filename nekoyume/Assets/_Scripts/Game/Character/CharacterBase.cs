@@ -452,6 +452,7 @@ namespace Nekoyume.Game.Character
                 {
                     effect.StopLoop();
                     yield return new WaitUntil(() => effect.last.isStopped);
+                    StartCoroutine(CoAnimationAttack());
                     yield return new WaitForSeconds(0.3f);
                     effect.Finisher();
                     isTriggerOn = true;

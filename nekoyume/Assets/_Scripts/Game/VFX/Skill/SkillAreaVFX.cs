@@ -21,10 +21,7 @@ namespace Nekoyume.Game.VFX.Skill
         {
             foreach (var ps in _loops)
             {
-                var behaviour = ps == last
-                    ? ParticleSystemStopBehavior.StopEmittingAndClear
-                    : ParticleSystemStopBehavior.StopEmitting;
-                ps.Stop(false, behaviour);
+                ps.Stop(false);
             }
         }
         public void Finisher()
