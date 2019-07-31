@@ -1,5 +1,4 @@
-﻿using System;
-using EnhancedUI.EnhancedScroller;
+﻿using EnhancedUI.EnhancedScroller;
 using Nekoyume.UI.Module;
 using UniRx;
 using UnityEngine;

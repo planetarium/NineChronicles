@@ -88,16 +88,14 @@ namespace Nekoyume.Game.Item
 
         public static Sprite GetSprite(ItemBase item = null)
         {
-            string path;
             int? id;
             if (item is ItemUsable itemUsable)
             {
-                path = EquipmentPath;
+ 
                 id = itemUsable.Data.resourceId;
             }
             else
             {
-                path = ItemPath;
                 id = item?.Data.id;
             }
 
@@ -106,7 +104,7 @@ namespace Nekoyume.Game.Item
                 id = DefaultId;
             }
 
-            return Resources.Load<Sprite>(string.Format(path, id));
+            return GetSprite(id.Value);
         }
 
         public static Sprite GetSprite(int id)

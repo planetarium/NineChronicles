@@ -1,8 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using EnhancedUI.EnhancedScroller;
-using Nekoyume.Data;
-using Nekoyume.UI.Module;
 using Nekoyume.UI.Model;
 
 namespace Nekoyume.UI.Scroller

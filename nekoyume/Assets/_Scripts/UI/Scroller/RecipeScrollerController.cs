@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using EnhancedUI.EnhancedScroller;
-using Nekoyume.Data.Table;
 using Nekoyume.UI.Model;
 
 namespace Nekoyume.UI.Scroller
