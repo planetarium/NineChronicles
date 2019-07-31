@@ -411,6 +411,14 @@ namespace Nekoyume.Game.Character
 
         public IEnumerator CoAttack(IEnumerable<Model.Skill.SkillInfo> infos)
         {
+            foreach (var skillInfo in infos)
+            {
+                if (skillInfo.Critical)
+                {
+                    
+                }
+            }
+            
             yield return StartCoroutine(CoAnimationAttack());
 
             var skillInfos = infos.ToList();

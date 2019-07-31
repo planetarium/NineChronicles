@@ -110,6 +110,26 @@ namespace Nekoyume.Game.Character
 
             Animator.Play(nameof(CharacterAnimation.Type.Casting), _baseLayerIndex, 0f);
         }
+        
+        public override void CastAttack()
+        {
+            if (!AnimatorValidation())
+            {
+                return;
+            }
+
+            Animator.Play(nameof(CharacterAnimation.Type.Casting), _baseLayerIndex, 0f);
+        }
+        
+        public override void CriticalAttack()
+        {
+            if (!AnimatorValidation())
+            {
+                return;
+            }
+
+            Animator.Play(nameof(CharacterAnimation.Type.Casting), _baseLayerIndex, 0f);
+        }
 
         public override void Hit()
         {
