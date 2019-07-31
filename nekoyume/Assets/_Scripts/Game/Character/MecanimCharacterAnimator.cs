@@ -85,22 +85,10 @@ namespace Nekoyume.Game.Character
             {
                 return;
             }
-
-            var currentState = Animator.GetCurrentAnimatorStateInfo(_baseLayerIndex);
-            if (currentState.IsName(nameof(CharacterAnimation.Type.Casting)))
-            {
-                Animator.Play(nameof(CharacterAnimation.Type.CastingAttack), _baseLayerIndex, 0f);
-            }
-            else
-            {
-                Animator.Play(nameof(CharacterAnimation.Type.Attack), _baseLayerIndex, 0f);
-            }
+            
+            Animator.Play(nameof(CharacterAnimation.Type.Attack), _baseLayerIndex, 0f);
         }
 
-        /// <summary>
-        /// Casting 애니메이션을 재생하는 함수입니다.
-        /// 이후 리소스 명을 변경하도록 요청해서 `CharacterAnimation.Type.Casting`을 `CharacterAnimation.Type.Cast`로 변경하겠습니다.
-        /// </summary>
         public override void Cast()
         {
             if (!AnimatorValidation())
@@ -118,7 +106,7 @@ namespace Nekoyume.Game.Character
                 return;
             }
 
-            Animator.Play(nameof(CharacterAnimation.Type.Casting), _baseLayerIndex, 0f);
+            Animator.Play(nameof(CharacterAnimation.Type.CastingAttack), _baseLayerIndex, 0f);
         }
         
         public override void CriticalAttack()
@@ -128,7 +116,7 @@ namespace Nekoyume.Game.Character
                 return;
             }
 
-            Animator.Play(nameof(CharacterAnimation.Type.Casting), _baseLayerIndex, 0f);
+            Animator.Play(nameof(CharacterAnimation.Type.CriticalAttack), _baseLayerIndex, 0f);
         }
 
         public override void Hit()

@@ -375,12 +375,20 @@ namespace Nekoyume.Game.Character
             VFXController.instance.Create<BattleHeal01VFX>(transform, HUDOffset - new Vector3(0f, 0.4f));
         }
 
-        private IEnumerator CoAnimationAttack()
+        private IEnumerator CoAnimationAttack(bool isCritical)
         {
             attackEnd = false;
             RunSpeed = 0.0f;
 
-            animator.Attack();
+            if (isCritical)
+            {
+                animator.CriticalAttack();
+            }
+            else
+            {
+                animator.Attack();   
+            }
+            
             yield return new WaitUntil(() => attackEnd);
 
             var enemy = GetComponentsInChildren<CharacterBase>()
@@ -411,18 +419,11 @@ namespace Nekoyume.Game.Character
 
         public IEnumerator CoAttack(IEnumerable<Model.Skill.SkillInfo> infos)
         {
-            foreach (var skillInfo in infos)
-            {
-                if (skillInfo.Critical)
-                {
-                    
-                }
-            }
-            
-            yield return StartCoroutine(CoAnimationAttack());
-
             var skillInfos = infos.ToList();
             var skillInfosCount = skillInfos.Count;
+            
+            yield return StartCoroutine(CoAnimationAttack(skillInfos.Any(skillInfo => skillInfo.Critical)));
+            
             for (var i = 0; i < skillInfosCount; i++)
             {
                 var info = skillInfos[i];
@@ -483,7 +484,7 @@ namespace Nekoyume.Game.Character
                 var first = skillInfosFirst == info;
                 var effect = Game.instance.stage.skillController.Get<SkillDoubleVFX>(target, info);
 
-                yield return StartCoroutine(CoAnimationAttack());
+                yield return StartCoroutine(CoAnimationAttack(info.Critical));
                 if (first)
                 {
                     effect.FirstStrike();
@@ -504,7 +505,7 @@ namespace Nekoyume.Game.Character
 
             yield return StartCoroutine(CoAnimationCast(skillInfos.First()));
 
-            yield return StartCoroutine(CoAnimationAttack());
+            yield return StartCoroutine(CoAnimationAttack(skillInfos.Any(info => info.Critical)));
 
             for (var i = 0; i < skillInfosCount; i++)
             {
