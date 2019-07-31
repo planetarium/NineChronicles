@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Nekoyume.UI.Scroller;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,13 +8,13 @@ namespace Nekoyume.UI.Module
 {
     public class Recipe : MonoBehaviour
     {
+        public RecipeScrollerController scrollerController;
         public RectTransform content;
-        public List<GameObject> slots;
+        public RecipeCellView[] slots;
 
         public void Show()
         {
-            float estHeight = slots.Count * 90;
-            content.sizeDelta = new Vector2(0, (estHeight >= 500) ? estHeight - 500 : 500);
+            scrollerController.SetData();
         }
     }
 }
