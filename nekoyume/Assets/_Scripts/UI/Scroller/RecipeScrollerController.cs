@@ -1,8 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using EnhancedUI.EnhancedScroller;
-using UniRx;
+using Nekoyume.Data.Table;
+using Nekoyume.UI.Model;
 
 namespace Nekoyume.UI.Scroller
 {
@@ -11,6 +11,7 @@ namespace Nekoyume.UI.Scroller
         public EnhancedScroller scroller;
         public RecipeCellView cellViewPrefab;
 
+        private List<RecipeInfo> _recipeList = new List<RecipeInfo>();
         private float _cellViewHeight = 90f;
 
         #region Mono
@@ -20,7 +21,6 @@ namespace Nekoyume.UI.Scroller
             this.ComponentFieldsNotNullTest();
 
             scroller.Delegate = this;
-
             _cellViewHeight = cellViewPrefab.GetComponent<RectTransform>().rect.height;
         }
 
@@ -35,7 +35,7 @@ namespace Nekoyume.UI.Scroller
             }
 
             cellView.name = $"Cell {dataIndex}";
-            cellView.SetData();
+            cellView.SetData(_recipeList[dataIndex]);
             return cellView;
         }
 
@@ -46,11 +46,12 @@ namespace Nekoyume.UI.Scroller
 
         public int GetNumberOfCells(EnhancedScroller scroller)
         {
-            return 7;
+            return _recipeList.Count;
         }
 
-        public void SetData()
+        public void SetData(List<RecipeInfo> recipeList)
         {
+            _recipeList = recipeList;
             scroller.ReloadData();
         }
     }

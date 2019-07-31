@@ -1,4 +1,5 @@
 using System;
+using Nekoyume.Data;
 using Nekoyume.Game.Skill;
 using UnityEngine;
 
@@ -102,6 +103,28 @@ namespace Nekoyume.Game.Item
 
             if (Equals(id, null) || Equals(id, 0))
             {
+                id = DefaultId;
+            }
+
+            return Resources.Load<Sprite>(string.Format(path, id));
+        }
+
+        public static Sprite GetSprite(int id)
+        {
+            var equips = Tables.instance.ItemEquipment;
+            var items = Tables.instance.Item;
+            string path = string.Empty;
+            if (equips.ContainsKey(id))
+            {
+                path = EquipmentPath;
+            }
+            else if (items.ContainsKey(id))
+            {
+                path = ItemPath;
+            }
+            else
+            {
+                path = ItemPath;
                 id = DefaultId;
             }
 
