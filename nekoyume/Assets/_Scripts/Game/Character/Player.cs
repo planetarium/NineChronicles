@@ -62,13 +62,13 @@ namespace Nekoyume.Game.Character
 
         #endregion
 
-        public override IEnumerator CoProcessDamage(Model.Skill.SkillInfo info, bool isConsiderDie)
+        public override IEnumerator CoProcessDamage(Model.Skill.SkillInfo info, bool isConsiderDie, bool isConsiderElementalType)
         {
-            yield return StartCoroutine(base.CoProcessDamage(info, isConsiderDie));
+            yield return StartCoroutine(base.CoProcessDamage(info, isConsiderDie, isConsiderElementalType));
 
             var position = transform.TransformPoint(0f, 1.7f, 0f);
             var force = DamageTextForce;
-            PopUpDmg(position, force, info);
+            PopUpDmg(position, force, info, isConsiderElementalType);
 
             Event.OnUpdateStatus.Invoke();
         }
@@ -231,10 +231,10 @@ namespace Nekoyume.Game.Character
             return canRun;
         }
 
-        protected override void ProcessAttack(CharacterBase target, Model.Skill.SkillInfo skill, bool isConsiderDie)
+        protected override void ProcessAttack(CharacterBase target, Model.Skill.SkillInfo skill, bool isLastHit, bool isConsiderElementalType)
         {
             ShowSpeech("PLAYER_SKILL", (int)(skill.Elemental ?? 0), (int)skill.Category);
-            base.ProcessAttack(target, skill, isConsiderDie);
+            base.ProcessAttack(target, skill, isLastHit, isConsiderElementalType);
             ShowSpeech("PLAYER_ATTACK");
         }
 

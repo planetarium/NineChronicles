@@ -220,7 +220,7 @@ namespace Nekoyume.Game.Character
             );
         }
 
-        public virtual IEnumerator CoProcessDamage(Model.Skill.SkillInfo info, bool isConsiderDie)
+        public virtual IEnumerator CoProcessDamage(Model.Skill.SkillInfo info, bool isConsiderDie, bool isConsiderElementalType)
         {
             var dmg = info.Effect;
 
@@ -245,7 +245,7 @@ namespace Nekoyume.Game.Character
             gameObject.SetActive(false);
         }
 
-        protected void PopUpDmg(Vector3 position, Vector3 force, Model.Skill.SkillInfo info)
+        protected void PopUpDmg(Vector3 position, Vector3 force, Model.Skill.SkillInfo info, bool isConsiderElementalType)
         {
             var dmg = info.Effect.ToString();
             var pos = transform.position;
@@ -261,7 +261,9 @@ namespace Nekoyume.Game.Character
             }
             else
             {
-                AudioController.PlayDamaged();
+                AudioController.PlayDamaged(isConsiderElementalType
+                    ? info.Elemental ?? Data.Table.Elemental.ElementalType.Normal
+                    : Data.Table.Elemental.ElementalType.Normal);
                 DamageText.Show(position, force, dmg);
                 if (info.Category == SkillEffect.Category.Normal)
                     VFXController.instance.Create<BattleAttack01VFX>(pos);
@@ -339,11 +341,11 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        protected virtual void ProcessAttack(CharacterBase target, Model.Skill.SkillInfo skill, bool isConsiderDie)
+        protected virtual void ProcessAttack(CharacterBase target, Model.Skill.SkillInfo skill, bool isLastHit, bool isConsiderElementalType)
         {
             if (!target) return;
             target.StopRun();
-            StartCoroutine(target.CoProcessDamage(skill, isConsiderDie));
+            StartCoroutine(target.CoProcessDamage(skill, isLastHit, isConsiderElementalType));
         }
 
         private void ProcessHeal(CharacterBase target, Model.Skill.SkillInfo info)
@@ -419,7 +421,7 @@ namespace Nekoyume.Game.Character
             {
                 var info = skillInfos[i];
                 var target = Game.instance.stage.GetCharacter(info.Target);
-                ProcessAttack(target, info, i == skillInfosCount - 1);
+                ProcessAttack(target, info, i == skillInfosCount - 1, false);
             }
         }
 
@@ -457,7 +459,7 @@ namespace Nekoyume.Game.Character
                     isTriggerOn = true;
                 }
                 
-                ProcessAttack(target, info, isTriggerOn);
+                ProcessAttack(target, info, isTriggerOn, isTriggerOn);
             }
             yield return new WaitForSeconds(0.5f);
         }
@@ -483,7 +485,7 @@ namespace Nekoyume.Game.Character
                 {
                     effect.SecondStrike();
                 }
-                ProcessAttack(target, info, i == skillInfosCount - 1);
+                ProcessAttack(target, info, i == skillInfosCount - 1, true);
             }
             yield return new WaitForSeconds(1.2f);
         }
@@ -503,7 +505,7 @@ namespace Nekoyume.Game.Character
                 var target = Game.instance.stage.GetCharacter(info.Target);
                 var effect = Game.instance.stage.skillController.Get<SkillBlowVFX>(target, info);
                 effect.Play();
-                ProcessAttack(target, info, i == skillInfosCount - 1);
+                ProcessAttack(target, info, i == skillInfosCount - 1, true);
             }
         }
 

@@ -53,6 +53,10 @@ namespace Nekoyume.Game.Controller
             public const string FootStepLow = "sfx_footstep-low";
             public const string FootStepHigh = "sfx_footstep-high";
             public const string DamageNormal = "sfx_damage_normal";
+            public const string DamageFire = "sfx_damage_fire";
+            public const string DamageWater = "sfx_damage_water";
+            public const string DamageLand = "sfx_damage_land";
+            public const string DamageWind = "sfx_damage_wind";
             public const string Critical01 = "sfx_critical01";
             public const string Critical02 = "sfx_critical02";
             public const string LevelUp = "sfx_levelup";
@@ -427,10 +431,28 @@ namespace Nekoyume.Game.Controller
             instance.PlaySfx(random < 0.5f ? SfxCode.FootStepLow : SfxCode.FootStepHigh);
         }
         
-        public static void PlayDamaged()
+        public static void PlayDamaged(Data.Table.Elemental.ElementalType elementalType = Data.Table.Elemental.ElementalType.Normal)
         {
-            var random = Random.value;
-            instance.PlaySfx(SfxCode.DamageNormal);
+            switch (elementalType)
+            {
+                case Data.Table.Elemental.ElementalType.Normal:
+                    instance.PlaySfx(SfxCode.DamageNormal);
+                    break;
+                case Data.Table.Elemental.ElementalType.Fire:
+                    instance.PlaySfx(SfxCode.DamageFire);
+                    break;
+                case Data.Table.Elemental.ElementalType.Water:
+                    instance.PlaySfx(SfxCode.DamageWater);
+                    break;
+                case Data.Table.Elemental.ElementalType.Land:
+                    instance.PlaySfx(SfxCode.DamageLand);
+                    break;
+                case Data.Table.Elemental.ElementalType.Wind:
+                    instance.PlaySfx(SfxCode.DamageWind);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(elementalType), elementalType, null);
+            }
         }
         
         public static void PlayDamagedCritical()
