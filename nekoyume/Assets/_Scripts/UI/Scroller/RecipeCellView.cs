@@ -15,6 +15,9 @@ namespace Nekoyume.UI.Scroller
         public Image[] materialIcons = new Image[5];
         public Text[] materialMarks = new Text[5];
 
+        private const float ResultIconScaleFactor = 1.2f;
+        private const float MaterialIconScaleFactor = 1.2f;
+
         #region Mono
 
         private void Awake()
@@ -28,10 +31,10 @@ namespace Nekoyume.UI.Scroller
         {
             obj.SetActive(true);
             resultNameText.text = recipe.resultName;
-            SetIcon(resultItemIcon, recipe.resultSprite, resultMark, 1.2f);
+            SetIcon(resultItemIcon, recipe.resultSprite, resultMark, ResultIconScaleFactor);
             for(int i = 0; i < 4; ++i)
             {
-                SetIcon(materialIcons[i], recipe.materialSprites[i], materialMarks[i], 0.7f);
+                SetIcon(materialIcons[i], recipe.materialSprites[i], materialMarks[i], MaterialIconScaleFactor);
             }
         }
 

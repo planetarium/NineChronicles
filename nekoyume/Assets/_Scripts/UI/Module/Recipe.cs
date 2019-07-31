@@ -43,22 +43,46 @@ namespace Nekoyume.UI.Module
         {
             if (id == 0) return string.Empty;
 
-            var equips = Tables.instance.ItemEquipment;
-            var items = Tables.instance.Item;
-
-            if (equips.ContainsKey(id))
+            string name = string.Empty;
+            if (TryGetEquipmentName(id, out name))
             {
-                return equips[id].name;
+                return name;
             }
-            else if (items.ContainsKey(id))
+            else if (TryGetMaterialName(id, out name))
             {
-                return items[id].name;
+                return name;
             }
             else
             {
                 Debug.LogError("Item not found!");
                 return string.Empty;
             }
+        }
+
+        private bool TryGetEquipmentName(int id, out string name)
+        {
+            var equips = Tables.instance.ItemEquipment;
+
+            if (equips.ContainsKey(id))
+            {
+                name = equips[id].name;
+                return true;
+            }
+            name = string.Empty;
+            return false;
+        }
+
+        private bool TryGetMaterialName(int id, out string name)
+        {
+            var items = Tables.instance.Item;
+
+            if (items.ContainsKey(id))
+            {
+                name = items[id].name;
+                return true;
+            }
+            name = string.Empty;
+            return false;
         }
     }
 }
