@@ -91,7 +91,6 @@ namespace Nekoyume.Game.Item
             int? id;
             if (item is ItemUsable itemUsable)
             {
- 
                 id = itemUsable.Data.resourceId;
             }
             else
