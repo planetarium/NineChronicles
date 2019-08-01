@@ -129,13 +129,6 @@ namespace Nekoyume.Model
             return MemberwiseClone();
         }
 
-        //FIXME 임시 속성부여 메서드.
-        public Elemental.ElementalType GetRandomElemental()
-        {
-            var values = Enum.GetValues(typeof(Data.Table.Elemental.ElementalType));
-            var random = new Random();
-            return (Elemental.ElementalType) values.GetValue(random.Next(values.Length));
-        }
     }
 
     public class InformationFieldAttribute : Attribute

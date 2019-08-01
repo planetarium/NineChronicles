@@ -352,16 +352,11 @@ namespace Nekoyume.Game.Character
         {
             if (target)
             {
-                var calc = info.Effect - target.HP;
-                if (calc <= 0)
-                {
-                    calc = 0;
-                }
-                target.HP += calc;
+                target.HP = Math.Min(info.Effect + target.HP, target.HPMax);
 
                 var position = transform.TransformPoint(0f, 1.7f, 0f);
                 var force = new Vector3(-0.1f, 0.5f);
-                var txt = calc.ToString();
+                var txt = info.Effect.ToString();
                 PopUpHeal(position, force, txt, info.Critical);
 
                 UpdateHpBar();
