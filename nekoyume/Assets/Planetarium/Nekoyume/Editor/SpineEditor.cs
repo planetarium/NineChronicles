@@ -78,7 +78,7 @@ namespace Planetarium.Nekoyume.Editor
             var animatorControllerGuidArray = AssetDatabase.FindAssets(FindAssetFilter);
             if (animatorControllerGuidArray.Length == 0)
             {
-                Object.DestroyImmediate(gameObject);
+                Object.Destroy(gameObject);
                 throw new AssetNotFoundException($"AssetDatabase.FindAssets(\"{FindAssetFilter}\")");
             }
 
@@ -106,13 +106,13 @@ namespace Planetarium.Nekoyume.Editor
                             asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(assetPath);
                             break;
                         default:
-                            Object.DestroyImmediate(gameObject);
+                            Object.Destroy(gameObject);
                             throw new AssetNotFoundException(assetPath);
                     }
 
                     if (ReferenceEquals(asset, null))
                     {
-                        Object.DestroyImmediate(gameObject);
+                        Object.Destroy(gameObject);
                         throw new AssetNotFoundException(assetPath);
                     }
                 }
@@ -133,13 +133,13 @@ namespace Planetarium.Nekoyume.Editor
             try
             {
                 var prefab = PrefabUtility.SaveAsPrefabAsset(gameObject, prefabPath);
-                Object.DestroyImmediate(gameObject);
+                Object.Destroy(gameObject);
                 Selection.activeObject = prefab;
             }
             catch
             {
-                Object.DestroyImmediate(gameObject);
-                throw new FailedToInstantiateGameObjectException(prefabPath);
+                Object.Destroy(gameObject);
+                throw new FailedToSaveAsPrefabAssetException(prefabPath);
             }
         }
         

@@ -375,7 +375,7 @@ namespace Nekoyume.Game.Character
             VFXController.instance.Create<BattleHeal01VFX>(transform, HUDOffset - new Vector3(0f, 0.4f));
         }
         
-        private void PreAnimation()
+        private void PreAnimationForTheKindOfAttack()
         {
             attackEnd = false;
             RunSpeed = 0.0f;
@@ -383,7 +383,7 @@ namespace Nekoyume.Game.Character
 
         private IEnumerator CoAnimationAttack(bool isCritical)
         {
-            PreAnimation();
+            PreAnimationForTheKindOfAttack();
             if (isCritical)
             {
                 animator.CriticalAttack();
@@ -393,12 +393,12 @@ namespace Nekoyume.Game.Character
                 animator.Attack();
             }
             yield return new WaitUntil(() => attackEnd);
-            PostAnimation();
+            PostAnimationForTheKindOfAttack();
         }
         
         private IEnumerator CoAnimationCastAttack(bool isCritical)
         {
-            PreAnimation();
+            PreAnimationForTheKindOfAttack();
             if (isCritical)
             {
                 animator.CriticalAttack();
@@ -408,12 +408,12 @@ namespace Nekoyume.Game.Character
                 animator.CastAttack();
             }
             yield return new WaitUntil(() => attackEnd);
-            PostAnimation();
+            PostAnimationForTheKindOfAttack();
         }
         
         protected virtual IEnumerator CoAnimationCast(Model.Skill.SkillInfo info)
         {
-            PreAnimation();
+            PreAnimationForTheKindOfAttack();
 
             AudioController.instance.PlaySfx(AudioController.SfxCode.BattleCast);
             animator.Cast();
@@ -422,10 +422,10 @@ namespace Nekoyume.Game.Character
             effect.Play();
             yield return new WaitForSeconds(0.6f);
 
-            PostAnimation();
+            PostAnimationForTheKindOfAttack();
         }
 
-        private void PostAnimation()
+        private void PostAnimationForTheKindOfAttack()
         {
             var enemy = GetComponentsInChildren<CharacterBase>()
                 .Where(c => c.gameObject.CompareTag(targetTag))
@@ -478,7 +478,7 @@ namespace Nekoyume.Game.Character
                 {
                     effect.StopLoop();
                     yield return new WaitUntil(() => effect.last.isStopped);
-                    yield return StartCoroutine(CoAnimationAttack(info.Critical));
+                    yield return StartCoroutine(CoAnimationCastAttack(info.Critical));
                     effect.Finisher();
                     isTriggerOn = true;
                 }

@@ -170,3 +170,23 @@ public class AssetNotFoundException : Exception
 public class SheetRowNotFoundException : Exception
 {
 }
+
+
+public class FailedToSaveAsPrefabAssetException : Exception
+{
+    private const string MessageDefault = "Failed to save as prefab.";
+    private const string MessageFormat = "Failed to save as prefab to `{0}`.";
+    
+    public FailedToSaveAsPrefabAssetException() : base(MessageDefault)
+    {
+        
+    }
+    
+    public FailedToSaveAsPrefabAssetException(string path) : base(string.Format(MessageFormat, path))
+    {
+    }
+
+    public FailedToSaveAsPrefabAssetException(string path, Exception inner) : base(string.Format(MessageFormat, path), inner)
+    {
+    }
+}
