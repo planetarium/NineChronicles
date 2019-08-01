@@ -16,7 +16,7 @@ namespace Nekoyume.UI.Scroller
         public Text[] materialMarks;
 
         private const float ResultIconScaleFactor = 1.2f;
-        private const float MaterialIconScaleFactor = 1.2f;
+        private const float MaterialIconScaleFactor = 0.7f;
 
         #region Mono
 
