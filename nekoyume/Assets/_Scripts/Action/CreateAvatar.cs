@@ -75,7 +75,7 @@ namespace Nekoyume.Action
                 avatarState.inventory.AddFungibleItem(ItemBase.ItemFactory(pair.Value, default));
             }
             
-            foreach (var pair in Tables.instance.ItemEquipment.Where(pair => pair.Value.id > 10100000))
+            foreach (var pair in Tables.instance.ItemEquipment.Where(pair => pair.Value.id > GameConfig.DefaultAvatarWeaponId))
             {
                 var b = new byte[16];
                 random.NextBytes(b);

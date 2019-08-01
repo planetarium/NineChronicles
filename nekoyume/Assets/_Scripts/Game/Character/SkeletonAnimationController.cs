@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Nekoyume.Game.Item;
 using Spine;
 using Spine.Unity;
 using Spine.Unity.Modules.AttachmentTools;
@@ -16,18 +17,28 @@ namespace Nekoyume.Game.Character
             public string stateName;
             public AnimationReferenceAsset animation;
         }
+        
+        public const string DefaultPMAShader = "Spine/Skeleton";
+        public const string DefaultStraightAlphaShader = "Sprites/Default";
 
         public List<StateNameToAnimationReference> statesAndAnimations = new List<StateNameToAnimationReference>();
 
-        public SkeletonAnimation skeletonAnimation;
+        public SkeletonAnimation SkeletonAnimation { get; private set; }
 
         private Spine.Animation TargetAnimation { get; set; }
 
-        [SpineSlot] public string weaponSlot = "weapon";
+        [SpineSlot]
+        public string weaponSlot = "weapon";
 
-        [SpineAttachment(slotField: "weaponSlot")]
-        public string weaponAttachment;
-
+        private bool _applyPMA;
+        private Shader _weaponShader;
+        private AtlasPage _weaponAtlasPage;
+        private int _weaponSlotIndex;
+        
+        private Skin _clonedSkinForChangeWeapon;
+        private RegionAttachment _defaultWeaponAttachment;
+        private RegionAttachment _currentWeaponAttachment;
+        
         #region Mono
 
         private void Awake()
@@ -37,7 +48,15 @@ namespace Nekoyume.Game.Character
                 entry.animation.Initialize();
             }
 
-            skeletonAnimation = GetComponent<SkeletonAnimation>();
+            SkeletonAnimation = GetComponent<SkeletonAnimation>();
+            
+            _applyPMA = SkeletonAnimation.pmaVertexColors;
+            _weaponShader = _applyPMA ? Shader.Find(DefaultPMAShader) : Shader.Find(DefaultStraightAlphaShader);
+            _weaponAtlasPage = new UnityEngine.Material(_weaponShader).ToSpineAtlasPage();
+            _weaponSlotIndex = SkeletonAnimation.skeleton.FindSlotIndex(weaponSlot);
+            
+            _clonedSkinForChangeWeapon = SkeletonAnimation.skeleton.Data.DefaultSkin.GetClone();
+            _defaultWeaponAttachment = MakeWeaponAttachment(Weapon.GetSprite(GameConfig.DefaultAvatarWeaponId));
         }
 
         #endregion
@@ -47,7 +66,7 @@ namespace Nekoyume.Game.Character
         {
             if (Math.Abs(horizontal) > 0f)
             {
-                skeletonAnimation.Skeleton.ScaleX = horizontal > 0 ? 1f : -1f;
+                SkeletonAnimation.Skeleton.ScaleX = horizontal > 0 ? 1f : -1f;
             }
         }
 
@@ -64,7 +83,7 @@ namespace Nekoyume.Game.Character
         /// <summary>Play a non-looping animation once then continue playing the state animation.</summary>
         public void PlayOneShot(Spine.Animation oneShot, int layerIndex)
         {
-            var state = skeletonAnimation.AnimationState;
+            var state = SkeletonAnimation.AnimationState;
             state.SetAnimation(0, oneShot, false);
             state.AddAnimation(0, TargetAnimation, true, 0f);
         }
@@ -76,27 +95,31 @@ namespace Nekoyume.Game.Character
 
         public void UpdateWeapon(Sprite sprite)
         {
-            var skeleton = skeletonAnimation.skeleton;
-            int weaponIndex = skeleton.FindSlotIndex(weaponSlot);
-            var weapon = skeletonAnimation.skeleton.GetAttachment(weaponSlot, weaponSlot);
-            var skin = new Skin("weapon switch");
-            if (sprite != null)
+            if (sprite is null)
             {
-                var rend = GetComponentInParent<MeshRenderer>();
-                var material = rend.material;
-                var newWeapon = weapon.GetRemappedClone(sprite, material);
-                skin.AddAttachment(weaponIndex, weaponSlot, newWeapon);
+                _clonedSkinForChangeWeapon.SetAttachment(_weaponSlotIndex, weaponSlot, _defaultWeaponAttachment);
             }
             else
             {
-                skin = skeleton.Data.FindSkin("default");
+                var newWeapon = MakeWeaponAttachment(sprite);
+                _clonedSkinForChangeWeapon.SetAttachment(_weaponSlotIndex, weaponSlot, newWeapon);
             }
 
-            skeleton.SetSkin(skin);
+            var skeleton = SkeletonAnimation.skeleton;
+            skeleton.SetSkin(_clonedSkinForChangeWeapon);
             skeleton.SetSlotsToSetupPose();
-            skeletonAnimation.Update(0);
+            SkeletonAnimation.Update(0);
         }
-
+        
+        private RegionAttachment MakeWeaponAttachment(Sprite sprite)
+        {
+            var attachment = _applyPMA
+                ? sprite.ToRegionAttachmentPMAClone(_weaponShader)
+                : sprite.ToRegionAttachment(_weaponAtlasPage);
+            
+            return attachment;
+        }
+        
         /// <summary>Gets a Spine Animation based on the hash of the state name.</summary>
         private Spine.Animation GetAnimationForState(int shortNameHash)
         {
@@ -111,7 +134,7 @@ namespace Nekoyume.Game.Character
                        || target.Name == nameof(CharacterAnimation.Type.Run)
                        || target.Name == nameof(CharacterAnimation.Type.Casting);
 
-            skeletonAnimation.AnimationState.SetAnimation(layerIndex, target, loop);
+            SkeletonAnimation.AnimationState.SetAnimation(layerIndex, target, loop);
             TargetAnimation = target;
         }
     }

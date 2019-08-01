@@ -145,11 +145,13 @@ namespace Nekoyume.Game.Character
         public void UpdateWeapon(Weapon weapon)
         {
             var controller = GetComponentInChildren<SkeletonAnimationController>();
-            if (controller != null)
+            if (!controller)
             {
-                var sprite = Weapon.GetSprite(weapon);
-                controller.UpdateWeapon(sprite);
+                return;
             }
+            
+            var sprite = Weapon.GetSprite(weapon);
+            controller.UpdateWeapon(sprite);
         }
 
 
@@ -249,12 +251,12 @@ namespace Nekoyume.Game.Character
             var controller = GetComponentInChildren<SkeletonAnimationController>();
             DOTween.Sequence()
                 .Append(DOTween.To(
-                    () => controller.skeletonAnimation.skeleton.A,
-                    co => controller.skeletonAnimation.skeleton.A = co, 0, 0f
+                    () => controller.SkeletonAnimation.skeleton.A,
+                    co => controller.SkeletonAnimation.skeleton.A = co, 0, 0f
                 ))
                 .Append(DOTween.To(
-                    () => controller.skeletonAnimation.skeleton.A,
-                    co => controller.skeletonAnimation.skeleton.A = co, endValue, sec
+                    () => controller.SkeletonAnimation.skeleton.A,
+                    co => controller.SkeletonAnimation.skeleton.A = co, endValue, sec
                 ))
                 .Play();
         }

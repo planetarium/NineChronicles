@@ -19,7 +19,7 @@ namespace Tests
             var avatarState = new AvatarState(address, agentAddress);
             var go = Game.instance.stage.playerFactory.Create(avatarState);
             var player = go.GetComponent<Player>();
-            var skeleton = player.GetComponentInChildren<SkeletonAnimationController>().skeletonAnimation.skeleton;
+            var skeleton = player.GetComponentInChildren<SkeletonAnimationController>().SkeletonAnimation.skeleton;
             Assert.AreEqual(1f, skeleton.A);
             player.DoFade(0f, 1f);
             yield return new WaitForSeconds(1f);

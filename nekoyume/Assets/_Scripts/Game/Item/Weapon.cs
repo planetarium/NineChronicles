@@ -9,10 +9,16 @@ namespace Nekoyume.Game.Item
     {
         private const string SpritePath = "images/equipment/{0}";
 
-        public static Sprite GetSprite(Equipment equipment = null)
+        public static Sprite GetSprite(Equipment equipment)
         {
-            var id = equipment?.Data.resourceId;
-            return Resources.Load<Sprite>(string.Format(SpritePath, id));
+            return equipment is null
+                ? null
+                : GetSprite(equipment.Data.resourceId);
+        }
+        
+        public static Sprite GetSprite(int equipmentId)
+        {
+            return Resources.Load<Sprite>(string.Format(SpritePath, equipmentId));
         }
 
         public Weapon(Data.Table.Item data, Guid id, SkillBase skillBase = null)
