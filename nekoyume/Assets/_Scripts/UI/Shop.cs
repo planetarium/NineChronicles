@@ -31,6 +31,7 @@ namespace Nekoyume.UI
         public Text switchBuyButtonText;
         public Button switchSellButton;
         public Text switchSellButtonText;
+        public Text catQuoteText;
         public InventoryAndItemInfo inventoryAndItemInfo;
         public ShopItems shopItems;
         public Button closeButton;
@@ -63,6 +64,7 @@ namespace Nekoyume.UI
 
             switchBuyButtonText.text = LocalizationManager.Localize("UI_BUY");
             switchSellButtonText.text = LocalizationManager.Localize("UI_SELL");
+            catQuoteText.text = LocalizationManager.Localize("SPEECH_SHOP_0");
 
             switchBuyButton.onClick.AsObservable().Subscribe(_ =>
                 {
