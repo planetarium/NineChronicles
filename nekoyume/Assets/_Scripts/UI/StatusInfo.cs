@@ -11,14 +11,29 @@ namespace Nekoyume.UI
 
         public void Set(string statKey, object statValue, float equipValue)
         {
-            key.text = statKey.ToUpper();
-            if (statKey == "luck")
+            var keyString = statKey.ToUpper();
+            if (keyString == "LUCK")
             {
-                statValue = (float)statValue * 100;
+                key.text = "CRI";
+                value.text = ToPercentage((float) statValue);
+                additional.text = equipValue > 0f
+                    ? $"(+{ToPercentage(equipValue)})"
+                    : "";
             }
-            value.text = statValue.ToString();
-            additional.text = equipValue > 0.0f ? $"(+{equipValue})" : "";
+            else
+            {
+                key.text = keyString;
+                value.text = ((int) statValue).ToString();
+                additional.text = equipValue > 0f
+                    ? $"(+{equipValue})"
+                    : "";
+            }
             gameObject.SetActive(true);
+        }
+
+        private string ToPercentage(float rawValue)
+        {
+            return (rawValue * 100f).ToString("0.#\\%");
         }
     }
 }
