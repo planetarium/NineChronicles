@@ -32,7 +32,7 @@ namespace Nekoyume.UI.Scroller
             obj.SetActive(true);
             resultNameText.text = recipe.resultName;
             SetIcon(resultItemIcon, recipe.resultSprite, resultMark, ResultIconScaleFactor);
-            for(int i = 0; i < 4; ++i)
+            for (int i = 0; i < materialIcons.Length; ++i)
             {
                 SetIcon(materialIcons[i], recipe.materialSprites[i], materialMarks[i], MaterialIconScaleFactor);
             }
