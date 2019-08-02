@@ -16,17 +16,17 @@ namespace Nekoyume.UI
             {
                 key.text = "CRI";
                 value.text = ToPercentage((float) statValue);
-                additional.text = equipValue > 0f
-                    ? $"(+{ToPercentage(equipValue)})"
-                    : "";
+                additional.text = Mathf.Approximately(equipValue, 0f)
+                    ? ""
+                    : $"(+{ToPercentage(equipValue)})";
             }
             else
             {
                 key.text = keyString;
                 value.text = ((int) statValue).ToString();
-                additional.text = equipValue > 0f
-                    ? $"(+{equipValue})"
-                    : "";
+                additional.text = Mathf.Approximately(equipValue, 0f)
+                    ? ""
+                    : $"(+{equipValue})";
             }
             gameObject.SetActive(true);
         }
