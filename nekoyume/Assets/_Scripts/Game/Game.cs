@@ -51,8 +51,16 @@ namespace Nekoyume.Game
 
         private void AgentInitialized(bool succeed)
         {
-            Widget.Find<LoadingScreen>()?.Close();
-            Widget.Find<Title>()?.Show();
+            Debug.LogWarning(succeed);
+            if (succeed)
+            {
+                Widget.Find<LoadingScreen>()?.Close();
+                Widget.Find<Title>()?.Show();
+            }
+            else
+            {
+                Widget.Find<UpdatePopup>()?.Show();
+            }
         }
     }
 }

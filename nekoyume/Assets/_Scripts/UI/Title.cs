@@ -1,6 +1,4 @@
 ﻿using Nekoyume.Game.Controller;
-using UnityEngine;
-using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
@@ -19,7 +17,7 @@ namespace Nekoyume.UI
             if (!ready)
                 return;
 
-            Widget.Find<Synopsis>()?.Show();
+            Find<Synopsis>()?.Show();
             Close();
         }
 

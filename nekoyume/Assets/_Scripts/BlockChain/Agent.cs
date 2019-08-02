@@ -69,6 +69,8 @@ namespace Nekoyume.BlockChain
         public event EventHandler<BlockDownloadState> PreloadProcessed;
         public event EventHandler PreloadEnded;
 
+        public bool SyncSucceed { get; private set; }
+
         static Agent() 
         {
             ForceDotNet.Force();
@@ -102,13 +104,23 @@ namespace Nekoyume.BlockChain
                 millisecondsDialTimeout: SwarmDialTimeout,
                 host: host,
                 listenPort: port,
-                iceServers: iceServers);
+                iceServers: iceServers,
+                differentVersionPeerEncountered: DifferentAppProtocolVersionPeerEncountered);
 
             var otherPeers = peers.Where(peer => peer.PublicKey != privateKey.PublicKey).ToList();
+            // Init SyncSucceed
+            SyncSucceed = true;
             _swarm.AddPeersAsync(otherPeers);
 
             // FIXME: Trusted peers should be configurable
             _trustedPeers = otherPeers.Select(peer => peer.Address).ToImmutableHashSet();
+        }
+
+        private void DifferentAppProtocolVersionPeerEncountered(object sender, DifferentProtocolVersionEventArgs e)
+        {
+            Debug.LogWarningFormat("Different Version Encountered Expected: {0} Actual : {1}",
+                e.ExpectedVersion, e.ActualVersion);
+            SyncSucceed = false;
         }
 
         public void Dispose()

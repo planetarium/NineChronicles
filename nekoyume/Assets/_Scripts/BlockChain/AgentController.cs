@@ -94,7 +94,7 @@ namespace Nekoyume.BlockChain
                 ActionRenderHandler.Instance.Start();
                 // 그리고 마이닝을 시작한다.
                 StartNullableCoroutine(_miner);
-                callback(true);
+                callback(Agent.SyncSucceed);
             };
             _miner = options.NoMiner ? null : Agent.CoMiner();
 

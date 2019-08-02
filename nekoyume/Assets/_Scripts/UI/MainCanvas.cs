@@ -12,6 +12,7 @@ namespace Nekoyume.UI
         public GameObject screen;
         public GameObject tooltip;
         public GameObject widget;
+        public GameObject systemInfo;
         
         public Canvas Canvas { get; private set; }
         public RectTransform RectTransform { get; private set; }
@@ -30,6 +31,8 @@ namespace Nekoyume.UI
                     return tooltip.transform;
                 case WidgetType.Widget:
                     return widget.transform;
+                case WidgetType.SystemInfo:
+                    return systemInfo.transform;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(widgetType), widgetType, null);
             }
@@ -75,7 +78,7 @@ namespace Nekoyume.UI
             Widget.Create<StageTitle>();
             Widget.Create<Alert>();
             Widget.Create<Confirm>();
-            
+
             // 툴팁류.
             Widget.Create<ItemInformationTooltip>();
 
@@ -83,6 +86,9 @@ namespace Nekoyume.UI
             Widget.Create<GrayLoadingScreen>();
             Widget.Create<LoadingScreen>(true);
             Widget.Create<StageLoadingScreen>();
+
+            //최상단 알림 영역.
+            Widget.Create<UpdatePopup>(true);
 #if DEBUG
             Widget.Create<Cheat>(true);
 #endif
