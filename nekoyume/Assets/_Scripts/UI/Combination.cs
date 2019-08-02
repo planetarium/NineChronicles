@@ -255,7 +255,6 @@ namespace Nekoyume.UI
                     recipeButtonImage.sprite = Resources.Load<Sprite>("UI/Textures/button_blue_01");
                     manualCombination.SetActive(false);
                     recipeCombination.SetActive(true);
-                    recipe.Show();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(value), value, null);

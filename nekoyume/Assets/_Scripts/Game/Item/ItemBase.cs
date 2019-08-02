@@ -1,4 +1,5 @@
 using System;
+using Nekoyume.Data;
 using Nekoyume.Game.Skill;
 using UnityEngine;
 
@@ -87,21 +88,40 @@ namespace Nekoyume.Game.Item
 
         public static Sprite GetSprite(ItemBase item = null)
         {
-            string path;
             int? id;
             if (item is ItemUsable itemUsable)
             {
-                path = EquipmentPath;
                 id = itemUsable.Data.resourceId;
             }
             else
             {
-                path = ItemPath;
                 id = item?.Data.id;
             }
 
             if (Equals(id, null) || Equals(id, 0))
             {
+                id = DefaultId;
+            }
+
+            return GetSprite(id.Value);
+        }
+
+        public static Sprite GetSprite(int id)
+        {
+            var equips = Tables.instance.ItemEquipment;
+            var items = Tables.instance.Item;
+            string path = string.Empty;
+            if (equips.ContainsKey(id))
+            {
+                path = EquipmentPath;
+            }
+            else if (items.ContainsKey(id))
+            {
+                path = ItemPath;
+            }
+            else
+            {
+                path = ItemPath;
                 id = DefaultId;
             }
 

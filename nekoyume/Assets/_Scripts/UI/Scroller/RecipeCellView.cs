@@ -1,7 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.UI;
 using EnhancedUI.EnhancedScroller;
+using Nekoyume.UI.Model;
 
 namespace Nekoyume.UI.Scroller
 {
@@ -9,6 +9,14 @@ namespace Nekoyume.UI.Scroller
     public class RecipeCellView : EnhancedScrollerCellView
     {
         public GameObject obj;
+        public Text resultNameText;
+        public Image resultItemIcon;
+        public Text resultMark;
+        public Image[] materialIcons;
+        public Text[] materialMarks;
+
+        private const float ResultIconScaleFactor = 1.2f;
+        private const float MaterialIconScaleFactor = 0.7f;
 
         #region Mono
 
@@ -19,9 +27,31 @@ namespace Nekoyume.UI.Scroller
 
         #endregion
 
-        public void SetData()
+        public void SetData(RecipeInfo recipe)
         {
             obj.SetActive(true);
+            resultNameText.text = recipe.resultName;
+            SetIcon(resultItemIcon, recipe.resultSprite, resultMark, ResultIconScaleFactor);
+            for (int i = 0; i < materialIcons.Length; ++i)
+            {
+                SetIcon(materialIcons[i], recipe.materialSprites[i], materialMarks[i], MaterialIconScaleFactor);
+            }
+        }
+
+        public void SetIcon(Image image, Sprite sprite, Text text, float scaleFactor = 1f)
+        {
+            if (sprite)
+            {
+                image.transform.parent.gameObject.SetActive(true);
+                image.enabled = true;
+                text.enabled = false;
+                image.overrideSprite = sprite;
+            }
+            else return;
+
+            image.SetNativeSize();
+            var rect = image.GetComponent<RectTransform>();
+            rect.sizeDelta = new Vector2(rect.sizeDelta.x * scaleFactor, rect.sizeDelta.y * scaleFactor);
         }
     }
 }
