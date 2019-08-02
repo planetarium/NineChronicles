@@ -16,7 +16,7 @@ using System.Collections;
 using Assets.SimpleLocalization;
 using Nekoyume.Game.Item;
 using Nekoyume.Helper;
-using UniRx.Triggers;
+using Nekoyume.Data;
 
 namespace Nekoyume.UI
 {
@@ -117,6 +117,13 @@ namespace Nekoyume.UI
                 {
                     AudioController.PlayClick();
                     Model.manualOrRecipe.Value = UI.Model.Combination.ManualOrRecipe.Manual;
+                })
+                .AddTo(gameObject);
+            recipe.scrollerController.onClickCellView
+                .Subscribe(cellView =>
+                {
+                    AudioController.PlayClick();
+                    RequestCombination(cellView.Model);
                 })
                 .AddTo(gameObject);
         }
@@ -252,6 +259,7 @@ namespace Nekoyume.UI
                     recipeCombination.SetActive(false);
                     break;
                 case UI.Model.Combination.ManualOrRecipe.Recipe:
+                    recipe.Reload();
                     recipeButtonImage.sprite = Resources.Load<Sprite>("UI/Textures/button_blue_01");
                     manualCombination.SetActive(false);
                     recipeCombination.SetActive(true);
@@ -426,6 +434,39 @@ namespace Nekoyume.UI
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickCombinationCombination);
         }
 
+        private void RequestCombination(RecipeInfo info)
+        {
+            _loadingScreen.Show();
+            var inventoryItemCount = States.Instance.currentAvatarState.Value.inventory.Items.Count();
+            var materials = new List<CombinationMaterial>();
+            foreach (var materialInfo in info.materialInfos)
+            {
+                if (materialInfo.id.Value == 0) break;
+                CombinationMaterial material = new CombinationMaterial(
+                    Tables.instance.CreateItemBase(materialInfo.id.Value), 1, 1, 1);
+                materials.Add(material);
+            }
+
+            foreach (var material in materials)
+            {
+                if (!States.Instance.currentAvatarState.Value.inventory.TryGetFungibleItem(material.item.Value.Data.id,
+                    out var outFungibleItem))
+                {
+                    continue;
+                }
+
+                if (outFungibleItem.count == material.count.Value)
+                {
+                    inventoryItemCount--;
+                }
+            }
+
+            ActionManager.instance.Combination(materials)
+                .Subscribe(eval => ResponseCombination(materials, inventoryItemCount))
+                .AddTo(this);
+            AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickCombinationCombination);
+        }
+
         /// <summary>
         /// 결과를 직접 받아서 데이타에 넣어주는 방법 보다는,
         /// 네트워크 결과를 핸들링하는 곳에 핸들링 인터페이스를 구현한 데이타 모델을 등록하는 방법이 좋겠다. 
@@ -450,6 +491,7 @@ namespace Nekoyume.UI
             AnalyticsManager.Instance.OnEvent(isSuccess
                 ? AnalyticsManager.EventName.ActionCombinationSuccess
                 : AnalyticsManager.EventName.ActionCombinationFail);
+            recipe.Reload();
         }
 
         private void SubscribeResultPopup(Model.CombinationResultPopup data)
