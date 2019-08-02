@@ -10,7 +10,7 @@ namespace Nekoyume.UI.Module
     {
         public RecipeScrollerController scrollerController;
 
-        public void Reload()
+        public void Reload(float scrollPos = 0)
         {
             var recipeInfoList = new List<RecipeInfo>();
             var recipeTable = Tables.instance.Recipe;
@@ -27,6 +27,7 @@ namespace Nekoyume.UI.Module
             }
             recipeInfoList.Sort((x, y) => x.recipeId - y.recipeId);
             scrollerController.SetData(recipeInfoList);
+            scrollerController.scroller.ScrollPosition = scrollPos;
         }
     }
 }

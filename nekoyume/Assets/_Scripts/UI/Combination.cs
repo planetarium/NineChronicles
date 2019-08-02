@@ -259,7 +259,7 @@ namespace Nekoyume.UI
                     recipeCombination.SetActive(false);
                     break;
                 case UI.Model.Combination.ManualOrRecipe.Recipe:
-                    recipe.Reload();
+                    recipe.Reload(0);
                     recipeButtonImage.sprite = Resources.Load<Sprite>("UI/Textures/button_blue_01");
                     manualCombination.SetActive(false);
                     recipeCombination.SetActive(true);
@@ -478,7 +478,7 @@ namespace Nekoyume.UI
             AnalyticsManager.Instance.OnEvent(isSuccess
                 ? AnalyticsManager.EventName.ActionCombinationSuccess
                 : AnalyticsManager.EventName.ActionCombinationFail);
-            recipe.Reload();
+            recipe.Reload(recipe.scrollerController.scroller.ScrollPosition);
         }
 
         private void SubscribeResultPopup(Model.CombinationResultPopup data)
