@@ -402,8 +402,6 @@ namespace Nekoyume.UI
 
         private void RequestCombination(Model.Combination data)
         {
-            _loadingScreen.Show();
-            var inventoryItemCount = States.Instance.currentAvatarState.Value.inventory.Items.Count();
             var materials = new List<CombinationMaterial>();
             if (data.equipmentMaterial.Value != null)
             {
@@ -413,39 +411,28 @@ namespace Nekoyume.UI
             {
                 materials.Add(combinationMaterial);
             }
-            
-            foreach (var material in materials)
-            {
-                if (!States.Instance.currentAvatarState.Value.inventory.TryGetFungibleItem(material.item.Value.Data.id,
-                    out var outFungibleItem))
-                {
-                    continue;
-                }
 
-                if (outFungibleItem.count == material.count.Value)
-                {
-                    inventoryItemCount--;
-                }
-            }
-
-            ActionManager.instance.Combination(materials)
-                .Subscribe(eval => ResponseCombination(materials, inventoryItemCount))
-                .AddTo(this);
-            AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickCombinationCombination);
+            RequestCombination(materials);
         }
 
         private void RequestCombination(RecipeInfo info)
         {
-            _loadingScreen.Show();
-            var inventoryItemCount = States.Instance.currentAvatarState.Value.inventory.Items.Count();
             var materials = new List<CombinationMaterial>();
             foreach (var materialInfo in info.materialInfos)
             {
-                if (materialInfo.id.Value == 0) break;
+                if (materialInfo.id == 0) break;
                 CombinationMaterial material = new CombinationMaterial(
-                    Tables.instance.CreateItemBase(materialInfo.id.Value), 1, 1, 1);
+                    Tables.instance.CreateItemBase(materialInfo.id), 1, 1, 1);
                 materials.Add(material);
             }
+
+            RequestCombination(materials);
+        }
+
+        private void RequestCombination(List<CombinationMaterial> materials)
+        {
+            _loadingScreen.Show();
+            var inventoryItemCount = States.Instance.currentAvatarState.Value.inventory.Items.Count();
 
             foreach (var material in materials)
             {

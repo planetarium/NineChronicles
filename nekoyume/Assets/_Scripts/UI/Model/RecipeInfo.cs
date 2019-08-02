@@ -10,10 +10,19 @@ namespace Nekoyume.UI.Model
     {
         public class MaterialInfo
         {
-            public ReactiveProperty<int> id = new ReactiveProperty<int>(0);
+            public int id;
             public Sprite sprite;
             public bool isEnough;
             public bool isObtained;
+
+            public MaterialInfo(int id, Sprite sprite)
+            {
+                this.id = id;
+                this.sprite = sprite;
+                var inventory = States.Instance.currentAvatarState.Value.inventory;
+                isEnough = inventory.HasItem(id);
+                isObtained = true;
+            }
         }
 
         public int recipeId;
@@ -29,15 +38,9 @@ namespace Nekoyume.UI.Model
 
             for (int i = 0; i < materialInfos.Length; ++i)
             {
-                materialInfos[i] = new MaterialInfo();
-                materialInfos[i].id.Subscribe(mid => SetSprite(materialInfos[i], mid));
-                SetMaterialInfo(materialInfos[i], materialIds[i]);
+                var sprite = ItemBase.GetSprite(materialIds[i]);
+                materialInfos[i] = new MaterialInfo(materialIds[i], sprite);
             }
-        }
-
-        public void SetSprite(MaterialInfo info, int id)
-        {
-            info.sprite = ItemBase.GetSprite(id);
         }
 
         private string GetEquipmentName(int id)
@@ -53,14 +56,6 @@ namespace Nekoyume.UI.Model
                 Debug.LogError("Item not found!");
                 return string.Empty;
             }
-        }
-
-        private void SetMaterialInfo(MaterialInfo info, int id)
-        {
-            info.id.Value = id;
-            var inventory = States.Instance.currentAvatarState.Value.inventory;
-            info.isEnough = inventory.HasItem(id);
-            info.isObtained = true;
         }
     }
 }
