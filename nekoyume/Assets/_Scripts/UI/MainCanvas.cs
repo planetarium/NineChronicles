@@ -88,7 +88,7 @@ namespace Nekoyume.UI
             Widget.Create<StageLoadingScreen>();
 
             //최상단 알림 영역.
-            Widget.Create<UpdatePopup>(true);
+            Widget.Create<UpdatePopup>();
 #if DEBUG
             Widget.Create<Cheat>(true);
 #endif
