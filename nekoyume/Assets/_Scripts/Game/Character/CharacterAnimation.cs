@@ -13,6 +13,7 @@ namespace Nekoyume.Game.Character
             Attack,
             Casting,
             CastingAttack,
+            CriticalAttack,
             Hit,
             Die,
             Disappear

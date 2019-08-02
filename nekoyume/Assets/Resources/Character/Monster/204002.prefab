@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &5959650194056961115
+--- !u!1 &1915938478381077306
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,12 +8,12 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1862170820573296665}
-  - component: {fileID: 5399102828560339688}
-  - component: {fileID: 2145600050650451697}
-  - component: {fileID: 8134597822499605368}
-  - component: {fileID: 5201865597379858882}
-  - component: {fileID: 5946454573139236686}
+  - component: {fileID: 1744768690815982407}
+  - component: {fileID: 7190582450670807588}
+  - component: {fileID: 1238760274921521642}
+  - component: {fileID: 1714849908829479743}
+  - component: {fileID: 2084401634621166872}
+  - component: {fileID: 5591421197663131875}
   m_Layer: 8
   m_Name: 204002
   m_TagString: Untagged
@@ -21,13 +21,13 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &1862170820573296665
+--- !u!4 &1744768690815982407
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5959650194056961115}
+  m_GameObject: {fileID: 1915938478381077306}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.64, y: 0.64, z: 1}
@@ -35,21 +35,21 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &5399102828560339688
+--- !u!33 &7190582450670807588
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5959650194056961115}
+  m_GameObject: {fileID: 1915938478381077306}
   m_Mesh: {fileID: 0}
---- !u!23 &2145600050650451697
+--- !u!23 &1238760274921521642
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5959650194056961115}
+  m_GameObject: {fileID: 1915938478381077306}
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
@@ -80,13 +80,13 @@ MeshRenderer:
   m_SortingLayerID: -385277771
   m_SortingLayer: 3
   m_SortingOrder: 0
---- !u!114 &8134597822499605368
+--- !u!114 &1714849908829479743
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5959650194056961115}
+  m_GameObject: {fileID: 1915938478381077306}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d247ba06193faa74d9335f5481b2b56c, type: 3}
@@ -115,14 +115,14 @@ MonoBehaviour:
   _animationName: Idle
   loop: 1
   timeScale: 1
---- !u!95 &5201865597379858882
+--- !u!95 &2084401634621166872
 Animator:
   serializedVersion: 3
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5959650194056961115}
+  m_GameObject: {fileID: 1915938478381077306}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: 21ad0e93f82d940989ca46e7a61db8ac, type: 2}
@@ -134,13 +134,13 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &5946454573139236686
+--- !u!114 &5591421197663131875
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5959650194056961115}
+  m_GameObject: {fileID: 1915938478381077306}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6ea4943521264f4fb16186014e900c1f, type: 3}
@@ -159,6 +159,8 @@ MonoBehaviour:
     animation: {fileID: 11400000, guid: efd609bcef370334392d3409cace93c6, type: 2}
   - stateName: CastingAttack
     animation: {fileID: 11400000, guid: 6ca169262d7c9434b9155a7a26c90193, type: 2}
+  - stateName: CriticalAttack
+    animation: {fileID: 11400000, guid: 6ca169262d7c9434b9155a7a26c90193, type: 2}
   - stateName: Hit
     animation: {fileID: 11400000, guid: 2243ff2dc62a88a40a421322f8e006b8, type: 2}
   - stateName: Die
@@ -166,5 +168,5 @@ MonoBehaviour:
   - stateName: Disappear
     animation: {fileID: 11400000, guid: 6722c4599ca9bd24582d513bf7a013a8, type: 2}
   skeletonAnimation: {fileID: 0}
-  weaponSlot: sword_0001
+  weaponSlot: weapon
   weaponAttachment: 

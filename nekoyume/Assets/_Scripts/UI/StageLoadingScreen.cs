@@ -59,7 +59,6 @@ namespace Nekoyume.UI
         {
             _shouldClose = true;
             yield return new WaitUntil(() => closeEnd);
-            yield return StartCoroutine(base.CoClose());
         }
         
         private IEnumerator CoRun()
