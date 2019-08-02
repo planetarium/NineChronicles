@@ -134,6 +134,23 @@ public class SpineSlotNotFoundException : Exception
     }
 }
 
+public class SpineAttachmentNotFoundException : Exception
+{
+    private const string MessageFormat = "Not found `{0}` spine attachment.";
+    
+    public SpineAttachmentNotFoundException()
+    {
+    }
+
+    public SpineAttachmentNotFoundException(string slotName) : base(string.Format(MessageFormat, slotName))
+    {
+    }
+
+    public SpineAttachmentNotFoundException(string slotName, Exception inner) : base(string.Format(MessageFormat, slotName), inner)
+    {
+    }
+}
+
 public class SerializeFieldNullException : Exception
 {
     
