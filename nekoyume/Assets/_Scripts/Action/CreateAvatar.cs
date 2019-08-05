@@ -72,7 +72,7 @@ namespace Nekoyume.Action
         {
             foreach (var pair in Tables.instance.Item)
             {
-                avatarState.inventory.AddFungibleItem(ItemBase.ItemFactory(pair.Value, default));
+                avatarState.inventory.AddFungibleItem(ItemBase.ItemFactory(pair.Value, default), 10);
             }
             
             foreach (var pair in Tables.instance.ItemEquipment.Where(pair => pair.Value.id > GameConfig.DefaultAvatarWeaponId))

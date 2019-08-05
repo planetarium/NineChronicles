@@ -212,5 +212,10 @@ namespace Nekoyume.Game.Item
             outAddedItem = (ItemUsable) newItem?.item;
             return !(outAddedItem is null);
         }
+
+        public bool HasItem(int id)
+        {
+            return _items.Exists(item => item.count > 0 && item.item.Data.id == id);
+        }
     }
 }

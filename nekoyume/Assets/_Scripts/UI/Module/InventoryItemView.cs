@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using EnhancedUI.EnhancedScroller;
 using Nekoyume.Game.Controller;
 using Nekoyume.UI.Scroller;
 using TMPro;

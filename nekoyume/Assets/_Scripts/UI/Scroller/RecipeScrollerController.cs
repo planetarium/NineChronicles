@@ -2,6 +2,7 @@
 using UnityEngine;
 using EnhancedUI.EnhancedScroller;
 using Nekoyume.UI.Model;
+using UniRx;
 
 namespace Nekoyume.UI.Scroller
 {
@@ -9,6 +10,7 @@ namespace Nekoyume.UI.Scroller
     {
         public EnhancedScroller scroller;
         public RecipeCellView cellViewPrefab;
+        public readonly Subject<RecipeCellView> onClickCellView = new Subject<RecipeCellView>();
 
         private List<RecipeInfo> _recipeList = new List<RecipeInfo>();
         private float _cellViewHeight = 90f;
@@ -35,6 +37,16 @@ namespace Nekoyume.UI.Scroller
 
             cellView.name = $"Cell {dataIndex}";
             cellView.SetData(_recipeList[dataIndex]);
+            if (cellView.onClickDisposable == null)
+            {
+                cellView.onClickDisposable = cellView.combineButtonOnClick
+                    .Subscribe(_ =>
+                    {
+                        onClickCellView.OnNext(cellView);
+                        cellView.onClickDisposable.Dispose();
+                        cellView.onClickDisposable = null;
+                    }).AddTo(cellView.gameObject);
+            }
             return cellView;
         }
 

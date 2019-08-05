@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Assets.SimpleLocalization;
 using EnhancedUI.EnhancedScroller;
 using Nekoyume.Game.Controller;
-using Nekoyume.UI.Model;
 using Nekoyume.UI.Scroller;
 using UniRx;
 using UnityEngine;

@@ -16,7 +16,7 @@ using System.Collections;
 using Assets.SimpleLocalization;
 using Nekoyume.Game.Item;
 using Nekoyume.Helper;
-using UniRx.Triggers;
+using Nekoyume.Data;
 
 namespace Nekoyume.UI
 {
@@ -117,6 +117,13 @@ namespace Nekoyume.UI
                 {
                     AudioController.PlayClick();
                     Model.manualOrRecipe.Value = UI.Model.Combination.ManualOrRecipe.Manual;
+                })
+                .AddTo(gameObject);
+            recipe.scrollerController.onClickCellView
+                .Subscribe(cellView =>
+                {
+                    AudioController.PlayClick();
+                    RequestCombination(cellView.Model);
                 })
                 .AddTo(gameObject);
         }
@@ -252,6 +259,7 @@ namespace Nekoyume.UI
                     recipeCombination.SetActive(false);
                     break;
                 case UI.Model.Combination.ManualOrRecipe.Recipe:
+                    recipe.Reload(0);
                     recipeButtonImage.sprite = Resources.Load<Sprite>("UI/Textures/button_blue_01");
                     manualCombination.SetActive(false);
                     recipeCombination.SetActive(true);
@@ -394,8 +402,6 @@ namespace Nekoyume.UI
 
         private void RequestCombination(Model.Combination data)
         {
-            _loadingScreen.Show();
-            var inventoryItemCount = States.Instance.currentAvatarState.Value.inventory.Items.Count();
             var materials = new List<CombinationMaterial>();
             if (data.equipmentMaterial.Value != null)
             {
@@ -405,7 +411,29 @@ namespace Nekoyume.UI
             {
                 materials.Add(combinationMaterial);
             }
-            
+
+            RequestCombination(materials);
+        }
+
+        private void RequestCombination(RecipeInfo info)
+        {
+            var materials = new List<CombinationMaterial>();
+            foreach (var materialInfo in info.materialInfos)
+            {
+                if (materialInfo.id == 0) break;
+                CombinationMaterial material = new CombinationMaterial(
+                    Tables.instance.CreateItemBase(materialInfo.id), 1, 1, 1);
+                materials.Add(material);
+            }
+
+            RequestCombination(materials);
+        }
+
+        private void RequestCombination(List<CombinationMaterial> materials)
+        {
+            _loadingScreen.Show();
+            var inventoryItemCount = States.Instance.currentAvatarState.Value.inventory.Items.Count();
+
             foreach (var material in materials)
             {
                 if (!States.Instance.currentAvatarState.Value.inventory.TryGetFungibleItem(material.item.Value.Data.id,
@@ -450,6 +478,7 @@ namespace Nekoyume.UI
             AnalyticsManager.Instance.OnEvent(isSuccess
                 ? AnalyticsManager.EventName.ActionCombinationSuccess
                 : AnalyticsManager.EventName.ActionCombinationFail);
+            recipe.Reload(recipe.scrollerController.scroller.ScrollPosition);
         }
 
         private void SubscribeResultPopup(Model.CombinationResultPopup data)
