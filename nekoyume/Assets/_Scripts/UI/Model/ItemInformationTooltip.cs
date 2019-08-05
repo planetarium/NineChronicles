@@ -22,6 +22,7 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<string> submitButtonText = new ReactiveProperty<string>(null);
 
         public readonly Subject<UI.ItemInformationTooltip> onSubmit = new Subject<UI.ItemInformationTooltip>();
+        public readonly Subject<UI.ItemInformationTooltip> onClose = new Subject<UI.ItemInformationTooltip>();
 
         public ItemInformationTooltip(CountableItem countableItem = null)
         {
@@ -67,6 +68,7 @@ namespace Nekoyume.UI.Model
             submitButtonText.Dispose();
 
             onSubmit.Dispose();
+            onClose.Dispose();
 
             base.Dispose();
         }

@@ -49,7 +49,7 @@ namespace Nekoyume.UI
             Show(target, item, null, null, null);
         }
         
-        public void Show(RectTransform target, InventoryItem item, Func<CountableItem, bool> submitEnabledFunc, string submitText, Action<ItemInformationTooltip> onSubmit)
+        public void Show(RectTransform target, InventoryItem item, Func<CountableItem, bool> submitEnabledFunc, string submitText, Action<ItemInformationTooltip> onSubmit, Action<ItemInformationTooltip> onClose = null)
         {
             if (item is null)
             {
@@ -95,6 +95,10 @@ namespace Nekoyume.UI
             Model.submitButtonEnabled.Subscribe(value => submitGameObject.SetActive(value))
                 .AddTo(_disposablesForModel);
             Model.onSubmit.Subscribe(onSubmit).AddTo(_disposablesForModel);
+            if (onClose != null)
+            {
+                Model.onClose.Subscribe(onClose).AddTo(_disposablesForModel);
+            }
             // Model.itemInformation.item을 마지막으로 구독해야 위에서의 구독으로 인해 바뀌는 레이아웃 상태를 모두 반영할 수 있음.
             Model.itemInformation.item.Subscribe(value => base.SubscribeTarget(Model.target.Value))
                 .AddTo(_disposablesForModel);
@@ -108,11 +112,11 @@ namespace Nekoyume.UI
             {
                 inventoryItem.selected.Value = false;
             }
-            
+
+            Model.onClose.OnNext(this);
             _disposablesForModel.DisposeAllAndClear();
             Model.target.Value = null;
             Model.itemInformation.item.Value = null;
-            
             base.Close();
         }
         
@@ -136,7 +140,6 @@ namespace Nekoyume.UI
                     }
                     
                     Close();
-                    
                     yield break;
                 }
                 

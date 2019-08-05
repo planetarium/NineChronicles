@@ -148,7 +148,6 @@ namespace Nekoyume.Game.Util
 
         private GameObject Add(string prefabName)
         {
-            GameObject first = null;
             if (objects.TryGetValue(prefabName, out var objectsList))
             {
                 var go = Instantiate(objectsList.First(), transform);
