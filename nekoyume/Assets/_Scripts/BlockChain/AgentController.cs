@@ -10,6 +10,7 @@ using Libplanet.Crypto;
 using Libplanet.Net;
 using Nekoyume.Helper;
 using Nekoyume.State;
+using Nekoyume.UI;
 using NetMQ;
 using UnityEngine;
 
@@ -72,7 +73,15 @@ namespace Nekoyume.BlockChain
                 host: host,
                 port: port
             );
-            Agent.PreloadStarted += (_, __) => { UI.Widget.Find<UI.LoadingScreen>()?.Show(); };
+            Agent.PreloadStarted += (_, __) => { Widget.Find<LoadingScreen>()?.Show(); };
+
+            // 별도 쓰레드에서는 GameObject.GetComponent<T> 를 사용할 수 없기때문에 미리 선언.
+            var loadingText = Widget.Find<LoadingScreen>()?.loadingText;
+            Agent.PreloadProcessed += (_, e) =>
+            {
+                if (loadingText)
+                    loadingText.text = $"{e.ReceivedBlockCount} / {e.TotalBlockCount}";
+            };
             Agent.PreloadEnded += (_, __) =>
             {
                 // 에이전트의 준비단계가 끝나면 에이전트의 상태를 한 번 동기화 한다.
