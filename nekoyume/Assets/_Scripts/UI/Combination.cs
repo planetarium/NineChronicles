@@ -478,7 +478,7 @@ namespace Nekoyume.UI
             AnalyticsManager.Instance.OnEvent(isSuccess
                 ? AnalyticsManager.EventName.ActionCombinationSuccess
                 : AnalyticsManager.EventName.ActionCombinationFail);
-            recipe.Reload(recipe.scrollerController.scroller.ScrollPosition);
+            recipe.Reload(recipe.scrollerController.scroller.ScrollPosition - 0.1f);
         }
 
         private void SubscribeResultPopup(Model.CombinationResultPopup data)
