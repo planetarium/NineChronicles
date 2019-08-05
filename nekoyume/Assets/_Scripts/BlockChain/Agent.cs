@@ -49,7 +49,8 @@ namespace Nekoyume.BlockChain
         
         private const float TxProcessInterval = 3.0f;
         private const int SwarmDialTimeout = 5000;
-        
+        private const int SwarmLinger = 1 * 1000;
+
         private static readonly TimeSpan BlockInterval = TimeSpan.FromSeconds(10);
         private static readonly TimeSpan SleepInterval = TimeSpan.FromSeconds(3);
         
@@ -100,6 +101,7 @@ namespace Nekoyume.BlockChain
                 privateKey,
                 appProtocolVersion: 1,
                 millisecondsDialTimeout: SwarmDialTimeout,
+                millisecondsLinger: SwarmLinger,
                 host: host,
                 listenPort: port,
                 iceServers: iceServers);
@@ -113,8 +115,11 @@ namespace Nekoyume.BlockChain
 
         public void Dispose()
         {
-            _store?.Dispose();
-            _swarm?.StopAsync().Wait(0);
+            // `_swarm`의 내부 큐가 비워진 다음 완전히 종료할 때까지 더 기다립니다.
+            Task.Run(async () => await _swarm?.StopAsync()).ContinueWith(_ =>
+            {
+                _store?.Dispose();
+            }).Wait(SwarmLinger + 1 * 1000);
         }
         
         public IEnumerator CoSwarmRunner()
