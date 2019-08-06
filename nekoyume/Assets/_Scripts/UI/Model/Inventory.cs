@@ -198,14 +198,20 @@ namespace Nekoyume.UI.Model
         
         public bool TryGetConsumable(Food consumable, out InventoryItem inventoryItem)
         {
+            if (consumable is null)
+            {
+                inventoryItem = null;
+                return false;
+            }
+
             foreach (var item in consumables)
             {
-                if (!(item.item.Value is Equipment equipment))
+                if (!(item.item.Value is Food food))
                 {
                     continue;
                 }
 
-                if (equipment.ItemId != consumable.ItemId)
+                if (food.ItemId != consumable.ItemId)
                 {
                     continue;
                 }
@@ -213,7 +219,6 @@ namespace Nekoyume.UI.Model
                 inventoryItem = item;
                 return true;
             }
-
             inventoryItem = null;
             return false;
         }

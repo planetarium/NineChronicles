@@ -1,10 +1,8 @@
 using System;
-using System.Collections.Generic;
 using Assets.SimpleLocalization;
 using Nekoyume.Game.Item;
 using Nekoyume.UI.Module;
 using UniRx;
-using UnityEngine;
 
 namespace Nekoyume.UI.Model
 {

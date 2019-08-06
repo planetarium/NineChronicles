@@ -1,4 +1,3 @@
-using System;
 using Nekoyume.Game.Item;
 using Nekoyume.UI.Module;
 using UniRx;
@@ -15,6 +14,7 @@ namespace Nekoyume.UI.Model
 
         public readonly Subject<InventoryItemView> onClick = new Subject<InventoryItemView>();
         public readonly Subject<InventoryItemView> onDoubleClick = new Subject<InventoryItemView>();
+        public readonly Subject<InventoryItemView> onRightClick = new Subject<InventoryItemView>();
 
         public InventoryItem(ItemBase item, int count) : base(item, count)
         {
@@ -22,8 +22,7 @@ namespace Nekoyume.UI.Model
 
         public override void Dispose()
         {
-            base.Dispose();
-            
+            base.Dispose();           
             covered.Dispose();
             dimmed.Dispose();
             equipped.Dispose();
@@ -32,6 +31,7 @@ namespace Nekoyume.UI.Model
 
             onClick.Dispose();
             onDoubleClick.Dispose();
+            onRightClick.Dispose();
         }
     }
 }

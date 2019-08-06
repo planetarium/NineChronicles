@@ -136,7 +136,8 @@ namespace Nekoyume.UI
                 ? AudioController.SfxCode.ChainMail2
                 : AudioController.SfxCode.Equipment);
 
-            if (inventoryAndItemInfo.inventory.Model.TryGetEquipment(slotItem, out var inventoryItem))
+            if (inventoryAndItemInfo.inventory.Model.TryGetEquipment(slotItem, out var inventoryItem) ||
+                inventoryAndItemInfo.inventory.Model.TryGetConsumable(slotItem as Food, out inventoryItem))
             {
                 inventoryItem.equipped.Value = false;
             }
@@ -170,10 +171,28 @@ namespace Nekoyume.UI
             Model.itemInfo.Value.item.Subscribe(OnItemInfoItem).AddTo(_disposablesForSetData);
             Model.itemInfo.Value.onClick.Subscribe(OnClickEquip).AddTo(_disposablesForSetData);
 
+            foreach (var item in Model.inventory.Value.equipments)
+            {
+                SubscribeOnRightClickEquip(item);
+            }
+            foreach (var item in Model.inventory.Value.consumables)
+            {
+                SubscribeOnRightClickEquip(item);
+            }
+
             inventoryAndItemInfo.SetData(Model.inventory.Value, Model.itemInfo.Value);
         }
 
-        private void Clear()
+        private void SubscribeOnRightClickEquip(InventoryItem item)
+        {
+            item.onRightClick
+                .Subscribe(itemView =>
+                {
+                    OnClickEquip(itemView.Model);
+                }).AddTo(_disposablesForSetData);
+        }
+
+        private void Clear() 
         {
             inventoryAndItemInfo.Clear();
             Model = null;
@@ -233,10 +252,11 @@ namespace Nekoyume.UI
                 {
                     inventoryItem.equipped.Value = false;
                 }
-                
+
                 slot.Set(countableItem.item.Value as ItemUsable);
                 SetGlowEquipSlot(false);
             }
+            else return;
 
             AudioController.instance.PlaySfx(type == ItemBase.ItemType.Food
                 ? AudioController.SfxCode.ChainMail2
