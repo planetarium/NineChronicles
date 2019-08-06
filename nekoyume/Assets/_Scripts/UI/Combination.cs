@@ -478,6 +478,7 @@ namespace Nekoyume.UI
             AnalyticsManager.Instance.OnEvent(isSuccess
                 ? AnalyticsManager.EventName.ActionCombinationSuccess
                 : AnalyticsManager.EventName.ActionCombinationFail);
+            // 에셋의 버그 때문에 스크롤 맨 끝 포지션으로 스크롤 포지션 설정 시 스크롤이 비정상적으로 표시되는 문제가 있음
             recipe.Reload(recipe.scrollerController.scroller.ScrollPosition - 0.1f);
         }
 
