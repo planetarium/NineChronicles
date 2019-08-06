@@ -203,6 +203,10 @@ namespace Nekoyume.UI
                 {
                     OnClickEquip(tooltip.itemInformation.Model.item.Value);
                     inventoryAndItemInfo.inventory.Tooltip.Close();
+                },
+                tooltip =>
+                {
+                    equipSlotGlow.SetActive(false);
                 });
         }
 
