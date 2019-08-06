@@ -6,6 +6,7 @@ namespace Nekoyume.EnumType
         Popup,
         Screen,
         Tooltip,
-        Widget
+        Widget,
+        SystemInfo,
     }
 }
