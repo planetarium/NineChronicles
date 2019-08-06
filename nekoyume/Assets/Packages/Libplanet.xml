@@ -1178,6 +1178,12 @@
             their corresponding <see cref="T:Libplanet.Tx.Transaction`1"/>s.
             </summary>
         </member>
+        <member name="P:Libplanet.Blockchain.BlockChain`1.BlockHashes">
+            <summary>
+            All <see cref="P:Libplanet.Blocks.Block`1.Hash"/>es in the current index.  The genesis block's hash goes
+            first, and the tip goes last.
+            </summary>
+        </member>
         <member name="P:Libplanet.Blockchain.BlockChain`1.System#Collections#Generic#IReadOnlyCollection{Libplanet#Blocks#Block{T}}#Count">
             <inheritdoc/>
         </member>
@@ -2403,6 +2409,12 @@
         <member name="M:Libplanet.Store.BaseStore.IterateStagedTransactionIds(System.Boolean)">
             <inheritdoc />
         </member>
+        <member name="M:Libplanet.Store.BaseStore.GetBlock``1(Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.BaseStore.GetBlockIndex(Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
+            <inheritdoc/>
+        </member>
         <member name="M:Libplanet.Store.BaseStore.PutBlock``1(Libplanet.Blocks.Block{``0})">
             <inheritdoc />
         </member>
@@ -2513,6 +2525,29 @@
             <param name="toBroadcast">Whether to iterate only the <see cref="T:Libplanet.Tx.TxId"/>s set to
             broadcast.</param>
             <returns>Staged <see cref="T:Libplanet.Tx.TxId"/>s.</returns>
+        </member>
+        <member name="M:Libplanet.Store.IStore.GetBlock``1(Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
+            <summary>
+            Gets the corresponding stored <see cref="T:Libplanet.Blocks.Block`1"/> to the given
+            <paramref name="blockHash"/>.
+            </summary>
+            <param name="blockHash"><see cref="P:Libplanet.Blocks.Block`1.Hash"/> to find.</param>
+            <returns>A found block, or <c>null</c> if no block having such
+            <paramref name="blockHash"/> is stored.</returns>
+            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match
+            to <see cref="T:Libplanet.Blocks.Block`1"/>'s type parameter.</typeparam>
+        </member>
+        <member name="M:Libplanet.Store.IStore.GetBlockIndex(Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
+            <summary>
+            Gets a stored block's <see cref="P:Libplanet.Blocks.Block`1.Index"/> by its <see cref="P:Libplanet.Blocks.Block`1.Hash"/>.
+            </summary>
+            <param name="blockHash"><see cref="P:Libplanet.Blocks.Block`1.Hash"/> to find.</param>
+            <remarks>
+            It provides only limited information, but can be called without any type parameter
+            unlike <see cref="M:Libplanet.Store.IStore.GetBlock``1(Libplanet.HashDigest{System.Security.Cryptography.SHA256})"/>.
+            </remarks>
+            <returns>A found block's <see cref="P:Libplanet.Blocks.Block`1.Index"/>, or <c>null</c> if no block having
+            such <paramref name="blockHash"/> is stored.</returns>
         </member>
         <member name="M:Libplanet.Store.IStore.PutBlock``1(Libplanet.Blocks.Block{``0})">
             <summary>
@@ -2649,7 +2684,7 @@
             </summary>
             <seealso cref="T:Libplanet.Store.IStore"/>
         </member>
-        <member name="M:Libplanet.Store.LiteDBStore.#ctor(System.String,System.Boolean,System.Int32)">
+        <member name="M:Libplanet.Store.LiteDBStore.#ctor(System.String,System.Boolean,System.Int32,System.Boolean)">
             <summary>
             Creates a new <seealso cref="T:Libplanet.Store.LiteDBStore"/>.
             </summary>
@@ -2658,6 +2693,8 @@
             Enables or disables double write check to ensure durability.
             </param>
             <param name="cacheSize">Max number of pages in the cache.</param>
+            <param name="flush">Writes data direct to disk avoiding OS cache.  Turned on by default.
+            </param>
         </member>
         <member name="M:Libplanet.Store.LiteDBStore.ListNamespaces">
             <inheritdoc/>
@@ -2705,9 +2742,6 @@
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Store.LiteDBStore.IterateBlockHashes">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.LiteDBStore.GetBlock``1(Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Store.LiteDBStore.PutBlock``1(Libplanet.Blocks.Block{``0})">
@@ -2784,13 +2818,17 @@
             cref="M:Libplanet.Store.IStore.StoreStateReference``1(System.String,System.Collections.Immutable.IImmutableSet{Libplanet.Address},Libplanet.Blocks.Block{``0})"/>
             <seealso cref="M:Libplanet.Store.IStore.IterateStateReferences(System.String,Libplanet.Address)"/>
         </member>
-        <member name="M:Libplanet.Store.StoreExtension.ListAllStateReferences(Libplanet.Store.IStore,System.String)">
+        <member name="M:Libplanet.Store.StoreExtension.ListAllStateReferences(Libplanet.Store.IStore,System.String,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}})">
             <summary>
             Lists all accounts, that have any states, in the given <paramref name="namespace"/> and
             their state references.
             </summary>
             <param name="store">A store object.</param>
             <param name="namespace">The namespace to look up state references.</param>
+            <param name="onlyAfter">Includes state references only made after the block
+            this argument refers to, if present.</param>
+            <param name="ignoreAfter">Excludes state references made after the block
+            this argument refers to, if present.</param>
             <returns>A dictionary of account addresses to lists of their corresponding state
             references.  Each list of state references is in ascending order, i.e., the block
             closest to the genesis goes first and the block closest to the tip goes last.</returns>
