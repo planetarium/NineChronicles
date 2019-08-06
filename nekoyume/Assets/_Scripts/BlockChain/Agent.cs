@@ -310,39 +310,6 @@ namespace Nekoyume.BlockChain
             states.TryGetValue(address, out object value);
             return value;
         }
-        
-        public CreateAvatar CreateAvatar(Address avatarAddress, int index, string nickName)
-        {
-            var createAvatar = new CreateAvatar
-            {
-                avatarAddress = avatarAddress,
-                index = index,
-                name = nickName,
-            };
-            var actions = new List<PolymorphicAction<ActionBase>>
-            {
-                createAvatar
-            };
-            Task.Run(() => _blocks.MakeTransaction(PrivateKey, actions));
-
-            return createAvatar;
-        }
-        
-        public DeleteAvatar DeleteAvatar(int index, Address avatarAddress)
-        {
-            var deleteAvatar = new DeleteAvatar
-            {
-                index = index,
-                avatarAddress = avatarAddress,
-            };
-            var actions = new List<PolymorphicAction<ActionBase>>
-            {
-                deleteAvatar
-            };
-            Task.Run(() => _blocks.MakeTransaction(PrivateKey, actions));
-
-            return deleteAvatar;
-        }
 
         private IBlockPolicy<PolymorphicAction<ActionBase>> GetPolicy()
         {
