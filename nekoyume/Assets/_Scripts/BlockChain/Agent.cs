@@ -92,7 +92,7 @@ namespace Nekoyume.BlockChain
             var policy = GetPolicy();
             PrivateKey = privateKey;
             Address = privateKey.PublicKey.ToAddress();
-            _store = new LiteDBStore($"{path}.ldb");
+            _store = new LiteDBStore($"{path}.ldb", flush: false);
             _blocks = new BlockChain<PolymorphicAction<ActionBase>>(policy, _store);
 #if BLOCK_LOG_USE
             FileHelper.WriteAllText("Block.log", "");
@@ -352,8 +352,8 @@ namespace Nekoyume.BlockChain
             return new BlockPolicy<PolymorphicAction<ActionBase>>(
                 new RewardGold { gold = 1 },
                 BlockInterval,
-                0x2000,
-                256
+                100000,
+                2048
             );
 #endif
         }
