@@ -92,7 +92,7 @@ namespace Nekoyume.BlockChain
             var policy = GetPolicy();
             PrivateKey = privateKey;
             Address = privateKey.PublicKey.ToAddress();
-            _store = new LiteDBStore($"{path}.ldb");
+            _store = new LiteDBStore($"{path}.ldb", flush: false);
             _blocks = new BlockChain<PolymorphicAction<ActionBase>>(policy, _store);
 #if BLOCK_LOG_USE
             FileHelper.WriteAllText("Block.log", "");
