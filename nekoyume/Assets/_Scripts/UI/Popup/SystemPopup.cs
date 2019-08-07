@@ -2,7 +2,7 @@ using Nekoyume.EnumType;
 
 namespace Nekoyume.UI
 {
-    public class UpdatePopup : SystemPopup
+    public abstract class SystemPopup : Alert
     {
         public override WidgetType WidgetType => WidgetType.SystemInfo;
     }

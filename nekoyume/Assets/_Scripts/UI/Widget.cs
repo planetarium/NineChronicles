@@ -43,6 +43,7 @@ namespace Nekoyume.UI
                     case WidgetType.Screen:
                     case WidgetType.Tooltip:
                     case WidgetType.Widget:
+                    case WidgetType.SystemInfo:
                         if (Dict.ContainsKey(t))
                         {
                             Debug.LogWarning($"Duplicated create widget: {t}");
@@ -56,6 +57,10 @@ namespace Nekoyume.UI
                         go.SetActive(activate);
                         Dict.Add(t, go);
                         break;
+                    case WidgetType.Hud:
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
 
                 go.transform.SetParent(MainCanvas.instance.GetTransform(widget.WidgetType));
