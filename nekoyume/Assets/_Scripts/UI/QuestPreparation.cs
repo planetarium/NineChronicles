@@ -170,26 +170,9 @@ namespace Nekoyume.UI
                 .AddTo(_disposablesForSetData);
             Model.itemInfo.Value.item.Subscribe(OnItemInfoItem).AddTo(_disposablesForSetData);
             Model.itemInfo.Value.onClick.Subscribe(OnClickEquip).AddTo(_disposablesForSetData);
-
-            foreach (var item in Model.inventory.Value.equipments)
-            {
-                SubscribeOnRightClickEquip(item);
-            }
-            foreach (var item in Model.inventory.Value.consumables)
-            {
-                SubscribeOnRightClickEquip(item);
-            }
+            Model.inventory.Value.onRightClickItemView.Subscribe(OnClickEquip).AddTo(_disposablesForSetData);
 
             inventoryAndItemInfo.SetData(Model.inventory.Value, Model.itemInfo.Value);
-        }
-
-        private void SubscribeOnRightClickEquip(InventoryItem item)
-        {
-            item.onRightClick
-                .Subscribe(itemView =>
-                {
-                    OnClickEquip(itemView.Model);
-                }).AddTo(_disposablesForSetData);
         }
 
         private void Clear() 
@@ -240,6 +223,11 @@ namespace Nekoyume.UI
             {
                 SetGlowEquipSlot(data.item.Value is ItemUsable);
             }
+        }
+
+        private void OnClickEquip(InventoryItemView itemView)
+        {
+            OnClickEquip(itemView.Model);
         }
 
         private void OnClickEquip(CountableItem countableItem)

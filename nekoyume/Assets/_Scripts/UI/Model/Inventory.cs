@@ -23,6 +23,7 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<Func<InventoryItem, bool>> equippedFunc = new ReactiveProperty<Func<InventoryItem, bool>>();
 
         public readonly Subject<InventoryItemView> onDoubleClickItemView = new Subject<InventoryItemView>();
+        public readonly Subject<InventoryItemView> onRightClickItemView = new Subject<InventoryItemView>();
         
         public Inventory(Game.Item.Inventory inventory, State state = State.Equipments)
         {
@@ -317,6 +318,7 @@ namespace Nekoyume.UI.Model
             item.dimmed.Value = dimmedFunc.Value(item);
             item.onClick.Subscribe(SubscribeOnClick);
             item.onDoubleClick.Subscribe(onDoubleClickItemView);
+            item.onRightClick.Subscribe(onRightClickItemView);
         }
         
         private bool DimmedFunc(InventoryItem inventoryItem)
