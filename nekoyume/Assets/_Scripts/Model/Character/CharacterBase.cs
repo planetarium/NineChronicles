@@ -35,13 +35,20 @@ namespace Nekoyume.Model
         private SkillBase _selectedSkill;
 
         [NonSerialized] private Root _root;
-        [NonSerialized] public Simulator Simulator;
+        
         public bool IsDead => currentHP <= 0;
         public Guid id = Guid.NewGuid();
         public float attackRange = 1.0f;
         public float runSpeed = 1.0f;
         public string characterSize = "s";
+        
+        public Simulator Simulator { get; }
 
+        protected CharacterBase(Simulator simulator)
+        {
+            Simulator = simulator;
+        }
+        
         public void InitAI()
         {
             SetSkill();

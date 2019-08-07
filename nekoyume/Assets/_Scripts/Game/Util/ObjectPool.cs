@@ -21,7 +21,7 @@ namespace Nekoyume.Game.Util
         public Dictionary<string, List<GameObject>> objects = new Dictionary<string, List<GameObject>>();
         private Dictionary<string, PoolData> dicts = new Dictionary<string, PoolData>();
 
-        public void Start()
+        public void Initialize()
         {
             foreach (var poolData in list)
             {

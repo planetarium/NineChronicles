@@ -31,10 +31,8 @@ namespace Nekoyume.Model
         
         private List<Equipment> Equipments { get; set; }
 
-        public Player(AvatarState avatarState, Simulator simulator = null)
+        public Player(AvatarState avatarState, Simulator simulator = null) : base(simulator)
         {
-            Simulator = simulator;
-            
             characterId = avatarState.characterId;
             level = avatarState.level;
             exp = avatarState.exp;
@@ -43,17 +41,33 @@ namespace Nekoyume.Model
             atkElement = Game.Elemental.Create(Elemental.ElementalType.Normal);
             defElement = Game.Elemental.Create(Elemental.ElementalType.Normal);
             TurnSpeed = 1.8f;
-            
+
             inventory = avatarState.inventory;
             Equip(inventory.Items);
             CalcStats(level);
         }
 
-        public Player()
+        public Player(int level) : base(null)
         {
+            characterId = GameConfig.DefaultAvatarCharacterId;
+            this.level = level;
+            exp = 0;
+            worldStage = 1;
+            
+            atkElement = Game.Elemental.Create(Elemental.ElementalType.Normal);
+            defElement = Game.Elemental.Create(Elemental.ElementalType.Normal);
+            TurnSpeed = 1.8f;
+            
+            inventory = new Inventory();
+            Equip(inventory.Items);
+            CalcStats(level);
+        }
+
+        public Player() : base(null)
+        {
+            characterId = GameConfig.DefaultAvatarCharacterId;
             level = 1;
             exp = 0;
-            characterId = GameConfig.DefaultAvatarCharacterId;
             worldStage = 1;
         }
 
@@ -226,7 +240,7 @@ namespace Nekoyume.Model
             levelTable.TryGetValue(level, out expData);
             if (expData == null)
             {
-                throw new KeyNotFoundException("invalid character level.");
+                throw new KeyNotFoundException($"invalid character level: `{level}`.");
             }
 
             var statsData = data.GetStats(level);
