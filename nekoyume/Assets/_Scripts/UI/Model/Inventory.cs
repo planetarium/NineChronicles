@@ -52,6 +52,7 @@ namespace Nekoyume.UI.Model
             dimmedFunc.Dispose();
             
             onDoubleClickItemView.Dispose();
+            onRightClickItemView.Dispose();
         }
         
         public InventoryItem AddItem(ItemBase itemBase, int count = 1)
