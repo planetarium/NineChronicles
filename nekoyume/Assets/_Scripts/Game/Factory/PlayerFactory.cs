@@ -24,7 +24,7 @@ namespace Nekoyume.Game.Factory
         {
             if (ReferenceEquals(model, null))
             {
-                model = new Player();
+                model = new Player(1);
             }
 
             var objectPool = GetComponent<ObjectPool>();

@@ -37,14 +37,8 @@ namespace Nekoyume.Model
             level = avatarState.level;
             exp = avatarState.exp;
             worldStage = avatarState.worldStage;
-
-            atkElement = Game.Elemental.Create(Elemental.ElementalType.Normal);
-            defElement = Game.Elemental.Create(Elemental.ElementalType.Normal);
-            TurnSpeed = 1.8f;
-
             inventory = avatarState.inventory;
-            Equip(inventory.Items);
-            CalcStats(level);
+            PostConstruction();
         }
 
         public Player(int level) : base(null)
@@ -53,22 +47,18 @@ namespace Nekoyume.Model
             this.level = level;
             exp = 0;
             worldStage = 1;
-            
+            inventory = new Inventory();
+            PostConstruction();
+        }
+
+        private void PostConstruction()
+        {
             atkElement = Game.Elemental.Create(Elemental.ElementalType.Normal);
             defElement = Game.Elemental.Create(Elemental.ElementalType.Normal);
             TurnSpeed = 1.8f;
             
-            inventory = new Inventory();
             Equip(inventory.Items);
             CalcStats(level);
-        }
-
-        public Player() : base(null)
-        {
-            characterId = GameConfig.DefaultAvatarCharacterId;
-            level = 1;
-            exp = 0;
-            worldStage = 1;
         }
 
         public void RemoveTarget(Monster monster)
