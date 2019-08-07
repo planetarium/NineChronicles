@@ -6,7 +6,7 @@ namespace Nekoyume.Game.Skill
 {
     public static class SkillFactory
     {
-        public static SkillBase Get(float chance, SkillEffect effect, Data.Table.Elemental.ElementalType elemental, int value)
+        public static SkillBase Get(decimal chance, SkillEffect effect, Data.Table.Elemental.ElementalType elemental, int value)
         {
             switch (effect.type)
             {

@@ -7,7 +7,7 @@ namespace Nekoyume.Game.Skill
     [Serializable]
     public class Blow : AttackBase
     {
-        public Blow(float chance, SkillEffect effect, Data.Table.Elemental.ElementalType elemental, int power)
+        public Blow(decimal chance, SkillEffect effect, Data.Table.Elemental.ElementalType elemental, int power)
             : base(chance, effect, elemental, power)
         {
         }

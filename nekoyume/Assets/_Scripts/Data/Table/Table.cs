@@ -121,6 +121,10 @@ namespace Nekoyume.Data.Table
                     {
                         fieldInfo.SetValue(row, int.Parse(value) == 1);
                     }
+                    else if (fieldType == typeof(decimal))
+                    {
+                        fieldInfo.SetValue(row, string.IsNullOrEmpty(value) ? 0m : decimal.Parse(value));
+                    }
                     else
                     {
                         continue;

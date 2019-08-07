@@ -109,7 +109,7 @@ namespace Nekoyume.Model
         protected virtual void SetSkill()
         {
             //기본공격 설정
-            var attack = SkillFactory.Get(1.0f, new SkillEffect(), Elemental.ElementalType.Normal, atk);
+            var attack = SkillFactory.Get(1.0m, new SkillEffect(), Elemental.ElementalType.Normal, atk);
             Skills.Add(attack);
         }
 
@@ -170,7 +170,7 @@ namespace Nekoyume.Model
             var skills = _skills.OrderBy(s => s.chance).ToArray();
             foreach (var skill in skills)
             {
-                var chance = (float) random.NextDouble();
+                var chance = random.Next(0, 100000) * 0.00001m;
                 if (skill.chance > chance)
                 {
                     return skill;

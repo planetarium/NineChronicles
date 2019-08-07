@@ -11,7 +11,7 @@ namespace Nekoyume.Data.Table
         public int setId = 0;
         public int setCount = 0;
         public string ability = "";
-        public float value = 0f;
+        public decimal value = 0m;
         
         public IStatMap ToSetEffectMap()
         {

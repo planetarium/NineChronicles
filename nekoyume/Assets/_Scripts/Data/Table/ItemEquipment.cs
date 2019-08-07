@@ -48,8 +48,8 @@ namespace Nekoyume.Data.Table
         public int value1 = 0;
         public string ability2 = "";
         public int value2 = 0;
-        public float turnSpeed = 2.0f;
-        public float attackRange = 1.0f;
+        public decimal turnSpeed = 2.0m;
+        public decimal attackRange = 1.0m;
         public int skillId = 0;
         public float skillChance = 0.0f;
         
