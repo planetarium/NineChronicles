@@ -52,10 +52,11 @@ namespace Nekoyume.Game.Entrance
             yield return new WaitForSeconds(1.0f);
             Widget.Find<LoadingScreen>()?.Close();
 
-            while (player.transform.position.x < stage.roomPosition.x)
-            {
-                yield return null;
-            }
+            if (player)
+                while (player.transform.position.x < stage.roomPosition.x)
+                {
+                    yield return null;
+                }
             playerComp.RunSpeed = 0.0f;
             playerComp.animator.Idle();
 
