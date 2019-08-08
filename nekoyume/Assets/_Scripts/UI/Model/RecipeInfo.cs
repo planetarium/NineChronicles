@@ -1,7 +1,7 @@
 ﻿using Nekoyume.BlockChain;
 using Nekoyume.Data;
 using Nekoyume.Game.Item;
-using UniRx;
+using System.Linq;
 using UnityEngine;
 
 namespace Nekoyume.UI.Model
@@ -15,12 +15,12 @@ namespace Nekoyume.UI.Model
             public bool isEnough;
             public bool isObtained;
 
-            public MaterialInfo(int id, Sprite sprite)
+            public MaterialInfo(int id, Sprite sprite, int count = 1)
             {
                 this.id = id;
                 this.sprite = sprite;
                 var inventory = States.Instance.currentAvatarState.Value.inventory;
-                isEnough = inventory.HasItem(id);
+                isEnough = inventory.HasItem(id, count);
                 isObtained = true;
             }
         }
@@ -39,7 +39,8 @@ namespace Nekoyume.UI.Model
             for (int i = 0; i < materialInfos.Length; ++i)
             {
                 var sprite = ItemBase.GetSprite(materialIds[i]);
-                materialInfos[i] = new MaterialInfo(materialIds[i], sprite);
+                int count = materialInfos.Count(item => item != null && item.id == materialIds[i]) + 1;
+                materialInfos[i] = new MaterialInfo(materialIds[i], sprite, count);
             }
         }
 
