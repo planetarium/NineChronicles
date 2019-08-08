@@ -13,7 +13,7 @@ namespace Nekoyume.Model
 
         public int spawnIndex = -1; 
 
-        public Monster(Character data, int monsterLevel, Player player)
+        public Monster(Character data, int monsterLevel, Player player) : base(player.Simulator)
         {
             var stats = data.GetStats(monsterLevel);
             currentHP = stats.HP;
@@ -21,7 +21,6 @@ namespace Nekoyume.Model
             def = stats.Defense;
             luck = stats.Luck;
             targets.Add(player);
-            Simulator = player.Simulator;
             this.data = data;
             level = monsterLevel;
             atkElement = Game.Elemental.Create(data.elemental);

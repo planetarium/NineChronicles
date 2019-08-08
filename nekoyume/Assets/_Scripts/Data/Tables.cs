@@ -30,10 +30,8 @@ namespace Nekoyume.Data
         public Table<CombinationQuest> CombinationQuest { get; private set; }
         public Table<TradeQuest> TradeQuest { get; private set; }
 
-        protected override void Awake()
+        public void Initialize()
         {
-            base.Awake();
-            
             Level = new Table<Level>();
             Load(Level, "DataTable/level");
 

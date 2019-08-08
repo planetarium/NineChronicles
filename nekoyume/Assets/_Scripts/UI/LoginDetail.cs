@@ -117,7 +117,7 @@ namespace Nekoyume.UI
             _isCreateMode = !States.Instance.avatarStates.ContainsKey(index);
             if (_isCreateMode)
             {
-                player = new Player();
+                player = new Player(1);
                 nameField.text = "";
                 nameInfo.text = "";
             }
@@ -133,7 +133,7 @@ namespace Nekoyume.UI
             btnCreate.SetActive(_isCreateMode);
             palette.SetActive(_isCreateMode);
 
-            // ÇöÀç ÇÁ·ÎÇÊ »çÁøÀÇ ¿ëµµ°¡ ºÒÅõ¸íÇÏ±â ¶§¹®¿¡ °¡·ÁµÒ.
+            // í”„ë¡œí•„ ì‚¬ì§„ì˜ ìš©ë„ê°€ ì •ë¦¬ë˜ì§€ ì•Šì•„ì„œ ì£¼ì„ ì²˜ë¦¬í•¨.
             // profileImage.SetActive(!isCreateMode);
             btnLogin.SetActive(!_isCreateMode);
             optionGrid.SetActive(!_isCreateMode);

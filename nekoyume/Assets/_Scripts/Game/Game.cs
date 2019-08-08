@@ -36,12 +36,13 @@ namespace Nekoyume.Game
             base.Awake();
 
             Screen.SetResolution(GameConfig.ScreenSize.x, GameConfig.ScreenSize.y, FullScreenMode.Windowed);
-            Tables.instance.EmptyMethod();
+            Tables.instance.Initialize();
 #if UNITY_EDITOR
             LocalizationManager.Read(languageType);
 #else
             LocalizationManager.Read();
 #endif
+            stage.objectPool.Initialize();
             MainCanvas.instance.Initialize();
             AgentController.Initialize(AgentInitialized);
             AudioController.instance.Initialize();
