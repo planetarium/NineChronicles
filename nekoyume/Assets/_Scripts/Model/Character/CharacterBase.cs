@@ -22,9 +22,9 @@ namespace Nekoyume.Model
         [InformationField]
         public int hp;
         [InformationField]
-        public float luck;
+        public decimal luck;
 
-        public const float CriticalMultiplier = 1.5f;
+        public const decimal CriticalMultiplier = 1.5m;
         public int level;
         public abstract float TurnSpeed { get; set; }
 
@@ -74,7 +74,7 @@ namespace Nekoyume.Model
 
         public bool IsCritical()
         {
-            var chance = Simulator.Random.NextDouble();
+            var chance = Simulator.Random.Next(0, 100000) * 0.00001m;
             return chance < luck;
         }
 
@@ -109,7 +109,7 @@ namespace Nekoyume.Model
         protected virtual void SetSkill()
         {
             //기본공격 설정
-            var attack = SkillFactory.Get(1.0f, new SkillEffect(), Elemental.ElementalType.Normal, atk);
+            var attack = SkillFactory.Get(1.0m, new SkillEffect(), Elemental.ElementalType.Normal, atk);
             Skills.Add(attack);
         }
 
@@ -170,7 +170,7 @@ namespace Nekoyume.Model
             var skills = _skills.OrderBy(s => s.chance).ToArray();
             foreach (var skill in skills)
             {
-                var chance = (float) random.NextDouble();
+                var chance = random.Next(0, 100000) * 0.00001m;
                 if (skill.chance > chance)
                 {
                     return skill;

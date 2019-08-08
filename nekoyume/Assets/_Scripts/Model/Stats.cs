@@ -7,8 +7,8 @@ namespace Nekoyume.Model
     public interface IStatMap
     {
         string Key { get; }
-        float Value { get; set; }
-        float AdditionalValue { get; set; }
+        decimal Value { get; set; }
+        decimal AdditionalValue { get; set; }
         int TotalValue { get; }
         string GetInformation();
         void GetInformation(out string key, out string value);
@@ -19,25 +19,25 @@ namespace Nekoyume.Model
     public class StatMap : IStatMap
     {
         public string Key { get; }
-        public float Value { get; set; }
-        public float AdditionalValue { get; set; }
+        public decimal Value { get; set; }
+        public decimal AdditionalValue { get; set; }
         public int TotalValue => (int) (Value + AdditionalValue);
 
         public StatMap(string key)
         {
             Key = key;
-            Value = 0f;
-            AdditionalValue = 0f;
+            Value = 0m;
+            AdditionalValue = 0m;
         }
 
-        public StatMap(string key, float value)
+        public StatMap(string key, decimal value)
         {
             Key = key;
             Value = value;
-            AdditionalValue = 0f;
+            AdditionalValue = 0m;
         }
 
-        public StatMap(string key, float value, float additionalValue)
+        public StatMap(string key, decimal value, decimal additionalValue)
         {
             Key = key;
             Value = value;
@@ -83,14 +83,14 @@ namespace Nekoyume.Model
                 return "";
             }
 
-            if (Value > 0f)
+            if (Value > 0m)
             {
-                return AdditionalValue > 0f
+                return AdditionalValue > 0m
                     ? $"{translatedText} {Value} <color=#00FF00>(+{AdditionalValue})</color>"
                     : $"{translatedText} {Value}";
             }
 
-            return AdditionalValue > 0f
+            return AdditionalValue > 0m
                 ? $"{translatedText} <color=#00FF00>(+{AdditionalValue})</color>"
                 : null;
         }
@@ -113,16 +113,16 @@ namespace Nekoyume.Model
                 return;
             }
 
-            if (Value > 0f)
+            if (Value > 0m)
             {
-                value = AdditionalValue > 0f
+                value = AdditionalValue > 0m
                     ? $"{Value} <color=#00FF00>(+{AdditionalValue})</color>"
                     : $"{Value}";
 
                 return;
             }
 
-            value = AdditionalValue > 0f
+            value = AdditionalValue > 0m
                 ? $"<color=#00FF00>(+{AdditionalValue})</color>"
                 : "";
         }
@@ -214,7 +214,7 @@ namespace Nekoyume.Model
             return (_statMaps != null ? _statMaps.GetHashCode() : 0);
         }
 
-        public void SetStatValue(string key, float value)
+        public void SetStatValue(string key, decimal value)
         {
             if (string.IsNullOrEmpty(key))
             {
@@ -229,7 +229,7 @@ namespace Nekoyume.Model
             _statMaps[key].Value = value;
         }
 
-        public void SetStatAdditionalValue(string key, float additionalValue)
+        public void SetStatAdditionalValue(string key, decimal additionalValue)
         {
             if (string.IsNullOrEmpty(key))
             {

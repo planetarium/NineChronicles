@@ -184,7 +184,7 @@ namespace Nekoyume.UI
                 {
                     GameObject row = Instantiate(statusRow, statusGrid.transform);
                     var info = row.GetComponent<StatusInfo>();
-                    info.Set(field.Name, field.GetValue(player), player.GetAdditionalStatus(field.Name));
+                    info.Set(field.Name, field.GetValue(player), (float) player.GetAdditionalStatus(field.Name));
                 }
             }
 

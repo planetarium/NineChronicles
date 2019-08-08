@@ -9,7 +9,7 @@ namespace Nekoyume.Game.Skill
     [Serializable]
     public class AttackBase : SkillBase
     {
-        protected AttackBase(float chance, SkillEffect effect,
+        protected AttackBase(decimal chance, SkillEffect effect,
             Data.Table.Elemental.ElementalType elemental, int power) : base(chance, effect, elemental, power)
         {
         }
@@ -88,7 +88,7 @@ namespace Nekoyume.Game.Skill
     [Serializable]
     public class Attack : AttackBase
     {
-        public Attack(float chance, SkillEffect effect,
+        public Attack(decimal chance, SkillEffect effect,
             Data.Table.Elemental.ElementalType elemental, int power) : base(chance, effect, elemental, power)
         {
         }

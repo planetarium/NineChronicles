@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using DecimalMath;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Data;
@@ -10,7 +11,6 @@ using Nekoyume.Game.Item;
 using Nekoyume.Game.Skill;
 using Nekoyume.Model;
 using Nekoyume.State;
-using UniRx.Async;
 
 namespace Nekoyume.Action
 {
@@ -118,7 +118,7 @@ namespace Nekoyume.Action
                     return states;
                 }
 
-                var normalizedRandomValue = ctx.Random.Next(0, 100000) * 0.00001f;
+                var normalizedRandomValue = ctx.Random.Next(0, 100000) * 0.00001m;
                 var roll = GetRoll(monsterPartsMaterial.count, 0, normalizedRandomValue);
 
                 // 조합 결과 획득.
@@ -222,23 +222,23 @@ namespace Nekoyume.Action
             return false;
         }
 
-        private float GetRoll(int monsterPartsCount, int deltaLevel, float normalizedRandomValue)
+        private decimal GetRoll(int monsterPartsCount, int deltaLevel, decimal normalizedRandomValue)
         {
-            var rollMax = Math.Pow(1f / (1f + GameConfig.CombinationValueP1 / monsterPartsCount),
+            var rollMax = DecimalEx.Pow(1m / (1m + GameConfig.CombinationValueP1 / monsterPartsCount),
                               GameConfig.CombinationValueP2) *
                           (deltaLevel <= 0
-                              ? 1f
-                              : Math.Pow(1f / (1f + GameConfig.CombinationValueL1 / deltaLevel),
+                              ? 1m
+                              : DecimalEx.Pow(1m / (1m + GameConfig.CombinationValueL1 / deltaLevel),
                                   GameConfig.CombinationValueL2));
-            var rollMin = rollMax * 0.7f;
-            return (float) (rollMin + (rollMax - rollMin) *
-                            Math.Pow(normalizedRandomValue, GameConfig.CombinationValueR1));
+            var rollMin = rollMax * 0.7m;
+            return rollMin + (rollMax - rollMin) *
+                   DecimalEx.Pow(normalizedRandomValue, GameConfig.CombinationValueR1);
         }
 
-        private StatMap GetStat(Item itemRow, float roll)
+        private StatMap GetStat(Item itemRow, decimal roll)
         {
             var key = itemRow.stat;
-            var value = (float) Math.Floor(itemRow.minStat + (itemRow.maxStat - itemRow.minStat) * roll);
+            var value = Math.Floor(itemRow.minStat + (itemRow.maxStat - itemRow.minStat) * roll);
             return new StatMap(key, value);
         }
 
@@ -264,7 +264,7 @@ namespace Nekoyume.Action
             return (ItemUsable) ItemBase.ItemFactory(itemEquipment, itemId);
         }
 
-        public static Equipment GetEquipment(ItemEquipment itemEquipment, Item monsterParts, float roll, Guid itemId)
+        public static Equipment GetEquipment(ItemEquipment itemEquipment, Item monsterParts, decimal roll, Guid itemId)
         {
             var table = Tables.instance.SkillEffect;
             SkillBase skill;
@@ -272,8 +272,8 @@ namespace Nekoyume.Action
             {
                 var skillEffect = table.First(r => r.Value.id == monsterParts.skillId);
                 var elementalType = monsterParts.elemental;
-                var chance = (float) Math.Floor(monsterParts.minChance +
-                                                (monsterParts.maxChance - monsterParts.minChance) * roll);
+                var chance = Math.Floor(monsterParts.minChance +
+                                        (monsterParts.maxChance - monsterParts.minChance) * roll);
                 chance = Math.Max(monsterParts.minChance, chance);
                 var value = (int) Math.Floor(monsterParts.minDamage +
                                              (monsterParts.maxDamage - monsterParts.minDamage) * roll);

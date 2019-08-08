@@ -33,7 +33,7 @@ namespace Tests
         {
             var equipment = Tables.instance.ItemEquipment.First().Value;
             var parts = Tables.instance.Item.Select(i => i.Value)
-                .First(r => r.skillId != 0 && r.minChance > 0.01f);
+                .First(r => r.skillId != 0 && r.minChance > 0.01m);
 
             var result = Nekoyume.Action.Combination.GetEquipment(equipment, parts, 0, default);
             Assert.NotNull(result);

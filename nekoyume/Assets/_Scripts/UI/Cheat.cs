@@ -111,7 +111,7 @@ namespace Nekoyume
             {
                 foreach (Elemental.ElementalType elemental in values)
                 {
-                    var skill = SkillFactory.Get(1.0f, row, elemental, 50);
+                    var skill = SkillFactory.Get(1.0m, row, elemental, 50);
                     skills.Add(skill);
                     Button newButton = Instantiate(buttonBase, skillList.content);
                     newButton.GetComponentInChildren<Text>().text = $"{skill.GetType().Name}_{elemental}";

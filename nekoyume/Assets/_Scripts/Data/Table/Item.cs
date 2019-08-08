@@ -45,8 +45,8 @@ namespace Nekoyume.Data.Table
         public int skillId = 0;
         public int minDamage = 0;
         public int maxDamage = 0;
-        public float minChance = 0f;
-        public float maxChance = 0f;
+        public decimal minChance = 0m;
+        public decimal maxChance = 0m;
 
         public virtual string LocalizedName => LocalizationManager.LocalizeItemName(id);
         public virtual string LocalizedDescription => LocalizationManager.LocalizeItemDescription(id);
