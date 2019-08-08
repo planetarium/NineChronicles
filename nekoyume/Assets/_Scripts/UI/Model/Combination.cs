@@ -212,17 +212,6 @@ namespace Nekoyume.UI.Model
         private void OnMaterialAdd(CombinationMaterial value)
         {
             value.count.Subscribe(count => UpdateReadyForCombination());
-            value.onEdit.Subscribe(obj =>
-            {
-                if (ReferenceEquals(obj, null))
-                {
-                    return;
-                }
-
-                itemCountPopup.Value.item.Value = obj;
-                itemCountPopup.Value.item.Value.minCount.Value = 1;
-                AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickCombinationEditMaterialItem);
-            });
             value.onMinus.Subscribe(obj =>
             {
                 if (ReferenceEquals(obj, null))

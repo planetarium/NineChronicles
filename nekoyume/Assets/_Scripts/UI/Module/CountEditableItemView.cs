@@ -10,7 +10,6 @@ namespace Nekoyume.UI.Module
     public class CountEditableItemView<T> : CountableItemView<T> where T : Model.CountEditableItem
     {
         public Image backgroundImage;
-        public Button editButton;
         public Button minusButton;
         public Button plusButton;
         public Button deleteButton;
@@ -28,14 +27,6 @@ namespace Nekoyume.UI.Module
             this.ComponentFieldsNotNullTest();
 
             deleteButtonText.text = LocalizationManager.Localize("UI_DELETE");
-
-            editButton.OnClickAsObservable()
-                .Subscribe(_ =>
-                {
-                    Model?.onEdit.OnNext(Model);
-                    AudioController.PlayClick();
-                })
-                .AddTo(_disposablesForAwake);
 
             minusButton.OnClickAsObservable()
                 .Subscribe(_ =>
