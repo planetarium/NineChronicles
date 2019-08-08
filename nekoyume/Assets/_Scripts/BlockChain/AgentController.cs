@@ -80,7 +80,10 @@ namespace Nekoyume.BlockChain
             Agent.PreloadProcessed += (_, e) =>
             {
                 if (loadingText)
-                    loadingText.text = $"{e.ReceivedBlockCount} / {e.TotalBlockCount}";
+                {
+                    if (e is BlockDownloadState blockDownloadState)
+                        loadingText.text = $"{blockDownloadState.ReceivedBlockCount} / {blockDownloadState.TotalBlockCount}";
+                }
             };
             Agent.PreloadEnded += (_, __) =>
             {

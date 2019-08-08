@@ -2085,9 +2085,32 @@
             <seealso cref="M:Libplanet.HashDigest`1.FromString(System.String)"/>
             <seealso cref="M:Libplanet.HashDigest`1.ToString"/>
         </member>
+        <member name="T:Libplanet.Net.ActionExecutionState">
+            <summary>
+            Indicates a progress of executing block actions.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.ActionExecutionState.TotalBlockCount">
+            <summary>
+            Total number of blocks to execute in the current batch.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.ActionExecutionState.ExecutedBlockCount">
+            <summary>
+            The number of currently executed blocks.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.ActionExecutionState.ExecutedBlockHash">
+            <summary>
+            The hash digest of the block just executed.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.ActionExecutionState.CurrentPhase">
+            <inheritdoc />
+        </member>
         <member name="T:Libplanet.Net.BlockDownloadState">
             <summary>
-            A container that indicates the progress of a block download.
+            Indicates a progress of downloading blocks.
             </summary>
         </member>
         <member name="P:Libplanet.Net.BlockDownloadState.TotalBlockCount">
@@ -2104,6 +2127,32 @@
             <summary>
             The hash digest of the block just received.
             </summary>
+        </member>
+        <member name="P:Libplanet.Net.BlockDownloadState.CurrentPhase">
+            <inheritdoc />
+        </member>
+        <member name="T:Libplanet.Net.BlockStateDownloadState">
+            <summary>
+            Indicates a progress of downloading block states.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.BlockStateDownloadState.TotalBlockStateCount">
+            <summary>
+            Total number of block states to receive in the current batch.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.BlockStateDownloadState.ReceivedBlockStateCount">
+            <summary>
+            The number of received block states until now.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.BlockStateDownloadState.ReceivedBlockHash">
+            <summary>
+            The blcok hash of the states just received.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.BlockStateDownloadState.CurrentPhase">
+            <inheritdoc />
         </member>
         <member name="T:Libplanet.Net.DifferentAppProtocolVersionException">
             <summary>
@@ -2277,6 +2326,39 @@
         <member name="M:Libplanet.Net.Peer.ToString">
             <inheritdoc/>
         </member>
+        <member name="F:Libplanet.Net.PreloadState.TotalPhase">
+            <summary>
+            The number of total phases.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.PreloadState.CurrentPhase">
+            <summary>
+            The current phase.
+            </summary>
+        </member>
+        <member name="T:Libplanet.Net.StateReferenceDownloadState">
+            <summary>
+            Indicates a progress of downloading state references.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.StateReferenceDownloadState.TotalStateReferenceCount">
+            <summary>
+            Total number of state references to receive in the current batch.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.StateReferenceDownloadState.ReceivedStateReferenceCount">
+            <summary>
+            The number of received state references until now.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.StateReferenceDownloadState.ReceivedAddress">
+            <summary>
+            The address of the state references just received.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.StateReferenceDownloadState.CurrentPhase">
+            <inheritdoc />
+        </member>
         <member name="E:Libplanet.Net.Swarm`1.DifferentVersionPeerEncountered">
             <summary>
             The <see cref="T:System.EventHandler" /> called when the different version of
@@ -2320,10 +2402,10 @@
             so that there are a lot of calls to <see cref="M:Libplanet.Action.IAction.Render(Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/> method in a short
             period of time.  This can lead a game startup slow.  If you want to omit rendering of
             these actions in the behind blocks use <see cref=
-            "M:Libplanet.Net.Swarm`1.PreloadAsync(System.IProgress{Libplanet.Net.BlockDownloadState},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Threading.CancellationToken)"
+            "M:Libplanet.Net.Swarm`1.PreloadAsync(System.IProgress{Libplanet.Net.PreloadState},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Threading.CancellationToken)"
             /> method too.</remarks>
         </member>
-        <member name="M:Libplanet.Net.Swarm`1.PreloadAsync(System.IProgress{Libplanet.Net.BlockDownloadState},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Net.Swarm`1.PreloadAsync(System.IProgress{Libplanet.Net.PreloadState},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Threading.CancellationToken)">
             <summary>
             Preemptively downloads blocks from registered <see cref="T:Libplanet.Net.Peer"/>s.
             </summary>

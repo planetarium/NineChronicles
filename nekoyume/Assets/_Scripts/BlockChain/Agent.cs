@@ -68,7 +68,7 @@ namespace Nekoyume.BlockChain
         public Address Address { get; }
         
         public event EventHandler PreloadStarted;
-        public event EventHandler<BlockDownloadState> PreloadProcessed;
+        public event EventHandler<PreloadState> PreloadProcessed;
         public event EventHandler PreloadEnded;
 
         public bool SyncSucceed { get; private set; }
@@ -149,7 +149,7 @@ namespace Nekoyume.BlockChain
             var swarmPreloadTask = Task.Run(async () =>
             {
                 await _swarm.PreloadAsync(
-                    new Progress<BlockDownloadState>(state =>
+                    new Progress<PreloadState>(state =>
                         PreloadProcessed?.Invoke(this, state)
                     ),
                     trustedStateValidators: _trustedPeers
