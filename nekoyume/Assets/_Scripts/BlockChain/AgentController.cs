@@ -108,6 +108,21 @@ namespace Nekoyume.BlockChain
             _miner = options.NoMiner ? null : Agent.CoMiner();
 
             StartSystemCoroutines(Agent);
+            StartCoroutine(CoCheckBlockTip());
+        }
+
+        private static IEnumerator CoCheckBlockTip()
+        {
+            while (true)
+            {
+                var current = Agent.BlockIndex;
+                yield return new WaitForSeconds(60f);
+                if (Agent.BlockIndex == current)
+                {
+                    Widget.Find<ExitPopup>().Show();
+                    break;
+                }
+            }
         }
 
         public static CommandLineOptions GetOptions(string jsonPath)

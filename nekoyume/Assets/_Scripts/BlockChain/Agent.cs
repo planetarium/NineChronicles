@@ -62,6 +62,7 @@ namespace Nekoyume.BlockChain
 
         public IDictionary<TxId, Transaction<PolymorphicAction<ActionBase>>> Transactions => _blocks.Transactions;
         public IBlockPolicy<PolymorphicAction<ActionBase>> Policy => _blocks.Policy;
+        public long BlockIndex => _blocks?.Tip?.Index ?? 0;
 
         public PrivateKey PrivateKey { get; }
         public Address Address { get; }
