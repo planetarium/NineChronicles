@@ -63,7 +63,7 @@ namespace Nekoyume.Data.Table
                 var m = materials[i];
                 if (recipe.Exists(item => item.materialId == m.id))
                 {
-                    var count = Mathf.FloorToInt((float)m.count / recipe[i].count);
+                    var count = m.count / recipe[i].count;
                     result = i == 0 ? count : Mathf.Min(result, count);
                 }
                 else
