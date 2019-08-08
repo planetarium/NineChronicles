@@ -15,7 +15,7 @@ MonoBehaviour:
   m_GroupName: Default Local Group
   m_Data:
     m_SerializedData: []
-  m_GUID: 5ffc7c51dd5154758b68b93436d94ef4
+  m_GUID: 69b8c741b8126437daf684ce301b4249
   m_SerializeEntries:
   - m_GUID: 9c9a281fa10de4732a69f1f7b08772b0
     m_Address: Assets/AddressableAssets/TableCSV/Background.csv
@@ -25,4 +25,6 @@ MonoBehaviour:
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 314ad4573790845ce84c5b850f063d3b, type: 2}
   m_SchemaSet:
-    m_Schemas: []
+    m_Schemas:
+    - {fileID: 11400000, guid: 73bb1d7b095a542b68f8adb34f122b1c, type: 2}
+    - {fileID: 11400000, guid: 8e0251bc8cbe64a46a171ac8119ea93a, type: 2}
