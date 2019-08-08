@@ -350,7 +350,7 @@ namespace Nekoyume.Game.Character
 
         private void ProcessHeal(CharacterBase target, Model.Skill.SkillInfo info)
         {
-            if (target)
+            if (target && target.IsAlive())
             {
                 target.HP = Math.Min(info.Effect + target.HP, target.HPMax);
 
