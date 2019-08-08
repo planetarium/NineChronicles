@@ -19,7 +19,6 @@ namespace Nekoyume.Data
         public Table<Recipe> Recipe { get; private set; }
         public Table<Elemental> Elemental { get; private set; }
         public Table<ItemEquipment> ItemEquipment { get; private set; }
-        public Table<Background> Background { get; private set; }
         public Table<StageReward> StageReward { get; private set; }
         public Table<SetEffect> SetEffect { get; private set; }
         public Table<SkillEffect> SkillEffect { get; private set; }
@@ -56,9 +55,6 @@ namespace Nekoyume.Data
             Load(Recipe, "DataTable/recipe");
             Elemental = new Table<Elemental>();
             Load(Elemental, "DataTable/elemental");
-
-            Background = new Table<Background>();
-            Load(Background, "DataTable/background");
 
             StageReward = new Table<StageReward>();
             Load(StageReward, "DataTable/stage_reward");

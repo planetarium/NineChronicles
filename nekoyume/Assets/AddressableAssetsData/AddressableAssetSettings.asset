@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 468a46d0ae32c3544b7d98094e6448a9, type: 3}
   m_Name: AddressableAssetSettings
   m_EditorClassIdentifier: 
-  m_DefaultGroup: 435b2aff4ae444dcc82d269b2cd5cf68
+  m_DefaultGroup: 5ffc7c51dd5154758b68b93436d94ef4
   m_BuildRemoteCatalog: 0
   m_RemoteCatalogBuildPath:
     m_Id: 
@@ -20,7 +20,6 @@ MonoBehaviour:
     m_Id: 
   m_overridePlayerVersion: 
   m_GroupAssets:
-  - {fileID: 11400000, guid: 38254e9a0c6dd49ecb396075152aade8, type: 2}
   - {fileID: 11400000, guid: ba95d7ceb323440b194fa44ae0c61dda, type: 2}
   m_BuildSettings:
     m_CompileScriptsInVirtualMode: 0
@@ -66,6 +65,7 @@ MonoBehaviour:
     - Character
     - Player
     - Monster
+    - TableCSV
   m_SchemaTemplates: []
   m_GroupTemplateObjects:
   - {fileID: 11400000, guid: 3eef9683fdc3e4e4eaf5beca5725a3ee, type: 2}
@@ -75,7 +75,6 @@ MonoBehaviour:
     m_AssemblyName: 
     m_ClassName: 
   m_ActivePlayerDataBuilderIndex: 3
-  m_ActivePlayModeDataBuilderIndex: 0
   m_DataBuilders:
   - {fileID: 11400000, guid: f0d436542327e4cb895c75ad770099a2, type: 2}
   - {fileID: 11400000, guid: d829385155f8d4d63ace5aee1b426c16, type: 2}

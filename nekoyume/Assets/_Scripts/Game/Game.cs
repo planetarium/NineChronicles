@@ -1,7 +1,9 @@
+using System.Collections;
 using Assets.SimpleLocalization;
 using Nekoyume.BlockChain;
 using Nekoyume.Data;
 using Nekoyume.Game.Controller;
+using Nekoyume.TableData;
 using Nekoyume.UI;
 using UnityEngine;
 
@@ -37,15 +39,21 @@ namespace Nekoyume.Game
 
             base.Awake();
 
+            Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
             Screen.SetResolution(GameConfig.ScreenSize.x, GameConfig.ScreenSize.y, FullScreenMode.Windowed);
+            MainCanvas.instance.Initialize();
             Tables.instance.Initialize();
+            stage.objectPool.Initialize();
 #if UNITY_EDITOR
             LocalizationManager.Read(languageType);
 #else
             LocalizationManager.Read();
 #endif
-            stage.objectPool.Initialize();
-            MainCanvas.instance.Initialize();
+        }
+
+        private IEnumerator Start()
+        {
+            yield return StartCoroutine(TableSheets.LoadAsync());
             AgentController.Initialize(AgentInitialized);
             AudioController.instance.Initialize();
         }
