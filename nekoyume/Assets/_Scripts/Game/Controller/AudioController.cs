@@ -1,10 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Nekoyume.BlockChain;
-using Nekoyume.Model;
 using Nekoyume.Pattern;
-using UniRx;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -177,13 +174,13 @@ namespace Nekoyume.Game.Controller
 
             CurrentState = State.InInitializing;
 
-            InitializeInternal("Audio/Music/Prefabs", _musicPrefabs);
-            InitializeInternal("Audio/Sfx/Prefabs", _sfxPrefabs);
+            InitializeInternal("Audio/Music/Prefabs", _musicPrefabs, _musicPool);
+            InitializeInternal("Audio/Sfx/Prefabs", _sfxPrefabs, _sfxPool);
 
             CurrentState = State.Idle;
         }
 
-        private void InitializeInternal(string folderPath, IDictionary<string, AudioSource> collection)
+        private void InitializeInternal(string folderPath, IDictionary<string, AudioSource> prefabs, IDictionary<string, Stack<AudioInfo>> pool)
         {
             var assets = Resources.LoadAll<GameObject>(folderPath);
             foreach (var asset in assets)
@@ -194,7 +191,8 @@ namespace Nekoyume.Game.Controller
                     throw new NotFoundComponentException<AudioSource>();
                 }
 
-                collection.Add(asset.name, audioSource);
+                prefabs.Add(asset.name, audioSource);
+                Push(pool, asset.name, new AudioInfo(Instantiate(asset.name, prefabs)));
             }
         }
         
@@ -288,14 +286,14 @@ namespace Nekoyume.Game.Controller
 
         #region Pool
 
-        private AudioSource Instantiate(string audioName, IDictionary<string, AudioSource> collection)
+        private AudioSource Instantiate(string audioName, IDictionary<string, AudioSource> prefabs)
         {
-            if (!collection.ContainsKey(audioName))
+            if (!prefabs.ContainsKey(audioName))
             {
                 throw new KeyNotFoundException($"Not found AudioSource `{audioName}`.");
             }
 
-            return Instantiate(collection[audioName], transform);
+            return Instantiate(prefabs[audioName], transform);
         }
 
         private AudioInfo PopFromMusicPool(string audioName)
@@ -322,30 +320,30 @@ namespace Nekoyume.Game.Controller
             return stack.Count > 0 ? stack.Pop() : new AudioInfo(Instantiate(audioName, _sfxPrefabs));
         }
 
-        private static void Push(IDictionary<string, List<AudioInfo>> collection, string audioName, AudioInfo audioInfo)
+        private static void Push(IDictionary<string, List<AudioInfo>> pool, string audioName, AudioInfo audioInfo)
         {
-            if (collection.ContainsKey(audioName))
+            if (pool.ContainsKey(audioName))
             {
-                collection[audioName].Add(audioInfo);
+                pool[audioName].Add(audioInfo);
             }
             else
             {
                 var list = new List<AudioInfo> {audioInfo};
-                collection.Add(audioName, list);
+                pool.Add(audioName, list);
             }
         }
 
-        private static void Push(IDictionary<string, Stack<AudioInfo>> collection, string audioName, AudioInfo audioInfo)
+        private static void Push(IDictionary<string, Stack<AudioInfo>> pool, string audioName, AudioInfo audioInfo)
         {
-            if (collection.ContainsKey(audioName))
+            if (pool.ContainsKey(audioName))
             {
-                collection[audioName].Push(audioInfo);
+                pool[audioName].Push(audioInfo);
             }
             else
             {
                 var stack = new Stack<AudioInfo>();
                 stack.Push(audioInfo);
-                collection.Add(audioName, stack);
+                pool.Add(audioName, stack);
             }
         }
 
