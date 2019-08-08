@@ -76,7 +76,7 @@ namespace Nekoyume.UI
                 {
                     GameObject row = Instantiate(statusInfo, group.transform);
                     var info = row.GetComponent<StatusInfo>();
-                    info.Set(field.Name, field.GetValue(player), (float) player.GetAdditionalStatus(field.Name));
+                    info.Set(field.Name, field.GetValue(player), decimal.ToSingle(player.GetAdditionalStatus(field.Name)));
                 }
             }
 

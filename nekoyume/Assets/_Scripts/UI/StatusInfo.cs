@@ -15,7 +15,7 @@ namespace Nekoyume.UI
             if (keyString == "LUCK")
             {
                 key.text = "CRI";
-                value.text = ToPercentage((float) statValue);
+                value.text = ToPercentage(decimal.ToSingle((decimal) statValue));
                 additional.text = Mathf.Approximately(equipValue, 0f)
                     ? ""
                     : $"(+{ToPercentage(equipValue)})";
