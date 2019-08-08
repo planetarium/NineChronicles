@@ -284,7 +284,8 @@ namespace Nekoyume.UI.Model
         {
             value.Dispose();
 
-            SetStaged(value.item.Value.Data.id, false);
+            bool exists = materials.ToList().Exists(item => item.item.Value.Data.id == value.item.Value.Data.id);
+            SetStaged(value.item.Value.Data.id, exists);
             UpdateReadyForCombination();
         }
 
