@@ -22,9 +22,9 @@ namespace Nekoyume.Model
         [InformationField]
         public int hp;
         [InformationField]
-        public float luck;
+        public decimal luck;
 
-        public const float CriticalMultiplier = 1.5f;
+        public const decimal CriticalMultiplier = 1.5m;
         public int level;
         public abstract float TurnSpeed { get; set; }
 
@@ -74,7 +74,7 @@ namespace Nekoyume.Model
 
         public bool IsCritical()
         {
-            var chance = Simulator.Random.NextDouble();
+            var chance = Simulator.Random.Next(0, 100000) * 0.00001m;
             return chance < luck;
         }
 

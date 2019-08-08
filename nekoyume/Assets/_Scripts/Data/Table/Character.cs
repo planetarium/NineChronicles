@@ -17,11 +17,11 @@ namespace Nekoyume.Data.Table
         public int hp = 0;
         public int damage = 0;
         public int defense = 0;
-        public float luck;
+        public decimal luck;
         public int lvHp = 0;
         public int lvDamage = 0;
         public int lvDefense = 0;
-        public float lvLuck = 0.1f;
+        public decimal lvLuck = 0.1m;
         public string skill0 = "";
         public string skill1 = "";
         public string skill2 = "";
@@ -34,7 +34,7 @@ namespace Nekoyume.Data.Table
             public int HP;
             public int Damage;
             public int Defense;
-            public float Luck;
+            public decimal Luck;
         }
 
         public Stats GetStats(int level)

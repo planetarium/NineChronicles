@@ -211,7 +211,7 @@ namespace Nekoyume.Model
             level = expData.level;
         }
 
-        public float GetAdditionalStatus(string key)
+        public decimal GetAdditionalStatus(string key)
         {
             var stats = Tables.instance.Character;
             var levelTable = Tables.instance.Level;
@@ -231,7 +231,7 @@ namespace Nekoyume.Model
 
             var statsData = data.GetStats(level);
 
-            float value;
+            decimal value;
             switch (key)
             {
                 case "atk":
