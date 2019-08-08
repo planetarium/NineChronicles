@@ -12,7 +12,7 @@ namespace Nekoyume.TableData
 
         public static Background Background { get; private set; }
 
-        public static IEnumerator LoadAsync()
+        public static IEnumerator CoInitialize()
         {
             LoadProgress.Value = 0f;
             var loadLocationOperation = Addressables.LoadResourceLocationsAsync("TableCSV");

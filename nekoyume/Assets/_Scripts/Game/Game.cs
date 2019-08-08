@@ -53,7 +53,7 @@ namespace Nekoyume.Game
 
         private IEnumerator Start()
         {
-            yield return StartCoroutine(TableSheets.LoadAsync());
+            yield return StartCoroutine(TableSheets.CoInitialize());
             AgentController.Initialize(AgentInitialized);
             AudioController.instance.Initialize();
         }
