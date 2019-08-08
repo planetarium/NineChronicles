@@ -41,8 +41,8 @@ namespace Nekoyume.Model
         public float attackRange = 1.0f;
         public float runSpeed = 1.0f;
         public string characterSize = "s";
-        
-        public Simulator Simulator { get; }
+
+        [NonSerialized] public Simulator Simulator;
 
         protected CharacterBase(Simulator simulator)
         {
