@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using DecimalMath;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Data;
@@ -10,7 +11,6 @@ using Nekoyume.Game.Item;
 using Nekoyume.Game.Skill;
 using Nekoyume.Model;
 using Nekoyume.State;
-using UniRx.Async;
 
 namespace Nekoyume.Action
 {
@@ -222,27 +222,17 @@ namespace Nekoyume.Action
             return false;
         }
 
-        private decimal Pow(decimal x, decimal y)
-        {
-            var result = x;
-            for (var i = 0; i < y; i++)
-            {
-                result*= x;
-            }
-
-            return result;
-        }
         private decimal GetRoll(int monsterPartsCount, int deltaLevel, decimal normalizedRandomValue)
         {
-            var rollMax = Pow(1m / (1m + GameConfig.CombinationValueP1 / monsterPartsCount),
+            var rollMax = DecimalEx.Pow(1m / (1m + GameConfig.CombinationValueP1 / monsterPartsCount),
                               GameConfig.CombinationValueP2) *
                           (deltaLevel <= 0
                               ? 1m
-                              : Pow(1m / (1m + GameConfig.CombinationValueL1 / deltaLevel),
+                              : DecimalEx.Pow(1m / (1m + GameConfig.CombinationValueL1 / deltaLevel),
                                   GameConfig.CombinationValueL2));
             var rollMin = rollMax * 0.7m;
             return rollMin + (rollMax - rollMin) *
-                   Pow(normalizedRandomValue, GameConfig.CombinationValueR1);
+                   DecimalEx.Pow(normalizedRandomValue, GameConfig.CombinationValueR1);
         }
 
         private StatMap GetStat(Item itemRow, decimal roll)
