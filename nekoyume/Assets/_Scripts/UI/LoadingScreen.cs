@@ -68,6 +68,7 @@ namespace Nekoyume.UI
             }
 
             _sequences = null;
+            loadingText.text = LocalizationManager.Localize("UI_IN_MINING_A_BLOCK");
         }
 
         #endregion
