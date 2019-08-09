@@ -145,10 +145,10 @@ namespace Nekoyume.BlockChain
             while (true)
             {
                 var current = Agent.BlockIndex;
-                yield return new WaitForSeconds(60f);
+                yield return new WaitForSeconds(180f);
                 if (Agent.BlockIndex == current)
                 {
-                    Widget.Find<ExitPopup>().Show();
+                    Widget.Find<ExitPopup>().Show(current);
                     break;
                 }
             }
