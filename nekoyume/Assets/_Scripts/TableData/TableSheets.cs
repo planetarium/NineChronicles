@@ -12,6 +12,8 @@ namespace Nekoyume.TableData
         public readonly ReactiveProperty<float> loadProgress = new ReactiveProperty<float>();
 
         public Background Background { get; private set; }
+        public World World { get; private set; }
+        public WorldChapter WorldChapter { get; private set; }
 
         public IEnumerator CoInitialize()
         {
@@ -41,6 +43,14 @@ namespace Nekoyume.TableData
                 case nameof(TableData.Background):
                     Background = new Background();
                     Background.Set(csv);
+                    break;
+                case nameof(TableData.World):
+                    World = new World();
+                    World.Set(csv);
+                    break;
+                case nameof(TableData.WorldChapter):
+                    WorldChapter = new WorldChapter();
+                    WorldChapter.Set(csv);
                     break;
                 default:
                     throw new InvalidDataException($"Not found {name} class in namespace `TableData`");

@@ -11,8 +11,6 @@ namespace Nekoyume.Data
     public class Tables : MonoSingleton<Tables>
     {
         public Table<Level> Level { get; private set; }
-        public Table<World> World { get; private set; }
-        public Table<WorldChapter> WorldChapter { get; private set; }
         public Table<Stage> Stage { get; private set; }
         public Table<Character> Character { get; private set; }
         public Table<Item> Item { get; private set; }
@@ -34,12 +32,6 @@ namespace Nekoyume.Data
             Level = new Table<Level>();
             Load(Level, "DataTable/level");
 
-            World = new Table<World>();
-            Load(World, "DataTable/world");
-            
-            WorldChapter = new Table<WorldChapter>();
-            Load(WorldChapter, "DataTable/world_chapter");
-            
             Stage = new Table<Stage>();
             Load(Stage, "DataTable/stage");
 

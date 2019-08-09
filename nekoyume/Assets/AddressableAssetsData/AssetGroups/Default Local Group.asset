@@ -17,8 +17,18 @@ MonoBehaviour:
     m_SerializedData: []
   m_GUID: 69b8c741b8126437daf684ce301b4249
   m_SerializeEntries:
+  - m_GUID: 1ddd193f5f195481d92ca512633e7072
+    m_Address: Assets/AddressableAssets/TableCSV/World.csv
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - TableCSV
   - m_GUID: 9c9a281fa10de4732a69f1f7b08772b0
     m_Address: Assets/AddressableAssets/TableCSV/Background.csv
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - TableCSV
+  - m_GUID: cf09867532f73454ba344b62840803b8
+    m_Address: Assets/AddressableAssets/TableCSV/WorldChapter.csv
     m_ReadOnly: 0
     m_SerializedLabels:
     - TableCSV
