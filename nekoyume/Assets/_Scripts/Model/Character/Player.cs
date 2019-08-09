@@ -154,9 +154,13 @@ namespace Nekoyume.Model
             }
         }
 
-        public void Equip(IEnumerable<Inventory.Item> items)
+        private void Equip(IEnumerable<Inventory.Item> items)
         {
-            Equipments = items.Select(i => i.item).OfType<Equipment>().Where(e => e.equipped).ToList();
+            Equipments = items.Select(i => i.item)
+                .OfType<Equipment>()
+                .Where(e => e.equipped)
+                .OrderBy(i => i.SkillBase.chance)
+                .ToList();
             foreach (var equipment in Equipments)
             {
                 switch (equipment.Data.cls.ToEnumItemType())

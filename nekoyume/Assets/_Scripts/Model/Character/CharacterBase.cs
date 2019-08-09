@@ -174,7 +174,7 @@ namespace Nekoyume.Model
 
         public SkillBase Select(IRandom random)
         {
-            var skills = _skills.OrderBy(s => s.chance).ToArray();
+            var skills = _skills.OrderBy(s => s.chance).ThenByDescending(i => i.power).ToArray();
             foreach (var skill in skills)
             {
                 var chance = random.Next(0, 100000) * 0.00001m;
