@@ -81,7 +81,7 @@ namespace Nekoyume.UI
             var nickName = nameField.text;
 
             ActionManager.instance
-                .CreateAvatar(AvatarManager.GetOrCreateAvatarAddress(_selectedIndex), _selectedIndex, nickName)
+                .CreateAvatar(AvatarManager.CreateAvatarAddress(), _selectedIndex, nickName)
                 .Subscribe(eval =>
                 {
                     var avatarState = AvatarManager.SetIndex(_selectedIndex);
@@ -112,7 +112,6 @@ namespace Nekoyume.UI
         private void Init(int index)
         {
             _selectedIndex = index;
-            AvatarManager.GetOrCreateAvatarAddress(_selectedIndex);
             Player player;
             _isCreateMode = !States.Instance.avatarStates.ContainsKey(index);
             if (_isCreateMode)
