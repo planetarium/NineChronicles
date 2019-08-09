@@ -17,12 +17,11 @@ namespace Nekoyume.TableData
             
             public void Set(string[] fields)
             {
-                var index = 0;
-                StageId = int.TryParse(fields[index++], out var stageId) ? stageId : 0;
-                Background = fields[index++];
-                BGM = string.IsNullOrEmpty(fields[index])
+                StageId = int.TryParse(fields[0], out var stageId) ? stageId : 0;
+                Background = fields[1];
+                BGM = string.IsNullOrEmpty(fields[2])
                     ? AudioController.MusicCode.StageGreen
-                    : fields[index];
+                    : fields[2];
             }
         }
     }

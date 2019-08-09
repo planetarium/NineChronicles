@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Nekoyume.TableData
 {
@@ -19,16 +20,12 @@ namespace Nekoyume.TableData
                 throw new ArgumentNullException(nameof(csv));
             }
 
-            var isFirstLine = true;
-            var lines = csv.Trim().Split('\n');
+            var lines = csv
+                .Trim()
+                .Split('\n')
+                .Skip(1);
             foreach (var line in lines)
             {
-                if (isFirstLine)
-                {
-                    isFirstLine = false;
-                    continue;
-                }
-                
                 var row = CSVToRow(line);
                 Add(row.Key, row);
             }
