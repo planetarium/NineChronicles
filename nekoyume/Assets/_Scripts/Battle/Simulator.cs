@@ -10,6 +10,7 @@ using Nekoyume.Game.Skill;
 using Nekoyume.Game.Util;
 using Nekoyume.Model;
 using Nekoyume.State;
+using Nekoyume.TableData;
 using Priority_Queue;
 using UnityEngine;
 
@@ -123,34 +124,34 @@ namespace Nekoyume.Battle
 
         private void SetWave()
         {
-            var stageTable = Tables.instance.Stage.Values.OrderBy(i => i.id);
-            var waves = stageTable.Where(row => row.stage == _worldStage).ToList();
+            var stageTable = Game.Game.instance.TableSheets.Stage.ToOrderedList();
+            var waves = stageTable.Where(row => row.Stage == _worldStage).ToList();
             _totalWave = waves.Count;
             foreach (var w in waves)
             {
                 var wave = SpawnWave(w);
                 _waves.Add(wave);
-                GetReward(w.reward);
+                GetReward(w.Reward);
             }
         }
 
-        private MonsterWave SpawnWave(Stage stage)
+        private MonsterWave SpawnWave(Stage.Row stage)
         {
             var wave = new MonsterWave();
             var monsterTable = Tables.instance.Character;
-            foreach (var monsterData in stage.Monsters())
+            foreach (var monsterData in stage.Monsters)
             {
-                for (int i = 0; i < monsterData.count; i++)
+                for (int i = 0; i < monsterData.Count; i++)
                 {
-                    if (!monsterTable.TryGetValue(monsterData.id, out var characterData))
+                    if (!monsterTable.TryGetValue(monsterData.Id, out var characterData))
                     {
-                        Debug.Log(monsterData.id);
+                        Debug.Log(monsterData.Id);
                     }
-                    wave.Add(new Monster(characterData, monsterData.level, Player));
-                    wave.IsBoss = stage.isBoss;
+                    wave.Add(new Monster(characterData, monsterData.Level, Player));
+                    wave.IsBoss = stage.IsBoss;
                 }
 
-                wave.EXP = stage.exp;
+                wave.EXP = stage.Exp;
             }
 
             return wave;
@@ -158,24 +159,23 @@ namespace Nekoyume.Battle
 
         private void GetReward(int id)
         {
-            var rewardTable = Tables.instance.StageReward;
+            var rewardTable = Game.Game.instance.TableSheets.StageReward;
             var itemTable = Tables.instance.Item;
             var itemSelector = new WeightedSelector<int>(Random);
             var items = new List<ItemBase>();
             if (rewardTable.TryGetValue(id, out var reward))
             {
-                var rewards = reward.Rewards();
-                foreach (var r in rewards)
+                foreach (var r in reward.Rewards)
                 {
-                    if (r.ratio <= 0f)
+                    if (r.Ratio <= 0f)
                     {
                         continue;
                     }
-                    itemSelector.Add(r.id, r.ratio);
+                    itemSelector.Add(r.ItemId, r.Ratio);
                     var itemId = itemSelector.Pop();
                     if (itemTable.TryGetValue(itemId, out var itemData))
                     {
-                        var count = Random.Next(r.range[0], r.range[1]);
+                        var count = Random.Next(r.Min, r.Max);
                         for (int i = 0; i < count; i++)
                         {
                             var b = new byte[16];

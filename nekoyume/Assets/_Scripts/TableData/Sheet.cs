@@ -40,6 +40,11 @@ namespace Nekoyume.TableData
         {
             return _enumerable.GetEnumerator();
         }
+
+        public List<TValue> ToOrderedList()
+        {
+            return _enumerable.ToList();
+        }
         
         private TValue CSVToRow(string csv)
         {

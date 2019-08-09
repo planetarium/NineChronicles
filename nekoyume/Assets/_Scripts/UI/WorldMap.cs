@@ -181,28 +181,28 @@ namespace Nekoyume.UI
             var previousStage = 0;
             var stageModels = new List<WorldMapStage>();
             WorldMapStage currentStageModel = null;
-            foreach (var stagePair in Tables.instance.Stage)
+            foreach (var stageRow in Game.Game.instance.TableSheets.Stage)
             {
-                if (stagePair.Value.stage < _currentChapter.StageBegin
-                    || stagePair.Value.stage > _currentChapter.StageEnd)
+                if (stageRow.Stage < _currentChapter.StageBegin
+                    || stageRow.Stage > _currentChapter.StageEnd)
                 {
                     continue;
                 }
                 
-                var currentStage = stagePair.Value.stage;
+                var currentStage = stageRow.Stage;
 
                 if (previousStage != currentStage)
                 {
                     var stageState = WorldMapStage.State.Normal;
-                    if (stagePair.Value.stage == SelectedStage)
+                    if (stageRow.Stage == SelectedStage)
                     {
                         stageState = WorldMapStage.State.Selected;
                     }
-                    else if (stagePair.Value.stage < States.Instance.currentAvatarState.Value.worldStage)
+                    else if (stageRow.Stage < States.Instance.currentAvatarState.Value.worldStage)
                     {
                         stageState = WorldMapStage.State.Cleared;
                     }
-                    else if (stagePair.Value.stage > States.Instance.currentAvatarState.Value.worldStage)
+                    else if (stageRow.Stage > States.Instance.currentAvatarState.Value.worldStage)
                     {
                         stageState = WorldMapStage.State.Disabled;
                     }
@@ -217,7 +217,7 @@ namespace Nekoyume.UI
                     stageModels.Add(currentStageModel);
                 }
                 
-                if (stagePair.Value.isBoss
+                if (stageRow.IsBoss
                     && currentStageModel != null)
                 {
                     currentStageModel.hasBoss.Value = true;

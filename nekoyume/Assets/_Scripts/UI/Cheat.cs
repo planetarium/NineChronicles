@@ -97,7 +97,7 @@ namespace Nekoyume
         {
             _modal.gameObject.SetActive(true);
             BtnOpen.gameObject.SetActive(false);
-            foreach (var i in Enumerable.Range(1, int.Parse(Tables.instance.Stage.Keys.Last())))
+            foreach (var i in Enumerable.Range(1, Game.Game.instance.TableSheets.Stage.Keys.Last()))
             {
                 Button newButton = Instantiate(buttonBase, list.content);
                 newButton.GetComponentInChildren<Text>().text = i.ToString();

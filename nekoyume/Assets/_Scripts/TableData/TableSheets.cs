@@ -14,6 +14,8 @@ namespace Nekoyume.TableData
         public Background Background { get; private set; }
         public World World { get; private set; }
         public WorldChapter WorldChapter { get; private set; }
+        public Stage Stage { get; private set; }
+        public StageReward StageReward { get; private set; }
 
         public IEnumerator CoInitialize()
         {
@@ -51,6 +53,14 @@ namespace Nekoyume.TableData
                 case nameof(TableData.WorldChapter):
                     WorldChapter = new WorldChapter();
                     WorldChapter.Set(csv);
+                    break;
+                case nameof(TableData.Stage):
+                    Stage = new Stage();
+                    Stage.Set(csv);
+                    break;
+                case nameof(TableData.StageReward):
+                    StageReward = new StageReward();
+                    StageReward.Set(csv);
                     break;
                 default:
                     throw new InvalidDataException($"Not found {name} class in namespace `TableData`");
