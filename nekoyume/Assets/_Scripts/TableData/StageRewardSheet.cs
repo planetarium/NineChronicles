@@ -5,7 +5,7 @@ using Nekoyume.Game.Controller;
 namespace Nekoyume.TableData
 {
     [Serializable]
-    public class StageReward : Sheet<int, StageReward.Row>
+    public class StageRewardSheet : Sheet<int, StageRewardSheet.Row>
     {
         [Serializable]
         public struct RewardData
@@ -34,7 +34,7 @@ namespace Nekoyume.TableData
             
             public void Set(string[] fields)
             {
-                Id = int.TryParse(fields[0], out var stageId) ? stageId : 0;
+                Id = int.TryParse(fields[0], out var id) ? id : 0;
                 Rewards = new List<RewardData>();
                 for (var i = 0; i < 5; i++)
                 {

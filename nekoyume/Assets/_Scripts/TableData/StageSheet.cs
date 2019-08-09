@@ -5,19 +5,19 @@ using Nekoyume.Game.Controller;
 namespace Nekoyume.TableData
 {
     [Serializable]
-    public class Stage : Sheet<int, Stage.Row>
+    public class StageSheet : Sheet<int, StageSheet.Row>
     {
         [Serializable]
         public struct MonsterData
         {
-            public int Id { get; }
+            public int CharacterId { get; }
             public int Level { get; }
             public string Visual { get; }
             public int Count { get; }
 
-            public MonsterData(int id, int level, string visual, int count)
+            public MonsterData(int characterId, int level, string visual, int count)
             {
-                Id = id;
+                CharacterId = characterId;
                 Level = level;
                 Visual = visual;
                 Count = count;
@@ -39,7 +39,7 @@ namespace Nekoyume.TableData
             
             public void Set(string[] fields)
             {
-                Id = int.TryParse(fields[0], out var stageId) ? stageId : 0;
+                Id = int.TryParse(fields[0], out var id) ? id : 0;
                 Stage = int.TryParse(fields[1], out var stage) ? stage : 0;
                 Wave = int.TryParse(fields[2], out var wave) ? wave : 0;
                 Monsters = new List<MonsterData>();
@@ -47,7 +47,7 @@ namespace Nekoyume.TableData
                 {
                     var offset = i * 4;
                     Monsters.Add(new MonsterData(
-                        int.TryParse(fields[3 + offset], out var id) ? id : 0,
+                        int.TryParse(fields[3 + offset], out var characterId) ? characterId : 0,
                         int.TryParse(fields[4 + offset], out var level) ? level : 0,
                         fields[5 + offset],
                         int.TryParse(fields[6 + offset], out var count) ? count : 0

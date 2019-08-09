@@ -4,7 +4,7 @@ using Nekoyume.Game.Controller;
 namespace Nekoyume.TableData
 {
     [Serializable]
-    public class Background : Sheet<int, Background.Row>
+    public class BackgroundSheet : Sheet<int, BackgroundSheet.Row>
     {
         [Serializable]
         public struct Row : ISheetRow<int>

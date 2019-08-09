@@ -10,8 +10,6 @@ namespace Nekoyume.Data
 {
     public class Tables : MonoSingleton<Tables>
     {
-        public Table<Level> Level { get; private set; }
-        public Table<Character> Character { get; private set; }
         public Table<Item> Item { get; private set; }
         public Table<Recipe> Recipe { get; private set; }
         public Table<Elemental> Elemental { get; private set; }
@@ -27,12 +25,6 @@ namespace Nekoyume.Data
 
         public void Initialize()
         {
-            Level = new Table<Level>();
-            Load(Level, "DataTable/level");
-
-            Character = new Table<Character>();
-            Load(Character, "DataTable/character");
-
             Item = new Table<Item>();
             Load(Item, "DataTable/item");
             

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Nekoyume.TableData;
 
 namespace Nekoyume.Model
 {
@@ -10,6 +11,7 @@ namespace Nekoyume.Model
         decimal Value { get; set; }
         decimal AdditionalValue { get; set; }
         int TotalValue { get; }
+        decimal TotalValueRaw { get; }
         string GetInformation();
         void GetInformation(out string key, out string value);
         void UpdatePlayer(Player player);
@@ -22,6 +24,7 @@ namespace Nekoyume.Model
         public decimal Value { get; set; }
         public decimal AdditionalValue { get; set; }
         public int TotalValue => (int) (Value + AdditionalValue);
+        public decimal TotalValueRaw => Value + AdditionalValue;
 
         public StatMap(string key)
         {
@@ -179,6 +182,10 @@ namespace Nekoyume.Model
     public class Stats
     {
         public IReadOnlyDictionary<string, IStatMap> StatMaps => _statMaps;
+        public int Damage => StatMaps.ContainsKey("damage") ? StatMaps["damage"].TotalValue : 0;
+        public int Defense => StatMaps.ContainsKey("defense") ? StatMaps["defense"].TotalValue : 0;
+        public int HP => StatMaps.ContainsKey("health") ? StatMaps["health"].TotalValue : 0;
+        public decimal Luck => StatMaps.ContainsKey("luck") ? StatMaps["luck"].TotalValueRaw : 0m;
 
         private readonly Dictionary<string, IStatMap> _statMaps = new Dictionary<string, IStatMap>();
 

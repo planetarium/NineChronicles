@@ -11,11 +11,13 @@ namespace Nekoyume.TableData
     {
         public readonly ReactiveProperty<float> loadProgress = new ReactiveProperty<float>();
 
-        public Background Background { get; private set; }
-        public World World { get; private set; }
-        public WorldChapter WorldChapter { get; private set; }
-        public Stage Stage { get; private set; }
-        public StageReward StageReward { get; private set; }
+        public BackgroundSheet BackgroundSheet { get; private set; }
+        public WorldSheet WorldSheet { get; private set; }
+        public WorldChapterSheet WorldChapterSheet { get; private set; }
+        public StageSheet StageSheet { get; private set; }
+        public StageRewardSheet StageRewardSheet { get; private set; }
+        public CharacterSheet CharacterSheet { get; private set; }
+        public LevelSheet LevelSheet { get; private set; }
 
         public IEnumerator CoInitialize()
         {
@@ -42,25 +44,33 @@ namespace Nekoyume.TableData
         {
             switch (name)
             {
-                case nameof(TableData.Background):
-                    Background = new Background();
-                    Background.Set(csv);
+                case nameof(TableData.BackgroundSheet):
+                    BackgroundSheet = new BackgroundSheet();
+                    BackgroundSheet.Set(csv);
                     break;
-                case nameof(TableData.World):
-                    World = new World();
-                    World.Set(csv);
+                case nameof(TableData.WorldSheet):
+                    WorldSheet = new WorldSheet();
+                    WorldSheet.Set(csv);
                     break;
-                case nameof(TableData.WorldChapter):
-                    WorldChapter = new WorldChapter();
-                    WorldChapter.Set(csv);
+                case nameof(TableData.WorldChapterSheet):
+                    WorldChapterSheet = new WorldChapterSheet();
+                    WorldChapterSheet.Set(csv);
                     break;
-                case nameof(TableData.Stage):
-                    Stage = new Stage();
-                    Stage.Set(csv);
+                case nameof(TableData.StageSheet):
+                    StageSheet = new StageSheet();
+                    StageSheet.Set(csv);
                     break;
-                case nameof(TableData.StageReward):
-                    StageReward = new StageReward();
-                    StageReward.Set(csv);
+                case nameof(TableData.StageRewardSheet):
+                    StageRewardSheet = new StageRewardSheet();
+                    StageRewardSheet.Set(csv);
+                    break;
+                case nameof(TableData.CharacterSheet):
+                    CharacterSheet = new CharacterSheet();
+                    CharacterSheet.Set(csv);
+                    break;
+                case nameof(TableData.LevelSheet):
+                    LevelSheet = new LevelSheet();
+                    LevelSheet.Set(csv);
                     break;
                 default:
                     throw new InvalidDataException($"Not found {name} class in namespace `TableData`");

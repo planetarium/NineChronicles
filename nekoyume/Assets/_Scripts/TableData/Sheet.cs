@@ -15,6 +15,7 @@ namespace Nekoyume.TableData
         where TValue : ISheetRow<TKey>, new()
     {
         private IOrderedEnumerable<TValue> _enumerable;
+        private List<TValue> _orderedList;
         
         public void Set(string csv)
         {
@@ -34,6 +35,7 @@ namespace Nekoyume.TableData
             }
             
             _enumerable = Values.OrderBy(value => value.Key);
+            _orderedList = _enumerable.ToList();
         }
         
         public new IEnumerator<TValue> GetEnumerator()
@@ -43,7 +45,7 @@ namespace Nekoyume.TableData
 
         public List<TValue> ToOrderedList()
         {
-            return _enumerable.ToList();
+            return _orderedList;
         }
         
         private TValue CSVToRow(string csv)

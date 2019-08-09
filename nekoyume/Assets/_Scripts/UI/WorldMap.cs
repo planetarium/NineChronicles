@@ -28,8 +28,8 @@ namespace Nekoyume.UI
         public Button nextButton;
         public Button[] closeButtons;
 
-        private World.Row _currentWorld;
-        private WorldChapter.Row _currentChapter;
+        private WorldSheet.Row _currentWorld;
+        private WorldChapterSheet.Row _currentChapter;
         private int _selectedStage = -1;
 
         private Module.WorldMapChapter _chapter;
@@ -120,7 +120,7 @@ namespace Nekoyume.UI
 
         public void LoadWorld(int worldId)
         {
-            if (!Game.Game.instance.TableSheets.World.TryGetValue(worldId, out var worldRow))
+            if (!Game.Game.instance.TableSheets.WorldSheet.TryGetValue(worldId, out var worldRow))
             {
                 throw new KeyNotFoundException($"worldId({worldId})");
             }
@@ -128,7 +128,7 @@ namespace Nekoyume.UI
             LoadWorld(worldRow, worldRow.ChapterBegin);
         }
         
-        private void LoadWorld(World.Row worldRow, int chapterId)
+        private void LoadWorld(WorldSheet.Row worldRow, int chapterId)
         {
             _currentWorld = worldRow;
             
@@ -142,8 +142,8 @@ namespace Nekoyume.UI
             SetModelToChapter();
 
             previousButton.interactable = _currentWorld.Id > 1;
-            nextButton.interactable = _currentWorld.Id < Game.Game.instance.TableSheets.World.Count;
-            pageText.text = $"{_currentWorld.Id} / {Game.Game.instance.TableSheets.World.Count}";
+            nextButton.interactable = _currentWorld.Id < Game.Game.instance.TableSheets.WorldSheet.Count;
+            pageText.text = $"{_currentWorld.Id} / {Game.Game.instance.TableSheets.WorldSheet.Count}";
             
             ShowStage();
         }
@@ -156,7 +156,7 @@ namespace Nekoyume.UI
                 _chapter = null;
             }
         
-            if (!Game.Game.instance.TableSheets.WorldChapter.TryGetValue(chapterId, out _currentChapter))
+            if (!Game.Game.instance.TableSheets.WorldChapterSheet.TryGetValue(chapterId, out _currentChapter))
             {
                 throw new KeyNotFoundException($"chapterId({chapterId})");
             }
@@ -181,7 +181,7 @@ namespace Nekoyume.UI
             var previousStage = 0;
             var stageModels = new List<WorldMapStage>();
             WorldMapStage currentStageModel = null;
-            foreach (var stageRow in Game.Game.instance.TableSheets.Stage)
+            foreach (var stageRow in Game.Game.instance.TableSheets.StageSheet)
             {
                 if (stageRow.Stage < _currentChapter.StageBegin
                     || stageRow.Stage > _currentChapter.StageEnd)
@@ -261,12 +261,12 @@ namespace Nekoyume.UI
 
         private void ShowChapter()
         {
-            if (!Game.Game.instance.TableSheets.WorldChapter.TryGetByStage(SelectedStage, out var chapter))
+            if (!Game.Game.instance.TableSheets.WorldChapterSheet.TryGetByStage(SelectedStage, out var chapter))
             {
                 throw new SheetRowNotFoundException();
             }
             
-            foreach (var worldRow in Game.Game.instance.TableSheets.World)
+            foreach (var worldRow in Game.Game.instance.TableSheets.WorldSheet)
             {
                 if (chapter.Id < worldRow.ChapterBegin
                     || chapter.Id > worldRow.ChapterEnd)

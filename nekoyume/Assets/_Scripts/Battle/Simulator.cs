@@ -124,7 +124,7 @@ namespace Nekoyume.Battle
 
         private void SetWave()
         {
-            var stageTable = Game.Game.instance.TableSheets.Stage.ToOrderedList();
+            var stageTable = Game.Game.instance.TableSheets.StageSheet.ToOrderedList();
             var waves = stageTable.Where(row => row.Stage == _worldStage).ToList();
             _totalWave = waves.Count;
             foreach (var w in waves)
@@ -135,19 +135,19 @@ namespace Nekoyume.Battle
             }
         }
 
-        private MonsterWave SpawnWave(Stage.Row stage)
+        private MonsterWave SpawnWave(StageSheet.Row stage)
         {
             var wave = new MonsterWave();
-            var monsterTable = Tables.instance.Character;
+            var monsterTable = Game.Game.instance.TableSheets.CharacterSheet;
             foreach (var monsterData in stage.Monsters)
             {
                 for (int i = 0; i < monsterData.Count; i++)
                 {
-                    if (!monsterTable.TryGetValue(monsterData.Id, out var characterData))
+                    if (!monsterTable.TryGetValue(monsterData.CharacterId, out var characterRow))
                     {
-                        Debug.Log(monsterData.Id);
+                        Debug.Log(monsterData.CharacterId);
                     }
-                    wave.Add(new Monster(characterData, monsterData.Level, Player));
+                    wave.Add(new Monster(characterRow, monsterData.Level, Player));
                     wave.IsBoss = stage.IsBoss;
                 }
 
@@ -159,7 +159,7 @@ namespace Nekoyume.Battle
 
         private void GetReward(int id)
         {
-            var rewardTable = Game.Game.instance.TableSheets.StageReward;
+            var rewardTable = Game.Game.instance.TableSheets.StageRewardSheet;
             var itemTable = Tables.instance.Item;
             var itemSelector = new WeightedSelector<int>(Random);
             var items = new List<ItemBase>();
