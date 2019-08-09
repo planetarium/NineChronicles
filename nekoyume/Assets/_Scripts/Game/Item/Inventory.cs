@@ -213,9 +213,9 @@ namespace Nekoyume.Game.Item
             return !(outAddedItem is null);
         }
 
-        public bool HasItem(int id)
+        public bool HasItem(int id, int count = 1)
         {
-            return _items.Exists(item => item.count > 0 && item.item.Data.id == id);
+            return _items.Exists(item.item.Data.id == id && item => item.count >= count);
         }
     }
 }
