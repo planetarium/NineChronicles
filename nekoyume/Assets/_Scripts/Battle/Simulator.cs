@@ -124,16 +124,8 @@ namespace Nekoyume.Battle
 
         private void SetWave()
         {
-            var stageTable = Tables.instance.Stage;
-            var waves = new List<Stage>();
-            foreach (var row in stageTable)
-            {
-                if (row.Value.stage == _worldStage)
-                {
-                    waves.Add(row.Value);
-                }
-
-            }
+            var stageTable = Tables.instance.Stage.Values.OrderBy(i => i.id);
+            var waves = stageTable.Where(row => row.stage == _worldStage).ToList();
             _totalWave = waves.Count;
             foreach (var w in waves)
             {

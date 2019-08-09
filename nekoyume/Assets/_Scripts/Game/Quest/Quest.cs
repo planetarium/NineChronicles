@@ -31,25 +31,25 @@ namespace Nekoyume.Game.Quest
         public QuestList()
         {
             quests = new List<Quest>();
-            foreach (var data in Tables.instance.Quest.Values)
+            foreach (var data in Tables.instance.Quest.Values.OrderBy(i => i.id))
             {
                 var quest = new BattleQuest(data);
                 quests.Add(quest);
             }
 
-            foreach (var collectData in Tables.instance.CollectQuest.Values)
+            foreach (var collectData in Tables.instance.CollectQuest.Values.OrderBy(i => i.id))
             {
                 var quest = new CollectQuest(collectData);
                 quests.Add(quest);
             }
 
-            foreach (var combinationData in Tables.instance.CombinationQuest.Values)
+            foreach (var combinationData in Tables.instance.CombinationQuest.Values.OrderBy(i => i.id))
             {
                 var quest = new CombinationQuest(combinationData);
                 quests.Add(quest);
             }
 
-            foreach (var tradeQuestData in Tables.instance.TradeQuest.Values)
+            foreach (var tradeQuestData in Tables.instance.TradeQuest.Values.OrderBy(i => i.id))
             {
                 var quest = new TradeQuest(tradeQuestData);
                 quests.Add(quest);
