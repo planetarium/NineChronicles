@@ -6,6 +6,8 @@ namespace Nekoyume
     public class GameConfig
     {
         public const int SlotCount = 3;
+
+        public const float PlayerSpeechBreakTime = 2f;
         
         #region action
 

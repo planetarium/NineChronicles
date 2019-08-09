@@ -16,7 +16,6 @@ namespace Nekoyume.Data
         public Table<ItemEquipment> ItemEquipment { get; private set; }
         public Table<SetEffect> SetEffect { get; private set; }
         public Table<SkillEffect> SkillEffect { get; private set; }
-        public Table<Setting> Settings { get; private set; }
         public Table<StageDialog> StageDialogs { get; private set; }
         public Table<Quest> Quest { get; private set; }
         public Table<CollectQuest> CollectQuest { get; private set; }
@@ -42,9 +41,6 @@ namespace Nekoyume.Data
             
             SkillEffect = new Table<SkillEffect>();
             Load(SkillEffect, "DataTable/skill_effect");
-
-            Settings = new Table<Setting>();
-            Load(Settings, "DataTable/settings");
             
             StageDialogs = new Table<StageDialog>();
             Load(StageDialogs, "DataTable/stage_dialog");
