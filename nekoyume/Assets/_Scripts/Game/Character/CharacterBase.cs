@@ -17,7 +17,7 @@ namespace Nekoyume.Game.Character
     {
         protected const float AnimatorTimeScale = 1.2f;
         protected const float KSkillGlobalCooltime = 0.6f;
-        
+
         public Root Root;
         public int HP = 0;
         public int ATK = 0;
@@ -52,7 +52,8 @@ namespace Nekoyume.Game.Character
         protected virtual Vector3 DamageTextForce => default;
 
         private bool applicationQuitting = false;
-        private void OnApplicationQuit ()
+
+        private void OnApplicationQuit()
         {
             applicationQuitting = true;
         }
@@ -107,7 +108,7 @@ namespace Nekoyume.Game.Character
                 animator.StopRun();
                 return;
             }
-            
+
             animator.Run();
 
             Vector2 position = transform.position;
@@ -132,6 +133,7 @@ namespace Nekoyume.Game.Character
             {
                 _hpBar.UpdatePosition(gameObject, HUDOffset);
             }
+
             if (!ReferenceEquals(_speechBubble, null))
             {
                 _speechBubble.UpdatePosition(gameObject, HUDOffset);
@@ -150,9 +152,10 @@ namespace Nekoyume.Game.Character
             {
                 _hpBar = Widget.Create<ProgressBar>(true);
             }
+
             _hpBar.UpdatePosition(gameObject, HUDOffset);
             _hpBar.SetText($"{HP} / {HPMax}");
-            _hpBar.SetValue((float)HP / HPMax);
+            _hpBar.SetValue((float) HP / HPMax);
         }
 
         public bool ShowSpeech(string key, params int[] list)
@@ -189,38 +192,8 @@ namespace Nekoyume.Game.Character
             return true;
         }
 
-        private float GetDamageFactor(AttackType attackType)
-        {
-            var damageFactorMap = new Dictionary<Tuple<AttackType, WeightType>, float>()
-            {
-                { new Tuple<AttackType, WeightType>(AttackType.Light, WeightType.Small), 1.25f },
-                { new Tuple<AttackType, WeightType>(AttackType.Light, WeightType.Medium), 1.5f },
-                { new Tuple<AttackType, WeightType>(AttackType.Light, WeightType.Large), 0.5f },
-                { new Tuple<AttackType, WeightType>(AttackType.Light, WeightType.Boss), 0.75f },
-                { new Tuple<AttackType, WeightType>(AttackType.Middle, WeightType.Small), 1.0f },
-                { new Tuple<AttackType, WeightType>(AttackType.Middle, WeightType.Medium), 1.0f },
-                { new Tuple<AttackType, WeightType>(AttackType.Middle, WeightType.Large), 1.25f },
-                { new Tuple<AttackType, WeightType>(AttackType.Middle, WeightType.Boss), 0.75f },
-                { new Tuple<AttackType, WeightType>(AttackType.Heavy, WeightType.Small), 0.75f },
-                { new Tuple<AttackType, WeightType>(AttackType.Heavy, WeightType.Medium), 1.25f },
-                { new Tuple<AttackType, WeightType>(AttackType.Heavy, WeightType.Large), 1.5f },
-                { new Tuple<AttackType, WeightType>(AttackType.Heavy, WeightType.Boss), 0.75f },
-            };
-            var factor = damageFactorMap[new Tuple<AttackType, WeightType>(attackType, WeightType)];
-            return factor;
-        }
-
-        protected int CalcDamage(AttackType attackType, int dmg)
-        {
-            const float attackDamageFactor = 0.5f;
-            const float defenseDamageFactor = 0.25f;
-            return Mathf.FloorToInt(
-                (attackDamageFactor * dmg - defenseDamageFactor * DEF) *
-                GetDamageFactor(attackType)
-            );
-        }
-
-        public virtual IEnumerator CoProcessDamage(Model.Skill.SkillInfo info, bool isConsiderDie, bool isConsiderElementalType)
+        public virtual IEnumerator CoProcessDamage(Model.Skill.SkillInfo info, bool isConsiderDie,
+            bool isConsiderElementalType)
         {
             var dmg = info.Effect;
 
@@ -245,7 +218,8 @@ namespace Nekoyume.Game.Character
             gameObject.SetActive(false);
         }
 
-        protected void PopUpDmg(Vector3 position, Vector3 force, Model.Skill.SkillInfo info, bool isConsiderElementalType)
+        protected void PopUpDmg(Vector3 position, Vector3 force, Model.Skill.SkillInfo info,
+            bool isConsiderElementalType)
         {
             var dmg = info.Effect.ToString();
             var pos = transform.position;
@@ -323,7 +297,7 @@ namespace Nekoyume.Game.Character
                     Destroy(_hpBar.gameObject);
                 _hpBar = null;
             }
-            
+
             if (!ReferenceEquals(_castingBar, null))
             {
                 if (!ReferenceEquals(_castingBar.gameObject, null))
@@ -341,7 +315,8 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        protected virtual void ProcessAttack(CharacterBase target, Model.Skill.SkillInfo skill, bool isLastHit, bool isConsiderElementalType)
+        protected virtual void ProcessAttack(CharacterBase target, Model.Skill.SkillInfo skill, bool isLastHit,
+            bool isConsiderElementalType)
         {
             if (!target) return;
             target.StopRun();
@@ -360,7 +335,6 @@ namespace Nekoyume.Game.Character
                 PopUpHeal(position, force, txt, info.Critical);
 
                 UpdateHpBar();
-
             }
 
             Event.OnUpdateStatus.Invoke();
@@ -371,7 +345,7 @@ namespace Nekoyume.Game.Character
             DamageText.Show(position, force, dmg);
             VFXController.instance.Create<BattleHeal01VFX>(transform, HUDOffset - new Vector3(0f, 0.4f));
         }
-        
+
         private void PreAnimationForTheKindOfAttack()
         {
             attackEnd = false;
@@ -389,10 +363,11 @@ namespace Nekoyume.Game.Character
             {
                 animator.Attack();
             }
+
             yield return new WaitUntil(() => attackEnd);
             PostAnimationForTheKindOfAttack();
         }
-        
+
         private IEnumerator CoAnimationCastAttack(bool isCritical)
         {
             PreAnimationForTheKindOfAttack();
@@ -404,10 +379,11 @@ namespace Nekoyume.Game.Character
             {
                 animator.CastAttack();
             }
+
             yield return new WaitUntil(() => attackEnd);
             PostAnimationForTheKindOfAttack();
         }
-        
+
         protected virtual IEnumerator CoAnimationCast(Model.Skill.SkillInfo info)
         {
             PreAnimationForTheKindOfAttack();
@@ -437,7 +413,7 @@ namespace Nekoyume.Game.Character
             var skillInfosCount = skillInfos.Count;
 
             yield return StartCoroutine(CoAnimationAttack(skillInfos.Any(skillInfo => skillInfo.Critical)));
-            
+
             for (var i = 0; i < skillInfosCount; i++)
             {
                 var info = skillInfos[i];
@@ -462,6 +438,7 @@ namespace Nekoyume.Game.Character
                 var count = FindObjectsOfType(effectTarget.GetType()).Length;
                 trigger = skillInfos.Skip(skillInfosCount - count).First();
             }
+
             effect.Play();
             yield return new WaitForSeconds(0.5f);
 
@@ -470,18 +447,46 @@ namespace Nekoyume.Game.Character
             {
                 var info = skillInfos[i];
                 var target = Game.instance.stage.GetCharacter(info.Target);
-                yield return new WaitForSeconds(0.1f);
+                yield return new WaitForSeconds(0.14f);
                 if (trigger == info)
                 {
-                    effect.StopLoop();
-                    yield return new WaitUntil(() => effect.last.isStopped);
-                    yield return StartCoroutine(CoAnimationCastAttack(info.Critical));
-                    effect.Finisher();
                     isTriggerOn = true;
+
+                    if (!info.Critical)
+                    {
+                        yield return new WaitForSeconds(0.2f);
+                    }
+
+                    if (info.Elemental == Data.Table.Elemental.ElementalType.Fire)
+                    {
+                        effect.StopLoop();
+                        yield return new WaitForSeconds(0.1f);
+                    }
+
+                    var coroutine = StartCoroutine(CoAnimationCastAttack(info.Critical));
+                    if (info.Elemental == Data.Table.Elemental.ElementalType.Water)
+                    {
+                        yield return new WaitForSeconds(0.1f);
+                        effect.StopLoop();
+                    }
+
+                    yield return coroutine;
+                    effect.Finisher();
+                    ProcessAttack(target, info, true, true);
+                    if (info.Elemental != Data.Table.Elemental.ElementalType.Fire
+                        && info.Elemental != Data.Table.Elemental.ElementalType.Water)
+                    {
+                        effect.StopLoop();
+                    }
+
+                    yield return new WaitUntil(() => effect.last.isStopped);
                 }
-                
-                ProcessAttack(target, info, isTriggerOn, isTriggerOn);
+                else
+                {
+                    ProcessAttack(target, info, isTriggerOn, isTriggerOn);
+                }
             }
+
             yield return new WaitForSeconds(0.5f);
         }
 
@@ -506,8 +511,10 @@ namespace Nekoyume.Game.Character
                 {
                     effect.SecondStrike();
                 }
+
                 ProcessAttack(target, info, i == skillInfosCount - 1, true);
             }
+
             yield return new WaitForSeconds(1.2f);
         }
 
@@ -517,7 +524,7 @@ namespace Nekoyume.Game.Character
             var skillInfosCount = skillInfos.Count;
 
             yield return StartCoroutine(CoAnimationCast(skillInfos.First()));
-            
+
             yield return StartCoroutine(CoAnimationCastAttack(skillInfos.Any(skillInfo => skillInfo.Critical)));
 
             for (var i = 0; i < skillInfosCount; i++)
