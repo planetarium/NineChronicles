@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Libplanet.Action;
 using Nekoyume.Data;
-using Nekoyume.Data.Table;
 using Nekoyume.Game.Factory;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Skill;
