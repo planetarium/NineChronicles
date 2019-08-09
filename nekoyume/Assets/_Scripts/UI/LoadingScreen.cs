@@ -47,17 +47,7 @@ namespace Nekoyume.UI
         {
             toolTip.text = _tips[new System.Random().Next(0, _tips.Count)];
             loadingImage.color = _color;
-            _sequences = new[]
-            {
-                DOTween.Sequence()
-                    .Append(loadingImage.DOFade(1f, 0.3f))
-                    .Append(loadingImage.DOFade(AlphaToBeginning, 0.6f))
-                    .SetLoops(-1),
-                DOTween.Sequence()
-                    .Append(loadingText.DOFade(1f, 0.3f))
-                    .Append(loadingText.DOFade(AlphaToBeginning, 0.6f))
-                    .SetLoops(-1)
-            };
+            _sequences = new Sequence[] { };
         }
 
         private void OnDisable()
