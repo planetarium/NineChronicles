@@ -207,7 +207,7 @@ namespace Nekoyume.Game
 
         private IEnumerator CoStageEnter(int stage)
         {
-            if (!TableSheets.Background.TryGetValue(stage, out var data))
+            if (!Game.instance.TableSheets.Background.TryGetValue(stage, out var data))
             {
                 yield break;
             }

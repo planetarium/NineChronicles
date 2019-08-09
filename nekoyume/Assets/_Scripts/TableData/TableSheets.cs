@@ -6,15 +6,15 @@ using UnityEngine.AddressableAssets;
 
 namespace Nekoyume.TableData
 {
-    public static class TableSheets
+    public class TableSheets
     {
-        public static readonly ReactiveProperty<float> LoadProgress = new ReactiveProperty<float>();
+        public readonly ReactiveProperty<float> loadProgress = new ReactiveProperty<float>();
 
-        public static Background Background { get; private set; }
+        public Background Background { get; private set; }
 
-        public static IEnumerator CoInitialize()
+        public IEnumerator CoInitialize()
         {
-            LoadProgress.Value = 0f;
+            loadProgress.Value = 0f;
             var loadLocationOperation = Addressables.LoadResourceLocationsAsync("TableCSV");
             yield return loadLocationOperation;
             var locations = loadLocationOperation.Result;
@@ -27,13 +27,13 @@ namespace Nekoyume.TableData
                 var asset = loadAssetOperation.Result;
                 SetToSheet(asset.name, asset.text);
                 loadedTaskCount++;
-                LoadProgress.Value = (float) loadedTaskCount / loadTaskCount;
+                loadProgress.Value = (float) loadedTaskCount / loadTaskCount;
             }
 
-            LoadProgress.Value = 1f;
+            loadProgress.Value = 1f;
         }
 
-        private static void SetToSheet(string name, string csv)
+        private void SetToSheet(string name, string csv)
         {
             switch (name)
             {

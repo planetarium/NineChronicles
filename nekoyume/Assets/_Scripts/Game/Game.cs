@@ -32,6 +32,8 @@ namespace Nekoyume.Game
     {
         public LocalizationManager.LanguageType languageType = LocalizationManager.LanguageType.English;
         public Stage stage;
+        
+        public TableSheets TableSheets { get; private set; }
 
         protected override void Awake()
         {
@@ -53,6 +55,7 @@ namespace Nekoyume.Game
 
         private IEnumerator Start()
         {
+            TableSheets = new TableSheets();
             yield return StartCoroutine(TableSheets.CoInitialize());
             AgentController.Initialize(AgentInitialized);
             AudioController.instance.Initialize();
