@@ -29,7 +29,7 @@ namespace Nekoyume.TableData
 
         public bool TryGetByStage(int stage, out Row row)
         {
-            foreach (var chapterRow in Game.Game.instance.TableSheets.WorldChapter)
+            foreach (var chapterRow in this)
             {
                 if (stage < chapterRow.StageBegin ||
                     stage > chapterRow.StageEnd)
