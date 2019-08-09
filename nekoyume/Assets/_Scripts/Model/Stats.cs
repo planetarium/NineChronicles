@@ -163,7 +163,7 @@ namespace Nekoyume.Model
                     player.hp += TotalValue;
                     break;
                 case "luck":
-                    player.luck += TotalValue;
+                    player.luck += TotalValue * 0.01m;
                     break;
                 case "turnSpeed":
                     player.TurnSpeed = TotalValue;
