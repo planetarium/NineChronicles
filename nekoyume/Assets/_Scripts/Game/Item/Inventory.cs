@@ -215,7 +215,7 @@ namespace Nekoyume.Game.Item
 
         public bool HasItem(int id, int count = 1)
         {
-            return _items.Exists(item => item.count >= count && item.item.Data.id == id);
+            return _items.Exists(item.item.Data.id == id && item => item.count >= count);
         }
     }
 }
