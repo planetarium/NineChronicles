@@ -22,6 +22,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - TableCSV
+  - m_GUID: 3e4d186920dbf594e944369120f97745
+    m_Address: Assets/AddressableAssets/TableCSV/Stage.csv
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - TableCSV
   - m_GUID: 9c9a281fa10de4732a69f1f7b08772b0
     m_Address: Assets/AddressableAssets/TableCSV/Background.csv
     m_ReadOnly: 0
@@ -29,6 +34,11 @@ MonoBehaviour:
     - TableCSV
   - m_GUID: cf09867532f73454ba344b62840803b8
     m_Address: Assets/AddressableAssets/TableCSV/WorldChapter.csv
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - TableCSV
+  - m_GUID: f51aefc4ac9a5c044b0fde0383fc7f6a
+    m_Address: Assets/AddressableAssets/TableCSV/StageReward.csv
     m_ReadOnly: 0
     m_SerializedLabels:
     - TableCSV
