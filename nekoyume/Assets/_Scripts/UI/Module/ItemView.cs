@@ -52,14 +52,11 @@ namespace Nekoyume.UI.Module
 
             UpdateView();
         }
-        
+
         protected virtual void SetDim(bool isDim)
         {
             iconImage.color = isDim ? DimColor : DefaultColor;
-            if (gradeImage)
-            {
-                gradeImage.color = isDim ? DimColor : DefaultColor;
-            }
+            if (gradeImage) gradeImage.color = isDim ? DimColor : DefaultColor;
         }
 
         private void UpdateView()
@@ -67,13 +64,10 @@ namespace Nekoyume.UI.Module
             if (ReferenceEquals(Model, null))
             {
                 iconImage.enabled = false;
-                if (gradeImage)
-                {
-                    gradeImage.enabled = false;
-                }
+                if (gradeImage) gradeImage.enabled = false;
                 return;
             }
-            
+
             var itemSprite = ItemBase.GetSprite(Model.item.Value);
             if (itemSprite is null)
             {
@@ -84,19 +78,17 @@ namespace Nekoyume.UI.Module
             iconImage.overrideSprite = itemSprite;
             iconImage.SetNativeSize();
 
-
             int grade = Model.item.Value.Data.grade;
-            if (grade < 2)
-            {
-                return;
-            }
-
             var gradeSprite = Game.Item.ItemBase.GetGradeIconSprite(grade);
+            if (gradeSprite is null)
+            {
+                throw new FailedToLoadResourceException<Sprite>(Model.item.Value.Data.grade.ToString());
+            }
 
             if (gradeImage)
             {
                 gradeImage.enabled = true;
-                gradeImage.overrideSprite = gradeSprite;   
+                gradeImage.overrideSprite = gradeSprite;
             }
         }
     }

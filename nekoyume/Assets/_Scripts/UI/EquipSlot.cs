@@ -20,10 +20,7 @@ namespace Nekoyume.UI
                 defaultImage.enabled = true;    
             }
             itemImage.enabled = false;
-            if (gradeImage)
-            {
-                gradeImage.enabled = false;
-            }
+            gradeImage.enabled = false;
             item = null;
             if (button != null)
             {
@@ -48,11 +45,13 @@ namespace Nekoyume.UI
             }
 
             var gradeSprite = ItemBase.GetGradeIconSprite(equipment.Data.grade);
-            if (gradeImage)
+            if (gradeSprite is null)
             {
-                gradeImage.enabled = true;
-                gradeImage.overrideSprite = gradeSprite;
+                throw new FailedToLoadResourceException<Sprite>(equipment.Data.grade.ToString());
             }
+
+            gradeImage.enabled = true;
+            gradeImage.overrideSprite = gradeSprite;
         }
     }
 }

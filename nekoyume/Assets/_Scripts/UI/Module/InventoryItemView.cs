@@ -12,7 +12,7 @@ namespace Nekoyume.UI.Module
     [RequireComponent(typeof(Button))]
     public class InventoryItemView : CountableItemView<Model.InventoryItem>
     {
-        public GameObject equippedIcon;
+        public Image equippedIcon;
         public Image coverImage;
         public Image selectionImage;
         public Image glowImage;
@@ -104,11 +104,6 @@ namespace Nekoyume.UI.Module
             selectionImage.color = isDim ? DimColor : DefaultColor;
         }
 
-        protected void SetEquipped(bool isEquipped)
-        {
-            equippedIcon.SetActive(isEquipped);
-        }
-
         #endregion
 
         public void ClearHighlights()
@@ -146,6 +141,11 @@ namespace Nekoyume.UI.Module
         private void SetGlow(bool isGlow)
         {
             glowImage.enabled = isGlow;
+        }
+
+        protected void SetEquipped(bool isEquipped)
+        {
+            equippedIcon.enabled = isEquipped;
         }
     }
 }
