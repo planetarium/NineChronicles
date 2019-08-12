@@ -11,8 +11,11 @@ namespace Nekoyume.TableData
     }
 
     [Serializable]
-    public abstract class Sheet<TKey, TValue> : Dictionary<TKey, TValue> where TValue : ISheetRow<TKey>, new()
+    public abstract class Sheet<TKey, TValue> : Dictionary<TKey, TValue>, IEnumerable<TValue>
+        where TValue : ISheetRow<TKey>, new()
     {
+        private IOrderedEnumerable<TValue> _enumerable;
+        
         public void Set(string csv)
         {
             if (string.IsNullOrEmpty(csv))
@@ -29,6 +32,13 @@ namespace Nekoyume.TableData
                 var row = CSVToRow(line);
                 Add(row.Key, row);
             }
+            
+            _enumerable = Values.OrderBy(value => value.Key);
+        }
+        
+        public new IEnumerator<TValue> GetEnumerator()
+        {
+            return _enumerable.GetEnumerator();
         }
         
         private TValue CSVToRow(string csv)
