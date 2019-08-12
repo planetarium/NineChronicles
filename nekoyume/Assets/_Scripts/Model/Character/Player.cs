@@ -159,7 +159,6 @@ namespace Nekoyume.Model
             Equipments = items.Select(i => i.item)
                 .OfType<Equipment>()
                 .Where(e => e.equipped)
-                .OrderBy(i => i.SkillBase.chance)
                 .ToList();
             foreach (var equipment in Equipments)
             {
