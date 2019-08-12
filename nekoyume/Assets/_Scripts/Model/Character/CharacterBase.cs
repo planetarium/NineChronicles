@@ -177,7 +177,10 @@ namespace Nekoyume.Model
             var selected = _skills
                 .Select(skill => new {skill, chance = random.Next(0, 100000) * 0.00001m})
                 .Where(t => t.skill.chance > t.chance)
-                .Select(t => t.skill).ToList();
+                .Select(t => t.skill)
+                .OrderBy(s => s.chance)
+                .ThenBy(s => s.effect.id)
+                .ToList();
 
             return selected[random.Next(selected.Count)];
         }
