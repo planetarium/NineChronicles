@@ -10,6 +10,7 @@ namespace Nekoyume.Game.Item
     {
         private const string ItemPath = "images/icon/item/{0}";
         private const string EquipmentPath = "images/icon/equipment/{0}";
+        private const string GradeIconPath = "UI/Textures/UI_grade_icon_{0}";
         private const int DefaultId = 101000;
 
         protected bool Equals(ItemBase other)
@@ -126,6 +127,14 @@ namespace Nekoyume.Game.Item
             }
 
             return Resources.Load<Sprite>(string.Format(path, id));
+        }
+
+        public static Sprite GetGradeIconSprite(int grade)
+        {
+            if (grade < 2) return null;
+
+            string path = string.Format(GradeIconPath, grade);
+            return Resources.Load<Sprite>(path);
         }
     }
 }
