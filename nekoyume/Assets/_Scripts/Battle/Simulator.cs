@@ -92,7 +92,6 @@ namespace Nekoyume.Battle
                                 rewards = rewards,
                             };
                             Log.Add(getReward);
-                            Debug.Log("win");
                         }
                         break;
                     }
@@ -100,7 +99,6 @@ namespace Nekoyume.Battle
                     if (Lose)
                     {
                         _result = BattleLog.Result.Lose;
-                        Debug.Log("lose");
                         break;
                     }
 
