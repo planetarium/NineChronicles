@@ -3,6 +3,8 @@ using System.Linq;
 using Nekoyume.Data;
 using Nekoyume.Game.Item;
 using NUnit.Framework;
+using UnityEngine;
+using UnityEngine.TestTools;
 
 namespace Tests
 {
@@ -33,6 +35,19 @@ namespace Tests
             Assert.IsFalse(updatedInventory.TryGetAddedItemFrom(inventory, out var result2));
             Assert.IsNull(result2);
 
+        }
+
+        [Test]
+        public void TryGetAddedItemFromInvalidCastException()
+        {
+            var inventory = new Inventory();
+            var updatedInventory = new Inventory();
+            var row = Tables.instance.Item.Values.First();
+            var item = (Nekoyume.Game.Item.Material) ItemBase.ItemFactory(row, new Guid());
+            LogAssert.Expect(LogType.Error, "Item Material: 100000 is not ItemUsable.");
+            updatedInventory.AddFungibleItem(item);
+            Assert.IsFalse(updatedInventory.TryGetAddedItemFrom(inventory, out var result2));
+            Assert.IsNull(result2);
         }
 
         [Test]
