@@ -19,7 +19,7 @@ namespace Nekoyume.UI.Model
             {
                 this.id = id;
                 var inventory = States.Instance.currentAvatarState.Value.inventory;
-                isEnough = inventory.HasItem(id, count);
+                isEnough = inventory.HasItem(id);
                 isObtained = true;
             }
         }
