@@ -4,6 +4,7 @@ using System.Linq;
 using Libplanet.Action;
 using Nekoyume.Data;
 using Nekoyume.Data.Table;
+using Nekoyume.Game.Factory;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Skill;
 using Nekoyume.Game.Util;
@@ -190,7 +191,7 @@ namespace Nekoyume.Battle
                             var b = new byte[16];
                             Random.NextBytes(b);
                             var guid = new Guid(b);
-                            var item = ItemBase.ItemFactory(itemData, guid);
+                            var item = ItemFactory.Create(itemData, guid);
                             items.Add(item);
                         }
                     }
