@@ -10,6 +10,7 @@ namespace Nekoyume.Game.Item
     {
         private const string ItemPath = "images/icon/item/{0}";
         private const string EquipmentPath = "images/icon/equipment/{0}";
+        private const string GradeIconPath = "UI/Textures/item_bg_{0}";
         private const int DefaultId = 101000;
 
         protected bool Equals(ItemBase other)
@@ -50,6 +51,19 @@ namespace Nekoyume.Game.Item
             Set,
             Food,
             Shoes,
+        }
+
+        public static ItemBase ItemEquipmentFactory(int itemId, Guid guid, SkillBase skillBase = null)
+        {
+            Data.Table.ItemEquipment itemData;
+            if (Tables.instance.TryGetItemEquipment(itemId, out itemData))
+            {
+                return ItemFactory(itemData, guid, skillBase);
+            }
+            else
+            {
+                return null;
+            }
         }
 
         public static ItemBase ItemFactory(Data.Table.Item itemData, Guid id, SkillBase skillBase = null)
@@ -126,6 +140,12 @@ namespace Nekoyume.Game.Item
             }
 
             return Resources.Load<Sprite>(string.Format(path, id));
+        }
+
+        public static Sprite GetGradeIconSprite(int grade)
+        {
+            string path = string.Format(GradeIconPath, grade);
+            return Resources.Load<Sprite>(path);
         }
     }
 }
