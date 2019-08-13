@@ -33,6 +33,8 @@ namespace Nekoyume.Game
 
         protected override void Awake()
         {
+            Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
+
             base.Awake();
 
             Screen.SetResolution(GameConfig.ScreenSize.x, GameConfig.ScreenSize.y, FullScreenMode.Windowed);
@@ -46,8 +48,6 @@ namespace Nekoyume.Game
             MainCanvas.instance.Initialize();
             AgentController.Initialize(AgentInitialized);
             AudioController.instance.Initialize();
-
-            Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
         }
 
         private void AgentInitialized(bool succeed)
