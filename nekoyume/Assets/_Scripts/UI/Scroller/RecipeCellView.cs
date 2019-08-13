@@ -1,12 +1,12 @@
-﻿using EnhancedUI.EnhancedScroller;
-using Nekoyume.Game.Factory;
-using Nekoyume.Helper;
-using Nekoyume.UI.Model;
-using Nekoyume.UI.Module;
-using System;
-using UniRx;
+﻿using System;
 using UnityEngine;
 using UnityEngine.UI;
+using EnhancedUI.EnhancedScroller;
+using Nekoyume.UI.Model;
+using Nekoyume.Helper;
+using UniRx;
+using Nekoyume.UI.Module;
+using Nekoyume.Game.Item;
 
 namespace Nekoyume.UI.Scroller
 {
@@ -26,7 +26,7 @@ namespace Nekoyume.UI.Scroller
         public IDisposable onClickDisposable;
         public Text combineText;
         public SimpleCountableItemView resultItemView;
-        public SimpleCountableItemView[] materialItemViews;
+        public MaterialIcon[] materialIcons;
 
         private const float ResultIconScaleFactor = 1.2f;
         private const float MaterialIconScaleFactor = 0.7f;
@@ -54,18 +54,22 @@ namespace Nekoyume.UI.Scroller
             Model = recipeInfo;
             resultNameText.text = recipeInfo.resultName;
 
-            SetItemView(recipeInfo.resultId, recipeInfo.resultAmount, resultItemView, ResultIconScaleFactor, false);
+            var item = ItemBase.ItemEquipmentFactory(recipeInfo.resultId, new Guid()); 
+            var countableItem = new CountableItem(item, recipeInfo.resultAmount);
+            resultItemView.SetData(countableItem);
+            var rect = resultItemView.iconImage.GetComponent<RectTransform>();
+            rect.sizeDelta = new Vector2(rect.sizeDelta.x * ResultIconScaleFactor, rect.sizeDelta.y * ResultIconScaleFactor);
+            resultItemView.gameObject.SetActive(true);
 
             for (int i = 0; i < recipeInfo.materialInfos.Length; ++i)
             {
                 var info = recipeInfo.materialInfos[i];
-                if (info.id == 0) break;
-                SetItemView(info.id, info.amount, materialItemViews[i], MaterialIconScaleFactor, true, !info.isEnough);
+                SetIcon(materialIcons[i], info.sprite, MaterialIconScaleFactor, !info.isEnough, info.isObtained);
             }
 
-            foreach(var info in recipeInfo.materialInfos)
+            foreach (var info in recipeInfo.materialInfos)
             {
-                if (info.id != 0 && !info.isEnough)
+                if (!info.isEnough && info.sprite)
                 {
                     combineButton.enabled = false;
                     combineButton.image.sprite = Resources.Load<Sprite>("UI/Textures/button_gray_01");
@@ -75,31 +79,43 @@ namespace Nekoyume.UI.Scroller
             }
         }
 
-        public void SetItemView(int itemId, int amount, SimpleCountableItemView itemView, float scaleFactor, bool isMaterial, bool isDimmed = false)
+        public void SetIcon(MaterialIcon icon, Sprite sprite, float scaleFactor, bool isDimmed = false, bool isObtained = true)
         {
-            var item = isMaterial ? ItemFactory.CreateMaterial(itemId, new Guid()) : ItemFactory.CreateEquipment(itemId, new Guid());
-            var countableItem = new CountableItem(item, amount);
-            try
+            if (sprite)
             {
-                itemView.SetData(countableItem);
+                icon.image.transform.parent.gameObject.SetActive(true);
+                if (isObtained)
+                {
+                    icon.image.enabled = true;
+                    icon.image.overrideSprite = sprite;
+                    icon.mark.enabled = false;
+                }
             }
-            catch (FailedToLoadResourceException<Sprite> e)
-            {
-                Debug.LogWarning($"No sprite : {itemId} {e}");
-            }
-            itemView.SetDim(isDimmed);
-            var rect = itemView.iconImage.GetComponent<RectTransform>();
+            else return;
+
+            icon.image.SetNativeSize();
+            var rect = icon.image.GetComponent<RectTransform>();
             rect.sizeDelta = new Vector2(rect.sizeDelta.x * scaleFactor, rect.sizeDelta.y * scaleFactor);
-            itemView.gameObject.SetActive(true);
+            if (isDimmed)
+            {
+                icon.image.color = DimmedColor;
+            }
+        }
+
+        public void ClearIcon(MaterialIcon icon)
+        {
+            icon.image.transform.parent.gameObject.SetActive(false);
+            icon.image.enabled = false;
+            icon.image.overrideSprite = null;
+            icon.image.color = Color.white;
+            icon.mark.enabled = true;
         }
 
         public void Clear()
         {
-            resultItemView.Clear();
-            for (int i = 0; i < materialItemViews.Length; ++i)
+            for (int i = 0; i < materialIcons.Length; ++i)
             {
-                materialItemViews[i].Clear();
-                materialItemViews[i].gameObject.SetActive(false);
+                ClearIcon(materialIcons[i]);
                 combineButton.enabled = true;
                 combineButton.image.sprite = Resources.Load<Sprite>("UI/Textures/button_blue_01");
                 combineText.color = Color.white;

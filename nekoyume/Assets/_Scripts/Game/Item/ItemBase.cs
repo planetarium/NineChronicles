@@ -1,5 +1,6 @@
 using System;
 using Nekoyume.Data;
+using Nekoyume.Game.Skill;
 using UnityEngine;
 
 namespace Nekoyume.Game.Item
@@ -11,21 +12,6 @@ namespace Nekoyume.Game.Item
         private const string EquipmentPath = "images/icon/equipment/{0}";
         private const string GradeIconPath = "UI/Textures/item_bg_{0}";
         private const int DefaultId = 101000;
-
-        public enum ItemType
-        {
-            Material,
-            Weapon,
-            RangedWeapon,
-            Armor,
-            Belt,
-            Necklace,
-            Ring,
-            Helm,
-            Set,
-            Food,
-            Shoes,
-        }
 
         protected bool Equals(ItemBase other)
         {
@@ -50,6 +36,66 @@ namespace Nekoyume.Game.Item
         public ItemBase(Data.Table.Item data)
         {
             Data = data;
+        }
+
+        public enum ItemType
+        {
+            Material,
+            Weapon,
+            RangedWeapon,
+            Armor,
+            Belt,
+            Necklace,
+            Ring,
+            Helm,
+            Set,
+            Food,
+            Shoes,
+        }
+
+        public static ItemBase ItemEquipmentFactory(int itemId, Guid guid, SkillBase skillBase = null)
+        {
+            Data.Table.ItemEquipment itemData;
+            if (Tables.instance.TryGetItemEquipment(itemId, out itemData))
+            {
+                return ItemFactory(itemData, guid, skillBase);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public static ItemBase ItemFactory(Data.Table.Item itemData, Guid id, SkillBase skillBase = null)
+        {
+            var type = itemData.cls.ToEnumItemType();
+            switch (type)
+            {
+                case ItemType.Material:
+                    return new Material(itemData);
+                case ItemType.Weapon:
+                    return new Weapon(itemData, id, skillBase);
+                case ItemType.RangedWeapon:
+                    return new RangedWeapon(itemData, id, skillBase);
+                case ItemType.Armor:
+                    return new Armor(itemData, id, skillBase);
+                case ItemType.Belt:
+                    return new Belt(itemData, id, skillBase);
+                case ItemType.Necklace:
+                    return new Necklace(itemData, id, skillBase);
+                case ItemType.Ring:
+                    return new Ring(itemData, id, skillBase);
+                case ItemType.Helm:
+                    return new Helm(itemData, id, skillBase);
+                case ItemType.Set:
+                    return new SetItem(itemData, id, skillBase);
+                case ItemType.Food:
+                    return new Food(itemData, id, skillBase);
+                case ItemType.Shoes:
+                    return new Shoes(itemData, id, skillBase);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
+            }
         }
 
         public abstract string ToItemInfo();

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Data;
-using Nekoyume.Game.Factory;
 
 namespace Nekoyume.Game.Item
 {
@@ -18,7 +17,7 @@ namespace Nekoyume.Game.Item
 
             public Item(ItemBase itemBase, int count = 1)
             {
-                item = ItemFactory.Create(itemBase.Data, default);
+                item = ItemBase.ItemFactory(itemBase.Data, default);
                 this.count = count;
             }
 
@@ -81,7 +80,7 @@ namespace Nekoyume.Game.Item
                 throw new KeyNotFoundException($"itemId: {id}");
             }
 
-            var newFungibleItem = ItemFactory.Create(itemRow, default);
+            var newFungibleItem = ItemBase.ItemFactory(itemRow, default);
             _items.Add(new Item(newFungibleItem, count));
         }
 
