@@ -87,7 +87,7 @@ namespace Nekoyume.UI.Scroller
             {
                 Debug.LogWarning($"No sprite : {itemId} {e}");
             }
-            itemView.SetDim(isDimmed);
+            itemView.Model.dimmed.Value = isDimmed;
             var rect = itemView.iconImage.GetComponent<RectTransform>();
             rect.sizeDelta = new Vector2(rect.sizeDelta.x * scaleFactor, rect.sizeDelta.y * scaleFactor);
             itemView.gameObject.SetActive(true);

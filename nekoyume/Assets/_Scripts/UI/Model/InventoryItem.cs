@@ -8,7 +8,6 @@ namespace Nekoyume.UI.Model
     public class InventoryItem : CountableItem
     {
         public readonly ReactiveProperty<bool> covered = new ReactiveProperty<bool>(false);
-        public readonly ReactiveProperty<bool> dimmed = new ReactiveProperty<bool>(false);
         public readonly ReactiveProperty<bool> equipped = new ReactiveProperty<bool>(false);
         public readonly ReactiveProperty<bool> selected = new ReactiveProperty<bool>(false);
         public readonly ReactiveProperty<bool> glowed = new ReactiveProperty<bool>(false);
@@ -25,7 +24,6 @@ namespace Nekoyume.UI.Model
             base.Dispose();
             
             covered.Dispose();
-            dimmed.Dispose();
             equipped.Dispose();
             selected.Dispose();
             glowed.Dispose();
