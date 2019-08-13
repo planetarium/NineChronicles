@@ -60,6 +60,8 @@ namespace Nekoyume.BlockChain
         protected readonly LiteDBStore _store;
         private readonly IImmutableSet<Address> _trustedPeers;
 
+        private readonly CancellationTokenSource _cancellationTokenSource;
+
         public IDictionary<TxId, Transaction<PolymorphicAction<ActionBase>>> Transactions => _blocks.Transactions;
         public IBlockPolicy<PolymorphicAction<ActionBase>> Policy => _blocks.Policy;
         public long BlockIndex => _blocks?.Tip?.Index ?? 0;
@@ -117,6 +119,7 @@ namespace Nekoyume.BlockChain
 
             // FIXME: Trusted peers should be configurable
             _trustedPeers = otherPeers.Select(peer => peer.Address).ToImmutableHashSet();
+            _cancellationTokenSource = new CancellationTokenSource();
         }
 
         private void DifferentAppProtocolVersionPeerEncountered(object sender, DifferentProtocolVersionEventArgs e)
@@ -128,6 +131,7 @@ namespace Nekoyume.BlockChain
 
         public void Dispose()
         {
+            _cancellationTokenSource.Cancel();
             // `_swarm`의 내부 큐가 비워진 다음 완전히 종료할 때까지 더 기다립니다.
             Task.Run(async () => await _swarm?.StopAsync()).ContinueWith(_ =>
             {
@@ -152,7 +156,8 @@ namespace Nekoyume.BlockChain
                     new Progress<PreloadState>(state =>
                         PreloadProcessed?.Invoke(this, state)
                     ),
-                    trustedStateValidators: _trustedPeers
+                    trustedStateValidators: _trustedPeers,
+                    cancellationToken: _cancellationTokenSource.Token
                 );
             });
 
