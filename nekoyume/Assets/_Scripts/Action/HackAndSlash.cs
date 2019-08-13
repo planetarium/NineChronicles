@@ -5,8 +5,10 @@ using System.Linq;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Battle;
+using Nekoyume.BlockChain;
 using Nekoyume.Game.Item;
 using Nekoyume.State;
+using UnityEngine;
 
 namespace Nekoyume.Action
 {
@@ -77,6 +79,9 @@ namespace Nekoyume.Action
             
             var simulator = new Simulator(ctx.Random, avatarState, foods, stage);
             var player = simulator.Simulate();
+            Debug.Log($"Execute HackAndSlash. result: {simulator.Log.result} player : `{avatarAddress}` " +
+                      $"node : `{States.Instance.agentState.Value.address}` " +
+                      $"current avatar: `{States.Instance.currentAvatarState?.Value?.address}`");
             avatarState.Update(player, simulator.rewards);
             avatarState.battleLog = simulator.Log;
             avatarState.updatedAt = DateTimeOffset.UtcNow;

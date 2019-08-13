@@ -61,14 +61,6 @@ MonoBehaviour:
   loadingImage: {fileID: 5618271611470827902}
   loadingText: {fileID: 5778285865273885480}
   toolTip: {fileID: 3479239245566432451}
-  tips:
-  - "\uC138\uD2B8 \uC544\uC774\uD15C\uC744 \uC7A5\uCC29\uD558\uBA74 \uCE90\uB9AD\uD130\uC758
-    \uB2A5\uB825\uCE58\uAC00 \uB354\uC6B1 \uC0C1\uC2B9\uD569\uB2C8\uB2E4."
-  - "\uC88B\uC740 \uBB34\uAE30\uB97C \uB9CC\uB4E4\uAE30 \uB108\uBB34 \uC5B4\uB824\uC6B0\uC2E0\uAC00\uC694?
-    \uC0C1\uC810\uC5D0\uC11C \uBB3C\uAC74\uC744 \uACE8\uB77C\uBCF4\uC138\uC694."
-  - "\uC804\uC5F4\uC744 \uAC00\uB2E4\uB4EC\uC744 \uB54C\uC5D0\uB294 \uC7A5\uBE44 \uC18D\uC131\uC744
-    \uD655\uC778\uD558\uC138\uC694. \uD2B9\uC815 \uC18D\uC131\uC758 \uBAAC\uC2A4\uD130\uC5D0\uAC8C\uB294
-    \uBB34\uC6A9\uC9C0\uBB3C\uC77C \uC218 \uC788\uC2B5\uB2C8\uB2E4."
 --- !u!1 &1334572938244390
 GameObject:
   m_ObjectHideFlags: 0
@@ -179,7 +171,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: -12.500015, y: -15.999996}
+  m_AnchoredPosition: {x: -12.500015, y: -15}
   m_SizeDelta: {x: 15, y: 24}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5988550284553687896
@@ -295,7 +287,7 @@ MonoBehaviour:
     m_BestFit: 0
     m_MinSize: 1
     m_MaxSize: 40
-    m_Alignment: 0
+    m_Alignment: 3
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0

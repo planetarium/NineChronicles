@@ -60,6 +60,8 @@ namespace Nekoyume.BlockChain
         protected readonly LiteDBStore _store;
         private readonly IImmutableSet<Address> _trustedPeers;
 
+        private readonly CancellationTokenSource _cancellationTokenSource;
+
         public IDictionary<TxId, Transaction<PolymorphicAction<ActionBase>>> Transactions => _blocks.Transactions;
         public IBlockPolicy<PolymorphicAction<ActionBase>> Policy => _blocks.Policy;
         public long BlockIndex => _blocks?.Tip?.Index ?? 0;
@@ -117,6 +119,7 @@ namespace Nekoyume.BlockChain
 
             // FIXME: Trusted peers should be configurable
             _trustedPeers = otherPeers.Select(peer => peer.Address).ToImmutableHashSet();
+            _cancellationTokenSource = new CancellationTokenSource();
         }
 
         private void DifferentAppProtocolVersionPeerEncountered(object sender, DifferentProtocolVersionEventArgs e)
@@ -128,6 +131,7 @@ namespace Nekoyume.BlockChain
 
         public void Dispose()
         {
+            _cancellationTokenSource.Cancel();
             // `_swarm`의 내부 큐가 비워진 다음 완전히 종료할 때까지 더 기다립니다.
             Task.Run(async () => await _swarm?.StopAsync()).ContinueWith(_ =>
             {
@@ -152,7 +156,8 @@ namespace Nekoyume.BlockChain
                     new Progress<PreloadState>(state =>
                         PreloadProcessed?.Invoke(this, state)
                     ),
-                    trustedStateValidators: _trustedPeers
+                    trustedStateValidators: _trustedPeers,
+                    cancellationToken: _cancellationTokenSource.Token
                 );
             });
 
@@ -310,39 +315,6 @@ namespace Nekoyume.BlockChain
             AddressStateMap states = _blocks.GetStates(new[] {address});
             states.TryGetValue(address, out object value);
             return value;
-        }
-        
-        public CreateAvatar CreateAvatar(Address avatarAddress, int index, string nickName)
-        {
-            var createAvatar = new CreateAvatar
-            {
-                avatarAddress = avatarAddress,
-                index = index,
-                name = nickName,
-            };
-            var actions = new List<PolymorphicAction<ActionBase>>
-            {
-                createAvatar
-            };
-            Task.Run(() => _blocks.MakeTransaction(PrivateKey, actions));
-
-            return createAvatar;
-        }
-        
-        public DeleteAvatar DeleteAvatar(int index, Address avatarAddress)
-        {
-            var deleteAvatar = new DeleteAvatar
-            {
-                index = index,
-                avatarAddress = avatarAddress,
-            };
-            var actions = new List<PolymorphicAction<ActionBase>>
-            {
-                deleteAvatar
-            };
-            Task.Run(() => _blocks.MakeTransaction(PrivateKey, actions));
-
-            return deleteAvatar;
         }
 
         private IBlockPolicy<PolymorphicAction<ActionBase>> GetPolicy()

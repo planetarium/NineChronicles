@@ -79,7 +79,7 @@ namespace Nekoyume.Game.Character
             ShowSpeech("PLAYER_LOSE");
             StopRun();
             animator.Die();
-            yield return new WaitForSeconds(1.2f);
+            yield return new WaitForSeconds(.5f);
             DisableHUD();
             yield return new WaitForSeconds(.8f);
             OnDead();
@@ -162,11 +162,6 @@ namespace Nekoyume.Game.Character
                 yield break;
             }
 
-            PopupText.Show(
-                transform.TransformPoint(-0.6f, 1.0f, 0.0f),
-                new Vector3(0.0f, 2.0f, 0.0f),
-                $"+{exp}"
-            );
             var level = model.level;
             model.GetExp(exp);
             EXP += exp;
@@ -176,12 +171,6 @@ namespace Nekoyume.Game.Character
                 AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionStatusLevelUp, level);
                 AudioController.instance.PlaySfx(AudioController.SfxCode.LevelUp);
                 VFXController.instance.Create<BattleLevelUp01VFX>(transform, HUDOffset);
-                yield return new WaitForSeconds(0.3f);
-                PopupText.Show(
-                    transform.TransformPoint(-0.6f, 1.0f, 0.0f),
-                    new Vector3(0.0f, 2.0f, 0.0f),
-                    "LEVEL UP"
-                );
                 InitStats(model);
             }
 

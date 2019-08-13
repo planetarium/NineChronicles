@@ -362,7 +362,7 @@ namespace Nekoyume.UI
                             shopItem.productId.Value)
                         .Subscribe(eval =>
                         {
-                            ResponseBuy(eval, inventory, shopItem.productId.Value, (ItemUsable) shopItem.item.Value);
+                            ResponseBuy(eval, shopItem.productId.Value, (ItemUsable) shopItem.item.Value);
                             AudioController.instance.PlaySfx(AudioController.SfxCode.BuyItem);
                         })
                         .AddTo(this);
@@ -430,8 +430,7 @@ namespace Nekoyume.UI
             _loadingScreen.Close();
         }
 
-        private void ResponseBuy(ActionBase.ActionEvaluation<Buy> eval, Game.Item.Inventory inventory, Guid productId,
-            ItemUsable shopItem)
+        private void ResponseBuy(ActionBase.ActionEvaluation<Buy> eval, Guid productId, ItemUsable shopItem)
         {
             Model.itemCountAndPricePopup.Value.item.Value = null;
 
@@ -441,9 +440,9 @@ namespace Nekoyume.UI
             Model.shopItems.Value.RemoveProduct(productId);
             Model.shopItems.Value.RemoveRegisteredProduct(productId);
 
-            if (!States.Instance.currentAvatarState.Value.inventory.TryGetAddedItemFrom(inventory,
-                out _))
+            if (!States.Instance.currentAvatarState.Value.inventory.HasItemUsable(shopItem.ItemId))
             {
+                // 구매실패
                 _loadingScreen.Close();
                 return;
             }

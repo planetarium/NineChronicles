@@ -49,13 +49,23 @@ namespace Nekoyume.State
         public bool Unregister(Address sellerAgentAddress,
             ShopItem shopItem)
         {
-            if (!items[sellerAgentAddress].Contains(shopItem))
+            if (!items.ContainsKey(sellerAgentAddress))
             {
                 return false;
             }
 
-            items[sellerAgentAddress].Remove(shopItem);
+            var shopItems = items[sellerAgentAddress];
+            if (!shopItems.Contains(shopItem))
+            {
+                return false;
+            }
 
+            shopItems.Remove(shopItem);
+            if (shopItems.Count == 0)
+            {
+                items.Remove(sellerAgentAddress);
+            }
+            
             return true;
         }
 

@@ -1,7 +1,7 @@
 ﻿using Nekoyume.BlockChain;
 using Nekoyume.Data;
 using Nekoyume.Game.Item;
-using UniRx;
+using System.Linq;
 using UnityEngine;
 
 namespace Nekoyume.UI.Model
@@ -19,7 +19,7 @@ namespace Nekoyume.UI.Model
             {
                 this.id = id;
                 var inventory = States.Instance.currentAvatarState.Value.inventory;
-                isEnough = inventory.HasItem(id);
+                isEnough = inventory.HasItem(id, count);
                 isObtained = true;
             }
         }

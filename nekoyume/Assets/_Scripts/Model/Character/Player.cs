@@ -154,9 +154,12 @@ namespace Nekoyume.Model
             }
         }
 
-        public void Equip(IEnumerable<Inventory.Item> items)
+        private void Equip(IEnumerable<Inventory.Item> items)
         {
-            Equipments = items.Select(i => i.item).OfType<Equipment>().Where(e => e.equipped).ToList();
+            Equipments = items.Select(i => i.item)
+                .OfType<Equipment>()
+                .Where(e => e.equipped)
+                .ToList();
             foreach (var equipment in Equipments)
             {
                 switch (equipment.Data.cls.ToEnumItemType())
@@ -248,7 +251,7 @@ namespace Nekoyume.Model
                     value = hp - statsData.HP;
                     break;
                 case "luck":
-                    value = (luck - statsData.Luck) * 100;
+                    value = (luck - statsData.Luck);
                     break;
                 default:
                     throw new InvalidCastException($"invalid status key: `{key}`.");

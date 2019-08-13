@@ -2608,6 +2608,15 @@
             broadcast.</param>
             <returns>Staged <see cref="T:Libplanet.Tx.TxId"/>s.</returns>
         </member>
+        <member name="M:Libplanet.Store.IStore.PutTransaction``1(Libplanet.Tx.Transaction{``0})">
+            <summary>
+            Puts a given <see cref="T:Libplanet.Tx.Transaction`1"/> to the store.  If the same transaction
+            already exists in the store it does nothing.
+            </summary>
+            <param name="tx">A transaction to put into the store.</param>
+            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match
+            to <see cref="T:Libplanet.Tx.Transaction`1"/>'s type parameter.</typeparam>
+        </member>
         <member name="M:Libplanet.Store.IStore.GetBlock``1(Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
             <summary>
             Gets the corresponding stored <see cref="T:Libplanet.Blocks.Block`1"/> to the given

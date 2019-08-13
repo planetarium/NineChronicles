@@ -6,7 +6,6 @@ using Libplanet;
 using Nekoyume.Action;
 using Nekoyume.Game.Item;
 using UniRx;
-using UnityEngine;
 
 namespace Nekoyume.BlockChain
 {
@@ -24,8 +23,14 @@ namespace Nekoyume.BlockChain
         
         public IObservable<ActionBase.ActionEvaluation<CreateAvatar>> CreateAvatar(Address avatarAddress, int index, string nickName)
         {
-            var action = AgentController.Agent.CreateAvatar(avatarAddress, index, nickName);
-            
+            var action = new CreateAvatar
+            {
+                avatarAddress = avatarAddress,
+                index = index,
+                name = nickName,
+            };
+            ProcessAction(action);
+
             return ActionBase.EveryRender<CreateAvatar>()
                 .SkipWhile(eval => !eval.Action.Id.Equals(action.Id))
                 .Take(1)
@@ -36,8 +41,13 @@ namespace Nekoyume.BlockChain
         public IObservable<ActionBase.ActionEvaluation<DeleteAvatar>> DeleteAvatar(int index)
         {
             var avatarAddress = States.Instance.avatarStates[index].address;
-            var action = AgentController.Agent.DeleteAvatar(index, avatarAddress);
-            
+            var action = new DeleteAvatar
+            {
+                index = index,
+                avatarAddress = avatarAddress,
+            };
+            ProcessAction(action);
+
             return ActionBase.EveryRender<DeleteAvatar>()
                 .SkipWhile(eval => !eval.Action.Id.Equals(action.Id))
                 .Take(1)

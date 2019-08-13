@@ -210,13 +210,28 @@ namespace Nekoyume.Game.Item
             //FIXME TryGetNonFungibleItem 내부에서 사용되는 아이템 비교방식때문에 오동작처리됨.
             //https://app.asana.com/0/958521740385861/1131813492738090/
             var newItem = _items.FirstOrDefault(i => !inventory.Items.Contains(i));
-            outAddedItem = (ItemUsable) newItem?.item;
+            outAddedItem = null;
+            if (newItem is null)
+                return false;
+            try
+            {
+                outAddedItem = (ItemUsable) newItem.item;
+            }
+            catch (InvalidCastException)
+            {
+                var item = newItem.item;
+
+                Debug.LogErrorFormat("Item {0}: {1} is not ItemUsable.", item.Data.cls, item.Data.id);
+            }
             return !(outAddedItem is null);
         }
 
-        public bool HasItem(int id)
+        public bool HasItem(int id, int count = 1)
         {
-            return _items.Exists(item => item.count > 0 && item.item.Data.id == id);
+            return _items.Exists(item => item.item.Data.id == id && item.count >= count);
         }
+
+        public bool HasItemUsable(Guid itemId) =>
+            _items.Select(i => i.item).OfType<ItemUsable>().Any(i => i.ItemId == itemId);
     }
 }

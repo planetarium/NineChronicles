@@ -161,6 +161,15 @@ namespace Nekoyume.UI.Model
                 return false;
             }
 
+            int sum = materials
+                .Where(item => countEditableItem.item.Value.Data.id == item.item.Value.Data.id)
+                .Sum(item => item.count.Value);
+
+            if (sum >= countEditableItem.count.Value)
+            {
+                return false;
+            }
+
             if (consumablesOrEquipments.Value == ConsumablesOrEquipments.Equipments
                 && GameConfig.EquipmentMaterials.Contains(countEditableItem.item.Value.Data.id))
             {
@@ -178,7 +187,7 @@ namespace Nekoyume.UI.Model
 
             foreach (var material in materials)
             {
-                if (material.item.Value.Data.id != countEditableItem.item.Value.Data.id)
+                if (material.item.Value.Data.id != 0)
                 {
                     continue;
                 }
@@ -186,10 +195,6 @@ namespace Nekoyume.UI.Model
                 if (countEditableItem.count.Value == 0)
                 {
                     materials.Remove(material);
-                }
-                else
-                {
-                    material.count.Value = countEditableItem.count.Value;
                 }
 
                 return true;
@@ -231,7 +236,10 @@ namespace Nekoyume.UI.Model
                     return;
                 }
 
-                if (obj.count.Value < obj.maxCount.Value)
+                int sum = materials
+                .Where(item => obj.item.Value.Data.id == item.item.Value.Data.id)
+                .Sum(item => item.count.Value);
+                if (sum < obj.maxCount.Value)
                 {
                     obj.count.Value++;
                 }
@@ -265,7 +273,8 @@ namespace Nekoyume.UI.Model
         {
             value.Dispose();
 
-            SetStaged(value.item.Value.Data.id, false);
+            bool exists = materials.Any(item => item.item.Value.Data.id == value.item.Value.Data.id);
+            SetStaged(value.item.Value.Data.id, exists);
             UpdateReadyForCombination();
         }
 

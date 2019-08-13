@@ -13,6 +13,8 @@ namespace Nekoyume.UI
         public Text loadingText;
         public Text toolTip;
 
+        public string Message { get; internal set; }
+
         private Color _color;
         private Sequence[] _sequences;
         private List<string> _tips;
@@ -43,21 +45,19 @@ namespace Nekoyume.UI
             _color.a = AlphaToBeginning;
         }
 
+        private void Update()
+        {
+            if (!string.IsNullOrEmpty(Message) && loadingText?.text != Message)
+            {
+                loadingText.text = Message;
+            }
+        }
+
         private void OnEnable()
         {
             toolTip.text = _tips[new System.Random().Next(0, _tips.Count)];
             loadingImage.color = _color;
-            _sequences = new[]
-            {
-                DOTween.Sequence()
-                    .Append(loadingImage.DOFade(1f, 0.3f))
-                    .Append(loadingImage.DOFade(AlphaToBeginning, 0.6f))
-                    .SetLoops(-1),
-                DOTween.Sequence()
-                    .Append(loadingText.DOFade(1f, 0.3f))
-                    .Append(loadingText.DOFade(AlphaToBeginning, 0.6f))
-                    .SetLoops(-1)
-            };
+            _sequences = new Sequence[] { };
         }
 
         private void OnDisable()
@@ -68,6 +68,7 @@ namespace Nekoyume.UI
             }
 
             _sequences = null;
+            Message = LocalizationManager.Localize("UI_IN_MINING_A_BLOCK");
         }
 
         #endregion

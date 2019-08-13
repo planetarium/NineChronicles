@@ -76,13 +76,39 @@ namespace Nekoyume.BlockChain
             Agent.PreloadStarted += (_, __) => { Widget.Find<LoadingScreen>()?.Show(); };
 
             // 별도 쓰레드에서는 GameObject.GetComponent<T> 를 사용할 수 없기때문에 미리 선언.
-            var loadingText = Widget.Find<LoadingScreen>()?.loadingText;
-            Agent.PreloadProcessed += (_, e) =>
+            var loadingScreen = Widget.Find<LoadingScreen>();
+            Agent.PreloadProcessed += (_, state) =>
             {
-                if (loadingText)
+                if (loadingScreen)
                 {
-                    if (e is BlockDownloadState blockDownloadState)
-                        loadingText.text = $"{blockDownloadState.ReceivedBlockCount} / {blockDownloadState.TotalBlockCount}";
+                    string text;
+
+                    switch (state)
+                    {
+                        case BlockDownloadState blockDownloadState:
+                            text = $"{blockDownloadState.ReceivedBlockCount} / {blockDownloadState.TotalBlockCount}";
+                            break;
+
+                        case StateReferenceDownloadState stateReferenceDownloadState:
+                            text =
+                                $"{stateReferenceDownloadState.ReceivedStateReferenceCount} / {stateReferenceDownloadState.TotalStateReferenceCount}";
+                            break;
+
+                        case BlockStateDownloadState blockStateDownloadState:
+                            text =
+                                $"{blockStateDownloadState.ReceivedBlockStateCount} / {blockStateDownloadState.TotalBlockStateCount}";
+                            break;
+
+                        case ActionExecutionState actionExecutionState:
+                            text =
+                                $"{actionExecutionState.ExecutedBlockCount} / {actionExecutionState.TotalBlockCount}";
+                            break;
+                        
+                        default:
+                            throw new Exception("Unknown state was reported during preload.");
+                    }
+
+                    loadingScreen.Message = $"{text}  ({state.CurrentPhase} / {PreloadState.TotalPhase})";
                 }
             };
             Agent.PreloadEnded += (_, __) =>
@@ -119,10 +145,10 @@ namespace Nekoyume.BlockChain
             while (true)
             {
                 var current = Agent.BlockIndex;
-                yield return new WaitForSeconds(60f);
+                yield return new WaitForSeconds(180f);
                 if (Agent.BlockIndex == current)
                 {
-                    Widget.Find<ExitPopup>().Show();
+                    Widget.Find<ExitPopup>().Show(current);
                     break;
                 }
             }
