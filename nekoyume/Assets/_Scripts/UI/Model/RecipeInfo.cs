@@ -11,6 +11,7 @@ namespace Nekoyume.UI.Model
         public class MaterialInfo
         {
             public int id;
+            public int amount = 1;
             public Sprite sprite;
             public bool isEnough;
             public bool isObtained;
@@ -26,15 +27,18 @@ namespace Nekoyume.UI.Model
         }
 
         public int recipeId;
+        public int resultId;
+        public int resultAmount = 1;
         public string resultName;
         public Sprite resultSprite;
         public MaterialInfo[] materialInfos = new MaterialInfo[5];
 
-        public RecipeInfo(int id, params int[] materialIds)
+        public RecipeInfo(int id, int resultId, params int[] materialIds)
         {
             recipeId = id;
-            resultName = GetEquipmentName(id);
-            resultSprite = ItemBase.GetSprite(id);
+            this.resultId = resultId;
+            resultName = GetEquipmentName(resultId);
+            resultSprite = ItemBase.GetSprite(resultId);
 
             for (int i = 0; i < materialInfos.Length; ++i)
             {

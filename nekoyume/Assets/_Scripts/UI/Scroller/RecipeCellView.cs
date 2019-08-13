@@ -5,6 +5,8 @@ using EnhancedUI.EnhancedScroller;
 using Nekoyume.UI.Model;
 using Nekoyume.Helper;
 using UniRx;
+using Nekoyume.UI.Module;
+using Nekoyume.Game.Item;
 
 namespace Nekoyume.UI.Scroller
 {
@@ -23,7 +25,7 @@ namespace Nekoyume.UI.Scroller
         public IObservable<Unit> combineButtonOnClick;
         public IDisposable onClickDisposable;
         public Text combineText;
-        public MaterialIcon resultItemIcon = new MaterialIcon();
+        public SimpleCountableItemView resultItemView;
         public MaterialIcon[] materialIcons;
 
         private const float ResultIconScaleFactor = 1.2f;
@@ -51,7 +53,14 @@ namespace Nekoyume.UI.Scroller
         {
             Model = recipeInfo;
             resultNameText.text = recipeInfo.resultName;
-            SetIcon(resultItemIcon, recipeInfo.resultSprite, ResultIconScaleFactor);
+
+            var item = ItemBase.ItemEquipmentFactory(recipeInfo.resultId, new Guid()); 
+            var countableItem = new CountableItem(item, recipeInfo.resultAmount);
+            resultItemView.SetData(countableItem);
+            var rect = resultItemView.iconImage.GetComponent<RectTransform>();
+            rect.sizeDelta = new Vector2(rect.sizeDelta.x * ResultIconScaleFactor, rect.sizeDelta.y * ResultIconScaleFactor);
+            resultItemView.gameObject.SetActive(true);
+
             for (int i = 0; i < recipeInfo.materialInfos.Length; ++i)
             {
                 var info = recipeInfo.materialInfos[i];

@@ -16,7 +16,9 @@ namespace Nekoyume.UI.Module
             var recipeTable = Tables.instance.Recipe;
             foreach (var pair in recipeTable)
             {
-                var info = new RecipeInfo(pair.Value.ResultId,
+                var info = new RecipeInfo(
+                    pair.Value.Id,
+                    pair.Value.ResultId,
                     pair.Value.Material1,
                     pair.Value.Material2,
                     pair.Value.Material3,

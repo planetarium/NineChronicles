@@ -53,6 +53,19 @@ namespace Nekoyume.Game.Item
             Shoes,
         }
 
+        public static ItemBase ItemEquipmentFactory(int itemId, Guid guid, SkillBase skillBase = null)
+        {
+            Data.Table.ItemEquipment itemData;
+            if (Tables.instance.TryGetItemEquipment(itemId, out itemData))
+            {
+                return ItemFactory(itemData, guid, skillBase);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         public static ItemBase ItemFactory(Data.Table.Item itemData, Guid id, SkillBase skillBase = null)
         {
             var type = itemData.cls.ToEnumItemType();
