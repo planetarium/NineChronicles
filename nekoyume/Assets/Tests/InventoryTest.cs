@@ -44,7 +44,7 @@ namespace Tests
             var inventory = new Inventory();
             var updatedInventory = new Inventory();
             var row = Tables.instance.Item.Values.First();
-            var item = (Nekoyume.Game.Item.Material) ItemBase.ItemFactory(row, new Guid());
+            var item = (Nekoyume.Game.Item.Material) ItemFactory.Create(row, new Guid());
             LogAssert.Expect(LogType.Error, "Item Material: 100000 is not ItemUsable.");
             updatedInventory.AddFungibleItem(item);
             Assert.IsFalse(updatedInventory.TryGetAddedItemFrom(inventory, out var result2));
