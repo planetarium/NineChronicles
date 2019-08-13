@@ -31,7 +31,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: -1
     aniso: -1
     mipBias: -100
     wrapU: 1
@@ -44,7 +44,7 @@ TextureImporter:
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 9
-  spritePivot: {x: 0.09595959, y: 0.81880367}
+  spritePivot: {x: 0.09587193, y: 0.5388291}
   spritePixelsToUnits: 100
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
@@ -86,7 +86,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 02c6aca7ddadb5d44a78a203684cb8c3
+    spriteID: 8aa6eadb1d68947aabae63dad8432b5c
     internalID: 0
     vertices: []
     indices: 
@@ -96,6 +96,6 @@ TextureImporter:
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0
-  userData: 636886681730578547
+  userData: 
   assetBundleName: 
   assetBundleVariant: 
