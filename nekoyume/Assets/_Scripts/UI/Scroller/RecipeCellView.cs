@@ -113,7 +113,6 @@ namespace Nekoyume.UI.Scroller
 
         public void Clear()
         {
-            ClearIcon(resultItemIcon);
             for (int i = 0; i < materialIcons.Length; ++i)
             {
                 ClearIcon(materialIcons[i]);
