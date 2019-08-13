@@ -75,7 +75,7 @@ namespace Nekoyume.Game.Character
             ShowSpeech("ENEMY_DEAD");
             StopRun();
             animator.Die();
-            yield return new WaitForSeconds(1.2f);
+            yield return new WaitForSeconds(.5f);
             DisableHUD();
             yield return new WaitForSeconds(.8f);
             OnDead();

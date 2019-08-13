@@ -9,6 +9,7 @@ using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.Game.VFX.Skill;
 using Nekoyume.UI;
+using Unity.Mathematics;
 using UnityEngine;
 
 namespace Nekoyume.Game.Character
@@ -201,6 +202,7 @@ namespace Nekoyume.Game.Character
                 yield break;
 
             HP -= dmg;
+            HP = math.max(HP, 0);
             UpdateHpBar();
             if (isConsiderDie && IsDead())
             {
@@ -293,15 +295,13 @@ namespace Nekoyume.Game.Character
         {
             if (!ReferenceEquals(_hpBar, null))
             {
-                if (!ReferenceEquals(_hpBar.gameObject, null))
-                    Destroy(_hpBar.gameObject);
+                Destroy(_hpBar.gameObject);
                 _hpBar = null;
             }
 
             if (!ReferenceEquals(_castingBar, null))
             {
-                if (!ReferenceEquals(_castingBar.gameObject, null))
-                    Destroy(_castingBar.gameObject);
+                Destroy(_castingBar.gameObject);
                 _castingBar = null;
             }
 
@@ -309,8 +309,7 @@ namespace Nekoyume.Game.Character
             {
                 _speechBubble.StopAllCoroutines();
                 _speechBubble.gameObject.SetActive(false);
-                if (!ReferenceEquals(_speechBubble.gameObject, null))
-                    Destroy(_speechBubble.gameObject, _speechBubble.destroyTime);
+                Destroy(_speechBubble.gameObject, _speechBubble.destroyTime);
                 _speechBubble = null;
             }
         }
