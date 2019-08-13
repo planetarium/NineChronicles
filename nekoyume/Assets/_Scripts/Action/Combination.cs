@@ -5,12 +5,14 @@ using System.Linq;
 using DecimalMath;
 using Libplanet;
 using Libplanet.Action;
+using Nekoyume.BlockChain;
 using Nekoyume.Data;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Skill;
 using Nekoyume.Model;
 using Nekoyume.State;
+using UnityEngine;
 
 namespace Nekoyume.Action
 {
@@ -69,6 +71,10 @@ namespace Nekoyume.Action
             {
                 return states;
             }
+
+            Debug.Log($"Execute Combination. player : `{avatarAddress}` " +
+                      $"node : `{States.Instance.agentState.Value.address}` " +
+                      $"current avatar: `{States.Instance.currentAvatarState?.Value?.address}`");
 
             // 사용한 재료를 인벤토리에서 제거.
             foreach (var material in Materials)

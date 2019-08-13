@@ -4,9 +4,11 @@ using System.Collections.Immutable;
 using System.Linq;
 using Libplanet;
 using Libplanet.Action;
+using Nekoyume.BlockChain;
 using Nekoyume.Data;
 using Nekoyume.Game.Item;
 using Nekoyume.State;
+using UnityEngine;
 
 namespace Nekoyume.Action
 {
@@ -51,6 +53,10 @@ namespace Nekoyume.Action
             {
                 return states;
             }
+
+            Debug.Log($"Execute CreateAvatar. player : `{avatarAddress}` " +
+                      $"node : `{States.Instance.agentState.Value.address}` " +
+                      $"current avatar: `{States.Instance.currentAvatarState?.Value?.address}`");
 
             agentState.avatarAddresses.Add(index, avatarAddress);
             avatarState = CreateAvatarState(name, avatarAddress, ctx.Signer, ctx.Random);
