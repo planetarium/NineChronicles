@@ -230,5 +230,8 @@ namespace Nekoyume.Game.Item
         {
             return _items.Exists(item => item.item.Data.id == id && item.count >= count);
         }
+
+        public bool HasItemUsable(Guid itemId) =>
+            _items.Select(i => i.item).OfType<ItemUsable>().Any(i => i.ItemId == itemId);
     }
 }
