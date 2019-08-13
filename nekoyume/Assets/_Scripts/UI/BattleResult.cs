@@ -159,7 +159,7 @@ namespace Nekoyume.UI
             topArea.expValueText.text = SharedModel.exp.ToString();
             topArea.expContainer.SetActive(true);
             suggestionsArea.root.SetActive(false);
-            bottomText.gameObject.SetActive(true);
+            bottomText.gameObject.SetActive(false);
             closeButton.interactable = true;
             closeButtonText.text = LocalizationManager.Localize("UI_MAIN");
             submitButton.interactable = true;
@@ -234,6 +234,7 @@ namespace Nekoyume.UI
             var secondsFormat = LocalizationManager.Localize("UI_AFTER_N_SECONDS");
             var fullFormat = LocalizationManager.Localize("UI_NEXT_STAGE_FORMAT");
             bottomText.text = string.Format(fullFormat, string.Format(secondsFormat, limitSeconds));
+            bottomText.gameObject.SetActive(true);
             
             var floatTime = (float) limitSeconds;
             var floatTimeMinusOne = limitSeconds - 1f;
