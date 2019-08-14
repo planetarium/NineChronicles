@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using Assets.SimpleLocalization;
 using DG.Tweening;
 using UnityEngine;
@@ -15,7 +16,7 @@ namespace Nekoyume.UI
         public Text englishText;
         
         private Color _color;
-        private Sequence _sequence = null;
+        private Sequence _sequence;
 
         #region Mono
 
@@ -61,12 +62,15 @@ namespace Nekoyume.UI
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+
+            StartCoroutine(CoWaitForQuit());
         }
 
         private void OnDisable()
         {
             _sequence?.Kill();
             _sequence = null;
+
         }
 
         #endregion
@@ -88,6 +92,12 @@ namespace Nekoyume.UI
                 .Append(koreanImage.DOFade(1f, 0.3f))
                 .Append(koreanImage.DOFade(AlphaToBeginning, 0.6f))
                 .SetLoops(-1);
+        }
+
+        private IEnumerator CoWaitForQuit()
+        {
+            yield return new WaitForSeconds(GameConfig.WaitSeconds);
+            Find<ExitPopup>().Show();
         }
     }
 }

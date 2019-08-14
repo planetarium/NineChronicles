@@ -71,5 +71,7 @@ namespace Nekoyume
         };
         
         public static readonly int2 ScreenSize = new int2(1136, 640);
+
+        public const float WaitSeconds = 180f;
     }
 }
