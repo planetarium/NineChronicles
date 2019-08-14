@@ -4,6 +4,7 @@ using Assets.SimpleLocalization;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Item;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
@@ -17,23 +18,7 @@ namespace Nekoyume.UI.Module
             public List<Image> elementalTypeImages;
             public Text commonText;
         }
-
-        [Serializable]
-        public struct StatsArea
-        {
-            public RectTransform root;
-            public ItemInformationStat prefab;
-            public List<ItemInformationStat> stats;
-        }
-
-        [Serializable]
-        public struct SkillsArea
-        {
-            public RectTransform root;
-            public ItemInformationSkill prefab;
-            public List<ItemInformationSkill> skills;
-        }
-
+        
         [Serializable]
         public struct DescriptionArea
         {
@@ -41,10 +26,27 @@ namespace Nekoyume.UI.Module
             public Text text;
         }
 
+        [Serializable]
+        public struct StatsArea
+        {
+            public RectTransform root;
+            public Text levelLimitText;
+            public ItemInformationStat statPrefab;
+            public List<ItemInformationStat> stats;
+        }
+
+        [Serializable]
+        public struct SkillsArea
+        {
+            public RectTransform root;
+            public ItemInformationSkill skillPrefab;
+            public List<ItemInformationSkill> skills;
+        }
+
         public IconArea iconArea;
+        public DescriptionArea descriptionArea;
         public StatsArea statsArea;
         public SkillsArea skillsArea;
-        public DescriptionArea descriptionArea;
 
         public Model.ItemInformation Model { get; private set; }
 
@@ -76,9 +78,9 @@ namespace Nekoyume.UI.Module
         private void UpdateView()
         {
             UpdateViewIconArea();
+            UpdateDescriptionArea();
             UpdateStatsArea();
             UpdateSkillsArea();
-            UpdateDescriptionArea();
         }
 
         private void UpdateViewIconArea()
@@ -133,6 +135,19 @@ namespace Nekoyume.UI.Module
                 iconArea.commonText.enabled = false;
             }
         }
+        
+        private void UpdateDescriptionArea()
+        {
+            if (Model?.item.Value is null)
+            {
+                descriptionArea.root.gameObject.SetActive(false);
+
+                return;
+            }
+
+            descriptionArea.text.text = Model.item.Value.item.Value.Data.LocalizedDescription;
+            descriptionArea.root.gameObject.SetActive(true);
+        }
 
         private void UpdateStatsArea()
         {
@@ -147,6 +162,9 @@ namespace Nekoyume.UI.Module
             var statCount = 0;
             if (Model.item.Value.item.Value is ItemUsable itemUsable)
             {
+                // todo: 장비에 레벨 제한이 들어가면 이곳에서 적용해줘야 함.
+                statsArea.levelLimitText.enabled = false;
+                
                 foreach (var statMap in itemUsable.Stats.StatMaps)
                 {
                     if (statMap.Key.Equals("turnSpeed")
@@ -161,6 +179,8 @@ namespace Nekoyume.UI.Module
             }
             else
             {
+                statsArea.levelLimitText.enabled = false;
+                
                 var data = Model.item.Value.item.Value.Data;
                 if (!string.IsNullOrEmpty(data.stat))
                 {
@@ -217,20 +237,7 @@ namespace Nekoyume.UI.Module
 
             skillsArea.root.gameObject.SetActive(true);
         }
-
-        private void UpdateDescriptionArea()
-        {
-            if (Model?.item.Value is null)
-            {
-                descriptionArea.root.gameObject.SetActive(false);
-
-                return;
-            }
-
-            descriptionArea.text.text = Model.item.Value.item.Value.Data.LocalizedDescription;
-            descriptionArea.root.gameObject.SetActive(true);
-        }
-
+        
         private void RemoveStatAll()
         {
             foreach (var stat in statsArea.stats)
@@ -253,7 +260,7 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            var go = Instantiate(statsArea.prefab.gameObject, statsArea.root);
+            var go = Instantiate(statsArea.statPrefab.gameObject, statsArea.root);
             var comp = go.GetComponent<ItemInformationStat>();
             statsArea.stats.Add(comp);
             comp.Show(model);
@@ -281,7 +288,7 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            var go = Instantiate(skillsArea.prefab.gameObject, skillsArea.root);
+            var go = Instantiate(skillsArea.skillPrefab.gameObject, skillsArea.root);
             var comp = go.GetComponent<ItemInformationSkill>();
             skillsArea.skills.Add(comp);
             comp.Show(model);

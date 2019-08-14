@@ -12,9 +12,6 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<bool> priceEnabled = new ReactiveProperty<bool>(false);
         public readonly ReactiveProperty<decimal> price = new ReactiveProperty<decimal>(0m);
 
-        public readonly ReactiveProperty<string> closeButtonText =
-            new ReactiveProperty<string>(LocalizationManager.Localize("UI_CLOSE"));
-
         public readonly ReactiveProperty<Func<CountableItem, bool>> submitButtonEnabledFunc =
             new ReactiveProperty<Func<CountableItem, bool>>();
 
@@ -64,7 +61,6 @@ namespace Nekoyume.UI.Model
         public override void Dispose()
         {
             titleText.Dispose();
-            closeButtonText.Dispose();
             submitButtonText.Dispose();
 
             onSubmit.Dispose();

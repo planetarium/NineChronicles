@@ -5,6 +5,7 @@ using Nekoyume.UI.Model;
 using UniRx;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
@@ -12,14 +13,12 @@ namespace Nekoyume.UI
     public class ItemInformationTooltip : VerticalTooltipWidget<Model.ItemInformationTooltip>
     {
         public Text titleText;
-        public GameObject coinImageContainer;
-        public Text priceText;
         public Module.ItemInformation itemInformation;
-        public Button closeButton;
-        public Text closeButtonText;
         public GameObject submitGameObject;
         public Button submitButton;
         public Text submitButtonText;
+        public GameObject priceContainer;
+        public Text priceText;
         
         private readonly List<IDisposable> _disposablesForAwake = new List<IDisposable>();
         private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
@@ -32,7 +31,6 @@ namespace Nekoyume.UI
             
             Model = new Model.ItemInformationTooltip();
 
-            closeButton.OnClickAsObservable().Subscribe(_ => Close()).AddTo(_disposablesForAwake);
             submitButton.OnClickAsObservable().Subscribe(_ => Model.onSubmit.OnNext(this)).AddTo(_disposablesForAwake);
         }
 
@@ -70,19 +68,10 @@ namespace Nekoyume.UI
             Model.titleText.SubscribeToText(titleText).AddTo(_disposablesForModel);
             Model.priceEnabled.Subscribe(value =>
             {
-                coinImageContainer.SetActive(value);
+                priceContainer.SetActive(value);
                 priceText.enabled = value;
             }).AddTo(_disposablesForModel);
             Model.price.SubscribeToText(priceText).AddTo(_disposablesForModel);
-            Model.closeButtonText.Subscribe(value =>
-            {
-                if (string.IsNullOrEmpty(value))
-                {
-                    return;
-                }
-                
-                closeButtonText.text = value;
-            }).AddTo(_disposablesForModel);
             Model.submitButtonText.Subscribe(value =>
             {
                 if (string.IsNullOrEmpty(value))

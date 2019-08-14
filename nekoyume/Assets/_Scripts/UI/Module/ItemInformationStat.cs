@@ -8,7 +8,6 @@ namespace Nekoyume.UI.Module
 {
     public class ItemInformationStat : MonoBehaviour
     {
-        public Image image;
         public Text keyText;
         public Text valueText;
 
