@@ -8,10 +8,10 @@ namespace Nekoyume.Game.Item
     [Serializable]
     public abstract class ItemBase
     {
-        private const string ItemPath = "images/icon/item/{0}";
-        private const string EquipmentPath = "images/icon/equipment/{0}";
-        private const string GradeIconPath = "UI/Textures/item_bg_{0}";
-        private const int DefaultId = 101000;
+        public const int DefaultId = 101000;
+        public const string ItemPath = "UI/Icons/Item/{0}";
+        public const string EquipmentPath = "UI/Icons/Equipment/{0}";
+        public const string GradeIconPath = "UI/Textures/item_bg_{0}";
 
         protected bool Equals(ItemBase other)
         {
