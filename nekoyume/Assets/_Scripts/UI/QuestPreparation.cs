@@ -170,12 +170,12 @@ namespace Nekoyume.UI
                 .AddTo(_disposablesForSetData);
             Model.itemInfo.Value.item.Subscribe(OnItemInfoItem).AddTo(_disposablesForSetData);
             Model.itemInfo.Value.onClick.Subscribe(OnClickEquip).AddTo(_disposablesForSetData);
-            Model.inventory.Value.onRightClickItemView.Subscribe(OnClickEquip).AddTo(_disposablesForSetData);
+            Model.inventory.Value.onRightClickItemView.Subscribe(itemView => OnClickEquip(itemView.Model)).AddTo(_disposablesForSetData);
 
             inventoryAndItemInfo.SetData(Model.inventory.Value, Model.itemInfo.Value);
         }
 
-        private void Clear() 
+        private void Clear()
         {
             inventoryAndItemInfo.Clear();
             Model = null;
@@ -225,15 +225,15 @@ namespace Nekoyume.UI
             }
         }
 
-        private void OnClickEquip(InventoryItemView itemView)
-        {
-            OnClickEquip(itemView.Model);
-        }
-
         private void OnClickEquip(CountableItem countableItem)
         {
             var type = countableItem.item.Value.Data.cls.ToEnumItemType();
             var slot = FindSelectedItemSlot(type);
+
+            AudioController.instance.PlaySfx(type == ItemBase.ItemType.Food
+                ? AudioController.SfxCode.ChainMail2
+                : AudioController.SfxCode.Equipment);
+
             if (slot != null)
             {
                 if (inventoryAndItemInfo.inventory.Model.TryGetEquipment(slot.item, out var inventoryItem))
@@ -245,10 +245,6 @@ namespace Nekoyume.UI
                 SetGlowEquipSlot(false);
             }
             else return;
-
-            AudioController.instance.PlaySfx(type == ItemBase.ItemType.Food
-                ? AudioController.SfxCode.ChainMail2
-                : AudioController.SfxCode.Equipment);
 
             if (type == ItemBase.ItemType.Armor)
             {
