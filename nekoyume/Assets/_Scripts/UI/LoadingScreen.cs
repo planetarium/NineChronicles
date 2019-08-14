@@ -65,7 +65,6 @@ namespace Nekoyume.UI
                     .Append(loadingImage.DOFade(AlphaToBeginning, 0.6f))
                     .SetLoops(-1),
             };
-            StartCoroutine(CoWaitForQuit());
         }
 
         private void OnDisable()
@@ -86,6 +85,14 @@ namespace Nekoyume.UI
             yield return new WaitForSeconds(GameConfig.WaitSeconds);
             if (isActiveAndEnabled)
                 Find<ActionFailPopup>().Show();
+        }
+
+        public void Show(bool waitForQuit = true)
+        {
+            base.Show();
+
+            if (waitForQuit)
+                StartCoroutine(CoWaitForQuit());
         }
     }
 }
