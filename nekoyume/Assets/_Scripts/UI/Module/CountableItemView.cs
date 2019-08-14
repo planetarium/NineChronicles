@@ -11,8 +11,6 @@ namespace Nekoyume.UI.Module
 
         public TextMeshProUGUI countText;
 
-        protected IDisposable _disposableForDimmed;
-        
         private readonly List<IDisposable> _disposablesForSetData = new List<IDisposable>();
 
         #region override
@@ -29,7 +27,7 @@ namespace Nekoyume.UI.Module
             base.SetData(model);
             Model.count.Subscribe(SetCount).AddTo(_disposablesForSetData);
             Model.countEnabled.Subscribe(countEnabled => countText.enabled = countEnabled).AddTo(_disposablesForSetData);
-            _disposableForDimmed = model.dimmed.Subscribe(SetDim);
+            Model.dimmed.Subscribe(SetDim).AddTo(_disposablesForSetData);
 
             UpdateView();
         }
@@ -37,11 +35,6 @@ namespace Nekoyume.UI.Module
         public override void Clear()
         {
             _disposablesForSetData.DisposeAllAndClear();
-            if (_disposableForDimmed != null)
-            {
-                _disposableForDimmed.Dispose();
-                _disposableForDimmed = null;
-            }
             base.Clear();
 
             UpdateView();
