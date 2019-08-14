@@ -78,6 +78,7 @@ namespace Nekoyume.UI
                 throw new NotFoundComponentException<ToggleGroup>();
             }
 
+            HPBar.gameObject.SetActive(false);
         }
 
         public override void Close()
@@ -171,6 +172,7 @@ namespace Nekoyume.UI
 
         public void ShowStage(int stage)
         {
+            HPBar.gameObject.SetActive(true);
             stageTitle.Show(stage);
         }
 
