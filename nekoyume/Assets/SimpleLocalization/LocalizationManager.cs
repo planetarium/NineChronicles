@@ -22,7 +22,7 @@ namespace Assets.SimpleLocalization
         /// </summary>
         public static event Action LocalizationChanged = delegate { };
 
-        public const LanguageType DefaultLanguage = LanguageType.English; 
+        public const LanguageType DefaultLanguage = LanguageType.Korean;
         private static readonly Dictionary<LanguageType, Dictionary<string, string>> Dictionary =
             new Dictionary<LanguageType, Dictionary<string, string>>();
 
@@ -34,23 +34,9 @@ namespace Assets.SimpleLocalization
         public static LanguageType Language
         {
             get => _language;
-            set
-            {
-                _language = value;
-                LocalizationChanged();
-            }
         }
 
-        public static LanguageType SystemLanguage
-        {
-            get
-            {
-                var systemLang = Application.systemLanguage.ToString();
-                return !Enum.TryParse<LanguageType>(systemLang, out var languageType)
-                    ? DefaultLanguage
-                    : languageType;
-            }
-        }
+        public static LanguageType SystemLanguage => LanguageType.Korean;
 
         /// <summary>
         /// Read localization spreadsheets.
@@ -61,9 +47,6 @@ namespace Assets.SimpleLocalization
 
             ReadInternal();
             var languageType = SystemLanguage;
-            Language = Dictionary.ContainsKey(languageType)
-                ? languageType
-                : DefaultLanguage;
         }
         
         public static void Read(LanguageType languageType, string path = "Localization")
@@ -71,9 +54,6 @@ namespace Assets.SimpleLocalization
             if (Dictionary.Count > 0) return;
 
             ReadInternal();
-            Language = Dictionary.ContainsKey(languageType)
-                ? languageType
-                : DefaultLanguage;
         }
         
         private static void ReadInternal(string path = "Localization")

@@ -73,7 +73,7 @@ namespace Nekoyume.BlockChain
                 host: host,
                 port: port
             );
-            Agent.PreloadStarted += (_, __) => { Widget.Find<LoadingScreen>()?.Show(); };
+            Agent.PreloadStarted += (_, __) => { Widget.Find<LoadingScreen>()?.Show(false); };
 
             // 별도 쓰레드에서는 GameObject.GetComponent<T> 를 사용할 수 없기때문에 미리 선언.
             var loadingScreen = Widget.Find<LoadingScreen>();
