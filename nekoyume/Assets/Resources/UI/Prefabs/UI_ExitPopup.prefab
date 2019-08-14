@@ -158,9 +158,10 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 1.5
-  m_Text: "\uBE14\uB85D \uB2E4\uC6B4\uB85C\uB4DC\uC5D0 \uC2E4\uD328\uD588\uC2B5\uB2C8\uB2E4.\n\uAC8C\uC784\uC744
-    \uB2E4\uC2DC \uC2E4\uD589\uD574 \uC8FC\uC138\uC694.\n\uD655\uC778\uC744 \uB204\uB974\uBA74
-    \uAC8C\uC784\uC774 \uC885\uB8CC\uB429\uB2C8\uB2E4."
+  m_Text: "\uC624\uB958\uAC00 \uBC1C\uC0DD\uD588\uC2B5\uB2C8\uB2E4. (\uBE14\uB85D
+    \uB2E4\uC6B4\uB85C\uB4DC)\n\uAC8C\uC784\uC744 \uB2E4\uC2DC \uC2E4\uD589\uD574
+    \uC8FC\uC138\uC694.\n\uD655\uC778\uC744 \uB204\uB974\uBA74 \uAC8C\uC784\uC774
+    \uC885\uB8CC\uB429\uB2C8\uB2E4."
 --- !u!114 &1028109342504996293
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -658,7 +659,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\uBE14\uB85D \uB2E4\uC6B4\uB85C\uB4DC \uC2E4\uD328"
+  m_Text: "\uC624 \uB958"
 --- !u!114 &265826229991915343
 MonoBehaviour:
   m_ObjectHideFlags: 0
