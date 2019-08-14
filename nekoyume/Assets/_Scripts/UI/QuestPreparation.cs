@@ -231,6 +231,9 @@ namespace Nekoyume.UI
 
         private void OnClickEquip(CountableItem countableItem)
         {
+            var item = countableItem as InventoryItem;
+            if (item != null && item.equipped.Value) return;
+
             var type = countableItem.item.Value.Data.cls.ToEnumItemType();
             var slot = FindSelectedItemSlot(type);
 
@@ -261,7 +264,7 @@ namespace Nekoyume.UI
                 _player.UpdateWeapon((Weapon) countableItem.item.Value);
             }
 
-            if(countableItem is InventoryItem item)
+            if (item != null)
             {
                 item.equipped.Value = true;
             }
@@ -308,15 +311,6 @@ namespace Nekoyume.UI
         {
             if (type == ItemBase.ItemType.Food)
             {
-                var count = consumableSlots
-                    .Select(s => s.item)
-                    .OfType<Food>()
-                    .Count(f => f.Data.id == Model.itemInfo.Value.item.Value.item.Value.Data.id);
-                if (count >= Model.itemInfo.Value.item.Value.count.Value)
-                {
-                    return null;
-                }
-
                 var slot = consumableSlots.FirstOrDefault(s => s.item?.Data == null);
                 if (slot == null)
                 {
