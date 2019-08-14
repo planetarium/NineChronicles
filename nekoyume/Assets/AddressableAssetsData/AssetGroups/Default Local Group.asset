@@ -17,86 +17,12 @@ MonoBehaviour:
     m_SerializedData: []
   m_GUID: 5ffc7c51dd5154758b68b93436d94ef4
   m_SerializeEntries:
-  - m_GUID: 0b3dff0059ffb409c9f7d31124e402c9
-    m_Address: Assets/AddressableAssets/TableCSV/item_equip.csv
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 10e4b9fbe92b9493599407ac855a29f9
-    m_Address: Assets/AddressableAssets/TableCSV/stage.csv
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 1ddd193f5f195481d92ca512633e7072
-    m_Address: Assets/AddressableAssets/TableCSV/world.csv
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 394d879cdb5384cdc8276bc8d4ec1dae
-    m_Address: Assets/AddressableAssets/TableCSV/set_effect.csv
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 3de47b51416174234b0072245b2caee2
-    m_Address: Assets/AddressableAssets/TableCSV/elemental.csv
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 477be04f7a6d04ba4a01d8c94956897b
-    m_Address: Assets/AddressableAssets/TableCSV/combination_quest.csv
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 4eb7c5e0544534644be55f96904c3fae
-    m_Address: Assets/AddressableAssets/TableCSV/battle_quest.csv
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 8a8eef0442b1242b78c9c287926fd556
-    m_Address: Assets/AddressableAssets/TableCSV/settings.csv
-    m_ReadOnly: 0
-    m_SerializedLabels: []
   - m_GUID: 9c9a281fa10de4732a69f1f7b08772b0
     m_Address: Assets/AddressableAssets/TableCSV/Background.csv
     m_ReadOnly: 0
     m_SerializedLabels:
     - TableCSV
-  - m_GUID: b7b77c29bfc0b4688a79a3df913d94bc
-    m_Address: Assets/AddressableAssets/TableCSV/character.csv
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: bb53b8217cfb14ced93d618d14cd2ad8
-    m_Address: Assets/AddressableAssets/TableCSV/level.csv
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: bc5fef79d9b054ccaa66e7bf59c3bc1b
-    m_Address: Assets/AddressableAssets/TableCSV/skill_effect.csv
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: cf09867532f73454ba344b62840803b8
-    m_Address: Assets/AddressableAssets/TableCSV/world_chapter.csv
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: d09e3a19682e845aaa922f8d1ea4d3e9
-    m_Address: Assets/AddressableAssets/TableCSV/stage_dialog.csv
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: d37af9f30d72a470ba0e119e9087cfed
-    m_Address: Assets/AddressableAssets/TableCSV/trade_quest.csv
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: d8f2baf41dcad4968b170126e60d4cf3
-    m_Address: Assets/AddressableAssets/TableCSV/stage_reward.csv
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: e3daf766d1d5149e58fee43f3b6185d5
-    m_Address: Assets/AddressableAssets/TableCSV/item.csv
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: f181a2486b647434d8a9b89a63685181
-    m_Address: Assets/AddressableAssets/TableCSV/collect_quest.csv
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: f96064a2242f54b3cbaa894f02f76d14
-    m_Address: Assets/AddressableAssets/TableCSV/recipe.csv
-    m_ReadOnly: 0
-    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 314ad4573790845ce84c5b850f063d3b, type: 2}
   m_SchemaSet:
-    m_Schemas:
-    - {fileID: 11400000, guid: 1dbda4dd3caa147a3b64e28925e3a199, type: 2}
-    - {fileID: 11400000, guid: ac7a2802fd0a84fc58956f3a673f5339, type: 2}
+    m_Schemas: []
