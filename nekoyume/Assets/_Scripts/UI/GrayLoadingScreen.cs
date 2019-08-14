@@ -97,7 +97,8 @@ namespace Nekoyume.UI
         private IEnumerator CoWaitForQuit()
         {
             yield return new WaitForSeconds(GameConfig.WaitSeconds);
-            Find<ActionFailPopup>().Show();
+            if (isActiveAndEnabled)
+                Find<ActionFailPopup>().Show();
         }
     }
 }
