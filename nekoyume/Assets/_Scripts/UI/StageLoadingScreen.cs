@@ -18,6 +18,7 @@ namespace Nekoyume.UI
 
         private bool _shouldClose;
         private List<RectTransform> _rects;
+        private Coroutine _coroutine;
 
         private static Sprite Load(string format, string background)
         {
@@ -53,11 +54,14 @@ namespace Nekoyume.UI
 
             base.Show();
             StartCoroutine(CoRun());
+            _coroutine = StartCoroutine(CoWaitForQuit());
         }
         
         public override IEnumerator CoClose()
         {
             _shouldClose = true;
+            if (!(_coroutine is null))
+                StopCoroutine(_coroutine);
             yield return new WaitUntil(() => closeEnd);
         }
         
@@ -96,6 +100,12 @@ namespace Nekoyume.UI
             }
 
             yield return null;
+        }
+
+        private IEnumerator CoWaitForQuit()
+        {
+            yield return new WaitForSeconds(GameConfig.WaitSeconds);
+            Find<ExitPopup>().Show();
         }
     }
 }

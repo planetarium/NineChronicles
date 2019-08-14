@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Assets.SimpleLocalization;
@@ -18,6 +19,7 @@ namespace Nekoyume.UI
         private Color _color;
         private Sequence[] _sequences;
         private List<string> _tips;
+        private Coroutine _coroutine;
 
         private const float AlphaToBeginning = 0.5f;
 
@@ -64,6 +66,7 @@ namespace Nekoyume.UI
                     .Append(loadingImage.DOFade(AlphaToBeginning, 0.6f))
                     .SetLoops(-1),
             };
+            _coroutine = StartCoroutine(CoWaitForQuit());
         }
 
         private void OnDisable()
@@ -75,8 +78,17 @@ namespace Nekoyume.UI
 
             _sequences = null;
             Message = LocalizationManager.Localize("UI_IN_MINING_A_BLOCK");
+
+            if (!(_coroutine is null))
+                StopCoroutine(_coroutine);
         }
 
         #endregion
+
+        private IEnumerator CoWaitForQuit()
+        {
+            yield return new WaitForSeconds(GameConfig.WaitSeconds);
+            Find<ExitPopup>().Show();
+        }
     }
 }

@@ -31,5 +31,11 @@ namespace Nekoyume.UI
 
             base.Close();
         }
+
+        public override void Show()
+        {
+            CloseCallback = Application.Quit;
+            base.Show();
+        }
     }
 }
