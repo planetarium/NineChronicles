@@ -6,11 +6,12 @@ using TMPro;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 namespace Nekoyume.UI.Module
 {
     [RequireComponent(typeof(Button))]
-    public class InventoryItemView : CountableItemView<Model.InventoryItem>
+    public class InventoryItemView : CountableItemView<Model.InventoryItem>, IPointerClickHandler
     {
         public Image equippedIcon;
         public Image coverImage;
@@ -112,6 +113,14 @@ namespace Nekoyume.UI.Module
             selectionImage.enabled = false;
             SetDim(false);
             SetEquipped(false);
+        }
+
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            if (eventData.button == PointerEventData.InputButton.Right)
+            {
+                Model.onRightClick.OnNext(this);
+            }
         }
 
         private void UpdateView()
