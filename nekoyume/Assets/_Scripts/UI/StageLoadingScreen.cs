@@ -53,6 +53,7 @@ namespace Nekoyume.UI
 
             base.Show();
             StartCoroutine(CoRun());
+            Debug.Log($"Call {this} CoWaitForQuit()");
             StartCoroutine(CoWaitForQuit());
         }
         
@@ -60,6 +61,7 @@ namespace Nekoyume.UI
         {
             _shouldClose = true;
             yield return new WaitUntil(() => closeEnd);
+            gameObject.SetActive(false);
         }
         
         private IEnumerator CoRun()
@@ -102,8 +104,8 @@ namespace Nekoyume.UI
         private IEnumerator CoWaitForQuit()
         {
             yield return new WaitForSeconds(GameConfig.WaitSeconds);
-            if (isActiveAndEnabled)
-                Find<ActionFailPopup>().Show();
+            Debug.Log($"Call {this} ActionFailPopup.Show()");
+            Find<ActionFailPopup>().Show();
         }
     }
 }

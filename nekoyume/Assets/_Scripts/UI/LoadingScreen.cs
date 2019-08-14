@@ -83,8 +83,8 @@ namespace Nekoyume.UI
         private IEnumerator CoWaitForQuit()
         {
             yield return new WaitForSeconds(GameConfig.WaitSeconds);
-            if (isActiveAndEnabled)
-                Find<ActionFailPopup>().Show();
+            Debug.Log($"Call {this} ActionFailPopup.Show()");
+            Find<ActionFailPopup>().Show();
         }
 
         public void Show(bool waitForQuit = true)
@@ -92,7 +92,10 @@ namespace Nekoyume.UI
             base.Show();
 
             if (waitForQuit)
+            {
+                Debug.Log($"Call {this} CoWaitForQuit()");
                 StartCoroutine(CoWaitForQuit());
+            }
         }
     }
 }
