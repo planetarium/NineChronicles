@@ -17,7 +17,6 @@ namespace Nekoyume.UI
         
         private Color _color;
         private Sequence _sequence;
-        private Coroutine _coroutine;
 
         #region Mono
 
@@ -64,7 +63,7 @@ namespace Nekoyume.UI
                     throw new ArgumentOutOfRangeException();
             }
 
-            _coroutine = StartCoroutine(CoWaitForQuit());
+            StartCoroutine(CoWaitForQuit());
         }
 
         private void OnDisable()
@@ -72,8 +71,6 @@ namespace Nekoyume.UI
             _sequence?.Kill();
             _sequence = null;
 
-            if (!(_coroutine is null))
-                StopCoroutine(_coroutine);
         }
 
         #endregion
