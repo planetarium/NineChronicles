@@ -102,7 +102,7 @@ namespace Nekoyume.UI
         private IEnumerator CoWaitForQuit()
         {
             yield return new WaitForSeconds(GameConfig.WaitSeconds);
-            Find<ExitPopup>().Show();
+            Find<ActionFailPopup>().Show();
         }
     }
 }

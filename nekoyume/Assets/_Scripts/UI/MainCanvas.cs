@@ -90,6 +90,7 @@ namespace Nekoyume.UI
             //최상단 알림 영역.
             Widget.Create<UpdatePopup>();
             Widget.Create<ExitPopup>();
+            Widget.Create<ActionFailPopup>();
 #if DEBUG
             Widget.Create<Cheat>(true);
 #endif
