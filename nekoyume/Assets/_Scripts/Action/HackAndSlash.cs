@@ -79,8 +79,8 @@ namespace Nekoyume.Action
             
             var simulator = new Simulator(ctx.Random, avatarState, foods, stage);
             var player = simulator.Simulate();
-            Debug.Log($"Execute HackAndSlash. result: {simulator.Log.result} player : `{avatarAddress}` " +
-                      $"node : `{States.Instance.agentState.Value.address}` " +
+            Debug.Log($"Execute HackAndSlash. stage: {avatarState.worldStage} result: {simulator.Log.result} " +
+                      $"player : `{avatarAddress}` node : `{States.Instance.agentState.Value.address}` " +
                       $"current avatar: `{States.Instance.currentAvatarState?.Value?.address}`");
             avatarState.Update(player, simulator.rewards);
             avatarState.battleLog = simulator.Log;

@@ -7,14 +7,13 @@ namespace Nekoyume.UI
     public class ExitPopup : SystemPopup
     {
         private long _index;
-        private Coroutine _coroutine;
 
         public void Show(long idx)
         {
             CloseCallback = Application.Quit;
             _index = idx;
             base.Show();
-            _coroutine = StartCoroutine(CoCheckBlockIndex());
+            StartCoroutine(CoCheckBlockIndex());
         }
 
         private IEnumerator CoCheckBlockIndex()
@@ -22,20 +21,6 @@ namespace Nekoyume.UI
             yield return new WaitWhile(() => AgentController.Agent.BlockIndex == _index);
             CloseCallback = null;
             Close();
-        }
-
-        public override void Close()
-        {
-            if (!(_coroutine is null))
-                StopCoroutine(_coroutine);
-
-            base.Close();
-        }
-
-        public override void Show()
-        {
-            CloseCallback = Application.Quit;
-            base.Show();
         }
     }
 }
