@@ -63,6 +63,7 @@ namespace Nekoyume.UI
                     throw new ArgumentOutOfRangeException();
             }
 
+            Debug.Log($"Call {this} CoWaitForQuit()");
             StartCoroutine(CoWaitForQuit());
         }
 
@@ -97,8 +98,8 @@ namespace Nekoyume.UI
         private IEnumerator CoWaitForQuit()
         {
             yield return new WaitForSeconds(GameConfig.WaitSeconds);
-            if (isActiveAndEnabled)
-                Find<ActionFailPopup>().Show();
+            Debug.Log($"Call {this} ActionFailPopup.Show()");
+            Find<ActionFailPopup>().Show();
         }
     }
 }
