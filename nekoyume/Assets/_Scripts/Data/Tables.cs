@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using Nekoyume.Data.Table;
+using Nekoyume.Game.Factory;
 using Nekoyume.Game.Item;
 using Nekoyume.Model;
 using UnityEngine;
@@ -92,7 +92,7 @@ namespace Nekoyume.Data
 
         public ItemBase CreateItemBase(int itemId)
         {
-            return !Item.TryGetValue(itemId, out var item) ? null : ItemBase.ItemFactory(item, default);
+            return !Item.TryGetValue(itemId, out var item) ? null : ItemFactory.Create(item, default);
         }
         
         public bool TryGetItem(int itemId, out Item item)

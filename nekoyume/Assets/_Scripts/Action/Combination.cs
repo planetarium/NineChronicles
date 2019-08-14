@@ -8,6 +8,7 @@ using Libplanet.Action;
 using Nekoyume.BlockChain;
 using Nekoyume.Data;
 using Nekoyume.Data.Table;
+using Nekoyume.Game.Factory;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Skill;
 using Nekoyume.Model;
@@ -267,7 +268,7 @@ namespace Nekoyume.Action
              * Nekoyume.BlockChain.<CoMiner>d__31:MoveNext() (at Assets/_Scripts/BlockChain/Agent.cs:208)
              * UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
              */
-            return (ItemUsable) ItemBase.ItemFactory(itemEquipment, itemId);
+            return (ItemUsable) ItemFactory.Create(itemEquipment, itemId);
         }
 
         public static Equipment GetEquipment(ItemEquipment itemEquipment, Item monsterParts, decimal roll, Guid itemId)
@@ -290,7 +291,7 @@ namespace Nekoyume.Action
                 skill = null;
             }
 
-            return (Equipment) ItemBase.ItemFactory(itemEquipment, itemId, skill);
+            return (Equipment) ItemFactory.Create(itemEquipment, itemId, skill);
         }
     }
 }

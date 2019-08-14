@@ -8,6 +8,7 @@ namespace Nekoyume.UI.Model
     {
         public readonly ReactiveProperty<int> count = new ReactiveProperty<int>(0);
         public readonly ReactiveProperty<bool> countEnabled = new ReactiveProperty<bool>(true);
+        public readonly ReactiveProperty<bool> dimmed = new ReactiveProperty<bool>(false);
         public readonly ReactiveProperty<Func<CountableItem, bool>> countEnabledFunc = new ReactiveProperty<Func<CountableItem, bool>>();
         
         public CountableItem(ItemBase item, int count) : base(item)
@@ -32,6 +33,7 @@ namespace Nekoyume.UI.Model
             
             count.Dispose();
             countEnabledFunc.Dispose();
+            dimmed.Dispose();
         }
 
         private bool CountEnabledFunc(CountableItem countableItem)

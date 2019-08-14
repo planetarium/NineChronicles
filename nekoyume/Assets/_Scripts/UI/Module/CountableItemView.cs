@@ -27,6 +27,7 @@ namespace Nekoyume.UI.Module
             base.SetData(model);
             Model.count.Subscribe(SetCount).AddTo(_disposablesForSetData);
             Model.countEnabled.Subscribe(countEnabled => countText.enabled = countEnabled).AddTo(_disposablesForSetData);
+            Model.dimmed.Subscribe(SetDim).AddTo(_disposablesForSetData);
 
             UpdateView();
         }

@@ -12,16 +12,14 @@ namespace Nekoyume.UI.Model
         {
             public int id;
             public int amount = 1;
-            public Sprite sprite;
             public bool isEnough;
             public bool isObtained;
 
-            public MaterialInfo(int id, Sprite sprite, int count = 1)
+            public MaterialInfo(int id)
             {
                 this.id = id;
-                this.sprite = sprite;
                 var inventory = States.Instance.currentAvatarState.Value.inventory;
-                isEnough = inventory.HasItem(id, count);
+                isEnough = inventory.HasItem(id);
                 isObtained = true;
             }
         }
@@ -30,7 +28,6 @@ namespace Nekoyume.UI.Model
         public int resultId;
         public int resultAmount = 1;
         public string resultName;
-        public Sprite resultSprite;
         public MaterialInfo[] materialInfos = new MaterialInfo[5];
 
         public RecipeInfo(int id, int resultId, params int[] materialIds)
@@ -38,13 +35,10 @@ namespace Nekoyume.UI.Model
             recipeId = id;
             this.resultId = resultId;
             resultName = GetEquipmentName(resultId);
-            resultSprite = ItemBase.GetSprite(resultId);
 
             for (int i = 0; i < materialInfos.Length; ++i)
             {
-                var sprite = ItemBase.GetSprite(materialIds[i]);
-                int count = materialInfos.Count(item => item != null && item.id == materialIds[i]) + 1;
-                materialInfos[i] = new MaterialInfo(materialIds[i], sprite, count);
+                materialInfos[i] = new MaterialInfo(materialIds[i]);
             }
         }
 

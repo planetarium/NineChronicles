@@ -6,6 +6,7 @@ using Libplanet;
 using Libplanet.Action;
 using Nekoyume.BlockChain;
 using Nekoyume.Data;
+using Nekoyume.Game.Factory;
 using Nekoyume.Game.Item;
 using Nekoyume.State;
 using UnityEngine;
@@ -78,7 +79,7 @@ namespace Nekoyume.Action
         {
             foreach (var pair in Tables.instance.Item)
             {
-                avatarState.inventory.AddFungibleItem(ItemBase.ItemFactory(pair.Value, default), 10);
+                avatarState.inventory.AddFungibleItem(ItemFactory.Create(pair.Value, default), 10);
             }
             
             foreach (var pair in Tables.instance.ItemEquipment.Where(pair => pair.Value.id > GameConfig.DefaultAvatarWeaponId))
@@ -86,7 +87,7 @@ namespace Nekoyume.Action
                 var b = new byte[16];
                 random.NextBytes(b);
                 var itemId = new Guid(b);
-                avatarState.inventory.AddNonFungibleItem((ItemUsable) ItemBase.ItemFactory(pair.Value, itemId));
+                avatarState.inventory.AddNonFungibleItem((ItemUsable) ItemFactory.Create(pair.Value, itemId));
             }
         }
     }
