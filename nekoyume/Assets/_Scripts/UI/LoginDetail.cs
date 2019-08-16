@@ -81,8 +81,8 @@ namespace Nekoyume.UI
             if (!Regex.IsMatch(nickName, GameConfig.AvatarNickNamePattern))
             {
                 Find<Alert>().Show(
-                    "Invaild nickname!",
-                    "Nickname should be 2~10 characters long and only able to contain Hangul, english letter and numbers.");
+                    LocalizationManager.Localize("UI_ERROR"),
+                    LocalizationManager.Localize("UI_INVALID_NICKNAME"));
                 return;
             }
 
