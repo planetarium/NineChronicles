@@ -1,76 +1,78 @@
 using System;
 using Assets.SimpleLocalization;
 using Nekoyume.Data.Table;
+using Nekoyume.EnumType;
+using Nekoyume.Game.Skill;
 
 namespace Nekoyume
 {
     public static class EnumExtension
     {
-        public static string Translate(this Elemental.ElementalType elementalType, SkillEffect.Category category)
+        public static string Translate(this Elemental.ElementalType elementalType, SkillCategory skillCategory)
         {
             switch (elementalType)
             {
                 case Elemental.ElementalType.Normal:
                     return "";
                 case Elemental.ElementalType.Fire:
-                    switch (category)
+                    switch (skillCategory)
                     {
-                        case SkillEffect.Category.Normal:
+                        case SkillCategory.Normal:
                             return LocalizationManager.Localize("UI_SKILL_FIRE_NORMAL");
-                        case SkillEffect.Category.Blow:
-                        case SkillEffect.Category.Double:
+                        case SkillCategory.Blow:
+                        case SkillCategory.Double:
                             return LocalizationManager.Localize("UI_SKILL_FIRE_BLOW");
-                        case SkillEffect.Category.Area:
+                        case SkillCategory.Area:
                             return LocalizationManager.Localize("UI_SKILL_FIRE_AREA");
                         default:
-                            throw new ArgumentOutOfRangeException(nameof(category), category, null);
+                            throw new ArgumentOutOfRangeException(nameof(skillCategory), skillCategory, null);
                     }
                 case Elemental.ElementalType.Water:
-                    switch (category)
+                    switch (skillCategory)
                     {
-                        case SkillEffect.Category.Normal:
+                        case SkillCategory.Normal:
                             return LocalizationManager.Localize("UI_SKILL_WATER_NORMAL");
-                        case SkillEffect.Category.Blow:
-                        case SkillEffect.Category.Double:
-                        case SkillEffect.Category.Area:
+                        case SkillCategory.Blow:
+                        case SkillCategory.Double:
+                        case SkillCategory.Area:
                             return LocalizationManager.Localize("UI_SKILL_WATER_BLOW");
                         default:
-                            throw new ArgumentOutOfRangeException(nameof(category), category, null);
+                            throw new ArgumentOutOfRangeException(nameof(skillCategory), skillCategory, null);
                     }
                 case Elemental.ElementalType.Land:
-                    switch (category)
+                    switch (skillCategory)
                     {
-                        case SkillEffect.Category.Normal:
+                        case SkillCategory.Normal:
                             return LocalizationManager.Localize("UI_SKILL_LAND_NORMAL");
-                        case SkillEffect.Category.Blow:
-                        case SkillEffect.Category.Double:
-                        case SkillEffect.Category.Area:
+                        case SkillCategory.Blow:
+                        case SkillCategory.Double:
+                        case SkillCategory.Area:
                             return LocalizationManager.Localize("UI_SKILL_LAND_BLOW");
                         default:
-                            throw new ArgumentOutOfRangeException(nameof(category), category, null);
+                            throw new ArgumentOutOfRangeException(nameof(skillCategory), skillCategory, null);
                     }
                 case Elemental.ElementalType.Wind:
-                    switch (category)
+                    switch (skillCategory)
                     {
-                        case SkillEffect.Category.Normal:
-                        case SkillEffect.Category.Blow:
-                        case SkillEffect.Category.Double:
+                        case SkillCategory.Normal:
+                        case SkillCategory.Blow:
+                        case SkillCategory.Double:
                             return LocalizationManager.Localize("UI_SKILL_WIND_NORMAL");
-                        case SkillEffect.Category.Area:
+                        case SkillCategory.Area:
                             return LocalizationManager.Localize("UI_SKILL_WIND_AREA");
                         default:
-                            throw new ArgumentOutOfRangeException(nameof(category), category, null);
+                            throw new ArgumentOutOfRangeException(nameof(skillCategory), skillCategory, null);
                     }
                 default:
                     throw new ArgumentOutOfRangeException(nameof(elementalType), elementalType, null);
             }
         }
         
-        public static string Translate(this SkillEffect.Category category, Elemental.ElementalType elementalType)
+        public static string Translate(this SkillCategory skillCategory, Elemental.ElementalType elementalType)
         {
-            switch (category)
+            switch (skillCategory)
             {
-                case SkillEffect.Category.Normal:
+                case SkillCategory.Normal:
                     switch (elementalType)
                     {
                         case Elemental.ElementalType.Normal:
@@ -82,11 +84,11 @@ namespace Nekoyume
                         default:
                             throw new ArgumentOutOfRangeException(nameof(elementalType), elementalType, null);
                     }
-                case SkillEffect.Category.Blow:
+                case SkillCategory.Blow:
                     return LocalizationManager.Localize("UI_SKILL_BLOW");
-                case SkillEffect.Category.Double:
+                case SkillCategory.Double:
                     return LocalizationManager.Localize("UI_SKILL_DOUBLE");
-                case SkillEffect.Category.Area:
+                case SkillCategory.Area:
                     switch (elementalType)
                     {
                         case Elemental.ElementalType.Normal:
@@ -102,7 +104,7 @@ namespace Nekoyume
                             throw new ArgumentOutOfRangeException(nameof(elementalType), elementalType, null);
                     }
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(category), category, null);
+                    throw new ArgumentOutOfRangeException(nameof(skillCategory), skillCategory, null);
             }
         }
     }

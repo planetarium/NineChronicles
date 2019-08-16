@@ -1,4 +1,4 @@
-using Nekoyume.Data.Table;
+using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Util;
 using UnityEngine;
@@ -29,7 +29,7 @@ namespace Nekoyume.Game.VFX.Skill
             position.y += 0.32f;
             var size = target.characterSize == "xs" ? "s" : "m";
             var elemental = skillInfo.Elemental;
-            if (skillInfo.Category == SkillEffect.Category.Area)
+            if (skillInfo.skillCategory == SkillCategory.Area)
             {
                 size = "l";
                 //FIXME 현재 무속성 범위공격 이펙트는 존재하지 않기때문에 임시처리.
@@ -40,7 +40,7 @@ namespace Nekoyume.Game.VFX.Skill
                 position.x = pos.x + 0.5f;
                 position.y = Stage.StageStartPosition;
             }
-            var skillName = $"{skillInfo.Category}_{size}_{elemental}".ToLower();
+            var skillName = $"{skillInfo.skillCategory}_{size}_{elemental}".ToLower();
             var go = _pool.Get(skillName, false, position);
             if (go == null)
             {

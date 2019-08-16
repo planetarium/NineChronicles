@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Nekoyume.Data;
 using Nekoyume.Data.Table;
+using Nekoyume.EnumType;
 
 namespace Nekoyume.Game.Item
 {
@@ -45,18 +46,18 @@ namespace Nekoyume.Game.Item
             }
 
             string targetString;
-            switch (skillEffect.target)
+            switch (skillEffect.skillTargetType)
             {
-                case SkillEffect.Target.Enemy:
+                case SkillTargetType.Enemy:
                     targetString = "단일 적에게";
                     break;
-                case SkillEffect.Target.Enemies:
+                case SkillTargetType.Enemies:
                     targetString = "모든 적에게";
                     break;
-                case SkillEffect.Target.Self:
+                case SkillTargetType.Self:
                     targetString = "자신에게";
                     break;
-                case SkillEffect.Target.Ally:
+                case SkillTargetType.Ally:
                     targetString = "아군에게";
                     break;
                 default:
@@ -65,13 +66,13 @@ namespace Nekoyume.Game.Item
 
             switch (skillEffect.type)
             {
-                case SkillEffect.SkillType.Attack:
+                case SkillType.Attack:
                     sb.AppendLine($"{Data.minChance}% ~ {Data.maxChance}% 확률로 {targetString} {Data.minDamage} ~ {Data.maxDamage}의 데미지를 입힌다.");
                     break;
-                case SkillEffect.SkillType.Buff:
+                case SkillType.Buff:
                     sb.AppendLine($"{Data.minChance}% ~ {Data.maxChance}% 확률로 {targetString} {Data.minDamage} ~ {Data.maxDamage}의 버프를 사용한다.");
                     break;
-                case SkillEffect.SkillType.Debuff:
+                case SkillType.Debuff:
                     sb.AppendLine($"{Data.minChance}% ~ {Data.maxChance}% 확률로 {targetString} {Data.minDamage} ~ {Data.maxDamage}의 디버프를 사용한다.");
                     break;
                 default:

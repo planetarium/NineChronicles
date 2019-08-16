@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Data.Table;
+using Nekoyume.EnumType;
 using Nekoyume.Model;
 
 namespace Nekoyume.Game.Skill
@@ -55,18 +56,18 @@ namespace Nekoyume.Game.Skill
         {
             var targets = caster.targets;
             IEnumerable<CharacterBase> target;
-            switch (effect.target)
+            switch (effect.skillTargetType)
             {
-                case SkillEffect.Target.Enemy:
+                case SkillTargetType.Enemy:
                     target = new[] {targets.First()};
                     break;
-                case SkillEffect.Target.Enemies:
+                case SkillTargetType.Enemies:
                     target = caster.targets;
                     break;
-                case SkillEffect.Target.Self:
+                case SkillTargetType.Self:
                     target = new[] {caster};
                     break;
-                case SkillEffect.Target.Ally:
+                case SkillTargetType.Ally:
                     target = new[] {caster};
                     break;
                 default:

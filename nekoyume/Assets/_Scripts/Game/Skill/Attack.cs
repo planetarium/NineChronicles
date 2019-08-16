@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Data.Table;
+using Nekoyume.EnumType;
 using Nekoyume.Model;
 using Unity.Mathematics;
 
@@ -41,7 +42,7 @@ namespace Nekoyume.Game.Skill
 
                     target.OnDamage(dmg);
 
-                    infos.Add(new Model.Skill.SkillInfo((CharacterBase) target.Clone(), dmg, critical, effect.category,
+                    infos.Add(new Model.Skill.SkillInfo((CharacterBase) target.Clone(), dmg, critical, effect.skillCategory,
                         elementalType));
                 }
             }
@@ -54,7 +55,7 @@ namespace Nekoyume.Game.Skill
             // 플레이어가 사용하는 스킬은 기본 공격력 + 스킬 위력으로 스킬이 나가도록 설정합니다.
             if (caster is Player)
             {
-                if (effect.category != SkillEffect.Category.Normal)
+                if (effect.skillCategory != SkillCategory.Normal)
                 {
                     return power + caster.atk;
                 }

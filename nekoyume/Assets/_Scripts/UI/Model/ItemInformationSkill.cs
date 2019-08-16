@@ -40,8 +40,8 @@ namespace Nekoyume.UI.Model
         public ItemInformationSkill(Skill skill)
         {
             var skillName = skill.elementalType == Elemental.ElementalType.Normal
-                ? $"{skill.effect.category.Translate(skill.elementalType)}"
-                : $"{skill.elementalType.Translate(skill.effect.category)} {skill.effect.category.Translate(skill.elementalType)}";
+                ? $"{skill.effect.skillCategory.Translate(skill.elementalType)}"
+                : $"{skill.elementalType.Translate(skill.effect.skillCategory)} {skill.effect.skillCategory.Translate(skill.elementalType)}";
 
 //            headerKey.Value = LocalizationManager.Localize("UI_SKILL");;
 //            headerValue.Value = "";

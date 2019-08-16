@@ -19,7 +19,7 @@ namespace Nekoyume.Game.Skill
             foreach (var target in GetTarget(caster))
             {
                 target.Heal(power);
-                infos.Add(new Model.Skill.SkillInfo(target, power, caster.IsCritical(), effect.category));
+                infos.Add(new Model.Skill.SkillInfo(target, power, caster.IsCritical(), effect.skillCategory));
             }
 
             return new Model.Heal

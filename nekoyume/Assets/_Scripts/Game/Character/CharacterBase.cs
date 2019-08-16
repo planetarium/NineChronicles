@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using BTAI;
 using Nekoyume.Data.Table;
+using Nekoyume.EnumType;
 using Nekoyume.Game.CC;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
@@ -232,7 +233,7 @@ namespace Nekoyume.Game.Character
                 ActionCamera.instance.Shake();
                 AudioController.PlayDamagedCritical();
                 CriticalText.Show(position, force, dmg);
-                if (info.Category == SkillEffect.Category.Normal)
+                if (info.skillCategory == SkillCategory.Normal)
                     VFXController.instance.Create<BattleAttackCritical01VFX>(pos);
             }
             else
@@ -241,7 +242,7 @@ namespace Nekoyume.Game.Character
                     ? info.Elemental ?? Data.Table.Elemental.ElementalType.Normal
                     : Data.Table.Elemental.ElementalType.Normal);
                 DamageText.Show(position, force, dmg);
-                if (info.Category == SkillEffect.Category.Normal)
+                if (info.skillCategory == SkillCategory.Normal)
                     VFXController.instance.Create<BattleAttack01VFX>(pos);
             }
         }

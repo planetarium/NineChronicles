@@ -1,42 +1,21 @@
 using System;
+using Nekoyume.EnumType;
+using Nekoyume.Game.Skill;
 
 namespace Nekoyume.Data.Table
 {
     [Serializable]
     public class SkillEffect : Row
     {
-        public enum SkillType
-        {
-            Attack,
-            Buff,
-            Debuff,
-        }
-
-        public enum Target
-        {
-            Enemy,
-            Enemies,
-            Self,
-            Ally,
-        }
-
-        public enum Category
-        {
-            Normal,
-            Double,
-            Area,
-            Blow,
-        }
-
         public int id = 0;
         public SkillType type = SkillType.Attack;
-        public Category category = Category.Normal;
-        public Target target = Target.Enemy;
+        public SkillCategory skillCategory = SkillCategory.Normal;
+        public SkillTargetType skillTargetType = SkillTargetType.Enemy;
         public int hitCount = 1;
 
         protected bool Equals(SkillEffect other)
         {
-            return id == other.id && type == other.type && category == other.category && target == other.target &&
+            return id == other.id && type == other.type && skillCategory == other.skillCategory && skillTargetType == other.skillTargetType &&
                    hitCount == other.hitCount;
         }
 
@@ -54,8 +33,8 @@ namespace Nekoyume.Data.Table
             {
                 var hashCode = id;
                 hashCode = (hashCode * 397) ^ (int) type;
-                hashCode = (hashCode * 397) ^ (int) category;
-                hashCode = (hashCode * 397) ^ (int) target;
+                hashCode = (hashCode * 397) ^ (int) skillCategory;
+                hashCode = (hashCode * 397) ^ (int) skillTargetType;
                 hashCode = (hashCode * 397) ^ hitCount;
                 return hashCode;
             }

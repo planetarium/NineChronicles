@@ -1,6 +1,5 @@
-using System;
 using Nekoyume.Data.Table;
-using Nekoyume.Model;
+using Nekoyume.EnumType;
 
 namespace Nekoyume.Game.Skill
 {
@@ -10,33 +9,33 @@ namespace Nekoyume.Game.Skill
         {
             switch (effect.type)
             {
-                case SkillEffect.SkillType.Attack:
-                    switch (effect.target)
+                case SkillType.Attack:
+                    switch (effect.skillTargetType)
                     {
-                        case SkillEffect.Target.Enemy:
-                            switch (effect.category)
+                        case SkillTargetType.Enemy:
+                            switch (effect.skillCategory)
                             {
-                                case SkillEffect.Category.Normal:
+                                case SkillCategory.Normal:
                                     return new NormalAttack(chance, effect, elemental, value);
-                                case SkillEffect.Category.Double:
+                                case SkillCategory.Double:
                                     return new DoubleAttack(chance, effect, elemental, value);
-                                case SkillEffect.Category.Blow:
+                                case SkillCategory.Blow:
                                     return new BlowAttack(chance, effect, elemental, value);
                                 default:
                                     return new NormalAttack(chance, effect, elemental, value);
                             }
-                        case SkillEffect.Target.Enemies:
+                        case SkillTargetType.Enemies:
                             return new AreaAttack(chance, effect, elemental, value);
                     }
                     break;
-                case SkillEffect.SkillType.Buff:
-                    switch (effect.target)
+                case SkillType.Buff:
+                    switch (effect.skillTargetType)
                     {
-                        case SkillEffect.Target.Self:
+                        case SkillTargetType.Self:
                             return new Heal(chance, effect, value);
                     }
                     break;
-                case SkillEffect.SkillType.Debuff:
+                case SkillType.Debuff:
                     break;
             }
             throw new InvalidActionException();
