@@ -37,11 +37,11 @@ namespace Nekoyume.UI.Model
 //            secondLineValue.Value = $"{itemRow.minChance:0%} - {itemRow.maxChance:0%}";
         }
 
-        public ItemInformationSkill(SkillBase skillBase)
+        public ItemInformationSkill(Skill skill)
         {
-            var skillName = skillBase.elementalType == Elemental.ElementalType.Normal
-                ? $"{skillBase.effect.category.Translate(skillBase.elementalType)}"
-                : $"{skillBase.elementalType.Translate(skillBase.effect.category)} {skillBase.effect.category.Translate(skillBase.elementalType)}";
+            var skillName = skill.elementalType == Elemental.ElementalType.Normal
+                ? $"{skill.effect.category.Translate(skill.elementalType)}"
+                : $"{skill.elementalType.Translate(skill.effect.category)} {skill.effect.category.Translate(skill.elementalType)}";
 
 //            headerKey.Value = LocalizationManager.Localize("UI_SKILL");;
 //            headerValue.Value = "";

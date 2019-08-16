@@ -273,7 +273,7 @@ namespace Nekoyume.Model
             }
         }
 
-        public void OverrideSkill(SkillBase skill)
+        public void OverrideSkill(Game.Skill.Skill skill)
         {
             Skills.Clear();
             Skills.Add(skill);

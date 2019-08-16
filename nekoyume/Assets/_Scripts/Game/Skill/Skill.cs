@@ -7,7 +7,7 @@ using Nekoyume.Model;
 namespace Nekoyume.Game.Skill
 {
     [Serializable]
-    public abstract class SkillBase
+    public abstract class Skill
     {
         public readonly decimal chance;
         public readonly SkillEffect effect;
@@ -16,7 +16,7 @@ namespace Nekoyume.Game.Skill
 
         public abstract Model.Skill Use(CharacterBase caster);
 
-        protected SkillBase(decimal chance, SkillEffect effect, Data.Table.Elemental.ElementalType elementalType,
+        protected Skill(decimal chance, SkillEffect effect, Data.Table.Elemental.ElementalType elementalType,
             int power)
         {
             this.chance = chance;
@@ -25,7 +25,7 @@ namespace Nekoyume.Game.Skill
             this.power = power;
         }
 
-        protected bool Equals(SkillBase other)
+        protected bool Equals(Skill other)
         {
             return chance.Equals(other.chance) && Equals(effect, other.effect) &&
                    elementalType == other.elementalType && power == other.power;
@@ -36,7 +36,7 @@ namespace Nekoyume.Game.Skill
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((SkillBase) obj);
+            return Equals((Skill) obj);
         }
 
         public override int GetHashCode()

@@ -212,9 +212,9 @@ namespace Nekoyume.UI.Module
             var statCount = 0;
             if (Model.item.Value.item.Value is ItemUsable itemUsable)
             {
-                if (itemUsable.SkillBase != null)
+                if (itemUsable.Skill != null)
                 {
-                    AddSkill(new Model.ItemInformationSkill(itemUsable.SkillBase));
+                    AddSkill(new Model.ItemInformationSkill(itemUsable.Skill));
                     statCount++;   
                 }
             }

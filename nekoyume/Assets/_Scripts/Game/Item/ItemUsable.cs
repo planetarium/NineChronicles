@@ -11,15 +11,15 @@ namespace Nekoyume.Game.Item
     {
         public new ItemEquipment Data { get; }
         public Stats Stats { get; }
-        public SkillBase SkillBase { get; }
+        public Skill.Skill Skill { get; }
         public Guid ItemId { get; }
 
-        protected ItemUsable(Data.Table.Item data, Guid id, SkillBase skillBase = null)
+        protected ItemUsable(Data.Table.Item data, Guid id, Skill.Skill skill = null)
             : base(data)
         {
             Data = (ItemEquipment) data;
             Stats = new Stats();
-            SkillBase = skillBase;
+            Skill = skill;
 
             if (ValidateAbility(Data.ability1, Data.value1))
             {
@@ -59,15 +59,15 @@ namespace Nekoyume.Game.Item
             var sb = new StringBuilder();
             sb.AppendLine(Stats.GetInformation());
 
-            if (SkillBase == null)
+            if (Skill == null)
             {
                 return sb.ToString().Trim();
             }
 
-            sb.Append($"{SkillBase.chance * 100}% 확률로");
-            sb.Append($" {SkillBase.effect.target}에게");
-            sb.Append($" {SkillBase.power} 위력의");
-            sb.Append($" {SkillBase.elementalType}속성 {SkillBase.effect.type}");
+            sb.Append($"{Skill.chance * 100}% 확률로");
+            sb.Append($" {Skill.effect.target}에게");
+            sb.Append($" {Skill.power} 위력의");
+            sb.Append($" {Skill.elementalType}속성 {Skill.effect.type}");
 
             return sb.ToString().Trim();
         }
@@ -75,7 +75,7 @@ namespace Nekoyume.Game.Item
         public void UpdatePlayer(Player player)
         {
             Stats.UpdatePlayer(player);
-            player.Skills.Add(SkillBase);
+            player.Skills.Add(Skill);
         }
 
         protected bool ValidateAbility(string key, int value)

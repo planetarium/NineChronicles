@@ -14,6 +14,7 @@ using Nekoyume.Model;
 using Nekoyume.UI;
 using UnityEngine;
 using UnityEngine.UI;
+using Skill = Nekoyume.Game.Skill.Skill;
 
 namespace Nekoyume
 {
@@ -33,8 +34,8 @@ namespace Nekoyume
         private StringBuilder _logString = new StringBuilder();
         private BattleLog.Result _result;
         private int[,] _stageRange;
-        private SkillBase[] _skills;
-        private SkillBase _selectedSkill;
+        private Skill[] _skills;
+        private Skill _selectedSkill;
 
         public class DebugRandom : IRandom
         {
@@ -105,7 +106,7 @@ namespace Nekoyume
                 newButton.gameObject.SetActive(true);
             }
 
-            var skills = new List<SkillBase>();
+            var skills = new List<Skill>();
             var values = Enum.GetValues(typeof(Elemental.ElementalType));
             foreach (var row in Tables.instance.SkillEffect.Values)
             {
@@ -208,7 +209,7 @@ namespace Nekoyume
             skillPanel.gameObject.SetActive(true);
         }
 
-        private void SelectSkill(SkillBase skill)
+        private void SelectSkill(Skill skill)
         {
             _selectedSkill = skill;
             DummyBattle(1);

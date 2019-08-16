@@ -8,7 +8,7 @@ using Unity.Mathematics;
 namespace Nekoyume.Game.Skill
 {
     [Serializable]
-    public class Attack : SkillBase
+    public class Attack : Skill
     {
         protected Attack(decimal chance, SkillEffect effect,
             Data.Table.Elemental.ElementalType elemental, int power) : base(chance, effect, elemental, power)

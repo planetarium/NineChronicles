@@ -9,8 +9,8 @@ namespace Nekoyume.Game.Item
     [Serializable]
     public class Food : ItemUsable
     {
-        public Food(Data.Table.Item data, Guid id, SkillBase skillBase = null)
-            : base(data, id, skillBase)
+        public Food(Data.Table.Item data, Guid id, Skill.Skill skill = null)
+            : base(data, id, skill)
         {
         }
     }

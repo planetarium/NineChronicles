@@ -21,8 +21,8 @@ namespace Nekoyume.Game.Item
             return Resources.Load<Sprite>(string.Format(SpritePath, equipmentId));
         }
 
-        public Weapon(Data.Table.Item data, Guid id, SkillBase skillBase = null)
-            : base(data, id, skillBase)
+        public Weapon(Data.Table.Item data, Guid id, Skill.Skill skill = null)
+            : base(data, id, skill)
         {
         }
     }

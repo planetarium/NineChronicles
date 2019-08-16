@@ -12,6 +12,7 @@ using Nekoyume.State;
 using Nekoyume.TableData;
 using Priority_Queue;
 using UnityEngine;
+using Skill = Nekoyume.Game.Skill.Skill;
 
 namespace Nekoyume.Battle
 {
@@ -30,7 +31,7 @@ namespace Nekoyume.Battle
         public List<ItemBase> rewards => _waveRewards.SelectMany(i => i).ToList();
         public const float TurnPriority = 100f;
 
-        public Simulator(IRandom random, AvatarState avatarState, List<Food> foods, int worldStage, SkillBase skill=null)
+        public Simulator(IRandom random, AvatarState avatarState, List<Food> foods, int worldStage, Skill skill=null)
         {
             Random = random;
             _worldStage = worldStage;

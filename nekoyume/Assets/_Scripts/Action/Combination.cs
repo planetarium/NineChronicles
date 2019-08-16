@@ -14,6 +14,7 @@ using Nekoyume.Game.Skill;
 using Nekoyume.Model;
 using Nekoyume.State;
 using UnityEngine;
+using Skill = Nekoyume.Game.Skill.Skill;
 
 namespace Nekoyume.Action
 {
@@ -274,7 +275,7 @@ namespace Nekoyume.Action
         public static Equipment GetEquipment(ItemEquipment itemEquipment, Item monsterParts, decimal roll, Guid itemId)
         {
             var table = Tables.instance.SkillEffect;
-            SkillBase skill;
+            Skill skill;
             try
             {
                 var skillEffect = table.First(r => r.Value.id == monsterParts.skillId);

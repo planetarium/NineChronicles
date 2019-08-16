@@ -32,7 +32,7 @@ namespace Nekoyume.Model
         public Game.Elemental defElement;
         public readonly Skills Skills = new Skills();
 
-        private SkillBase _selectedSkill;
+        private Game.Skill.Skill _selectedSkill;
 
         [NonSerialized] private Root _root;
         
@@ -143,11 +143,11 @@ namespace Nekoyume.Model
     }
 
     [Serializable]
-    public class Skills : IEnumerable<SkillBase>
+    public class Skills : IEnumerable<Game.Skill.Skill>
     {
-        private readonly List<SkillBase> _skills = new List<SkillBase>();
+        private readonly List<Game.Skill.Skill> _skills = new List<Game.Skill.Skill>();
 
-        public void Add(SkillBase s)
+        public void Add(Game.Skill.Skill s)
         {
             if (s is null)
             {
@@ -162,7 +162,7 @@ namespace Nekoyume.Model
             _skills.Clear();
         }
 
-        public IEnumerator<SkillBase> GetEnumerator()
+        public IEnumerator<Game.Skill.Skill> GetEnumerator()
         {
             return _skills.GetEnumerator();
         }
@@ -172,7 +172,7 @@ namespace Nekoyume.Model
             return GetEnumerator();
         }
 
-        public SkillBase Select(IRandom random)
+        public Game.Skill.Skill Select(IRandom random)
         {
             var selected = _skills
                 .Select(skill => new {skill, chance = random.Next(0, 100000) * 0.00001m})

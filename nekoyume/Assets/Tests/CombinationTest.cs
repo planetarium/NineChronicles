@@ -25,7 +25,7 @@ namespace Tests
 
             var result = Nekoyume.Action.Combination.GetEquipment(equipment, parts, 0, default);
             Assert.NotNull(result);
-            Assert.Null(result.SkillBase);
+            Assert.Null(result.Skill);
         }
 
         [Test]
@@ -37,9 +37,9 @@ namespace Tests
 
             var result = Nekoyume.Action.Combination.GetEquipment(equipment, parts, 0, default);
             Assert.NotNull(result);
-            Assert.AreEqual(parts.minChance, result.SkillBase.chance);
-            Assert.AreEqual(parts.elemental, result.SkillBase.elementalType);
-            Assert.AreEqual(parts.minDamage, result.SkillBase.power);
+            Assert.AreEqual(parts.minChance, result.Skill.chance);
+            Assert.AreEqual(parts.elemental, result.Skill.elementalType);
+            Assert.AreEqual(parts.minDamage, result.Skill.power);
         }
 
         [UnityTest]

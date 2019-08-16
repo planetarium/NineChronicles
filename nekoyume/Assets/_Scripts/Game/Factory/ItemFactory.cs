@@ -9,12 +9,12 @@ namespace Nekoyume.Game.Factory
 {
     public class ItemFactory : MonoBehaviour
     {
-        public static ItemBase CreateMaterial(int itemId, Guid guid, SkillBase skillBase = null)
+        public static ItemBase CreateMaterial(int itemId, Guid guid, Skill.Skill skill = null)
         {
             Data.Table.Item itemData;
             if (Tables.instance.TryGetItem(itemId, out itemData))
             {
-                return Create(itemData, guid, skillBase);
+                return Create(itemData, guid, skill);
             }
             else
             {
@@ -22,12 +22,12 @@ namespace Nekoyume.Game.Factory
             }
         }
 
-        public static ItemBase CreateEquipment(int itemId, Guid guid, SkillBase skillBase = null)
+        public static ItemBase CreateEquipment(int itemId, Guid guid, Skill.Skill skill = null)
         {
             Data.Table.ItemEquipment itemData;
             if (Tables.instance.TryGetItemEquipment(itemId, out itemData))
             {
-                return Create(itemData, guid, skillBase);
+                return Create(itemData, guid, skill);
             }
             else
             {
@@ -35,7 +35,7 @@ namespace Nekoyume.Game.Factory
             }
         }
 
-        public static ItemBase Create(Data.Table.Item itemData, Guid id, SkillBase skillBase = null)
+        public static ItemBase Create(Data.Table.Item itemData, Guid id, Skill.Skill skill = null)
         {
             var type = itemData.cls.ToEnumItemType();
             switch (type)
@@ -43,25 +43,25 @@ namespace Nekoyume.Game.Factory
                 case ItemBase.ItemType.Material:
                     return new Material(itemData);
                 case ItemBase.ItemType.Weapon:
-                    return new Weapon(itemData, id, skillBase);
+                    return new Weapon(itemData, id, skill);
                 case ItemBase.ItemType.RangedWeapon:
-                    return new RangedWeapon(itemData, id, skillBase);
+                    return new RangedWeapon(itemData, id, skill);
                 case ItemBase.ItemType.Armor:
-                    return new Armor(itemData, id, skillBase);
+                    return new Armor(itemData, id, skill);
                 case ItemBase.ItemType.Belt:
-                    return new Belt(itemData, id, skillBase);
+                    return new Belt(itemData, id, skill);
                 case ItemBase.ItemType.Necklace:
-                    return new Necklace(itemData, id, skillBase);
+                    return new Necklace(itemData, id, skill);
                 case ItemBase.ItemType.Ring:
-                    return new Ring(itemData, id, skillBase);
+                    return new Ring(itemData, id, skill);
                 case ItemBase.ItemType.Helm:
-                    return new Helm(itemData, id, skillBase);
+                    return new Helm(itemData, id, skill);
                 case ItemBase.ItemType.Set:
-                    return new SetItem(itemData, id, skillBase);
+                    return new SetItem(itemData, id, skill);
                 case ItemBase.ItemType.Food:
-                    return new Food(itemData, id, skillBase);
+                    return new Food(itemData, id, skill);
                 case ItemBase.ItemType.Shoes:
-                    return new Shoes(itemData, id, skillBase);
+                    return new Shoes(itemData, id, skill);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);
             }
