@@ -15,6 +15,7 @@ using Nekoyume.Model;
 using Nekoyume.UI;
 using Nekoyume.Game.VFX;
 using Nekoyume.Game.VFX.Skill;
+using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using UnityEngine;
 
@@ -206,7 +207,7 @@ namespace Nekoyume.Game
 
         private IEnumerator CoStageEnter(int stage)
         {
-            if (!Tables.instance.Background.TryGetValue(stage, out Data.Table.Background data))
+            if (!Game.instance.TableSheets.BackgroundSheet.TryGetValue(stage, out var data))
             {
                 yield break;
             }
@@ -214,7 +215,7 @@ namespace Nekoyume.Game
             _battleResultModel = new BattleResult.Model();
             
             id = stage;
-            zone = data.background;
+            zone = data.Background;
             LoadBackground(zone, 3.0f);
             RunPlayer();
             Widget.Find<Gold>().Close();
@@ -226,7 +227,7 @@ namespace Nekoyume.Game
 
             yield return StartCoroutine(title.CoClose());
 
-            AudioController.instance.PlayMusic(data.bgm);
+            AudioController.instance.PlayMusic(data.BGM);
         }
 
         private IEnumerator CoStageEnd(BattleLog log)

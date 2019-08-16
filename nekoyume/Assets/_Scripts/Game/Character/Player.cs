@@ -98,19 +98,11 @@ namespace Nekoyume.Game.Character
             InitStats(character);
 
             if (ReferenceEquals(_speechBubble, null))
-                _speechBubble = Widget.Create<SpeechBubble>();
-            if (!ReferenceEquals(_speechBubble, null))
             {
-                Setting speechSetting;
-                if (Data.Tables.instance.Settings.TryGetValue("player_speech_break_time", out speechSetting))
-                {
-                    _speechBubble.speechBreakTime = speechSetting.GetValueAsFloat();
-                }
-                else
-                {
-                    _speechBubble.speechBreakTime = 5.0f; // set default
-                }
+                _speechBubble = Widget.Create<SpeechBubble>();
             }
+
+            _speechBubble.speechBreakTime = GameConfig.PlayerSpeechBreakTime;
         }
 
         public void UpdateSet(Armor armor, Weapon weapon = null)
