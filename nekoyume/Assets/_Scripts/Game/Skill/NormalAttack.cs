@@ -87,9 +87,9 @@ namespace Nekoyume.Game.Skill
     }
 
     [Serializable]
-    public class Attack : AttackBase
+    public class NormalAttack : AttackBase
     {
-        public Attack(decimal chance, SkillEffect effect,
+        public NormalAttack(decimal chance, SkillEffect effect,
             Data.Table.Elemental.ElementalType elemental, int power) : base(chance, effect, elemental, power)
         {
         }

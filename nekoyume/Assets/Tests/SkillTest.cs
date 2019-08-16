@@ -42,7 +42,7 @@ namespace Tests
         public void Attack()
         {
             var caster = _simulator.Player;
-            var attack = caster.Skills.First(s => s is Nekoyume.Game.Skill.Attack);
+            var attack = caster.Skills.First(s => s is Nekoyume.Game.Skill.NormalAttack);
             var result = attack.Use(caster);
             var target = caster.targets.First();
 

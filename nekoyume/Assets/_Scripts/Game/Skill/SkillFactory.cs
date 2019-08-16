@@ -17,13 +17,13 @@ namespace Nekoyume.Game.Skill
                             switch (effect.category)
                             {
                                 case SkillEffect.Category.Normal:
-                                    return new Attack(chance, effect, elemental, value);
+                                    return new NormalAttack(chance, effect, elemental, value);
                                 case SkillEffect.Category.Double:
                                     return new DoubleAttack(chance, effect, elemental, value);
                                 case SkillEffect.Category.Blow:
                                     return new Blow(chance, effect, elemental, value);
                                 default:
-                                    return new Attack(chance, effect, elemental, value);
+                                    return new NormalAttack(chance, effect, elemental, value);
                             }
                         case SkillEffect.Target.Enemies:
                             return new AreaAttack(chance, effect, elemental, value);
