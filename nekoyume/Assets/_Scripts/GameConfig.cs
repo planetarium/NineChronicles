@@ -6,7 +6,9 @@ namespace Nekoyume
     public class GameConfig
     {
         public const int SlotCount = 3;
-        
+        public const float WaitSeconds = 180f;
+        public const string AvatarNickNamePattern = @"\b[0-9°¡-ÆRa-zA-Z]{2,10}\b";
+
         #region action
 
         public const int DefaultAvatarCharacterId = 100010;
@@ -71,7 +73,5 @@ namespace Nekoyume
         };
         
         public static readonly int2 ScreenSize = new int2(1136, 640);
-
-        public const float WaitSeconds = 180f;
     }
 }

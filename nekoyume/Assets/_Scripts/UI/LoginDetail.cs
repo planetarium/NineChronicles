@@ -8,6 +8,7 @@ using Nekoyume.Model;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Text.RegularExpressions;
 
 namespace Nekoyume.UI
 {
@@ -77,10 +78,11 @@ namespace Nekoyume.UI
         public void CreateClick()
         {
             var nickName = nameField.text;
-
-            if (nickName.Length <= 2)
+            if (!Regex.IsMatch(nickName, GameConfig.AvatarNickNamePattern))
             {
-                Debug.LogWarning("Minimum length of nickname : 2");
+                Find<Alert>().Show(
+                    "Invaild nickname!",
+                    "Nickname should be 2~10 characters long and only able to contain Hangul, english letter and numbers.");
                 return;
             }
 

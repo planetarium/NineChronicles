@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.BlockChain;
@@ -42,7 +43,8 @@ namespace Nekoyume.Action
                 states = states.SetState(ctx.Signer, MarkChanged);
                 return states.SetState(avatarAddress, MarkChanged);
             }
-            if(name.Length <= 2)
+
+            if (!Regex.IsMatch(name, GameConfig.AvatarNickNamePattern))
             {
                 return states;
             }
