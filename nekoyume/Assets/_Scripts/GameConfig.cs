@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+ï»¿using System.Collections.Generic;
 using Unity.Mathematics;
 
 namespace Nekoyume
@@ -7,7 +7,7 @@ namespace Nekoyume
     {
         public const int SlotCount = 3;
         public const float WaitSeconds = 180f;
-        public const string AvatarNickNamePattern = @"\b[0-9°¡-ÆRa-zA-Z]{2,10}\b";
+        public const string AvatarNickNamePattern = @"\b[0-9ê°€-íž£a-zA-Z]{2,10}\b";
 
         #region action
 
