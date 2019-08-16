@@ -5,9 +5,9 @@ using Nekoyume.Model;
 namespace Nekoyume.Game.Skill
 {
     [Serializable]
-    public class Blow : AttackBase
+    public class BlowAttack : Attack
     {
-        public Blow(decimal chance, SkillEffect effect, Data.Table.Elemental.ElementalType elemental, int power)
+        public BlowAttack(decimal chance, SkillEffect effect, Data.Table.Elemental.ElementalType elemental, int power)
             : base(chance, effect, elemental, power)
         {
         }

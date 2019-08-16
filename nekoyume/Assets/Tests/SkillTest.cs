@@ -60,7 +60,7 @@ namespace Tests
         {
             var caster = _simulator.Player;
             var effect = Tables.instance.SkillEffect.Values.First(r => r.category == SkillEffect.Category.Blow);
-            var blow = new Nekoyume.Game.Skill.Blow(1, effect, Elemental.ElementalType.Normal, caster.atk);
+            var blow = new Nekoyume.Game.Skill.BlowAttack(1, effect, Elemental.ElementalType.Normal, caster.atk);
             var result = blow.Use(caster);
             var target = caster.targets.First();
 

@@ -21,7 +21,7 @@ namespace Nekoyume.Game.Skill
                                 case SkillEffect.Category.Double:
                                     return new DoubleAttack(chance, effect, elemental, value);
                                 case SkillEffect.Category.Blow:
-                                    return new Blow(chance, effect, elemental, value);
+                                    return new BlowAttack(chance, effect, elemental, value);
                                 default:
                                     return new NormalAttack(chance, effect, elemental, value);
                             }
