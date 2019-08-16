@@ -29,7 +29,7 @@ namespace Nekoyume.TableData
         [UnityTest]
         public IEnumerator GetEnumeratorTest()
         {
-            var enumerator = _tableSheets.Background.GetEnumerator();
+            var enumerator = _tableSheets.BackgroundSheet.GetEnumerator();
             int previousKey;
 
             if (enumerator.MoveNext())

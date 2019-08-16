@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Nekoyume.TableData;
 using UniRx;
 using UnityEngine;
 
@@ -48,7 +49,7 @@ namespace Nekoyume.Game.Character
             id = spawnCharacter.id;
             StartRun();
 
-            if (!ShowSpeech("ENEMY", spawnCharacter.data.id))
+            if (!ShowSpeech("ENEMY", spawnCharacter.data.Id))
             {
                 ShowSpeech("ENEMY_INIT", spawnCharacter.spawnIndex);
             }
@@ -89,7 +90,7 @@ namespace Nekoyume.Game.Character
         
         private void InitStats(Model.Monster character)
         {
-            var stats = character.data.GetStats(character.level);
+            var stats = character.data.ToStats(character.level);
             HP = stats.HP;
             ATK = stats.Damage;
             DEF = stats.Defense;

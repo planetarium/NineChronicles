@@ -7,6 +7,7 @@ using Nekoyume.Data.Table;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Skill;
 using Nekoyume.State;
+using Nekoyume.TableData;
 
 namespace Nekoyume.Model
 {
@@ -75,30 +76,27 @@ namespace Nekoyume.Model
 
         private void CalcStats(int lv)
         {
-            var stats = Tables.instance.Character;
-            var levelTable = Tables.instance.Level;
-            stats.TryGetValue(characterId, out var data);
-            if (data == null)
+            var game = Game.Game.instance;
+            if (!game.TableSheets.CharacterSheet.TryGetValue(characterId, out var characterRow))
+            {
+                throw new InvalidActionException();   
+            }
+
+            if (!game.TableSheets.LevelSheet.TryGetValue(lv, out var levelRow))
             {
                 throw new InvalidActionException();
             }
 
-            levelTable.TryGetValue(lv, out var expData);
-            if (expData == null)
-            {
-                throw new InvalidActionException();
-            }
-
-            var statsData = data.GetStats(lv);
+            var statsData = characterRow.ToStats(lv);
             currentHP = statsData.HP;
             atk = statsData.Damage;
             def = statsData.Defense;
             hp = statsData.HP;
-            expMax = expData.exp + expData.expNeed;
-            expNeed = expData.expNeed;
+            expMax = levelRow.Exp + levelRow.ExpNeed;
+            expNeed = levelRow.ExpNeed;
             luck = statsData.Luck;
-            runSpeed = data.runSpeed;
-            characterSize = data.size;
+            runSpeed = characterRow.RunSpeed;
+            characterSize = characterRow.Size;
             var setMap = new Dictionary<int, int>();
             foreach (var equipment in Equipments)
             {
@@ -113,7 +111,7 @@ namespace Nekoyume.Model
             }
 
             // 플레이어 사거리가 장비에 영향을 안받도록 고정시킴.
-            attackRange = data.attackRange;
+            attackRange = characterRow.AttackRange;
 
             foreach (var pair in setMap)
             {
@@ -206,37 +204,18 @@ namespace Nekoyume.Model
 
         private void LevelUp()
         {
-            var levelTable = Tables.instance.Level;
-            Level expData;
-            var row = levelTable.First(r => r.Value.exp + r.Value.expNeed > exp);
-            levelTable.TryGetValue(row.Key, out expData);
-            if (expData == null)
-            {
-                throw new InvalidActionException();
-            }
-
-            level = expData.level;
+            level = Game.Game.instance.TableSheets.LevelSheet.GetLevel(exp);
         }
 
         public decimal GetAdditionalStatus(string key)
         {
-            var stats = Tables.instance.Character;
-            var levelTable = Tables.instance.Level;
-            Character data;
-            stats.TryGetValue(characterId, out data);
-            if (data == null)
+            var game = Game.Game.instance;
+            if (!game.TableSheets.CharacterSheet.TryGetValue(characterId, out var characterRow))
             {
                 throw new KeyNotFoundException($"invalid character id: `{characterId}`.");
             }
 
-            Level expData;
-            levelTable.TryGetValue(level, out expData);
-            if (expData == null)
-            {
-                throw new KeyNotFoundException($"invalid character level: `{level}`.");
-            }
-
-            var statsData = data.GetStats(level);
+            var statsData = characterRow.ToStats(level);
 
             decimal value;
             switch (key)

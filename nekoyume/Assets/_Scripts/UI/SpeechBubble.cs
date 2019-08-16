@@ -25,7 +25,7 @@ namespace Nekoyume.UI
         public float speechWaitTime = 1.0f;
         public float bubbleTweenTime = 0.2f;
 
-        public float speechBreakTime = 0.0f;
+        public float speechBreakTime;
         public float destroyTime = 4.0f;
 
         private int _speechCount = 0;

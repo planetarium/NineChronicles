@@ -10,19 +10,12 @@ namespace Nekoyume.Data
 {
     public class Tables : MonoSingleton<Tables>
     {
-        public Table<Level> Level { get; private set; }
-        public Table<World> World { get; private set; }
-        public Table<WorldChapter> WorldChapter { get; private set; }
-        public Table<Stage> Stage { get; private set; }
-        public Table<Character> Character { get; private set; }
         public Table<Item> Item { get; private set; }
         public Table<Recipe> Recipe { get; private set; }
         public Table<Elemental> Elemental { get; private set; }
         public Table<ItemEquipment> ItemEquipment { get; private set; }
-        public Table<StageReward> StageReward { get; private set; }
         public Table<SetEffect> SetEffect { get; private set; }
         public Table<SkillEffect> SkillEffect { get; private set; }
-        public Table<Setting> Settings { get; private set; }
         public Table<StageDialog> StageDialogs { get; private set; }
         public Table<Quest> Quest { get; private set; }
         public Table<CollectQuest> CollectQuest { get; private set; }
@@ -31,48 +24,36 @@ namespace Nekoyume.Data
 
         public void Initialize()
         {
-            Level = new Table<Level>();
-            Load(Level, "DataTable/level");
-
-            World = new Table<World>();
-            Load(World, "DataTable/world");
-            
-            WorldChapter = new Table<WorldChapter>();
-            Load(WorldChapter, "DataTable/world_chapter");
-            
-            Stage = new Table<Stage>();
-            Load(Stage, "DataTable/stage");
-
-            Character = new Table<Character>();
-            Load(Character, "DataTable/character");
-
             Item = new Table<Item>();
             Load(Item, "DataTable/item");
+            
             ItemEquipment = new Table<ItemEquipment>();
             Load(ItemEquipment, "DataTable/item_equip");
 
             Recipe = new Table<Recipe>();
             Load(Recipe, "DataTable/recipe");
+            
             Elemental = new Table<Elemental>();
             Load(Elemental, "DataTable/elemental");
 
-            StageReward = new Table<StageReward>();
-            Load(StageReward, "DataTable/stage_reward");
             SetEffect = new Table<SetEffect>();
             Load(SetEffect, "DataTable/set_effect");
+            
             SkillEffect = new Table<SkillEffect>();
             Load(SkillEffect, "DataTable/skill_effect");
-
-            Settings = new Table<Setting>();
-            Load(Settings, "DataTable/settings");
+            
             StageDialogs = new Table<StageDialog>();
             Load(StageDialogs, "DataTable/stage_dialog");
+            
             Quest = new Table<Quest>();
             Load(Quest, "DataTable/battle_quest");
+            
             CollectQuest = new Table<CollectQuest>();
             Load(CollectQuest, "DataTable/collect_quest");
+            
             CombinationQuest = new Table<CombinationQuest>();
             Load(CombinationQuest, "DataTable/combination_quest");
+            
             TradeQuest = new Table<TradeQuest>();
             Load(TradeQuest, "DataTable/trade_quest");
         }
