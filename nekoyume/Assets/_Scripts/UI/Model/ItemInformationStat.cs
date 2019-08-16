@@ -1,12 +1,12 @@
+using System;
 using Nekoyume.Model;
 using UniRx;
 using UnityEngine;
 
 namespace Nekoyume.UI.Model
 {
-    public class ItemInformationStat
+    public class ItemInformationStat : IDisposable
     {
-        public readonly ReactiveProperty<Sprite> image = new ReactiveProperty<Sprite>();
         public readonly ReactiveProperty<string> key = new ReactiveProperty<string>();
         public readonly ReactiveProperty<string> value = new ReactiveProperty<string>();
 
@@ -20,6 +20,12 @@ namespace Nekoyume.UI.Model
         {
             key.Value = statMap.Key;
             value.Value = $"{statMap.TotalValue}";
+        }
+
+        public void Dispose()
+        {
+            key.Dispose();
+            value.Dispose();
         }
     }
 }

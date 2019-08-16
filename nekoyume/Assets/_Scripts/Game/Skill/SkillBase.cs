@@ -6,13 +6,8 @@ using Nekoyume.Model;
 
 namespace Nekoyume.Game.Skill
 {
-    public interface ISkill
-    {
-        Model.Skill Use(CharacterBase caster);
-    }
-
     [Serializable]
-    public abstract class SkillBase : ISkill
+    public abstract class SkillBase
     {
         public readonly decimal chance;
         public readonly SkillEffect effect;

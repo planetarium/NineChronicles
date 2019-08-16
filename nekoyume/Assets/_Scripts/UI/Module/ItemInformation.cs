@@ -96,7 +96,6 @@ namespace Nekoyume.UI.Module
                     image.enabled = false;
                 }
 
-                // 텍스트.
                 iconArea.commonText.enabled = false;
 
                 return;
@@ -132,6 +131,7 @@ namespace Nekoyume.UI.Module
             }
             else
             {
+                // todo: 내구도가 생기면 이곳에서 표시해줘야 함.
                 iconArea.commonText.enabled = false;
             }
         }
@@ -220,10 +220,10 @@ namespace Nekoyume.UI.Module
             }
             else
             {
-                var data = Model.item.Value.item.Value.Data;
-                if (data.skillId > 0)
+                var skillId = Model.item.Value.item.Value.Data.skillId;
+                if (Game.Game.instance.TableSheets.SkillSheet.TryGetValue(skillId, out var skillRow))
                 {
-                    AddSkill(new Model.ItemInformationSkill(data));
+                    AddSkill(new Model.ItemInformationSkill(skillRow));
                     statCount++;
                 }
             }

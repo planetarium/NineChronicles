@@ -29,9 +29,9 @@ namespace Nekoyume.UI.Module
         public void Hide()
         {
             gameObject.SetActive(false);
-            
-            _disposablesForModel.DisposeAllAndClear();
+            Model.Dispose();
             Model = null;
+            _disposablesForModel.DisposeAllAndClear();
         }
     }
 }

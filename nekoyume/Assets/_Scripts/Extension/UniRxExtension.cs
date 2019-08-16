@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using UniRx;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nekoyume
 {
@@ -26,6 +28,11 @@ namespace Nekoyume
             }
             collection.Dispose();
             collection.Clear();
+        }
+        
+        public static IDisposable SubscribeToImage(this IObservable<Sprite> source, Image text)
+        {
+            return source.SubscribeWithState(text, (x, t) => t.sprite = x);
         }
     }
 }
