@@ -42,6 +42,10 @@ namespace Nekoyume.Action
                 states = states.SetState(ctx.Signer, MarkChanged);
                 return states.SetState(avatarAddress, MarkChanged);
             }
+            if(name.Length <= 2)
+            {
+                return states;
+            }
 
             var agentState = (AgentState) states.GetState(ctx.Signer) ?? new AgentState(ctx.Signer);
             var avatarState = (AvatarState) states.GetState(avatarAddress);

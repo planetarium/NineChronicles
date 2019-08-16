@@ -76,9 +76,15 @@ namespace Nekoyume.UI
 
         public void CreateClick()
         {
-            Find<GrayLoadingScreen>()?.Show();
-            
             var nickName = nameField.text;
+
+            if (nickName.Length <= 2)
+            {
+                Debug.LogWarning("Minimum length of nickname : 2");
+                return;
+            }
+
+            Find<GrayLoadingScreen>()?.Show();
 
             ActionManager.instance
                 .CreateAvatar(AvatarManager.CreateAvatarAddress(), _selectedIndex, nickName)
