@@ -1,12 +1,11 @@
-using Nekoyume.Data.Table;
 using Nekoyume.Model;
+using Nekoyume.TableData;
 
 namespace Nekoyume.Game.Skill
 {
     public class NormalAttack : Attack
     {
-        public NormalAttack(decimal chance, SkillEffect effect,
-            Data.Table.Elemental.ElementalType elemental, int power) : base(chance, effect, elemental, power)
+        public NormalAttack(SkillSheet.Row skillRow, int power, decimal chance) : base(skillRow, power, chance)
         {
         }
 

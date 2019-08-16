@@ -18,20 +18,18 @@ namespace Nekoyume.UI.Module
         
         private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
 
-        private string _power;
-        private string _chance;
-
         public bool IsShow => gameObject.activeSelf;
         public Model.ItemInformationSkill Model { get; private set; }
 
-        private void Awake()
-        {
-            _power = LocalizationManager.Localize("UI_POWER");
-            _chance = LocalizationManager.Localize("UI_CHANCE");
-        }
-
         public void Show(Model.ItemInformationSkill model)
         {
+            if (model is null)
+            {
+                Hide();
+                
+                return;
+            }
+            
             _disposablesForModel.DisposeAllAndClear();
             Model = model;
             Model.iconSprite.SubscribeToImage(iconImage).AddTo(_disposablesForModel);
@@ -44,17 +42,9 @@ namespace Nekoyume.UI.Module
         public void Hide()
         {
             gameObject.SetActive(false);
-            Model.Dispose();
+            Model?.Dispose();
             Model = null;
             _disposablesForModel.DisposeAllAndClear();
-        }
-
-        private void Subscribe(SkillSheet.Row row)
-        {
-            iconImage.sprite = row.GetIcon();
-            nameText.text = row.GetLocalizedName();
-            powerText.text = $"{_power}: ??";
-            chanceText.text = $"{_chance}: ??";
         }
     }
 }

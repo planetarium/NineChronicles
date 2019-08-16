@@ -38,7 +38,7 @@ namespace Tests
             var result = Nekoyume.Action.Combination.GetEquipment(equipment, parts, 0, default);
             Assert.NotNull(result);
             Assert.AreEqual(parts.minChance, result.Skill.chance);
-            Assert.AreEqual(parts.elemental, result.Skill.elementalType);
+            Assert.AreEqual(parts.elemental, result.Skill.skillRow.ElementalType);
             Assert.AreEqual(parts.minDamage, result.Skill.power);
         }
 

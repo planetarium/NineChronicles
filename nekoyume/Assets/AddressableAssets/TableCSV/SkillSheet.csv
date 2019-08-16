@@ -1,2 +1,22 @@
-id,name
-100000,공격
+id,_name,elemental_type,skill_effect_id,_skill_type,_skill_target_type,_skill_target_count,_hit_count
+100000,기본 공격,Normal,1
+100001,일격,Normal,2
+100002,연사,Normal,3
+100003,광역 난사,Normal,4
+110000,불 공격,Fire,1
+110001,불꽃 일격,Fire,2
+110002,불꽃 연사,Fire,3
+110003,용암 해일,Fire,4
+120000,물 공격,Water,1
+120001,얼음 일격,Water,2
+120002,얼음 연사,Water,3
+120003,얼음 해일,Water,4
+130000,땅 공격,Land,1
+130001,모래 일격,Land,2
+130002,모래 연사,Land,3
+130003,모래 폭풍,Land,4
+140000,바람 공격,Wind,1
+140001,바람 일격,Wind,2
+140002,바람 연사,Wind,3
+140003,거대 태풍,Wind,4
+200000,힐,Normal,5

@@ -70,6 +70,7 @@ namespace Nekoyume.UI.Module
         public void Clear()
         {
             _disposables.DisposeAllAndClear();
+            Model?.Dispose();
             Model = null;
 
             UpdateView();
@@ -220,10 +221,10 @@ namespace Nekoyume.UI.Module
             }
             else
             {
-                var skillId = Model.item.Value.item.Value.Data.skillId;
-                if (Game.Game.instance.TableSheets.SkillSheet.TryGetValue(skillId, out var skillRow))
+                var itemRow = Model.item.Value.item.Value.Data;
+                if (itemRow.skillId != 0)
                 {
-                    AddSkill(new Model.ItemInformationSkill(skillRow));
+                    AddSkill(new Model.ItemInformationSkill(itemRow));
                     statCount++;
                 }
             }

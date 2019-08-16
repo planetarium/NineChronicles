@@ -115,8 +115,12 @@ namespace Nekoyume.Model
 
         protected virtual void SetSkill()
         {
-            //기본공격 설정
-            var attack = SkillFactory.Get(1.0m, new SkillEffect(), Elemental.ElementalType.Normal, atk);
+            if (!Game.Game.instance.TableSheets.SkillSheet.TryGetValue(100000, out var skillRow))
+            {
+                throw new KeyNotFoundException("100000");
+            }
+            
+            var attack = SkillFactory.Get(skillRow, atk, 1m);
             Skills.Add(attack);
         }
 

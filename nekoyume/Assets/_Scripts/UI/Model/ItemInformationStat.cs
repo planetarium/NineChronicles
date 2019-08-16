@@ -1,7 +1,6 @@
 using System;
 using Nekoyume.Model;
 using UniRx;
-using UnityEngine;
 
 namespace Nekoyume.UI.Model
 {

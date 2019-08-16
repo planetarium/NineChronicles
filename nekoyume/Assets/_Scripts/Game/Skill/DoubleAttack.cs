@@ -1,15 +1,13 @@
 using System;
-using System.Linq;
-using Nekoyume.Data.Table;
 using Nekoyume.Model;
+using Nekoyume.TableData;
 
 namespace Nekoyume.Game.Skill
 {
     [Serializable]
     public class DoubleAttack : Attack
     {
-        public DoubleAttack(decimal chance, SkillEffect effect,
-            Data.Table.Elemental.ElementalType elemental, int power) : base(chance, effect, elemental, power)
+        public DoubleAttack(SkillSheet.Row skillRow, int power, decimal chance) : base(skillRow, power, chance)
         {
         }
 

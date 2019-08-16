@@ -11,6 +11,7 @@ using Nekoyume.Game.Character;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Skill;
 using Nekoyume.Model;
+using Nekoyume.TableData;
 using Nekoyume.UI;
 using UnityEngine;
 using UnityEngine.UI;
@@ -107,18 +108,14 @@ namespace Nekoyume
             }
 
             var skills = new List<Skill>();
-            var values = Enum.GetValues(typeof(Elemental.ElementalType));
-            foreach (var row in Tables.instance.SkillEffect.Values)
+            foreach (var skillRow in Game.Game.instance.TableSheets.SkillSheet)
             {
-                foreach (Elemental.ElementalType elemental in values)
-                {
-                    var skill = SkillFactory.Get(1.0m, row, elemental, 50);
-                    skills.Add(skill);
-                    Button newButton = Instantiate(buttonBase, skillList.content);
-                    newButton.GetComponentInChildren<Text>().text = $"{skill.GetType().Name}_{elemental}";
-                    newButton.onClick.AddListener(() => SelectSkill(skill));
-                    newButton.gameObject.SetActive(true);
-                }
+                var skill = SkillFactory.Get(skillRow, 50, 1m);
+                skills.Add(skill);
+                Button newButton = Instantiate(buttonBase, skillList.content);
+                newButton.GetComponentInChildren<Text>().text = $"{skillRow.GetLocalizedName()}_{skillRow.ElementalType}";
+                newButton.onClick.AddListener(() => SelectSkill(skill));
+                newButton.gameObject.SetActive(true);
             }
 
             _skills = skills.ToArray();

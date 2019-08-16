@@ -67,7 +67,7 @@ namespace Nekoyume.Game.Item
             sb.Append($"{Skill.chance * 100}% 확률로");
             sb.Append($" {Skill.effect.skillTargetType}에게");
             sb.Append($" {Skill.power} 위력의");
-            sb.Append($" {Skill.elementalType}속성 {Skill.effect.type}");
+            sb.Append($" {Skill.skillRow.ElementalType}속성 {Skill.effect.type}");
 
             return sb.ToString().Trim();
         }

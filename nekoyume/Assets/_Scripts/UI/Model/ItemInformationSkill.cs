@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Assets.SimpleLocalization;
 using Nekoyume.Data;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Skill;
@@ -16,38 +17,27 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<string> power = new ReactiveProperty<string>();
         public readonly ReactiveProperty<string> chance = new ReactiveProperty<string>();
 
-        public ItemInformationSkill(SkillSheet.Row skillRow)
+        public ItemInformationSkill(Data.Table.Item itemRow)
         {
-//            if (!Tables.instance.SkillEffect.TryGetValue(itemRow.skillId, out var skillEffect))
-//            {
-//                throw new KeyNotFoundException(itemRow.skillId.ToString());
-//            }
+            if (!Game.Game.instance.TableSheets.SkillSheet.TryGetValue(itemRow.skillId, out var skillRow))
+            {
+                throw new KeyNotFoundException(nameof(itemRow.skillId));
+            }
 
             iconSprite.Value = skillRow.GetIcon();
             name.Value = skillRow.GetLocalizedName();
-
-//            headerKey.Value = LocalizationManager.Localize("UI_SKILL");
-//            headerValue.Value = itemRow.elemental == Elemental.ElementalType.Normal
-//                ? $"{skillEffect.category.Translate(itemRow.elemental)}"
-//                : $"{itemRow.elemental.Translate(skillEffect.category)} {skillEffect.category.Translate(itemRow.elemental)}";
-//            firstLineKey.Value = $"  - {LocalizationManager.Localize("UI_POWER")}";
-//            firstLineValue.Value = $"{itemRow.minDamage} - {itemRow.maxDamage}";
-//            secondLineEnabled.Value = true;
-//            secondLineKey.Value = $"  - {LocalizationManager.Localize("UI_CHANCE")}";
-//            secondLineValue.Value = $"{itemRow.minChance:0%} - {itemRow.maxChance:0%}";
+            power.Value =
+                $"{LocalizationManager.Localize("UI_SKILL_POWER")}: {itemRow.minDamage} - {itemRow.maxDamage}";
+            chance.Value =
+                $"{LocalizationManager.Localize("UI_SKILL_CHANCE")}: {itemRow.minChance:0%} - {itemRow.maxChance:0%}";
         }
 
         public ItemInformationSkill(Skill skill)
         {
-            var skillName = skill.elementalType == Elemental.ElementalType.Normal
-                ? $"{skill.effect.skillCategory.Translate(skill.elementalType)}"
-                : $"{skill.elementalType.Translate(skill.effect.skillCategory)} {skill.effect.skillCategory.Translate(skill.elementalType)}";
-
-//            headerKey.Value = LocalizationManager.Localize("UI_SKILL");;
-//            headerValue.Value = "";
-//            firstLineKey.Value = string.Format(LocalizationManager.Localize("UI_SKILL_DESCRIPTION_FORMAT"), skillName, skillBase.chance, skillBase.power);
-//            firstLineValue.Value = "";
-//            secondLineEnabled.Value = false;
+            iconSprite.Value = skill.skillRow.GetIcon();
+            name.Value = skill.skillRow.GetLocalizedName();
+            power.Value = $"{LocalizationManager.Localize("UI_SKILL_POWER")}: {skill.power}";
+            chance.Value = $"{LocalizationManager.Localize("UI_SKILL_CHANCE")}: {skill.chance:0%}";
         }
 
         public void Dispose()

@@ -48,10 +48,9 @@ namespace Tests
         public void PlayerSelectSkill()
         {
             Assert.AreEqual(1, _player.Skills.Count());
-            foreach (var effect in Tables.instance.SkillEffect.Values)
+            foreach (var skillRow in Game.instance.TableSheets.SkillSheet)
             {
-                var dmg = (int) (1.3m);
-                var skill = SkillFactory.Get(0.1m, effect, Elemental.ElementalType.Normal, dmg);
+                var skill = SkillFactory.Get(skillRow, (int) 1.3m, .1m);
                 _player.Skills.Add(skill);
             }
             Assert.AreEqual(5, _player.Skills.Count());

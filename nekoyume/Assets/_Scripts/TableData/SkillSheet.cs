@@ -1,5 +1,7 @@
 using System;
 using Assets.SimpleLocalization;
+using Nekoyume.Data.Table;
+using Nekoyume.EnumType;
 using UnityEngine;
 
 namespace Nekoyume.TableData
@@ -11,14 +13,18 @@ namespace Nekoyume.TableData
         public struct Row : ISheetRow<int>
         {
             public int Id { get; private set; }
-            public string Name { get; private set; }
+            public Elemental.ElementalType ElementalType { get; private set; }
+            public int SkillEffectId { get; private set; }
 
             public int Key => Id;
             
             public void Set(string[] fields)
             {
                 Id = int.TryParse(fields[0], out var id) ? id : 0;
-                Name = fields[1];
+                ElementalType = Enum.TryParse<Elemental.ElementalType>(fields[1], out var elementalType)
+                    ? elementalType
+                    : Elemental.ElementalType.Normal;
+                SkillEffectId = int.TryParse(fields[2], out var skillEffectId) ? skillEffectId : 0;
             }
         }
     }

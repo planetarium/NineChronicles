@@ -1,18 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Nekoyume.Data.Table;
 using Nekoyume.EnumType;
 using Nekoyume.Model;
 using Unity.Mathematics;
+using Nekoyume.TableData;
 
 namespace Nekoyume.Game.Skill
 {
     [Serializable]
     public class Attack : Skill
     {
-        protected Attack(decimal chance, SkillEffect effect,
-            Data.Table.Elemental.ElementalType elemental, int power) : base(chance, effect, elemental, power)
+        protected Attack(SkillSheet.Row skillRow, int power, decimal chance) : base(skillRow, power, chance)
         {
         }
 
@@ -21,7 +20,7 @@ namespace Nekoyume.Game.Skill
             var targets = GetTarget(caster);
             var infos = new List<Model.Skill.SkillInfo>();
             var targetList = targets.ToArray();
-            var elemental = Elemental.Create(elementalType);
+            var elemental = Elemental.Create(skillRow.ElementalType);
             var multiplier = GetMultiplier(effect.hitCount, 1);
             var skillPower = CalcSkillPower(caster);
             for (var i = 0; i < effect.hitCount; i++)
@@ -42,8 +41,8 @@ namespace Nekoyume.Game.Skill
 
                     target.OnDamage(dmg);
 
-                    infos.Add(new Model.Skill.SkillInfo((CharacterBase) target.Clone(), dmg, critical, effect.skillCategory,
-                        elementalType));
+                    infos.Add(new Model.Skill.SkillInfo((CharacterBase) target.Clone(), dmg, critical,
+                        effect.skillCategory, skillRow.ElementalType));
                 }
             }
 

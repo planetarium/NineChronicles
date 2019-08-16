@@ -1,15 +1,14 @@
 using System;
 using System.Collections.Generic;
-using Nekoyume.Data.Table;
 using Nekoyume.Model;
+using Nekoyume.TableData;
 
 namespace Nekoyume.Game.Skill
 {
     [Serializable]
     public class Heal : Skill
     {
-        public Heal(decimal chance, SkillEffect effect, int power)
-            : base(chance, effect, Data.Table.Elemental.ElementalType.Normal, power)
+        public Heal(SkillSheet.Row skillRow, int power, decimal chance) : base(skillRow, power, chance)
         {
         }
 
