@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.BlockChain;
@@ -41,6 +42,11 @@ namespace Nekoyume.Action
             {
                 states = states.SetState(ctx.Signer, MarkChanged);
                 return states.SetState(avatarAddress, MarkChanged);
+            }
+
+            if (!Regex.IsMatch(name, GameConfig.AvatarNickNamePattern))
+            {
+                return states;
             }
 
             var agentState = (AgentState) states.GetState(ctx.Signer) ?? new AgentState(ctx.Signer);

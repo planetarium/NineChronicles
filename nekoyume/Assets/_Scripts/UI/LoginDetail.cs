@@ -8,6 +8,7 @@ using Nekoyume.Model;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Text.RegularExpressions;
 
 namespace Nekoyume.UI
 {
@@ -76,9 +77,16 @@ namespace Nekoyume.UI
 
         public void CreateClick()
         {
-            Find<GrayLoadingScreen>()?.Show();
-            
             var nickName = nameField.text;
+            if (!Regex.IsMatch(nickName, GameConfig.AvatarNickNamePattern))
+            {
+                Find<Alert>().Show(
+                    LocalizationManager.Localize("UI_ERROR"),
+                    LocalizationManager.Localize("UI_INVALID_NICKNAME"));
+                return;
+            }
+
+            Find<GrayLoadingScreen>()?.Show();
 
             ActionManager.instance
                 .CreateAvatar(AvatarManager.CreateAvatarAddress(), _selectedIndex, nickName)

@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Unity.Mathematics;
 
 namespace Nekoyume
@@ -6,9 +6,9 @@ namespace Nekoyume
     public class GameConfig
     {
         public const int SlotCount = 3;
-
+        public const float WaitSeconds = 180f;
+        public const string AvatarNickNamePattern = @"\b[0-9가-힣a-zA-Z]{2,10}\b";
         public const float PlayerSpeechBreakTime = 2f;
-        
         #region action
 
         public const int DefaultAvatarCharacterId = 100010;
@@ -73,7 +73,5 @@ namespace Nekoyume
         };
         
         public static readonly int2 ScreenSize = new int2(1136, 640);
-
-        public const float WaitSeconds = 180f;
     }
 }
