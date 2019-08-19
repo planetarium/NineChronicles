@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Data.Table;
 using Nekoyume.Model;
+using Unity.Mathematics;
 
 namespace Nekoyume.Game.Skill
 {
@@ -30,12 +31,12 @@ namespace Nekoyume.Game.Skill
                     var critical = caster.IsCritical();
                     var dmg = elemental.CalculateDmg(skillPower, target.defElement);
                     // https://gamedev.stackexchange.com/questions/129319/rpg-formula-attack-and-defense
-                    dmg = (dmg * dmg) / (dmg + target.def);
-                    dmg = Convert.ToInt32(dmg * multiply);
-                    dmg = Math.Max(dmg, 1);
+                    dmg = (int) ((long) dmg * dmg / (dmg + target.def));
+                    dmg = (int) (dmg * multiply);
+                    dmg = math.max(dmg, 1);
                     if (critical)
                     {
-                        dmg = Convert.ToInt32(dmg * CharacterBase.CriticalMultiplier);
+                        dmg = (int) (dmg * CharacterBase.CriticalMultiplier);
                     }
 
                     target.OnDamage(dmg);
