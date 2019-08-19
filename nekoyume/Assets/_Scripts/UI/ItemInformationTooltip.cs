@@ -63,17 +63,17 @@ namespace Nekoyume.UI
             itemInformation.SetData(Model.itemInformation);
             
             Model.titleText.SubscribeToText(titleText).AddTo(_disposablesForModel);
-            Model.priceEnabled.SubscribeToGameObject(priceContainer).AddTo(_disposablesForModel);
+            Model.priceEnabled.Subscribe(priceContainer.SetActive).AddTo(_disposablesForModel);
             Model.priceEnabled.SubscribeToBehaviour(priceText).AddTo(_disposablesForModel);
             Model.price.SubscribeToText(priceText).AddTo(_disposablesForModel);
             Model.submitButtonText.SubscribeToText(submitButtonText).AddTo(_disposablesForModel);
-            Model.submitButtonEnabled.SubscribeToGameObject(submitGameObject).AddTo(_disposablesForModel);
+            Model.submitButtonEnabled.Subscribe(submitGameObject.SetActive).AddTo(_disposablesForModel);
             Model.onSubmit.Subscribe(onSubmit).AddTo(_disposablesForModel);
             if (onClose != null)
             {
                 Model.onClose.Subscribe(onClose).AddTo(_disposablesForModel);
             }
-            Model.footerRootActive.SubscribeToGameObject(footerRoot).AddTo(_disposablesForModel);
+            Model.footerRootActive.Subscribe(footerRoot.SetActive).AddTo(_disposablesForModel);
             // Model.itemInformation.item을 마지막으로 구독해야 위에서의 구독으로 인해 바뀌는 레이아웃 상태를 모두 반영할 수 있음.
             Model.itemInformation.item.Subscribe(value => base.SubscribeTarget(Model.target.Value))
                 .AddTo(_disposablesForModel);

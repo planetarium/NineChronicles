@@ -35,11 +35,6 @@ namespace Nekoyume
             return source.SubscribeWithState(behaviour, (x, t) => behaviour.enabled = x);
         }
         
-        public static IDisposable SubscribeToGameObject(this IObservable<bool> source, GameObject gameObject)
-        {
-            return source.SubscribeWithState(gameObject, (x, t) => gameObject.SetActive(x));
-        }
-        
         public static IDisposable SubscribeToImage(this IObservable<Sprite> source, Image text)
         {
             return source.SubscribeWithState(text, (x, t) => t.sprite = x);
