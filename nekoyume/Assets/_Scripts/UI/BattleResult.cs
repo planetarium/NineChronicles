@@ -56,8 +56,8 @@ namespace Nekoyume.UI
             public Text submitButtonText2;
         }
         
-        private static readonly Vector3 VfxBattleWinOffset = new Vector3(-3.43f, -0.28f, 10f);
         private const int Timer = 5;
+        private static readonly Vector3 VfxBattleWinOffset = new Vector3(-3.43f, -0.28f, 10f);
 
         public CanvasGroup canvasGroup;
         public GameObject victoryImageContainer;
@@ -218,6 +218,7 @@ namespace Nekoyume.UI
                     var model = SharedModel.rewards[i];
                     view.SetData(model);
                     view.gameObject.SetActive(true);
+                    VFXController.instance.Create<DropItemInventoryVFX>(view.RectTransform, view.CenterOffsetAsPosition);
                     AudioController.instance.PlaySfx(AudioController.SfxCode.RewardItem);
                 }
                 

@@ -1,4 +1,5 @@
 using System;
+using Nekoyume.EnumType;
 using Nekoyume.Game.Item;
 using UniRx;
 using UnityEngine;
@@ -15,6 +16,16 @@ namespace Nekoyume.UI.Module
         public Image gradeImage;
 
         public RectTransform RectTransform { get; private set; }
+        public Vector3 CenterOffsetAsPosition
+        {
+            get
+            {
+                var pivotPosition = RectTransform.GetPivotPositionFromAnchor(PivotPresetType.MiddleCenter);
+                var position = new Vector3(pivotPosition.x, pivotPosition.y);
+                return RectTransform.localToWorldMatrix * position;
+            }
+        }
+
         public T Model { get; private set; }
 
         #region Mono
