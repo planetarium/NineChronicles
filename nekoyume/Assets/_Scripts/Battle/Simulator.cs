@@ -5,14 +5,12 @@ using Libplanet.Action;
 using Nekoyume.Data;
 using Nekoyume.Game.Factory;
 using Nekoyume.Game.Item;
-using Nekoyume.Game.Skill;
 using Nekoyume.Game.Util;
 using Nekoyume.Model;
 using Nekoyume.State;
 using Nekoyume.TableData;
 using Priority_Queue;
 using UnityEngine;
-using Skill = Nekoyume.Game.Skill.Skill;
 
 namespace Nekoyume.Battle
 {
@@ -31,7 +29,8 @@ namespace Nekoyume.Battle
         public List<ItemBase> rewards => _waveRewards.SelectMany(i => i).ToList();
         public const float TurnPriority = 100f;
 
-        public Simulator(IRandom random, AvatarState avatarState, List<Food> foods, int worldStage, Skill skill=null)
+        public Simulator(IRandom random, AvatarState avatarState, List<Food> foods, int worldStage,
+            Game.Skill.Skill skill = null)
         {
             Random = random;
             _worldStage = worldStage;
@@ -95,6 +94,7 @@ namespace Nekoyume.Battle
                             };
                             Log.Add(getReward);
                         }
+
                         break;
                     }
 
@@ -110,8 +110,10 @@ namespace Nekoyume.Battle
                         var speed = current * 0.6f;
                         Characters.UpdatePriority(other, speed);
                     }
+
                     Characters.Enqueue(character, TurnPriority / character.TurnSpeed);
                 }
+
                 if (Lose)
                 {
                     break;
@@ -147,6 +149,7 @@ namespace Nekoyume.Battle
                     {
                         Debug.Log(monsterData.CharacterId);
                     }
+
                     wave.Add(new Monster(characterRow, monsterData.Level, Player));
                     wave.IsBoss = stage.IsBoss;
                 }
@@ -171,6 +174,7 @@ namespace Nekoyume.Battle
                     {
                         continue;
                     }
+
                     itemSelector.Add(r.ItemId, r.Ratio);
                     var itemId = itemSelector.Pop();
                     if (itemTable.TryGetValue(itemId, out var itemData))
@@ -187,6 +191,7 @@ namespace Nekoyume.Battle
                     }
                 }
             }
+
             _waveRewards.Add(items);
         }
     }
