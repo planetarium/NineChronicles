@@ -1,8 +1,10 @@
+using System;
 using Nekoyume.Model;
 using Nekoyume.TableData;
 
 namespace Nekoyume.Game.Skill
 {
+    [Serializable]
     public class NormalAttack : Attack
     {
         public NormalAttack(SkillSheet.Row skillRow, int power, decimal chance) : base(skillRow, power, chance)
