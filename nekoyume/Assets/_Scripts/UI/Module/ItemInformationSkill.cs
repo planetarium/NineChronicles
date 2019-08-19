@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Assets.SimpleLocalization;
-using Nekoyume.TableData;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;

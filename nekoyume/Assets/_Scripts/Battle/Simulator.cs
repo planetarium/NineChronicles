@@ -170,7 +170,7 @@ namespace Nekoyume.Battle
             {
                 foreach (var r in reward.Rewards)
                 {
-                    if (r.Ratio <= 0f)
+                    if (r.Ratio <= 0m)
                     {
                         continue;
                     }
