@@ -31,6 +31,8 @@ namespace Nekoyume.TableData
 
     public static class SkillSheetRowExtension
     {
+        private const string DefaultIconPath = "UI/Icons/Skill/100000";
+        
         public static string GetLocalizedName(this SkillSheet.Row row)
         {
             return LocalizationManager.Localize($"SKILL_NAME_{row.Id}");
@@ -45,8 +47,7 @@ namespace Nekoyume.TableData
                 return sprite;
             }
             
-            path = $"UI/Icons/Skill/{100000}";
-            sprite = Resources.Load<Sprite>(path);
+            sprite = Resources.Load<Sprite>(DefaultIconPath);
 
             return sprite; 
         }
