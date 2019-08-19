@@ -2,7 +2,7 @@ using System;
 using Nekoyume.Model;
 using Nekoyume.TableData;
 
-namespace Nekoyume.Game.Skill
+namespace Nekoyume.Game
 {
     [Serializable]
     public class AreaAttack: Attack

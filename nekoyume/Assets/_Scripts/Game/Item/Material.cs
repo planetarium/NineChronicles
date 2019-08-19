@@ -64,7 +64,7 @@ namespace Nekoyume.Game.Item
                     throw new ArgumentOutOfRangeException();
             }
 
-            switch (skillEffect.type)
+            switch (skillEffect.skillType)
             {
                 case SkillType.Attack:
                     sb.AppendLine($"{Data.minChance}% ~ {Data.maxChance}% 확률로 {targetString} {Data.minDamage} ~ {Data.maxDamage}의 데미지를 입힌다.");

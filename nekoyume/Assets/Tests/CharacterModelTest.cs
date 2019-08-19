@@ -3,14 +3,11 @@ using System.Linq;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Battle;
-using Nekoyume.Data;
 using Nekoyume.Game;
 using Nekoyume.Game.Item;
-using Nekoyume.Game.Skill;
 using Nekoyume.Model;
 using Nekoyume.State;
 using NUnit.Framework;
-using Elemental = Nekoyume.Data.Table.Elemental;
 
 namespace Tests
 {

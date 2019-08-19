@@ -1,6 +1,4 @@
 using System;
-using Nekoyume.Data.Table;
-using Nekoyume.Game.Skill;
 using UnityEngine;
 
 namespace Nekoyume.Game.Item
@@ -8,7 +6,7 @@ namespace Nekoyume.Game.Item
     [Serializable]
     public class Armor : Equipment
     {
-        public Armor(Data.Table.Item data, Guid id, Skill.Skill skill = null)
+        public Armor(Data.Table.Item data, Guid id, Skill skill = null)
             : base(data, id, skill)
         {
         }

@@ -1,7 +1,6 @@
 using System;
 using System.Text;
 using Nekoyume.Data.Table;
-using Nekoyume.Game.Skill;
 using Nekoyume.Model;
 
 namespace Nekoyume.Game.Item
@@ -11,10 +10,10 @@ namespace Nekoyume.Game.Item
     {
         public new ItemEquipment Data { get; }
         public Stats Stats { get; }
-        public Skill.Skill Skill { get; }
+        public Skill Skill { get; }
         public Guid ItemId { get; }
 
-        protected ItemUsable(Data.Table.Item data, Guid id, Skill.Skill skill = null)
+        protected ItemUsable(Data.Table.Item data, Guid id, Skill skill = null)
             : base(data)
         {
             Data = (ItemEquipment) data;
@@ -67,7 +66,7 @@ namespace Nekoyume.Game.Item
             sb.Append($"{Skill.chance * 100}% 확률로");
             sb.Append($" {Skill.effect.skillTargetType}에게");
             sb.Append($" {Skill.power} 위력의");
-            sb.Append($" {Skill.skillRow.ElementalType}속성 {Skill.effect.type}");
+            sb.Append($" {Skill.skillRow.ElementalType}속성 {Skill.effect.skillType}");
 
             return sb.ToString().Trim();
         }

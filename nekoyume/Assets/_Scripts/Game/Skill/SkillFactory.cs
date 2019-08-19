@@ -3,8 +3,9 @@ using Nekoyume.Data;
 using Nekoyume.Data.Table;
 using Nekoyume.EnumType;
 using Nekoyume.TableData;
+using UnityEngine;
 
-namespace Nekoyume.Game.Skill
+namespace Nekoyume.Game
 {
     public static class SkillFactory
     {
@@ -14,8 +15,8 @@ namespace Nekoyume.Game.Skill
             {
                 throw new KeyNotFoundException(nameof(skillRow.SkillEffectId));
             }
-            
-            switch (skillEffectRow.type)
+
+            switch (skillEffectRow.skillType)
             {
                 case SkillType.Attack:
                     switch (skillEffectRow.skillTargetType)
@@ -35,6 +36,7 @@ namespace Nekoyume.Game.Skill
                         case SkillTargetType.Enemies:
                             return new AreaAttack(skillRow, power, chance);
                     }
+
                     break;
                 case SkillType.Buff:
                     switch (skillEffectRow.skillTargetType)
@@ -42,11 +44,15 @@ namespace Nekoyume.Game.Skill
                         case SkillTargetType.Self:
                             return new Heal(skillRow, power, chance);
                     }
+
                     break;
                 case SkillType.Debuff:
                     break;
             }
-            throw new InvalidActionException();
+
+            Debug.LogWarning($"{skillRow.Id}, {skillEffectRow.skillType}, {skillEffectRow.skillTargetType}, {skillEffectRow.skillCategory}");
+            throw new UnexpectedOperationException(
+                $"{skillRow.Id}, {skillEffectRow.skillType}, {skillEffectRow.skillTargetType}, {skillEffectRow.skillCategory}");
         }
     }
 }

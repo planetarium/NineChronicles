@@ -1,21 +1,18 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Libplanet.Action;
 using Nekoyume.Battle;
 using Nekoyume.BlockChain;
-using Nekoyume.Data;
-using Nekoyume.Data.Table;
+using Nekoyume.Game;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Item;
-using Nekoyume.Game.Skill;
 using Nekoyume.Model;
 using Nekoyume.TableData;
 using Nekoyume.UI;
 using UnityEngine;
 using UnityEngine.UI;
-using Skill = Nekoyume.Game.Skill.Skill;
+using Skill = Nekoyume.Model.Skill;
 
 namespace Nekoyume
 {
@@ -35,8 +32,8 @@ namespace Nekoyume
         private StringBuilder _logString = new StringBuilder();
         private BattleLog.Result _result;
         private int[,] _stageRange;
-        private Skill[] _skills;
-        private Skill _selectedSkill;
+        private Game.Skill[] _skills;
+        private Game.Skill _selectedSkill;
 
         public class DebugRandom : IRandom
         {
@@ -107,7 +104,7 @@ namespace Nekoyume
                 newButton.gameObject.SetActive(true);
             }
 
-            var skills = new List<Skill>();
+            var skills = new List<Game.Skill>();
             foreach (var skillRow in Game.Game.instance.TableSheets.SkillSheet)
             {
                 var skill = SkillFactory.Get(skillRow, 50, 1m);
@@ -206,7 +203,7 @@ namespace Nekoyume
             skillPanel.gameObject.SetActive(true);
         }
 
-        private void SelectSkill(Skill skill)
+        private void SelectSkill(Game.Skill skill)
         {
             _selectedSkill = skill;
             DummyBattle(1);

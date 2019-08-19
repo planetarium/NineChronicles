@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class UnexpectedOperationException : Exception
 {
+    public UnexpectedOperationException(string message) : base(message)
+    {
+    }
 }
 
 public class InvalidActionException : Exception

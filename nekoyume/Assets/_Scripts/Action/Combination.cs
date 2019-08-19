@@ -8,13 +8,13 @@ using Libplanet.Action;
 using Nekoyume.BlockChain;
 using Nekoyume.Data;
 using Nekoyume.Data.Table;
+using Nekoyume.Game;
 using Nekoyume.Game.Factory;
 using Nekoyume.Game.Item;
-using Nekoyume.Game.Skill;
 using Nekoyume.Model;
 using Nekoyume.State;
 using UnityEngine;
-using Skill = Nekoyume.Game.Skill.Skill;
+using Elemental = Nekoyume.Data.Table.Elemental;
 
 namespace Nekoyume.Action
 {
@@ -276,7 +276,7 @@ namespace Nekoyume.Action
         public static Equipment GetEquipment(ItemEquipment itemEquipment, Item monsterParts, decimal roll, Guid itemId)
         {
             var table = Game.Game.instance.TableSheets.SkillSheet;
-            Skill skill;
+            Game.Skill skill;
             try
             {
                 var skillRow = table.ToOrderedList().First(r => r.Id == monsterParts.skillId);

@@ -6,7 +6,7 @@ using Nekoyume.Model;
 using Unity.Mathematics;
 using Nekoyume.TableData;
 
-namespace Nekoyume.Game.Skill
+namespace Nekoyume.Game
 {
     [Serializable]
     public class Attack : Skill

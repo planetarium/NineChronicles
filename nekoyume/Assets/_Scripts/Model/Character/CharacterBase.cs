@@ -5,8 +5,7 @@ using System.Linq;
 using BTAI;
 using Libplanet.Action;
 using Nekoyume.Battle;
-using Nekoyume.Data.Table;
-using Nekoyume.Game.Skill;
+using Nekoyume.Game;
 
 namespace Nekoyume.Model
 {
@@ -32,7 +31,7 @@ namespace Nekoyume.Model
         public Game.Elemental defElement;
         public readonly Skills Skills = new Skills();
 
-        private Game.Skill.Skill _selectedSkill;
+        private Game.Skill _selectedSkill;
 
         [NonSerialized] private Root _root;
         
@@ -147,11 +146,11 @@ namespace Nekoyume.Model
     }
 
     [Serializable]
-    public class Skills : IEnumerable<Game.Skill.Skill>
+    public class Skills : IEnumerable<Game.Skill>
     {
-        private readonly List<Game.Skill.Skill> _skills = new List<Game.Skill.Skill>();
+        private readonly List<Game.Skill> _skills = new List<Game.Skill>();
 
-        public void Add(Game.Skill.Skill s)
+        public void Add(Game.Skill s)
         {
             if (s is null)
             {
@@ -166,7 +165,7 @@ namespace Nekoyume.Model
             _skills.Clear();
         }
 
-        public IEnumerator<Game.Skill.Skill> GetEnumerator()
+        public IEnumerator<Game.Skill> GetEnumerator()
         {
             return _skills.GetEnumerator();
         }
@@ -176,7 +175,7 @@ namespace Nekoyume.Model
             return GetEnumerator();
         }
 
-        public Game.Skill.Skill Select(IRandom random)
+        public Game.Skill Select(IRandom random)
         {
             var selected = _skills
                 .Select(skill => new {skill, chance = random.Next(0, 100000) * 0.00001m})

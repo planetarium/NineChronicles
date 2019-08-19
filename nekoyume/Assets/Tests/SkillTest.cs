@@ -45,7 +45,7 @@ namespace Tests
         public void Attack()
         {
             var caster = _simulator.Player;
-            var attack = caster.Skills.First(s => s is Nekoyume.Game.Skill.NormalAttack);
+            var attack = caster.Skills.First(s => s is NormalAttack);
             var result = attack.Use(caster);
             var target = caster.targets.First();
 
@@ -71,7 +71,7 @@ namespace Tests
                 
                 return skillEffectRow.skillCategory == SkillCategory.Blow;
             });
-            var blow = new Nekoyume.Game.Skill.BlowAttack(skillRow, caster.atk, 1m);
+            var blow = new BlowAttack(skillRow, caster.atk, 1m);
             var result = blow.Use(caster);
             var target = caster.targets.First();
 
@@ -97,7 +97,7 @@ namespace Tests
                 
                 return skillEffectRow.skillCategory == SkillCategory.Double;
             });
-            var doubleAttack = new Nekoyume.Game.Skill.DoubleAttack(skillRow, caster.atk, 1m);
+            var doubleAttack = new Nekoyume.Game.DoubleAttack(skillRow, caster.atk, 1m);
             var result = doubleAttack.Use(caster);
             var target = caster.targets.First();
 
@@ -126,7 +126,7 @@ namespace Tests
                 
                 return skillEffectRow.skillCategory == SkillCategory.Area;
             });
-            var area = new Nekoyume.Game.Skill.AreaAttack(skillRow, caster.atk, 1m);
+            var area = new Nekoyume.Game.AreaAttack(skillRow, caster.atk, 1m);
             var result = area.Use(caster);
             var target = caster.targets.First();
 
@@ -152,9 +152,9 @@ namespace Tests
                     throw new KeyNotFoundException(nameof(r.SkillEffectId));
                 }
                 
-                return skillEffectRow.type == SkillType.Buff;
+                return skillEffectRow.skillType == SkillType.Buff;
             });
-            var heal = new Nekoyume.Game.Skill.Heal(skillRow, caster.atk, 1m);
+            var heal = new Nekoyume.Game.Heal(skillRow, caster.atk, 1m);
             caster.currentHP -= caster.atk;
             var result = heal.Use(caster);
 

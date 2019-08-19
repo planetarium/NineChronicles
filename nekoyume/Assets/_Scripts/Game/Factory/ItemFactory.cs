@@ -1,6 +1,5 @@
 ﻿using Nekoyume.Data;
 using Nekoyume.Game.Item;
-using Nekoyume.Game.Skill;
 using System;
 using UnityEngine;
 using Material = Nekoyume.Game.Item.Material;
@@ -9,7 +8,7 @@ namespace Nekoyume.Game.Factory
 {
     public class ItemFactory : MonoBehaviour
     {
-        public static ItemBase CreateMaterial(int itemId, Guid guid, Skill.Skill skill = null)
+        public static ItemBase CreateMaterial(int itemId, Guid guid, Skill skill = null)
         {
             Data.Table.Item itemData;
             if (Tables.instance.TryGetItem(itemId, out itemData))
@@ -22,7 +21,7 @@ namespace Nekoyume.Game.Factory
             }
         }
 
-        public static ItemBase CreateEquipment(int itemId, Guid guid, Skill.Skill skill = null)
+        public static ItemBase CreateEquipment(int itemId, Guid guid, Skill skill = null)
         {
             Data.Table.ItemEquipment itemData;
             if (Tables.instance.TryGetItemEquipment(itemId, out itemData))
@@ -35,7 +34,7 @@ namespace Nekoyume.Game.Factory
             }
         }
 
-        public static ItemBase Create(Data.Table.Item itemData, Guid id, Skill.Skill skill = null)
+        public static ItemBase Create(Data.Table.Item itemData, Guid id, Skill skill = null)
         {
             var type = itemData.cls.ToEnumItemType();
             switch (type)

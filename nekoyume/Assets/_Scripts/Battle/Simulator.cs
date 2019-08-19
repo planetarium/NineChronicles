@@ -30,7 +30,7 @@ namespace Nekoyume.Battle
         public const float TurnPriority = 100f;
 
         public Simulator(IRandom random, AvatarState avatarState, List<Food> foods, int worldStage,
-            Game.Skill.Skill skill = null)
+            Game.Skill skill = null)
         {
             Random = random;
             _worldStage = worldStage;

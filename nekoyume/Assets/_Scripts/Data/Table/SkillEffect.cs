@@ -1,6 +1,5 @@
 using System;
 using Nekoyume.EnumType;
-using Nekoyume.Game.Skill;
 
 namespace Nekoyume.Data.Table
 {
@@ -8,14 +7,14 @@ namespace Nekoyume.Data.Table
     public class SkillEffect : Row
     {
         public int id = 0;
-        public SkillType type = SkillType.Attack;
+        public SkillType skillType = SkillType.Attack;
         public SkillCategory skillCategory = SkillCategory.Normal;
         public SkillTargetType skillTargetType = SkillTargetType.Enemy;
         public int hitCount = 1;
 
         protected bool Equals(SkillEffect other)
         {
-            return id == other.id && type == other.type && skillCategory == other.skillCategory && skillTargetType == other.skillTargetType &&
+            return id == other.id && skillType == other.skillType && skillCategory == other.skillCategory && skillTargetType == other.skillTargetType &&
                    hitCount == other.hitCount;
         }
 
@@ -32,7 +31,7 @@ namespace Nekoyume.Data.Table
             unchecked
             {
                 var hashCode = id;
-                hashCode = (hashCode * 397) ^ (int) type;
+                hashCode = (hashCode * 397) ^ (int) skillType;
                 hashCode = (hashCode * 397) ^ (int) skillCategory;
                 hashCode = (hashCode * 397) ^ (int) skillTargetType;
                 hashCode = (hashCode * 397) ^ hitCount;
