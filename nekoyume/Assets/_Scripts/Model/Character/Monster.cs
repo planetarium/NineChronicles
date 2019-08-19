@@ -42,10 +42,11 @@ namespace Nekoyume.Model
         {
             base.SetSkill();
             //TODO 몬스터별 스킬 구현
+            var dmg = (int) (atk * 1.3m);
+            var chance = .1m;
             foreach (var skillRow in Game.Game.instance.TableSheets.SkillSheet)
             {
-                var dmg = (int) (atk * 1.3m);
-                var skill = SkillFactory.Get(skillRow, dmg, .1m);
+                var skill = SkillFactory.Get(skillRow, dmg, chance);
                 Skills.Add(skill);
             }
         }
