@@ -24,24 +24,29 @@ public class InvalidActionException : Exception
     }
 }
 
-public class GameActionResultNullException : Exception {}
-public class GameActionResultUnexpectedException : Exception {}
+public class GameActionResultNullException : Exception
+{
+}
+
+public class GameActionResultUnexpectedException : Exception
+{
+}
 
 public class FailedToInstantiateGameObjectException : Exception
 {
     private const string MessageDefault = "Failed to instantiate a `GameObject`.";
     private const string MessageFormat = "Failed to instantiate a `GameObject` by prefab named `{0}`.";
-    
+
     public FailedToInstantiateGameObjectException() : base(MessageDefault)
     {
-        
     }
-    
+
     public FailedToInstantiateGameObjectException(string name) : base(string.Format(MessageFormat, name))
     {
     }
 
-    public FailedToInstantiateGameObjectException(string name, Exception inner) : base(string.Format(MessageFormat, name), inner)
+    public FailedToInstantiateGameObjectException(string name, Exception inner) : base(
+        string.Format(MessageFormat, name), inner)
     {
     }
 }
@@ -52,7 +57,7 @@ public class FailedToLoadResourceException<T> : Exception
     private const string MessageFormat1 = "Failed to load resource. type : `{0}`, path : `{1}`.";
 
     private static readonly string TypeName = typeof(T).Name;
-    
+
     public FailedToLoadResourceException() : base(string.Format(MessageFormat0, TypeName))
     {
     }
@@ -61,7 +66,8 @@ public class FailedToLoadResourceException<T> : Exception
     {
     }
 
-    public FailedToLoadResourceException(string path, Exception inner) : base(string.Format(MessageFormat1, TypeName, path), inner)
+    public FailedToLoadResourceException(string path, Exception inner) : base(
+        string.Format(MessageFormat1, TypeName, path), inner)
     {
     }
 }
@@ -87,10 +93,16 @@ public class NotFoundGameObjectException : Exception
 public class NotFoundComponentException<T> : Exception where T : Component
 {
     private const string MessageFormat = "Not found `{0}` component.";
+    private const string MessageFormatWithGameObject = "Not found `{0}` component in {1}.";
 
     private static readonly string TypeName = typeof(T).Name;
-    
+
     public NotFoundComponentException() : this(string.Format(MessageFormat, TypeName))
+    {
+    }
+
+    public NotFoundComponentException(GameObject gameObject) : this(string.Format(MessageFormatWithGameObject, TypeName,
+        gameObject.name))
     {
     }
 
@@ -106,7 +118,7 @@ public class NotFoundComponentException<T> : Exception where T : Component
 public class SpineBoneNotFoundException : Exception
 {
     private const string MessageFormat = "Not found `{0}` spine bone.";
-    
+
     public SpineBoneNotFoundException()
     {
     }
@@ -115,7 +127,8 @@ public class SpineBoneNotFoundException : Exception
     {
     }
 
-    public SpineBoneNotFoundException(string slotName, Exception inner) : base(string.Format(MessageFormat, slotName), inner)
+    public SpineBoneNotFoundException(string slotName, Exception inner) : base(string.Format(MessageFormat, slotName),
+        inner)
     {
     }
 }
@@ -123,7 +136,7 @@ public class SpineBoneNotFoundException : Exception
 public class SpineSlotNotFoundException : Exception
 {
     private const string MessageFormat = "Not found `{0}` spine slot.";
-    
+
     public SpineSlotNotFoundException()
     {
     }
@@ -132,7 +145,8 @@ public class SpineSlotNotFoundException : Exception
     {
     }
 
-    public SpineSlotNotFoundException(string slotName, Exception inner) : base(string.Format(MessageFormat, slotName), inner)
+    public SpineSlotNotFoundException(string slotName, Exception inner) : base(string.Format(MessageFormat, slotName),
+        inner)
     {
     }
 }
@@ -140,7 +154,7 @@ public class SpineSlotNotFoundException : Exception
 public class SpineAttachmentNotFoundException : Exception
 {
     private const string MessageFormat = "Not found `{0}` spine attachment.";
-    
+
     public SpineAttachmentNotFoundException()
     {
     }
@@ -149,14 +163,14 @@ public class SpineAttachmentNotFoundException : Exception
     {
     }
 
-    public SpineAttachmentNotFoundException(string slotName, Exception inner) : base(string.Format(MessageFormat, slotName), inner)
+    public SpineAttachmentNotFoundException(string slotName, Exception inner) : base(
+        string.Format(MessageFormat, slotName), inner)
     {
     }
 }
 
 public class SerializeFieldNullException : Exception
 {
-    
 }
 
 public class AddOutOfSpecificRangeException<T> : Exception
@@ -196,17 +210,17 @@ public class FailedToSaveAsPrefabAssetException : Exception
 {
     private const string MessageDefault = "Failed to save as prefab.";
     private const string MessageFormat = "Failed to save as prefab to `{0}`.";
-    
+
     public FailedToSaveAsPrefabAssetException() : base(MessageDefault)
     {
-        
     }
-    
+
     public FailedToSaveAsPrefabAssetException(string path) : base(string.Format(MessageFormat, path))
     {
     }
 
-    public FailedToSaveAsPrefabAssetException(string path, Exception inner) : base(string.Format(MessageFormat, path), inner)
+    public FailedToSaveAsPrefabAssetException(string path, Exception inner) : base(string.Format(MessageFormat, path),
+        inner)
     {
     }
 }

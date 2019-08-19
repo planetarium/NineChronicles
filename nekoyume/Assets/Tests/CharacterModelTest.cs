@@ -30,7 +30,7 @@ namespace Tests
         [Test]
         public void MonsterSelectSkill()
         {
-            var data = Game.instance.TableSheets.CharacterSheet.ToOrderedList().First(i => i.Id > 200000);
+            var data = ATestSetUp.tableSheets.CharacterSheet.ToOrderedList().First(i => i.Id > 200000);
             var monster = new Monster(data, 1, _player);
             monster.InitAI();
 
@@ -45,12 +45,12 @@ namespace Tests
         public void PlayerSelectSkill()
         {
             Assert.AreEqual(1, _player.Skills.Count());
-            foreach (var skillRow in Game.instance.TableSheets.SkillSheet)
+            foreach (var skillRow in ATestSetUp.tableSheets.SkillSheet)
             {
                 var skill = SkillFactory.Get(skillRow, (int) 1.3m, .1m);
                 _player.Skills.Add(skill);
             }
-            Assert.AreEqual(5, _player.Skills.Count());
+            Assert.AreEqual(1 + ATestSetUp.tableSheets.SkillSheet.Count, _player.Skills.Count());
 
             //Check selected skill is first
             var selected = _player.Skills.Select(_random);
