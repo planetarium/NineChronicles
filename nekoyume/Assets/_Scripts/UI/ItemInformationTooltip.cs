@@ -15,12 +15,12 @@ namespace Nekoyume.UI
         public Text titleText;
         public Module.ItemInformation itemInformation;
         public GameObject submitGameObject;
+        public GameObject footerRoot;
         public Button submitButton;
         public Text submitButtonText;
         public GameObject priceContainer;
         public Text priceText;
         
-        private readonly List<IDisposable> _disposablesForAwake = new List<IDisposable>();
         private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
         
         public new Model.ItemInformationTooltip Model { get; private set; }
@@ -30,16 +30,13 @@ namespace Nekoyume.UI
             base.Awake();
             
             Model = new Model.ItemInformationTooltip();
-
-            submitButton.OnClickAsObservable().Subscribe(_ => Model.onSubmit.OnNext(this)).AddTo(_disposablesForAwake);
+            submitButton.OnClickAsObservable().Subscribe(_ => Model.onSubmit.OnNext(this)).AddTo(gameObject);
         }
 
         private void OnDestroy()
         {
             Model.Dispose();
             Model = null;
-            
-            _disposablesForAwake.DisposeAllAndClear();
         }
 
         public void Show(RectTransform target, InventoryItem item)
@@ -66,28 +63,17 @@ namespace Nekoyume.UI
             itemInformation.SetData(Model.itemInformation);
             
             Model.titleText.SubscribeToText(titleText).AddTo(_disposablesForModel);
-            Model.priceEnabled.Subscribe(value =>
-            {
-                priceContainer.SetActive(value);
-                priceText.enabled = value;
-            }).AddTo(_disposablesForModel);
+            Model.priceEnabled.SubscribeToGameObject(priceContainer).AddTo(_disposablesForModel);
+            Model.priceEnabled.SubscribeToBehaviour(priceText).AddTo(_disposablesForModel);
             Model.price.SubscribeToText(priceText).AddTo(_disposablesForModel);
-            Model.submitButtonText.Subscribe(value =>
-            {
-                if (string.IsNullOrEmpty(value))
-                {
-                    return;
-                }
-                
-                submitButtonText.text = value;
-            }).AddTo(_disposablesForModel);
-            Model.submitButtonEnabled.Subscribe(value => submitGameObject.SetActive(value))
-                .AddTo(_disposablesForModel);
+            Model.submitButtonText.SubscribeToText(submitButtonText).AddTo(_disposablesForModel);
+            Model.submitButtonEnabled.SubscribeToGameObject(submitGameObject).AddTo(_disposablesForModel);
             Model.onSubmit.Subscribe(onSubmit).AddTo(_disposablesForModel);
             if (onClose != null)
             {
                 Model.onClose.Subscribe(onClose).AddTo(_disposablesForModel);
             }
+            Model.footerRootActive.SubscribeToGameObject(footerRoot).AddTo(_disposablesForModel);
             // Model.itemInformation.item을 마지막으로 구독해야 위에서의 구독으로 인해 바뀌는 레이아웃 상태를 모두 반영할 수 있음.
             Model.itemInformation.item.Subscribe(value => base.SubscribeTarget(Model.target.Value))
                 .AddTo(_disposablesForModel);

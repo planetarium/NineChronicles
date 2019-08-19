@@ -30,6 +30,7 @@ namespace Nekoyume.UI.Module
         public struct StatsArea
         {
             public RectTransform root;
+            public Text commonText;
             public Text levelLimitText;
             public ItemInformationStat statPrefab;
             public List<ItemInformationStat> stats;
@@ -127,8 +128,7 @@ namespace Nekoyume.UI.Module
             // 텍스트.
             if (Model.item.Value.item.Value.Data.cls.ToEnumItemType() == ItemBase.ItemType.Material)
             {
-                iconArea.commonText.text = LocalizationManager.Localize("UI_ADDITIONAL_ABILITIES_WHEN_COMBINED");
-                iconArea.commonText.enabled = true;
+                iconArea.commonText.enabled = false;
             }
             else
             {
@@ -163,6 +163,7 @@ namespace Nekoyume.UI.Module
             var statCount = 0;
             if (Model.item.Value.item.Value is ItemUsable itemUsable)
             {
+                statsArea.commonText.enabled = false;
                 // todo: 장비에 레벨 제한이 들어가면 이곳에서 적용해줘야 함.
                 statsArea.levelLimitText.enabled = false;
                 
@@ -180,6 +181,8 @@ namespace Nekoyume.UI.Module
             }
             else
             {
+                statsArea.commonText.enabled = true;
+                statsArea.commonText.text = LocalizationManager.Localize("UI_ADDITIONAL_ABILITIES_WHEN_COMBINED");
                 statsArea.levelLimitText.enabled = false;
                 
                 var data = Model.item.Value.item.Value.Data;
