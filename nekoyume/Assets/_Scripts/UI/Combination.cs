@@ -383,10 +383,9 @@ namespace Nekoyume.UI
             if (data.equipmentMaterial.Value != null)
             {
                 materials.Add(data.equipmentMaterial.Value);
-            } foreach (var combinationMaterial in data.materials)
-            {
-                materials.Add(combinationMaterial);
             }
+
+            materials.AddRange(data.materials);
 
             RequestCombination(materials);
         }
