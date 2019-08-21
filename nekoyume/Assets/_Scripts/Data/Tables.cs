@@ -82,18 +82,18 @@ namespace Nekoyume.Data
             return ItemEquipment.TryGetValue(itemEquipmentId, out itemEquipment);
         }
 
-        public IEnumerable<IStatMap> GetSetEffects(int id, int count)
+        public IEnumerable<IStatMap> GetSetEffect(int id, int count)
         {
-            var setEffects = new List<IStatMap>();
+            var statMaps = new List<IStatMap>();
             foreach (var row in SetEffect)
             {
                 if (row.Value.setId == id)
                 {
-                    setEffects.Add(row.Value.ToSetEffectMap());
+                    statMaps.Add(row.Value.ToSetEffectMap());
                 }
             }
 
-            return setEffects.Take(count).ToArray();
+            return statMaps.Take(count).ToArray();
         }
     }
 }

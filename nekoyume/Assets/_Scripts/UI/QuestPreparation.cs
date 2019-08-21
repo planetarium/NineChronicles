@@ -272,7 +272,7 @@ namespace Nekoyume.UI
 
         private void Quest(bool repeat)
         {
-            Find<LoadingScreen>().Show(true);
+            Find<LoadingScreen>().Show();
 
             questBtn.SetActive(false);
             _player.StartRun();

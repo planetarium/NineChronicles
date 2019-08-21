@@ -116,10 +116,10 @@ namespace Nekoyume.Model
 
             foreach (var pair in setMap)
             {
-                var setEffects = Tables.instance.GetSetEffects(pair.Key, pair.Value);
-                foreach (var setEffect in setEffects)
+                var setEffect = Tables.instance.GetSetEffect(pair.Key, pair.Value);
+                foreach (var statMap in setEffect)
                 {
-                    setEffect.UpdatePlayer(this);
+                    statMap.UpdatePlayer(this);
                 }
             }
         }

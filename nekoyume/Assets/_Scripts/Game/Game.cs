@@ -45,6 +45,7 @@ namespace Nekoyume.Game
             Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
             Screen.SetResolution(GameConfig.ScreenSize.x, GameConfig.ScreenSize.y, FullScreenMode.Windowed);
             MainCanvas.instance.Initialize();
+            Widget.Find<LoadingScreen>().Show(false);
             Tables.instance.Initialize();
             stage.objectPool.Initialize();
 #if UNITY_EDITOR
