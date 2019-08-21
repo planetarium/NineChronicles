@@ -106,6 +106,7 @@ namespace Nekoyume.UI
             var avatarState = AvatarManager.SetIndex(_selectedIndex);
             OnDidAvatarStateLoaded(avatarState);
             AudioController.PlayClick();
+            Find<Menu>()?.ShowRoom();
         }
 
         public void BackClick()

@@ -15,7 +15,7 @@ namespace Nekoyume.UI
         private Material _glass;
         private bool _animCloseEnd;
 
-        private Animator Animator { get; set; }
+        protected Animator Animator { get; set; }
         public RectTransform RectTransform { get; private set; }
         public virtual WidgetType WidgetType => WidgetType.Widget;
 
@@ -191,11 +191,13 @@ namespace Nekoyume.UI
         public virtual void OnCompleteOfShowAnimation()
         {
             Animator.enabled = false;
+            Animator.speed = 1f;
         }
 
         public virtual void OnCompleteOfCloseAnimation()
         {
             _animCloseEnd = true;
+            Animator.speed = 1f;
         }
     }
 }

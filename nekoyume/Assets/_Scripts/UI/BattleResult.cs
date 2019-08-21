@@ -298,6 +298,8 @@ namespace Nekoyume.UI
             }
             
             Game.Event.OnRoomEnter.Invoke();
+            Find<Menu>()?.ShowWorld();
+            Find<Menu>()?.ShowRoom();
             Close();
         }
 

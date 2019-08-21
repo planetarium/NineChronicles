@@ -265,8 +265,6 @@ namespace Nekoyume.Game
 
         public IEnumerator CoSpawnPlayer(Model.Player character)
         {
-            Widget.Find<Menu>().ShowWorld();
-
             var playerCharacter = RunPlayer();
             playerCharacter.Init(character);
             playerCharacter.ShowSpeech("PLAYER_INIT");

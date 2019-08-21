@@ -190,7 +190,7 @@ namespace Nekoyume.UI
             {
                 return;
             }
-            foreach (var widget in new Widget[] {_inventory, _statusDetail})
+            foreach (var widget in new Widget[] {_inventory, _statusDetail, _quest})
             {
                 if (selected != widget)
                     widget.Close();

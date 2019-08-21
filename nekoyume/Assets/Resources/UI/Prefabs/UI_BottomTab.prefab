@@ -1465,8 +1465,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1542912246320733003}
   - component: {fileID: 6035183985399840212}
+  - component: {fileID: 4964587564797645840}
   m_Layer: 5
-  m_Name: UI_ButtonPanel
+  m_Name: UI_BottomTab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1512,6 +1513,25 @@ MonoBehaviour:
   infoAndEquipButton: {fileID: 1542912246354021191}
   mailButton: {fileID: 1542912244914454462}
   dictionaryButton: {fileID: 1542912245387503312}
+--- !u!95 &4964587564797645840
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1542912246320733002}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 4c7ca3a2c67e8f14baf854d01557ec4a, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &1542912246354021185
 GameObject:
   m_ObjectHideFlags: 0

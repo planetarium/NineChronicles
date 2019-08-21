@@ -77,6 +77,14 @@ namespace Nekoyume.UI
 
             var worldMap = Find<WorldMap>();
             worldMap.SelectedStage = States.Instance.currentAvatarState.Value.worldStage;
+            var bottomTab = Find<BottomTab>();
+            if (bottomTab)
+            {
+                bottomTab.UpdateButton(
+                    BottomTab.ButtonHideFlag.InfoAndEquip |
+                    BottomTab.ButtonHideFlag.Inventory);
+                bottomTab.FadeIn(0.3f);
+            }
             OnChangeStage();
         }
 
@@ -90,7 +98,6 @@ namespace Nekoyume.UI
             }
 
             equipmentSlots.Clear();
-
             base.Close();
         }
 
@@ -157,7 +164,7 @@ namespace Nekoyume.UI
             _stage.LoadBackground("room");
             _player = _stage.GetPlayer(_stage.roomPosition);
             _player.UpdateSet(_player.model.armor);
-            Find<Menu>().ShowRoom();
+            Find<Menu>()?.ShowRoom();
             Close();
             AudioController.PlayClick();
         }
@@ -273,6 +280,9 @@ namespace Nekoyume.UI
         private void Quest(bool repeat)
         {
             Find<LoadingScreen>().Show();
+            Find<BottomTab>().UpdateButton(
+                BottomTab.ButtonHideFlag.Main |
+                BottomTab.ButtonHideFlag.Dictionary);
 
             questBtn.SetActive(false);
             _player.StartRun();
