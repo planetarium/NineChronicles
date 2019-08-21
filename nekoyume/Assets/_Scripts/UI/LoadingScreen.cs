@@ -87,7 +87,7 @@ namespace Nekoyume.UI
             Find<ActionFailPopup>().Show();
         }
 
-        public void Show(bool waitForQuit = true)
+        public void Show(bool waitForQuit = false)
         {
             base.Show();
 

@@ -6,6 +6,7 @@ using Nekoyume.Game.Controller;
 using Nekoyume.TableData;
 using Nekoyume.UI;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 namespace Nekoyume.Game
 {
@@ -55,6 +56,7 @@ namespace Nekoyume.Game
 
         private IEnumerator Start()
         {
+            yield return Addressables.InitializeAsync();
             TableSheets = new TableSheets();
             yield return StartCoroutine(TableSheets.CoInitialize());
             AgentController.Initialize(AgentInitialized);
