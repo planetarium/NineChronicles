@@ -58,6 +58,11 @@ namespace Nekoyume.BlockChain
             return evaluation.OutputStates.UpdatedAddresses.Contains(States.Instance.agentState.Value.address);
         }
 
+        private bool ValidateEvaluationForCurrentAvatarState<T>(ActionBase.ActionEvaluation<T> evaluation)
+            where T : ActionBase =>
+            !(States.Instance.currentAvatarState.Value is null)
+            && evaluation.OutputStates.UpdatedAddresses.Contains(States.Instance.currentAvatarState.Value.address);
+
         private AgentState GetAgentState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
         {
             var agentAddress = States.Instance.agentState.Value.address;
@@ -159,7 +164,7 @@ namespace Nekoyume.BlockChain
         private void HackAndSlash()
         {
             ActionBase.EveryRender<HackAndSlash>()
-                .Where(ValidateEvaluationForAgentState)
+                .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
                 .Subscribe(UpdateCurrentAvatarState).AddTo(_disposables);
         }
@@ -167,7 +172,7 @@ namespace Nekoyume.BlockChain
         private void Combination()
         {
             ActionBase.EveryRender<Combination>()
-                .Where(ValidateEvaluationForAgentState)
+                .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
                 .Subscribe(UpdateCurrentAvatarState).AddTo(_disposables);
         }
@@ -175,7 +180,7 @@ namespace Nekoyume.BlockChain
         private void Sell()
         {
             ActionBase.EveryRender<Sell>()
-                .Where(ValidateEvaluationForAgentState)
+                .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
                 .Subscribe(UpdateCurrentAvatarState).AddTo(_disposables);
         }
@@ -183,7 +188,7 @@ namespace Nekoyume.BlockChain
         private void SellCancellation()
         {
             ActionBase.EveryRender<SellCancellation>()
-                .Where(ValidateEvaluationForAgentState)
+                .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
                 .Subscribe(UpdateCurrentAvatarState).AddTo(_disposables);
         }
