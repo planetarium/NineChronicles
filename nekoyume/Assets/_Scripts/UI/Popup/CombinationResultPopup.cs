@@ -20,8 +20,8 @@ namespace Nekoyume.UI
         public GameObject resultItemVfx;
         
         private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
-        
-        public Model.CombinationResultPopup Model { get; private set; }
+
+        private Model.CombinationResultPopup Model { get; set; }
 
         #region Mono
 
@@ -37,8 +37,8 @@ namespace Nekoyume.UI
             submitButton.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
-                    Model.onClickSubmit.OnNext(Model);
                     AudioController.PlayClick();
+                    Close();
                 })
                 .AddTo(gameObject);
         }

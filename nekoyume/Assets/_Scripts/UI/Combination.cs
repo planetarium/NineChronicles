@@ -1,7 +1,5 @@
-using DG.Tweening;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Nekoyume.Manager;
 using Nekoyume.BlockChain;
 using Nekoyume.Game.Character;
@@ -12,9 +10,7 @@ using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 using Stage = Nekoyume.Game.Stage;
-using System.Collections;
 using Assets.SimpleLocalization;
-using Nekoyume.Game.Item;
 using Nekoyume.Helper;
 using Nekoyume.Data;
 
@@ -45,17 +41,12 @@ namespace Nekoyume.UI
         public Button recipeCloseButton;
         public Recipe recipe;
 
-        public GameObject particleVFX;
-        public GameObject resultItemVFX;
-
         private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
 
         private Stage _stage;
         private Player _player;
 
         private SimpleItemCountPopup _simpleItemCountPopup;
-        private CombinationResultPopup _resultPopup;
-        private GrayLoadingScreen _loadingScreen;
 
         public Model.Combination Model { get; private set; }
 
@@ -138,18 +129,6 @@ namespace Nekoyume.UI
                 throw new NotFoundComponentException<SimpleItemCountPopup>();
             }
 
-            _resultPopup = Find<CombinationResultPopup>();
-            if (ReferenceEquals(_resultPopup, null))
-            {
-                throw new NotFoundComponentException<CombinationResultPopup>();
-            }
-
-            _loadingScreen = Find<GrayLoadingScreen>();
-            if (ReferenceEquals(_loadingScreen, null))
-            {
-                throw new NotFoundComponentException<LoadingScreen>();
-            }
-
             base.Show();
 
             _stage = Game.Game.instance.stage;
@@ -206,8 +185,6 @@ namespace Nekoyume.UI
             Model.materials.ObserveReplace().Subscribe(_ => UpdateStagedItems()).AddTo(_disposablesForModel);
             Model.showMaterialsCount.Subscribe(SubscribeShowMaterialsCount).AddTo(_disposablesForModel);
             Model.readyForCombination.Subscribe(SetActiveCombinationButton).AddTo(_disposablesForModel);
-            Model.resultPopup.Subscribe(SubscribeResultPopup).AddTo(_disposablesForModel);
-            Model.onShowResultVFX.Subscribe(ShowResultVFX).AddTo(_disposablesForModel);
 
             inventory.SetData(Model.inventory.Value);
 
@@ -406,8 +383,7 @@ namespace Nekoyume.UI
             if (data.equipmentMaterial.Value != null)
             {
                 materials.Add(data.equipmentMaterial.Value);
-            }
-            foreach (var combinationMaterial in data.materials)
+            } foreach (var combinationMaterial in data.materials)
             {
                 materials.Add(combinationMaterial);
             }
@@ -431,94 +407,17 @@ namespace Nekoyume.UI
 
         private void RequestCombination(List<CombinationMaterial> materials)
         {
-            _loadingScreen.Show();
-            var inventoryItemCount = States.Instance.currentAvatarState.Value.inventory.Items.Count();
-
-            foreach (var material in materials)
+            ActionManager.instance.Combination(materials);
+            AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickCombinationCombination);
+            Model.inventory.Value.RemoveItems(materials);
+            Model.RemoveEquipmentMaterial();
+            while (Model.materials.Count > 0)
             {
-                if (!States.Instance.currentAvatarState.Value.inventory.TryGetFungibleItem(material.item.Value.Data.id,
-                    out var outFungibleItem))
-                {
-                    continue;
-                }
-
-                if (outFungibleItem.count == material.count.Value)
-                {
-                    inventoryItemCount--;
-                }
+                Model.materials.RemoveAt(0);
             }
 
-            ActionManager.instance.Combination(materials)
-                .Subscribe(eval => ResponseCombination(materials, inventoryItemCount))
-                .AddTo(this);
-            AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickCombinationCombination);
-        }
-
-        /// <summary>
-        /// 결과를 직접 받아서 데이타에 넣어주는 방법 보다는,
-        /// 네트워크 결과를 핸들링하는 곳에 핸들링 인터페이스를 구현한 데이타 모델을 등록하는 방법이 좋겠다. 
-        /// </summary>
-        private void ResponseCombination(ICollection<CombinationMaterial> materials, int inventoryItemCount)
-        {
-            _loadingScreen.Close();
-
-            var isSuccess = States.Instance.currentAvatarState.Value.inventory.Items.Count() > inventoryItemCount;
-
-            Model.resultPopup.Value = new Model.CombinationResultPopup(isSuccess
-                ? States.Instance.currentAvatarState.Value.inventory.TryGetNonFungibleItemFromLast(
-                    out var outNonFungibleItem)
-                    ? new CountableItem(outNonFungibleItem, 1)
-                    : null
-                : null)
-            {
-                isSuccess = isSuccess,
-                materialItems = materials
-            };
-
-            AnalyticsManager.Instance.OnEvent(isSuccess
-                ? AnalyticsManager.EventName.ActionCombinationSuccess
-                : AnalyticsManager.EventName.ActionCombinationFail);
             // 에셋의 버그 때문에 스크롤 맨 끝 포지션으로 스크롤 포지션 설정 시 스크롤이 비정상적으로 표시되는 문제가 있음
             recipe.Reload(recipe.scrollerController.scroller.ScrollPosition - 0.1f);
-        }
-
-        private void SubscribeResultPopup(Model.CombinationResultPopup data)
-        {
-            if (ReferenceEquals(data, null))
-            {
-                _resultPopup.Close();
-                return;
-            }
-
-            _resultPopup.Pop(data);
-        }
-
-        private void ShowResultVFX(Model.CombinationResultPopup data)
-        {
-            StartCoroutine(CoShowResultVFX(data));
-        }
-
-        private IEnumerator CoShowResultVFX(Model.CombinationResultPopup data)
-        {
-            if (!data.isSuccess)
-            {
-                yield break;
-            }
-
-            yield return null;
-            particleVFX.SetActive(false);
-            resultItemVFX.SetActive(false);
-
-            var position = data.itemInformation.Value.item.Value.item.Value.Data.cls.ToEnumItemType() == ItemBase.ItemType.Food
-                ? inventory.consumablesButton.transform.position
-                : inventory.equipmentsButton.transform.position;
-
-            particleVFX.transform.position = _resultPopup.itemInformation.iconArea.itemView.transform.position;
-            particleVFX.transform.DOMoveX(position.x, 0.6f);
-            particleVFX.transform.DOMoveY(position.y, 0.6f).SetEase(Ease.InCubic)
-                .onComplete = () => { resultItemVFX.SetActive(true); };
-            particleVFX.SetActive(true);
-            resultItemVFX.transform.position = position;
         }
     }
 }
