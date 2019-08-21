@@ -409,6 +409,7 @@ namespace Nekoyume.UI
         {
             ActionManager.instance.Combination(materials);
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickCombinationCombination);
+            Find<CombinationLoadingScreen>().Show();
             Model.inventory.Value.RemoveItems(materials);
             Model.RemoveEquipmentMaterial();
             while (Model.materials.Count > 0)
