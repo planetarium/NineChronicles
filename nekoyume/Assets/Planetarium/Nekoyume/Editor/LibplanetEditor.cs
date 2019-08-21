@@ -1,6 +1,4 @@
 ﻿using System.IO;
-using Libplanet;
-using Nekoyume.BlockChain;
 using UnityEditor;
 using UnityEngine;
 

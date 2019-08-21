@@ -6,6 +6,7 @@ using Nekoyume.Game.Controller;
 using Nekoyume.TableData;
 using Nekoyume.UI;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 namespace Nekoyume.Game
 {
@@ -44,6 +45,7 @@ namespace Nekoyume.Game
             Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
             Screen.SetResolution(GameConfig.ScreenSize.x, GameConfig.ScreenSize.y, FullScreenMode.Windowed);
             MainCanvas.instance.Initialize();
+            Widget.Find<LoadingScreen>().Show(false);
             Tables.instance.Initialize();
             stage.objectPool.Initialize();
 #if UNITY_EDITOR
@@ -55,6 +57,7 @@ namespace Nekoyume.Game
 
         private IEnumerator Start()
         {
+            yield return Addressables.InitializeAsync();
             TableSheets = new TableSheets();
             yield return StartCoroutine(TableSheets.CoInitialize());
             AgentController.Initialize(AgentInitialized);

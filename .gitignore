@@ -41,30 +41,33 @@ sysinfo.txt
 .sln.DotSettins
 
 # Rider
-.idea
-.idea/
-nekoyume/Assets/Plugins/Editor/JetBrains
-nekoyume/Assets/Plugins/Editor/Jetbrains.meta
-nekoyume/Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll
-nekoyume/Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll.meta
+/nekoyume/.idea
+/nekoyume/Assets/Plugins/Editor/JetBrains*
 
 # Spine
-Spine Examples
-Spine Examples.meta
+/nekoyume/Assets/Spine Examples*
 
 # Compose
 nekoyume/compose/results
 
 # Pseudo commandline options.
-nekoyume/Assets/StreamingAssets/clo.json
-nekoyume/Assets/StreamingAssets/clo.json.meta
-nekoyume/Assets/StreamingAssets/clo_test_fixture.json.meta
+/nekoyume/Assets/StreamingAssets/clo.json*
+/nekoyume/Assets/StreamingAssets/clo_test_fixture.json.meta
 
 # UnityTestRunner
-nekoyume/Assets/InitTestscene*.unity
-nekoyume/Assets/InitTestscene*.unity.meta
+/nekoyume/Assets/InitTestscene*.unity*
+
+# AddressableAssets
+# 꼭 필요한 설정파일 이외에 에셋 빌드로 생성되는 불특정 파일들 모두를 무시하기 위해서 아래처럼 설정함.
+/nekoyume/Assets/AddressableAssetsData/
+!nekoyume/Assets/AddressableAssetsData/AddressableAssetsSettings*
+!nekoyume/Assets/AddressableAssetsData/AnalyzeData*
+!nekoyume/Assets/AddressableAssetsData/AssetGroups*
+!nekoyume/Assets/AddressableAssetsData/AssetGroupTemplates*
+!nekoyume/Assets/AddressableAssetsData/DataBuilders*
+!nekoyume/Assets/AddressableAssetsData/DefaultObject*
+/nekoyume/Assets/StreamingAssets/aa*
 
 # ETC.
-nekoyume/Assets/_MyTest
-nekoyume/Assets/_MyTest.*
+/nekoyume/Assets/_MyTest*
 

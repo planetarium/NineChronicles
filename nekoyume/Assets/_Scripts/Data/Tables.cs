@@ -84,16 +84,16 @@ namespace Nekoyume.Data
 
         public IEnumerable<IStatMap> GetSetEffect(int id, int count)
         {
-            var effects = new List<IStatMap>();
+            var statMaps = new List<IStatMap>();
             foreach (var row in SetEffect)
             {
                 if (row.Value.setId == id)
                 {
-                    effects.Add(row.Value.ToSetEffectMap());
+                    statMaps.Add(row.Value.ToSetEffectMap());
                 }
             }
 
-            return effects.Take(count).ToArray();
+            return statMaps.Take(count).ToArray();
         }
     }
 }
