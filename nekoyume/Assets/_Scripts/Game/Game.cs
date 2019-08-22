@@ -7,6 +7,8 @@ using Nekoyume.TableData;
 using Nekoyume.UI;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UniRx;
+using Nekoyume.Game.VFX;
 
 namespace Nekoyume.Game
 {
@@ -33,7 +35,7 @@ namespace Nekoyume.Game
     {
         public LocalizationManager.LanguageType languageType = LocalizationManager.LanguageType.English;
         public Stage stage;
-        
+
         public TableSheets TableSheets { get; private set; }
 
         protected override void Awake()
@@ -62,6 +64,11 @@ namespace Nekoyume.Game
             yield return StartCoroutine(TableSheets.CoInitialize());
             AgentController.Initialize(AgentInitialized);
             AudioController.instance.Initialize();
+            Observable.EveryUpdate()
+                .Where(_ => Input.GetMouseButtonUp(0))
+                .Select(_ => Input.mousePosition)
+                .Subscribe(pos => PlayMouseOnClickVFX(pos))
+                .AddTo(gameObject);
         }
 
         private void AgentInitialized(bool succeed)
@@ -76,6 +83,12 @@ namespace Nekoyume.Game
             {
                 Widget.Find<UpdatePopup>()?.Show();
             }
+        }
+
+        private void PlayMouseOnClickVFX(Vector3 pos)
+        {
+            var vfx = VFXController.instance.CreateFromScreen<MouseClickVFX>(pos);
+            vfx.Play();
         }
     }
 }

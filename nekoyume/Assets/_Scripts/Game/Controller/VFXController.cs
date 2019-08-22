@@ -31,6 +31,14 @@ namespace Nekoyume.Game.Controller
             return vfx;
         }
 
+        public T CreateFromScreen<T>(Vector3 position) where T : VFX.VFX
+        {
+            position = Camera.main.ScreenToWorldPoint(position);
+            position.z = 0;
+            var vfx = _pool.Get<T>(position);
+            return vfx;
+        }
+
         public T Create<T>(Transform target, Vector3 offset) where T : VFX.VFX
         {
             var vfx = _pool.Get<T>();
