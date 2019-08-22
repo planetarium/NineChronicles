@@ -50,7 +50,6 @@ namespace Nekoyume.Game
                     break;
             }
 
-            Debug.LogWarning($"{skillRow.Id}, {skillEffectRow.skillType}, {skillEffectRow.skillTargetType}, {skillEffectRow.skillCategory}");
             throw new UnexpectedOperationException(
                 $"{skillRow.Id}, {skillEffectRow.skillType}, {skillEffectRow.skillTargetType}, {skillEffectRow.skillCategory}");
         }
