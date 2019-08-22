@@ -85,9 +85,10 @@ namespace Nekoyume.Game
             }
         }
 
-        private void PlayMouseOnClickVFX(Vector3 pos)
+        private void PlayMouseOnClickVFX(Vector3 position)
         {
-            var vfx = VFXController.instance.CreateFromScreen<MouseClickVFX>(pos);
+            position = ActionCamera.instance.Cam.ScreenToWorldPoint(position);
+            var vfx = VFXController.instance.CreateAndChaseCam<MouseClickVFX>(position);
             vfx.Play();
         }
     }

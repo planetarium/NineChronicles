@@ -31,16 +31,18 @@ namespace Nekoyume.Game.Controller
             return vfx;
         }
 
-        public T CreateFromScreen<T>(Vector3 position) where T : VFX.VFX
+        public T Create<T>(Transform target, Vector3 offset) where T : VFX.VFX
         {
-            position = Camera.main.ScreenToWorldPoint(position);
-            position.z = 0;
-            var vfx = _pool.Get<T>(position);
+            var vfx = _pool.Get<T>();
+            StartCoroutine(CoChaseTarget(vfx, target, offset));
             return vfx;
         }
 
-        public T Create<T>(Transform target, Vector3 offset) where T : VFX.VFX
+        public T CreateAndChaseCam<T>(Vector3 position) where T : VFX.VFX
         {
+            var target = ActionCamera.instance.transform;
+            var offset = position - target.position;
+            offset.z += 10f;
             var vfx = _pool.Get<T>();
             StartCoroutine(CoChaseTarget(vfx, target, offset));
             return vfx;
