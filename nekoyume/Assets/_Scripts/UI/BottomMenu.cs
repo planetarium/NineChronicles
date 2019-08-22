@@ -17,8 +17,7 @@ namespace Nekoyume.UI
             Quest =         1 << 4,
             InfoAndEquip =  1 << 5,
             Mail =          1 << 6,
-            Dictionary =    1 << 7,
-            All =           int.MaxValue
+            Dictionary =    1 << 7
         }
 
         public Button goToMainButton;
