@@ -177,9 +177,7 @@ namespace Nekoyume.Game
             yield return StartCoroutine(CoStageEnter(log.worldStage));
             foreach (EventBase e in log)
             {
-                {
-                    yield return StartCoroutine(e.CoExecute(this));
-                }
+                yield return StartCoroutine(e.CoExecute(this));
             }
 
             yield return StartCoroutine(CoStageEnd(log));

@@ -11,6 +11,7 @@ namespace Nekoyume.UI
 {
     public class Status : Widget
     {
+        public BottomMenu bottomMenu;
         public Text TextLevelName;
         public StageTitle stageTitle;
         public Text TextStage;
@@ -29,7 +30,6 @@ namespace Nekoyume.UI
         private StatusDetail _statusDetail;
         private Inventory _inventory;
         private Quest _quest;
-        private ToggleGroup _toggleGroup;
 
         #region Mono
 
@@ -72,18 +72,11 @@ namespace Nekoyume.UI
                 throw new NotFoundComponentException<Quest>();
             }
 
-            _toggleGroup = GetComponentInChildren<ToggleGroup>();
-            if (ReferenceEquals(_toggleGroup, null))
-            {
-                throw new NotFoundComponentException<ToggleGroup>();
-            }
-
             HPBar.gameObject.SetActive(false);
         }
 
         public override void Close()
         {
-            _toggleGroup.SetAllTogglesOff();
             stageTitle.Close();
 
             base.Close();
@@ -172,6 +165,10 @@ namespace Nekoyume.UI
 
         public void ShowStage(int stage)
         {
+            bottomMenu.Show(
+                BottomMenu.ButtonHideFlag.Main |
+                BottomMenu.ButtonHideFlag.Dictionary);
+            bottomMenu.FadeInAlpha(0.5f);
             HPBar.gameObject.SetActive(true);
             stageTitle.Show(stage);
         }
@@ -200,6 +197,7 @@ namespace Nekoyume.UI
         private void OnRoomEnter()
         {
             stageTitle.gameObject.SetActive(false);
+            Find<Menu>()?.ShowRoom();
         }
 
         private void OnUpdateStatus()

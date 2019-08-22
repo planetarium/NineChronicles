@@ -114,7 +114,7 @@ namespace Nekoyume.Game.Item
             }
             else
             {
-                _inventoryPosition = _status.BtnInventory.transform.position;
+                _inventoryPosition = _status.bottomMenu.inventoryButton.transform.position;
                 _inventoryPosition.z = transform.position.z;
             }
         }

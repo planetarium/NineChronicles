@@ -29,6 +29,7 @@ namespace Nekoyume.UI
         public Text questContinuousBtnText;
         public GameObject equipSlotGlow;
         public Text labelStage;
+        public BottomMenu bottomMenu;
 
         private Stage _stage;
         private Player _player;
@@ -48,7 +49,7 @@ namespace Nekoyume.UI
             equipmentTitleText.text = LocalizationManager.Localize("UI_EQUIP_EQUIPMENTS");
             questBtnText.text = LocalizationManager.Localize("UI_BATTLE");
             questContinuousBtnText.text = LocalizationManager.Localize("UI_BATTLE_CONTINUOUS");
-            
+
             _stage = Game.Game.instance.stage;
             _stage.LoadBackground("dungeon");
             _player = _stage.GetPlayer(_stage.questPreparationPosition);
@@ -77,19 +78,16 @@ namespace Nekoyume.UI
 
             var worldMap = Find<WorldMap>();
             worldMap.SelectedStage = States.Instance.currentAvatarState.Value.worldStage;
-            var bottomTab = Find<BottomTab>();
-            if (bottomTab)
-            {
-                bottomTab.UpdateButton(
-                    BottomTab.ButtonHideFlag.InfoAndEquip |
-                    BottomTab.ButtonHideFlag.Inventory);
-                bottomTab.FadeIn(0.3f);
-            }
+            bottomMenu.Show(
+                BottomMenu.ButtonHideFlag.InfoAndEquip |
+                BottomMenu.ButtonHideFlag.Inventory);
+            bottomMenu.FadeInColor(0.3f);
             OnChangeStage();
         }
 
         public override void Close()
         {
+            bottomMenu.Close();
             Clear();
 
             foreach (var slot in consumableSlots)
@@ -280,9 +278,6 @@ namespace Nekoyume.UI
         private void Quest(bool repeat)
         {
             Find<LoadingScreen>().Show();
-            Find<BottomTab>().UpdateButton(
-                BottomTab.ButtonHideFlag.Main |
-                BottomTab.ButtonHideFlag.Dictionary);
 
             questBtn.SetActive(false);
             _player.StartRun();

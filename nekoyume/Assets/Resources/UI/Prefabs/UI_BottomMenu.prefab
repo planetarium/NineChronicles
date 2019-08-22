@@ -1245,7 +1245,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -1319,7 +1319,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -1467,7 +1467,7 @@ GameObject:
   - component: {fileID: 6035183985399840212}
   - component: {fileID: 4964587564797645840}
   m_Layer: 5
-  m_Name: UI_BottomTab
+  m_Name: UI_BottomMenu
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1509,10 +1509,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   goToMainButton: {fileID: 1542912245646647679}
   inventoryButton: {fileID: 1542912244654648968}
-  QuestButton: {fileID: 1542912246053238745}
+  questButton: {fileID: 1542912246053238745}
   infoAndEquipButton: {fileID: 1542912246354021191}
   mailButton: {fileID: 1542912244914454462}
   dictionaryButton: {fileID: 1542912245387503312}
+  animator: {fileID: 0}
 --- !u!95 &4964587564797645840
 Animator:
   serializedVersion: 3
