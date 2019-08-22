@@ -78,6 +78,7 @@ workflows:
 
       - azure-aks/create-cluster:
           name: create-cluster
+          node-count: 1
           cluster-name: "nekoyume-alpha"
           resource-group: "nekoyume-alpha"
           requires:
