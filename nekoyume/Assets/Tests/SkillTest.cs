@@ -42,7 +42,7 @@ namespace Tests
         }
 
         [Test]
-        public void Attack()
+        public void NormalAttack()
         {
             var caster = _simulator.Player;
             var attack = caster.Skills.First(s => s is NormalAttack);
@@ -59,7 +59,7 @@ namespace Tests
         }
 
         [Test]
-        public void Blow()
+        public void BlowAttack()
         {
             var caster = _simulator.Player;
             var skillRow = ATestSetUp.tableSheets.SkillSheet.ToOrderedList().First(r =>
