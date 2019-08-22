@@ -561,6 +561,13 @@
             or networking.  These bring an action indeterministic.  You maybe
             fine to log messages for debugging purpose, but equivalent messages
             could be logged multiple times.</para>
+            <para>Lastly, although it might be surprising, <a
+            href="https://wp.me/p1fTCO-kT">floating-point arithmetics are
+            underspecified so that it can make different results on different
+            machines, platforms, runtimes, compilers, and builds</a>.</para>
+            <para>For more on determinism in general, please read also <a
+            href="https://tendermint.com/docs/spec/abci/abci.html#determinism"
+            >Tendermint ABCI's docs on determinism</a>.</para>
             </remarks>
             <seealso cref="T:Libplanet.Action.IActionContext"/>
         </member>
@@ -664,6 +671,13 @@
             <returns>A random object that shares interface mostly equivalent
             to <see cref="T:System.Random"/>.</returns>
         </member>
+        <member name="M:Libplanet.Action.IActionContext.NewGuid">
+            <summary>
+            Creates new <see cref="T:System.Guid"/>.  Its seed (state) is determined by a block and
+            a transaction, which is deterministic as like <see cref="P:Libplanet.Action.IActionContext.Random"/>.
+            </summary>
+            <returns>A deterministic guid.</returns>
+        </member>
         <member name="T:Libplanet.Action.IRandom">
             <summary>
             An pseudorandom number generator interface equivalent to
@@ -729,15 +743,6 @@
             <exception cref="T:System.ArgumentNullException">Thrown when <paramref
             name="buffer"/> is <c>null</c>.</exception>
             <seealso cref="M:System.Random.NextBytes(System.Byte[])"/>
-        </member>
-        <member name="M:Libplanet.Action.IRandom.NextDouble">
-            <summary>
-            Gets a random floating-point number that is greater than or
-            equal to 0.0, and less than 1.0.
-            </summary>
-            <returns>A double-precision floating point number that is greater
-            than or equal to 0.0, and less than 1.0.</returns>
-            <seealso cref="M:System.Random.NextDouble"/>
         </member>
         <member name="T:Libplanet.Action.MissingActionTypeException">
             <summary>
@@ -1033,6 +1038,20 @@
             <para>It is 20 <see cref="T:System.Byte"/>s.</para>
             </summary>
         </member>
+        <member name="M:Libplanet.Address.#ctor(System.Collections.Immutable.ImmutableArray{System.Byte})">
+            <summary>
+            Creates an <see cref="T:Libplanet.Address"/> instance from the given immutable <see
+            cref="T:System.Byte"/> array (i.e., <paramref name="address"/>).
+            </summary>
+            <param name="address">An immutable array of 20 <see cref="T:System.Byte"/>s which
+            represents an <see cref="T:Libplanet.Address"/>.</param>
+            <exception cref="T:System.ArgumentException">Thrown when the given <paramref
+            name="address"/> array did not lengthen 20 bytes.</exception>
+            <remarks>A valid <see cref="T:System.Byte"/> array which represents an
+            <see cref="T:Libplanet.Address"/> can be gotten using <see cref="M:Libplanet.Address.ToByteArray"
+            /> method.</remarks>
+            <seealso cref="P:Libplanet.Address.ByteArray"/>
+        </member>
         <member name="M:Libplanet.Address.#ctor(System.Byte[])">
             <summary>
             Creates an <see cref="T:Libplanet.Address"/> instance from the given <see
@@ -1041,7 +1060,7 @@
             <param name="address">An array of 20 <see cref="T:System.Byte"/>s which
             represents an <see cref="T:Libplanet.Address"/>.  This must not be <c>null</c>.
             </param>
-            <exception cref="T:System.NullReferenceException">Thrown when <c>null</c> was
+            <exception cref="T:System.ArgumentNullException">Thrown when <c>null</c> was
             passed to <paramref name="address"/>.</exception>
             <exception cref="T:System.ArgumentException">Thrown when the given <paramref
             name="address"/> array did not lengthen 20 bytes.</exception>
@@ -2482,6 +2501,12 @@
         <member name="M:Libplanet.Store.BaseStore.ListNamespaces">
             <inheritdoc />
         </member>
+        <member name="M:Libplanet.Store.BaseStore.GetCanonicalNamespace">
+            <inheritdoc />
+        </member>
+        <member name="M:Libplanet.Store.BaseStore.SetCanonicalNamespace(System.String)">
+            <inheritdoc />
+        </member>
         <member name="M:Libplanet.Store.BaseStore.ListAddresses(System.String)">
             <inheritdoc />
         </member>
@@ -2521,54 +2546,34 @@
         <member name="M:Libplanet.Store.BaseStore.DeleteNamespace(System.String)">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Store.FileStore.ListNamespaces">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.FileStore.DeleteNamespace(System.String)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.FileStore.ListAddresses(System.String)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.FileStore.IterateStagedTransactionIds(System.Boolean)">
-            <inheritdoc />
-        </member>
-        <member name="M:Libplanet.Store.FileStore.PutBlock``1(Libplanet.Blocks.Block{``0})">
-            <inheritdoc />
-        </member>
-        <member name="M:Libplanet.Store.FileStore.StageTransactionIds(System.Collections.Generic.IDictionary{Libplanet.Tx.TxId,System.Boolean})">
-            <inheritdoc />
-        </member>
-        <member name="M:Libplanet.Store.FileStore.IterateStateReferences(System.String,Libplanet.Address)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.FileStore.StoreStateReference``1(System.String,System.Collections.Immutable.IImmutableSet{Libplanet.Address},Libplanet.Blocks.Block{``0})">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.FileStore.ForkStateReferences``1(System.String,System.String,Libplanet.Blocks.Block{``0},System.Collections.Immutable.IImmutableSet{Libplanet.Address})">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.FileStore.ListTxNonces(System.String)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.FileStore.GetTxNonce(System.String,Libplanet.Address)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.FileStore.IncreaseTxNonce(System.String,Libplanet.Address,System.Int64)">
-            <inheritdoc/>
-        </member>
         <member name="M:Libplanet.Store.IStore.ListNamespaces">
             <summary>
             Lists existing namespaces.
             </summary>
             <returns>Existing namespaces.</returns>
         </member>
-        <member name="M:Libplanet.Store.IStore.IterateIndex(System.String)">
+        <member name="M:Libplanet.Store.IStore.GetCanonicalNamespace">
+            <summary>
+            Gets the current canonical namespace.
+            </summary>
+            <returns>The current canonical namespace.  Maybe <c>null</c>.</returns>
+        </member>
+        <member name="M:Libplanet.Store.IStore.SetCanonicalNamespace(System.String)">
+            <summary>
+            Set canonical namespace.
+            </summary>
+            <param name="namespace">A new canonical namespace.  Cannot be <c>null</c>.</param>
+            <exception cref="T:System.ArgumentNullException">Thrown when <paramref name="namespace"/> is
+            <c>null</c>.</exception>
+        </member>
+        <member name="M:Libplanet.Store.IStore.IterateIndex(System.String,System.Int32,System.Nullable{System.Int32})">
             <summary>
             Lists all block hashes in the <parmaref name="namespace"/>.
             </summary>
             <param name="namespace">The namespace of the index that contains block hashes to
             iterate.</param>
+            <param name="offset">The starting point to return block hashes.</param>
+            <param name="limit">The maximum number of block hashes to get.</param>
             <returns>Block hashes in the index of the <paramref name="namespace"/>, in ascending
             order; the genesis block goes first, and the tip block goes last.</returns>
         </member>
@@ -2576,7 +2581,8 @@
             <summary>
             Deletes an index, tx nonces, and state references in the given
             <paramref name="namespace"/>.
-            It also deletes namespace itself.
+            It also deletes namespace itself.  If there is no such <paramref name="namespace"/> it
+            does nothing.
             </summary>
             <param name="namespace">The namespace to delete.</param>
             <remarks>This does not delete blocks or transactions that belong to
@@ -2775,7 +2781,7 @@
             </summary>
             <seealso cref="T:Libplanet.Store.IStore"/>
         </member>
-        <member name="M:Libplanet.Store.LiteDBStore.#ctor(System.String,System.Boolean,System.Int32,System.Boolean)">
+        <member name="M:Libplanet.Store.LiteDBStore.#ctor(System.String,System.Boolean,System.Int32,System.Boolean,System.Boolean)">
             <summary>
             Creates a new <seealso cref="T:Libplanet.Store.LiteDBStore"/>.
             </summary>
@@ -2786,6 +2792,8 @@
             <param name="cacheSize">Max number of pages in the cache.</param>
             <param name="flush">Writes data direct to disk avoiding OS cache.  Turned on by default.
             </param>
+            <param name="readOnly">Opens database readonly mode. Turned off by default.
+            </param>
         </member>
         <member name="M:Libplanet.Store.LiteDBStore.ListNamespaces">
             <inheritdoc/>
@@ -2793,10 +2801,16 @@
         <member name="M:Libplanet.Store.LiteDBStore.DeleteNamespace(System.String)">
             <inheritdoc/>
         </member>
+        <member name="M:Libplanet.Store.LiteDBStore.GetCanonicalNamespace">
+            <inheritdoc />
+        </member>
+        <member name="M:Libplanet.Store.LiteDBStore.SetCanonicalNamespace(System.String)">
+            <inheritdoc />
+        </member>
         <member name="M:Libplanet.Store.LiteDBStore.CountIndex(System.String)">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Store.LiteDBStore.IterateIndex(System.String)">
+        <member name="M:Libplanet.Store.LiteDBStore.IterateIndex(System.String,System.Int32,System.Nullable{System.Int32})">
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Store.LiteDBStore.IndexBlockHash(System.String,System.Int64)">
