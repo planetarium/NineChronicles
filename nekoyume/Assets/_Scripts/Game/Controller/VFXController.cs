@@ -38,6 +38,16 @@ namespace Nekoyume.Game.Controller
             return vfx;
         }
 
+        public T CreateAndChaseCam<T>(Vector3 position) where T : VFX.VFX
+        {
+            var target = ActionCamera.instance.transform;
+            var offset = position - target.position;
+            offset.z += 10f;
+            var vfx = _pool.Get<T>();
+            StartCoroutine(CoChaseTarget(vfx, target, offset));
+            return vfx;
+        }
+
         private static IEnumerator CoChaseTarget(Component vfx, Transform target, Vector3 offset)
         {
             var g = vfx.gameObject;
