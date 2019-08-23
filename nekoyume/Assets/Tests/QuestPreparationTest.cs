@@ -104,7 +104,6 @@ namespace Tests
             Widget.Find<LoginDetail>().LoginClick();
             yield return new WaitUntil(() => GameObject.Find("room"));
 
-            Assert.IsNull(States.Instance.currentAvatarState.Value.battleLog);
             _widget.Show();
             var current = AgentController.Agent.Transactions.Count;
             _widget.QuestClick(false);
@@ -113,7 +112,6 @@ namespace Tests
             var tx = AgentController.Agent.Transactions.Values.OrderByDescending(t => t.Timestamp).First();
             yield return _miner.CoMine(tx);
             yield return new WaitWhile(() => _widget.gameObject.activeSelf);
-            Assert.IsNotNull(States.Instance.currentAvatarState.Value.battleLog);
         }
 
     }

@@ -1,5 +1,6 @@
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Item;
+using Nekoyume.Model;
 using Nekoyume.UI;
 using UnityEngine.Events;
 
@@ -9,7 +10,6 @@ namespace Nekoyume.Game
     {
         public static readonly UnityEvent OnNestEnter = new UnityEvent();
         public static readonly UnityEvent OnRoomEnter = new UnityEvent();
-        public static readonly UnityEvent OnStageStart = new UnityEvent();
         public static readonly UnityEvent OnPlayerDead = new UnityEvent();
 
         public class EnemyDead : UnityEvent<Enemy>
@@ -37,9 +37,14 @@ namespace Nekoyume.Game
         }
         public static readonly  SlotClick OnSlotClick = new SlotClick();
 
-        public class AttackEnd : UnityEvent<CharacterBase>
+        public class AttackEnd : UnityEvent<Character.CharacterBase>
         {
         }
         public static readonly AttackEnd OnAttackEnd = new AttackEnd();
+
+        public class StageStart : UnityEvent<BattleLog>
+        {
+        }
+        public static readonly StageStart OnStageStart = new StageStart();
     }
 }
