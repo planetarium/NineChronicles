@@ -1,12 +1,9 @@
 ﻿using Nekoyume.Game.Item;
 using Nekoyume.Game.VFX;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace Nekoyume.UI
 {
-    public class BattleUI : Widget
+    public class Battle : Widget
     {
         public StageTitle stageTitle;
         public BottomMenu bottomMenu;

@@ -231,7 +231,7 @@ namespace Nekoyume.Game
         private IEnumerator CoStageEnd(BattleLog log)
         {
             yield return new WaitForSeconds(2.0f);
-            Widget.Find<BattleUI>().Close();
+            Widget.Find<UI.Battle>().Close();
             if (log.result == BattleLog.Result.Win)
             {
                 yield return new WaitForSeconds(0.75f);
@@ -275,7 +275,7 @@ namespace Nekoyume.Game
             status.Show();
             status.ShowBattleStatus();
 
-            var battle = Widget.Find<BattleUI>();
+            var battle = Widget.Find<UI.Battle>();
             battle.Show(id);
 
             ActionCamera.instance.ChaseX(player.transform);
