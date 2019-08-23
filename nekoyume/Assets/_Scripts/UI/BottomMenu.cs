@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -38,26 +37,6 @@ namespace Nekoyume.UI
                 }
             }
             gameObject.SetActive(false);
-        }
-
-        public void FadeInColor(float duration = 1f)
-        {
-            if (animator)
-            {
-                animator.enabled = true;
-                animator.Play("FadeInColor");
-                animator.speed = 1.0f / ((duration != 0) ? duration : 1f);
-            }
-        }
-
-        public void FadeInAlpha(float duration = 1f)
-        {
-            if (animator)
-            {
-                animator.enabled = true;
-                animator.Play("FadeInAlpha");
-                animator.speed = 1.0f / ((duration != 0) ? duration : 1f);
-            }
         }
 
         private void MapButton(Button button, UnityAction action)
