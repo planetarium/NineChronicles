@@ -69,14 +69,14 @@ namespace Editor
             string locationPathName = Path.Combine(
                 basePath,
                 targetDirName ?? buildTarget.ToString(),
-                PlayerName);
+                buildTarget.HasFlag(BuildTarget.StandaloneWindows64) ? $"{PlayerName}.exe" : PlayerName);
 
             BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions
             {
                 scenes = scenes,
                 locationPathName = locationPathName,
                 target = buildTarget,
-                options = options,
+                options = options | BuildOptions.Development,
             };
 
             BuildReport report = BuildPipeline.BuildPlayer(buildPlayerOptions);

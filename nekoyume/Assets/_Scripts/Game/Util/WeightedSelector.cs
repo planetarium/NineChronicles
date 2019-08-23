@@ -29,7 +29,7 @@ namespace Nekoyume.Game.Util
             int i = 0;
             int len = _weights.Count;
 
-            float rnd = (float) _random.NextDouble();
+            float rnd = decimal.ToSingle((_random.Next(0, 100000) * 0.00001m));
             int idx = -1;
             for (i = 0; i < len; ++i)
             {
