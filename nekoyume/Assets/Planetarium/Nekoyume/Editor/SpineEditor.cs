@@ -78,7 +78,7 @@ namespace Planetarium.Nekoyume.Editor
             var animatorControllerGuidArray = AssetDatabase.FindAssets(FindAssetFilter);
             if (animatorControllerGuidArray.Length == 0)
             {
-                Object.Destroy(gameObject);
+                Object.DestroyImmediate(gameObject);
                 throw new AssetNotFoundException($"AssetDatabase.FindAssets(\"{FindAssetFilter}\")");
             }
 
@@ -96,6 +96,7 @@ namespace Planetarium.Nekoyume.Editor
                     switch (animationType)
                     {
                         case CharacterAnimation.Type.Appear:
+                        case CharacterAnimation.Type.Win:
                         case CharacterAnimation.Type.Disappear:
                             assetPath = Path.Combine(animationAssetsPath, $"{nameof(CharacterAnimation.Type.Idle)}.asset");
                             asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(assetPath);
@@ -106,13 +107,13 @@ namespace Planetarium.Nekoyume.Editor
                             asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(assetPath);
                             break;
                         default:
-                            Object.Destroy(gameObject);
+                            Object.DestroyImmediate(gameObject);
                             throw new AssetNotFoundException(assetPath);
                     }
 
                     if (ReferenceEquals(asset, null))
                     {
-                        Object.Destroy(gameObject);
+                        Object.DestroyImmediate(gameObject);
                         throw new AssetNotFoundException(assetPath);
                     }
                 }
@@ -133,12 +134,12 @@ namespace Planetarium.Nekoyume.Editor
             try
             {
                 var prefab = PrefabUtility.SaveAsPrefabAsset(gameObject, prefabPath);
-                Object.Destroy(gameObject);
+                Object.DestroyImmediate(gameObject);
                 Selection.activeObject = prefab;
             }
             catch
             {
-                Object.Destroy(gameObject);
+                Object.DestroyImmediate(gameObject);
                 throw new FailedToSaveAsPrefabAssetException(prefabPath);
             }
         }

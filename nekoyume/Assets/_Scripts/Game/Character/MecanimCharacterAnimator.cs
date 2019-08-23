@@ -129,6 +129,16 @@ namespace Nekoyume.Game.Character
             Animator.Play(nameof(CharacterAnimation.Type.Hit), _baseLayerIndex, 0f);
         }
 
+        public override void Win()
+        {
+            if (!AnimatorValidation())
+            {
+                return;
+            }
+
+            Animator.Play(nameof(CharacterAnimation.Type.Win), _baseLayerIndex, 0f);
+        }
+
         public override void Die()
         {
             if (!AnimatorValidation())

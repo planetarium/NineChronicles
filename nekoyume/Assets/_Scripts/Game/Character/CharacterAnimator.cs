@@ -61,6 +61,7 @@ namespace Nekoyume.Game.Character
         public abstract void CastAttack();
         public abstract void CriticalAttack();
         public abstract void Hit();
+        public abstract void Win();
         public abstract void Die();
         public abstract void Disappear();
 

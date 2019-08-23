@@ -16,6 +16,7 @@ namespace Nekoyume.Game.Character
             CriticalAttack,
             Hit,
             Die,
+            Win,
             Disappear
         }
 
