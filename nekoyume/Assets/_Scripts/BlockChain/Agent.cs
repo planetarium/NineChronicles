@@ -221,14 +221,17 @@ namespace Nekoyume.BlockChain
                 yield return new WaitForSeconds(TxProcessInterval);
                 var actions = new List<PolymorphicAction<ActionBase>>();
 
+                Debug.LogFormat("Try Dequeue Actions. Total Count: {0}", _queuedActions.Count);
                 while (_queuedActions.TryDequeue(out PolymorphicAction<ActionBase> action))
                 {
                     actions.Add(action);
+                    Debug.LogFormat("Remain Queued Actions Count: {0}", _queuedActions.Count);
                 }
+                Debug.LogFormat("Finish Dequeue Actions.");
 
                 if (actions.Any())
                 {
-                    var task = Task.Run(() => AvatarManager.MakeTransaction(actions, _blocks));
+                    var task = Task.Run(() => MakeTransaction(actions, true));
                     yield return new WaitUntil(() => task.IsCompleted);
                 }
             }
@@ -299,7 +302,7 @@ namespace Nekoyume.BlockChain
 
                     foreach (var retryAction in retryActions)
                     {
-                        _blocks.MakeTransaction(PrivateKey, retryAction);
+                        MakeTransaction(retryAction, true);
                     }
                 }
             }
@@ -307,6 +310,7 @@ namespace Nekoyume.BlockChain
 
         public void EnqueueAction(GameAction gameAction)
         {
+            Debug.LogFormat("Enqueue GameAction: {0} Id: {1}", gameAction, gameAction.Id);
             _queuedActions.Enqueue(gameAction);
         }
         
@@ -343,15 +347,21 @@ namespace Nekoyume.BlockChain
                     agentAddresses = States.Instance.rankingState.Value.GetAgentAddresses(3, null),
                 }
             };
-            return _blocks.MakeTransaction(
-                PrivateKey,
-                actions,
-                broadcast: false);
+            return MakeTransaction(actions, false);
         }
 
         public void AppendBlock(Block<PolymorphicAction<ActionBase>> block)
         {
             _blocks.Append(block);
+        }
+
+        private Transaction<PolymorphicAction<ActionBase>> MakeTransaction(
+            IEnumerable<PolymorphicAction<ActionBase>> actions, bool broadcast)
+        {
+            var polymorphicActions = actions.ToArray();
+            Debug.LogFormat("Make Transaction with Actions: `{0}`",
+                string.Join(",", polymorphicActions.Select(i => i.InnerAction)));
+            return _blocks.MakeTransaction(PrivateKey, polymorphicActions, broadcast: broadcast);
         }
     }
 }

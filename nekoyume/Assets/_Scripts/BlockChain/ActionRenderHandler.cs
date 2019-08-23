@@ -9,6 +9,7 @@ using Nekoyume.State;
 using Nekoyume.UI;
 using Nekoyume.UI.Model;
 using UniRx;
+using UnityEngine;
 
 namespace Nekoyume.BlockChain
 {
@@ -77,11 +78,15 @@ namespace Nekoyume.BlockChain
 
         private void UpdateAgentState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
         {
+            Debug.LogFormat("Called UpdateAgentState<{0}>. Updated Addresses : `{1}`", evaluation.Action,
+                string.Join(",", evaluation.OutputStates.UpdatedAddresses));
             States.Instance.agentState.Value = GetAgentState(evaluation);
         }
 
         private void UpdateAvatarState<T>(ActionBase.ActionEvaluation<T> evaluation, int index) where T : ActionBase
         {
+            Debug.LogFormat("Called UpdateAvatarState<{0}>. Updated Addresses : `{1}`", evaluation.Action,
+                string.Join(",", evaluation.OutputStates.UpdatedAddresses));
             if (!States.Instance.agentState.Value.avatarAddresses.ContainsKey(index))
             {
                 States.Instance.avatarStates.Remove(index);
