@@ -3,14 +3,11 @@ using System.Linq;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Battle;
-using Nekoyume.Data;
 using Nekoyume.Game;
 using Nekoyume.Game.Item;
-using Nekoyume.Game.Skill;
 using Nekoyume.Model;
 using Nekoyume.State;
 using NUnit.Framework;
-using Elemental = Nekoyume.Data.Table.Elemental;
 
 namespace Tests
 {
@@ -33,7 +30,7 @@ namespace Tests
         [Test]
         public void MonsterSelectSkill()
         {
-            var data = Game.instance.TableSheets.CharacterSheet.ToOrderedList().First(i => i.Id > 200000);
+            var data = ATestSetUp.tableSheets.CharacterSheet.ToOrderedList().First(i => i.Id > 200000);
             var monster = new Monster(data, 1, _player);
             monster.InitAI();
 
@@ -48,13 +45,12 @@ namespace Tests
         public void PlayerSelectSkill()
         {
             Assert.AreEqual(1, _player.Skills.Count());
-            foreach (var effect in Tables.instance.SkillEffect.Values)
+            foreach (var skillRow in ATestSetUp.tableSheets.SkillSheet)
             {
-                var dmg = (int) (1.3m);
-                var skill = SkillFactory.Get(0.1m, effect, Elemental.ElementalType.Normal, dmg);
+                var skill = SkillFactory.Get(skillRow, (int) 1.3m, .1m);
                 _player.Skills.Add(skill);
             }
-            Assert.AreEqual(5, _player.Skills.Count());
+            Assert.AreEqual(1 + ATestSetUp.tableSheets.SkillSheet.Count, _player.Skills.Count());
 
             //Check selected skill is first
             var selected = _player.Skills.Select(_random);

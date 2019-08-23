@@ -5,10 +5,13 @@ using Nekoyume;
 using Nekoyume.Battle;
 using Nekoyume.Data;
 using Nekoyume.Data.Table;
+using Nekoyume.EnumType;
+using Nekoyume.Game;
 using Nekoyume.Game.Item;
 using Nekoyume.Model;
 using Nekoyume.State;
 using NUnit.Framework;
+using Elemental = Nekoyume.Data.Table.Elemental;
 
 namespace Tests
 {
@@ -39,10 +42,10 @@ namespace Tests
         }
 
         [Test]
-        public void Attack()
+        public void NormalAttack()
         {
             var caster = _simulator.Player;
-            var attack = caster.Skills.First(s => s is Nekoyume.Game.Skill.Attack);
+            var attack = caster.Skills.First(s => s is NormalAttack);
             var result = attack.Use(caster);
             var target = caster.targets.First();
 
@@ -51,16 +54,24 @@ namespace Tests
             var info = result.skillInfos.First();
             Assert.AreEqual(caster.atk, info.Effect);
             Assert.NotNull(info.Target);
-            Assert.AreEqual(SkillEffect.Category.Normal, info.Category);
+            Assert.AreEqual(SkillCategory.Normal, info.skillCategory);
             Assert.AreEqual(Elemental.ElementalType.Normal, info.Elemental);
         }
 
         [Test]
-        public void Blow()
+        public void BlowAttack()
         {
             var caster = _simulator.Player;
-            var effect = Tables.instance.SkillEffect.Values.First(r => r.category == SkillEffect.Category.Blow);
-            var blow = new Nekoyume.Game.Skill.Blow(1, effect, Elemental.ElementalType.Normal, caster.atk);
+            var skillRow = ATestSetUp.tableSheets.SkillSheet.ToOrderedList().First(r =>
+            {
+                if (!Tables.instance.SkillEffect.TryGetValue(r.SkillEffectId, out var skillEffectRow))
+                {
+                    throw new KeyNotFoundException(nameof(r.SkillEffectId));
+                }
+                
+                return skillEffectRow.skillCategory == SkillCategory.Blow;
+            });
+            var blow = new BlowAttack(skillRow, caster.atk, 1m);
             var result = blow.Use(caster);
             var target = caster.targets.First();
 
@@ -69,7 +80,7 @@ namespace Tests
             var info = result.skillInfos.First();
             Assert.AreEqual(caster.atk, info.Effect);
             Assert.NotNull(info.Target);
-            Assert.AreEqual(SkillEffect.Category.Blow, info.Category);
+            Assert.AreEqual(SkillCategory.Blow, info.skillCategory);
             Assert.AreEqual(Elemental.ElementalType.Normal, info.Elemental);
         }
 
@@ -77,8 +88,16 @@ namespace Tests
         public void DoubleAttack()
         {
             var caster = _simulator.Player;
-            var effect = Tables.instance.SkillEffect.Values.First(r => r.category == SkillEffect.Category.Double);
-            var doubleAttack = new Nekoyume.Game.Skill.DoubleAttack(1, effect, Elemental.ElementalType.Normal, caster.atk);
+            var skillRow = ATestSetUp.tableSheets.SkillSheet.ToOrderedList().First(r =>
+            {
+                if (!Tables.instance.SkillEffect.TryGetValue(r.SkillEffectId, out var skillEffectRow))
+                {
+                    throw new KeyNotFoundException(nameof(r.SkillEffectId));
+                }
+                
+                return skillEffectRow.skillCategory == SkillCategory.Double;
+            });
+            var doubleAttack = new Nekoyume.Game.DoubleAttack(skillRow, caster.atk, 1m);
             var result = doubleAttack.Use(caster);
             var target = caster.targets.First();
 
@@ -88,7 +107,7 @@ namespace Tests
             foreach (var info in result.skillInfos)
             {
                 Assert.NotNull(info.Target);
-                Assert.AreEqual(SkillEffect.Category.Double, info.Category);
+                Assert.AreEqual(SkillCategory.Double, info.skillCategory);
                 Assert.AreEqual(Elemental.ElementalType.Normal, info.Elemental);
             }
         }
@@ -97,18 +116,27 @@ namespace Tests
         public void AreaAttack()
         {
             var caster = _simulator.Player;
-            var effect = Tables.instance.SkillEffect.Values.First(r => r.category == SkillEffect.Category.Area);
-            var area = new Nekoyume.Game.Skill.AreaAttack(1, effect, Elemental.ElementalType.Normal, caster.atk);
+            SkillEffect skillEffectRow = null;
+            var skillRow = ATestSetUp.tableSheets.SkillSheet.ToOrderedList().First(r =>
+            {
+                if (!Tables.instance.SkillEffect.TryGetValue(r.SkillEffectId, out skillEffectRow))
+                {
+                    throw new KeyNotFoundException(nameof(r.SkillEffectId));
+                }
+                
+                return skillEffectRow.skillCategory == SkillCategory.Area;
+            });
+            var area = new Nekoyume.Game.AreaAttack(skillRow, caster.atk, 1m);
             var result = area.Use(caster);
             var target = caster.targets.First();
 
             Assert.AreEqual(target.hp - caster.atk, target.currentHP);
-            Assert.AreEqual(effect.hitCount, result.skillInfos.Count());
+            Assert.AreEqual(skillEffectRow.hitCount, result.skillInfos.Count());
             Assert.LessOrEqual(result.skillInfos.Sum(i => i.Effect), caster.atk);
             foreach (var info in result.skillInfos)
             {
                 Assert.NotNull(info.Target);
-                Assert.AreEqual(SkillEffect.Category.Area, info.Category);
+                Assert.AreEqual(SkillCategory.Area, info.skillCategory);
                 Assert.AreEqual(Elemental.ElementalType.Normal, info.Elemental);
             }
         }
@@ -117,8 +145,16 @@ namespace Tests
         public void Heal()
         {
             var caster = _simulator.Player;
-            var effect = Tables.instance.SkillEffect.Values.First(r => r.type == SkillEffect.SkillType.Buff);
-            var heal = new Nekoyume.Game.Skill.Heal(1, effect, caster.atk);
+            var skillRow = ATestSetUp.tableSheets.SkillSheet.ToOrderedList().First(r =>
+            {
+                if (!Tables.instance.SkillEffect.TryGetValue(r.SkillEffectId, out var skillEffectRow))
+                {
+                    throw new KeyNotFoundException(nameof(r.SkillEffectId));
+                }
+                
+                return skillEffectRow.skillType == SkillType.Buff;
+            });
+            var heal = new Nekoyume.Game.Heal(skillRow, caster.atk, 1m);
             caster.currentHP -= caster.atk;
             var result = heal.Use(caster);
 
@@ -128,7 +164,7 @@ namespace Tests
             Assert.AreEqual(caster.atk, info.Effect);
             Assert.NotNull(info.Target);
             Assert.AreEqual(1, result.skillInfos.Count());
-            Assert.AreEqual(SkillEffect.Category.Normal, info.Category);
+            Assert.AreEqual(SkillCategory.Normal, info.skillCategory);
             Assert.Null(info.Elemental);
         }
     }

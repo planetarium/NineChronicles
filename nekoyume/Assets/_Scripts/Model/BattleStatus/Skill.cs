@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Nekoyume.Data.Table;
+using Nekoyume.EnumType;
 
 namespace Nekoyume.Model
 {
@@ -15,16 +16,16 @@ namespace Nekoyume.Model
             public readonly CharacterBase Target;
             public readonly int Effect;
             public readonly bool Critical;
-            public readonly SkillEffect.Category Category;
+            public readonly SkillCategory skillCategory;
             public Elemental.ElementalType? Elemental;
 
-            public SkillInfo(CharacterBase character, int effect, bool critical, SkillEffect.Category category,
+            public SkillInfo(CharacterBase character, int effect, bool critical, SkillCategory skillCategory,
                 Elemental.ElementalType? elemental = null)
             {
                 Target = character;
                 Effect = effect;
                 Critical = critical;
-                Category = category;
+                this.skillCategory = skillCategory;
                 Elemental = elemental;
             }
         }

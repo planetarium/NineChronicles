@@ -1,14 +1,13 @@
 using System;
-using Nekoyume.Data.Table;
 using Nekoyume.Model;
+using Nekoyume.TableData;
 
-namespace Nekoyume.Game.Skill
+namespace Nekoyume.Game
 {
     [Serializable]
-    public class AreaAttack: AttackBase
+    public class AreaAttack: Attack
     {
-        public AreaAttack(decimal chance, SkillEffect effect,
-            Data.Table.Elemental.ElementalType elemental, int power) : base(chance, effect, elemental, power)
+        public AreaAttack(SkillSheet.Row skillRow, int power, decimal chance) : base(skillRow, power, chance)
         {
         }
 

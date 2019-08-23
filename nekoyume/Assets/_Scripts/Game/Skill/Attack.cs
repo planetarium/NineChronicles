@@ -1,17 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Nekoyume.Data.Table;
+using Nekoyume.EnumType;
 using Nekoyume.Model;
 using Unity.Mathematics;
+using Nekoyume.TableData;
 
-namespace Nekoyume.Game.Skill
+namespace Nekoyume.Game
 {
     [Serializable]
-    public class AttackBase : SkillBase
+    public class Attack : Skill
     {
-        protected AttackBase(decimal chance, SkillEffect effect,
-            Data.Table.Elemental.ElementalType elemental, int power) : base(chance, effect, elemental, power)
+        protected Attack(SkillSheet.Row skillRow, int power, decimal chance) : base(skillRow, power, chance)
         {
         }
 
@@ -20,7 +20,7 @@ namespace Nekoyume.Game.Skill
             var targets = GetTarget(caster);
             var infos = new List<Model.Skill.SkillInfo>();
             var targetList = targets.ToArray();
-            var elemental = Elemental.Create(elementalType);
+            var elemental = Elemental.Create(skillRow.ElementalType);
             var multiplier = GetMultiplier(effect.hitCount, 1);
             var skillPower = CalcSkillPower(caster);
             for (var i = 0; i < effect.hitCount; i++)
@@ -41,8 +41,8 @@ namespace Nekoyume.Game.Skill
 
                     target.OnDamage(dmg);
 
-                    infos.Add(new Model.Skill.SkillInfo((CharacterBase) target.Clone(), dmg, critical, effect.category,
-                        elementalType));
+                    infos.Add(new Model.Skill.SkillInfo((CharacterBase) target.Clone(), dmg, critical,
+                        effect.skillCategory, skillRow.ElementalType));
                 }
             }
 
@@ -54,7 +54,7 @@ namespace Nekoyume.Game.Skill
             // 플레이어가 사용하는 스킬은 기본 공격력 + 스킬 위력으로 스킬이 나가도록 설정합니다.
             if (caster is Player)
             {
-                if (effect.category != SkillEffect.Category.Normal)
+                if (effect.skillCategory != SkillCategory.Normal)
                 {
                     return power + caster.atk;
                 }
@@ -83,26 +83,6 @@ namespace Nekoyume.Game.Skill
         public override Model.Skill Use(CharacterBase caster)
         {
             throw new NotImplementedException();
-        }
-    }
-
-    [Serializable]
-    public class Attack : AttackBase
-    {
-        public Attack(decimal chance, SkillEffect effect,
-            Data.Table.Elemental.ElementalType elemental, int power) : base(chance, effect, elemental, power)
-        {
-        }
-
-        public override Model.Skill Use(CharacterBase caster)
-        {
-            var info = ProcessDamage(caster);
-
-            return new Model.Attack
-            {
-                character = (CharacterBase) caster.Clone(),
-                skillInfos = info,
-            };
         }
     }
 }

@@ -11,11 +11,11 @@ namespace Nekoyume.TableData
         public struct RewardData
         {
             public int ItemId { get; }
-            public float Ratio { get; }
+            public decimal Ratio { get; }
             public int Min { get; }
             public int Max { get; }
 
-            public RewardData(int itemId, float ratio, int min, int max)
+            public RewardData(int itemId, decimal ratio, int min, int max)
             {
                 ItemId = itemId;
                 Ratio = ratio;
@@ -41,7 +41,7 @@ namespace Nekoyume.TableData
                     var offset = i * 4;
                     Rewards.Add(new RewardData(
                             int.TryParse(fields[1 + offset], out var itemId) ? itemId : 0,
-                            float.TryParse(fields[2 + offset], out var ratio) ? ratio : 0f,
+                            decimal.TryParse(fields[2 + offset], out var ratio) ? ratio : 0m,
                             int.TryParse(fields[3 + offset], out var min) ? min : 0,
                             int.TryParse(fields[4 + offset], out var max) ? max : 0
                         ));

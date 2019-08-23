@@ -5,7 +5,6 @@ using Nekoyume.Battle;
 using Nekoyume.Data;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Item;
-using Nekoyume.Game.Skill;
 using Nekoyume.State;
 using Nekoyume.TableData;
 using UnityEngine;
@@ -273,7 +272,7 @@ namespace Nekoyume.Model
             }
         }
 
-        public void OverrideSkill(SkillBase skill)
+        public void OverrideSkill(Game.Skill skill)
         {
             Skills.Clear();
             Skills.Add(skill);

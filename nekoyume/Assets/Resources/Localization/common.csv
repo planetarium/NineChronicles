@@ -145,25 +145,9 @@ UI_COMBINE_EQUIPMENTS,Combine Equipments,장비 제작
 UI_COMBINE_CONSUMABLES,Combine Consumables,소모품 제작
 UI_RECIPE,Recipe,레시피
 UI_SKILL,Skill,스킬
-UI_POWER,Power,위력
-UI_CHANCE,Chance,확률
+UI_SKILL_POWER,Power,위력
+UI_SKILL_CHANCE,Chance,확률
 UI_SKILL_DESCRIPTION_FORMAT,{0} ({1:0%} chance to add damage {2}),{0} ({1:0%} 확률로 추가 데미지 {2})
-UI_SKILL_FIRE_NORMAL,Fire,불
-UI_SKILL_FIRE_BLOW,Flame,불꽃
-UI_SKILL_FIRE_AREA,Magma,용암
-UI_SKILL_WATER_NORMAL,Water,물
-UI_SKILL_WATER_BLOW,Ice,얼음
-UI_SKILL_LAND_NORMAL,Land,대지
-UI_SKILL_LAND_BLOW,Sand,모래
-UI_SKILL_WIND_NORMAL,Wind,바람
-UI_SKILL_WIND_AREA,Huge,거대
-UI_SKILL_NORMAL,Attack,공격
-UI_SKILL_BLOW,Blow Attack,일격
-UI_SKILL_DOUBLE,Double Attack,연사
-UI_SKILL_AREA_NORMAL,Wide Area Attack,광역 난사
-UI_SKILL_AREA_FIRE_OR_WATER,Tsunami,해일
-UI_SKILL_AREA_LAND,Storm,폭풍
-UI_SKILL_AREA_WIND,Typhoon,태풍
 UI_EXP,Exp,경험치
 UI_BATTLE_RESULT_VICTORY_MESSAGE,You won the battle!,전투에서 승리하였습니다!
 UI_BATTLE_RESULT_DEFEAT_MESSAGE,You have to be stronger.,당신은 더욱 강해져야 합니다.

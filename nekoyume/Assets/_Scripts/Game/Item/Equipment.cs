@@ -1,9 +1,4 @@
 using System;
-using System.Linq;
-using Nekoyume.Data;
-using Nekoyume.Data.Table;
-using Nekoyume.Game.Skill;
-using Nekoyume.Model;
 
 namespace Nekoyume.Game.Item
 {
@@ -12,8 +7,8 @@ namespace Nekoyume.Game.Item
     {
         public bool equipped = false;
 
-        public Equipment(Data.Table.Item data, Guid id, SkillBase skillBase = null)
-            : base(data, id, skillBase)
+        public Equipment(Data.Table.Item data, Guid id, Skill skill = null)
+            : base(data, id, skill)
         {
             //TODO 논의후 테이블에 제대로 설정되야함.
             Stats.SetStatValue("turnSpeed", Data.turnSpeed);

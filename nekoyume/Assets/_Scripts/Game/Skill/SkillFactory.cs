@@ -1,45 +1,57 @@
-using System;
+using System.Collections.Generic;
+using Nekoyume.Data;
 using Nekoyume.Data.Table;
-using Nekoyume.Model;
+using Nekoyume.EnumType;
+using Nekoyume.TableData;
+using UnityEngine;
 
-namespace Nekoyume.Game.Skill
+namespace Nekoyume.Game
 {
     public static class SkillFactory
     {
-        public static SkillBase Get(decimal chance, SkillEffect effect, Data.Table.Elemental.ElementalType elemental, int value)
+        public static Skill Get(SkillSheet.Row skillRow, int power, decimal chance)
         {
-            switch (effect.type)
+            if (!Tables.instance.SkillEffect.TryGetValue(skillRow.SkillEffectId, out var skillEffectRow))
             {
-                case SkillEffect.SkillType.Attack:
-                    switch (effect.target)
+                throw new KeyNotFoundException(nameof(skillRow.SkillEffectId));
+            }
+
+            switch (skillEffectRow.skillType)
+            {
+                case SkillType.Attack:
+                    switch (skillEffectRow.skillTargetType)
                     {
-                        case SkillEffect.Target.Enemy:
-                            switch (effect.category)
+                        case SkillTargetType.Enemy:
+                            switch (skillEffectRow.skillCategory)
                             {
-                                case SkillEffect.Category.Normal:
-                                    return new Attack(chance, effect, elemental, value);
-                                case SkillEffect.Category.Double:
-                                    return new DoubleAttack(chance, effect, elemental, value);
-                                case SkillEffect.Category.Blow:
-                                    return new Blow(chance, effect, elemental, value);
+                                case SkillCategory.Normal:
+                                    return new NormalAttack(skillRow, power, chance);
+                                case SkillCategory.Double:
+                                    return new DoubleAttack(skillRow, power, chance);
+                                case SkillCategory.Blow:
+                                    return new BlowAttack(skillRow, power, chance);
                                 default:
-                                    return new Attack(chance, effect, elemental, value);
+                                    return new NormalAttack(skillRow, power, chance);
                             }
-                        case SkillEffect.Target.Enemies:
-                            return new AreaAttack(chance, effect, elemental, value);
+                        case SkillTargetType.Enemies:
+                            return new AreaAttack(skillRow, power, chance);
                     }
+
                     break;
-                case SkillEffect.SkillType.Buff:
-                    switch (effect.target)
+                case SkillType.Buff:
+                    switch (skillEffectRow.skillTargetType)
                     {
-                        case SkillEffect.Target.Self:
-                            return new Heal(chance, effect, value);
+                        case SkillTargetType.Self:
+                            return new Heal(skillRow, power, chance);
                     }
+
                     break;
-                case SkillEffect.SkillType.Debuff:
+                case SkillType.Debuff:
                     break;
             }
-            throw new InvalidActionException();
+
+            throw new UnexpectedOperationException(
+                $"{skillRow.Id}, {skillEffectRow.skillType}, {skillEffectRow.skillTargetType}, {skillEffectRow.skillCategory}");
         }
     }
 }

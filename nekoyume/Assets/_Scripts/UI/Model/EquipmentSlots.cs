@@ -14,7 +14,7 @@ namespace Nekoyume.UI.Model
         private void Awake()
         {
             if (slots is null)
-                throw new NotFoundComponentException<EquipSlot>();
+                throw new NotFoundComponentException<EquipSlot>(gameObject);
         }
 
         public bool TryGet(ItemBase.ItemType type, out EquipSlot slot)

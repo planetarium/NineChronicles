@@ -1,15 +1,14 @@
 using System;
 using System.Collections.Generic;
-using Nekoyume.Data.Table;
 using Nekoyume.Model;
+using Nekoyume.TableData;
 
-namespace Nekoyume.Game.Skill
+namespace Nekoyume.Game
 {
     [Serializable]
-    public class Heal : SkillBase
+    public class Heal : Skill
     {
-        public Heal(decimal chance, SkillEffect effect, int power)
-            : base(chance, effect, Data.Table.Elemental.ElementalType.Normal, power)
+        public Heal(SkillSheet.Row skillRow, int power, decimal chance) : base(skillRow, power, chance)
         {
         }
 
@@ -19,7 +18,7 @@ namespace Nekoyume.Game.Skill
             foreach (var target in GetTarget(caster))
             {
                 target.Heal(power);
-                infos.Add(new Model.Skill.SkillInfo(target, power, caster.IsCritical(), effect.category));
+                infos.Add(new Model.Skill.SkillInfo(target, power, caster.IsCritical(), effect.skillCategory));
             }
 
             return new Model.Heal
