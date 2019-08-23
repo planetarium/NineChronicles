@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Nekoyume.EnumType;
 using UnityEngine;
 
@@ -6,17 +7,19 @@ namespace Nekoyume.UI
 {
     [RequireComponent(typeof(Canvas))]
     public class MainCanvas : MonoSingleton<MainCanvas>
-    {   
+    {
         public GameObject hud;
         public GameObject popup;
         public GameObject screen;
         public GameObject tooltip;
         public GameObject widget;
         public GameObject systemInfo;
-        
+
+        private List<Widget> _widgets;
+
         public Canvas Canvas { get; private set; }
         public RectTransform RectTransform { get; private set; }
-        
+
         public Transform GetTransform(WidgetType widgetType)
         {
             switch (widgetType)
@@ -37,11 +40,11 @@ namespace Nekoyume.UI
                     throw new ArgumentOutOfRangeException(nameof(widgetType), widgetType, null);
             }
         }
-        
+
         protected override void Awake()
         {
             base.Awake();
-            
+
             this.ComponentFieldsNotNullTest();
 
             Canvas = GetComponent<Canvas>();
@@ -50,51 +53,59 @@ namespace Nekoyume.UI
 
         public void Initialize()
         {
-            Widget.Create<Title>();
-            Widget.Create<Synopsis>();
-            Widget.Create<Login>();
-            Widget.Create<LoginDetail>();
-            Widget.Create<Menu>();
-            Widget.Create<Status>();
-            Widget.Create<Blind>();
-            Widget.Create<Shop>();
-            Widget.Create<QuestPreparation>();
-            Widget.Create<Combination>();
-            Widget.Create<RankingBoard>();
-            Widget.Create<WorldMap>();
-            Widget.Create<Dialog>();
-            Widget.Create<Battle>();
+            _widgets = new List<Widget>()
+            {
+                Widget.Create<Title>(),
+                Widget.Create<Synopsis>(),
+                Widget.Create<Login>(),
+                Widget.Create<LoginDetail>(),
+                Widget.Create<Menu>(),
+                Widget.Create<Status>(),
+                Widget.Create<Blind>(),
+                Widget.Create<Shop>(),
+                Widget.Create<QuestPreparation>(),
+                Widget.Create<Combination>(),
+                Widget.Create<RankingBoard>(),
+                Widget.Create<WorldMap>(),
+                Widget.Create<Dialog>(),
+                Widget.Create<Battle>(),
 
-            // 모듈류.
-            Widget.Create<StatusDetail>();
-            Widget.Create<Inventory>();
-            Widget.Create<Gold>();
-            Widget.Create<Quest>();
+                // 모듈류.
+                Widget.Create<StatusDetail>(),
+                Widget.Create<Inventory>(),
+                Widget.Create<Gold>(),
+                Widget.Create<Quest>(),
 
-            // 팝업류.
-            Widget.Create<BattleResult>();
-            Widget.Create<SimpleItemCountPopup>();
-            Widget.Create<ItemCountAndPricePopup>();
-            Widget.Create<CombinationResultPopup>();
-            Widget.Create<StageTitle>();
-            Widget.Create<Alert>();
-            Widget.Create<Confirm>();
+                // 팝업류.
+                Widget.Create<BattleResult>(),
+                Widget.Create<SimpleItemCountPopup>(),
+                Widget.Create<ItemCountAndPricePopup>(),
+                Widget.Create<CombinationResultPopup>(),
+                Widget.Create<StageTitle>(),
+                Widget.Create<Alert>(),
+                Widget.Create<Confirm>(),
 
-            // 툴팁류.
-            Widget.Create<ItemInformationTooltip>();
+                // 툴팁류.
+                Widget.Create<ItemInformationTooltip>(),
 
-            // 스크린 영역. 로딩창류.
-            Widget.Create<GrayLoadingScreen>();
-            Widget.Create<LoadingScreen>();
-            Widget.Create<StageLoadingScreen>();
+                // 스크린 영역. 로딩창류.
+                Widget.Create<GrayLoadingScreen>(),
+                Widget.Create<LoadingScreen>(),
+                Widget.Create<StageLoadingScreen>(),
 
-            //최상단 알림 영역.
-            Widget.Create<UpdatePopup>();
-            Widget.Create<ExitPopup>();
-            Widget.Create<ActionFailPopup>();
+                //최상단 알림 영역.
+                Widget.Create<UpdatePopup>(),
+                Widget.Create<ExitPopup>(),
+                Widget.Create<ActionFailPopup>(),
 #if DEBUG
-            Widget.Create<Cheat>(true);
+                Widget.Create<Cheat>(true),
 #endif
+            };
+
+            foreach(var widget in _widgets)
+            {
+                widget.Initialize();
+            }
         }
     }
 }

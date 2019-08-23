@@ -41,6 +41,15 @@ namespace Nekoyume.UI
 
         #region override
 
+        public override void Initialize()
+        {
+            base.Initialize();
+
+            bottomMenu.goToMainButton.onClick.AddListener(BackClick);
+            var status = Find<Status>();
+            bottomMenu.questButton.onClick.AddListener(status.ToggleQuest);
+        }
+
         public override void Show()
         {
             base.Show();
@@ -78,13 +87,14 @@ namespace Nekoyume.UI
 
             var worldMap = Find<WorldMap>();
             worldMap.SelectedStage = States.Instance.currentAvatarState.Value.worldStage;
-            bottomMenu.Show();
             OnChangeStage();
         }
 
         public override void Close()
         {
-            bottomMenu.Close();
+            Find<Inventory>()?.Close();
+            Find<StatusDetail>()?.Close();
+            Find<Quest>()?.Close();
             Clear();
 
             foreach (var slot in consumableSlots)

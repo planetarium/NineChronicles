@@ -104,18 +104,29 @@ namespace Nekoyume.UI
             AudioController.PlayClick();
         }
 
+        public override void Initialize()
+        {
+            base.Initialize();
+
+            var status = Find<Status>();
+            bottomMenu.inventoryButton.onClick.AddListener(status.ToggleInventory);
+            bottomMenu.questButton.onClick.AddListener(status.ToggleQuest);
+            bottomMenu.infoAndEquipButton.onClick.AddListener(status.ToggleStatus);
+        }
+
         public override void Show()
         {
             base.Show();
 
             Find<Gold>()?.Show();
             Find<Status>()?.Show();
-            bottomMenu.Show();
         }
 
         public override void Close()
         {
-            bottomMenu.Close();
+            Find<Inventory>()?.Close();
+            Find<StatusDetail>()?.Close();
+            Find<Quest>()?.Close();
             Find<Gold>()?.Close();
             Find<Status>()?.Close();
 

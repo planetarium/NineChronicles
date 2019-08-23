@@ -27,6 +27,11 @@ namespace Nekoyume.UI
             RectTransform = GetComponent<RectTransform>();
         }
 
+        public virtual void Initialize()
+        {
+
+        }
+
         public static T Create<T>(bool activate = false) where T : Widget
         {
             var t = typeof(T);

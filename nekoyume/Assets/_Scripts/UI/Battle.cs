@@ -16,11 +16,28 @@ namespace Nekoyume.UI
             InventoryVfx.Stop();
         }
 
+        public override void Initialize()
+        {
+            base.Initialize();
+            var status = Find<Status>();
+            bottomMenu.inventoryButton.onClick.AddListener(status.ToggleInventory);
+            bottomMenu.questButton.onClick.AddListener(status.ToggleQuest);
+            bottomMenu.infoAndEquipButton.onClick.AddListener(status.ToggleStatus);
+        }
+
         public void Show(int stage)
         {
             base.Show();
-            bottomMenu.Show();
             stageTitle.Show(stage);
+        }
+
+        public override void Close()
+        {
+            Find<Inventory>()?.Close();
+            Find<StatusDetail>()?.Close();
+            Find<Quest>()?.Close();
+
+            base.Close();
         }
 
         private void OnGetItem(DropItem dropItem)
@@ -32,7 +49,6 @@ namespace Nekoyume.UI
         {
             base.OnCompleteOfCloseAnimation();
             stageTitle?.Close();
-            bottomMenu?.Close();
         }
     }
 }
