@@ -18,7 +18,6 @@ namespace Nekoyume.Game.Entrance
             var objectPool = stage.objectPool;
             
             Widget.Find<LoadingScreen>()?.Show();
-            Widget.Find<Menu>()?.ShowRoom();
 
             stage.id = 0;
             stage.LoadBackground("room");

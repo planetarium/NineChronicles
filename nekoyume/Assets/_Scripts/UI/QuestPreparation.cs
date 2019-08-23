@@ -29,6 +29,7 @@ namespace Nekoyume.UI
         public Text questContinuousBtnText;
         public GameObject equipSlotGlow;
         public Text labelStage;
+        public BottomMenu bottomMenu;
 
         private Stage _stage;
         private Player _player;
@@ -40,6 +41,15 @@ namespace Nekoyume.UI
 
         #region override
 
+        public override void Initialize()
+        {
+            base.Initialize();
+
+            bottomMenu.goToMainButton.onClick.AddListener(BackClick);
+            var status = Find<Status>();
+            bottomMenu.questButton.onClick.AddListener(status.ToggleQuest);
+        }
+
         public override void Show()
         {
             base.Show();
@@ -48,7 +58,7 @@ namespace Nekoyume.UI
             equipmentTitleText.text = LocalizationManager.Localize("UI_EQUIP_EQUIPMENTS");
             questBtnText.text = LocalizationManager.Localize("UI_BATTLE");
             questContinuousBtnText.text = LocalizationManager.Localize("UI_BATTLE_CONTINUOUS");
-            
+
             _stage = Game.Game.instance.stage;
             _stage.LoadBackground("dungeon");
             _player = _stage.GetPlayer(_stage.questPreparationPosition);
@@ -82,6 +92,9 @@ namespace Nekoyume.UI
 
         public override void Close()
         {
+            Find<Inventory>()?.Close();
+            Find<StatusDetail>()?.Close();
+            Find<Quest>()?.Close();
             Clear();
 
             foreach (var slot in consumableSlots)
@@ -90,7 +103,6 @@ namespace Nekoyume.UI
             }
 
             equipmentSlots.Clear();
-
             base.Close();
         }
 
@@ -157,7 +169,7 @@ namespace Nekoyume.UI
             _stage.LoadBackground("room");
             _player = _stage.GetPlayer(_stage.roomPosition);
             _player.UpdateSet(_player.model.armor);
-            Find<Menu>().ShowRoom();
+            Find<Menu>()?.ShowRoom();
             Close();
             AudioController.PlayClick();
         }

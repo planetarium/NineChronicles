@@ -23,7 +23,7 @@ namespace Nekoyume.Game.Item
         private static readonly float DelayAfterDrop = Mathf.Max(DurationToFade, DurationToDrop) + 0.2f;
         private static readonly Vector3 DropAmount = new Vector3(0.8f, 0f);
 
-        private static Status _status;
+        private static UI.Battle _battle;
         private static Vector3 _inventoryPosition = Vector3.zero;
 
         public DropItemVFX dropItemVfx;
@@ -46,7 +46,7 @@ namespace Nekoyume.Game.Item
 
         private void OnEnable()
         {
-            _status = Widget.Find<Status>();
+            _battle = Widget.Find<UI.Battle>();
 
             UpdateInventoryPosition();
         }
@@ -108,13 +108,13 @@ namespace Nekoyume.Game.Item
 
         private void UpdateInventoryPosition()
         {
-            if (ReferenceEquals(_status, null))
+            if (ReferenceEquals(_battle, null))
             {
                 _inventoryPosition = new Vector3(-2.99f, -1.84f);
             }
             else
             {
-                _inventoryPosition = _status.BtnInventory.transform.position;
+                _inventoryPosition = _battle.bottomMenu.inventoryButton.transform.position;
                 _inventoryPosition.z = transform.position.z;
             }
         }

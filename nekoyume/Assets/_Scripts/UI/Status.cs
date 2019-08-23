@@ -12,16 +12,11 @@ namespace Nekoyume.UI
     public class Status : Widget
     {
         public Text TextLevelName;
-        public StageTitle stageTitle;
         public Text TextStage;
         public Text TextHP;
         public Text TextExp;
         public Slider HPBar;
         public Slider ExpBar;
-        public Toggle BtnStatus;
-        public Toggle BtnInventory;
-        public Toggle BtnQuest;
-        public DropItemInventoryVFX InventoryVfx;
 
         private string _avatarName = "";
         private Player _player;
@@ -29,7 +24,6 @@ namespace Nekoyume.UI
         private StatusDetail _statusDetail;
         private Inventory _inventory;
         private Quest _quest;
-        private ToggleGroup _toggleGroup;
 
         #region Mono
 
@@ -39,13 +33,6 @@ namespace Nekoyume.UI
 
             Game.Event.OnRoomEnter.AddListener(OnRoomEnter);
             Game.Event.OnUpdateStatus.AddListener(OnUpdateStatus);
-            Game.Event.OnGetItem.AddListener(OnGetItem);
-            InventoryVfx.Stop();
-        }
-
-        private void OnGetItem(DropItem dropItem)
-        {
-            InventoryVfx.Play();
         }
 
         #endregion
@@ -72,21 +59,7 @@ namespace Nekoyume.UI
                 throw new NotFoundComponentException<Quest>();
             }
 
-            _toggleGroup = GetComponentInChildren<ToggleGroup>();
-            if (ReferenceEquals(_toggleGroup, null))
-            {
-                throw new NotFoundComponentException<ToggleGroup>();
-            }
-
             HPBar.gameObject.SetActive(false);
-        }
-
-        public override void Close()
-        {
-            _toggleGroup.SetAllTogglesOff();
-            stageTitle.Close();
-
-            base.Close();
         }
 
         public void UpdatePlayer(GameObject playerObj)
@@ -143,11 +116,6 @@ namespace Nekoyume.UI
             }
             
             _inventory.Close();
-
-            if (BtnInventory.isOn)
-            {
-                BtnInventory.isOn = false;
-            }
         }
 
         public void ToggleStatus()
@@ -167,17 +135,11 @@ namespace Nekoyume.UI
             }
             
             _statusDetail.Close();
-
-            if (BtnStatus.isOn)
-            {
-                BtnStatus.isOn = false;
-            }
         }
 
-        public void ShowStage(int stage)
+        public void ShowBattleStatus()
         {
             HPBar.gameObject.SetActive(true);
-            stageTitle.Show(stage);
         }
 
         public void ToggleQuest()
@@ -194,7 +156,7 @@ namespace Nekoyume.UI
             {
                 return;
             }
-            foreach (var widget in new Widget[] {_inventory, _statusDetail})
+            foreach (var widget in new Widget[] {_inventory, _statusDetail, _quest})
             {
                 if (selected != widget)
                     widget.Close();
@@ -203,7 +165,7 @@ namespace Nekoyume.UI
         
         private void OnRoomEnter()
         {
-            stageTitle.gameObject.SetActive(false);
+            Find<Menu>()?.ShowRoom();
         }
 
         private void OnUpdateStatus()

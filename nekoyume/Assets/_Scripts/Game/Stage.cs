@@ -177,9 +177,7 @@ namespace Nekoyume.Game
             yield return StartCoroutine(CoStageEnter(log.worldStage));
             foreach (EventBase e in log)
             {
-                {
-                    yield return StartCoroutine(e.CoExecute(this));
-                }
+                yield return StartCoroutine(e.CoExecute(this));
             }
 
             yield return StartCoroutine(CoStageEnd(log));
@@ -233,8 +231,10 @@ namespace Nekoyume.Game
         private IEnumerator CoStageEnd(BattleLog log)
         {
             yield return new WaitForSeconds(2.0f);
+            Widget.Find<UI.Battle>().Close();
             if (log.result == BattleLog.Result.Win)
             {
+                yield return new WaitForSeconds(0.75f);
                 yield return StartCoroutine(CoDialog(log.worldStage));
 
                 var playerCharacter = GetPlayer();
@@ -266,8 +266,6 @@ namespace Nekoyume.Game
 
         public IEnumerator CoSpawnPlayer(Model.Player character)
         {
-            Widget.Find<Menu>().ShowWorld();
-
             var playerCharacter = RunPlayer();
             playerCharacter.Init(character);
             playerCharacter.ShowSpeech("PLAYER_INIT");
@@ -276,7 +274,10 @@ namespace Nekoyume.Game
             var status = Widget.Find<Status>();
             status.UpdatePlayer(player);
             status.Show();
-            status.ShowStage(id);
+            status.ShowBattleStatus();
+
+            var battle = Widget.Find<UI.Battle>();
+            battle.Show(id);
 
             ActionCamera.instance.ChaseX(player.transform);
             yield return null;

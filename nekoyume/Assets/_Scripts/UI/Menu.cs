@@ -11,6 +11,7 @@ namespace Nekoyume.UI
 {
     public class Menu : Widget
     {
+        public BottomMenu bottomMenu;
         public GameObject btnQuest;
         public Text btnQuestText;
         public GameObject btnCombination;
@@ -67,7 +68,7 @@ namespace Nekoyume.UI
         public void QuestClick()
         {
             Close();
-            
+
             Find<QuestPreparation>()?.Show();
             Find<Gold>()?.Show();
             AudioController.PlayClick();
@@ -77,7 +78,7 @@ namespace Nekoyume.UI
         public void ShopClick()
         {
             Close();
-            
+
             Find<Shop>()?.Show();
             Find<Gold>()?.Show();
             AudioController.PlayClick();
@@ -87,7 +88,7 @@ namespace Nekoyume.UI
         public void CombinationClick()
         {
             Close();
-            
+
             Find<Combination>()?.Show();
             Find<Gold>()?.Show();
             AudioController.PlayClick();
@@ -103,6 +104,16 @@ namespace Nekoyume.UI
             AudioController.PlayClick();
         }
 
+        public override void Initialize()
+        {
+            base.Initialize();
+
+            var status = Find<Status>();
+            bottomMenu.inventoryButton.onClick.AddListener(status.ToggleInventory);
+            bottomMenu.questButton.onClick.AddListener(status.ToggleQuest);
+            bottomMenu.infoAndEquipButton.onClick.AddListener(status.ToggleStatus);
+        }
+
         public override void Show()
         {
             base.Show();
@@ -113,6 +124,9 @@ namespace Nekoyume.UI
 
         public override void Close()
         {
+            Find<Inventory>()?.Close();
+            Find<StatusDetail>()?.Close();
+            Find<Quest>()?.Close();
             Find<Gold>()?.Close();
             Find<Status>()?.Close();
 
