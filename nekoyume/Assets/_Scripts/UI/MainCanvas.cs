@@ -92,7 +92,7 @@ namespace Nekoyume.UI
                 Widget.Create<GrayLoadingScreen>(),
                 Widget.Create<LoadingScreen>(),
                 Widget.Create<StageLoadingScreen>(),
-                Widget.Create<CombinationLoadingScreen>();
+                Widget.Create<CombinationLoadingScreen>(),
 
                 //최상단 알림 영역.
                 Widget.Create<UpdatePopup>(),
