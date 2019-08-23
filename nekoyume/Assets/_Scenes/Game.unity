@@ -640,6 +640,14 @@ MonoBehaviour:
       type: 3}
     InitCount: 5
     AddCount: 3
+  - Prefab: {fileID: 2190558253493181965, guid: 6943defa54d9f1a46a51bb41a9d0d325,
+      type: 3}
+    InitCount: 5
+    AddCount: 3
+  - Prefab: {fileID: 7812389707914379057, guid: 5b8548ec6c3b8584b977c0723843752c,
+      type: 3}
+    InitCount: 20
+    AddCount: 10
 --- !u!114 &1333831685
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -56,8 +56,8 @@ namespace Nekoyume.UI
             public Text submitButtonText2;
         }
         
-        private static readonly Vector3 VfxBattleWinOffset = new Vector3(-3.43f, -0.28f, 10f);
         private const int Timer = 5;
+        private static readonly Vector3 VfxBattleWinOffset = new Vector3(-3.43f, -0.28f, 10f);
 
         public CanvasGroup canvasGroup;
         public GameObject victoryImageContainer;
@@ -218,6 +218,7 @@ namespace Nekoyume.UI
                     var model = SharedModel.rewards[i];
                     view.SetData(model);
                     view.gameObject.SetActive(true);
+                    VFXController.instance.Create<DropItemInventoryVFX>(view.transform, view.CenterOffsetAsPosition);
                     AudioController.instance.PlaySfx(AudioController.SfxCode.RewardItem);
                 }
                 
@@ -281,10 +282,11 @@ namespace Nekoyume.UI
             player.DisableHUD();
 
             var stageId = SharedModel.shouldRepeat ? stage.id : stage.id + 1;
-            yield return ActionManager.instance.HackAndSlash(player.equipments, new List<Food>(), stageId).ToYieldInstruction();
+            var action = ActionManager.instance.HackAndSlash(player.equipments, new List<Food>(), stageId)
+                .ToYieldInstruction();
             yield return StartCoroutine(stageLoadingScreen.CoClose());
             yield return coFadeOut;
-            Game.Event.OnStageStart.Invoke();
+            Game.Event.OnStageStart.Invoke(action.Result.Action.Result);
             Close();
         }
         

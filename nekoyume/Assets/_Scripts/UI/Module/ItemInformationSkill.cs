@@ -8,14 +8,11 @@ namespace Nekoyume.UI.Module
 {
     public class ItemInformationSkill : MonoBehaviour
     {
-        public Image headerImage;
-        public Text headerKeyText;
-        public Text headerValueText;
-        public Text firstLineKeyText;
-        public Text firstLineValueText;
-        public GameObject secondLine;
-        public Text secondLineKeyText;
-        public Text secondLineValueText;
+        public Image iconImage;
+        public RectTransform informationArea;
+        public Text nameText;
+        public Text powerText;
+        public Text chanceText;
         
         private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
 
@@ -24,25 +21,28 @@ namespace Nekoyume.UI.Module
 
         public void Show(Model.ItemInformationSkill model)
         {
+            if (model is null)
+            {
+                Hide();
+                
+                return;
+            }
+            
             _disposablesForModel.DisposeAllAndClear();
             Model = model;
-            Model.headerKey.SubscribeToText(headerKeyText).AddTo(_disposablesForModel);
-            Model.headerValue.SubscribeToText(headerValueText).AddTo(_disposablesForModel);
-            Model.firstLineKey.SubscribeToText(firstLineKeyText).AddTo(_disposablesForModel);
-            Model.firstLineValue.SubscribeToText(firstLineValueText).AddTo(_disposablesForModel);
-            Model.secondLineEnabled.Subscribe(secondLine.SetActive).AddTo(_disposablesForModel);
-            Model.secondLineKey.SubscribeToText(secondLineKeyText).AddTo(_disposablesForModel);
-            Model.secondLineValue.SubscribeToText(secondLineValueText).AddTo(_disposablesForModel);
-
+            Model.iconSprite.SubscribeToImage(iconImage).AddTo(_disposablesForModel);
+            Model.name.SubscribeToText(nameText).AddTo(_disposablesForModel);
+            Model.power.SubscribeToText(powerText).AddTo(_disposablesForModel);
+            Model.chance.SubscribeToText(chanceText).AddTo(_disposablesForModel);
             gameObject.SetActive(true);
         }
 
         public void Hide()
         {
             gameObject.SetActive(false);
-            
-            _disposablesForModel.DisposeAllAndClear();
+            Model?.Dispose();
             Model = null;
+            _disposablesForModel.DisposeAllAndClear();
         }
     }
 }

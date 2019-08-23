@@ -57,11 +57,6 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<int> showMaterialsCount = new ReactiveProperty<int>();
         public readonly ReactiveProperty<bool> readyForCombination = new ReactiveProperty<bool>();
 
-        public readonly ReactiveProperty<CombinationResultPopup> resultPopup =
-            new ReactiveProperty<CombinationResultPopup>();
-
-        public readonly Subject<CombinationResultPopup> onShowResultVFX = new Subject<CombinationResultPopup>();
-
         public Combination(Game.Item.Inventory inventory)
         {
             this.inventory.Value = new Inventory(inventory, Inventory.State.Materials);
@@ -73,7 +68,6 @@ namespace Nekoyume.UI.Model
             itemCountPopup.Value.onClickSubmit.Subscribe(OnClickSubmitItemCountPopup);
             materials.ObserveAdd().Subscribe(_ => OnMaterialAdd(_.Value));
             materials.ObserveRemove().Subscribe(_ => OnMaterialRemove(_.Value));
-            resultPopup.Subscribe(OnResultPopup);
         }
 
         public void Dispose()
@@ -86,9 +80,6 @@ namespace Nekoyume.UI.Model
             materials.DisposeAll();
             showMaterialsCount.Dispose();
             readyForCombination.Dispose();
-            resultPopup.DisposeAll();
-
-            onShowResultVFX.Dispose();
         }
 
         private void Subscribe(ConsumablesOrEquipments value)
@@ -141,8 +132,8 @@ namespace Nekoyume.UI.Model
             RegisterToStagedItems(data.item.Value);
             itemCountPopup.Value.item.Value = null;
         }
-        
-        private void RemoveEquipmentMaterial()
+
+        public void RemoveEquipmentMaterial()
         {
             if (equipmentMaterial.Value == null)
             {
@@ -311,39 +302,6 @@ namespace Nekoyume.UI.Model
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-        }
-        
-        private void OnResultPopup(CombinationResultPopup data)
-        {
-            if (ReferenceEquals(data, null))
-            {
-                return;
-            }
-
-            resultPopup.Value.onClickSubmit.Subscribe(OnResultPopupOnClickSubmit);
-        }
-
-        private void OnResultPopupOnClickSubmit(CombinationResultPopup data)
-        {
-            // 재료 아이템들을 인벤토리에서 제거하기.
-            inventory.Value.RemoveItems(data.materialItems);
-
-            // 결과 아이템이 있다면, 인벤토리에 추가하고 해당 아이템을 선택하기.
-            if (!ReferenceEquals(data.itemInformation.Value.item.Value, null))
-            {
-                inventory.Value.AddItem((ItemUsable) data.itemInformation.Value.item.Value.item.Value);
-            }
-            
-            RemoveEquipmentMaterial();
-            while (materials.Count > 0)
-            {
-                materials.RemoveAt(0);
-            }
-
-            onShowResultVFX.OnNext(resultPopup.Value);
-
-            resultPopup.Value.Dispose();
-            resultPopup.Value = null;
         }
     }
 }

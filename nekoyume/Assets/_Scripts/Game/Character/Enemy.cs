@@ -120,14 +120,14 @@ namespace Nekoyume.Game.Character
 
         protected override void ProcessAttack(CharacterBase target, Model.Skill.SkillInfo skill, bool isLastHit, bool isConsiderElementalType)
         {
-            ShowSpeech("ENEMY_SKILL", (int)(skill.Elemental ?? 0), (int)skill.Category);
+            ShowSpeech("ENEMY_SKILL", (int)(skill.Elemental ?? 0), (int)skill.skillCategory);
             base.ProcessAttack(target, skill, isLastHit, isConsiderElementalType);
             ShowSpeech("ENEMY_ATTACK");
         }
 
         protected override IEnumerator CoAnimationCast(Model.Skill.SkillInfo info)
         {
-            ShowSpeech("ENEMY_SKILL", (int)(info.Elemental ?? 0), (int)info.Category);
+            ShowSpeech("ENEMY_SKILL", (int)(info.Elemental ?? 0), (int)info.skillCategory);
             yield return StartCoroutine(base.CoAnimationCast(info));
         }
     }

@@ -8,12 +8,13 @@ using Libplanet.Action;
 using Nekoyume.BlockChain;
 using Nekoyume.Data;
 using Nekoyume.Data.Table;
+using Nekoyume.Game;
 using Nekoyume.Game.Factory;
 using Nekoyume.Game.Item;
-using Nekoyume.Game.Skill;
 using Nekoyume.Model;
 using Nekoyume.State;
 using UnityEngine;
+using Elemental = Nekoyume.Data.Table.Elemental;
 
 namespace Nekoyume.Action
 {
@@ -164,11 +165,12 @@ namespace Nekoyume.Action
                 }
 
                 if (itemEquipmentRow == null
-                    && !Tables.instance.ItemEquipment.TryGetValue(GameConfig.CombinationDefaultFoodId, out itemEquipmentRow))
+                    && !Tables.instance.ItemEquipment.TryGetValue(GameConfig.CombinationDefaultFoodId,
+                        out itemEquipmentRow))
                 {
                     return states;
                 }
-                
+
                 // 조합 결과 획득.
                 var b = new byte[16];
                 ctx.Random.NextBytes(b);
@@ -273,18 +275,17 @@ namespace Nekoyume.Action
 
         public static Equipment GetEquipment(ItemEquipment itemEquipment, Item monsterParts, decimal roll, Guid itemId)
         {
-            var table = Tables.instance.SkillEffect;
-            SkillBase skill;
+            var table = Game.Game.instance.TableSheets.SkillSheet;
+            Game.Skill skill;
             try
             {
-                var skillEffect = table.First(r => r.Value.id == monsterParts.skillId);
-                var elementalType = monsterParts.elemental;
+                var skillRow = table.ToOrderedList().First(r => r.Id == monsterParts.skillId);
                 var chance = Math.Floor(monsterParts.minChance +
                                         (monsterParts.maxChance - monsterParts.minChance) * roll);
                 chance = Math.Max(monsterParts.minChance, chance);
                 var value = (int) Math.Floor(monsterParts.minDamage +
                                              (monsterParts.maxDamage - monsterParts.minDamage) * roll);
-                skill = SkillFactory.Get(chance, skillEffect.Value, elementalType, value);
+                skill = SkillFactory.Get(skillRow, value, chance);
             }
             catch (InvalidOperationException)
             {

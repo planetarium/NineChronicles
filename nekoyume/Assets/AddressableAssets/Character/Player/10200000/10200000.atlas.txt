@@ -27,14 +27,14 @@ ankle_R
   index: -1
 arm_L
   rotate: false
-  xy: 86, 181
+  xy: 97, 190
   size: 20, 31
   orig: 20, 31
   offset: 0, 0
   index: -1
 arm_R
   rotate: true
-  xy: 86, 156
+  xy: 125, 226
   size: 23, 22
   orig: 23, 22
   offset: 0, 0
@@ -67,6 +67,13 @@ effect_02
   orig: 120, 79
   offset: 0, 0
   index: -1
+eye_04
+  rotate: true
+  xy: 86, 180
+  size: 32, 9
+  orig: 32, 9
+  offset: 0, 0
+  index: -1
 eye_red_01
   rotate: false
   xy: 379, 436
@@ -82,8 +89,8 @@ eye_red_02
   offset: 0, 0
   index: -1
 eye_red_03
-  rotate: false
-  xy: 146, 317
+  rotate: true
+  xy: 86, 147
   size: 31, 10
   orig: 31, 10
   offset: 0, 0
@@ -167,7 +174,7 @@ hand_L
   index: -1
 hand_L_02
   rotate: false
-  xy: 125, 237
+  xy: 85, 133
   size: 8, 12
   orig: 8, 12
   offset: 0, 0
@@ -202,16 +209,23 @@ leg_R
   index: -1
 mouth_01
   rotate: true
-  xy: 139, 300
+  xy: 198, 342
   size: 19, 5
   orig: 19, 5
   offset: 0, 0
   index: -1
 mouth_02
-  rotate: true
-  xy: 198, 342
+  rotate: false
+  xy: 97, 183
   size: 19, 5
   orig: 19, 5
+  offset: 0, 0
+  index: -1
+mouth_03
+  rotate: false
+  xy: 146, 321
+  size: 10, 6
+  orig: 10, 6
   offset: 0, 0
   index: -1
 shadow

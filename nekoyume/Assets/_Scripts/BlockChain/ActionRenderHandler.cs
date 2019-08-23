@@ -1,8 +1,15 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Nekoyume.Action;
+using Nekoyume.Game.Factory;
+using Nekoyume.Game.Item;
+using Nekoyume.Manager;
 using Nekoyume.State;
+using Nekoyume.UI;
+using Nekoyume.UI.Model;
 using UniRx;
+using UnityEngine;
 
 namespace Nekoyume.BlockChain
 {
@@ -58,6 +65,11 @@ namespace Nekoyume.BlockChain
             return evaluation.OutputStates.UpdatedAddresses.Contains(States.Instance.agentState.Value.address);
         }
 
+        private bool ValidateEvaluationForCurrentAvatarState<T>(ActionBase.ActionEvaluation<T> evaluation)
+            where T : ActionBase =>
+            !(States.Instance.currentAvatarState.Value is null)
+            && evaluation.OutputStates.UpdatedAddresses.Contains(States.Instance.currentAvatarState.Value.address);
+
         private AgentState GetAgentState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
         {
             var agentAddress = States.Instance.agentState.Value.address;
@@ -66,11 +78,15 @@ namespace Nekoyume.BlockChain
 
         private void UpdateAgentState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
         {
+            Debug.LogFormat("Called UpdateAgentState<{0}>. Updated Addresses : `{1}`", evaluation.Action,
+                string.Join(",", evaluation.OutputStates.UpdatedAddresses));
             States.Instance.agentState.Value = GetAgentState(evaluation);
         }
 
         private void UpdateAvatarState<T>(ActionBase.ActionEvaluation<T> evaluation, int index) where T : ActionBase
         {
+            Debug.LogFormat("Called UpdateAvatarState<{0}>. Updated Addresses : `{1}`", evaluation.Action,
+                string.Join(",", evaluation.OutputStates.UpdatedAddresses));
             if (!States.Instance.agentState.Value.avatarAddresses.ContainsKey(index))
             {
                 States.Instance.avatarStates.Remove(index);
@@ -159,23 +175,23 @@ namespace Nekoyume.BlockChain
         private void HackAndSlash()
         {
             ActionBase.EveryRender<HackAndSlash>()
-                .Where(ValidateEvaluationForAgentState)
+                .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
                 .Subscribe(UpdateCurrentAvatarState).AddTo(_disposables);
         }
 
         private void Combination()
         {
-            ActionBase.EveryRender<Combination>()
-                .Where(ValidateEvaluationForAgentState)
+            ActionBase.EveryRender<Action.Combination>()
+                .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
-                .Subscribe(UpdateCurrentAvatarState).AddTo(_disposables);
+                .Subscribe(ResponseCombination).AddTo(_disposables);
         }
 
         private void Sell()
         {
             ActionBase.EveryRender<Sell>()
-                .Where(ValidateEvaluationForAgentState)
+                .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
                 .Subscribe(UpdateCurrentAvatarState).AddTo(_disposables);
         }
@@ -183,7 +199,7 @@ namespace Nekoyume.BlockChain
         private void SellCancellation()
         {
             ActionBase.EveryRender<SellCancellation>()
-                .Where(ValidateEvaluationForAgentState)
+                .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
                 .Subscribe(UpdateCurrentAvatarState).AddTo(_disposables);
         }
@@ -206,6 +222,33 @@ namespace Nekoyume.BlockChain
                 .Where(ValidateEvaluationForAgentState)
                 .ObserveOnMainThread()
                 .Subscribe(UpdateAgentState).AddTo(_disposables);
+        }
+
+        private void ResponseCombination(ActionBase.ActionEvaluation<Action.Combination> evaluation)
+        {
+            var newState = (AvatarState) evaluation.OutputStates.GetState(States.Instance.currentAvatarState.Value.address);
+            var newItems = newState.inventory.Items.Select(i => i.item).OfType<ItemUsable>().ToList();
+            var currentItems = States.Instance.currentAvatarState.Value.inventory.Items.Select(i => i.item)
+                .OfType<ItemUsable>().ToList();
+            var isSuccess = newItems.Count > currentItems.Count;
+            var popup = Widget.Find<UI.CombinationResultPopup>();
+            var materialItems = evaluation.Action.Materials
+                .Select(material => new {material, item = ItemFactory.CreateMaterial(material.id, Guid.Empty)})
+                .Select(t => new CombinationMaterial(t.item, t.material.count, t.material.count, t.material.count))
+                .ToList();
+            var model = new UI.Model.CombinationResultPopup(isSuccess
+                ? new CountableItem(newItems.First(i => !currentItems.Contains(i)), 1)
+                : null)
+            {
+                isSuccess = isSuccess,
+                materialItems = materialItems
+            };
+            popup.Pop(model);
+
+            AnalyticsManager.Instance.OnEvent(isSuccess
+                ? AnalyticsManager.EventName.ActionCombinationSuccess
+                : AnalyticsManager.EventName.ActionCombinationFail);
+            UpdateCurrentAvatarState(evaluation);
         }
     }
 }

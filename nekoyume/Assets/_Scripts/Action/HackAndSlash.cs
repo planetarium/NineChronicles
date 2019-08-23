@@ -7,6 +7,7 @@ using Libplanet.Action;
 using Nekoyume.Battle;
 using Nekoyume.BlockChain;
 using Nekoyume.Game.Item;
+using Nekoyume.Model;
 using Nekoyume.State;
 using UnityEngine;
 
@@ -19,6 +20,7 @@ namespace Nekoyume.Action
         public List<Food> foods;
         public int stage;
         public Address avatarAddress;
+        public BattleLog Result { get; private set; }
 
         protected override IImmutableDictionary<string, object> PlainValueInternal =>
             new Dictionary<string, object>
@@ -79,11 +81,10 @@ namespace Nekoyume.Action
             
             var simulator = new Simulator(ctx.Random, avatarState, foods, stage);
             var player = simulator.Simulate();
-            Debug.Log($"Execute HackAndSlash. stage: {avatarState.worldStage} result: {simulator.Log.result} " +
+            Debug.Log($"Execute HackAndSlash. stage: {stage} result: {simulator.Log.result} " +
                       $"player : `{avatarAddress}` node : `{States.Instance.agentState.Value.address}` " +
                       $"current avatar: `{States.Instance.currentAvatarState?.Value?.address}`");
             avatarState.Update(player, simulator.rewards);
-            avatarState.battleLog = simulator.Log;
             avatarState.updatedAt = DateTimeOffset.UtcNow;
             if (avatarState.worldStage > stage)
             {
@@ -94,6 +95,7 @@ namespace Nekoyume.Action
             }
 
             states = states.SetState(avatarAddress, avatarState);
+            Result = simulator.Log;
             return states.SetState(ctx.Signer, agentState);
         }
     }

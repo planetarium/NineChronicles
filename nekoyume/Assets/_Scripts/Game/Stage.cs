@@ -70,9 +70,9 @@ namespace Nekoyume.Game
             Event.OnStageStart.AddListener(OnStageStart);
         }
 
-        private void OnStageStart()
+        private void OnStageStart(BattleLog log)
         {
-            _battleLog = States.Instance.currentAvatarState.Value.battleLog;
+            _battleLog = log;
             Play(_battleLog);
         }
 

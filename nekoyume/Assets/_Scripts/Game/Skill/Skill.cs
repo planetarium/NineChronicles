@@ -1,39 +1,40 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.Data;
 using Nekoyume.Data.Table;
+using Nekoyume.EnumType;
 using Nekoyume.Model;
+using Nekoyume.TableData;
 
-namespace Nekoyume.Game.Skill
+namespace Nekoyume.Game
 {
-    public interface ISkill
-    {
-        Model.Skill Use(CharacterBase caster);
-    }
-
     [Serializable]
-    public abstract class SkillBase : ISkill
+    public abstract class Skill
     {
+        public readonly SkillSheet.Row skillRow;
+        public readonly int power;
         public readonly decimal chance;
         public readonly SkillEffect effect;
-        public readonly Data.Table.Elemental.ElementalType elementalType;
-        public readonly int power;
 
         public abstract Model.Skill Use(CharacterBase caster);
 
-        protected SkillBase(decimal chance, SkillEffect effect, Data.Table.Elemental.ElementalType elementalType,
-            int power)
+        protected Skill(SkillSheet.Row skillRow, int power, decimal chance)
         {
-            this.chance = chance;
-            this.effect = effect;
-            this.elementalType = elementalType;
+            this.skillRow = skillRow;
             this.power = power;
+            this.chance = chance;
+
+            if (!Tables.instance.SkillEffect.TryGetValue(skillRow.SkillEffectId, out effect))
+            {
+                throw new KeyNotFoundException(nameof(skillRow.SkillEffectId));
+            }
         }
 
-        protected bool Equals(SkillBase other)
+        protected bool Equals(Skill other)
         {
-            return chance.Equals(other.chance) && Equals(effect, other.effect) &&
-                   elementalType == other.elementalType && power == other.power;
+            return skillRow.Equals(other.skillRow) && power == other.power && chance.Equals(other.chance) &&
+                   Equals(effect, other.effect);
         }
 
         public override bool Equals(object obj)
@@ -41,17 +42,17 @@ namespace Nekoyume.Game.Skill
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((SkillBase) obj);
+            return Equals((Skill) obj);
         }
 
         public override int GetHashCode()
         {
             unchecked
             {
-                var hashCode = chance.GetHashCode();
-                hashCode = (hashCode * 397) ^ (effect != null ? effect.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (int) elementalType;
+                var hashCode = skillRow.GetHashCode();
                 hashCode = (hashCode * 397) ^ power;
+                hashCode = (hashCode * 397) ^ chance.GetHashCode();
+                hashCode = (hashCode * 397) ^ (effect != null ? effect.GetHashCode() : 0);
                 return hashCode;
             }
         }
@@ -60,18 +61,18 @@ namespace Nekoyume.Game.Skill
         {
             var targets = caster.targets;
             IEnumerable<CharacterBase> target;
-            switch (effect.target)
+            switch (effect.skillTargetType)
             {
-                case SkillEffect.Target.Enemy:
+                case SkillTargetType.Enemy:
                     target = new[] {targets.First()};
                     break;
-                case SkillEffect.Target.Enemies:
+                case SkillTargetType.Enemies:
                     target = caster.targets;
                     break;
-                case SkillEffect.Target.Self:
+                case SkillTargetType.Self:
                     target = new[] {caster};
                     break;
-                case SkillEffect.Target.Ally:
+                case SkillTargetType.Ally:
                     target = new[] {caster};
                     break;
                 default:

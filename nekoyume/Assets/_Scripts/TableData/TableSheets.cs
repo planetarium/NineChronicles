@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.IO;
 using System.Linq;
@@ -18,10 +19,13 @@ namespace Nekoyume.TableData
         public StageRewardSheet StageRewardSheet { get; private set; }
         public CharacterSheet CharacterSheet { get; private set; }
         public LevelSheet LevelSheet { get; private set; }
+        public SkillSheet SkillSheet { get; private set; }
 
+#if UNITY_EDITOR
         public IEnumerator CoInitialize()
         {
             loadProgress.Value = 0f;
+
             var loadLocationOperation = Addressables.LoadResourceLocationsAsync("TableCSV");
             yield return loadLocationOperation;
             var locations = loadLocationOperation.Result;
@@ -31,15 +35,39 @@ namespace Nekoyume.TableData
             {
                 var loadAssetOperation = Addressables.LoadAssetAsync<TextAsset>(location);
                 yield return loadAssetOperation;
-                var asset = loadAssetOperation.Result;
-                SetToSheet(asset.name, asset.text);
+                var textAsset = loadAssetOperation.Result;
+                SetToSheet(textAsset.name, textAsset.text);
                 loadedTaskCount++;
                 loadProgress.Value = (float) loadedTaskCount / loadTaskCount;
             }
 
             loadProgress.Value = 1f;
         }
+#else
+        public IEnumerator CoInitialize()
+        {
+            loadProgress.Value = 0f;
+            
+            var request = Resources.LoadAsync<AddressableAssetsContainer>("AddressableAssetsContainer");
+            yield return request;
+            if (!(request.asset is AddressableAssetsContainer addressableAssetsContainer))
+            {
+                throw new NullReferenceException(nameof(addressableAssetsContainer));
+            }
+            
+            var tableCsvAssets = addressableAssetsContainer.tableCsvAssets;
+            var loadTaskCount = tableCsvAssets.Count;
+            var loadedTaskCount = 0;
+            foreach (var textAsset in tableCsvAssets)
+            {
+                SetToSheet(textAsset.name, textAsset.text);
+                loadedTaskCount++;
+                loadProgress.Value = (float) loadedTaskCount / loadTaskCount;
+            }
 
+            loadProgress.Value = 1f;
+        }
+#endif
         private void SetToSheet(string name, string csv)
         {
             switch (name)
@@ -71,6 +99,10 @@ namespace Nekoyume.TableData
                 case nameof(TableData.LevelSheet):
                     LevelSheet = new LevelSheet();
                     LevelSheet.Set(csv);
+                    break;
+                case nameof(TableData.SkillSheet):
+                    SkillSheet = new SkillSheet();
+                    SkillSheet.Set(csv);
                     break;
                 default:
                     throw new InvalidDataException($"Not found {name} class in namespace `TableData`");

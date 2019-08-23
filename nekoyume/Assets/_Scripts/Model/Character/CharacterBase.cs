@@ -5,8 +5,7 @@ using System.Linq;
 using BTAI;
 using Libplanet.Action;
 using Nekoyume.Battle;
-using Nekoyume.Data.Table;
-using Nekoyume.Game.Skill;
+using Nekoyume.Game;
 
 namespace Nekoyume.Model
 {
@@ -32,7 +31,7 @@ namespace Nekoyume.Model
         public Game.Elemental defElement;
         public readonly Skills Skills = new Skills();
 
-        private SkillBase _selectedSkill;
+        private Game.Skill _selectedSkill;
 
         [NonSerialized] private Root _root;
         
@@ -115,8 +114,12 @@ namespace Nekoyume.Model
 
         protected virtual void SetSkill()
         {
-            //기본공격 설정
-            var attack = SkillFactory.Get(1.0m, new SkillEffect(), Elemental.ElementalType.Normal, atk);
+            if (!Game.Game.instance.TableSheets.SkillSheet.TryGetValue(100000, out var skillRow))
+            {
+                throw new KeyNotFoundException("100000");
+            }
+            
+            var attack = SkillFactory.Get(skillRow, atk, 1m);
             Skills.Add(attack);
         }
 
@@ -143,11 +146,11 @@ namespace Nekoyume.Model
     }
 
     [Serializable]
-    public class Skills : IEnumerable<SkillBase>
+    public class Skills : IEnumerable<Game.Skill>
     {
-        private readonly List<SkillBase> _skills = new List<SkillBase>();
+        private readonly List<Game.Skill> _skills = new List<Game.Skill>();
 
-        public void Add(SkillBase s)
+        public void Add(Game.Skill s)
         {
             if (s is null)
             {
@@ -162,7 +165,7 @@ namespace Nekoyume.Model
             _skills.Clear();
         }
 
-        public IEnumerator<SkillBase> GetEnumerator()
+        public IEnumerator<Game.Skill> GetEnumerator()
         {
             return _skills.GetEnumerator();
         }
@@ -172,7 +175,7 @@ namespace Nekoyume.Model
             return GetEnumerator();
         }
 
-        public SkillBase Select(IRandom random)
+        public Game.Skill Select(IRandom random)
         {
             var selected = _skills
                 .Select(skill => new {skill, chance = random.Next(0, 100000) * 0.00001m})

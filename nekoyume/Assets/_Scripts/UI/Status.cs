@@ -78,17 +78,21 @@ namespace Nekoyume.UI
         {
             if (_player != null)
             {
+                var level = _player.Level;
+
                 _avatarName = States.Instance.currentAvatarState.Value.name;
-                TextLevelName.text = $"LV. {_player.Level} {_avatarName}";
+                TextLevelName.text = $"LV. {level} {_avatarName}";
                 TextHP.text = $"{_player.HP}/{_player.HPMax}";
-                TextExp.text = $"{_player.EXP}/{_player.EXPMax}";
+                TextExp.text = $"{_player.EXPMax - _player.EXP}";
 
                 float hpValue = _player.HP / (float) _player.HPMax;
                 HPBar.fillRect.gameObject.SetActive(hpValue > 0.0f);
                 hpValue = Mathf.Min(Mathf.Max(hpValue, 0.1f), 1.0f);
                 HPBar.value = hpValue;
 
-                float expValue = _player.EXP / (float) _player.EXPMax;
+                var expNeed = _player.model.expNeed;
+                var levelExp = _player.EXPMax - expNeed;
+                var expValue = (float) (_player.EXP - levelExp) / expNeed;
                 ExpBar.fillRect.gameObject.SetActive(expValue > 0.0f);
                 expValue = Mathf.Min(Mathf.Max(expValue, 0.1f), 1.0f);
                 ExpBar.value = expValue;

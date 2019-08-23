@@ -5,9 +5,9 @@ using Nekoyume.Battle;
 using Nekoyume.Data;
 using Nekoyume.Data.Table;
 using Nekoyume.Game.Item;
-using Nekoyume.Game.Skill;
 using Nekoyume.State;
 using Nekoyume.TableData;
+using UnityEngine;
 
 namespace Nekoyume.Model
 {
@@ -74,20 +74,20 @@ namespace Nekoyume.Model
             Simulator.Lose = true;
         }
 
-        private void CalcStats(int lv)
+        private void CalcStats(int level)
         {
             var game = Game.Game.instance;
             if (!game.TableSheets.CharacterSheet.TryGetValue(characterId, out var characterRow))
             {
-                throw new InvalidActionException();   
+                throw new KeyNotFoundException(nameof(characterId));   
             }
 
-            if (!game.TableSheets.LevelSheet.TryGetValue(lv, out var levelRow))
+            if (!game.TableSheets.LevelSheet.TryGetValue(level, out var levelRow))
             {
-                throw new InvalidActionException();
+                throw new KeyNotFoundException(nameof(level));
             }
 
-            var statsData = characterRow.ToStats(lv);
+            var statsData = characterRow.ToStats(level);
             currentHP = statsData.HP;
             atk = statsData.Damage;
             def = statsData.Defense;
@@ -115,10 +115,10 @@ namespace Nekoyume.Model
 
             foreach (var pair in setMap)
             {
-                var effect = Tables.instance.GetSetEffect(pair.Key, pair.Value);
-                foreach (var e in effect)
+                var setEffect = Tables.instance.GetSetEffect(pair.Key, pair.Value);
+                foreach (var statMap in setEffect)
                 {
-                    e.UpdatePlayer(this);
+                    statMap.UpdatePlayer(this);
                 }
             }
         }
@@ -272,7 +272,7 @@ namespace Nekoyume.Model
             }
         }
 
-        public void OverrideSkill(SkillBase skill)
+        public void OverrideSkill(Game.Skill skill)
         {
             Skills.Clear();
             Skills.Add(skill);

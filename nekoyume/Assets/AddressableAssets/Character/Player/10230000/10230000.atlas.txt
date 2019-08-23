@@ -13,7 +13,7 @@ ankle_L
   index: -1
 ankle_L_02
   rotate: false
-  xy: 339, 253
+  xy: 311, 241
   size: 16, 15
   orig: 16, 15
   offset: 0, 0
@@ -88,6 +88,13 @@ effect_02
   orig: 120, 79
   offset: 0, 0
   index: -1
+eye_04
+  rotate: true
+  xy: 126, 197
+  size: 32, 9
+  orig: 32, 9
+  offset: 0, 0
+  index: -1
 eye_red_01
   rotate: false
   xy: 301, 307
@@ -103,8 +110,8 @@ eye_red_02
   offset: 0, 0
   index: -1
 eye_red_03
-  rotate: true
-  xy: 126, 199
+  rotate: false
+  xy: 339, 258
   size: 30, 10
   orig: 30, 10
   offset: 0, 0
@@ -202,14 +209,14 @@ hand_L
   index: -1
 hand_L_02
   rotate: false
-  xy: 126, 182
+  xy: 390, 259
   size: 10, 15
   orig: 10, 15
   offset: 0, 0
   index: -1
 hand_R
   rotate: false
-  xy: 311, 240
+  xy: 371, 258
   size: 17, 16
   orig: 17, 16
   offset: 0, 0
@@ -247,6 +254,13 @@ mouth_02
   xy: 255, 179
   size: 19, 5
   orig: 19, 5
+  offset: 0, 0
+  index: -1
+mouth_03
+  rotate: false
+  xy: 197, 305
+  size: 10, 6
+  orig: 10, 6
   offset: 0, 0
   index: -1
 shadow

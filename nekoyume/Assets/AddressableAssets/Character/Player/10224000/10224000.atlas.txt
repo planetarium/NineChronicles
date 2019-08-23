@@ -6,7 +6,7 @@ filter: Linear,Linear
 repeat: none
 ankle_L
   rotate: false
-  xy: 176, 119
+  xy: 205, 413
   size: 16, 18
   orig: 16, 18
   offset: 0, 0
@@ -26,15 +26,15 @@ ankle_R
   offset: 0, 0
   index: -1
 arm_L
-  rotate: false
-  xy: 176, 139
+  rotate: true
+  xy: 180, 413
   size: 18, 23
   orig: 18, 23
   offset: 0, 0
   index: -1
 arm_R
   rotate: false
-  xy: 180, 415
+  xy: 223, 415
   size: 18, 16
   orig: 18, 16
   offset: 0, 0
@@ -65,6 +65,13 @@ effect_02
   xy: 2, 341
   size: 120, 79
   orig: 120, 79
+  offset: 0, 0
+  index: -1
+eye_04
+  rotate: true
+  xy: 176, 130
+  size: 32, 9
+  orig: 32, 9
   offset: 0, 0
   index: -1
 eye_red_01
@@ -212,6 +219,13 @@ mouth_02
   xy: 122, 45
   size: 19, 5
   orig: 19, 5
+  offset: 0, 0
+  index: -1
+mouth_03
+  rotate: false
+  xy: 414, 414
+  size: 10, 6
+  orig: 10, 6
   offset: 0, 0
   index: -1
 shadow

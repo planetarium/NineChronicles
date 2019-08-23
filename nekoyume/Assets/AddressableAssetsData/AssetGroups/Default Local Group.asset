@@ -47,6 +47,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - TableCSV
+  - m_GUID: db0d91fbecba94be9aa59f77d9e43d9f
+    m_Address: Assets/AddressableAssets/TableCSV/SkillSheet.csv
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - TableCSV
   - m_GUID: f51aefc4ac9a5c044b0fde0383fc7f6a
     m_Address: Assets/AddressableAssets/TableCSV/StageRewardSheet.csv
     m_ReadOnly: 0
@@ -56,5 +61,4 @@ MonoBehaviour:
   m_Settings: {fileID: 11400000, guid: 314ad4573790845ce84c5b850f063d3b, type: 2}
   m_SchemaSet:
     m_Schemas:
-    - {fileID: 11400000, guid: 73bb1d7b095a542b68f8adb34f122b1c, type: 2}
-    - {fileID: 11400000, guid: 8e0251bc8cbe64a46a171ac8119ea93a, type: 2}
+    - {fileID: 11400000, guid: 5c7e18ec47fed4f2198e1309f148ecd8, type: 2}

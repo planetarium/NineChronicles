@@ -6,7 +6,7 @@ namespace Nekoyume.Game.Util
     public class WeightedSelector<T>
     {
         private readonly List<T> _values;
-        private readonly List<float> _weights;
+        private readonly List<decimal> _weights;
         private readonly IRandom _random;
 
         public int Count => _values.Count;
@@ -14,11 +14,11 @@ namespace Nekoyume.Game.Util
         public WeightedSelector(IRandom random)
         {
             _values = new List<T>();
-            _weights = new List<float>();
+            _weights = new List<decimal>();
             _random = random;
         }
 
-        public void Add(T item, float weight)
+        public void Add(T item, decimal weight)
         {
             _values.Add(item);
             _weights.Add(weight);
@@ -29,7 +29,7 @@ namespace Nekoyume.Game.Util
             int i = 0;
             int len = _weights.Count;
 
-            float rnd = (float) _random.NextDouble();
+            decimal rnd = _random.Next(0, 100000) * 0.00001m;
             int idx = -1;
             for (i = 0; i < len; ++i)
             {

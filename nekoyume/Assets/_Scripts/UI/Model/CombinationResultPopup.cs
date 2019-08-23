@@ -10,7 +10,7 @@ namespace Nekoyume.UI.Model
         public bool isSuccess;
         public ICollection<CombinationMaterial> materialItems;
 
-        public readonly Subject<CombinationResultPopup> onClickSubmit = new Subject<CombinationResultPopup>();
+        private readonly Subject<CombinationResultPopup> _onClickSubmit = new Subject<CombinationResultPopup>();
         
         public CombinationResultPopup(CountableItem countableItem = null)
         {
@@ -19,7 +19,7 @@ namespace Nekoyume.UI.Model
         
         public void Dispose()
         {   
-            onClickSubmit.Dispose();
+            _onClickSubmit.Dispose();
         }
     }
 }

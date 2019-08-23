@@ -8,7 +8,6 @@ namespace Nekoyume.UI.Module
 {
     public class ItemInformationStat : MonoBehaviour
     {
-        public Image image;
         public Text keyText;
         public Text valueText;
 
@@ -19,6 +18,13 @@ namespace Nekoyume.UI.Module
 
         public void Show(Model.ItemInformationStat model)
         {
+            if (model is null)
+            {
+                Hide();
+                
+                return;
+            }
+            
             _disposablesForModel.DisposeAllAndClear();
             Model = model;
             Model.key.SubscribeToText(keyText).AddTo(_disposablesForModel);
@@ -30,9 +36,9 @@ namespace Nekoyume.UI.Module
         public void Hide()
         {
             gameObject.SetActive(false);
-            
-            _disposablesForModel.DisposeAllAndClear();
+            Model?.Dispose();
             Model = null;
+            _disposablesForModel.DisposeAllAndClear();
         }
     }
 }

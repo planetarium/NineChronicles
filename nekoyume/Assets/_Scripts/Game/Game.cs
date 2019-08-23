@@ -6,6 +6,9 @@ using Nekoyume.Game.Controller;
 using Nekoyume.TableData;
 using Nekoyume.UI;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
+using UniRx;
+using Nekoyume.Game.VFX;
 
 namespace Nekoyume.Game
 {
@@ -32,7 +35,7 @@ namespace Nekoyume.Game
     {
         public LocalizationManager.LanguageType languageType = LocalizationManager.LanguageType.English;
         public Stage stage;
-        
+
         public TableSheets TableSheets { get; private set; }
 
         protected override void Awake()
@@ -44,6 +47,7 @@ namespace Nekoyume.Game
             Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
             Screen.SetResolution(GameConfig.ScreenSize.x, GameConfig.ScreenSize.y, FullScreenMode.Windowed);
             MainCanvas.instance.Initialize();
+            Widget.Find<LoadingScreen>().Show(false);
             Tables.instance.Initialize();
             stage.objectPool.Initialize();
 #if UNITY_EDITOR
@@ -55,10 +59,16 @@ namespace Nekoyume.Game
 
         private IEnumerator Start()
         {
+            yield return Addressables.InitializeAsync();
             TableSheets = new TableSheets();
             yield return StartCoroutine(TableSheets.CoInitialize());
             AgentController.Initialize(AgentInitialized);
             AudioController.instance.Initialize();
+            Observable.EveryUpdate()
+                .Where(_ => Input.GetMouseButtonUp(0))
+                .Select(_ => Input.mousePosition)
+                .Subscribe(pos => PlayMouseOnClickVFX(pos))
+                .AddTo(gameObject);
         }
 
         private void AgentInitialized(bool succeed)
@@ -73,6 +83,13 @@ namespace Nekoyume.Game
             {
                 Widget.Find<UpdatePopup>()?.Show();
             }
+        }
+
+        private void PlayMouseOnClickVFX(Vector3 position)
+        {
+            position = ActionCamera.instance.Cam.ScreenToWorldPoint(position);
+            var vfx = VFXController.instance.CreateAndChaseCam<MouseClickVFX>(position);
+            vfx.Play();
         }
     }
 }

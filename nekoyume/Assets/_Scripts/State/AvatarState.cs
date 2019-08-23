@@ -19,7 +19,6 @@ namespace Nekoyume.State
         public long exp;
         public Inventory inventory;
         public int worldStage;
-        public BattleLog battleLog;
         public DateTimeOffset updatedAt;
         public DateTimeOffset? clearedAt;
         public Address agentAddress;
@@ -38,7 +37,6 @@ namespace Nekoyume.State
             exp = 0;
             inventory = new Inventory();
             worldStage = 1;
-            battleLog = null;
             updatedAt = DateTimeOffset.UtcNow;
             this.agentAddress = agentAddress;
             questList = new QuestList();
@@ -57,7 +55,6 @@ namespace Nekoyume.State
             exp = avatarState.exp;
             inventory = avatarState.inventory;
             worldStage = avatarState.worldStage;
-            battleLog = avatarState.battleLog;
             updatedAt = avatarState.updatedAt;
             clearedAt = avatarState.clearedAt;
             agentAddress = avatarState.agentAddress;
