@@ -80,7 +80,9 @@ namespace Nekoyume.Battle
 
                         if (index == lastWave)
                         {
-                            if (_worldStage == Player.worldStage)
+                            var stages = Game.Game.instance.TableSheets.StageSheet.ToOrderedList();
+                            if (_worldStage == Player.worldStage
+                                && Player.worldStage < stages.Last().Stage)
                             {
                                 Player.worldStage++;
                             }
