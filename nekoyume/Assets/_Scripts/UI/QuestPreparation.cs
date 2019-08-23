@@ -300,7 +300,7 @@ namespace Nekoyume.UI
             ActionManager.instance.HackAndSlash(equipments, foods, selectedStage)
                 .Subscribe(eval =>
                 {
-                    Game.Event.OnStageStart.Invoke();
+                    Game.Event.OnStageStart.Invoke(eval.Action.Result);
                     Find<LoadingScreen>().Close();
                     _stage.repeatStage = repeat;
                     Close();

@@ -146,7 +146,6 @@ namespace Nekoyume.UI
 
         public virtual void Close()
         {
-            Debug.Log($"Call {this} Close");
             StopAllCoroutines();
             if (!gameObject.activeSelf)
             {
@@ -159,7 +158,6 @@ namespace Nekoyume.UI
 
         public virtual IEnumerator CoClose()
         {
-            Debug.Log($"Call {this} CoClose");
             if (Animator)
             {
                 _animCloseEnd = false;
