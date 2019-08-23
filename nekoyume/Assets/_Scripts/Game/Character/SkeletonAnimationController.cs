@@ -17,7 +17,7 @@ namespace Nekoyume.Game.Character
             public string stateName;
             public AnimationReferenceAsset animation;
         }
-        
+
         public const string DefaultPMAShader = "Spine/Skeleton";
         public const string DefaultStraightAlphaShader = "Sprites/Default";
 
@@ -34,11 +34,11 @@ namespace Nekoyume.Game.Character
         private Shader _weaponShader;
         private AtlasPage _weaponAtlasPage;
         private int _weaponSlotIndex;
-        
+
         private Skin _clonedSkinForChangeWeapon;
         private RegionAttachment _defaultWeaponAttachment;
         private RegionAttachment _currentWeaponAttachment;
-        
+
         #region Mono
 
         private void Awake()
@@ -49,12 +49,12 @@ namespace Nekoyume.Game.Character
             }
 
             SkeletonAnimation = GetComponent<SkeletonAnimation>();
-            
+
             _applyPMA = SkeletonAnimation.pmaVertexColors;
             _weaponShader = _applyPMA ? Shader.Find(DefaultPMAShader) : Shader.Find(DefaultStraightAlphaShader);
             _weaponAtlasPage = new UnityEngine.Material(_weaponShader).ToSpineAtlasPage();
             _weaponSlotIndex = SkeletonAnimation.skeleton.FindSlotIndex(weaponSlot);
-            
+
             _clonedSkinForChangeWeapon = SkeletonAnimation.skeleton.Data.DefaultSkin.GetClone();
             _defaultWeaponAttachment = MakeWeaponAttachment(Weapon.GetSprite(GameConfig.DefaultAvatarWeaponId));
         }
@@ -71,13 +71,26 @@ namespace Nekoyume.Game.Character
         }
 
         /// <summary>Plays an  animation based on the hash of the state name.</summary>
-        public void PlayAnimationForState(int shortNameHash, int layerIndex)
+        public TrackEntry PlayAnimationForState(int shortNameHash, int layerIndex)
         {
             var foundAnimation = GetAnimationForState(shortNameHash);
             if (foundAnimation == null)
-                return;
+            {
+                return null;
+            }
 
-            PlayNewAnimation(foundAnimation, layerIndex);
+            return PlayNewAnimation(foundAnimation, layerIndex);
+        }
+
+        public TrackEntry PlayAnimationForState(string stateName, int layerIndex)
+        {
+            var foundAnimation = GetAnimationForState(stateName);
+            if (foundAnimation == null)
+            {
+                return null;
+            }
+
+            return PlayNewAnimation(foundAnimation, layerIndex);
         }
 
         /// <summary>Play a non-looping animation once then continue playing the state animation.</summary>
@@ -110,16 +123,16 @@ namespace Nekoyume.Game.Character
             skeleton.SetSlotsToSetupPose();
             SkeletonAnimation.Update(0);
         }
-        
+
         private RegionAttachment MakeWeaponAttachment(Sprite sprite)
         {
             var attachment = _applyPMA
                 ? sprite.ToRegionAttachmentPMAClone(_weaponShader)
                 : sprite.ToRegionAttachment(_weaponAtlasPage);
-            
+
             return attachment;
         }
-        
+
         /// <summary>Gets a Spine Animation based on the hash of the state name.</summary>
         private Spine.Animation GetAnimationForState(int shortNameHash)
         {
@@ -127,15 +140,21 @@ namespace Nekoyume.Game.Character
             return foundState?.animation;
         }
 
+        private Spine.Animation GetAnimationForState(string stateName)
+        {
+            var foundState = statesAndAnimations.Find(entry => entry.stateName == stateName);
+            return foundState?.animation;
+        }
+
         /// <summary>Play an animation. If a transition animation is defined, the transition is played before the target animation being passed.</summary>
-        private void PlayNewAnimation(Spine.Animation target, int layerIndex)
+        private TrackEntry PlayNewAnimation(Spine.Animation target, int layerIndex)
         {
             var loop = target.Name == nameof(CharacterAnimation.Type.Idle)
                        || target.Name == nameof(CharacterAnimation.Type.Run)
                        || target.Name == nameof(CharacterAnimation.Type.Casting);
 
-            SkeletonAnimation.AnimationState.SetAnimation(layerIndex, target, loop);
             TargetAnimation = target;
+            return SkeletonAnimation.AnimationState.SetAnimation(layerIndex, target, loop);
         }
     }
 }
