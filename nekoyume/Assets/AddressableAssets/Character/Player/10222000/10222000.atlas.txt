@@ -12,15 +12,15 @@ ankle_L
   offset: 0, 0
   index: -1
 ankle_L_02
-  rotate: true
-  xy: 176, 138
+  rotate: false
+  xy: 180, 420
   size: 24, 11
   orig: 24, 11
   offset: 0, 0
   index: -1
 ankle_R
   rotate: false
-  xy: 180, 420
+  xy: 206, 420
   size: 24, 11
   orig: 24, 11
   offset: 0, 0
@@ -65,6 +65,13 @@ effect_02
   xy: 2, 341
   size: 120, 79
   orig: 120, 79
+  offset: 0, 0
+  index: -1
+eye_04
+  rotate: true
+  xy: 176, 130
+  size: 32, 9
+  orig: 32, 9
   offset: 0, 0
   index: -1
 eye_red_01
@@ -212,6 +219,13 @@ mouth_02
   xy: 122, 45
   size: 19, 5
   orig: 19, 5
+  offset: 0, 0
+  index: -1
+mouth_03
+  rotate: true
+  xy: 167, 289
+  size: 10, 6
+  orig: 10, 6
   offset: 0, 0
   index: -1
 shadow

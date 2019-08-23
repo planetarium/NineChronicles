@@ -88,6 +88,13 @@ effect_02
   orig: 120, 79
   offset: 0, 0
   index: -1
+eye_04
+  rotate: false
+  xy: 104, 228
+  size: 32, 9
+  orig: 32, 9
+  offset: 0, 0
+  index: -1
 eye_red_01
   rotate: true
   xy: 206, 327
@@ -247,6 +254,13 @@ mouth_02
   xy: 118, 2
   size: 19, 5
   orig: 19, 5
+  offset: 0, 0
+  index: -1
+mouth_03
+  rotate: false
+  xy: 489, 292
+  size: 10, 6
+  orig: 10, 6
   offset: 0, 0
   index: -1
 shadow
