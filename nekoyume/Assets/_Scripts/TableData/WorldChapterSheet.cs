@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Nekoyume.Game.Controller;
 
 namespace Nekoyume.TableData
@@ -16,7 +17,7 @@ namespace Nekoyume.TableData
             public string Prefab { get; private set; }
 
             public int Key => Id;
-            
+
             public void Set(string[] fields)
             {
                 Id = int.TryParse(fields[0], out var id) ? id : 0;
@@ -27,23 +28,25 @@ namespace Nekoyume.TableData
             }
         }
 
-        public bool TryGetByStage(int stage, out Row row)
+        public bool TryGetByStage(int stage, out Row outRow)
         {
-            foreach (var chapterRow in this)
+            var orderedList = ToOrderedList();
+            foreach (var row in orderedList)
             {
-                if (stage < chapterRow.StageBegin ||
-                    stage > chapterRow.StageEnd)
+                if (stage < row.StageBegin
+                    || stage > row.StageEnd)
                 {
                     continue;
                 }
-                
-                row = chapterRow;
 
+                outRow = row;
+                
                 return true;
             }
 
-            row = new Row();
-            return false;
+            outRow = orderedList.Last();
+            
+            return true;
         }
     }
 }
