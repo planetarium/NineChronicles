@@ -9,7 +9,7 @@ namespace Planetarium.Nekoyume.Editor
         public int callbackOrder { get; }
         public void OnPreprocessBuild(BuildReport report)
         {
-            AddressableAssetSettings.BuildPlayerContent();   
+            AddressableAssetSettings.BuildPlayerContent();
         }
     }
 }
