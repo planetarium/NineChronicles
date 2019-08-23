@@ -152,20 +152,22 @@ namespace Nekoyume.UI
 
         private void SetInformation(Player player)
         {
-            levelInfo.text = $"LV. {player.level}";
+            var level = player.level;
+            levelInfo.text = $"LV. {level}";
             
             var hp = player.currentHP;
             var hpMax = player.currentHP;
-            var exp = player.exp;
-            var expMax = player.expMax;
+            var expNeed = player.expNeed;
+            var levelExp = player.expMax - expNeed;
+            var currentExp = player.exp - levelExp;
 
             //hp, exp
             textHp.text = $"{hp}/{hpMax}";
-            textExp.text = $"{exp}/{expMax}";
+            textExp.text = $"{currentExp} / {expNeed}";
 
             //percentage
             var hpPercentage = hp / (float) hpMax;
-            var expPercentage = player.exp / (float) expMax;
+            var expPercentage = (float) currentExp / expNeed;
 
             foreach (
                 var tuple in new[]
