@@ -36,7 +36,7 @@ namespace Nekoyume.BlockChain
             
             return true;
         }
-        
+
         public static AvatarState SetIndex(int index)
         {
             if (!States.Instance.avatarStates.ContainsKey(index))
@@ -51,14 +51,6 @@ namespace Nekoyume.BlockChain
         private static void ResetIndex()
         {
             States.Instance.currentAvatarKey.Value = -1;
-        }
-
-        public static Transaction<PolymorphicAction<ActionBase>> MakeTransaction(
-            IEnumerable<PolymorphicAction<ActionBase>> actions,
-            BlockChain<PolymorphicAction<ActionBase>> chain
-        )
-        {
-            return chain.MakeTransaction(AgentController.Agent.PrivateKey, actions);
         }
     }
 }

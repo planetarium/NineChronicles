@@ -282,10 +282,11 @@ namespace Nekoyume.UI
             player.DisableHUD();
 
             var stageId = SharedModel.shouldRepeat ? stage.id : stage.id + 1;
-            yield return ActionManager.instance.HackAndSlash(player.equipments, new List<Food>(), stageId).ToYieldInstruction();
+            var action = ActionManager.instance.HackAndSlash(player.equipments, new List<Food>(), stageId)
+                .ToYieldInstruction();
             yield return StartCoroutine(stageLoadingScreen.CoClose());
             yield return coFadeOut;
-            Game.Event.OnStageStart.Invoke();
+            Game.Event.OnStageStart.Invoke(action.Result.Action.Result);
             Close();
         }
         
