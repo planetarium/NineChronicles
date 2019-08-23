@@ -34,6 +34,7 @@ namespace Nekoyume.Game.Character
         void CriticalAttack();
         void Hit();
         void Die();
+        void Win();
         void Disappear();
 
         #endregion

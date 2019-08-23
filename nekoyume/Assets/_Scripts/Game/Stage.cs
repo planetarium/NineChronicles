@@ -238,8 +238,9 @@ namespace Nekoyume.Game
                 yield return StartCoroutine(CoDialog(log.worldStage));
 
                 var playerCharacter = GetPlayer();
+                playerCharacter.animator.Win();
                 playerCharacter.ShowSpeech("PLAYER_WIN");
-                yield return new WaitForSeconds(1.0f);
+                yield return new WaitForSeconds(2.2f);
                 StartCoroutine(CoSlideBg());
             }
             else
