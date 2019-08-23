@@ -78,10 +78,7 @@ namespace Nekoyume.UI
 
             var worldMap = Find<WorldMap>();
             worldMap.SelectedStage = States.Instance.currentAvatarState.Value.worldStage;
-            bottomMenu.Show(
-                BottomMenu.ButtonHideFlag.InfoAndEquip |
-                BottomMenu.ButtonHideFlag.Inventory);
-            bottomMenu.FadeInColor(0.3f);
+            bottomMenu.Show();
             OnChangeStage();
         }
 

@@ -191,13 +191,11 @@ namespace Nekoyume.UI
         public virtual void OnCompleteOfShowAnimation()
         {
             Animator.enabled = false;
-            Animator.speed = 1f;
         }
 
         public virtual void OnCompleteOfCloseAnimation()
         {
             _animCloseEnd = true;
-            Animator.speed = 1f;
         }
     }
 }

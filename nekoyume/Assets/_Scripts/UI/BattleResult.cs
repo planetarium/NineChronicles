@@ -297,7 +297,7 @@ namespace Nekoyume.UI
                 _battleWinVFX.Stop();
             }
 
-            Find<Status>().bottomMenu.Close();
+            Find<BattleUI>().Close();
             Game.Event.OnRoomEnter.Invoke();
             Close();
         }

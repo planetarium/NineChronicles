@@ -110,7 +110,7 @@ namespace Nekoyume.UI
 
             Find<Gold>()?.Show();
             Find<Status>()?.Show();
-            bottomMenu.Show(BottomMenu.ButtonHideFlag.Main);
+            bottomMenu.Show();
         }
 
         public override void Close()

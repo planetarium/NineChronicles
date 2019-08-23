@@ -231,8 +231,10 @@ namespace Nekoyume.Game
         private IEnumerator CoStageEnd(BattleLog log)
         {
             yield return new WaitForSeconds(2.0f);
+            Widget.Find<BattleUI>().Close();
             if (log.result == BattleLog.Result.Win)
             {
+                yield return new WaitForSeconds(0.75f);
                 yield return StartCoroutine(CoDialog(log.worldStage));
 
                 var playerCharacter = GetPlayer();
@@ -271,7 +273,10 @@ namespace Nekoyume.Game
             var status = Widget.Find<Status>();
             status.UpdatePlayer(player);
             status.Show();
-            status.ShowStage(id);
+            status.ShowBattleStatus();
+
+            var battle = Widget.Find<BattleUI>();
+            battle.Show(id);
 
             ActionCamera.instance.ChaseX(player.transform);
             yield return null;

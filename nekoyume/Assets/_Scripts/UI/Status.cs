@@ -11,18 +11,12 @@ namespace Nekoyume.UI
 {
     public class Status : Widget
     {
-        public BottomMenu bottomMenu;
         public Text TextLevelName;
-        public StageTitle stageTitle;
         public Text TextStage;
         public Text TextHP;
         public Text TextExp;
         public Slider HPBar;
         public Slider ExpBar;
-        public Toggle BtnStatus;
-        public Toggle BtnInventory;
-        public Toggle BtnQuest;
-        public DropItemInventoryVFX InventoryVfx;
 
         private string _avatarName = "";
         private Player _player;
@@ -39,13 +33,6 @@ namespace Nekoyume.UI
 
             Game.Event.OnRoomEnter.AddListener(OnRoomEnter);
             Game.Event.OnUpdateStatus.AddListener(OnUpdateStatus);
-            Game.Event.OnGetItem.AddListener(OnGetItem);
-            InventoryVfx.Stop();
-        }
-
-        private void OnGetItem(DropItem dropItem)
-        {
-            InventoryVfx.Play();
         }
 
         #endregion
@@ -73,13 +60,6 @@ namespace Nekoyume.UI
             }
 
             HPBar.gameObject.SetActive(false);
-        }
-
-        public override void Close()
-        {
-            stageTitle.Close();
-
-            base.Close();
         }
 
         public void UpdatePlayer(GameObject playerObj)
@@ -132,11 +112,6 @@ namespace Nekoyume.UI
             }
             
             _inventory.Close();
-
-            if (BtnInventory.isOn)
-            {
-                BtnInventory.isOn = false;
-            }
         }
 
         public void ToggleStatus()
@@ -156,21 +131,11 @@ namespace Nekoyume.UI
             }
             
             _statusDetail.Close();
-
-            if (BtnStatus.isOn)
-            {
-                BtnStatus.isOn = false;
-            }
         }
 
-        public void ShowStage(int stage)
+        public void ShowBattleStatus()
         {
-            bottomMenu.Show(
-                BottomMenu.ButtonHideFlag.Main |
-                BottomMenu.ButtonHideFlag.Dictionary);
-            bottomMenu.FadeInAlpha(0.5f);
             HPBar.gameObject.SetActive(true);
-            stageTitle.Show(stage);
         }
 
         public void ToggleQuest()
@@ -196,7 +161,6 @@ namespace Nekoyume.UI
         
         private void OnRoomEnter()
         {
-            stageTitle.gameObject.SetActive(false);
             Find<Menu>()?.ShowRoom();
         }
 
