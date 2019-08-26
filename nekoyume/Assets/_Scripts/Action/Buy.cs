@@ -67,8 +67,8 @@ namespace Nekoyume.Action
             var shopState = (ShopState) states.GetState(ShopState.Address);
 
             Debug.Log($"Execute Buy. buyer : `{buyerAvatarState}` seller: `{sellerAvatarAddress}`" +
-                      $"node : `{States.Instance.agentState.Value.address}` " +
-                      $"current avatar: `{States.Instance.currentAvatarState?.Value?.address}`");
+                      $"node : `{States.Instance?.agentState?.Value?.address}` " +
+                      $"current avatar: `{States.Instance?.currentAvatarState?.Value?.address}`");
             // 상점에서 구매할 아이템을 찾는다.
             if (!shopState.TryGet(sellerAgentAddress, productId, out var outPair))
             {

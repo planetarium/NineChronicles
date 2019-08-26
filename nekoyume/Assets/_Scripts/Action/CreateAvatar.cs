@@ -62,8 +62,8 @@ namespace Nekoyume.Action
             }
 
             Debug.Log($"Execute CreateAvatar. player : `{avatarAddress}` " +
-                      $"node : `{States.Instance.agentState.Value.address}` " +
-                      $"current avatar: `{States.Instance.currentAvatarState?.Value?.address}`");
+                      $"node : `{States.Instance?.agentState?.Value?.address}` " +
+                      $"current avatar: `{States.Instance?.currentAvatarState?.Value?.address}`");
 
             agentState.avatarAddresses.Add(index, avatarAddress);
             avatarState = CreateAvatarState(name, avatarAddress, ctx.Signer, ctx.Random, ctx.BlockIndex);
