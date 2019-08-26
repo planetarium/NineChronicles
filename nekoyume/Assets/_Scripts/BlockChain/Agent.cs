@@ -214,6 +214,8 @@ namespace Nekoyume.BlockChain
                 );
             });
 
+            Cheat.Log($"Address: {PrivateKey.PublicKey.ToAddress()}");
+
             yield return new WaitUntil(() => swarmStartTask.IsCompleted);
         }
 
@@ -236,6 +238,7 @@ namespace Nekoyume.BlockChain
                 {
                     var task = Task.Run(() => MakeTransaction(actions, true));
                     yield return new WaitUntil(() => task.IsCompleted);
+                    Cheat.Log($"# of staged txs: {_store.IterateStagedTransactionIds(false).Count()}");
                 }
             }
         }

@@ -63,7 +63,7 @@ namespace Nekoyume
                 return _random.NextDouble();
             }
         }
-        static void Log(string text)
+        internal static void Log(string text)
         {
             Instance._logString.Insert(0, $"> {text}\n");
             Instance.log.text += Instance._logString.ToString();
