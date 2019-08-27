@@ -11,6 +11,7 @@ using Nekoyume.Data.Table;
 using Nekoyume.Game;
 using Nekoyume.Game.Factory;
 using Nekoyume.Game.Item;
+using Nekoyume.Game.Mail;
 using Nekoyume.Model;
 using Nekoyume.State;
 using UnityEngine;
@@ -34,8 +35,16 @@ namespace Nekoyume.Action
             }
         }
 
+        [Serializable]
+        public struct Result
+        {
+            public List<Material> materials;
+            public ItemUsable itemUsable;
+        }
+
         public List<Material> Materials { get; private set; }
         public Address avatarAddress;
+        public Result result;
 
         protected override IImmutableDictionary<string, object> PlainValueInternal =>
             new Dictionary<string, object>
@@ -86,6 +95,12 @@ namespace Nekoyume.Action
                     return states;
                 }
             }
+
+            // 액션 결과
+            result = new Result
+            {
+                materials = Materials,
+            };
 
             // 조합식 테이블 로드.
             var recipeTable = Tables.instance.Recipe;
@@ -139,7 +154,9 @@ namespace Nekoyume.Action
                 var stat = GetStat(outMonsterPartsMaterialRow, roll);
                 itemUsable.Stats.SetStatAdditionalValue(stat.Key, stat.Value);
 
-                avatarState.inventory.AddNonFungibleItem(itemUsable);
+                result.itemUsable = itemUsable;
+                var mail = new Mail(result, ctx.BlockIndex);
+                avatarState.Update(mail);
                 avatarState.questList.UpdateCombinationQuest(itemUsable);
             }
             else
@@ -176,8 +193,11 @@ namespace Nekoyume.Action
                 ctx.Random.NextBytes(b);
                 var itemId = new Guid(b);
                 var itemUsable = GetFood(itemEquipmentRow, itemId);
-                avatarState.inventory.AddNonFungibleItem(itemUsable);
+                result.itemUsable = itemUsable;
+                var mail = new Mail(result, ctx.BlockIndex);
+                avatarState.Update(mail);
                 avatarState.questList.UpdateCombinationQuest(itemUsable);
+
             }
 
             avatarState.updatedAt = DateTimeOffset.UtcNow;
