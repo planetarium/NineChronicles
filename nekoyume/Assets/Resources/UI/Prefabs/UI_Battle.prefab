@@ -36,8 +36,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: 270}
-  m_SizeDelta: {x: 485, y: 129}
+  m_AnchoredPosition: {x: 0, y: 300}
+  m_SizeDelta: {x: 390, y: 63}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &688452910377814426
 CanvasRenderer:
@@ -67,7 +67,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: 1a530346964f93f49bae3ce02a6579a9, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 7809fcd98260441d6bf827b044e48b57, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -142,8 +142,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stageTitle: {fileID: 688452910377814436}
   bottomMenu: {fileID: 6506759856637049313}
-  InventoryVfx: {fileID: 6687957620143741144}
---- !u!95 &5397369226710595720
+  InventoryVfx: {fileID: 0}
 Animator:
   serializedVersion: 3
   m_ObjectHideFlags: 0
@@ -241,7 +240,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: STAGE 1
+  m_Text: Stage 1
 --- !u!114 &688452911185082631
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -451,3 +450,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 30463509e40a47959b49173543756b79, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  
