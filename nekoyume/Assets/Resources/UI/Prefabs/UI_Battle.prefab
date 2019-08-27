@@ -99,7 +99,7 @@ GameObject:
   m_Component:
   - component: {fileID: 688452911084739667}
   - component: {fileID: 688452911084739666}
-  - component: {fileID: 5397369226710595720}
+  - component: {fileID: 411954315895112361}
   m_Layer: 5
   m_Name: UI_Battle
   m_TagString: Untagged
@@ -142,7 +142,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stageTitle: {fileID: 688452910377814436}
   bottomMenu: {fileID: 6506759856637049313}
-  InventoryVfx: {fileID: 0}
+  InventoryVfx: {fileID: 6687957620143741144}
+--- !u!95 &411954315895112361
 Animator:
   serializedVersion: 3
   m_ObjectHideFlags: 0
@@ -263,16 +264,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 688452911084739667}
     m_Modifications:
-    - target: {fileID: 1542912245387503314, guid: 214a4ae05c347734c86a76da3c3af566,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1542912245646647673, guid: 214a4ae05c347734c86a76da3c3af566,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 1542912246320733002, guid: 214a4ae05c347734c86a76da3c3af566,
         type: 3}
       propertyPath: m_Name
@@ -418,6 +409,16 @@ PrefabInstance:
       propertyPath: playOnAwake
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1542912245387503314, guid: 214a4ae05c347734c86a76da3c3af566,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1542912245646647673, guid: 214a4ae05c347734c86a76da3c3af566,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 214a4ae05c347734c86a76da3c3af566, type: 3}
 --- !u!224 &2081901924314079102 stripped
@@ -450,4 +451,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 30463509e40a47959b49173543756b79, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  
