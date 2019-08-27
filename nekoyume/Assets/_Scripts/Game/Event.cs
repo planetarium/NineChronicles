@@ -1,7 +1,9 @@
+using Nekoyume.Action;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Item;
 using Nekoyume.Model;
 using Nekoyume.UI;
+using UnityEngine;
 using UnityEngine.Events;
 
 namespace Nekoyume.Game
@@ -46,5 +48,11 @@ namespace Nekoyume.Game
         {
         }
         public static readonly StageStart OnStageStart = new StageStart();
+
+        public class CombinationEnd : UnityEvent<bool>
+        {
+        }
+
+        public static readonly  CombinationEnd OnCombinationEnd = new CombinationEnd();
     }
 }

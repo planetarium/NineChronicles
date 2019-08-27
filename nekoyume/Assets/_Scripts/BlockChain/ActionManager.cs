@@ -146,7 +146,23 @@ namespace Nekoyume.BlockChain
                 .Last()
                 .ObserveOnMainThread(); // Last() is for completion
         }
-        
+
+        public IObservable<ActionBase.ActionEvaluation<AddItem>> AddItem(Guid itemId)
+        {
+            var action = new AddItem
+            {
+                avatarAddress = States.Instance.currentAvatarState.Value.address,
+                itemId = itemId,
+            };
+            ProcessAction(action);
+
+            return ActionBase.EveryRender<AddItem>()
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .Take(1)
+                .Last()
+                .ObserveOnMainThread(); // Last() is for completion
+        }
+
         #endregion
     }
 }
