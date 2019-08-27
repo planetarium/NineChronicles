@@ -1,13 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Nekoyume.Action;
-using Nekoyume.Game.Factory;
-using Nekoyume.Game.Item;
 using Nekoyume.Manager;
 using Nekoyume.State;
-using Nekoyume.UI;
-using Nekoyume.UI.Model;
 using UniRx;
 using UnityEngine;
 
@@ -49,6 +44,7 @@ namespace Nekoyume.BlockChain
             SellCancellation();
             Buy();
             RankingReward();
+            AddItem();
         }
 
         public void Stop()
@@ -224,31 +220,22 @@ namespace Nekoyume.BlockChain
                 .Subscribe(UpdateAgentState).AddTo(_disposables);
         }
 
-        private void ResponseCombination(ActionBase.ActionEvaluation<Action.Combination> evaluation)
+        private void AddItem()
         {
-            var newState = (AvatarState) evaluation.OutputStates.GetState(States.Instance.currentAvatarState.Value.address);
-            var newItems = newState.inventory.Items.Select(i => i.item).OfType<ItemUsable>().ToList();
-            var currentItems = States.Instance.currentAvatarState.Value.inventory.Items.Select(i => i.item)
-                .OfType<ItemUsable>().ToList();
-            var isSuccess = newItems.Count > currentItems.Count;
-            var popup = Widget.Find<UI.CombinationResultPopup>();
-            var materialItems = evaluation.Action.Materials
-                .Select(material => new {material, item = ItemFactory.CreateMaterial(material.id, Guid.Empty)})
-                .Select(t => new CombinationMaterial(t.item, t.material.count, t.material.count, t.material.count))
-                .ToList();
-            var model = new UI.Model.CombinationResultPopup(isSuccess
-                ? new CountableItem(newItems.First(i => !currentItems.Contains(i)), 1)
-                : null)
-            {
-                isSuccess = isSuccess,
-                materialItems = materialItems
-            };
-            popup.Pop(model);
+            ActionBase.EveryRender<AddItem>()
+                .Where(ValidateEvaluationForCurrentAvatarState)
+                .ObserveOnMainThread()
+                .Subscribe(UpdateCurrentAvatarState).AddTo(_disposables);
+        }
 
+        private void ResponseCombination(ActionBase.ActionEvaluation<Combination> evaluation)
+        {
+            var isSuccess = !(evaluation.Action.result.itemUsable is null);
             AnalyticsManager.Instance.OnEvent(isSuccess
                 ? AnalyticsManager.EventName.ActionCombinationSuccess
                 : AnalyticsManager.EventName.ActionCombinationFail);
             UpdateCurrentAvatarState(evaluation);
+            Game.Event.OnCombinationEnd.Invoke(isSuccess);
         }
     }
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Libplanet;
 using Nekoyume.Game.Item;
+using Nekoyume.Game.Mail;
 using Nekoyume.Game.Quest;
 using Nekoyume.Model;
 
@@ -23,6 +24,7 @@ namespace Nekoyume.State
         public DateTimeOffset? clearedAt;
         public Address agentAddress;
         public QuestList questList;
+        public MailBox mailBox;
 
         public AvatarState(Address address, Address agentAddress, string name = null) : base(address)
         {
@@ -40,6 +42,7 @@ namespace Nekoyume.State
             updatedAt = DateTimeOffset.UtcNow;
             this.agentAddress = agentAddress;
             questList = new QuestList();
+            mailBox = new MailBox();
         }
         
         public AvatarState(AvatarState avatarState) : base(avatarState.address)
@@ -73,6 +76,11 @@ namespace Nekoyume.State
         public object Clone()
         {
             return MemberwiseClone();
+        }
+
+        public void Update(Mail mail)
+        {
+            mailBox.Add(mail);
         }
     }
 }
