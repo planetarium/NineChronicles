@@ -25,8 +25,9 @@ namespace Nekoyume.State
         public Address agentAddress;
         public QuestList questList;
         public MailBox mailBox;
+        public long BlockIndex;
 
-        public AvatarState(Address address, Address agentAddress, string name = null) : base(address)
+        public AvatarState(Address address, Address agentAddress, long blockIndex, string name = null) : base(address)
         {
             if (address == null)
             {
@@ -43,6 +44,7 @@ namespace Nekoyume.State
             this.agentAddress = agentAddress;
             questList = new QuestList();
             mailBox = new MailBox();
+            BlockIndex = blockIndex;
         }
         
         public AvatarState(AvatarState avatarState) : base(avatarState.address)

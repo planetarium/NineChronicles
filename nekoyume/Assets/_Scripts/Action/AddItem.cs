@@ -39,6 +39,7 @@ namespace Nekoyume.Action
 
             mail.New = false;
             avatarState.inventory.AddNonFungibleItem(mail.attachment.itemUsable);
+            avatarState.BlockIndex = ctx.BlockIndex;
             states = states.SetState(avatarAddress, avatarState);
             return states;
         }

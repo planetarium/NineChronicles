@@ -29,6 +29,7 @@ namespace Nekoyume.Model
         public sealed override float TurnSpeed { get; set; }
         
         public readonly Inventory inventory;
+        public readonly long blockIndex;
         
         private List<Equipment> Equipments { get; set; }
 
@@ -39,6 +40,7 @@ namespace Nekoyume.Model
             exp = avatarState.exp;
             worldStage = avatarState.worldStage;
             inventory = avatarState.inventory;
+            blockIndex = avatarState.BlockIndex;
             PostConstruction();
         }
 

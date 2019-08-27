@@ -54,7 +54,7 @@ namespace Nekoyume.Action
 
             var deletedAvatarState = new DeletedAvatarState(
                 (AvatarState) states.GetState(avatarAddress),
-                DateTimeOffset.UtcNow);
+                DateTimeOffset.UtcNow) {BlockIndex = ctx.BlockIndex};
 
             states = states.SetState(ctx.Signer, agentState);
             return states.SetState(avatarAddress, deletedAvatarState);
