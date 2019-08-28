@@ -1,24 +1,46 @@
+using EnhancedUI.EnhancedScroller;
 using Nekoyume.Helper;
+using System;
+using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
-    public class MailInfo : MonoBehaviour
+    public class MailCellView : EnhancedScrollerCellView
     {
         public Image icon;
         public Text label;
         public Game.Mail.Mail data;
         public Button button;
+        public IObservable<Unit> onClickButton;
+        public IDisposable onClickDisposable;
 
-        public void Set(Game.Mail.Mail mail)
+        #region Mono
+
+        private void Awake()
+        {
+            this.ComponentFieldsNotNullTest();
+            onClickButton = button.OnClickAsObservable();
+        }
+
+        private void OnDisable()
+        {
+            Clear();
+        }
+
+        #endregion
+
+        public void SetData(Game.Mail.Mail mail)
         {
             data = mail;
-            var sprite = Resources.Load<Sprite>("UI/Textures/UI_icon_quest_01");
             var text = mail.ToInfo();
-            var color = ColorHelper.HexToColorRGB("fff9dd");
+            Sprite sprite;
+            Color32 color;
             if (mail.New)
             {
+                sprite = Resources.Load<Sprite>("UI/Textures/UI_icon_quest_01");
+                color = ColorHelper.HexToColorRGB("fff9dd");
                 button.interactable = true;
             }
             else
@@ -38,6 +60,12 @@ namespace Nekoyume.UI
             data.New = false;
             button.interactable = false;
             label.color = ColorHelper.HexToColorRGB("7a7a7a");
+        }
+
+        public void Clear()
+        {
+            onClickDisposable.Dispose();
+            button.interactable = true;
         }
     }
 }
