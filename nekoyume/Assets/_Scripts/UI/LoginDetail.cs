@@ -211,6 +211,8 @@ namespace Nekoyume.UI
         {
             base.Show();
             contentPivot.SetActive(!_isCreateMode);
+            nameField.Select();
+            nameField.ActivateInputField();
         }
 
         public override void Close()
