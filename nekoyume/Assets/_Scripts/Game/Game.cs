@@ -3,12 +3,12 @@ using Assets.SimpleLocalization;
 using Nekoyume.BlockChain;
 using Nekoyume.Data;
 using Nekoyume.Game.Controller;
+using Nekoyume.Game.VFX;
 using Nekoyume.TableData;
 using Nekoyume.UI;
+using UniRx;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
-using UniRx;
-using Nekoyume.Game.VFX;
 
 namespace Nekoyume.Game
 {
