@@ -3,6 +3,7 @@ using System.Linq;
 using Nekoyume.BlockChain;
 using Nekoyume.Game.Factory;
 using Nekoyume.UI.Model;
+using Nekoyume.UI.Scroller;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,33 +11,16 @@ namespace Nekoyume.UI
 {
     public class Mail : Widget
     {
-        public ScrollRect list;
-        public MailInfo mailInfo;
+        public MailScrollerController scroller;
 
         public override void Show()
         {
             var mailBox = States.Instance.currentAvatarState.Value.mailBox;
-            mailInfo.gameObject.SetActive(true);
-            foreach (var mail in mailBox)
-            {
-                var newInfo = Instantiate(mailInfo, list.content);
-                newInfo.Set(mail);
-            }
-            mailInfo.gameObject.SetActive(false);
+            scroller.SetData(mailBox);
             base.Show();
         }
 
-        private void OnDisable()
-        {
-            foreach (Transform child in  list.content.transform)
-            {
-                Destroy(child.gameObject);
-            }
-
-            list.verticalNormalizedPosition = 1f;
-        }
-
-        public void GetAttachment(MailInfo info)
+        public void GetAttachment(MailCellView info)
         {
             var item = info.data.attachment.itemUsable;
             var popup = Find<CombinationResultPopup>();

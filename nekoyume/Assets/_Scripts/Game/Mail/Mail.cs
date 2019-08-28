@@ -29,9 +29,14 @@ namespace Nekoyume.Game.Mail
     }
 
     [Serializable]
-    public class MailBox: IEnumerable<Mail>
+    public class MailBox : IEnumerable<Mail>
     {
         private readonly List<Mail> _mails = new List<Mail>();
+
+        public int Count => _mails.Count;
+
+        public Mail this[int idx] => _mails[idx];
+
         public IEnumerator<Mail> GetEnumerator()
         {
             return _mails.OrderByDescending(i => i.blockIndex).GetEnumerator();
