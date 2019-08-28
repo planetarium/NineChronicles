@@ -119,7 +119,7 @@ namespace Nekoyume.UI.Module
         {
             if (eventData.button == PointerEventData.InputButton.Right)
             {
-                Model.onRightClick.OnNext(this);
+                Model?.onRightClick.OnNext(this);
             }
         }
 
