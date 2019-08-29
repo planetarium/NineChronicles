@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.coffee.softmask-for-ugui": "https://github.com/mob-sakai/SoftMaskForUGUI.git#0.9.0",
     "com.unity.2d.pixel-perfect": "1.0.1-preview",
     "com.unity.addressables": "1.1.7",
     "com.unity.analytics": "3.3.2",
@@ -39,5 +40,11 @@
     "com.unity.modules.vr": "1.0.0",
     "com.unity.modules.wind": "1.0.0",
     "com.unity.modules.xr": "1.0.0"
+  },
+  "lock": {
+    "com.coffee.softmask-for-ugui": {
+      "hash": "62ac172783b59ac0849039bd9a37adf4aeb2692a",
+      "revision": "0.9.0"
+    }
   }
 }

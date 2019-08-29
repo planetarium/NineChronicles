@@ -99,6 +99,7 @@ namespace Nekoyume.UI
                 Widget.Create<UpdatePopup>(),
                 Widget.Create<ExitPopup>(),
                 Widget.Create<ActionFailPopup>(),
+                Widget.Create<Notification>(true),
 #if DEBUG
                 Widget.Create<Cheat>(true),
 #endif
