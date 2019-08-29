@@ -46,15 +46,18 @@ namespace Nekoyume.UI.Scroller
             contentSizeFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
         }
 
-        public void SetModel(IReadOnlyReactiveCollection<NotificationCellView.Model> model, bool moveToFirst = true)
+        public void SetModel(IReadOnlyReactiveCollection<NotificationCellView.Model> model)
         {
             _disposablesForModel.DisposeAllAndClear();
             SharedModel = model;
             SharedModel.ObserveAdd()
-                .Subscribe(Subscribe)
+                .Subscribe(_ => ReloadDataWithFactor(true))
+                .AddTo(_disposablesForModel);
+            SharedModel.ObserveRemove()
+                .Subscribe(_ => ReloadDataWithFactor(false))
                 .AddTo(_disposablesForModel);
 
-            ReloadData(moveToFirst);
+            enhancedScroller.ReloadData();
         }
 
         #region IEnhancedScrollerDelegate
@@ -94,17 +97,11 @@ namespace Nekoyume.UI.Scroller
         }
 
         #endregion
-
-        private void Subscribe(CollectionAddEvent<NotificationCellView.Model> addEvent)
-        {
-            ReloadData(false);
-        }
-
-        private void ReloadData(bool moveToFirst)
+        
+        private void ReloadDataWithFactor(bool moveToLast)
         {
             var count = SharedModel.Count;
-            if (moveToFirst ||
-                count == 0)
+            if (count == 0)
             {
                 enhancedScroller.ReloadData();
 
@@ -121,6 +118,13 @@ namespace Nekoyume.UI.Scroller
                 return;
             }
 
+            if (moveToLast)
+            {
+                enhancedScroller.ReloadData(1f);
+
+                return;
+            }
+            
             var scrollItemPositionFactor = (_cellViewHeight + _layoutGroupSpacing) / scrollSize;
             var scrollPositionFactor = 1f - (1f - (enhancedScroller.ScrollPosition / scrollSize));
             enhancedScroller.ReloadData(scrollPositionFactor - scrollItemPositionFactor);

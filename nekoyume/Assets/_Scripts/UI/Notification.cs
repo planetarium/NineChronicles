@@ -64,7 +64,6 @@ namespace Nekoyume.UI
                 throw new ArgumentOutOfRangeException(nameof(index));
 
             Models.RemoveAt(index);
-            scroller.SetModel(Models, false);
         }
     }
 }
