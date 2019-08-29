@@ -74,7 +74,7 @@ namespace Nekoyume.UI
         public void QuestClick()
         {
             Close();
-            Find<WorldMap>().Show();
+            Find<WorldMap>().Show(true);
             AudioController.PlayClick();
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickMainBattle);
         }

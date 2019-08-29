@@ -47,14 +47,14 @@ namespace Nekoyume.UI
             base.Initialize();
 
             worldMapButton.OnClickAsObservable()
-                .Subscribe(_ => Find<WorldMap>().Show())
+                .Subscribe(_ => GoToWorldMap())
                 .AddTo(gameObject);
 
             bottomMenu.goToMainButton.onClick.AddListener(BackClick);
             var status = Find<Status>();
             bottomMenu.questButton.onClick.AddListener(status.ToggleQuest);
             // todo: 월드맵 버튼 추가.
-            // bottomMenu.worldMapButton.onClick.AddListener(Find<WorldMap>().Show);
+//            bottomMenu.worldMapButton.onClick.AddListener(Find<WorldMap>().Show(false));
         }
 
         public override void Show()
@@ -365,6 +365,12 @@ namespace Nekoyume.UI
         {
             var worldMap = Find<WorldMap>();
             labelStage.text = $"Stage {worldMap.SelectedStage}";
+        }
+
+        private void GoToWorldMap()
+        {
+            Close();
+            Find<WorldMap>().Show(false);
         }
     }
 }

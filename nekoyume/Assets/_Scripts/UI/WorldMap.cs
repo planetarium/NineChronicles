@@ -98,18 +98,20 @@ namespace Nekoyume.UI
                     .Subscribe(_ =>
                     {
                         AudioController.PlayClick();
-                        GoToQuestPreparation();
+                        GoToMenu();
                     }).AddTo(gameObject);
             }
         }
 
         #endregion
 
-        public override void Show()
+        public void Show(bool useAvatarState)
         {
-            SelectedStage = States.Instance.currentAvatarState.Value.worldStage;
+            if (useAvatarState)
+                SelectedStage = States.Instance.currentAvatarState.Value.worldStage;
+            
             ShowChapter();
-            base.Show();
+            Show();
         }
 
         public void LoadWorld(int worldId)
@@ -272,6 +274,12 @@ namespace Nekoyume.UI
 
                 break;
             }
+        }
+
+        private void GoToMenu()
+        {
+            Close();
+            Find<Menu>().ShowRoom();
         }
 
         private void GoToQuestPreparation()
