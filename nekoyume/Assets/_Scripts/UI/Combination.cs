@@ -100,7 +100,7 @@ namespace Nekoyume.UI
                 .Subscribe(_ =>
                 {
                     AudioController.PlayClick();
-                    Close();
+                    GoToMenu();
                 })
                 .AddTo(gameObject);
             recipeCloseButton.OnClickAsObservable()
@@ -151,12 +151,6 @@ namespace Nekoyume.UI
         public override void Close()
         {
             Clear();
-
-            _stage.GetPlayer(_stage.roomPosition);
-            _stage.LoadBackground("room");
-            _player.gameObject.SetActive(true);
-
-            Find<Menu>()?.ShowRoom();
 
             base.Close();
 
@@ -418,6 +412,12 @@ namespace Nekoyume.UI
 
             // 에셋의 버그 때문에 스크롤 맨 끝 포지션으로 스크롤 포지션 설정 시 스크롤이 비정상적으로 표시되는 문제가 있음
             recipe.Reload(recipe.scrollerController.scroller.ScrollPosition - 0.1f);
+        }
+
+        private void GoToMenu()
+        {
+            Close();
+            Find<Menu>().ShowRoom();
         }
     }
 }

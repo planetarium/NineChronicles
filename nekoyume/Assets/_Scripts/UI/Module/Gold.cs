@@ -1,15 +1,14 @@
 using System;
 using Nekoyume.Model;
+using TMPro;
 using UniRx;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
-    public class Gold: MonoBehaviour
+    public class Gold : MonoBehaviour
     {
-        public Image image;
-        public Text text;
+        public TextMeshProUGUI text;
 
         private IDisposable _disposable;
 
@@ -24,7 +23,7 @@ namespace Nekoyume.UI.Module
         {
             _disposable.Dispose();
         }
-        
+
         #endregion
 
         private void SetGold(decimal gold)
