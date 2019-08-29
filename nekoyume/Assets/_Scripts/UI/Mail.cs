@@ -1,11 +1,11 @@
 using System;
 using System.Linq;
+using Nekoyume.Action;
 using Nekoyume.BlockChain;
 using Nekoyume.Game.Factory;
+using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Scroller;
-using UnityEngine;
-using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
@@ -22,6 +22,8 @@ namespace Nekoyume.UI
 
         public void GetAttachment(MailCellView info)
         {
+            if (!info.data.New)
+                return;
             var item = info.data.attachment.itemUsable;
             var popup = Find<CombinationResultPopup>();
             var materialItems = info.data.attachment.materials
@@ -36,13 +38,14 @@ namespace Nekoyume.UI
             popup.Pop(model);
             info.Read();
 
-            //게임상의 인벤토리 업데이트
-            var player = Game.Game.instance.stage.GetPlayer();
-            player.Inventory.AddNonFungibleItem(item);
-
             //아바타상태 인벤토리 업데이트
             ActionManager.instance.AddItem(item.ItemId);
-        }
 
+            //게임상의 인벤토리 업데이트
+            var newState = (AvatarState) States.Instance.currentAvatarState.Value.Clone();
+            newState.inventory.AddNonFungibleItem(item);
+            var index = States.Instance.currentAvatarKey.Value;
+            ActionRenderHandler.Instance.UpdateLocalAvatarState(newState, index);
+        }
     }
 }

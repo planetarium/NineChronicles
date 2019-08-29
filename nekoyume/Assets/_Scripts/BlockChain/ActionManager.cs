@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Nekoyume.Manager;
 using Libplanet;
 using Nekoyume.Action;
 using Nekoyume.Game.Item;
+using Nekoyume.Manager;
+using Nekoyume.UI.Model;
 using UniRx;
 
 namespace Nekoyume.BlockChain
@@ -78,17 +79,17 @@ namespace Nekoyume.BlockChain
                 .ObserveOnMainThread();
         }
         
-        public IObservable<ActionBase.ActionEvaluation<Combination>> Combination(
-            List<UI.Model.CombinationMaterial> materials)
+        public IObservable<ActionBase.ActionEvaluation<Action.Combination>> Combination(
+            List<CombinationMaterial> materials)
         {
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionCombination);
 
-            var action = new Combination();
-            materials.ForEach(m => action.Materials.Add(new Combination.Material(m)));
+            var action = new Action.Combination();
+            materials.ForEach(m => action.Materials.Add(new Action.Combination.Material(m)));
             action.avatarAddress = States.Instance.currentAvatarState.Value.address;
             ProcessAction(action);
 
-            return ActionBase.EveryRender<Combination>()
+            return ActionBase.EveryRender<Action.Combination>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .Take(1)
                 .Last()

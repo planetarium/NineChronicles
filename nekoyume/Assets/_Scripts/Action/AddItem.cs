@@ -33,7 +33,7 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            var mail = avatarState.mailBox.FirstOrDefault(i => i.attachment.itemUsable?.ItemId == itemId);
+            var mail = avatarState.mailBox.FirstOrDefault(i => i.attachment.itemUsable?.ItemId == itemId && i.New);
             if (mail is null)
                 return states;
 

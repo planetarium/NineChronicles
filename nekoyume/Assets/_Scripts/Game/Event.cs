@@ -48,11 +48,5 @@ namespace Nekoyume.Game
         {
         }
         public static readonly StageStart OnStageStart = new StageStart();
-
-        public class CombinationEnd : UnityEvent<bool>
-        {
-        }
-
-        public static readonly  CombinationEnd OnCombinationEnd = new CombinationEnd();
     }
 }
