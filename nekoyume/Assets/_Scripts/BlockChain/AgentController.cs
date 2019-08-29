@@ -44,6 +44,7 @@ namespace Nekoyume.BlockChain
         private static IEnumerator _miner;
         private static IEnumerator _txProcessor;
         private static IEnumerator _swarmRunner;
+        private static IEnumerator _autoPlayer;
 
         public static void Initialize(Action<bool> callback)
         {
@@ -132,10 +133,13 @@ namespace Nekoyume.BlockChain
                 // 그리고 마이닝을 시작한다.
                 StartNullableCoroutine(_miner);
                 StartCoroutine(CoCheckBlockTip());
+
+                StartNullableCoroutine(_autoPlayer);
                 callback(Agent.SyncSucceed);
                 Agent.LoadQueuedActions();
             };
             _miner = options.NoMiner ? null : Agent.CoMiner();
+            _autoPlayer = options.AutoPlay ? Agent.CoAutoPlayer() : null;
 
             StartSystemCoroutines(Agent);
         }
