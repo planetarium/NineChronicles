@@ -20,19 +20,14 @@ namespace Nekoyume.UI
         public Text btnCreateText;
         public InputField nameField;
         public Text namePlaceHolder;
-        public Text textHp;
         public Text textExp;
-        public Slider hpBar;
         public Slider expBar;
         public Text levelInfo;
         public Text nameInfo;
         public RectTransform content;
-        public GameObject contentPivot;
         public GameObject profileImage;
         public GameObject statusGrid;
         public GameObject statusRow;
-        public GameObject optionGrid;
-        public GameObject optionRow;
         public GameObject palette;
         public Text paletteHairText;
         public Text paletteLensText;
@@ -138,12 +133,10 @@ namespace Nekoyume.UI
             // create new or login
             nameField.gameObject.SetActive(_isCreateMode);
             btnCreate.SetActive(_isCreateMode);
-            palette.SetActive(_isCreateMode);
 
             // 프로필 사진의 용도가 정리되지 않아서 주석 처리함.
             // profileImage.SetActive(!isCreateMode);
             btnLogin.SetActive(!_isCreateMode);
-            optionGrid.SetActive(!_isCreateMode);
             
             SetInformation(player);
 
@@ -155,24 +148,19 @@ namespace Nekoyume.UI
             var level = player.level;
             levelInfo.text = $"LV. {level}";
             
-            var hp = player.currentHP;
-            var hpMax = player.currentHP;
             var expNeed = player.expNeed;
             var levelExp = player.expMax - expNeed;
             var currentExp = player.exp - levelExp;
 
             //hp, exp
-            textHp.text = $"{hp}/{hpMax}";
             textExp.text = $"{currentExp} / {expNeed}";
 
             //percentage
-            var hpPercentage = hp / (float) hpMax;
             var expPercentage = (float) currentExp / expNeed;
 
             foreach (
                 var tuple in new[]
                 {
-                    new Tuple<Slider, float>(hpBar, hpPercentage),
                     new Tuple<Slider, float>(expBar, expPercentage)
                 }
             )
@@ -196,21 +184,11 @@ namespace Nekoyume.UI
                     info.Set(field.Name, field.GetValue(player), decimal.ToSingle(player.GetAdditionalStatus(field.Name)));
                 }
             }
-
-            //option info
-            foreach (var option in player.GetOptions())
-            {
-                GameObject row = Instantiate(optionRow, optionGrid.transform);
-                var text = row.GetComponent<Text>();
-                text.text = option;
-                row.SetActive(true);
-            }
         }
 
         public override void Show()
         {
             base.Show();
-            contentPivot.SetActive(!_isCreateMode);
             nameField.Select();
             nameField.ActivateInputField();
         }
@@ -224,11 +202,6 @@ namespace Nekoyume.UI
         private void Clear()
         {
             foreach (Transform child in statusGrid.transform)
-            {
-                Destroy(child.gameObject);
-            }
-
-            foreach (Transform child in optionGrid.transform)
             {
                 Destroy(child.gameObject);
             }

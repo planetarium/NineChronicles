@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using EnhancedUI.EnhancedScroller;
-using Nekoyume.UI.Model;
 using UniRx;
 using Nekoyume.Game.Mail;
 
@@ -31,14 +29,14 @@ namespace Nekoyume.UI.Scroller
         public EnhancedScrollerCellView GetCellView(EnhancedScroller scroller, int dataIndex, int cellIndex)
         {
             var cellView = scroller.GetCellView(cellViewPrefab) as MailCellView;
-            if(ReferenceEquals(cellView, null))
+            if(cellView is null)
             {
                 throw new FailedToInstantiateGameObjectException(cellViewPrefab.name);
             }
-
+            
             cellView.name = $"Cell {dataIndex}";
             cellView.SetData(_mailBox[dataIndex]);
-            if (cellView.onClickDisposable == null)
+            if (cellView.onClickDisposable is null)
             {
                 cellView.onClickDisposable = cellView.onClickButton
                     .Subscribe(_ =>
