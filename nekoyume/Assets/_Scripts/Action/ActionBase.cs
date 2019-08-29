@@ -6,6 +6,7 @@ using UniRx;
 
 namespace Nekoyume.Action
 {
+    [Serializable]
     public abstract class ActionBase : IAction
     {
         public const string MarkChanged = "";

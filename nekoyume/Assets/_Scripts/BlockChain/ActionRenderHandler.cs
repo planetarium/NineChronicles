@@ -33,6 +33,7 @@ namespace Nekoyume.BlockChain
 
         public void Start()
         {
+            LoadLocalAvatarState();
             Shop();
             Ranking();
             RewardGold();
@@ -250,6 +251,29 @@ namespace Nekoyume.BlockChain
             Debug.LogFormat("Update local avatarState. agentAddress: {0} address: {1} BlockIndex: {2}",
                 avatarState.agentAddress, avatarState.address, avatarState.BlockIndex);
             UpdateAvatarState(avatarState, index);
+        }
+
+        private void LoadLocalAvatarState()
+        {
+            if (!(States.Instance.agentState?.Value is null))
+            {
+                foreach (var avatarAddress in States.Instance.agentState.Value.avatarAddresses)
+                {
+                    var key = string.Format(States.CurrentAvatarKey, States.Instance.agentState.Value.address,
+                        avatarAddress.Value);
+                    var avatarStateString = PlayerPrefs.GetString(key);
+
+                    if (!string.IsNullOrEmpty(avatarStateString))
+                    {
+                        var avatarState =
+                            ByteSerializer.Deserialize<AvatarState>(Convert.FromBase64String(avatarStateString));
+                        Debug.LogFormat("Load local avatarState. agentAddress: {0} address: {1} BlockIndex: {2}",
+                            avatarState.agentAddress, avatarState.address, avatarState.BlockIndex);
+                        UpdateLocalAvatarState(avatarState, avatarAddress.Key);
+                        PlayerPrefs.DeleteKey(avatarStateString);
+                    }
+                }
+            }
         }
     }
 }

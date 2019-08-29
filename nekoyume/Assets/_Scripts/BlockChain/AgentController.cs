@@ -133,6 +133,7 @@ namespace Nekoyume.BlockChain
                 StartNullableCoroutine(_miner);
                 StartCoroutine(CoCheckBlockTip());
                 callback(Agent.SyncSucceed);
+                Agent.LoadQueuedActions();
             };
             _miner = options.NoMiner ? null : Agent.CoMiner();
 
@@ -276,6 +277,18 @@ namespace Nekoyume.BlockChain
         private Coroutine StartNullableCoroutine(IEnumerator routine)
         {
             return ReferenceEquals(routine, null) ? null : StartCoroutine(routine);
+        }
+
+        public static bool WantsToQuit()
+        {
+            Agent.SaveQueuedActions();
+            return true;
+        }
+
+        [RuntimeInitializeOnLoadMethod]
+        private static void RunOnStart()
+        {
+            Application.wantsToQuit += WantsToQuit;
         }
     }
 }

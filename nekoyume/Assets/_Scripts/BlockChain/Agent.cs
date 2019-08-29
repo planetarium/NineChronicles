@@ -50,6 +50,7 @@ namespace Nekoyume.BlockChain
         private const float TxProcessInterval = 3.0f;
         private const int SwarmDialTimeout = 5000;
         private const int SwarmLinger = 1 * 1000;
+        private const string QueuedActionsKey = "queuedActions";
 
         private static readonly TimeSpan BlockInterval = TimeSpan.FromSeconds(10);
         private static readonly TimeSpan SleepInterval = TimeSpan.FromSeconds(3);
@@ -362,6 +363,49 @@ namespace Nekoyume.BlockChain
             Debug.LogFormat("Make Transaction with Actions: `{0}`",
                 string.Join(",", polymorphicActions.Select(i => i.InnerAction)));
             return _blocks.MakeTransaction(PrivateKey, polymorphicActions, broadcast: broadcast);
+        }
+
+        public void LoadQueuedActions()
+        {
+            var actionsListString = PlayerPrefs.GetString(QueuedActionsKey);
+            if (!string.IsNullOrEmpty(actionsListString))
+            {
+                var actionsList = ByteSerializer.Deserialize<List<GameAction>>(
+                    Convert.FromBase64String(actionsListString));
+                foreach (var action in actionsList)
+                {
+                    EnqueueAction(action);
+                }
+                Debug.Log($"Load queued actions: {_queuedActions.Count}");
+                PlayerPrefs.DeleteKey(QueuedActionsKey);
+            }
+        }
+
+        public void SaveQueuedActions()
+        {
+            if (_queuedActions.Any())
+            {
+                List<GameAction> actionsList;
+
+                var actionsListString = PlayerPrefs.GetString(QueuedActionsKey);
+                if (string.IsNullOrEmpty(actionsListString))
+                {
+                    Debug.Log("Create new queuedActions list.");
+                    actionsList = new List<GameAction>();
+                }
+                else
+                {
+                    actionsList =
+                        ByteSerializer.Deserialize<List<GameAction>>(
+                            Convert.FromBase64String(PlayerPrefs.GetString(QueuedActionsKey)));
+                    Debug.Log($"Load queuedActions list. : {actionsList.Count}");
+                }
+                while (_queuedActions.TryDequeue(out var action))
+                    actionsList.Add((GameAction) action.InnerAction);
+                Debug.LogWarning($"Save QueuedActions : {_queuedActions.Count}");
+                PlayerPrefs.SetString(QueuedActionsKey, Convert.ToBase64String(ByteSerializer.Serialize(actionsList)));
+            }
+
         }
     }
 }

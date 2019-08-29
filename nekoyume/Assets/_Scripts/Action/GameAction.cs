@@ -1,12 +1,9 @@
 using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
-using Libplanet;
-using Libplanet.Action;
-using Nekoyume.State;
 
 namespace Nekoyume.Action
 {
+    [Serializable]
     public abstract class GameAction : ActionBase
     {
         public Guid Id { get; private set; }

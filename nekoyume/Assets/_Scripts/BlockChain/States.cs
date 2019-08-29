@@ -1,6 +1,9 @@
+using System;
+using Nekoyume.Action;
 using Nekoyume.Model;
 using Nekoyume.State;
 using UniRx;
+using UnityEngine;
 
 namespace Nekoyume.BlockChain
 {
@@ -26,6 +29,8 @@ namespace Nekoyume.BlockChain
         public readonly ReactiveProperty<AvatarState> currentAvatarState = new ReactiveProperty<AvatarState>();
         public readonly ReactiveProperty<RankingState> rankingState = new ReactiveProperty<RankingState>();
         public readonly ReactiveProperty<ShopState> shopState = new ReactiveProperty<ShopState>();
+
+        public const string CurrentAvatarKey = "agent_{0}_avatar_{1}";
 
         private States()
         {
@@ -99,5 +104,35 @@ namespace Nekoyume.BlockChain
         {
             ReactiveShopState.Initialize(value);
         }
+
+        private static bool WantsToQuit()
+        {
+            SaveLocalAvatarState();
+            return true;
+        }
+
+        [RuntimeInitializeOnLoadMethod]
+        private static void RunOnStart()
+        {
+            Application.wantsToQuit += WantsToQuit;
+        }
+
+        public static void SaveLocalAvatarState()
+        {
+            if (!(Instance.currentAvatarState?.Value is null))
+            {
+                var avatarState = Instance.currentAvatarState.Value;
+                Debug.LogFormat("Save local avatarState. agentAddress: {0} address: {1} BlockIndex: {2}",
+                    avatarState.agentAddress, avatarState.address, avatarState.BlockIndex);
+
+                var key = string.Format(CurrentAvatarKey, avatarState.agentAddress,
+                    avatarState.address);
+                var serializedAvatar =
+                    Convert.ToBase64String(ByteSerializer.Serialize(avatarState));
+                PlayerPrefs.SetString(key, serializedAvatar);
+            }
+
+        }
+
     }
 }

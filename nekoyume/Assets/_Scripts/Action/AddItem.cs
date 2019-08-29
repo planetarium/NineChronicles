@@ -8,6 +8,7 @@ using Nekoyume.State;
 
 namespace Nekoyume.Action
 {
+    [Serializable]
     [ActionType("add_item")]
     public class AddItem : GameAction
     {
