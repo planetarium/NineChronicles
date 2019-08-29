@@ -102,20 +102,28 @@ namespace Nekoyume.UI.Scroller
 
         private void ReloadData(bool moveToFirst)
         {
-            if (moveToFirst)
+            var count = SharedModel.Count;
+            if (moveToFirst ||
+                count == 0)
             {
                 enhancedScroller.ReloadData();
+
+                return;
             }
-            else
+
+            var contentHeight = (count - 1) * (_cellViewHeight + _layoutGroupSpacing)
+                                + _cellViewHeight + _layoutGroupPadding;
+            var scrollSize = contentHeight - _scrollRectTransform.rect.height;
+            if (scrollSize <= 0f)
             {
-                var count = SharedModel.Count;
-                var contentHeight = (count - 1) * (_cellViewHeight + _layoutGroupSpacing) + _cellViewHeight +
-                                    _layoutGroupPadding;
-                var scrollSize = Mathf.Max(contentHeight - _scrollRectTransform.rect.height, 0f);
-                var scrollItemPositionFactor = (_cellViewHeight + _layoutGroupSpacing) / scrollSize;
-                var scrollPositionFactor = 1f - (1f - (enhancedScroller.ScrollPosition / scrollSize));
-                enhancedScroller.ReloadData(scrollPositionFactor - scrollItemPositionFactor);
+                enhancedScroller.ReloadData();
+
+                return;
             }
+
+            var scrollItemPositionFactor = (_cellViewHeight + _layoutGroupSpacing) / scrollSize;
+            var scrollPositionFactor = 1f - (1f - (enhancedScroller.ScrollPosition / scrollSize));
+            enhancedScroller.ReloadData(scrollPositionFactor - scrollItemPositionFactor);
         }
 
         private void Subscribe(NotificationCellView view)
