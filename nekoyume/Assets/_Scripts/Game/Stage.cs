@@ -216,7 +216,6 @@ namespace Nekoyume.Game
             zone = data.Background;
             LoadBackground(zone, 3.0f);
             RunPlayer();
-            Widget.Find<Gold>().Close();
 
             var title = Widget.Find<StageTitle>();
             title.Show(stage);

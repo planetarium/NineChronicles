@@ -29,6 +29,7 @@ namespace Nekoyume.UI
         public Text questContinuousBtnText;
         public GameObject equipSlotGlow;
         public Text labelStage;
+        public Button worldMapButton;
         public BottomMenu bottomMenu;
 
         private Stage _stage;
@@ -45,9 +46,15 @@ namespace Nekoyume.UI
         {
             base.Initialize();
 
+            worldMapButton.OnClickAsObservable()
+                .Subscribe(_ => Find<WorldMap>().Show())
+                .AddTo(gameObject);
+
             bottomMenu.goToMainButton.onClick.AddListener(BackClick);
             var status = Find<Status>();
             bottomMenu.questButton.onClick.AddListener(status.ToggleQuest);
+            // todo: 월드맵 버튼 추가.
+            // bottomMenu.worldMapButton.onClick.AddListener(Find<WorldMap>().Show);
         }
 
         public override void Show()
@@ -85,16 +92,14 @@ namespace Nekoyume.UI
 
             questBtn.SetActive(true);
 
-            var worldMap = Find<WorldMap>();
-            worldMap.SelectedStage = States.Instance.currentAvatarState.Value.worldStage;
-            OnChangeStage();
+            UpdateStage();
         }
 
         public override void Close()
         {
-            Find<Inventory>()?.Close();
-            Find<StatusDetail>()?.Close();
-            Find<Quest>()?.Close();
+            Find<Inventory>().Close();
+            Find<StatusDetail>().Close();
+            Find<Quest>().Close();
             Clear();
 
             foreach (var slot in consumableSlots)
@@ -169,7 +174,7 @@ namespace Nekoyume.UI
             _stage.LoadBackground("room");
             _player = _stage.GetPlayer(_stage.roomPosition);
             _player.UpdateSet(_player.model.armor);
-            Find<Menu>()?.ShowRoom();
+            Find<Menu>().ShowRoom();
             Close();
             AudioController.PlayClick();
         }
@@ -356,12 +361,7 @@ namespace Nekoyume.UI
             }
         }
 
-        public void OpenWorldMap()
-        {
-            Find<WorldMap>().Show();
-        }
-
-        public void OnChangeStage()
+        private void UpdateStage()
         {
             var worldMap = Find<WorldMap>();
             labelStage.text = $"Stage {worldMap.SelectedStage}";

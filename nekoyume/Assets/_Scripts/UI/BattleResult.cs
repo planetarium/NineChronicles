@@ -271,7 +271,6 @@ namespace Nekoyume.UI
             var stageLoadingScreen = Find<StageLoadingScreen>();
             stageLoadingScreen.Show(stage.zone);
             Find<Status>().Close();
-            Find<Gold>().Close();
 
             if (_battleWinVFX)
             {
