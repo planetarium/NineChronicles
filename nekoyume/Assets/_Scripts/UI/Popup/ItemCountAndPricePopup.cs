@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Assets.SimpleLocalization;
+using TMPro;
 using UniRx;
 using UnityEngine.UI;
 
@@ -8,7 +9,7 @@ namespace Nekoyume.UI
 {
     public class ItemCountAndPricePopup : ItemCountPopup<Model.ItemCountAndPricePopup>
     {
-        public InputField priceInputField;
+        public TMP_InputField priceInputField;
 
         private Model.ItemCountAndPricePopup _data;
         private readonly List<IDisposable> _disposablesForAwake = new List<IDisposable>();
@@ -25,11 +26,11 @@ namespace Nekoyume.UI
             priceInputField.onValueChanged.AsObservable()
                 .Subscribe(_ =>
                 {
-                    if (!int.TryParse(_, out var price))
+                    var priceString = _.Replace(",", "");
+                    if (!int.TryParse(priceString, out var price) || price < 0)
                     {
                         price = 0;
                     }
-
                     _data.price.Value = price;
                 }).AddTo(_disposablesForAwake);
         }
