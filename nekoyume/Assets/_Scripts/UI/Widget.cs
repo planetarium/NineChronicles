@@ -4,12 +4,17 @@ using System.Collections.Generic;
 using Nekoyume.EnumType;
 using UnityEngine;
 
-
 namespace Nekoyume.UI
 {
     public class Widget : MonoBehaviour
     {
-        private static readonly Dictionary<Type, GameObject> Dict = new Dictionary<Type, GameObject>();
+        private struct PoolElementModel
+        {
+            public GameObject gameObject;
+            public Widget widget;
+        }
+
+        private static readonly Dictionary<Type, PoolElementModel> Pool = new Dictionary<Type, PoolElementModel>();
         private static readonly int Radius = Shader.PropertyToID("_Radius");
 
         private Material _glass;
@@ -29,13 +34,12 @@ namespace Nekoyume.UI
 
         public virtual void Initialize()
         {
-
         }
 
         public static T Create<T>(bool activate = false) where T : Widget
         {
-            var t = typeof(T);
-            var names = t.ToString().Split('.');
+            var type = typeof(T);
+            var names = type.ToString().Split('.');
             var resName = $"UI/Prefabs/UI_{names[names.Length - 1]}";
             var res = Resources.Load<GameObject>(resName);
             if (!ReferenceEquals(res, null))
@@ -49,18 +53,22 @@ namespace Nekoyume.UI
                     case WidgetType.Tooltip:
                     case WidgetType.Widget:
                     case WidgetType.SystemInfo:
-                        if (Dict.ContainsKey(t))
+                        if (Pool.ContainsKey(type))
                         {
-                            Debug.LogWarning($"Duplicated create widget: {t}");
-                            Destroy(go);
-                            Dict[t].SetActive(activate);
+                            Debug.LogWarning($"Duplicated create widget: {type}");
+                            DestroyImmediate(go);
+                            Pool[type].gameObject.SetActive(activate);
 
-                            return Dict[t].GetComponent<T>();
+                            return (T) Pool[type].widget;
                         }
 
                         go.transform.SetParent(MainCanvas.instance.widget.transform);
                         go.SetActive(activate);
-                        Dict.Add(t, go);
+                        Pool.Add(type, new PoolElementModel
+                        {
+                            gameObject = go,
+                            widget = widget
+                        });
                         break;
                     case WidgetType.Hud:
                         break;
@@ -74,16 +82,20 @@ namespace Nekoyume.UI
                 return widget;
             }
 
-            Debug.LogWarning(($"widget not exist: {t}"));
+            Debug.LogWarning(($"widget not exist: {type}"));
 
             return null;
         }
 
         public static T Find<T>() where T : Widget
         {
-            var t = typeof(T);
-            GameObject go;
-            return Dict.TryGetValue(t, out go) ? go.GetComponent<T>() : null;
+            var type = typeof(T);
+            if (!Pool.TryGetValue(type, out var model))
+            {
+                throw new WidgetNotFoundException(type.Name);
+            }
+
+            return (T) model.widget;
         }
 
 

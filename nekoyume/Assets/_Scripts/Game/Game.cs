@@ -76,12 +76,12 @@ namespace Nekoyume.Game
             Debug.LogWarning(succeed);
             if (succeed)
             {
-                Widget.Find<LoadingScreen>()?.Close();
-                Widget.Find<Title>()?.Show();
+                Widget.Find<LoadingScreen>().Close();
+                Widget.Find<Title>().Show();
             }
             else
             {
-                Widget.Find<UpdatePopup>()?.Show();
+                Widget.Find<UpdatePopup>().Show();
             }
         }
 

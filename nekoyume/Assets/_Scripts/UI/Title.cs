@@ -17,7 +17,7 @@ namespace Nekoyume.UI
             if (!ready)
                 return;
 
-            Find<Synopsis>()?.Show();
+            Find<Synopsis>().Show();
             Close();
         }
 

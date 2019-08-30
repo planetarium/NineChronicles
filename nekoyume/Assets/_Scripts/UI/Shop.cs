@@ -131,14 +131,6 @@ namespace Nekoyume.UI
         {
             Clear();
 
-            var stage = Game.Game.instance.stage;
-            var player = stage.GetPlayer(stage.roomPosition);
-            if (player)
-            {
-                player.gameObject.SetActive(true);
-            }
-
-            Find<Menu>()?.ShowRoom();
             base.Close();
 
             AudioController.instance.PlayMusic(AudioController.MusicCode.Main);
@@ -161,7 +153,7 @@ namespace Nekoyume.UI
                 .AddTo(_disposablesForModel);
             Model.itemCountAndPricePopup.Value.onClickCancel.Subscribe(OnClickCloseItemCountAndPricePopup)
                 .AddTo(_disposablesForModel);
-            Model.onClickClose.Subscribe(_ => Close()).AddTo(_disposablesForModel);
+            Model.onClickClose.Subscribe(_ => GoToMenu()).AddTo(_disposablesForModel);
 
             inventoryAndItemInfo.SetData(Model.inventory.Value, Model.itemInfo.Value);
             shopItems.SetState(Model.state.Value);
@@ -482,6 +474,12 @@ namespace Nekoyume.UI
         {
             Model.itemCountAndPricePopup.Value.item.Value = null;
             itemCountAndPricePopup.Close();
+        }
+
+        private void GoToMenu()
+        {
+            Close();
+            Find<Menu>().ShowRoom();
         }
     }
 }

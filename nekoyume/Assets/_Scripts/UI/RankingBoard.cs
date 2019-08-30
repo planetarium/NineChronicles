@@ -1,10 +1,10 @@
 using System;
 using Assets.SimpleLocalization;
 using Nekoyume.BlockChain;
-using Nekoyume.Game;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.State;
+using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -18,8 +18,8 @@ namespace Nekoyume.UI
         public GameObject allHeader;
         public Text[] rankingButtonTexts;
         public Text[] filteredRankingButtonTexts;
+        public Button closeButton;
 
-        private Stage _stage;
         private Player _player;
         private AvatarState[] _avatarStates;
 
@@ -29,23 +29,27 @@ namespace Nekoyume.UI
 
             foreach (var rankingButtonText in rankingButtonTexts)
             {
-                rankingButtonText.text = LocalizationManager.Localize("UI_OVERALL_RANKING");    
+                rankingButtonText.text = LocalizationManager.Localize("UI_OVERALL_RANKING");
             }
 
             foreach (var filteredRankingButtonText in filteredRankingButtonTexts)
             {
-                filteredRankingButtonText.text = LocalizationManager.Localize("UI_RANKING_IN_24HOURS");    
+                filteredRankingButtonText.text = LocalizationManager.Localize("UI_RANKING_IN_24HOURS");
             }
-            
-            _stage = GameObject.Find("Stage").GetComponent<Stage>();
+
+            closeButton.OnClickAsObservable()
+                .Subscribe(_ => GoToMenu())
+                .AddTo(gameObject);
         }
 
         public override void Show()
         {
             base.Show();
 
-            _stage.LoadBackground("ranking");
-            _player = _stage.GetPlayer();
+            var stage = Game.Game.instance.stage;
+            stage.LoadBackground("ranking");
+
+            _player = stage.GetPlayer();
             if (ReferenceEquals(_player, null))
             {
                 throw new NotFoundComponentException<Player>();
@@ -61,11 +65,6 @@ namespace Nekoyume.UI
         {
             _avatarStates = null;
             ClearBoard();
-
-            Find<Menu>()?.ShowRoom();
-            _stage.LoadBackground("room");
-            _stage.GetPlayer(_stage.roomPosition);
-            _player.gameObject.SetActive(true);
 
             base.Close();
 
@@ -90,14 +89,15 @@ namespace Nekoyume.UI
                 {
                     continue;
                 }
-                
+
                 RankingInfo rankingInfo = Instantiate(rankingBase, board.content);
                 var bg = rankingInfo.GetComponent<Image>();
                 if (index % 2 == 1)
                 {
                     bg.enabled = false;
                 }
-                rankingInfo.Set(index +1, avatarState);
+
+                rankingInfo.Set(index + 1, avatarState);
                 rankingInfo.gameObject.SetActive(true);
             }
         }
@@ -122,6 +122,12 @@ namespace Nekoyume.UI
             {
                 Destroy(child.gameObject);
             }
+        }
+
+        private void GoToMenu()
+        {
+            Close();
+            Find<Menu>().ShowRoom();
         }
     }
 }

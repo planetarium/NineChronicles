@@ -17,6 +17,7 @@ namespace Nekoyume.UI
 
         private List<Widget> _widgets;
 
+        public bool IsInitialized { get; private set; }
         public Canvas Canvas { get; private set; }
         public RectTransform RectTransform { get; private set; }
 
@@ -43,6 +44,8 @@ namespace Nekoyume.UI
 
         protected override void Awake()
         {
+            IsInitialized = false;
+            
             base.Awake();
 
             this.ComponentFieldsNotNullTest();
@@ -73,7 +76,6 @@ namespace Nekoyume.UI
                 // 모듈류.
                 Widget.Create<StatusDetail>(),
                 Widget.Create<Inventory>(),
-                Widget.Create<Gold>(),
                 Widget.Create<Quest>(),
                 Widget.Create<Mail>(),
 
@@ -109,6 +111,8 @@ namespace Nekoyume.UI
             {
                 widget.Initialize();
             }
+
+            IsInitialized = true;
         }
     }
 }

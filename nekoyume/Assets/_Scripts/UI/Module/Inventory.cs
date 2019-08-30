@@ -26,7 +26,7 @@ namespace Nekoyume.UI.Module
         public Image materialsButtonIconImage;
         public Text materialsButtonText;
         public InventoryScrollerController scrollerController;
-        
+
         private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
 
         private Sprite _selectedButtonSprite;
@@ -37,11 +37,19 @@ namespace Nekoyume.UI.Module
         private Sprite _consumablesButtonIconSpriteBlue;
         private Sprite _materialsButtonIconSpriteBlack;
         private Sprite _materialsButtonIconSpriteBlue;
-        
+
+        private ItemInformationTooltip _tooltip;
+
         public RectTransform RectTransform { get; private set; }
-        public ItemInformationTooltip Tooltip { get; private set; }
+
+        public ItemInformationTooltip Tooltip => _tooltip
+            ? _tooltip
+            : MainCanvas.instance.IsInitialized
+                ? _tooltip = Widget.Find<ItemInformationTooltip>()
+                : null;
+
         public Model.Inventory Model { get; private set; }
-        
+
         #region Mono
 
         protected void Awake()
@@ -61,7 +69,7 @@ namespace Nekoyume.UI.Module
             _consumablesButtonIconSpriteBlue = Resources.Load<Sprite>("UI/Textures/icon_inventory_02_blue");
             _materialsButtonIconSpriteBlack = Resources.Load<Sprite>("UI/Textures/icon_inventory_03_black");
             _materialsButtonIconSpriteBlue = Resources.Load<Sprite>("UI/Textures/icon_inventory_03_blue");
-            
+
             RectTransform = GetComponent<RectTransform>();
 
             equipmentsButton.OnClickAsObservable().Subscribe(_ =>
@@ -81,17 +89,10 @@ namespace Nekoyume.UI.Module
             }).AddTo(this);
         }
 
-        private void OnEnable()
-        {
-            Tooltip = Widget.Find<ItemInformationTooltip>();
-        }
-
         private void OnDisable()
         {
-            if (!ReferenceEquals(Tooltip, null))
-            {
-                Tooltip.Close();   
-            }
+            if (Tooltip)
+                Tooltip.Close();
         }
 
         private void OnDestroy()
@@ -100,7 +101,7 @@ namespace Nekoyume.UI.Module
         }
 
         #endregion
-        
+
         public void SetData(Model.Inventory model)
         {
             if (ReferenceEquals(model, null))
@@ -123,11 +124,13 @@ namespace Nekoyume.UI.Module
 
                 if (scroller.StartCellViewIndex + skipCount < idx)
                 {
-                    scroller.ScrollPosition = scroller.GetScrollPositionForCellViewIndex(idx - skipCount, EnhancedScroller.CellViewPositionEnum.Before);
+                    scroller.ScrollPosition = scroller.GetScrollPositionForCellViewIndex(idx - skipCount,
+                        EnhancedScroller.CellViewPositionEnum.Before);
                 }
                 else if (scroller.StartCellViewIndex == idx)
                 {
-                    scroller.ScrollPosition = scroller.GetScrollPositionForCellViewIndex(idx, EnhancedScroller.CellViewPositionEnum.Before);
+                    scroller.ScrollPosition =
+                        scroller.GetScrollPositionForCellViewIndex(idx, EnhancedScroller.CellViewPositionEnum.Before);
                 }
             }).AddTo(_disposablesForModel);
         }
@@ -175,9 +178,7 @@ namespace Nekoyume.UI.Module
             }
 
             if (Tooltip)
-            {
-                Tooltip.Close();   
-            }
+                Tooltip.Close();
         }
     }
 }

@@ -27,7 +27,7 @@ namespace Nekoyume.UI
         public void End()
         {
             Game.Event.OnNestEnter.Invoke();
-            Find<Login>()?.Show();
+            Find<Login>().Show();
             Close();
         }
     }

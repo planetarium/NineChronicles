@@ -81,7 +81,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            Find<GrayLoadingScreen>()?.Show();
+            Find<GrayLoadingScreen>().Show();
 
             ActionManager.instance
                 .CreateAvatar(AvatarManager.CreateAvatarAddress(), _selectedIndex, nickName)

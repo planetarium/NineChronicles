@@ -1,11 +1,10 @@
-using Nekoyume.Game;
-using Nekoyume.Manager;
-using Nekoyume.Game.Controller;
-using Nekoyume.UI.Module;
-using UnityEngine;
-using UnityEngine.UI;
 using System.Collections;
 using Assets.SimpleLocalization;
+using Nekoyume.Game;
+using Nekoyume.Game.Controller;
+using Nekoyume.Manager;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
@@ -28,7 +27,7 @@ namespace Nekoyume.UI
         protected override void Awake()
         {
             base.Awake();
-            
+
             btnQuestText.text = LocalizationManager.Localize("UI_QUEST");
             btnCombinationText.text = LocalizationManager.Localize("UI_COMBINATION");
             btnShopText.text = LocalizationManager.Localize("UI_SHOP");
@@ -48,12 +47,19 @@ namespace Nekoyume.UI
 
         public void ShowRoom()
         {
+            var stage = Game.Game.instance.stage;
+            stage.LoadBackground("room");
+            stage.GetPlayer(stage.roomPosition);
+
+            var player = stage.GetPlayer();
+            player.gameObject.SetActive(true);
+
             Show();
             ShowButtons(true);
-            StartCoroutine("ShowSpeeches");
+            StartCoroutine(ShowSpeeches());
 
             LabelInfo.text = "";
-            
+
             AudioController.instance.PlayMusic(AudioController.MusicCode.Main);
         }
 
@@ -68,9 +74,7 @@ namespace Nekoyume.UI
         public void QuestClick()
         {
             Close();
-
-            Find<QuestPreparation>()?.Show();
-            Find<Gold>()?.Show();
+            Find<WorldMap>().Show(true);
             AudioController.PlayClick();
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickMainBattle);
         }
@@ -78,9 +82,7 @@ namespace Nekoyume.UI
         public void ShopClick()
         {
             Close();
-
-            Find<Shop>()?.Show();
-            Find<Gold>()?.Show();
+            Find<Shop>().Show();
             AudioController.PlayClick();
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickMainShop);
         }
@@ -88,9 +90,7 @@ namespace Nekoyume.UI
         public void CombinationClick()
         {
             Close();
-
-            Find<Combination>()?.Show();
-            Find<Gold>()?.Show();
+            Find<Combination>().Show();
             AudioController.PlayClick();
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickMainCombination);
         }
@@ -98,9 +98,7 @@ namespace Nekoyume.UI
         public void RankingClick()
         {
             Close();
-
-            Find<RankingBoard>()?.Show();
-            Find<Gold>()?.Show();
+            Find<RankingBoard>().Show();
             AudioController.PlayClick();
         }
 
@@ -117,29 +115,25 @@ namespace Nekoyume.UI
         public override void Show()
         {
             base.Show();
-
-            Find<Gold>()?.Show();
-            Find<Status>()?.Show();
+            Find<Status>().Show();
         }
 
         public override void Close()
         {
-            Find<Inventory>()?.Close();
-            Find<StatusDetail>()?.Close();
-            Find<Quest>()?.Close();
-            Find<Gold>()?.Close();
-            Find<Status>()?.Close();
-
-            StopCoroutine("ShowSpeeches");
+            StopCoroutine(ShowSpeeches());
             foreach (var speechBubble in SpeechBubbles)
             {
                 speechBubble.Hide();
             }
-
+            
+            Find<Inventory>().Close();
+            Find<StatusDetail>().Close();
+            Find<Quest>().Close();
+            Find<Status>().Close();
             base.Close();
         }
 
-        public IEnumerator ShowSpeeches()
+        private IEnumerator ShowSpeeches()
         {
             foreach (var speechBubble in SpeechBubbles)
             {
