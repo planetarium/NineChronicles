@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Nekoyume.Data.Table;
+using Nekoyume.Helper;
 using Nekoyume.Model;
+using UnityEngine;
 
 namespace Nekoyume.Game.Item
 {
@@ -74,6 +76,11 @@ namespace Nekoyume.Game.Item
             }
 
             return sb.ToString().Trim();
+        }
+
+        public override Sprite GetIconSprite()
+        {
+            return SpriteHelper.GetItemIcon(Data.resourceId);
         }
 
         public void UpdatePlayer(Player player)

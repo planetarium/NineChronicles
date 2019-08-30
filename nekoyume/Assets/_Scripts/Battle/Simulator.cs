@@ -80,9 +80,9 @@ namespace Nekoyume.Battle
 
                         if (index == lastWave)
                         {
-                            var stages = Game.Game.instance.TableSheets.StageSheet.ToOrderedList();
+                            var stageSheet = Game.Game.instance.TableSheets.StageSheet;
                             if (_worldStage == Player.worldStage
-                                && Player.worldStage < stages.Last().Stage)
+                                && Player.worldStage < stageSheet.Last.Id)
                             {
                                 Player.worldStage++;
                             }
@@ -128,22 +128,25 @@ namespace Nekoyume.Battle
 
         private void SetWave()
         {
-            var stageTable = Game.Game.instance.TableSheets.StageSheet.ToOrderedList();
-            var waves = stageTable.Where(row => row.Stage == _worldStage).ToList();
+            var stageSheet = Game.Game.instance.TableSheets.StageSheet;
+            if (!stageSheet.TryGetValue(_worldStage, out var stageRow))
+                throw new SheetRowNotFoundException(nameof(stageSheet), _worldStage.ToString());
+
+            var waves = stageRow.Waves;
             _totalWave = waves.Count;
-            foreach (var w in waves)
+            foreach (var waveData in waves)
             {
-                var wave = SpawnWave(w);
+                var wave = SpawnWave(waveData);
                 _waves.Add(wave);
-                GetReward(w.Reward);
+                GetReward(waveData.RewardId);
             }
         }
 
-        private MonsterWave SpawnWave(StageSheet.Row stage)
+        private MonsterWave SpawnWave(StageSheet.WaveData waveData)
         {
             var wave = new MonsterWave();
             var monsterTable = Game.Game.instance.TableSheets.CharacterSheet;
-            foreach (var monsterData in stage.Monsters)
+            foreach (var monsterData in waveData.Monsters)
             {
                 for (int i = 0; i < monsterData.Count; i++)
                 {
@@ -153,10 +156,10 @@ namespace Nekoyume.Battle
                     }
 
                     wave.Add(new Monster(characterRow, monsterData.Level, Player));
-                    wave.IsBoss = stage.IsBoss;
+                    wave.IsBoss = waveData.IsBoss;
                 }
 
-                wave.EXP = stage.Exp;
+                wave.EXP = waveData.Exp;
             }
 
             return wave;

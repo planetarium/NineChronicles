@@ -278,7 +278,7 @@ namespace Nekoyume.Action
             var table = Game.Game.instance.TableSheets.SkillSheet;
             try
             {
-                var skillRow = table.ToOrderedList().First(r => r.Id == monsterParts.skillId);
+                var skillRow = table.OrderedList.First(r => r.Id == monsterParts.skillId);
                 var chance = Math.Floor(monsterParts.minChance +
                                         (monsterParts.maxChance - monsterParts.minChance) * roll);
                 chance = Math.Max(monsterParts.minChance, chance);

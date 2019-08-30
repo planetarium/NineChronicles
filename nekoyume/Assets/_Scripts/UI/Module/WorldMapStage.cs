@@ -1,106 +1,162 @@
 ﻿using System;
 using System.Collections.Generic;
 using Nekoyume.Game.Controller;
+using Nekoyume.TableData;
+using TMPro;
 using UniRx;
-using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.UI;
-
 
 namespace Nekoyume.UI.Module
 {
     public class WorldMapStage : MonoBehaviour
     {
-        [Serializable]
-        public struct SpriteSet
+        public enum State
         {
-            public Sprite normal;
-            public Sprite selected;
-            public Sprite cleared;
-            public Sprite disabled;
+            Normal,
+            Disabled,
+            Hidden
         }
 
-        public SpriteSet spriteSet;
-        public float normalScale = 0.45f;
-        public float bossScale = 0.6f;
-        
+        public class ViewModel : IDisposable
+        {
+            public readonly int stageId;
+            public readonly bool hasBoss;
+            public readonly ReactiveProperty<State> state = new ReactiveProperty<State>();
+            public readonly ReactiveProperty<bool> selected = new ReactiveProperty<bool>();
+
+            public ViewModel(StageSheet.Row stageRow, State state) : this(stageRow.Id, stageRow.HasBoss, state)
+            {
+            }
+
+            public ViewModel(State state) : this(-1, false, state)
+            {
+            }
+
+            public ViewModel(int stageId, bool hasBoss, State state)
+            {
+                this.stageId = stageId;
+                this.hasBoss = hasBoss;
+                this.state.Value = state;
+            }
+
+            public void Dispose()
+            {
+                state.Dispose();
+                selected.Dispose();
+            }
+        }
+
+        public float bossScale = 1.4f;
+
+        public Image normalImage;
+        public Image disabledImage;
+        public Image selectedImage;
         public Image bossImage;
-        public Image stageImage;
         public Button button;
-        public Text buttonText;
+        public TextMeshProUGUI buttonText;
 
-        public Tween.DOTweenRectTransformMoveBy tweenMove;
-        public Tween.DOTweenGroupAlpha tweenAlpha;
-
+        private Vector3 _normalImageScale;
+        private Vector3 _disabledImageScale;
+        private Vector3 _selectedImageScale;
         private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
-        
-        public Model.WorldMapStage Model { get; private set; }
+
+        public readonly Subject<WorldMapStage> onClick = new Subject<WorldMapStage>();
+
+        public ViewModel SharedViewModel { get; private set; }
 
         private void Awake()
         {
+            _normalImageScale = normalImage.transform.localScale;
+            _disabledImageScale = disabledImage.transform.localScale;
+            _selectedImageScale = selectedImage.transform.localScale;
+
             button.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
                     AudioController.PlayClick();
-                    Model.onClick.OnNext(this);
+                    onClick.OnNext(this);
                 }).AddTo(gameObject);
         }
 
-        public void SetModel(Model.WorldMapStage model)
+        public void Show(ViewModel viewModel)
         {
-            if (model == null)
+            if (viewModel is null)
             {
-                Clear();
-                
+                Hide();
+
                 return;
             }
-            
+
             _disposablesForModel.DisposeAllAndClear();
-            Model = model;
-            Model.state.Subscribe(Subscribe).AddTo(_disposablesForModel);
-            Model.hasBoss.Subscribe(SetBoss).AddTo(_disposablesForModel);
-            Model.stage.SubscribeToText(buttonText).AddTo(_disposablesForModel);
+            SharedViewModel = viewModel;
+            SharedViewModel.state.Subscribe(SubscribeState).AddTo(_disposablesForModel);
+            SharedViewModel.selected.Subscribe(_ => SubscribeState(SharedViewModel.state.Value))
+                .AddTo(_disposablesForModel);
+
+            SetBoss(SharedViewModel.hasBoss);
+            buttonText.text = SharedViewModel.stageId.ToString();
         }
 
-        public void Clear()
+        public void Hide()
         {
-            _disposablesForModel.DisposeAllAndClear();
-            Model = null;
+            SharedViewModel.state.Value = State.Hidden;
         }
 
-        private void Subscribe(Model.WorldMapStage.State value)
+        private void SubscribeState(State value)
         {
+            if (SharedViewModel.selected.Value)
+            {
+                gameObject.SetActive(true);
+                normalImage.enabled = false;
+                disabledImage.enabled = false;
+                selectedImage.enabled = true;
+                button.enabled = true;
+
+                return;
+            }
+
             switch (value)
             {
-                case UI.Model.WorldMapStage.State.Normal:
-                    stageImage.sprite = spriteSet.normal;
+                case State.Normal:
+                    gameObject.SetActive(true);
+                    normalImage.enabled = true;
+                    disabledImage.enabled = false;
+                    selectedImage.enabled = false;
                     button.enabled = true;
                     break;
-                case UI.Model.WorldMapStage.State.Selected:
-                    stageImage.sprite = spriteSet.selected;
-                    button.enabled = true;
-                    break;
-                case UI.Model.WorldMapStage.State.Cleared:
-                    stageImage.sprite = spriteSet.cleared;
-                    button.enabled = true;
-                    break;
-                case UI.Model.WorldMapStage.State.Disabled:
-                    stageImage.sprite = spriteSet.disabled;
+                case State.Disabled:
+                    gameObject.SetActive(true);
+                    normalImage.enabled = false;
+                    disabledImage.enabled = true;
+                    selectedImage.enabled = false;
                     button.enabled = false;
+                    break;
+                case State.Hidden:
+                    gameObject.SetActive(false);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(value), value, null);
             }
-            
-            stageImage.SetNativeSize();
+
+            normalImage.SetNativeSize();
         }
 
         private void SetBoss(bool isBoss)
         {
             bossImage.enabled = isBoss;
-            stageImage.transform.localScale = isBoss
-                ? new float3(bossScale, bossScale, 1f)
-                : new float3(normalScale, normalScale, 1f);
+            if (isBoss)
+            {
+                normalImage.transform.localScale *= bossScale;
+                disabledImage.transform.localScale *= bossScale;
+                selectedImage.transform.localScale *= bossScale;
+            }
+            else
+            {
+                normalImage.transform.localScale = _normalImageScale;
+                disabledImage.transform.localScale = _disabledImageScale;
+                selectedImage.transform.localScale = _selectedImageScale;
+            }
         }
     }
 }

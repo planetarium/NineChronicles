@@ -202,10 +202,6 @@ public class AssetNotFoundException : Exception
     }
 }
 
-public class SheetRowNotFoundException : Exception
-{
-}
-
 public class WidgetNotFoundException : Exception
 {
     public WidgetNotFoundException(string widgetName) : base(widgetName)

@@ -2,16 +2,25 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
+using UnityEngine;
 
 namespace Nekoyume.TableData
 {
     [Serializable]
-    public abstract class Sheet<TKey, TValue> : Dictionary<TKey, TValue>, IEnumerable<TValue>
+    public abstract class Sheet<TKey, TValue> : Dictionary<TKey, TValue>
         where TValue : SheetRow<TKey>, new()
     {
         private readonly List<int> _invalidColumnIndexes = new List<int>();
+        
         private IOrderedEnumerable<TValue> _enumerable;
         private List<TValue> _orderedList;
+        private TValue _first;
+        private TValue _last;
+
+        public IReadOnlyList<TValue> OrderedList => _orderedList;
+        public TValue First => _first;
+        public TValue Last => _last;
 
         public void Set(string csv)
         {
@@ -46,32 +55,62 @@ namespace Nekoyume.TableData
                     continue;
                 }
 
-                var row = CSVToRow(line);
-                Add(row.Key, row);
+                if (!TryGetRow(line, out var row))
+                {
+                    // Do not throw any exceptions for check all of lines.
+                    continue;
+                }
+
+                AddRow(row.Key, row);
+            }
+
+            foreach (var value in Values)
+            {
+                value.EndOfSheetInitialize();
             }
 
             _enumerable = Values.OrderBy(value => value.Key);
             _orderedList = _enumerable.ToList();
+            _first = _orderedList.First();
+            _last = _orderedList.Last();
         }
 
         public new IEnumerator<TValue> GetEnumerator()
         {
             return _enumerable.GetEnumerator();
         }
-
-        public List<TValue> ToOrderedList()
+        
+        protected virtual void AddRow(TKey key, TValue value)
         {
-            return _orderedList;
+            Add(key, value);
         }
 
-        private TValue CSVToRow(string csv)
+        private bool TryGetRow(string csv, out TValue row)
         {
             var fields = csv.Trim().Split(',')
                 .Where((column, index) => !_invalidColumnIndexes.Contains(index))
-                .ToList();
-            var row = new TValue();
+                .ToArray();
+            row = new TValue();
             row.Set(fields);
-            return row;
+
+#if UNITY_EDITOR
+            try
+            {
+                row.Validate();
+            }
+            catch (SheetRowValidateException e)
+            {
+                var sb = new StringBuilder();
+                sb.AppendLine(GetType().Name);
+                sb.AppendLine(row.Key.ToString());
+                sb.AppendLine(e.Message);
+                Debug.LogError(sb.ToString());
+
+                return false;
+            }
+#endif
+
+            return true;
         }
     }
 }

@@ -45,7 +45,7 @@ namespace Nekoyume.UI
 
         public void Set(ItemUsable equipment)
         {
-            var sprite = ItemBase.GetSprite(equipment);
+            var sprite = equipment.GetIconSprite();
             if (defaultImage)
             {
                 defaultImage.enabled = false;
@@ -55,7 +55,7 @@ namespace Nekoyume.UI
             itemImage.SetNativeSize();
             item = equipment;
 
-            var gradeSprite = ItemBase.GetGradeIconSprite(equipment.Data.grade);
+            var gradeSprite = equipment.GetBackgroundSprite();
             if (gradeSprite is null)
             {
                 throw new FailedToLoadResourceException<Sprite>(equipment.Data.grade.ToString());

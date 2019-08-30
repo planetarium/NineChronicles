@@ -4,6 +4,7 @@ using Nekoyume.BlockChain;
 using Nekoyume.Data;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
+using Nekoyume.Pattern;
 using Nekoyume.TableData;
 using Nekoyume.UI;
 using UniRx;
@@ -42,29 +43,31 @@ namespace Nekoyume.Game
         protected override void Awake()
         {
             Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
-
             base.Awake();
-
-            Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
-            Screen.SetResolution(GameConfig.ScreenSize.x, GameConfig.ScreenSize.y, FullScreenMode.Windowed);
-            MainCanvas.instance.Initialize();
-            Widget.Find<LoadingScreen>().Show(false);
-            Tables.instance.Initialize();
-            stage.objectPool.Initialize();
 #if UNITY_EDITOR
             LocalizationManager.Read(languageType);
 #else
             LocalizationManager.Read();
 #endif
+            MainCanvas.instance.InitializeFirst();
+            Widget.Find<LoadingScreen>().Show(false);
         }
 
         private IEnumerator Start()
         {
+            Tables.instance.Initialize();
             yield return Addressables.InitializeAsync();
             TableSheets = new TableSheets();
             yield return StartCoroutine(TableSheets.CoInitialize());
-            AgentController.Initialize(AgentInitialized);
+            yield return StartCoroutine(MainCanvas.instance.InitializeSecond());
+            stage.objectPool.Initialize();
+            yield return null;
+            stage.dropItemFactory.Initialize();
+            yield return null;
             AudioController.instance.Initialize();
+            yield return null;
+            AgentController.Initialize(AgentInitialized);
+
             Observable.EveryUpdate()
                 .Where(_ => Input.GetMouseButtonUp(0))
                 .Select(_ => Input.mousePosition)

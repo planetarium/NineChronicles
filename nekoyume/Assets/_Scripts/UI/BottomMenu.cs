@@ -4,7 +4,6 @@ using System.Linq;
 using Assets.SimpleLocalization;
 using Nekoyume.Game.Mail;
 using Nekoyume.Model;
-using Nekoyume.UI.Tween;
 using TMPro;
 using UniRx;
 using UnityEngine;
@@ -24,15 +23,19 @@ namespace Nekoyume.UI.Module
         }
 
         public Image hasNewMail;
+
         public Mail mail;
-        // ¿ÞÂÊ
+
+        // ê³µìš© ë²„íŠ¼.
         public Button goToMainButton;
         public Button mailButton;
         public Button questButton;
         public Button chatButton;
         public Button collectionButton;
+
         public Button settingButton;
-        // ¿À¸¥ÂÊ
+
+        // ì¶”ê°€ ë²„íŠ¼.
         public Button avatarInfoButton;
         public Button inventoryButton;
         public Button switchBuyButton;
@@ -41,6 +44,7 @@ namespace Nekoyume.UI.Module
         public Button combinationConsumableButton;
         public Button combinationRecipeButton;
         public Button WorldMapButton;
+        public Button stageButton;
         public Button AutoRepeatButton;
 
         private Button[] _buttons;
@@ -69,6 +73,7 @@ namespace Nekoyume.UI.Module
                     combinationConsumableButton,
                     combinationRecipeButton,
                     WorldMapButton,
+                    stageButton,
                     AutoRepeatButton
                 };
 
@@ -95,6 +100,7 @@ namespace Nekoyume.UI.Module
                 if (btn.image != null)
                     btn.image.SetNativeSize();
             }
+
             mail.gameObject.SetActive(false);
             _disposables.DisposeAllAndClear();
         }
@@ -103,6 +109,5 @@ namespace Nekoyume.UI.Module
         {
             hasNewMail.gameObject.SetActive(!(mailBox is null) && mailBox.Any(i => i.New));
         }
-
     }
 }

@@ -7,7 +7,7 @@ namespace Nekoyume.TableData
     public class StageRewardSheet : Sheet<int, StageRewardSheet.Row>
     {
         [Serializable]
-        public struct RewardData
+        public class RewardData
         {
             public int ItemId { get; }
             public decimal Ratio { get; }

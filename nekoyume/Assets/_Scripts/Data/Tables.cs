@@ -4,6 +4,7 @@ using Nekoyume.Data.Table;
 using Nekoyume.Game.Factory;
 using Nekoyume.Game.Item;
 using Nekoyume.Model;
+using Nekoyume.Pattern;
 using UnityEngine;
 
 namespace Nekoyume.Data
@@ -26,34 +27,34 @@ namespace Nekoyume.Data
         {
             Item = new Table<Item>();
             Load(Item, "DataTable/item");
-            
+
             ItemEquipment = new Table<ItemEquipment>();
             Load(ItemEquipment, "DataTable/item_equip");
 
             Recipe = new Table<Recipe>();
             Load(Recipe, "DataTable/recipe");
-            
+
             Elemental = new Table<Elemental>();
             Load(Elemental, "DataTable/elemental");
 
             SetEffect = new Table<SetEffect>();
             Load(SetEffect, "DataTable/set_effect");
-            
+
             SkillEffect = new Table<SkillEffect>();
             Load(SkillEffect, "DataTable/skill_effect");
-            
+
             StageDialogs = new Table<StageDialog>();
             Load(StageDialogs, "DataTable/stage_dialog");
-            
+
             Quest = new Table<Quest>();
             Load(Quest, "DataTable/battle_quest");
-            
+
             CollectQuest = new Table<CollectQuest>();
             Load(CollectQuest, "DataTable/collect_quest");
-            
+
             CombinationQuest = new Table<CombinationQuest>();
             Load(CombinationQuest, "DataTable/combination_quest");
-            
+
             TradeQuest = new Table<TradeQuest>();
             Load(TradeQuest, "DataTable/trade_quest");
         }
@@ -71,12 +72,12 @@ namespace Nekoyume.Data
         {
             return !Item.TryGetValue(itemId, out var item) ? null : ItemFactory.Create(item, default);
         }
-        
+
         public bool TryGetItem(int itemId, out Item item)
         {
             return Item.TryGetValue(itemId, out item);
         }
-        
+
         public bool TryGetItemEquipment(int itemEquipmentId, out ItemEquipment itemEquipment)
         {
             return ItemEquipment.TryGetValue(itemEquipmentId, out itemEquipment);
