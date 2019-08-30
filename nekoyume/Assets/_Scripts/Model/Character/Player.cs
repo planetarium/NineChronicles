@@ -7,7 +7,6 @@ using Nekoyume.Data.Table;
 using Nekoyume.Game.Item;
 using Nekoyume.State;
 using Nekoyume.TableData;
-using UnityEngine;
 
 namespace Nekoyume.Model
 {

@@ -14,12 +14,12 @@ namespace Nekoyume.Model
     {
         public readonly List<CharacterBase> targets = new List<CharacterBase>();
         [InformationField]
+        public int hp;
+        [InformationField]
         public int atk;
         [InformationField]
         public int def;
         public int currentHP;
-        [InformationField]
-        public int hp;
         [InformationField]
         public decimal luck;
 
