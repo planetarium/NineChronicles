@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Net;
 using Nekoyume.Action;
 using Nekoyume.Manager;
 using Nekoyume.State;
@@ -259,18 +261,17 @@ namespace Nekoyume.BlockChain
             {
                 foreach (var avatarAddress in States.Instance.agentState.Value.avatarAddresses)
                 {
-                    var key = string.Format(States.CurrentAvatarKey, States.Instance.agentState.Value.address,
+                    var fileName = string.Format(States.CurrentAvatarFileNameFormat, States.Instance.agentState.Value.address,
                         avatarAddress.Value);
-                    var avatarStateString = PlayerPrefs.GetString(key);
-
-                    if (!string.IsNullOrEmpty(avatarStateString))
+                    var path = Path.Combine(Application.persistentDataPath, fileName);
+                    if (File.Exists(path))
                     {
                         var avatarState =
-                            ByteSerializer.Deserialize<AvatarState>(Convert.FromBase64String(avatarStateString));
+                            ByteSerializer.Deserialize<AvatarState>(File.ReadAllBytes(path));
                         Debug.LogFormat("Load local avatarState. agentAddress: {0} address: {1} BlockIndex: {2}",
                             avatarState.agentAddress, avatarState.address, avatarState.BlockIndex);
                         UpdateLocalAvatarState(avatarState, avatarAddress.Key);
-                        PlayerPrefs.DeleteKey(avatarStateString);
+                        File.Delete(path);
                     }
                 }
             }

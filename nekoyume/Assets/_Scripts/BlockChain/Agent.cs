@@ -3,7 +3,9 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using AsyncIO;
@@ -50,7 +52,7 @@ namespace Nekoyume.BlockChain
         private const float TxProcessInterval = 3.0f;
         private const int SwarmDialTimeout = 5000;
         private const int SwarmLinger = 1 * 1000;
-        private const string QueuedActionsKey = "queuedActions";
+        private const string QueuedActionsFileName = "queued_actions.dat";
 
         private static readonly TimeSpan BlockInterval = TimeSpan.FromSeconds(10);
         private static readonly TimeSpan SleepInterval = TimeSpan.FromSeconds(3);
@@ -324,6 +326,13 @@ namespace Nekoyume.BlockChain
 
         private IBlockPolicy<PolymorphicAction<ActionBase>> GetPolicy()
         {
+            return new BlockPolicy<PolymorphicAction<ActionBase>>(
+                new RewardGold { gold = 1 },
+                BlockInterval,
+                100000,
+                2048
+            );
+
 # if UNITY_EDITOR
             return new DebugPolicy();
 # else
@@ -367,17 +376,20 @@ namespace Nekoyume.BlockChain
 
         public void LoadQueuedActions()
         {
-            var actionsListString = PlayerPrefs.GetString(QueuedActionsKey);
-            if (!string.IsNullOrEmpty(actionsListString))
+            var path = Path.Combine(Application.persistentDataPath, QueuedActionsFileName);
+            if (File.Exists(path))
             {
-                var actionsList = ByteSerializer.Deserialize<List<GameAction>>(
-                    Convert.FromBase64String(actionsListString));
-                foreach (var action in actionsList)
+                var actionsListBytes = File.ReadAllBytes(path);
+                if (actionsListBytes.Any())
                 {
-                    EnqueueAction(action);
+                    var actionsList = ByteSerializer.Deserialize<List<GameAction>>(actionsListBytes);
+                    foreach (var action in actionsList)
+                    {
+                        EnqueueAction(action);
+                    }
+                    Debug.Log($"Load queued actions: {_queuedActions.Count}");
+                    File.Delete(path);
                 }
-                Debug.Log($"Load queued actions: {_queuedActions.Count}");
-                PlayerPrefs.DeleteKey(QueuedActionsKey);
             }
         }
 
@@ -387,8 +399,8 @@ namespace Nekoyume.BlockChain
             {
                 List<GameAction> actionsList;
 
-                var actionsListString = PlayerPrefs.GetString(QueuedActionsKey);
-                if (string.IsNullOrEmpty(actionsListString))
+                var path = Path.Combine(Application.persistentDataPath, QueuedActionsFileName);
+                if (!File.Exists(path))
                 {
                     Debug.Log("Create new queuedActions list.");
                     actionsList = new List<GameAction>();
@@ -396,16 +408,16 @@ namespace Nekoyume.BlockChain
                 else
                 {
                     actionsList =
-                        ByteSerializer.Deserialize<List<GameAction>>(
-                            Convert.FromBase64String(PlayerPrefs.GetString(QueuedActionsKey)));
+                        ByteSerializer.Deserialize<List<GameAction>>(File.ReadAllBytes(path));
                     Debug.Log($"Load queuedActions list. : {actionsList.Count}");
                 }
+
+                Debug.LogWarning($"Save QueuedActions : {_queuedActions.Count}");
                 while (_queuedActions.TryDequeue(out var action))
                     actionsList.Add((GameAction) action.InnerAction);
-                Debug.LogWarning($"Save QueuedActions : {_queuedActions.Count}");
-                PlayerPrefs.SetString(QueuedActionsKey, Convert.ToBase64String(ByteSerializer.Serialize(actionsList)));
-            }
 
+                File.WriteAllBytes(path, ByteSerializer.Serialize(actionsList));
+            }
         }
     }
 }
