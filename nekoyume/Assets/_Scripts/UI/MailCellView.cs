@@ -62,9 +62,9 @@ namespace Nekoyume.UI
             label.color = ColorHelper.HexToColorRGB("7a7a7a");
         }
 
-        public void Clear()
+        private void Clear()
         {
-            onClickDisposable.Dispose();
+            onClickDisposable?.Dispose();
             button.interactable = true;
         }
     }
