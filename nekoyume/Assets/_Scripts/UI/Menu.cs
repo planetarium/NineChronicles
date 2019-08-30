@@ -2,6 +2,7 @@ using System.Collections;
 using Assets.SimpleLocalization;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
+using Nekoyume.UI.Module;
 using Nekoyume.Manager;
 using UnityEngine;
 using UnityEngine.UI;
