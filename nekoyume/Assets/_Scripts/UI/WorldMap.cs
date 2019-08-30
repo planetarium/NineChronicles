@@ -67,7 +67,7 @@ namespace Nekoyume.UI
                     .Subscribe(_ =>
                     {
                         AudioController.PlayClick();
-                        Close();
+                        GoToMenu();
                     }).AddTo(gameObject);
             }
 
