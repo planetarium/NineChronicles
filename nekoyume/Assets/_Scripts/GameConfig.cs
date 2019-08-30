@@ -7,7 +7,7 @@ namespace Nekoyume
     {
         public const int SlotCount = 3;
         public const float WaitSeconds = 180f;
-        public const string AvatarNickNamePattern = @"\b[0-9가-힣a-zA-Z]{2,10}\b";
+        public const string AvatarNickNamePattern = @"^[0-9가-힣a-zA-Z]{2,10}$";
         public const float PlayerSpeechBreakTime = 2f;
         #region action
 
