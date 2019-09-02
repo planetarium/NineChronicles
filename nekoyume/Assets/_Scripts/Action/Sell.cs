@@ -86,7 +86,7 @@ namespace Nekoyume.Action
             }
             
             // 상점에 아이템을 등록한다.
-            var shopItem = shopState.Register(ctx.Signer, new ShopItem
+            shopState.Register(ctx.Signer, new ShopItem
             {
                 sellerAvatarAddress = sellerAvatarAddress,
                 productId = productId,

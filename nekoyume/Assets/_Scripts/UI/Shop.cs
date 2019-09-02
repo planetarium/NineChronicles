@@ -341,7 +341,8 @@ namespace Nekoyume.UI
 
         private void OnClickSubmitItemCountAndPricePopup(Model.ItemCountAndPricePopup data)
         {
-            _loadingScreen.Show();
+            if (Model.state.Value != UI.Model.Shop.State.Sell)
+                _loadingScreen.Show();
 
             if (Model.itemInfo.Value.item.Value is ShopItem shopItem)
             {
@@ -376,35 +377,17 @@ namespace Nekoyume.UI
             }
 
             // 판매하겠습니다.
-            ActionManager.instance
-                .Sell((ItemUsable) data.item.Value.item.Value, data.price.Value)
-                .Subscribe(eval =>
-                {
-                    ResponseSell(eval);
-                    AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
-                })
-                .AddTo(this);
+            ActionManager.instance.Sell((ItemUsable) data.item.Value.item.Value, data.price.Value);
+            ResponseSell();
         }
 
-        private void ResponseSell(ActionBase.ActionEvaluation<Sell> eval)
+        private void ResponseSell()
         {
+            var item = Model.itemCountAndPricePopup.Value.item.Value;
+            Model.inventory.Value.RemoveItem(item.item.Value);
             Model.itemCountAndPricePopup.Value.item.Value = null;
-
-            var sellerAgentAddress = eval.InputContext.Signer;
-            var productId = eval.Action.productId;
-            if (!States.Instance.shopState.Value.TryGet(sellerAgentAddress, productId, out var outPair))
-            {
-                return;
-            }
-
-            var shopItem = outPair.Value;
-
-            Model.inventory.Value.RemoveItem(shopItem.itemUsable);
-
-            Model.shopItems.Value.AddShopItem(sellerAgentAddress, shopItem);
-            Model.shopItems.Value.AddRegisteredProduct(sellerAgentAddress, shopItem);
-
-            _loadingScreen.Close();
+            AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
+            Notification.Push($"{item.item.Value.Data.name} 아이템을 상점에 등록합니다.");
         }
 
         private void ResponseSellCancellation(ActionBase.ActionEvaluation<SellCancellation> eval, Guid productId,
