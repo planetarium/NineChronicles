@@ -15,7 +15,7 @@ MonoBehaviour:
   m_GroupName: Default Local Group
   m_Data:
     m_SerializedData: []
-  m_GUID: 69b8c741b8126437daf684ce301b4249
+  m_GUID: e0c321a654c6d4f189d163e28eb60520
   m_SerializeEntries:
   - m_GUID: 1ddd193f5f195481d92ca512633e7072
     m_Address: Assets/AddressableAssets/TableCSV/WorldSheet.csv
@@ -61,4 +61,5 @@ MonoBehaviour:
   m_Settings: {fileID: 11400000, guid: 314ad4573790845ce84c5b850f063d3b, type: 2}
   m_SchemaSet:
     m_Schemas:
-    - {fileID: 11400000, guid: 5c7e18ec47fed4f2198e1309f148ecd8, type: 2}
+    - {fileID: 11400000, guid: 6f5b8e00bcd8047f0a3b400d24d9e2fd, type: 2}
+    - {fileID: 11400000, guid: d8a5d7bef2c3047d19651607af455c56, type: 2}
