@@ -283,6 +283,7 @@ namespace Nekoyume.UI
             var stageId = SharedModel.shouldRepeat ? stage.id : stage.id + 1;
             var action = ActionManager.instance.HackAndSlash(player.equipments, new List<Food>(), stageId)
                 .ToYieldInstruction();
+            yield return action;
             yield return StartCoroutine(stageLoadingScreen.CoClose());
             yield return coFadeOut;
             Game.Event.OnStageStart.Invoke(action.Result.Action.Result);
