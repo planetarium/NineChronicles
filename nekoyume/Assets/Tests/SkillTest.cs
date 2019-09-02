@@ -25,7 +25,7 @@ namespace Tests
             var random = new Cheat.DebugRandom();
             var address = new Address();
             var agentAddress = new Address();
-            var avatarState = new AvatarState(address, agentAddress);
+            var avatarState = new AvatarState(address, agentAddress, 1);
 
             _simulator = new Simulator(random, avatarState, new List<Food>(), 1);
             var caster = _simulator.Player;

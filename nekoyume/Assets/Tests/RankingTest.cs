@@ -22,8 +22,8 @@ namespace Tests
         {
             var state = new RankingState();
             var agentAddress = GetNewAddress();
-            var avatar1 = new AvatarState(GetNewAddress(), agentAddress);
-            var avatar2 = new AvatarState(GetNewAddress(), agentAddress);
+            var avatar1 = new AvatarState(GetNewAddress(), agentAddress, 1);
+            var avatar2 = new AvatarState(GetNewAddress(), agentAddress, 1);
             state.Update(avatar1);
             state.Update(avatar2);
             var result = state.GetAgentAddresses(2, null);
@@ -35,8 +35,8 @@ namespace Tests
         public void GetAgentAddresses()
         {
             var state = new RankingState();
-            var avatar1 = new AvatarState(GetNewAddress(), GetNewAddress());
-            var avatar2 = new AvatarState(GetNewAddress(), GetNewAddress());
+            var avatar1 = new AvatarState(GetNewAddress(), GetNewAddress(), 1);
+            var avatar2 = new AvatarState(GetNewAddress(), GetNewAddress(), 1);
             state.Update(avatar1);
             state.Update(avatar2);
             var result = state.GetAgentAddresses(3, null);
@@ -54,11 +54,11 @@ namespace Tests
         public void GetAvatars()
         {
             var state = new RankingState();
-            var avatar1 = new AvatarState(GetNewAddress(), GetNewAddress())
+            var avatar1 = new AvatarState(GetNewAddress(), GetNewAddress(), 1)
             {
                 worldStage = 2, clearedAt = DateTimeOffset.UtcNow
             };
-            var avatar2 = new AvatarState(GetNewAddress(), GetNewAddress())
+            var avatar2 = new AvatarState(GetNewAddress(), GetNewAddress(), 1)
             {
                 worldStage = 2, clearedAt = DateTimeOffset.UtcNow
             };
@@ -76,15 +76,15 @@ namespace Tests
         public void GetAvatarsWithTimeStamp()
         {
             var state = new RankingState();
-            var avatar1 = new AvatarState(GetNewAddress(), GetNewAddress())
+            var avatar1 = new AvatarState(GetNewAddress(), GetNewAddress(), 1)
             {
                 worldStage = 2, clearedAt = DateTimeOffset.UtcNow
             };
-            var avatar2 = new AvatarState(GetNewAddress(), GetNewAddress())
+            var avatar2 = new AvatarState(GetNewAddress(), GetNewAddress(), 1)
             {
                 worldStage = 2, clearedAt = DateTimeOffset.UtcNow
             };
-            var avatar3 = new AvatarState(GetNewAddress(), GetNewAddress())
+            var avatar3 = new AvatarState(GetNewAddress(), GetNewAddress(), 1)
             {
                 worldStage = 3, clearedAt = DateTimeOffset.UtcNow, updatedAt =  DateTimeOffset.UtcNow.AddDays(-2)
             };
@@ -105,7 +105,7 @@ namespace Tests
         public void Update()
         {
             var state = new RankingState();
-            var avatar1 = new AvatarState(GetNewAddress(), GetNewAddress())
+            var avatar1 = new AvatarState(GetNewAddress(), GetNewAddress(), 1)
             {
                 worldStage = 2, clearedAt = DateTimeOffset.UtcNow
             };

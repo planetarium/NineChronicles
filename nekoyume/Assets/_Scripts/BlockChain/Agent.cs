@@ -3,7 +3,9 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using AsyncIO;
@@ -50,6 +52,7 @@ namespace Nekoyume.BlockChain
         private const float TxProcessInterval = 3.0f;
         private const int SwarmDialTimeout = 5000;
         private const int SwarmLinger = 1 * 1000;
+        private const string QueuedActionsFileName = "queued_actions.dat";
 
         private static readonly TimeSpan BlockInterval = TimeSpan.FromSeconds(10);
         private static readonly TimeSpan SleepInterval = TimeSpan.FromSeconds(3);
@@ -323,6 +326,13 @@ namespace Nekoyume.BlockChain
 
         private IBlockPolicy<PolymorphicAction<ActionBase>> GetPolicy()
         {
+            return new BlockPolicy<PolymorphicAction<ActionBase>>(
+                new RewardGold { gold = 1 },
+                BlockInterval,
+                100000,
+                2048
+            );
+
 # if UNITY_EDITOR
             return new DebugPolicy();
 # else
@@ -362,6 +372,52 @@ namespace Nekoyume.BlockChain
             Debug.LogFormat("Make Transaction with Actions: `{0}`",
                 string.Join(",", polymorphicActions.Select(i => i.InnerAction)));
             return _blocks.MakeTransaction(PrivateKey, polymorphicActions, broadcast: broadcast);
+        }
+
+        public void LoadQueuedActions()
+        {
+            var path = Path.Combine(Application.persistentDataPath, QueuedActionsFileName);
+            if (File.Exists(path))
+            {
+                var actionsListBytes = File.ReadAllBytes(path);
+                if (actionsListBytes.Any())
+                {
+                    var actionsList = ByteSerializer.Deserialize<List<GameAction>>(actionsListBytes);
+                    foreach (var action in actionsList)
+                    {
+                        EnqueueAction(action);
+                    }
+                    Debug.Log($"Load queued actions: {_queuedActions.Count}");
+                    File.Delete(path);
+                }
+            }
+        }
+
+        public void SaveQueuedActions()
+        {
+            if (_queuedActions.Any())
+            {
+                List<GameAction> actionsList;
+
+                var path = Path.Combine(Application.persistentDataPath, QueuedActionsFileName);
+                if (!File.Exists(path))
+                {
+                    Debug.Log("Create new queuedActions list.");
+                    actionsList = new List<GameAction>();
+                }
+                else
+                {
+                    actionsList =
+                        ByteSerializer.Deserialize<List<GameAction>>(File.ReadAllBytes(path));
+                    Debug.Log($"Load queuedActions list. : {actionsList.Count}");
+                }
+
+                Debug.LogWarning($"Save QueuedActions : {_queuedActions.Count}");
+                while (_queuedActions.TryDequeue(out var action))
+                    actionsList.Add((GameAction) action.InnerAction);
+
+                File.WriteAllBytes(path, ByteSerializer.Serialize(actionsList));
+            }
         }
     }
 }

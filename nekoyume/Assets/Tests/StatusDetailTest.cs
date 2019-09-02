@@ -21,7 +21,7 @@ namespace Tests
         {
             var address = new Address();
             var agentAddress = new Address();
-            var avatarState = new AvatarState(address, agentAddress);
+            var avatarState = new AvatarState(address, agentAddress, 1);
             var go = Game.instance.stage.playerFactory.Create(avatarState);
             _player = go.GetComponent<Player>();
 

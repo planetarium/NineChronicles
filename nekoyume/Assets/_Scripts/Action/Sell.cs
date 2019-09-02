@@ -95,6 +95,7 @@ namespace Nekoyume.Action
             });
 
             avatarState.updatedAt = DateTimeOffset.UtcNow;
+            avatarState.BlockIndex = ctx.BlockIndex;
 
             states = states.SetState(sellerAvatarAddress, avatarState);
             states = states.SetState(ctx.Signer, agentState);

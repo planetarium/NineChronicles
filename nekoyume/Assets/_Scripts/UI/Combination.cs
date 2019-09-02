@@ -405,6 +405,11 @@ namespace Nekoyume.UI
             Find<CombinationLoadingScreen>().Show();
             Model.inventory.Value.RemoveItems(materials);
             Model.RemoveEquipmentMaterial();
+            foreach (var material in materials)
+            {
+                States.Instance.currentAvatarState.Value.inventory.RemoveFungibleItem(material.item.Value.Data.id,
+                    material.count.Value);
+            }
             while (Model.materials.Count > 0)
             {
                 Model.materials.RemoveAt(0);

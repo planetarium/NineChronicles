@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Net;
 using Nekoyume.Action;
 using Nekoyume.Manager;
 using Nekoyume.State;
@@ -33,6 +35,7 @@ namespace Nekoyume.BlockChain
 
         public void Start()
         {
+            LoadLocalAvatarState();
             Shop();
             Ranking();
             RewardGold();
@@ -96,15 +99,8 @@ namespace Nekoyume.BlockChain
             {
                 return;
             }
-            
-            if (States.Instance.avatarStates.ContainsKey(index))
-            {
-                States.Instance.avatarStates[index] = avatarState;
-            }
-            else
-            {
-                States.Instance.avatarStates.Add(index, avatarState);
-            }
+
+            UpdateAvatarState(avatarState, index);
         }
         
         private void UpdateCurrentAvatarState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
@@ -235,7 +231,50 @@ namespace Nekoyume.BlockChain
                 ? AnalyticsManager.EventName.ActionCombinationSuccess
                 : AnalyticsManager.EventName.ActionCombinationFail);
             UpdateCurrentAvatarState(evaluation);
-            Game.Event.OnCombinationEnd.Invoke(isSuccess);
+        }
+
+        private void UpdateAvatarState(AvatarState avatarState, int index)
+        {
+
+            if (States.Instance.avatarStates.ContainsKey(index))
+            {
+                // 게임에서 업데이트한 아바타 상태를 따라잡았을때만 업데이트
+                if (avatarState.BlockIndex >= States.Instance.avatarStates[index].BlockIndex)
+                    States.Instance.avatarStates[index] = avatarState;
+            }
+            else
+            {
+                States.Instance.avatarStates.Add(index, avatarState);
+            }
+        }
+
+        public void UpdateLocalAvatarState(AvatarState avatarState, int index)
+        {
+            Debug.LogFormat("Update local avatarState. agentAddress: {0} address: {1} BlockIndex: {2}",
+                avatarState.agentAddress, avatarState.address, avatarState.BlockIndex);
+            UpdateAvatarState(avatarState, index);
+        }
+
+        private void LoadLocalAvatarState()
+        {
+            if (!(States.Instance.agentState?.Value is null))
+            {
+                foreach (var avatarAddress in States.Instance.agentState.Value.avatarAddresses)
+                {
+                    var fileName = string.Format(States.CurrentAvatarFileNameFormat, States.Instance.agentState.Value.address,
+                        avatarAddress.Value);
+                    var path = Path.Combine(Application.persistentDataPath, fileName);
+                    if (File.Exists(path))
+                    {
+                        var avatarState =
+                            ByteSerializer.Deserialize<AvatarState>(File.ReadAllBytes(path));
+                        Debug.LogFormat("Load local avatarState. agentAddress: {0} address: {1} BlockIndex: {2}",
+                            avatarState.agentAddress, avatarState.address, avatarState.BlockIndex);
+                        UpdateLocalAvatarState(avatarState, avatarAddress.Key);
+                        File.Delete(path);
+                    }
+                }
+            }
         }
     }
 }

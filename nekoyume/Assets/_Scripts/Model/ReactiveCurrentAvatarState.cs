@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Nekoyume.Game.Mail;
 using Nekoyume.State;
 using UniRx;
 using Inventory = Nekoyume.Game.Item.Inventory;
@@ -10,6 +14,8 @@ namespace Nekoyume.Model
     public static class ReactiveCurrentAvatarState
     {
         public static readonly ReactiveProperty<Inventory> Inventory = new ReactiveProperty<Inventory>();
+        public static readonly ReactiveProperty<MailBox> MailBox = new ReactiveProperty<MailBox>();
+        private static readonly List<IDisposable> Disposables = new List<IDisposable>();
 
         public static void Initialize(AvatarState avatarState)
         {
@@ -18,7 +24,10 @@ namespace Nekoyume.Model
                 return;
             }
 
-            Inventory.Value = avatarState.inventory;
+            Disposables.DisposeAllAndClear();
+
+            Inventory.SetValueAndForceNotify(avatarState.inventory);
+            MailBox.SetValueAndForceNotify(avatarState.mailBox);
         }
     }
 }
