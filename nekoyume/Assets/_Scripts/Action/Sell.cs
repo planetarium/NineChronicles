@@ -52,6 +52,11 @@ namespace Nekoyume.Action
                 return states.SetState(ctx.Signer, MarkChanged);
             }
 
+            if (price < 0)
+            {
+                return states;
+            }
+
             var agentState = (AgentState) states.GetState(ctx.Signer);
             if (!agentState.avatarAddresses.ContainsValue(sellerAvatarAddress))
                 return states;
