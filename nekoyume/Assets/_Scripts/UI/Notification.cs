@@ -43,7 +43,8 @@ namespace Nekoyume.UI
             scroller.onRequestToRemoveModelByIndex.Subscribe(SubscribeToRemoveModel).AddTo(gameObject);
             scroller.SetModel(Models);
             Models.ObserveAdd()
-                .Subscribe(_ => AudioController.instance.PlaySfx(AudioController.SfxCode.Notification));
+                .Subscribe(_ => AudioController.instance.PlaySfx(AudioController.SfxCode.Notification))
+                .AddTo(gameObject);
         }
 
         private void Update()
