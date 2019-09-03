@@ -274,7 +274,7 @@ namespace Nekoyume.UI.Model
                 item.dimmed.Value = dimmedFunc.Value(item);
             }
         }
-        
+
         private void SubscribeOnClick(InventoryItemView view)
         {
             if (!ReferenceEquals(selectedItemView.Value, null) &&
@@ -283,10 +283,18 @@ namespace Nekoyume.UI.Model
                 selectedItemView.Value.Model.selected.Value = false;
             }
 
-            selectedItemView.SetValueAndForceNotify(view);
-            selectedItemView.Value.Model.selected.Value = true;
+            if (selectedItemView.Value == view)
+            {
+                selectedItemView.Value.Model.selected.Value = false;
+                selectedItemView.SetValueAndForceNotify(null);
+            }
+            else
+            {
+                selectedItemView.SetValueAndForceNotify(view);
+                selectedItemView.Value.Model.selected.Value = true;
 
-            SetGlowedAll(false);
+                SetGlowedAll(false);
+            }
         }
 
         private void UpdateItems(IEnumerable<Game.Item.Inventory.Item> list)

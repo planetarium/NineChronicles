@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Assets.SimpleLocalization;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
@@ -10,6 +7,9 @@ using Nekoyume.Game.Item;
 using Nekoyume.Manager;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -87,7 +87,10 @@ namespace Nekoyume.UI
             {
                 var type = equipment.Data.cls.ToEnumItemType();
                 if (equipmentSlots.TryGet(type, out var es))
+                {
                     es.Set(equipment);
+                    es.SetOnClickAction(ShowEquippedTooltip, Unequip);
+                }
             }
 
             questBtn.SetActive(true);
@@ -120,10 +123,22 @@ namespace Nekoyume.UI
             AnalyticsManager.Instance.BattleEntrance(repeat);
         }
 
-        public void Unequip(GameObject sender)
+        public void ShowEquippedTooltip(EquipSlot slot)
         {
-            var slot = sender.GetComponent<EquipSlot>();
-            if (slot.item == null)
+            if (slot is null) return;
+
+            if (inventoryAndItemInfo.inventory.Model.TryGetEquipment(slot.item, out var item) ||
+                inventoryAndItemInfo.inventory.Model.TryGetConsumable(slot.item as Food, out item))
+            {
+                inventoryAndItemInfo.inventory.Tooltip.Show(
+                    slot.rectTransform,
+                    item);
+            }
+        }
+
+        public void Unequip(EquipSlot slot)
+        {
+            if (slot.item is null)
             {
                 equipSlotGlow.SetActive(false);
                 foreach (var item in Model.inventory.Value.equipments)
@@ -203,13 +218,7 @@ namespace Nekoyume.UI
         {
             if (view is null)
             {
-                return;
-            }
-
-            if (inventoryAndItemInfo.inventory.Tooltip.Model.target.Value == view.RectTransform)
-            {
                 inventoryAndItemInfo.inventory.Tooltip.Close();
-
                 return;
             }
 
@@ -217,6 +226,8 @@ namespace Nekoyume.UI
                 view.RectTransform,
                 view.Model,
                 value => !view.Model.dimmed.Value,
+                (view.Model.equipped.Value) ?
+                LocalizationManager.Localize("UI_UNEQUIP") :
                 LocalizationManager.Localize("UI_EQUIP"),
                 tooltip =>
                 {
@@ -235,7 +246,7 @@ namespace Nekoyume.UI
 
             // Fix me. 이미 장착한 아이템일 경우 장착 버튼 비활성화 필요.
             // 현재는 왼쪽 부분인 인벤토리와 아이템 정보 부분만 뷰모델을 적용했는데, 오른쪽 까지 뷰모델이 확장되면 가능.
-            if (ReferenceEquals(data, null) ||
+            if (data is null ||
                 data.dimmed.Value)
             {
                 SetGlowEquipSlot(false);
@@ -249,9 +260,15 @@ namespace Nekoyume.UI
         private void OnClickEquip(CountableItem countableItem)
         {
             var item = countableItem as InventoryItem;
-            if (item != null && item.equipped.Value) return;
-
             var type = countableItem.item.Value.Data.cls.ToEnumItemType();
+
+            if (item != null && item.equipped.Value)
+            {
+                var equipSlot = FindSlot(item.item.Value as ItemUsable, type);
+                if (equipSlot) Unequip(equipSlot);
+                return;
+            }
+
             var slot = FindSelectedItemSlot(type);
 
             AudioController.instance.PlaySfx(type == ItemBase.ItemType.Food
@@ -266,6 +283,7 @@ namespace Nekoyume.UI
                 }
 
                 slot.Set(countableItem.item.Value as ItemUsable);
+                slot.SetOnClickAction(ShowEquippedTooltip, Unequip);
                 SetGlowEquipSlot(false);
             }
             else return;
@@ -328,8 +346,8 @@ namespace Nekoyume.UI
         {
             if (type == ItemBase.ItemType.Food)
             {
-                var slot = consumableSlots.FirstOrDefault(s => s.item?.Data == null);
-                if (slot == null)
+                var slot = consumableSlots.FirstOrDefault(s => s.item?.Data is null);
+                if (slot is null)
                 {
                     slot = consumableSlots[0];
                 }
@@ -339,6 +357,21 @@ namespace Nekoyume.UI
 
             equipmentSlots.TryGet(type, out var es);
             return es;
+        }
+
+        public EquipSlot FindSlot(ItemUsable item, ItemBase.ItemType type)
+        {
+            if (type == ItemBase.ItemType.Food)
+            {
+                foreach (var slot in consumableSlots)
+                {
+                    if (item.Equals(slot.item))
+                    {
+                        return slot;
+                    }
+                }
+            }
+            return equipmentSlots.FindSlot(item);
         }
 
         private void SetGlowEquipSlot(bool isActive)
