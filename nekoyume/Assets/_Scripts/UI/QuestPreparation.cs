@@ -270,6 +270,7 @@ namespace Nekoyume.UI
             }
 
             var slot = FindSelectedItemSlot(type);
+            if (slot.item != null) return;
 
             AudioController.instance.PlaySfx(type == ItemBase.ItemType.Food
                 ? AudioController.SfxCode.ChainMail2
