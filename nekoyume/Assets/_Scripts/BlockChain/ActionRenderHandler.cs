@@ -193,7 +193,7 @@ namespace Nekoyume.BlockChain
             ActionBase.EveryRender<SellCancellation>()
                 .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
-                .Subscribe(UpdateCurrentAvatarState).AddTo(_disposables);
+                .Subscribe(ResponseSellCancellation).AddTo(_disposables);
         }
 
         private void Buy()
@@ -280,6 +280,12 @@ namespace Nekoyume.BlockChain
         private void ResponseSell(ActionBase.ActionEvaluation<Sell> eval)
         {
             UI.Notification.Push($"{eval.Action.itemUsable.Data.name} 상점 등록 완료.");
+            UpdateCurrentAvatarState(eval);
+        }
+
+        private void ResponseSellCancellation(ActionBase.ActionEvaluation<SellCancellation> eval)
+        {
+            UI.Notification.Push($"{eval.Action.result.itemUsable.Data.name} 판매 취소 완료.");
             UpdateCurrentAvatarState(eval);
         }
     }

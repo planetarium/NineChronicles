@@ -363,14 +363,8 @@ namespace Nekoyume.UI
                 else
                 {
                     // 판매 취소하겠습니다.
-                    ActionManager.instance
-                        .SellCancellation(shopItem.sellerAvatarAddress.Value, shopItem.productId.Value)
-                        .Subscribe(eval =>
-                        {
-                            ResponseSellCancellation(eval, shopItem.productId.Value, (ItemUsable) shopItem.item.Value);
-                            AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
-                        })
-                        .AddTo(this);
+                    ActionManager.instance.SellCancellation(shopItem.sellerAvatarAddress.Value, shopItem.productId.Value);
+                    ResponseSellCancellation(shopItem);
                 }
 
                 return;
@@ -390,19 +384,18 @@ namespace Nekoyume.UI
             Notification.Push($"{item.item.Value.Data.name} 아이템을 상점에 등록합니다.");
         }
 
-        private void ResponseSellCancellation(ActionBase.ActionEvaluation<SellCancellation> eval, Guid productId,
-            ItemUsable shopItem)
+        private void ResponseSellCancellation(ShopItem shopItem)
         {
             Model.itemCountAndPricePopup.Value.item.Value = null;
 
-            var sellerAgentAddress = eval.InputContext.Signer;
+            var sellerAgentAddress = shopItem.sellerAgentAddress.Value;
+            var productId = shopItem.productId.Value;
 
             Model.shopItems.Value.RemoveShopItem(sellerAgentAddress, productId);
             Model.shopItems.Value.RemoveProduct(productId);
             Model.shopItems.Value.RemoveRegisteredProduct(productId);
-            Model.inventory.Value.AddItem(shopItem);
-
-            _loadingScreen.Close();
+            AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
+            Notification.Push($"{shopItem.item.Value.Data.name} 아이템을 판매 취소합니다.");
         }
 
         private void ResponseBuy(ActionBase.ActionEvaluation<Buy> eval, Guid productId, ItemUsable shopItem)

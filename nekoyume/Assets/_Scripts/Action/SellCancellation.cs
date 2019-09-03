@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using Libplanet;
 using Libplanet.Action;
-using Nekoyume.BlockChain;
-using Nekoyume.Game.Item;
+using Nekoyume.Game.Mail;
 using Nekoyume.State;
 
 namespace Nekoyume.Action
@@ -14,6 +13,13 @@ namespace Nekoyume.Action
     {
         public Guid productId;
         public Address sellerAvatarAddress;
+        public Result result;
+
+        [Serializable]
+        public class Result : ActionResult
+        {
+            public Game.Item.ShopItem shopItem;
+        }
 
         protected override IImmutableDictionary<string, object> PlainValueInternal => new Dictionary<string, object>
         {
@@ -55,8 +61,14 @@ namespace Nekoyume.Action
                 return states;
             }
             
-            // 인벤토리에 아이템을 넣는다.
-            avatarState.inventory.AddNonFungibleItem(outUnregisteredItem.itemUsable);
+            // 메일에 아이템을 넣는다.
+            result = new Result
+            {
+                shopItem = outUnregisteredItem,
+                itemUsable = outUnregisteredItem.itemUsable
+            };
+            var mail = new SellCancelMail(result, ctx.BlockIndex);
+            avatarState.Update(mail);
             avatarState.updatedAt = DateTimeOffset.UtcNow;
             avatarState.BlockIndex = ctx.BlockIndex;
             

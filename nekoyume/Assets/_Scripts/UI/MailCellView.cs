@@ -92,6 +92,26 @@ namespace Nekoyume.UI
                     AddItem(item);
                     break;
                 }
+                case SellCancelMail _:
+                {
+                    var attachment = (Action.SellCancellation.Result) data.attachment;
+                    var item = attachment.itemUsable;
+                    //TODO 관련 기획이 끝나면 별도 UI를 생성
+                    var popup = Widget.Find<ItemCountAndPricePopup>();
+                    var model = new UI.Model.ItemCountAndPricePopup();
+                    model.priceInteractable.Value = true;
+                    model.price.Value = attachment.shopItem.price;
+                    model.countEnabled.Value = false;
+                    model.item.Value = new CountEditableItem(item, 1, 1, 1);
+                    model.onClickCancel.Subscribe(_ =>
+                    {
+                        AddItem(item);
+                        popup.Close();
+                    }).AddTo(gameObject);
+                    //TODO 재판매 처리추가되야함
+                    popup.Pop(model);
+                    break;
+                }
             }
         }
 
