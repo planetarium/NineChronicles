@@ -7,23 +7,20 @@ using Nekoyume.Action;
 namespace Nekoyume.Game.Mail
 {
     [Serializable]
-    public class Mail
+    public abstract class Mail
     {
         public bool New;
-        public Combination.Result attachment;
+        public ActionResult attachment;
         public long blockIndex;
 
-        public Mail(Combination.Result actionResult, long blockIndex)
+        protected Mail(ActionResult actionResult, long blockIndex)
         {
             New = true;
             attachment = actionResult;
             this.blockIndex = blockIndex;
         }
 
-        public string ToInfo()
-        {
-            return "조합 완료";
-        }
+        public abstract string ToInfo();
     }
 
     [Serializable]

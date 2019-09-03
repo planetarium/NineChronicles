@@ -1,6 +1,13 @@
 using EnhancedUI.EnhancedScroller;
 using Nekoyume.Helper;
 using System;
+using System.Linq;
+using Nekoyume.BlockChain;
+using Nekoyume.Game.Factory;
+using Nekoyume.Game.Item;
+using Nekoyume.Game.Mail;
+using Nekoyume.State;
+using Nekoyume.UI.Model;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -57,9 +64,35 @@ namespace Nekoyume.UI
 
         public void Read()
         {
+            if (!data.New)
+                return;
+
             data.New = false;
             button.interactable = false;
             label.color = ColorHelper.HexToColorRGB("7a7a7a");
+
+            switch (data)
+            {
+                case CombinationMail _:
+                {
+                    var attachment = (Action.Combination.Result) data.attachment;
+                    var item = attachment.itemUsable;
+                    var popup = Widget.Find<CombinationResultPopup>();
+                    var materialItems = attachment.materials
+                        .Select(material => new {material, item = ItemFactory.CreateMaterial(material.id, Guid.Empty)})
+                        .Select(t => new CombinationMaterial(t.item, t.material.count, t.material.count, t.material.count))
+                        .ToList();
+                    var model = new UI.Model.CombinationResultPopup(new CountableItem(item, 1))
+                    {
+                        isSuccess = true,
+                        materialItems = materialItems
+                    };
+                    popup.Pop(model);
+
+                    AddItem(item);
+                    break;
+                }
+            }
         }
 
         private void Clear()
@@ -67,5 +100,18 @@ namespace Nekoyume.UI
             onClickDisposable?.Dispose();
             button.interactable = true;
         }
+
+        private static void AddItem(ItemUsable item)
+        {
+            //아바타상태 인벤토리 업데이트
+            ActionManager.instance.AddItem(item.ItemId);
+
+            //게임상의 인벤토리 업데이트
+            var newState = (AvatarState) States.Instance.currentAvatarState.Value.Clone();
+            newState.inventory.AddNonFungibleItem(item);
+            var index = States.Instance.currentAvatarKey.Value;
+            ActionRenderHandler.Instance.UpdateLocalAvatarState(newState, index);
+        }
+
     }
 }
