@@ -23,6 +23,7 @@
  - `--no-miner`    : 마이닝을 사용하지 않습니다.
  - `--peer`        : Peer 를 추가합니다. 추가하려는 Peer가 여럿일 경우 --peer peerA peerB ... 와 같이 추가할 수 있습니다.
  - `--storage-path`: 데이터를 저장할 경로를 지정합니다.
+ - `--auto-play`   : 백그라운드에서 캐릭터 생성 및 자동 전투를 수행합니다.
 
 #### Unity Editor 에서 커맨드라인 옵션 사용
 
@@ -95,3 +96,8 @@ $ /Applications/Unity/Hub/Editor/2019.1.0f2/Unity.app/Contents/MacOS/Unity -quit
 cd nekoyume/compose
 docker-compose up --build
 ```
+
+### 오토 플레이 옵션
+
+`--auto-play` 옵션으로 백그라운드에서 캐릭터를 생성하고 자동전투를 수행하도록 할 수 있습니다.
+현재 캐릭터의 이름은 노드의 Address 앞 여덟자리로 생성되며 `TxProcessInterval` 마다 1 스테이지 전투를 반복합니다.

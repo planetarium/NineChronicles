@@ -23,6 +23,7 @@ namespace Nekoyume.Helper
 
         public string storagePath;
 
+        public bool autoPlay;
 
         [Option("private-key", Required = false, HelpText = "The private key to use.")]
         public string PrivateKey { get => privateKey; set => privateKey = value; }
@@ -41,6 +42,9 @@ namespace Nekoyume.Helper
 
         [Option("storage-path", Required = false, HelpText = "The path to store game data.")]
         public string StoragePath { get => storagePath; set => storagePath = value; }
+
+        [Option("auto-play", Required = false, HelpText = "Play automatically in background.")]
+        public bool AutoPlay { get => autoPlay; set => autoPlay = value; }
     }
 
     public static class CommnadLineParser

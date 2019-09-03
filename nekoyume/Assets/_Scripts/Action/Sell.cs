@@ -70,8 +70,8 @@ namespace Nekoyume.Action
             var shopState = (ShopState) states.GetState(ShopState.Address);
 
             Debug.Log($"Execute Sell. seller : `{sellerAvatarAddress}` " +
-                      $"node : `{States.Instance.agentState.Value.address}` " +
-                      $"current avatar: `{States.Instance.currentAvatarState?.Value?.address}`");
+                      $"node : `{States.Instance?.agentState?.Value?.address}` " +
+                      $"current avatar: `{States.Instance?.currentAvatarState?.Value?.address}`");
 
             // 인벤토리에서 판매할 아이템을 선택하고 수량을 조절한다.
             if (!avatarState.inventory.TryGetNonFungibleItem(itemUsable, out ItemUsable nonFungibleItem))
