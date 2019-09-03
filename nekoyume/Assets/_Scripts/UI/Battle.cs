@@ -1,5 +1,6 @@
 ﻿using Nekoyume.Game.Item;
 using Nekoyume.Game.VFX;
+using Nekoyume.UI.Module;
 
 namespace Nekoyume.UI
 {
