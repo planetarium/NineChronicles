@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using Libplanet;
 using Libplanet.Action;
+using Nekoyume.Game.Mail;
 using Nekoyume.State;
 
 namespace Nekoyume.Action
@@ -34,7 +35,8 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            var mail = avatarState.mailBox.FirstOrDefault(i => i.attachment.itemUsable?.ItemId == itemId && i.New);
+            var mail = avatarState.mailBox.OfType<AttachmentMail>()
+                .FirstOrDefault(i => i.attachment.itemUsable?.ItemId == itemId && i.New);
             if (mail is null)
                 return states;
 

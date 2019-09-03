@@ -10,17 +10,17 @@ namespace Nekoyume.Game.Mail
     public abstract class Mail
     {
         public bool New;
-        public ActionResult attachment;
         public long blockIndex;
 
         protected Mail(ActionResult actionResult, long blockIndex)
         {
             New = true;
-            attachment = actionResult;
             this.blockIndex = blockIndex;
         }
 
         public abstract string ToInfo();
+
+        public abstract void Read(IMail mail);
     }
 
     [Serializable]
@@ -46,5 +46,6 @@ namespace Nekoyume.Game.Mail
         {
             _mails.Add(mail);
         }
+
     }
 }
