@@ -1,6 +1,8 @@
-﻿using Nekoyume.Game.Item;
+﻿using Nekoyume.Game.Controller;
+using Nekoyume.Game.Item;
 using Nekoyume.Game.VFX;
 using Nekoyume.UI.Module;
+using UnityEngine;
 
 namespace Nekoyume.UI
 {
@@ -8,13 +10,11 @@ namespace Nekoyume.UI
     {
         public StageTitle stageTitle;
         public BottomMenu bottomMenu;
-        public DropItemInventoryVFX InventoryVfx;
 
         protected override void Awake()
         {
             base.Awake();
             Game.Event.OnGetItem.AddListener(OnGetItem);
-            InventoryVfx.Stop();
         }
 
         public override void Initialize()
@@ -43,7 +43,7 @@ namespace Nekoyume.UI
 
         private void OnGetItem(DropItem dropItem)
         {
-            InventoryVfx.Play();
+            VFXController.instance.Create<DropItemInventoryVFX>(bottomMenu.inventoryButton.transform, Vector3.zero);
         }
 
         public override void OnCompleteOfCloseAnimation()
