@@ -215,7 +215,7 @@ public class WidgetNotFoundException : Exception
 
 public class WidgetNotFoundException<T> : Exception where T : Widget
 {
-    private const string MessageFormat = "Widget now found. type : {0}";
+    private const string MessageFormat = "Widget not found. type : {0}";
 
     private static readonly string TypeName = typeof(T).Name;
 

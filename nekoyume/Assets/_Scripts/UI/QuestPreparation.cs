@@ -154,13 +154,13 @@ namespace Nekoyume.UI
             slot.Unequip();
             if (slot.type == ItemBase.ItemType.Armor)
             {
-                var armor = (Armor)slot.item;
-                var weapon = (Weapon)_weaponSlot.item;
+                var armor = (Armor) slot.item;
+                var weapon = (Weapon) _weaponSlot.item;
                 _player.UpdateSet(armor, weapon);
             }
             else if (slot.type == ItemBase.ItemType.Weapon)
             {
-                _player.UpdateWeapon((Weapon)slot.item);
+                _player.UpdateWeapon((Weapon) slot.item);
             }
 
 
@@ -217,7 +217,7 @@ namespace Nekoyume.UI
 
         private void SubscribeInventorySelectedItem(InventoryItemView view)
         {
-            if (view is null)
+            if (!view)
             {
                 inventoryAndItemInfo.inventory.Tooltip.Close();
                 return;
@@ -374,7 +374,7 @@ namespace Nekoyume.UI
                     }
                 }
             }
-            return equipmentSlots.FindSlot(item);
+            return equipmentSlots.FindSlotWithItem(item);
         }
 
         private void SetGlowEquipSlot(bool isActive)

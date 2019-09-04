@@ -31,7 +31,7 @@ namespace Nekoyume.UI.Model
             return slot;
         }
 
-        public EquipSlot FindSlot(ItemUsable item)
+        public EquipSlot FindSlotWithItem(ItemUsable item)
         {
             foreach (var slot in slots)
             {

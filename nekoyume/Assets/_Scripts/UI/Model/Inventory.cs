@@ -249,7 +249,6 @@ namespace Nekoyume.UI.Model
             {
                 return;
             }
-
             selectedItemView.Value.Model.selected.Value = false;
             selectedItemView.Value = null;
         }
@@ -277,21 +276,22 @@ namespace Nekoyume.UI.Model
 
         private void SubscribeOnClick(InventoryItemView view)
         {
-            if (selectedItemView.Value is null)
-            {
-                selectedItemView.SetValueAndForceNotify(view);
-                selectedItemView.Value.Model.selected.Value = true;
-            }
-            else if (selectedItemView.Value == view && selectedItemView.Value.Model.selected.Value)
+            var prevSelected = selectedItemView.Value;
+            if (selectedItemView.Value != null)
             {
                 DeselectAll();
             }
-            else
+            if (prevSelected is null || !ReferenceEquals(prevSelected, view))
             {
-                selectedItemView.SetValueAndForceNotify(view);
-                selectedItemView.Value.Model.selected.Value = true;
-                SetGlowedAll(false);
+                SelectView(view);
             }
+        }
+
+        private void SelectView(InventoryItemView view)
+        {
+            selectedItemView.SetValueAndForceNotify(view);
+            selectedItemView.Value.Model.selected.Value = true;
+            SetGlowedAll(false);
         }
 
         private void UpdateItems(IEnumerable<Game.Item.Inventory.Item> list)

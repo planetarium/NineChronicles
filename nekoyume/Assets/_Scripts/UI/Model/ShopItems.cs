@@ -123,14 +123,16 @@ namespace Nekoyume.UI.Model
         
         public void OnClickShopItem(ShopItemView shopItemView)
         {
-            if (!ReferenceEquals(selectedItemView.Value, null)
-                && !ReferenceEquals(selectedItemView.Value.Model, null))
+            var prevSelected = selectedItemView.Value;
+            if (selectedItemView.Value != null)
             {
-                selectedItemView.Value.Model.selected.Value = false;
+                DeselectAll();
             }
-
-            selectedItemView.SetValueAndForceNotify(shopItemView);
-            selectedItemView.Value.Model.selected.Value = true;
+            if (prevSelected is null || !ReferenceEquals(prevSelected, shopItemView))
+            {
+                selectedItemView.SetValueAndForceNotify(shopItemView);
+                selectedItemView.Value.Model.selected.Value = true;
+            }
         }
 
         private void ResetBuyItems()

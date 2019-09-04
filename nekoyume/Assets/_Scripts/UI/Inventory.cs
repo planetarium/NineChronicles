@@ -1,5 +1,7 @@
 using Nekoyume.BlockChain;
 using Nekoyume.Game.Controller;
+using Nekoyume.UI.Module;
+using System;
 using UniRx;
 using UnityEngine.UI;
 
@@ -16,6 +18,8 @@ namespace Nekoyume.UI
         public Button closeButton;
 
         public Model.Inventory Model { get; private set; }
+
+        private IDisposable _disposableForSelectItem;
 
         protected override void Awake()
         {
@@ -35,19 +39,19 @@ namespace Nekoyume.UI
             Model = new Model.Inventory(States.Instance.currentAvatarState.Value.inventory);
             Model.selectedItemView.Subscribe(view =>
             {
-                if (view is null)
-                {
-                    return;
-                }
-                
-                if (inventory.Tooltip.Model.target.Value == view.RectTransform)
+                if (!view)
                 {
                     inventory.Tooltip.Close();
-
                     return;
                 }
-                
-                inventory.Tooltip.Show(view.RectTransform, view.Model);
+
+                inventory.Tooltip.Show(
+                    view.RectTransform,
+                    view.Model,
+                    tooltip =>
+                    {
+                        inventory.Model.DeselectAll();
+                    });
             });
             
             inventory.SetData(Model);

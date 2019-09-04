@@ -39,11 +39,11 @@ namespace Nekoyume.UI
             Model = null;
         }
 
-        public void Show(RectTransform target, InventoryItem item)
+        public void Show(RectTransform target, InventoryItem item, Action<ItemInformationTooltip> onClose = null)
         {
-            Show(target, item, null, null, null);
+            Show(target, item, null, null, onClose);
         }
-        
+
         public void Show(RectTransform target, InventoryItem item, Func<CountableItem, bool> submitEnabledFunc, string submitText, Action<ItemInformationTooltip> onSubmit, Action<ItemInformationTooltip> onClose = null)
         {
             if (item is null)
