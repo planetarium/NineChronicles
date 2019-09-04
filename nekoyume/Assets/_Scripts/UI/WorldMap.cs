@@ -1,13 +1,15 @@
 using System;
 using System.Collections.Generic;
-using Assets.SimpleLocalization;
+using System.Linq;
+using UnityEngine;
 using Nekoyume.BlockChain;
+using Nekoyume.Data;
+using Assets.SimpleLocalization;
 using Nekoyume.Game.Controller;
-using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using UniRx;
-using UnityEngine;
 using UnityEngine.UI;
+using Nekoyume.TableData;
 
 namespace Nekoyume.UI
 {
@@ -45,7 +47,12 @@ namespace Nekoyume.UI
 
                 return _selectedStage;
             }
-            set => _selectedStage = value;
+            set
+            {
+                var stages = Game.Game.instance.TableSheets.StageSheet.ToOrderedList();
+                _selectedStage = Math.Min(value, stages.Last().Stage);
+
+            }
         }
 
         #region Mono

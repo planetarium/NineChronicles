@@ -66,6 +66,7 @@ namespace Nekoyume.Game.Controller
             public const string BattleCast = "sfx_battle_cast";
             public const string RewardItem = "sfx_reward_item";
             public const string BuyItem = "sfx_buy_item";
+            public const string Notification = "sfx_notification";
         }
 
         private enum State

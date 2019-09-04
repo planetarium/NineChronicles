@@ -1,6 +1,7 @@
 using EnhancedUI.EnhancedScroller;
 using Nekoyume.Helper;
 using System;
+using Nekoyume.Game.Mail;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,6 +16,8 @@ namespace Nekoyume.UI
         public Button button;
         public IObservable<Unit> onClickButton;
         public IDisposable onClickDisposable;
+
+        private Mail _mail;
 
         #region Mono
 
@@ -33,6 +36,7 @@ namespace Nekoyume.UI
 
         public void SetData(Game.Mail.Mail mail)
         {
+            _mail = Widget.Find<Mail>();
             data = mail;
             var text = mail.ToInfo();
             Sprite sprite;
@@ -57,9 +61,13 @@ namespace Nekoyume.UI
 
         public void Read()
         {
+            if (!data.New)
+                return;
+
             data.New = false;
             button.interactable = false;
             label.color = ColorHelper.HexToColorRGB("7a7a7a");
+            data.Read(_mail);
         }
 
         private void Clear()

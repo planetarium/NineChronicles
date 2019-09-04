@@ -5,7 +5,7 @@ namespace Nekoyume.Game.VFX.Skill
 {
     public class SkillAreaVFX : SkillVFX
     {
-        protected override float EmmitDuration => 0f;
+        protected override float EmitDuration => 0f;
         public ParticleSystem finisher;
         public ParticleSystem last;
         private ParticleSystem[] _loops;

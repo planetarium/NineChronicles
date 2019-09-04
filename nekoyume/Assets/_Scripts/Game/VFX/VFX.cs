@@ -3,6 +3,9 @@ using UnityEngine;
 
 namespace Nekoyume.Game.VFX
 {
+    /// <summary>
+    /// This object is used by VFXController only. Do not use directly.
+    /// </summary>
     [RequireComponent(typeof(ParticleSystem))]
     public class VFX : MonoBehaviour
     {
@@ -10,10 +13,10 @@ namespace Nekoyume.Game.VFX
 
         private ParticleSystem[] _particles = null;
         private int _particlesLength = 0;
-        private ParticleSystem _particlesRoot = null;
         private float _particlesDuration = 0f;
 
-        protected virtual float EmmitDuration => 1f;
+        protected ParticleSystem _particlesRoot = null;
+        protected virtual float EmitDuration => 1f;
 
         #region Mono
 
@@ -45,14 +48,14 @@ namespace Nekoyume.Game.VFX
             _particlesRoot = _particles[0];
         }
 
-        private void OnEnable()
+        protected virtual void OnEnable()
         {
             if (ReferenceEquals(_particlesRoot, null))
             {
                 return;
             }
 
-            if (EmmitDuration > 0f)
+            if (EmitDuration > 0f)
             {
                 StartCoroutine(CoAutoInactive());   
             }
@@ -70,7 +73,8 @@ namespace Nekoyume.Game.VFX
         {
             gameObject.SetActive(true);
         }
-        public void Stop()
+
+        public virtual void Stop()
         {
             gameObject.SetActive(false);
         }
@@ -79,7 +83,7 @@ namespace Nekoyume.Game.VFX
         {
             var duration = 0f;
 
-            while (duration < EmmitDuration)
+            while (duration < EmitDuration)
             {
                 duration += Time.deltaTime;
 

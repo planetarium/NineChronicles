@@ -7,6 +7,7 @@ using Random = UnityEngine.Random;
 
 namespace Nekoyume.Game
 {
+    [DefaultExecutionOrder(300)]
     [RequireComponent(typeof(Camera))]
     public class ActionCamera : MonoSingleton<ActionCamera>
     {

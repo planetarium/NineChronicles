@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using DefaultNamespace;
+using Nekoyume.Game.Controller;
 using Nekoyume.UI.Scroller;
 using UniRx;
 
@@ -41,6 +42,9 @@ namespace Nekoyume.UI
             base.Awake();
             scroller.onRequestToRemoveModelByIndex.Subscribe(SubscribeToRemoveModel).AddTo(gameObject);
             scroller.SetModel(Models);
+            Models.ObserveAdd()
+                .Subscribe(_ => AudioController.instance.PlaySfx(AudioController.SfxCode.Notification))
+                .AddTo(gameObject);
         }
 
         private void Update()

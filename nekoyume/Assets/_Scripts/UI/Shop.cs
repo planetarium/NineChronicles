@@ -341,7 +341,8 @@ namespace Nekoyume.UI
 
         private void OnClickSubmitItemCountAndPricePopup(Model.ItemCountAndPricePopup data)
         {
-            _loadingScreen.Show();
+            if (Model.state.Value != UI.Model.Shop.State.Sell)
+                _loadingScreen.Show();
 
             if (Model.itemInfo.Value.item.Value is ShopItem shopItem)
             {
@@ -362,64 +363,39 @@ namespace Nekoyume.UI
                 else
                 {
                     // 판매 취소하겠습니다.
-                    ActionManager.instance
-                        .SellCancellation(shopItem.sellerAvatarAddress.Value, shopItem.productId.Value)
-                        .Subscribe(eval =>
-                        {
-                            ResponseSellCancellation(eval, shopItem.productId.Value, (ItemUsable) shopItem.item.Value);
-                            AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
-                        })
-                        .AddTo(this);
+                    ActionManager.instance.SellCancellation(shopItem.sellerAvatarAddress.Value, shopItem.productId.Value);
+                    ResponseSellCancellation(shopItem);
                 }
 
                 return;
             }
 
             // 판매하겠습니다.
-            ActionManager.instance
-                .Sell((ItemUsable) data.item.Value.item.Value, data.price.Value)
-                .Subscribe(eval =>
-                {
-                    ResponseSell(eval);
-                    AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
-                })
-                .AddTo(this);
+            ActionManager.instance.Sell((ItemUsable) data.item.Value.item.Value, data.price.Value);
+            ResponseSell();
         }
 
-        private void ResponseSell(ActionBase.ActionEvaluation<Sell> eval)
+        private void ResponseSell()
+        {
+            var item = Model.itemCountAndPricePopup.Value.item.Value;
+            Model.inventory.Value.RemoveItem(item.item.Value);
+            Model.itemCountAndPricePopup.Value.item.Value = null;
+            AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
+            Notification.Push($"{item.item.Value.Data.name} 아이템을 상점에 등록합니다.");
+        }
+
+        private void ResponseSellCancellation(ShopItem shopItem)
         {
             Model.itemCountAndPricePopup.Value.item.Value = null;
 
-            var sellerAgentAddress = eval.InputContext.Signer;
-            var productId = eval.Action.productId;
-            if (!States.Instance.shopState.Value.TryGet(sellerAgentAddress, productId, out var outPair))
-            {
-                return;
-            }
-
-            var shopItem = outPair.Value;
-
-            Model.inventory.Value.RemoveItem(shopItem.itemUsable);
-
-            Model.shopItems.Value.AddShopItem(sellerAgentAddress, shopItem);
-            Model.shopItems.Value.AddRegisteredProduct(sellerAgentAddress, shopItem);
-
-            _loadingScreen.Close();
-        }
-
-        private void ResponseSellCancellation(ActionBase.ActionEvaluation<SellCancellation> eval, Guid productId,
-            ItemUsable shopItem)
-        {
-            Model.itemCountAndPricePopup.Value.item.Value = null;
-
-            var sellerAgentAddress = eval.InputContext.Signer;
+            var sellerAgentAddress = shopItem.sellerAgentAddress.Value;
+            var productId = shopItem.productId.Value;
 
             Model.shopItems.Value.RemoveShopItem(sellerAgentAddress, productId);
             Model.shopItems.Value.RemoveProduct(productId);
             Model.shopItems.Value.RemoveRegisteredProduct(productId);
-            Model.inventory.Value.AddItem(shopItem);
-
-            _loadingScreen.Close();
+            AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
+            Notification.Push($"{shopItem.item.Value.Data.name} 아이템을 판매 취소합니다.");
         }
 
         private void ResponseBuy(ActionBase.ActionEvaluation<Buy> eval, Guid productId, ItemUsable shopItem)
