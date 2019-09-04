@@ -19,11 +19,13 @@ using Libplanet.Net;
 using Libplanet.Store;
 using Libplanet.Tx;
 using Nekoyume.Action;
+using Nekoyume.Game.Item;
 #if BLOCK_LOG_USE
 using Nekoyume.Helper;
 #endif
 using Nekoyume.Serilog;
 using Serilog;
+using UniRx;
 using UnityEngine;
 
 namespace Nekoyume.BlockChain
@@ -214,6 +216,8 @@ namespace Nekoyume.BlockChain
                 );
             });
 
+            Cheat.Log($"Address: {PrivateKey.PublicKey.ToAddress()}");
+
             yield return new WaitUntil(() => swarmStartTask.IsCompleted);
         }
 
@@ -236,7 +240,30 @@ namespace Nekoyume.BlockChain
                 {
                     var task = Task.Run(() => MakeTransaction(actions, true));
                     yield return new WaitUntil(() => task.IsCompleted);
+                    Cheat.Log($"# of staged txs: {_store.IterateStagedTransactionIds(false).Count()}");
                 }
+            }
+        }
+
+        public IEnumerator CoAutoPlayer()
+        {
+            int avatarIndex = 0;
+            Address avatarAddress = AvatarManager.CreateAvatarAddress();
+            string dummyName = Address.ToHex().Substring(0, 8);
+
+            yield return ActionManager.instance
+                .CreateAvatar(avatarAddress, avatarIndex, dummyName)
+                .ToYieldInstruction();
+
+            AvatarManager.SetIndex(avatarIndex);
+            var waitForSeconds = new WaitForSeconds(TxProcessInterval);
+
+            while (true)
+            {
+                yield return waitForSeconds;
+
+                yield return ActionManager.instance.HackAndSlash(
+                    new List<Equipment>(), new List<Food>(), 1).ToYieldInstruction();
             }
         }
 

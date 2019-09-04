@@ -84,8 +84,8 @@ namespace Nekoyume.Action
             }
 
             Debug.Log($"Execute Combination. player : `{avatarAddress}` " +
-                      $"node : `{States.Instance.agentState.Value.address}` " +
-                      $"current avatar: `{States.Instance.currentAvatarState?.Value?.address}`");
+                      $"node : `{States.Instance?.agentState?.Value?.address}` " +
+                      $"current avatar: `{States.Instance?.currentAvatarState?.Value?.address}`");
 
             // 사용한 재료를 인벤토리에서 제거.
             foreach (var material in Materials)

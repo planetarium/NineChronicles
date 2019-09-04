@@ -1,13 +1,14 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.BlockChain;
 using Nekoyume.Game.Mail;
 using Nekoyume.Model;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Nekoyume.UI
+namespace Nekoyume.UI.Module
 {
     public class BottomMenu : MonoBehaviour
     {
