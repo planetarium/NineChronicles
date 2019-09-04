@@ -353,13 +353,6 @@ namespace Nekoyume.BlockChain
 
         private IBlockPolicy<PolymorphicAction<ActionBase>> GetPolicy()
         {
-            return new BlockPolicy<PolymorphicAction<ActionBase>>(
-                new RewardGold { gold = 1 },
-                BlockInterval,
-                100000,
-                2048
-            );
-
 # if UNITY_EDITOR
             return new DebugPolicy();
 # else
