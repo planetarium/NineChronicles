@@ -144,6 +144,7 @@ GameObject:
   - component: {fileID: 222481197531525468}
   - component: {fileID: 114504198101856258}
   - component: {fileID: 114107061293335166}
+  - component: {fileID: 1457542177737296865}
   m_Layer: 5
   m_Name: SlotBelt
   m_TagString: Untagged
@@ -222,11 +223,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 31d16648271740229b605e99f40a2c8b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  rectTransform: {fileID: 0}
   button: {fileID: 0}
   gradeImage: {fileID: 4423429282000483156}
   defaultImage: {fileID: 114051379875005956}
   itemImage: {fileID: 2329875161907077694}
   type: 4
+--- !u!114 &1457542177737296865
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1042521792185820}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1862395651, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates: []
 --- !u!1 &1048091883891404
 GameObject:
   m_ObjectHideFlags: 0
@@ -313,6 +328,7 @@ GameObject:
   - component: {fileID: 222803224878618738}
   - component: {fileID: 114289491092641894}
   - component: {fileID: 114324202881565294}
+  - component: {fileID: 5297191996140400638}
   m_Layer: 5
   m_Name: SlotRing2
   m_TagString: Untagged
@@ -391,11 +407,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 31d16648271740229b605e99f40a2c8b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  rectTransform: {fileID: 0}
   button: {fileID: 0}
   gradeImage: {fileID: 1948542142619909813}
   defaultImage: {fileID: 114960982128279618}
   itemImage: {fileID: 3728752011783181804}
   type: 6
+--- !u!114 &5297191996140400638
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1066582493202522}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1862395651, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates: []
 --- !u!1 &1093658089476738
 GameObject:
   m_ObjectHideFlags: 0
@@ -1114,6 +1144,7 @@ GameObject:
   - component: {fileID: 222757969579879516}
   - component: {fileID: 114794798238621964}
   - component: {fileID: 114927856771885820}
+  - component: {fileID: 7378866597129296145}
   m_Layer: 5
   m_Name: SlotBody
   m_TagString: Untagged
@@ -1192,11 +1223,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 31d16648271740229b605e99f40a2c8b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  rectTransform: {fileID: 0}
   button: {fileID: 0}
   gradeImage: {fileID: 7013330435921018618}
   defaultImage: {fileID: 114983507505213598}
   itemImage: {fileID: 3109979628209043187}
   type: 3
+--- !u!114 &7378866597129296145
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1484811922802942}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1862395651, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates: []
 --- !u!1 &1529925278338208
 GameObject:
   m_ObjectHideFlags: 0
@@ -1410,6 +1455,7 @@ GameObject:
   - component: {fileID: 222382480054176794}
   - component: {fileID: 114302059253212596}
   - component: {fileID: 114517948193490702}
+  - component: {fileID: 4294103971562919229}
   m_Layer: 5
   m_Name: SlotNeck
   m_TagString: Untagged
@@ -1488,11 +1534,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 31d16648271740229b605e99f40a2c8b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  rectTransform: {fileID: 0}
   button: {fileID: 0}
   gradeImage: {fileID: 3067910812407655209}
   defaultImage: {fileID: 114676150779133956}
   itemImage: {fileID: 6630438943221882395}
   type: 5
+--- !u!114 &4294103971562919229
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1569826106165312}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1862395651, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates: []
 --- !u!1 &1571755478602324
 GameObject:
   m_ObjectHideFlags: 0
@@ -1505,6 +1565,7 @@ GameObject:
   - component: {fileID: 222156907663926528}
   - component: {fileID: 114513140095525190}
   - component: {fileID: 114906802428102500}
+  - component: {fileID: 6391392163671109883}
   m_Layer: 5
   m_Name: SlotRing
   m_TagString: Untagged
@@ -1583,11 +1644,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 31d16648271740229b605e99f40a2c8b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  rectTransform: {fileID: 0}
   button: {fileID: 0}
   gradeImage: {fileID: 2181738280151441541}
   defaultImage: {fileID: 114601298524153340}
   itemImage: {fileID: 6851651614706214042}
   type: 6
+--- !u!114 &6391392163671109883
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1571755478602324}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1862395651, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates: []
 --- !u!1 &1602854428135446
 GameObject:
   m_ObjectHideFlags: 0
@@ -2565,6 +2640,7 @@ GameObject:
   - component: {fileID: 222220681306265710}
   - component: {fileID: 114786787157209194}
   - component: {fileID: 114251819476231452}
+  - component: {fileID: 5335674817080299155}
   m_Layer: 5
   m_Name: SlotWeapon
   m_TagString: Untagged
@@ -2643,11 +2719,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 31d16648271740229b605e99f40a2c8b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  rectTransform: {fileID: 0}
   button: {fileID: 0}
   gradeImage: {fileID: 7683779973934985817}
   defaultImage: {fileID: 114443146394530188}
   itemImage: {fileID: 8645349938831423400}
   type: 1
+--- !u!114 &5335674817080299155
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1934166285123574}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1862395651, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates: []
 --- !u!1 &296837700665265470
 GameObject:
   m_ObjectHideFlags: 0

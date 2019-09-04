@@ -22,7 +22,7 @@ namespace Nekoyume.UI
         public Text priceText;
         
         private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
-        
+
         public new Model.ItemInformationTooltip Model { get; private set; }
         
         protected override void Awake()
@@ -83,11 +83,6 @@ namespace Nekoyume.UI
 
         public override void Close()
         {
-            if (Model.itemInformation.item.Value is InventoryItem inventoryItem)
-            {
-                inventoryItem.selected.Value = false;
-            }
-
             Model.onClose.OnNext(this);
             _disposablesForModel.DisposeAllAndClear();
             Model.target.Value = null;

@@ -277,22 +277,19 @@ namespace Nekoyume.UI.Model
 
         private void SubscribeOnClick(InventoryItemView view)
         {
-            if (!ReferenceEquals(selectedItemView.Value, null) &&
-                !ReferenceEquals(selectedItemView.Value.Model, null))
+            if (selectedItemView.Value is null)
             {
-                selectedItemView.Value.Model.selected.Value = false;
+                selectedItemView.SetValueAndForceNotify(view);
+                selectedItemView.Value.Model.selected.Value = true;
             }
-
-            if (selectedItemView.Value == view)
+            else if (selectedItemView.Value == view && selectedItemView.Value.Model.selected.Value)
             {
-                selectedItemView.Value.Model.selected.Value = false;
-                selectedItemView.SetValueAndForceNotify(null);
+                DeselectAll();
             }
             else
             {
                 selectedItemView.SetValueAndForceNotify(view);
                 selectedItemView.Value.Model.selected.Value = true;
-
                 SetGlowedAll(false);
             }
         }

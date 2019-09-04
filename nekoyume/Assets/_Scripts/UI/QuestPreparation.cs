@@ -69,7 +69,7 @@ namespace Nekoyume.UI
             _stage = Game.Game.instance.stage;
             _stage.LoadBackground("dungeon");
             _player = _stage.GetPlayer(_stage.questPreparationPosition);
-            if (ReferenceEquals(_player, null))
+            if (_player is null)
             {
                 throw new NotFoundComponentException<Player>();
             }
@@ -154,13 +154,13 @@ namespace Nekoyume.UI
             slot.Unequip();
             if (slot.type == ItemBase.ItemType.Armor)
             {
-                var armor = (Armor) slot.item;
-                var weapon = (Weapon) _weaponSlot.item;
+                var armor = (Armor)slot.item;
+                var weapon = (Weapon)_weaponSlot.item;
                 _player.UpdateSet(armor, weapon);
             }
             else if (slot.type == ItemBase.ItemType.Weapon)
             {
-                _player.UpdateWeapon((Weapon) slot.item);
+                _player.UpdateWeapon((Weapon)slot.item);
             }
 
 
@@ -173,6 +173,7 @@ namespace Nekoyume.UI
             {
                 inventoryItem.equipped.Value = false;
             }
+            inventoryAndItemInfo.inventory.Tooltip.Close();
         }
 
         public void SelectItem(Toggle item)
@@ -237,6 +238,7 @@ namespace Nekoyume.UI
                 tooltip =>
                 {
                     equipSlotGlow.SetActive(false);
+                    inventoryAndItemInfo.inventory.Model.DeselectAll();
                 });
         }
 
@@ -270,7 +272,6 @@ namespace Nekoyume.UI
             }
 
             var slot = FindSelectedItemSlot(type);
-            if (slot.item != null) return;
 
             AudioController.instance.PlaySfx(type == ItemBase.ItemType.Food
                 ? AudioController.SfxCode.ChainMail2
@@ -278,7 +279,8 @@ namespace Nekoyume.UI
 
             if (slot != null)
             {
-                if (inventoryAndItemInfo.inventory.Model.TryGetEquipment(slot.item, out var inventoryItem))
+                if (inventoryAndItemInfo.inventory.Model.TryGetEquipment(slot.item, out var inventoryItem) ||
+                    inventoryAndItemInfo.inventory.Model.TryGetConsumable(slot.item as Food, out inventoryItem))
                 {
                     inventoryItem.equipped.Value = false;
                 }
@@ -287,7 +289,6 @@ namespace Nekoyume.UI
                 slot.SetOnClickAction(ShowEquippedTooltip, Unequip);
                 SetGlowEquipSlot(false);
             }
-            else return;
 
             if (type == ItemBase.ItemType.Armor)
             {
@@ -304,6 +305,7 @@ namespace Nekoyume.UI
             {
                 item.equipped.Value = true;
             }
+            inventoryAndItemInfo.inventory.Tooltip.Close();
         }
 
         private void Quest(bool repeat)

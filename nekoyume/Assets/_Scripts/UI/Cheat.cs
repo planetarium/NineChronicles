@@ -12,7 +12,6 @@ using Nekoyume.TableData;
 using Nekoyume.UI;
 using UnityEngine;
 using UnityEngine.UI;
-using Skill = Nekoyume.Model.Skill;
 
 namespace Nekoyume
 {
@@ -66,7 +65,7 @@ namespace Nekoyume
         static void Log(string text)
         {
             Instance._logString.Insert(0, $"> {text}\n");
-            Instance.log.text += Instance._logString.ToString();
+            Instance.log.text = Instance._logString.ToString();
         }
 
         protected override void Awake()

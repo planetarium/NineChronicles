@@ -22,7 +22,10 @@ namespace Nekoyume.UI
         private void Awake()
         {
             _eventTrigger = GetComponent<EventTrigger>();
-            if (!_eventTrigger) return;
+            if (!_eventTrigger)
+            {
+                throw new NotFoundComponentException<EventTrigger>();
+            }
 
             EventTrigger.Entry entry = new EventTrigger.Entry();
             entry.eventID = EventTriggerType.PointerClick;
