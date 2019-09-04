@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace Nekoyume.Game.Controller
 {
+    [DefaultExecutionOrder(350)]
     public class VFXController : MonoSingleton<VFXController>
     {
         protected override bool ShouldRename => true;
@@ -33,7 +34,7 @@ namespace Nekoyume.Game.Controller
 
         public T Create<T>(Transform target, Vector3 offset) where T : VFX.VFX
         {
-            var vfx = _pool.Get<T>();
+            var vfx = _pool.Get<T>(target.position + offset);
             StartCoroutine(CoChaseTarget(vfx, target, offset));
             return vfx;
         }
@@ -43,7 +44,7 @@ namespace Nekoyume.Game.Controller
             var target = ActionCamera.instance.transform;
             var offset = position - target.position;
             offset.z += 10f;
-            var vfx = _pool.Get<T>();
+            var vfx = _pool.Get<T>(target.position + offset);
             StartCoroutine(CoChaseTarget(vfx, target, offset));
             return vfx;
         }
@@ -56,7 +57,6 @@ namespace Nekoyume.Game.Controller
                    target)
             {
                 t.position = target.position + offset;
-
                 yield return null;
             }
         }

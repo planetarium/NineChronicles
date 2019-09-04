@@ -67,7 +67,7 @@ namespace Nekoyume.Game
             Observable.EveryUpdate()
                 .Where(_ => Input.GetMouseButtonUp(0))
                 .Select(_ => Input.mousePosition)
-                .Subscribe(pos => PlayMouseOnClickVFX(pos))
+                .Subscribe(PlayMouseOnClickVFX)
                 .AddTo(gameObject);
         }
 

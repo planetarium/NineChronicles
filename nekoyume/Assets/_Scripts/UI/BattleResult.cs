@@ -218,7 +218,8 @@ namespace Nekoyume.UI
                     var model = SharedModel.rewards[i];
                     view.SetData(model);
                     view.gameObject.SetActive(true);
-                    VFXController.instance.Create<DropItemInventoryVFX>(view.transform, view.CenterOffsetAsPosition).Play();
+                    yield return null;
+                    VFXController.instance.Create<DropItemInventoryVFX>(view.transform, view.CenterOffsetAsPosition);
                     AudioController.instance.PlaySfx(AudioController.SfxCode.RewardItem);
                 }
                 

@@ -3,6 +3,9 @@ using UnityEngine;
 
 namespace Nekoyume.Game.VFX
 {
+    /// <summary>
+    /// This object is used by VFXController only. Do not use directly.
+    /// </summary>
     [RequireComponent(typeof(ParticleSystem))]
     public class VFX : MonoBehaviour
     {
