@@ -36,7 +36,7 @@ namespace Nekoyume.Action
         }
 
         [Serializable]
-        public class Result : ActionResult
+        public class Result : AttachmentActionResult
         {
             public List<Material> materials;
         }

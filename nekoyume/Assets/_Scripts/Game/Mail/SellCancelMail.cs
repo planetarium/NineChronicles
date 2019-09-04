@@ -6,9 +6,9 @@ namespace Nekoyume.Game.Mail
     [Serializable]
     public class SellCancelMail : AttachmentMail
     {
-        public SellCancelMail(ActionResult actionResult, long blockIndex) : base(actionResult, blockIndex)
+        public SellCancelMail(AttachmentActionResult attachmentActionResult, long blockIndex) : base(attachmentActionResult, blockIndex)
         {
-            attachment = (SellCancellation.Result) actionResult;
+            attachment = (SellCancellation.Result) attachmentActionResult;
         }
 
         public override string ToInfo()

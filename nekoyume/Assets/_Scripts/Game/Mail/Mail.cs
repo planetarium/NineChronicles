@@ -12,7 +12,7 @@ namespace Nekoyume.Game.Mail
         public bool New;
         public long blockIndex;
 
-        protected Mail(ActionResult actionResult, long blockIndex)
+        protected Mail(AttachmentActionResult attachmentActionResult, long blockIndex)
         {
             New = true;
             this.blockIndex = blockIndex;

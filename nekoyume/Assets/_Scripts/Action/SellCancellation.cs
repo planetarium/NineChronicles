@@ -16,7 +16,7 @@ namespace Nekoyume.Action
         public Result result;
 
         [Serializable]
-        public class Result : ActionResult
+        public class Result : AttachmentActionResult
         {
             public Game.Item.ShopItem shopItem;
         }

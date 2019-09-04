@@ -6,11 +6,11 @@ namespace Nekoyume.Game.Mail
     [Serializable]
     public abstract class AttachmentMail : Mail
     {
-        public ActionResult attachment;
+        public AttachmentActionResult attachment;
 
-        protected AttachmentMail(ActionResult actionResult, long blockIndex) : base(actionResult, blockIndex)
+        protected AttachmentMail(AttachmentActionResult attachmentActionResult, long blockIndex) : base(attachmentActionResult, blockIndex)
         {
-            attachment = actionResult;
+            attachment = attachmentActionResult;
         }
     }
 }
