@@ -6,9 +6,8 @@ namespace Nekoyume.Game.Mail
     [Serializable]
     public class SellCancelMail : AttachmentMail
     {
-        public SellCancelMail(AttachmentActionResult attachmentActionResult, long blockIndex) : base(attachmentActionResult, blockIndex)
+        public SellCancelMail(SellCancellation.Result attachmentActionResult, long blockIndex) : base(attachmentActionResult, blockIndex)
         {
-            attachment = (SellCancellation.Result) attachmentActionResult;
         }
 
         public override string ToInfo()
@@ -19,11 +18,6 @@ namespace Nekoyume.Game.Mail
         public override void Read(IMail mail)
         {
             mail.Read(this);
-        }
-
-        public SellCancellation.Result GetAttachment()
-        {
-            return (SellCancellation.Result) attachment;
         }
     }
 }

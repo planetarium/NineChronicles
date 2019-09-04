@@ -6,9 +6,8 @@ namespace Nekoyume.Game.Mail
     [Serializable]
     public class CombinationMail : AttachmentMail
     {
-        public CombinationMail(AttachmentActionResult attachmentActionResult, long blockIndex) : base(attachmentActionResult, blockIndex)
+        public CombinationMail(Combination.Result attachmentActionResult, long blockIndex) : base(attachmentActionResult, blockIndex)
         {
-            attachment = (Combination.Result) attachmentActionResult;
         }
 
         public override string ToInfo()
@@ -21,9 +20,5 @@ namespace Nekoyume.Game.Mail
             mail.Read(this);
         }
 
-        public Combination.Result GetAttachment()
-        {
-            return (Combination.Result) attachment;
-        }
     }
 }

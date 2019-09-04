@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Nekoyume.Action;
 using Nekoyume.BlockChain;
 using Nekoyume.Game.Factory;
 using Nekoyume.Game.Item;
@@ -24,7 +25,7 @@ namespace Nekoyume.UI
 
         public void Read(CombinationMail mail)
         {
-            var attachment = mail.GetAttachment();
+            var attachment = (Action.Combination.Result) mail.attachment;
             var item = attachment.itemUsable;
             var popup = Find<CombinationResultPopup>();
             var materialItems = attachment.materials
@@ -43,7 +44,7 @@ namespace Nekoyume.UI
 
         public void Read(SellCancelMail mail)
         {
-            var attachment = mail.GetAttachment();
+            var attachment = (SellCancellation.Result) mail.attachment;
             var item = attachment.itemUsable;
             //TODO 관련 기획이 끝나면 별도 UI를 생성
             var popup = Find<ItemCountAndPricePopup>();

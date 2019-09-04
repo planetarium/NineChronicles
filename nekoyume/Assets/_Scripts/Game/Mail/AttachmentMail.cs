@@ -8,7 +8,7 @@ namespace Nekoyume.Game.Mail
     {
         public AttachmentActionResult attachment;
 
-        protected AttachmentMail(AttachmentActionResult attachmentActionResult, long blockIndex) : base(attachmentActionResult, blockIndex)
+        protected AttachmentMail(AttachmentActionResult attachmentActionResult, long blockIndex) : base(blockIndex)
         {
             attachment = attachmentActionResult;
         }
