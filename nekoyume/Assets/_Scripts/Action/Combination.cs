@@ -36,10 +36,9 @@ namespace Nekoyume.Action
         }
 
         [Serializable]
-        public struct Result
+        public class Result : AttachmentActionResult
         {
             public List<Material> materials;
-            public ItemUsable itemUsable;
         }
 
         public List<Material> Materials { get; private set; }
@@ -155,7 +154,7 @@ namespace Nekoyume.Action
                 itemUsable.Stats.SetStatAdditionalValue(stat.Key, stat.Value);
 
                 result.itemUsable = itemUsable;
-                var mail = new Mail(result, ctx.BlockIndex);
+                var mail = new CombinationMail(result, ctx.BlockIndex);
                 avatarState.Update(mail);
                 avatarState.questList.UpdateCombinationQuest(itemUsable);
             }
@@ -194,7 +193,7 @@ namespace Nekoyume.Action
                 var itemId = new Guid(b);
                 var itemUsable = GetFood(itemEquipmentRow, itemId);
                 result.itemUsable = itemUsable;
-                var mail = new Mail(result, ctx.BlockIndex);
+                var mail = new CombinationMail(result, ctx.BlockIndex);
                 avatarState.Update(mail);
                 avatarState.questList.UpdateCombinationQuest(itemUsable);
 
