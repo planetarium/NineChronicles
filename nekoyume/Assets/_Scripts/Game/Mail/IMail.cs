@@ -4,5 +4,7 @@ namespace Nekoyume.Game.Mail
     {
         void Read(CombinationMail mail);
         void Read(SellCancelMail mail);
+        void Read(BuyerMail buyerMail);
+        void Read(SellerMail sellerMail);
     }
 }

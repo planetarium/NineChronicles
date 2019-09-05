@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.BlockChain;
+using Nekoyume.Game.Mail;
 using Nekoyume.State;
 using UnityEngine;
 
@@ -16,6 +17,20 @@ namespace Nekoyume.Action
         public Address sellerAgentAddress;
         public Address sellerAvatarAddress;
         public Guid productId;
+        public BuyerResult buyerResult;
+        public SellerResult sellerResult;
+
+        [Serializable]
+        public class BuyerResult : AttachmentActionResult
+        {
+            public Game.Item.ShopItem shopItem;
+        }
+
+        [Serializable]
+        public class SellerResult : AttachmentActionResult
+        {
+            public Game.Item.ShopItem shopItem;
+        }
 
         protected override IImmutableDictionary<string, object> PlainValueInternal => new Dictionary<string, object>
         {
@@ -66,7 +81,7 @@ namespace Nekoyume.Action
 
             var shopState = (ShopState) states.GetState(ShopState.Address);
 
-            Debug.Log($"Execute Buy. buyer : `{buyerAvatarState}` seller: `{sellerAvatarAddress}`" +
+            Debug.Log($"Execute Buy. buyer : `{buyerAvatarAddress}` seller: `{sellerAvatarAddress}`" +
                       $"node : `{States.Instance?.agentState?.Value?.address}` " +
                       $"current avatar: `{States.Instance?.currentAvatarState?.Value?.address}`");
             // 상점에서 구매할 아이템을 찾는다.
@@ -103,11 +118,22 @@ namespace Nekoyume.Action
             // 구매자의 돈을 감소 시킨다.
             buyerAgentState.gold -= outPair.Value.price;
                 
-            // 판매자의 돈을 증가 시킨다.
-            sellerAgentState.gold += outPair.Value.price;
-            
-            // 구매자의 인벤토리에 구매한 아이템을 넣는다.
-            buyerAvatarState.inventory.AddNonFungibleItem(outPair.Value.itemUsable);
+            // 구매자, 판매자에게 결과 메일 전송
+            buyerResult = new BuyerResult
+            {
+                shopItem = outPair.Value,
+                itemUsable = outPair.Value.itemUsable
+            };
+            var buyerMail = new BuyerMail(buyerResult, ctx.BlockIndex);
+            buyerAvatarState.Update(buyerMail);
+
+            sellerResult = new SellerResult
+            {
+                shopItem = outPair.Value,
+                itemUsable = outPair.Value.itemUsable
+            };
+            var sellerMail = new SellerMail(sellerResult, ctx.BlockIndex);
+            sellerAvatarState.Update(sellerMail);
 
             // 퀘스트 업데이트
             buyerAvatarState.questList.UpdateTradeQuest("buy");
