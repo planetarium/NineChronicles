@@ -213,13 +213,13 @@ namespace Nekoyume.UI.Module
             }
 
             RemoveSkillAll();
-            var statCount = 0;
+            var skillCount = 0;
             if (Model.item.Value.item.Value is ItemUsable itemUsable)
             {
-                if (itemUsable.Skill != null)
+                foreach (var skill in itemUsable.Skills)
                 {
-                    AddSkill(new Model.ItemInformationSkill(itemUsable.Skill));
-                    statCount++;   
+                    AddSkill(new Model.ItemInformationSkill(skill));
+                    skillCount++;
                 }
             }
             else
@@ -228,11 +228,11 @@ namespace Nekoyume.UI.Module
                 if (itemRow.skillId != 0)
                 {
                     AddSkill(new Model.ItemInformationSkill(itemRow));
-                    statCount++;
+                    skillCount++;
                 }
             }
 
-            if (statCount <= 0)
+            if (skillCount <= 0)
             {
                 skillsArea.root.gameObject.SetActive(false);
 

@@ -25,7 +25,7 @@ namespace Tests
 
             var result = Nekoyume.Action.Combination.GetEquipment(equipment, parts, 0, default);
             Assert.NotNull(result);
-            Assert.Null(result.Skill);
+            Assert.AreEqual(result.Skills.Count, 0);
         }
 
         [Test]
@@ -37,9 +37,11 @@ namespace Tests
 
             var result = Nekoyume.Action.Combination.GetEquipment(equipment, parts, 0, default);
             Assert.NotNull(result);
-            Assert.AreEqual(parts.minChance, result.Skill.chance);
-            Assert.AreEqual(parts.elemental, result.Skill.skillRow.ElementalType);
-            Assert.AreEqual(parts.minDamage, result.Skill.power);
+            Assert.AreNotEqual(result.Skills.Count, 0);
+            var skill = result.Skills[0];
+            Assert.AreEqual(parts.minChance, skill.chance);
+            Assert.AreEqual(parts.elemental, skill.skillRow.ElementalType);
+            Assert.AreEqual(parts.minDamage, skill.power);
         }
 
         [UnityTest]

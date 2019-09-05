@@ -16,6 +16,7 @@ using Nekoyume.Model;
 using Nekoyume.State;
 using UnityEngine;
 using Elemental = Nekoyume.Data.Table.Elemental;
+using Skill = Nekoyume.Game.Skill;
 
 namespace Nekoyume.Action
 {
@@ -104,15 +105,13 @@ namespace Nekoyume.Action
             // 조합식 테이블 로드.
             var recipeTable = Tables.instance.Recipe;
 
-            // 조합 재료 정렬.
-            var orderedMaterials = Materials.OrderBy(order => order.id).ToList();
-
             // 장비인지 소모품인지 확인.
-            var equipmentMaterials = orderedMaterials.Where(item => GameConfig.EquipmentMaterials.Contains(item.id))
+            var equipmentMaterials = Materials.Where(item => GameConfig.EquipmentMaterials.Contains(item.id))
                 .ToList();
             if (equipmentMaterials.Any())
             {
                 // 장비
+                var orderedMaterials = Materials.OrderByDescending(order => order.count).ToList();
                 orderedMaterials.RemoveAll(item => equipmentMaterials.Contains(item));
                 if (orderedMaterials.Count == 0)
                 {
@@ -120,10 +119,7 @@ namespace Nekoyume.Action
                 }
 
                 var equipmentMaterial = equipmentMaterials[0];
-                var monsterPartsMaterial = orderedMaterials[0];
-
-                if (!Tables.instance.Item.TryGetValue(equipmentMaterial.id, out var outEquipmentMaterialRow) ||
-                    !Tables.instance.Item.TryGetValue(monsterPartsMaterial.id, out var outMonsterPartsMaterialRow))
+                if (!Tables.instance.Item.TryGetValue(equipmentMaterial.id, out var outEquipmentMaterialRow))
                 {
                     return states;
                 }
@@ -133,31 +129,50 @@ namespace Nekoyume.Action
                     return states;
                 }
 
-                if (!TryGetItemEquipmentRow(outItemType, outMonsterPartsMaterialRow.elemental,
-                    outEquipmentMaterialRow.grade,
-                    out var itemEquipmentRow))
+                var itemId = ctx.Random.GenerateUUID4();
+                Equipment equipment = null;
+                var isFirst = true;
+                foreach (var monsterPartsMaterial in orderedMaterials)
                 {
-                    return states;
+                    if (!Tables.instance.Item.TryGetValue(monsterPartsMaterial.id, out var outMonsterPartsMaterialRow))
+                    {
+                        return states;
+                    }
+
+                    if (isFirst)
+                    {
+                        isFirst = false;
+
+                        if (!TryGetItemEquipmentRow(outItemType, outMonsterPartsMaterialRow.elemental,
+                            outEquipmentMaterialRow.grade,
+                            out var itemEquipmentRow))
+                        {
+                            return states;
+                        }
+
+                        equipment = (Equipment) ItemFactory.Create(itemEquipmentRow, itemId);
+                        if (equipment is null)
+                        {
+                            return states;
+                        }
+                    }
+
+                    var normalizedRandomValue = ctx.Random.Next(0, 100000) * 0.00001m;
+                    var roll = GetRoll(monsterPartsMaterial.count, 0, normalizedRandomValue);
+
+                    var statMap = GetStat(outMonsterPartsMaterialRow, roll);
+                    equipment.Stats.SetStatAdditionalValue(statMap.Key, statMap.Value);
+                    equipment.Skills.Add(GetSkill(outMonsterPartsMaterialRow, roll));
                 }
 
-                var normalizedRandomValue = ctx.Random.Next(0, 100000) * 0.00001m;
-                var roll = GetRoll(monsterPartsMaterial.count, 0, normalizedRandomValue);
-
-                // 조합 결과 획득.
-                var itemId = ctx.Random.GenerateUUID4();
-                var itemUsable = GetEquipment(itemEquipmentRow, outMonsterPartsMaterialRow, roll, itemId);
-
-                // 추가 스탯 적용.
-                var stat = GetStat(outMonsterPartsMaterialRow, roll);
-                itemUsable.Stats.SetStatAdditionalValue(stat.Key, stat.Value);
-
-                result.itemUsable = itemUsable;
+                result.itemUsable = equipment;
                 var mail = new CombinationMail(result, ctx.BlockIndex);
                 avatarState.Update(mail);
-                avatarState.questList.UpdateCombinationQuest(itemUsable);
+                avatarState.questList.UpdateCombinationQuest(equipment);
             }
             else
             {
+                var orderedMaterials = Materials.OrderBy(order => order.id).ToList();
                 ItemEquipment itemEquipmentRow = null;
                 // 소모품
                 foreach (var recipe in recipeTable)
@@ -192,7 +207,6 @@ namespace Nekoyume.Action
                 var mail = new CombinationMail(result, ctx.BlockIndex);
                 avatarState.Update(mail);
                 avatarState.questList.UpdateCombinationQuest(itemUsable);
-
             }
 
             avatarState.updatedAt = DateTimeOffset.UtcNow;
@@ -267,6 +281,25 @@ namespace Nekoyume.Action
             return new StatMap(key, value);
         }
 
+        private static Skill GetSkill(Item monsterParts, decimal roll)
+        {
+            var table = Game.Game.instance.TableSheets.SkillSheet;
+            try
+            {
+                var skillRow = table.ToOrderedList().First(r => r.Id == monsterParts.skillId);
+                var chance = Math.Floor(monsterParts.minChance +
+                                        (monsterParts.maxChance - monsterParts.minChance) * roll);
+                chance = Math.Max(monsterParts.minChance, chance);
+                var value = (int) Math.Floor(monsterParts.minDamage +
+                                             (monsterParts.maxDamage - monsterParts.minDamage) * roll);
+                return SkillFactory.Get(skillRow, value, chance);
+            }
+            catch (InvalidOperationException)
+            {
+                return null;
+            }
+        }
+
         private static ItemUsable GetFood(ItemEquipment itemEquipment, Guid itemId)
         {
             // FixMe. 소모품에 랜덤 스킬을 할당했을 때, `HackAndSlash` 액션에서 예외 발생. 그래서 소모품은 랜덤 스킬을 할당하지 않음.
@@ -291,24 +324,11 @@ namespace Nekoyume.Action
 
         public static Equipment GetEquipment(ItemEquipment itemEquipment, Item monsterParts, decimal roll, Guid itemId)
         {
-            var table = Game.Game.instance.TableSheets.SkillSheet;
-            Game.Skill skill;
-            try
-            {
-                var skillRow = table.ToOrderedList().First(r => r.Id == monsterParts.skillId);
-                var chance = Math.Floor(monsterParts.minChance +
-                                        (monsterParts.maxChance - monsterParts.minChance) * roll);
-                chance = Math.Max(monsterParts.minChance, chance);
-                var value = (int) Math.Floor(monsterParts.minDamage +
-                                             (monsterParts.maxDamage - monsterParts.minDamage) * roll);
-                skill = SkillFactory.Get(skillRow, value, chance);
-            }
-            catch (InvalidOperationException)
-            {
-                skill = null;
-            }
+            var skill = GetSkill(monsterParts, roll);
+            var equipment = (Equipment) ItemFactory.Create(itemEquipment, itemId);
+            equipment.Skills.Add(skill);
 
-            return (Equipment) ItemFactory.Create(itemEquipment, itemId, skill);
+            return equipment;
         }
     }
 }
