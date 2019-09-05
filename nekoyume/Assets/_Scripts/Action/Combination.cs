@@ -144,7 +144,7 @@ namespace Nekoyume.Action
                 var roll = GetRoll(monsterPartsMaterial.count, 0, normalizedRandomValue);
 
                 // 조합 결과 획득.
-                var itemId = ctx.NewGuid();
+                var itemId = ctx.Random.GenerateUUID4();
                 var itemUsable = GetEquipment(itemEquipmentRow, outMonsterPartsMaterialRow, roll, itemId);
 
                 // 추가 스탯 적용.
@@ -186,7 +186,7 @@ namespace Nekoyume.Action
                 }
 
                 // 조합 결과 획득.
-                var itemId = ctx.NewGuid();
+                var itemId = ctx.Random.GenerateUUID4();
                 var itemUsable = GetFood(itemEquipmentRow, itemId);
                 result.itemUsable = itemUsable;
                 var mail = new CombinationMail(result, ctx.BlockIndex);

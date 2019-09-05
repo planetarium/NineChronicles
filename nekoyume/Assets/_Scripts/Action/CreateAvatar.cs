@@ -76,12 +76,12 @@ namespace Nekoyume.Action
         {
             var avatarState = new AvatarState(avatarAddress, ctx.Signer, ctx.BlockIndex, name);
 #if UNITY_EDITOR
-            AddItemsForTest(avatarState, ctx);
+            AddItemsForTest(avatarState, ctx.Random);
 #endif
             return avatarState;
         }
 
-        private static void AddItemsForTest(AvatarState avatarState, IActionContext ctx)
+        private static void AddItemsForTest(AvatarState avatarState, IRandom random)
         {
             foreach (var pair in Tables.instance.Item)
             {
@@ -90,7 +90,7 @@ namespace Nekoyume.Action
             
             foreach (var pair in Tables.instance.ItemEquipment.Where(pair => pair.Value.id > GameConfig.DefaultAvatarWeaponId))
             {
-                var itemId = ctx.NewGuid();
+                var itemId = random.GenerateUUID4();
                 avatarState.inventory.AddNonFungibleItem((ItemUsable) ItemFactory.Create(pair.Value, itemId));
             }
         }
