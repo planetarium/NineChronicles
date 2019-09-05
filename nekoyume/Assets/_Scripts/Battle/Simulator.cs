@@ -16,7 +16,7 @@ namespace Nekoyume.Battle
 {
     public class Simulator
     {
-        private readonly IActionContext _ctx;
+        public readonly IRandom Random;
         private readonly int _worldStage;
         private readonly List<MonsterWave> _waves;
         public readonly BattleLog Log;
@@ -29,10 +29,10 @@ namespace Nekoyume.Battle
         public List<ItemBase> rewards => _waveRewards.SelectMany(i => i).ToList();
         public const float TurnPriority = 100f;
 
-        public Simulator(IActionContext ctx, AvatarState avatarState, List<Food> foods, int worldStage,
+        public Simulator(IRandom random, AvatarState avatarState, List<Food> foods, int worldStage,
             Game.Skill skill = null)
         {
-            _ctx = ctx;
+            Random = random;
             _worldStage = worldStage;
             Log = new BattleLog();
             _waves = new List<MonsterWave>();
@@ -164,10 +164,9 @@ namespace Nekoyume.Battle
 
         private void GetReward(int id)
         {
-            IRandom random = _ctx.Random;
             var rewardTable = Game.Game.instance.TableSheets.StageRewardSheet;
             var itemTable = Tables.instance.Item;
-            var itemSelector = new WeightedSelector<int>(random);
+            var itemSelector = new WeightedSelector<int>(Random);
             var items = new List<ItemBase>();
             if (rewardTable.TryGetValue(id, out var reward))
             {
@@ -182,10 +181,12 @@ namespace Nekoyume.Battle
                     var itemId = itemSelector.Pop();
                     if (itemTable.TryGetValue(itemId, out var itemData))
                     {
-                        var count = _ctx.Random.Next(r.Min, r.Max);
+                        var count = Random.Next(r.Min, r.Max);
                         for (int i = 0; i < count; i++)
                         {
-                            var guid = _ctx.NewGuid();
+                            var b = new byte[16];
+                            Random.NextBytes(b);
+                            var guid = new Guid(b);
                             var item = ItemFactory.Create(itemData, guid);
                             items.Add(item);
                         }
