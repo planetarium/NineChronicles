@@ -127,10 +127,18 @@ namespace Nekoyume.UI
         {
             if (slot is null) return;
 
-            if (inventoryAndItemInfo.inventory.Model.TryGetEquipment(slot.item, out var item) ||
-                inventoryAndItemInfo.inventory.Model.TryGetConsumable(slot.item as Food, out item))
+            var inventoryModule = inventoryAndItemInfo.inventory;
+
+            if (inventoryModule.Tooltip.Target != null && inventoryModule.Tooltip.Target == slot.rectTransform)
             {
-                inventoryAndItemInfo.inventory.Tooltip.Show(
+                inventoryModule.Tooltip.Close();
+                return;
+            }
+
+            if (inventoryModule.Model.TryGetEquipment(slot.item, out var item) ||
+                inventoryModule.Model.TryGetConsumable(slot.item as Food, out item))
+            {
+                inventoryModule.Tooltip.Show(
                     slot.rectTransform,
                     item);
             }

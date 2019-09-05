@@ -24,7 +24,9 @@ namespace Nekoyume.UI
         private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
 
         public new Model.ItemInformationTooltip Model { get; private set; }
-        
+
+        public RectTransform Target { get; private set; }
+
         protected override void Awake()
         {
             base.Awake();
@@ -50,7 +52,8 @@ namespace Nekoyume.UI
             {
                 return;
             }
-            
+
+            Target = target;
             _disposablesForModel.DisposeAllAndClear();
             Model.target.Value = target;
             Model.itemInformation.item.Value = item;
@@ -87,6 +90,7 @@ namespace Nekoyume.UI
             _disposablesForModel.DisposeAllAndClear();
             Model.target.Value = null;
             Model.itemInformation.item.Value = null;
+            Target = null;
             base.Close();
         }
         
