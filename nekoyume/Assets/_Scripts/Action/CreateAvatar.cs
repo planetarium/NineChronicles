@@ -66,23 +66,22 @@ namespace Nekoyume.Action
                       $"current avatar: `{States.Instance?.currentAvatarState?.Value?.address}`");
 
             agentState.avatarAddresses.Add(index, avatarAddress);
-            avatarState = CreateAvatarState(name, avatarAddress, ctx.Signer, ctx.Random, ctx.BlockIndex);
+            avatarState = CreateAvatarState(name, avatarAddress, ctx);
 
             states = states.SetState(ctx.Signer, agentState);
             return states.SetState(avatarAddress, avatarState);
         }
 
-        private static AvatarState CreateAvatarState(string name, Address avatarAddress, Address agentAddress,
-            IRandom random, long blockIndex)
+        private static AvatarState CreateAvatarState(string name, Address avatarAddress, IActionContext ctx)
         {
-            var avatarState = new AvatarState(avatarAddress, agentAddress, blockIndex, name);
+            var avatarState = new AvatarState(avatarAddress, ctx.Signer, ctx.BlockIndex, name);
 #if UNITY_EDITOR
-            AddItemsForTest(avatarState, random);
+            AddItemsForTest(avatarState, ctx);
 #endif
             return avatarState;
         }
 
-        private static void AddItemsForTest(AvatarState avatarState, IRandom random)
+        private static void AddItemsForTest(AvatarState avatarState, IActionContext ctx)
         {
             foreach (var pair in Tables.instance.Item)
             {
@@ -91,9 +90,7 @@ namespace Nekoyume.Action
             
             foreach (var pair in Tables.instance.ItemEquipment.Where(pair => pair.Value.id > GameConfig.DefaultAvatarWeaponId))
             {
-                var b = new byte[16];
-                random.NextBytes(b);
-                var itemId = new Guid(b);
+                var itemId = ctx.NewGuid();
                 avatarState.inventory.AddNonFungibleItem((ItemUsable) ItemFactory.Create(pair.Value, itemId));
             }
         }
