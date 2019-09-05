@@ -25,6 +25,8 @@ namespace Nekoyume.Game.Character
         #region Animation
 
         void Appear();
+        void Standing();
+        void StandingToIdle();
         void Idle();
         void Run();
         void StopRun();
