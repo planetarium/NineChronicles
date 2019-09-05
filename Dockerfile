@@ -1,5 +1,17 @@
 FROM gableroux/unity3d:2019.1.0f2 AS build
 
+ARG apt_source
+
+RUN if [ "$apt_source" != "" ]; then \
+  echo "Replace APT source to <$apt_source>."; \
+  sed -i \
+    "s|http://archive.ubuntu.com/ubuntu|$apt_source|" \
+    /etc/apt/sources.list; \
+  fi
+RUN apt-get update && \
+  apt-get install -y libxml2-utils xsltproc && \
+  rm -rf /var/lib/apt/lists/*
+
 ARG ulf
 
 ENV ULF=$ulf
@@ -13,6 +25,7 @@ RUN /scripts/build.sh
 FROM bitnami/minideb:stretch
 
 COPY --from=build /src/Build/LinuxHeadless /app
+COPY --from=build /tmp/test /app/test-result
 VOLUME /data
 
 ENTRYPOINT ["/app/nekoyume", "--storage-path=/data/planetarium"]
