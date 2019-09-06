@@ -87,6 +87,7 @@ GameObject:
   - component: {fileID: 388104067817853246}
   - component: {fileID: 388434516919512120}
   - component: {fileID: 387389212801572156}
+  - component: {fileID: 6202325387254898463}
   m_Layer: 5
   m_Name: UI_EquipmentSlot
   m_TagString: Untagged
@@ -222,11 +223,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 31d16648271740229b605e99f40a2c8b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  eventTrigger: {fileID: 6202325387254898463}
+  rectTransform: {fileID: 570257463785617384}
   button: {fileID: 356276037603139144}
   gradeImage: {fileID: 722425532850955470}
   defaultImage: {fileID: 387531924573887712}
   itemImage: {fileID: 1355787674379007280}
   type: 1
+--- !u!114 &6202325387254898463
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 355993498261736094}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1862395651, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates: []
 --- !u!1 &356276037603139144
 GameObject:
   m_ObjectHideFlags: 0

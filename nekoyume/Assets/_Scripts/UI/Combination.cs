@@ -271,15 +271,9 @@ namespace Nekoyume.UI
 
         private void SubscribeInventorySelectedItem(InventoryItemView view)
         {
-            if (view is null)
-            {
-                return;
-            }
-            
-            if (inventory.Tooltip.Model.target.Value == view.RectTransform)
+            if (!view)
             {
                 inventory.Tooltip.Close();
-
                 return;
             }
 
@@ -292,6 +286,10 @@ namespace Nekoyume.UI
                 {
                     Model.RegisterToStagedItems(tooltip.itemInformation.Model.item.Value);
                     inventory.Tooltip.Close();
+                },
+                tooltip =>
+                {
+                    inventory.Model.DeselectAll();
                 });
         }
 

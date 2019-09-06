@@ -22,9 +22,11 @@ namespace Nekoyume.UI
         public Text priceText;
         
         private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
-        
+
         public new Model.ItemInformationTooltip Model { get; private set; }
-        
+
+        public RectTransform Target { get; private set; }
+
         protected override void Awake()
         {
             base.Awake();
@@ -39,18 +41,19 @@ namespace Nekoyume.UI
             Model = null;
         }
 
-        public void Show(RectTransform target, InventoryItem item)
+        public void Show(RectTransform target, InventoryItem item, Action<ItemInformationTooltip> onClose = null)
         {
-            Show(target, item, null, null, null);
+            Show(target, item, null, null, onClose);
         }
-        
+
         public void Show(RectTransform target, InventoryItem item, Func<CountableItem, bool> submitEnabledFunc, string submitText, Action<ItemInformationTooltip> onSubmit, Action<ItemInformationTooltip> onClose = null)
         {
             if (item is null)
             {
                 return;
             }
-            
+
+            Target = target;
             _disposablesForModel.DisposeAllAndClear();
             Model.target.Value = target;
             Model.itemInformation.item.Value = item;
@@ -83,15 +86,11 @@ namespace Nekoyume.UI
 
         public override void Close()
         {
-            if (Model.itemInformation.item.Value is InventoryItem inventoryItem)
-            {
-                inventoryItem.selected.Value = false;
-            }
-
             Model.onClose.OnNext(this);
             _disposablesForModel.DisposeAllAndClear();
             Model.target.Value = null;
             Model.itemInformation.item.Value = null;
+            Target = null;
             base.Close();
         }
         

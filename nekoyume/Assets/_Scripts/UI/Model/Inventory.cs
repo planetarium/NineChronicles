@@ -249,7 +249,6 @@ namespace Nekoyume.UI.Model
             {
                 return;
             }
-
             selectedItemView.Value.Model.selected.Value = false;
             selectedItemView.Value = null;
         }
@@ -274,18 +273,24 @@ namespace Nekoyume.UI.Model
                 item.dimmed.Value = dimmedFunc.Value(item);
             }
         }
-        
+
         private void SubscribeOnClick(InventoryItemView view)
         {
-            if (!ReferenceEquals(selectedItemView.Value, null) &&
-                !ReferenceEquals(selectedItemView.Value.Model, null))
+            var prevSelected = selectedItemView.Value;
+            if (selectedItemView.Value != null)
             {
-                selectedItemView.Value.Model.selected.Value = false;
+                DeselectAll();
             }
+            if (prevSelected is null || !ReferenceEquals(prevSelected, view))
+            {
+                SelectView(view);
+            }
+        }
 
+        private void SelectView(InventoryItemView view)
+        {
             selectedItemView.SetValueAndForceNotify(view);
             selectedItemView.Value.Model.selected.Value = true;
-
             SetGlowedAll(false);
         }
 

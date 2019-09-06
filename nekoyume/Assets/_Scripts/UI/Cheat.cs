@@ -12,7 +12,6 @@ using Nekoyume.TableData;
 using Nekoyume.UI;
 using UnityEngine;
 using UnityEngine.UI;
-using Skill = Nekoyume.Model.Skill;
 
 namespace Nekoyume
 {

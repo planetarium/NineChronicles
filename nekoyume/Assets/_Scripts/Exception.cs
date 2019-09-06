@@ -1,4 +1,5 @@
 using System;
+using Nekoyume.UI;
 using Spine;
 using UnityEngine;
 
@@ -208,6 +209,17 @@ public class SheetRowNotFoundException : Exception
 public class WidgetNotFoundException : Exception
 {
     public WidgetNotFoundException(string widgetName) : base(widgetName)
+    {
+    }
+}
+
+public class WidgetNotFoundException<T> : Exception where T : Widget
+{
+    private const string MessageFormat = "Widget not found. type : {0}";
+
+    private static readonly string TypeName = typeof(T).Name;
+
+    public WidgetNotFoundException() : base(string.Format(MessageFormat, TypeName))
     {
     }
 }

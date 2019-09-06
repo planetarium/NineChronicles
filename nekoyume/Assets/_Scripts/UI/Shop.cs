@@ -255,13 +255,7 @@ namespace Nekoyume.UI
         {
             if (!view)
             {
-                return;
-            }
-
-            if (inventoryAndItemInfo.inventory.Tooltip.Model.target.Value == view.RectTransform)
-            {
                 inventoryAndItemInfo.inventory.Tooltip.Close();
-
                 return;
             }
 
@@ -282,6 +276,10 @@ namespace Nekoyume.UI
                     {
                         Model.OnClickItemInfo(tooltip.itemInformation.Model.item.Value);
                         inventoryAndItemInfo.inventory.Tooltip.Close();
+                    },
+                    tooltip =>
+                    {
+                        inventoryAndItemInfo.inventory.Model.DeselectAll();
                     });
             }
         }
@@ -290,13 +288,13 @@ namespace Nekoyume.UI
         {
             if (!view)
             {
+                inventoryAndItemInfo.inventory.Tooltip.Close();
                 return;
             }
 
             if (inventoryAndItemInfo.inventory.Tooltip.Model.target.Value == view.RectTransform)
             {
                 inventoryAndItemInfo.inventory.Tooltip.Close();
-
                 return;
             }
 
@@ -311,6 +309,10 @@ namespace Nekoyume.UI
                     {
                         Model.OnClickItemInfo(tooltip.itemInformation.Model.item.Value);
                         inventoryAndItemInfo.inventory.Tooltip.Close();
+                    },
+                    tooltip =>
+                    {
+                        shopItems.data.DeselectAll();
                     });
             }
             else
@@ -324,6 +326,10 @@ namespace Nekoyume.UI
                     {
                         Model.OnClickItemInfo(tooltip.itemInformation.Model.item.Value);
                         inventoryAndItemInfo.inventory.Tooltip.Close();
+                    },
+                    tooltip =>
+                    {
+                        shopItems.data.DeselectAll();
                     });
             }
         }
