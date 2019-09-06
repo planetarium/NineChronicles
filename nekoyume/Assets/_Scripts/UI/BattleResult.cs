@@ -117,7 +117,7 @@ namespace Nekoyume.UI
                 .Subscribe(_ =>
                 {
                     AudioController.PlayClick();
-                    StartCoroutine(CoGoToNextStage());
+                    GoToNextStage();
                     AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickBattleResultNext);
                 })
                 .AddTo(gameObject);
@@ -255,20 +255,19 @@ namespace Nekoyume.UI
                 floatTimeMinusOne = limitSeconds - 1f;
             }
 
-            StartCoroutine(CoGoToNextStage());
+            GoToNextStage();
         }
 
-        private IEnumerator CoGoToNextStage()
+        private void GoToNextStage()
         {
             if (!submitButton.interactable)
-                yield break;
+                return;
             closeButton.interactable = false;
             submitButton.interactable = false;
             suggestionsArea.submitButton1.interactable = false;
             suggestionsArea.submitButton2.interactable = false;
             
             StopCoUpdateBottomText();
-            var coFadeOut = StartCoroutine(CoFadeOut());
             
             var stage = Game.Game.instance.stage;
             var stageLoadingScreen = Find<StageLoadingScreen>();
@@ -284,12 +283,21 @@ namespace Nekoyume.UI
             player.DisableHUD();
 
             var stageId = SharedModel.shouldRepeat ? stage.id : stage.id + 1;
-            var action = ActionManager.instance.HackAndSlash(player.Equipments, new List<Consumable>(), stageId)
-                .ToYieldInstruction();
-            yield return action;
-            yield return StartCoroutine(stageLoadingScreen.CoClose());
-            yield return coFadeOut;
-            Game.Event.OnStageStart.Invoke(action.Result.Action.Result);
+            StartCoroutine(stageLoadingScreen.CoClose());
+            ActionManager.instance.HackAndSlash(player.Equipments, new List<Consumable>(), stageId)
+                .Subscribe((_) => { }, onError: (_) => Find<ActionFailPopup>().Show("Action timeout during HackAndSlash."));
+            StartCoroutine(CoFadeOut());
+        }
+
+        public void NextStage()
+        {
+            Debug.Log("");
+            StartCoroutine(CoGoToNextStageClose());
+        }
+
+        private IEnumerator CoGoToNextStageClose()
+        {
+            yield return StartCoroutine(Find<StageLoadingScreen>().CoClose());
             Close();
         }
 

@@ -53,7 +53,6 @@ namespace Nekoyume.UI
 
             base.Show();
             StartCoroutine(CoRun());
-            StartCoroutine(CoWaitForQuit());
         }
         
         public override IEnumerator CoClose()
@@ -98,12 +97,6 @@ namespace Nekoyume.UI
             }
 
             yield return null;
-        }
-
-        private IEnumerator CoWaitForQuit()
-        {
-            yield return new WaitForSeconds(GameConfig.WaitSeconds);
-            Find<ActionFailPopup>().Show();
         }
     }
 }

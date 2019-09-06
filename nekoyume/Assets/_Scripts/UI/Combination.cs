@@ -414,7 +414,8 @@ namespace Nekoyume.UI
             var index = States.Instance.currentAvatarKey.Value;
             ActionRenderHandler.UpdateLocalAvatarState(newState, index);
 
-            ActionManager.instance.Combination(materials);
+            ActionManager.instance.Combination(materials)
+                .Subscribe((_) => { }, (_) => Find<ActionFailPopup>().Show("Timeout occurred during Combination"));
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickCombinationCombination);
             Find<CombinationLoadingScreen>().Show();
             inventory.SharedModel.RemoveItems(materials);

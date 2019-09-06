@@ -5,8 +5,10 @@ using Nekoyume.Action;
 using Nekoyume.Manager;
 using Nekoyume.State;
 using Nekoyume.TableData;
+using Nekoyume.UI;
 using UniRx;
 using UnityEngine;
+using Combination = Nekoyume.Action.Combination;
 
 namespace Nekoyume.BlockChain
 {
@@ -173,7 +175,7 @@ namespace Nekoyume.BlockChain
             ActionBase.EveryRender<HackAndSlash>()
                 .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
-                .Subscribe(UpdateCurrentAvatarState).AddTo(_disposables);
+                .Subscribe(ResponseHackAndSlash).AddTo(_disposables);
         }
 
         private void Combination()
@@ -333,6 +335,16 @@ namespace Nekoyume.BlockChain
             }
 
             UpdateCurrentAvatarState(eval);
+        }
+        
+        private void ResponseHackAndSlash(ActionBase.ActionEvaluation<HackAndSlash> eval)
+        {
+            Widget.Find<ActionFailPopup>().Close();
+            Widget.Find<LoadingScreen>().Close();
+            Widget.Find<QuestPreparation>().Close();
+            if(Widget.Find<BattleResult>().IsActive()) Widget.Find<BattleResult>().NextStage();
+            UpdateCurrentAvatarState(eval);
+            Game.Event.OnStageStart.Invoke(eval.Action.Result);
         }
     }
 }
