@@ -22,7 +22,7 @@ namespace Nekoyume.Game.Character
 
         public virtual void ResetTarget(GameObject value)
         {
-            if (ReferenceEquals(value, null))
+            if (!value)
             {
                 throw new ArgumentNullException();
             }
@@ -30,7 +30,7 @@ namespace Nekoyume.Game.Character
             Target = value;
             Animator = value.GetComponentInChildren<T>();
 
-            if (ReferenceEquals(Animator, null))
+            if (Animator is null)
             {
                 throw new NotFoundComponentException<T>();
             }
@@ -38,7 +38,7 @@ namespace Nekoyume.Game.Character
 
         public void DestroyTarget()
         {
-            if (ReferenceEquals(Target, null))
+            if (Target is null)
             {
                 throw new ArgumentNullException();
             }
@@ -53,6 +53,8 @@ namespace Nekoyume.Game.Character
         #region Animation
 
         public abstract void Appear();
+        public abstract void Standing();
+        public abstract void StandingToIdle();
         public abstract void Idle();
         public abstract void Run();
         public abstract void StopRun();

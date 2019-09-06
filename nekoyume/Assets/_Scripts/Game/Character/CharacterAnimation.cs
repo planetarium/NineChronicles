@@ -8,6 +8,8 @@ namespace Nekoyume.Game.Character
         public enum Type
         {
             Appear,
+            Standing,
+            StandingToIdle,
             Idle,
             Run,
             Attack,

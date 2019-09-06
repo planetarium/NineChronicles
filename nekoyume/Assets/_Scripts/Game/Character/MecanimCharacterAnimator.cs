@@ -46,6 +46,27 @@ namespace Nekoyume.Game.Character
             Animator.Play(nameof(CharacterAnimation.Type.Appear));
         }
 
+        public override void Standing()
+        {
+            if (!AnimatorValidation())
+            {
+                return;
+            }
+            
+            Animator.Play(nameof(CharacterAnimation.Type.Standing));
+            Animator.SetBool(nameof(CharacterAnimation.Type.Standing), true);
+        }
+
+        public override void StandingToIdle()
+        {
+            if (!AnimatorValidation())
+            {
+                return;
+            }
+            
+            Animator.SetBool(nameof(CharacterAnimation.Type.Standing), false);
+        }
+
         public override void Idle()
         {
             if (!AnimatorValidation())
@@ -54,8 +75,8 @@ namespace Nekoyume.Game.Character
             }
             
             Animator.Play(nameof(CharacterAnimation.Type.Idle));
+            Animator.SetBool(nameof(CharacterAnimation.Type.Standing), false);
             Animator.SetBool(nameof(CharacterAnimation.Type.Run), false);
-            Animator.SetBool(nameof(CharacterAnimation.Type.Die), false);
         }
 
         public override void Run()
