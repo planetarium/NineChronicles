@@ -110,7 +110,7 @@ namespace Nekoyume.UI
             var status = Find<Status>();
             bottomMenu.inventoryButton.onClick.AddListener(status.ToggleInventory);
             bottomMenu.questButton.onClick.AddListener(status.ToggleQuest);
-            bottomMenu.infoAndEquipButton.onClick.AddListener(status.ToggleStatus);
+            bottomMenu.avatarStatusButton.onClick.AddListener(status.ToggleStatus);
         }
 
         public override void Show()

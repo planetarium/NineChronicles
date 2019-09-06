@@ -12,14 +12,24 @@ namespace Nekoyume.UI.Module
 {
     public class BottomMenu : MonoBehaviour
     {
+        // ¿ÞÂÊ
         public Button goToMainButton;
-        public Button inventoryButton;
-        public Button questButton;
-        public Button infoAndEquipButton;
         public Button mailButton;
+        public Button questButton;
+        public Button chatButton;
         public Button dictionaryButton;
+        public Button settingButton;
         public Image hasNewMail;
         public Mail mail;
+
+        // ¿À¸¥ÂÊ
+        public Button avatarStatusButton;
+        public Button inventoryButton;
+        public Button shopSellButton;
+        public Button shopBuyButton;
+        public Button combinationEquipmentButton;
+        public Button combinationConsumableButton;
+        public Button combinationRecipeButton;
 
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
