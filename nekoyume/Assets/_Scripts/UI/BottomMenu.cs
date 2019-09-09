@@ -12,6 +12,15 @@ namespace Nekoyume.UI.Module
 {
     public class BottomMenu : MonoBehaviour
     {
+        [Serializable]
+        public struct Button
+        {
+            public UnityEngine.UI.Button button;
+            public Text text;
+        }
+
+        public Image hasNewMail;
+        public Mail mail;
         // ¿ÞÂÊ
         public Button goToMainButton;
         public Button mailButton;
@@ -19,14 +28,11 @@ namespace Nekoyume.UI.Module
         public Button chatButton;
         public Button dictionaryButton;
         public Button settingButton;
-        public Image hasNewMail;
-        public Mail mail;
-
         // ¿À¸¥ÂÊ
         public Button avatarStatusButton;
         public Button inventoryButton;
-        public Button shopSellButton;
-        public Button shopBuyButton;
+        public Button switchBuyButton;
+        public Button switchSellButton;
         public Button combinationEquipmentButton;
         public Button combinationConsumableButton;
         public Button combinationRecipeButton;
@@ -36,7 +42,7 @@ namespace Nekoyume.UI.Module
         public void Awake()
         {
             hasNewMail.gameObject.SetActive(false);
-            mailButton.onClick.AddListener(mail.Toggle);
+            mailButton.button.onClick.AddListener(mail.Toggle);
         }
 
         private void OnEnable()

@@ -10,12 +10,9 @@ namespace Nekoyume.UI
         public ScrollRect list;
         public QuestInfo questInfo;
 
-        private Player _player;
-
         public override void Show()
         {
             var questList = States.Instance.currentAvatarState.Value.questList;
-            _player = Game.Game.instance.stage.GetPlayer();
             questInfo.gameObject.SetActive(true);
             foreach (var quest in questList)
             {
@@ -28,7 +25,7 @@ namespace Nekoyume.UI
 
         public override void Close()
         {
-            foreach (Transform child in  list.content.transform)
+            foreach (Transform child in list.content.transform)
             {
                 Destroy(child.gameObject);
             }

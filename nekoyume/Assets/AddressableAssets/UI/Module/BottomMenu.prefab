@@ -1951,21 +1951,47 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1a9fb73816c65348abb3c05cb462e11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  goToMainButton: {fileID: 1542912245646647679}
-  mailButton: {fileID: 1542912244914454462}
-  questButton: {fileID: 1542912246053238745}
-  chatButton: {fileID: 1542912246354021191}
-  dictionaryButton: {fileID: 1542912244654648968}
-  settingButton: {fileID: 1542912245387503312}
   hasNewMail: {fileID: 1159692334}
   mail: {fileID: 7410317637696060875}
-  inventoryButton: {fileID: 0}
-  avatarStatusButton: {fileID: 0}
-  shopSellButton: {fileID: 0}
-  shopBuyButton: {fileID: 0}
-  combinationEquipmentButton: {fileID: 0}
-  combinationConsumableButton: {fileID: 0}
-  combinationRecipeButton: {fileID: 0}
+  goToMainButton:
+    button: {fileID: 1542912245646647679}
+    text: {fileID: 1542912244853021835}
+  mailButton:
+    button: {fileID: 1542912244914454462}
+    text: {fileID: 1542912245605688920}
+  questButton:
+    button: {fileID: 1542912246053238745}
+    text: {fileID: 1542912245061904254}
+  chatButton:
+    button: {fileID: 1542912246354021191}
+    text: {fileID: 1542912245061904254}
+  dictionaryButton:
+    button: {fileID: 1542912244654648968}
+    text: {fileID: 1542912245333955621}
+  settingButton:
+    button: {fileID: 1542912245387503312}
+    text: {fileID: 1542912244973672363}
+  avatarStatusButton:
+    button: {fileID: 0}
+    text: {fileID: 0}
+  inventoryButton:
+    button: {fileID: 0}
+    text: {fileID: 0}
+  switchBuyButton:
+    button: {fileID: 0}
+    text: {fileID: 0}
+  switchSellButton:
+    button: {fileID: 0}
+    text: {fileID: 0}
+  combinationEquipmentButton:
+    button: {fileID: 0}
+    text: {fileID: 0}
+  combinationConsumableButton:
+    button: {fileID: 0}
+    text: {fileID: 0}
+  combinationRecipeButton:
+    button: {fileID: 0}
+    text: {fileID: 0}
 --- !u!95 &4964587564797645840
 Animator:
   serializedVersion: 3

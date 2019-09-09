@@ -574,7 +574,7 @@ GameObject:
   - component: {fileID: 4968880463180577773}
   - component: {fileID: 2935716778539098222}
   m_Layer: 0
-  m_Name: AvatarStateButton
+  m_Name: AvatarStatusButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -983,10 +983,30 @@ PrefabInstance:
         type: 3}
       propertyPath: avatarStatusButton
       value: 
-      objectReference: {fileID: 7505073989392458139}
+      objectReference: {fileID: 0}
     - target: {fileID: 6035183985399840212, guid: 214a4ae05c347734c86a76da3c3af566,
         type: 3}
       propertyPath: inventoryButton
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 6035183985399840212, guid: 214a4ae05c347734c86a76da3c3af566,
+        type: 3}
+      propertyPath: avatarStatusButton.button
+      value: 
+      objectReference: {fileID: 7505073989392458139}
+    - target: {fileID: 6035183985399840212, guid: 214a4ae05c347734c86a76da3c3af566,
+        type: 3}
+      propertyPath: avatarStatusButton.text
+      value: 
+      objectReference: {fileID: 7545051757135799334}
+    - target: {fileID: 6035183985399840212, guid: 214a4ae05c347734c86a76da3c3af566,
+        type: 3}
+      propertyPath: inventoryButton.text
+      value: 
+      objectReference: {fileID: 1294072037100329095}
+    - target: {fileID: 6035183985399840212, guid: 214a4ae05c347734c86a76da3c3af566,
+        type: 3}
+      propertyPath: inventoryButton.button
       value: 
       objectReference: {fileID: 2540248987740308608}
     - target: {fileID: 1542912245387503314, guid: 214a4ae05c347734c86a76da3c3af566,

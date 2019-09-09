@@ -108,9 +108,18 @@ namespace Nekoyume.UI
             base.Initialize();
 
             var status = Find<Status>();
-            bottomMenu.inventoryButton.onClick.AddListener(status.ToggleInventory);
-            bottomMenu.questButton.onClick.AddListener(status.ToggleQuest);
-            bottomMenu.avatarStatusButton.onClick.AddListener(status.ToggleStatus);
+            bottomMenu.goToMainButton.button.onClick.AddListener(() =>
+            {
+#if UNITY_EDITOR
+                UnityEditor.EditorApplication.isPlaying = false;
+#else
+                bottomMenu.goToMainButton.button.onClick.AddListener(Application.Quit);
+#endif
+            });
+            bottomMenu.goToMainButton.text.text = LocalizationManager.Localize("UI_GAMEEXIT");
+            bottomMenu.inventoryButton.button.onClick.AddListener(status.ToggleInventory);
+            bottomMenu.questButton.button.onClick.AddListener(status.ToggleQuest);
+            bottomMenu.avatarStatusButton.button.onClick.AddListener(status.ToggleStatus);
         }
 
         public override void Show()
