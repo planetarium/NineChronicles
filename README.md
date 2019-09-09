@@ -1,4 +1,11 @@
-# Nekoyume
+Nine Chronicles
+===============
+
+[![CircleCI][]][ci]
+
+[ci-badge]: https://circleci.com/gh/planetarium/nekoyume-unity.svg?style=svg&circle-token=ca79d4f6281fe60cdde55d0f1c3d97d561106bda
+[ci]: https://circleci.com/gh/planetarium/nekoyume-unity
+
 
 ### 의존성
  - [Unity Hub]
