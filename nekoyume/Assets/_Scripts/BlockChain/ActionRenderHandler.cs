@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net;
 using Nekoyume.Action;
 using Nekoyume.Manager;
 using Nekoyume.State;
@@ -48,6 +47,7 @@ namespace Nekoyume.BlockChain
             Buy();
             RankingReward();
             AddItem();
+            AddGold();
         }
 
         public void Stop()
@@ -79,7 +79,8 @@ namespace Nekoyume.BlockChain
         {
             Debug.LogFormat("Called UpdateAgentState<{0}>. Updated Addresses : `{1}`", evaluation.Action,
                 string.Join(",", evaluation.OutputStates.UpdatedAddresses));
-            States.Instance.agentState.Value = GetAgentState(evaluation);
+            var state = GetAgentState(evaluation);
+            UpdateAgentState(state);
         }
 
         private void UpdateAvatarState<T>(ActionBase.ActionEvaluation<T> evaluation, int index) where T : ActionBase
@@ -201,11 +202,7 @@ namespace Nekoyume.BlockChain
             ActionBase.EveryRender<Buy>()
                 .Where(ValidateEvaluationForAgentState)
                 .ObserveOnMainThread()
-                .Subscribe(eval =>
-                {
-                    UpdateAgentState(eval);
-                    UpdateCurrentAvatarState(eval);
-                }).AddTo(_disposables);
+                .Subscribe(ResponseBuy).AddTo(_disposables);
         }
 
         private void RankingReward()
@@ -224,6 +221,18 @@ namespace Nekoyume.BlockChain
                 .Subscribe(UpdateCurrentAvatarState).AddTo(_disposables);
         }
 
+        private void AddGold()
+        {
+            ActionBase.EveryRender<AddItem>()
+                .Where(ValidateEvaluationForAgentState)
+                .ObserveOnMainThread()
+                .Subscribe(eval =>
+                {
+                    UpdateAgentState(eval);
+                    UpdateCurrentAvatarState(eval);
+                }).AddTo(_disposables);
+        }
+
         private void ResponseCombination(ActionBase.ActionEvaluation<Combination> evaluation)
         {
             var isSuccess = !(evaluation.Action.result.itemUsable is null);
@@ -233,7 +242,7 @@ namespace Nekoyume.BlockChain
             UpdateCurrentAvatarState(evaluation);
         }
 
-        private void UpdateAvatarState(AvatarState avatarState, int index)
+        private static void UpdateAvatarState(AvatarState avatarState, int index)
         {
 
             if (States.Instance.avatarStates.ContainsKey(index))
@@ -248,11 +257,23 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        public void UpdateLocalAvatarState(AvatarState avatarState, int index)
+        private static void UpdateAgentState(AgentState state)
+        {
+            States.Instance.agentState.Value = state;
+        }
+
+        public static void UpdateLocalAvatarState(AvatarState avatarState, int index)
         {
             Debug.LogFormat("Update local avatarState. agentAddress: {0} address: {1} BlockIndex: {2}",
                 avatarState.agentAddress, avatarState.address, avatarState.BlockIndex);
             UpdateAvatarState(avatarState, index);
+        }
+
+        public static void UpdateLocalAgentState(AgentState agentState)
+        {
+            Debug.LogFormat("Update local agentSTate. agentAddress: {0} BlockIndex: {1}",
+                agentState.address, AgentController.Agent.BlockIndex);
+            UpdateAgentState(agentState);
         }
 
         private void LoadLocalAvatarState()
@@ -286,6 +307,19 @@ namespace Nekoyume.BlockChain
         private void ResponseSellCancellation(ActionBase.ActionEvaluation<SellCancellation> eval)
         {
             UI.Notification.Push($"{eval.Action.result.itemUsable.Data.name} 판매 취소 완료.");
+            UpdateCurrentAvatarState(eval);
+        }
+
+        private void ResponseBuy(ActionBase.ActionEvaluation<Buy> eval)
+        {
+            if (eval.Action.buyerAvatarAddress == States.Instance.currentAvatarState.Value.address)
+            {
+                UI.Notification.Push($"{eval.Action.buyerResult.itemUsable.Data.name} 구매 완료.");
+            }
+            else
+            {
+                UI.Notification.Push($"{eval.Action.buyerResult.itemUsable.Data.name} 판매 완료.");
+            }
             UpdateCurrentAvatarState(eval);
         }
     }
