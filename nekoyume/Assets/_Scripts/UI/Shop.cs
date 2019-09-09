@@ -347,29 +347,31 @@ namespace Nekoyume.UI
 
         private void OnClickSubmitItemCountAndPricePopup(Model.ItemCountAndPricePopup data)
         {
-            if (Model.itemInfo.Value.item.Value is ShopItem shopItem)
+            if (Model.state.Value == UI.Model.Shop.State.Buy)
             {
-                if (Model.state.Value == UI.Model.Shop.State.Buy)
-                {
-                    // 구매하겠습니다.
-                    ActionManager.instance
-                        .Buy(shopItem.sellerAgentAddress.Value, shopItem.sellerAvatarAddress.Value,
-                            shopItem.productId.Value);
-                    ResponseBuy(shopItem);
-                }
-                else
-                {
-                    // 판매 취소하겠습니다.
-                    ActionManager.instance.SellCancellation(shopItem.sellerAvatarAddress.Value, shopItem.productId.Value);
-                    ResponseSellCancellation(shopItem);
-                }
-
-                return;
+                var shopItem =
+                    Model.shopItems.Value.products.FirstOrDefault(i => i.item.Value.Equals(data.item.Value.item.Value));
+                if (shopItem is null)
+                    return;
+                ActionManager.instance
+                    .Buy(shopItem.sellerAgentAddress.Value, shopItem.sellerAvatarAddress.Value,
+                        shopItem.productId.Value);
+                ResponseBuy(shopItem);
             }
-
-            // 판매하겠습니다.
-            ActionManager.instance.Sell((ItemUsable) data.item.Value.item.Value, data.price.Value);
-            ResponseSell();
+            else
+            {
+                var shopItem =
+                    Model.shopItems.Value.registeredProducts.FirstOrDefault(i =>
+                        i.item.Value.Equals(data.item.Value.item.Value));
+                if (shopItem is null)
+                {
+                    ActionManager.instance.Sell((ItemUsable) data.item.Value.item.Value, data.price.Value);
+                    ResponseSell();
+                    return;
+                }
+                ActionManager.instance.SellCancellation(shopItem.sellerAvatarAddress.Value, shopItem.productId.Value);
+                ResponseSellCancellation(shopItem);
+            }
         }
 
         private void ResponseSell()
