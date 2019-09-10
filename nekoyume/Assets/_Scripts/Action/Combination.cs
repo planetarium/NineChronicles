@@ -281,7 +281,7 @@ namespace Nekoyume.Action
             return new StatMap(key, value);
         }
 
-        private static Skill GetSkill(Item monsterParts, decimal roll)
+        public static Skill GetSkill(Item monsterParts, decimal roll)
         {
             var table = Game.Game.instance.TableSheets.SkillSheet;
             try
@@ -298,6 +298,15 @@ namespace Nekoyume.Action
             {
                 return null;
             }
+        }
+        
+        public static Equipment GetEquipment(ItemEquipment itemEquipment, Item monsterParts, decimal roll, Guid itemId)
+        {
+            var skill = GetSkill(monsterParts, roll);
+            var equipment = (Equipment) ItemFactory.Create(itemEquipment, itemId);
+            equipment.Skills.Add(skill);
+
+            return equipment;
         }
 
         private static ItemUsable GetFood(ItemEquipment itemEquipment, Guid itemId)
@@ -320,15 +329,6 @@ namespace Nekoyume.Action
              * UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
              */
             return (ItemUsable) ItemFactory.Create(itemEquipment, itemId);
-        }
-
-        public static Equipment GetEquipment(ItemEquipment itemEquipment, Item monsterParts, decimal roll, Guid itemId)
-        {
-            var skill = GetSkill(monsterParts, roll);
-            var equipment = (Equipment) ItemFactory.Create(itemEquipment, itemId);
-            equipment.Skills.Add(skill);
-
-            return equipment;
         }
     }
 }
