@@ -63,6 +63,7 @@ namespace Nekoyume.BlockChain
         protected readonly BlockChain<PolymorphicAction<ActionBase>> _blocks;
         private readonly Swarm<PolymorphicAction<ActionBase>> _swarm;
         protected readonly LiteDBStore _store;
+        private readonly ImmutableList<Peer> _seedPeers;
         private readonly IImmutableSet<Address> _trustedPeers;
 
         private readonly CancellationTokenSource _cancellationTokenSource;
@@ -74,6 +75,7 @@ namespace Nekoyume.BlockChain
         public PrivateKey PrivateKey { get; }
         public Address Address { get; }
         
+        public event EventHandler BootstrapStarted;
         public event EventHandler PreloadStarted;
         public event EventHandler<PreloadState> PreloadProcessed;
         public event EventHandler PreloadEnded;
@@ -117,13 +119,12 @@ namespace Nekoyume.BlockChain
                 iceServers: iceServers,
                 differentVersionPeerEncountered: DifferentAppProtocolVersionPeerEncountered);
 
-            var otherPeers = peers.Where(peer => peer.PublicKey != privateKey.PublicKey).ToList();
+            _seedPeers = peers.Where(peer => peer.PublicKey != privateKey.PublicKey).ToImmutableList();
             // Init SyncSucceed
             SyncSucceed = true;
-            _swarm.AddPeersAsync(otherPeers);
 
             // FIXME: Trusted peers should be configurable
-            _trustedPeers = otherPeers.Select(peer => peer.Address).ToImmutableHashSet();
+            _trustedPeers = _seedPeers.Select(peer => peer.Address).ToImmutableHashSet();
             _cancellationTokenSource = new CancellationTokenSource();
         }
 
@@ -146,6 +147,25 @@ namespace Nekoyume.BlockChain
         
         public IEnumerator CoSwarmRunner()
         {
+            BootstrapStarted?.Invoke(this, null);
+            var bootstrapTask = Task.Run(async () =>
+            {
+                try
+                {
+                    await _swarm.BootstrapAsync(
+                        _seedPeers,
+                        5000,
+                        5000,
+                        _cancellationTokenSource.Token);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogFormat("Exception occurred during bootstrap {0}", e);
+                }
+            });
+            
+            yield return new WaitUntil(() => bootstrapTask.IsCompleted);
+            
             PreloadStarted?.Invoke(this, null);
             Debug.Log("PreloadingStarted event was invoked");
 
@@ -240,7 +260,7 @@ namespace Nekoyume.BlockChain
                 {
                     var task = Task.Run(() => MakeTransaction(actions, true));
                     yield return new WaitUntil(() => task.IsCompleted);
-                    Cheat.Log($"# of staged txs: {_store.IterateStagedTransactionIds(false).Count()}");
+                    Cheat.Log($"# of staged txs: {_store.IterateStagedTransactionIds().Count()}");
                 }
             }
         }

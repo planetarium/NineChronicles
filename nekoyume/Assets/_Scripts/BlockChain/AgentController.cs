@@ -207,14 +207,14 @@ namespace Nekoyume.BlockChain
             return options.Host;
         }
 
-        private static Peer LoadPeer(string peerInfo)
+        private static BoundPeer LoadPeer(string peerInfo)
         {
             string[] tokens = peerInfo.Split(',');
             var pubKey = new PublicKey(ByteUtil.ParseHex(tokens[0]));
             string host = tokens[1];
             int port = int.Parse(tokens[2]);
 
-            return new Peer(pubKey, new DnsEndPoint(host, port));
+            return new BoundPeer(pubKey, new DnsEndPoint(host, port), 0);
         }
 
         private static IEnumerable<string> LoadConfigLines(string fileName)

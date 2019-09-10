@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Threading.Tasks;
 using Libplanet;
@@ -62,13 +63,8 @@ namespace Tests
             public IEnumerator CoMine(Transaction<PolymorphicAction<ActionBase>> transaction)
             {
                 var task = Task.Run(() =>
-                    _blocks.StageTransactions(new Dictionary<Transaction<PolymorphicAction<ActionBase>>, bool>()
-                        {
-                            {
-                                transaction,
-                                true
-                            }
-                        }
+                    _blocks.StageTransactions(
+                        ImmutableHashSet<Transaction<PolymorphicAction<ActionBase>>>.Empty.Add(transaction)
                     )
                 );
                 yield return new WaitUntil(() => task.IsCompleted);
