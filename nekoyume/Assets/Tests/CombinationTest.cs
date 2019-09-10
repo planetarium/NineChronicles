@@ -2,8 +2,8 @@ using System.Collections;
 using System.Linq;
 using Nekoyume.BlockChain;
 using Nekoyume.Data;
-using Nekoyume.Game;
-using Nekoyume.Game.Entrance;
+using Nekoyume.Game.Factory;
+using Nekoyume.Game.Item;
 using Nekoyume.UI;
 using Nekoyume.UI.Module;
 using NUnit.Framework;
@@ -23,23 +23,55 @@ namespace Tests
             var equipment = Tables.instance.ItemEquipment.First().Value;
             var parts = Tables.instance.Item.Select(i => i.Value).First(r => r.skillId == 0);
 
-            var result = Nekoyume.Action.Combination.GetEquipment(equipment, parts, 0, default);
+            Nekoyume.Action.Combination.TryGetEquipment(equipment, parts, 0, default, out var result);
             Assert.NotNull(result);
-            Assert.Null(result.Skill);
+            Assert.AreEqual(result.Skills.Count, 0);
         }
 
         [Test]
         public void GetEquipmentWithSkill()
         {
             var equipment = Tables.instance.ItemEquipment.First().Value;
-            var parts = Tables.instance.Item.Select(i => i.Value)
-                .First(r => r.skillId != 0 && r.minChance > 0.01m);
+            var part = Tables.instance.Item.Select(i => i.Value)
+                .First(r => r.skillId > 0 && r.skillId < 200000);
 
-            var result = Nekoyume.Action.Combination.GetEquipment(equipment, parts, 0, default);
+            Nekoyume.Action.Combination.TryGetEquipment(equipment, part, 0, default, out var result);
             Assert.NotNull(result);
-            Assert.AreEqual(parts.minChance, result.Skill.chance);
-            Assert.AreEqual(parts.elemental, result.Skill.skillRow.ElementalType);
-            Assert.AreEqual(parts.minDamage, result.Skill.power);
+            Assert.AreNotEqual(result.Skills.Count, 0);
+            var skill = result.Skills[0];
+            Assert.AreEqual(part.minChance, skill.chance);
+            Assert.AreEqual(part.elemental, skill.skillRow.ElementalType);
+            Assert.AreEqual(part.minDamage, skill.power);
+        }
+
+        [Test]
+        public void GetEquipmentWithSkills()
+        {
+            var equipmentRow = Tables.instance.ItemEquipment.First().Value;
+            var equipment = (Equipment) ItemFactory.Create(equipmentRow, default);
+            Assert.NotNull(equipment);
+
+            var partRows = Tables.instance.Item.Select(i => i.Value)
+                .Where(r => r.skillId > 0 && r.skillId < 200000)
+                .Take(3)
+                .ToList();
+            foreach (var partRow in partRows)
+            {
+                if (Nekoyume.Action.Combination.TryGetSkill(partRow, 0, out var skill))
+                    equipment.Skills.Add(skill);
+            }
+
+            Assert.AreEqual(partRows.Count, equipment.Skills.Count);
+
+            var skillsAndPartRows = equipment.Skills.Zip(partRows, (skill, partRow) => new {skill, partRow});
+            foreach (var skillAndPartRow in skillsAndPartRows)
+            {
+                var skill = skillAndPartRow.skill;
+                var partRow = skillAndPartRow.partRow;
+                Assert.AreEqual(partRow.minChance, skill.chance);
+                Assert.AreEqual(partRow.elemental, skill.skillRow.ElementalType);
+                Assert.AreEqual(partRow.minDamage, skill.power);
+            }
         }
 
         [UnityTest]
@@ -71,7 +103,7 @@ namespace Tests
             //Combination
             var row = Tables.instance.Recipe.Values.First();
             var rect = w.inventory.scrollerController.GetComponentInChildren<ScrollRect>();
-            foreach (var material in new [] {row.Material1, row.Material2})
+            foreach (var material in new[] {row.Material1, row.Material2})
             {
                 var index = States.Instance.currentAvatarState.Value.inventory.Items.ToList()
                     .FindIndex(i => i.item.Data.id == material);
@@ -88,11 +120,12 @@ namespace Tests
                     {
                         break;
                     }
-
                 }
+
                 item.GetComponent<Button>().onClick.Invoke();
                 w.inventory.Tooltip.submitButton.onClick.Invoke();
             }
+
             var current = AgentController.Agent.Transactions.Count;
             w.combinationButton.onClick.Invoke();
             yield return new WaitUntil(() => AgentController.Agent.Transactions.Count > current);
