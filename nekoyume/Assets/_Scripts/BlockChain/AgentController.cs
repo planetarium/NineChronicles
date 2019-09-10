@@ -45,6 +45,7 @@ namespace Nekoyume.BlockChain
         private static IEnumerator _txProcessor;
         private static IEnumerator _swarmRunner;
         private static IEnumerator _autoPlayer;
+        private static IEnumerator _logger;
 
         public static void Initialize(Action<bool> callback)
         {
@@ -77,6 +78,7 @@ namespace Nekoyume.BlockChain
 
             // 별도 쓰레드에서는 GameObject.GetComponent<T> 를 사용할 수 없기때문에 미리 선언.
             var loadingScreen = Widget.Find<LoadingScreen>();
+            Agent.BootstrapStarted += (_, state) => { loadingScreen.Message = "네트워크 연결을 수립하고 있습니다..."; };
             Agent.PreloadProcessed += (_, state) =>
             {
                 if (loadingScreen)
@@ -86,11 +88,11 @@ namespace Nekoyume.BlockChain
                     switch (state)
                     {
                         case BlockDownloadState blockDownloadState:
-                            text = $"{blockDownloadState.ReceivedBlockCount} / {blockDownloadState.TotalBlockCount}";
+                            text = "블록 다운로드 중... " + $"{blockDownloadState.ReceivedBlockCount} / {blockDownloadState.TotalBlockCount}";
                             break;
 
                         case StateReferenceDownloadState stateReferenceDownloadState:
-                            text =
+                            text = "상태 다운로드 중... " +
                                 $"{stateReferenceDownloadState.ReceivedStateReferenceCount} / {stateReferenceDownloadState.TotalStateReferenceCount}";
                             break;
 
@@ -273,9 +275,13 @@ namespace Nekoyume.BlockChain
         {
             _txProcessor = agent.CoTxProcessor();
             _swarmRunner = agent.CoSwarmRunner();
+#if DEBUG
+            _logger = agent.CoLogger();
+#endif
 
             StartNullableCoroutine(_txProcessor);
             StartNullableCoroutine(_swarmRunner);
+            StartNullableCoroutine(_logger);
         }
 
         private Coroutine StartNullableCoroutine(IEnumerator routine)

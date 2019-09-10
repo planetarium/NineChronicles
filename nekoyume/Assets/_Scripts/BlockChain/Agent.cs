@@ -144,6 +144,17 @@ namespace Nekoyume.BlockChain
                 _store?.Dispose();
             }).Wait(SwarmLinger + 1 * 1000);
         }
+
+        public IEnumerator CoLogger()
+        {
+            while (true)
+            {
+                var log = $"Staged Transactions : {_store.IterateStagedTransactionIds().Count()}\n\n";
+                log += _swarm.TraceTable();
+                Cheat.Display(log);
+                yield return new WaitForSeconds(0.5f);
+            }
+        }
         
         public IEnumerator CoSwarmRunner()
         {
@@ -236,8 +247,6 @@ namespace Nekoyume.BlockChain
                 );
             });
 
-            Cheat.Log($"Address: {PrivateKey.PublicKey.ToAddress()}");
-
             yield return new WaitUntil(() => swarmStartTask.IsCompleted);
         }
 
@@ -260,7 +269,6 @@ namespace Nekoyume.BlockChain
                 {
                     var task = Task.Run(() => MakeTransaction(actions, true));
                     yield return new WaitUntil(() => task.IsCompleted);
-                    Cheat.Log($"# of staged txs: {_store.IterateStagedTransactionIds().Count()}");
                 }
             }
         }
@@ -274,6 +282,7 @@ namespace Nekoyume.BlockChain
             yield return ActionManager.instance
                 .CreateAvatar(avatarAddress, avatarIndex, dummyName)
                 .ToYieldInstruction();
+            Debug.LogFormat("Autoplay[{0}, {1}]: CreateAvatar", avatarAddress.ToHex(), dummyName);
 
             AvatarManager.SetIndex(avatarIndex);
             var waitForSeconds = new WaitForSeconds(TxProcessInterval);
@@ -284,6 +293,7 @@ namespace Nekoyume.BlockChain
 
                 yield return ActionManager.instance.HackAndSlash(
                     new List<Equipment>(), new List<Food>(), 1).ToYieldInstruction();
+                Debug.LogFormat("Autoplay[{0}, {1}]: HackAndSlash", avatarAddress.ToHex(), dummyName);
             }
         }
 
