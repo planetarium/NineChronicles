@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using EnhancedUI.EnhancedScroller;
 using Nekoyume.EnumType;
+using Nekoyume.Game.Controller;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -51,10 +52,17 @@ namespace Nekoyume.UI.Scroller
             _disposablesForModel.DisposeAllAndClear();
             SharedModel = model;
             SharedModel.ObserveAdd()
-                .Subscribe(_ => ReloadDataWithFactor(true))
+                .Subscribe(_ =>
+                {
+                    AudioController.instance.PlaySfx(AudioController.SfxCode.Notification);
+                    ReloadDataWithFactor(true);
+                })
                 .AddTo(_disposablesForModel);
             SharedModel.ObserveRemove()
                 .Subscribe(_ => ReloadDataWithFactor(false))
+                .AddTo(_disposablesForModel);
+            SharedModel.ObserveReset()
+                .Subscribe(_ => ReloadDataWithFactor(true))
                 .AddTo(_disposablesForModel);
 
             enhancedScroller.ReloadData();
@@ -90,7 +98,7 @@ namespace Nekoyume.UI.Scroller
             }
 
             cellView.name = $"Cell {cellIndex}";
-            cellView.onClickSubmitButton = Subscribe;
+            cellView.onClickSubmitButton = SubscribeOnClick;
             cellView.SetModel(SharedModel[dataIndex]);
 
             return cellView;
@@ -130,7 +138,7 @@ namespace Nekoyume.UI.Scroller
             enhancedScroller.ReloadData(scrollPositionFactor - scrollItemPositionFactor);
         }
 
-        private void Subscribe(NotificationCellView view)
+        private void SubscribeOnClick(NotificationCellView view)
         {
             onRequestToRemoveModelByIndex.OnNext(view.dataIndex);
             view.SharedModel.submitAction?.Invoke();

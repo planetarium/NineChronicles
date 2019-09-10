@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Nekoyume.EnumType;
+using UniRx;
 using UnityEngine;
 
 namespace Nekoyume.UI
@@ -14,23 +15,40 @@ namespace Nekoyume.UI
             public Widget widget;
         }
 
+        protected static readonly Subject<Widget> OnEnableSubject = new Subject<Widget>();
+        protected static readonly Subject<Widget> OnDisableSubject = new Subject<Widget>();
+        
         private static readonly Dictionary<Type, PoolElementModel> Pool = new Dictionary<Type, PoolElementModel>();
         private static readonly int Radius = Shader.PropertyToID("_Radius");
 
         private Material _glass;
-        private bool _animCloseEnd;
+        private Animator _animator;
+        private bool _isCloseAnimationCompleted;
 
-        protected Animator Animator { get; set; }
         public RectTransform RectTransform { get; private set; }
         public virtual WidgetType WidgetType => WidgetType.Widget;
+
+        #region Mono
 
         protected virtual void Awake()
         {
             FindGlassMaterial(gameObject);
 
-            Animator = GetComponent<Animator>();
+            _animator = GetComponent<Animator>();
             RectTransform = GetComponent<RectTransform>();
         }
+
+        private void OnEnable()
+        {
+            OnEnableSubject.OnNext(this);
+        }
+
+        private void OnDisable()
+        {
+            OnDisableSubject.OnNext(this);
+        }
+
+        #endregion
 
         public virtual void Initialize()
         {
@@ -109,29 +127,62 @@ namespace Nekoyume.UI
 
             _glass = image.material;
         }
+        
+        public virtual bool IsActive()
+        {
+            return gameObject.activeSelf;
+        }
+        
+        public void Toggle()
+        {
+            if (IsActive())
+            {
+                Close();
+            }
+            else
+            {
+                Show();
+            }
+        }
 
         public virtual void Show()
         {
             gameObject.SetActive(true);
-            if (Animator)
+            if (_animator)
             {
-                Animator.enabled = true;
-                Animator.Play("Show");
+                _animator.enabled = true;
+                _animator.Play("Show");
             }
 
             StartCoroutine(Blur());
         }
-
-        public virtual IEnumerator WaitForShow()
+        
+        public virtual void Close()
         {
-            Show();
-            while (gameObject.activeSelf)
+            StopAllCoroutines();
+            if (!gameObject.activeSelf)
             {
-                yield return null;
+                return;
             }
+
+            // TODO : wait close animation
+            StartCoroutine(CoClose());
+        }
+        
+        public virtual IEnumerator CoClose()
+        {
+            if (_animator)
+            {
+                _isCloseAnimationCompleted = false;
+                _animator.enabled = true;
+                _animator.Play("Close");
+                yield return new WaitUntil(() => _isCloseAnimationCompleted);
+            }
+
+            gameObject.SetActive(false);
         }
 
-        protected virtual IEnumerator Blur()
+        private IEnumerator Blur()
         {
             if (!_glass)
             {
@@ -161,56 +212,19 @@ namespace Nekoyume.UI
             _glass.SetFloat(Radius, to);
         }
 
-        public virtual void Close()
-        {
-            StopAllCoroutines();
-            if (!gameObject.activeSelf)
-            {
-                return;
-            }
-
-            // TODO : wait close animation
-            StartCoroutine(CoClose());
-        }
-
-        public virtual IEnumerator CoClose()
-        {
-            if (Animator)
-            {
-                _animCloseEnd = false;
-                Animator.enabled = true;
-                Animator.Play("Close");
-                yield return new WaitUntil(() => _animCloseEnd);
-            }
-
-            gameObject.SetActive(false);
-        }
-
-        public virtual bool IsActive()
-        {
-            return gameObject.activeSelf;
-        }
-
-        public void Toggle()
-        {
-            if (IsActive())
-            {
-                Close();
-            }
-            else
-            {
-                Show();
-            }
-        }
-
+        #region Call From Animation
+        
         public virtual void OnCompleteOfShowAnimation()
         {
-            Animator.enabled = false;
+            _animator.enabled = false;
         }
 
         public virtual void OnCompleteOfCloseAnimation()
         {
-            _animCloseEnd = true;
+            _animator.enabled = false;
+            _isCloseAnimationCompleted = true;
         }
+        
+        #endregion
     }
 }
