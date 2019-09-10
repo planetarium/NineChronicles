@@ -23,7 +23,7 @@ namespace Tests
             var equipment = Tables.instance.ItemEquipment.First().Value;
             var parts = Tables.instance.Item.Select(i => i.Value).First(r => r.skillId == 0);
 
-            var result = Nekoyume.Action.Combination.GetEquipment(equipment, parts, 0, default);
+            Nekoyume.Action.Combination.TryGetEquipment(equipment, parts, 0, default, out var result);
             Assert.NotNull(result);
             Assert.AreEqual(result.Skills.Count, 0);
         }
@@ -35,7 +35,7 @@ namespace Tests
             var part = Tables.instance.Item.Select(i => i.Value)
                 .First(r => r.skillId > 0 && r.skillId < 200000);
 
-            var result = Nekoyume.Action.Combination.GetEquipment(equipment, part, 0, default);
+            Nekoyume.Action.Combination.TryGetEquipment(equipment, part, 0, default, out var result);
             Assert.NotNull(result);
             Assert.AreNotEqual(result.Skills.Count, 0);
             var skill = result.Skills[0];
@@ -56,7 +56,10 @@ namespace Tests
                 .Take(3)
                 .ToList();
             foreach (var partRow in partRows)
-                equipment.Skills.Add(Nekoyume.Action.Combination.GetSkill(partRow, 0));
+            {
+                if (Nekoyume.Action.Combination.TryGetSkill(partRow, 0, out var skill))
+                    equipment.Skills.Add(skill);
+            }
 
             Assert.AreEqual(partRows.Count, equipment.Skills.Count);
 
