@@ -150,9 +150,14 @@ namespace Nekoyume.Action
                             return states;
                         }
 
-                        equipment = (Equipment) ItemFactory.Create(itemEquipmentRow, itemId);
-                        if (equipment is null)
+                        try
                         {
+                            equipment = (Equipment) ItemFactory.Create(itemEquipmentRow, itemId);
+                        }
+                        catch (ArgumentOutOfRangeException e)
+                        {
+                            Debug.LogException(e);
+                            
                             return states;
                         }
                     }
