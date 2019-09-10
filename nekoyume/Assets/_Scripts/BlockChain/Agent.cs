@@ -18,6 +18,8 @@ using Libplanet.Crypto;
 using Libplanet.Net;
 using Libplanet.Store;
 using Libplanet.Tx;
+using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.Extensibility;
 using Nekoyume.Action;
 using Nekoyume.Game.Item;
 #if BLOCK_LOG_USE
@@ -80,13 +82,23 @@ namespace Nekoyume.BlockChain
 
         public bool SyncSucceed { get; private set; }
 
-        static Agent() 
+        private static TelemetryClient _telemetryClient;
+
+        static Agent()
         {
+            _telemetryClient =
+                new TelemetryClient(new TelemetryConfiguration("953da29a-95f7-4f04-9efe-d48c42a1b53a"));
             ForceDotNet.Force();
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
-                .WriteTo.Sink(new UnityDebugSink())
+                .WriteTo.ApplicationInsights(_telemetryClient, TelemetryConverter.Traces)
                 .CreateLogger();
+        }
+
+        private void InitialTelemetryClient(Address address)
+        {
+            _telemetryClient.Context.User.AuthenticatedUserId = address.ToHex();
+            _telemetryClient.Context.Session.Id = Guid.NewGuid().ToString();
         }
 
         public Agent(
@@ -116,6 +128,8 @@ namespace Nekoyume.BlockChain
                 listenPort: port,
                 iceServers: iceServers,
                 differentVersionPeerEncountered: DifferentAppProtocolVersionPeerEncountered);
+            
+            InitialTelemetryClient(_swarm.Address);
 
             var otherPeers = peers.Where(peer => peer.PublicKey != privateKey.PublicKey).ToList();
             // Init SyncSucceed
