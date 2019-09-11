@@ -1,0 +1,71 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: miner
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: miner
+    spec:
+      nodeSelector:
+        beta.kubernetes.io/os: linux
+      containers:
+      - name: miner
+        image: <<DOCKER_IMAGE_NAME>>
+        command:
+          - /app/nekoyume
+          - --peer=<<PUBLIC_KEY>>,52.231.74.24,31234
+          - --storage-path=/data/miner
+        volumeMounts:
+          - name: volume
+            mountPath: /data
+      volumes:
+        - name: volume
+          persistentVolumeClaim:
+            claimName: azurefile
+
+---
+
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: seed
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: seed
+    spec:
+      nodeSelector:
+        beta.kubernetes.io/os: linux
+      containers:
+      - name: seed
+        image: <<DOCKER_IMAGE_NAME>>
+        command:
+          - /app/nekoyume
+          - --no-miner
+          - --host=52.231.74.24
+          - --port=31234
+          - --private-key=<<PRIVATE_KEY>>
+          - --storage-path=/data/seed
+        livenessProbe:
+          failureThreshold: 3
+          initialDelaySeconds: 120
+          periodSeconds: 5
+          successThreshold: 1
+          tcpSocket:
+            port: 31234
+          timeoutSeconds: 1
+        ports:
+        - containerPort: 31234
+          name: miner
+        volumeMounts:
+          - name: volume
+            mountPath: /data
+      volumes:
+        - name: volume
+          persistentVolumeClaim:
+            claimName: azurefile
