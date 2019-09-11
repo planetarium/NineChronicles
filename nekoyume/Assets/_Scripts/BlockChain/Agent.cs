@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using AsyncIO;
@@ -25,7 +24,6 @@ using Nekoyume.Game.Item;
 #if BLOCK_LOG_USE
 using Nekoyume.Helper;
 #endif
-using Nekoyume.Serilog;
 using Serilog;
 using UniRx;
 using UnityEngine;
