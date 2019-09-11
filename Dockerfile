@@ -8,7 +8,7 @@ RUN if [ "$apt_source" != "" ]; then \
     "s|http://archive.ubuntu.com/ubuntu|$apt_source|" \
     /etc/apt/sources.list; \
   fi
-RUN apt-get update && \
+RUN apt-get update || true && \
   apt-get install -y libxml2-utils xsltproc && \
   rm -rf /var/lib/apt/lists/*
 
