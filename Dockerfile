@@ -25,7 +25,6 @@ RUN /scripts/build.sh
 FROM bitnami/minideb:stretch
 
 COPY --from=build /src/Build/LinuxHeadless /app
-COPY --from=build /tmp/test /app/test-result
 VOLUME /data
 
 ENTRYPOINT ["/app/nekoyume", "--storage-path=/data/planetarium"]
