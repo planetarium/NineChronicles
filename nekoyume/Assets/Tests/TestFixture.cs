@@ -17,6 +17,10 @@ namespace Tests
             var path = Path.Combine(Application.streamingAssetsPath, "clo_test_fixture.json");
             _path = Path.Combine(Application.streamingAssetsPath, "clo.json");
             _backup = Path.Combine(Application.streamingAssetsPath, "clo_copy.json");
+            if (File.Exists(_backup))
+            {
+                File.Delete(_backup);
+            }
             if (File.Exists(_path))
             {
                 File.Copy(_path, _backup);
