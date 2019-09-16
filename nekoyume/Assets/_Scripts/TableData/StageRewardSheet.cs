@@ -46,9 +46,5 @@ namespace Nekoyume.TableData
                 }
             }
         }
-
-        public StageRewardSheet(string csv) : base(csv)
-        {
-        }
     }
 }

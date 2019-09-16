@@ -47,9 +47,5 @@ namespace Nekoyume.TableData
 
             return true;
         }
-
-        public WorldChapterSheet(string csv) : base(csv)
-        {
-        }
     }
 }

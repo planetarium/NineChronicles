@@ -71,28 +71,36 @@ namespace Nekoyume.TableData
             switch (name)
             {
                 case nameof(TableData.BackgroundSheet):
-                    BackgroundSheet = new BackgroundSheet(csv);
+                    BackgroundSheet = new BackgroundSheet();
+                    BackgroundSheet.Set(csv);
                     break;
                 case nameof(TableData.WorldSheet):
-                    WorldSheet = new WorldSheet(csv);
+                    WorldSheet = new WorldSheet();
+                    WorldSheet.Set(csv);
                     break;
                 case nameof(TableData.WorldChapterSheet):
-                    WorldChapterSheet = new WorldChapterSheet(csv);
+                    WorldChapterSheet = new WorldChapterSheet();
+                    WorldChapterSheet.Set(csv);
                     break;
                 case nameof(TableData.StageSheet):
-                    StageSheet = new StageSheet(csv);
+                    StageSheet = new StageSheet();
+                    StageSheet.Set(csv);
                     break;
                 case nameof(TableData.StageRewardSheet):
-                    StageRewardSheet = new StageRewardSheet(csv);
+                    StageRewardSheet = new StageRewardSheet();
+                    StageRewardSheet.Set(csv);
                     break;
                 case nameof(TableData.CharacterSheet):
-                    CharacterSheet = new CharacterSheet(csv);
+                    CharacterSheet = new CharacterSheet();
+                    CharacterSheet.Set(csv);
                     break;
                 case nameof(TableData.LevelSheet):
-                    LevelSheet = new LevelSheet(csv);
+                    LevelSheet = new LevelSheet();
+                    LevelSheet.Set(csv);
                     break;
                 case nameof(TableData.SkillSheet):
-                    SkillSheet = new SkillSheet(csv);
+                    SkillSheet = new SkillSheet();
+                    SkillSheet.Set(csv);
                     break;
                 default:
                     throw new InvalidDataException($"Not found {name} class in namespace `TableData`");

@@ -57,9 +57,5 @@ namespace Nekoyume.TableData
                 Exp = int.TryParse(fields[21], out var exp) ? exp : 0;
             }
         }
-
-        public StageSheet(string csv) : base(csv)
-        {
-        }
     }
 }

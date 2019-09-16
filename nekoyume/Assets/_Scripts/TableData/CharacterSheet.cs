@@ -49,10 +49,6 @@ namespace Nekoyume.TableData
                 RunSpeed = int.TryParse(fields[14], out var runSpeed) ? runSpeed : 1f;
             }
         }
-
-        public CharacterSheet(string csv) : base(csv)
-        {
-        }
     }
 
     public static class CharacterSheetExtension

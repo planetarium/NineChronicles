@@ -24,9 +24,5 @@ namespace Nekoyume.TableData
                     : fields[2];
             }
         }
-
-        public BackgroundSheet(string csv) : base(csv)
-        {
-        }
     }
 }

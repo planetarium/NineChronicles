@@ -23,9 +23,5 @@ namespace Nekoyume.TableData
                 ChapterEnd = int.TryParse(fields[3], out var chapterEnd) ? chapterEnd : 0;
             }
         }
-
-        public WorldSheet(string csv) : base(csv)
-        {
-        }
     }
 }

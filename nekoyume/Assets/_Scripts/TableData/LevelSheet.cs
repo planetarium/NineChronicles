@@ -38,9 +38,5 @@ namespace Nekoyume.TableData
 
             return 0;
         }
-
-        public LevelSheet(string csv) : base(csv)
-        {
-        }
     }
 }

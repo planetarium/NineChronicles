@@ -26,10 +26,6 @@ namespace Nekoyume.TableData
                 SkillEffectId = int.TryParse(fields[2], out var skillEffectId) ? skillEffectId : 0;
             }
         }
-
-        public SkillSheet(string csv) : base(csv)
-        {
-        }
     }
 
     public static class SkillSheetRowExtension

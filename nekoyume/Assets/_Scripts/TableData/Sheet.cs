@@ -10,10 +10,10 @@ namespace Nekoyume.TableData
         where TValue : SheetRow<TKey>, new()
     {
         private readonly List<int> _invalidColumnIndexes = new List<int>();
-        private readonly IOrderedEnumerable<TValue> _enumerable;
-        private readonly List<TValue> _orderedList;
+        private IOrderedEnumerable<TValue> _enumerable;
+        private List<TValue> _orderedList;
 
-        protected Sheet(string csv)
+        public void Set(string csv)
         {
             if (string.IsNullOrEmpty(csv))
             {
