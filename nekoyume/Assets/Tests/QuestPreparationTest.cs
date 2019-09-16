@@ -92,7 +92,9 @@ namespace Tests
             Widget.Find<Synopsis>().End();
             yield return new WaitUntil(() => Widget.Find<Login>().ready);
             Widget.Find<Login>().SlotClick(2);
-            Widget.Find<LoginDetail>().CreateClick();
+            var loginDetail = Widget.Find<LoginDetail>();
+            loginDetail.nameField.text = "has";
+            loginDetail.CreateClick();
             yield return new WaitUntil(() => AgentController.Agent.Transactions.Any());
             var createAvatarTx = AgentController.Agent.Transactions.First().Value;
             yield return _miner.CoMine(createAvatarTx);
