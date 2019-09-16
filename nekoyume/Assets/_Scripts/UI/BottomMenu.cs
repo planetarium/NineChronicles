@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Nekoyume.BlockChain;
 using Nekoyume.Game.Mail;
 using Nekoyume.Model;
+using TMPro;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -16,7 +16,8 @@ namespace Nekoyume.UI.Module
         public struct Button
         {
             public UnityEngine.UI.Button button;
-            public Text text;
+            public Image image;
+            public TextMeshProUGUI text;
         }
 
         public Image hasNewMail;
@@ -26,7 +27,7 @@ namespace Nekoyume.UI.Module
         public Button mailButton;
         public Button questButton;
         public Button chatButton;
-        public Button dictionaryButton;
+        public Button collectionButton;
         public Button settingButton;
         // ¿À¸¥ÂÊ
         public Button avatarStatusButton;

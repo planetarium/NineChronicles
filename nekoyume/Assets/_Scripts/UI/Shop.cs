@@ -429,8 +429,8 @@ namespace Nekoyume.UI
 
         private void GoToMenu()
         {
-            Close();
             Find<Menu>().ShowRoom();
+            Close();
         }
     }
 }
