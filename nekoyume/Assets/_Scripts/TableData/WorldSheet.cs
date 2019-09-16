@@ -1,5 +1,5 @@
 using System;
-using Nekoyume.Game.Controller;
+using System.Collections.Generic;
 
 namespace Nekoyume.TableData
 {
@@ -7,16 +7,15 @@ namespace Nekoyume.TableData
     public class WorldSheet : Sheet<int, WorldSheet.Row>
     {
         [Serializable]
-        public struct Row : ISheetRow<int>
+        public class Row : SheetRow<int>
         {
+            public override int Key => Id;
             public int Id { get; private set; }
             public string Name { get; private set; }
             public int ChapterBegin { get; private set; }
             public int ChapterEnd { get; private set; }
 
-            public int Key => Id;
-            
-            public void Set(string[] fields)
+            public override void Set(IReadOnlyList<string> fields)
             {
                 Id = int.TryParse(fields[0], out var id) ? id : 0;
                 Name = fields[1];

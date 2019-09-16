@@ -1,5 +1,5 @@
 using System;
-using Nekoyume.Game.Controller;
+using System.Collections.Generic;
 
 namespace Nekoyume.TableData
 {
@@ -7,15 +7,14 @@ namespace Nekoyume.TableData
     public class LevelSheet : Sheet<int, LevelSheet.Row>
     {
         [Serializable]
-        public struct Row : ISheetRow<int>
+        public class Row : SheetRow<int>
         {
+            public override int Key => Level;
             public int Level { get; private set; }
             public long Exp { get; private set; }
             public long ExpNeed { get; private set; }
 
-            public int Key => Level;
-            
-            public void Set(string[] fields)
+            public override void Set(IReadOnlyList<string> fields)
             {
                 Level = int.TryParse(fields[0], out var level) ? level : 0;
                 Exp = long.TryParse(fields[1], out var exp) ? exp : 0L;
@@ -34,6 +33,7 @@ namespace Nekoyume.TableData
                     return row.Key;
                 }
             }
+
             e.Dispose();
 
             return 0;

@@ -1,7 +1,7 @@
 using System;
+using System.Collections.Generic;
 using Assets.SimpleLocalization;
 using Nekoyume.Data.Table;
-using Nekoyume.EnumType;
 using UnityEngine;
 
 namespace Nekoyume.TableData
@@ -10,15 +10,14 @@ namespace Nekoyume.TableData
     public class SkillSheet : Sheet<int, SkillSheet.Row>
     {
         [Serializable]
-        public struct Row : ISheetRow<int>
+        public class Row : SheetRow<int>
         {
+            public override int Key => Id;
             public int Id { get; private set; }
             public Elemental.ElementalType ElementalType { get; private set; }
             public int SkillEffectId { get; private set; }
 
-            public int Key => Id;
-            
-            public void Set(string[] fields)
+            public override void Set(IReadOnlyList<string> fields)
             {
                 Id = int.TryParse(fields[0], out var id) ? id : 0;
                 ElementalType = Enum.TryParse<Elemental.ElementalType>(fields[1], out var elementalType)
@@ -32,12 +31,12 @@ namespace Nekoyume.TableData
     public static class SkillSheetRowExtension
     {
         private const string DefaultIconPath = "UI/Icons/Skill/100000";
-        
+
         public static string GetLocalizedName(this SkillSheet.Row row)
         {
             return LocalizationManager.Localize($"SKILL_NAME_{row.Id}");
         }
-        
+
         public static Sprite GetIcon(this SkillSheet.Row row)
         {
             var path = $"UI/Icons/Skill/{row.Id}";
@@ -46,10 +45,10 @@ namespace Nekoyume.TableData
             {
                 return sprite;
             }
-            
+
             sprite = Resources.Load<Sprite>(DefaultIconPath);
 
-            return sprite; 
+            return sprite;
         }
     }
 }

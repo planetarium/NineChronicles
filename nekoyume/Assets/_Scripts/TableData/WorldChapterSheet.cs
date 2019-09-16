@@ -1,6 +1,6 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
-using Nekoyume.Game.Controller;
 
 namespace Nekoyume.TableData
 {
@@ -8,17 +8,16 @@ namespace Nekoyume.TableData
     public class WorldChapterSheet : Sheet<int, WorldChapterSheet.Row>
     {
         [Serializable]
-        public struct Row : ISheetRow<int>
+        public class Row : SheetRow<int>
         {
+            public override int Key => Id;
             public int Id { get; private set; }
             public string Name { get; private set; }
             public int StageBegin { get; private set; }
             public int StageEnd { get; private set; }
             public string Prefab { get; private set; }
 
-            public int Key => Id;
-
-            public void Set(string[] fields)
+            public override void Set(IReadOnlyList<string> fields)
             {
                 Id = int.TryParse(fields[0], out var id) ? id : 0;
                 Name = fields[1];
@@ -40,12 +39,12 @@ namespace Nekoyume.TableData
                 }
 
                 outRow = row;
-                
+
                 return true;
             }
 
             outRow = orderedList.Last();
-            
+
             return true;
         }
     }

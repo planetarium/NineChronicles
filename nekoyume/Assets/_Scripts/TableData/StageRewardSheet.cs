@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Nekoyume.Game.Controller;
 
 namespace Nekoyume.TableData
 {
@@ -23,16 +22,15 @@ namespace Nekoyume.TableData
                 Max = max;
             }
         }
-        
+
         [Serializable]
-        public struct Row : ISheetRow<int>
+        public class Row : SheetRow<int>
         {
+            public override int Key => Id;
             public int Id { get; private set; }
             public List<RewardData> Rewards { get; private set; }
 
-            public int Key => Id;
-            
-            public void Set(string[] fields)
+            public override void Set(IReadOnlyList<string> fields)
             {
                 Id = int.TryParse(fields[0], out var id) ? id : 0;
                 Rewards = new List<RewardData>();
@@ -40,11 +38,11 @@ namespace Nekoyume.TableData
                 {
                     var offset = i * 4;
                     Rewards.Add(new RewardData(
-                            int.TryParse(fields[1 + offset], out var itemId) ? itemId : 0,
-                            decimal.TryParse(fields[2 + offset], out var ratio) ? ratio : 0m,
-                            int.TryParse(fields[3 + offset], out var min) ? min : 0,
-                            int.TryParse(fields[4 + offset], out var max) ? max : 0
-                        ));
+                        int.TryParse(fields[1 + offset], out var itemId) ? itemId : 0,
+                        decimal.TryParse(fields[2 + offset], out var ratio) ? ratio : 0m,
+                        int.TryParse(fields[3 + offset], out var min) ? min : 0,
+                        int.TryParse(fields[4 + offset], out var max) ? max : 0
+                    ));
                 }
             }
         }

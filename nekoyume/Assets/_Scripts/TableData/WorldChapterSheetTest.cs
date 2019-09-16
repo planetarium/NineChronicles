@@ -10,7 +10,7 @@ namespace Nekoyume.TableData
     {
         private MonoBehaviour _monoBehaviour;
         private TableSheets _tableSheets;
-        
+
         [UnitySetUp]
         public IEnumerator SetUp()
         {
@@ -26,7 +26,7 @@ namespace Nekoyume.TableData
             _tableSheets = null;
             yield break;
         }
-        
+
         [UnityTest]
         public IEnumerator TryGetByStageTest()
         {
@@ -37,7 +37,7 @@ namespace Nekoyume.TableData
             Assert.IsNotNull(row);
             Assert.GreaterOrEqual(lastStageId, row.StageBegin);
             Assert.LessOrEqual(lastStageId, row.StageEnd);
-            
+
             yield break;
         }
     }
