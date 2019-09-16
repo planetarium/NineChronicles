@@ -260,6 +260,8 @@ namespace Nekoyume.UI
 
         private IEnumerator CoGoToNextStage()
         {
+            if (!submitButton.interactable)
+                yield break;
             closeButton.interactable = false;
             submitButton.interactable = false;
             suggestionsArea.submitButton1.interactable = false;
