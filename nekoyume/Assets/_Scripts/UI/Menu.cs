@@ -29,7 +29,7 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
-            btnQuestText.text = LocalizationManager.Localize("UI_QUEST");
+            btnQuestText.text = LocalizationManager.Localize("UI_DUNGEON");
             btnCombinationText.text = LocalizationManager.Localize("UI_COMBINATION");
             btnShopText.text = LocalizationManager.Localize("UI_SHOP");
             btnRankingText.text = LocalizationManager.Localize("UI_RANKING");
@@ -119,7 +119,7 @@ namespace Nekoyume.UI
             bottomMenu.goToMainButton.text.text = LocalizationManager.Localize("UI_GAMEEXIT");
             bottomMenu.inventoryButton.button.onClick.AddListener(status.ToggleInventory);
             bottomMenu.questButton.button.onClick.AddListener(status.ToggleQuest);
-            bottomMenu.avatarStatusButton.button.onClick.AddListener(status.ToggleStatus);
+            bottomMenu.avatarInfoButton.button.onClick.AddListener(status.ToggleStatus);
         }
 
         public override void Show()

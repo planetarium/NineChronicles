@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Assets.SimpleLocalization;
 using Nekoyume.Game.Mail;
 using Nekoyume.Model;
+using Nekoyume.UI.Tween;
 using TMPro;
 using UniRx;
 using UnityEngine;
@@ -18,6 +20,7 @@ namespace Nekoyume.UI.Module
             public UnityEngine.UI.Button button;
             public Image image;
             public TextMeshProUGUI text;
+            public string localizationKey;
         }
 
         public Image hasNewMail;
@@ -30,7 +33,7 @@ namespace Nekoyume.UI.Module
         public Button collectionButton;
         public Button settingButton;
         // ¿À¸¥ÂÊ
-        public Button avatarStatusButton;
+        public Button avatarInfoButton;
         public Button inventoryButton;
         public Button switchBuyButton;
         public Button switchSellButton;
@@ -38,12 +41,38 @@ namespace Nekoyume.UI.Module
         public Button combinationConsumableButton;
         public Button combinationRecipeButton;
 
+        private Button[] _buttons;
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
+
 
         public void Awake()
         {
             hasNewMail.gameObject.SetActive(false);
             mailButton.button.onClick.AddListener(mail.Toggle);
+
+            if (_buttons is null)
+                _buttons = new Button[]
+                {
+                    goToMainButton,
+                    mailButton,
+                    questButton,
+                    chatButton,
+                    collectionButton,
+                    settingButton,
+                    avatarInfoButton,
+                    inventoryButton,
+                    switchBuyButton,
+                    switchSellButton,
+                    combinationEquipmentButton,
+                    combinationConsumableButton,
+                    combinationRecipeButton
+                };
+
+            foreach (var btn in _buttons)
+            {
+                if (btn.text != null)
+                    btn.text.text = LocalizationManager.Localize(btn.localizationKey);
+            }
         }
 
         private void OnEnable()
@@ -57,6 +86,11 @@ namespace Nekoyume.UI.Module
 
         private void OnDisable()
         {
+            foreach (var btn in _buttons)
+            {
+                if (btn.image != null)
+                    btn.image.SetNativeSize();
+            }
             mail.gameObject.SetActive(false);
             _disposables.DisposeAllAndClear();
         }
