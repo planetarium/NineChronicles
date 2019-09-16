@@ -297,22 +297,6 @@ namespace Nekoyume.Action
             }
         }
 
-        public static bool TryGetEquipment(ItemEquipment itemEquipment, Item monsterParts, decimal roll, Guid itemId,
-            out Equipment equipment)
-        {
-            if (!TryGetSkill(monsterParts, roll, out var skill))
-            {
-                equipment = null;
-
-                return false;
-            }
-
-            equipment = (Equipment) ItemFactory.Create(itemEquipment, itemId);
-            equipment.Skills.Add(skill);
-
-            return true;
-        }
-
         private static ItemUsable GetFood(ItemEquipment itemEquipment, Guid itemId)
         {
             // FixMe. 소모품에 랜덤 스킬을 할당했을 때, `HackAndSlash` 액션에서 예외 발생. 그래서 소모품은 랜덤 스킬을 할당하지 않음.
