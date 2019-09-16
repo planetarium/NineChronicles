@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Nekoyume.Game.Controller;
 
 namespace Nekoyume.TableData
 {
@@ -25,8 +24,9 @@ namespace Nekoyume.TableData
         }
 
         [Serializable]
-        public struct Row : ISheetRow<int>
+        public class Row : SheetRow<int>
         {
+            public override int Key => Id;
             public int Id { get; private set; }
             public int Stage { get; private set; }
             public int Wave { get; private set; }
@@ -35,9 +35,7 @@ namespace Nekoyume.TableData
             public int Reward { get; private set; }
             public long Exp { get; private set; }
 
-            public int Key => Id;
-            
-            public void Set(string[] fields)
+            public override void Set(IReadOnlyList<string> fields)
             {
                 Id = int.TryParse(fields[0], out var id) ? id : 0;
                 Stage = int.TryParse(fields[1], out var stage) ? stage : 0;
@@ -51,13 +49,17 @@ namespace Nekoyume.TableData
                         int.TryParse(fields[4 + offset], out var level) ? level : 0,
                         fields[5 + offset],
                         int.TryParse(fields[6 + offset], out var count) ? count : 0
-                        ));
+                    ));
                 }
-                
+
                 IsBoss = bool.TryParse(fields[19], out var isBoss) && isBoss;
                 Reward = int.TryParse(fields[20], out var reward) ? reward : 0;
                 Exp = int.TryParse(fields[21], out var exp) ? exp : 0;
             }
+        }
+
+        public StageSheet(string csv) : base(csv)
+        {
         }
     }
 }

@@ -28,7 +28,7 @@ namespace Nekoyume.TableData
         {
             var tableSheets = new TableSheets();
             yield return _monoBehaviour.StartCoroutine(tableSheets.CoInitialize());
-            Assert.AreEqual(tableSheets.loadProgress.Value, 1f);  
+            Assert.AreEqual(tableSheets.loadProgress.Value, 1f);
             Assert.NotNull(tableSheets.BackgroundSheet);
         }
     }

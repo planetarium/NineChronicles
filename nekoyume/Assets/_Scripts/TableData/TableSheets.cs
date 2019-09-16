@@ -1,7 +1,5 @@
-using System;
 using System.Collections;
 using System.IO;
-using System.Linq;
 using UniRx;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -73,36 +71,28 @@ namespace Nekoyume.TableData
             switch (name)
             {
                 case nameof(TableData.BackgroundSheet):
-                    BackgroundSheet = new BackgroundSheet();
-                    BackgroundSheet.Set(csv);
+                    BackgroundSheet = new BackgroundSheet(csv);
                     break;
                 case nameof(TableData.WorldSheet):
-                    WorldSheet = new WorldSheet();
-                    WorldSheet.Set(csv);
+                    WorldSheet = new WorldSheet(csv);
                     break;
                 case nameof(TableData.WorldChapterSheet):
-                    WorldChapterSheet = new WorldChapterSheet();
-                    WorldChapterSheet.Set(csv);
+                    WorldChapterSheet = new WorldChapterSheet(csv);
                     break;
                 case nameof(TableData.StageSheet):
-                    StageSheet = new StageSheet();
-                    StageSheet.Set(csv);
+                    StageSheet = new StageSheet(csv);
                     break;
                 case nameof(TableData.StageRewardSheet):
-                    StageRewardSheet = new StageRewardSheet();
-                    StageRewardSheet.Set(csv);
+                    StageRewardSheet = new StageRewardSheet(csv);
                     break;
                 case nameof(TableData.CharacterSheet):
-                    CharacterSheet = new CharacterSheet();
-                    CharacterSheet.Set(csv);
+                    CharacterSheet = new CharacterSheet(csv);
                     break;
                 case nameof(TableData.LevelSheet):
-                    LevelSheet = new LevelSheet();
-                    LevelSheet.Set(csv);
+                    LevelSheet = new LevelSheet(csv);
                     break;
                 case nameof(TableData.SkillSheet):
-                    SkillSheet = new SkillSheet();
-                    SkillSheet.Set(csv);
+                    SkillSheet = new SkillSheet(csv);
                     break;
                 default:
                     throw new InvalidDataException($"Not found {name} class in namespace `TableData`");

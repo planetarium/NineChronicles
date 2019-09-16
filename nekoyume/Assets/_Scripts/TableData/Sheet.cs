@@ -5,23 +5,15 @@ using System.Linq;
 
 namespace Nekoyume.TableData
 {
-    // todo: 추상클래스로 바꾸고, Key만 검사하는 Equals 구현.
-    public interface ISheetRow<out T>
-    {
-        T Key { get; }
-        void Set(string[] fields);
-    }
-
     [Serializable]
     public abstract class Sheet<TKey, TValue> : Dictionary<TKey, TValue>, IEnumerable<TValue>
-        where TValue : ISheetRow<TKey>, new()
+        where TValue : SheetRow<TKey>, new()
     {
-        protected readonly List<int> invalidColumnIndexes = new List<int>();
-        
-        private IOrderedEnumerable<TValue> _enumerable;
-        private List<TValue> _orderedList;
-        
-        public void Set(string csv)
+        private readonly List<int> _invalidColumnIndexes = new List<int>();
+        private readonly IOrderedEnumerable<TValue> _enumerable;
+        private readonly List<TValue> _orderedList;
+
+        protected Sheet(string csv)
         {
             if (string.IsNullOrEmpty(csv))
             {
@@ -42,10 +34,10 @@ namespace Nekoyume.TableData
                 var columnName = columnNames[i];
                 if (columnName.StartsWith("_"))
                 {
-                    invalidColumnIndexes.Add(i);
+                    _invalidColumnIndexes.Add(i);
                 }
             }
-            
+
             var linesWithoutColumnName = lines.Skip(1);
             foreach (var line in linesWithoutColumnName)
             {
@@ -53,15 +45,15 @@ namespace Nekoyume.TableData
                 {
                     continue;
                 }
-                
+
                 var row = CSVToRow(line);
                 Add(row.Key, row);
             }
-            
+
             _enumerable = Values.OrderBy(value => value.Key);
             _orderedList = _enumerable.ToList();
         }
-        
+
         public new IEnumerator<TValue> GetEnumerator()
         {
             return _enumerable.GetEnumerator();
@@ -71,12 +63,12 @@ namespace Nekoyume.TableData
         {
             return _orderedList;
         }
-        
+
         private TValue CSVToRow(string csv)
         {
             var fields = csv.Trim().Split(',')
-                .Where((column, index) => !invalidColumnIndexes.Contains(index))
-                .ToArray();
+                .Where((column, index) => !_invalidColumnIndexes.Contains(index))
+                .ToList();
             var row = new TValue();
             row.Set(fields);
             return row;
