@@ -111,6 +111,8 @@ namespace Nekoyume.UI
             {
                 widget.Initialize();
             }
+            
+            Notification.RegisterWidgetTypeForUX<Mail>();
 
             IsInitialized = true;
         }

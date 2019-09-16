@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
@@ -62,6 +63,29 @@ namespace Nekoyume.UI
             popup.Pop(model);
         }
 
+        public void Read(BuyerMail buyerMail)
+        {
+            var attachment = (Buy.BuyerResult) buyerMail.attachment;
+            var item = attachment.itemUsable;
+            var popup = Find<CombinationResultPopup>();
+            var model = new UI.Model.CombinationResultPopup(new CountableItem(item, 1))
+            {
+                isSuccess = true,
+                materialItems = new List<CombinationMaterial>()
+            };
+            popup.Pop(model);
+
+            AddItem(item);
+        }
+
+        public void Read(SellerMail sellerMail)
+        {
+            var attachment = (Buy.SellerResult) sellerMail.attachment;
+            //TODO 관련 기획이 끝나면 별도 UI를 생성
+            AddGold(attachment.shopItem.price);
+            Notification.Push($"{attachment.shopItem.price:n0} 골드 획득");
+        }
+
         private static void AddItem(ItemUsable item)
         {
             //아바타상태 인벤토리 업데이트
@@ -71,7 +95,22 @@ namespace Nekoyume.UI
             var newState = (AvatarState) States.Instance.currentAvatarState.Value.Clone();
             newState.inventory.AddNonFungibleItem(item);
             var index = States.Instance.currentAvatarKey.Value;
-            ActionRenderHandler.Instance.UpdateLocalAvatarState(newState, index);
+            ActionRenderHandler.UpdateLocalAvatarState(newState, index);
         }
+
+        private static void AddGold(decimal gold)
+        {
+            //판매자 에이전트 골드 업데이트
+            ActionManager.instance.AddGold();
+
+            //게임상의 골드 업데이트
+            var newAgentState = (AgentState) States.Instance.agentState.Value.Clone();
+            newAgentState.gold += gold;
+            ActionRenderHandler.UpdateLocalAgentState(newAgentState);
+            var newAvatarState = (AvatarState) States.Instance.currentAvatarState.Value.Clone();
+            var index = States.Instance.currentAvatarKey.Value;
+            ActionRenderHandler.UpdateLocalAvatarState(newAvatarState, index);
+        }
+
     }
 }

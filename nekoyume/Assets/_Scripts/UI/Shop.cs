@@ -360,38 +360,31 @@ namespace Nekoyume.UI
 
         private void OnClickSubmitItemCountAndPricePopup(Model.ItemCountAndPricePopup data)
         {
-            if (Model.state.Value != UI.Model.Shop.State.Sell)
-                _loadingScreen.Show();
-
-            if (Model.itemInfo.Value.item.Value is ShopItem shopItem)
+            if (Model.state.Value == UI.Model.Shop.State.Buy)
             {
-                if (Model.state.Value == UI.Model.Shop.State.Buy)
-                {
-                    var inventory = States.Instance.currentAvatarState.Value.inventory;
-                    // 구매하겠습니다.
-                    ActionManager.instance
-                        .Buy(shopItem.sellerAgentAddress.Value, shopItem.sellerAvatarAddress.Value,
-                            shopItem.productId.Value)
-                        .Subscribe(eval =>
-                        {
-                            ResponseBuy(eval, shopItem.productId.Value, (ItemUsable) shopItem.item.Value);
-                            AudioController.instance.PlaySfx(AudioController.SfxCode.BuyItem);
-                        })
-                        .AddTo(this);
-                }
-                else
-                {
-                    // 판매 취소하겠습니다.
-                    ActionManager.instance.SellCancellation(shopItem.sellerAvatarAddress.Value, shopItem.productId.Value);
-                    ResponseSellCancellation(shopItem);
-                }
-
-                return;
+                var shopItem =
+                    Model.shopItems.Value.products.FirstOrDefault(i => i.item.Value.Equals(data.item.Value.item.Value));
+                if (shopItem is null)
+                    return;
+                ActionManager.instance
+                    .Buy(shopItem.sellerAgentAddress.Value, shopItem.sellerAvatarAddress.Value,
+                        shopItem.productId.Value);
+                ResponseBuy(shopItem);
             }
-
-            // 판매하겠습니다.
-            ActionManager.instance.Sell((ItemUsable) data.item.Value.item.Value, data.price.Value);
-            ResponseSell();
+            else
+            {
+                var shopItem =
+                    Model.shopItems.Value.registeredProducts.FirstOrDefault(i =>
+                        i.item.Value.Equals(data.item.Value.item.Value));
+                if (shopItem is null)
+                {
+                    ActionManager.instance.Sell((ItemUsable) data.item.Value.item.Value, data.price.Value);
+                    ResponseSell();
+                    return;
+                }
+                ActionManager.instance.SellCancellation(shopItem.sellerAvatarAddress.Value, shopItem.productId.Value);
+                ResponseSellCancellation(shopItem);
+            }
         }
 
         private void ResponseSell()
@@ -417,52 +410,15 @@ namespace Nekoyume.UI
             Notification.Push($"{shopItem.item.Value.Data.name} 아이템을 판매 취소합니다.");
         }
 
-        private void ResponseBuy(ActionBase.ActionEvaluation<Buy> eval, Guid productId, ItemUsable shopItem)
+        private void ResponseBuy(ShopItem shopItem)
         {
             Model.itemCountAndPricePopup.Value.item.Value = null;
-
-            var sellerAvatarAddress = eval.InputContext.Signer;
-
-            Model.shopItems.Value.RemoveShopItem(sellerAvatarAddress, productId);
+            var productId = shopItem.productId.Value;
+            Model.shopItems.Value.RemoveShopItem(shopItem.sellerAvatarAddress.Value, productId);
             Model.shopItems.Value.RemoveProduct(productId);
             Model.shopItems.Value.RemoveRegisteredProduct(productId);
-
-            if (!States.Instance.currentAvatarState.Value.inventory.HasItemUsable(shopItem.ItemId))
-            {
-                // 구매실패
-                _loadingScreen.Close();
-                return;
-            }
-
-            StartCoroutine(CoShowBuyResultVFX(productId));
-            Model.inventory.Value.AddItem(shopItem);
-
-            _loadingScreen.Close();
-        }
-
-        private IEnumerator CoShowBuyResultVFX(Guid productId)
-        {
-            var shopItemView = shopItems.GetByProductId(productId);
-            if (!shopItemView)
-            {
-                yield break;
-            }
-
-            yield return new WaitForSeconds(0.1f);
-
-            particleVFX.SetActive(false);
-            resultItemVFX.SetActive(false);
-
-            var position = shopItemView.Model.item.Value.Data.cls.ToEnumItemType() == ItemBase.ItemType.Food
-                ? inventoryAndItemInfo.inventory.consumablesButton.transform.position
-                : inventoryAndItemInfo.inventory.equipmentsButton.transform.position;
-
-            particleVFX.transform.position = shopItemView.transform.position;
-            particleVFX.transform.DOMoveX(position.x, 0.6f);
-            particleVFX.transform.DOMoveY(position.y, 0.6f).SetEase(Ease.InCubic)
-                .onComplete = () => { resultItemVFX.SetActive(true); };
-            particleVFX.SetActive(true);
-            resultItemVFX.transform.position = position;
+            AudioController.instance.PlaySfx(AudioController.SfxCode.BuyItem);
+            Notification.Push($"{shopItem.item.Value.Data.name} 아이템을 구매합니다.");
         }
 
         private void OnClickCloseItemCountAndPricePopup(Model.ItemCountAndPricePopup data)

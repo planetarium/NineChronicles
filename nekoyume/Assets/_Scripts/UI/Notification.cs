@@ -4,11 +4,12 @@ using DefaultNamespace;
 using Nekoyume.Game.Controller;
 using Nekoyume.UI.Scroller;
 using UniRx;
+using UnityEngine;
 
 namespace Nekoyume.UI
 {
     /// <summary>
-    /// 사용법: 어디서든 `Notification.Push()`함수를 호출하세요.
+    /// Usage: Just to call the `Notification.Push()` method anywhere.
     /// </summary>
     public class Notification : SystemInfoWidget
     {
@@ -16,6 +17,11 @@ namespace Nekoyume.UI
 
         private static readonly ReactiveCollection<NotificationCellView.Model> Models =
             new ReactiveCollection<NotificationCellView.Model>();
+        
+        private static readonly List<Type> WidgetTypesForUX = new List<Type>();
+        
+        private static int _widgetEnableCount;
+        
 
         public static IReadOnlyCollection<NotificationCellView.Model> SharedModels => Models;
 
@@ -28,6 +34,11 @@ namespace Nekoyume.UI
 
         public static void Push(string message, string submitText, System.Action submitAction)
         {
+            if (_widgetEnableCount > 0)
+            {
+                return;
+            }
+            
             Models.Add(new NotificationCellView.Model
             {
                 message = message,
@@ -36,15 +47,32 @@ namespace Nekoyume.UI
                 addedAt = DateTime.Now
             });
         }
+        
+        /// <summary>
+        /// This class consider if there is any widget raise `OnEnableSubject` subject in the `WidgetTypesForUX` property.
+        /// Widget type can registered once and cannot unregistered.
+        /// </summary>
+        /// <param name="widget"></param>
+        public static void RegisterWidgetTypeForUX<T>() where T : Widget
+        {
+            var type = typeof(T);
+            if (WidgetTypesForUX.Contains(type))
+            {
+                return;
+            }
+            
+            WidgetTypesForUX.Add(type);
+        }
+
+        #region Mono
 
         protected override void Awake()
         {
             base.Awake();
+            OnEnableSubject.Subscribe(SubscribeOnEnable).AddTo(gameObject);
+            OnDisableSubject.Subscribe(SubscribeOnDisable).AddTo(gameObject);
             scroller.onRequestToRemoveModelByIndex.Subscribe(SubscribeToRemoveModel).AddTo(gameObject);
             scroller.SetModel(Models);
-            Models.ObserveAdd()
-                .Subscribe(_ => AudioController.instance.PlaySfx(AudioController.SfxCode.Notification))
-                .AddTo(gameObject);
         }
 
         private void Update()
@@ -61,7 +89,41 @@ namespace Nekoyume.UI
                 break;
             }
         }
+        
+        #endregion
 
+        private void SubscribeOnEnable(Widget widget)
+        {
+            var type = widget.GetType();
+            if (!WidgetTypesForUX.Contains(type))
+            {
+                return;
+            }
+
+            _widgetEnableCount++;
+            
+            if (_widgetEnableCount == 1)
+            {
+                Models.Clear();
+            }
+        }
+        
+        private void SubscribeOnDisable(Widget widget)
+        {
+            var type = widget.GetType();
+            if (!WidgetTypesForUX.Contains(type))
+            {
+                return;
+            }
+            
+            if (_widgetEnableCount == 0)
+            {
+                return;
+            }
+            
+            _widgetEnableCount--;
+        }
+        
         private void SubscribeToRemoveModel(int index)
         {
             if (index >= Models.Count)

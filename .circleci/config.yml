@@ -2,6 +2,7 @@ version: 2.1
 orbs:
   azure-acr: circleci/azure-acr@0.1.2
   azure-aks: circleci/azure-aks@0.2.0
+  azure-cli: circleci/azure-cli@1.1.0
   kubernetes: circleci/kubernetes@0.3.0
 
 executors:
@@ -10,24 +11,65 @@ executors:
       docker_layer_caching: true
 
 jobs:
+  collect-test-result:
+    executor: azure-acr/default
+    parameters:
+      docker-image-name:
+        description: The Docker image which contains test results
+        type: string
+    steps:
+      - azure-cli/install
+
+      - azure-cli/login-with-service-principal
+
+      - azure-acr/acr-login:
+          registry-name: "planetariumtest"
+
+      - run:
+          name: collect-test-result
+          command: |
+            mkdir -p /tmp/test-result/
+            docker run \
+              --entrypoint=/bin/ls \
+              "<< parameters.docker-image-name >>" \
+              -al /app/
+            docker run \
+              --entrypoint=/bin/ls \
+              "<< parameters.docker-image-name >>" \
+              -al /app/test-result/
+            docker run \
+              --entrypoint=/bin/cat \
+              "<< parameters.docker-image-name >>" \
+              /app/test-result/result.txt > /tmp/test-result/result.txt
+            docker run \
+              --entrypoint=/bin/cat \
+              "<< parameters.docker-image-name >>" \
+              /app/test-result/junit.xml > /tmp/test-result/junit.xml
+
+      - store_test_results:
+          path: /tmp/test-result
+
+      - store_artifacts:
+          path: /tmp/test-result
+
+      - run:
+          name: ensure-tests-pass
+          command: '[ "$(cat /tmp/test-result/result.txt)" = "Passed" ]'
+
   deploy-application:
     executor: azure-aks/default
     parameters:
       cluster-name:
-        description: |
-          Name of the AKS cluster
+        description: Name of the AKS cluster
         type: string
       docker-image-name:
-        description: |
-          Name of the docker image to be deployed
+        description: Name of the docker image to be deployed
         type: string
       version-info:
-        description: |
-          App version information
+        description: App version information
         type: string
       resource-group:
-        description: |
-          Resource group
+        description: Resource group
         type: string
         default: ""
     steps:
@@ -75,6 +117,12 @@ workflows:
           repo: $CIRCLE_PROJECT_REPONAME
           extra-build-args: '--build-arg ulf="$ULF"'
           executor: default
+
+      - collect-test-result:
+          name: collect-test-result
+          docker-image-name: "$DOCKER_SERVER/$CIRCLE_PROJECT_REPONAME:git-$CIRCLE_SHA1"
+          requires:
+            - build-and-push-image
 
       - azure-aks/create-cluster:
           name: create-cluster

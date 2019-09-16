@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Text;
 using Nekoyume.Data.Table;
 using Nekoyume.Model;
@@ -10,15 +11,15 @@ namespace Nekoyume.Game.Item
     {
         public new ItemEquipment Data { get; }
         public Stats Stats { get; }
-        public Skill Skill { get; }
+        public List<Skill> Skills { get; }
         public Guid ItemId { get; }
 
-        protected ItemUsable(Data.Table.Item data, Guid id, Skill skill = null)
+        protected ItemUsable(Data.Table.Item data, Guid id)
             : base(data)
         {
             Data = (ItemEquipment) data;
             Stats = new Stats();
-            Skill = skill;
+            Skills = new List<Skill>();
 
             if (ValidateAbility(Data.ability1, Data.value1))
             {
@@ -29,6 +30,7 @@ namespace Nekoyume.Game.Item
             {
                 Stats.SetStatValue(Data.ability2, Data.value2);
             }
+
             ItemId = id;
         }
 
@@ -49,7 +51,7 @@ namespace Nekoyume.Game.Item
         {
             unchecked
             {
-                return (base.GetHashCode() * 397) ^ (ItemId != null ? ItemId.GetHashCode() : 0);
+                return (base.GetHashCode() * 397) ^ ItemId.GetHashCode();
             }
         }
 
@@ -58,15 +60,18 @@ namespace Nekoyume.Game.Item
             var sb = new StringBuilder();
             sb.AppendLine(Stats.GetInformation());
 
-            if (Skill == null)
+            if (Skills.Count == 0)
             {
                 return sb.ToString().Trim();
             }
 
-            sb.Append($"{Skill.chance * 100}% 확률로");
-            sb.Append($" {Skill.effect.skillTargetType}에게");
-            sb.Append($" {Skill.power} 위력의");
-            sb.Append($" {Skill.skillRow.ElementalType}속성 {Skill.effect.skillType}");
+            foreach (var skill in Skills)
+            {
+                sb.Append($"{skill.chance * 100}% 확률로");
+                sb.Append($" {skill.effect.skillTargetType}에게");
+                sb.Append($" {skill.power} 위력의");
+                sb.Append($" {skill.skillRow.ElementalType}속성 {skill.effect.skillType}");
+            }
 
             return sb.ToString().Trim();
         }
@@ -74,7 +79,7 @@ namespace Nekoyume.Game.Item
         public void UpdatePlayer(Player player)
         {
             Stats.UpdatePlayer(player);
-            player.Skills.Add(Skill);
+            Skills.ForEach(skill => player.Skills.Add(skill));
         }
 
         protected bool ValidateAbility(string key, int value)
