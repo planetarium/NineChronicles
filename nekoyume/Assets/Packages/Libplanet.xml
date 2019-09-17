@@ -75,17 +75,18 @@
             The result states that <see cref="P:Libplanet.Action.ActionEvaluation.Action"/> makes.
             </summary>
         </member>
-        <member name="M:Libplanet.Action.ActionEvaluation.EvaluateActionsGradually(Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Int64,Libplanet.Action.IAccountStateDelta,Libplanet.Address,Libplanet.Address,System.Byte[],System.Collections.Immutable.IImmutableList{Libplanet.Action.IAction},System.Boolean)">
+        <member name="M:Libplanet.Action.ActionEvaluation.EvaluateActionsGradually(Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Int64,System.Nullable{Libplanet.Tx.TxId},Libplanet.Action.IAccountStateDelta,Libplanet.Address,Libplanet.Address,System.Byte[],System.Collections.Immutable.IImmutableList{Libplanet.Action.IAction},System.Boolean)">
             <summary>
             Executes the <paramref name="actions"/> step by step, and emits
             <see cref="T:Libplanet.Action.ActionEvaluation"/> for each step.
             </summary>
-            <param name="blockHash">The <see cref="P:Libplanet.Blocks.Block`1.Hash"/> of
-            <see cref="T:Libplanet.Blocks.Block`1"/> that this <see cref="T:Libplanet.Tx.Transaction`1"/> will
-            belong to.</param>
-            <param name="blockIndex">The <see cref="P:Libplanet.Blocks.Block`1.Index"/> of
-            <see cref="T:Libplanet.Blocks.Block`1"/> that this <see cref="T:Libplanet.Tx.Transaction`1"/> will
-            belong to.</param>
+            <param name="blockHash">The <see cref="P:Libplanet.Blocks.Block`1.Hash"/> of <see cref="T:Libplanet.Blocks.Block`1"/> that
+            <paramref name="actions"/> belongs to.</param>
+            <param name="blockIndex">The <see cref="P:Libplanet.Blocks.Block`1.Index"/> of <see cref="T:Libplanet.Blocks.Block`1"/> that
+            <paramref name="actions"/> belongs to.</param>
+            <param name="txid">The <see cref="P:Libplanet.Tx.Transaction`1.Id"/> of <see cref="T:Libplanet.Tx.Transaction`1"/>
+            that <paramref name="actions"/> belongs to.  This can be <c>null</c> on rehearsal mode
+            or if an action is a <see cref="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.BlockAction"/>.</param>
             <param name="previousStates">The states immediately before <paramref name="actions"/>
             being executed.  Note that its <see cref="P:Libplanet.Action.IAccountStateDelta.UpdatedAddresses"/> are
             remained to the returned next states.</param>
@@ -102,13 +103,10 @@
             Note that each <see cref="P:Libplanet.Action.IActionContext.Random"/> object
             has a unconsumed state.
             </returns>
-            <exception cref="T:Libplanet.Tx.UnexpectedlyTerminatedTxRehearsalException">
-            Thrown when one of <paramref name="actions"/> throws some
-            exception during <paramref name="rehearsal"/> mode.
+            <exception cref="T:Libplanet.Action.UnexpectedlyTerminatedActionException">
+            Thrown when one of <paramref name="actions"/> throws some exception.
             The actual exception that an <see cref="T:Libplanet.Action.IAction"/> threw
             is stored in its <see cref="P:System.Exception.InnerException"/> property.
-            It is never thrown if the <paramref name="rehearsal"/> option is
-            <c>false</c>.
             </exception>
         </member>
         <member name="T:Libplanet.Action.ActionTypeAttribute">
@@ -671,13 +669,6 @@
             <returns>A random object that shares interface mostly equivalent
             to <see cref="T:System.Random"/>.</returns>
         </member>
-        <member name="M:Libplanet.Action.IActionContext.NewGuid">
-            <summary>
-            Creates new <see cref="T:System.Guid"/>.  Its seed (state) is determined by a block and
-            a transaction, which is deterministic as like <see cref="P:Libplanet.Action.IActionContext.Random"/>.
-            </summary>
-            <returns>A deterministic guid.</returns>
-        </member>
         <member name="T:Libplanet.Action.IRandom">
             <summary>
             An pseudorandom number generator interface equivalent to
@@ -1004,6 +995,76 @@
         <member name="M:Libplanet.Action.PolymorphicAction`1.Unrender(Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)">
             <inheritdoc/>
         </member>
+        <member name="M:Libplanet.Action.PolymorphicAction`1.ToString">
+            <inheritdoc/>
+        </member>
+        <member name="T:Libplanet.Action.RandomExtension">
+            <summary>
+            This extension class provides some convenient methods
+            to deal with <see cref="T:Libplanet.Action.IRandom"/>.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Action.RandomExtension.GenerateRandomGuid(Libplanet.Action.IRandom)">
+            <summary>
+            Generates a random <see cref="T:System.Guid"/>.
+            </summary>
+            <param name="random"> <see cref="T:Libplanet.Action.IRandom"/> to generate
+            a random <see cref="T:System.Guid"/>.</param>
+            <returns> Generated random <see cref="T:System.Guid"/>.
+            </returns>
+            <seealso cref="T:Libplanet.Action.IRandom"/>
+        </member>
+        <member name="T:Libplanet.Action.UnexpectedlyTerminatedActionException">
+            <summary>
+            The exception that is thrown during an <see cref="T:Libplanet.Action.IAction"/> is being evaluated.
+            <para>The actual exception that the <see cref="P:Libplanet.Action.UnexpectedlyTerminatedActionException.Action"/> threw
+            is stored in the <see cref="P:System.Exception.InnerException"/> property.</para>
+            </summary>
+        </member>
+        <member name="M:Libplanet.Action.UnexpectedlyTerminatedActionException.#ctor(System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.Nullable{System.Int64},System.Nullable{Libplanet.Tx.TxId},Libplanet.Action.IAction,System.String,System.Exception)">
+            <summary>
+            Creates a new <see cref="T:Libplanet.Action.UnexpectedlyTerminatedActionException"/> object.
+            </summary>
+            <param name="blockHash">The <see cref="P:Libplanet.Blocks.Block`1.Hash"/> of the <see cref="T:Libplanet.Blocks.Block`1"/>
+            that <paramref name="action"/> belongs to.  This can be <c>null</c> on rehearsal mode.
+            </param>
+            <param name="blockIndex">The <see cref="P:Libplanet.Blocks.Block`1.Index"/> of the <see cref="T:Libplanet.Blocks.Block`1"/>
+            that <paramref name="action"/> belongs to.  This can be <c>null</c> on rehearsal mode.
+            </param>
+            <param name="txid">The <see cref="P:Libplanet.Tx.Transaction`1.Id"/> of
+            the <see cref="T:Libplanet.Tx.Transaction`1"/> that <paramref name="action"/> belongs to.
+            This can be <c>null</c> on rehearsal mode or if <paramref name="action"/> is
+            a <see cref="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.BlockAction"/>.
+            </param>
+            <param name="action">The <see cref="T:Libplanet.Action.IAction"/> object which threw an exception.</param>
+            <param name="message">Specifies a <see cref="P:System.Exception.Message"/>.</param>
+            <param name="innerException">The actual exception that the <see cref="P:Libplanet.Action.UnexpectedlyTerminatedActionException.Action"/> threw.
+            </param>
+        </member>
+        <member name="P:Libplanet.Action.UnexpectedlyTerminatedActionException.BlockHash">
+            <summary>
+            The <see cref="P:Libplanet.Blocks.Block`1.Hash"/> of the <see cref="T:Libplanet.Blocks.Block`1"/> that <see cref="P:Libplanet.Action.UnexpectedlyTerminatedActionException.Action"/>
+            belongs to.  This can be <c>null</c> on rehearsal mode.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Action.UnexpectedlyTerminatedActionException.BlockIndex">
+            <summary>
+            The <see cref="P:Libplanet.Blocks.Block`1.Index"/> of the <see cref="T:Libplanet.Blocks.Block`1"/> that <see cref="P:Libplanet.Action.UnexpectedlyTerminatedActionException.Action"/>
+            belongs to.  This can be <c>null</c> on rehearsal mode.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Action.UnexpectedlyTerminatedActionException.TxId">
+            <summary>
+            The <see cref="P:Libplanet.Tx.Transaction`1.Id"/> of the <see cref="T:Libplanet.Tx.Transaction`1"/> that
+            <see cref="P:Libplanet.Action.UnexpectedlyTerminatedActionException.Action"/> belongs to.  This can be <c>null</c> on rehearsal mode or
+            if <see cref="P:Libplanet.Action.UnexpectedlyTerminatedActionException.Action"/> is a <see cref="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.BlockAction"/>.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Action.UnexpectedlyTerminatedActionException.Action">
+            <summary>
+            The <see cref="T:Libplanet.Action.IAction"/> object which threw an exception.
+            </summary>
+        </member>
         <member name="T:Libplanet.Address">
             <summary>
             An identifier of 20 bytes (or 40 letters in hexadecimal, commonly with
@@ -1278,14 +1339,14 @@
             <see cref="M:Libplanet.Blockchain.BlockChain`1.GetNextTxNonce(Libplanet.Address)"/> result of the
             <see cref="P:Libplanet.Tx.Transaction`1.Signer"/>.</exception>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain`1.StageTransactions(System.Collections.Generic.IDictionary{Libplanet.Tx.Transaction{`0},System.Boolean})">
+        <member name="M:Libplanet.Blockchain.BlockChain`1.StageTransactions(System.Collections.Immutable.IImmutableSet{Libplanet.Tx.Transaction{`0}})">
             <summary>
             Adds <paramref name="transactions"/> to the pending list so that
             a next <see cref="T:Libplanet.Blocks.Block`1"/> to be mined contains these
             <paramref name="transactions"/>.
             </summary>
-            <param name="transactions"> <see cref="T:Libplanet.Tx.Transaction`1"/>s to add to the pending list.
-            Keys are <see cref="P:Libplanet.Blockchain.BlockChain`1.Transactions"/>s and values are whether to broadcast.</param>
+            <param name="transactions"><see cref="T:Libplanet.Tx.Transaction`1"/>s to add to the pending list.
+            </param>
         </member>
         <member name="M:Libplanet.Blockchain.BlockChain`1.UnstageTransactions(System.Collections.Generic.ISet{Libplanet.Tx.Transaction{`0}})">
             <summary>
@@ -1293,7 +1354,7 @@
             </summary>
             <param name="transactions"><see cref="T:Libplanet.Tx.Transaction`1"/>s
             to remove from the pending list.</param>
-            <seealso cref="M:Libplanet.Blockchain.BlockChain`1.StageTransactions(System.Collections.Generic.IDictionary{Libplanet.Tx.Transaction{`0},System.Boolean})"/>
+            <seealso cref="M:Libplanet.Blockchain.BlockChain`1.StageTransactions(System.Collections.Immutable.IImmutableSet{Libplanet.Tx.Transaction{`0}})"/>
         </member>
         <member name="M:Libplanet.Blockchain.BlockChain`1.GetNextTxNonce(Libplanet.Address)">
             <summary>
@@ -1333,6 +1394,15 @@
             <remarks>This method is idempotent (except for rendering).  If the given
             <paramref name="block"/> has executed before, it does not execute it nor mutate states.
             </remarks>
+        </member>
+        <member name="M:Libplanet.Blockchain.BlockChain`1.FindBranchPoint(Libplanet.Blockchain.BlockLocator)">
+            <summary>
+            Find an approximate to the topmost common ancestor between this
+            <see cref="T:Libplanet.Blockchain.BlockChain`1"/> and a given <see cref="T:Libplanet.Blockchain.BlockLocator"/>.
+            </summary>
+            <param name="locator">A block locator that contains candidate common ancestors.</param>
+            <returns>An approximate to the topmost common ancestor.  If it failed to find anything
+            returns <c>null</c>.</returns>
         </member>
         <member name="T:Libplanet.Blockchain.IncompleteBlockStatesException">
             <summary>
@@ -2173,6 +2243,28 @@
         <member name="P:Libplanet.Net.BlockStateDownloadState.CurrentPhase">
             <inheritdoc />
         </member>
+        <member name="M:Libplanet.Net.BoundPeer.#ctor(Libplanet.Crypto.PublicKey,System.Net.DnsEndPoint,System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Libplanet.Net.BoundPeer"/> class.
+            </summary>
+            <param name="publicKey">A <see cref="T:Libplanet.Crypto.PublicKey"/> of the
+            <see cref="T:Libplanet.Net.Peer"/>.</param>
+            <param name="endPoint">A <see cref="T:System.Net.DnsEndPoint"/> consisting of the
+            host and port of the <see cref="T:Libplanet.Net.Peer"/>.</param>
+            <param name="appProtocolVersion">An application protocol version
+            that the <see cref="T:Libplanet.Net.Peer"/> is using.</param>
+        </member>
+        <member name="P:Libplanet.Net.BoundPeer.EndPoint">
+            <summary>
+            The corresponding <see cref="T:System.Net.DnsEndPoint"/> of this peer.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Net.BoundPeer.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Net.BoundPeer.ToString">
+            <inheritdoc/>
+        </member>
         <member name="T:Libplanet.Net.DifferentAppProtocolVersionException">
             <summary>
             The exception that is thrown when the version of the
@@ -2231,11 +2323,6 @@
             A reply to <see cref="F:Libplanet.Net.Messages.Message.MessageType.Ping"/>.
             </summary>
         </member>
-        <member name="F:Libplanet.Net.Messages.Message.MessageType.PeerSetDelta">
-            <summary>
-            Peer's delta set to sync peer list.
-            </summary>
-        </member>
         <member name="F:Libplanet.Net.Messages.Message.MessageType.GetBlockHashes">
             <summary>
             Request to query block hashes.
@@ -2271,6 +2358,16 @@
             Message containing serialized transaction.
             </summary>
         </member>
+        <member name="F:Libplanet.Net.Messages.Message.MessageType.FindNeighbors">
+            <summary>
+            Message containing request for nearby peers.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.Messages.Message.MessageType.Neighbors">
+            <summary>
+            Message containing nearby peers.
+            </summary>
+        </member>
         <member name="F:Libplanet.Net.Messages.Message.MessageType.GetRecentStates">
             <summary>
             Request to query calculated states.
@@ -2295,36 +2392,10 @@
             </summary>
             <seealso cref="T:Libplanet.Net.Swarm`1"/>
         </member>
-        <member name="M:Libplanet.Net.Peer.#ctor(Libplanet.Crypto.PublicKey,System.Net.DnsEndPoint)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Libplanet.Net.Peer"/> class
-            with omitting <see cref="P:Libplanet.Net.Peer.AppProtocolVersion"/>.
-            </summary>
-            <param name="publicKey">A <see cref="P:Libplanet.Net.Peer.PublicKey"/> of the
-            <see cref="T:Libplanet.Net.Peer"/>.</param>
-            <param name="endPoint">A <see cref="T:System.Net.DnsEndPoint"/> consisting of the
-            host and port of the <see cref="T:Libplanet.Net.Peer"/>.</param>
-        </member>
-        <member name="M:Libplanet.Net.Peer.#ctor(Libplanet.Crypto.PublicKey,System.Net.DnsEndPoint,System.Nullable{System.Int32})">
-            <summary>
-            Initializes a new instance of the <see cref="T:Libplanet.Net.Peer"/> class.
-            </summary>
-            <param name="publicKey">A <see cref="P:Libplanet.Net.Peer.PublicKey"/> of the
-            <see cref="T:Libplanet.Net.Peer"/>.</param>
-            <param name="endPoint">A <see cref="T:System.Net.DnsEndPoint"/> consisting of the
-            host and port of the <see cref="T:Libplanet.Net.Peer"/>.</param>
-            <param name="appProtocolVersion">An application protocol version
-            that the <see cref="T:Libplanet.Net.Peer"/> is using.</param>
-        </member>
         <member name="P:Libplanet.Net.Peer.PublicKey">
             <summary>
             The corresponding <see cref="T:Libplanet.Crypto.PublicKey"/> of
             this peer.
-            </summary>
-        </member>
-        <member name="P:Libplanet.Net.Peer.EndPoint">
-            <summary>
-            The corresponding <see cref="T:System.Net.DnsEndPoint"/> of this peer.
             </summary>
         </member>
         <member name="P:Libplanet.Net.Peer.AppProtocolVersion">
@@ -2340,9 +2411,6 @@
             <seealso cref="P:Libplanet.Net.Peer.PublicKey"/>
         </member>
         <member name="M:Libplanet.Net.Peer.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Net.Peer.ToString">
             <inheritdoc/>
         </member>
         <member name="F:Libplanet.Net.PreloadState.TotalPhase">
@@ -2368,11 +2436,6 @@
         <member name="P:Libplanet.Net.StateReferenceDownloadState.ReceivedStateReferenceCount">
             <summary>
             The number of received state references until now.
-            </summary>
-        </member>
-        <member name="P:Libplanet.Net.StateReferenceDownloadState.ReceivedAddress">
-            <summary>
-            The address of the state references just received.
             </summary>
         </member>
         <member name="P:Libplanet.Net.StateReferenceDownloadState.CurrentPhase">
@@ -2402,16 +2465,16 @@
             <returns>A <see cref="T:System.Threading.Tasks.Task"/> completed when <see cref="P:Libplanet.Net.Swarm`1.Running"/>
             property becomes <c>true</c>.</returns>
         </member>
-        <member name="M:Libplanet.Net.Swarm`1.StartAsync(System.TimeSpan,System.TimeSpan,System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Net.Swarm`1.StartAsync(System.TimeSpan,System.Threading.CancellationToken)">
             <summary>
-            Joins to the peer-to-peer network and starts to periodically synchronize
-            the <see cref="P:Libplanet.Net.Swarm`1.BlockChain"/>.
+            Starts to periodically synchronize the <see cref="P:Libplanet.Net.Swarm`1.BlockChain"/>.
             </summary>
-            <param name="distributeInterval">The time period of peer exchange.</param>
             <param name="broadcastTxInterval">The time period of exchange of staged transactions.
             </param>
-            <param name="cancellationToken">A cancellation token used to propagate notification
-            that this operation should be canceled.</param>
+            /// <param name="cancellationToken">
+            A cancellation token used to propagate notification that this
+            operation should be canceled.
+            </param>
             <returns>An awaitable task without value.</returns>
             <exception cref="T:Libplanet.Net.SwarmException">Thrown when this <see cref="T:Libplanet.Net.Swarm`1"/> instance is
             already <see cref="P:Libplanet.Net.Swarm`1.Running"/>.</exception>
@@ -2423,6 +2486,19 @@
             these actions in the behind blocks use <see cref=
             "M:Libplanet.Net.Swarm`1.PreloadAsync(System.IProgress{Libplanet.Net.PreloadState},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Threading.CancellationToken)"
             /> method too.</remarks>
+        </member>
+        <member name="M:Libplanet.Net.Swarm`1.BootstrapAsync(System.Collections.Generic.IEnumerable{Libplanet.Net.Peer},System.Nullable{System.TimeSpan},System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
+            <summary>
+            Join to the peer-to-peer network using seed peers.
+            </summary>
+            <param name="seedPeers">List of seed peers.</param>
+            <param name="pingSeedTimeout">Timeout for connecting to seed peers.</param>
+            <param name="findNeighborsTimeout">Timeout for requesting neighbors.</param>
+            <param name="cancellationToken">A cancellation token used to propagate notification
+            that this operation should be canceled.</param>
+            <returns>An awaitable task without value.</returns>
+            <exception cref="T:Libplanet.Net.SwarmException">Thrown when this <see cref="T:Libplanet.Net.Swarm`1"/> instance is
+            not <see cref="P:Libplanet.Net.Swarm`1.Running"/>.</exception>
         </member>
         <member name="M:Libplanet.Net.Swarm`1.PreloadAsync(System.IProgress{Libplanet.Net.PreloadState},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Threading.CancellationToken)">
             <summary>
@@ -2450,7 +2526,7 @@
             </returns>
             <remarks>This does not render downloaded <see cref="T:Libplanet.Action.IAction"/>s, but fills states only.
             If you want to render all <see cref="T:Libplanet.Action.IAction"/>s from the genesis block to the recent
-            blocks use <see cref="M:Libplanet.Net.Swarm`1.StartAsync(System.TimeSpan,System.TimeSpan,System.Threading.CancellationToken)"/> method
+            blocks use <see cref="M:Libplanet.Net.Swarm`1.StartAsync(System.TimeSpan,System.Threading.CancellationToken)"/> method
             instead.</remarks>
         </member>
         <member name="T:Libplanet.Nonce">
@@ -2498,22 +2574,25 @@
             <returns>A hexadecimal representation of a <see cref="T:Libplanet.Nonce"/>.
             </returns>
         </member>
-        <member name="M:Libplanet.Store.BaseStore.ListNamespaces">
+        <member name="M:Libplanet.Store.BaseStore.ListChainIds">
             <inheritdoc />
         </member>
-        <member name="M:Libplanet.Store.BaseStore.GetCanonicalNamespace">
+        <member name="M:Libplanet.Store.BaseStore.GetCanonicalChainId">
             <inheritdoc />
         </member>
-        <member name="M:Libplanet.Store.BaseStore.SetCanonicalNamespace(System.String)">
+        <member name="M:Libplanet.Store.BaseStore.SetCanonicalChainId(System.Guid)">
             <inheritdoc />
         </member>
-        <member name="M:Libplanet.Store.BaseStore.ListAddresses(System.String)">
+        <member name="M:Libplanet.Store.BaseStore.ForkBlockIndexes(System.Guid,System.Guid,Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
             <inheritdoc />
         </member>
-        <member name="M:Libplanet.Store.BaseStore.StageTransactionIds(System.Collections.Generic.IDictionary{Libplanet.Tx.TxId,System.Boolean})">
+        <member name="M:Libplanet.Store.BaseStore.ListAddresses(System.Guid)">
             <inheritdoc />
         </member>
-        <member name="M:Libplanet.Store.BaseStore.IterateStagedTransactionIds(System.Boolean)">
+        <member name="M:Libplanet.Store.BaseStore.StageTransactionIds(System.Collections.Immutable.IImmutableSet{Libplanet.Tx.TxId})">
+            <inheritdoc />
+        </member>
+        <member name="M:Libplanet.Store.BaseStore.IterateStagedTransactionIds">
             <inheritdoc />
         </member>
         <member name="M:Libplanet.Store.BaseStore.GetBlock``1(Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
@@ -2525,93 +2604,122 @@
         <member name="M:Libplanet.Store.BaseStore.PutBlock``1(Libplanet.Blocks.Block{``0})">
             <inheritdoc />
         </member>
-        <member name="M:Libplanet.Store.BaseStore.IterateStateReferences(System.String,Libplanet.Address)">
+        <member name="M:Libplanet.Store.BaseStore.IterateStateReferences(System.Guid,Libplanet.Address)">
             <inheritdoc />
         </member>
-        <member name="M:Libplanet.Store.BaseStore.StoreStateReference``1(System.String,System.Collections.Immutable.IImmutableSet{Libplanet.Address},Libplanet.Blocks.Block{``0})">
+        <member name="M:Libplanet.Store.BaseStore.ForkStateReferences``1(System.Guid,System.Guid,Libplanet.Blocks.Block{``0})">
             <inheritdoc />
         </member>
-        <member name="M:Libplanet.Store.BaseStore.ForkStateReferences``1(System.String,System.String,Libplanet.Blocks.Block{``0},System.Collections.Immutable.IImmutableSet{Libplanet.Address})">
-            <inheritdoc />
-        </member>
-        <member name="M:Libplanet.Store.BaseStore.ListTxNonces(System.String)">
+        <member name="M:Libplanet.Store.BaseStore.ListTxNonces(System.Guid)">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Store.BaseStore.GetTxNonce(System.String,Libplanet.Address)">
+        <member name="M:Libplanet.Store.BaseStore.GetTxNonce(System.Guid,Libplanet.Address)">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Store.BaseStore.IncreaseTxNonce(System.String,Libplanet.Address,System.Int64)">
+        <member name="M:Libplanet.Store.BaseStore.IncreaseTxNonce(System.Guid,Libplanet.Address,System.Int64)">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Store.BaseStore.DeleteNamespace(System.String)">
+        <member name="M:Libplanet.Store.BaseStore.DeleteChainId(System.Guid)">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Store.IStore.ListNamespaces">
+        <member name="T:Libplanet.Store.ChainIdNotFoundException">
             <summary>
-            Lists existing namespaces.
+            The exception that is thrown when a chain ID does not exist in
+            an <see cref="T:Libplanet.Store.IStore"/> object.
             </summary>
-            <returns>Existing namespaces.</returns>
         </member>
-        <member name="M:Libplanet.Store.IStore.GetCanonicalNamespace">
+        <member name="M:Libplanet.Store.ChainIdNotFoundException.#ctor(System.Guid,System.String)">
             <summary>
-            Gets the current canonical namespace.
+            Initializes a new instance of the <see cref="T:Libplanet.Store.ChainIdNotFoundException"/> class.
             </summary>
-            <returns>The current canonical namespace.  Maybe <c>null</c>.</returns>
+            <param name="chainId">The ID of the chain not found.</param>
+            <param name="message">The message that describes the error.</param>
         </member>
-        <member name="M:Libplanet.Store.IStore.SetCanonicalNamespace(System.String)">
+        <member name="P:Libplanet.Store.ChainIdNotFoundException.ChainId">
             <summary>
-            Set canonical namespace.
+            Gets the ID of the chain not found.
             </summary>
-            <param name="namespace">A new canonical namespace.  Cannot be <c>null</c>.</param>
-            <exception cref="T:System.ArgumentNullException">Thrown when <paramref name="namespace"/> is
-            <c>null</c>.</exception>
         </member>
-        <member name="M:Libplanet.Store.IStore.IterateIndex(System.String,System.Int32,System.Nullable{System.Int32})">
+        <member name="M:Libplanet.Store.IStore.ListChainIds">
             <summary>
-            Lists all block hashes in the <parmaref name="namespace"/>.
+            Lists existing chain IDs.
             </summary>
-            <param name="namespace">The namespace of the index that contains block hashes to
+            <returns>Existing chain IDs.</returns>
+        </member>
+        <member name="M:Libplanet.Store.IStore.DeleteChainId(System.Guid)">
+            <summary>
+            Deletes an index, tx nonces, and state references in the given
+            <paramref name="chainId"/>.
+            It also deletes chain itself.  If there is no such <paramref name="chainId"/> it
+            does nothing.
+            </summary>
+            <param name="chainId">The ID of chain to delete.</param>
+            <remarks>This does not delete blocks or transactions that belong to the index of
+            the <paramref name="chainId"/>, but only the index, tx nonces, and state references.
+            </remarks>
+        </member>
+        <member name="M:Libplanet.Store.IStore.GetCanonicalChainId">
+            <summary>
+            Gets the ID of the current canonical chain.
+            </summary>
+            <returns>The ID of the current canonical chain.  Maybe <c>null</c>.</returns>
+            <seealso cref="M:Libplanet.Store.IStore.SetCanonicalChainId(System.Guid)"/>
+        </member>
+        <member name="M:Libplanet.Store.IStore.SetCanonicalChainId(System.Guid)">
+            <summary>
+            Sets the canonical chain.
+            </summary>
+            <param name="chainId">The ID of a new canonical chain.</param>
+            <seealso cref="M:Libplanet.Store.IStore.GetCanonicalChainId"/>
+        </member>
+        <member name="M:Libplanet.Store.IStore.IterateIndex(System.Guid,System.Int32,System.Nullable{System.Int32})">
+            <summary>
+            Lists all block hashes in the <parmaref name="chainId"/>.
+            </summary>
+            <param name="chainId">The chain ID of the index that contains block hashes to
             iterate.</param>
             <param name="offset">The starting point to return block hashes.</param>
             <param name="limit">The maximum number of block hashes to get.</param>
-            <returns>Block hashes in the index of the <paramref name="namespace"/>, in ascending
+            <returns>Block hashes in the index of the <paramref name="chainId"/>, in ascending
             order; the genesis block goes first, and the tip block goes last.</returns>
         </member>
-        <member name="M:Libplanet.Store.IStore.DeleteNamespace(System.String)">
+        <member name="M:Libplanet.Store.IStore.ForkBlockIndexes(System.Guid,System.Guid,Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
             <summary>
-            Deletes an index, tx nonces, and state references in the given
-            <paramref name="namespace"/>.
-            It also deletes namespace itself.  If there is no such <paramref name="namespace"/> it
-            does nothing.
+            Forks block indexes from
+            <paramref name="sourceChainId"/> to
+            <paramref name="destinationChainId"/>.
             </summary>
-            <param name="namespace">The namespace to delete.</param>
-            <remarks>This does not delete blocks or transactions that belong to
-            the index of the <paramref name="namespace"/>, but only the index,
-            tx nonces, and state references.</remarks>
+            <param name="sourceChainId">The chain ID of block indexes to
+            fork.</param>
+            <param name="destinationChainId">The chain ID of destination
+            block indexes.</param>
+            <param name="branchPoint">The branch point <see cref="T:Libplanet.Blocks.Block`1"/>
+            to fork.</param>
+            <exception cref="T:Libplanet.Store.ChainIdNotFoundException">Thrown when the given
+            <paramref name="sourceChainId"/> does not exist.</exception>
+            <seealso cref="M:Libplanet.Store.IStore.IterateIndex(System.Guid,System.Int32,System.Nullable{System.Int32})"/>
+            <seealso cref="M:Libplanet.Store.IStore.AppendIndex(System.Guid,Libplanet.HashDigest{System.Security.Cryptography.SHA256})"/>
         </member>
-        <member name="M:Libplanet.Store.IStore.ListAddresses(System.String)">
+        <member name="M:Libplanet.Store.IStore.ListAddresses(System.Guid)">
             <summary>
             Lists all addresses that have ever had states.
             </summary>
-            <param name="namespace">The namespace to list addresses.</param>
+            <param name="chainId">The ID of the chain to list addresses.</param>
             <returns>All addresses in an arbitrary order.  The order might
             be vary for each call.</returns>
         </member>
-        <member name="M:Libplanet.Store.IStore.StageTransactionIds(System.Collections.Generic.IDictionary{Libplanet.Tx.TxId,System.Boolean})">
+        <member name="M:Libplanet.Store.IStore.StageTransactionIds(System.Collections.Immutable.IImmutableSet{Libplanet.Tx.TxId})">
             <summary>
             Adds <see cref="T:Libplanet.Tx.TxId"/>s to the pending list so that
             a next <see cref="T:Libplanet.Blocks.Block`1"/> to be mined contains the corresponding
             <see cref="T:Libplanet.Tx.Transaction`1"/>s.
             </summary>
-            <param name="txids"><see cref="T:Libplanet.Tx.TxId"/>s to add to pending list. Keys are
-            <see cref="T:Libplanet.Tx.TxId"/>s and values are whether to broadcast.</param>
+            <param name="txids"><see cref="T:Libplanet.Tx.TxId"/>s to add to pending list.</param>
         </member>
-        <member name="M:Libplanet.Store.IStore.IterateStagedTransactionIds(System.Boolean)">
+        <member name="M:Libplanet.Store.IStore.IterateStagedTransactionIds">
             <summary>
             Iterates staged <see cref="T:Libplanet.Tx.TxId"/>s.
             </summary>
-            <param name="toBroadcast">Whether to iterate only the <see cref="T:Libplanet.Tx.TxId"/>s set to
-            broadcast.</param>
             <returns>Staged <see cref="T:Libplanet.Tx.TxId"/>s.</returns>
         </member>
         <member name="M:Libplanet.Store.IStore.PutTransaction``1(Libplanet.Tx.Transaction{``0})">
@@ -2678,102 +2786,93 @@
             <c>b = 1; c = 1</c> (delta).</para>
             </remarks>
         </member>
-        <member name="M:Libplanet.Store.IStore.IterateStateReferences(System.String,Libplanet.Address)">
+        <member name="M:Libplanet.Store.IStore.IterateStateReferences(System.Guid,Libplanet.Address)">
             <summary>
             Gets pairs of a state reference and a corresponding <see cref="P:Libplanet.Blocks.Block`1.Index"/> of
-            the requested <paramref name="address"/> in the specified <paramref name="namespace"/>.
+            the requested <paramref name="address"/> in the specified <paramref name="chainId"/>.
             </summary>
-            <param name="namespace">The chain namespace.</param>
+            <param name="chainId">The chain ID.</param>
             <param name="address">The <see cref="T:Libplanet.Address"/> to get state references.</param>
             <returns><em>Ordered</em> pairs of a state reference and a corresponding
             <see cref="P:Libplanet.Blocks.Block`1.Index"/>.  The highest index (i.e., the closest to the tip) goes
             first and the lowest index (i.e., the closest to the genesis) goes last.</returns>
-            <seealso cref="M:Libplanet.Store.IStore.StoreStateReference``1(System.String,System.Collections.Immutable.IImmutableSet{Libplanet.Address},Libplanet.Blocks.Block{``0})"/>
+            <seealso
+            cref="M:Libplanet.Store.IStore.StoreStateReference(System.Guid,System.Collections.Immutable.IImmutableSet{Libplanet.Address},Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Int64)"/>
         </member>
-        <member name="M:Libplanet.Store.IStore.StoreStateReference``1(System.String,System.Collections.Immutable.IImmutableSet{Libplanet.Address},Libplanet.Blocks.Block{``0})">
+        <member name="M:Libplanet.Store.IStore.StoreStateReference(System.Guid,System.Collections.Immutable.IImmutableSet{Libplanet.Address},Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Int64)">
             <summary>
             Stores a state reference, which is a <see cref="P:Libplanet.Blocks.Block`1.Hash"/>
             that has the state of the <see cref="T:Libplanet.Address"/> for each updated
             <see cref="T:Libplanet.Address"/>es by the <see cref="T:Libplanet.Tx.Transaction`1"/>s in the
-            <paramref name="block"/>.</summary>
-            <param name="namespace">The namespace to store a state reference.
-            </param>
+            <see cref="T:Libplanet.Blocks.Block`1" />.</summary>
+            <param name="chainId">The ID of the chain to store a state reference.</param>
             <param name="addresses">The <see cref="T:Libplanet.Address"/>es to store state
             reference.</param>
-            <param name="block">The <see cref="T:Libplanet.Blocks.Block`1"/> which has the state
+            <param name="blockHash">The <see cref="P:Libplanet.Blocks.Block`1.Hash"/> which has the state
             of the <see cref="T:Libplanet.Address"/>.</param>
-            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> class used with
-            <paramref name="block"/>.</typeparam>
-            <remarks>State reference must be stored in the same order as the blocks. For now,
-            it is assumed that this is only called by
-            <see cref="M:Libplanet.Blockchain.BlockChain`1.Append(Libplanet.Blocks.Block{`0})"/> method.</remarks>
-            <seealso cref="M:Libplanet.Store.IStore.IterateStateReferences(System.String,Libplanet.Address)"/>
+            <param name="blockIndex">The <see cref="P:Libplanet.Blocks.Block`1.Index"/> which has the state
+            of the <see cref="T:Libplanet.Address"/>. This must refer to the same block
+            that <paramref name="blockHash"/> refers to.</param>
+            <seealso cref="M:Libplanet.Store.IStore.IterateStateReferences(System.Guid,Libplanet.Address)"/>
         </member>
-        <member name="M:Libplanet.Store.IStore.ForkStateReferences``1(System.String,System.String,Libplanet.Blocks.Block{``0},System.Collections.Immutable.IImmutableSet{Libplanet.Address})">
+        <member name="M:Libplanet.Store.IStore.ForkStateReferences``1(System.Guid,System.Guid,Libplanet.Blocks.Block{``0})">
             <summary>
             Forks state references, which are <see cref="P:Libplanet.Blocks.Block`1.Hash"/>es that
             have the state of the <see cref="T:Libplanet.Address"/>es, from
-            <paramref name="sourceNamespace"/> to
-            <paramref name="destinationNamespace"/>.
+            <paramref name="sourceChainId"/> to <paramref name="destinationChainId"/>.
             <para>This method copies state references from
-            <paramref name="sourceNamespace"/> to
-            <paramref name="destinationNamespace"/> and strips
-            <paramref name="addressesToStrip"/> of state references after
-            <paramref name="branchPoint"/>.</para>
+            <paramref name="sourceChainId"/> to <paramref name="destinationChainId"/> and strips
+            state references after <paramref name="branchPoint"/>.</para>
             </summary>
-            <param name="sourceNamespace">The namespace of state references to
-            fork.</param>
-            <param name="destinationNamespace">The namespace of destination
-            state references.</param>
+            <param name="sourceChainId">The chain ID of state references to fork.</param>
+            <param name="destinationChainId">The new chain ID to have state references.</param>
             <param name="branchPoint">The branch point <see cref="T:Libplanet.Blocks.Block`1"/>
             to fork.</param>
-            <param name="addressesToStrip">The set of <see cref="T:Libplanet.Address"/>es
-            to strip <see cref="P:Libplanet.Blocks.Block`1.Hash"/> after forking.</param>
             <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> class used with
             <paramref name="branchPoint"/>.</typeparam>
-            <exception cref="T:Libplanet.Store.NamespaceNotFoundException">Thrown when the given
-            <paramref name="sourceNamespace"/> does not exist.</exception>
-            <seealso cref="M:Libplanet.Store.IStore.IterateStateReferences(System.String,Libplanet.Address)"/>
-            <seealso cref="M:Libplanet.Store.IStore.StoreStateReference``1(System.String,System.Collections.Immutable.IImmutableSet{Libplanet.Address},Libplanet.Blocks.Block{``0})"/>
+            <exception cref="T:Libplanet.Store.ChainIdNotFoundException">Thrown when the given
+            <paramref name="sourceChainId"/> does not exist.</exception>
+            <seealso cref="M:Libplanet.Store.IStore.IterateStateReferences(System.Guid,Libplanet.Address)"/>
+            <seealso
+            cref="M:Libplanet.Store.IStore.StoreStateReference(System.Guid,System.Collections.Immutable.IImmutableSet{Libplanet.Address},Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Int64)"/>
         </member>
-        <member name="M:Libplanet.Store.IStore.ListTxNonces(System.String)">
+        <member name="M:Libplanet.Store.IStore.ListTxNonces(System.Guid)">
             <summary>
             Lists all <see cref="T:Libplanet.Address"/>es that have ever signed <see cref="T:Libplanet.Tx.Transaction`1"/>,
             and their corresponding <see cref="T:Libplanet.Tx.Transaction`1"/> nonces.
             </summary>
-            <param name="namespace">The namespace to list <see cref="T:Libplanet.Address"/>es and their
+            <param name="chainId">The ID of the chain to list <see cref="T:Libplanet.Address"/>es and their
             <see cref="T:Libplanet.Tx.Transaction`1"/> nonces.</param>
             <returns>Pairs of an <see cref="T:Libplanet.Address"/> and its tx nonce.  All nonces are greater
             than 0.  (If there are underlying entries having zero nonces these must be hidden.)
             </returns>
-            <seealso cref="M:Libplanet.Store.IStore.GetTxNonce(System.String,Libplanet.Address)"/>
+            <seealso cref="M:Libplanet.Store.IStore.GetTxNonce(System.Guid,Libplanet.Address)"/>
         </member>
-        <member name="M:Libplanet.Store.IStore.GetTxNonce(System.String,Libplanet.Address)">
+        <member name="M:Libplanet.Store.IStore.GetTxNonce(System.Guid,Libplanet.Address)">
             <summary>
             Gets <see cref="T:Libplanet.Tx.Transaction`1"/> nonce of the
             <paramref name="address"/>.
             </summary>
-            <param name="namespace">The namespace to get
-            <see cref="T:Libplanet.Tx.Transaction`1"/> nonce.
+            <param name="chainId">The ID of the chain to get <see cref="T:Libplanet.Tx.Transaction`1"/> nonce.
             </param>
             <param name="address">The <see cref="T:Libplanet.Address"/> to get
             <see cref="T:Libplanet.Tx.Transaction`1"/> nonce.
             </param>
             <returns>A <see cref="T:Libplanet.Tx.Transaction`1"/> nonce. If there is no
             previous <see cref="T:Libplanet.Tx.Transaction`1"/>, return 0.</returns>
-            <seealso cref="M:Libplanet.Store.IStore.IncreaseTxNonce(System.String,Libplanet.Address,System.Int64)"/>
+            <seealso cref="M:Libplanet.Store.IStore.IncreaseTxNonce(System.Guid,Libplanet.Address,System.Int64)"/>
         </member>
-        <member name="M:Libplanet.Store.IStore.IncreaseTxNonce(System.String,Libplanet.Address,System.Int64)">
+        <member name="M:Libplanet.Store.IStore.IncreaseTxNonce(System.Guid,Libplanet.Address,System.Int64)">
             <summary>
             Increases (or decreases if a negative <paramref name="delta"/> is given)
             the tx nonce counter for <paramref name="signer"/>.
             </summary>
-            <param name="namespace">The namespace to increase
+            <param name="chainId">The ID of the chain to increase
             <see cref="T:Libplanet.Tx.Transaction`1"/> nonce.</param>
             <param name="signer">The address of the account to increase tx nonce.</param>
             <param name="delta">How many to increase the counter.  A negative number decreases
             the counter.  1 by default.</param>
-            <seealso cref="M:Libplanet.Store.IStore.GetTxNonce(System.String,Libplanet.Address)"/>
+            <seealso cref="M:Libplanet.Store.IStore.GetTxNonce(System.Guid,Libplanet.Address)"/>
         </member>
         <member name="T:Libplanet.Store.LiteDBStore">
             <summary>
@@ -2795,43 +2894,46 @@
             <param name="readOnly">Opens database readonly mode. Turned off by default.
             </param>
         </member>
-        <member name="M:Libplanet.Store.LiteDBStore.ListNamespaces">
+        <member name="M:Libplanet.Store.LiteDBStore.ListChainIds">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Store.LiteDBStore.DeleteNamespace(System.String)">
+        <member name="M:Libplanet.Store.LiteDBStore.DeleteChainId(System.Guid)">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Store.LiteDBStore.GetCanonicalNamespace">
+        <member name="M:Libplanet.Store.LiteDBStore.GetCanonicalChainId">
             <inheritdoc />
         </member>
-        <member name="M:Libplanet.Store.LiteDBStore.SetCanonicalNamespace(System.String)">
+        <member name="M:Libplanet.Store.LiteDBStore.SetCanonicalChainId(System.Guid)">
             <inheritdoc />
         </member>
-        <member name="M:Libplanet.Store.LiteDBStore.CountIndex(System.String)">
+        <member name="M:Libplanet.Store.LiteDBStore.CountIndex(System.Guid)">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Store.LiteDBStore.IterateIndex(System.String,System.Int32,System.Nullable{System.Int32})">
+        <member name="M:Libplanet.Store.LiteDBStore.IterateIndex(System.Guid,System.Int32,System.Nullable{System.Int32})">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Store.LiteDBStore.IndexBlockHash(System.String,System.Int64)">
+        <member name="M:Libplanet.Store.LiteDBStore.IndexBlockHash(System.Guid,System.Int64)">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Store.LiteDBStore.AppendIndex(System.String,Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
+        <member name="M:Libplanet.Store.LiteDBStore.AppendIndex(System.Guid,Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Store.LiteDBStore.DeleteIndex(System.String,Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
+        <member name="M:Libplanet.Store.LiteDBStore.DeleteIndex(System.Guid,Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Store.LiteDBStore.ListAddresses(System.String)">
+        <member name="M:Libplanet.Store.LiteDBStore.ForkBlockIndexes(System.Guid,System.Guid,Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Store.LiteDBStore.StageTransactionIds(System.Collections.Generic.IDictionary{Libplanet.Tx.TxId,System.Boolean})">
+        <member name="M:Libplanet.Store.LiteDBStore.ListAddresses(System.Guid)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.LiteDBStore.StageTransactionIds(System.Collections.Immutable.IImmutableSet{Libplanet.Tx.TxId})">
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Store.LiteDBStore.UnstageTransactionIds(System.Collections.Generic.ISet{Libplanet.Tx.TxId})">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Store.LiteDBStore.IterateStagedTransactionIds(System.Boolean)">
+        <member name="M:Libplanet.Store.LiteDBStore.IterateStagedTransactionIds">
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Store.LiteDBStore.IterateTransactionIds">
@@ -2861,22 +2963,22 @@
         <member name="M:Libplanet.Store.LiteDBStore.SetBlockStates(Libplanet.HashDigest{System.Security.Cryptography.SHA256},Libplanet.Action.AddressStateMap)">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Store.LiteDBStore.IterateStateReferences(System.String,Libplanet.Address)">
+        <member name="M:Libplanet.Store.LiteDBStore.IterateStateReferences(System.Guid,Libplanet.Address)">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Store.LiteDBStore.StoreStateReference``1(System.String,System.Collections.Immutable.IImmutableSet{Libplanet.Address},Libplanet.Blocks.Block{``0})">
+        <member name="M:Libplanet.Store.LiteDBStore.StoreStateReference(System.Guid,System.Collections.Immutable.IImmutableSet{Libplanet.Address},Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Int64)">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Store.LiteDBStore.ForkStateReferences``1(System.String,System.String,Libplanet.Blocks.Block{``0},System.Collections.Immutable.IImmutableSet{Libplanet.Address})">
+        <member name="M:Libplanet.Store.LiteDBStore.ForkStateReferences``1(System.Guid,System.Guid,Libplanet.Blocks.Block{``0})">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Store.LiteDBStore.ListTxNonces(System.String)">
+        <member name="M:Libplanet.Store.LiteDBStore.ListTxNonces(System.Guid)">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Store.LiteDBStore.GetTxNonce(System.String,Libplanet.Address)">
+        <member name="M:Libplanet.Store.LiteDBStore.GetTxNonce(System.Guid,Libplanet.Address)">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Store.LiteDBStore.IncreaseTxNonce(System.String,Libplanet.Address,System.Int64)">
+        <member name="M:Libplanet.Store.LiteDBStore.IncreaseTxNonce(System.Guid,Libplanet.Address,System.Int64)">
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Store.LiteDBStore.CountTransactions">
@@ -2885,32 +2987,13 @@
         <member name="M:Libplanet.Store.LiteDBStore.CountBlocks">
             <inheritdoc/>
         </member>
-        <member name="T:Libplanet.Store.NamespaceNotFoundException">
-            <summary>
-            The exception that is thrown when the namespace of
-            <see cref="N:Libplanet.Store"/> does not exist.
-            </summary>
-        </member>
-        <member name="M:Libplanet.Store.NamespaceNotFoundException.#ctor(System.String,System.String)">
-            <summary>
-            Initializes a new instance of the
-            <see cref="T:Libplanet.Store.NamespaceNotFoundException"/> class.
-            </summary>
-            <param name="namespace">The namespace not found.</param>
-            <param name="message">The message that describes the error.</param>
-        </member>
-        <member name="P:Libplanet.Store.NamespaceNotFoundException.Namespace">
-            <summary>
-            Gets the namespace not found.
-            </summary>
-        </member>
-        <member name="M:Libplanet.Store.StoreExtension.LookupStateReference``1(Libplanet.Store.IStore,System.String,Libplanet.Address,Libplanet.Blocks.Block{``0})">
+        <member name="M:Libplanet.Store.StoreExtension.LookupStateReference``1(Libplanet.Store.IStore,System.Guid,Libplanet.Address,Libplanet.Blocks.Block{``0})">
             <summary>
             Looks up a state reference, which is a block's <see cref="P:Libplanet.Blocks.Block`1.Hash"/> that contains
             an action mutating the <paramref name="address"/>' state.
             </summary>
             <param name="store">The store object expected to contain the state reference.</param>
-            <param name="namespace">The namespace to look up a state reference.</param>
+            <param name="chainId">The chain ID to look up a state reference.</param>
             <param name="address">The <see cref="T:Libplanet.Address"/> to look up.</param>
             <param name="lookupUntil">The upper bound (i.e., the latest block) of the search range.
             <see cref="T:Libplanet.Blocks.Block`1"/>s after <paramref name="lookupUntil"/> are ignored.</param>
@@ -2919,17 +3002,16 @@
             address.</returns>
             <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> class used with
             <paramref name="lookupUntil"/>.</typeparam>
-            <seealso
-            cref="M:Libplanet.Store.IStore.StoreStateReference``1(System.String,System.Collections.Immutable.IImmutableSet{Libplanet.Address},Libplanet.Blocks.Block{``0})"/>
-            <seealso cref="M:Libplanet.Store.IStore.IterateStateReferences(System.String,Libplanet.Address)"/>
+            <seealso cref="M:Libplanet.Store.IStore.StoreStateReference(System.Guid,System.Collections.Immutable.IImmutableSet{Libplanet.Address},Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Int64)"/>
+            <seealso cref="M:Libplanet.Store.IStore.IterateStateReferences(System.Guid,Libplanet.Address)"/>
         </member>
-        <member name="M:Libplanet.Store.StoreExtension.ListAllStateReferences(Libplanet.Store.IStore,System.String,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}})">
+        <member name="M:Libplanet.Store.StoreExtension.ListAllStateReferences(Libplanet.Store.IStore,System.Guid,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}})">
             <summary>
-            Lists all accounts, that have any states, in the given <paramref name="namespace"/> and
+            Lists all accounts, that have any states, in the given <paramref name="chainId"/> and
             their state references.
             </summary>
             <param name="store">A store object.</param>
-            <param name="namespace">The namespace to look up state references.</param>
+            <param name="chainId">The chain ID to look up state references.</param>
             <param name="onlyAfter">Includes state references only made after the block
             this argument refers to, if present.</param>
             <param name="ignoreAfter">Excludes state references made after the block
@@ -3300,7 +3382,7 @@
             is passed to <paramref name="privateKey"/> or
             or <paramref name="actions"/>.
             </exception>
-            <exception cref="T:Libplanet.Tx.UnexpectedlyTerminatedTxRehearsalException">
+            <exception cref="T:Libplanet.Action.UnexpectedlyTerminatedActionException">
             Thrown when one of <paramref name="actions"/> throws some
             exception during their rehearsal.
             <para>This exception is thrown probably because the logic of some of
@@ -3359,7 +3441,7 @@
             Note that each <see cref="P:Libplanet.Action.IActionContext.Random"/> object has
             a unconsumed state.
             </returns>
-            <exception cref="T:Libplanet.Tx.UnexpectedlyTerminatedTxRehearsalException">
+            <exception cref="T:Libplanet.Action.UnexpectedlyTerminatedActionException">
             Thrown when one of <see cref="P:Libplanet.Tx.Transaction`1.Actions"/> throws some
             exception during <paramref name="rehearsal"/> mode.
             The actual exception that an <see cref="T:Libplanet.Action.IAction"/> threw
@@ -3392,7 +3474,7 @@
             being executed.  Note that it maintains
             <see cref="P:Libplanet.Action.IAccountStateDelta.UpdatedAddresses"/> of the given
             <paramref name="previousStates"/> as well.</returns>
-            <exception cref="T:Libplanet.Tx.UnexpectedlyTerminatedTxRehearsalException">
+            <exception cref="T:Libplanet.Action.UnexpectedlyTerminatedActionException">
             Thrown when one of <see cref="P:Libplanet.Tx.Transaction`1.Actions"/> throws some
             exception during <paramref name="rehearsal"/> mode.
             The actual exception that an <see cref="T:Libplanet.Action.IAction"/> threw
@@ -3495,32 +3577,6 @@
         </member>
         <member name="M:Libplanet.Tx.TxId.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
             <inheritdoc />
-        </member>
-        <member name="T:Libplanet.Tx.UnexpectedlyTerminatedTxRehearsalException">
-            <summary>
-            The exception that is thrown during a <see cref="T:Libplanet.Tx.Transaction`1"/>
-            is being created when one of <see cref="P:Libplanet.Tx.Transaction`1.Actions"/>
-            throws some exception during rehearsal mode.
-            <para>The actual exception that the <see cref="P:Libplanet.Tx.UnexpectedlyTerminatedTxRehearsalException.Action"/> threw
-            is stored in the <see cref="P:System.Exception.InnerException"/> property.</para>
-            </summary>
-        </member>
-        <member name="M:Libplanet.Tx.UnexpectedlyTerminatedTxRehearsalException.#ctor(Libplanet.Action.IAction,System.String,System.Exception)">
-            <summary>
-            Creates a new <see cref="T:Libplanet.Tx.UnexpectedlyTerminatedTxRehearsalException"
-            /> object with an <paramref name="innerException"/>.
-            </summary>
-            <param name="action">The <see cref="T:Libplanet.Action.IAction"/> object which threw
-            an exception.</param>
-            <param name="message">Specifies a <see cref="P:System.Exception.Message"/>.
-            </param>
-            <param name="innerException">The actual exception that
-            the <see cref="P:Libplanet.Tx.UnexpectedlyTerminatedTxRehearsalException.Action"/> threw.</param>
-        </member>
-        <member name="P:Libplanet.Tx.UnexpectedlyTerminatedTxRehearsalException.Action">
-            <summary>
-            The <see cref="T:Libplanet.Action.IAction"/> object which threw an exception.
-            </summary>
         </member>
     </members>
 </doc>

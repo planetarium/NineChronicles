@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.IO;
 using UniRx;
@@ -19,8 +20,16 @@ namespace Nekoyume.TableData
         public LevelSheet LevelSheet { get; private set; }
         public SkillSheet SkillSheet { get; private set; }
 
-#if UNITY_EDITOR
         public IEnumerator CoInitialize()
+        {
+#if UNITY_EDITOR
+            return CoInitializeForEditor();
+#else
+            return CoInitializeForPlayer();
+#endif
+        }
+
+        public IEnumerator CoInitializeForEditor()
         {
             loadProgress.Value = 0f;
 
@@ -41,8 +50,8 @@ namespace Nekoyume.TableData
 
             loadProgress.Value = 1f;
         }
-#else
-        public IEnumerator CoInitialize()
+
+        public IEnumerator CoInitializeForPlayer()
         {
             loadProgress.Value = 0f;
             
@@ -65,7 +74,7 @@ namespace Nekoyume.TableData
 
             loadProgress.Value = 1f;
         }
-#endif
+
         private void SetToSheet(string name, string csv)
         {
             switch (name)
