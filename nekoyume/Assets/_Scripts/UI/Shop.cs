@@ -15,22 +15,16 @@ using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 using InventoryAndItemInfo = Nekoyume.UI.Module.InventoryAndItemInfo;
-using Player = Nekoyume.Game.Character.Player;
 using ShopItem = Nekoyume.UI.Model.ShopItem;
 using ShopItems = Nekoyume.UI.Module.ShopItems;
-using Stage = Nekoyume.Game.Stage;
-
 namespace Nekoyume.UI
 {
     public class Shop : Widget
     {
+        public BottomMenu bottomMenu;
         public CanvasGroup canvasGroup;
         public RectTransform bg1;
         public RectTransform right;
-        public Button switchBuyButton;
-        public Text switchBuyButtonText;
-        public Button switchSellButton;
-        public Text switchSellButtonText;
         public Text catQuoteText;
         public InventoryAndItemInfo inventoryAndItemInfo;
         public ShopItems shopItems;
@@ -62,17 +56,17 @@ namespace Nekoyume.UI
             _defaultAnchoredPositionXOfRight = right.anchoredPosition.x;
             base.Awake();
 
-            switchBuyButtonText.text = LocalizationManager.Localize("UI_BUY");
-            switchSellButtonText.text = LocalizationManager.Localize("UI_SELL");
+            bottomMenu.switchBuyButton.text.text = LocalizationManager.Localize("UI_BUY");
+            bottomMenu.switchSellButton.text.text = LocalizationManager.Localize("UI_SELL");
             catQuoteText.text = LocalizationManager.Localize("SPEECH_SHOP_0");
 
-            switchBuyButton.onClick.AsObservable().Subscribe(_ =>
+            bottomMenu.switchBuyButton.button.onClick.AsObservable().Subscribe(_ =>
                 {
                     AudioController.PlayClick();
                     Model?.onClickSwitchBuy.OnNext(Model);
                 })
                 .AddTo(_disposablesForAwake);
-            switchSellButton.onClick.AsObservable().Subscribe(_ =>
+            bottomMenu.switchSellButton.button.onClick.AsObservable().Subscribe(_ =>
                 {
                     AudioController.PlayClick();
                     Model?.onClickSwitchSell.OnNext(Model);
@@ -94,10 +88,24 @@ namespace Nekoyume.UI
 
         #endregion
 
+        public override void Initialize()
+        {
+            base.Initialize();
+
+            bottomMenu.goToMainButton.button.onClick.AddListener(GoToMenu);
+            var status = Find<Status>();
+            bottomMenu.questButton.button.onClick.AddListener(status.ToggleQuest);
+        }
+
         public override void Show()
         {
             var stage = Game.Game.instance.stage;
             var player = stage.GetPlayer();
+            if (ReferenceEquals(player, null))
+            {
+                throw new NotFoundComponentException<Game.Character.Player>();
+            }
+
             if (player)
             {
                 player.gameObject.SetActive(false);
@@ -174,21 +182,26 @@ namespace Nekoyume.UI
 
         private void SubscribeState(Model.Shop.State state)
         {
+            if(state == UI.Model.Shop.State.Show)
+            {
+                shopItems.SetState(state);
+                Model.state.Value = UI.Model.Shop.State.Buy;
+            }
+
             switch (state)
             {
                 case UI.Model.Shop.State.Show:
                     shopItems.SetState(state);
                     Model.state.Value = UI.Model.Shop.State.Buy;
-                    switchBuyButton.image.sprite = Resources.Load<Sprite>("UI/Textures/button_blue_01");
-                    switchSellButton.image.sprite = Resources.Load<Sprite>("UI/Textures/button_black_01");
+                    bottomMenu.switchBuyButton.button.interactable = false;
                     return;
                 case UI.Model.Shop.State.Buy:
-                    switchBuyButton.image.sprite = Resources.Load<Sprite>("UI/Textures/button_blue_01");
-                    switchSellButton.image.sprite = Resources.Load<Sprite>("UI/Textures/button_black_01");
+                    bottomMenu.switchBuyButton.button.interactable = false;
+                    bottomMenu.switchSellButton.button.interactable = true;
                     break;
                 case UI.Model.Shop.State.Sell:
-                    switchBuyButton.image.sprite = Resources.Load<Sprite>("UI/Textures/button_black_01");
-                    switchSellButton.image.sprite = Resources.Load<Sprite>("UI/Textures/button_blue_01");
+                    bottomMenu.switchBuyButton.button.interactable = true;
+                    bottomMenu.switchSellButton.button.interactable = false;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(state), state, null);
@@ -416,8 +429,8 @@ namespace Nekoyume.UI
 
         private void GoToMenu()
         {
-            Close();
             Find<Menu>().ShowRoom();
+            Close();
         }
     }
 }

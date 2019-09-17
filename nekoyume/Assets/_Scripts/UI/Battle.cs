@@ -21,9 +21,9 @@ namespace Nekoyume.UI
         {
             base.Initialize();
             var status = Find<Status>();
-            bottomMenu.inventoryButton.onClick.AddListener(status.ToggleInventory);
-            bottomMenu.questButton.onClick.AddListener(status.ToggleQuest);
-            bottomMenu.infoAndEquipButton.onClick.AddListener(status.ToggleStatus);
+            bottomMenu.inventoryButton.button.onClick.AddListener(status.ToggleInventory);
+            bottomMenu.questButton.button.onClick.AddListener(status.ToggleQuest);
+            bottomMenu.avatarInfoButton.button.onClick.AddListener(status.ToggleStatus);
         }
 
         public void Show(int stage)
@@ -43,7 +43,7 @@ namespace Nekoyume.UI
 
         private void OnGetItem(DropItem dropItem)
         {
-            VFXController.instance.Create<DropItemInventoryVFX>(bottomMenu.inventoryButton.transform, Vector3.zero);
+            VFXController.instance.Create<DropItemInventoryVFX>(bottomMenu.inventoryButton.image.transform, Vector3.zero);
         }
 
         public override void OnCompleteOfCloseAnimation()

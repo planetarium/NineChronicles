@@ -29,7 +29,7 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
-            btnQuestText.text = LocalizationManager.Localize("UI_QUEST");
+            btnQuestText.text = LocalizationManager.Localize("UI_DUNGEON");
             btnCombinationText.text = LocalizationManager.Localize("UI_COMBINATION");
             btnShopText.text = LocalizationManager.Localize("UI_SHOP");
             btnRankingText.text = LocalizationManager.Localize("UI_RANKING");
@@ -108,9 +108,18 @@ namespace Nekoyume.UI
             base.Initialize();
 
             var status = Find<Status>();
-            bottomMenu.inventoryButton.onClick.AddListener(status.ToggleInventory);
-            bottomMenu.questButton.onClick.AddListener(status.ToggleQuest);
-            bottomMenu.infoAndEquipButton.onClick.AddListener(status.ToggleStatus);
+            bottomMenu.goToMainButton.button.onClick.AddListener(() =>
+            {
+#if UNITY_EDITOR
+                UnityEditor.EditorApplication.isPlaying = false;
+#else
+                bottomMenu.goToMainButton.button.onClick.AddListener(Application.Quit);
+#endif
+            });
+            bottomMenu.goToMainButton.text.text = LocalizationManager.Localize("UI_GAMEEXIT");
+            bottomMenu.inventoryButton.button.onClick.AddListener(status.ToggleInventory);
+            bottomMenu.questButton.button.onClick.AddListener(status.ToggleQuest);
+            bottomMenu.avatarInfoButton.button.onClick.AddListener(status.ToggleStatus);
         }
 
         public override void Show()

@@ -43,7 +43,7 @@ namespace Tests
             Assert.AreEqual(Nekoyume.UI.Model.Shop.State.Buy,w.Model.state.Value);
 
             //Switching Sell panel
-            w.switchSellButton.onClick.Invoke();
+            w.bottomMenu.switchSellButton.button.onClick.Invoke();
             Assert.AreEqual(Nekoyume.UI.Model.Shop.State.Sell,w.Model.state.Value);
             Assert.IsFalse(w.inventoryAndItemInfo.inventory.Tooltip.isActiveAndEnabled);
             Assert.IsFalse(w.itemCountAndPricePopup.isActiveAndEnabled);
@@ -108,7 +108,7 @@ namespace Tests
             Assert.AreEqual(Nekoyume.UI.Model.Shop.State.Buy,w.Model.state.Value);
 
             //Switching Sell panel
-            w.switchSellButton.onClick.Invoke();
+            w.bottomMenu.switchSellButton.button.onClick.Invoke();
             Assert.AreEqual(Nekoyume.UI.Model.Shop.State.Sell,w.Model.state.Value);
             Assert.IsFalse(w.inventoryAndItemInfo.inventory.Tooltip.isActiveAndEnabled);
             Assert.IsFalse(w.itemCountAndPricePopup.isActiveAndEnabled);
@@ -134,7 +134,7 @@ namespace Tests
 
             //Buy
             var current = States.Instance.currentAvatarState.Value.inventory.Items.Count();
-            w.switchBuyButton.onClick.Invoke();
+            w.bottomMenu.switchBuyButton.button.onClick.Invoke();
             w.shopItems.refreshButton.onClick.Invoke();
             var shopItem = w.shopItems.items.First(i =>
                 i.Model.sellerAgentAddress.Value != States.Instance.agentState.Value.address);
@@ -177,7 +177,7 @@ namespace Tests
             Assert.AreEqual(Nekoyume.UI.Model.Shop.State.Buy,w.Model.state.Value);
 
             //Switching Sell panel
-            w.switchSellButton.onClick.Invoke();
+            w.bottomMenu.switchSellButton.button.onClick.Invoke();
             Assert.AreEqual(Nekoyume.UI.Model.Shop.State.Sell,w.Model.state.Value);
             Assert.IsFalse(w.inventoryAndItemInfo.inventory.Tooltip.isActiveAndEnabled);
             Assert.IsFalse(w.itemCountAndPricePopup.isActiveAndEnabled);
@@ -206,7 +206,7 @@ namespace Tests
             var currentGold = States.Instance.agentState.Value.gold;
 
             //Check Shop.products is empty
-            w.switchBuyButton.onClick.Invoke();
+            w.bottomMenu.switchBuyButton.button.onClick.Invoke();
             w.shopItems.refreshButton.onClick.Invoke();
             Assert.IsEmpty(w.shopItems.data.products);
 

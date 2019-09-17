@@ -50,9 +50,9 @@ namespace Nekoyume.UI
                 .Subscribe(_ => GoToWorldMap())
                 .AddTo(gameObject);
 
-            bottomMenu.goToMainButton.onClick.AddListener(BackClick);
+            bottomMenu.goToMainButton.button.onClick.AddListener(BackClick);
             var status = Find<Status>();
-            bottomMenu.questButton.onClick.AddListener(status.ToggleQuest);
+            bottomMenu.questButton.button.onClick.AddListener(status.ToggleQuest);
             // todo: 월드맵 버튼 추가.
 //            bottomMenu.worldMapButton.onClick.AddListener(Find<WorldMap>().Show(false));
         }

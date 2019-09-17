@@ -4,6 +4,7 @@ using Nekoyume.BlockChain;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.State;
+using Nekoyume.UI.Module;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,6 +13,7 @@ namespace Nekoyume.UI
 {
     public class RankingBoard : Widget
     {
+        public BottomMenu bottomMenu;
         public RankingInfo rankingBase;
         public ScrollRect board;
         public GameObject filterHeader;
@@ -40,6 +42,15 @@ namespace Nekoyume.UI
             closeButton.OnClickAsObservable()
                 .Subscribe(_ => GoToMenu())
                 .AddTo(gameObject);
+        }
+
+        public override void Initialize()
+        {
+            base.Initialize();
+
+            bottomMenu.goToMainButton.button.onClick.AddListener(GoToMenu);
+            var status = Find<Status>();
+            bottomMenu.questButton.button.onClick.AddListener(status.ToggleQuest);
         }
 
         public override void Show()

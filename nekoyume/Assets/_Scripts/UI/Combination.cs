@@ -18,16 +18,8 @@ namespace Nekoyume.UI
 {
     public class Combination : Widget
     {
-        public Button switchEquipmentsButton;
-        public Image switchEquipmentsButtonImage;
-        public Text switchEquipmentsButtonText;
-        public Button switchConsumableButton;
-        public Image switchConsumableButtonImage;
-        public Text switchConsumableButtonText;
+        public BottomMenu bottomMenu;
         public Module.Inventory inventory;
-        public Button recipeButton;
-        public Image recipeButtonImage;
-        public Text recipeButtonText;
         public GameObject manualCombination;
         public Text materialsTitleText;
         public CombinationMaterialView equipmentMaterialView;
@@ -58,27 +50,27 @@ namespace Nekoyume.UI
 
             this.ComponentFieldsNotNullTest();
 
-            switchEquipmentsButtonText.text = LocalizationManager.Localize("UI_COMBINE_EQUIPMENTS");
-            switchConsumableButtonText.text = LocalizationManager.Localize("UI_COMBINE_CONSUMABLES");
-            recipeButtonText.text = LocalizationManager.Localize("UI_RECIPE");
+            bottomMenu.combinationEquipmentButton.text.text = LocalizationManager.Localize("UI_COMBINE_EQUIPMENTS");
+            bottomMenu.combinationConsumableButton.text.text = LocalizationManager.Localize("UI_COMBINE_CONSUMABLES");
+            bottomMenu.combinationRecipeButton.text.text = LocalizationManager.Localize("UI_RECIPE");
             materialsTitleText.text = LocalizationManager.Localize("UI_COMBINATION_MATERIALS");
             combinationButtonText.text = LocalizationManager.Localize("UI_COMBINATION_ITEM");
 
-            switchEquipmentsButton.OnClickAsObservable()
+            bottomMenu.combinationEquipmentButton.button.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
                     AudioController.PlayClick();
                     Model.consumablesOrEquipments.Value = UI.Model.Combination.ConsumablesOrEquipments.Equipments;
                 })
                 .AddTo(gameObject);
-            switchConsumableButton.OnClickAsObservable()
+            bottomMenu.combinationConsumableButton.button.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
                     AudioController.PlayClick();
                     Model.consumablesOrEquipments.Value = UI.Model.Combination.ConsumablesOrEquipments.Consumables;
                 })
                 .AddTo(gameObject);
-            recipeButton.OnClickAsObservable()
+            bottomMenu.combinationRecipeButton.button.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
                     AudioController.PlayClick();
@@ -120,6 +112,15 @@ namespace Nekoyume.UI
         }
 
         #endregion
+
+        public override void Initialize()
+        {
+            base.Initialize();
+
+            bottomMenu.goToMainButton.button.onClick.AddListener(GoToMenu);
+            var status = Find<Status>();
+            bottomMenu.questButton.button.onClick.AddListener(status.ToggleQuest);
+        }
 
         public override void Show()
         {
@@ -202,14 +203,14 @@ namespace Nekoyume.UI
             switch (value)
             {
                 case UI.Model.Combination.ConsumablesOrEquipments.Consumables:
-                    switchEquipmentsButtonImage.sprite = Resources.Load<Sprite>("UI/Textures/button_black_02");
-                    switchConsumableButtonImage.sprite = Resources.Load<Sprite>("UI/Textures/button_blue_01");
+                    bottomMenu.combinationEquipmentButton.button.interactable = true;
+                    bottomMenu.combinationConsumableButton.button.interactable = false;
                     equipmentMaterialView.gameObject.SetActive(false);
                     materialViewsPlusImageContainer.SetActive(false);
                     break;
                 case UI.Model.Combination.ConsumablesOrEquipments.Equipments:
-                    switchEquipmentsButtonImage.sprite = Resources.Load<Sprite>("UI/Textures/button_blue_01");
-                    switchConsumableButtonImage.sprite = Resources.Load<Sprite>("UI/Textures/button_black_02");
+                    bottomMenu.combinationEquipmentButton.button.interactable = false;
+                    bottomMenu.combinationConsumableButton.button.interactable = true;
                     equipmentMaterialView.gameObject.SetActive(true);
                     materialViewsPlusImageContainer.SetActive(true);
                     break;
@@ -225,13 +226,11 @@ namespace Nekoyume.UI
             switch (value)
             {
                 case UI.Model.Combination.ManualOrRecipe.Manual:
-                    recipeButtonImage.sprite = Resources.Load<Sprite>("UI/Textures/button_black_02");
                     manualCombination.SetActive(true);
                     recipeCombination.SetActive(false);
                     break;
                 case UI.Model.Combination.ManualOrRecipe.Recipe:
                     recipe.Reload(0);
-                    recipeButtonImage.sprite = Resources.Load<Sprite>("UI/Textures/button_blue_01");
                     manualCombination.SetActive(false);
                     recipeCombination.SetActive(true);
                     break;
