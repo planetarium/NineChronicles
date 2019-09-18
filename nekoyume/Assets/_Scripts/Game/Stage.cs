@@ -15,7 +15,6 @@ using Nekoyume.Model;
 using Nekoyume.UI;
 using Nekoyume.Game.VFX;
 using Nekoyume.Game.VFX.Skill;
-using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using UnityEngine;
 
@@ -36,6 +35,8 @@ namespace Nekoyume.Game
         public GameObject background;
         // dummy for stage background moving.
         public GameObject dummy;
+        public ParticleSystem defaultBGVFX;
+        public ParticleSystem bosswaveBGVFX;
         
         public int id;
         public Character.Player selectedPlayer;
@@ -162,6 +163,23 @@ namespace Nekoyume.Game
             if (ReferenceEquals(prefab, null)) return;
             background = Instantiate(prefab, transform);
             background.name = prefabName;
+            foreach (Transform child in background.transform)
+            {
+                string name = child.name;
+                if (name.StartsWith("bgvfx"))
+                {
+                    string num = name.Substring(name.Length - 2);
+                    switch (num)
+                    {
+                        case "01":
+                            defaultBGVFX = child.GetComponent<ParticleSystem>();
+                            break;
+                        case "02":
+                            bosswaveBGVFX = child.GetComponent<ParticleSystem>();
+                            break;
+                    }
+                }
+            }
         }
 
         public void Play(BattleLog log)
@@ -215,6 +233,7 @@ namespace Nekoyume.Game
             id = stage;
             zone = data.Background;
             LoadBackground(zone, 3.0f);
+            PlayBGVFX(false);
             RunPlayer();
 
             var title = Widget.Find<StageTitle>();
@@ -392,6 +411,7 @@ namespace Nekoyume.Game
                 yield return new WaitForSeconds(1.5f);
                 playerCharacter.ShowSpeech("PLAYER_BOSS_STAGE");
                 yield return new WaitForSeconds(1.5f);
+                PlayBGVFX(true);
                 AudioController.instance.PlayMusic(AudioController.MusicCode.Boss1);
                 VFXController.instance.Create<BattleBossTitleVFX>(Vector3.zero);
                 StartCoroutine(Widget.Find<Blind>().FadeIn(0.4f, "", 0.2f));
@@ -473,6 +493,20 @@ namespace Nekoyume.Game
                     .OrderBy(c => c.transform.position.x).FirstOrDefault();
                 if (enemy != null && !character.TargetInRange(enemy))
                     character.StartRun();
+            }
+        }
+
+        private void PlayBGVFX(bool isBoss)
+        {
+            if (isBoss)
+            {
+                defaultBGVFX.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+                bosswaveBGVFX.Play(true);
+            }
+            else
+            {
+                bosswaveBGVFX.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+                defaultBGVFX.Play(true);
             }
         }
     }
