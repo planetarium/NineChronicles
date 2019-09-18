@@ -13,7 +13,7 @@ B1_01
   index: -1
 B1_02
   rotate: false
-  xy: 958, 572
+  xy: 297, 19
   size: 51, 40
   orig: 51, 40
   offset: 0, 0
@@ -54,22 +54,22 @@ B3_01
   offset: 0, 0
   index: -1
 B3_02
-  rotate: false
-  xy: 697, 594
+  rotate: true
+  xy: 994, 717
   size: 31, 27
   orig: 31, 27
   offset: 0, 0
   index: -1
 B3_03
   rotate: false
-  xy: 889, 507
+  xy: 472, 483
   size: 25, 26
   orig: 25, 26
   offset: 0, 0
   index: -1
 B3_04
   rotate: false
-  xy: 994, 722
+  xy: 443, 483
   size: 27, 26
   orig: 27, 26
   offset: 0, 0
@@ -242,6 +242,13 @@ eye_05
   orig: 95, 78
   offset: 0, 0
   index: -1
+face_02
+  rotate: false
+  xy: 958, 579
+  size: 59, 33
+  orig: 59, 33
+  offset: 0, 0
+  index: -1
 leaf_01
   rotate: false
   xy: 2, 466
@@ -307,14 +314,14 @@ leaf_09_1
   index: -1
 leaf_09_2
   rotate: false
-  xy: 297, 26
+  xy: 896, 540
   size: 49, 33
   orig: 49, 33
   offset: 0, 0
   index: -1
 leaf_09_3
   rotate: false
-  xy: 896, 535
+  xy: 400, 471
   size: 41, 38
   orig: 41, 38
   offset: 0, 0
@@ -334,10 +341,17 @@ leg_R_01
   offset: 0, 0
   index: -1
 leg_R_02
-  rotate: false
-  xy: 297, 2
+  rotate: true
+  xy: 350, 35
   size: 24, 22
   orig: 24, 22
+  offset: 0, 0
+  index: -1
+pop
+  rotate: false
+  xy: 1017, 1010
+  size: 5, 12
+  orig: 5, 12
   offset: 0, 0
   index: -1
 shadow
@@ -349,8 +363,15 @@ shadow
   index: -1
 tear
   rotate: true
-  xy: 939, 563
+  xy: 802, 708
   size: 10, 17
   orig: 10, 17
+  offset: 0, 0
+  index: -1
+z
+  rotate: true
+  xy: 697, 592
+  size: 29, 35
+  orig: 29, 35
   offset: 0, 0
   index: -1
