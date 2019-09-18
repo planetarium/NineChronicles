@@ -184,7 +184,7 @@ namespace Nekoyume.Battle
                         var count = Random.Next(r.Min, r.Max);
                         for (int i = 0; i < count; i++)
                         {
-                            var guid = Random.GenerateUUID4();
+                            var guid = Random.GenerateRandomGuid();
                             var item = ItemFactory.Create(itemData, guid);
                             items.Add(item);
                         }

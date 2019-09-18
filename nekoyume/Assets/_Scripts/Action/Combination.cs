@@ -119,7 +119,7 @@ namespace Nekoyume.Action
                 if (!TryGetItemType(outEquipmentMaterialRow.id, out var outItemType))
                     return states;
 
-                var itemId = ctx.Random.GenerateUUID4();
+                var itemId = ctx.Random.GenerateRandomGuid();
                 Equipment equipment = null;
                 var isFirst = true;
                 foreach (var monsterPartsMaterial in orderedMaterials)
@@ -186,7 +186,7 @@ namespace Nekoyume.Action
                     return states;
 
                 // 조합 결과 획득.
-                var itemId = ctx.Random.GenerateUUID4();
+                var itemId = ctx.Random.GenerateRandomGuid();
                 var itemUsable = GetFood(itemEquipmentRow, itemId);
                 result.itemUsable = itemUsable;
                 var mail = new CombinationMail(result, ctx.BlockIndex);
