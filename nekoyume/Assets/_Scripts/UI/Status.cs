@@ -2,8 +2,6 @@ using Nekoyume.Manager;
 using Nekoyume.BlockChain;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
-using Nekoyume.Game.Item;
-using Nekoyume.Game.VFX;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -156,7 +154,7 @@ namespace Nekoyume.UI
             {
                 return;
             }
-            foreach (var widget in new Widget[] {_inventory, _statusDetail, _quest})
+            foreach (var widget in new Widget[] { _inventory, _statusDetail, _quest })
             {
                 if (selected != widget)
                     widget.Close();
