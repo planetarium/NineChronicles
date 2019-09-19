@@ -148,7 +148,6 @@ namespace Nekoyume.UI.Model
             // 판매하겠습니까?
             itemCountAndPricePopup.Value.titleText.Value = LocalizationManager.Localize("UI_SELL");
             itemCountAndPricePopup.Value.countEnabled.Value = true;
-            itemCountAndPricePopup.Value.price.Value = 1;
             itemCountAndPricePopup.Value.priceInteractable.Value = true;
             itemCountAndPricePopup.Value.item.Value = new CountEditableItem(
                 inventoryItem.item.Value,
