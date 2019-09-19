@@ -90,7 +90,7 @@ namespace Nekoyume.Action
             
             foreach (var pair in Tables.instance.ItemEquipment.Where(pair => pair.Value.id > GameConfig.DefaultAvatarWeaponId))
             {
-                var itemId = random.GenerateUUID4();
+                var itemId = random.GenerateRandomGuid();
                 avatarState.inventory.AddNonFungibleItem((ItemUsable) ItemFactory.Create(pair.Value, itemId));
             }
         }
