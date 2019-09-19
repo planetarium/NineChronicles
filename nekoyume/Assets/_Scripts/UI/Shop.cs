@@ -390,10 +390,11 @@ namespace Nekoyume.UI
         private void ResponseSell()
         {
             var item = Model.itemCountAndPricePopup.Value.item.Value;
+            var price = Model.itemCountAndPricePopup.Value.price.Value;
             Model.inventory.Value.RemoveItem(item.item.Value);
             Model.itemCountAndPricePopup.Value.item.Value = null;
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
-            Notification.Push($"{item.item.Value.Data.name} 아이템을 상점에 등록합니다.");
+            Notification.Push($"{item.item.Value.Data.name} 아이템을 상점에 등록합니다.\n아이템 판매시 {price} gold의 8%를 세금으로 차감합니다.");
         }
 
         private void ResponseSellCancellation(ShopItem shopItem)

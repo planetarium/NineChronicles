@@ -30,6 +30,7 @@ namespace Nekoyume.Action
         public class SellerResult : AttachmentActionResult
         {
             public Game.Item.ShopItem shopItem;
+            public decimal gold;
         }
 
         protected override IImmutableDictionary<string, object> PlainValueInternal => new Dictionary<string, object>
@@ -130,7 +131,8 @@ namespace Nekoyume.Action
             sellerResult = new SellerResult
             {
                 shopItem = outPair.Value,
-                itemUsable = outPair.Value.itemUsable
+                itemUsable = outPair.Value.itemUsable,
+                gold = decimal.Round(outPair.Value.price * 0.92m)
             };
             var sellerMail = new SellerMail(sellerResult, ctx.BlockIndex);
             sellerAvatarState.Update(sellerMail);
