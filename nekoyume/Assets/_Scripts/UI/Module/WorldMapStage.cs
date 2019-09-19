@@ -21,21 +21,24 @@ namespace Nekoyume.UI.Module
         public class ViewModel : IDisposable
         {
             public readonly int stageId;
+            public readonly string stageNumber;
             public readonly bool hasBoss;
             public readonly ReactiveProperty<State> state = new ReactiveProperty<State>();
             public readonly ReactiveProperty<bool> selected = new ReactiveProperty<bool>();
 
-            public ViewModel(StageSheet.Row stageRow, State state) : this(stageRow.Id, stageRow.HasBoss, state)
+            public ViewModel(StageSheet.Row stageRow, string stageNumber, State state) :
+                this(stageRow.Id, stageNumber, stageRow.HasBoss, state)
             {
             }
 
-            public ViewModel(State state) : this(-1, false, state)
+            public ViewModel(State state) : this(-1, "0", false, state)
             {
             }
 
-            public ViewModel(int stageId, bool hasBoss, State state)
+            public ViewModel(int stageId, string stageNumber, bool hasBoss, State state)
             {
                 this.stageId = stageId;
+                this.stageNumber = stageNumber;
                 this.hasBoss = hasBoss;
                 this.state.Value = state;
             }
@@ -95,7 +98,7 @@ namespace Nekoyume.UI.Module
                 .AddTo(_disposablesForModel);
 
             SetBoss(SharedViewModel.hasBoss);
-            buttonText.text = SharedViewModel.stageId.ToString();
+            buttonText.text = SharedViewModel.stageNumber;
         }
 
         public void Hide()

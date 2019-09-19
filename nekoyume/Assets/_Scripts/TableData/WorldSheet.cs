@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Assets.SimpleLocalization;
 
 namespace Nekoyume.TableData
 {
@@ -57,6 +58,11 @@ namespace Nekoyume.TableData
 
             worldRow = sheet.Last;
             return true;
+        }
+
+        public static string GetLocalizedName(this WorldSheet.Row worldRow)
+        {
+            return LocalizationManager.Localize($"WORLD_NAME_{worldRow.Name.ToUpper()}");
         }
 
         public static bool TryGetStageId(this WorldSheet.Row worldRow, int stageId, out int stageNumber)

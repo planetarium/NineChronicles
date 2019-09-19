@@ -68,7 +68,7 @@ namespace Nekoyume.UI.Module
                 throw new ArgumentNullException(nameof(worldRow));
 
             _disposablesForModel.DisposeAllAndClear();
-            SharedViewModel = new ViewModel(worldRow.Name);
+            SharedViewModel = new ViewModel(worldRow.GetLocalizedName());
 
             var stageRows = Game.Game.instance.TableSheets.StageSheet.Values
                 .Where(stageRow => stageRow.Id >= worldRow.StageBegin && stageRow.Id <= worldRow.StageEnd)
@@ -110,7 +110,10 @@ namespace Nekoyume.UI.Module
                         continue;
                     }
 
-                    var stageModel = new WorldMapStage.ViewModel(stageRows[stageRowsIndex], WorldMapStage.State.Normal);
+                    var stageModel = new WorldMapStage.ViewModel(
+                        stageRows[stageRowsIndex],
+                        $"{stageRowsIndex + 1}",
+                        WorldMapStage.State.Normal);
 
                     stageModels.Add(stageModel);
                 }
