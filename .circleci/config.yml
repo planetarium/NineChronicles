@@ -34,18 +34,22 @@ jobs:
             mkdir -p /tmp/test-result/
             docker run \
               --entrypoint=/bin/bash \
+              -v /tmp/test-result/:/tmp/test-result/ \
               "<< parameters.docker-image-name >>" \
               /scripts/test.sh
             docker run \
               --entrypoint=/bin/ls \
+              -v /tmp/test-result/:/tmp/test-result/ \
               "<< parameters.docker-image-name >>" \
               -al /tmp/test-result/
             docker run \
               --entrypoint=/bin/cat \
+              -v /tmp/test-result/:/tmp/test-result/ \
               "<< parameters.docker-image-name >>" \
               /tmp/test-result/result.txt > /tmp/test-result/result.txt
             docker run \
               --entrypoint=/bin/cat \
+              -v /tmp/test-result/:/tmp/test-result/ \
               "<< parameters.docker-image-name >>" \
               /tmp/test-result/junit.xml > /tmp/test-result/junit.xml
 
