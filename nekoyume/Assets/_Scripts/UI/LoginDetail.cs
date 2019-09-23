@@ -173,16 +173,12 @@ namespace Nekoyume.UI
                 slide.DOValue(percentage, 2.0f).SetEase(Ease.OutCubic);
             }
 
-            // status info
-            var fields = player.GetType().GetFields();
-            foreach (var field in fields)
+            var rows = player.GetStatusRow();
+            foreach(var (key, value, additional) in rows)
             {
-                if (field.IsDefined(typeof(InformationFieldAttribute), true))
-                {
-                    GameObject row = Instantiate(statusRow, statusGrid.transform);
-                    var info = row.GetComponent<StatusInfo>();
-                    info.Set(field.Name, field.GetValue(player), decimal.ToSingle(player.GetAdditionalStatus(field.Name)));
-                }
+                var go = Instantiate(statusRow, statusGrid.transform);
+                var info = go.GetComponent<StatusInfo>();
+                info.Set(key, value, additional);
             }
         }
 
