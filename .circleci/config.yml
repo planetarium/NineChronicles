@@ -33,8 +33,9 @@ jobs:
           command: |
             mkdir -p /tmp/test-result/
             docker run \
+              --entrypoint=/bin/bash \
               "<< parameters.docker-image-name >>" \
-              "bash /scripts/test.sh"
+              /scripts/test.sh
             docker run \
               --entrypoint=/bin/ls \
               "<< parameters.docker-image-name >>" \
