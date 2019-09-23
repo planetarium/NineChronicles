@@ -30,10 +30,7 @@ namespace Nekoyume.UI
         public ShopItems shopItems;
         public Button closeButton;
         public ItemCountAndPricePopup itemCountAndPricePopup;
-
-
-        public GameObject particleVFX;
-        public GameObject resultItemVFX;
+        public GameObject shopNotice;
 
         private readonly List<IDisposable> _disposablesForAwake = new List<IDisposable>();
         private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
@@ -198,10 +195,13 @@ namespace Nekoyume.UI
                 case UI.Model.Shop.State.Buy:
                     bottomMenu.switchBuyButton.button.interactable = false;
                     bottomMenu.switchSellButton.button.interactable = true;
+                    shopNotice.SetActive(true);
+
                     break;
                 case UI.Model.Shop.State.Sell:
                     bottomMenu.switchBuyButton.button.interactable = true;
                     bottomMenu.switchSellButton.button.interactable = false;
+                    shopNotice.SetActive(false);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(state), state, null);
