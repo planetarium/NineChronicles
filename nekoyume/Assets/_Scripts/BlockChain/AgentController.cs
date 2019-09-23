@@ -69,6 +69,7 @@ namespace Nekoyume.BlockChain
             var iceServers = GetIceServers();
             var host = GetHost(options);
             int? port = options.Port;
+            bool consoleSink = options.ConsoleSink;
             var storagePath = options.StoragePath ?? DefaultStoragePath;
 
             Agent = new Agent(
@@ -77,7 +78,8 @@ namespace Nekoyume.BlockChain
                 peers: peers,
                 iceServers: iceServers,
                 host: host,
-                port: port
+                port: port,
+                consoleSink: consoleSink
             );
 
             // 별도 쓰레드에서는 GameObject.GetComponent<T> 를 사용할 수 없기때문에 미리 선언.

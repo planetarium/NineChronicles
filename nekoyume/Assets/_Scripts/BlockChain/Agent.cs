@@ -21,11 +21,14 @@ using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Extensibility;
 using Nekoyume.Action;
 using Nekoyume.Game.Item;
+using Nekoyume.Serilog;
 #if BLOCK_LOG_USE
 using Nekoyume.Helper;
 #endif
 using Serilog;
+using Serilog.Sinks.ApplicationInsights;
 using UniRx;
+using UniRx.Diagnostics;
 using UnityEngine;
 
 namespace Nekoyume.BlockChain
@@ -86,21 +89,37 @@ namespace Nekoyume.BlockChain
 
         private static TelemetryClient _telemetryClient;
 
+        private const string InstrumentationKey = "953da29a-95f7-4f04-9efe-d48c42a1b53a";
+
         static Agent()
         {
             _telemetryClient =
-                new TelemetryClient(new TelemetryConfiguration("953da29a-95f7-4f04-9efe-d48c42a1b53a"));
+                new TelemetryClient(new TelemetryConfiguration(InstrumentationKey));
             ForceDotNet.Force();
-            Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Verbose()
-                .WriteTo.ApplicationInsights(_telemetryClient, TelemetryConverter.Traces)
-                .CreateLogger();
         }
 
-        private void InitialTelemetryClient(Address address)
+        private void InitializeTelemetryClient(Address address)
         {
             _telemetryClient.Context.User.AuthenticatedUserId = address.ToHex();
             _telemetryClient.Context.Session.Id = Guid.NewGuid().ToString();
+        }
+
+        private void InitializeLogger(bool consoleSink)
+        {
+            var loggerConfiguration = new LoggerConfiguration()
+                .MinimumLevel.Verbose();
+
+            if (consoleSink)
+            {
+                Log.Logger = loggerConfiguration
+                    .WriteTo.Sink(new Serilog.UnityDebugSink()).CreateLogger();
+            }
+            else
+            {
+                Log.Logger = loggerConfiguration
+                    .WriteTo.ApplicationInsights(_telemetryClient, TelemetryConverter.Traces)
+                    .CreateLogger();
+            }
         }
 
         public Agent(
@@ -109,7 +128,8 @@ namespace Nekoyume.BlockChain
             IEnumerable<Peer> peers,
             IEnumerable<IceServer> iceServers,
             string host,
-            int? port)
+            int? port,
+            bool consoleSink)
         {
             Debug.Log(path);
             var policy = GetPolicy();
@@ -120,6 +140,7 @@ namespace Nekoyume.BlockChain
 #if BLOCK_LOG_USE
             FileHelper.WriteAllText("Block.log", "");
 #endif
+            InitializeLogger(consoleSink);
 
             _swarm = new Swarm<PolymorphicAction<ActionBase>>(
                 _blocks,
@@ -132,7 +153,7 @@ namespace Nekoyume.BlockChain
                 iceServers: iceServers,
                 differentVersionPeerEncountered: DifferentAppProtocolVersionPeerEncountered);
             
-            InitialTelemetryClient(_swarm.Address);
+            InitializeTelemetryClient(_swarm.Address);
 
             _seedPeers = peers.Where(peer => peer.PublicKey != privateKey.PublicKey).ToImmutableList();
             // Init SyncSucceed
