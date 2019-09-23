@@ -318,7 +318,8 @@ namespace Nekoyume.BlockChain
             }
             else
             {
-                UI.Notification.Push($"{eval.Action.buyerResult.itemUsable.Data.name} 판매 완료.");
+                var result = eval.Action.sellerResult;
+                UI.Notification.Push($"{result.itemUsable.Data.name} 판매 완료.\n세금 8% 제외 {result.gold}gold 획득");
             }
             UpdateCurrentAvatarState(eval);
         }

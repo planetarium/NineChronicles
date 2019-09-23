@@ -40,7 +40,7 @@ namespace Nekoyume.Action
 
             mail.New = false;
             var attachment = (Buy.SellerResult) mail.attachment;
-            var gold = attachment.shopItem.price;
+            var gold = attachment.gold;
             agentState.gold += gold;
 
             avatarState.BlockIndex = ctx.BlockIndex;

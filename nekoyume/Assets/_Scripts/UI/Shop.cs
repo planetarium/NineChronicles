@@ -30,10 +30,7 @@ namespace Nekoyume.UI
         public ShopItems shopItems;
         public Button closeButton;
         public ItemCountAndPricePopup itemCountAndPricePopup;
-
-
-        public GameObject particleVFX;
-        public GameObject resultItemVFX;
+        public GameObject shopNotice;
 
         private readonly List<IDisposable> _disposablesForAwake = new List<IDisposable>();
         private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
@@ -199,10 +196,13 @@ namespace Nekoyume.UI
                 case UI.Model.Shop.State.Buy:
                     bottomMenu.switchBuyButton.button.interactable = false;
                     bottomMenu.switchSellButton.button.interactable = true;
+                    shopNotice.SetActive(true);
+
                     break;
                 case UI.Model.Shop.State.Sell:
                     bottomMenu.switchBuyButton.button.interactable = true;
                     bottomMenu.switchSellButton.button.interactable = false;
+                    shopNotice.SetActive(false);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(state), state, null);
@@ -391,10 +391,11 @@ namespace Nekoyume.UI
         private void ResponseSell()
         {
             var item = Model.itemCountAndPricePopup.Value.item.Value;
+            var price = Model.itemCountAndPricePopup.Value.price.Value;
             Model.inventory.Value.RemoveItem(item.item.Value);
             Model.itemCountAndPricePopup.Value.item.Value = null;
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
-            Notification.Push($"{item.item.Value.Data.name} 아이템을 상점에 등록합니다.");
+            Notification.Push($"{item.item.Value.Data.name} 아이템을 상점에 등록합니다.\n아이템 판매시 {price} gold의 8%를 세금으로 차감합니다.");
         }
 
         private void ResponseSellCancellation(ShopItem shopItem)
