@@ -191,17 +191,17 @@ namespace Nekoyume.UI
                     Model.state.Value = UI.Model.Shop.State.Buy;
                     bottomMenu.switchBuyButton.button.interactable = false;
                     bottomMenu.switchSellButton.button.interactable = true;
+                    shopNotice.SetActive(false);
                     return;
                 case UI.Model.Shop.State.Buy:
                     bottomMenu.switchBuyButton.button.interactable = false;
                     bottomMenu.switchSellButton.button.interactable = true;
-                    shopNotice.SetActive(true);
-
+                    shopNotice.SetActive(false);
                     break;
                 case UI.Model.Shop.State.Sell:
                     bottomMenu.switchBuyButton.button.interactable = true;
                     bottomMenu.switchSellButton.button.interactable = false;
-                    shopNotice.SetActive(false);
+                    shopNotice.SetActive(true);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(state), state, null);
