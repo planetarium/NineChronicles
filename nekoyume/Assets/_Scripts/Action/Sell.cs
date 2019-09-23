@@ -11,6 +11,7 @@ using UnityEngine;
 
 namespace Nekoyume.Action
 {
+    [Serializable]
     [ActionType("sell")]
     public class Sell : GameAction
     {

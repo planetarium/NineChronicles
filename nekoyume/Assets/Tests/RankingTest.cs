@@ -7,7 +7,7 @@ using NUnit.Framework;
 
 namespace Tests
 {
-    public class RankingTest
+    public class RankingTest : PlayModeTest
     {
         [Test]
         public void GetAgentAddressesEmpty()

@@ -1,7 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Libplanet;
 using Libplanet.Action;
@@ -62,16 +64,28 @@ namespace Tests
 
             public IEnumerator CoMine(Transaction<PolymorphicAction<ActionBase>> transaction)
             {
+                Debug.Log("Mine");
                 var task = Task.Run(() =>
                     _blocks.StageTransactions(
                         ImmutableHashSet<Transaction<PolymorphicAction<ActionBase>>>.Empty.Add(transaction)
                     )
                 );
                 yield return new WaitUntil(() => task.IsCompleted);
+                Debug.Log("Mine 0");
                 var mine = Task.Run(() => _blocks.MineBlock(PrivateKey.PublicKey.ToAddress()));
                 yield return new WaitUntil(() => mine.IsCompleted);
+                Debug.Log("Mine 1");
                 var block = mine.Result;
-                AgentController.Agent.AppendBlock(block);
+                try
+                {
+                    Debug.Log("Mine 2");
+                    AgentController.Agent.AppendBlock(block);
+                    Debug.Log("Mine 3");
+                }
+                catch (Exception e)
+                {
+                    Debug.LogFormat("Miner: {0} NoMiner: {1} Exception: {2}", BlockIndex, AgentController.Agent.BlockIndex, e);
+                }
             }
         }
     }

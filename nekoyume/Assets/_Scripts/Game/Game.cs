@@ -37,6 +37,7 @@ namespace Nekoyume.Game
         public Stage stage;
 
         public TableSheets TableSheets { get; private set; }
+        public bool initialized;
 
         protected override void Awake()
         {
@@ -73,6 +74,7 @@ namespace Nekoyume.Game
 
         private void AgentInitialized(bool succeed)
         {
+            initialized = true;
             Debug.LogWarning(succeed);
             if (succeed)
             {
@@ -90,6 +92,11 @@ namespace Nekoyume.Game
             position = ActionCamera.instance.Cam.ScreenToWorldPoint(position);
             var vfx = VFXController.instance.CreateAndChaseCam<MouseClickVFX>(position);
             vfx.Play();
+        }
+
+        public void Init()
+        {
+            AgentController.Initialize(AgentInitialized);
         }
     }
 }
