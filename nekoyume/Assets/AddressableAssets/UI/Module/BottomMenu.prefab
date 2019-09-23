@@ -979,7 +979,6 @@ GameObject:
   - component: {fileID: 1542912246320733003}
   - component: {fileID: 6035183985399840212}
   - component: {fileID: 4964587564797645840}
-  - component: {fileID: 513781378567130634}
   m_Layer: 5
   m_Name: BottomMenu
   m_TagString: Untagged
@@ -1108,18 +1107,6 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!225 &513781378567130634
-CanvasGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1542912246320733002}
-  m_Enabled: 1
-  m_Alpha: 1
-  m_Interactable: 1
-  m_BlocksRaycasts: 1
-  m_IgnoreParentGroups: 0
 --- !u!1 &1594532328043895077
 GameObject:
   m_ObjectHideFlags: 0
@@ -2024,6 +2011,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2704347456868047162}
+  - component: {fileID: 4143457369581556510}
   m_Layer: 5
   m_Name: Buttons
   m_TagString: Untagged
@@ -2056,6 +2044,18 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 4}
   m_SizeDelta: {x: -568, y: -8}
   m_Pivot: {x: 0, y: 0.5}
+--- !u!225 &4143457369581556510
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4861084812032090825}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 1
 --- !u!1 &5356339363246942621
 GameObject:
   m_ObjectHideFlags: 0
@@ -3026,6 +3026,18 @@ MonoBehaviour:
   - {fileID: 0}
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!225 &952647411663190109
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9211034104194974263}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 1
 --- !u!1001 &6330611640667053716
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3187,9 +3199,15 @@ MonoBehaviour:
     type: 3}
   m_PrefabInstance: {fileID: 6330611640667053716}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 9211034104194974263}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: dab29f4cce30f4a4c8061e9e1af33e3c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &9211034104194974263 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2886511627788967075, guid: 40dcfa18207e59e43b73666cca50e67a,
+    type: 3}
+  m_PrefabInstance: {fileID: 6330611640667053716}
+  m_PrefabAsset: {fileID: 0}

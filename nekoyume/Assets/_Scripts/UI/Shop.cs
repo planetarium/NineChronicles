@@ -194,6 +194,7 @@ namespace Nekoyume.UI
                     shopItems.SetState(state);
                     Model.state.Value = UI.Model.Shop.State.Buy;
                     bottomMenu.switchBuyButton.button.interactable = false;
+                    bottomMenu.switchSellButton.button.interactable = true;
                     return;
                 case UI.Model.Shop.State.Buy:
                     bottomMenu.switchBuyButton.button.interactable = false;
