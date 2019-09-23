@@ -1,5 +1,7 @@
 using System;
+using System.Linq;
 using Nekoyume.Game;
+using Nekoyume.Game.Buff;
 using Nekoyume.TableData;
 
 namespace Nekoyume.Model
@@ -47,6 +49,11 @@ namespace Nekoyume.Model
             foreach (var skillRow in Game.Game.instance.TableSheets.SkillSheet)
             {
                 var skill = SkillFactory.Get(skillRow, dmg, chance);
+                var rows = Game.Game.instance.TableSheets.BuffSheet.Values.ToList();
+                foreach (var buff in rows.Select(BuffFactory.Get))
+                {
+                    skill.buffs.Add(buff);
+                }
                 Skills.Add(skill);
             }
         }
