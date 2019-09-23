@@ -62,7 +62,7 @@ namespace Nekoyume.BlockChain
         private readonly ConcurrentQueue<PolymorphicAction<ActionBase>> _queuedActions = new ConcurrentQueue<PolymorphicAction<ActionBase>>();
         protected readonly BlockChain<PolymorphicAction<ActionBase>> _blocks;
         private readonly Swarm<PolymorphicAction<ActionBase>> _swarm;
-        protected readonly LiteDBStore _store;
+        protected LiteDBStore _store;
         private readonly ImmutableList<Peer> _seedPeers;
         private readonly IImmutableSet<Address> _trustedPeers;
 
@@ -71,6 +71,8 @@ namespace Nekoyume.BlockChain
         public IDictionary<TxId, Transaction<PolymorphicAction<ActionBase>>> Transactions => _blocks.Transactions;
         public IBlockPolicy<PolymorphicAction<ActionBase>> Policy => _blocks.Policy;
         public long BlockIndex => _blocks?.Tip?.Index ?? 0;
+
+        public LiteDBStore Store => _store;
 
         public PrivateKey PrivateKey { get; }
         public Address Address { get; }
@@ -109,6 +111,7 @@ namespace Nekoyume.BlockChain
             string host,
             int? port)
         {
+            Debug.Log(path);
             var policy = GetPolicy();
             PrivateKey = privateKey;
             Address = privateKey.PublicKey.ToAddress();
@@ -162,7 +165,7 @@ namespace Nekoyume.BlockChain
             while (true)
             {
                 var log = $"Staged Transactions : {_store.IterateStagedTransactionIds().Count()}\n\n";
-                log += _swarm.TraceTable();
+                log += _swarm?.TraceTable();
                 Cheat.Display(log);
                 yield return new WaitForSeconds(0.5f);
             }
@@ -236,6 +239,9 @@ namespace Nekoyume.BlockChain
                 try
                 {
                     await _swarm.StartAsync();
+                }
+                catch (TaskCanceledException)
+                {
                 }
                 catch (Exception e)
                 {

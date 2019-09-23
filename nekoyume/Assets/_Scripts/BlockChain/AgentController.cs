@@ -49,15 +49,16 @@ namespace Nekoyume.BlockChain
 
         public static void Initialize(Action<bool> callback)
         {
-            if (!ReferenceEquals(Agent, null))
+            if (!(Agent is null))
             {
+                Debug.Log("Agent Exist");
                 return;
             }
 
             instance.InitAgent(callback);
         }
 
-        private void InitAgent(Action<bool> callback)
+        public void InitAgent(Action<bool> callback)
         {
             var options = GetOptions(CommandLineOptionsJsonPath);
             var privateKey = GetPrivateKey(options);
@@ -206,7 +207,7 @@ namespace Nekoyume.BlockChain
 
         private static string GetHost(CommandLineOptions options)
         {
-            return options.Host;
+            return string.IsNullOrEmpty(options.host) ? null : options.Host;
         }
 
         private static BoundPeer LoadPeer(string peerInfo)
@@ -263,6 +264,7 @@ namespace Nekoyume.BlockChain
         {
             ActionRenderHandler.Instance.Stop();
             Agent?.Dispose();
+            Agent = null;
             
             NetMQConfig.Cleanup(false);
 
@@ -289,9 +291,9 @@ namespace Nekoyume.BlockChain
             return ReferenceEquals(routine, null) ? null : StartCoroutine(routine);
         }
 
-        public static bool WantsToQuit()
+        private static bool WantsToQuit()
         {
-            Agent.SaveQueuedActions();
+            Agent?.SaveQueuedActions();
             return true;
         }
 
@@ -299,6 +301,13 @@ namespace Nekoyume.BlockChain
         private static void RunOnStart()
         {
             Application.wantsToQuit += WantsToQuit;
+        }
+
+        public void Dispose()
+        {
+            StopAllCoroutines();
+            Destroy(this);
+            States.Dispose();
         }
     }
 }

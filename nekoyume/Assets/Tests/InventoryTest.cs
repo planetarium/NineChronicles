@@ -9,7 +9,7 @@ using UnityEngine.TestTools;
 
 namespace Tests
 {
-    public class InventoryTest
+    public class InventoryTest : PlayModeTest
     {
         [Test]
         public void TryGetAddedItemFromTrue()

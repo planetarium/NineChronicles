@@ -1,6 +1,4 @@
-using System;
 using System.IO;
-using System.Net;
 using Nekoyume.Action;
 using Nekoyume.Model;
 using Nekoyume.State;
@@ -14,17 +12,10 @@ namespace Nekoyume.BlockChain
     /// </summary>
     public class States
     {
-        private static class Singleton
-        {
-            internal static readonly States Value = new States();
+        public static States Instance => _instance ?? (_instance = new States());
 
-            static Singleton()
-            {
-            }
-        }
+        private static States _instance;
 
-        public static readonly States Instance = Singleton.Value;
-        
         public readonly ReactiveProperty<AgentState> agentState = new ReactiveProperty<AgentState>();
         public readonly ReactiveDictionary<int, AvatarState> avatarStates = new ReactiveDictionary<int, AvatarState>();
         public readonly ReactiveProperty<int> currentAvatarKey = new ReactiveProperty<int>(-1);
@@ -133,6 +124,11 @@ namespace Nekoyume.BlockChain
                 File.WriteAllBytes(path, ByteSerializer.Serialize(avatarState));
             }
 
+        }
+
+        internal static void Dispose()
+        {
+            _instance = null;
         }
 
     }

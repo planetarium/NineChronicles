@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Libplanet;
@@ -8,16 +9,19 @@ using Nekoyume.Game.Item;
 using Nekoyume.Model;
 using Nekoyume.State;
 using NUnit.Framework;
+using UnityEngine.TestTools;
 
 namespace Tests
 {
-    public class CharacterModelTest
+    public class CharacterModelTest : PlayModeTest
     {
-        private readonly IRandom _random;
-        private readonly Player _player;
+        private IRandom _random;
+        private Player _player;
 
-        public CharacterModelTest()
+        [UnitySetUp]
+        public IEnumerator CharacterModelSetup()
         {
+            yield return SetUp();
              _random = new TestRandom();
             var address = new Address();
             var agentAddress = new Address();
@@ -30,7 +34,7 @@ namespace Tests
         [Test]
         public void MonsterSelectSkill()
         {
-            var data = ATestSetUp.tableSheets.CharacterSheet.ToOrderedList().First(i => i.Id > 200000);
+            var data = Game.instance.TableSheets.CharacterSheet.ToOrderedList().First(i => i.Id > 200000);
             var monster = new Monster(data, 1, _player);
             monster.InitAI();
 
@@ -45,12 +49,12 @@ namespace Tests
         public void PlayerSelectSkill()
         {
             Assert.AreEqual(1, _player.Skills.Count());
-            foreach (var skillRow in ATestSetUp.tableSheets.SkillSheet)
+            foreach (var skillRow in Game.instance.TableSheets.SkillSheet)
             {
                 var skill = SkillFactory.Get(skillRow, (int) 1.3m, .1m);
                 _player.Skills.Add(skill);
             }
-            Assert.AreEqual(1 + ATestSetUp.tableSheets.SkillSheet.Count, _player.Skills.Count());
+            Assert.AreEqual(1 + Game.instance.TableSheets.SkillSheet.Count, _player.Skills.Count());
 
             //Check selected skill is first
             var selected = _player.Skills.Select(_random);

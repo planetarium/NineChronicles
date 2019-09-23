@@ -28,7 +28,7 @@ namespace Tests
             }
             File.Copy(path, _path);
             LibplanetEditor.DeleteAllEditor();
-            SceneManager.LoadScene("Game");
+//            SceneManager.LoadScene("Game");
         }
 
         [OneTimeTearDown]

@@ -49,7 +49,6 @@ namespace Tests
             var result = attack.Use(caster);
             var target = caster.targets.First();
             var info = result.skillInfos.First();
-            Assert.AreEqual(caster.atk, info.Effect);
             Assert.AreEqual(target.currentHP, target.hp - info.Effect);
             Assert.AreEqual(1, result.skillInfos.Count());
             Assert.NotNull(info.Target);
