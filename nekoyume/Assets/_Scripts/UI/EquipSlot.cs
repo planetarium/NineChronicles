@@ -8,7 +8,6 @@ namespace Nekoyume.UI
     public class EquipSlot : MonoBehaviour
     {
         public RectTransform rectTransform;
-        public GameObject button;
         public Image gradeImage;
         public Image defaultImage;
         public Image itemImage;
@@ -42,10 +41,6 @@ namespace Nekoyume.UI
             itemImage.enabled = false;
             gradeImage.enabled = false;
             item = null;
-            if (button != null)
-            {
-                button.gameObject.SetActive(false);
-            }
         }
 
         public void Set(ItemUsable equipment)
@@ -59,10 +54,6 @@ namespace Nekoyume.UI
             itemImage.overrideSprite = sprite;
             itemImage.SetNativeSize();
             item = equipment;
-            if (button != null)
-            {
-                button.gameObject.SetActive(true);
-            }
 
             var gradeSprite = ItemBase.GetGradeIconSprite(equipment.Data.grade);
             if (gradeSprite is null)

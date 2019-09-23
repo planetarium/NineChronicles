@@ -42,7 +42,7 @@ namespace Nekoyume.Game
         public Character.Player selectedPlayer;
         public Vector3 selectPositionBegin(int index) => new Vector3(-2.2f + index * 2.22f, -2.6f, 0.0f);
         public Vector3 selectPositionEnd(int index) => new Vector3(-2.2f + index * 2.22f, -0.88f, 0.0f);
-        public readonly Vector2 questPreparationPosition = new Vector2(1.65f, -0.8f);
+        public readonly Vector2 questPreparationPosition = new Vector2(2.1f, -0.2f);
         public readonly Vector2 roomPosition = new Vector2(-2.66f, -1.85f);
         public bool repeatStage;
         public string zone;
