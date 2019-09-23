@@ -69,16 +69,14 @@ namespace Nekoyume.UI
             }
 
             // status info
-            var fields = player.GetType().GetFields();
-            foreach (var field in fields)
+            var rows = player.GetStatusRow();
+            foreach (var (key, value, additional) in rows)
             {
-                if (field.IsDefined(typeof(InformationFieldAttribute), true))
-                {
-                    GameObject row = Instantiate(statusInfo, group.transform);
-                    var info = row.GetComponent<StatusInfo>();
-                    info.Set(field.Name, field.GetValue(player), decimal.ToSingle(player.GetAdditionalStatus(field.Name)));
-                }
+                var go = Instantiate(statusInfo, group.transform);
+                var info = go.GetComponent<StatusInfo>();
+                info.Set(key, value, additional);
             }
+
 
             //option info
             foreach (var option in player.GetOptions())

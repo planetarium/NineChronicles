@@ -123,6 +123,7 @@ namespace Nekoyume.Model
                 }
             }
         }
+
         public void GetExp(long waveExp, bool log = false)
         {
             exp += waveExp;
@@ -206,6 +207,16 @@ namespace Nekoyume.Model
         private void LevelUp()
         {
             level = Game.Game.instance.TableSheets.LevelSheet.GetLevel(exp);
+        }
+
+
+        public IEnumerable<(string key, object value, float additional)> GetStatusRow()
+        {
+            var fields = GetType().GetFields();
+            var tuples = fields
+                .Where(field => field.IsDefined(typeof(InformationFieldAttribute), true))
+                .Select(field => (field.Name, field.GetValue(this), decimal.ToSingle(GetAdditionalStatus(field.Name))));
+            return tuples;
         }
 
         public decimal GetAdditionalStatus(string key)
