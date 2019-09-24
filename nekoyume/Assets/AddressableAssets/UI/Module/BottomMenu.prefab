@@ -1088,6 +1088,21 @@ MonoBehaviour:
     image: {fileID: 0}
     text: {fileID: 0}
     localizationKey: UI_RECIPE
+  WorldMapButton:
+    button: {fileID: 0}
+    image: {fileID: 0}
+    text: {fileID: 0}
+    localizationKey: UI_WORLD_MAP
+  stageButton:
+    button: {fileID: 0}
+    image: {fileID: 0}
+    text: {fileID: 0}
+    localizationKey: UI_STAGE
+  AutoRepeatButton:
+    button: {fileID: 0}
+    image: {fileID: 0}
+    text: {fileID: 0}
+    localizationKey: UI_BATTLE_CONTINOUS
 --- !u!95 &4964587564797645840
 Animator:
   serializedVersion: 3

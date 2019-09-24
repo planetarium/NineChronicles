@@ -25,12 +25,11 @@ namespace Nekoyume.UI
         public Text equipmentTitleText;
         public EquipmentSlots equipmentSlots;
         public GameObject questBtn;
-        public Text questBtnText;
-        public Text questContinuousBtnText;
         public GameObject equipSlotGlow;
-        public Text labelStage;
         public Button worldMapButton;
         public BottomMenu bottomMenu;
+        public GameObject statusRowPrefab;
+        public Transform statusRowParent;
 
         private Stage _stage;
         private Player _player;
@@ -65,8 +64,6 @@ namespace Nekoyume.UI
 
             consumableTitleText.text = LocalizationManager.Localize("UI_EQUIP_CONSUMABLES");
             equipmentTitleText.text = LocalizationManager.Localize("UI_EQUIP_EQUIPMENTS");
-            questBtnText.text = LocalizationManager.Localize("UI_BATTLE");
-            questContinuousBtnText.text = LocalizationManager.Localize("UI_BATTLE_CONTINUOUS");
 
             _stage = Game.Game.instance.stage;
             _stage.LoadBackground("dungeon");
@@ -95,9 +92,15 @@ namespace Nekoyume.UI
                 }
             }
 
-            questBtn.SetActive(true);
+            var rows = _player.model.GetStatusRow();
+            foreach (var (key, value, additional) in rows)
+            {
+                var go = Instantiate(statusRowPrefab, statusRowParent);
+                var info = go.GetComponent<StatusInfo>();
+                info.Set(key, value, additional);
+            }
 
-            UpdateStage();
+            questBtn.SetActive(true);
         }
 
         public override void Close()
@@ -404,13 +407,6 @@ namespace Nekoyume.UI
             {
                 equipSlotGlow.SetActive(false);
             }
-        }
-
-        private void UpdateStage()
-        {
-            var worldMap = Find<WorldMap>();
-            _stageId = worldMap.SelectedStageId;
-            labelStage.text = $"Stage {_stageId}";
         }
 
         private void GoToWorldMap()
