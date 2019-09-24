@@ -91,8 +91,6 @@ namespace Nekoyume.BlockChain
 
         static Agent()
         {
-            _telemetryClient =
-                new TelemetryClient(new TelemetryConfiguration(InstrumentationKey));
             ForceDotNet.Force();
         }
 
@@ -114,6 +112,9 @@ namespace Nekoyume.BlockChain
             }
             else
             {
+                _telemetryClient =
+                    new TelemetryClient(new TelemetryConfiguration(InstrumentationKey));
+                
                 loggerConfiguration = loggerConfiguration
                     .WriteTo.ApplicationInsights(_telemetryClient, TelemetryConverter.Traces);
             }
