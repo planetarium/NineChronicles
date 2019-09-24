@@ -26,9 +26,7 @@ using Nekoyume.Serilog;
 using Nekoyume.Helper;
 #endif
 using Serilog;
-using Serilog.Sinks.ApplicationInsights;
 using UniRx;
-using UniRx.Diagnostics;
 using UnityEngine;
 
 namespace Nekoyume.BlockChain
@@ -111,15 +109,16 @@ namespace Nekoyume.BlockChain
 
             if (consoleSink)
             {
-                Log.Logger = loggerConfiguration
-                    .WriteTo.Sink(new Serilog.UnityDebugSink()).CreateLogger();
+                loggerConfiguration = loggerConfiguration
+                    .WriteTo.Sink(new UnityDebugSink());
             }
             else
             {
-                Log.Logger = loggerConfiguration
-                    .WriteTo.ApplicationInsights(_telemetryClient, TelemetryConverter.Traces)
-                    .CreateLogger();
+                loggerConfiguration = loggerConfiguration
+                    .WriteTo.ApplicationInsights(_telemetryClient, TelemetryConverter.Traces);
             }
+
+            Log.Logger = loggerConfiguration.CreateLogger();
         }
 
         public Agent(
