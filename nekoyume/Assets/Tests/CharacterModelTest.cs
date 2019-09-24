@@ -34,7 +34,7 @@ namespace Tests
         [Test]
         public void MonsterSelectSkill()
         {
-            var data = Game.instance.TableSheets.CharacterSheet.ToOrderedList().First(i => i.Id > 200000);
+            var data = Game.instance.TableSheets.CharacterSheet.OrderedList.First(i => i.Id > 200000);
             var monster = new Monster(data, 1, _player);
             monster.InitAI();
 

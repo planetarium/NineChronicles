@@ -60,7 +60,7 @@ namespace Tests
         public void BlowAttack()
         {
             var caster = _simulator.Player;
-            var skillRow = ATestSetUp.tableSheets.SkillSheet.ToOrderedList().First(r =>
+            var skillRow = ATestSetUp.tableSheets.SkillSheet.OrderedList.First(r =>
             {
                 if (!Tables.instance.SkillEffect.TryGetValue(r.SkillEffectId, out var skillEffectRow))
                 {
@@ -88,7 +88,7 @@ namespace Tests
         public void DoubleAttack()
         {
             var caster = _simulator.Player;
-            var skillRow = ATestSetUp.tableSheets.SkillSheet.ToOrderedList().First(r =>
+            var skillRow = ATestSetUp.tableSheets.SkillSheet.OrderedList.First(r =>
             {
                 if (!Tables.instance.SkillEffect.TryGetValue(r.SkillEffectId, out var skillEffectRow))
                 {
@@ -116,7 +116,7 @@ namespace Tests
         {
             var caster = _simulator.Player;
             SkillEffect skillEffectRow = null;
-            var skillRow = ATestSetUp.tableSheets.SkillSheet.ToOrderedList().First(r =>
+            var skillRow = ATestSetUp.tableSheets.SkillSheet.OrderedList.First(r =>
             {
                 if (!Tables.instance.SkillEffect.TryGetValue(r.SkillEffectId, out skillEffectRow))
                 {
@@ -143,7 +143,7 @@ namespace Tests
         public void Heal()
         {
             var caster = _simulator.Player;
-            var skillRow = ATestSetUp.tableSheets.SkillSheet.ToOrderedList().First(r =>
+            var skillRow = ATestSetUp.tableSheets.SkillSheet.OrderedList.First(r =>
             {
                 if (!Tables.instance.SkillEffect.TryGetValue(r.SkillEffectId, out var skillEffectRow))
                 {

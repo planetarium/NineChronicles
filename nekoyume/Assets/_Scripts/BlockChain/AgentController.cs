@@ -9,6 +9,7 @@ using Libplanet;
 using Libplanet.Crypto;
 using Libplanet.Net;
 using Nekoyume.Helper;
+using Nekoyume.Pattern;
 using Nekoyume.State;
 using Nekoyume.UI;
 using NetMQ;
@@ -29,9 +30,11 @@ namespace Nekoyume.BlockChain
 #endif
 
 #if NEKOALPHA_NOMINER
-        private static readonly string CommandLineOptionsJsonPath = Path.Combine(Application.streamingAssetsPath, "clo_nekoalpha_nominer.json");
+        private static readonly string CommandLineOptionsJsonPath =
+ Path.Combine(Application.streamingAssetsPath, "clo_nekoalpha_nominer.json");
 #else
-        private static readonly string CommandLineOptionsJsonPath = Path.Combine(Application.streamingAssetsPath, "clo.json");
+        private static readonly string CommandLineOptionsJsonPath =
+            Path.Combine(Application.streamingAssetsPath, "clo.json");
 #endif
         private const string PeersFileName = "peers.dat";
         private const string IceServersFileName = "ice_servers.dat";
@@ -89,12 +92,13 @@ namespace Nekoyume.BlockChain
                     switch (state)
                     {
                         case BlockDownloadState blockDownloadState:
-                            text = "블록 다운로드 중... " + $"{blockDownloadState.ReceivedBlockCount} / {blockDownloadState.TotalBlockCount}";
+                            text = "블록 다운로드 중... " +
+                                   $"{blockDownloadState.ReceivedBlockCount} / {blockDownloadState.TotalBlockCount}";
                             break;
 
                         case StateReferenceDownloadState stateReferenceDownloadState:
                             text = "상태 다운로드 중... " +
-                                $"{stateReferenceDownloadState.ReceivedStateReferenceCount} / {stateReferenceDownloadState.TotalStateReferenceCount}";
+                                   $"{stateReferenceDownloadState.ReceivedStateReferenceCount} / {stateReferenceDownloadState.TotalStateReferenceCount}";
                             break;
 
                         case BlockStateDownloadState blockStateDownloadState:
@@ -106,7 +110,7 @@ namespace Nekoyume.BlockChain
                             text =
                                 $"{actionExecutionState.ExecutedBlockCount} / {actionExecutionState.TotalBlockCount}";
                             break;
-                        
+
                         default:
                             throw new Exception("Unknown state was reported during preload.");
                     }
@@ -169,7 +173,7 @@ namespace Nekoyume.BlockChain
                     File.ReadAllText(jsonPath)
                 );
             }
-            else 
+            else
             {
                 return CommnadLineParser.GetCommandLineOptions() ?? new CommandLineOptions();
             }
@@ -227,12 +231,12 @@ namespace Nekoyume.BlockChain
                 fileName
             );
             string content;
-            
+
             if (File.Exists(userPath))
             {
                 content = File.ReadAllText(userPath);
             }
-            else 
+            else
             {
                 string assetName = Path.GetFileNameWithoutExtension(fileName);
                 content = Resources.Load<TextAsset>($"Config/{assetName}").text;
@@ -249,7 +253,7 @@ namespace Nekoyume.BlockChain
 
         private static IEnumerable<IceServer> LoadIceServers()
         {
-            foreach (string line in LoadConfigLines(IceServersFileName)) 
+            foreach (string line in LoadConfigLines(IceServersFileName))
             {
                 var uri = new Uri(line);
                 string[] userInfo = uri.UserInfo.Split(':');
@@ -265,7 +269,7 @@ namespace Nekoyume.BlockChain
             ActionRenderHandler.Instance.Stop();
             Agent?.Dispose();
             Agent = null;
-            
+
             NetMQConfig.Cleanup(false);
 
             base.OnDestroy();

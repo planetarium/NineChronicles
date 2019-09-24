@@ -1,6 +1,8 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Nekoyume.EnumType;
+using Nekoyume.Pattern;
 using UnityEngine;
 
 namespace Nekoyume.UI
@@ -15,9 +17,9 @@ namespace Nekoyume.UI
         public GameObject widget;
         public GameObject systemInfo;
 
-        private List<Widget> _widgets;
+        private List<Widget> _firstWidgets;
+        private List<Widget> _secondWidgets;
 
-        public bool IsInitialized { get; private set; }
         public Canvas Canvas { get; private set; }
         public RectTransform RectTransform { get; private set; }
 
@@ -44,8 +46,6 @@ namespace Nekoyume.UI
 
         protected override void Awake()
         {
-            IsInitialized = false;
-            
             base.Awake();
 
             this.ComponentFieldsNotNullTest();
@@ -54,43 +54,10 @@ namespace Nekoyume.UI
             RectTransform = GetComponent<RectTransform>();
         }
 
-        public void Initialize()
+        public void InitializeFirst()
         {
-            _widgets = new List<Widget>()
+            _firstWidgets = new List<Widget>
             {
-                Widget.Create<Title>(),
-                Widget.Create<Synopsis>(),
-                Widget.Create<Login>(),
-                Widget.Create<LoginDetail>(),
-                Widget.Create<Menu>(),
-                Widget.Create<Status>(),
-                Widget.Create<Blind>(),
-                Widget.Create<Shop>(),
-                Widget.Create<QuestPreparation>(),
-                Widget.Create<Combination>(),
-                Widget.Create<RankingBoard>(),
-                Widget.Create<WorldMap>(),
-                Widget.Create<Dialog>(),
-                Widget.Create<Battle>(),
-
-                // 모듈류.
-                Widget.Create<StatusDetail>(),
-                Widget.Create<Inventory>(),
-                Widget.Create<Quest>(),
-                Widget.Create<Mail>(),
-
-                // 팝업류.
-                Widget.Create<BattleResult>(),
-                Widget.Create<SimpleItemCountPopup>(),
-                Widget.Create<ItemCountAndPricePopup>(),
-                Widget.Create<CombinationResultPopup>(),
-                Widget.Create<StageTitle>(),
-                Widget.Create<Alert>(),
-                Widget.Create<Confirm>(),
-
-                // 툴팁류.
-                Widget.Create<ItemInformationTooltip>(),
-
                 // 스크린 영역. 로딩창류.
                 Widget.Create<GrayLoadingScreen>(),
                 Widget.Create<LoadingScreen>(),
@@ -107,14 +74,84 @@ namespace Nekoyume.UI
 #endif
             };
 
-            foreach(var widget in _widgets)
+            foreach (var widget in _firstWidgets)
             {
                 widget.Initialize();
             }
-            
-            Notification.RegisterWidgetTypeForUX<Mail>();
 
-            IsInitialized = true;
+            Notification.RegisterWidgetTypeForUX<Mail>();
+        }
+
+        public IEnumerator InitializeSecond()
+        {
+            _secondWidgets = new List<Widget>();
+            
+            // 툴팁류.
+            _secondWidgets.Add(Widget.Create<ItemInformationTooltip>());
+            yield return null;
+            
+            // 일반.
+            _secondWidgets.Add(Widget.Create<Title>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<Synopsis>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<Login>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<LoginDetail>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<Menu>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<Status>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<Blind>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<Shop>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<QuestPreparation>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<Combination>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<RankingBoard>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<WorldMap>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<Dialog>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<Battle>());
+            yield return null;
+
+            // 모듈류.
+            _secondWidgets.Add(Widget.Create<StatusDetail>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<Inventory>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<Quest>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<Mail>());
+            yield return null;
+
+            // 팝업류.
+            _secondWidgets.Add(Widget.Create<BattleResult>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<SimpleItemCountPopup>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<ItemCountAndPricePopup>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<CombinationResultPopup>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<StageTitle>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<Alert>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<Confirm>());
+            yield return null;
+
+            foreach (var widget in _secondWidgets)
+            {
+                widget.Initialize();
+            }
+
+            Notification.RegisterWidgetTypeForUX<Mail>();
         }
     }
 }

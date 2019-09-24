@@ -42,11 +42,6 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - TableCSV
-  - m_GUID: cf09867532f73454ba344b62840803b8
-    m_Address: Assets/AddressableAssets/TableCSV/WorldChapterSheet.csv
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - TableCSV
   - m_GUID: db0d91fbecba94be9aa59f77d9e43d9f
     m_Address: Assets/AddressableAssets/TableCSV/SkillSheet.csv
     m_ReadOnly: 0
@@ -60,6 +55,4 @@ MonoBehaviour:
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 314ad4573790845ce84c5b850f063d3b, type: 2}
   m_SchemaSet:
-    m_Schemas:
-    - {fileID: 11400000, guid: 6f5b8e00bcd8047f0a3b400d24d9e2fd, type: 2}
-    - {fileID: 11400000, guid: d8a5d7bef2c3047d19651607af455c56, type: 2}
+    m_Schemas: []

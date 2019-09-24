@@ -15,7 +15,7 @@ namespace Nekoyume.Model
     {
         public static readonly ReactiveProperty<Inventory> Inventory = new ReactiveProperty<Inventory>();
         public static readonly ReactiveProperty<MailBox> MailBox = new ReactiveProperty<MailBox>();
-        private static readonly List<IDisposable> Disposables = new List<IDisposable>();
+        public static readonly ReactiveProperty<int> WorldStage = new ReactiveProperty<int>();
 
         public static void Initialize(AvatarState avatarState)
         {
@@ -23,11 +23,10 @@ namespace Nekoyume.Model
             {
                 return;
             }
-
-            Disposables.DisposeAllAndClear();
-
+            
             Inventory.SetValueAndForceNotify(avatarState.inventory);
             MailBox.SetValueAndForceNotify(avatarState.mailBox);
+            WorldStage.SetValueAndForceNotify(avatarState.worldStage);
         }
     }
 }

@@ -10,6 +10,14 @@ namespace Nekoyume.TableData
 
         public abstract void Set(IReadOnlyList<string> fields);
 
+        public virtual void Validate()
+        {
+        }
+
+        public virtual void EndOfSheetInitialize()
+        {
+        }
+
         #region Equals
 
         private bool Equals(SheetRow<T> other)

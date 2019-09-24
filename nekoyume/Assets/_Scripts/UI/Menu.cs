@@ -1,5 +1,6 @@
 using System.Collections;
 using Assets.SimpleLocalization;
+using Nekoyume.BlockChain;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.UI.Module;
@@ -75,7 +76,8 @@ namespace Nekoyume.UI
         public void QuestClick()
         {
             Close();
-            Find<WorldMap>().Show(true);
+            var avatarState = States.Instance.currentAvatarState.Value;
+            Find<WorldMap>().ShowByStageId(avatarState.worldStage);
             AudioController.PlayClick();
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickMainBattle);
         }

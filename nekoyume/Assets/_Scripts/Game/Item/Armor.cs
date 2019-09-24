@@ -1,4 +1,5 @@
 using System;
+using Nekoyume.Helper;
 using UnityEngine;
 
 namespace Nekoyume.Game.Item
@@ -11,14 +12,9 @@ namespace Nekoyume.Game.Item
         {
         }
 
-        public static Sprite GetIcon(Armor armor = null)
+        public override Sprite GetIconSprite()
         {
-            var id = armor?.Data.resourceId ?? GameConfig.DefaultAvatarArmorId;
-            var path = string.Format(EquipmentPath, id);
-            var sprite = Resources.Load<Sprite>(path);
-            if (ReferenceEquals(sprite, null))
-                throw new AssetNotFoundException(path);
-            return sprite;
+            return SpriteHelper.GetItemIcon(Data.resourceId);
         }
     }
 }
