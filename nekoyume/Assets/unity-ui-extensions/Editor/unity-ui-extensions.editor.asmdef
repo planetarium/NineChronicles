@@ -4,7 +4,9 @@
         "GUID:81f0aa294cb834b84ad867f18e6e179f"
     ],
     "optionalUnityReferences": [],
-    "includePlatforms": [],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
