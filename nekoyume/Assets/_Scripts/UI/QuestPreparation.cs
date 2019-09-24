@@ -199,7 +199,7 @@ namespace Nekoyume.UI
         {
             _stage.LoadBackground("room");
             _player = _stage.GetPlayer(_stage.roomPosition);
-            _player.UpdateSet(_player.model.armor);
+            _player.UpdateSet(_player.Model.armor);
             Find<Menu>().ShowRoom();
             Close();
             AudioController.PlayClick();

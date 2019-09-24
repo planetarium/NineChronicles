@@ -10,6 +10,7 @@ namespace Nekoyume.Game.Buff
     [Serializable]
     public abstract class Buff
     {
+        public BuffSheet.Row data;
         public int effect;
         public int time;
         public int chance;
@@ -19,6 +20,7 @@ namespace Nekoyume.Game.Buff
 
         protected Buff(BuffSheet.Row row)
         {
+            data = row;
             effect = row.effect;
             time = row.time;
             chance = row.chance;

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Nekoyume.EnumType;
+using UnityEngine;
 
 namespace Nekoyume.TableData
 {
@@ -27,6 +28,25 @@ namespace Nekoyume.TableData
                 int.TryParse(fields[5], out time);
                 int.TryParse(fields[7], out chance);
             }
+        }
+    }
+
+    public static class BuffSheetRowExtension
+    {
+        private const string DefaultIconPath = "UI/Icons/Buff/1";
+
+        public static Sprite GetIcon(this BuffSheet.Row row)
+        {
+            var path = $"UI/Icons/Buff/{row.id}";
+            var sprite = Resources.Load<Sprite>(path);
+            if (sprite)
+            {
+                return sprite;
+            }
+
+            sprite = Resources.Load<Sprite>(DefaultIconPath);
+
+            return sprite;
         }
     }
 }
