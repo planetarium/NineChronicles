@@ -447,9 +447,10 @@ MonoBehaviour:
   equipmentTitleText: {fileID: 2772277285839741450}
   equipmentSlots: {fileID: 7883566207052153685}
   questBtn: {fileID: 2876461971111643554}
+  questBtnText: {fileID: 0}
+  questContinuousBtnText: {fileID: 0}
   equipSlotGlow: {fileID: 6387715629849393821}
-  statusRowPrefab: {fileID: 490529903817437585}
-  statusRowParent: {fileID: 2401098584682892455}
+  labelStage: {fileID: 0}
   worldMapButton: {fileID: 1761833055148249653}
   bottomMenu: {fileID: 3987886139300675019}
 --- !u!95 &1720378640888706023
@@ -2290,6 +2291,12 @@ PrefabInstance:
       objectReference: {fileID: 428732458948424751}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5d633949e6ef14b458c0199e45af34c7, type: 3}
+--- !u!224 &498318398070278489 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 570257463785617384, guid: 5d633949e6ef14b458c0199e45af34c7,
+    type: 3}
+  m_PrefabInstance: {fileID: 73068960210337457}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &6273656947288220078 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6202325387254898463, guid: 5d633949e6ef14b458c0199e45af34c7,
@@ -2302,6 +2309,12 @@ MonoBehaviour:
   m_Script: {fileID: -1862395651, guid: f70555f144d8491a825f0804e09c671c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &428732458948424751 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 355993498261736094, guid: 5d633949e6ef14b458c0199e45af34c7,
+    type: 3}
+  m_PrefabInstance: {fileID: 73068960210337457}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &316342392219935629 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 387389212801572156, guid: 5d633949e6ef14b458c0199e45af34c7,
@@ -2314,18 +2327,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 31d16648271740229b605e99f40a2c8b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!224 &498318398070278489 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 570257463785617384, guid: 5d633949e6ef14b458c0199e45af34c7,
-    type: 3}
-  m_PrefabInstance: {fileID: 73068960210337457}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &428732458948424751 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 355993498261736094, guid: 5d633949e6ef14b458c0199e45af34c7,
-    type: 3}
-  m_PrefabInstance: {fileID: 73068960210337457}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &489289595432239779
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2554,12 +2555,6 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 489289595432239779}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &490529903817437585 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1398657386951474, guid: b8781d5bc7f43914a975b0ea40b8adf4,
-    type: 3}
-  m_PrefabInstance: {fileID: 489289595432239779}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &3384993256314053859
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2730,9 +2725,9 @@ PrefabInstance:
     m_RemovedComponents:
     - {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: 5d633949e6ef14b458c0199e45af34c7, type: 3}
---- !u!1 &3029048285480119933 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 355993498261736094, guid: 5d633949e6ef14b458c0199e45af34c7,
+--- !u!224 &2958899362010616587 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 570257463785617384, guid: 5d633949e6ef14b458c0199e45af34c7,
     type: 3}
   m_PrefabInstance: {fileID: 3384993256314053859}
   m_PrefabAsset: {fileID: 0}
@@ -2760,9 +2755,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 31d16648271740229b605e99f40a2c8b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!224 &2958899362010616587 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 570257463785617384, guid: 5d633949e6ef14b458c0199e45af34c7,
+--- !u!1 &3029048285480119933 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 355993498261736094, guid: 5d633949e6ef14b458c0199e45af34c7,
     type: 3}
   m_PrefabInstance: {fileID: 3384993256314053859}
   m_PrefabAsset: {fileID: 0}
@@ -6025,7 +6020,7 @@ PrefabInstance:
     - target: {fileID: 6035183985399840212, guid: 214a4ae05c347734c86a76da3c3af566,
         type: 3}
       propertyPath: WorldMapButton.localizationKey
-      value: UI_WORLDMAP
+      value: UI_WORLD_MAP
       objectReference: {fileID: 0}
     - target: {fileID: 6035183985399840212, guid: 214a4ae05c347734c86a76da3c3af566,
         type: 3}
