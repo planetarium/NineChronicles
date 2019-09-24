@@ -168,6 +168,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   languageType: 0
   stage: {fileID: 1333831682}
+  initialized: 0
 --- !u!114 &76869999
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -564,6 +565,8 @@ MonoBehaviour:
   spawner: {fileID: 157041507}
   background: {fileID: 0}
   dummy: {fileID: 282372974}
+  defaultBGVFX: {fileID: 0}
+  bosswaveBGVFX: {fileID: 0}
   id: 0
   selectedPlayer: {fileID: 0}
   repeatStage: 0
@@ -779,6 +782,7 @@ GameObject:
   - component: {fileID: 1933286908}
   - component: {fileID: 1933286907}
   - component: {fileID: 1933286910}
+  - component: {fileID: 1933286911}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -870,6 +874,22 @@ MonoBehaviour:
     duration: 0.2
     magnitudeX: 0.01
     magnitudeY: 0.03
+--- !u!114 &1933286911
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1933286906}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1690312454, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_EventMask:
+    serializedVersion: 2
+    m_Bits: 289
+  m_MaxRayIntersections: 0
 --- !u!1 &2109428484
 GameObject:
   m_ObjectHideFlags: 0

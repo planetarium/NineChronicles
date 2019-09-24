@@ -23,12 +23,15 @@ namespace Nekoyume.Game.Character
         public int Level = 0;
         public int MPMax = 0;
         public float RunSpeedMax = 3.0f;
+        
+        public Model.Player model;
+        public Item.Inventory Inventory;
+        public TouchHandler touchHandler;
+        
         public override float Speed => RunSpeedMax;
         
         public List<Equipment> equipments =>
             Inventory.Items.Select(i => i.item).OfType<Equipment>().Where(e => e.equipped).ToList();
-
-        public Item.Inventory Inventory;
 
         public long EXPMax { get; private set; }
 
@@ -37,8 +40,9 @@ namespace Nekoyume.Game.Character
         protected override Vector3 HUDOffset => animator.GetHUDPosition();
 
         public override Guid Id => model.id;
+        public Model.Player Model => model;
 
-        public Model.Player Model => (Model.Player) model;
+        public bool InBattle { get; set; }
 
         #region Mono
 
@@ -51,6 +55,17 @@ namespace Nekoyume.Game.Character
             animator.TimeScale = AnimatorTimeScale;
 
             Inventory = new Item.Inventory();
+
+            touchHandler.onPointerClick.Subscribe(_ =>
+                {
+                    if (InBattle)
+                        return;
+                    
+                    animator.Touch();
+                })
+                .AddTo(gameObject);
+
+            InBattle = false;
 
             targetTag = Tag.Enemy;
             Event.OnUpdateStatus.AddListener(UpdateHpBar);
@@ -95,7 +110,7 @@ namespace Nekoyume.Game.Character
         public void Init(Model.Player character)
         {
             model = character;
-            StartCoroutine(CoUpdateSet(character.armor));
+            StartCoroutine(CoUpdateSet(model.armor));
             InitStats(character);
 
             if (ReferenceEquals(_speechBubble, null))
@@ -114,7 +129,7 @@ namespace Nekoyume.Game.Character
         private IEnumerator CoUpdateSet(Armor armor, Weapon weapon = null)
         {
             if (weapon == null)
-                weapon = Model.weapon;
+                weapon = model.weapon;
 
             var itemId = armor?.Data.resourceId ?? GameConfig.DefaultAvatarArmorId;
             if (!ReferenceEquals(animator.Target, null))
@@ -156,15 +171,15 @@ namespace Nekoyume.Game.Character
             }
 
             var level = model.level;
-            Model.GetExp(exp);
+            model.GetExp(exp);
             EXP += exp;
 
-            if (Model.level != level)
+            if (model.level != level)
             {
                 AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionStatusLevelUp, level);
                 AudioController.instance.PlaySfx(AudioController.SfxCode.LevelUp);
                 VFXController.instance.Create<BattleLevelUp01VFX>(transform, HUDOffset);
-                InitStats(Model);
+                InitStats(model);
             }
 
             Event.OnUpdateStatus.Invoke();
@@ -220,7 +235,6 @@ namespace Nekoyume.Game.Character
             ShowSpeech("PLAYER_SKILL", (int)(skill.Elemental ?? 0), (int)skill.skillCategory);
             base.ProcessAttack(target, skill, isLastHit, isConsiderElementalType);
             ShowSpeech("PLAYER_ATTACK");
-            Widget.Find<Status>().UpdateBuff(model.buffs);
         }
 
         protected override IEnumerator CoAnimationCast(Model.Skill.SkillInfo info)
