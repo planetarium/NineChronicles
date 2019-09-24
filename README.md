@@ -31,6 +31,7 @@ Nine Chronicles
  - `--peer`        : Peer 를 추가합니다. 추가하려는 Peer가 여럿일 경우 --peer peerA peerB ... 와 같이 추가할 수 있습니다.
  - `--storage-path`: 데이터를 저장할 경로를 지정합니다.
  - `--auto-play`   : 백그라운드에서 캐릭터 생성 및 자동 전투를 수행합니다.
+ - `--console-sink`: 로그를 콘솔로 출력합니다.
 
 #### Unity Editor 에서 커맨드라인 옵션 사용
 
@@ -108,3 +109,7 @@ docker-compose up --build
 
 `--auto-play` 옵션으로 백그라운드에서 캐릭터를 생성하고 자동전투를 수행하도록 할 수 있습니다.
 현재 캐릭터의 이름은 노드의 Address 앞 여덟자리로 생성되며 `TxProcessInterval` 마다 1 스테이지 전투를 반복합니다.
+
+### console sink 옵션
+
+`--console-sink` 옵션으로 로그를 ApplicationInsights로 보내지 않고 `UnityDebugSink`를 통하여 내보내게 할 수 있습니다.
