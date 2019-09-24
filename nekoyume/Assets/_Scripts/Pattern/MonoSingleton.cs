@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Nekoyume
+namespace Nekoyume.Pattern
 {
     /// <summary>
     /// ToDo. 루트 게임오브젝트가 아닐 경우 `DontDestroyOnLoad(gameObject);`가 작동하지 않는다.

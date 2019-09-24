@@ -1,294 +1,241 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
-using Nekoyume.BlockChain;
-using Nekoyume.Data;
 using Assets.SimpleLocalization;
 using Nekoyume.Game.Controller;
-using Nekoyume.UI.Model;
-using UniRx;
-using UnityEngine.UI;
+using Nekoyume.Helper;
+using Nekoyume.Model;
 using Nekoyume.TableData;
+using Nekoyume.UI.Module;
+using TMPro;
+using UniRx;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
     public class WorldMap : Widget
     {
-        public Module.WorldMapChapter[] chapters;
-
-        public GameObject world;
-        public GameObject stage;
-        public Transform chapterContainer;
-        public Button[] mainButtons;
-        public Text[] mainButtonTexts;
-        public Button worldButton;
-        public Text worldButtonText;
-        public Button previousButton;
-        public Text pageText;
-        public Button nextButton;
-        public Button[] closeButtons;
-
-        private WorldSheet.Row _currentWorld;
-        private WorldChapterSheet.Row _currentChapter;
-        private int _selectedStage = -1;
-
-        private Module.WorldMapChapter _chapter;
-        private readonly List<IDisposable> _disposablesForChapter = new List<IDisposable>();
-
-        public int SelectedStage
+        [Serializable]
+        public struct StageInformation
         {
-            get
+            [Serializable]
+            public struct IconsArea
             {
-                if (_selectedStage < 0)
-                {
-                    _selectedStage = States.Instance.currentAvatarState.Value.worldStage;
-                }
-
-                return _selectedStage;
+                public RectTransform root;
+                public TextMeshProUGUI text;
+                public List<Image> iconImages;
             }
-            set
-            {
-                var stages = Game.Game.instance.TableSheets.StageSheet.ToOrderedList();
-                _selectedStage = Math.Min(value, stages.Last().Stage);
 
-            }
+            public TextMeshProUGUI titleText;
+            public TextMeshProUGUI descriptionText;
+            public IconsArea monstersArea;
+            public IconsArea rewardsArea;
+            public TextMeshProUGUI expText;
+        }
+
+        public class ViewModel
+        {
+            public readonly ReactiveProperty<bool> isWorldShown = new ReactiveProperty<bool>(false);
+            public readonly ReactiveProperty<int> selectedStageId = new ReactiveProperty<int>(1);
+        }
+
+        public GameObject worldMapRoot;
+        public Button alfheimButton;
+        public Button svartalfaheimrButton;
+        public Button asgardButton;
+        public List<WorldMapWorld> worlds = new List<WorldMapWorld>();
+        public StageInformation stageInformation;
+        public Button submitButton;
+        public TextMeshProUGUI submitText;
+        public BottomMenu bottomMenu;
+
+        public ViewModel SharedViewModel { get; private set; }
+
+        public int SelectedStageId
+        {
+            get => SharedViewModel.selectedStageId.Value;
+            private set => SharedViewModel.selectedStageId.Value = value;
         }
 
         #region Mono
 
-        protected override void Awake()
+        public override void Initialize()
         {
-            base.Awake();
+            base.Initialize();
+            var firstStageId = Game.Game.instance.TableSheets.StageSheet.First.Id;
+            SharedViewModel = new ViewModel();
+            SharedViewModel.selectedStageId.Value = firstStageId;
+            SharedViewModel.isWorldShown.Subscribe(worldMapRoot.SetActive)
+                .AddTo(gameObject);
+            SharedViewModel.selectedStageId.Subscribe(UpdateStageInformation)
+                .AddTo(gameObject);
 
-            foreach (var mainButtonText in mainButtonTexts)
+            var sheet = Game.Game.instance.TableSheets.WorldSheet;
+            foreach (var world in worlds)
             {
-                mainButtonText.text = LocalizationManager.Localize("UI_MAIN");
+                if (!sheet.TryGetByName(world.worldName, out var row))
+                {
+                    throw new SheetRowNotFoundException("WorldSheet", "Name", world.worldName);
+                }
+
+                world.Set(row);
+
+                foreach (var stage in world.pages.SelectMany(page => page.stages))
+                {
+                    stage.onClick.Subscribe(worldMapStage =>
+                            SharedViewModel.selectedStageId.Value = worldMapStage.SharedViewModel.stageId)
+                        .AddTo(gameObject);
+                }
             }
 
-            worldButtonText.text = LocalizationManager.Localize("UI_WORLD");
+            stageInformation.monstersArea.text.text = LocalizationManager.Localize("UI_WORLD_MAP_MONSTERS");
+            stageInformation.rewardsArea.text.text = LocalizationManager.Localize("UI_WORLD_MAP_REWARDS");
+            submitText.text = LocalizationManager.Localize("UI_WORLD_MAP_PREPARE");
+            bottomMenu.WorldMapButton.text.text = LocalizationManager.Localize("UI_WORLD_MAP");
+            bottomMenu.stageButton.text.text = LocalizationManager.Localize("UI_STAGE");
 
-            foreach (var mainButton in mainButtons)
-            {
-                mainButton.OnClickAsObservable()
-                    .Subscribe(_ =>
-                    {
-                        AudioController.PlayClick();
-                        GoToMenu();
-                    }).AddTo(gameObject);
-            }
-
-            worldButton.OnClickAsObservable()
+            alfheimButton.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
                     AudioController.PlayClick();
-                    ShowWorld();
+                    ChangeWorld("Alfheim");
                 }).AddTo(gameObject);
-
-            previousButton.OnClickAsObservable()
+            svartalfaheimrButton.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
                     AudioController.PlayClick();
-                    LoadWorld(_currentWorld.Id - 1);
+                    ChangeWorld("Svartalfaheimr");
                 }).AddTo(gameObject);
-
-            nextButton.OnClickAsObservable()
+            asgardButton.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
                     AudioController.PlayClick();
-                    LoadWorld(_currentWorld.Id + 1);
+                    ChangeWorld("Asgard");
+                }).AddTo(gameObject);
+            submitButton.OnClickAsObservable()
+                .Subscribe(_ =>
+                {
+                    AudioController.PlayClick();
+                    GoToQuestPreparation();
+                }).AddTo(gameObject);
+            bottomMenu.goToMainButton.button.OnClickAsObservable()
+                .Subscribe(_ =>
+                {
+                    AudioController.PlayClick();
+                    GoToMain();
+                }).AddTo(gameObject);
+            bottomMenu.WorldMapButton.button.OnClickAsObservable()
+                .Subscribe(_ =>
+                {
+                    AudioController.PlayClick();
+                    SharedViewModel.isWorldShown.Value = true;
+                }).AddTo(gameObject);
+            bottomMenu.stageButton.button.OnClickAsObservable()
+                .Subscribe(_ =>
+                {
+                    AudioController.PlayClick();
+                    SharedViewModel.isWorldShown.Value = false;
                 }).AddTo(gameObject);
 
-            foreach (var closeButton in closeButtons)
+            ReactiveCurrentAvatarState.WorldStage.Subscribe(clearedStageId =>
             {
-                closeButton.OnClickAsObservable()
-                    .Subscribe(_ =>
-                    {
-                        AudioController.PlayClick();
-                        GoToMenu();
-                    }).AddTo(gameObject);
-            }
+                foreach (var world in worlds)
+                {
+                    world.Set(clearedStageId, SelectedStageId);
+                }
+            }).AddTo(gameObject);
         }
 
         #endregion
 
-        public void Show(bool useAvatarState)
+        public void ShowByStageId(int stageId)
         {
-            if (useAvatarState)
-                SelectedStage = States.Instance.currentAvatarState.Value.worldStage;
-            
-            ShowChapter();
+            SelectedStageId = stageId;
+            var tableSheets = Game.Game.instance.TableSheets;
+            if (!tableSheets.WorldSheet.TryGetByStageId(SelectedStageId, out var worldRow))
+                throw new SheetRowNotFoundException("WorldSheet", "TryGetByStageId()", SelectedStageId.ToString());
+
+            foreach (var world in worlds)
+            {
+                if (world.worldName.Equals(worldRow.Name))
+                {
+                    world.ShowByStageId(SelectedStageId);
+                }
+                else
+                {
+                    world.Hide();
+                }
+            }
+
             Show();
         }
 
-        public void LoadWorld(int worldId)
+        private void ChangeWorld(string value)
         {
-            if (!Game.Game.instance.TableSheets.WorldSheet.TryGetValue(worldId, out var worldRow))
+            SharedViewModel.isWorldShown.Value = false;
+            
+            foreach (var world in worlds)
             {
-                throw new KeyNotFoundException($"worldId({worldId})");
-            }
-
-            LoadWorld(worldRow, worldRow.ChapterBegin);
-        }
-
-        private void LoadWorld(WorldSheet.Row worldRow, int chapterId)
-        {
-            _currentWorld = worldRow;
-
-            if (chapterId < _currentWorld.ChapterBegin
-                || chapterId > _currentWorld.ChapterEnd)
-            {
-                throw new ArgumentOutOfRangeException($"chapterId({chapterId})");
-            }
-
-            ChangeChapter(chapterId);
-            SetModelToChapter();
-
-            previousButton.interactable = _currentWorld.Id > 1;
-            nextButton.interactable = _currentWorld.Id < Game.Game.instance.TableSheets.WorldSheet.Count;
-            pageText.text = $"{_currentWorld.Id} / {Game.Game.instance.TableSheets.WorldSheet.Count}";
-
-            ShowStage();
-        }
-
-        private void ChangeChapter(int chapterId)
-        {
-            if (_chapter)
-            {
-                _chapter.Model.Dispose();
-                _chapter = null;
-            }
-
-            if (!Game.Game.instance.TableSheets.WorldChapterSheet.TryGetValue(chapterId, out _currentChapter))
-            {
-                throw new KeyNotFoundException($"chapterId({chapterId})");
-            }
-
-            if (!TryGetWorldMapChapter(_currentChapter.Prefab, out var worldMapChapter))
-            {
-                throw new FailedToLoadResourceException<WorldMapChapter>();
-            }
-
-            if (chapterContainer.childCount > 0)
-            {
-                Destroy(chapterContainer.GetChild(0).gameObject);
-            }
-
-            _chapter = Instantiate(worldMapChapter, chapterContainer);
-        }
-
-        private void SetModelToChapter()
-        {
-            _disposablesForChapter.DisposeAllAndClear();
-
-            var previousStage = 0;
-            var stageModels = new List<WorldMapStage>();
-            WorldMapStage currentStageModel = null;
-            foreach (var stageRow in Game.Game.instance.TableSheets.StageSheet)
-            {
-                if (stageRow.Stage < _currentChapter.StageBegin
-                    || stageRow.Stage > _currentChapter.StageEnd)
+                if (world.worldName.Equals(value))
                 {
+                    world.ShowByPageNumber(1);
+                }
+                else
+                {
+                    world.Hide();
+                }
+            }
+        }
+
+        private void UpdateStageInformation(int stageId)
+        {
+            var tableSheets = Game.Game.instance.TableSheets;
+            if (!tableSheets.StageSheet.TryGetValue(stageId, out var stageRow))
+                throw new SheetRowNotFoundException("StageSheet", SelectedStageId.ToString());
+            
+            stageInformation.titleText.text = $"Stage #{SelectedStageId}";
+            stageInformation.descriptionText.text = stageRow.GetLocalizedDescription();
+
+            var monsterCount = stageRow.TotalMonsterIds.Count;
+            for (var i = 0; i < stageInformation.monstersArea.iconImages.Count; i++)
+            {
+                var image = stageInformation.monstersArea.iconImages[i];
+                if (i < monsterCount)
+                {
+                    image.transform.parent.gameObject.SetActive(true);
+                    image.sprite = SpriteHelper.GetCharacterIcon(stageRow.TotalMonsterIds[i]);
+
                     continue;
                 }
 
-                var currentStage = stageRow.Stage;
-
-                if (previousStage != currentStage)
-                {
-                    var stageState = WorldMapStage.State.Normal;
-                    if (stageRow.Stage == SelectedStage)
-                    {
-                        stageState = WorldMapStage.State.Selected;
-                    }
-                    else if (stageRow.Stage < States.Instance.currentAvatarState.Value.worldStage)
-                    {
-                        stageState = WorldMapStage.State.Cleared;
-                    }
-                    else if (stageRow.Stage > States.Instance.currentAvatarState.Value.worldStage)
-                    {
-                        stageState = WorldMapStage.State.Disabled;
-                    }
-
-                    currentStageModel = new WorldMapStage(stageState, currentStage, false);
-                    currentStageModel.onClick.Subscribe(_ =>
-                    {
-                        SelectedStage = _.Model.stage.Value;
-                        GoToQuestPreparation();
-                    }).AddTo(_disposablesForChapter);
-
-                    stageModels.Add(currentStageModel);
-                }
-
-                if (stageRow.IsBoss
-                    && currentStageModel != null)
-                {
-                    currentStageModel.hasBoss.Value = true;
-                }
-
-                previousStage = currentStage;
+                image.transform.parent.gameObject.SetActive(false);
             }
 
-            var chapterModel = new WorldMapChapter(stageModels);
-            _chapter.SetModel(chapterModel);
-        }
-
-        private bool TryGetWorldMapChapter(string chapterPrefab, out Module.WorldMapChapter worldMapChapter)
-        {
-            foreach (var chapter in chapters)
+            var rewardItemRows = stageRow.GetRewardItemRows();
+            for (var i = 0; i < stageInformation.rewardsArea.iconImages.Count; i++)
             {
-                if (!chapter.name.Equals(chapterPrefab))
+                var image = stageInformation.rewardsArea.iconImages[i];
+                if (i < rewardItemRows.Count)
                 {
+                    image.transform.parent.gameObject.SetActive(true);
+                    image.sprite = SpriteHelper.GetItemIcon(rewardItemRows[i].id);
+
                     continue;
                 }
 
-                worldMapChapter = chapter;
-                return true;
+                image.transform.parent.gameObject.SetActive(false);
             }
 
-            worldMapChapter = null;
-            return false;
+            stageInformation.expText.text = $"EXP +{stageRow.TotalExp}";
         }
 
-        private void ShowWorld()
+        private void GoToMain()
         {
-            world.SetActive(true);
-            stage.SetActive(false);
-        }
-
-        private void ShowStage()
-        {
-            world.SetActive(false);
-            stage.SetActive(true);
-        }
-
-        private void ShowChapter()
-        {
-            if (!Game.Game.instance.TableSheets.WorldChapterSheet.TryGetByStage(SelectedStage, out var chapter))
-            {
-                throw new SheetRowNotFoundException();
-            }
-
-            foreach (var worldRow in Game.Game.instance.TableSheets.WorldSheet)
-            {
-                if (chapter.Id < worldRow.ChapterBegin
-                    || chapter.Id > worldRow.ChapterEnd)
-                {
-                    continue;
-                }
-
-                LoadWorld(worldRow, chapter.Id);
-
-                break;
-            }
-        }
-
-        private void GoToMenu()
-        {
-            Close();
             Find<Menu>().ShowRoom();
+            Close();
         }
-
+        
         private void GoToQuestPreparation()
         {
             Close();

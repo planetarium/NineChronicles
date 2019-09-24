@@ -4,6 +4,7 @@ using Nekoyume.BlockChain;
 using Nekoyume.Data;
 using Nekoyume.Game.Factory;
 using Nekoyume.Game.Item;
+using Nekoyume.Game.Mail;
 using Nekoyume.UI;
 using Nekoyume.UI.Module;
 using NUnit.Framework;
@@ -16,33 +17,6 @@ namespace Tests
     public class CombinationTest
     {
         private MinerFixture _miner;
-
-        [Test]
-        public void GetEquipmentWithoutSkill()
-        {
-            var equipment = Tables.instance.ItemEquipment.First().Value;
-            var parts = Tables.instance.Item.Select(i => i.Value).First(r => r.skillId == 0);
-
-            Nekoyume.Action.Combination.TryGetEquipment(equipment, parts, 0, default, out var result);
-            Assert.NotNull(result);
-            Assert.AreEqual(result.Skills.Count, 0);
-        }
-
-        [Test]
-        public void GetEquipmentWithSkill()
-        {
-            var equipment = Tables.instance.ItemEquipment.First().Value;
-            var part = Tables.instance.Item.Select(i => i.Value)
-                .First(r => r.skillId > 0 && r.skillId < 200000);
-
-            Nekoyume.Action.Combination.TryGetEquipment(equipment, part, 0, default, out var result);
-            Assert.NotNull(result);
-            Assert.AreNotEqual(result.Skills.Count, 0);
-            var skill = result.Skills[0];
-            Assert.AreEqual(part.minChance, skill.chance);
-            Assert.AreEqual(part.elemental, skill.skillRow.ElementalType);
-            Assert.AreEqual(part.minDamage, skill.power);
-        }
 
         [Test]
         public void GetEquipmentWithSkills()
@@ -84,7 +58,9 @@ namespace Tests
             Widget.Find<Synopsis>().End();
             yield return new WaitUntil(() => Widget.Find<Login>().ready);
             Widget.Find<Login>().SlotClick(2);
-            Widget.Find<LoginDetail>().CreateClick();
+            var loginDetail = Widget.Find<LoginDetail>();
+            loginDetail.nameField.text = "combination";
+            loginDetail.CreateClick();
             yield return new WaitUntil(() => AgentController.Agent.Transactions.Any());
             var createAvatarTx = AgentController.Agent.Transactions.First().Value;
             yield return _miner.CoMine(createAvatarTx);
@@ -131,9 +107,7 @@ namespace Tests
             yield return new WaitUntil(() => AgentController.Agent.Transactions.Count > current);
             var tx = AgentController.Agent.Transactions.Values.OrderByDescending(t => t.Timestamp).First();
             yield return _miner.CoMine(tx);
-            yield return new WaitWhile(() => Widget.Find<GrayLoadingScreen>().gameObject.activeSelf);
-            Assert.IsTrue(States.Instance.currentAvatarState.Value.inventory.Items.Select(i => i.item.Data.id)
-                .Contains(row.ResultId));
+            Assert.AreEqual(1, States.Instance.currentAvatarState.Value.mailBox.OfType<CombinationMail>().Count());
         }
 
         [TearDown]

@@ -1,5 +1,6 @@
 using System.Collections;
 using Nekoyume.Game.Util;
+using Nekoyume.Pattern;
 using UnityEngine;
 
 namespace Nekoyume.Game.Controller

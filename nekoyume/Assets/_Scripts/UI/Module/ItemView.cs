@@ -1,6 +1,7 @@
 using System;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Item;
+using Nekoyume.Helper;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -72,28 +73,30 @@ namespace Nekoyume.UI.Module
 
         private void UpdateView()
         {
-            if (ReferenceEquals(Model, null))
+            if (Model is null ||
+                Model.item.Value is null)
             {
                 iconImage.enabled = false;
                 if (gradeImage) gradeImage.enabled = false;
                 return;
             }
 
-            var itemSprite = ItemBase.GetSprite(Model.item.Value);
+            var item = Model.item.Value;
+
+            var itemSprite = item.GetIconSprite();
             if (itemSprite is null)
             {
-                throw new FailedToLoadResourceException<Sprite>(Model.item.Value.Data.id.ToString());
+                throw new FailedToLoadResourceException<Sprite>(item.Data.id.ToString());
             }
 
             iconImage.enabled = true;
             iconImage.overrideSprite = itemSprite;
             iconImage.SetNativeSize();
 
-            int grade = Model.item.Value.Data.grade;
-            var gradeSprite = Game.Item.ItemBase.GetGradeIconSprite(grade);
+            var gradeSprite = item.GetBackgroundSprite();
             if (gradeSprite is null)
             {
-                throw new FailedToLoadResourceException<Sprite>(Model.item.Value.Data.grade.ToString());
+                throw new FailedToLoadResourceException<Sprite>(item.Data.grade.ToString());
             }
 
             if (gradeImage)

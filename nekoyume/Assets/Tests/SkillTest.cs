@@ -48,11 +48,9 @@ namespace Tests
             var attack = caster.Skills.First(s => s is NormalAttack);
             var result = attack.Use(caster);
             var target = caster.targets.First();
-
-            Assert.AreEqual(target.hp - caster.atk, target.currentHP);
-            Assert.AreEqual(1, result.skillInfos.Count());
             var info = result.skillInfos.First();
-            Assert.AreEqual(caster.atk, info.Effect);
+            Assert.AreEqual(target.currentHP, target.hp - info.Effect);
+            Assert.AreEqual(1, result.skillInfos.Count());
             Assert.NotNull(info.Target);
             Assert.AreEqual(SkillCategory.Normal, info.skillCategory);
             Assert.AreEqual(Elemental.ElementalType.Normal, info.Elemental);
@@ -62,7 +60,7 @@ namespace Tests
         public void BlowAttack()
         {
             var caster = _simulator.Player;
-            var skillRow = ATestSetUp.tableSheets.SkillSheet.ToOrderedList().First(r =>
+            var skillRow = ATestSetUp.tableSheets.SkillSheet.OrderedList.First(r =>
             {
                 if (!Tables.instance.SkillEffect.TryGetValue(r.SkillEffectId, out var skillEffectRow))
                 {
@@ -74,11 +72,13 @@ namespace Tests
             var blow = new BlowAttack(skillRow, caster.atk, 1m);
             var result = blow.Use(caster);
             var target = caster.targets.First();
-
-            Assert.AreEqual(target.hp - caster.atk, target.currentHP);
-            Assert.AreEqual(1, result.skillInfos.Count());
             var info = result.skillInfos.First();
-            Assert.AreEqual(caster.atk, info.Effect);
+            var atk = caster.atk + blow.power;
+            if (info.Critical)
+                atk = (int) (atk * CharacterBase.CriticalMultiplier);
+            Assert.AreEqual(atk, info.Effect);
+            Assert.AreEqual(target.currentHP, target.hp - info.Effect);
+            Assert.AreEqual(1, result.skillInfos.Count());
             Assert.NotNull(info.Target);
             Assert.AreEqual(SkillCategory.Blow, info.skillCategory);
             Assert.AreEqual(Elemental.ElementalType.Normal, info.Elemental);
@@ -88,7 +88,7 @@ namespace Tests
         public void DoubleAttack()
         {
             var caster = _simulator.Player;
-            var skillRow = ATestSetUp.tableSheets.SkillSheet.ToOrderedList().First(r =>
+            var skillRow = ATestSetUp.tableSheets.SkillSheet.OrderedList.First(r =>
             {
                 if (!Tables.instance.SkillEffect.TryGetValue(r.SkillEffectId, out var skillEffectRow))
                 {
@@ -101,9 +101,8 @@ namespace Tests
             var result = doubleAttack.Use(caster);
             var target = caster.targets.First();
 
-            Assert.AreEqual(target.hp - caster.atk, target.currentHP);
+            Assert.AreEqual(target.currentHP, target.hp - result.skillInfos.Sum(i => i.Effect));
             Assert.AreEqual(2, result.skillInfos.Count());
-            Assert.AreEqual(caster.atk, result.skillInfos.Sum(i => i.Effect));
             foreach (var info in result.skillInfos)
             {
                 Assert.NotNull(info.Target);
@@ -117,7 +116,7 @@ namespace Tests
         {
             var caster = _simulator.Player;
             SkillEffect skillEffectRow = null;
-            var skillRow = ATestSetUp.tableSheets.SkillSheet.ToOrderedList().First(r =>
+            var skillRow = ATestSetUp.tableSheets.SkillSheet.OrderedList.First(r =>
             {
                 if (!Tables.instance.SkillEffect.TryGetValue(r.SkillEffectId, out skillEffectRow))
                 {
@@ -130,9 +129,8 @@ namespace Tests
             var result = area.Use(caster);
             var target = caster.targets.First();
 
-            Assert.AreEqual(target.hp - caster.atk, target.currentHP);
+            Assert.AreEqual(target.currentHP, target.hp - result.skillInfos.Sum(i => i.Effect));
             Assert.AreEqual(skillEffectRow.hitCount, result.skillInfos.Count());
-            Assert.LessOrEqual(result.skillInfos.Sum(i => i.Effect), caster.atk);
             foreach (var info in result.skillInfos)
             {
                 Assert.NotNull(info.Target);
@@ -145,7 +143,7 @@ namespace Tests
         public void Heal()
         {
             var caster = _simulator.Player;
-            var skillRow = ATestSetUp.tableSheets.SkillSheet.ToOrderedList().First(r =>
+            var skillRow = ATestSetUp.tableSheets.SkillSheet.OrderedList.First(r =>
             {
                 if (!Tables.instance.SkillEffect.TryGetValue(r.SkillEffectId, out var skillEffectRow))
                 {

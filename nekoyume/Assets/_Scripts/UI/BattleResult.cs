@@ -292,8 +292,8 @@ namespace Nekoyume.UI
             Game.Event.OnStageStart.Invoke(action.Result.Action.Result);
             Close();
         }
-        
-        private void GoToMain()
+
+        public void GoToMain()
         {
             SetShouldRepeatFalse();
             

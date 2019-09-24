@@ -5,6 +5,7 @@ using Libplanet;
 using Nekoyume.Action;
 using Nekoyume.Game.Item;
 using Nekoyume.Manager;
+using Nekoyume.Pattern;
 using Nekoyume.UI.Model;
 using UniRx;
 
@@ -19,10 +20,11 @@ namespace Nekoyume.BlockChain
         {
             AgentController.Agent.EnqueueAction(action);
         }
-        
+
         #region Actions
-        
-        public IObservable<ActionBase.ActionEvaluation<CreateAvatar>> CreateAvatar(Address avatarAddress, int index, string nickName)
+
+        public IObservable<ActionBase.ActionEvaluation<CreateAvatar>> CreateAvatar(Address avatarAddress, int index,
+            string nickName)
         {
             var action = new CreateAvatar
             {
@@ -38,7 +40,7 @@ namespace Nekoyume.BlockChain
                 .Last()
                 .ObserveOnMainThread();
         }
-        
+
         public IObservable<ActionBase.ActionEvaluation<DeleteAvatar>> DeleteAvatar(int index)
         {
             var avatarAddress = States.Instance.avatarStates[index].address;
@@ -78,7 +80,7 @@ namespace Nekoyume.BlockChain
                 .Last()
                 .ObserveOnMainThread();
         }
-        
+
         public IObservable<ActionBase.ActionEvaluation<Action.Combination>> Combination(
             List<CombinationMaterial> materials)
         {
@@ -113,8 +115,9 @@ namespace Nekoyume.BlockChain
                 .Last()
                 .ObserveOnMainThread(); // Last() is for completion
         }
-        
-        public IObservable<ActionBase.ActionEvaluation<SellCancellation>> SellCancellation(Address sellerAvatarAddress, Guid productId)
+
+        public IObservable<ActionBase.ActionEvaluation<SellCancellation>> SellCancellation(Address sellerAvatarAddress,
+            Guid productId)
         {
             var action = new SellCancellation
             {
@@ -129,8 +132,9 @@ namespace Nekoyume.BlockChain
                 .Last()
                 .ObserveOnMainThread(); // Last() is for completion
         }
-        
-        public IObservable<ActionBase.ActionEvaluation<Buy>> Buy(Address sellerAgentAddress, Address sellerAvatarAddress, Guid productId)
+
+        public IObservable<ActionBase.ActionEvaluation<Buy>> Buy(Address sellerAgentAddress,
+            Address sellerAvatarAddress, Guid productId)
         {
             var action = new Buy
             {

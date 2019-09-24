@@ -5,6 +5,7 @@ using Nekoyume.UI;
 using Nekoyume.UI.Model;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.TestTools;
 
 namespace Tests
@@ -58,7 +59,8 @@ namespace Tests
         public void Start()
         {
             LogAssert.Expect(LogType.Exception,
-                "NotFoundComponentException`1: Not found `EquipSlot` component.");
+                "NotFoundComponentException`1: Not found `EquipSlot` component in MonoBehaviourTest: Tests.EquipmentSlotsFixture.");
+            gameObject.AddComponent<EventTrigger>();
             var slot = gameObject.AddComponent<EquipSlot>();
             slot.type = ItemBase.ItemType.Armor;
             gameObject.AddComponent<EquipmentSlots>().slots = new [] {slot};

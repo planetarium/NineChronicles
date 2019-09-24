@@ -48,9 +48,7 @@ namespace Nekoyume.UI.Module
 
         public ItemInformationTooltip Tooltip => _tooltip
             ? _tooltip
-            : MainCanvas.instance.IsInitialized
-                ? _tooltip = Widget.Find<ItemInformationTooltip>()
-                : null;
+            : _tooltip = Widget.Find<ItemInformationTooltip>();
 
         public Model.Inventory Model { get; private set; }
 

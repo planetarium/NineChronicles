@@ -3,22 +3,26 @@ using System.Collections;
 using System.Linq;
 using Nekoyume.BlockChain;
 using Nekoyume.Data;
+using Nekoyume.Game;
+using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
 using Nekoyume.UI;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 
 namespace Tests
 {
-    public class QuestPreparationTest
+    public class QuestPreparationTest : PlayModeTest
     {
-        private readonly QuestPreparation _widget;
-        private readonly Ring _ring;
-        private MinerFixture _miner;
+        private QuestPreparation _widget;
+        private Ring _ring;
 
-        public QuestPreparationTest()
+        [UnitySetUp]
+        public IEnumerator QuestPreparationSetup()
         {
+            yield return SetUp();
             _widget = Widget.Find<QuestPreparation>();
             var data = Tables.instance.ItemEquipment.Values.First();
             data.cls = "Ring";
@@ -26,15 +30,15 @@ namespace Tests
             _ring = ring;
         }
 
-        [TearDown]
-        public void TearDown()
+        [UnityTearDown]
+        public IEnumerator QuestPreparationTearDown()
         {
+            yield return TearDown();
             foreach (var es in _widget.equipmentSlots)
             {
                 es.Unequip();
             }
-
-            _miner?.TearDown();
+            yield return null;
         }
 
         [Test]
@@ -83,19 +87,22 @@ namespace Tests
         }
 
         [UnityTest]
+        [Timeout(180000)]
         public IEnumerator HackAndSlash()
         {
-            _miner = new MinerFixture("hack_and_slash");
+            miner = new MinerFixture("hack_and_slash");
 
             // CreateAvatar
             Widget.Find<Title>().OnClick();
             Widget.Find<Synopsis>().End();
             yield return new WaitUntil(() => Widget.Find<Login>().ready);
             Widget.Find<Login>().SlotClick(2);
-            Widget.Find<LoginDetail>().CreateClick();
+            var loginDetail = Widget.Find<LoginDetail>();
+            loginDetail.nameField.text = "has";
+            loginDetail.CreateClick();
             yield return new WaitUntil(() => AgentController.Agent.Transactions.Any());
             var createAvatarTx = AgentController.Agent.Transactions.First().Value;
-            yield return _miner.CoMine(createAvatarTx);
+            yield return miner.CoMine(createAvatarTx);
             yield return new WaitWhile(() => States.Instance.currentAvatarState.Value is null);
             yield return new WaitUntil(() => Widget.Find<Login>().ready);
 
@@ -104,14 +111,23 @@ namespace Tests
             Widget.Find<LoginDetail>().LoginClick();
             yield return new WaitUntil(() => GameObject.Find("room"));
 
+            var dialog = Widget.Find<Dialog>();
+            yield return new WaitUntil(() => dialog.isActiveAndEnabled);
+            while (dialog.isActiveAndEnabled)
+            {
+                dialog.Skip();
+                yield return null;
+            }
+
             _widget.Show();
             var current = AgentController.Agent.Transactions.Count;
             _widget.QuestClick(false);
             yield return new WaitUntil(() => AgentController.Agent.Transactions.Count > current);
             // Transaction.Id 가 랜덤하게 생성되어 순서가 보장이 되지 않기때문에 정렬처리
             var tx = AgentController.Agent.Transactions.Values.OrderByDescending(t => t.Timestamp).First();
-            yield return _miner.CoMine(tx);
-            yield return new WaitWhile(() => _widget.gameObject.activeSelf);
+            yield return miner.CoMine(tx);
+            yield return new WaitUntil(() => Widget.Find<BattleResult>().isActiveAndEnabled);
+            Widget.Find<BattleResult>().GoToMain();
         }
 
     }

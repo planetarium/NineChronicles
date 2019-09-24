@@ -30,7 +30,7 @@ namespace Nekoyume.UI
         {
             Item = item;
             Icon.gameObject.SetActive(true);
-            Icon.sprite = ItemBase.GetSprite(item);
+            Icon.sprite = item.GetIconSprite();
             Icon.SetNativeSize();
 
             LabelCount.text = count.ToString();

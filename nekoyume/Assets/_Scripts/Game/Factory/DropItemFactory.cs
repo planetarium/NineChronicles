@@ -12,10 +12,11 @@ namespace Nekoyume.Game.Factory
         private ItemBase _box;
         private const int BoxId = 100000;
 
-        private void Start()
+        public void Initialize()
         {
             _box = Tables.instance.CreateItemBase(BoxId);
         }
+        
         public IEnumerator CoCreate(List<ItemBase> items, Vector3 position)
         {
             for (var i = 0; i < items.Count; i++)
@@ -36,7 +37,7 @@ namespace Nekoyume.Game.Factory
 
             // sprite
             var render = dropItem.GetComponent<SpriteRenderer>();
-            var sprite = ItemBase.GetSprite(_box);
+            var sprite = _box.GetIconSprite();
             render.sprite = sprite;
             render.sortingOrder = 0;
 

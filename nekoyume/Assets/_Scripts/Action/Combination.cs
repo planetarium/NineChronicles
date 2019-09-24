@@ -278,7 +278,7 @@ namespace Nekoyume.Action
             var table = Game.Game.instance.TableSheets.SkillSheet;
             try
             {
-                var skillRow = table.ToOrderedList().First(r => r.Id == monsterParts.skillId);
+                var skillRow = table.OrderedList.First(r => r.Id == monsterParts.skillId);
                 var chance = Math.Floor(monsterParts.minChance +
                                         (monsterParts.maxChance - monsterParts.minChance) * roll);
                 chance = Math.Max(monsterParts.minChance, chance);
@@ -295,22 +295,6 @@ namespace Nekoyume.Action
 
                 return false;
             }
-        }
-
-        public static bool TryGetEquipment(ItemEquipment itemEquipment, Item monsterParts, decimal roll, Guid itemId,
-            out Equipment equipment)
-        {
-            if (!TryGetSkill(monsterParts, roll, out var skill))
-            {
-                equipment = null;
-
-                return false;
-            }
-
-            equipment = (Equipment) ItemFactory.Create(itemEquipment, itemId);
-            equipment.Skills.Add(skill);
-
-            return true;
         }
 
         private static ItemUsable GetFood(ItemEquipment itemEquipment, Guid itemId)

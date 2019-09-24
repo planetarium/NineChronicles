@@ -10,7 +10,6 @@ using Nekoyume.UI.Module;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using TMPro;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -26,15 +25,18 @@ namespace Nekoyume.UI
         public Text equipmentTitleText;
         public EquipmentSlots equipmentSlots;
         public GameObject questBtn;
+        public Text questBtnText;
+        public Text questContinuousBtnText;
         public GameObject equipSlotGlow;
-        public GameObject statusRowPrefab;
-        public Transform statusRowParent;
+        public Text labelStage;
         public Button worldMapButton;
         public BottomMenu bottomMenu;
 
         private Stage _stage;
         private Player _player;
         private EquipSlot _weaponSlot;
+
+        private int _stageId;
 
         private readonly List<IDisposable> _disposablesForSetData = new List<IDisposable>();
 
@@ -60,9 +62,11 @@ namespace Nekoyume.UI
         public override void Show()
         {
             base.Show();
-            Find<Status>().Show();
-            equipmentTitleText.text = LocalizationManager.Localize("UI_EQUIPMENTS");
-            consumableTitleText.text = LocalizationManager.Localize("UI_CONSUMABLES");
+
+            consumableTitleText.text = LocalizationManager.Localize("UI_EQUIP_CONSUMABLES");
+            equipmentTitleText.text = LocalizationManager.Localize("UI_EQUIP_EQUIPMENTS");
+            questBtnText.text = LocalizationManager.Localize("UI_BATTLE");
+            questContinuousBtnText.text = LocalizationManager.Localize("UI_BATTLE_CONTINUOUS");
 
             _stage = Game.Game.instance.stage;
             _stage.LoadBackground("dungeon");
@@ -93,21 +97,11 @@ namespace Nekoyume.UI
 
             questBtn.SetActive(true);
 
-            if (statusRowParent.childCount == 0)
-            {
-                var rows = _player.model.GetStatusRow();
-                foreach (var (key, value, additional) in rows)
-                {
-                    var go = Instantiate(statusRowPrefab, statusRowParent);
-                    var info = go.GetComponent<StatusInfo>();
-                    info.Set(key, value, additional);
-                }
-            }
+            UpdateStage();
         }
 
         public override void Close()
         {
-            Find<Status>().Show();
             Find<Inventory>().Close();
             Find<StatusDetail>().Close();
             Find<Quest>().Close();
@@ -350,8 +344,7 @@ namespace Nekoyume.UI
                 }
             }
 
-            var selectedStage = Find<WorldMap>().SelectedStage;
-            ActionManager.instance.HackAndSlash(equipments, foods, selectedStage)
+            ActionManager.instance.HackAndSlash(equipments, foods, _stageId)
                 .Subscribe(eval =>
                 {
                     Game.Event.OnStageStart.Invoke(eval.Action.Result);
@@ -413,10 +406,17 @@ namespace Nekoyume.UI
             }
         }
 
+        private void UpdateStage()
+        {
+            var worldMap = Find<WorldMap>();
+            _stageId = worldMap.SelectedStageId;
+            labelStage.text = $"Stage {_stageId}";
+        }
+
         private void GoToWorldMap()
         {
             Close();
-            Find<WorldMap>().Show(false);
+            Find<WorldMap>().ShowByStageId(_stageId);
         }
     }
 }

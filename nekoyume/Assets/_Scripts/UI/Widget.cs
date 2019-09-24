@@ -17,7 +17,7 @@ namespace Nekoyume.UI
 
         protected static readonly Subject<Widget> OnEnableSubject = new Subject<Widget>();
         protected static readonly Subject<Widget> OnDisableSubject = new Subject<Widget>();
-        
+
         private static readonly Dictionary<Type, PoolElementModel> Pool = new Dictionary<Type, PoolElementModel>();
         private static readonly int Radius = Shader.PropertyToID("_Radius");
 
@@ -62,6 +62,14 @@ namespace Nekoyume.UI
             var res = Resources.Load<GameObject>(resName);
             if (!ReferenceEquals(res, null))
             {
+                if (Pool.ContainsKey(type))
+                {
+                    Debug.LogWarning($"Duplicated create widget: {type}");
+                    Pool[type].gameObject.SetActive(activate);
+
+                    return (T) Pool[type].widget;
+                }
+
                 var go = Instantiate(res, MainCanvas.instance.transform);
                 var widget = go.GetComponent<T>();
                 switch (widget.WidgetType)
@@ -71,15 +79,6 @@ namespace Nekoyume.UI
                     case WidgetType.Tooltip:
                     case WidgetType.Widget:
                     case WidgetType.SystemInfo:
-                        if (Pool.ContainsKey(type))
-                        {
-                            Debug.LogWarning($"Duplicated create widget: {type}");
-                            DestroyImmediate(go);
-                            Pool[type].gameObject.SetActive(activate);
-
-                            return (T) Pool[type].widget;
-                        }
-
                         go.transform.SetParent(MainCanvas.instance.widget.transform);
                         go.SetActive(activate);
                         Pool.Add(type, new PoolElementModel
@@ -96,7 +95,6 @@ namespace Nekoyume.UI
 
                 go.transform.SetParent(MainCanvas.instance.GetTransform(widget.WidgetType));
                 go.SetActive(activate);
-
                 return widget;
             }
 

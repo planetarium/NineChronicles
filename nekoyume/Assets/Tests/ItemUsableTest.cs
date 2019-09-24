@@ -6,7 +6,7 @@ using NUnit.Framework;
 
 namespace Tests
 {
-    public class ItemUsableTest
+    public class ItemUsableTest : PlayModeTest
     {
         [Test]
         public void Equals()

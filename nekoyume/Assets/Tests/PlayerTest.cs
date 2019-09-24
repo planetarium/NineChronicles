@@ -9,7 +9,7 @@ using UnityEngine.TestTools;
 
 namespace Tests
 {
-    public class PlayerTest
+    public class PlayerTest : PlayModeTest
     {
         [UnityTest]
         public IEnumerator DoFade()
