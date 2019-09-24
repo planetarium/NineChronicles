@@ -92,7 +92,7 @@ namespace Nekoyume.UI
             stageInformation.monstersArea.text.text = LocalizationManager.Localize("UI_WORLD_MAP_MONSTERS");
             stageInformation.rewardsArea.text.text = LocalizationManager.Localize("UI_WORLD_MAP_REWARDS");
             submitText.text = LocalizationManager.Localize("UI_WORLD_MAP_PREPARE");
-            bottomMenu.WorldMapButton.text.text = LocalizationManager.Localize("UI_WORLD_MAP");
+            bottomMenu.worldMapButton.text.text = LocalizationManager.Localize("UI_WORLD_MAP");
             bottomMenu.stageButton.text.text = LocalizationManager.Localize("UI_STAGE");
 
             alfheimButton.OnClickAsObservable()
@@ -125,7 +125,7 @@ namespace Nekoyume.UI
                     AudioController.PlayClick();
                     GoToMain();
                 }).AddTo(gameObject);
-            bottomMenu.WorldMapButton.button.OnClickAsObservable()
+            bottomMenu.worldMapButton.button.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
                     AudioController.PlayClick();
