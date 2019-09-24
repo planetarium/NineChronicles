@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Assets.SimpleLocalization;
 using EnhancedUI.EnhancedScroller;
 using Nekoyume.Game.Controller;
+using Nekoyume.Helper;
 using Nekoyume.UI.Scroller;
 using UniRx;
 using UnityEngine;
@@ -39,6 +40,9 @@ namespace Nekoyume.UI.Module
         private Sprite _materialsButtonIconSpriteBlue;
 
         private ItemInformationTooltip _tooltip;
+        private RectTransform[] _switchButtonTransforms;
+        private static Vector2 BtnHighlightSize = new Vector2(157f, 60f);
+        private static Vector2 BtnSize = new Vector2(130f, 36f);
 
         public RectTransform RectTransform { get; private set; }
 
@@ -56,19 +60,26 @@ namespace Nekoyume.UI.Module
         {
             this.ComponentFieldsNotNullTest();
 
+            _switchButtonTransforms = new RectTransform[]
+            {
+                equipmentsButton.GetComponent<RectTransform>(),
+                consumablesButton.GetComponent<RectTransform>(),
+                materialsButton.GetComponent<RectTransform>(),
+            };
+
             titleText.text = LocalizationManager.Localize("UI_INVENTORY");
             equipmentsButtonText.text = LocalizationManager.Localize("UI_EQUIPMENTS");
             consumablesButtonText.text = LocalizationManager.Localize("UI_CONSUMABLES");
             materialsButtonText.text = LocalizationManager.Localize("UI_MATERIALS");
 
-            _selectedButtonSprite = Resources.Load<Sprite>("UI/Textures/button_blue_01");
-            _deselectedButtonSprite = Resources.Load<Sprite>("UI/Textures/button_black_03");
+            _selectedButtonSprite = Resources.Load<Sprite>("UI/Textures/button_yellow_02");
+            _deselectedButtonSprite = Resources.Load<Sprite>("UI/Textures/button_brown_01");
             _equipmentsButtonIconSpriteBlack = Resources.Load<Sprite>("UI/Textures/icon_inventory_01_black");
-            _equipmentsButtonIconSpriteBlue = Resources.Load<Sprite>("UI/Textures/icon_inventory_01_blue");
+            _equipmentsButtonIconSpriteBlue = Resources.Load<Sprite>("UI/Textures/icon_inventory_01_yellow");
             _consumablesButtonIconSpriteBlack = Resources.Load<Sprite>("UI/Textures/icon_inventory_02_black");
-            _consumablesButtonIconSpriteBlue = Resources.Load<Sprite>("UI/Textures/icon_inventory_02_blue");
+            _consumablesButtonIconSpriteBlue = Resources.Load<Sprite>("UI/Textures/icon_inventory_02_yellow");
             _materialsButtonIconSpriteBlack = Resources.Load<Sprite>("UI/Textures/icon_inventory_03_black");
-            _materialsButtonIconSpriteBlue = Resources.Load<Sprite>("UI/Textures/icon_inventory_03_blue");
+            _materialsButtonIconSpriteBlue = Resources.Load<Sprite>("UI/Textures/icon_inventory_03_yellow");
 
             RectTransform = GetComponent<RectTransform>();
 
@@ -175,6 +186,30 @@ namespace Nekoyume.UI.Module
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(state), state, null);
+            }
+
+            // 선택된 버튼의 스프라이트가 1픽셀 내려가는 문제가 있음.
+
+            var btn = _switchButtonTransforms[(int)state];
+            btn.anchoredPosition = new Vector2(btn.anchoredPosition.x, 1);
+            btn.sizeDelta = BtnHighlightSize;
+            var shadows = btn.GetComponentsInChildren<Shadow>();
+            foreach(var shadow in shadows)
+            {
+                shadow.effectColor = ColorHelper.HexToColorRGB("a35400");
+            }
+            
+            for (int i = 0; i < 3; ++i)
+            {
+                if (i == (int)state) continue;
+                btn = _switchButtonTransforms[i];
+                btn.anchoredPosition = new Vector2(btn.anchoredPosition.x, 0);
+                btn.sizeDelta = BtnSize;
+                shadows = btn.GetComponentsInChildren<Shadow>();
+                foreach (var shadow in shadows)
+                {
+                    shadow.effectColor = Color.black;
+                }
             }
 
             if (Tooltip)
