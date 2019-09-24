@@ -152,7 +152,7 @@ namespace Nekoyume.BlockChain
                 iceServers: iceServers,
                 differentVersionPeerEncountered: DifferentAppProtocolVersionPeerEncountered);
             
-            InitializeTelemetryClient(_swarm.Address);
+            if (!consoleSink) InitializeTelemetryClient(_swarm.Address);
 
             _seedPeers = peers.Where(peer => peer.PublicKey != privateKey.PublicKey).ToImmutableList();
             // Init SyncSucceed
