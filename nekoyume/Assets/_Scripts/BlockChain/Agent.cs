@@ -69,6 +69,8 @@ namespace Nekoyume.BlockChain
 
         private readonly CancellationTokenSource _cancellationTokenSource;
 
+        private string _tipInfo = string.Empty;
+
         public IDictionary<TxId, Transaction<PolymorphicAction<ActionBase>>> Transactions => _blocks.Transactions;
         public IBlockPolicy<PolymorphicAction<ActionBase>> Policy => _blocks.Policy;
         public long BlockIndex => _blocks?.Tip?.Index ?? 0;
@@ -185,7 +187,9 @@ namespace Nekoyume.BlockChain
         {
             while (true)
             {
-                var log = $"Staged Transactions : {_store.IterateStagedTransactionIds().Count()}\n\n";
+                var log = "Tip Information\n";
+                log += _tipInfo;
+                log += $"Staged Transactions : {_store.IterateStagedTransactionIds().Count()}\n\n";
                 log += _swarm?.TraceTable();
                 Cheat.Display(log);
                 yield return new WaitForSeconds(0.5f);
@@ -277,6 +281,7 @@ namespace Nekoyume.BlockChain
             Task.Run(async () =>
             {
                 await _swarm.WaitForRunningAsync();
+                _blocks.TipChanged += TipChangedHandler;
 
                 Debug.LogFormat(
                     "The address of this node: {0},{1},{2}",
@@ -287,6 +292,15 @@ namespace Nekoyume.BlockChain
             });
 
             yield return new WaitUntil(() => swarmStartTask.IsCompleted);
+        }
+
+        private void TipChangedHandler(
+            object target,
+            BlockChain<PolymorphicAction<ActionBase>>.TipChangedEventArgs args)
+        {
+            _tipInfo =  $" -TimeStamp   : {DateTimeOffset.Now}\n";
+            _tipInfo += $" -PrevBlock   : [{args.PreviousIndex}] {args.PreviousHash}\n";
+            _tipInfo += $" -LatestBlock : [{args.Index}] {args.Hash} by {_blocks.Tip.Miner?.ToString()}\n";
         }
 
         public IEnumerator CoTxProcessor()
@@ -367,6 +381,10 @@ namespace Nekoyume.BlockChain
 #if BLOCK_LOG_USE
                     FileHelper.AppendAllText("Block.log", task.Result.ToVerboseString());
 #endif
+                }
+                else if (task.Exception?.InnerExceptions.OfType<OperationCanceledException>().Count() != 0)
+                {
+                    Debug.Log("Mining was canceled due to change of tip.");
                 }
                 else
                 {
