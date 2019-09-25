@@ -10,7 +10,6 @@ using Nekoyume.UI.Module;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using TMPro;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -26,10 +25,11 @@ namespace Nekoyume.UI
         public Text equipmentTitleText;
         public EquipmentSlots equipmentSlots;
         public GameObject questBtn;
-        public TextMeshProUGUI questContinuousBtnText;
         public GameObject equipSlotGlow;
         public Button worldMapButton;
         public BottomMenu bottomMenu;
+        public GameObject statusRowPrefab;
+        public Transform statusRowParent;
 
         private Stage _stage;
         private Player _player;
@@ -54,8 +54,8 @@ namespace Nekoyume.UI
             bottomMenu.goToMainButton.button.onClick.AddListener(BackClick);
             var status = Find<Status>();
             bottomMenu.questButton.button.onClick.AddListener(status.ToggleQuest);
-            // todo: 월드맵 버튼 추가.
-//            bottomMenu.worldMapButton.onClick.AddListener(Find<WorldMap>().Show(false));
+            var worldMap = Find<WorldMap>();
+            bottomMenu.worldMapButton.button.onClick.AddListener(worldMap.Show);
         }
 
         public override void Show()
@@ -64,7 +64,6 @@ namespace Nekoyume.UI
 
             consumableTitleText.text = LocalizationManager.Localize("UI_EQUIP_CONSUMABLES");
             equipmentTitleText.text = LocalizationManager.Localize("UI_EQUIP_EQUIPMENTS");
-            questContinuousBtnText.text = LocalizationManager.Localize("UI_BATTLE_CONTINUOUS");
 
             _stage = Game.Game.instance.stage;
             _stage.LoadBackground("dungeon");
@@ -93,9 +92,17 @@ namespace Nekoyume.UI
                 }
             }
 
-            questBtn.SetActive(true);
+            var rows = _player.model.GetStatusRow();
+            foreach (var (key, value, additional) in rows)
+            {
+                var go = Instantiate(statusRowPrefab, statusRowParent);
+                var info = go.GetComponent<StatusInfo>();
+                info.Set(key, value, additional);
+            }
 
-            UpdateStage();
+            questBtn.SetActive(true);
+            var worldMap = Find<WorldMap>();
+            _stageId = worldMap.SelectedStageId;
         }
 
         public override void Close()
@@ -197,7 +204,7 @@ namespace Nekoyume.UI
         {
             _stage.LoadBackground("room");
             _player = _stage.GetPlayer(_stage.roomPosition);
-            _player.UpdateSet(_player.Model.armor);
+            _player.UpdateSet(_player.model.armor);
             Find<Menu>().ShowRoom();
             Close();
             AudioController.PlayClick();
@@ -402,12 +409,6 @@ namespace Nekoyume.UI
             {
                 equipSlotGlow.SetActive(false);
             }
-        }
-
-        private void UpdateStage()
-        {
-            var worldMap = Find<WorldMap>();
-            _stageId = worldMap.SelectedStageId;
         }
 
         private void GoToWorldMap()

@@ -3,9 +3,7 @@ using System.Linq;
 using Libplanet;
 using Libplanet.Crypto;
 using Nekoyume.State;
-using Nekoyume.UI;
 using NUnit.Framework;
-using UnityEngine;
 
 namespace Tests
 {
@@ -123,17 +121,6 @@ namespace Tests
             avatar1.worldStage = 3;
             state.Update(avatar1);
             Assert.AreEqual(3, state.GetAvatars(null).First().worldStage);
-        }
-
-        [Test]
-        public void RankingInfo()
-        {
-            var widget = Widget.Find<RankingBoard>();
-            var rankingInfo = widget.rankingBase;
-            var agentAddress = GetNewAddress();
-            var avatar = new AvatarState(GetNewAddress(), agentAddress, 1);
-            rankingInfo.Set(1, avatar);
-            Assert.NotNull(rankingInfo.icon.sprite);
         }
     }
 }

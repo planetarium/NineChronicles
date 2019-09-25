@@ -61,12 +61,13 @@ namespace Tests
                 File.Delete(_backup + ".meta");
             }
 
-            AgentController.instance.Dispose();
-            yield return new WaitForSeconds(2f);
             if (!string.IsNullOrEmpty(_storePath))
             {
-                File.Delete($"{_storePath}.ldb");
+                File.Delete(_storePath);
             }
+
+            AgentController.instance.Dispose();
+            yield return new WaitForSeconds(2f);
         }
     }
 }

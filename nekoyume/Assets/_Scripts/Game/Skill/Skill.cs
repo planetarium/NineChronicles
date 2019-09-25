@@ -16,8 +16,6 @@ namespace Nekoyume.Game
         public readonly int power;
         public readonly decimal chance;
         public readonly SkillEffect effect;
-        public List<Buff.Buff> buffs = new List<Buff.Buff>();
-
 
         public abstract Model.Skill Use(CharacterBase caster);
 
@@ -83,22 +81,6 @@ namespace Nekoyume.Game
             }
 
             return target;
-        }
-
-        public void ProcessBuff(CharacterBase caster)
-        {
-            foreach (var buff in buffs)
-            {
-                var targets = buff.GetTarget(caster);
-                foreach (var target in targets)
-                {
-                    var canBuff = target.GetChance(buff.chance);
-                    if (canBuff)
-                    {
-                        caster.AddBuff(buff);
-                    }
-                }
-            }
         }
     }
 }

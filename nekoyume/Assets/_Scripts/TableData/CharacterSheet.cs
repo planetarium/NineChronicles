@@ -69,10 +69,10 @@ namespace Nekoyume.TableData
             }
 
             var stats = new Stats();
-            stats.AddStatValue("damage", damage);
-            stats.AddStatValue("defense", defense);
-            stats.AddStatValue("health", hp);
-            stats.AddStatValue("luck", luck);
+            stats.SetStatValue("damage", damage);
+            stats.SetStatValue("defense", defense);
+            stats.SetStatValue("health", hp);
+            stats.SetStatValue("luck", luck);
 
             return stats;
         }

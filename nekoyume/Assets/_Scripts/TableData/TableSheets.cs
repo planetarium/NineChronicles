@@ -18,7 +18,6 @@ namespace Nekoyume.TableData
         public CharacterSheet CharacterSheet { get; private set; }
         public LevelSheet LevelSheet { get; private set; }
         public SkillSheet SkillSheet { get; private set; }
-        public BuffSheet BuffSheet { get; private set; }
 
         public IEnumerator CoInitialize()
         {
@@ -107,10 +106,6 @@ namespace Nekoyume.TableData
                 case nameof(TableData.SkillSheet):
                     SkillSheet = new SkillSheet();
                     SkillSheet.Set(csv);
-                    break;
-                case nameof(TableData.BuffSheet):
-                    BuffSheet = new BuffSheet();
-                    BuffSheet.Set(csv);
                     break;
                 default:
                     throw new InvalidDataException($"Not found {name} class in namespace `TableData`");

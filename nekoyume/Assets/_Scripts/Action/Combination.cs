@@ -9,7 +9,6 @@ using Nekoyume.BlockChain;
 using Nekoyume.Data;
 using Nekoyume.Data.Table;
 using Nekoyume.Game;
-using Nekoyume.Game.Buff;
 using Nekoyume.Game.Factory;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Mail;
@@ -25,19 +24,15 @@ namespace Nekoyume.Action
     public class Combination : GameAction
     {
         [Serializable]
-        public class Material
+        public struct Material
         {
             public int id;
             public int count;
 
-            public Material(UI.Model.CountableItem item) : this(item.item.Value.Data.id, item.count.Value)
+            public Material(UI.Model.CountableItem item)
             {
-            }
-
-            public Material(int id, int count)
-            {
-                this.id = id;
-                this.count = count;
+                id = item.item.Value.Data.id;
+                count = item.count.Value;
             }
         }
 
@@ -112,28 +107,8 @@ namespace Nekoyume.Action
             if (equipmentMaterials.Any())
             {
                 // 장비
-                Materials.RemoveAll(item => equipmentMaterials.Contains(item));
-
-                var zippedMaterials = new List<Material>();
-                foreach (var source in Materials)
-                {
-                    var shouldToAdd = true;
-                    foreach (var target in zippedMaterials.Where(target => target.id == source.id))
-                    {
-                        target.count += source.count;
-                        shouldToAdd = false;
-                        break;
-                    }
-
-                    if (shouldToAdd)
-                    {
-                        zippedMaterials.Add(new Material(source.id, source.count));
-                    }
-                }
-                
-                var orderedMaterials = zippedMaterials
-                    .OrderByDescending(order => order.count)
-                    .ToList();
+                var orderedMaterials = Materials.OrderByDescending(order => order.count).ToList();
+                orderedMaterials.RemoveAll(item => equipmentMaterials.Contains(item));
                 if (orderedMaterials.Count == 0)
                     return states;
 
@@ -177,7 +152,7 @@ namespace Nekoyume.Action
                     var roll = GetRoll(monsterPartsMaterial.count, 0, normalizedRandomValue);
 
                     if (TryGetStat(outMonsterPartsMaterialRow, roll, out var statMap))
-                        equipment.Stats.AddStatAdditionalValue(statMap.Key, statMap.Value);
+                        equipment.Stats.SetStatAdditionalValue(statMap.Key, statMap.Value);
 
                     if (TryGetSkill(outMonsterPartsMaterialRow, roll, out var skill))
                         equipment.Skills.Add(skill);
@@ -311,13 +286,6 @@ namespace Nekoyume.Action
                                              (monsterParts.maxDamage - monsterParts.minDamage) * roll);
 
                 skill = SkillFactory.Get(skillRow, value, chance);
-
-                foreach (var row in Game.Game.instance.TableSheets.BuffSheet.Values.OrderBy(r => r.id))
-                {
-                    var buff = BuffFactory.Get(row);
-                    skill.buffs.Add(buff);
-                }
-
 
                 return true;
             }

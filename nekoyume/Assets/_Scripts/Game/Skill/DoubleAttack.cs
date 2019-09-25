@@ -14,8 +14,6 @@ namespace Nekoyume.Game
         public override Model.Skill Use(CharacterBase caster)
         {
             var infos = ProcessDamage(caster);
-            ProcessBuff(caster);
-
             return new Model.DoubleAttack
             {
                 character = (CharacterBase) caster.Clone(),
