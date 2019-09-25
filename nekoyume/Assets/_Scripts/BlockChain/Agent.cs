@@ -219,6 +219,10 @@ namespace Nekoyume.BlockChain
                         5000,
                         _cancellationTokenSource.Token);
                 }
+                catch (SwarmException e)
+                {
+                    Debug.LogFormat("Bootstrap failed. {0}", e.Message);
+                }
                 catch (Exception e)
                 {
                     Debug.LogFormat("Exception occurred during bootstrap {0}", e);
