@@ -1,4 +1,6 @@
+using System;
 using System.IO;
+using System.Reflection;
 using Nekoyume.Game.Character;
 using Spine.Unity;
 using Spine.Unity.Editor;
@@ -17,7 +19,7 @@ namespace Planetarium.Nekoyume.Editor
         private const string MonsterPrefabPath = "Assets/Resources/Character/Monster";
         private const string PlayerSpineRootPath = "Assets/AddressableAssets/Character/Player";
         private const string MonsterSpineRootPath = "Assets/AddressableAssets/Character/Monster";
-        
+
         private static readonly Vector3 Position = Vector3.zero;
         private static readonly Vector3 LocalScale = new Vector3(.64f, .64f, 1f);
 
@@ -26,7 +28,7 @@ namespace Planetarium.Nekoyume.Editor
         {
             return Selection.activeObject is SkeletonDataAsset;
         }
-        
+
         [MenuItem("Assets/9C/Create Spine Prefab", false, 0)]
         public static void CreateSpinePrefab()
         {
@@ -37,7 +39,7 @@ namespace Planetarium.Nekoyume.Editor
 
             CreateSpinePrefabInternal(skeletonDataAsset);
         }
-        
+
         [MenuItem("Tools/9C/Create Spine Prefab All Of Player", false, 0)]
         public static void CreateSpinePrefabAllOfPlayers()
         {
@@ -49,9 +51,11 @@ namespace Planetarium.Nekoyume.Editor
         {
             CreateSpinePrefabAllOfPath(MonsterSpineRootPath);
         }
-        
+
         private static void CreateSpinePrefabInternal(SkeletonDataAsset skeletonDataAsset)
         {
+            CreateAnimationReferenceAssets(skeletonDataAsset);
+            
             var assetPath = AssetDatabase.GetAssetPath(skeletonDataAsset);
             var assetFolderPath = assetPath.Replace(Path.GetFileName(assetPath), "");
             var animationAssetsPath = Path.Combine(assetFolderPath, "ReferenceAssets");
@@ -59,7 +63,8 @@ namespace Planetarium.Nekoyume.Editor
             var prefabName = split[split.Length > 1 ? split.Length - 2 : 0];
             var isPlayer = prefabName.StartsWith("1");
             var prefabPath = Path.Combine(isPlayer ? PlayerPrefabPath : MonsterPrefabPath, $"{prefabName}.prefab");
-            var skeletonAnimation = SpineEditorUtilities.EditorInstantiation.InstantiateSkeletonAnimation(skeletonDataAsset);
+            var skeletonAnimation =
+                SpineEditorUtilities.EditorInstantiation.InstantiateSkeletonAnimation(skeletonDataAsset);
             skeletonAnimation.AnimationName = nameof(CharacterAnimation.Type.Idle);
 
             var gameObject = skeletonAnimation.gameObject;
@@ -84,7 +89,8 @@ namespace Planetarium.Nekoyume.Editor
 
             var animatorControllerPath = AssetDatabase.GUIDToAssetPath(animatorControllerGuidArray[0]);
             var animator = gameObject.AddComponent<Animator>();
-            animator.runtimeAnimatorController = AssetDatabase.LoadAssetAtPath<AnimatorController>(animatorControllerPath);
+            animator.runtimeAnimatorController =
+                AssetDatabase.LoadAssetAtPath<AnimatorController>(animatorControllerPath);
 
             var controller = gameObject.AddComponent<SkeletonAnimationController>();
             foreach (var animationType in CharacterAnimation.List)
@@ -100,12 +106,15 @@ namespace Planetarium.Nekoyume.Editor
                         case CharacterAnimation.Type.StandingToIdle:
                         case CharacterAnimation.Type.Win:
                         case CharacterAnimation.Type.Disappear:
-                            assetPath = Path.Combine(animationAssetsPath, $"{nameof(CharacterAnimation.Type.Idle)}.asset");
+                            assetPath = Path.Combine(animationAssetsPath,
+                                $"{nameof(CharacterAnimation.Type.Idle)}.asset");
                             asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(assetPath);
                             break;
+                        case CharacterAnimation.Type.Touch:
                         case CharacterAnimation.Type.CastingAttack:
                         case CharacterAnimation.Type.CriticalAttack:
-                            assetPath = Path.Combine(animationAssetsPath, $"{nameof(CharacterAnimation.Type.Attack)}.asset");
+                            assetPath = Path.Combine(animationAssetsPath,
+                                $"{nameof(CharacterAnimation.Type.Attack)}.asset");
                             asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(assetPath);
                             break;
                         default:
@@ -119,7 +128,7 @@ namespace Planetarium.Nekoyume.Editor
                         throw new AssetNotFoundException(assetPath);
                     }
                 }
-                
+
                 controller.statesAndAnimations.Add(
                     new SkeletonAnimationController.StateNameToAnimationReference
                     {
@@ -145,7 +154,61 @@ namespace Planetarium.Nekoyume.Editor
                 throw new FailedToSaveAsPrefabAssetException(prefabPath);
             }
         }
-        
+
+        /// <summary>
+        /// `SkeletonDataAssetInspector.CreateAnimationReferenceAssets(): 242`
+        /// </summary>
+        /// <param name="skeletonDataAsset"></param>
+        private static void CreateAnimationReferenceAssets(SkeletonDataAsset skeletonDataAsset)
+        {
+            const string assetFolderName = "ReferenceAssets";
+
+            var parentFolder = Path.GetDirectoryName(AssetDatabase.GetAssetPath(skeletonDataAsset));
+            var dataPath = parentFolder + "/" + assetFolderName;
+            if (!AssetDatabase.IsValidFolder(dataPath))
+            {
+                AssetDatabase.CreateFolder(parentFolder, assetFolderName);
+            }
+
+            var nameField =
+                typeof(AnimationReferenceAsset).GetField("animationName",
+                    BindingFlags.NonPublic | BindingFlags.Instance);
+            if (nameField is null)
+            {
+                throw new NullReferenceException(
+                    "typeof(AnimationReferenceAsset).GetField(\"animationName\", BindingFlags.NonPublic | BindingFlags.Instance);");
+            }
+
+            var skeletonDataAssetField = typeof(AnimationReferenceAsset).GetField("skeletonDataAsset",
+                BindingFlags.NonPublic | BindingFlags.Instance);
+            if (skeletonDataAssetField is null)
+            {
+                throw new NullReferenceException(
+                    "typeof(AnimationReferenceAsset).GetField(\"skeletonDataAsset\", BindingFlags.NonPublic | BindingFlags.Instance);");
+            }
+
+            var skeletonData = skeletonDataAsset.GetSkeletonData(false);
+            foreach (var animation in skeletonData.Animations)
+            {
+                var assetPath = $"{dataPath}/{SpineEditorUtilities.AssetUtility.GetPathSafeName(animation.Name)}.asset";
+                var existingAsset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(assetPath);
+                if (existingAsset != null)
+                    continue;
+
+                AnimationReferenceAsset newAsset = ScriptableObject.CreateInstance<AnimationReferenceAsset>();
+                skeletonDataAssetField.SetValue(newAsset, skeletonDataAsset);
+                nameField.SetValue(newAsset, animation.Name);
+                AssetDatabase.CreateAsset(newAsset, assetPath);
+            }
+
+            var folderObject = AssetDatabase.LoadAssetAtPath(dataPath, typeof(UnityEngine.Object));
+            if (folderObject != null)
+            {
+                Selection.activeObject = folderObject;
+                EditorGUIUtility.PingObject(folderObject);
+            }
+        }
+
         private static void CreateSpinePrefabAllOfPath(string path)
         {
             if (!AssetDatabase.IsValidFolder(path))
@@ -163,7 +226,7 @@ namespace Planetarium.Nekoyume.Editor
                 if (skeletonDataAsset is null)
                 {
                     Debug.LogError($"Not Found SkeletonData from {skeletonDataAssetPath}");
-                    
+
                     continue;
                 }
 
