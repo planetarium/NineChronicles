@@ -43,9 +43,9 @@ namespace Nekoyume.UI.Module
         public Button combinationEquipmentButton;
         public Button combinationConsumableButton;
         public Button combinationRecipeButton;
-        public Button worldMapButton;
+        public Button WorldMapButton;
         public Button stageButton;
-        public Button autoRepeatButton;
+        public Button AutoRepeatButton;
 
         private Button[] _buttons;
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
@@ -72,9 +72,9 @@ namespace Nekoyume.UI.Module
                     combinationEquipmentButton,
                     combinationConsumableButton,
                     combinationRecipeButton,
-                    worldMapButton,
+                    WorldMapButton,
                     stageButton,
-                    autoRepeatButton
+                    AutoRepeatButton
                 };
 
             foreach (var btn in _buttons)

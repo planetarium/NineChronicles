@@ -272,8 +272,6 @@ namespace Nekoyume.BlockChain
             Agent?.Dispose();
             Agent = null;
 
-            NetMQConfig.Cleanup(false);
-
             base.OnDestroy();
         }
 
@@ -300,6 +298,7 @@ namespace Nekoyume.BlockChain
         private static bool WantsToQuit()
         {
             Agent?.SaveQueuedActions();
+            NetMQConfig.Cleanup(false);
             return true;
         }
 

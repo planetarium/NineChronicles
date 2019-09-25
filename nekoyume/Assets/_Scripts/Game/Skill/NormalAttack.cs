@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using Nekoyume.Game.Buff;
 using Nekoyume.Model;
 using Nekoyume.TableData;
 
@@ -14,7 +16,7 @@ namespace Nekoyume.Game
         public override Model.Skill Use(CharacterBase caster)
         {
             var info = ProcessDamage(caster);
-
+            ProcessBuff(caster);
             return new Model.Attack
             {
                 character = (CharacterBase) caster.Clone(),

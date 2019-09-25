@@ -107,13 +107,13 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<Shop>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<WorldMap>());
-            yield return null;
             _secondWidgets.Add(Widget.Create<QuestPreparation>());
             yield return null;
             _secondWidgets.Add(Widget.Create<Combination>());
             yield return null;
             _secondWidgets.Add(Widget.Create<RankingBoard>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<WorldMap>());
             yield return null;
             _secondWidgets.Add(Widget.Create<Dialog>());
             yield return null;

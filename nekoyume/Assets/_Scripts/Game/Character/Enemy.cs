@@ -123,6 +123,7 @@ namespace Nekoyume.Game.Character
             ShowSpeech("ENEMY_SKILL", (int)(skill.Elemental ?? 0), (int)skill.skillCategory);
             base.ProcessAttack(target, skill, isLastHit, isConsiderElementalType);
             ShowSpeech("ENEMY_ATTACK");
+            UpdateHpBar(model.buffs);
         }
 
         protected override IEnumerator CoAnimationCast(Model.Skill.SkillInfo info)
