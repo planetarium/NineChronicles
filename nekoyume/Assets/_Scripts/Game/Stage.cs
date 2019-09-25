@@ -286,6 +286,7 @@ namespace Nekoyume.Game
         public IEnumerator CoSpawnPlayer(Player character)
         {
             var playerCharacter = RunPlayer();
+            playerCharacter.InBattle = true;
             playerCharacter.Init(character);
             playerCharacter.ShowSpeech("PLAYER_INIT");
             var player = playerCharacter.gameObject;

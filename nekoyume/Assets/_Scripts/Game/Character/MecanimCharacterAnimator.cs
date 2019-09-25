@@ -1,4 +1,3 @@
-using System.Linq;
 using UnityEngine;
 
 namespace Nekoyume.Game.Character
@@ -6,10 +5,10 @@ namespace Nekoyume.Game.Character
     public class MecanimCharacterAnimator : CharacterAnimator<Animator>
     {
         private static readonly Vector3 Vector3Zero = Vector3.zero;
-        
+
         private int _baseLayerIndex;
-        
-        public MecanimCharacterAnimator(CharacterBase root) : base (root)
+
+        public MecanimCharacterAnimator(CharacterBase root) : base(root)
         {
         }
 
@@ -18,11 +17,11 @@ namespace Nekoyume.Game.Character
             base.ResetTarget(value);
 
             Animator.speed = TimeScale;
-            
+
             _baseLayerIndex = Animator.GetLayerIndex("Base Layer");
         }
 
-        public override bool AnimatorValidation()
+        public override bool ValidateAnimator()
         {
             // Reference.
             // if (ReferenceEquals(_anim, null)) 이 라인일 때와 if (_anim == null) 이 라인일 때의 결과가 달라서 주석을 남겨뒀어요.
@@ -38,146 +37,130 @@ namespace Nekoyume.Game.Character
 
         public override void Appear()
         {
-            if (!AnimatorValidation())
-            {
+            if (!ValidateAnimator())
                 return;
-            }
-            
-            Animator.Play(nameof(CharacterAnimation.Type.Appear));
+
+            Animator.Play(nameof(CharacterAnimation.Type.Appear), _baseLayerIndex, 0f);
         }
 
         public override void Standing()
         {
-            if (!AnimatorValidation())
-            {
+            if (!ValidateAnimator())
                 return;
-            }
-            
-            Animator.Play(nameof(CharacterAnimation.Type.Standing));
+
+            Animator.Play(nameof(CharacterAnimation.Type.Standing), _baseLayerIndex, 0f);
             Animator.SetBool(nameof(CharacterAnimation.Type.Standing), true);
         }
 
         public override void StandingToIdle()
         {
-            if (!AnimatorValidation())
-            {
+            if (!ValidateAnimator())
                 return;
-            }
-            
+
             Animator.SetBool(nameof(CharacterAnimation.Type.Standing), false);
         }
 
         public override void Idle()
         {
-            if (!AnimatorValidation())
-            {
+            if (!ValidateAnimator())
                 return;
-            }
-            
-            Animator.Play(nameof(CharacterAnimation.Type.Idle));
+
+            Animator.Play(nameof(CharacterAnimation.Type.Idle), _baseLayerIndex, 0f);
             Animator.SetBool(nameof(CharacterAnimation.Type.Standing), false);
             Animator.SetBool(nameof(CharacterAnimation.Type.Run), false);
         }
 
+        public override void Touch()
+        {
+            if (!ValidateAnimator())
+                return;
+
+            if (Animator.GetBool(nameof(CharacterAnimation.Type.Touch)))
+                return;
+
+            Animator.Play(nameof(CharacterAnimation.Type.Touch), _baseLayerIndex, 0f);
+            Animator.SetBool(nameof(CharacterAnimation.Type.Touch), true);
+        }
+
         public override void Run()
         {
-            if (!AnimatorValidation())
-            {
+            if (!ValidateAnimator())
                 return;
-            }
-            
-            Animator.Play(nameof(CharacterAnimation.Type.Run));
+
+            Animator.Play(nameof(CharacterAnimation.Type.Run), _baseLayerIndex, 0f);
             Animator.SetBool(nameof(CharacterAnimation.Type.Run), true);
         }
 
         public override void StopRun()
         {
-            if (!AnimatorValidation())
-            {
+            if (!ValidateAnimator())
                 return;
-            }
-            
+
             Animator.SetBool(nameof(CharacterAnimation.Type.Run), false);
         }
 
         public override void Attack()
         {
-            if (!AnimatorValidation())
-            {
+            if (!ValidateAnimator())
                 return;
-            }
-            
+
             Animator.Play(nameof(CharacterAnimation.Type.Attack), _baseLayerIndex, 0f);
         }
 
         public override void Cast()
         {
-            if (!AnimatorValidation())
-            {
+            if (!ValidateAnimator())
                 return;
-            }
 
             Animator.Play(nameof(CharacterAnimation.Type.Casting), _baseLayerIndex, 0f);
         }
-        
+
         public override void CastAttack()
         {
-            if (!AnimatorValidation())
-            {
+            if (!ValidateAnimator())
                 return;
-            }
 
             Animator.Play(nameof(CharacterAnimation.Type.CastingAttack), _baseLayerIndex, 0f);
         }
-        
+
         public override void CriticalAttack()
         {
-            if (!AnimatorValidation())
-            {
+            if (!ValidateAnimator())
                 return;
-            }
 
             Animator.Play(nameof(CharacterAnimation.Type.CriticalAttack), _baseLayerIndex, 0f);
         }
 
         public override void Hit()
         {
-            if (!AnimatorValidation())
-            {
+            if (!ValidateAnimator())
                 return;
-            }
 
             Animator.Play(nameof(CharacterAnimation.Type.Hit), _baseLayerIndex, 0f);
         }
 
         public override void Win()
         {
-            if (!AnimatorValidation())
-            {
+            if (!ValidateAnimator())
                 return;
-            }
 
             Animator.Play(nameof(CharacterAnimation.Type.Win), _baseLayerIndex, 0f);
         }
 
         public override void Die()
         {
-            if (!AnimatorValidation())
-            {
+            if (!ValidateAnimator())
                 return;
-            }
-            
+
             Animator.Play(nameof(CharacterAnimation.Type.Die), _baseLayerIndex, 0f);
         }
 
         public override void Disappear()
         {
-            if (!AnimatorValidation())
-            {
+            if (!ValidateAnimator())
                 return;
-            }
-            
-            Animator.Play(nameof(CharacterAnimation.Type.Disappear));
+
+            Animator.Play(nameof(CharacterAnimation.Type.Disappear), _baseLayerIndex, 0f);
         }
     }
 }

@@ -62,9 +62,9 @@ namespace Nekoyume.Game.Character
             Skeleton.AnimationState.Event += RaiseEvent;
         }
 
-        public override bool AnimatorValidation()
+        public override bool ValidateAnimator()
         {
-            return base.AnimatorValidation() && !ReferenceEquals(Skeleton, null);
+            return base.ValidateAnimator() && !ReferenceEquals(Skeleton, null);
         }
 
         public override Vector3 GetHUDPosition()

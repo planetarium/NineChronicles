@@ -11,6 +11,7 @@ namespace Nekoyume.Game.Character
             Standing,
             StandingToIdle,
             Idle,
+            Touch,
             Run,
             Attack,
             Casting,

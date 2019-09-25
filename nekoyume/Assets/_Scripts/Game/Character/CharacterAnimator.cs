@@ -47,7 +47,7 @@ namespace Nekoyume.Game.Character
             Target = null;
         }
 
-        public abstract bool AnimatorValidation();
+        public abstract bool ValidateAnimator();
         public abstract Vector3 GetHUDPosition();
 
         #region Animation
@@ -56,6 +56,7 @@ namespace Nekoyume.Game.Character
         public abstract void Standing();
         public abstract void StandingToIdle();
         public abstract void Idle();
+        public abstract void Touch();
         public abstract void Run();
         public abstract void StopRun();
         public abstract void Attack();
