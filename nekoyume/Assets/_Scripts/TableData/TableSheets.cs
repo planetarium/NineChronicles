@@ -64,6 +64,7 @@ namespace Nekoyume.TableData
             var tableCsvAssets = addressableAssetsContainer.tableCsvAssets;
             var loadTaskCount = tableCsvAssets.Count;
             var loadedTaskCount = 0;
+            //어드레서블어셋에 새로운 테이블을 추가하면 AddressableAssetsContainer.asset에도 해당 csv파일을 추가해줘야합니다.
             foreach (var textAsset in tableCsvAssets)
             {
                 SetToSheet(textAsset.name, textAsset.text);
