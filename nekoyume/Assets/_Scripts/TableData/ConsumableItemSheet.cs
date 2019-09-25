@@ -1,19 +1,13 @@
 using System;
 using System.Collections.Generic;
 using Nekoyume.EnumType;
+using Nekoyume.Model;
 
 namespace Nekoyume.TableData
 {
     [Serializable]
     public class ConsumableItemSheet : Sheet<int, ConsumableItemSheet.Row>
     {
-        [Serializable]
-        public class StatData
-        {
-            public string type;
-            public decimal value;
-        }
-
         [Serializable]
         public class Row : ItemSheet.Row
         {
@@ -34,11 +28,9 @@ namespace Nekoyume.TableData
                         string.IsNullOrEmpty(fields[6 + i * 2]))
                         return;
 
-                    Stats.Add(new StatData
-                    {
-                        type = fields[5 + i * 2],
-                        value = decimal.Parse(fields[6 + i * 2])
-                    });   
+                    Stats.Add(new StatData(
+                        (StatType) Enum.Parse(typeof(StatType), fields[5 + i * 2]),
+                        decimal.Parse(fields[6 + i * 2])));
                 }
             }
         }

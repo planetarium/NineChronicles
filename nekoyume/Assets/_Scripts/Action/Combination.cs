@@ -10,7 +10,6 @@ using Nekoyume.Data;
 using Nekoyume.Data.Table;
 using Nekoyume.EnumType;
 using Nekoyume.Game;
-using Nekoyume.Game.Buff;
 using Nekoyume.Game.Factory;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Mail;
@@ -180,7 +179,7 @@ namespace Nekoyume.Action
                     var roll = GetRoll(monsterPartsMaterial.count, 0, normalizedRandomValue);
 
                     if (TryGetStat(outMonsterPartsMaterialRow, roll, out var statMap))
-                        equipment.Stats.AddStatAdditionalValue(statMap.Key, statMap.Value);
+                        equipment.Stats.AddStatAdditionalValue(statMap.StatType, statMap.Value);
 
                     if (TryGetSkill(outMonsterPartsMaterialRow, roll, out var skill))
                         equipment.Skills.Add(skill);
@@ -289,14 +288,14 @@ namespace Nekoyume.Action
 
         private static bool TryGetStat(MaterialItemSheet.Row itemRow, decimal roll, out StatMap statMap)
         {
-            if (string.IsNullOrEmpty(itemRow.StatType))
+            if (!itemRow.StatType.HasValue)
             {
                 statMap = null;
 
                 return false;
             }
 
-            var key = itemRow.StatType;
+            var key = itemRow.StatType.Value;
             var value = Math.Floor(itemRow.StatMin + (itemRow.StatMax - itemRow.StatMin) * roll);
             statMap = new StatMap(key, value);
             return true;
@@ -315,13 +314,6 @@ namespace Nekoyume.Action
                                              (monsterParts.SkillDamageMax - monsterParts.SkillDamageMin) * roll);
 
                 skill = SkillFactory.Get(skillRow, value, chance);
-
-                foreach (var row in Game.Game.instance.TableSheets.BuffSheet.Values.OrderBy(r => r.id))
-                {
-                    var buff = BuffFactory.Get(row);
-                    skill.buffs.Add(buff);
-                }
-
 
                 return true;
             }

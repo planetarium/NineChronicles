@@ -23,6 +23,7 @@ namespace Assets.SimpleLocalization
         public static event Action LocalizationChanged = delegate { };
 
         public const LanguageType DefaultLanguage = LanguageType.Korean;
+
         private static readonly Dictionary<LanguageType, Dictionary<string, string>> Dictionary =
             new Dictionary<LanguageType, Dictionary<string, string>>();
 
@@ -48,14 +49,14 @@ namespace Assets.SimpleLocalization
             ReadInternal();
             var languageType = SystemLanguage;
         }
-        
+
         public static void Read(LanguageType languageType, string path = "Localization")
         {
             if (Dictionary.Count > 0) return;
 
             ReadInternal();
         }
-        
+
         private static void ReadInternal(string path = "Localization")
         {
             if (Dictionary.Count > 0) return;
@@ -79,7 +80,7 @@ namespace Assets.SimpleLocalization
                 }
 
                 // csv파일 저장형식이 라인피드로만 처리되고 있어서 윈도우에서 줄바꿈이 제대로 안되는 문제가 있음
-                var lines = text.Split(new[] {"\n", "\r\n"}, StringSplitOptions.RemoveEmptyEntries);
+                var lines = text.Split(new[] { "\n", "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
                 var languages = lines[0]
                     .Split(',')
                     .Skip(1)
@@ -136,26 +137,23 @@ namespace Assets.SimpleLocalization
                 throw new KeyNotFoundException("Language not found: " + Language);
             }
 
-            if (!Dictionary[Language].ContainsKey(localizationKey))
-            {
-                throw new KeyNotFoundException("Translation not found: " + localizationKey);
-            }
-
-            return Dictionary[Language][localizationKey];
+            return Dictionary[Language].ContainsKey(localizationKey)
+                ? Dictionary[Language][localizationKey]
+                : $"!{localizationKey}!";
         }
-        
+
         public static string LocalizeCharacterName(int characterId)
         {
             var localizationKey = $"CHARACTER_NAME_{characterId}";
             return Localize(localizationKey);
         }
-        
+
         public static string LocalizeItemName(int itemId)
         {
             var localizationKey = $"ITEM_NAME_{itemId}";
             return Localize(localizationKey);
         }
-        
+
         public static string LocalizeBattleQuestInfo(int stage)
         {
             var localizationKey = "QUEST_BATTLE_INFO";
@@ -234,10 +232,10 @@ namespace Assets.SimpleLocalization
                     result.Add(pair.Key, pair.Value);
                 }
             }
-            
+
             return result;
         }
-        
+
         private static string ReplaceMarkers(string text)
         {
             return text

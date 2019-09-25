@@ -1,3 +1,5 @@
-id,name,category,target_type,effect,time,skill_id,chance
-1,공격 강화,Attack,Self,200,5,100000,100
-2,방어 강화,Defense,Self,200,5,100000,100
+id,group,_name,stat_type,target_type,effect,duration,chance
+101000,101000,공격 강화,ATK,Self,50,3,100
+102000,102000,방어 강화,DEF,Self,50,3,100
+103000,103000,체력 재생,HP,Self,50,3,100
+201000,201000,공격 약화,ATK,Self,-50,3,100

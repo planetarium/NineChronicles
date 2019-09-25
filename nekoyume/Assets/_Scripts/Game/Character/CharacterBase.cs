@@ -161,7 +161,7 @@ namespace Nekoyume.Game.Character
             _hpBar.SetValue((float) HP / HPMax);
         }
 
-        protected void UpdateHpBar(Dictionary<BuffCategory, Buff.Buff> buffs)
+        protected void UpdateHpBar(Dictionary<int, Buff> buffs)
         {
             UpdateHpBar();
             _hpBar.UpdateBuff(buffs);

@@ -50,7 +50,8 @@ namespace Nekoyume.TableData
             var linesWithoutColumnName = lines.Skip(1);
             foreach (var line in linesWithoutColumnName)
             {
-                if (line.StartsWith("_"))
+                if (line.StartsWith(",") ||
+                    line.StartsWith("_"))
                 {
                     continue;
                 }
