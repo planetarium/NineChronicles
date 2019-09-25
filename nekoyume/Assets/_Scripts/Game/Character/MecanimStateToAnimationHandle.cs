@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.Collections;
 using Spine.Unity;
 
@@ -69,6 +70,14 @@ namespace Nekoyume.Game.Character
             {
                 animator.SetTrigger(TransitionHash);
             }
+        }
+
+        public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
+        {
+            if (!stateInfo.IsName(nameof(CharacterAnimation.Type.Touch)))
+                return;
+            
+            animator.SetBool(nameof(CharacterAnimation.Type.Touch), false);
         }
     }
 }

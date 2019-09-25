@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,6 +9,11 @@ namespace Nekoyume.UI
         public Text key;
         public Text value;
         public Text additional;
+
+        public void Set((string key, object value, float additional) tuple)
+        {
+            Set(tuple.key, tuple.value, tuple.additional);
+        }
 
         public void Set(string statKey, object statValue, float equipValue)
         {

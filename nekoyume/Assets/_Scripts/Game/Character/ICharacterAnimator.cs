@@ -19,7 +19,7 @@ namespace Nekoyume.Game.Character
 
         void ResetTarget(GameObject value);
         void DestroyTarget();
-        bool AnimatorValidation();
+        bool ValidateAnimator();
         Vector3 GetHUDPosition();
         
         #region Animation
@@ -28,6 +28,7 @@ namespace Nekoyume.Game.Character
         void Standing();
         void StandingToIdle();
         void Idle();
+        void Touch();
         void Run();
         void StopRun();
         void Attack();
