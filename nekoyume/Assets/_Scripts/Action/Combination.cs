@@ -9,6 +9,7 @@ using Nekoyume.BlockChain;
 using Nekoyume.Data;
 using Nekoyume.Data.Table;
 using Nekoyume.Game;
+using Nekoyume.Game.Buff;
 using Nekoyume.Game.Factory;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Mail;
@@ -310,6 +311,13 @@ namespace Nekoyume.Action
                                              (monsterParts.maxDamage - monsterParts.minDamage) * roll);
 
                 skill = SkillFactory.Get(skillRow, value, chance);
+
+                foreach (var row in Game.Game.instance.TableSheets.BuffSheet.Values.OrderBy(r => r.id))
+                {
+                    var buff = BuffFactory.Get(row);
+                    skill.buffs.Add(buff);
+                }
+
 
                 return true;
             }
