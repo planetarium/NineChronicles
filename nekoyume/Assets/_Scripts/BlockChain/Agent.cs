@@ -69,6 +69,8 @@ namespace Nekoyume.BlockChain
 
         private readonly CancellationTokenSource _cancellationTokenSource;
 
+        private string _tipInfo = string.Empty;
+
         public IDictionary<TxId, Transaction<PolymorphicAction<ActionBase>>> Transactions => _blocks.Transactions;
         public IBlockPolicy<PolymorphicAction<ActionBase>> Policy => _blocks.Policy;
         public long BlockIndex => _blocks?.Tip?.Index ?? 0;
@@ -185,10 +187,22 @@ namespace Nekoyume.BlockChain
         {
             while (true)
             {
-                var log = $"Staged Transactions : {_store.IterateStagedTransactionIds().Count()}\n\n";
-                log += _swarm?.TraceTable();
-                Cheat.Display(log);
-                yield return new WaitForSeconds(0.5f);
+                Cheat.Display("Logs", _tipInfo);
+                Cheat.Display("Peers", _swarm?.TraceTable());
+                var log = $"Staged Transactions\n";
+                int count = 1;
+                foreach (var id in _store.IterateStagedTransactionIds())
+                {
+                    var tx = _store.GetTransaction<PolymorphicAction<ActionBase>>(id);
+                    log += $"[{count++}] Id : {tx.Id}";
+                    log += $"-Signer : {tx.Signer.ToString()}\n";
+                    log += $"-Nonce : {tx.Nonce}\n";
+                    log += $"-Timestamp : {tx.Timestamp}\n";
+                    log += $"-Actions\n";
+                    log = tx.Actions.Aggregate(log, (current, action) => current + $" -{action.InnerAction}\n");
+                }
+                Cheat.Display("StagedTxs", log);
+                yield return new WaitForSeconds(0.1f);
             }
         }
         
@@ -204,6 +218,10 @@ namespace Nekoyume.BlockChain
                         5000,
                         5000,
                         _cancellationTokenSource.Token);
+                }
+                catch (SwarmException e)
+                {
+                    Debug.LogFormat("Bootstrap failed. {0}", e.Message);
                 }
                 catch (Exception e)
                 {
@@ -277,6 +295,7 @@ namespace Nekoyume.BlockChain
             Task.Run(async () =>
             {
                 await _swarm.WaitForRunningAsync();
+                _blocks.TipChanged += TipChangedHandler;
 
                 Debug.LogFormat(
                     "The address of this node: {0},{1},{2}",
@@ -287,6 +306,17 @@ namespace Nekoyume.BlockChain
             });
 
             yield return new WaitUntil(() => swarmStartTask.IsCompleted);
+        }
+
+        private void TipChangedHandler(
+            object target,
+            BlockChain<PolymorphicAction<ActionBase>>.TipChangedEventArgs args)
+        {
+            _tipInfo = "Tip Information\n";
+            _tipInfo += $" -Miner           : {_blocks.Tip.Miner?.ToString()}\n";
+            _tipInfo += $" -TimeStamp  : {DateTimeOffset.Now}\n";
+            _tipInfo += $" -PrevBlock    : [{args.PreviousIndex}] {args.PreviousHash}\n";
+            _tipInfo += $" -LatestBlock : [{args.Index}] {args.Hash}";
         }
 
         public IEnumerator CoTxProcessor()
@@ -352,9 +382,9 @@ namespace Nekoyume.BlockChain
                     txs.Add(rankingRewardTx);
                 }
 
-                var task = Task.Run(() =>
+                var task = Task.Run(async () =>
                 {
-                    var block = _blocks.MineBlock(Address);
+                    var block = await _blocks.MineBlock(Address);
                     _swarm.BroadcastBlocks(new[] {block});
                     return block;
                 });
@@ -367,6 +397,10 @@ namespace Nekoyume.BlockChain
 #if BLOCK_LOG_USE
                     FileHelper.AppendAllText("Block.log", task.Result.ToVerboseString());
 #endif
+                }
+                else if (task.Exception?.InnerExceptions.OfType<OperationCanceledException>().Count() != 0)
+                {
+                    Debug.Log("Mining was canceled due to change of tip.");
                 }
                 else
                 {
