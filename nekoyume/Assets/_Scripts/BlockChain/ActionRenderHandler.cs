@@ -247,9 +247,7 @@ namespace Nekoyume.BlockChain
 
             if (States.Instance.avatarStates.ContainsKey(index))
             {
-                // 게임에서 업데이트한 아바타 상태를 따라잡았을때만 업데이트
-                if (avatarState.BlockIndex >= States.Instance.avatarStates[index].BlockIndex)
-                    States.Instance.avatarStates[index] = avatarState;
+                States.Instance.avatarStates[index] = avatarState;
             }
             else
             {
