@@ -7217,6 +7217,36 @@ PrefabInstance:
       propertyPath: AutoRepeatButton.localizationKey
       value: UI_BATTLE_CONTINUOUS
       objectReference: {fileID: 0}
+    - target: {fileID: 6035183985399840212, guid: 214a4ae05c347734c86a76da3c3af566,
+        type: 3}
+      propertyPath: worldMapButton.button
+      value: 
+      objectReference: {fileID: 1761833055148249653}
+    - target: {fileID: 6035183985399840212, guid: 214a4ae05c347734c86a76da3c3af566,
+        type: 3}
+      propertyPath: worldMapButton.image
+      value: 
+      objectReference: {fileID: 5300892822816522765}
+    - target: {fileID: 6035183985399840212, guid: 214a4ae05c347734c86a76da3c3af566,
+        type: 3}
+      propertyPath: worldMapButton.text
+      value: 
+      objectReference: {fileID: 8565030946970403035}
+    - target: {fileID: 6035183985399840212, guid: 214a4ae05c347734c86a76da3c3af566,
+        type: 3}
+      propertyPath: autoRepeatButton.button
+      value: 
+      objectReference: {fileID: 8006535290859725783}
+    - target: {fileID: 6035183985399840212, guid: 214a4ae05c347734c86a76da3c3af566,
+        type: 3}
+      propertyPath: autoRepeatButton.image
+      value: 
+      objectReference: {fileID: 3142328721397431741}
+    - target: {fileID: 6035183985399840212, guid: 214a4ae05c347734c86a76da3c3af566,
+        type: 3}
+      propertyPath: autoRepeatButton.text
+      value: 
+      objectReference: {fileID: 7932206781905798187}
     - target: {fileID: 1542912246320733003, guid: 214a4ae05c347734c86a76da3c3af566,
         type: 3}
       propertyPath: m_LocalPosition.x

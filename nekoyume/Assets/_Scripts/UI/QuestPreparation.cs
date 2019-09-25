@@ -54,8 +54,8 @@ namespace Nekoyume.UI
             bottomMenu.goToMainButton.button.onClick.AddListener(BackClick);
             var status = Find<Status>();
             bottomMenu.questButton.button.onClick.AddListener(status.ToggleQuest);
-            // todo: 월드맵 버튼 추가.
-//            bottomMenu.worldMapButton.onClick.AddListener(Find<WorldMap>().Show(false));
+            var worldMap = Find<WorldMap>();
+            bottomMenu.worldMapButton.button.onClick.AddListener(worldMap.Show);
         }
 
         public override void Show()
@@ -101,6 +101,8 @@ namespace Nekoyume.UI
             }
 
             questBtn.SetActive(true);
+            var worldMap = Find<WorldMap>();
+            _stageId = worldMap.SelectedStageId;
         }
 
         public override void Close()
