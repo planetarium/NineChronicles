@@ -47,6 +47,9 @@ namespace Nekoyume.Game.Character
         {
             if (!ValidateAnimator())
                 return;
+            
+            if (Animator.GetBool(nameof(CharacterAnimation.Type.Standing)))
+                return;
 
             Animator.Play(nameof(CharacterAnimation.Type.Standing), _baseLayerIndex, 0f);
             Animator.SetBool(nameof(CharacterAnimation.Type.Standing), true);
@@ -68,6 +71,7 @@ namespace Nekoyume.Game.Character
             Animator.Play(nameof(CharacterAnimation.Type.Idle), _baseLayerIndex, 0f);
             Animator.SetBool(nameof(CharacterAnimation.Type.Standing), false);
             Animator.SetBool(nameof(CharacterAnimation.Type.Run), false);
+            Animator.SetBool(nameof(CharacterAnimation.Type.Touch), false);
         }
 
         public override void Touch()
@@ -85,6 +89,9 @@ namespace Nekoyume.Game.Character
         public override void Run()
         {
             if (!ValidateAnimator())
+                return;
+            
+            if (Animator.GetBool(nameof(CharacterAnimation.Type.Run)))
                 return;
 
             Animator.Play(nameof(CharacterAnimation.Type.Run), _baseLayerIndex, 0f);
