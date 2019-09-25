@@ -1,7 +1,12 @@
+using System.Collections.Generic;
+using System.Linq;
 using Nekoyume.Manager;
 using Nekoyume.BlockChain;
+using Nekoyume.EnumType;
+using Nekoyume.Game.Buff;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
+using Nekoyume.TableData;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,6 +20,8 @@ namespace Nekoyume.UI
         public Text TextExp;
         public Slider HPBar;
         public Slider ExpBar;
+        public Image buffImage;
+        public GameObject buffList;
 
         private string _avatarName = "";
         private Player _player;
@@ -58,6 +65,7 @@ namespace Nekoyume.UI
             }
 
             HPBar.gameObject.SetActive(false);
+            ClearBuff();
         }
 
         public void UpdatePlayer(GameObject playerObj)
@@ -88,7 +96,7 @@ namespace Nekoyume.UI
                 hpValue = Mathf.Min(Mathf.Max(hpValue, 0.1f), 1.0f);
                 HPBar.value = hpValue;
 
-                var expNeed = _player.model.expNeed;
+                var expNeed = _player.Model.expNeed;
                 var levelExp = _player.EXPMax - expNeed;
                 var expValue = (float) (_player.EXP - levelExp) / expNeed;
                 ExpBar.fillRect.gameObject.SetActive(expValue > 0.0f);
@@ -144,6 +152,19 @@ namespace Nekoyume.UI
         {
             Toggle(_quest);
         }
+        public void UpdateBuff(Dictionary<BuffCategory, Buff> modelBuffs)
+        {
+            ClearBuff();
+            var buffs = modelBuffs.Values.OrderBy(r => r.data.id);
+            buffImage.gameObject.SetActive(true);
+            foreach (var buff in buffs)
+            {
+                var icon = buff.data.GetIcon();
+                var go = Instantiate(buffImage, buffList.transform);
+                go.sprite = icon;
+            }
+            buffImage.gameObject.SetActive(false);
+        }
 
         private void Toggle(Widget selected)
         {
@@ -169,6 +190,15 @@ namespace Nekoyume.UI
         private void OnUpdateStatus()
         {
             UpdateExp();
+        }
+
+        private void ClearBuff()
+        {
+            foreach (Transform child in buffList.transform)
+            {
+                Destroy(child.gameObject);
+            }
+
         }
     }
 }

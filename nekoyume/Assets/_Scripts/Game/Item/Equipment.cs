@@ -11,9 +11,9 @@ namespace Nekoyume.Game.Item
             : base(data, id)
         {
             //TODO 논의후 테이블에 제대로 설정되야함.
-            Stats.SetStatValue("turnSpeed", Data.turnSpeed);
+            Stats.AddStatValue("turnSpeed", Data.turnSpeed);
             //TODO 장비대신 스킬별 사거리를 사용해야함.
-            Stats.SetStatValue("attackRange", Data.attackRange);
+            Stats.AddStatValue("attackRange", Data.attackRange);
         }
 
         public bool Equip()

@@ -51,16 +51,17 @@ namespace Nekoyume.Game
 
         private int CalcSkillPower(CharacterBase caster)
         {
+            var atk = caster.Atk();
             // 플레이어가 사용하는 스킬은 기본 공격력 + 스킬 위력으로 스킬이 나가도록 설정합니다.
             if (caster is Player)
             {
                 if (effect.skillCategory != SkillCategory.Normal)
                 {
-                    return power + caster.atk;
+                    return power + atk;
                 }
             }
 
-            return power;
+            return atk;
         }
 
         private float[] GetMultiplier(int count, float total)

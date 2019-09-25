@@ -11,11 +11,12 @@ using Nekoyume.Game.Factory;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Trigger;
 using Nekoyume.Game.Util;
-using Nekoyume.Model;
-using Nekoyume.UI;
 using Nekoyume.Game.VFX;
 using Nekoyume.Game.VFX.Skill;
+using Nekoyume.Model;
+using Nekoyume.UI;
 using Nekoyume.UI.Model;
+using Spine.Unity;
 using UnityEngine;
 
 namespace Nekoyume.Game
@@ -103,7 +104,7 @@ namespace Nekoyume.Game
                     if (!ReferenceEquals(anim, null) && !anim.Target.activeSelf)
                     {
                         anim.Target.SetActive(true);
-                        var skeleton = anim.Target.GetComponentInChildren<Spine.Unity.SkeletonAnimation>().skeleton;
+                        var skeleton = anim.Target.GetComponentInChildren<SkeletonAnimation>().skeleton;
                         skeleton.A = 0.0f;
                         DOTween.To(() => skeleton.A, x=> skeleton.A = x, 1.0f, 1.0f);
                         anim.Appear();
@@ -282,7 +283,7 @@ namespace Nekoyume.Game
             }
         }
 
-        public IEnumerator CoSpawnPlayer(Model.Player character)
+        public IEnumerator CoSpawnPlayer(Player character)
         {
             var playerCharacter = RunPlayer();
             playerCharacter.Init(character);
@@ -467,8 +468,13 @@ namespace Nekoyume.Game
             return player;
         }
 
-        public Character.CharacterBase GetCharacter(CharacterBase caster) =>
-            GetComponentsInChildren<Character.CharacterBase>().FirstOrDefault(c => c.Id == caster.id);
+        public Character.CharacterBase GetCharacter(CharacterBase caster)
+        {
+            var character = GetComponentsInChildren<Character.CharacterBase>().FirstOrDefault(c => c.Id == caster.id);
+            if (!(character is null))
+                character.model = caster;
+            return character;
+        }
 
         private IEnumerator BeforeSkill(Character.CharacterBase character)
         {
