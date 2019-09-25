@@ -5,10 +5,7 @@ using System.Linq;
 using BTAI;
 using Libplanet.Action;
 using Nekoyume.Battle;
-using Nekoyume.EnumType;
 using Nekoyume.Game;
-using Nekoyume.Game.Buff;
-using UnityEngine;
 
 namespace Nekoyume.Model
 {
@@ -43,7 +40,6 @@ namespace Nekoyume.Model
         public float attackRange = 1.0f;
         public float runSpeed = 1.0f;
         public string characterSize = "s";
-        public Dictionary<BuffCategory, Buff> buffs = new Dictionary<BuffCategory, Buff>();
 
         [NonSerialized] public Simulator Simulator;
 
@@ -61,7 +57,6 @@ namespace Nekoyume.Model
                 BT.Selector().OpenBranch(
                     BT.If(IsAlive).OpenBranch(
                         BT.Sequence().OpenBranch(
-                            BT.Call(CheckBuff),
                             BT.Call(SelectSkill),
                             BT.Call(UseSkill)
                         )
@@ -144,43 +139,6 @@ namespace Nekoyume.Model
             return MemberwiseClone();
         }
 
-        private void CheckBuff()
-        {
-            var keyList = buffs.Keys.ToList();
-            foreach (var key in keyList)
-            {
-                var buff = buffs[key];
-                var before = buff.time;
-                buff.time--;
-                Debug.Log($"Decrease {buff} time. from: {before} to: {buff.time}");
-                if (buff.time <= 0)
-                {
-                    buffs.Remove(key);
-                }
-            }
-        }
-
-        public int Atk()
-        {
-            var calc = atk;
-            foreach (var pair in buffs)
-            {
-                calc = pair.Value.Use(this);
-            }
-
-            return calc;
-        }
-
-        public void AddBuff(Buff buff)
-        {
-            Debug.Log($"Add {buff}. Type: {buff.Category} Effect: {buff.effect} Time: {buff.time} Chance: {buff.chance}");
-            buffs[buff.Category] = buff;
-        }
-
-        public bool GetChance(int chance)
-        {
-            return chance > Simulator.Random.Next(0, 100);
-        }
     }
 
     public class InformationFieldAttribute : Attribute

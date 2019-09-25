@@ -14,9 +14,8 @@ namespace Nekoyume.Game
         public override Model.Skill Use(CharacterBase caster)
         {
             var info = ProcessDamage(caster);
-            ProcessBuff(caster);
 
-            return new Blow
+            return new Model.Blow
             {
                 character = (CharacterBase) caster.Clone(),
                 skillInfos = info,

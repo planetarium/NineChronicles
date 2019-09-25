@@ -13,7 +13,7 @@ namespace Nekoyume.Game
 
         public override Model.Skill Use(CharacterBase caster)
         {
-            ProcessBuff(caster);
+
             return new Model.AreaAttack
             {
                 character = (CharacterBase) caster.Clone(),

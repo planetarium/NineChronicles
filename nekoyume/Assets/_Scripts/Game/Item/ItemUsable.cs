@@ -25,12 +25,12 @@ namespace Nekoyume.Game.Item
 
             if (ValidateAbility(Data.ability1, Data.value1))
             {
-                Stats.AddStatValue(Data.ability1, Data.value1);
+                Stats.SetStatValue(Data.ability1, Data.value1);
             }
 
             if (ValidateAbility(Data.ability2, Data.value2))
             {
-                Stats.AddStatValue(Data.ability2, Data.value2);
+                Stats.SetStatValue(Data.ability2, Data.value2);
             }
 
             ItemId = id;

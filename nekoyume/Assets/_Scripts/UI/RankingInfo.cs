@@ -1,6 +1,5 @@
 using System.Linq;
 using Nekoyume.Game.Item;
-using Nekoyume.Helper;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -21,8 +20,7 @@ namespace Nekoyume.UI
         {
             rank.text = ranking.ToString();
             var armor = avatarState.inventory.Items.Select(i => i.item).OfType<Armor>().FirstOrDefault(e => e.equipped);
-            var armorId = armor?.Data.resourceId ?? GameConfig.DefaultAvatarArmorId;
-            icon.sprite = SpriteHelper.GetItemIcon(armorId);
+            icon.sprite = armor?.GetIconSprite();
             icon.SetNativeSize();
             level.text = avatarState.level.ToString();
             id.text = avatarState.name;
