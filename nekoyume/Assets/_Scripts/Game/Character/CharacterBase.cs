@@ -29,12 +29,13 @@ namespace Nekoyume.Game.Character
         public float RunSpeed = 0.0f;
         public string targetTag = "";
         public string characterSize = "s";
+        public Model.CharacterBase model;
 
         protected virtual WeightType WeightType => WeightType.Small;
 
         protected float dyingTime = 1.0f;
 
-        private ProgressBar _hpBar;
+        protected HpBar _hpBar;
         private ProgressBar _castingBar;
         protected SpeechBubble _speechBubble;
 
@@ -148,17 +149,24 @@ namespace Nekoyume.Game.Character
             return Mathf.FloorToInt((ATK + UnityEngine.Random.Range(-r, r)) * (Power * 0.01f));
         }
 
-        public void UpdateHpBar()
+        protected void UpdateHpBar()
         {
             if (ReferenceEquals(_hpBar, null))
             {
-                _hpBar = Widget.Create<ProgressBar>(true);
+                _hpBar = Widget.Create<HpBar>(true);
             }
 
             _hpBar.UpdatePosition(gameObject, HUDOffset);
             _hpBar.SetText($"{HP} / {HPMax}");
             _hpBar.SetValue((float) HP / HPMax);
         }
+
+        protected void UpdateHpBar(Dictionary<BuffCategory, Buff.Buff> buffs)
+        {
+            UpdateHpBar();
+            _hpBar.UpdateBuff(buffs);
+        }
+
 
         public bool ShowSpeech(string key, params int[] list)
         {

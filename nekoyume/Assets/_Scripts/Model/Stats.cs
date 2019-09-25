@@ -221,7 +221,7 @@ namespace Nekoyume.Model
             return (_statMaps != null ? _statMaps.GetHashCode() : 0);
         }
 
-        public void SetStatValue(string key, decimal value)
+        public void AddStatValue(string key, decimal value)
         {
             if (string.IsNullOrEmpty(key))
             {
@@ -233,10 +233,10 @@ namespace Nekoyume.Model
                 _statMaps.Add(key, new StatMap(key));
             }
 
-            _statMaps[key].Value = value;
+            _statMaps[key].Value += value;
         }
 
-        public void SetStatAdditionalValue(string key, decimal additionalValue)
+        public void AddStatAdditionalValue(string key, decimal additionalValue)
         {
             if (string.IsNullOrEmpty(key))
             {
@@ -248,7 +248,7 @@ namespace Nekoyume.Model
                 _statMaps.Add(key, new StatMap(key));
             }
 
-            _statMaps[key].AdditionalValue = additionalValue;
+            _statMaps[key].AdditionalValue += additionalValue;
         }
 
         public string GetInformation()

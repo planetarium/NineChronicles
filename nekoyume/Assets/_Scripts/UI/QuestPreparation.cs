@@ -10,6 +10,7 @@ using Nekoyume.UI.Module;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -25,6 +26,7 @@ namespace Nekoyume.UI
         public Text equipmentTitleText;
         public EquipmentSlots equipmentSlots;
         public GameObject questBtn;
+        public TextMeshProUGUI questContinuousBtnText;
         public GameObject equipSlotGlow;
         public Button worldMapButton;
         public BottomMenu bottomMenu;
@@ -64,6 +66,7 @@ namespace Nekoyume.UI
 
             consumableTitleText.text = LocalizationManager.Localize("UI_EQUIP_CONSUMABLES");
             equipmentTitleText.text = LocalizationManager.Localize("UI_EQUIP_EQUIPMENTS");
+            questContinuousBtnText.text = LocalizationManager.Localize("UI_BATTLE_CONTINUOUS");
 
             _stage = Game.Game.instance.stage;
             _stage.LoadBackground("dungeon");
@@ -204,7 +207,7 @@ namespace Nekoyume.UI
         {
             _stage.LoadBackground("room");
             _player = _stage.GetPlayer(_stage.roomPosition);
-            _player.UpdateSet(_player.model.armor);
+            _player.UpdateSet(_player.Model.armor);
             Find<Menu>().ShowRoom();
             Close();
             AudioController.PlayClick();
@@ -410,7 +413,7 @@ namespace Nekoyume.UI
                 equipSlotGlow.SetActive(false);
             }
         }
-
+        
         private void GoToWorldMap()
         {
             Close();
