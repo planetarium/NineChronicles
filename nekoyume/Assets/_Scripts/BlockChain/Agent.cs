@@ -194,7 +194,7 @@ namespace Nekoyume.BlockChain
                 foreach (var id in _store.IterateStagedTransactionIds())
                 {
                     var tx = _store.GetTransaction<PolymorphicAction<ActionBase>>(id);
-                    log += $"[{count++}] Id : {tx.Id}";
+                    log += $"[{count++}] Id : {tx.Id}\n";
                     log += $"-Signer : {tx.Signer.ToString()}\n";
                     log += $"-Nonce : {tx.Nonce}\n";
                     log += $"-Timestamp : {tx.Timestamp}\n";
