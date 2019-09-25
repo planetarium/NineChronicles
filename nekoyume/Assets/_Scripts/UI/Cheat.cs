@@ -10,6 +10,7 @@ using Nekoyume.Game.Item;
 using Nekoyume.Model;
 using Nekoyume.TableData;
 using Nekoyume.UI;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -19,7 +20,9 @@ namespace Nekoyume
     {
         private static Cheat Instance;
 
-        public Text log;
+        public TextMeshProUGUI Logs;
+        public TextMeshProUGUI Peers;
+        public TextMeshProUGUI StagedTxs;
         public Button BtnOpen;
         public Button buttonBase;
         public ScrollRect list;
@@ -63,15 +66,26 @@ namespace Nekoyume
             }
         }
 
-        public static void Display(string text)
+        public static void Display(string target, string text)
         {
-            Instance.log.text = text;
+            switch (target)
+            {
+                case "Logs":
+                    Instance.Logs.text = text;
+                    break;
+                case "Peers":
+                    Instance.Peers.text = text;
+                    break;
+                case "StagedTxs":
+                    Instance.StagedTxs.text = text;
+                    break;
+            }
         }
         
-        static void Log(string text)
+        public static void Log(string text)
         {
             Instance._logString.Insert(0, $"> {text}\n");
-            Instance.log.text += Instance._logString.ToString();
+            Instance.Logs.text += Instance._logString.ToString();
         }
 
         protected override void Awake()

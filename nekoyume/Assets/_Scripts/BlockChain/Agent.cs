@@ -187,12 +187,22 @@ namespace Nekoyume.BlockChain
         {
             while (true)
             {
-                var log = "Tip Information\n";
-                log += _tipInfo;
-                log += $"Staged Transactions : {_store.IterateStagedTransactionIds().Count()}\n\n";
-                log += _swarm?.TraceTable();
-                Cheat.Display(log);
-                yield return new WaitForSeconds(0.5f);
+                Cheat.Display("Logs", _tipInfo);
+                Cheat.Display("Peers", _swarm?.TraceTable());
+                var log = $"Staged Transactions\n";
+                int count = 1;
+                foreach (var id in _store.IterateStagedTransactionIds())
+                {
+                    var tx = _store.GetTransaction<PolymorphicAction<ActionBase>>(id);
+                    log += $"[{count++}] Id : {tx.Id}";
+                    log += $"-Signer : {tx.Signer.ToString()}\n";
+                    log += $"-Nonce : {tx.Nonce}\n";
+                    log += $"-Timestamp : {tx.Timestamp}\n";
+                    log += $"-Actions\n";
+                    log = tx.Actions.Aggregate(log, (current, action) => current + $" -{action.InnerAction}\n");
+                }
+                Cheat.Display("StagedTxs", log);
+                yield return new WaitForSeconds(0.1f);
             }
         }
         
@@ -298,9 +308,11 @@ namespace Nekoyume.BlockChain
             object target,
             BlockChain<PolymorphicAction<ActionBase>>.TipChangedEventArgs args)
         {
-            _tipInfo =  $" -TimeStamp   : {DateTimeOffset.Now}\n";
-            _tipInfo += $" -PrevBlock   : [{args.PreviousIndex}] {args.PreviousHash}\n";
-            _tipInfo += $" -LatestBlock : [{args.Index}] {args.Hash} by {_blocks.Tip.Miner?.ToString()}\n";
+            _tipInfo = "Tip Information\n";
+            _tipInfo += $" -Miner           : {_blocks.Tip.Miner?.ToString()}\n";
+            _tipInfo += $" -TimeStamp  : {DateTimeOffset.Now}\n";
+            _tipInfo += $" -PrevBlock    : [{args.PreviousIndex}] {args.PreviousHash}\n";
+            _tipInfo += $" -LatestBlock : [{args.Index}] {args.Hash}";
         }
 
         public IEnumerator CoTxProcessor()
@@ -366,9 +378,9 @@ namespace Nekoyume.BlockChain
                     txs.Add(rankingRewardTx);
                 }
 
-                var task = Task.Run(() =>
+                var task = Task.Run(async () =>
                 {
-                    var block = _blocks.MineBlock(Address);
+                    var block = await _blocks.MineBlock(Address);
                     _swarm.BroadcastBlocks(new[] {block});
                     return block;
                 });
