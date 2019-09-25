@@ -34,7 +34,7 @@ namespace Tests
             var privateKey = new PrivateKey(ByteUtil.ParseHex(hex));
             if (File.Exists(_storePath))
                 File.Delete(_storePath);
-            _agent = new TestAgent(privateKey, storeName, new List<Peer>(), new List<IceServer>(),  "", null);
+            _agent = new TestAgent(privateKey, storeName, new List<Peer>(), new List<IceServer>(),  "", null, true);
         }
 
         public IEnumerator CoMine(Transaction<PolymorphicAction<ActionBase>> transaction)
@@ -52,8 +52,8 @@ namespace Tests
         private class TestAgent: Agent
         {
             public TestAgent(PrivateKey privateKey, string path, IEnumerable<Peer> peers,
-                IEnumerable<IceServer> iceServers, string host, int? port)
-                : base(privateKey, path, peers, iceServers, host, port)
+                IEnumerable<IceServer> iceServers, string host, int? port, bool consoleSink)
+                : base(privateKey, path, peers, iceServers, host, port, consoleSink)
             {
             }
 

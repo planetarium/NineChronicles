@@ -25,6 +25,8 @@ namespace Nekoyume.Helper
 
         public bool autoPlay;
 
+        public bool consoleSink;
+
         [Option("private-key", Required = false, HelpText = "The private key to use.")]
         public string PrivateKey { get => privateKey; set => privateKey = value; }
 
@@ -45,6 +47,13 @@ namespace Nekoyume.Helper
 
         [Option("auto-play", Required = false, HelpText = "Play automatically in background.")]
         public bool AutoPlay { get => autoPlay; set => autoPlay = value; }
+        
+        [Option("console-sink", Required = false, HelpText = "Write logs on console.")]
+        public bool ConsoleSink
+        {
+            get => consoleSink;
+            set => consoleSink = value;
+        }
     }
 
     public static class CommnadLineParser
