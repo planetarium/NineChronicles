@@ -73,9 +73,9 @@ namespace Nekoyume.Action
             {
                 if (!avatarState.inventory.TryGetNonFungibleItem(equipment, out ItemUsable outNonFungibleItem))
                 {
-                    return states;
+                    continue;
                 }
-                
+
                 ((Equipment) outNonFungibleItem).Equip();
             }
             

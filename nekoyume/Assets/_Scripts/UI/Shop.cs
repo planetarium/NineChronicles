@@ -7,6 +7,7 @@ using Nekoyume.BlockChain;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
 using Nekoyume.Model;
+using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using UniRx;
@@ -391,6 +392,10 @@ namespace Nekoyume.UI
         {
             var item = Model.itemCountAndPricePopup.Value.item.Value;
             var price = Model.itemCountAndPricePopup.Value.price.Value;
+            var newState = (AvatarState) States.Instance.currentAvatarState.Value.Clone();
+            newState.inventory.RemoveNonFungibleItem((ItemUsable) item.item.Value);
+            var index = States.Instance.currentAvatarKey.Value;
+            ActionRenderHandler.UpdateLocalAvatarState(newState, index);
             Model.inventory.Value.RemoveItem(item.item.Value);
             Model.itemCountAndPricePopup.Value.item.Value = null;
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
