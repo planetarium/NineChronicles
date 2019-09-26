@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Assets.SimpleLocalization;
 using Nekoyume.Data.Table;
+using Nekoyume.EnumType;
 using Nekoyume.Game.Item;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -109,7 +110,7 @@ namespace Nekoyume.UI.Module
             iconArea.itemView.SetData(Model.item.Value);
 
             // 속성.
-            var sprite = Elemental.GetSprite(itemRow.elemental);
+            var sprite = itemRow.elemental.GetSprite();
             var elementalCount = itemRow.grade;
             for (var i = 0; i < iconArea.elementalTypeImages.Count; i++)
             {

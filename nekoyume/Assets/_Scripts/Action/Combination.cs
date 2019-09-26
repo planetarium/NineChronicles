@@ -8,6 +8,7 @@ using Libplanet.Action;
 using Nekoyume.BlockChain;
 using Nekoyume.Data;
 using Nekoyume.Data.Table;
+using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.Game.Buff;
 using Nekoyume.Game.Factory;
@@ -16,7 +17,6 @@ using Nekoyume.Game.Mail;
 using Nekoyume.Model;
 using Nekoyume.State;
 using UnityEngine;
-using Elemental = Nekoyume.Data.Table.Elemental;
 using Skill = Nekoyume.Game.Skill;
 
 namespace Nekoyume.Action
@@ -251,7 +251,7 @@ namespace Nekoyume.Action
             }
         }
 
-        private static bool TryGetItemEquipmentRow(ItemBase.ItemType itemType, Elemental.ElementalType elementalType,
+        private static bool TryGetItemEquipmentRow(ItemBase.ItemType itemType, ElementalType elementalType,
             int grade, out ItemEquipment outItemEquipmentRow)
         {
             foreach (var pair in Tables.instance.ItemEquipment)

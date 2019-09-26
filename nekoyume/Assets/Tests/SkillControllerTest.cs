@@ -13,14 +13,14 @@ namespace Tests
     public class SkillControllerTest
     {
         private Nekoyume.Game.Character.Player _player;
-        private readonly Nekoyume.Data.Table.Elemental.ElementalType[] _elementalTypes;
+        private readonly ElementalType[] _elementalTypes;
         private Address _address;
         private AvatarState _avatarState;
 
         public SkillControllerTest()
         {
-            _elementalTypes = (Nekoyume.Data.Table.Elemental.ElementalType[])
-                Enum.GetValues(typeof(Nekoyume.Data.Table.Elemental.ElementalType));
+            _elementalTypes = (ElementalType[])
+                Enum.GetValues(typeof(ElementalType));
         }
 
         [SetUp]
@@ -63,7 +63,7 @@ namespace Tests
             Assert.NotNull(_player);
             Assert.NotNull(_player.model);
 
-            foreach (Nekoyume.Data.Table.Elemental.ElementalType elemental in _elementalTypes)
+            foreach (ElementalType elemental in _elementalTypes)
             {
                 var info = new Nekoyume.Model.Skill.SkillInfo(_player.model, 0, false, SkillCategory.Double, elemental);
                 yield return _player.CoDoubleAttack(new []{info});
@@ -79,7 +79,7 @@ namespace Tests
             Assert.NotNull(_player);
             Assert.NotNull(_player.model);
 
-            foreach (Nekoyume.Data.Table.Elemental.ElementalType elemental in _elementalTypes)
+            foreach (ElementalType elemental in _elementalTypes)
             {
                 var info = new Nekoyume.Model.Skill.SkillInfo(_player.model, 0, false, SkillCategory.Blow, elemental);
                 yield return _player.CoBlow(new []{info});
@@ -95,7 +95,7 @@ namespace Tests
             Assert.NotNull(_player);
             Assert.NotNull(_player.model);
 
-            foreach (Nekoyume.Data.Table.Elemental.ElementalType elemental in _elementalTypes)
+            foreach (ElementalType elemental in _elementalTypes)
             {
                 var info = new Nekoyume.Model.Skill.SkillInfo(_player.model, 0, false, SkillCategory.Normal, elemental);
                 yield return _player.CoHeal(new []{info});
@@ -120,7 +120,7 @@ namespace Tests
             }
 
             var info = new Nekoyume.Model.Skill.SkillInfo(_player.model, 0, false, SkillCategory.Area,
-                Nekoyume.Data.Table.Elemental.ElementalType.Water);
+                ElementalType.Water);
             yield return _player.CoAreaAttack(new[] {info});
             Assert.Greater(pool.objects["area_l_water"].Count, current);
         }

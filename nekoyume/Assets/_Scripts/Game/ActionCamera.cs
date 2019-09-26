@@ -114,7 +114,8 @@ namespace Nekoyume.Game
 
         private IEnumerator CoChaseX()
         {
-            while (!ReferenceEquals(_target, null))
+            while (_target != null &&
+                   _target.gameObject.activeSelf)
             {
                 var pos = _transform.position;
                 var desiredPosX = _target.position.x + chaseData.offsetX;

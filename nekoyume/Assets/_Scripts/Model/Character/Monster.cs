@@ -24,8 +24,8 @@ namespace Nekoyume.Model
             targets.Add(player);
             this.data = data;
             level = monsterLevel;
-            atkElement = Game.Elemental.Create(data.Elemental);
-            defElement = Game.Elemental.Create(data.Elemental);
+            atkElementType = data.Elemental;
+            defElementType = data.Elemental;
             TurnSpeed = 1.0f;
             attackRange = data.AttackRange;
             hp = stats.HP;

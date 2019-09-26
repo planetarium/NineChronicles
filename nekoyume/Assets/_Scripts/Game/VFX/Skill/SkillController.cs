@@ -33,8 +33,8 @@ namespace Nekoyume.Game.VFX.Skill
             {
                 size = "l";
                 //FIXME 현재 무속성 범위공격 이펙트는 존재하지 않기때문에 임시처리.
-                if (elemental == Data.Table.Elemental.ElementalType.Normal)
-                    elemental = Data.Table.Elemental.ElementalType.Fire;
+                if (elemental == ElementalType.Normal)
+                    elemental = ElementalType.Fire;
                 var pos = ActionCamera.instance.Cam.ScreenToWorldPoint(
                     new Vector2((float) Screen.width / 2, 0));
                 position.x = pos.x + 0.5f;
@@ -58,7 +58,7 @@ namespace Nekoyume.Game.VFX.Skill
 
         public SkillCastingVFX Get(Vector3 position, Model.Skill.SkillInfo skillInfo)
         {
-            var elemental = skillInfo.Elemental ?? Data.Table.Elemental.ElementalType.Normal;
+            var elemental = skillInfo.Elemental ?? ElementalType.Normal;
             var skillName = $"casting_{elemental}".ToLower();
             var go = _pool.Get(skillName, false, position);
             var effect = go.GetComponent<SkillCastingVFX>();
