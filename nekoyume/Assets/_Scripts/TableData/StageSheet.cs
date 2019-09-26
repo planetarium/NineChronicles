@@ -128,10 +128,10 @@ namespace Nekoyume.TableData
             return $"{stageRow.Key}: Description";
         }
 
-        public static List<Item> GetRewardItemRows(this StageSheet.Row stageRow)
+        public static List<MaterialItemSheet.Row> GetRewardItemRows(this StageSheet.Row stageRow)
         {
             var tableSheets = Game.Game.instance.TableSheets;
-            var itemRows = new List<Item>();
+            var itemRows = new List<MaterialItemSheet.Row>();
             foreach (var rewardId in stageRow.TotalRewardIds)
             {
                 if (!tableSheets.StageRewardSheet.TryGetValue(rewardId, out var rewardRow))
@@ -142,7 +142,7 @@ namespace Nekoyume.TableData
                 foreach (var rewardData in rewardRow.Rewards)
                 {
                     var itemId = rewardData.ItemId;
-                    if (!Tables.instance.Item.TryGetValue(itemId, out var item))
+                    if (!tableSheets.MaterialItemSheet.TryGetValue(itemId, out var item))
                     {
                         continue;
                     }

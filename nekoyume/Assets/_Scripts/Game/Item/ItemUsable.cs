@@ -4,6 +4,7 @@ using System.Text;
 using Nekoyume.Data.Table;
 using Nekoyume.Helper;
 using Nekoyume.Model;
+using Nekoyume.TableData;
 using UnityEngine;
 
 namespace Nekoyume.Game.Item
@@ -11,27 +12,22 @@ namespace Nekoyume.Game.Item
     [Serializable]
     public abstract class ItemUsable : ItemBase
     {
-        public new ItemEquipment Data { get; }
+        public new ConsumableItemSheet.Row Data { get; }
+        
         public Stats Stats { get; }
         public List<Skill> Skills { get; }
         public Guid ItemId { get; }
 
-        protected ItemUsable(Data.Table.Item data, Guid id)
-            : base(data)
+        protected ItemUsable(ConsumableItemSheet.Row data, Guid id) : base(data)
         {
-            Data = (ItemEquipment) data;
+            Data = data;
             Stats = new Stats();
+            foreach (var statData in data.Stats)
+            {
+                Stats.AddStatValue(statData.type, statData.value);
+            }
+            
             Skills = new List<Skill>();
-
-            if (ValidateAbility(Data.ability1, Data.value1))
-            {
-                Stats.AddStatValue(Data.ability1, Data.value1);
-            }
-
-            if (ValidateAbility(Data.ability2, Data.value2))
-            {
-                Stats.AddStatValue(Data.ability2, Data.value2);
-            }
 
             ItemId = id;
         }
@@ -57,6 +53,7 @@ namespace Nekoyume.Game.Item
             }
         }
 
+        // todo: 번역.
         public override string ToItemInfo()
         {
             var sb = new StringBuilder();
@@ -80,18 +77,13 @@ namespace Nekoyume.Game.Item
 
         public override Sprite GetIconSprite()
         {
-            return SpriteHelper.GetItemIcon(Data.resourceId);
+            return SpriteHelper.GetItemIcon(Data.Id);
         }
 
         public void UpdatePlayer(Player player)
         {
             Stats.UpdatePlayer(player);
             Skills.ForEach(skill => player.Skills.Add(skill));
-        }
-
-        protected bool ValidateAbility(string key, int value)
-        {
-            return !string.IsNullOrEmpty(key) && value > 0;
         }
     }
 }

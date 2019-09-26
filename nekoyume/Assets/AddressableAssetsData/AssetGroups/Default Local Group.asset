@@ -17,6 +17,11 @@ MonoBehaviour:
     m_SerializedData: []
   m_GUID: e0c321a654c6d4f189d163e28eb60520
   m_SerializeEntries:
+  - m_GUID: 026b8433d156e41ccbcf2df0e0d9a60c
+    m_Address: Assets/AddressableAssets/TableCSV/CollectQuestSheet.csv
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - TableCSV
   - m_GUID: 1ddd193f5f195481d92ca512633e7072
     m_Address: Assets/AddressableAssets/TableCSV/WorldSheet.csv
     m_ReadOnly: 0
@@ -24,6 +29,11 @@ MonoBehaviour:
     - TableCSV
   - m_GUID: 32a0301f4e09eeb4b9850aa01a11d1ea
     m_Address: Assets/AddressableAssets/TableCSV/LevelSheet.csv
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - TableCSV
+  - m_GUID: 350d6456233584be3866295647c58660
+    m_Address: Assets/AddressableAssets/TableCSV/ConsumableItemSheet.csv
     m_ReadOnly: 0
     m_SerializedLabels:
     - TableCSV
@@ -37,8 +47,23 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - TableCSV
+  - m_GUID: 5ab879af1aa3546029295078227f18eb
+    m_Address: Assets/AddressableAssets/TableCSV/EquipmentItemSheet.csv
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - TableCSV
   - m_GUID: 5fb195c2ff01eb644b9aea6396bff952
     m_Address: Assets/AddressableAssets/TableCSV/BuffSheet.csv
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - TableCSV
+  - m_GUID: 73c03aa7f96e34d548d9f3b5b1a46d83
+    m_Address: Assets/AddressableAssets/TableCSV/TradeQuestSheet.csv
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - TableCSV
+  - m_GUID: 7b51d54d60dfe4d428c50da56e2291b7
+    m_Address: Assets/AddressableAssets/TableCSV/CombinationQuestSheet.csv
     m_ReadOnly: 0
     m_SerializedLabels:
     - TableCSV
@@ -47,8 +72,18 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - TableCSV
+  - m_GUID: b5f9f2c3ca5844c30907904f7413f75f
+    m_Address: Assets/AddressableAssets/TableCSV/BattleQuestSheet.csv
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - TableCSV
   - m_GUID: db0d91fbecba94be9aa59f77d9e43d9f
     m_Address: Assets/AddressableAssets/TableCSV/SkillSheet.csv
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - TableCSV
+  - m_GUID: e46844ab52129453bac5814cfef9b4c0
+    m_Address: Assets/AddressableAssets/TableCSV/MaterialItemSheet.csv
     m_ReadOnly: 0
     m_SerializedLabels:
     - TableCSV
@@ -60,5 +95,4 @@ MonoBehaviour:
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 314ad4573790845ce84c5b850f063d3b, type: 2}
   m_SchemaSet:
-    m_Schemas:
-    - {fileID: 11400000, guid: eaefb8f1754f77644b14214f0605484d, type: 2}
+    m_Schemas: []

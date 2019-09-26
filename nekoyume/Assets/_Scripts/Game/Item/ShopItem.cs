@@ -1,5 +1,6 @@
 using System;
 using Libplanet;
+using Nekoyume.TableData;
 
 namespace Nekoyume.Game.Item
 {

@@ -17,7 +17,7 @@ namespace Nekoyume.Action
     public class HackAndSlash : GameAction
     {
         public List<Equipment> equipments;
-        public List<Food> foods;
+        public List<Consumable> foods;
         public int stage;
         public Address avatarAddress;
         public BattleLog Result { get; private set; }
@@ -35,7 +35,7 @@ namespace Nekoyume.Action
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, object> plainValue)
         {
             equipments = ByteSerializer.Deserialize<List<Equipment>>((byte[]) plainValue["equipments"]);
-            foods = ByteSerializer.Deserialize<List<Food>>((byte[]) plainValue["foods"]);
+            foods = ByteSerializer.Deserialize<List<Consumable>>((byte[]) plainValue["foods"]);
             stage = ByteSerializer.Deserialize<int>((byte[]) plainValue["stage"]);
             avatarAddress = new Address((byte[]) plainValue["avatarAddress"]);
         }

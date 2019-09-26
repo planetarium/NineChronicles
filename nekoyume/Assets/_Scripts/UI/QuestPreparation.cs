@@ -10,6 +10,7 @@ using Nekoyume.UI.Module;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.EnumType;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -74,7 +75,7 @@ namespace Nekoyume.UI
                 throw new NotFoundComponentException<Player>();
             }
 
-            _weaponSlot = equipmentSlots.First(es => es.type == ItemBase.ItemType.Weapon);
+            _weaponSlot = equipmentSlots.First(es => es.itemSubType == ItemSubType.Weapon);
 
             SetData(new Model.QuestPreparation(States.Instance.currentAvatarState.Value.inventory));
 
@@ -85,8 +86,7 @@ namespace Nekoyume.UI
 
             foreach (var equipment in _player.equipments)
             {
-                var type = equipment.Data.cls.ToEnumItemType();
-                if (equipmentSlots.TryGet(type, out var es))
+                if (equipmentSlots.TryGet(equipment.Data.ItemSubType, out var es))
                 {
                     es.Set(equipment);
                     es.SetOnClickAction(ShowEquippedTooltip, Unequip);
@@ -156,7 +156,7 @@ namespace Nekoyume.UI
             }
 
             if (inventoryModule.Model.TryGetEquipment(slot.item, out var item) ||
-                inventoryModule.Model.TryGetConsumable(slot.item as Food, out item))
+                inventoryModule.Model.TryGetConsumable(slot.item as Consumable, out item))
             {
                 inventoryModule.Tooltip.Show(
                     slot.rectTransform,
@@ -171,7 +171,7 @@ namespace Nekoyume.UI
                 equipSlotGlow.SetActive(false);
                 foreach (var item in Model.inventory.Value.equipments)
                 {
-                    item.glowed.Value = item.item.Value.Data.cls.ToEnumItemType() == slot.type;
+                    item.glowed.Value = item.item.Value.Data.ItemSubType == slot.itemSubType;
                 }
 
                 return;
@@ -180,24 +180,24 @@ namespace Nekoyume.UI
             var slotItem = slot.item;
 
             slot.Unequip();
-            if (slot.type == ItemBase.ItemType.Armor)
+            if (slot.itemSubType == ItemSubType.Armor)
             {
                 var armor = (Armor) slot.item;
                 var weapon = (Weapon) _weaponSlot.item;
                 _player.UpdateSet(armor, weapon);
             }
-            else if (slot.type == ItemBase.ItemType.Weapon)
+            else if (slot.itemSubType == ItemSubType.Weapon)
             {
                 _player.UpdateWeapon((Weapon) slot.item);
             }
 
 
-            AudioController.instance.PlaySfx(slot.type == ItemBase.ItemType.Food
+            AudioController.instance.PlaySfx(slot.itemSubType == ItemSubType.Food
                 ? AudioController.SfxCode.ChainMail2
                 : AudioController.SfxCode.Equipment);
 
             if (inventoryAndItemInfo.inventory.Model.TryGetEquipment(slotItem, out var inventoryItem) ||
-                inventoryAndItemInfo.inventory.Model.TryGetConsumable(slotItem as Food, out inventoryItem))
+                inventoryAndItemInfo.inventory.Model.TryGetConsumable(slotItem as Consumable, out inventoryItem))
             {
                 inventoryItem.equipped.Value = false;
             }
@@ -290,25 +290,25 @@ namespace Nekoyume.UI
         private void OnClickEquip(CountableItem countableItem)
         {
             var item = countableItem as InventoryItem;
-            var type = countableItem.item.Value.Data.cls.ToEnumItemType();
+            var itemSubType = countableItem.item.Value.Data.ItemSubType;
 
             if (item != null && item.equipped.Value)
             {
-                var equipSlot = FindSlot(item.item.Value as ItemUsable, type);
+                var equipSlot = FindSlot(item.item.Value as ItemUsable, itemSubType);
                 if (equipSlot) Unequip(equipSlot);
                 return;
             }
 
-            var slot = FindSelectedItemSlot(type);
+            var slot = FindSelectedItemSlot(itemSubType);
 
-            AudioController.instance.PlaySfx(type == ItemBase.ItemType.Food
+            AudioController.instance.PlaySfx(itemSubType == ItemSubType.Food
                 ? AudioController.SfxCode.ChainMail2
                 : AudioController.SfxCode.Equipment);
 
             if (slot != null)
             {
                 if (inventoryAndItemInfo.inventory.Model.TryGetEquipment(slot.item, out var inventoryItem) ||
-                    inventoryAndItemInfo.inventory.Model.TryGetConsumable(slot.item as Food, out inventoryItem))
+                    inventoryAndItemInfo.inventory.Model.TryGetConsumable(slot.item as Consumable, out inventoryItem))
                 {
                     inventoryItem.equipped.Value = false;
                 }
@@ -318,13 +318,13 @@ namespace Nekoyume.UI
                 SetGlowEquipSlot(false);
             }
 
-            if (type == ItemBase.ItemType.Armor)
+            if (itemSubType == ItemSubType.Armor)
             {
                 var armor = (Armor) countableItem.item.Value;
                 var weapon = (Weapon) _weaponSlot.item;
                 _player.UpdateSet(armor, weapon);
             }
-            else if (type == ItemBase.ItemType.Weapon)
+            else if (itemSubType == ItemSubType.Weapon)
             {
                 _player.UpdateWeapon((Weapon) countableItem.item.Value);
             }
@@ -353,12 +353,12 @@ namespace Nekoyume.UI
                 }
             }
 
-            var foods = new List<Food>();
+            var foods = new List<Consumable>();
             foreach (var slot in consumableSlots)
             {
                 if (slot.item?.Data != null)
                 {
-                    foods.Add((Food) slot.item);
+                    foods.Add((Consumable) slot.item);
                 }
             }
 
@@ -372,9 +372,9 @@ namespace Nekoyume.UI
                 }).AddTo(this);
         }
 
-        public EquipSlot FindSelectedItemSlot(ItemBase.ItemType type)
+        public EquipSlot FindSelectedItemSlot(ItemSubType type)
         {
-            if (type == ItemBase.ItemType.Food)
+            if (type == ItemSubType.Food)
             {
                 var slot = consumableSlots.FirstOrDefault(s => s.item?.Data is null);
                 if (slot is null)
@@ -389,9 +389,9 @@ namespace Nekoyume.UI
             return es;
         }
 
-        public EquipSlot FindSlot(ItemUsable item, ItemBase.ItemType type)
+        public EquipSlot FindSlot(ItemUsable item, ItemSubType type)
         {
-            if (type == ItemBase.ItemType.Food)
+            if (type == ItemSubType.Food)
             {
                 foreach (var slot in consumableSlots)
                 {
@@ -411,7 +411,7 @@ namespace Nekoyume.UI
             if (!isActive)
                 return;
 
-            var type = Model.itemInfo.Value.item.Value.item.Value.Data.cls.ToEnumItemType();
+            var type = Model.itemInfo.Value.item.Value.item.Value.Data.ItemSubType;
             var slot = FindSelectedItemSlot(type);
             if (slot && slot.transform.parent)
             {

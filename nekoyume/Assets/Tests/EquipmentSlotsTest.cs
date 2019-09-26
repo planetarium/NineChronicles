@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Nekoyume.EnumType;
 using Nekoyume.Game.Item;
 using Nekoyume.UI;
 using Nekoyume.UI.Model;
@@ -23,7 +24,7 @@ namespace Tests
             yield return new WaitUntil(()=> _fx.IsTestFinished);
 
             var es = _fx.GetComponent<EquipmentSlots>();
-            Assert.IsFalse(es.TryGet(ItemBase.ItemType.Weapon, out var slot));
+            Assert.IsFalse(es.TryGet(ItemSubType.Weapon, out var slot));
             Assert.Null(slot);
         }
 
@@ -39,8 +40,8 @@ namespace Tests
 
             es.slots = new[] {_fx.GetComponent<EquipSlot>()};
 
-            Assert.IsTrue(_fx.GetComponent<EquipmentSlots>().TryGet(ItemBase.ItemType.Armor, out var slot));
-            Assert.AreEqual(ItemBase.ItemType.Armor, slot.type);
+            Assert.IsTrue(_fx.GetComponent<EquipmentSlots>().TryGet(ItemSubType.Armor, out var slot));
+            Assert.AreEqual(ItemSubType.Armor, slot.itemSubType);
             Assert.NotNull(slot);
         }
 
@@ -62,7 +63,7 @@ namespace Tests
                 "NotFoundComponentException`1: Not found `EquipSlot` component in MonoBehaviourTest: Tests.EquipmentSlotsFixture.");
             gameObject.AddComponent<EventTrigger>();
             var slot = gameObject.AddComponent<EquipSlot>();
-            slot.type = ItemBase.ItemType.Armor;
+            slot.itemSubType = ItemSubType.Armor;
             gameObject.AddComponent<EquipmentSlots>().slots = new [] {slot};
             IsTestFinished = true;
         }

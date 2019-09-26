@@ -207,7 +207,7 @@ namespace Nekoyume
             Find<Menu>()?.Close();
             Find<Menu>()?.ShowWorld();
             
-            var simulator = new Simulator(new DebugRandom(), States.Instance.currentAvatarState.Value, new List<Food>(), stageId, _selectedSkill);
+            var simulator = new Simulator(new DebugRandom(), States.Instance.currentAvatarState.Value, new List<Consumable>(), stageId, _selectedSkill);
             simulator.Simulate();
             simulator.Log.result = _result;
             

@@ -1,6 +1,7 @@
 using System;
 using Nekoyume.Data;
 using Nekoyume.Helper;
+using Nekoyume.TableData;
 using UnityEngine;
 
 namespace Nekoyume.Game.Item
@@ -8,24 +9,9 @@ namespace Nekoyume.Game.Item
     [Serializable]
     public abstract class ItemBase
     {
-        public enum ItemType
-        {
-            Material,
-            Weapon,
-            RangedWeapon,
-            Armor,
-            Belt,
-            Necklace,
-            Ring,
-            Helm,
-            Set,
-            Food,
-            Shoes,
-        }
+        public ItemSheet.Row Data { get; }
 
-        public Data.Table.Item Data { get; }
-        
-        public ItemBase(Data.Table.Item data)
+        protected ItemBase(ItemSheet.Row data)
         {
             Data = data;
         }
@@ -52,12 +38,12 @@ namespace Nekoyume.Game.Item
 
         public virtual Sprite GetIconSprite()
         {
-            return SpriteHelper.GetItemIcon(Data.id);
+            return SpriteHelper.GetItemIcon(Data.Id);
         }
         
         public virtual Sprite GetBackgroundSprite()
         {
-            return SpriteHelper.GetItemBackground(Data.grade);
+            return SpriteHelper.GetItemBackground(Data.Grade);
         }
     }
 }

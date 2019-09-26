@@ -29,7 +29,7 @@ namespace Nekoyume.Battle
         public List<ItemBase> rewards => _waveRewards.SelectMany(i => i).ToList();
         public const float TurnPriority = 100f;
 
-        public Simulator(IRandom random, AvatarState avatarState, List<Food> foods, int worldStage,
+        public Simulator(IRandom random, AvatarState avatarState, List<Consumable> foods, int worldStage,
             Game.Skill skill = null)
         {
             Random = random;
@@ -168,7 +168,6 @@ namespace Nekoyume.Battle
         private void GetReward(int id)
         {
             var rewardTable = Game.Game.instance.TableSheets.StageRewardSheet;
-            var itemTable = Tables.instance.Item;
             var itemSelector = new WeightedSelector<int>(Random);
             var items = new List<ItemBase>();
             if (rewardTable.TryGetValue(id, out var reward))
@@ -182,7 +181,7 @@ namespace Nekoyume.Battle
 
                     itemSelector.Add(r.ItemId, r.Ratio);
                     var itemId = itemSelector.Pop();
-                    if (itemTable.TryGetValue(itemId, out var itemData))
+                    if (Game.Game.instance.TableSheets.MaterialItemSheet.TryGetValue(itemId, out var itemData))
                     {
                         var count = Random.Next(r.Min, r.Max);
                         for (int i = 0; i < count; i++)

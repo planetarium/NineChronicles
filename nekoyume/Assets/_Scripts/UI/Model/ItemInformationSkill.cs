@@ -15,19 +15,19 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<string> power = new ReactiveProperty<string>();
         public readonly ReactiveProperty<string> chance = new ReactiveProperty<string>();
 
-        public ItemInformationSkill(Data.Table.Item itemRow)
+        public ItemInformationSkill(MaterialItemSheet.Row itemRow)
         {
-            if (!Game.Game.instance.TableSheets.SkillSheet.TryGetValue(itemRow.skillId, out var skillRow))
+            if (!Game.Game.instance.TableSheets.SkillSheet.TryGetValue(itemRow.SkillId, out var skillRow))
             {
-                throw new KeyNotFoundException(nameof(itemRow.skillId));
+                throw new KeyNotFoundException(nameof(itemRow.SkillId));
             }
 
             iconSprite.Value = skillRow.GetIcon();
             name.Value = skillRow.GetLocalizedName();
             power.Value =
-                $"{LocalizationManager.Localize("UI_SKILL_POWER")}: {itemRow.minDamage} - {itemRow.maxDamage}";
+                $"{LocalizationManager.Localize("UI_SKILL_POWER")}: {itemRow.SkillDamageMin} - {itemRow.SkillDamageMax}";
             chance.Value =
-                $"{LocalizationManager.Localize("UI_SKILL_CHANCE")}: {itemRow.minChance:0%} - {itemRow.maxChance:0%}";
+                $"{LocalizationManager.Localize("UI_SKILL_CHANCE")}: {itemRow.SkillChanceMin:0%} - {itemRow.SkillChanceMax:0%}";
         }
 
         public ItemInformationSkill(Skill skill)

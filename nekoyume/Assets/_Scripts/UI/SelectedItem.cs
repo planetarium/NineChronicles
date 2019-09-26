@@ -1,5 +1,6 @@
 using Assets.SimpleLocalization;
 using Nekoyume.Game.Item;
+using Nekoyume.TableData;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -38,9 +39,9 @@ namespace Nekoyume.UI
         public void SetItem(ItemBase itemBase)
         {
             item = itemBase;
-            itemName.text = itemBase.Data.LocalizedName;
+            itemName.text = itemBase.Data.GetLocalizedName();
             info.text = itemBase.ToItemInfo();
-            flavour.text = itemBase.Data.LocalizedDescription;
+            flavour.text = itemBase.Data.GetLocalizedDescription();
 
             if (_considerPrice)
             {

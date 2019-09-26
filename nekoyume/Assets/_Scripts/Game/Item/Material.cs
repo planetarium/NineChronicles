@@ -4,15 +4,23 @@ using System.Text;
 using Nekoyume.Data;
 using Nekoyume.Data.Table;
 using Nekoyume.EnumType;
+using Nekoyume.TableData;
 
 namespace Nekoyume.Game.Item
 {
     [Serializable]
     public class Material : ItemBase
     {
+        public new MaterialItemSheet.Row Data { get; }
+
+        public Material(MaterialItemSheet.Row data) : base(data)
+        {
+            Data = data;
+        }
+        
         protected bool Equals(Material other)
         {
-            return Data.id == other.Data.id;
+            return Data.Id == other.Data.Id;
         }
 
         public override bool Equals(object obj)
@@ -23,26 +31,23 @@ namespace Nekoyume.Game.Item
             return Equals((Material) obj);
         }
 
-        public Material(Data.Table.Item data) : base(data)
-        {
-        }
-
+        // todo: 번역.
         public override string ToItemInfo()
         {
             var sb = new StringBuilder();
-            if (!string.IsNullOrEmpty(Data.stat))
+            if (!string.IsNullOrEmpty(Data.StatType))
             {
-                sb.AppendLine($"{Data.elemental} 속성. {Data.stat} 을 최소 {Data.minStat} ~ 최대 {Data.maxStat} 까지 상승시켜준다.");   
+                sb.AppendLine($"{Data.ElementalType} 속성. {Data.StatType} 을 최소 {Data.StatMin} ~ 최대 {Data.StatMax} 까지 상승시켜준다.");   
             }
 
-            if (Data.skillId == 0)
+            if (Data.SkillId == 0)
             {
                 return sb.ToString();
             }
             
-            if (!Tables.instance.SkillEffect.TryGetValue(Data.skillId, out var skillEffect))
+            if (!Tables.instance.SkillEffect.TryGetValue(Data.SkillId, out var skillEffect))
             {
-                throw new KeyNotFoundException($"SkillEffect: {Data.skillId}");
+                throw new KeyNotFoundException($"SkillEffect: {Data.SkillId}");
             }
 
             string targetString;
@@ -67,13 +72,13 @@ namespace Nekoyume.Game.Item
             switch (skillEffect.skillType)
             {
                 case SkillType.Attack:
-                    sb.AppendLine($"{Data.minChance}% ~ {Data.maxChance}% 확률로 {targetString} {Data.minDamage} ~ {Data.maxDamage}의 데미지를 입힌다.");
+                    sb.AppendLine($"{Data.SkillChanceMin}% ~ {Data.SkillChanceMax}% 확률로 {targetString} {Data.SkillDamageMin} ~ {Data.SkillDamageMax}의 데미지를 입힌다.");
                     break;
                 case SkillType.Buff:
-                    sb.AppendLine($"{Data.minChance}% ~ {Data.maxChance}% 확률로 {targetString} {Data.minDamage} ~ {Data.maxDamage}의 버프를 사용한다.");
+                    sb.AppendLine($"{Data.SkillChanceMin}% ~ {Data.SkillChanceMax}% 확률로 {targetString} {Data.SkillDamageMin} ~ {Data.SkillDamageMax}의 버프를 사용한다.");
                     break;
                 case SkillType.Debuff:
-                    sb.AppendLine($"{Data.minChance}% ~ {Data.maxChance}% 확률로 {targetString} {Data.minDamage} ~ {Data.maxDamage}의 디버프를 사용한다.");
+                    sb.AppendLine($"{Data.SkillChanceMin}% ~ {Data.SkillChanceMax}% 확률로 {targetString} {Data.SkillDamageMin} ~ {Data.SkillDamageMax}의 디버프를 사용한다.");
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

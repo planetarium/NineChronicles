@@ -219,7 +219,7 @@ namespace Nekoyume.UI
                 if (i < rewardItemRows.Count)
                 {
                     image.transform.parent.gameObject.SetActive(true);
-                    image.sprite = SpriteHelper.GetItemIcon(rewardItemRows[i].id);
+                    image.sprite = SpriteHelper.GetItemIcon(rewardItemRows[i].Id);
 
                     continue;
                 }

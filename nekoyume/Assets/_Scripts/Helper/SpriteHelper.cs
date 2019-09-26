@@ -10,7 +10,6 @@ namespace Nekoyume.Helper
 
         private const string ItemDefaultPath = "UI/Icons/Item/100000";
         private const string ItemPathFormat = "UI/Icons/Item/{0}";
-        private const string ItemEquipmentPathFormat = "UI/Icons/Equipment/{0}";
         
         private const string ItemBackgroundDefaultPath = "UI/Textures/item_bg_0";
         private const string ItemBackgroundPathFormat = "UI/Textures/item_bg_{0}";
@@ -24,13 +23,9 @@ namespace Nekoyume.Helper
         public static Sprite GetItemIcon(int itemId)
         {
             var path = ItemDefaultPath;
-            if (Tables.instance.Item.ContainsKey(itemId))
+            if (Game.Game.instance.TableSheets.ItemSheet.ContainsKey(itemId))
             {
                 path = string.Format(ItemPathFormat, itemId);
-            }
-            else if (Tables.instance.ItemEquipment.ContainsKey(itemId))
-            {
-                path = string.Format(ItemEquipmentPathFormat, itemId);
             }
 
             return Resources.Load<Sprite>(path);

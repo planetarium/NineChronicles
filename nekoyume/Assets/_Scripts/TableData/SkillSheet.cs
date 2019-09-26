@@ -29,7 +29,7 @@ namespace Nekoyume.TableData
         }
     }
 
-    public static class SkillSheetRowExtension
+    public static class SkillSheetExtension
     {
         private const string DefaultIconPath = "UI/Icons/Skill/100000";
 

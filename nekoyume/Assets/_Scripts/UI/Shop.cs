@@ -8,6 +8,7 @@ using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
 using Nekoyume.Model;
 using Nekoyume.State;
+using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using UniRx;
@@ -399,7 +400,7 @@ namespace Nekoyume.UI
             Model.inventory.Value.RemoveItem(item.item.Value);
             Model.itemCountAndPricePopup.Value.item.Value = null;
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
-            Notification.Push($"{item.item.Value.Data.name} 아이템을 상점에 등록합니다.\n아이템 판매시 {price} gold의 8%를 세금으로 차감합니다.");
+            Notification.Push($"{item.item.Value.Data.GetLocalizedName()} 아이템을 상점에 등록합니다.\n아이템 판매시 {price} gold의 8%를 세금으로 차감합니다.");
         }
 
         private void ResponseSellCancellation(ShopItem shopItem)
@@ -413,7 +414,7 @@ namespace Nekoyume.UI
             Model.shopItems.Value.RemoveProduct(productId);
             Model.shopItems.Value.RemoveRegisteredProduct(productId);
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
-            Notification.Push($"{shopItem.item.Value.Data.name} 아이템을 판매 취소합니다.");
+            Notification.Push($"{shopItem.item.Value.Data.GetLocalizedName()} 아이템을 판매 취소합니다.");
         }
 
         private void ResponseBuy(ShopItem shopItem)
@@ -424,7 +425,7 @@ namespace Nekoyume.UI
             Model.shopItems.Value.RemoveProduct(productId);
             Model.shopItems.Value.RemoveRegisteredProduct(productId);
             AudioController.instance.PlaySfx(AudioController.SfxCode.BuyItem);
-            Notification.Push($"{shopItem.item.Value.Data.name} 아이템을 구매합니다.");
+            Notification.Push($"{shopItem.item.Value.Data.GetLocalizedName()} 아이템을 구매합니다.");
         }
 
         private void OnClickCloseItemCountAndPricePopup(Model.ItemCountAndPricePopup data)

@@ -4,6 +4,7 @@ using System.IO;
 using Nekoyume.Action;
 using Nekoyume.Manager;
 using Nekoyume.State;
+using Nekoyume.TableData;
 using UniRx;
 using UnityEngine;
 
@@ -54,13 +55,14 @@ namespace Nekoyume.BlockChain
         {
             _disposables.DisposeAllAndClear();
         }
-        
+
         private bool ValidateEvaluationForAgentState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
         {
             if (States.Instance.agentState.Value == null)
             {
                 return false;
             }
+
             return evaluation.OutputStates.UpdatedAddresses.Contains(States.Instance.agentState.Value.address);
         }
 
@@ -103,17 +105,17 @@ namespace Nekoyume.BlockChain
 
             UpdateAvatarState(avatarState, index);
         }
-        
+
         private void UpdateCurrentAvatarState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
         {
             UpdateAvatarState(evaluation, States.Instance.currentAvatarKey.Value);
         }
-        
+
         private void UpdateShopState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
         {
             States.Instance.shopState.Value = (ShopState) evaluation.OutputStates.GetState(ShopState.Address);
         }
-        
+
         private void UpdateRankingState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
         {
             States.Instance.rankingState.Value = (RankingState) evaluation.OutputStates.GetState(RankingState.Address);
@@ -125,7 +127,7 @@ namespace Nekoyume.BlockChain
                 .ObserveOnMainThread()
                 .Subscribe(UpdateShopState).AddTo(_disposables);
         }
-        
+
         private void Ranking()
         {
             ActionBase.EveryRender(RankingState.Address)
@@ -244,7 +246,6 @@ namespace Nekoyume.BlockChain
 
         private static void UpdateAvatarState(AvatarState avatarState, int index)
         {
-
             if (States.Instance.avatarStates.ContainsKey(index))
             {
                 States.Instance.avatarStates[index] = avatarState;
@@ -280,7 +281,8 @@ namespace Nekoyume.BlockChain
             {
                 foreach (var avatarAddress in States.Instance.agentState.Value.avatarAddresses)
                 {
-                    var fileName = string.Format(States.CurrentAvatarFileNameFormat, States.Instance.agentState.Value.address,
+                    var fileName = string.Format(States.CurrentAvatarFileNameFormat,
+                        States.Instance.agentState.Value.address,
                         avatarAddress.Value);
                     var path = Path.Combine(Application.persistentDataPath, fileName);
                     if (File.Exists(path))
@@ -298,13 +300,13 @@ namespace Nekoyume.BlockChain
 
         private void ResponseSell(ActionBase.ActionEvaluation<Sell> eval)
         {
-            UI.Notification.Push($"{eval.Action.itemUsable.Data.name} 상점 등록 완료.");
+            UI.Notification.Push($"{eval.Action.itemUsable.Data.GetLocalizedName()} 상점 등록 완료.");
             UpdateCurrentAvatarState(eval);
         }
 
         private void ResponseSellCancellation(ActionBase.ActionEvaluation<SellCancellation> eval)
         {
-            UI.Notification.Push($"{eval.Action.result.itemUsable.Data.name} 판매 취소 완료.");
+            UI.Notification.Push($"{eval.Action.result.itemUsable.Data.GetLocalizedName()} 판매 취소 완료.");
             UpdateCurrentAvatarState(eval);
         }
 
@@ -312,13 +314,15 @@ namespace Nekoyume.BlockChain
         {
             if (eval.Action.buyerAvatarAddress == States.Instance.currentAvatarState.Value.address)
             {
-                UI.Notification.Push($"{eval.Action.buyerResult.itemUsable.Data.name} 구매 완료.");
+                UI.Notification.Push($"{eval.Action.buyerResult.itemUsable.Data.GetLocalizedName()} 구매 완료.");
             }
             else
             {
                 var result = eval.Action.sellerResult;
-                UI.Notification.Push($"{result.itemUsable.Data.name} 판매 완료.\n세금 8% 제외 {result.gold}gold 획득");
+                UI.Notification.Push(
+                    $"{result.itemUsable.Data.GetLocalizedName()} 판매 완료.\n세금 8% 제외 {result.gold}gold 획득");
             }
+
             UpdateCurrentAvatarState(eval);
         }
     }

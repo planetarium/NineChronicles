@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Data;
 using Nekoyume.Game.Factory;
+using Nekoyume.TableData;
 using UnityEngine;
 
 namespace Nekoyume.Game.Item
@@ -77,7 +78,7 @@ namespace Nekoyume.Game.Item
                 return;
             }
 
-            if (!Tables.instance.TryGetItem(id, out var itemRow))
+            if (!Game.instance.TableSheets.MaterialItemSheet.TryGetValue(id, out var itemRow))
             {
                 throw new KeyNotFoundException($"itemId: {id}");
             }
@@ -96,7 +97,7 @@ namespace Nekoyume.Game.Item
 
         public bool RemoveFungibleItem(ItemBase itemBase, int count = 1)
         {
-            return RemoveFungibleItem(itemBase.Data.id, count);
+            return RemoveFungibleItem(itemBase.Data.Id, count);
         }
 
         public bool RemoveFungibleItem(int id, int count = 1)
@@ -124,14 +125,14 @@ namespace Nekoyume.Game.Item
 
         public bool TryGetFungibleItem(ItemBase itemBase, out Item outFungibleItem)
         {
-            return TryGetFungibleItem(itemBase.Data.id, out outFungibleItem);
+            return TryGetFungibleItem(itemBase.Data.Id, out outFungibleItem);
         }
 
         public bool TryGetFungibleItem(int id, out Item outFungibleItem)
         {
             foreach (var fungibleItem in _items)
             {
-                if (fungibleItem.item.Data.id != id)
+                if (fungibleItem.item.Data.Id != id)
                 {
                     continue;
                 }
@@ -222,14 +223,14 @@ namespace Nekoyume.Game.Item
             {
                 var item = newItem.item;
 
-                Debug.LogErrorFormat("Item {0}: {1} is not ItemUsable.", item.Data.cls, item.Data.id);
+                Debug.LogErrorFormat("Item {0}: {1} is not ItemUsable.", item.Data.ItemType, item.Data.Id);
             }
             return !(outAddedItem is null);
         }
 
         public bool HasItem(int id, int count = 1)
         {
-            return _items.Exists(item => item.item.Data.id == id && item.count >= count);
+            return _items.Exists(item => item.item.Data.Id == id && item.count >= count);
         }
 
         public bool HasItemUsable(Guid itemId) =>

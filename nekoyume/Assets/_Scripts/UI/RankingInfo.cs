@@ -21,7 +21,7 @@ namespace Nekoyume.UI
         {
             rank.text = ranking.ToString();
             var armor = avatarState.inventory.Items.Select(i => i.item).OfType<Armor>().FirstOrDefault(e => e.equipped);
-            var armorId = armor?.Data.resourceId ?? GameConfig.DefaultAvatarArmorId;
+            var armorId = armor?.Data.Id ?? GameConfig.DefaultAvatarArmorId;
             icon.sprite = SpriteHelper.GetItemIcon(armorId);
             icon.SetNativeSize();
             level.text = avatarState.level.ToString();

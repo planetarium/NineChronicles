@@ -5,6 +5,7 @@ using System.Text;
 using Assets.SimpleLocalization;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
+using Nekoyume.TableData;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -95,9 +96,9 @@ namespace Nekoyume.UI.Module
             _disposablesForUpdateView.DisposeAllAndClear();
             var item = _data.item.Value;
             item.count.Where(value => value == 0).Subscribe(_ => _data.item.Value = null).AddTo(_disposablesForUpdateView);
-            nameText.text = item.item.Value.Data.LocalizedName;
+            nameText.text = item.item.Value.Data.GetLocalizedName();
             infoText.text = item.item.Value.ToItemInfo();
-            descriptionText.text = item.item.Value.Data.LocalizedDescription;
+            descriptionText.text = item.item.Value.Data.GetLocalizedDescription();
             SetButtonText(_data.buttonText.Value);
             SetButtonActive(_data.buttonEnabled.Value);
             

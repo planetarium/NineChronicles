@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Libplanet;
 using Nekoyume.Data;
+using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Item;
@@ -25,8 +26,8 @@ namespace Tests
             var go = Game.instance.stage.playerFactory.Create(avatarState);
             _player = go.GetComponent<Player>();
 
-            var data = Tables.instance.ItemEquipment.Values.First();
-            data.cls = "Ring";
+            var data = Game.instance.TableSheets.EquipmentItemSheet.OrderedList.FirstOrDefault(row =>
+                row.ItemSubType == ItemSubType.Ring);
             _ring = new Ring(data, Guid.NewGuid());
             _player.Inventory.AddNonFungibleItem(_ring);
             _widget = Widget.Find<StatusDetail>();
@@ -46,7 +47,7 @@ namespace Tests
             _ring.Equip();
             Assert.AreEqual(1, _player.equipments.Count(i => i is Ring));
             _widget.Show();
-            var ringSlots = _widget.equipmentSlots.Where(i => i.type == ItemBase.ItemType.Ring).ToList();
+            var ringSlots = _widget.equipmentSlots.Where(i => i.itemSubType == ItemSubType.Ring).ToList();
             Assert.AreEqual(2, ringSlots.Count);
             Assert.AreEqual(1, ringSlots.Count(i => i.item is Ring));
         }
@@ -61,7 +62,7 @@ namespace Tests
             _player.Inventory.AddNonFungibleItem(ring);
             Assert.AreEqual(2, _player.equipments.Count(i => i is Ring));
             _widget.Show();
-            var ringSlots = _widget.equipmentSlots.Where(i => i.type == ItemBase.ItemType.Ring).ToList();
+            var ringSlots = _widget.equipmentSlots.Where(i => i.itemSubType == ItemSubType.Ring).ToList();
             Assert.AreEqual(2, ringSlots.Count);
             Assert.AreEqual(2, ringSlots.Count(i => i.item is Ring));
         }

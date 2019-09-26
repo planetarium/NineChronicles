@@ -361,7 +361,7 @@ namespace Nekoyume.BlockChain
                 yield return waitForSeconds;
 
                 yield return ActionManager.instance.HackAndSlash(
-                    new List<Equipment>(), new List<Food>(), 1).ToYieldInstruction();
+                    new List<Equipment>(), new List<Consumable>(), 1).ToYieldInstruction();
                 Debug.LogFormat("Autoplay[{0}, {1}]: HackAndSlash", avatarAddress.ToHex(), dummyName);
             }
         }

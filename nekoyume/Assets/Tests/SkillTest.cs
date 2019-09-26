@@ -26,7 +26,7 @@ namespace Tests
             var agentAddress = new Address();
             var avatarState = new AvatarState(address, agentAddress, 1);
 
-            _simulator = new Simulator(random, avatarState, new List<Food>(), 1);
+            _simulator = new Simulator(random, avatarState, new List<Consumable>(), 1);
             var caster = _simulator.Player;
             var target = (CharacterBase) caster.Clone();
             caster.InitAI();

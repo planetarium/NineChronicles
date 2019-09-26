@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Assets.SimpleLocalization;
+using Nekoyume.EnumType;
 using Nekoyume.Game.Item;
 using Nekoyume.Model;
+using Nekoyume.TableData;
 
 namespace Nekoyume.Game.Quest
 {
@@ -11,12 +13,12 @@ namespace Nekoyume.Game.Quest
     public class CombinationQuest : Quest
     {
         public int current;
-        public string cls;
 
-        public CombinationQuest(Data.Table.Quest data) : base(data)
+        public new CombinationQuestSheet.Row Data { get; }
+
+        public CombinationQuest(CombinationQuestSheet.Row data) : base(data)
         {
-            var questData = (Data.Table.CombinationQuest) data;
-            cls = questData.cls;
+            Data = data;
         }
 
         public override void Check(Player player, List<ItemBase> items)
@@ -24,17 +26,19 @@ namespace Nekoyume.Game.Quest
             if (Complete)
                 return;
             Update(items);
-            Complete = current >= goal;
+            Complete = current >= Data.Goal;
         }
 
         public override string ToInfo()
         {
-            return LocalizationManager.LocalizeCombinationQuestInfo(cls, current, goal);
+            var format = LocalizationManager.Localize("QUEST_COLLECT_CURRENT_INFO_FORMAT");
+            return string.Format(format, Data.ItemSubType.GetLocalizedString(), current, Data.Goal);
         }
 
         private void Update(List<ItemBase> items)
         {
-            current += items.Count(i => i.Data.cls == cls);
+            current += items.Count(i => i.Data.ItemType == Data.ItemType &&
+                                        i.Data.ItemSubType == Data.ItemSubType);
         }
     }
 }
