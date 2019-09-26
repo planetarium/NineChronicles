@@ -7,16 +7,6 @@ namespace Nekoyume
     {
         private const string ExceptionFormat = "Invalid string. {0}";
         
-        public static ItemBase.ItemType ToEnumItemType(this string s)
-        {
-            if (Enum.TryParse(s, out ItemBase.ItemType result))
-            {
-                return result;
-            }
-            
-            throw new InvalidCastException(string.Format(ExceptionFormat, s));
-        }
-
         public static string ToStatString(this string s)
         {
             switch (s)

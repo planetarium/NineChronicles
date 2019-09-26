@@ -83,12 +83,13 @@ namespace Nekoyume.Action
 
         private static void AddItemsForTest(AvatarState avatarState, IRandom random)
         {
-            foreach (var pair in Tables.instance.Item)
+            foreach (var row in Game.Game.instance.TableSheets.MaterialItemSheet)
             {
-                avatarState.inventory.AddFungibleItem(ItemFactory.Create(pair.Value, default), 10);
+                avatarState.inventory.AddFungibleItem(ItemFactory.Create(row, default), 10);
             }
-            
-            foreach (var pair in Tables.instance.ItemEquipment.Where(pair => pair.Value.id > GameConfig.DefaultAvatarWeaponId))
+
+            foreach (var pair in Game.Game.instance.TableSheets.EquipmentItemSheet.Where(pair =>
+                pair.Value.Id > GameConfig.DefaultAvatarWeaponId))
             {
                 var itemId = random.GenerateRandomGuid();
                 avatarState.inventory.AddNonFungibleItem((ItemUsable) ItemFactory.Create(pair.Value, itemId));

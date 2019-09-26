@@ -60,7 +60,7 @@ namespace Nekoyume.BlockChain
 
         public IObservable<ActionBase.ActionEvaluation<HackAndSlash>> HackAndSlash(
             List<Equipment> equipments,
-            List<Food> foods,
+            List<Consumable> foods,
             int stage)
         {
             var action = new HackAndSlash
@@ -72,7 +72,7 @@ namespace Nekoyume.BlockChain
             };
             ProcessAction(action);
 
-            var itemIDs = equipments.Select(e => e.Data.id).Concat(foods.Select(f => f.Data.id)).ToArray();
+            var itemIDs = equipments.Select(e => e.Data.Id).Concat(foods.Select(f => f.Data.Id)).ToArray();
             AnalyticsManager.Instance.Battle(itemIDs);
             return ActionBase.EveryRender<HackAndSlash>()
                 .SkipWhile(eval => !eval.Action.Id.Equals(action.Id))

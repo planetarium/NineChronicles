@@ -1,4 +1,5 @@
 using System;
+using Nekoyume.EnumType;
 using Nekoyume.Game.Item;
 using UniRx;
 
@@ -43,7 +44,7 @@ namespace Nekoyume.UI.Model
                 return false;
             }
             
-            return countableItem.item.Value.Data.cls.ToEnumItemType() == ItemBase.ItemType.Material;
+            return countableItem.item.Value.Data.ItemType == ItemType.Material;
         }
     }
 }

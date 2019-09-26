@@ -102,7 +102,7 @@ namespace Nekoyume.Model
             var setMap = new Dictionary<int, int>();
             foreach (var equipment in Equipments)
             {
-                var key = equipment.Data.setId;
+                var key = equipment.Data.SetId;
                 if (!setMap.TryGetValue(key, out _))
                 {
                     setMap[key] = 0;
@@ -163,31 +163,31 @@ namespace Nekoyume.Model
                 .ToList();
             foreach (var equipment in Equipments)
             {
-                switch (equipment.Data.cls.ToEnumItemType())
+                switch (equipment.Data.ItemSubType)
                 {
-                    case ItemBase.ItemType.Weapon:
+                    case ItemSubType.Weapon:
                         weapon = equipment as Weapon;
                         break;
-                    case ItemBase.ItemType.RangedWeapon:
+                    case ItemSubType.RangedWeapon:
                         weapon = equipment as RangedWeapon;
                         break;
-                    case ItemBase.ItemType.Armor:
+                    case ItemSubType.Armor:
                         armor = equipment as Armor;
-                        defElementType = equipment.Data.elemental;
+                        defElementType = equipment.Data.ElementalType;
                         break;
-                    case ItemBase.ItemType.Belt:
+                    case ItemSubType.Belt:
                         belt = equipment as Belt;
                         break;
-                    case ItemBase.ItemType.Necklace:
+                    case ItemSubType.Necklace:
                         necklace = equipment as Necklace;
                         break;
-                    case ItemBase.ItemType.Ring:
+                    case ItemSubType.Ring:
                         ring = equipment as Ring;
                         break;
-                    case ItemBase.ItemType.Helm:
+                    case ItemSubType.Helm:
                         helm = equipment as Helm;
                         break;
-                    case ItemBase.ItemType.Set:
+                    case ItemSubType.Set:
                         set = equipment as SetItem;
                         break;
                     default:
@@ -267,7 +267,7 @@ namespace Nekoyume.Model
             }
         }
 
-        public void Use(List<Food> foods)
+        public void Use(List<Consumable> foods)
         {
             foreach (var food in foods)
             {

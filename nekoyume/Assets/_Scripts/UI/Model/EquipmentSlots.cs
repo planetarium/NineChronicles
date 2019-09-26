@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.EnumType;
 using Nekoyume.Game.Item;
 using UnityEngine;
 
@@ -17,17 +18,16 @@ namespace Nekoyume.UI.Model
                 throw new NotFoundComponentException<EquipSlot>(gameObject);
         }
 
-        public bool TryGet(ItemBase.ItemType type, out EquipSlot slot)
+        public bool TryGet(ItemSubType type, out EquipSlot slot)
         {
-            if (type == ItemBase.ItemType.Ring)
+            if (type == ItemSubType.Ring)
             {
-                slot = slots.FirstOrDefault(es =>
-                           es.type == ItemBase.ItemType.Ring && es.item?.Data is null)
-                       ?? slots.First(es => es.type == ItemBase.ItemType.Ring);
+                slot = slots.FirstOrDefault(es => es.itemSubType == ItemSubType.Ring && es.item?.Data is null)
+                       ?? slots.First(es => es.itemSubType == ItemSubType.Ring);
                 return slot;
             }
 
-            slot = slots.FirstOrDefault(es => es.type == type);
+            slot = slots.FirstOrDefault(es => es.itemSubType == type);
             return slot;
         }
 

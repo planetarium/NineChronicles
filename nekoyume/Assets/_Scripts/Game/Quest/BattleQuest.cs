@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using Assets.SimpleLocalization;
 using Nekoyume.Game.Item;
 using Nekoyume.Model;
+using Nekoyume.TableData;
 
 namespace Nekoyume.Game.Quest
 {
     [Serializable]
     public class BattleQuest : Quest
     {
-        public BattleQuest(Data.Table.Quest data) : base(data)
+        public BattleQuest(BattleQuestSheet.Row data) : base(data)
         {
         }
 
@@ -17,12 +18,12 @@ namespace Nekoyume.Game.Quest
         {
             if (Complete)
                 return;
-            Complete = player.worldStage > goal;
+            Complete = player.worldStage > Data.Goal;
         }
 
         public override string ToInfo()
         {
-            return LocalizationManager.LocalizeBattleQuestInfo(goal);
+            return LocalizationManager.LocalizeBattleQuestInfo(Data.Goal);
         }
     }
 }

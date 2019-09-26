@@ -61,7 +61,7 @@ namespace Nekoyume.UI.Model
             {
                 case Equipment equipment:
                     return AddItem(equipment);
-                case Food consumable:
+                case Consumable consumable:
                     return AddItem(consumable);
                 case Material material:
                     return AddItem(material, count);
@@ -77,7 +77,7 @@ namespace Nekoyume.UI.Model
             return inventoryItem;
         }
         
-        public InventoryItem AddItem(Food consumable)
+        public InventoryItem AddItem(Consumable consumable)
         {
             var inventoryItem = new InventoryItem(consumable, 1);
             consumables.Add(inventoryItem);
@@ -103,7 +103,7 @@ namespace Nekoyume.UI.Model
             {
                 case Equipment equipment:
                     return RemoveItem(equipment);
-                case Food consumable:
+                case Consumable consumable:
                     return RemoveItem(consumable);
                 case Material material:
                     return RemoveItem(material, count);
@@ -117,7 +117,7 @@ namespace Nekoyume.UI.Model
             return TryGetEquipment(equipment, out var inventoryItem) && equipments.Remove(inventoryItem);
         }
         
-        public bool RemoveItem(Food consumable)
+        public bool RemoveItem(Consumable consumable)
         {
             return TryGetConsumable(consumable, out var inventoryItem) && consumables.Remove(inventoryItem);
         }
@@ -198,7 +198,7 @@ namespace Nekoyume.UI.Model
             return false;
         }
         
-        public bool TryGetConsumable(Food consumable, out InventoryItem inventoryItem)
+        public bool TryGetConsumable(Consumable consumable, out InventoryItem inventoryItem)
         {
             if (consumable is null)
             {
@@ -208,7 +208,7 @@ namespace Nekoyume.UI.Model
 
             foreach (var item in consumables)
             {
-                if (!(item.item.Value is Food food))
+                if (!(item.item.Value is Consumable food))
                 {
                     continue;
                 }
@@ -229,7 +229,7 @@ namespace Nekoyume.UI.Model
         {
             foreach (var item in materials)
             {
-                if (item.item.Value.Data.id != material.Data.id)
+                if (item.item.Value.Data.Id != material.Data.Id)
                 {
                     continue;
                 }
@@ -307,7 +307,7 @@ namespace Nekoyume.UI.Model
                         inventoryItem.equipped.Value = equipment.equipped;
                         equipments.Add(inventoryItem);
                         break;
-                    case Food _:
+                    case Consumable _:
                         consumables.Add(inventoryItem);
                         break;
                     default:

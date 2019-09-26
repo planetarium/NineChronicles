@@ -3,6 +3,7 @@ using System.Collections;
 using System.Linq;
 using Nekoyume.BlockChain;
 using Nekoyume.Data;
+using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
@@ -24,8 +25,8 @@ namespace Tests
         {
             yield return SetUp();
             _widget = Widget.Find<QuestPreparation>();
-            var data = Tables.instance.ItemEquipment.Values.First();
-            data.cls = "Ring";
+            var data = Game.instance.TableSheets.EquipmentItemSheet.OrderedList.FirstOrDefault(row =>
+                row.ItemSubType == ItemSubType.Ring);
             var ring = new Ring(data, Guid.NewGuid());
             _ring = ring;
         }
@@ -38,6 +39,7 @@ namespace Tests
             {
                 es.Unequip();
             }
+
             yield return null;
         }
 
@@ -45,41 +47,42 @@ namespace Tests
         public void FindRingSlotEmptyFirst()
         {
             var ringSlots =
-                _widget.equipmentSlots.Where(es => es.type == ItemBase.ItemType.Ring && es.item?.Data is null);
+                _widget.equipmentSlots.Where(es => es.itemSubType == ItemSubType.Ring && es.item?.Data is null);
             Assert.AreEqual(2, ringSlots.Count());
 
-            var slot = _widget.FindSelectedItemSlot(ItemBase.ItemType.Ring);
+            var slot = _widget.FindSelectedItemSlot(ItemSubType.Ring);
             slot.Set(_ring);
 
-            Assert.AreEqual(slot, _widget.equipmentSlots.First(es => es.type == ItemBase.ItemType.Ring));
+            Assert.AreEqual(slot, _widget.equipmentSlots.First(es => es.itemSubType == ItemSubType.Ring));
         }
 
         [Test]
         public void FindRingSlotEmptySecond()
         {
-            var ringSlots = _widget.equipmentSlots.Where(es => es.type == ItemBase.ItemType.Ring && es.item?.Data is null);
+            var ringSlots =
+                _widget.equipmentSlots.Where(es => es.itemSubType == ItemSubType.Ring && es.item?.Data is null);
             Assert.AreEqual(2, ringSlots.Count());
 
-            var slot = _widget.FindSelectedItemSlot(ItemBase.ItemType.Ring);
+            var slot = _widget.FindSelectedItemSlot(ItemSubType.Ring);
             slot.Set(_ring);
-            var slot2 = _widget.FindSelectedItemSlot(ItemBase.ItemType.Ring);
+            var slot2 = _widget.FindSelectedItemSlot(ItemSubType.Ring);
 
             Assert.AreNotEqual(slot, slot2);
-            Assert.AreEqual(_widget.equipmentSlots.Last(es => es.type == ItemBase.ItemType.Ring), slot2);
+            Assert.AreEqual(_widget.equipmentSlots.Last(es => es.itemSubType == ItemSubType.Ring), slot2);
         }
 
         [Test]
         public void FindRingSlotFirst()
         {
             var ringSlots =
-                _widget.equipmentSlots.Where(es => es.type == ItemBase.ItemType.Ring && es.item?.Data is null);
+                _widget.equipmentSlots.Where(es => es.itemSubType == ItemSubType.Ring && es.item?.Data is null);
             Assert.AreEqual(2, ringSlots.Count());
 
-            var slot = _widget.FindSelectedItemSlot(ItemBase.ItemType.Ring);
+            var slot = _widget.FindSelectedItemSlot(ItemSubType.Ring);
             slot.Set(_ring);
-            var slot2 = _widget.FindSelectedItemSlot(ItemBase.ItemType.Ring);
+            var slot2 = _widget.FindSelectedItemSlot(ItemSubType.Ring);
             slot2.Set(_ring);
-            var slot3 = _widget.FindSelectedItemSlot(ItemBase.ItemType.Ring);
+            var slot3 = _widget.FindSelectedItemSlot(ItemSubType.Ring);
 
             Assert.AreNotEqual(slot, slot2);
             Assert.AreEqual(slot, slot3);
@@ -129,6 +132,5 @@ namespace Tests
             yield return new WaitUntil(() => Widget.Find<BattleResult>().isActiveAndEnabled);
             Widget.Find<BattleResult>().GoToMain();
         }
-
     }
 }

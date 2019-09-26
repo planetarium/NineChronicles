@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Assets.SimpleLocalization;
+using Nekoyume.EnumType;
 using Nekoyume.Manager;
 using Nekoyume.Game.Item;
 using UniRx;
@@ -22,18 +23,18 @@ namespace Nekoyume.UI.Model
             Recipe
         }
 
-        private static readonly string[] DimmedTypes =
+        private static readonly ItemSubType[] DimmedTypes =
         {
-            nameof(ItemBase.ItemType.Weapon),
-            nameof(ItemBase.ItemType.RangedWeapon),
-            nameof(ItemBase.ItemType.Armor),
-            nameof(ItemBase.ItemType.Belt),
-            nameof(ItemBase.ItemType.Necklace),
-            nameof(ItemBase.ItemType.Ring),
-            nameof(ItemBase.ItemType.Helm),
-            nameof(ItemBase.ItemType.Set),
-            nameof(ItemBase.ItemType.Food),
-            nameof(ItemBase.ItemType.Shoes)
+            ItemSubType.Weapon,
+            ItemSubType.RangedWeapon,
+            ItemSubType.Armor,
+            ItemSubType.Belt,
+            ItemSubType.Necklace,
+            ItemSubType.Ring,
+            ItemSubType.Helm,
+            ItemSubType.Set,
+            ItemSubType.Food,
+            ItemSubType.Shoes
         };
         
         public readonly ReactiveProperty<ConsumablesOrEquipments> consumablesOrEquipments =
@@ -108,16 +109,16 @@ namespace Nekoyume.UI.Model
         
         private bool DimmedFuncForConsumables(InventoryItem inventoryItem)
         {
-            return DimmedTypes.Contains(inventoryItem.item.Value.Data.cls)
-                   || GameConfig.PaintMaterials.Contains(inventoryItem.item.Value.Data.id)
-                   || !GameConfig.ConsumableMaterials.Contains(inventoryItem.item.Value.Data.id);
+            return DimmedTypes.Contains(inventoryItem.item.Value.Data.ItemSubType)
+                   || GameConfig.PaintMaterials.Contains(inventoryItem.item.Value.Data.Id)
+                   || !GameConfig.ConsumableMaterials.Contains(inventoryItem.item.Value.Data.Id);
         }
         
         private bool DimmedFuncForEquipments(InventoryItem inventoryItem)
         {
-            return DimmedTypes.Contains(inventoryItem.item.Value.Data.cls)
-                   || GameConfig.PaintMaterials.Contains(inventoryItem.item.Value.Data.id)
-                   || GameConfig.ConsumableMaterials.Contains(inventoryItem.item.Value.Data.id);
+            return DimmedTypes.Contains(inventoryItem.item.Value.Data.ItemSubType)
+                   || GameConfig.PaintMaterials.Contains(inventoryItem.item.Value.Data.Id)
+                   || GameConfig.ConsumableMaterials.Contains(inventoryItem.item.Value.Data.Id);
         }
 
         private void OnClickSubmitItemCountPopup(SimpleItemCountPopup data)
@@ -153,7 +154,7 @@ namespace Nekoyume.UI.Model
             }
 
             int sum = materials
-                .Where(item => countEditableItem.item.Value.Data.id == item.item.Value.Data.id)
+                .Where(item => countEditableItem.item.Value.Data.Id == item.item.Value.Data.Id)
                 .Sum(item => item.count.Value);
 
             if (sum >= countEditableItem.count.Value)
@@ -162,7 +163,7 @@ namespace Nekoyume.UI.Model
             }
 
             if (consumablesOrEquipments.Value == ConsumablesOrEquipments.Equipments
-                && GameConfig.EquipmentMaterials.Contains(countEditableItem.item.Value.Data.id))
+                && GameConfig.EquipmentMaterials.Contains(countEditableItem.item.Value.Data.Id))
             {
                 RemoveEquipmentMaterial();
                 
@@ -178,7 +179,7 @@ namespace Nekoyume.UI.Model
 
             foreach (var material in materials)
             {
-                if (material.item.Value.Data.id != 0)
+                if (material.item.Value.Data.Id != 0)
                 {
                     continue;
                 }
@@ -228,7 +229,7 @@ namespace Nekoyume.UI.Model
                 }
 
                 int sum = materials
-                .Where(item => obj.item.Value.Data.id == item.item.Value.Data.id)
+                .Where(item => obj.item.Value.Data.Id == item.item.Value.Data.Id)
                 .Sum(item => item.count.Value);
                 if (sum < obj.maxCount.Value)
                 {
@@ -244,7 +245,7 @@ namespace Nekoyume.UI.Model
 
                 if (consumablesOrEquipments.Value == ConsumablesOrEquipments.Equipments
                     && equipmentMaterial.Value != null
-                    && equipmentMaterial.Value.item.Value.Data.id == obj.item.Value.Data.id)
+                    && equipmentMaterial.Value.item.Value.Data.Id == obj.item.Value.Data.Id)
                 {
                     RemoveEquipmentMaterial();
                 }
@@ -256,7 +257,7 @@ namespace Nekoyume.UI.Model
                 AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickCombinationRemoveMaterialItem);
             });
 
-            SetStaged(value.item.Value.Data.id, true);
+            SetStaged(value.item.Value.Data.Id, true);
             UpdateReadyForCombination();
         }
 
@@ -264,8 +265,8 @@ namespace Nekoyume.UI.Model
         {
             value.Dispose();
 
-            bool exists = materials.Any(item => item.item.Value.Data.id == value.item.Value.Data.id);
-            SetStaged(value.item.Value.Data.id, exists);
+            bool exists = materials.Any(item => item.item.Value.Data.Id == value.item.Value.Data.Id);
+            SetStaged(value.item.Value.Data.Id, exists);
             UpdateReadyForCombination();
         }
 
@@ -273,7 +274,7 @@ namespace Nekoyume.UI.Model
         {
             foreach (var item in inventory.Value.materials)
             {
-                if (item.item.Value.Data.id != materialId)
+                if (item.item.Value.Data.Id != materialId)
                 {
                     continue;
                 }

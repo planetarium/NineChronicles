@@ -1,5 +1,6 @@
 using System;
 using Nekoyume.Model;
+using Nekoyume.TableData;
 using UniRx;
 
 namespace Nekoyume.UI.Model
@@ -9,10 +10,10 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<string> key = new ReactiveProperty<string>();
         public readonly ReactiveProperty<string> value = new ReactiveProperty<string>();
 
-        public ItemInformationStat(Data.Table.Item itemRow)
+        public ItemInformationStat(MaterialItemSheet.Row itemRow)
         {
-            key.Value = itemRow.stat.ToStatString();
-            value.Value = $"{itemRow.minStat} - {itemRow.maxStat}";
+            key.Value = itemRow.StatType.ToStatString();
+            value.Value = $"{itemRow.StatMin} - {itemRow.StatMax}";
         }
 
         public ItemInformationStat(IStatMap statMap)

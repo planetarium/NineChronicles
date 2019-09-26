@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Assets.SimpleLocalization;
 using Libplanet;
+using Nekoyume.EnumType;
 using Nekoyume.Game.Item;
 using Nekoyume.Model;
 using Nekoyume.UI.Module;
@@ -12,8 +13,6 @@ namespace Nekoyume.UI.Model
 {
     public class Shop : IDisposable
     {
-        private static readonly string DimmedString = nameof(ItemBase.ItemType.Material);
-        
         public enum State
         {
             Show, Buy, Sell
@@ -80,7 +79,7 @@ namespace Nekoyume.UI.Model
         
         public bool DimmedFuncForSell(InventoryItem inventoryItem)
         {
-            return inventoryItem.item.Value.Data.cls == DimmedString;
+            return inventoryItem.item.Value.Data.ItemType == ItemType.Material;
         }
 
         public bool EquippedFuncForSell(InventoryItem inventoryItem)

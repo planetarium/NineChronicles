@@ -1,5 +1,6 @@
 using System;
 using Assets.SimpleLocalization;
+using Nekoyume.EnumType;
 using Nekoyume.Game.Item;
 using Nekoyume.UI.Module;
 using UniRx;
@@ -8,8 +9,6 @@ namespace Nekoyume.UI.Model
 {
     public class QuestPreparation : IDisposable
     {
-        private const string DimmedType = nameof(ItemBase.ItemType.Material);
-
         public readonly ReactiveProperty<Inventory> inventory = new ReactiveProperty<Inventory>();
         public readonly ReactiveProperty<ItemInfo> itemInfo = new ReactiveProperty<ItemInfo>();
 
@@ -32,7 +31,7 @@ namespace Nekoyume.UI.Model
 
         private bool DimmedFunc(InventoryItem inventoryItem)
         {
-            return inventoryItem.item.Value.Data.cls == DimmedType;
+            return inventoryItem.item.Value.Data.ItemType == ItemType.Material;
         }
         
         private void SubscribeInventorySelectedItem(InventoryItemView view)

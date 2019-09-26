@@ -227,7 +227,7 @@ MonoBehaviour:
   gradeImage: {fileID: 4423429282000483156}
   defaultImage: {fileID: 114051379875005956}
   itemImage: {fileID: 2329875161907077694}
-  type: 4
+  itemSubType: 4
 --- !u!114 &1457542177737296865
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -410,7 +410,7 @@ MonoBehaviour:
   gradeImage: {fileID: 1948542142619909813}
   defaultImage: {fileID: 114960982128279618}
   itemImage: {fileID: 3728752011783181804}
-  type: 6
+  itemSubType: 6
 --- !u!114 &5297191996140400638
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1225,7 +1225,7 @@ MonoBehaviour:
   gradeImage: {fileID: 7013330435921018618}
   defaultImage: {fileID: 114983507505213598}
   itemImage: {fileID: 3109979628209043187}
-  type: 3
+  itemSubType: 3
 --- !u!114 &7378866597129296145
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1535,7 +1535,7 @@ MonoBehaviour:
   gradeImage: {fileID: 3067910812407655209}
   defaultImage: {fileID: 114676150779133956}
   itemImage: {fileID: 6630438943221882395}
-  type: 5
+  itemSubType: 5
 --- !u!114 &4294103971562919229
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1644,7 +1644,7 @@ MonoBehaviour:
   gradeImage: {fileID: 2181738280151441541}
   defaultImage: {fileID: 114601298524153340}
   itemImage: {fileID: 6851651614706214042}
-  type: 6
+  itemSubType: 6
 --- !u!114 &6391392163671109883
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2718,7 +2718,7 @@ MonoBehaviour:
   gradeImage: {fileID: 7683779973934985817}
   defaultImage: {fileID: 114443146394530188}
   itemImage: {fileID: 8645349938831423400}
-  type: 1
+  itemSubType: 1
 --- !u!114 &5335674817080299155
 MonoBehaviour:
   m_ObjectHideFlags: 0

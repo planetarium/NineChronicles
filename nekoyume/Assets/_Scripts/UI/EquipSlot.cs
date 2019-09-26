@@ -1,3 +1,4 @@
+using Nekoyume.EnumType;
 using Nekoyume.Game.Item;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -12,7 +13,7 @@ namespace Nekoyume.UI
         public Image defaultImage;
         public Image itemImage;
         public ItemUsable item;
-        public ItemBase.ItemType type;
+        public ItemSubType itemSubType;
 
         private EventTrigger _eventTrigger;
         private System.Action<EquipSlot> _onLeftClick;
@@ -58,7 +59,7 @@ namespace Nekoyume.UI
             var gradeSprite = equipment.GetBackgroundSprite();
             if (gradeSprite is null)
             {
-                throw new FailedToLoadResourceException<Sprite>(equipment.Data.grade.ToString());
+                throw new FailedToLoadResourceException<Sprite>(equipment.Data.Grade.ToString());
             }
 
             gradeImage.enabled = true;
