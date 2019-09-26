@@ -173,7 +173,7 @@ namespace Nekoyume.Model
 
         public void AddBuff(Buff buff)
         {
-            Debug.Log($"Add {buff}. Type: {buff.Category} Effect: {buff.effect} Time: {buff.time} Chance: {buff.chance}");
+            Debug.Log($"{this} Add {buff}. Type: {buff.Category} Effect: {buff.effect} Time: {buff.time} Chance: {buff.chance}");
             buffs[buff.Category] = buff;
         }
 
