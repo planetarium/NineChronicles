@@ -5,13 +5,13 @@ from collections import Counter, OrderedDict
 from operator import itemgetter
 
 ### EDIT: WORLD
-MONSTER_PARTS_DROP_RATE = 0.05
+MONSTER_PARTS_DROP_RATE = 0.03
 STAGES_PER_WORLD = 50
 STAGES_PER_MONSTER_LV = 1
 BASE_EXP = 50
 ADDITIONAL_EXP_PER_STAGE = 7
-MIN_WAVES = 3
-MAX_WAVES = 6
+MIN_WAVES = 5
+MAX_WAVES = 10
 
 
 ### EDIT: MAP DATA ###
@@ -22,8 +22,8 @@ MAX_WAVES = 6
 # 
 WORLD_MONSTERS = {
     1: [204000, 201000, 204001, 201001, 204002, 201002, 204003, 201003, 204004, 201004, 202001, 202002, 202003, 202004, 202005],
-    2: [204000, 204001, 203002, 204002, 204003, 203003, 204004, 203005],
-    3: [204000, 204001, 203002, 204002, 202003,  204003, 201003, 203003, 204004, 202004, 202005, 203005],
+    2: [204000, 203000, 204001, 203001, 204002, 203002, 204003, 203003, 204004, 203004, 203005],
+    3: [204000, 203000, 204001, 203001, 204002, 203002, 204003, 203003, 204004, 203004, 203005],
 }
 
 # monster_id -> parts_id
@@ -126,9 +126,9 @@ BOSS_LOCATION = {
     },
     2: {
         10: 203005,
-        20: 203005,
-        30: 203007,
-        40: 203007,
+        20: 203006,
+        30: 203006,
+        40: 203006,
         50: 203007        
     },
     3: {
@@ -193,9 +193,9 @@ for world, monster_list in WORLD_MONSTERS.items():
 
             monster_picked = []
 
-            monster_count = random.randrange(1, min(1 + wave, 6))
+            monster_count = random.randrange(3, min(3 + wave, 12))
             if is_boss_wave:
-                monster_count = 4
+                monster_count = 5
             # add 3 to 5 monsters
             for idx in range(0, monster_count):
                 if (idx == 0) and is_boss_wave:
