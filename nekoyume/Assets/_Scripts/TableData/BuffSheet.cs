@@ -65,5 +65,19 @@ namespace Nekoyume.TableData
         {
             return SpriteHelper.GetBuffIcon(row.Id);
         }
+
+        public static Sprite GetIcon(int id)
+        {
+            var path = $"UI/Icons/Buff/{id}";
+            var sprite = Resources.Load<Sprite>(path);
+            if (sprite)
+            {
+                return sprite;
+            }
+
+            sprite = Resources.Load<Sprite>(DefaultIconPath);
+
+            return sprite;
+        }
     }
 }

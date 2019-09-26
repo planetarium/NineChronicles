@@ -20,8 +20,7 @@ namespace Nekoyume.UI
         public Text TextExp;
         public Slider HPBar;
         public Slider ExpBar;
-        public Image buffImage;
-        public GameObject buffList;
+        public BuffLayout buffLayout;
 
         private string _avatarName = "";
         private Player _player;
@@ -65,7 +64,6 @@ namespace Nekoyume.UI
             }
 
             HPBar.gameObject.SetActive(false);
-            ClearBuff();
         }
 
         public void UpdatePlayer(GameObject playerObj)
@@ -152,19 +150,11 @@ namespace Nekoyume.UI
         {
             Toggle(_quest);
         }
-        
-        public void UpdateBuff(Dictionary<int, Buff> modelBuffs)
+
+        public void UpdateBuff(Dictionary<BuffCategory, Buff> modelBuffs)
         {
-            ClearBuff();
             var buffs = modelBuffs.Values.OrderBy(r => r.Data.Id);
-            buffImage.gameObject.SetActive(true);
-            foreach (var buff in buffs)
-            {
-                var icon = buff.Data.GetIcon();
-                var go = Instantiate(buffImage, buffList.transform);
-                go.sprite = icon;
-            }
-            buffImage.gameObject.SetActive(false);
+            buffLayout.UpdateBuff(buffs);
         }
 
         private void Toggle(Widget selected)
@@ -191,15 +181,6 @@ namespace Nekoyume.UI
         private void OnUpdateStatus()
         {
             UpdateExp();
-        }
-
-        private void ClearBuff()
-        {
-            foreach (Transform child in buffList.transform)
-            {
-                Destroy(child.gameObject);
-            }
-
         }
     }
 }
