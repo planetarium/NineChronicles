@@ -31,22 +31,27 @@ jobs:
       - run:
           name: run-unittest
           command: |
-            mkdir -p /tmp/test-result/
+            mkdir -p /tmp/test-result/ /tmp/test/
             docker run \
+              --entrypoint=/bin/bash \
+              -v /tmp/test/:/tmp/test/ \
               "<< parameters.docker-image-name >>" \
-              "bash /scripts/test.sh"
+              /scripts/test.sh
             docker run \
               --entrypoint=/bin/ls \
+              -v /tmp/test/:/tmp/test/ \
               "<< parameters.docker-image-name >>" \
-              -al /tmp/test-result/
+              -al /tmp/test/
             docker run \
               --entrypoint=/bin/cat \
+              -v /tmp/test/:/tmp/test/ \
               "<< parameters.docker-image-name >>" \
-              /tmp/test-result/result.txt > /tmp/test-result/result.txt
+              /tmp/test/result.txt > /tmp/test-result/result.txt
             docker run \
               --entrypoint=/bin/cat \
+              -v /tmp/test/:/tmp/test/ \
               "<< parameters.docker-image-name >>" \
-              /tmp/test-result/junit.xml > /tmp/test-result/junit.xml
+              /tmp/test/junit.xml > /tmp/test-result/junit.xml
 
       - store_test_results:
           path: /tmp/test-result
