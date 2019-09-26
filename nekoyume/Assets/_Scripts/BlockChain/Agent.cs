@@ -189,7 +189,7 @@ namespace Nekoyume.BlockChain
             {
                 Cheat.Display("Logs", _tipInfo);
                 Cheat.Display("Peers", _swarm?.TraceTable());
-                var log = $"Staged Transactions\n";
+                var log = $"Staged Transactions : {_store.IterateStagedTransactionIds().Count()}\n";
                 int count = 1;
                 foreach (var id in _store.IterateStagedTransactionIds())
                 {
