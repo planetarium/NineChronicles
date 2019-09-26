@@ -17,10 +17,10 @@ namespace Nekoyume.Model
             public readonly int Effect;
             public readonly bool Critical;
             public readonly SkillCategory skillCategory;
-            public Elemental.ElementalType? Elemental;
+            public ElementalType? Elemental;
 
             public SkillInfo(CharacterBase character, int effect, bool critical, SkillCategory skillCategory,
-                Elemental.ElementalType? elemental = null)
+                ElementalType? elemental = null)
             {
                 Target = character;
                 Effect = effect;

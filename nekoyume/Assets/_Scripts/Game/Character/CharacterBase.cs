@@ -247,8 +247,8 @@ namespace Nekoyume.Game.Character
             else
             {
                 AudioController.PlayDamaged(isConsiderElementalType
-                    ? info.Elemental ?? Data.Table.Elemental.ElementalType.Normal
-                    : Data.Table.Elemental.ElementalType.Normal);
+                    ? info.Elemental ?? ElementalType.Normal
+                    : ElementalType.Normal);
                 DamageText.Show(position, force, dmg);
                 if (info.skillCategory == SkillCategory.Normal)
                     VFXController.instance.Create<BattleAttack01VFX>(pos);
@@ -465,14 +465,14 @@ namespace Nekoyume.Game.Character
                         yield return new WaitForSeconds(0.2f);
                     }
 
-                    if (info.Elemental == Data.Table.Elemental.ElementalType.Fire)
+                    if (info.Elemental == ElementalType.Fire)
                     {
                         effect.StopLoop();
                         yield return new WaitForSeconds(0.1f);
                     }
 
                     var coroutine = StartCoroutine(CoAnimationCastAttack(info.Critical));
-                    if (info.Elemental == Data.Table.Elemental.ElementalType.Water)
+                    if (info.Elemental == ElementalType.Water)
                     {
                         yield return new WaitForSeconds(0.1f);
                         effect.StopLoop();
@@ -481,8 +481,8 @@ namespace Nekoyume.Game.Character
                     yield return coroutine;
                     effect.Finisher();
                     ProcessAttack(target, info, true, true);
-                    if (info.Elemental != Data.Table.Elemental.ElementalType.Fire
-                        && info.Elemental != Data.Table.Elemental.ElementalType.Water)
+                    if (info.Elemental != ElementalType.Fire
+                        && info.Elemental != ElementalType.Water)
                     {
                         effect.StopLoop();
                     }

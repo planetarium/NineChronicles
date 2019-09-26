@@ -20,7 +20,7 @@ namespace Nekoyume.Game
             var targets = GetTarget(caster);
             var infos = new List<Model.Skill.SkillInfo>();
             var targetList = targets.ToArray();
-            var elemental = Elemental.Create(skillRow.ElementalType);
+            var elemental = skillRow.ElementalType;
             var multiplier = GetMultiplier(effect.hitCount, 1);
             var skillPower = CalcSkillPower(caster);
             for (var i = 0; i < effect.hitCount; i++)
@@ -29,7 +29,7 @@ namespace Nekoyume.Game
                 {
                     var multiply = multiplier[i];
                     var critical = caster.IsCritical();
-                    var dmg = elemental.CalculateDmg(skillPower, target.defElement);
+                    var dmg = elemental.GetDamage(target.defElementType, skillPower);
                     // https://gamedev.stackexchange.com/questions/129319/rpg-formula-attack-and-defense
                     dmg = (int) ((long) dmg * dmg / (dmg + target.def));
                     dmg = (int) (dmg * multiply);

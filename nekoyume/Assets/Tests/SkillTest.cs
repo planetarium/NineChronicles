@@ -11,7 +11,6 @@ using Nekoyume.Game.Item;
 using Nekoyume.Model;
 using Nekoyume.State;
 using NUnit.Framework;
-using Elemental = Nekoyume.Data.Table.Elemental;
 
 namespace Tests
 {
@@ -53,7 +52,7 @@ namespace Tests
             Assert.AreEqual(1, result.skillInfos.Count());
             Assert.NotNull(info.Target);
             Assert.AreEqual(SkillCategory.Normal, info.skillCategory);
-            Assert.AreEqual(Elemental.ElementalType.Normal, info.Elemental);
+            Assert.AreEqual(ElementalType.Normal, info.Elemental);
         }
 
         [Test]
@@ -81,7 +80,7 @@ namespace Tests
             Assert.AreEqual(1, result.skillInfos.Count());
             Assert.NotNull(info.Target);
             Assert.AreEqual(SkillCategory.Blow, info.skillCategory);
-            Assert.AreEqual(Elemental.ElementalType.Normal, info.Elemental);
+            Assert.AreEqual(ElementalType.Normal, info.Elemental);
         }
 
         [Test]
@@ -107,7 +106,7 @@ namespace Tests
             {
                 Assert.NotNull(info.Target);
                 Assert.AreEqual(SkillCategory.Double, info.skillCategory);
-                Assert.AreEqual(Elemental.ElementalType.Normal, info.Elemental);
+                Assert.AreEqual(ElementalType.Normal, info.Elemental);
             }
         }
 
@@ -135,7 +134,7 @@ namespace Tests
             {
                 Assert.NotNull(info.Target);
                 Assert.AreEqual(SkillCategory.Area, info.skillCategory);
-                Assert.AreEqual(Elemental.ElementalType.Normal, info.Elemental);
+                Assert.AreEqual(ElementalType.Normal, info.Elemental);
             }
         }
 
