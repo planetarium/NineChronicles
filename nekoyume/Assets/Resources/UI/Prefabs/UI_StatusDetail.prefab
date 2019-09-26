@@ -224,7 +224,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rectTransform: {fileID: 0}
-  button: {fileID: 0}
   gradeImage: {fileID: 4423429282000483156}
   defaultImage: {fileID: 114051379875005956}
   itemImage: {fileID: 2329875161907077694}
@@ -408,7 +407,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rectTransform: {fileID: 0}
-  button: {fileID: 0}
   gradeImage: {fileID: 1948542142619909813}
   defaultImage: {fileID: 114960982128279618}
   itemImage: {fileID: 3728752011783181804}
@@ -1127,7 +1125,7 @@ MonoBehaviour:
   m_ChildAlignment: 0
   m_Spacing: 5
   m_ChildForceExpandWidth: 1
-  m_ChildForceExpandHeight: 1
+  m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 1
   m_ChildControlHeight: 1
   m_ChildScaleWidth: 0
@@ -1224,7 +1222,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rectTransform: {fileID: 0}
-  button: {fileID: 0}
   gradeImage: {fileID: 7013330435921018618}
   defaultImage: {fileID: 114983507505213598}
   itemImage: {fileID: 3109979628209043187}
@@ -1535,7 +1532,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rectTransform: {fileID: 0}
-  button: {fileID: 0}
   gradeImage: {fileID: 3067910812407655209}
   defaultImage: {fileID: 114676150779133956}
   itemImage: {fileID: 6630438943221882395}
@@ -1645,7 +1641,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rectTransform: {fileID: 0}
-  button: {fileID: 0}
   gradeImage: {fileID: 2181738280151441541}
   defaultImage: {fileID: 114601298524153340}
   itemImage: {fileID: 6851651614706214042}
@@ -1940,7 +1935,7 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 12800000, guid: 1da5c5563106ea94ba1e2114308b9c16, type: 3}
-    m_FontSize: 14
+    m_FontSize: 13
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 1
@@ -2720,7 +2715,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rectTransform: {fileID: 0}
-  button: {fileID: 0}
   gradeImage: {fileID: 7683779973934985817}
   defaultImage: {fileID: 114443146394530188}
   itemImage: {fileID: 8645349938831423400}

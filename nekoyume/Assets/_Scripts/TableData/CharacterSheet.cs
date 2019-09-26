@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Nekoyume.Data.Table;
+using Nekoyume.EnumType;
 using Nekoyume.Model;
 
 namespace Nekoyume.TableData
@@ -16,7 +17,7 @@ namespace Nekoyume.TableData
             public string Name { get; private set; }
             public int Resource { get; private set; }
             public string Size { get; private set; }
-            public Elemental.ElementalType Elemental { get; private set; }
+            public ElementalType Elemental { get; private set; }
             public int HP { get; private set; }
             public int Damage { get; private set; }
             public int Defense { get; private set; }
@@ -34,9 +35,9 @@ namespace Nekoyume.TableData
                 Name = fields[1];
                 Resource = int.TryParse(fields[2], out var resource) ? resource : 0;
                 Size = string.IsNullOrEmpty(fields[3]) ? "s" : fields[3];
-                Elemental = Enum.TryParse<Elemental.ElementalType>(fields[4], out var elementalType)
+                Elemental = Enum.TryParse<ElementalType>(fields[4], out var elementalType)
                     ? elementalType
-                    : Data.Table.Elemental.ElementalType.Normal;
+                    : ElementalType.Normal;
                 HP = int.TryParse(fields[5], out var hp) ? hp : 0;
                 Damage = int.TryParse(fields[6], out var damage) ? damage : 0;
                 Defense = int.TryParse(fields[7], out var defense) ? defense : 0;

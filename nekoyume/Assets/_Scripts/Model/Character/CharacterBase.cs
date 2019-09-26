@@ -30,8 +30,8 @@ namespace Nekoyume.Model
         public int level;
         public abstract float TurnSpeed { get; set; }
 
-        public Game.Elemental atkElement;
-        public Game.Elemental defElement;
+        public ElementalType atkElementType;
+        public ElementalType defElementType;
         public readonly Skills Skills = new Skills();
 
         private Game.Skill _selectedSkill;

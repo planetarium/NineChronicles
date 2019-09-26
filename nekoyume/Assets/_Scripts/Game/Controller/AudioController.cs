@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Nekoyume.EnumType;
 using Nekoyume.Pattern;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -431,23 +432,23 @@ namespace Nekoyume.Game.Controller
             instance.PlaySfx(random < 0.5f ? SfxCode.FootStepLow : SfxCode.FootStepHigh);
         }
         
-        public static void PlayDamaged(Data.Table.Elemental.ElementalType elementalType = Data.Table.Elemental.ElementalType.Normal)
+        public static void PlayDamaged(ElementalType elementalType = ElementalType.Normal)
         {
             switch (elementalType)
             {
-                case Data.Table.Elemental.ElementalType.Normal:
+                case ElementalType.Normal:
                     instance.PlaySfx(SfxCode.DamageNormal);
                     break;
-                case Data.Table.Elemental.ElementalType.Fire:
+                case ElementalType.Fire:
                     instance.PlaySfx(SfxCode.DamageFire);
                     break;
-                case Data.Table.Elemental.ElementalType.Water:
+                case ElementalType.Water:
                     instance.PlaySfx(SfxCode.DamageWater);
                     break;
-                case Data.Table.Elemental.ElementalType.Land:
+                case ElementalType.Land:
                     instance.PlaySfx(SfxCode.DamageLand);
                     break;
-                case Data.Table.Elemental.ElementalType.Wind:
+                case ElementalType.Wind:
                     instance.PlaySfx(SfxCode.DamageWind);
                     break;
                 default:

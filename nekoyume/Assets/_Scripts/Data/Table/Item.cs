@@ -1,5 +1,6 @@
 using System;
 using Assets.SimpleLocalization;
+using Nekoyume.EnumType;
 
 namespace Nekoyume.Data.Table
 {
@@ -38,7 +39,7 @@ namespace Nekoyume.Data.Table
         public string name = "";
         public int grade = 0;
         public string description = "";
-        public Elemental.ElementalType elemental = Elemental.ElementalType.Normal;
+        public ElementalType elemental = ElementalType.Normal;
         public string stat = "";
         public int minStat = 0;
         public int maxStat = 0;

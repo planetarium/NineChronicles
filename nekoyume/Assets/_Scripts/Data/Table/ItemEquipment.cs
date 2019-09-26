@@ -1,5 +1,6 @@
 using System;
 using Assets.SimpleLocalization;
+using Nekoyume.EnumType;
 
 namespace Nekoyume.Data.Table
 {
@@ -42,7 +43,7 @@ namespace Nekoyume.Data.Table
         }
 
         public int resourceId = 0;
-        public Elemental.ElementalType elemental;
+        public ElementalType elemental;
         public int setId = 0;
         public string ability1 = "";
         public int value1 = 0;

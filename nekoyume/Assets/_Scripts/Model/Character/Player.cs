@@ -4,6 +4,7 @@ using System.Linq;
 using Nekoyume.Battle;
 using Nekoyume.Data;
 using Nekoyume.Data.Table;
+using Nekoyume.EnumType;
 using Nekoyume.Game.Item;
 using Nekoyume.State;
 using Nekoyume.TableData;
@@ -55,8 +56,8 @@ namespace Nekoyume.Model
 
         private void PostConstruction()
         {
-            atkElement = Game.Elemental.Create(Elemental.ElementalType.Normal);
-            defElement = Game.Elemental.Create(Elemental.ElementalType.Normal);
+            atkElementType = ElementalType.Normal;
+            defElementType = ElementalType.Normal;
             TurnSpeed = 1.8f;
             
             Equip(inventory.Items);
@@ -172,7 +173,7 @@ namespace Nekoyume.Model
                         break;
                     case ItemBase.ItemType.Armor:
                         armor = equipment as Armor;
-                        defElement = Game.Elemental.Create((Elemental.ElementalType) equipment?.Data.elemental);
+                        defElementType = equipment.Data.elemental;
                         break;
                     case ItemBase.ItemType.Belt:
                         belt = equipment as Belt;
@@ -253,25 +254,16 @@ namespace Nekoyume.Model
 
         public IEnumerable<string> GetOptions()
         {
-            if (set != null)
+            var atkOptions = atkElementType.GetOptions("damage");
+            foreach (var atkOption in atkOptions)
             {
-                var aStrong = atkElement.Data.strong;
-                var aWeak = atkElement.Data.weak;
-                var dStrong = defElement.Data.strong;
-                var dWeak = defElement.Data.weak;
-                var aMultiply = atkElement.Data.multiply * 100;
-                var dMultiply = defElement.Data.multiply * 100;
-                if (aMultiply > 0)
-                {
-                    yield return $"{Elemental.GetDescription(aStrong)} 공격 +{aMultiply}%";
-                    yield return $"{Elemental.GetDescription(aWeak)} 공격 -{aMultiply}%";
-                }
-
-                if (dMultiply > 0)
-                {
-                    yield return $"{Elemental.GetDescription(dStrong)} 방어 +{dMultiply}%";
-                    yield return $"{Elemental.GetDescription(dWeak)} 방어 -{dMultiply}%";
-                }
+                yield return atkOption;
+            }
+            
+            var defOptions = defElementType.GetOptions("defense");
+            foreach (var defOption in defOptions)
+            {
+                yield return defOption;
             }
         }
 

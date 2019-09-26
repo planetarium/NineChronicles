@@ -18,7 +18,6 @@ namespace Nekoyume.Game
         public readonly SkillEffect effect;
         public List<Buff.Buff> buffs = new List<Buff.Buff>();
 
-
         public abstract Model.Skill Use(CharacterBase caster);
 
         protected Skill(SkillSheet.Row skillRow, int power, decimal chance)

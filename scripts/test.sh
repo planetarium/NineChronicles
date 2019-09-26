@@ -4,7 +4,6 @@ set -e
 source "$(dirname $0)/_common.sh"
 
 title "Unit tests (Editor)"
-mkdir -p /tmp/test/
 /opt/Unity/Editor/Unity \
   -batchmode \
   -nographics \
