@@ -96,7 +96,7 @@ namespace Nekoyume.UI
             if (Game.Game.instance.TableSheets.CharacterSheet.TryGetValue(_characterId, out var characterData))
             {
                 var localizedName = LocalizationManager.LocalizeCharacterName(_characterId);
-                var res = Resources.Load<Sprite>($"Images/character_{characterData.Resource}");
+                var res = Resources.Load<Sprite>($"Images/character_{characterData.Id}");
                 imgCharacter.sprite = res;
                 imgCharacter.SetNativeSize();
                 imgCharacter.enabled = imgCharacter.sprite != null;
