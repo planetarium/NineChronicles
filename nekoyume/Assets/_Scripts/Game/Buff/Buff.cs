@@ -5,33 +5,28 @@ using Nekoyume.EnumType;
 using Nekoyume.Model;
 using Nekoyume.TableData;
 
-namespace Nekoyume.Game.Buff
+namespace Nekoyume.Game
 {
     [Serializable]
     public abstract class Buff
     {
-        public BuffSheet.Row data;
-        public int effect;
-        public int time;
-        public int chance;
-        private readonly SkillTargetType _targetType;
-        public abstract BuffCategory Category { get; }
-        public abstract int Use(CharacterBase characterBase);
+        public int remainedDuration;
+
+        public BuffSheet.Row Data { get; }
 
         protected Buff(BuffSheet.Row row)
         {
-            data = row;
-            effect = row.effect;
-            time = row.time;
-            chance = row.chance;
-            _targetType = row.targetType;
+            remainedDuration = row.Duration;
+            Data = row;
         }
+
+        public abstract int Use(CharacterBase characterBase);
 
         public IEnumerable<CharacterBase> GetTarget(CharacterBase caster)
         {
             var targets = caster.targets;
             IEnumerable<CharacterBase> target;
-            switch (_targetType)
+            switch (Data.TargetType)
             {
                 case SkillTargetType.Enemy:
                     target = new[] {targets.First()};
@@ -51,7 +46,6 @@ namespace Nekoyume.Game.Buff
             }
 
             return target;
-
         }
     }
 }

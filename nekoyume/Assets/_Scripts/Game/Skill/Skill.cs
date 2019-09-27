@@ -16,7 +16,7 @@ namespace Nekoyume.Game
         public readonly int power;
         public readonly decimal chance;
         public readonly SkillEffect effect;
-        public List<Buff.Buff> buffs = new List<Buff.Buff>();
+        public List<Buff> buffs;
 
         public abstract Model.Skill Use(CharacterBase caster);
 
@@ -25,6 +25,7 @@ namespace Nekoyume.Game
             this.skillRow = skillRow;
             this.power = power;
             this.chance = chance;
+            buffs = skillRow.GetBuffs().Select(BuffFactory.Get).ToList();
 
             if (!Tables.instance.SkillEffect.TryGetValue(skillRow.SkillEffectId, out effect))
             {
@@ -43,7 +44,7 @@ namespace Nekoyume.Game
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((Skill) obj);
+            return Equals((Skill)obj);
         }
 
         public override int GetHashCode()
@@ -65,33 +66,33 @@ namespace Nekoyume.Game
             switch (effect.skillTargetType)
             {
                 case SkillTargetType.Enemy:
-                    target = new[] {targets.First()};
+                    target = new[] { targets.First() };
                     break;
                 case SkillTargetType.Enemies:
                     target = caster.targets;
                     break;
                 case SkillTargetType.Self:
-                    target = new[] {caster};
+                    target = new[] { caster };
                     break;
                 case SkillTargetType.Ally:
-                    target = new[] {caster};
+                    target = new[] { caster };
                     break;
                 default:
-                    target = new[] {targets.First()};
+                    target = new[] { targets.First() };
                     break;
             }
 
             return target;
         }
 
-        public void ProcessBuff(CharacterBase caster)
+        protected void ProcessBuff(CharacterBase caster)
         {
             foreach (var buff in buffs)
             {
                 var targets = buff.GetTarget(caster);
                 foreach (var target in targets)
                 {
-                    var canBuff = target.GetChance(buff.chance);
+                    var canBuff = target.GetChance(buff.Data.Chance);
                     if (canBuff)
                     {
                         caster.AddBuff(buff);

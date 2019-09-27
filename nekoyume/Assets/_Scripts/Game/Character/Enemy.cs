@@ -92,8 +92,8 @@ namespace Nekoyume.Game.Character
         {
             var stats = character.data.ToStats(character.level);
             HP = stats.HP;
-            ATK = stats.Damage;
-            DEF = stats.Defense;
+            ATK = stats.ATK;
+            DEF = stats.DEF;
             Power = 0;
             HPMax = HP;
             Range = character.attackRange;

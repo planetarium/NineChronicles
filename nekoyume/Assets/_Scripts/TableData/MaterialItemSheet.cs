@@ -11,7 +11,7 @@ namespace Nekoyume.TableData
         public class Row : ItemSheet.Row
         {
             public override ItemType ItemType => ItemType.Material;
-            public string StatType { get; private set; }
+            public StatType? StatType { get; private set; }
             public int StatMin { get; private set; }
             public int StatMax { get; private set; }
             public int SkillId { get; private set; }
@@ -23,7 +23,9 @@ namespace Nekoyume.TableData
             public override void Set(IReadOnlyList<string> fields)
             {
                 base.Set(fields);
-                StatType = fields[4];
+                StatType = string.IsNullOrEmpty(fields[4])
+                    ? StatType = null
+                    : (StatType) Enum.Parse(typeof(StatType), fields[4]);
                 StatMin = string.IsNullOrEmpty(fields[5]) ? 0 : int.Parse(fields[5]);
                 StatMax = string.IsNullOrEmpty(fields[6]) ? 0 : int.Parse(fields[6]);
                 SkillId = string.IsNullOrEmpty(fields[7]) ? 0 : int.Parse(fields[7]);

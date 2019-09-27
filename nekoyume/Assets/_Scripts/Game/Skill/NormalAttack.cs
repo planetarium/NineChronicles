@@ -1,6 +1,4 @@
 using System;
-using System.Linq;
-using Nekoyume.Game.Buff;
 using Nekoyume.Model;
 using Nekoyume.TableData;
 

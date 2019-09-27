@@ -3,7 +3,7 @@ using System.Linq;
 using Nekoyume.Manager;
 using Nekoyume.BlockChain;
 using Nekoyume.EnumType;
-using Nekoyume.Game.Buff;
+using Nekoyume.Game;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.TableData;
@@ -152,14 +152,15 @@ namespace Nekoyume.UI
         {
             Toggle(_quest);
         }
-        public void UpdateBuff(Dictionary<BuffCategory, Buff> modelBuffs)
+        
+        public void UpdateBuff(Dictionary<int, Buff> modelBuffs)
         {
             ClearBuff();
-            var buffs = modelBuffs.Values.OrderBy(r => r.data.id);
+            var buffs = modelBuffs.Values.OrderBy(r => r.Data.Id);
             buffImage.gameObject.SetActive(true);
             foreach (var buff in buffs)
             {
-                var icon = buff.data.GetIcon();
+                var icon = buff.Data.GetIcon();
                 var go = Instantiate(buffImage, buffList.transform);
                 go.sprite = icon;
             }

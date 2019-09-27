@@ -29,6 +29,8 @@ namespace Nekoyume.TableData
         public CollectQuestSheet CollectQuestSheet { get; private set; }
         public CombinationQuestSheet CombinationQuestSheet { get; private set; }
         public TradeQuestSheet TradeQuestSheet { get; private set; }
+        public SkillBuffSheet SkillBuffSheet { get; private set; }
+        public SetEffectSheet SetEffectSheet { get; private set; }
 
         public IEnumerator CoInitialize()
         {
@@ -55,25 +57,25 @@ namespace Nekoyume.TableData
                 var textAsset = loadAssetOperation.Result;
                 SetToSheet(textAsset.name, textAsset.text);
                 loadedTaskCount++;
-                loadProgress.Value = (float) loadedTaskCount / loadTaskCount;
+                loadProgress.Value = (float)loadedTaskCount / loadTaskCount;
             }
 
             loadProgress.Value = 1f;
-            
+
             PostInitialize();
         }
 
         public IEnumerator CoInitializeForPlayer()
         {
             loadProgress.Value = 0f;
-            
+
             var request = Resources.LoadAsync<AddressableAssetsContainer>("AddressableAssetsContainer");
             yield return request;
             if (!(request.asset is AddressableAssetsContainer addressableAssetsContainer))
             {
                 throw new NullReferenceException(nameof(addressableAssetsContainer));
             }
-            
+
             var tableCsvAssets = addressableAssetsContainer.tableCsvAssets;
             var loadTaskCount = tableCsvAssets.Count;
             var loadedTaskCount = 0;
@@ -82,7 +84,7 @@ namespace Nekoyume.TableData
             {
                 SetToSheet(textAsset.name, textAsset.text);
                 loadedTaskCount++;
-                loadProgress.Value = (float) loadedTaskCount / loadTaskCount;
+                loadProgress.Value = (float)loadedTaskCount / loadTaskCount;
             }
 
             loadProgress.Value = 1f;
@@ -159,6 +161,14 @@ namespace Nekoyume.TableData
                 case nameof(TableData.TradeQuestSheet):
                     TradeQuestSheet = new TradeQuestSheet();
                     TradeQuestSheet.Set(csv);
+                    break;
+                case nameof(TableData.SkillBuffSheet):
+                    SkillBuffSheet = new SkillBuffSheet();
+                    SkillBuffSheet.Set(csv);
+                    break;
+                case nameof(TableData.SetEffectSheet):
+                    SetEffectSheet = new SetEffectSheet();
+                    SetEffectSheet.Set(csv);
                     break;
                 default:
                     throw new InvalidDataException($"Not found {name} class in namespace `TableData`");

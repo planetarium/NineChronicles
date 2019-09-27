@@ -13,7 +13,7 @@ namespace Nekoyume.Game.Item
     public abstract class ItemUsable : ItemBase
     {
         public new ConsumableItemSheet.Row Data { get; }
-        
+
         public Stats Stats { get; }
         public List<Skill> Skills { get; }
         public Guid ItemId { get; }
@@ -24,9 +24,9 @@ namespace Nekoyume.Game.Item
             Stats = new Stats();
             foreach (var statData in data.Stats)
             {
-                Stats.AddStatValue(statData.type, statData.value);
+                Stats.AddStatValue(statData.StatType, statData.Value);
             }
-            
+
             Skills = new List<Skill>();
 
             ItemId = id;

@@ -35,7 +35,7 @@ namespace Nekoyume.Game.Item
         public override string ToItemInfo()
         {
             var sb = new StringBuilder();
-            if (!string.IsNullOrEmpty(Data.StatType))
+            if (Data.StatType.HasValue)
             {
                 sb.AppendLine($"{Data.ElementalType} 속성. {Data.StatType} 을 최소 {Data.StatMin} ~ 최대 {Data.StatMax} 까지 상승시켜준다.");   
             }
