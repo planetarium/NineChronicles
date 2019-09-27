@@ -29,7 +29,7 @@ namespace Nekoyume.Game.Factory
             }
             //FIXME 애니메이터 재사용시 기존 투명도가 유지되는 문제가 있음.
 //            var animator = objectPool.Get(spawnCharacter.data.Id.ToString(), true);
-            var origin = Resources.Load<GameObject>($"Character/Monster/{spawnCharacter.data.Resource}") ??
+            var origin = Resources.Load<GameObject>($"Character/Monster/{spawnCharacter.data.Id}") ??
                          Resources.Load<GameObject>($"Character/Monster/{DefaultResource}");
             var go = Instantiate(origin, enemy.transform);
             enemy.animator.ResetTarget(go);
