@@ -15,7 +15,6 @@ namespace Nekoyume.TableData
             public override int Key => Id;
             public int Id { get; private set; }
             public string Name { get; private set; }
-            public int Resource { get; private set; }
             public string Size { get; private set; }
             public ElementalType Elemental { get; private set; }
             public int HP { get; private set; }
