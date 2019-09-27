@@ -57,6 +57,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - TableCSV
+  - m_GUID: 6ea8c45db4a218c45961083efda3f37a
+    m_Address: Assets/AddressableAssets/TableCSV/EnemySkillSheet.csv
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - TableCSV
   - m_GUID: 73c03aa7f96e34d548d9f3b5b1a46d83
     m_Address: Assets/AddressableAssets/TableCSV/TradeQuestSheet.csv
     m_ReadOnly: 0
