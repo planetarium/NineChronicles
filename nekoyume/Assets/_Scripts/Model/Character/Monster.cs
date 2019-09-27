@@ -45,7 +45,11 @@ namespace Nekoyume.Model
             //TODO 몬스터별 스킬 구현
             var dmg = (int) (atk * 1.3m);
             var chance = .1m;
-            foreach (var skillRow in Game.Game.instance.TableSheets.SkillSheet)
+            var skillIds = Game.Game.instance.TableSheets.EnemySkillSheet.Values.Where(r => r.characterId == data.Id)
+                .Select(r => r.skillId).ToList();
+            var enemySkills = Game.Game.instance.TableSheets.SkillSheet.Values.Where(r => skillIds.Contains(r.Id))
+                .ToList();
+            foreach (var skillRow in enemySkills)
             {
                 var skill = SkillFactory.Get(skillRow, dmg, chance);
                 Skills.Add(skill);
