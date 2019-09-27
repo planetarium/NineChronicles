@@ -16,6 +16,7 @@ namespace Nekoyume.Model
         public StatData(StatType statType, decimal value = 0m)
         {
             StatType = statType;
+            Value = value;
         }
 
         public virtual void UpdatePlayer(Player player)
