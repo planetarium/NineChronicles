@@ -46,7 +46,7 @@ namespace Nekoyume.UI
             foreach (var id in buffs)
             {
                 if (id <= 0 || _images.ContainsKey(id)) continue;
-                var img = GetUnenabledImage();
+                var img = GetDisabledImage();
                 img.enabled = true;
                 SetSprite(img, id);
                 _images.Add(id, img);
@@ -76,7 +76,7 @@ namespace Nekoyume.UI
             iconPrefab.SetActive(false);
         }
 
-        private Image GetUnenabledImage()
+        private Image GetDisabledImage()
         {
             foreach (var image in _pool)
                 if (!image.enabled)
