@@ -3,6 +3,7 @@ using UnityEngine;
 using Nekoyume.Game;
 using System.Collections.Generic;
 using Nekoyume.TableData;
+using Nekoyume.Helper;
 
 namespace Nekoyume.UI
 {
@@ -30,7 +31,7 @@ namespace Nekoyume.UI
 
             foreach(var buff in buffs)
             {
-                int id = buff.data.id;
+                int id = buff.Data.Id;
                 if (!_images.ContainsKey(id))
                     _addList.Add(id);
                 else
@@ -92,7 +93,7 @@ namespace Nekoyume.UI
                 img.overrideSprite = null;
                 return;
             }
-            var sprite = BuffSheetRowExtension.GetIcon(id);
+            var sprite = SpriteHelper.GetBuffIcon(id);
             img.overrideSprite = sprite;
         }
     }

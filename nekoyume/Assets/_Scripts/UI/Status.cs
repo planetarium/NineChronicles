@@ -151,7 +151,7 @@ namespace Nekoyume.UI
             Toggle(_quest);
         }
 
-        public void UpdateBuff(Dictionary<BuffCategory, Buff> modelBuffs)
+        public void UpdateBuff(Dictionary<int, Buff> modelBuffs)
         {
             var buffs = modelBuffs.Values.OrderBy(r => r.Data.Id);
             buffLayout.UpdateBuff(buffs);
