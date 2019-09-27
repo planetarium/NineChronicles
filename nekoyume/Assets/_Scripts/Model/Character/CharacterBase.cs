@@ -158,7 +158,18 @@ namespace Nekoyume.Model
         public int Atk()
         {
             var calc = atk;
-            foreach (var pair in buffs)
+            foreach (var pair in buffs.Where(pair => pair.Value is AttackBuff))
+            {
+                calc = pair.Value.Use(this);
+            }
+
+            return calc;
+        }
+
+        public int Def()
+        {
+            var calc = def;
+            foreach (var pair in buffs.Where(pair => pair.Value is DefenseBuff))
             {
                 calc = pair.Value.Use(this);
             }
