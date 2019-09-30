@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Data;
+using Nekoyume.EnumType;
 using Nekoyume.Game.Item;
 using Nekoyume.Model;
 using Nekoyume.TableData;
@@ -85,7 +86,7 @@ namespace Nekoyume.Game.Quest
             quest?.Check(null, new List<ItemBase> {itemUsable});
         }
 
-        public void UpdateTradeQuest(string type)
+        public void UpdateTradeQuest(TradeType type)
         {
             var quest = quests.OfType<TradeQuest>()
                 .FirstOrDefault(i => i.Data.Type == type && !i.Complete);

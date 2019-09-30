@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Assets.SimpleLocalization;
+using Nekoyume.EnumType;
 using Nekoyume.Game.Item;
 using Nekoyume.Model;
 using Nekoyume.TableData;
@@ -29,7 +30,8 @@ namespace Nekoyume.Game.Quest
 
         public override string ToInfo()
         {
-            return LocalizationManager.LocalizeTradeQuest(Data.Type, _current, Data.Goal);
+            var format = LocalizationManager.Localize("QUEST_COLLECT_CURRENT_INFO_FORMAT");
+            return string.Format(format, Data.Type.GetLocalizedString(), _current, Data.Goal);
         }
     }
 }
