@@ -7,6 +7,7 @@ using Libplanet.Action;
 using Nekoyume.Battle;
 using Nekoyume.EnumType;
 using Nekoyume.Game;
+using UniRx;
 using UnityEngine;
 
 namespace Nekoyume.Model
@@ -41,6 +42,8 @@ namespace Nekoyume.Model
         public Dictionary<int, Buff> buffs = new Dictionary<int, Buff>();
 
         [NonSerialized] public Simulator Simulator;
+
+        [NonSerialized] public readonly Subject<Dictionary<int, Buff>> OnUpdateBuff = new Subject<Dictionary<int, Buff>>();
 
         protected CharacterBase(Simulator simulator)
         {
@@ -157,6 +160,7 @@ namespace Nekoyume.Model
                 {
                     buffs.Remove(key);
                 }
+                OnUpdateBuff.OnNext(buffs);
             }
         }
 
