@@ -1,4 +1,10 @@
 Key,English,Korean
+STAT_TYPE_HP,HP,체력
+STAT_TYPE_ATK,Attack,공격력
+STAT_TYPE_DEF,Defence,방어력
+STAT_TYPE_SPD,Speed,속도
+STAT_TYPE_CRI,Critical,치명타
+STAT_TYPE_RNG,Range,사거리
 ITEM_TYPE_Consumable,Consumable,소모품
 ITEM_TYPE_Equipment,Equipment,장비
 ITEM_TYPE_Material,Material,재료
@@ -16,3 +22,5 @@ ITEM_SUB_TYPE_EquipmentMaterial,Equipment Material,장비 재료
 ITEM_SUB_TYPE_FoodMaterial,Food Material,음식 재료
 ITEM_SUB_TYPE_MonsterPart,Monster Part,몬스터 파츠
 ITEM_SUB_TYPE_NormalMaterial,Normal Material,일반 재료
+TRADE_TYPE_Buy,Buy,구매
+TRADE_TYPE_Sell,Sell,판매

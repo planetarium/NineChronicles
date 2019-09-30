@@ -30,7 +30,9 @@ namespace Nekoyume.Game.Quest
 
         public override string ToInfo()
         {
-            return LocalizationManager.LocalizeCollectQuestInfo(Data.ItemId, current, Data.Goal);
+            var format = LocalizationManager.Localize("QUEST_COLLECT_CURRENT_INFO_FORMAT");
+            var itemName = LocalizationManager.LocalizeItemName(Data.ItemId);
+            return string.Format(format, itemName, current, Data.Goal);
         }
 
         private void Update(List<ItemBase> rewards)

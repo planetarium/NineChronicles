@@ -23,7 +23,8 @@ namespace Nekoyume.Game.Quest
 
         public override string ToInfo()
         {
-            return LocalizationManager.LocalizeBattleQuestInfo(Data.Goal);
+            var format = LocalizationManager.Localize("QUEST_BATTLE_CURRENT_INFO_FORMAT");
+            return string.Format(format, Data.Goal);
         }
     }
 }
