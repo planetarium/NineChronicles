@@ -8,7 +8,7 @@ using Nekoyume.TableData;
 namespace Nekoyume.Game
 {
     [Serializable]
-    public abstract class Buff
+    public abstract class Buff : ICloneable
     {
         public int remainedDuration;
 
@@ -46,6 +46,11 @@ namespace Nekoyume.Game
             }
 
             return target;
+        }
+
+        public object Clone()
+        {
+            return MemberwiseClone();
         }
     }
 }

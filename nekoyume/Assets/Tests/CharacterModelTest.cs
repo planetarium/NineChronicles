@@ -8,6 +8,7 @@ using Nekoyume.Game;
 using Nekoyume.Game.Item;
 using Nekoyume.Model;
 using Nekoyume.State;
+using Nekoyume.TableData;
 using NUnit.Framework;
 using UnityEngine.TestTools;
 
@@ -22,7 +23,7 @@ namespace Tests
         public IEnumerator CharacterModelSetup()
         {
             yield return SetUp();
-             _random = new TestRandom();
+            _random = new TestRandom();
             var address = new Address();
             var agentAddress = new Address();
             var avatarState = new AvatarState(address, agentAddress, 1);
@@ -42,7 +43,8 @@ namespace Tests
 
             //Check selected skill is first
             var skill = monster.Skills.Select(_random);
-            Assert.AreEqual(1, skill.effect.id);
+            var id = monster.Skills.OrderBy(i => i.chance).First().skillRow.SkillEffectId;
+            Assert.AreEqual(id, skill.effect.id);
         }
 
         [Test]
@@ -59,6 +61,26 @@ namespace Tests
             //Check selected skill is first
             var selected = _player.Skills.Select(_random);
             Assert.AreEqual(1, selected.effect.id);
+        }
+
+        [Test]
+        public void CheckBuff()
+        {
+            _player.targets.Add(_player);
+            var skill = _player.Skills.First();
+            skill.buffs = skill.skillRow.GetBuffs().Select(BuffFactory.Get).ToList();
+            Assert.AreEqual(2, skill.buffs.Count);
+            Assert.AreEqual(0, _player.buffs.Count);
+            skill.Use(_player);
+            Assert.AreEqual(2, _player.buffs.Count);
+            foreach (var pair in _player.buffs)
+            {
+                var playerBuff = pair.Value;
+                var skillBuff = skill.buffs.First(i => i.Data.GroupId == pair.Key);
+                Assert.AreEqual(playerBuff.remainedDuration, skillBuff.remainedDuration);
+                playerBuff.remainedDuration--;
+                Assert.Greater(skillBuff.remainedDuration, playerBuff.remainedDuration);
+            }
         }
 
         private class TestRandom : IRandom
