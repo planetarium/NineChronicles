@@ -10,12 +10,12 @@ using Nekoyume.Data;
 using Nekoyume.Data.Table;
 using Nekoyume.EnumType;
 using Nekoyume.Game;
-using Nekoyume.Game.Buff;
 using Nekoyume.Game.Factory;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Mail;
 using Nekoyume.Model;
 using Nekoyume.State;
+using Nekoyume.TableData;
 using UnityEngine;
 using Skill = Nekoyume.Game.Skill;
 
@@ -30,7 +30,7 @@ namespace Nekoyume.Action
             public int id;
             public int count;
 
-            public Material(UI.Model.CountableItem item) : this(item.item.Value.Data.id, item.count.Value)
+            public Material(UI.Model.CountableItem item) : this(item.item.Value.Data.Id, item.count.Value)
             {
             }
 
@@ -130,7 +130,7 @@ namespace Nekoyume.Action
                         zippedMaterials.Add(new Material(source.id, source.count));
                     }
                 }
-                
+
                 var orderedMaterials = zippedMaterials
                     .OrderByDescending(order => order.count)
                     .ToList();
@@ -138,10 +138,11 @@ namespace Nekoyume.Action
                     return states;
 
                 var equipmentMaterial = equipmentMaterials[0];
-                if (!Tables.instance.Item.TryGetValue(equipmentMaterial.id, out var outEquipmentMaterialRow))
+                if (!Game.Game.instance.TableSheets.MaterialItemSheet.TryGetValue(equipmentMaterial.id,
+                    out var outEquipmentMaterialRow))
                     return states;
 
-                if (!TryGetItemType(outEquipmentMaterialRow.id, out var outItemType))
+                if (!TryGetItemType(outEquipmentMaterialRow.Id, out var outItemType))
                     return states;
 
                 var itemId = ctx.Random.GenerateRandomGuid();
@@ -149,15 +150,16 @@ namespace Nekoyume.Action
                 var isFirst = true;
                 foreach (var monsterPartsMaterial in orderedMaterials)
                 {
-                    if (!Tables.instance.Item.TryGetValue(monsterPartsMaterial.id, out var outMonsterPartsMaterialRow))
+                    if (!Game.Game.instance.TableSheets.MaterialItemSheet.TryGetValue(monsterPartsMaterial.id,
+                        out var outMonsterPartsMaterialRow))
                         return states;
 
                     if (isFirst)
                     {
                         isFirst = false;
 
-                        if (!TryGetItemEquipmentRow(outItemType, outMonsterPartsMaterialRow.elemental,
-                            outEquipmentMaterialRow.grade,
+                        if (!TryGetItemEquipmentRow(outItemType, outMonsterPartsMaterialRow.ElementalType,
+                            outEquipmentMaterialRow.Grade,
                             out var itemEquipmentRow))
                             return states;
 
@@ -177,7 +179,7 @@ namespace Nekoyume.Action
                     var roll = GetRoll(monsterPartsMaterial.count, 0, normalizedRandomValue);
 
                     if (TryGetStat(outMonsterPartsMaterialRow, roll, out var statMap))
-                        equipment.Stats.AddStatAdditionalValue(statMap.Key, statMap.Value);
+                        equipment.Stats.AddStatAdditionalValue(statMap.StatType, statMap.Value);
 
                     if (TryGetSkill(outMonsterPartsMaterialRow, roll, out var skill))
                         equipment.Skills.Add(skill);
@@ -191,14 +193,15 @@ namespace Nekoyume.Action
             else
             {
                 var orderedMaterials = Materials.OrderBy(order => order.id).ToList();
-                ItemEquipment itemEquipmentRow = null;
+                EquipmentItemSheet.Row itemEquipmentRow = null;
                 // 소모품
                 foreach (var recipe in recipeTable)
                 {
                     if (!recipe.Value.IsMatchForConsumable(orderedMaterials))
                         continue;
 
-                    if (!Tables.instance.ItemEquipment.TryGetValue(recipe.Value.ResultId, out itemEquipmentRow))
+                    if (!Game.Game.instance.TableSheets.EquipmentItemSheet.TryGetValue(recipe.Value.ResultId,
+                        out itemEquipmentRow))
                         break;
 
                     if (recipe.Value.GetCombinationResultCountForConsumable(orderedMaterials) == 0)
@@ -206,7 +209,7 @@ namespace Nekoyume.Action
                 }
 
                 if (itemEquipmentRow == null &&
-                    !Tables.instance.ItemEquipment.TryGetValue(GameConfig.CombinationDefaultFoodId,
+                    !Game.Game.instance.TableSheets.EquipmentItemSheet.TryGetValue(GameConfig.CombinationDefaultFoodId,
                         out itemEquipmentRow))
                     return states;
 
@@ -225,48 +228,48 @@ namespace Nekoyume.Action
             return states.SetState(ctx.Signer, agentState);
         }
 
-        private bool TryGetItemType(int itemId, out ItemBase.ItemType outItemType)
+        private bool TryGetItemType(int itemId, out ItemSubType outItemType)
         {
             var type = itemId.ToString().Substring(0, 4);
             switch (type)
             {
                 case "3030":
-                    outItemType = ItemBase.ItemType.Weapon;
+                    outItemType = ItemSubType.Weapon;
                     return true;
                 case "3031":
-                    outItemType = ItemBase.ItemType.Armor;
+                    outItemType = ItemSubType.Armor;
                     return true;
                 case "3032":
-                    outItemType = ItemBase.ItemType.Belt;
+                    outItemType = ItemSubType.Belt;
                     return true;
                 case "3033":
-                    outItemType = ItemBase.ItemType.Necklace;
+                    outItemType = ItemSubType.Necklace;
                     return true;
                 case "3034":
-                    outItemType = ItemBase.ItemType.Ring;
+                    outItemType = ItemSubType.Ring;
                     return true;
                 default:
-                    outItemType = ItemBase.ItemType.Material;
+                    outItemType = ItemSubType.Armor;
                     return false;
             }
         }
 
-        private static bool TryGetItemEquipmentRow(ItemBase.ItemType itemType, ElementalType elementalType,
-            int grade, out ItemEquipment outItemEquipmentRow)
+        private static bool TryGetItemEquipmentRow(ItemSubType itemSubType, ElementalType elementalType,
+            int grade, out EquipmentItemSheet.Row outItemEquipmentRow)
         {
-            foreach (var pair in Tables.instance.ItemEquipment)
+            foreach (var row in Game.Game.instance.TableSheets.EquipmentItemSheet)
             {
-                if (pair.Value.cls.ToEnumItemType() != itemType ||
-                    pair.Value.elemental != elementalType ||
-                    pair.Value.grade != grade)
+                if (row.ItemSubType != itemSubType ||
+                    row.ElementalType != elementalType ||
+                    row.Grade != grade)
                     continue;
 
-                outItemEquipmentRow = pair.Value;
+                outItemEquipmentRow = row;
                 return true;
             }
 
             outItemEquipmentRow = null;
-            
+
             return false;
         }
 
@@ -283,41 +286,34 @@ namespace Nekoyume.Action
                    DecimalEx.Pow(normalizedRandomValue, GameConfig.CombinationValueR1);
         }
 
-        private static bool TryGetStat(Item itemRow, decimal roll, out StatMap statMap)
+        private static bool TryGetStat(MaterialItemSheet.Row itemRow, decimal roll, out StatMap statMap)
         {
-            if (string.IsNullOrEmpty(itemRow.stat))
+            if (!itemRow.StatType.HasValue)
             {
                 statMap = null;
 
                 return false;
             }
 
-            var key = itemRow.stat;
-            var value = Math.Floor(itemRow.minStat + (itemRow.maxStat - itemRow.minStat) * roll);
+            var key = itemRow.StatType.Value;
+            var value = Math.Floor(itemRow.StatMin + (itemRow.StatMax - itemRow.StatMin) * roll);
             statMap = new StatMap(key, value);
             return true;
         }
 
-        public static bool TryGetSkill(Item monsterParts, decimal roll, out Skill skill)
+        public static bool TryGetSkill(MaterialItemSheet.Row monsterParts, decimal roll, out Skill skill)
         {
-            var table = Game.Game.instance.TableSheets.SkillSheet;
             try
             {
-                var skillRow = table.OrderedList.First(r => r.Id == monsterParts.skillId);
-                var chance = Math.Floor(monsterParts.minChance +
-                                        (monsterParts.maxChance - monsterParts.minChance) * roll);
-                chance = Math.Max(monsterParts.minChance, chance);
-                var value = (int) Math.Floor(monsterParts.minDamage +
-                                             (monsterParts.maxDamage - monsterParts.minDamage) * roll);
+                var skillRow =
+                    Game.Game.instance.TableSheets.SkillSheet.OrderedList.First(r => r.Id == monsterParts.SkillId);
+                var chance = Math.Floor(monsterParts.SkillChanceMin +
+                                        (monsterParts.SkillChanceMax - monsterParts.SkillChanceMin) * roll);
+                chance = Math.Max(monsterParts.SkillChanceMin, chance);
+                var value = (int) Math.Floor(monsterParts.SkillDamageMin +
+                                             (monsterParts.SkillDamageMax - monsterParts.SkillDamageMin) * roll);
 
                 skill = SkillFactory.Get(skillRow, value, chance);
-
-                foreach (var row in Game.Game.instance.TableSheets.BuffSheet.Values.OrderBy(r => r.id))
-                {
-                    var buff = BuffFactory.Get(row);
-                    skill.buffs.Add(buff);
-                }
-
 
                 return true;
             }
@@ -329,7 +325,7 @@ namespace Nekoyume.Action
             }
         }
 
-        private static ItemUsable GetFood(ItemEquipment itemEquipment, Guid itemId)
+        private static ItemUsable GetFood(EquipmentItemSheet.Row equipmentItemRow, Guid itemId)
         {
             // FixMe. 소모품에 랜덤 스킬을 할당했을 때, `HackAndSlash` 액션에서 예외 발생. 그래서 소모품은 랜덤 스킬을 할당하지 않음.
             /*
@@ -348,7 +344,7 @@ namespace Nekoyume.Action
              * Nekoyume.BlockChain.<CoMiner>d__31:MoveNext() (at Assets/_Scripts/BlockChain/Agent.cs:208)
              * UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
              */
-            return (ItemUsable) ItemFactory.Create(itemEquipment, itemId);
+            return (ItemUsable) ItemFactory.Create(equipmentItemRow, itemId);
         }
     }
 }

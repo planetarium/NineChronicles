@@ -1,12 +1,12 @@
 using System;
+using Nekoyume.TableData;
 
 namespace Nekoyume.Game.Item
 {
     [Serializable]
     public class Ring : Equipment
     {
-        public Ring(Data.Table.Item data, Guid id)
-            : base(data, id)
+        public Ring(EquipmentItemSheet.Row data, Guid id) : base(data, id)
         {
         }
     }

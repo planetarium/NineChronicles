@@ -1,9 +1,10 @@
 using System;
+using DecimalMath;
 using Nekoyume.EnumType;
 using Nekoyume.Model;
 using Nekoyume.TableData;
 
-namespace Nekoyume.Game.Buff
+namespace Nekoyume.Game
 {
     [Serializable]
     public class DefenseBuff : Buff
@@ -12,10 +13,9 @@ namespace Nekoyume.Game.Buff
         {
         }
 
-        public override BuffCategory Category => BuffCategory.Defense;
         public override int Use(CharacterBase characterBase)
         {
-            return characterBase.def * (100 + effect) / 100;
+            return (int) (characterBase.def * (1 + Data.Effect / 100f));
         }
     }
 }

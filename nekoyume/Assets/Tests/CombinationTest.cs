@@ -2,6 +2,7 @@ using System.Collections;
 using System.Linq;
 using Nekoyume.BlockChain;
 using Nekoyume.Data;
+using Nekoyume.Game;
 using Nekoyume.Game.Factory;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Mail;
@@ -21,12 +22,12 @@ namespace Tests
         [Test]
         public void GetEquipmentWithSkills()
         {
-            var equipmentRow = Tables.instance.ItemEquipment.First().Value;
+            var equipmentRow = Game.instance.TableSheets.EquipmentItemSheet.First;
             var equipment = (Equipment) ItemFactory.Create(equipmentRow, default);
             Assert.NotNull(equipment);
 
-            var partRows = Tables.instance.Item.Select(i => i.Value)
-                .Where(r => r.skillId > 0 && r.skillId < 200000)
+            var partRows = Game.instance.TableSheets.MaterialItemSheet.Select(i => i.Value)
+                .Where(r => r.SkillId > 0 && r.SkillId < 200000)
                 .Take(3)
                 .ToList();
             foreach (var partRow in partRows)
@@ -42,9 +43,9 @@ namespace Tests
             {
                 var skill = skillAndPartRow.skill;
                 var partRow = skillAndPartRow.partRow;
-                Assert.AreEqual(partRow.minChance, skill.chance);
-                Assert.AreEqual(partRow.elemental, skill.skillRow.ElementalType);
-                Assert.AreEqual(partRow.minDamage, skill.power);
+                Assert.AreEqual(partRow.SkillChanceMin, skill.chance);
+                Assert.AreEqual(partRow.ElementalType, skill.skillRow.ElementalType);
+                Assert.AreEqual(partRow.SkillDamageMin, skill.power);
             }
         }
 
@@ -82,7 +83,7 @@ namespace Tests
             foreach (var material in new[] {row.Material1, row.Material2})
             {
                 var index = States.Instance.currentAvatarState.Value.inventory.Items.ToList()
-                    .FindIndex(i => i.item.Data.id == material);
+                    .FindIndex(i => i.item.Data.Id == material);
                 InventoryItemView item;
                 while (true)
                 {

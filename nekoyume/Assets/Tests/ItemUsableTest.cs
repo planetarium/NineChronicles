@@ -11,7 +11,7 @@ namespace Tests
         [Test]
         public void Equals()
         {
-            var row = Tables.instance.ItemEquipment.Values.First();
+            var row = Nekoyume.Game.Game.instance.TableSheets.EquipmentItemSheet.First;
             var id1 = new Guid();
             var item1 = ItemFactory.Create(row, Guid.NewGuid());
             var item2 = ItemFactory.Create(row, Guid.NewGuid());

@@ -4,6 +4,7 @@ using Assets.SimpleLocalization;
 using Nekoyume.Data.Table;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Item;
+using Nekoyume.TableData;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
@@ -110,8 +111,8 @@ namespace Nekoyume.UI.Module
             iconArea.itemView.SetData(Model.item.Value);
 
             // 속성.
-            var sprite = itemRow.elemental.GetSprite();
-            var elementalCount = itemRow.grade;
+            var sprite = itemRow.ElementalType.GetSprite();
+            var elementalCount = itemRow.Grade;
             for (var i = 0; i < iconArea.elementalTypeImages.Count; i++)
             {
                 var image = iconArea.elementalTypeImages[i];
@@ -127,7 +128,7 @@ namespace Nekoyume.UI.Module
             }
 
             // 텍스트.
-            if (Model.item.Value.item.Value.Data.cls.ToEnumItemType() == ItemBase.ItemType.Material)
+            if (Model.item.Value.item.Value.Data.ItemType == ItemType.Material)
             {
                 iconArea.commonText.enabled = false;
             }
@@ -147,7 +148,7 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            descriptionArea.text.text = Model.item.Value.item.Value.Data.LocalizedDescription;
+            descriptionArea.text.text = Model.item.Value.item.Value.Data.GetLocalizedDescription();
             descriptionArea.root.gameObject.SetActive(true);
         }
 
@@ -187,9 +188,11 @@ namespace Nekoyume.UI.Module
                 statsArea.levelLimitText.enabled = false;
                 
                 var data = Model.item.Value.item.Value.Data;
-                if (!string.IsNullOrEmpty(data.stat))
+                if (data.ItemType == ItemType.Material &&
+                    data is MaterialItemSheet.Row materialData &&
+                    materialData.StatType.HasValue)
                 {
-                    AddStat(new Model.ItemInformationStat(data));
+                    AddStat(new Model.ItemInformationStat(materialData));
                     statCount++;
                 }
             }
@@ -225,10 +228,12 @@ namespace Nekoyume.UI.Module
             }
             else
             {
-                var itemRow = Model.item.Value.item.Value.Data;
-                if (itemRow.skillId != 0)
+                var data = Model.item.Value.item.Value.Data;
+                if (data.ItemType == ItemType.Material &&
+                    data is MaterialItemSheet.Row materialData &&
+                    materialData.SkillId != 0)
                 {
-                    AddSkill(new Model.ItemInformationSkill(itemRow));
+                    AddSkill(new Model.ItemInformationSkill(materialData));
                     skillCount++;
                 }
             }

@@ -1,4 +1,6 @@
 using System;
+using Nekoyume.TableData;
+using Nekoyume.EnumType;
 
 namespace Nekoyume.Game.Item
 {
@@ -7,13 +9,16 @@ namespace Nekoyume.Game.Item
     {
         public bool equipped = false;
 
-        public Equipment(Data.Table.Item data, Guid id)
-            : base(data, id)
+        public new EquipmentItemSheet.Row Data { get; }
+
+        public Equipment(EquipmentItemSheet.Row data, Guid id) : base(data, id)
         {
-            //TODO 논의후 테이블에 제대로 설정되야함.
-            Stats.AddStatValue("turnSpeed", Data.turnSpeed);
-            //TODO 장비대신 스킬별 사거리를 사용해야함.
-            Stats.AddStatValue("attackRange", Data.attackRange);
+            Data = data;
+
+            // //TODO 논의후 테이블에 제대로 설정되야함.
+            // Stats.AddStatValue(StatType.SPD, Data.turnSpeed);
+            // //TODO 장비대신 스킬별 사거리를 사용해야함.
+            // Stats.AddStatValue(StatType.RNG, Data.attackRange);
         }
 
         public bool Equip()

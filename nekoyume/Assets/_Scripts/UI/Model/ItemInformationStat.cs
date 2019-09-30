@@ -1,5 +1,7 @@
 using System;
+using Nekoyume.EnumType;
 using Nekoyume.Model;
+using Nekoyume.TableData;
 using UniRx;
 
 namespace Nekoyume.UI.Model
@@ -9,16 +11,18 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<string> key = new ReactiveProperty<string>();
         public readonly ReactiveProperty<string> value = new ReactiveProperty<string>();
 
-        public ItemInformationStat(Data.Table.Item itemRow)
+        public ItemInformationStat(MaterialItemSheet.Row itemRow)
         {
-            key.Value = itemRow.stat.ToStatString();
-            value.Value = $"{itemRow.minStat} - {itemRow.maxStat}";
+            key.Value = itemRow.StatType.HasValue
+                ? itemRow.StatType.Value.GetLocalizedString()
+                : $"{nameof(itemRow.StatType)} has not value";
+            value.Value = $"{itemRow.StatMin} - {itemRow.StatMax}";
         }
 
-        public ItemInformationStat(IStatMap statMap)
+        public ItemInformationStat(StatMap statMap)
         {
-            key.Value = statMap.Key;
-            value.Value = $"{statMap.TotalValue}";
+            key.Value = statMap.StatType.GetLocalizedString();
+            value.Value = $"{statMap.TotalValueAsInt}";
         }
 
         public void Dispose()

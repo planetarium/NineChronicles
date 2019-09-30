@@ -7,7 +7,6 @@ using Libplanet.Action;
 using Nekoyume.Battle;
 using Nekoyume.EnumType;
 using Nekoyume.Game;
-using Nekoyume.Game.Buff;
 using UnityEngine;
 
 namespace Nekoyume.Model
@@ -16,15 +15,11 @@ namespace Nekoyume.Model
     public abstract class CharacterBase : ICloneable
     {
         public readonly List<CharacterBase> targets = new List<CharacterBase>();
-        [InformationField]
-        public int hp;
-        [InformationField]
-        public int atk;
-        [InformationField]
-        public int def;
+        [InformationField] public int hp;
+        [InformationField] public int atk;
+        [InformationField] public int def;
         public int currentHP;
-        [InformationField]
-        public decimal luck;
+        [InformationField] public decimal luck;
 
         public const decimal CriticalMultiplier = 1.5m;
         public int level;
@@ -37,13 +32,13 @@ namespace Nekoyume.Model
         private Game.Skill _selectedSkill;
 
         [NonSerialized] private Root _root;
-        
+
         public bool IsDead => currentHP <= 0;
         public Guid id = Guid.NewGuid();
         public float attackRange = 1.0f;
         public float runSpeed = 1.0f;
         public string characterSize = "s";
-        public Dictionary<BuffCategory, Buff> buffs = new Dictionary<BuffCategory, Buff>();
+        public Dictionary<int, Buff> buffs = new Dictionary<int, Buff>();
 
         [NonSerialized] public Simulator Simulator;
 
@@ -51,7 +46,7 @@ namespace Nekoyume.Model
         {
             Simulator = simulator;
         }
-        
+
         public void InitAI()
         {
             SetSkill();
@@ -103,7 +98,7 @@ namespace Nekoyume.Model
         {
             var dead = new Dead
             {
-                character = (CharacterBase) Clone(),
+                character = (CharacterBase)Clone(),
             };
             Simulator.Log.Add(dead);
         }
@@ -123,7 +118,7 @@ namespace Nekoyume.Model
             {
                 throw new KeyNotFoundException("100000");
             }
-            
+
             var attack = SkillFactory.Get(skillRow, atk, 1m);
             Skills.Add(attack);
         }
@@ -150,10 +145,10 @@ namespace Nekoyume.Model
             foreach (var key in keyList)
             {
                 var buff = buffs[key];
-                var before = buff.time;
-                buff.time--;
-                Debug.Log($"Decrease {buff} time. from: {before} to: {buff.time}");
-                if (buff.time <= 0)
+                var before = buff.remainedDuration;
+                buff.remainedDuration--;
+                Debug.Log($"Decrease {buff} time. from: {before} to: {buff.remainedDuration}");
+                if (buff.remainedDuration <= 0)
                 {
                     buffs.Remove(key);
                 }
@@ -163,7 +158,18 @@ namespace Nekoyume.Model
         public int Atk()
         {
             var calc = atk;
-            foreach (var pair in buffs)
+            foreach (var pair in buffs.Where(pair => pair.Value is AttackBuff))
+            {
+                calc = pair.Value.Use(this);
+            }
+
+            return calc;
+        }
+
+        public int Def()
+        {
+            var calc = def;
+            foreach (var pair in buffs.Where(pair => pair.Value is DefenseBuff))
             {
                 calc = pair.Value.Use(this);
             }
@@ -173,8 +179,13 @@ namespace Nekoyume.Model
 
         public void AddBuff(Buff buff)
         {
-            Debug.Log($"{this} Add {buff}. Type: {buff.Category} Effect: {buff.effect} Time: {buff.time} Chance: {buff.chance}");
-            buffs[buff.Category] = buff;
+            Debug.Log(
+                $"Add {buff}. Type: {buff.Data.StatType} Effect: {buff.Data.Effect} Time: {buff.remainedDuration} Chance: {buff.Data.Chance}");
+            if (buffs.TryGetValue(buff.Data.GroupId, out var outBuff) &&
+                outBuff.Data.Id > buff.Data.Id)
+                return;
+
+            buffs[buff.Data.GroupId] = buff;
         }
 
         public bool GetChance(int chance)
@@ -198,7 +209,7 @@ namespace Nekoyume.Model
             {
                 return;
             }
-            
+
             _skills.Add(s);
         }
 
@@ -220,7 +231,7 @@ namespace Nekoyume.Model
         public Game.Skill Select(IRandom random)
         {
             var selected = _skills
-                .Select(skill => new {skill, chance = random.Next(0, 100000) * 0.00001m})
+                .Select(skill => new { skill, chance = random.Next(0, 100000) * 0.00001m })
                 .Where(t => t.skill.chance > t.chance)
                 .Select(t => t.skill)
                 .OrderBy(s => s.chance)

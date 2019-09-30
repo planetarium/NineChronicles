@@ -12,7 +12,7 @@ namespace Nekoyume.TableData
         where TValue : SheetRow<TKey>, new()
     {
         private readonly List<int> _invalidColumnIndexes = new List<int>();
-        
+
         private IOrderedEnumerable<TValue> _enumerable;
         private List<TValue> _orderedList;
         private TValue _first;
@@ -50,7 +50,8 @@ namespace Nekoyume.TableData
             var linesWithoutColumnName = lines.Skip(1);
             foreach (var line in linesWithoutColumnName)
             {
-                if (line.StartsWith("_"))
+                if (line.StartsWith(",") ||
+                    line.StartsWith("_"))
                 {
                     continue;
                 }
@@ -64,6 +65,34 @@ namespace Nekoyume.TableData
                 AddRow(row.Key, row);
             }
 
+            PostSet();
+        }
+
+        public void Set<T>(Sheet<TKey, T> sheet, bool executePostSet = true) where T : TValue, new()
+        {
+            foreach (var sheetRow in sheet)
+            {
+                AddRow(sheetRow.Key, sheetRow);
+            }
+
+            if (executePostSet)
+            {
+                PostSet();
+            }
+        }
+
+        public new IEnumerator<TValue> GetEnumerator()
+        {
+            return _enumerable.GetEnumerator();
+        }
+
+        protected virtual void AddRow(TKey key, TValue value)
+        {
+            Add(key, value);
+        }
+
+        private void PostSet()
+        {
             foreach (var value in Values)
             {
                 value.EndOfSheetInitialize();
@@ -73,16 +102,6 @@ namespace Nekoyume.TableData
             _orderedList = _enumerable.ToList();
             _first = _orderedList.First();
             _last = _orderedList.Last();
-        }
-
-        public new IEnumerator<TValue> GetEnumerator()
-        {
-            return _enumerable.GetEnumerator();
-        }
-        
-        protected virtual void AddRow(TKey key, TValue value)
-        {
-            Add(key, value);
         }
 
         private bool TryGetRow(string csv, out TValue row)

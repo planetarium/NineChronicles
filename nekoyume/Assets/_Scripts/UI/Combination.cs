@@ -13,6 +13,7 @@ using Stage = Nekoyume.Game.Stage;
 using Assets.SimpleLocalization;
 using Nekoyume.Helper;
 using Nekoyume.Data;
+using Nekoyume.Game.Factory;
 
 namespace Nekoyume.UI
 {
@@ -388,7 +389,7 @@ namespace Nekoyume.UI
             {
                 if (materialInfo.id == 0) break;
                 CombinationMaterial material = new CombinationMaterial(
-                    Tables.instance.CreateItemBase(materialInfo.id), 1, 1, 1);
+                    ItemFactory.CreateMaterial(materialInfo.id), 1, 1, 1);
                 materials.Add(material);
             }
 
@@ -404,7 +405,7 @@ namespace Nekoyume.UI
             Model.RemoveEquipmentMaterial();
             foreach (var material in materials)
             {
-                States.Instance.currentAvatarState.Value.inventory.RemoveFungibleItem(material.item.Value.Data.id,
+                States.Instance.currentAvatarState.Value.inventory.RemoveFungibleItem(material.item.Value.Data.Id,
                     material.count.Value);
             }
             while (Model.materials.Count > 0)

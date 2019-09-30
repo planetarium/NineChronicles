@@ -86,7 +86,7 @@ namespace Nekoyume.UI.Module
             var itemSprite = item.GetIconSprite();
             if (itemSprite is null)
             {
-                throw new FailedToLoadResourceException<Sprite>(item.Data.id.ToString());
+                throw new FailedToLoadResourceException<Sprite>(item.Data.Id.ToString());
             }
 
             iconImage.enabled = true;
@@ -96,7 +96,7 @@ namespace Nekoyume.UI.Module
             var gradeSprite = item.GetBackgroundSprite();
             if (gradeSprite is null)
             {
-                throw new FailedToLoadResourceException<Sprite>(item.Data.grade.ToString());
+                throw new FailedToLoadResourceException<Sprite>(item.Data.Grade.ToString());
             }
 
             if (gradeImage)

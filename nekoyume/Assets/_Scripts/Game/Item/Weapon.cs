@@ -1,4 +1,5 @@
 using System;
+using Nekoyume.TableData;
 using UnityEngine;
 
 namespace Nekoyume.Game.Item
@@ -12,7 +13,7 @@ namespace Nekoyume.Game.Item
         {
             return equipment is null
                 ? null
-                : GetSprite(equipment.Data.resourceId);
+                : GetSprite(equipment.Data.Id);
         }
         
         public new static Sprite GetSprite(int equipmentId)
@@ -20,8 +21,7 @@ namespace Nekoyume.Game.Item
             return Resources.Load<Sprite>(string.Format(SpritePath, equipmentId));
         }
 
-        public Weapon(Data.Table.Item data, Guid id)
-            : base(data, id)
+        public Weapon(EquipmentItemSheet.Row data, Guid id) : base(data, id)
         {
         }
     }

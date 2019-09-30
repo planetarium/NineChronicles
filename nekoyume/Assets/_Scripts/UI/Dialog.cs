@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Assets.SimpleLocalization;
 using Nekoyume.BlockChain;
 using Nekoyume.Helper;
+using Nekoyume.TableData;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -95,7 +96,7 @@ namespace Nekoyume.UI
             if (Game.Game.instance.TableSheets.CharacterSheet.TryGetValue(_characterId, out var characterData))
             {
                 var localizedName = LocalizationManager.LocalizeCharacterName(_characterId);
-                var res = Resources.Load<Sprite>($"Images/character_{characterData.Resource}");
+                var res = Resources.Load<Sprite>($"Images/character_{characterData.Id}");
                 imgCharacter.sprite = res;
                 imgCharacter.SetNativeSize();
                 imgCharacter.enabled = imgCharacter.sprite != null;
@@ -203,17 +204,9 @@ namespace Nekoyume.UI
 
                                 break;
                             case "item":
-                                if (Data.Tables.instance.Item.TryGetValue(pairValue, out var itemData))
+                                if (Game.Game.instance.TableSheets.ItemSheet.TryGetValue(pairValue, out var itemData))
                                 {
-                                    var localizedItemName = itemData.LocalizedName;
-                                    left = $"{left}<color={_itemTextColor}>{localizedItemName}</color>";
-                                }
-
-                                break;
-                            case "item_equip":
-                                if (Data.Tables.instance.ItemEquipment.TryGetValue(pairValue, out var itemEquipData))
-                                {
-                                    var localizedItemName = itemEquipData.LocalizedName;
+                                    var localizedItemName = itemData.GetLocalizedName();
                                     left = $"{left}<color={_itemTextColor}>{localizedItemName}</color>";
                                 }
 

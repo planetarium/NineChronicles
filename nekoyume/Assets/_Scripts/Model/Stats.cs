@@ -1,55 +1,72 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Nekoyume.EnumType;
 using Nekoyume.TableData;
 
 namespace Nekoyume.Model
 {
-    public interface IStatMap
+    [Serializable]
+    public class StatData
     {
-        string Key { get; }
-        decimal Value { get; set; }
-        decimal AdditionalValue { get; set; }
-        int TotalValue { get; }
-        decimal TotalValueRaw { get; }
-        string GetInformation();
-        void GetInformation(out string key, out string value);
-        void UpdatePlayer(Player player);
+        public StatType StatType { get; }
+        public decimal Value { get; set; }
+        public int ValueAsInt => (int) Value;
+
+        public StatData(StatType statType, decimal value = 0m)
+        {
+            StatType = statType;
+            Value = value;
+        }
+
+        public virtual void UpdatePlayer(Player player)
+        {
+            switch (StatType)
+            {
+                case StatType.HP:
+                    player.currentHP += ValueAsInt;
+                    player.hp += ValueAsInt;
+                    break;
+                case StatType.ATK:
+                    player.atk += ValueAsInt;
+                    break;
+                case StatType.DEF:
+                    player.def += ValueAsInt;
+                    break;
+                case StatType.SPD:
+                    player.TurnSpeed = ValueAsInt;
+                    break;
+                case StatType.CRI:
+                    player.luck += ValueAsInt * 0.01m;
+                    break;
+                case StatType.RNG:
+                    player.attackRange = ValueAsInt;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
     }
 
     [Serializable]
-    public class StatMap : IStatMap
+    public class StatMap : StatData
     {
-        public string Key { get; }
-        public decimal Value { get; set; }
         public decimal AdditionalValue { get; set; }
-        public int TotalValue => (int) (Value + AdditionalValue);
-        public decimal TotalValueRaw => Value + AdditionalValue;
+        public decimal TotalValue => Value + AdditionalValue;
+        public int TotalValueAsInt => (int) (Value + AdditionalValue);
 
-        public StatMap(string key)
+        public StatMap(StatType statType, decimal value = 0m, decimal additionalValue = 0m) : base(statType, value)
         {
-            Key = key;
-            Value = 0m;
-            AdditionalValue = 0m;
-        }
-
-        public StatMap(string key, decimal value)
-        {
-            Key = key;
-            Value = value;
-            AdditionalValue = 0m;
-        }
-
-        public StatMap(string key, decimal value, decimal additionalValue)
-        {
-            Key = key;
-            Value = value;
             AdditionalValue = additionalValue;
+        }
+
+        public StatMap(StatData statData) : this(statData.StatType, statData.Value)
+        {
         }
 
         private bool Equals(StatMap other)
         {
-            return string.Equals(Key, other.Key) &&
+            return string.Equals(StatType, other.StatType) &&
                    Value.Equals(other.Value) &&
                    AdditionalValue.Equals(other.AdditionalValue);
         }
@@ -66,7 +83,7 @@ namespace Nekoyume.Model
         {
             unchecked
             {
-                var hashCode = (Key != null ? Key.GetHashCode() : 0);
+                var hashCode = (StatType != null ? StatType.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ Value.GetHashCode();
                 hashCode = (hashCode * 397) ^ AdditionalValue.GetHashCode();
                 return hashCode;
@@ -75,16 +92,13 @@ namespace Nekoyume.Model
 
         public string GetInformation()
         {
-            if (Key == "turnSpeed" || Key == "attackRange")
+            if (StatType == StatType.SPD ||
+                StatType == StatType.RNG)
             {
                 return "";
             }
 
-            var translatedText = TranslateKeyToString();
-            if (string.IsNullOrEmpty(translatedText))
-            {
-                return "";
-            }
+            var translatedText = StatType.GetLocalizedString();
 
             if (Value > 0m)
             {
@@ -100,7 +114,8 @@ namespace Nekoyume.Model
 
         public void GetInformation(out string key, out string value)
         {
-            if (Key == "turnSpeed" || Key == "attackRange")
+            if (StatType == StatType.SPD ||
+                StatType == StatType.RNG)
             {
                 key = "";
                 value = "";
@@ -108,13 +123,7 @@ namespace Nekoyume.Model
                 return;
             }
 
-            key = TranslateKeyToString();
-            if (string.IsNullOrEmpty(key))
-            {
-                value = "";
-
-                return;
-            }
+            key = StatType.GetLocalizedString();
 
             if (Value > 0m)
             {
@@ -130,50 +139,31 @@ namespace Nekoyume.Model
                 : "";
         }
 
-        public string TranslateKeyToString()
+        public override void UpdatePlayer(Player player)
         {
-            switch (Key)
+            switch (StatType)
             {
-                case "damage":
-                    return "공격력";
-                case "defense":
-                    return "방어력";
-                case "health":
-                    return "체력";
-                case "luck":
-                    return "행운";
-                case "turnSpeed":
-                    return "행동력";
-                case "attackRange":
-                    return "공격 거리";
+                case StatType.HP:
+                    player.currentHP += TotalValueAsInt;
+                    player.hp += TotalValueAsInt;
+                    break;
+                case StatType.ATK:
+                    player.atk += TotalValueAsInt;
+                    break;
+                case StatType.DEF:
+                    player.def += TotalValueAsInt;
+                    break;
+                case StatType.SPD:
+                    player.TurnSpeed = TotalValueAsInt;
+                    break;
+                case StatType.CRI:
+                    player.luck += TotalValueAsInt * 0.01m;
+                    break;
+                case StatType.RNG:
+                    player.attackRange = TotalValueAsInt;
+                    break;
                 default:
-                    return "";
-            }
-        }
-
-        public void UpdatePlayer(Player player)
-        {
-            switch (Key)
-            {
-                case "damage":
-                    player.atk += TotalValue;
-                    break;
-                case "defense":
-                    player.def += TotalValue;
-                    break;
-                case "health":
-                    player.currentHP += TotalValue;
-                    player.hp += TotalValue;
-                    break;
-                case "luck":
-                    player.luck += TotalValue * 0.01m;
-                    break;
-                case "turnSpeed":
-                    player.TurnSpeed = TotalValue;
-                    break;
-                case "attackRange":
-                    player.attackRange = TotalValue;
-                    break;
+                    throw new ArgumentOutOfRangeException();
             }
         }
     }
@@ -181,13 +171,14 @@ namespace Nekoyume.Model
     [Serializable]
     public class Stats
     {
-        public IReadOnlyDictionary<string, IStatMap> StatMaps => _statMaps;
-        public int Damage => StatMaps.ContainsKey("damage") ? StatMaps["damage"].TotalValue : 0;
-        public int Defense => StatMaps.ContainsKey("defense") ? StatMaps["defense"].TotalValue : 0;
-        public int HP => StatMaps.ContainsKey("health") ? StatMaps["health"].TotalValue : 0;
-        public decimal Luck => StatMaps.ContainsKey("luck") ? StatMaps["luck"].TotalValueRaw : 0m;
+        public IReadOnlyDictionary<StatType, StatMap> StatMaps => _statMaps;
+        public int ATK => StatMaps.ContainsKey(StatType.ATK) ? StatMaps[StatType.ATK].TotalValueAsInt : 0;
+        public int DEF => StatMaps.ContainsKey(StatType.DEF) ? StatMaps[StatType.DEF].TotalValueAsInt : 0;
+        public int HP => StatMaps.ContainsKey(StatType.HP) ? StatMaps[StatType.HP].TotalValueAsInt : 0;
+        public decimal CRI => StatMaps.ContainsKey(StatType.CRI) ? StatMaps[StatType.CRI].TotalValue : 0m;
 
-        private readonly Dictionary<string, IStatMap> _statMaps = new Dictionary<string, IStatMap>();
+        private readonly Dictionary<StatType, StatMap> _statMaps =
+            new Dictionary<StatType, StatMap>(StatTypeComparer.Instance);
 
         private bool Equals(Stats other)
         {
@@ -221,13 +212,8 @@ namespace Nekoyume.Model
             return (_statMaps != null ? _statMaps.GetHashCode() : 0);
         }
 
-        public void AddStatValue(string key, decimal value)
+        public void AddStatValue(StatType key, decimal value)
         {
-            if (string.IsNullOrEmpty(key))
-            {
-                return;
-            }
-
             if (!_statMaps.ContainsKey(key))
             {
                 _statMaps.Add(key, new StatMap(key));
@@ -236,13 +222,8 @@ namespace Nekoyume.Model
             _statMaps[key].Value += value;
         }
 
-        public void AddStatAdditionalValue(string key, decimal additionalValue)
+        public void AddStatAdditionalValue(StatType key, decimal additionalValue)
         {
-            if (string.IsNullOrEmpty(key))
-            {
-                return;
-            }
-
             if (!_statMaps.ContainsKey(key))
             {
                 _statMaps.Add(key, new StatMap(key));

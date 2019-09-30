@@ -130,7 +130,7 @@ namespace Nekoyume.Game.Character
             if (weapon == null)
                 weapon = Model.weapon;
 
-            var itemId = armor?.Data.resourceId ?? GameConfig.DefaultAvatarArmorId;
+            var itemId = armor?.Data.Id ?? GameConfig.DefaultAvatarArmorId;
             if (!ReferenceEquals(animator.Target, null))
             {
                 if (animator.Target.name.Contains(itemId.ToString()))

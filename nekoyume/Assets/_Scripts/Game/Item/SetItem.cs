@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
+using Nekoyume.TableData;
 
 namespace Nekoyume.Game.Item
 {
     [Serializable]
     public class SetItem : Equipment
     {
-        public SetItem(Data.Table.Item data, Guid id)
-            : base(data, id)
+        public SetItem(EquipmentItemSheet.Row data, Guid id) : base(data, id)
         {
         }
 

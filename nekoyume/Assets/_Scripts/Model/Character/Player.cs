@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Battle;
-using Nekoyume.Data;
-using Nekoyume.Data.Table;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Item;
 using Nekoyume.State;
@@ -27,10 +25,10 @@ namespace Nekoyume.Model
         public Helm helm;
         public SetItem set;
         public sealed override float TurnSpeed { get; set; }
-        
+
         public readonly Inventory inventory;
         public readonly long blockIndex;
-        
+
         private List<Equipment> Equipments { get; set; }
 
         public Player(AvatarState avatarState, Simulator simulator = null) : base(simulator)
@@ -59,7 +57,7 @@ namespace Nekoyume.Model
             atkElementType = ElementalType.Normal;
             defElementType = ElementalType.Normal;
             TurnSpeed = 1.8f;
-            
+
             Equip(inventory.Items);
             CalcStats(level);
         }
@@ -81,7 +79,7 @@ namespace Nekoyume.Model
             var game = Game.Game.instance;
             if (!game.TableSheets.CharacterSheet.TryGetValue(characterId, out var characterRow))
             {
-                throw new KeyNotFoundException(nameof(characterId));   
+                throw new KeyNotFoundException(nameof(characterId));
             }
 
             if (!game.TableSheets.LevelSheet.TryGetValue(level, out var levelRow))
@@ -91,18 +89,18 @@ namespace Nekoyume.Model
 
             var statsData = characterRow.ToStats(level);
             currentHP = statsData.HP;
-            atk = statsData.Damage;
-            def = statsData.Defense;
+            atk = statsData.ATK;
+            def = statsData.DEF;
             hp = statsData.HP;
             expMax = levelRow.Exp + levelRow.ExpNeed;
             expNeed = levelRow.ExpNeed;
-            luck = statsData.Luck;
+            luck = statsData.CRI;
             runSpeed = characterRow.RunSpeed;
             characterSize = characterRow.Size;
             var setMap = new Dictionary<int, int>();
             foreach (var equipment in Equipments)
             {
-                var key = equipment.Data.setId;
+                var key = equipment.Data.SetId;
                 if (!setMap.TryGetValue(key, out _))
                 {
                     setMap[key] = 0;
@@ -113,11 +111,11 @@ namespace Nekoyume.Model
             }
 
             // 플레이어 사거리가 장비에 영향을 안받도록 고정시킴.
-            attackRange = characterRow.AttackRange;
+            attackRange = characterRow.RNG;
 
             foreach (var pair in setMap)
             {
-                var setEffect = Tables.instance.GetSetEffect(pair.Key, pair.Value);
+                var setEffect = Game.Game.instance.TableSheets.SetEffectSheet.GetSetEffect(pair.Key, pair.Value);
                 foreach (var statMap in setEffect)
                 {
                     statMap.UpdatePlayer(this);
@@ -163,31 +161,31 @@ namespace Nekoyume.Model
                 .ToList();
             foreach (var equipment in Equipments)
             {
-                switch (equipment.Data.cls.ToEnumItemType())
+                switch (equipment.Data.ItemSubType)
                 {
-                    case ItemBase.ItemType.Weapon:
+                    case ItemSubType.Weapon:
                         weapon = equipment as Weapon;
                         break;
-                    case ItemBase.ItemType.RangedWeapon:
+                    case ItemSubType.RangedWeapon:
                         weapon = equipment as RangedWeapon;
                         break;
-                    case ItemBase.ItemType.Armor:
+                    case ItemSubType.Armor:
                         armor = equipment as Armor;
-                        defElementType = equipment.Data.elemental;
+                        defElementType = equipment.Data.ElementalType;
                         break;
-                    case ItemBase.ItemType.Belt:
+                    case ItemSubType.Belt:
                         belt = equipment as Belt;
                         break;
-                    case ItemBase.ItemType.Necklace:
+                    case ItemSubType.Necklace:
                         necklace = equipment as Necklace;
                         break;
-                    case ItemBase.ItemType.Ring:
+                    case ItemSubType.Ring:
                         ring = equipment as Ring;
                         break;
-                    case ItemBase.ItemType.Helm:
+                    case ItemSubType.Helm:
                         helm = equipment as Helm;
                         break;
-                    case ItemBase.ItemType.Set:
+                    case ItemSubType.Set:
                         set = equipment as SetItem;
                         break;
                     default:
@@ -195,6 +193,7 @@ namespace Nekoyume.Model
                 }
             }
         }
+
         public void Spawn()
         {
             InitAI();
@@ -234,16 +233,16 @@ namespace Nekoyume.Model
             switch (key)
             {
                 case "atk":
-                    value = atk - statsData.Damage;
+                    value = atk - statsData.ATK;
                     break;
                 case "def":
-                    value = def - statsData.Defense;
+                    value = def - statsData.DEF;
                     break;
                 case "hp":
                     value = hp - statsData.HP;
                     break;
                 case "luck":
-                    value = (luck - statsData.Luck);
+                    value = (luck - statsData.CRI);
                     break;
                 default:
                     throw new InvalidCastException($"invalid status key: `{key}`.");
@@ -259,7 +258,7 @@ namespace Nekoyume.Model
             {
                 yield return atkOption;
             }
-            
+
             var defOptions = defElementType.GetOptions("defense");
             foreach (var defOption in defOptions)
             {
@@ -267,7 +266,7 @@ namespace Nekoyume.Model
             }
         }
 
-        public void Use(List<Food> foods)
+        public void Use(List<Consumable> foods)
         {
             foreach (var food in foods)
             {

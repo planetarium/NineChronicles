@@ -1,5 +1,6 @@
 using System;
 using Assets.SimpleLocalization;
+using Nekoyume.TableData;
 using UniRx;
 using UnityEngine;
 
@@ -37,7 +38,7 @@ namespace Nekoyume.UI.Model
                     return;
                 }
 
-                titleText.Value = item.item.Value.Data.LocalizedName;
+                titleText.Value = item.item.Value.Data.GetLocalizedName();
 
                 if (!(item is ShopItem shopItem))
                 {

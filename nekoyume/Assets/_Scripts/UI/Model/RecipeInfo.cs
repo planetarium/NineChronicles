@@ -2,6 +2,7 @@
 using Nekoyume.Data;
 using Nekoyume.Game.Item;
 using System.Linq;
+using Nekoyume.TableData;
 using UnityEngine;
 
 namespace Nekoyume.UI.Model
@@ -44,17 +45,12 @@ namespace Nekoyume.UI.Model
 
         private string GetEquipmentName(int id)
         {
-            if (id == 0) return string.Empty;
-            var equips = Tables.instance.ItemEquipment;
-            if (equips.ContainsKey(id))
-            {
-                return equips[id].name;
-            }
-            else
-            {
-                Debug.LogError("Item not found!");
+            if (id == 0)
                 return string.Empty;
-            }
+
+            return Game.Game.instance.TableSheets.ItemSheet.TryGetValue(id, out var itemRow)
+                ? itemRow.GetLocalizedName()
+                : string.Empty;
         }
     }
 }

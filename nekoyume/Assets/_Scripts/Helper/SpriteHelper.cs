@@ -5,32 +5,30 @@ namespace Nekoyume.Helper
 {
     public static class SpriteHelper
     {
-        private const string CharacterDefaultPath = "UI/Icons/Character/100000";
-        private const string CharacterPathFormat = "UI/Icons/Character/{0}";
+        private const string CharacterIconDefaultPath = "UI/Icons/Character/100000";
+        private const string CharacterIconPathFormat = "UI/Icons/Character/{0}";
 
-        private const string ItemDefaultPath = "UI/Icons/Item/100000";
-        private const string ItemPathFormat = "UI/Icons/Item/{0}";
-        private const string ItemEquipmentPathFormat = "UI/Icons/Equipment/{0}";
-        
+        private const string ItemIconDefaultPath = "UI/Icons/Item/100000";
+        private const string ItemIconPathFormat = "UI/Icons/Item/{0}";
+
         private const string ItemBackgroundDefaultPath = "UI/Textures/item_bg_0";
         private const string ItemBackgroundPathFormat = "UI/Textures/item_bg_{0}";
 
+        private const string BuffIconDefaultPath = "UI/Icons/Buff/1";
+        private const string BuffIconPathFormat = "UI/Icons/Buff/{0}";
+
         public static Sprite GetCharacterIcon(int characterId)
         {
-            return Resources.Load<Sprite>(string.Format(CharacterPathFormat, characterId)) ??
-                   Resources.Load<Sprite>(CharacterDefaultPath);
+            return Resources.Load<Sprite>(string.Format(CharacterIconPathFormat, characterId)) ??
+                   Resources.Load<Sprite>(CharacterIconDefaultPath);
         }
 
         public static Sprite GetItemIcon(int itemId)
         {
-            var path = ItemDefaultPath;
-            if (Tables.instance.Item.ContainsKey(itemId))
+            var path = ItemIconDefaultPath;
+            if (Game.Game.instance.TableSheets.ItemSheet.ContainsKey(itemId))
             {
-                path = string.Format(ItemPathFormat, itemId);
-            }
-            else if (Tables.instance.ItemEquipment.ContainsKey(itemId))
-            {
-                path = string.Format(ItemEquipmentPathFormat, itemId);
+                path = string.Format(ItemIconPathFormat, itemId);
             }
 
             return Resources.Load<Sprite>(path);
@@ -40,6 +38,12 @@ namespace Nekoyume.Helper
         {
             return Resources.Load<Sprite>(string.Format(ItemBackgroundPathFormat, grade)) ??
                    Resources.Load<Sprite>(ItemBackgroundDefaultPath);
+        }
+
+        public static Sprite GetBuffIcon(int buffId)
+        {
+            return Resources.Load<Sprite>(string.Format(BuffIconPathFormat, buffId)) ??
+                   Resources.Load<Sprite>(BuffIconDefaultPath);
         }
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.IO;
+using Nekoyume.UI.Model;
 using UniRx;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -19,6 +20,18 @@ namespace Nekoyume.TableData
         public LevelSheet LevelSheet { get; private set; }
         public SkillSheet SkillSheet { get; private set; }
         public BuffSheet BuffSheet { get; private set; }
+        public ItemSheet ItemSheet { get; private set; }
+        public MaterialItemSheet MaterialItemSheet { get; private set; }
+        public EquipmentItemSheet EquipmentItemSheet { get; private set; }
+        public ConsumableItemSheet ConsumableItemSheet { get; private set; }
+        public QuestSheet QuestSheet { get; private set; }
+        public BattleQuestSheet BattleQuestSheet { get; private set; }
+        public CollectQuestSheet CollectQuestSheet { get; private set; }
+        public CombinationQuestSheet CombinationQuestSheet { get; private set; }
+        public TradeQuestSheet TradeQuestSheet { get; private set; }
+        public SkillBuffSheet SkillBuffSheet { get; private set; }
+        public SetEffectSheet SetEffectSheet { get; private set; }
+        public EnemySkillSheet EnemySkillSheet { get; private set; }
 
         public IEnumerator CoInitialize()
         {
@@ -45,23 +58,25 @@ namespace Nekoyume.TableData
                 var textAsset = loadAssetOperation.Result;
                 SetToSheet(textAsset.name, textAsset.text);
                 loadedTaskCount++;
-                loadProgress.Value = (float) loadedTaskCount / loadTaskCount;
+                loadProgress.Value = (float)loadedTaskCount / loadTaskCount;
             }
 
             loadProgress.Value = 1f;
+
+            PostInitialize();
         }
 
         public IEnumerator CoInitializeForPlayer()
         {
             loadProgress.Value = 0f;
-            
+
             var request = Resources.LoadAsync<AddressableAssetsContainer>("AddressableAssetsContainer");
             yield return request;
             if (!(request.asset is AddressableAssetsContainer addressableAssetsContainer))
             {
                 throw new NullReferenceException(nameof(addressableAssetsContainer));
             }
-            
+
             var tableCsvAssets = addressableAssetsContainer.tableCsvAssets;
             var loadTaskCount = tableCsvAssets.Count;
             var loadedTaskCount = 0;
@@ -70,10 +85,18 @@ namespace Nekoyume.TableData
             {
                 SetToSheet(textAsset.name, textAsset.text);
                 loadedTaskCount++;
-                loadProgress.Value = (float) loadedTaskCount / loadTaskCount;
+                loadProgress.Value = (float)loadedTaskCount / loadTaskCount;
             }
 
             loadProgress.Value = 1f;
+
+            PostInitialize();
+        }
+
+        private void PostInitialize()
+        {
+            ItemSheetInitialize();
+            QuestSheetInitialize();
         }
 
         private void SetToSheet(string name, string csv)
@@ -112,9 +135,66 @@ namespace Nekoyume.TableData
                     BuffSheet = new BuffSheet();
                     BuffSheet.Set(csv);
                     break;
+                case nameof(TableData.MaterialItemSheet):
+                    MaterialItemSheet = new MaterialItemSheet();
+                    MaterialItemSheet.Set(csv);
+                    break;
+                case nameof(TableData.EquipmentItemSheet):
+                    EquipmentItemSheet = new EquipmentItemSheet();
+                    EquipmentItemSheet.Set(csv);
+                    break;
+                case nameof(TableData.ConsumableItemSheet):
+                    ConsumableItemSheet = new ConsumableItemSheet();
+                    ConsumableItemSheet.Set(csv);
+                    break;
+                case nameof(TableData.BattleQuestSheet):
+                    BattleQuestSheet = new BattleQuestSheet();
+                    BattleQuestSheet.Set(csv);
+                    break;
+                case nameof(TableData.CollectQuestSheet):
+                    CollectQuestSheet = new CollectQuestSheet();
+                    CollectQuestSheet.Set(csv);
+                    break;
+                case nameof(TableData.CombinationQuestSheet):
+                    CombinationQuestSheet = new CombinationQuestSheet();
+                    CombinationQuestSheet.Set(csv);
+                    break;
+                case nameof(TableData.TradeQuestSheet):
+                    TradeQuestSheet = new TradeQuestSheet();
+                    TradeQuestSheet.Set(csv);
+                    break;
+                case nameof(TableData.SkillBuffSheet):
+                    SkillBuffSheet = new SkillBuffSheet();
+                    SkillBuffSheet.Set(csv);
+                    break;
+                case nameof(TableData.SetEffectSheet):
+                    SetEffectSheet = new SetEffectSheet();
+                    SetEffectSheet.Set(csv);
+                    break;
+                case nameof(TableData.EnemySkillSheet):
+                    EnemySkillSheet = new EnemySkillSheet();
+                    EnemySkillSheet.Set(csv);
+                    break;
                 default:
                     throw new InvalidDataException($"Not found {name} class in namespace `TableData`");
             }
+        }
+
+        private void ItemSheetInitialize()
+        {
+            ItemSheet = new ItemSheet();
+            ItemSheet.Set(ConsumableItemSheet, false);
+            ItemSheet.Set(EquipmentItemSheet, false);
+            ItemSheet.Set(MaterialItemSheet);
+        }
+
+        private void QuestSheetInitialize()
+        {
+            QuestSheet = new QuestSheet();
+            QuestSheet.Set(BattleQuestSheet, false);
+            QuestSheet.Set(CollectQuestSheet, false);
+            QuestSheet.Set(CombinationQuestSheet, false);
+            QuestSheet.Set(TradeQuestSheet);
         }
     }
 }

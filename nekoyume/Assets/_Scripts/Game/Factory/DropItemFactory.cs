@@ -14,7 +14,7 @@ namespace Nekoyume.Game.Factory
 
         public void Initialize()
         {
-            _box = Tables.instance.CreateItemBase(BoxId);
+            _box = ItemFactory.CreateMaterial(BoxId);
         }
         
         public IEnumerator CoCreate(List<ItemBase> items, Vector3 position)
@@ -22,7 +22,7 @@ namespace Nekoyume.Game.Factory
             for (var i = 0; i < items.Count; i++)
             {
                 var item = items[i];
-                var exist = Tables.instance.CreateItemBase(item.Data.id);
+                var exist = ItemFactory.CreateMaterial(item.Data.Id);
                 if (exist == null)
                 {
                     items.Remove(item);
