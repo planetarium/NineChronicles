@@ -36,7 +36,6 @@ namespace Nekoyume.UI.Model
             itemCountAndPricePopup.Value = new ItemCountAndPricePopup();
 
             state.Subscribe(OnState);
-            this.inventory.Value.selectedItemView.Subscribe(OnSelectInventoryItem);
             this.shopItems.Value.selectedItemView.Subscribe(OnSelectShopItem);
             itemInfo.Value.onClick.Subscribe(OnClickItemInfo);
 
@@ -153,25 +152,6 @@ namespace Nekoyume.UI.Model
                 1,
                 1,
                 inventoryItem.count.Value);
-        }
-
-        private void OnSelectInventoryItem(InventoryItemView view)
-        {
-            if (itemInfo.Value.item.Value is ShopItem)
-            {
-                if (view is null)
-                {
-                    // 초기화 단계에서 `inventory.Value.selectedItem.Subscribe(OnSelectInventoryItem);` 라인을 통해
-                    // 구독할 때, 한 번 반드시 이 라인에 들어옵니다.
-                    // 이때 예외가 발생하지 않아야 해서 수정합니다.
-                    return; // throw new UnexpectedOperationException();
-                }
-                
-                shopItems.Value.DeselectAll();
-            }
-            
-            itemInfo.Value.item.Value = view?.Model;
-            itemInfo.Value.priceEnabled.Value = false;
         }
 
         private void OnSelectShopItem(ShopItemView view)
