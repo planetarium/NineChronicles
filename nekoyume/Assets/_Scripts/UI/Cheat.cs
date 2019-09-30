@@ -21,8 +21,8 @@ namespace Nekoyume
         private static Cheat Instance;
 
         public TextMeshProUGUI Logs;
-        public TextMeshProUGUI Peers;
-        public TextMeshProUGUI StagedTxs;
+        public Transform Peers;
+        public Transform StagedTxs;
         public Button BtnOpen;
         public Button buttonBase;
         public ScrollRect list;
@@ -74,10 +74,12 @@ namespace Nekoyume
                     Instance.Logs.text = text;
                     break;
                 case "Peers":
-                    Instance.Peers.text = text;
+                    Instance.Peers.Find("TextRect/Text").GetComponent<TextMeshProUGUI>().text = text;
+                    Instance.Refresh(Instance.Peers);
                     break;
                 case "StagedTxs":
-                    Instance.StagedTxs.text = text;
+                    Instance.StagedTxs.Find("TextRect/Text").GetComponent<TextMeshProUGUI>().text = text;
+                    Instance.Refresh(Instance.StagedTxs);
                     break;
             }
         }
@@ -86,6 +88,39 @@ namespace Nekoyume
         {
             Instance._logString.Insert(0, $"> {text}\n");
             Instance.Logs.text += Instance._logString.ToString();
+        }
+
+        private void Refresh(Transform target)
+        {
+            // 마스크에 짤려서 사이즈 조정
+            var delta = target.Find("TextRect/Text").GetComponent<TextMeshProUGUI>().preferredHeight -
+                        target.GetComponent<RectTransform>().rect.height;
+            target.Find("TextRect/Text").GetComponent<RectTransform>().sizeDelta =
+                new Vector2(0, delta < 0 ? 0 : delta);
+            
+            // 스크롤바 조정
+            if (delta < 0)
+            {
+                target.Find("Scrollbar").gameObject.SetActive(false);
+                ScrollBarHandler(target, 0);
+            }
+            else
+            {
+                target.Find("Scrollbar").gameObject.SetActive(true);
+                target.Find("Scrollbar").GetComponent<Scrollbar>().size =
+                    target.GetComponent<RectTransform>().rect.height /
+                    target.Find("TextRect/Text").GetComponent<TextMeshProUGUI>().preferredHeight;
+            }
+        }
+
+        private void ScrollBarHandler(Transform target, float location)
+        {
+            var delta = target.Find("TextRect/Text").GetComponent<TextMeshProUGUI>().preferredHeight -
+                        target.GetComponent<RectTransform>().rect.height;
+            target.Find("TextRect/Text").GetComponent<RectTransform>().anchoredPosition =
+                delta > 0 ?
+                    new Vector2(0, delta * (location - 1)) :
+                    new Vector2(0, 0);
         }
 
         protected override void Awake()
@@ -114,6 +149,20 @@ namespace Nekoyume
         public override void Show()
         {
             _modal.gameObject.SetActive(true);
+
+            Peers.Find("Scrollbar")
+                .GetComponent<Scrollbar>()
+                .onValueChanged
+                .AddListener((location) => ScrollBarHandler(Peers, location));
+            StagedTxs.Find("Scrollbar")
+                .GetComponent<Scrollbar>()
+                .onValueChanged
+                .AddListener((location) => ScrollBarHandler(StagedTxs, location));
+            Refresh(Peers);
+            Refresh(StagedTxs);
+            ScrollBarHandler(Peers, 0);
+            ScrollBarHandler(StagedTxs, 0);
+
             BtnOpen.gameObject.SetActive(false);
             foreach (var i in Enumerable.Range(1, Game.Game.instance.TableSheets.StageSheet.Count))
             {
@@ -141,6 +190,8 @@ namespace Nekoyume
 
         public override void Close()
         {
+            Peers.Find("Scrollbar").GetComponent<Scrollbar>().onValueChanged.RemoveAllListeners();
+            StagedTxs.Find("Scrollbar").GetComponent<Scrollbar>().onValueChanged.RemoveAllListeners();
             foreach (Transform child in list.content.transform)
             {
                 Destroy(child.gameObject);
