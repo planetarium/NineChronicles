@@ -75,6 +75,15 @@ namespace Nekoyume.Model
         {
             var attack = _selectedSkill.Use(this);
             Simulator.Log.Add(attack);
+            foreach (var info in attack.skillInfos)
+            {
+                if (info.Target.IsDead)
+                {
+                    var target = targets.First(i => i.id == info.Target.id);
+                    target.Die();
+                }
+            }
+
             _selectedSkill = null;
         }
 
@@ -89,7 +98,7 @@ namespace Nekoyume.Model
             return !IsDead;
         }
 
-        private void Die()
+        public void Die()
         {
             OnDead();
         }
@@ -106,10 +115,6 @@ namespace Nekoyume.Model
         public void OnDamage(int dmg)
         {
             currentHP -= dmg;
-            if (IsDead)
-            {
-                Die();
-            }
         }
 
         protected virtual void SetSkill()
