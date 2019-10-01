@@ -43,8 +43,6 @@ namespace Nekoyume.Model
 
         [NonSerialized] public Simulator Simulator;
 
-        [NonSerialized] public readonly Subject<Dictionary<int, Buff>> OnUpdateBuff = new Subject<Dictionary<int, Buff>>();
-
         protected CharacterBase(Simulator simulator)
         {
             Simulator = simulator;
@@ -160,7 +158,6 @@ namespace Nekoyume.Model
                 {
                     buffs.Remove(key);
                 }
-                OnUpdateBuff.OnNext(buffs);
             }
         }
 
