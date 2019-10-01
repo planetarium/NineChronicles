@@ -15,10 +15,8 @@ using UnityEngine.UI;
 
 namespace Tests
 {
-    public class CombinationTest
+    public class CombinationTest : PlayModeTest
     {
-        private MinerFixture _miner;
-
         [Test]
         public void GetEquipmentWithSkills()
         {
@@ -52,7 +50,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator CombinationSuccess()
         {
-            _miner = new MinerFixture("combination");
+            miner = new MinerFixture("combination");
 
             // CreateAvatar
             Widget.Find<Title>().OnClick();
@@ -64,7 +62,7 @@ namespace Tests
             loginDetail.CreateClick();
             yield return new WaitUntil(() => AgentController.Agent.Transactions.Any());
             var createAvatarTx = AgentController.Agent.Transactions.First().Value;
-            yield return _miner.CoMine(createAvatarTx);
+            yield return miner.CoMine(createAvatarTx);
             yield return new WaitWhile(() => States.Instance.currentAvatarState.Value is null);
             yield return new WaitUntil(() => Widget.Find<Login>().ready);
 
@@ -107,14 +105,8 @@ namespace Tests
             w.combinationButton.onClick.Invoke();
             yield return new WaitUntil(() => AgentController.Agent.Transactions.Count > current);
             var tx = AgentController.Agent.Transactions.Values.OrderByDescending(t => t.Timestamp).First();
-            yield return _miner.CoMine(tx);
+            yield return miner.CoMine(tx);
             Assert.AreEqual(1, States.Instance.currentAvatarState.Value.mailBox.OfType<CombinationMail>().Count());
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-            _miner?.TearDown();
         }
     }
 }
