@@ -186,7 +186,7 @@ namespace Nekoyume.UI.Module
                     throw new ArgumentOutOfRangeException(nameof(state), state, null);
             }
 
-            // ���õ� ��ư�� ��������Ʈ�� 1�ȼ� �������� ������ ����.
+            // 선택된 버튼의 스프라이트가 1픽셀 내려가는 문제가 있음.
 
             var btn = _switchButtonTransforms[(int) state];
             btn.anchoredPosition = new Vector2(btn.anchoredPosition.x, 1);
