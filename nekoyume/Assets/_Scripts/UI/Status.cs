@@ -83,8 +83,7 @@ namespace Nekoyume.UI
             var icon = sender.GetComponent<BuffIcon>();
             buffTooltip.gameObject.SetActive(true);
             buffTooltip.UpdateText(icon.Data);
-            // xÃà ÇÑ ÇÈ¼¿ ¾î±ß³ª¼­ Á¶Àý
-            buffTooltip.RectTransform.anchoredPosition = icon.image.rectTransform.anchoredPosition + Vector2.down * (icon.image.rectTransform.sizeDelta.y) + Vector2.left;
+            buffTooltip.RectTransform.anchoredPosition = icon.image.rectTransform.anchoredPosition + Vector2.down * (icon.image.rectTransform.sizeDelta.y);
         }
 
         public void HideBuffTooltip()
