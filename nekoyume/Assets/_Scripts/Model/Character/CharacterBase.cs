@@ -38,7 +38,7 @@ namespace Nekoyume.Model
         public Guid id = Guid.NewGuid();
         public float attackRange = 1.0f;
         public float runSpeed = 1.0f;
-        public string characterSize = "s";
+        public SizeType sizeType = SizeType.S;
         public Dictionary<int, Buff> buffs = new Dictionary<int, Buff>();
 
         [NonSerialized] public Simulator Simulator;

@@ -27,11 +27,11 @@ namespace Nekoyume.Game.VFX.Skill
             var position = target.transform.position;
             position.x -= 0.2f;
             position.y += 0.32f;
-            var size = target.characterSize == "xs" ? "s" : "m";
+            var size = target.sizeType == SizeType.XS ? SizeType.S : SizeType.M;
             var elemental = skillInfo.Elemental;
             if (skillInfo.skillCategory == SkillCategory.Area)
             {
-                size = "l";
+                size = SizeType.L;
                 //FIXME 현재 무속성 범위공격 이펙트는 존재하지 않기때문에 임시처리.
                 if (elemental == ElementalType.Normal)
                     elemental = ElementalType.Fire;
