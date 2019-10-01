@@ -165,7 +165,7 @@ MonoBehaviour:
   cellIdentifier: 
   resultNameText: {fileID: 8520511758456405266}
   combineButton: {fileID: 8842818271357276940}
-  combineText: {fileID: 5324806253411747857}
+  combineText: {fileID: 8359337847514703934}
   resultItemView: {fileID: 8589147641202870958}
   materialItemViews:
   - {fileID: 7175836152496901596}
@@ -1719,7 +1719,7 @@ MonoBehaviour:
   m_text: 999
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 76f23b4f2b0bc49c18792f72986c9673, type: 2}
-  m_sharedMaterial: {fileID: 21379994291666194, guid: 76f23b4f2b0bc49c18792f72986c9673,
+  m_sharedMaterial: {fileID: -7447916340868117875, guid: 76f23b4f2b0bc49c18792f72986c9673,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -2771,7 +2771,7 @@ MonoBehaviour:
   m_text: 999
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 76f23b4f2b0bc49c18792f72986c9673, type: 2}
-  m_sharedMaterial: {fileID: 21379994291666194, guid: 76f23b4f2b0bc49c18792f72986c9673,
+  m_sharedMaterial: {fileID: -7447916340868117875, guid: 76f23b4f2b0bc49c18792f72986c9673,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -3993,6 +3993,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: CombineButton
       objectReference: {fileID: 0}
+    - target: {fileID: 2502086263600563004, guid: 19858599dbc2e42379cee2444fa9d644,
+        type: 3}
+      propertyPath: m_Text
+      value: "\uB9CC\uB4E4\uAE30\n"
+      objectReference: {fileID: 0}
     - target: {fileID: 1840297032024698369, guid: 19858599dbc2e42379cee2444fa9d644,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -4098,10 +4103,15 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
-    - target: {fileID: 2502086263600563004, guid: 19858599dbc2e42379cee2444fa9d644,
+    - target: {fileID: 2304770950174932112, guid: 19858599dbc2e42379cee2444fa9d644,
+        type: 3}
+      propertyPath: text
+      value: 
+      objectReference: {fileID: 8359337847514703934}
+    - target: {fileID: 2260495146334200595, guid: 19858599dbc2e42379cee2444fa9d644,
         type: 3}
       propertyPath: m_Text
-      value: "\uB9CC\uB4E4\uAE30\n"
+      value: "\uC870\uD569"
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 19858599dbc2e42379cee2444fa9d644, type: 3}
@@ -4123,9 +4133,9 @@ MonoBehaviour:
   m_Script: {fileID: 1392445389, guid: f70555f144d8491a825f0804e09c671c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &5324806253411747857 stripped
+--- !u!114 &8359337847514703934 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2502086263600563004, guid: 19858599dbc2e42379cee2444fa9d644,
+  m_CorrespondingSourceObject: {fileID: 2260495146334200595, guid: 19858599dbc2e42379cee2444fa9d644,
     type: 3}
   m_PrefabInstance: {fileID: 7736253012710591277}
   m_PrefabAsset: {fileID: 0}

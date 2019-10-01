@@ -292,6 +292,11 @@ namespace Nekoyume.UI
             var item = countableItem as InventoryItem;
             var itemSubType = countableItem.item.Value.Data.ItemSubType;
 
+            if(itemSubType != ItemSubType.Weapon && itemSubType != ItemSubType.Food)
+            {
+                return;
+            }
+
             if (item != null && item.equipped.Value)
             {
                 var equipSlot = FindSlot(item.item.Value as ItemUsable, itemSubType);
