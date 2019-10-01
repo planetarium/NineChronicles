@@ -185,6 +185,22 @@ namespace Nekoyume.BlockChain
 
         }
 
+        public IObservable<ActionBase.ActionEvaluation<DailyReward>> DailyReward()
+        {
+            var action = new DailyReward
+            {
+                avatarAddress = States.Instance.currentAvatarState.Value.address,
+                refillPoint = GameConfig.ActionPoint
+            };
+            ProcessAction(action);
+
+            return ActionBase.EveryRender<DailyReward>()
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .Take(1)
+                .Last()
+                .ObserveOnMainThread();
+        }
+
         #endregion
     }
 }

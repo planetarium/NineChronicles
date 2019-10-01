@@ -1,9 +1,7 @@
-using Nekoyume.Action;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Item;
 using Nekoyume.Model;
 using Nekoyume.UI;
-using UnityEngine;
 using UnityEngine.Events;
 
 namespace Nekoyume.Game
@@ -48,5 +46,11 @@ namespace Nekoyume.Game
         {
         }
         public static readonly StageStart OnStageStart = new StageStart();
+
+        public class TipChanged : UnityEvent<long>
+        {
+        }
+        public static readonly TipChanged OnTipChanged = new TipChanged();
+
     }
 }
