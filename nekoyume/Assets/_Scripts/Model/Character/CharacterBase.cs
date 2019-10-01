@@ -7,6 +7,7 @@ using Libplanet.Action;
 using Nekoyume.Battle;
 using Nekoyume.EnumType;
 using Nekoyume.Game;
+using UniRx;
 using UnityEngine;
 
 namespace Nekoyume.Model
