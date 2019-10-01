@@ -19,8 +19,6 @@ namespace Nekoyume.UI.Model
             itemInfo.Value = new ItemInfo();
             itemInfo.Value.buttonText.Value = LocalizationManager.Localize("UI_EQUIP");
             itemInfo.Value.buttonEnabledFunc.Value = null;
-            
-            this.inventory.Value.selectedItemView.Subscribe(SubscribeInventorySelectedItem);
         }
         
         public void Dispose()
@@ -32,18 +30,6 @@ namespace Nekoyume.UI.Model
         private bool DimmedFunc(InventoryItem inventoryItem)
         {
             return inventoryItem.item.Value.Data.ItemType == ItemType.Material;
-        }
-        
-        private void SubscribeInventorySelectedItem(InventoryItemView view)
-        {
-            if (view is null)
-            {
-                itemInfo.Value.item.Value = null;
-                
-                return;
-            }
-            
-            itemInfo.Value.item.Value = view.Model;
         }
     }
 }

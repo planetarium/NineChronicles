@@ -186,20 +186,20 @@ namespace Nekoyume.UI.Module
                     throw new ArgumentOutOfRangeException(nameof(state), state, null);
             }
 
-            // ¼±ÅÃµÈ ¹öÆ°ÀÇ ½ºÇÁ¶óÀÌÆ®°¡ 1ÇÈ¼¿ ³»·Á°¡´Â ¹®Á¦°¡ ÀÖÀ½.
+            // ì„ íƒëœ ë²„íŠ¼ì˜ ìŠ¤í”„ë¼ì´íŠ¸ê°€ 1í”½ì…€ ë‚´ë ¤ê°€ëŠ” ë¬¸ì œê°€ ìˆìŒ.
 
-            var btn = _switchButtonTransforms[(int)state];
+            var btn = _switchButtonTransforms[(int) state];
             btn.anchoredPosition = new Vector2(btn.anchoredPosition.x, 1);
             btn.sizeDelta = BtnHighlightSize;
             var shadows = btn.GetComponentsInChildren<Shadow>();
-            foreach(var shadow in shadows)
+            foreach (var shadow in shadows)
             {
                 shadow.effectColor = ColorHelper.HexToColorRGB("a35400");
             }
-            
+
             for (int i = 0; i < 3; ++i)
             {
-                if (i == (int)state) continue;
+                if (i == (int) state) continue;
                 btn = _switchButtonTransforms[i];
                 btn.anchoredPosition = new Vector2(btn.anchoredPosition.x, 0);
                 btn.sizeDelta = BtnSize;
