@@ -40,11 +40,29 @@ namespace Nekoyume.Action
                 this.count = count;
             }
         }
-
+        
         [Serializable]
         public class Result : AttachmentActionResult
         {
             public List<Material> materials;
+        }
+        
+        private class MaterialRow
+        {
+            public MaterialItemSheet.Row row;
+            public int count;
+
+            public MaterialRow(Material material)
+            {
+                var sheet = Game.Game.instance.TableSheets.MaterialItemSheet;
+                if (!sheet.TryGetValue(material.id, out var outRow))
+                {
+                    throw new SheetRowNotFoundException(nameof(sheet), material.id.ToString());
+                }
+
+                row = outRow;
+                count = material.count;
+            }
         }
 
         public List<Material> Materials { get; private set; }
@@ -105,63 +123,55 @@ namespace Nekoyume.Action
 
             // 조합식 테이블 로드.
             var recipeTable = Tables.instance.Recipe;
-
-            // 장비인지 소모품인지 확인.
-            var equipmentMaterials = Materials.Where(item => GameConfig.EquipmentMaterials.Contains(item.id))
-                .ToList();
-            if (equipmentMaterials.Any())
+            
+            // 모든 재료를 테이블 값으로.
+            var materialRows = Materials.Select(material => new MaterialRow(material)).ToList();
+            var isEquipment = materialRows.Any(row => row.row.ItemSubType == ItemSubType.EquipmentMaterial);
+            if (isEquipment)
             {
-                // 장비
-                Materials.RemoveAll(item => equipmentMaterials.Contains(item));
-
-                var zippedMaterials = new List<Material>();
-                foreach (var source in Materials)
+                var zippedMaterialRows = Zip(materialRows);
+                var equipmentMaterials = zippedMaterialRows
+                    .Where(materialRow => materialRow.row.ItemSubType == ItemSubType.EquipmentMaterial)
+                    .ToList();
+                if (equipmentMaterials.Count == 0 || equipmentMaterials.Count > 1)
                 {
-                    var shouldToAdd = true;
-                    foreach (var target in zippedMaterials.Where(target => target.id == source.id))
-                    {
-                        target.count += source.count;
-                        shouldToAdd = false;
-                        break;
-                    }
-
-                    if (shouldToAdd)
-                    {
-                        zippedMaterials.Add(new Material(source.id, source.count));
-                    }
+                    // 장비 베이스의 수량 에러.
+                    return states;
                 }
 
-                var orderedMaterials = zippedMaterials
-                    .OrderByDescending(order => order.count)
-                    .ToList();
-                if (orderedMaterials.Count == 0)
-                    return states;
-
                 var equipmentMaterial = equipmentMaterials[0];
-                if (!Game.Game.instance.TableSheets.MaterialItemSheet.TryGetValue(equipmentMaterial.id,
-                    out var outEquipmentMaterialRow))
+                if (!TryGetItemType(equipmentMaterial.row.Id, out var outItemType))
+                {
+                    // 장비 베이스의 Id로 장비의 타입을 추측할 수 없는 에러.
                     return states;
+                }
+                
+                var monsterParts = zippedMaterialRows
+                    .Where(materialRow => materialRow.row.ItemSubType != ItemSubType.EquipmentMaterial)
+                    .ToList();
+                if (monsterParts.Count == 0 || monsterParts.Count > 4)
+                {
+                    // 몬스터 파츠의 수량 에러.
+                    return states;
+                }
 
-                if (!TryGetItemType(outEquipmentMaterialRow.Id, out var outItemType))
-                    return states;
+                var elementalType = GetElementalType(monsterParts, ctx.Random);
 
                 var itemId = ctx.Random.GenerateRandomGuid();
                 Equipment equipment = null;
                 var isFirst = true;
-                foreach (var monsterPartsMaterial in orderedMaterials)
+                foreach (var monsterPart in monsterParts)
                 {
-                    if (!Game.Game.instance.TableSheets.MaterialItemSheet.TryGetValue(monsterPartsMaterial.id,
-                        out var outMonsterPartsMaterialRow))
-                        return states;
-
                     if (isFirst)
                     {
                         isFirst = false;
 
-                        if (!TryGetItemEquipmentRow(outItemType, outMonsterPartsMaterialRow.ElementalType,
-                            outEquipmentMaterialRow.Grade,
+                        if (!TryGetItemEquipmentRow(outItemType, elementalType, equipmentMaterial.row.Grade,
                             out var itemEquipmentRow))
+                        {
+                            // 장비 얻어오기 실패.
                             return states;
+                        }
 
                         try
                         {
@@ -169,6 +179,7 @@ namespace Nekoyume.Action
                         }
                         catch (ArgumentOutOfRangeException e)
                         {
+                            // 장비 생성 실패.
                             Debug.LogException(e);
 
                             return states;
@@ -176,12 +187,12 @@ namespace Nekoyume.Action
                     }
 
                     var normalizedRandomValue = ctx.Random.Next(0, 100000) * 0.00001m;
-                    var roll = GetRoll(monsterPartsMaterial.count, 0, normalizedRandomValue);
+                    var roll = GetRoll(monsterPart.count, 0, normalizedRandomValue);
 
-                    if (TryGetStat(outMonsterPartsMaterialRow, roll, out var statMap))
+                    if (TryGetStat(monsterPart.row, roll, out var statMap))
                         equipment.Stats.AddStatAdditionalValue(statMap.StatType, statMap.Value);
 
-                    if (TryGetSkill(outMonsterPartsMaterialRow, roll, out var skill))
+                    if (TryGetSkill(monsterPart.row, roll, out var skill))
                         equipment.Skills.Add(skill);
                 }
 
@@ -226,6 +237,110 @@ namespace Nekoyume.Action
             avatarState.BlockIndex = ctx.BlockIndex;
             states = states.SetState(avatarAddress, avatarState);
             return states.SetState(ctx.Signer, agentState);
+        }
+
+        private List<MaterialRow> Zip(IEnumerable<MaterialRow> materialRows)
+        {
+            var zippedMaterialRows = new List<MaterialRow>();
+            foreach (var source in materialRows)
+            {
+                var shouldToAdd = true;
+                foreach (var target in zippedMaterialRows.Where(target => target.row.Id == source.row.Id))
+                {
+                    target.count += source.count;
+                    shouldToAdd = false;
+                    break;
+                }
+
+                if (shouldToAdd)
+                {
+                    zippedMaterialRows.Add(source);
+                }
+            }
+
+            return zippedMaterialRows;
+        }
+
+        private ElementalType GetElementalType(List<MaterialRow> monsterParts, IRandom random)
+        {
+            var elementalTypeCountForEachGrades = new Dictionary<ElementalType, Dictionary<int, int>>(ElementalTypeComparer.Instance);
+            var maxGrade = 0;
+            
+            // 전체 속성 가중치가 가장 큰 것을 리턴하기.
+            var elementalTypeWeights = new Dictionary<ElementalType, int>(ElementalTypeComparer.Instance);
+            var maxWeightElementalTypes = new List<ElementalType>();
+            var maxWeight = 0;
+            
+            foreach (var monsterPart in monsterParts)
+            {
+                var key = monsterPart.row.ElementalType;
+                var grade = monsterPart.row.Grade;
+                if (grade > maxGrade)
+                {
+                    maxGrade = grade;
+                }
+
+                if (!elementalTypeCountForEachGrades.ContainsKey(key))
+                {
+                    elementalTypeCountForEachGrades[key] = new Dictionary<int, int>();
+                }
+
+                elementalTypeCountForEachGrades[key][grade] += monsterPart.count;
+                
+                var weight = 10 ^ (grade - 1) * monsterPart.count;
+                elementalTypeWeights[key] += weight;
+
+                var totalWeight = elementalTypeWeights[key];
+                if (totalWeight < maxWeight)
+                    continue;
+
+                if (totalWeight == maxWeight &&
+                    !maxWeightElementalTypes.Contains(key))
+                {
+                    maxWeightElementalTypes.Add(key);
+                    
+                    continue;
+                }
+
+                maxWeightElementalTypes.Clear();
+                maxWeightElementalTypes.Add(key);
+                maxWeight = totalWeight;
+            }
+
+            if (maxWeightElementalTypes.Count == 1)
+                return maxWeightElementalTypes[0];
+            
+            // 높은 등급의 재료를 더 많이 갖고 있는 것을 리턴하기.
+            var maxGradeCountElementalTypes = new List<ElementalType>();
+            var maxGradeCount = 0;
+            foreach (var elementalType in maxWeightElementalTypes)
+            {
+                if (!elementalTypeCountForEachGrades[elementalType].ContainsKey(maxGrade))
+                    continue;
+
+                var gradeCount = elementalTypeCountForEachGrades[elementalType][maxGrade];
+                if (gradeCount < maxGradeCount)
+                    continue;
+
+                if (gradeCount == maxGradeCount &&
+                    !maxGradeCountElementalTypes.Contains(elementalType))
+                {
+                    maxGradeCountElementalTypes.Add(elementalType);
+                    
+                    continue;
+                }
+                
+                maxGradeCountElementalTypes.Clear();
+                maxGradeCountElementalTypes.Add(elementalType);
+                maxGradeCount = gradeCount;
+            }
+
+            if (maxGradeCountElementalTypes.Count == 1)
+                return maxGradeCountElementalTypes[0];
+            
+            // 무작위로 하나 고르기.
+            var index = random.Next(0, maxGradeCountElementalTypes.Count - 1);
+            return maxGradeCountElementalTypes[index];
         }
 
         private bool TryGetItemType(int itemId, out ItemSubType outItemType)
