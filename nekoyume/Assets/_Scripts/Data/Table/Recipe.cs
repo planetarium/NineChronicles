@@ -25,7 +25,7 @@ namespace Nekoyume.Data.Table
         public int Material4;
         public int Material5;
 
-        public bool IsMatchForConsumable(List<Combination.Material> materials)
+        public bool IsMatchForConsumable(List<Combination.MaterialRow> materials)
         {
             var recipe = GetRecipe();
 
@@ -38,7 +38,7 @@ namespace Nekoyume.Data.Table
             for (var i = 0; i < mCount; i++)
             {
                 var m = materials[i];
-                int idx = recipe.FindIndex(item => item.materialId == m.id && item.count <= m.count);
+                int idx = recipe.FindIndex(item => item.materialId == m.row.Id && item.count <= m.count);
                 if (idx != -1)
                 {
                     recipe.RemoveAt(idx);
@@ -52,7 +52,7 @@ namespace Nekoyume.Data.Table
             return recipe.Count == 0;
         }
 
-        public int GetCombinationResultCountForConsumable(List<Combination.Material> materials)
+        public int GetCombinationResultCountForConsumable(List<Combination.MaterialRow> materials)
         {
             var recipe = GetRecipe();
             var result = 0;
@@ -61,7 +61,7 @@ namespace Nekoyume.Data.Table
             for (var i = 0; i < mCount; i++)
             {
                 var m = materials[i];
-                if (recipe.Exists(item => item.materialId == m.id))
+                if (recipe.Exists(item => item.materialId == m.row.Id))
                 {
                     var count = m.count / recipe[i].count;
                     result = i == 0 ? count : Mathf.Min(result, count);

@@ -28,7 +28,7 @@ namespace Nekoyume.Game.Character
         public int Power = 100;
         public float RunSpeed = 0.0f;
         public string targetTag = "";
-        public string characterSize = "s";
+        public SizeType sizeType = SizeType.S;
         public Model.CharacterBase model;
 
         protected virtual WeightType WeightType => WeightType.Small;

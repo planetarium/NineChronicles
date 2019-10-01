@@ -196,7 +196,7 @@ namespace Nekoyume.Game.Character
             Inventory = character.inventory;
             Range = character.attackRange;
             RunSpeedMax = character.runSpeed;
-            characterSize = character.characterSize;
+            sizeType = character.sizeType;
         }
 
         private void OnAnimatorEvent(string eventName)
