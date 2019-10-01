@@ -290,9 +290,10 @@ namespace Nekoyume.UI
         private void OnClickEquip(CountableItem countableItem)
         {
             var item = countableItem as InventoryItem;
-            var itemSubType = countableItem.item.Value.Data.ItemSubType;
+            var itemRow = countableItem.item.Value.Data;
+            var itemSubType = itemRow.ItemSubType;
 
-            if(itemSubType != ItemSubType.Weapon && itemSubType != ItemSubType.Food)
+            if (itemRow.ItemType == ItemType.Material)
             {
                 return;
             }
