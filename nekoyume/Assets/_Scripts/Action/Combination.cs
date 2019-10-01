@@ -7,7 +7,6 @@ using Libplanet;
 using Libplanet.Action;
 using Nekoyume.BlockChain;
 using Nekoyume.Data;
-using Nekoyume.Data.Table;
 using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.Game.Factory;
@@ -40,14 +39,14 @@ namespace Nekoyume.Action
                 this.count = count;
             }
         }
-        
+
         [Serializable]
         public class Result : AttachmentActionResult
         {
             public List<Material> materials;
         }
-        
-        private class MaterialRow
+
+        public class MaterialRow
         {
             public MaterialItemSheet.Row row;
             public int count;
@@ -123,7 +122,7 @@ namespace Nekoyume.Action
 
             // 조합식 테이블 로드.
             var recipeTable = Tables.instance.Recipe;
-            
+
             // 모든 재료를 테이블 값으로.
             var materialRows = Materials.Select(material => new MaterialRow(material)).ToList();
             var isEquipment = materialRows.Any(row => row.row.ItemSubType == ItemSubType.EquipmentMaterial);
@@ -145,7 +144,7 @@ namespace Nekoyume.Action
                     // 장비 베이스의 Id로 장비의 타입을 추측할 수 없는 에러.
                     return states;
                 }
-                
+
                 var monsterParts = zippedMaterialRows
                     .Where(materialRow => materialRow.row.ItemSubType != ItemSubType.EquipmentMaterial)
                     .ToList();
@@ -169,7 +168,7 @@ namespace Nekoyume.Action
                         if (!TryGetItemEquipmentRow(outItemType, elementalType, equipmentMaterial.row.Grade,
                             out var itemEquipmentRow))
                         {
-                            // 장비 얻어오기 실패.
+                            // 장비 테이블 값 가져오기 실패.
                             return states;
                         }
 
@@ -203,26 +202,29 @@ namespace Nekoyume.Action
             }
             else
             {
-                var orderedMaterials = Materials.OrderBy(order => order.id).ToList();
+                var foodMaterials = materialRows.OrderBy(order => order.row.Id).ToList();
                 ConsumableItemSheet.Row itemEquipmentRow = null;
                 // 소모품
                 foreach (var recipe in recipeTable)
                 {
-                    if (!recipe.Value.IsMatchForConsumable(orderedMaterials))
+                    if (!recipe.Value.IsMatchForConsumable(foodMaterials))
                         continue;
 
                     if (!Game.Game.instance.TableSheets.ConsumableItemSheet.TryGetValue(recipe.Value.ResultId,
                         out itemEquipmentRow))
                         break;
 
-                    if (recipe.Value.GetCombinationResultCountForConsumable(orderedMaterials) == 0)
+                    if (recipe.Value.GetCombinationResultCountForConsumable(foodMaterials) == 0)
                         break;
                 }
 
                 if (itemEquipmentRow == null &&
-                    !Game.Game.instance.TableSheets.ConsumableItemSheet.TryGetValue(GameConfig.CombinationDefaultFoodId,
-                        out itemEquipmentRow))
+                    !Game.Game.instance.TableSheets.ConsumableItemSheet
+                        .TryGetValue(GameConfig.CombinationDefaultFoodId, out itemEquipmentRow))
+                {
+                    // 소모품 테이블 값 가져오기 실패.
                     return states;
+                }
 
                 // 조합 결과 획득.
                 var itemId = ctx.Random.GenerateRandomGuid();
@@ -239,7 +241,7 @@ namespace Nekoyume.Action
             return states.SetState(ctx.Signer, agentState);
         }
 
-        private List<MaterialRow> Zip(IEnumerable<MaterialRow> materialRows)
+        private static List<MaterialRow> Zip(IEnumerable<MaterialRow> materialRows)
         {
             var zippedMaterialRows = new List<MaterialRow>();
             foreach (var source in materialRows)
@@ -261,20 +263,21 @@ namespace Nekoyume.Action
             return zippedMaterialRows;
         }
 
-        private ElementalType GetElementalType(List<MaterialRow> monsterParts, IRandom random)
+        private static ElementalType GetElementalType(IEnumerable<MaterialRow> monsterParts, IRandom random)
         {
-            var elementalTypeCountForEachGrades = new Dictionary<ElementalType, Dictionary<int, int>>(ElementalTypeComparer.Instance);
+            var elementalTypeCountForEachGrades =
+                new Dictionary<ElementalType, Dictionary<int, int>>(ElementalTypeComparer.Instance);
             var maxGrade = 0;
-            
+
             // 전체 속성 가중치가 가장 큰 것을 리턴하기.
             var elementalTypeWeights = new Dictionary<ElementalType, int>(ElementalTypeComparer.Instance);
             var maxWeightElementalTypes = new List<ElementalType>();
             var maxWeight = 0;
-            
+
             foreach (var monsterPart in monsterParts)
             {
                 var key = monsterPart.row.ElementalType;
-                var grade = monsterPart.row.Grade;
+                var grade = Math.Max(1, monsterPart.row.Grade);
                 if (grade > maxGrade)
                 {
                     maxGrade = grade;
@@ -285,9 +288,20 @@ namespace Nekoyume.Action
                     elementalTypeCountForEachGrades[key] = new Dictionary<int, int>();
                 }
 
-                elementalTypeCountForEachGrades[key][grade] += monsterPart.count;
+                if (!elementalTypeCountForEachGrades[key].ContainsKey(grade))
+                {
+                    elementalTypeCountForEachGrades[key][grade] = 0;
+                }
                 
-                var weight = 10 ^ (grade - 1) * monsterPart.count;
+                elementalTypeCountForEachGrades[key][grade] += monsterPart.count;
+
+                var weight = (int) Math.Pow(10, grade - 1) * monsterPart.count;
+
+                if (!elementalTypeWeights.ContainsKey(key))
+                {
+                    elementalTypeWeights[key] = 0;
+                }
+                
                 elementalTypeWeights[key] += weight;
 
                 var totalWeight = elementalTypeWeights[key];
@@ -298,7 +312,7 @@ namespace Nekoyume.Action
                     !maxWeightElementalTypes.Contains(key))
                 {
                     maxWeightElementalTypes.Add(key);
-                    
+
                     continue;
                 }
 
@@ -309,7 +323,7 @@ namespace Nekoyume.Action
 
             if (maxWeightElementalTypes.Count == 1)
                 return maxWeightElementalTypes[0];
-            
+
             // 높은 등급의 재료를 더 많이 갖고 있는 것을 리턴하기.
             var maxGradeCountElementalTypes = new List<ElementalType>();
             var maxGradeCount = 0;
@@ -326,10 +340,10 @@ namespace Nekoyume.Action
                     !maxGradeCountElementalTypes.Contains(elementalType))
                 {
                     maxGradeCountElementalTypes.Add(elementalType);
-                    
+
                     continue;
                 }
-                
+
                 maxGradeCountElementalTypes.Clear();
                 maxGradeCountElementalTypes.Add(elementalType);
                 maxGradeCount = gradeCount;
@@ -337,13 +351,18 @@ namespace Nekoyume.Action
 
             if (maxGradeCountElementalTypes.Count == 1)
                 return maxGradeCountElementalTypes[0];
-            
+
             // 무작위로 하나 고르기.
-            var index = random.Next(0, maxGradeCountElementalTypes.Count - 1);
+            var index = random.Next(0, maxGradeCountElementalTypes.Count);
+            // todo: libplanet 에서 max 값 -1까지만 리턴하도록 수정된 후에 삭제.
+            if (index == maxGradeCountElementalTypes.Count)
+            {
+                index--;
+            }
             return maxGradeCountElementalTypes[index];
         }
 
-        private bool TryGetItemType(int itemId, out ItemSubType outItemType)
+        private static bool TryGetItemType(int itemId, out ItemSubType outItemType)
         {
             var type = itemId.ToString().Substring(0, 4);
             switch (type)
