@@ -193,14 +193,14 @@ namespace Nekoyume.Action
             else
             {
                 var orderedMaterials = Materials.OrderBy(order => order.id).ToList();
-                EquipmentItemSheet.Row itemEquipmentRow = null;
+                ConsumableItemSheet.Row itemEquipmentRow = null;
                 // 소모품
                 foreach (var recipe in recipeTable)
                 {
                     if (!recipe.Value.IsMatchForConsumable(orderedMaterials))
                         continue;
 
-                    if (!Game.Game.instance.TableSheets.EquipmentItemSheet.TryGetValue(recipe.Value.ResultId,
+                    if (!Game.Game.instance.TableSheets.ConsumableItemSheet.TryGetValue(recipe.Value.ResultId,
                         out itemEquipmentRow))
                         break;
 
@@ -209,7 +209,7 @@ namespace Nekoyume.Action
                 }
 
                 if (itemEquipmentRow == null &&
-                    !Game.Game.instance.TableSheets.EquipmentItemSheet.TryGetValue(GameConfig.CombinationDefaultFoodId,
+                    !Game.Game.instance.TableSheets.ConsumableItemSheet.TryGetValue(GameConfig.CombinationDefaultFoodId,
                         out itemEquipmentRow))
                     return states;
 
@@ -325,7 +325,7 @@ namespace Nekoyume.Action
             }
         }
 
-        private static ItemUsable GetFood(EquipmentItemSheet.Row equipmentItemRow, Guid itemId)
+        private static ItemUsable GetFood(ConsumableItemSheet.Row equipmentItemRow, Guid itemId)
         {
             // FixMe. 소모품에 랜덤 스킬을 할당했을 때, `HackAndSlash` 액션에서 예외 발생. 그래서 소모품은 랜덤 스킬을 할당하지 않음.
             /*
