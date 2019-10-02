@@ -1,11 +1,15 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Assets.SimpleLocalization;
 using EnhancedUI.EnhancedScroller;
+using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
+using Nekoyume.Model;
 using Nekoyume.UI.Scroller;
 using UniRx;
+using UniRx.Async;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,6 +17,9 @@ namespace Nekoyume.UI.Module
 {
     public class Inventory : MonoBehaviour
     {
+        private static readonly Vector2 BtnHighlightSize = new Vector2(157f, 60f);
+        private static readonly Vector2 BtnSize = new Vector2(130f, 36f);
+
         public Text titleText;
         public Button equipmentsButton;
         public Image equipmentsButtonImage;
@@ -28,8 +35,6 @@ namespace Nekoyume.UI.Module
         public Text materialsButtonText;
         public InventoryScrollerController scrollerController;
 
-        private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
-
         private Sprite _selectedButtonSprite;
         private Sprite _deselectedButtonSprite;
         private Sprite _equipmentsButtonIconSpriteBlack;
@@ -40,9 +45,11 @@ namespace Nekoyume.UI.Module
         private Sprite _materialsButtonIconSpriteBlue;
 
         private ItemInformationTooltip _tooltip;
-        private RectTransform[] _switchButtonTransforms;
-        private static Vector2 BtnHighlightSize = new Vector2(157f, 60f);
-        private static Vector2 BtnSize = new Vector2(130f, 36f);
+
+        private readonly Dictionary<ItemType, RectTransform> _switchButtonTransforms =
+            new Dictionary<ItemType, RectTransform>(ItemTypeComparer.Instance);
+
+        private readonly List<IDisposable> _disposablesForOnDisable = new List<IDisposable>();
 
         public RectTransform RectTransform { get; private set; }
 
@@ -50,25 +57,13 @@ namespace Nekoyume.UI.Module
             ? _tooltip
             : _tooltip = Widget.Find<ItemInformationTooltip>();
 
-        public Model.Inventory Model { get; private set; }
+        public Model.Inventory SharedModel { get; private set; }
 
         #region Mono
 
         protected void Awake()
         {
             this.ComponentFieldsNotNullTest();
-
-            _switchButtonTransforms = new RectTransform[]
-            {
-                equipmentsButton.GetComponent<RectTransform>(),
-                consumablesButton.GetComponent<RectTransform>(),
-                materialsButton.GetComponent<RectTransform>(),
-            };
-
-            titleText.text = LocalizationManager.Localize("UI_INVENTORY");
-            equipmentsButtonText.text = LocalizationManager.Localize("UI_EQUIPMENTS");
-            consumablesButtonText.text = LocalizationManager.Localize("UI_CONSUMABLES");
-            materialsButtonText.text = LocalizationManager.Localize("UI_MATERIALS");
 
             _selectedButtonSprite = Resources.Load<Sprite>("UI/Textures/button_yellow_02");
             _deselectedButtonSprite = Resources.Load<Sprite>("UI/Textures/button_brown_01");
@@ -78,140 +73,165 @@ namespace Nekoyume.UI.Module
             _consumablesButtonIconSpriteBlue = Resources.Load<Sprite>("UI/Textures/icon_inventory_02_yellow");
             _materialsButtonIconSpriteBlack = Resources.Load<Sprite>("UI/Textures/icon_inventory_03_black");
             _materialsButtonIconSpriteBlue = Resources.Load<Sprite>("UI/Textures/icon_inventory_03_yellow");
+            _switchButtonTransforms.Add(ItemType.Consumable, consumablesButton.GetComponent<RectTransform>());
+            _switchButtonTransforms.Add(ItemType.Equipment, equipmentsButton.GetComponent<RectTransform>());
+            _switchButtonTransforms.Add(ItemType.Material, materialsButton.GetComponent<RectTransform>());
+
+            titleText.text = LocalizationManager.Localize("UI_INVENTORY");
+            equipmentsButtonText.text = LocalizationManager.Localize("UI_EQUIPMENTS");
+            consumablesButtonText.text = LocalizationManager.Localize("UI_CONSUMABLES");
+            materialsButtonText.text = LocalizationManager.Localize("UI_MATERIALS");
 
             RectTransform = GetComponent<RectTransform>();
+
+            SharedModel = new Model.Inventory();
+            SharedModel.State.Subscribe(SubscribeState).AddTo(gameObject);
+            SharedModel.SelectedItemView.Subscribe(SubscribeSelectedItemView).AddTo(gameObject);
 
             equipmentsButton.OnClickAsObservable().Subscribe(_ =>
             {
                 AudioController.PlayClick();
-                Model.state.Value = UI.Model.Inventory.State.Equipments;
-            }).AddTo(this);
+                SharedModel.State.Value = ItemType.Equipment;
+            }).AddTo(gameObject);
             consumablesButton.OnClickAsObservable().Subscribe(_ =>
             {
                 AudioController.PlayClick();
-                Model.state.Value = UI.Model.Inventory.State.Consumables;
-            }).AddTo(this);
+                SharedModel.State.Value = ItemType.Consumable;
+            }).AddTo(gameObject);
             materialsButton.OnClickAsObservable().Subscribe(_ =>
             {
                 AudioController.PlayClick();
-                Model.state.Value = UI.Model.Inventory.State.Materials;
-            }).AddTo(this);
+                SharedModel.State.Value = ItemType.Material;
+            }).AddTo(gameObject);
+        }
+
+        private void OnEnable()
+        {
+            ReactiveCurrentAvatarState.Inventory.Subscribe(SharedModel.ResetItems)
+                .AddTo(_disposablesForOnDisable);
         }
 
         private void OnDisable()
         {
-            if (Tooltip)
-                Tooltip.Close();
+            _disposablesForOnDisable.DisposeAllAndClear();
+            scrollerController.Clear();
+            Tooltip.Close();
         }
 
         private void OnDestroy()
         {
-            Clear();
+            SharedModel.Dispose();
+            SharedModel = null;
         }
 
         #endregion
 
-        public void SetData(Model.Inventory model)
+        #region Subscribe
+
+        private void SubscribeState(ItemType stateType)
         {
-            if (ReferenceEquals(model, null))
+            switch (stateType)
             {
-                Clear();
-                return;
-            }
-
-            _disposablesForModel.DisposeAllAndClear();
-            Model = model;
-            Model.state.Subscribe(SubscribeState).AddTo(_disposablesForModel);
-            Model.selectedItemView.Subscribe(view =>
-            {
-                if (!view) return;
-
-                var scroller = scrollerController.scroller;
-                var cellHeight = scrollerController.GetCellViewSize(scroller, 0);
-                var skipCount = Mathf.FloorToInt(scrollerController.scrollRectTransform.rect.height / cellHeight) - 1;
-                int idx = -Mathf.CeilToInt(view.inventoryCellView.transform.localPosition.y / cellHeight);
-
-                if (scroller.StartCellViewIndex + skipCount < idx)
-                {
-                    scroller.ScrollPosition = scroller.GetScrollPositionForCellViewIndex(idx - skipCount,
-                        EnhancedScroller.CellViewPositionEnum.Before);
-                }
-                else if (scroller.StartCellViewIndex == idx)
-                {
-                    scroller.ScrollPosition =
-                        scroller.GetScrollPositionForCellViewIndex(idx, EnhancedScroller.CellViewPositionEnum.Before);
-                }
-            }).AddTo(_disposablesForModel);
-        }
-
-        public void Clear()
-        {
-            _disposablesForModel.DisposeAllAndClear();
-            Model = null;
-            scrollerController.Clear();
-        }
-
-        private void SubscribeState(Model.Inventory.State state)
-        {
-            switch (state)
-            {
-                case UI.Model.Inventory.State.Equipments:
+                case ItemType.Equipment:
                     equipmentsButtonImage.sprite = _selectedButtonSprite;
                     equipmentsButtonIconImage.sprite = _equipmentsButtonIconSpriteBlue;
                     consumablesButtonImage.sprite = _deselectedButtonSprite;
                     consumablesButtonIconImage.sprite = _consumablesButtonIconSpriteBlack;
                     materialsButtonImage.sprite = _deselectedButtonSprite;
                     materialsButtonIconImage.sprite = _materialsButtonIconSpriteBlack;
-                    scrollerController.SetData(Model.equipments);
+                    scrollerController.SetData(SharedModel.Equipments);
                     break;
-                case UI.Model.Inventory.State.Consumables:
+                case ItemType.Consumable:
                     equipmentsButtonImage.sprite = _deselectedButtonSprite;
                     equipmentsButtonIconImage.sprite = _equipmentsButtonIconSpriteBlack;
                     consumablesButtonImage.sprite = _selectedButtonSprite;
                     consumablesButtonIconImage.sprite = _consumablesButtonIconSpriteBlue;
                     materialsButtonImage.sprite = _deselectedButtonSprite;
                     materialsButtonIconImage.sprite = _materialsButtonIconSpriteBlack;
-                    scrollerController.SetData(Model.consumables);
+                    scrollerController.SetData(SharedModel.Consumables);
                     break;
-                case UI.Model.Inventory.State.Materials:
+                case ItemType.Material:
                     equipmentsButtonImage.sprite = _deselectedButtonSprite;
                     equipmentsButtonIconImage.sprite = _equipmentsButtonIconSpriteBlack;
                     consumablesButtonImage.sprite = _deselectedButtonSprite;
                     consumablesButtonIconImage.sprite = _consumablesButtonIconSpriteBlack;
                     materialsButtonImage.sprite = _selectedButtonSprite;
                     materialsButtonIconImage.sprite = _materialsButtonIconSpriteBlue;
-                    scrollerController.SetData(Model.materials);
+                    scrollerController.SetData(SharedModel.Materials);
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(state), state, null);
+                    throw new ArgumentOutOfRangeException(nameof(stateType), stateType, null);
             }
 
             // 선택된 버튼의 스프라이트가 1픽셀 내려가는 문제가 있음.
 
-            var btn = _switchButtonTransforms[(int) state];
-            btn.anchoredPosition = new Vector2(btn.anchoredPosition.x, 1);
-            btn.sizeDelta = BtnHighlightSize;
-            var shadows = btn.GetComponentsInChildren<Shadow>();
-            foreach (var shadow in shadows)
+            foreach (var pair in _switchButtonTransforms)
             {
-                shadow.effectColor = ColorHelper.HexToColorRGB("a35400");
-            }
-
-            for (int i = 0; i < 3; ++i)
-            {
-                if (i == (int) state) continue;
-                btn = _switchButtonTransforms[i];
-                btn.anchoredPosition = new Vector2(btn.anchoredPosition.x, 0);
-                btn.sizeDelta = BtnSize;
-                shadows = btn.GetComponentsInChildren<Shadow>();
-                foreach (var shadow in shadows)
+                var btn = pair.Value;
+                var shadows = btn.GetComponentsInChildren<Shadow>();
+                if (pair.Key == stateType)
                 {
-                    shadow.effectColor = Color.black;
+                    btn.anchoredPosition = new Vector2(btn.anchoredPosition.x, 1);
+                    btn.sizeDelta = BtnHighlightSize;
+                    foreach (var shadow in shadows)
+                    {
+                        shadow.effectColor = ColorHelper.HexToColorRGB("a35400");
+                    }   
+                }
+                else
+                {
+                    btn.anchoredPosition = new Vector2(btn.anchoredPosition.x, 0);
+                    btn.sizeDelta = BtnSize;
+                    foreach (var shadow in shadows)
+                    {
+                        shadow.effectColor = Color.black;
+                    }
                 }
             }
 
-            if (Tooltip)
+            Tooltip.Close();
+        }
+
+        private void SubscribeSelectedItemView(InventoryItemView view)
+        {
+            if (view is null)
+                return;
+
+            AdjustmentScrollPosition(view);
+        }
+
+        #endregion
+
+        private void AdjustmentScrollPosition(InventoryItemView view)
+        {
+            var scroller = scrollerController.scroller;
+            var cellHeight = scrollerController.GetCellViewSize(scroller, 0);
+            var skipCount = Mathf.FloorToInt(scrollerController.scrollRectTransform.rect.height / cellHeight) - 1;
+            var index = -Mathf.CeilToInt(view.InventoryCellView.transform.localPosition.y / cellHeight);
+
+            if (scroller.StartCellViewIndex + skipCount < index)
+            {
+                scroller.ScrollPosition = scroller.GetScrollPositionForCellViewIndex(index - skipCount,
+                    EnhancedScroller.CellViewPositionEnum.Before);
+            }
+            else if (scroller.StartCellViewIndex == index)
+            {
+                scroller.ScrollPosition =
+                    scroller.GetScrollPositionForCellViewIndex(index, EnhancedScroller.CellViewPositionEnum.Before);
+            }
+        }
+
+        private void ShowTooltip(InventoryItemView view)
+        {
+            if (view is null ||
+                view.RectTransform == Tooltip.Target)
+            {
                 Tooltip.Close();
+
+                return;
+            }
+
+            Tooltip.Show(view.RectTransform, view.Model);
         }
     }
 }

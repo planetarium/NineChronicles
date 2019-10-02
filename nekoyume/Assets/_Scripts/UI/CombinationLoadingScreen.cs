@@ -24,8 +24,9 @@ namespace Nekoyume.UI
             _color.a = AlphaToBeginning;
         }
 
-        private void OnEnable()
+        protected override void OnEnable()
         {
+            base.OnEnable();
             loadingImage.color = _color;
             _sequence = DOTween.Sequence()
                 .Append(loadingImage.DOFade(1f, 0.3f))
@@ -34,10 +35,11 @@ namespace Nekoyume.UI
                 .OnComplete(Close);
         }
 
-        private void OnDisable()
+        protected override void OnDisable()
         {
             _sequence?.Kill();
             _sequence = null;
+            base.OnDisable();
         }
 
         #endregion

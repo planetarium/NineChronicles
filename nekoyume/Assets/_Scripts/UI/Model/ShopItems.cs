@@ -11,48 +11,81 @@ namespace Nekoyume.UI.Model
 {
     public class ShopItems : IDisposable
     {
-        public readonly ReactiveCollection<ShopItem> products = new ReactiveCollection<ShopItem>();
-        public readonly ReactiveCollection<ShopItem> registeredProducts = new ReactiveCollection<ShopItem>();
-        public readonly ReactiveProperty<ShopItemView> selectedItemView = new ReactiveProperty<ShopItemView>();
+        public readonly ReactiveCollection<ShopItem> Products = new ReactiveCollection<ShopItem>();
+        public readonly ReactiveCollection<ShopItem> RegisteredProducts = new ReactiveCollection<ShopItem>();
+        public readonly ReactiveProperty<ShopItemView> SelectedItemView = new ReactiveProperty<ShopItemView>();
         
-        public readonly Subject<ShopItems> onRefresh = new Subject<ShopItems>();
+        public readonly Subject<ShopItems> OnRefresh = new Subject<ShopItems>();
 
-        private readonly IDictionary<Address, List<Game.Item.ShopItem>> _shopItems;
+        private IDictionary<Address, List<Game.Item.ShopItem>> _shopItems;
         
-        public ShopItems(IDictionary<Address, List<Game.Item.ShopItem>> shopItems)
+        public ShopItems(IDictionary<Address, List<Game.Item.ShopItem>> shopItems = null)
         {
-            _shopItems = shopItems;
+            Products.ObserveAdd().Subscribe(OnAddShopItem);
+            Products.ObserveRemove().Subscribe(OnRemoveShopItem);
+            RegisteredProducts.ObserveAdd().Subscribe(OnAddShopItem);
+            RegisteredProducts.ObserveRemove().Subscribe(OnRemoveShopItem);
+            OnRefresh.Subscribe(_ => ResetBuyItems());
+            
+            ResetItems(shopItems);
+        }
+        
+        public void Dispose()
+        {
+            Products.DisposeAllAndClear();
+            RegisteredProducts.DisposeAllAndClear();
+            SelectedItemView.Dispose();
+            
+            OnRefresh.Dispose();
+        }
 
-            products.ObserveAdd().Subscribe(OnAddShopItem);
-            products.ObserveRemove().Subscribe(OnRemoveShopItem);
-            registeredProducts.ObserveAdd().Subscribe(OnAddShopItem);
-            registeredProducts.ObserveRemove().Subscribe(OnRemoveShopItem);
-            onRefresh.Subscribe(_ => ResetBuyItems());
+        public void ResetItems(IDictionary<Address, List<Game.Item.ShopItem>> shopItems)
+        {
+            _shopItems = shopItems ?? new Dictionary<Address, List<Game.Item.ShopItem>>();
             
             ResetBuyItems();
             ResetSellItems();
         }
         
-        public void Dispose()
+        private void SubscribeItemOnClick(ShopItemView view)
         {
-            products.DisposeAll();
-            registeredProducts.DisposeAll();
-            selectedItemView.Dispose();
-            
-            onRefresh.Dispose();
+            if (view is null ||
+                view == SelectedItemView.Value)
+            {
+                DeselectItemView();
+
+                return;
+            }
+
+            DeselectItemView();
+            SelectItemView(view);
         }
 
-        public void DeselectAll()
+        public void SelectItemView(ShopItemView view)
         {
-            if (ReferenceEquals(selectedItemView.Value, null)
-                || ReferenceEquals(selectedItemView.Value.Model, null))
+            if (view is null ||
+                view.Model is null)
+            {
+                return;
+            }
+            
+            SelectedItemView.Value = view;
+            SelectedItemView.Value.Model.Selected.Value = true;
+        }
+
+        public void DeselectItemView()
+        {
+            if (SelectedItemView.Value is null ||
+                SelectedItemView.Value.Model is null)
             {
                 return;
             }
 
-            selectedItemView.Value.Model.selected.Value = false;
-            selectedItemView.Value = null;
+            SelectedItemView.Value.Model.Selected.Value = false;
+            SelectedItemView.Value = null;
         }
+
+        #region Shop Item
 
         public void AddShopItem(Address sellerAgentAddress, Game.Item.ShopItem shopItem)
         {
@@ -62,13 +95,6 @@ namespace Nekoyume.UI.Model
             }
             
             _shopItems[sellerAgentAddress].Add(shopItem);
-        }
-        
-        public ShopItem AddRegisteredProduct(Address sellerAgentAddress, Game.Item.ShopItem shopItem)
-        {
-            var result = new ShopItem(sellerAgentAddress, shopItem);
-            registeredProducts.Add(result);
-            return result;
         }
         
         public void RemoveShopItem(Address sellerAgentAddress, Guid productId)
@@ -90,19 +116,28 @@ namespace Nekoyume.UI.Model
             }
         }
 
+        #endregion
+
+        public ShopItem AddRegisteredProduct(Address sellerAgentAddress, Game.Item.ShopItem shopItem)
+        {
+            var result = new ShopItem(sellerAgentAddress, shopItem);
+            RegisteredProducts.Add(result);
+            return result;
+        }
+        
         public void RemoveProduct(Guid productId)
         {
-            RemoveItem(products, productId);
+            RemoveItem(Products, productId);
         }
         
         public void RemoveRegisteredProduct(Guid productId)
         {
-            RemoveItem(registeredProducts, productId);
+            RemoveItem(RegisteredProducts, productId);
         }
         
         private void RemoveItem(ICollection<ShopItem> collection, Guid productId)
         {
-            var shouldRemove = collection.FirstOrDefault(item => item.productId.Value == productId);
+            var shouldRemove = collection.FirstOrDefault(item => item.ProductId.Value == productId);
 
             if (!ReferenceEquals(shouldRemove, null))
             {
@@ -112,32 +147,20 @@ namespace Nekoyume.UI.Model
 
         private void OnAddShopItem(CollectionAddEvent<ShopItem> e)
         {
-            e.Value.onClick.Subscribe(OnClickShopItem);
+            e.Value.OnClick.Subscribe(SubscribeItemOnClick);
         }
         
         private void OnRemoveShopItem(CollectionRemoveEvent<ShopItem> e)
         {
             // 데이터의 프로퍼티를 외부에서 처분하는 부분 기억.
-            e.Value.onClick.Dispose();
-        }
-        
-        public void OnClickShopItem(ShopItemView shopItemView)
-        {
-            var prevSelected = selectedItemView.Value;
-            if (selectedItemView.Value != null)
-            {
-                DeselectAll();
-            }
-            if (prevSelected is null || !ReferenceEquals(prevSelected, shopItemView))
-            {
-                selectedItemView.SetValueAndForceNotify(shopItemView);
-                selectedItemView.Value.Model.selected.Value = true;
-            }
+            e.Value.OnClick.Dispose();
         }
 
+        #region Reset
+        
         private void ResetBuyItems()
         {
-            products.Clear();
+            Products.Clear();
 
             if (_shopItems.Count == 0)
             {
@@ -163,8 +186,8 @@ namespace Nekoyume.UI.Model
                     {
                         continue;
                     }
-                    products.Add(new ShopItem(keyValuePair.Key, shopItem));
-                    if (products.Count == total)
+                    Products.Add(new ShopItem(keyValuePair.Key, shopItem));
+                    if (Products.Count == total)
                     {
                         return;
                     }
@@ -188,7 +211,7 @@ namespace Nekoyume.UI.Model
 
         private void ResetSellItems()
         {
-            registeredProducts.Clear();
+            RegisteredProducts.Clear();
             
             if (_shopItems.Count == 0)
             {
@@ -204,8 +227,10 @@ namespace Nekoyume.UI.Model
             var items = _shopItems[key];
             foreach (var item in items)
             {
-                registeredProducts.Add(new ShopItem(key, item));
+                RegisteredProducts.Add(new ShopItem(key, item));
             }
         }
+        
+        #endregion
     }
 }

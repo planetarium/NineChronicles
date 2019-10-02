@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Assets.SimpleLocalization;
 
 namespace Nekoyume.EnumType
@@ -30,6 +31,36 @@ namespace Nekoyume.EnumType
         FoodMaterial,
         MonsterPart,
         NormalMaterial
+    }
+    
+    public class ItemTypeComparer : IEqualityComparer<ItemType>
+    {
+        public static readonly ItemTypeComparer Instance = new ItemTypeComparer();
+        
+        public bool Equals(ItemType x, ItemType y)
+        {
+            return x == y;
+        }
+
+        public int GetHashCode(ItemType obj)
+        {
+            return (int) obj;
+        }
+    }
+    
+    public class ItemSubTypeComparer : IEqualityComparer<ItemSubType>
+    {
+        public static readonly ItemSubTypeComparer Instance = new ItemSubTypeComparer();
+        
+        public bool Equals(ItemSubType x, ItemSubType y)
+        {
+            return x == y;
+        }
+
+        public int GetHashCode(ItemSubType obj)
+        {
+            return (int) obj;
+        }
     }
 
     public static class ItemTypeExtension

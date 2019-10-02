@@ -24,7 +24,7 @@ namespace Nekoyume.UI.Scroller
         private ReactiveCollection<Model.InventoryItem> _dataList = new ReactiveCollection<Model.InventoryItem>();
         private float _cellViewHeight = 100f;
         
-        private readonly List<IDisposable> _disposablesForSetData = new List<IDisposable>();
+        private readonly List<IDisposable> _disposablesForClear = new List<IDisposable>();
 
         #region Mono
 
@@ -74,35 +74,27 @@ namespace Nekoyume.UI.Scroller
 
         public void SetData(ReactiveCollection<Model.InventoryItem> dataList)
         {
-            if (ReferenceEquals(dataList, null))
+            Debug.LogWarning("InventoryScrollerController.SetData() called.");
+            if (dataList is null)
             {
                 Clear();
+                
                 return;
             }
             
-            _disposablesForSetData.DisposeAllAndClear();
+            _disposablesForClear.DisposeAllAndClear();
             _dataList = dataList;
-            _dataList.ObserveAdd().Subscribe(OnDataAdd).AddTo(_disposablesForSetData);
-            _dataList.ObserveRemove().Subscribe(OnDataRemove).AddTo(_disposablesForSetData);
+            _dataList.ObserveAdd().Subscribe(_ => scroller.ReloadData()).AddTo(_disposablesForClear);
+            _dataList.ObserveRemove().Subscribe(_ => scroller.ReloadData()).AddTo(_disposablesForClear);
             
             scroller.ReloadData();
         }
 
         public void Clear()
         {
+            _disposablesForClear.DisposeAllAndClear();
             _dataList = new ReactiveCollection<Model.InventoryItem>();
-            _disposablesForSetData.DisposeAllAndClear();
             
-            scroller.ReloadData();
-        }
-
-        private void OnDataAdd(CollectionAddEvent<Model.InventoryItem> e)
-        {
-            scroller.ReloadData();
-        }
-
-        private void OnDataRemove(CollectionRemoveEvent<Model.InventoryItem> e)
-        {
             scroller.ReloadData();
         }
 
