@@ -59,13 +59,6 @@ namespace Nekoyume.UI.Model
 
             DeselectItemView();
             SelectItemView(view);
-
-//            if (SelectedItemView.Value is null ||
-//                SelectedItemView.Value != view)
-//            {
-//                SelectedItemView.SetValueAndForceNotify(view);
-//                SelectedItemView.Value.Model.Selected.Value = true;
-//            }
         }
 
         public void SelectItemView(ShopItemView view)
