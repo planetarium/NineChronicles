@@ -56,7 +56,7 @@ namespace Nekoyume.UI
             public Text submitButtonText2;
         }
         
-        private const int Timer = 5;
+        private const int Timer = 10;
         private static readonly Vector3 VfxBattleWinOffset = new Vector3(-3.43f, -0.28f, 10f);
 
         public CanvasGroup canvasGroup;
