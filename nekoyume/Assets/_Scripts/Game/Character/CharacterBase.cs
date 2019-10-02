@@ -154,6 +154,7 @@ namespace Nekoyume.Game.Character
             if (ReferenceEquals(_hpBar, null))
             {
                 _hpBar = Widget.Create<HpBar>(true);
+                _hpBar.UpdateLevel(model.level);
             }
 
             _hpBar.UpdatePosition(gameObject, HUDOffset);
@@ -269,22 +270,12 @@ namespace Nekoyume.Game.Character
             );
         }
 
-        public void StartRun(bool showHpBar = false)
+        public void StartRun()
         {
             RunSpeed = Speed;
             if (Root == null)
             {
                 InitBT();
-            }
-
-            if (showHpBar)
-            {
-                if (ReferenceEquals(_hpBar, null))
-                {
-                    _hpBar = Widget.Create<HpBar>(true);
-                }
-                _hpBar.Show();
-                _hpBar.UpdateLevel(model.level);
             }
         }
 

@@ -465,7 +465,7 @@ namespace Nekoyume.Game
             Vector2 position = playerTransform.position;
             position.y = StageStartPosition;
             playerTransform.position = position;
-            player.StartRun(true);
+            player.StartRun();
             return player;
         }
 
