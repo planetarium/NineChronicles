@@ -75,6 +75,15 @@ namespace Nekoyume.Model
         {
             var attack = _selectedSkill.Use(this);
             Simulator.Log.Add(attack);
+            foreach (var info in attack.skillInfos)
+            {
+                if (info.Target.IsDead)
+                {
+                    var target = targets.First(i => i.id == info.Target.id);
+                    target.Die();
+                }
+            }
+
             _selectedSkill = null;
         }
 
@@ -89,7 +98,7 @@ namespace Nekoyume.Model
             return !IsDead;
         }
 
-        private void Die()
+        public void Die()
         {
             OnDead();
         }
@@ -106,10 +115,6 @@ namespace Nekoyume.Model
         public void OnDamage(int dmg)
         {
             currentHP -= dmg;
-            if (IsDead)
-            {
-                Die();
-            }
         }
 
         protected virtual void SetSkill()
@@ -147,7 +152,7 @@ namespace Nekoyume.Model
                 var buff = buffs[key];
                 var before = buff.remainedDuration;
                 buff.remainedDuration--;
-                Debug.Log($"Decrease {buff} time. from: {before} to: {buff.remainedDuration}");
+                Debug.Log($"{this} Decrease {buff} time. from: {before} to: {buff.remainedDuration}");
                 if (buff.remainedDuration <= 0)
                 {
                     buffs.Remove(key);
@@ -180,12 +185,12 @@ namespace Nekoyume.Model
         public void AddBuff(Buff buff)
         {
             Debug.Log(
-                $"Add {buff}. Type: {buff.Data.StatType} Effect: {buff.Data.Effect} Time: {buff.remainedDuration} Chance: {buff.Data.Chance}");
+                $"{this} Add {buff}. Type: {buff.Data.StatType} Effect: {buff.Data.Effect} Time: {buff.remainedDuration} Chance: {buff.Data.Chance}");
             if (buffs.TryGetValue(buff.Data.GroupId, out var outBuff) &&
                 outBuff.Data.Id > buff.Data.Id)
                 return;
 
-            buffs[buff.Data.GroupId] = buff;
+            buffs[buff.Data.GroupId] = (Buff) buff.Clone();
         }
 
         public bool GetChance(int chance)

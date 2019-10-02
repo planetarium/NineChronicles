@@ -64,6 +64,7 @@ namespace Nekoyume.UI
             }
 
             HPBar.gameObject.SetActive(false);
+            buffLayout.UpdateBuff(new List<Buff>());
         }
 
         public void UpdatePlayer(GameObject playerObj)

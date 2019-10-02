@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Nekoyume.EnumType;
 
 namespace Nekoyume.TableData
 {
@@ -9,12 +10,12 @@ namespace Nekoyume.TableData
         [Serializable]
         public class Row : QuestSheet.Row
         {
-            public string Type { get; private set; }
+            public TradeType Type { get; private set; }
             
             public override void Set(IReadOnlyList<string> fields)
             {
                 base.Set(fields);
-                Type = fields[3];
+                Type = (TradeType) Enum.Parse(typeof(TradeType), fields[3]);
             }
         }
     }

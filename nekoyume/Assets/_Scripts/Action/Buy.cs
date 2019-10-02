@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.BlockChain;
+using Nekoyume.EnumType;
 using Nekoyume.Game.Mail;
 using Nekoyume.State;
 using UnityEngine;
@@ -138,8 +139,8 @@ namespace Nekoyume.Action
             sellerAvatarState.Update(sellerMail);
 
             // 퀘스트 업데이트
-            buyerAvatarState.questList.UpdateTradeQuest("buy");
-            sellerAvatarState.questList.UpdateTradeQuest("sell");
+            buyerAvatarState.questList.UpdateTradeQuest(TradeType.Buy);
+            sellerAvatarState.questList.UpdateTradeQuest(TradeType.Sell);
 
             var timestamp = DateTimeOffset.UtcNow;
             buyerAvatarState.updatedAt = timestamp;
