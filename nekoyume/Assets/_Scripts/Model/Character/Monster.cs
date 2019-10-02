@@ -29,7 +29,7 @@ namespace Nekoyume.Model
             attackRange = data.RNG;
             hp = stats.HP;
             runSpeed = data.RunSpeed;
-            characterSize = data.Size;
+            sizeType = data.Size;
         }
 
         protected override void OnDead()

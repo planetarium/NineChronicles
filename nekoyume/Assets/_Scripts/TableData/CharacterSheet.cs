@@ -15,7 +15,7 @@ namespace Nekoyume.TableData
             public override int Key => Id;
             public int Id { get; private set; }
             public string Name { get; private set; }
-            public string Size { get; private set; }
+            public SizeType Size { get; private set; }
             public ElementalType Elemental { get; private set; }
             public int HP { get; private set; }
             public int ATK { get; private set; }
@@ -32,7 +32,7 @@ namespace Nekoyume.TableData
             {
                 Id = int.Parse(fields[0]);
                 Name = fields[1];
-                Size = string.IsNullOrEmpty(fields[2]) ? "s" : fields[2];
+                Size = (SizeType) Enum.Parse(typeof(SizeType), fields[2]);
                 Elemental = Enum.TryParse<ElementalType>(fields[3], out var elementalType)
                     ? elementalType
                     : ElementalType.Normal;

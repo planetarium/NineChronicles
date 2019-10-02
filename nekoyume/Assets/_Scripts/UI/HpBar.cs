@@ -1,9 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Game;
-using Nekoyume.TableData;
-using UnityEngine;
-using UnityEngine.UI;
+using Nekoyume.UI.Module;
 
 namespace Nekoyume.UI
 {

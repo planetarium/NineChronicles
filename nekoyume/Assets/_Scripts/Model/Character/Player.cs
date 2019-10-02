@@ -96,7 +96,7 @@ namespace Nekoyume.Model
             expNeed = levelRow.ExpNeed;
             luck = statsData.CRI;
             runSpeed = characterRow.RunSpeed;
-            characterSize = characterRow.Size;
+            sizeType = characterRow.Size;
             var setMap = new Dictionary<int, int>();
             foreach (var equipment in Equipments)
             {

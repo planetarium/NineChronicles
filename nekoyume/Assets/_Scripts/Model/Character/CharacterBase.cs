@@ -7,6 +7,7 @@ using Libplanet.Action;
 using Nekoyume.Battle;
 using Nekoyume.EnumType;
 using Nekoyume.Game;
+using UniRx;
 using UnityEngine;
 
 namespace Nekoyume.Model
@@ -37,7 +38,7 @@ namespace Nekoyume.Model
         public Guid id = Guid.NewGuid();
         public float attackRange = 1.0f;
         public float runSpeed = 1.0f;
-        public string characterSize = "s";
+        public SizeType sizeType = SizeType.S;
         public Dictionary<int, Buff> buffs = new Dictionary<int, Buff>();
 
         [NonSerialized] public Simulator Simulator;

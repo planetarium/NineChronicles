@@ -290,7 +290,13 @@ namespace Nekoyume.UI
         private void OnClickEquip(CountableItem countableItem)
         {
             var item = countableItem as InventoryItem;
-            var itemSubType = countableItem.item.Value.Data.ItemSubType;
+            var itemRow = countableItem.item.Value.Data;
+            var itemSubType = itemRow.ItemSubType;
+
+            if (itemRow.ItemType == ItemType.Material)
+            {
+                return;
+            }
 
             if (item != null && item.equipped.Value)
             {

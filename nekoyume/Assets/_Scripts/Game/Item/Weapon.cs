@@ -16,7 +16,7 @@ namespace Nekoyume.Game.Item
                 : GetSprite(equipment.Data.Id);
         }
         
-        public new static Sprite GetSprite(int equipmentId)
+        public static Sprite GetSprite(int equipmentId)
         {
             return Resources.Load<Sprite>(string.Format(SpritePath, equipmentId));
         }

@@ -4,6 +4,7 @@ using Nekoyume.Helper;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using System;
+using System.Linq;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -56,28 +57,25 @@ namespace Nekoyume.UI.Scroller
 
             SetItemView(recipeInfo.resultId, recipeInfo.resultAmount, resultItemView, ResultIconScaleFactor, false);
 
-            for (int i = 0; i < recipeInfo.materialInfos.Length; ++i)
+            for (var i = 0; i < recipeInfo.materialInfos.Length; ++i)
             {
                 var info = recipeInfo.materialInfos[i];
                 if (info.id == 0) break;
                 SetItemView(info.id, info.amount, materialItemViews[i], MaterialIconScaleFactor, true, !info.isEnough);
             }
 
-            foreach(var info in recipeInfo.materialInfos)
+            if (recipeInfo.materialInfos.Any(info => info.id != 0 && !info.isEnough))
             {
-                if (info.id != 0 && !info.isEnough)
-                {
-                    combineButton.enabled = false;
-                    combineButton.image.sprite = Resources.Load<Sprite>("UI/Textures/button_gray_01");
-                    combineText.color = ColorHelper.HexToColorRGB("92A3B5");
-                    break;
-                }
+                combineButton.enabled = false;
+                combineButton.image.sprite = Resources.Load<Sprite>("UI/Textures/button_gray_01");
+                combineText.color = ColorHelper.HexToColorRGB("92A3B5");
             }
         }
 
-        public void SetItemView(int itemId, int amount, SimpleCountableItemView itemView, float scaleFactor, bool isMaterial, bool isDimmed = false)
+        private void SetItemView(int itemId, int amount, SimpleCountableItemView itemView, float scaleFactor, bool isMaterial, bool isDimmed = false)
         {
-            var item = isMaterial ? ItemFactory.CreateMaterial(itemId, new Guid()) : ItemFactory.CreateEquipment(itemId, new Guid());
+            var row = Game.Game.instance.TableSheets.ItemSheet.Values.First(i => i.Id == itemId);
+            var item = ItemFactory.Create(row, new Guid());
             var countableItem = new CountableItem(item, amount);
             try
             {
@@ -93,10 +91,10 @@ namespace Nekoyume.UI.Scroller
             itemView.gameObject.SetActive(true);
         }
 
-        public void Clear()
+        private void Clear()
         {
             resultItemView.Clear();
-            for (int i = 0; i < materialItemViews.Length; ++i)
+            for (var i = 0; i < materialItemViews.Length; ++i)
             {
                 materialItemViews[i].Clear();
                 materialItemViews[i].gameObject.SetActive(false);

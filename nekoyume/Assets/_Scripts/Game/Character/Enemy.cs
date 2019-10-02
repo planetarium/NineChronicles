@@ -101,7 +101,7 @@ namespace Nekoyume.Game.Character
             // https://app.asana.com/0/958521740385861/1129316006113668
             //_runSpeed = -character.runSpeed;
             _runSpeed = -1f;
-            characterSize = character.characterSize;
+            sizeType = character.sizeType;
         }
         
         private void OnAnimatorEvent(string eventName)

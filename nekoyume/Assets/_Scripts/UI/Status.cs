@@ -2,25 +2,24 @@ using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Manager;
 using Nekoyume.BlockChain;
-using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
-using Nekoyume.TableData;
 using UnityEngine;
 using UnityEngine.UI;
+using Nekoyume.UI.Module;
 
 namespace Nekoyume.UI
 {
     public class Status : Widget
     {
         public Text TextLevelName;
-        public Text TextStage;
         public Text TextHP;
         public Text TextExp;
         public Slider HPBar;
         public Slider ExpBar;
         public BuffLayout buffLayout;
+        public BuffTooltip buffTooltip;
 
         private string _avatarName = "";
         private Player _player;
@@ -46,19 +45,19 @@ namespace Nekoyume.UI
             base.Show();
 
             _statusDetail = Find<StatusDetail>();
-            if (ReferenceEquals(_statusDetail, null))
+            if (_statusDetail is null)
             {
                 throw new NotFoundComponentException<StatusDetail>();
             }
             
             _inventory = Find<Inventory>();
-            if (ReferenceEquals(_inventory, null))
+            if (_inventory is null)
             {
                 throw new NotFoundComponentException<Inventory>();
             }
 
             _quest = Find<Quest>();
-            if (ReferenceEquals(_quest, null))
+            if (_quest is null)
             {
                 throw new NotFoundComponentException<Quest>();
             }
@@ -77,6 +76,19 @@ namespace Nekoyume.UI
             }
 
             UpdateExp();
+        }
+
+        public void ShowBuffTooltip(GameObject sender)
+        {
+            var icon = sender.GetComponent<BuffIcon>();
+            buffTooltip.gameObject.SetActive(true);
+            buffTooltip.UpdateText(icon.Data);
+            buffTooltip.RectTransform.anchoredPosition = icon.image.rectTransform.anchoredPosition + Vector2.down * (icon.image.rectTransform.sizeDelta.y);
+        }
+
+        public void HideBuffTooltip()
+        {
+            buffTooltip.gameObject.SetActive(false);
         }
 
         private void UpdateExp()
