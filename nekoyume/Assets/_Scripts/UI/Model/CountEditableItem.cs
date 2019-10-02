@@ -5,31 +5,32 @@ namespace Nekoyume.UI.Model
 {
     public class CountEditableItem : CountableItem
     {
-        public readonly ReactiveProperty<int> minCount = new ReactiveProperty<int>(0);
-        public readonly ReactiveProperty<int> maxCount = new ReactiveProperty<int>(1);
+        public readonly ReactiveProperty<int> MinCount = new ReactiveProperty<int>(0);
+        public readonly ReactiveProperty<int> MaxCount = new ReactiveProperty<int>(1);
 
-        public readonly Subject<CountEditableItem> onMinus = new Subject<CountEditableItem>();
-        public readonly Subject<CountEditableItem> onPlus = new Subject<CountEditableItem>();
-        public readonly Subject<CountEditableItem> onDelete = new Subject<CountEditableItem>();
+        public readonly Subject<CountEditableItem> OnClick = new Subject<CountEditableItem>();
+        public readonly Subject<CountEditableItem> OnMinus = new Subject<CountEditableItem>();
+        public readonly Subject<CountEditableItem> OnPlus = new Subject<CountEditableItem>();
+        public readonly Subject<CountEditableItem> OnDelete = new Subject<CountEditableItem>();
         
         public CountEditableItem(ItemBase item, int count, int minCount, int maxCount) : base(item, count)
         {
-            this.minCount.Value = minCount;
-            this.maxCount.Value = maxCount;
+            MinCount.Value = minCount;
+            MaxCount.Value = maxCount;
             
-            this.minCount.Subscribe(min =>
+            MinCount.Subscribe(min =>
             {
-                if (this.Count.Value < min)
+                if (Count.Value < min)
                 {
-                    this.Count.Value = min;
+                    Count.Value = min;
                 }
             });
 
-            this.maxCount.Subscribe(max =>
+            MaxCount.Subscribe(max =>
             {
-                if (this.Count.Value > max)
+                if (Count.Value > max)
                 {
-                    this.Count.Value = max;
+                    Count.Value = max;
                 }
             });
         }
@@ -38,10 +39,10 @@ namespace Nekoyume.UI.Model
         {
             base.Dispose();
 
-            minCount.Dispose();
-            maxCount.Dispose();
+            MinCount.Dispose();
+            MaxCount.Dispose();
 
-            onDelete.Dispose();
+            OnDelete.Dispose();
         }
     }
 }

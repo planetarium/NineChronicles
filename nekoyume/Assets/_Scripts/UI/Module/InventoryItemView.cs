@@ -23,7 +23,7 @@ namespace Nekoyume.UI.Module
 
         private readonly List<IDisposable> _disposablesForClear = new List<IDisposable>();
 
-        public InventoryCellView inventoryCellView { get; private set; }
+        public InventoryCellView InventoryCellView { get; private set; }
 
         #region Mono
 
@@ -34,8 +34,8 @@ namespace Nekoyume.UI.Module
             this.ComponentFieldsNotNullTest();
 
             _button = GetComponent<Button>();
-            inventoryCellView = transform.parent.GetComponent<InventoryCellView>();
-            if(ReferenceEquals(inventoryCellView, null))
+            InventoryCellView = transform.parent.GetComponent<InventoryCellView>();
+            if(ReferenceEquals(InventoryCellView, null))
             {
                 Debug.LogError("InventoryCellView not attached to the parent GameObject!");
             }

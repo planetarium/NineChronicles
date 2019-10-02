@@ -173,7 +173,7 @@ namespace Nekoyume.UI.Model
         private void OnMaterialAdd(CombinationMaterial value)
         {
             value.Count.Subscribe(count => UpdateReadyForCombination());
-            value.onMinus.Subscribe(obj =>
+            value.OnMinus.Subscribe(obj =>
             {
                 if (ReferenceEquals(obj, null))
                 {
@@ -185,7 +185,7 @@ namespace Nekoyume.UI.Model
                     obj.Count.Value--;
                 }
             });
-            value.onPlus.Subscribe(obj =>
+            value.OnPlus.Subscribe(obj =>
             {
                 if (ReferenceEquals(obj, null))
                 {
@@ -195,12 +195,12 @@ namespace Nekoyume.UI.Model
                 var sum = Materials
                 .Where(item => obj.ItemBase.Value.Data.Id == item.ItemBase.Value.Data.Id)
                 .Sum(item => item.Count.Value);
-                if (sum < obj.maxCount.Value)
+                if (sum < obj.MaxCount.Value)
                 {
                     obj.Count.Value++;
                 }
             });
-            value.onDelete.Subscribe(obj =>
+            value.OnDelete.Subscribe(obj =>
             {
                 if (!(obj is CombinationMaterial material))
                 {

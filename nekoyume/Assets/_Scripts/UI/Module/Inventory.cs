@@ -207,7 +207,7 @@ namespace Nekoyume.UI.Module
             var scroller = scrollerController.scroller;
             var cellHeight = scrollerController.GetCellViewSize(scroller, 0);
             var skipCount = Mathf.FloorToInt(scrollerController.scrollRectTransform.rect.height / cellHeight) - 1;
-            var index = -Mathf.CeilToInt(view.inventoryCellView.transform.localPosition.y / cellHeight);
+            var index = -Mathf.CeilToInt(view.InventoryCellView.transform.localPosition.y / cellHeight);
 
             if (scroller.StartCellViewIndex + skipCount < index)
             {

@@ -36,7 +36,7 @@ namespace Nekoyume.UI.Model
             onClickMinus.Subscribe(value =>
             {
                 if (ReferenceEquals(value, null) ||
-                    value.item.Value.Count.Value <= item.Value.minCount.Value)
+                    value.item.Value.Count.Value <= item.Value.MinCount.Value)
                 {
                     return;
                 }
@@ -47,7 +47,7 @@ namespace Nekoyume.UI.Model
             onClickPlus.Subscribe(value =>
             {
                 if (ReferenceEquals(value, null) ||
-                    value.item.Value.Count.Value >= item.Value.maxCount.Value)
+                    value.item.Value.Count.Value >= item.Value.MaxCount.Value)
                 {
                     return;
                 }
