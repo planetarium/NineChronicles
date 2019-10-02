@@ -25,9 +25,9 @@ namespace Nekoyume.UI.Module
 
             _disposablesForSetData.DisposeAllAndClear();
             base.SetData(model);
-            Model.count.Subscribe(SetCount).AddTo(_disposablesForSetData);
-            Model.countEnabled.Subscribe(countEnabled => countText.enabled = countEnabled).AddTo(_disposablesForSetData);
-            Model.dimmed.Subscribe(SetDim).AddTo(_disposablesForSetData);
+            Model.Count.Subscribe(SetCount).AddTo(_disposablesForSetData);
+            Model.CountEnabled.Subscribe(countEnabled => countText.enabled = countEnabled).AddTo(_disposablesForSetData);
+            Model.Dimmed.Subscribe(SetDim).AddTo(_disposablesForSetData);
 
             UpdateView();
         }
@@ -62,7 +62,7 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            SetCount(Model.count.Value);
+            SetCount(Model.Count.Value);
         }
     }
 }

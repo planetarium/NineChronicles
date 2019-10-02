@@ -23,35 +23,41 @@ namespace Nekoyume.UI
         public GameObject optionGroup;
 
         private Game.Character.Player _player;
-        
+
         #region Mono
 
         protected override void Awake()
         {
             base.Awake();
-            
+
             statusTitleText.text = LocalizationManager.Localize("UI_STATUS");
             equipmentTitleText.text = LocalizationManager.Localize("UI_EQUIPMENTS");
         }
 
-        private void OnDisable()
+        protected override void OnDisable()
         {
             if (group != null)
+            {
                 foreach (Transform child in group.transform)
                 {
                     Destroy(child.gameObject);
                 }
+            }
 
             if (optionGroup != null)
+            {
                 foreach (Transform child in optionGroup.transform)
                 {
                     if (child != null)
                         Destroy(child.gameObject);
                 }
+            }
+            
+            base.OnDisable();
         }
 
         #endregion
-        
+
         public override void Show()
         {
             _player = FindObjectOfType<Game.Character.Player>();

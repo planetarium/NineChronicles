@@ -7,24 +7,24 @@ namespace Nekoyume.UI.Model
 {
     public class CountableItem : Item
     {
-        public readonly ReactiveProperty<int> count = new ReactiveProperty<int>(0);
-        public readonly ReactiveProperty<bool> countEnabled = new ReactiveProperty<bool>(true);
-        public readonly ReactiveProperty<bool> dimmed = new ReactiveProperty<bool>(false);
-        public readonly ReactiveProperty<Func<CountableItem, bool>> countEnabledFunc = new ReactiveProperty<Func<CountableItem, bool>>();
+        public readonly ReactiveProperty<int> Count = new ReactiveProperty<int>(0);
+        public readonly ReactiveProperty<bool> CountEnabled = new ReactiveProperty<bool>(true);
+        public readonly ReactiveProperty<bool> Dimmed = new ReactiveProperty<bool>(false);
+        public readonly ReactiveProperty<Func<CountableItem, bool>> CountEnabledFunc = new ReactiveProperty<Func<CountableItem, bool>>();
         
         public CountableItem(ItemBase item, int count) : base(item)
         {
-            this.count.Value = count;
-            countEnabledFunc.Value = CountEnabledFunc;
+            this.Count.Value = count;
+            CountEnabledFunc.Value = CountEnabledFuncDefault;
 
-            countEnabledFunc.Subscribe(func =>
+            CountEnabledFunc.Subscribe(func =>
             {
-                if (countEnabledFunc.Value == null)
+                if (CountEnabledFunc.Value == null)
                 {
-                    countEnabledFunc.Value = CountEnabledFunc;
+                    CountEnabledFunc.Value = CountEnabledFuncDefault;
                 }
 
-                countEnabled.Value = countEnabledFunc.Value(this);
+                CountEnabled.Value = CountEnabledFunc.Value(this);
             });
         }
         
@@ -32,19 +32,20 @@ namespace Nekoyume.UI.Model
         {
             base.Dispose();
             
-            count.Dispose();
-            countEnabledFunc.Dispose();
-            dimmed.Dispose();
+            Count.Dispose();
+            CountEnabledFunc.Dispose();
+            Dimmed.Dispose();
+            CountEnabledFunc.Dispose();
         }
 
-        private bool CountEnabledFunc(CountableItem countableItem)
+        private bool CountEnabledFuncDefault(CountableItem countableItem)
         {
-            if (countableItem.item.Value == null)
+            if (countableItem.ItemBase.Value == null)
             {
                 return false;
             }
             
-            return countableItem.item.Value.Data.ItemType == ItemType.Material;
+            return countableItem.ItemBase.Value.Data.ItemType == ItemType.Material;
         }
     }
 }

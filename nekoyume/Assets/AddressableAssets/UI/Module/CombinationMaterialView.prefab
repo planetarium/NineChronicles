@@ -695,6 +695,7 @@ MonoBehaviour:
   gradeImage: {fileID: 1381884966976448169}
   countText: {fileID: 6810814303074840121}
   backgroundImage: {fileID: 6811526936287957493}
+  itemButton: {fileID: 8517881368494002061}
   minusButton: {fileID: 4881653107994014286}
   plusButton: {fileID: 5989712946912153782}
   deleteButton: {fileID: 6812466987651077521}
@@ -956,14 +957,14 @@ PrefabInstance:
       propertyPath: m_characterSpacing
       value: -2
       objectReference: {fileID: 0}
+    - target: {fileID: 8837219427280939916, guid: b2ed3c0ed67b64dc9bc309cbb7156632,
+        type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -7447916340868117875, guid: 76f23b4f2b0bc49c18792f72986c9673,
+        type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b2ed3c0ed67b64dc9bc309cbb7156632, type: 3}
---- !u!224 &6632975681073301345 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 8659810237601268436, guid: b2ed3c0ed67b64dc9bc309cbb7156632,
-    type: 3}
-  m_PrefabInstance: {fileID: 2603295790947239349}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &6810814303074840121 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8837219427280939916, guid: b2ed3c0ed67b64dc9bc309cbb7156632,
@@ -976,3 +977,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!224 &6632975681073301345 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 8659810237601268436, guid: b2ed3c0ed67b64dc9bc309cbb7156632,
+    type: 3}
+  m_PrefabInstance: {fileID: 2603295790947239349}
+  m_PrefabAsset: {fileID: 0}

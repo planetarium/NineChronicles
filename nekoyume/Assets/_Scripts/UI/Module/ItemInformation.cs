@@ -105,7 +105,7 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            var itemRow = Model.item.Value.item.Value.Data;
+            var itemRow = Model.item.Value.ItemBase.Value.Data;
 
             // 아이콘.
             iconArea.itemView.SetData(Model.item.Value);
@@ -128,7 +128,7 @@ namespace Nekoyume.UI.Module
             }
 
             // 텍스트.
-            if (Model.item.Value.item.Value.Data.ItemType == ItemType.Material)
+            if (Model.item.Value.ItemBase.Value.Data.ItemType == ItemType.Material)
             {
                 iconArea.commonText.enabled = false;
             }
@@ -148,7 +148,7 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            descriptionArea.text.text = Model.item.Value.item.Value.Data.GetLocalizedDescription();
+            descriptionArea.text.text = Model.item.Value.ItemBase.Value.Data.GetLocalizedDescription();
             descriptionArea.root.gameObject.SetActive(true);
         }
 
@@ -163,7 +163,7 @@ namespace Nekoyume.UI.Module
 
             RemoveStatAll();
             var statCount = 0;
-            if (Model.item.Value.item.Value is ItemUsable itemUsable)
+            if (Model.item.Value.ItemBase.Value is ItemUsable itemUsable)
             {
                 statsArea.commonText.enabled = false;
                 // todo: 장비에 레벨 제한이 들어가면 이곳에서 적용해줘야 함.
@@ -187,7 +187,7 @@ namespace Nekoyume.UI.Module
                 statsArea.commonText.text = LocalizationManager.Localize("UI_ADDITIONAL_ABILITIES_WHEN_COMBINED");
                 statsArea.levelLimitText.enabled = false;
                 
-                var data = Model.item.Value.item.Value.Data;
+                var data = Model.item.Value.ItemBase.Value.Data;
                 if (data.ItemType == ItemType.Material &&
                     data is MaterialItemSheet.Row materialData &&
                     materialData.StatType.HasValue)
@@ -218,7 +218,7 @@ namespace Nekoyume.UI.Module
 
             RemoveSkillAll();
             var skillCount = 0;
-            if (Model.item.Value.item.Value is ItemUsable itemUsable)
+            if (Model.item.Value.ItemBase.Value is ItemUsable itemUsable)
             {
                 foreach (var skill in itemUsable.Skills)
                 {
@@ -228,7 +228,7 @@ namespace Nekoyume.UI.Module
             }
             else
             {
-                var data = Model.item.Value.item.Value.Data;
+                var data = Model.item.Value.ItemBase.Value.Data;
                 if (data.ItemType == ItemType.Material &&
                     data is MaterialItemSheet.Row materialData &&
                     materialData.SkillId != 0)

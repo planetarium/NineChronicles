@@ -6,16 +6,16 @@ namespace Nekoyume.UI.Model
 {
     public class Item : IDisposable
     {
-        public readonly ReactiveProperty<ItemBase> item = new ReactiveProperty<ItemBase>();
+        public readonly ReactiveProperty<ItemBase> ItemBase = new ReactiveProperty<ItemBase>();
 
         public Item(ItemBase value)
         {
-            item.Value = value;
+            ItemBase.Value = value;
         }
 
         public virtual void Dispose()
         {
-            item.Dispose();
+            ItemBase.Dispose();
         }
     }
 }

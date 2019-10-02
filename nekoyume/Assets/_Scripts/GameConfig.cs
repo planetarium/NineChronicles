@@ -71,7 +71,5 @@ namespace Nekoyume
             305003,
             305004
         };
-        
-        public static readonly int2 ScreenSize = new int2(1136, 640);
     }
 }

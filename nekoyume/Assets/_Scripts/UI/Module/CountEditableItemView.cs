@@ -10,13 +10,13 @@ namespace Nekoyume.UI.Module
     public class CountEditableItemView<T> : CountableItemView<T> where T : Model.CountEditableItem
     {
         public Image backgroundImage;
+        public Button itemButton;
         public Button minusButton;
         public Button plusButton;
         public Button deleteButton;
         public Text deleteButtonText;
 
-        private readonly List<IDisposable> _disposablesForAwake = new List<IDisposable>();
-        private readonly List<IDisposable> _disposablesForSetData = new List<IDisposable>();
+        private readonly List<IDisposable> _disposablesForClear = new List<IDisposable>();
 
         #region Mono
 
@@ -28,36 +28,36 @@ namespace Nekoyume.UI.Module
 
             deleteButtonText.text = LocalizationManager.Localize("UI_DELETE");
 
+            itemButton.OnClickAsObservable()
+                .Subscribe(_ =>
+                {
+                    Model?.OnClick.OnNext(Model);
+                    AudioController.PlayClick();
+                })
+                .AddTo(gameObject);
             minusButton.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
-                    Model?.onMinus.OnNext(Model);
+                    Model?.OnMinus.OnNext(Model);
                     AudioController.PlayClick();
                 })
-                .AddTo(_disposablesForAwake);
+                .AddTo(gameObject);
             
             plusButton.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
-                    Model?.onPlus.OnNext(Model);
+                    Model?.OnPlus.OnNext(Model);
                     AudioController.PlayClick();
                 })
-                .AddTo(_disposablesForAwake);
+                .AddTo(gameObject);
             
             deleteButton.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
-                    Model?.onDelete.OnNext(Model);
+                    Model?.OnDelete.OnNext(Model);
                     AudioController.PlayClick();
                 })
-                .AddTo(_disposablesForAwake);
-        }
-
-        protected override void OnDestroy()
-        {
-            _disposablesForAwake.DisposeAllAndClear();
-
-            base.OnDestroy();
+                .AddTo(gameObject);
         }
 
         #endregion
@@ -70,14 +70,14 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            _disposablesForSetData.DisposeAllAndClear();
+            _disposablesForClear.DisposeAllAndClear();
             base.SetData(model);
-            Model.count.Subscribe(SetCount).AddTo(_disposablesForSetData);
+            Model.Count.Subscribe(SetCount).AddTo(_disposablesForClear);
         }
 
         public override void Clear()
         {
-            _disposablesForSetData.DisposeAllAndClear();
+            _disposablesForClear.DisposeAllAndClear();
             base.Clear();
         }
     }

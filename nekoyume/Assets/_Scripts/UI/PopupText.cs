@@ -41,12 +41,13 @@ namespace Nekoyume.UI
             _rectTransform = GetComponent<RectTransform>();
         }
 
-        private void OnDisable()
+        protected override void OnDisable()
         {
             _sequence?.Kill();
             _sequence = null;
             _tweenColor?.Kill();
             _tweenColor = null;
+            base.OnDisable();
         }
 
         #endregion

@@ -161,7 +161,6 @@ namespace Nekoyume.Game.Character
             controller.UpdateWeapon(sprite);
         }
 
-
         public IEnumerator CoGetExp(long exp)
         {
             if (exp <= 0)
@@ -178,6 +177,7 @@ namespace Nekoyume.Game.Character
                 AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionStatusLevelUp, level);
                 AudioController.instance.PlaySfx(AudioController.SfxCode.LevelUp);
                 VFXController.instance.Create<BattleLevelUp01VFX>(transform, HUDOffset);
+                _hpBar.UpdateLevel(model.level);
                 InitStats(Model);
             }
 

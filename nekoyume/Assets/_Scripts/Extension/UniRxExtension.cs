@@ -20,7 +20,7 @@ namespace Nekoyume
             property.Dispose();
         }
         
-        public static void DisposeAll<T>(this ReactiveCollection<T> collection) where T : IDisposable
+        public static void DisposeAllAndClear<T>(this ReactiveCollection<T> collection) where T : IDisposable
         {
             foreach (var item in collection)
             {

@@ -16,6 +16,7 @@ namespace Nekoyume.UI
         public Image bar;
         public Text label;
         public Text[] labelShadows;
+        public float colorChangeThreshold = 0.35f;
 
         public void UpdatePosition(GameObject target, Vector3 offset = new Vector3())
         {
@@ -53,7 +54,7 @@ namespace Nekoyume.UI
 
             slider.value = value;
 
-            if (value < 0.35f)
+            if (value < colorChangeThreshold)
             {
                 label.color = redColor;
                 bar.sprite = redBar;
