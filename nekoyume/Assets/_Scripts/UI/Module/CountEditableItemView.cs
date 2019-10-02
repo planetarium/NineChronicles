@@ -72,7 +72,7 @@ namespace Nekoyume.UI.Module
 
             _disposablesForSetData.DisposeAllAndClear();
             base.SetData(model);
-            Model.count.Subscribe(SetCount).AddTo(_disposablesForSetData);
+            Model.Count.Subscribe(SetCount).AddTo(_disposablesForSetData);
         }
 
         public override void Clear()

@@ -19,17 +19,17 @@ namespace Nekoyume.UI.Model
             
             this.minCount.Subscribe(min =>
             {
-                if (this.count.Value < min)
+                if (this.Count.Value < min)
                 {
-                    this.count.Value = min;
+                    this.Count.Value = min;
                 }
             });
 
             this.maxCount.Subscribe(max =>
             {
-                if (this.count.Value > max)
+                if (this.Count.Value > max)
                 {
-                    this.count.Value = max;
+                    this.Count.Value = max;
                 }
             });
         }

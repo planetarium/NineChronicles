@@ -74,14 +74,14 @@ namespace Nekoyume.UI.Module
         private void UpdateView()
         {
             if (Model is null ||
-                Model.item.Value is null)
+                Model.ItemBase.Value is null)
             {
                 iconImage.enabled = false;
                 if (gradeImage) gradeImage.enabled = false;
                 return;
             }
 
-            var item = Model.item.Value;
+            var item = Model.ItemBase.Value;
 
             var itemSprite = item.GetIconSprite();
             if (itemSprite is null)

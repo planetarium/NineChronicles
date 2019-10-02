@@ -30,32 +30,32 @@ namespace Nekoyume.UI.Model
                     return;
                 }
                 
-                _originalCount = value.count.Value;
+                _originalCount = value.Count.Value;
             });
             
             onClickMinus.Subscribe(value =>
             {
                 if (ReferenceEquals(value, null) ||
-                    value.item.Value.count.Value <= item.Value.minCount.Value)
+                    value.item.Value.Count.Value <= item.Value.minCount.Value)
                 {
                     return;
                 }
 
-                value.item.Value.count.Value--;
+                value.item.Value.Count.Value--;
             });
             
             onClickPlus.Subscribe(value =>
             {
                 if (ReferenceEquals(value, null) ||
-                    value.item.Value.count.Value >= item.Value.maxCount.Value)
+                    value.item.Value.Count.Value >= item.Value.maxCount.Value)
                 {
                     return;
                 }
 
-                value.item.Value.count.Value++;
+                value.item.Value.Count.Value++;
             });
 
-            onClickCancel.Subscribe(value => value.item.Value.count.Value = _originalCount);
+            onClickCancel.Subscribe(value => value.item.Value.Count.Value = _originalCount);
         }
         
         public virtual void Dispose()

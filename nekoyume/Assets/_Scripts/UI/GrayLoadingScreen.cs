@@ -49,8 +49,10 @@ namespace Nekoyume.UI
             _color.a = AlphaToBeginning;
         }
 
-        private void OnEnable()
+        protected override void OnEnable()
         {
+            base.OnEnable();
+            
             switch (LocalizationManager.Language)
             {
                 case LocalizationManager.LanguageType.English:
@@ -66,10 +68,12 @@ namespace Nekoyume.UI
             StartCoroutine(CoWaitForQuit());
         }
 
-        private void OnDisable()
+        protected override void OnDisable()
         {
             _sequence?.Kill();
             _sequence = null;
+            
+            base.OnDisable();
 
         }
 

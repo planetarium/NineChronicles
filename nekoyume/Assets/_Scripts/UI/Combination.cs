@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Nekoyume.Manager;
 using Nekoyume.BlockChain;
 using Nekoyume.Game.Character;
@@ -13,14 +14,15 @@ using Stage = Nekoyume.Game.Stage;
 using Assets.SimpleLocalization;
 using Nekoyume.Helper;
 using Nekoyume.Data;
+using Nekoyume.EnumType;
 using Nekoyume.Game.Factory;
 
 namespace Nekoyume.UI
 {
     public class Combination : Widget
     {
-        public BottomMenu bottomMenu;
         public Module.Inventory inventory;
+        public BottomMenu bottomMenu;
         public GameObject manualCombination;
         public Text materialsTitleText;
         public CombinationMaterialView equipmentMaterialView;
@@ -34,22 +36,41 @@ namespace Nekoyume.UI
         public Button recipeCloseButton;
         public Recipe recipe;
 
-        private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
-
         private Stage _stage;
         private Player _player;
 
-        private SimpleItemCountPopup _simpleItemCountPopup;
-
-        public Model.Combination Model { get; private set; }
+        private SimpleItemCountPopup SimpleItemCountPopup { get; set; }
+        public Model.Combination SharedModel { get; private set; }
 
         #region Mono
 
         protected override void Awake()
         {
             base.Awake();
+            
+            _stage = Game.Game.instance.stage;
+            
+            SharedModel = new Model.Combination();
+        }
 
-            this.ComponentFieldsNotNullTest();
+        #endregion
+        
+        #region Override
+
+        public override void Initialize()
+        {
+            base.Initialize();
+            
+            inventory.SharedModel.SelectedItemView.Subscribe(SubscribeInventorySelectedItemView);
+            inventory.SharedModel.OnRightClickItemView
+                .Subscribe(itemView =>
+                {
+                    if (itemView.Model.Dimmed.Value)
+                        return;
+                    
+                    SharedModel.RegisterToStagedItems(itemView.Model);
+                })
+                .AddTo(gameObject);
 
             bottomMenu.combinationEquipmentButton.text.text = LocalizationManager.Localize("UI_COMBINE_EQUIPMENTS");
             bottomMenu.combinationConsumableButton.text.text = LocalizationManager.Localize("UI_COMBINE_CONSUMABLES");
@@ -57,18 +78,36 @@ namespace Nekoyume.UI
             materialsTitleText.text = LocalizationManager.Localize("UI_COMBINATION_MATERIALS");
             combinationButtonText.text = LocalizationManager.Localize("UI_COMBINATION_ITEM");
 
+            SimpleItemCountPopup = Find<SimpleItemCountPopup>();
+            
+            SharedModel.State.Subscribe(SubscribeState).AddTo(gameObject);
+            SharedModel.RecipeEnabled.Subscribe(SubscribeRecipeEnabled).AddTo(gameObject);
+            SharedModel.ItemCountPopup.Value.item.Subscribe(SubscribeItemPopup).AddTo(gameObject);
+            SharedModel.ItemCountPopup.Value.onClickCancel.Subscribe(SubscribeItemPopupOnClickCancel)
+                .AddTo(gameObject);
+            SharedModel.EquipmentMaterial.Subscribe(equipmentMaterialView.SetData).AddTo(gameObject);
+            SharedModel.Materials.ObserveAdd().Subscribe(SubscribeMaterialAdd).AddTo(gameObject);
+            SharedModel.Materials.ObserveRemove().Subscribe(SubscribeMaterialRemove).AddTo(gameObject);
+            SharedModel.Materials.ObserveReplace().Subscribe(_ => UpdateStagedItems()).AddTo(gameObject);
+            SharedModel.ShowMaterialsCount.Subscribe(SubscribeShowMaterialsCount).AddTo(gameObject);
+            SharedModel.ReadyToCombination.Subscribe(SubscribeReadyToCombination).AddTo(gameObject);
+            SharedModel.OnMaterialAdded.Subscribe(materialId => SubscribeOnMaterial(materialId, true))
+                .AddTo(gameObject);
+            SharedModel.OnMaterialRemoved.Subscribe(materialId => SubscribeOnMaterial(materialId, false))
+                .AddTo(gameObject);
+
             bottomMenu.combinationEquipmentButton.button.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
                     AudioController.PlayClick();
-                    Model.consumablesOrEquipments.Value = UI.Model.Combination.ConsumablesOrEquipments.Equipments;
+                    SharedModel.State.Value = ItemType.Equipment;
                 })
                 .AddTo(gameObject);
             bottomMenu.combinationConsumableButton.button.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
                     AudioController.PlayClick();
-                    Model.consumablesOrEquipments.Value = UI.Model.Combination.ConsumablesOrEquipments.Consumables;
+                    SharedModel.State.Value = ItemType.Consumable;
                 })
                 .AddTo(gameObject);
             bottomMenu.combinationRecipeButton.button.OnClickAsObservable()
@@ -76,17 +115,14 @@ namespace Nekoyume.UI
                 {
                     AudioController.PlayClick();
 
-                    Model.manualOrRecipe.Value =
-                        Model.manualOrRecipe.Value == UI.Model.Combination.ManualOrRecipe.Manual ?
-                            UI.Model.Combination.ManualOrRecipe.Recipe :
-                            UI.Model.Combination.ManualOrRecipe.Manual;
+                    SharedModel.RecipeEnabled.Value = !SharedModel.RecipeEnabled.Value;
                 })
                 .AddTo(gameObject);
             combinationButton.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
                     AudioController.PlayClick();
-                    RequestCombination(Model);
+                    RequestCombination(SharedModel);
                 })
                 .AddTo(gameObject);
             closeButton.OnClickAsObservable()
@@ -100,7 +136,7 @@ namespace Nekoyume.UI
                 .Subscribe(_ =>
                 {
                     AudioController.PlayClick();
-                    Model.manualOrRecipe.Value = UI.Model.Combination.ManualOrRecipe.Manual;
+                    SharedModel.RecipeEnabled.Value = false;
                 })
                 .AddTo(gameObject);
             recipe.scrollerController.onClickCellView
@@ -110,13 +146,8 @@ namespace Nekoyume.UI
                     RequestCombination(cellView.Model);
                 })
                 .AddTo(gameObject);
-        }
 
-        #endregion
-
-        public override void Initialize()
-        {
-            base.Initialize();
+            UpdateStagedItems();
 
             bottomMenu.goToMainButton.button.onClick.AddListener(GoToMenu);
             var status = Find<Status>();
@@ -125,91 +156,69 @@ namespace Nekoyume.UI
 
         public override void Show()
         {
-            _simpleItemCountPopup = Find<SimpleItemCountPopup>();
-            if (ReferenceEquals(_simpleItemCountPopup, null))
-            {
-                throw new NotFoundComponentException<SimpleItemCountPopup>();
-            }
-
             base.Show();
+            
+            inventory.SharedModel.State.Value = ItemType.Material;
 
-            _stage = Game.Game.instance.stage;
             _stage.LoadBackground("combination");
-
             _player = _stage.GetPlayer();
-            if (ReferenceEquals(_player, null))
-            {
-                throw new NotFoundComponentException<Player>();
-            }
-
             _player.gameObject.SetActive(false);
-
-            SetData(new Model.Combination(
-                States.Instance.currentAvatarState.Value.inventory));
 
             AudioController.instance.PlayMusic(AudioController.MusicCode.Combination);
         }
 
         public override void Close()
         {
-            Clear();
+            foreach (var item in materialViews)
+            {
+                item.Clear();
+            }
 
             base.Close();
 
             AudioController.instance.PlayMusic(AudioController.MusicCode.Main);
         }
 
-        private void SetData(Model.Combination model)
+        #endregion
+
+        #region Subscribe
+
+        private void SubscribeInventorySelectedItemView(InventoryItemView view)
         {
-            if (ReferenceEquals(model, null))
+            if (view is null ||
+                view.RectTransform == inventory.Tooltip.Target)
             {
-                Clear();
+                inventory.Tooltip.Close();
+
                 return;
             }
 
-            _disposablesForModel.DisposeAllAndClear();
-            Model = model;
-            Model.consumablesOrEquipments.Subscribe(Subscribe).AddTo(_disposablesForModel);
-            Model.manualOrRecipe.Subscribe(Subscribe).AddTo(_disposablesForModel);
-            Model.inventory.Value.selectedItemView.Subscribe(SubscribeInventorySelectedItem)
-                .AddTo(_disposablesForModel);
-            Model.itemCountPopup.Value.item.Subscribe(OnPopupItem).AddTo(_disposablesForModel);
-            Model.itemCountPopup.Value.onClickCancel.Subscribe(OnClickClosePopup).AddTo(_disposablesForModel);
-            Model.equipmentMaterial.Subscribe(equipmentMaterialView.SetData).AddTo(_disposablesForModel);
-            Model.materials.ObserveAdd().Subscribe(OnAddStagedItems).AddTo(_disposablesForModel);
-            Model.materials.ObserveRemove().Subscribe(OnRemoveStagedItems).AddTo(_disposablesForModel);
-            Model.materials.ObserveReplace().Subscribe(_ => UpdateStagedItems()).AddTo(_disposablesForModel);
-            Model.showMaterialsCount.Subscribe(SubscribeShowMaterialsCount).AddTo(_disposablesForModel);
-            Model.readyForCombination.Subscribe(SetActiveCombinationButton).AddTo(_disposablesForModel);
-
-            inventory.SetData(Model.inventory.Value);
-
-            UpdateStagedItems();
+            inventory.Tooltip.Show(
+                view.RectTransform,
+                view.Model,
+                value => !view.Model.Dimmed.Value,
+                LocalizationManager.Localize("UI_COMBINATION_REGISTER_MATERIAL"),
+                tooltip =>
+                {
+                    SharedModel.RegisterToStagedItems(tooltip.itemInformation.Model.item.Value);
+                    inventory.Tooltip.Close();
+                },
+                tooltip => inventory.SharedModel.DeselectItemView());
         }
 
-        private void Clear()
-        {
-            inventory.Clear();
-            Model = null;
-            _disposablesForModel.DisposeAllAndClear();
-
-            foreach (var item in materialViews)
-            {
-                item.Clear();
-            }
-        }
-
-        private void Subscribe(Model.Combination.ConsumablesOrEquipments value)
+        private void SubscribeState(ItemType value)
         {
             switch (value)
             {
-                case UI.Model.Combination.ConsumablesOrEquipments.Consumables:
+                case ItemType.Consumable:
+                    inventory.SharedModel.DimmedFunc.Value = DimmedFuncForConsumables;
                     bottomMenu.combinationEquipmentButton.button.interactable = true;
                     bottomMenu.combinationConsumableButton.button.interactable = false;
                     equipmentMaterialView.gameObject.SetActive(false);
                     materialViewsPlusImageContainer.SetActive(false);
                     break;
-                case UI.Model.Combination.ConsumablesOrEquipments.Equipments:
+                case ItemType.Equipment:
+                    inventory.SharedModel.DimmedFunc.Value = DimmedFuncForEquipments;
                     bottomMenu.combinationEquipmentButton.button.interactable = false;
                     bottomMenu.combinationConsumableButton.button.interactable = true;
                     equipmentMaterialView.gameObject.SetActive(true);
@@ -218,103 +227,61 @@ namespace Nekoyume.UI
                 default:
                     throw new ArgumentOutOfRangeException(nameof(value), value, null);
             }
-            
+
             inventory.Tooltip.Close();
         }
-        
-        private void Subscribe(Model.Combination.ManualOrRecipe value)
+
+        private void SubscribeRecipeEnabled(bool value)
         {
-            switch (value)
+            if (value)
             {
-                case UI.Model.Combination.ManualOrRecipe.Manual:
-                    manualCombination.SetActive(true);
-                    recipeCombination.SetActive(false);
-                    break;
-                case UI.Model.Combination.ManualOrRecipe.Recipe:
-                    recipe.Reload(0);
-                    manualCombination.SetActive(false);
-                    recipeCombination.SetActive(true);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(value), value, null);
+                recipe.Reload();
+            }
+
+            manualCombination.SetActive(!value);
+            recipeCombination.SetActive(value);
+        }
+
+        private void SubscribeOnMaterial(int materialId, bool isAdded)
+        {
+            foreach (var item in inventory.SharedModel.Materials)
+            {
+                if (item.ItemBase.Value.Data.Id != materialId)
+                {
+                    continue;
+                }
+
+                item.Covered.Value = isAdded;
+                item.Dimmed.Value = isAdded;
+
+                inventory.SharedModel.DimmedFunc.SetValueAndForceNotify(inventory.SharedModel.DimmedFunc.Value);
+
+                break;
             }
         }
 
-        private void UpdateStagedItems(int startIndex = 0)
-        {
-            if (Model.consumablesOrEquipments.Value == UI.Model.Combination.ConsumablesOrEquipments.Equipments)
-            {
-                if (Model.equipmentMaterial.Value == null)
-                {
-                    equipmentMaterialView.Clear();    
-                }
-                else
-                {
-                    equipmentMaterialView.SetData(Model.equipmentMaterial.Value);
-                }
-            }
-            
-            var dataCount = Model.materials.Count;
-            for (var i = startIndex; i < materialViews.Length; i++)
-            {
-                var item = materialViews[i];
-                if (i < dataCount)
-                {
-                    item.SetData(Model.materials[i]);
-                }
-                else
-                {
-                    item.Clear();
-                }
-            }
-        }
-
-        private void SubscribeInventorySelectedItem(InventoryItemView view)
-        {
-            if (!view)
-            {
-                inventory.Tooltip.Close();
-                return;
-            }
-
-            inventory.Tooltip.Show(
-                view.RectTransform,
-                view.Model,
-                value => !view.Model.dimmed.Value,
-                LocalizationManager.Localize("UI_COMBINATION_REGISTER_MATERIAL"),
-                tooltip =>
-                {
-                    Model.RegisterToStagedItems(tooltip.itemInformation.Model.item.Value);
-                    inventory.Tooltip.Close();
-                },
-                tooltip =>
-                {
-                    inventory.Model.DeselectAll();
-                });
-        }
-
-        private void OnPopupItem(CountableItem data)
+        private void SubscribeItemPopup(CountableItem data)
         {
             if (ReferenceEquals(data, null))
             {
-                _simpleItemCountPopup.Close();
+                SimpleItemCountPopup.Close();
                 return;
             }
 
-            _simpleItemCountPopup.Pop(Model.itemCountPopup.Value);
+            SimpleItemCountPopup.Pop(SharedModel.ItemCountPopup.Value);
         }
 
-        private void OnClickClosePopup(Model.SimpleItemCountPopup data)
+        private void SubscribeItemPopupOnClickCancel(Model.SimpleItemCountPopup data)
         {
-            Model.itemCountPopup.Value.item.Value = null;
-            _simpleItemCountPopup.Close();
+            SharedModel.ItemCountPopup.Value.item.Value = null;
+            SimpleItemCountPopup.Close();
         }
 
-        private void OnAddStagedItems(CollectionAddEvent<CombinationMaterial> e)
+        private void SubscribeMaterialAdd(CollectionAddEvent<CombinationMaterial> e)
         {
             if (e.Index >= materialViews.Length)
             {
-                Model.materials.RemoveAt(e.Index);
+                SharedModel.Materials.RemoveAt(e.Index);
                 throw new AddOutOfSpecificRangeException<CollectionAddEvent<CountEditableItem>>(
                     materialViews.Length);
             }
@@ -322,21 +289,21 @@ namespace Nekoyume.UI
             materialViews[e.Index].SetData(e.Value);
         }
 
-        private void OnRemoveStagedItems(CollectionRemoveEvent<CombinationMaterial> e)
+        private void SubscribeMaterialRemove(CollectionRemoveEvent<CombinationMaterial> e)
         {
             if (e.Index >= materialViews.Length)
             {
                 return;
             }
 
-            var dataCount = Model.materials.Count;
+            var dataCount = SharedModel.Materials.Count;
             for (var i = e.Index; i <= dataCount; i++)
             {
                 var item = materialViews[i];
 
                 if (i < dataCount)
                 {
-                    item.SetData(Model.materials[i]);
+                    item.SetData(SharedModel.Materials[i]);
                 }
                 else
                 {
@@ -353,7 +320,7 @@ namespace Nekoyume.UI
             }
         }
 
-        private void SetActiveCombinationButton(bool isActive)
+        private void SubscribeReadyToCombination(bool isActive)
         {
             if (isActive)
             {
@@ -369,29 +336,72 @@ namespace Nekoyume.UI
             }
         }
 
+        #endregion
+
+        private static bool DimmedFuncForConsumables(InventoryItem inventoryItem)
+        {
+            var row = inventoryItem.ItemBase.Value.Data;
+            return row.ItemType != ItemType.Material ||
+                   row.ItemSubType != ItemSubType.FoodMaterial;
+        }
+
+        private static bool DimmedFuncForEquipments(InventoryItem inventoryItem)
+        {
+            var row = inventoryItem.ItemBase.Value.Data;
+            return row.ItemType != ItemType.Material ||
+                   row.ItemSubType != ItemSubType.EquipmentMaterial &&
+                   row.ItemSubType != ItemSubType.MonsterPart;
+        }
+
+        private void UpdateStagedItems(int startIndex = 0)
+        {
+            if (SharedModel.State.Value == ItemType.Equipment)
+            {
+                if (SharedModel.EquipmentMaterial.Value == null)
+                {
+                    equipmentMaterialView.Clear();
+                }
+                else
+                {
+                    equipmentMaterialView.SetData(SharedModel.EquipmentMaterial.Value);
+                }
+            }
+
+            var dataCount = SharedModel.Materials.Count;
+            for (var i = startIndex; i < materialViews.Length; i++)
+            {
+                var item = materialViews[i];
+                if (i < dataCount)
+                {
+                    item.SetData(SharedModel.Materials[i]);
+                }
+                else
+                {
+                    item.Clear();
+                }
+            }
+        }
+
         private void RequestCombination(Model.Combination data)
         {
             var materials = new List<CombinationMaterial>();
-            if (data.equipmentMaterial.Value != null)
+            if (data.EquipmentMaterial.Value != null)
             {
-                materials.Add(data.equipmentMaterial.Value);
+                materials.Add(data.EquipmentMaterial.Value);
             }
 
-            materials.AddRange(data.materials);
+            materials.AddRange(data.Materials);
 
             RequestCombination(materials);
         }
 
         private void RequestCombination(RecipeInfo info)
         {
-            var materials = new List<CombinationMaterial>();
-            foreach (var materialInfo in info.materialInfos)
-            {
-                if (materialInfo.id == 0) break;
-                CombinationMaterial material = new CombinationMaterial(
-                    ItemFactory.CreateMaterial(materialInfo.id), 1, 1, 1);
-                materials.Add(material);
-            }
+            var materials = info.materialInfos
+                .Where(materialInfo => materialInfo.id != 0)
+                .Select(materialInfo => new CombinationMaterial(
+                    ItemFactory.CreateMaterial(materialInfo.id), 1, 1, 1))
+                .ToList();
 
             RequestCombination(materials);
         }
@@ -401,19 +411,20 @@ namespace Nekoyume.UI
             ActionManager.instance.Combination(materials);
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickCombinationCombination);
             Find<CombinationLoadingScreen>().Show();
-            Model.inventory.Value.RemoveItems(materials);
-            Model.RemoveEquipmentMaterial();
+            inventory.SharedModel.RemoveItems(materials);
+            SharedModel.RemoveEquipmentMaterial();
             foreach (var material in materials)
             {
-                States.Instance.currentAvatarState.Value.inventory.RemoveFungibleItem(material.item.Value.Data.Id,
-                    material.count.Value);
-            }
-            while (Model.materials.Count > 0)
-            {
-                Model.materials.RemoveAt(0);
+                States.Instance.currentAvatarState.Value.inventory.RemoveFungibleItem(material.ItemBase.Value.Data.Id,
+                    material.Count.Value);
             }
 
-            // 에셋의 버그 때문에 스크롤 맨 끝 포지션으로 스크롤 포지션 설정 시 스크롤이 비정상적으로 표시되는 문제가 있음
+            while (SharedModel.Materials.Count > 0)
+            {
+                SharedModel.Materials.RemoveAt(0);
+            }
+
+            // 에셋의 버그 때문에 스크롤 맨 끝 포지션으로 스크롤 포지션 설정 시 스크롤이 비정상적으로 표시되는 문제가 있음.
             recipe.Reload(recipe.scrollerController.scroller.ScrollPosition - 0.1f);
         }
 

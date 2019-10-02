@@ -21,10 +21,7 @@ namespace Nekoyume.UI.Module
 
         private Button _button;
 
-        private readonly List<IDisposable> _disposablesForAwake = new List<IDisposable>();
-        private readonly List<IDisposable> _disposablesForSetData = new List<IDisposable>();
-
-        private readonly TimeSpan _timeSpan200Milliseconds = TimeSpan.FromMilliseconds(200);
+        private readonly List<IDisposable> _disposablesForClear = new List<IDisposable>();
 
         public InventoryCellView inventoryCellView { get; private set; }
 
@@ -48,21 +45,13 @@ namespace Nekoyume.UI.Module
                 .Subscribe(_=>
                 {
                     AudioController.PlaySelect();
-                    Model?.onClick.OnNext(this);
+                    Model?.OnClick.OnNext(this);
                 })
-                .AddTo(_disposablesForAwake);
-            buttonClickStream
-                .Buffer(buttonClickStream.Throttle(_timeSpan200Milliseconds))
-                .Where(_ => _.Count >= 2)
-                .Subscribe(_ =>
-                {
-                    Model?.onDoubleClick.OnNext(this);
-                }).AddTo(_disposablesForAwake);
+                .AddTo(gameObject);
         }
 
         protected override void OnDestroy()
         {
-            _disposablesForAwake.DisposeAllAndClear();
             Clear();
         }
 
@@ -79,20 +68,20 @@ namespace Nekoyume.UI.Module
             }
             
             base.SetData(model);
-            _disposablesForSetData.DisposeAllAndClear();
-            Model.covered.Subscribe(SetCover).AddTo(_disposablesForSetData);
-            Model.dimmed.Subscribe(SetDim).AddTo(_disposablesForSetData);
-            Model.selected.Subscribe(SetSelect).AddTo(_disposablesForSetData);
-            Model.glowed.Subscribe(SetGlow).AddTo(_disposablesForSetData);
-            Model.count.Subscribe(SetCount).AddTo(_disposablesForSetData);
-            Model.equipped.Subscribe(SetEquipped).AddTo(_disposablesForSetData);
+            _disposablesForClear.DisposeAllAndClear();
+            Model.Covered.Subscribe(SetCover).AddTo(_disposablesForClear);
+            Model.Dimmed.Subscribe(SetDim).AddTo(_disposablesForClear);
+            Model.Selected.Subscribe(SetSelect).AddTo(_disposablesForClear);
+            Model.Glowed.Subscribe(SetGlow).AddTo(_disposablesForClear);
+            Model.Count.Subscribe(SetCount).AddTo(_disposablesForClear);
+            Model.Equipped.Subscribe(SetEquipped).AddTo(_disposablesForClear);
 
             UpdateView();
         }
 
         public override void Clear()
         {
-            _disposablesForSetData.DisposeAllAndClear();
+            _disposablesForClear.DisposeAllAndClear();
             base.Clear();
 
             UpdateView();
@@ -119,7 +108,7 @@ namespace Nekoyume.UI.Module
         {
             if (eventData.button == PointerEventData.InputButton.Right)
             {
-                Model?.onRightClick.OnNext(this);
+                Model?.OnRightClick.OnNext(this);
             }
         }
 
@@ -131,10 +120,10 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            coverImage.enabled = Model.covered.Value;
-            selectionImage.enabled = Model.selected.Value;
-            SetDim(Model.dimmed.Value);
-            SetEquipped(Model.equipped.Value);
+            coverImage.enabled = Model.Covered.Value;
+            selectionImage.enabled = Model.Selected.Value;
+            SetDim(Model.Dimmed.Value);
+            SetEquipped(Model.Equipped.Value);
         }
 
         private void SetCover(bool isCover)

@@ -19,7 +19,7 @@ namespace Nekoyume.UI
 {
     public class QuestPreparation : Widget
     {
-        public InventoryAndItemInfo inventoryAndItemInfo;
+        public Module.Inventory inventory;
 
         public Text consumableTitleText;
         public EquipSlot[] consumableSlots;
@@ -39,9 +39,6 @@ namespace Nekoyume.UI
         private int _stageId;
 
         private readonly Dictionary<string, StatusInfo> _stats = new Dictionary<string, StatusInfo>();
-        private readonly List<IDisposable> _disposablesForSetData = new List<IDisposable>();
-
-        private Model.QuestPreparation Model { get; set; }
 
         #region override
 
@@ -49,11 +46,24 @@ namespace Nekoyume.UI
         {
             base.Initialize();
 
+            inventory.SharedModel.DimmedFunc.Value =
+                inventoryItem => inventoryItem.ItemBase.Value.Data.ItemType == ItemType.Material;
+            inventory.SharedModel.SelectedItemView.Subscribe(SubscribeInventorySelectedItem)
+                .AddTo(gameObject);
+            inventory.SharedModel.OnRightClickItemView.Subscribe(itemView =>
+                {
+                    if (itemView.Model.Dimmed.Value)
+                        return;
+                    
+                    OnClickEquip(itemView.Model);
+                })
+                .AddTo(gameObject);
+
             worldMapButton.OnClickAsObservable()
                 .Subscribe(_ => GoToWorldMap())
                 .AddTo(gameObject);
 
-            bottomMenu.goToMainButton.button.onClick.AddListener(BackClick);
+            bottomMenu.goToMainButton.button.onClick.AddListener(GoToMenu);
             var status = Find<Status>();
             bottomMenu.questButton.button.onClick.AddListener(status.ToggleQuest);
             var worldMap = Find<WorldMap>();
@@ -63,6 +73,8 @@ namespace Nekoyume.UI
         public override void Show()
         {
             base.Show();
+
+            inventory.SharedModel.State.Value = ItemType.Equipment;
 
             consumableTitleText.text = LocalizationManager.Localize("UI_EQUIP_CONSUMABLES");
             equipmentTitleText.text = LocalizationManager.Localize("UI_EQUIP_EQUIPMENTS");
@@ -77,8 +89,6 @@ namespace Nekoyume.UI
 
             _weaponSlot = equipmentSlots.First(es => es.itemSubType == ItemSubType.Weapon);
 
-            SetData(new Model.QuestPreparation(States.Instance.currentAvatarState.Value.inventory));
-
             // stop run immediately.
             _player.gameObject.SetActive(false);
             _player.gameObject.SetActive(true);
@@ -86,14 +96,14 @@ namespace Nekoyume.UI
 
             foreach (var equipment in _player.equipments)
             {
-                if (equipmentSlots.TryGet(equipment.Data.ItemSubType, out var es))
-                {
-                    es.Set(equipment);
-                    es.SetOnClickAction(ShowEquippedTooltip, Unequip);
-                }
+                if (!equipmentSlots.TryGet(equipment.Data.ItemSubType, out var es))
+                    continue;
+
+                es.Set(equipment);
+                es.SetOnClickAction(ShowTooltip, Unequip);
             }
 
-            bool isStatInitialized = _stats.Count > 0;
+            var isStatInitialized = _stats.Count > 0;
             var rows = _player.Model.GetStatusRow();
             if (!isStatInitialized)
             {
@@ -123,7 +133,6 @@ namespace Nekoyume.UI
             Find<Inventory>().Close();
             Find<StatusDetail>().Close();
             Find<Quest>().Close();
-            Clear();
 
             foreach (var slot in consumableSlots)
             {
@@ -136,6 +145,76 @@ namespace Nekoyume.UI
 
         #endregion
 
+        #region Tooltip
+
+        private void ShowTooltip(InventoryItemView view)
+        {
+            if (view is null ||
+                view.RectTransform == inventory.Tooltip.Target)
+            {
+                inventory.Tooltip.Close();
+
+                return;
+            }
+
+            inventory.Tooltip.Show(view.RectTransform, view.Model,
+                value => !view.Model.Dimmed.Value,
+                view.Model.Equipped.Value
+                    ? LocalizationManager.Localize("UI_UNEQUIP")
+                    : LocalizationManager.Localize("UI_EQUIP"),
+                tooltip =>
+                {
+                    OnClickEquip(tooltip.itemInformation.Model.item.Value);
+                    inventory.Tooltip.Close();
+                },
+                tooltip =>
+                {
+                    equipSlotGlow.SetActive(false);
+                    inventory.SharedModel.DeselectItemView();
+                });
+        }
+
+        private void ShowTooltip(EquipSlot slot)
+        {
+            if (slot is null ||
+                slot.rectTransform == inventory.Tooltip.Target)
+            {
+                inventory.Tooltip.Close();
+
+                return;
+            }
+
+            if (inventory.SharedModel.TryGetEquipment(slot.item, out var item) ||
+                inventory.SharedModel.TryGetConsumable(slot.item as Consumable, out item))
+            {
+                inventory.Tooltip.Show(slot.rectTransform, item, tooltip => inventory.SharedModel.DeselectItemView());
+            }
+        }
+
+        #endregion
+
+        #region Subscribe
+
+        private void SubscribeInventorySelectedItem(InventoryItemView view)
+        {
+            // Fix me. 이미 장착한 아이템일 경우 장착 버튼 비활성화 필요.
+            // 현재는 왼쪽 부분인 인벤토리와 아이템 정보 부분만 뷰모델을 적용했는데, 오른쪽 까지 뷰모델이 확장되면 가능.
+            if (view is null ||
+                view.Model is null ||
+                view.Model.Dimmed.Value)
+            {
+                SetGlowEquipSlot(false);
+            }
+            else
+            {
+                SetGlowEquipSlot(view.Model.ItemBase.Value is ItemUsable);
+            }
+
+            ShowTooltip(view);
+        }
+
+        #endregion
+
         public void QuestClick(bool repeat)
         {
             Quest(repeat);
@@ -143,35 +222,14 @@ namespace Nekoyume.UI
             AnalyticsManager.Instance.BattleEntrance(repeat);
         }
 
-        public void ShowEquippedTooltip(EquipSlot slot)
-        {
-            if (slot is null) return;
-
-            var inventoryModule = inventoryAndItemInfo.inventory;
-
-            if (inventoryModule.Tooltip.Target != null && inventoryModule.Tooltip.Target == slot.rectTransform)
-            {
-                inventoryModule.Tooltip.Close();
-                return;
-            }
-
-            if (inventoryModule.Model.TryGetEquipment(slot.item, out var item) ||
-                inventoryModule.Model.TryGetConsumable(slot.item as Consumable, out item))
-            {
-                inventoryModule.Tooltip.Show(
-                    slot.rectTransform,
-                    item);
-            }
-        }
-
-        public void Unequip(EquipSlot slot)
+        private void Unequip(EquipSlot slot)
         {
             if (slot.item is null)
             {
                 equipSlotGlow.SetActive(false);
-                foreach (var item in Model.inventory.Value.equipments)
+                foreach (var item in inventory.SharedModel.Equipments)
                 {
-                    item.glowed.Value = item.item.Value.Data.ItemSubType == slot.itemSubType;
+                    item.Glowed.Value = item.ItemBase.Value.Data.ItemSubType == slot.itemSubType;
                 }
 
                 return;
@@ -191,116 +249,27 @@ namespace Nekoyume.UI
                 _player.UpdateWeapon((Weapon) slot.item);
             }
 
-
             AudioController.instance.PlaySfx(slot.itemSubType == ItemSubType.Food
                 ? AudioController.SfxCode.ChainMail2
                 : AudioController.SfxCode.Equipment);
 
-            if (inventoryAndItemInfo.inventory.Model.TryGetEquipment(slotItem, out var inventoryItem) ||
-                inventoryAndItemInfo.inventory.Model.TryGetConsumable(slotItem as Consumable, out inventoryItem))
+            if (inventory.SharedModel.TryGetEquipment(slotItem, out var inventoryItem) ||
+                inventory.SharedModel.TryGetConsumable(slotItem as Consumable, out inventoryItem))
             {
-                inventoryItem.equipped.Value = false;
-            }
-            inventoryAndItemInfo.inventory.Tooltip.Close();
-        }
-
-        public void SelectItem(Toggle item)
-        {
-            if (item.isOn)
-            {
-                var label = item.GetComponentInChildren<Text>();
-                label.color = new Color(0.1960784f, 1, 0.1960784f, 1);
-            }
-        }
-
-        public void BackClick()
-        {
-            _stage.LoadBackground("room");
-            _player = _stage.GetPlayer(_stage.roomPosition);
-            _player.UpdateSet(_player.Model.armor);
-            Find<Menu>().ShowRoom();
-            Close();
-            AudioController.PlayClick();
-        }
-
-        private void SetData(Model.QuestPreparation model)
-        {
-            _disposablesForSetData.DisposeAllAndClear();
-            Model = model;
-            Model.inventory.Value.selectedItemView.Subscribe(SubscribeInventorySelectedItem)
-                .AddTo(_disposablesForSetData);
-            Model.itemInfo.Value.item.Subscribe(OnItemInfoItem).AddTo(_disposablesForSetData);
-            Model.itemInfo.Value.onClick.Subscribe(OnClickEquip).AddTo(_disposablesForSetData);
-            Model.inventory.Value.onRightClickItemView.Subscribe(itemView => OnClickEquip(itemView.Model)).AddTo(_disposablesForSetData);
-
-            inventoryAndItemInfo.SetData(Model.inventory.Value, Model.itemInfo.Value);
-        }
-
-        private void Clear()
-        {
-            inventoryAndItemInfo.Clear();
-            Model = null;
-            _disposablesForSetData.DisposeAllAndClear();
-        }
-
-        private void SubscribeInventorySelectedItem(InventoryItemView view)
-        {
-            if (!view)
-            {
-                inventoryAndItemInfo.inventory.Tooltip.Close();
-                return;
+                inventoryItem.Equipped.Value = false;
             }
 
-            inventoryAndItemInfo.inventory.Tooltip.Show(
-                view.RectTransform,
-                view.Model,
-                value => !view.Model.dimmed.Value,
-                (view.Model.equipped.Value) ?
-                LocalizationManager.Localize("UI_UNEQUIP") :
-                LocalizationManager.Localize("UI_EQUIP"),
-                tooltip =>
-                {
-                    OnClickEquip(tooltip.itemInformation.Model.item.Value);
-                    inventoryAndItemInfo.inventory.Tooltip.Close();
-                },
-                tooltip =>
-                {
-                    equipSlotGlow.SetActive(false);
-                    inventoryAndItemInfo.inventory.Model.DeselectAll();
-                });
-        }
-
-        private void OnItemInfoItem(InventoryItem data)
-        {
-            AudioController.PlaySelect();
-
-            // Fix me. 이미 장착한 아이템일 경우 장착 버튼 비활성화 필요.
-            // 현재는 왼쪽 부분인 인벤토리와 아이템 정보 부분만 뷰모델을 적용했는데, 오른쪽 까지 뷰모델이 확장되면 가능.
-            if (data is null ||
-                data.dimmed.Value)
-            {
-                SetGlowEquipSlot(false);
-            }
-            else
-            {
-                SetGlowEquipSlot(data.item.Value is ItemUsable);
-            }
+            inventory.Tooltip.Close();
         }
 
         private void OnClickEquip(CountableItem countableItem)
         {
             var item = countableItem as InventoryItem;
-            var itemRow = countableItem.item.Value.Data;
-            var itemSubType = itemRow.ItemSubType;
+            var itemSubType = countableItem.ItemBase.Value.Data.ItemSubType;
 
-            if (itemRow.ItemType == ItemType.Material)
+            if (item != null && item.Equipped.Value)
             {
-                return;
-            }
-
-            if (item != null && item.equipped.Value)
-            {
-                var equipSlot = FindSlot(item.item.Value as ItemUsable, itemSubType);
+                var equipSlot = FindSlot(item.ItemBase.Value as ItemUsable, itemSubType);
                 if (equipSlot) Unequip(equipSlot);
                 return;
             }
@@ -313,33 +282,34 @@ namespace Nekoyume.UI
 
             if (slot != null)
             {
-                if (inventoryAndItemInfo.inventory.Model.TryGetEquipment(slot.item, out var inventoryItem) ||
-                    inventoryAndItemInfo.inventory.Model.TryGetConsumable(slot.item as Consumable, out inventoryItem))
+                if (inventory.SharedModel.TryGetEquipment(slot.item, out var inventoryItem) ||
+                    inventory.SharedModel.TryGetConsumable(slot.item as Consumable, out inventoryItem))
                 {
-                    inventoryItem.equipped.Value = false;
+                    inventoryItem.Equipped.Value = false;
                 }
 
-                slot.Set(countableItem.item.Value as ItemUsable);
-                slot.SetOnClickAction(ShowEquippedTooltip, Unequip);
+                slot.Set(countableItem.ItemBase.Value as ItemUsable);
+                slot.SetOnClickAction(ShowTooltip, Unequip);
                 SetGlowEquipSlot(false);
             }
 
             if (itemSubType == ItemSubType.Armor)
             {
-                var armor = (Armor) countableItem.item.Value;
+                var armor = (Armor) countableItem.ItemBase.Value;
                 var weapon = (Weapon) _weaponSlot.item;
                 _player.UpdateSet(armor, weapon);
             }
             else if (itemSubType == ItemSubType.Weapon)
             {
-                _player.UpdateWeapon((Weapon) countableItem.item.Value);
+                _player.UpdateWeapon((Weapon) countableItem.ItemBase.Value);
             }
 
             if (item != null)
             {
-                item.equipped.Value = true;
+                item.Equipped.Value = true;
             }
-            inventoryAndItemInfo.inventory.Tooltip.Close();
+
+            inventory.Tooltip.Close();
         }
 
         private void Quest(bool repeat)
@@ -359,16 +329,16 @@ namespace Nekoyume.UI
                 }
             }
 
-            var foods = new List<Consumable>();
+            var consumables = new List<Consumable>();
             foreach (var slot in consumableSlots)
             {
                 if (slot.item?.Data != null)
                 {
-                    foods.Add((Consumable) slot.item);
+                    consumables.Add((Consumable) slot.item);
                 }
             }
 
-            ActionManager.instance.HackAndSlash(equipments, foods, _stageId)
+            ActionManager.instance.HackAndSlash(equipments, consumables, _stageId)
                 .Subscribe(eval =>
                 {
                     Game.Event.OnStageStart.Invoke(eval.Action.Result);
@@ -382,20 +352,14 @@ namespace Nekoyume.UI
         {
             if (type == ItemSubType.Food)
             {
-                var slot = consumableSlots.FirstOrDefault(s => s.item?.Data is null);
-                if (slot is null)
-                {
-                    slot = consumableSlots[0];
-                }
-
-                return slot;
+                return consumableSlots.FirstOrDefault(s => s.item?.Data is null) ?? consumableSlots[0];
             }
 
             equipmentSlots.TryGet(type, out var es);
             return es;
         }
 
-        public EquipSlot FindSlot(ItemUsable item, ItemSubType type)
+        private EquipSlot FindSlot(ItemUsable item, ItemSubType type)
         {
             if (type == ItemSubType.Food)
             {
@@ -407,6 +371,7 @@ namespace Nekoyume.UI
                     }
                 }
             }
+
             return equipmentSlots.FindSlotWithItem(item);
         }
 
@@ -417,7 +382,7 @@ namespace Nekoyume.UI
             if (!isActive)
                 return;
 
-            var type = Model.itemInfo.Value.item.Value.item.Value.Data.ItemSubType;
+            var type = inventory.SharedModel.SelectedItemView.Value.Model.ItemBase.Value.Data.ItemSubType;
             var slot = FindSelectedItemSlot(type);
             if (slot && slot.transform.parent)
             {
@@ -428,6 +393,16 @@ namespace Nekoyume.UI
             {
                 equipSlotGlow.SetActive(false);
             }
+        }
+
+        public void GoToMenu()
+        {
+            _stage.LoadBackground("room");
+            _player = _stage.GetPlayer(_stage.roomPosition);
+            _player.UpdateSet(_player.Model.armor);
+            Find<Menu>().ShowRoom();
+            Close();
+            AudioController.PlayClick();
         }
 
         private void GoToWorldMap()
