@@ -167,7 +167,6 @@ namespace Nekoyume.Game.Character
             _hpBar.UpdateBuff(buffs);
         }
 
-
         public bool ShowSpeech(string key, params int[] list)
         {
             if (ReferenceEquals(_speechBubble, null))
@@ -270,12 +269,22 @@ namespace Nekoyume.Game.Character
             );
         }
 
-        public void StartRun()
+        public void StartRun(bool showHpBar = false)
         {
             RunSpeed = Speed;
             if (Root == null)
             {
                 InitBT();
+            }
+
+            if (showHpBar)
+            {
+                if (ReferenceEquals(_hpBar, null))
+                {
+                    _hpBar = Widget.Create<HpBar>(true);
+                }
+                _hpBar.Show();
+                _hpBar.UpdateLevel(model.level);
             }
         }
 
