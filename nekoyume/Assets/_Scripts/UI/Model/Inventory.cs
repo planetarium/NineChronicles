@@ -1,60 +1,90 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Nekoyume.EnumType;
 using Nekoyume.Game.Item;
 using Nekoyume.UI.Module;
 using UniRx;
+using UnityEngine;
+using Material = Nekoyume.Game.Item.Material;
 
 namespace Nekoyume.UI.Model
 {
     public class Inventory : IDisposable
     {
-        public enum State
-        {
-            Equipments, Consumables, Materials
-        }
-        
-        public readonly ReactiveProperty<State> state = new ReactiveProperty<State>(State.Equipments);
-        public readonly ReactiveCollection<InventoryItem> equipments = new ReactiveCollection<InventoryItem>();
-        public readonly ReactiveCollection<InventoryItem> consumables = new ReactiveCollection<InventoryItem>();
-        public readonly ReactiveCollection<InventoryItem> materials = new ReactiveCollection<InventoryItem>();
-        
-        public readonly ReactiveProperty<InventoryItemView> selectedItemView = new ReactiveProperty<InventoryItemView>(null);
-        public readonly ReactiveProperty<Func<InventoryItem, bool>> dimmedFunc = new ReactiveProperty<Func<InventoryItem, bool>>();
-        public readonly ReactiveProperty<Func<InventoryItem, bool>> equippedFunc = new ReactiveProperty<Func<InventoryItem, bool>>();
+        public readonly ReactiveProperty<ItemType> State = new ReactiveProperty<ItemType>(ItemType.Equipment);
+        public readonly ReactiveCollection<InventoryItem> Consumables = new ReactiveCollection<InventoryItem>();
+        public readonly ReactiveCollection<InventoryItem> Equipments = new ReactiveCollection<InventoryItem>();
+        public readonly ReactiveCollection<InventoryItem> Materials = new ReactiveCollection<InventoryItem>();
 
-        public readonly Subject<InventoryItemView> onDoubleClickItemView = new Subject<InventoryItemView>();
-        public readonly Subject<InventoryItemView> onRightClickItemView = new Subject<InventoryItemView>();
-        
-        public Inventory(Game.Item.Inventory inventory, State state = State.Equipments)
-        {
-            this.state.Value = state;
-            dimmedFunc.Value = DimmedFunc;
-            
-            UpdateItems(inventory.Items);
+        public readonly ReactiveProperty<InventoryItemView> SelectedItemView =
+            new ReactiveProperty<InventoryItemView>(null);
 
-            equipments.ObserveAdd().Subscribe(added => InitInventoryItem(added.Value));
-            equipments.ObserveRemove().Subscribe(removed => removed.Value.Dispose());
-            consumables.ObserveAdd().Subscribe(added => InitInventoryItem(added.Value));
-            consumables.ObserveRemove().Subscribe(removed => removed.Value.Dispose());
-            materials.ObserveAdd().Subscribe(added => InitInventoryItem(added.Value));
-            materials.ObserveRemove().Subscribe(removed => removed.Value.Dispose());
-            
-            dimmedFunc.Subscribe(SubscribeDimmedFunc);
+        public readonly ReactiveProperty<Func<InventoryItem, bool>> DimmedFunc =
+            new ReactiveProperty<Func<InventoryItem, bool>>();
+
+        public readonly ReactiveProperty<Func<InventoryItem, bool>> EquippedFunc =
+            new ReactiveProperty<Func<InventoryItem, bool>>();
+
+        public readonly Subject<InventoryItemView> OnRightClickItemView = new Subject<InventoryItemView>();
+
+        public Inventory(ItemType stateType = ItemType.Equipment)
+        {
+            State.Value = stateType;
+            DimmedFunc.Value = DefaultDimmedFunc;
+
+            State.Subscribe(SubscribeState);
+            DimmedFunc.Subscribe(SubscribeDimmedFunc);
         }
 
         public void Dispose()
         {
-            state.Dispose();
-            equipments.Dispose();
-            consumables.Dispose();
-            materials.Dispose();
-            selectedItemView.Dispose();
-            dimmedFunc.Dispose();
-            
-            onDoubleClickItemView.Dispose();
-            onRightClickItemView.Dispose();
+            State.Dispose();
+            Consumables.Dispose();
+            Equipments.Dispose();
+            Materials.Dispose();
+            SelectedItemView.Dispose();
+            DimmedFunc.Dispose();
+            EquippedFunc.Dispose();
+            OnRightClickItemView.Dispose();
         }
-        
+
+        public void ResetItems(Game.Item.Inventory inventory)
+        {
+            Debug.LogWarning($"Model.Inventory.ResetItems() called. inventory.Items.Count is {inventory?.Items.Count ?? 0}");
+            
+            RemoveItemsAll();
+
+            if (inventory is null)
+            {
+                return;
+            }
+
+            foreach (var item in inventory.Items)
+            {
+                AddItem(item.item, item.count);
+            }
+
+            // 정렬.
+            
+            State.SetValueAndForceNotify(State.Value);
+        }
+
+        #region Inventory Item Pool
+
+        private InventoryItem CreateInventoryItem(ItemBase itemBase, int count)
+        {
+            var item = new InventoryItem(itemBase, count);
+            item.Dimmed.Value = DimmedFunc.Value(item);
+            item.OnClick.Subscribe(SubscribeItemOnClick);
+            item.OnRightClick.Subscribe(OnRightClickItemView);
+            return item;
+        }
+
+        #endregion
+
+        #region Add Item
+
         public InventoryItem AddItem(ItemBase itemBase, int count = 1)
         {
             switch (itemBase)
@@ -69,99 +99,128 @@ namespace Nekoyume.UI.Model
                     return null;
             }
         }
-        
+
         public InventoryItem AddItem(Equipment equipment)
         {
-            var inventoryItem = new InventoryItem(equipment, 1);
-            equipments.Add(inventoryItem);
+            var inventoryItem = CreateInventoryItem(equipment, 1);
+            inventoryItem.Equipped.Value = equipment.equipped;
+            Equipments.Add(inventoryItem);
+
             return inventoryItem;
         }
-        
+
         public InventoryItem AddItem(Consumable consumable)
         {
-            var inventoryItem = new InventoryItem(consumable, 1);
-            consumables.Add(inventoryItem);
+            var inventoryItem = CreateInventoryItem(consumable, 1);
+            Consumables.Add(inventoryItem);
+
             return inventoryItem;
         }
-        
+
         public InventoryItem AddItem(Material material, int count)
         {
             if (TryGetMaterial(material, out var inventoryItem))
             {
-                inventoryItem.count.Value += count;
+                inventoryItem.Count.Value += count;
                 return inventoryItem;
             }
 
-            inventoryItem = new InventoryItem(material, count);
-            materials.Add(inventoryItem);
+            inventoryItem = CreateInventoryItem(material, count);
+            Materials.Add(inventoryItem);
+
             return inventoryItem;
         }
-        
-        public bool RemoveItem(ItemBase itemBase, int count = 1)
+
+        #endregion
+
+        #region Remove Item
+
+        public void RemoveItem(ItemBase itemBase, int count = 1)
         {
+            InventoryItem item = null;
             switch (itemBase)
             {
                 case Equipment equipment:
-                    return RemoveItem(equipment);
+                    item = RemoveItem(equipment);
+                    break;
                 case Consumable consumable:
-                    return RemoveItem(consumable);
+                    item = RemoveItem(consumable);
+                    break;
                 case Material material:
-                    return RemoveItem(material, count);
-                default:
-                    return false;
+                    item = RemoveItem(material, count);
+                    break;
             }
-        }
-        
-        public bool RemoveItem(Equipment equipment)
-        {
-            return TryGetEquipment(equipment, out var inventoryItem) && equipments.Remove(inventoryItem);
-        }
-        
-        public bool RemoveItem(Consumable consumable)
-        {
-            return TryGetConsumable(consumable, out var inventoryItem) && consumables.Remove(inventoryItem);
+            
+            item?.Dispose();
         }
 
-        public bool RemoveItem(Material material, int count)
+        public InventoryItem RemoveItem(Equipment equipment)
         {
-            if (!TryGetMaterial(material, out var inventoryItem) ||
-                inventoryItem.count.Value < count)
-            {
-                return false;
-            }
+            if (!TryGetEquipment(equipment, out var inventoryItem))
+                return null;
 
-            inventoryItem.count.Value -= count;
-            if (inventoryItem.count.Value == 0)
-            {
-                materials.Remove(inventoryItem);
-            }
+            Equipments.Remove(inventoryItem);
 
-            return true;
+            return inventoryItem;
+        }
+
+        public InventoryItem RemoveItem(Consumable consumable)
+        {
+            if (!TryGetConsumable(consumable, out var inventoryItem))
+                return null;
+
+            Consumables.Remove(inventoryItem);
+
+            return inventoryItem;
+        }
+
+        public InventoryItem RemoveItem(Material material, int count)
+        {
+            if (!TryGetMaterial(material, out var inventoryItem))
+                return null;
+
+            inventoryItem.Count.Value -= count;
+            if (inventoryItem.Count.Value > 0)
+                return null;
+
+
+            Materials.Remove(inventoryItem);
+
+            return inventoryItem;
         }
 
         public void RemoveItems(IEnumerable<CountEditableItem> collection)
         {
             foreach (var countEditableItem in collection)
             {
-                if (ReferenceEquals(countEditableItem, null))
-                {
+                if (countEditableItem is null)
                     continue;
-                }
 
-                RemoveItem(countEditableItem.item.Value, countEditableItem.count.Value);
+                RemoveItem(countEditableItem.ItemBase.Value, countEditableItem.Count.Value);
             }
         }
 
-        public bool TryGetItem(string guid, out ItemUsable itemUsable)
+        public void RemoveItemsAll()
         {
-            foreach (var inventoryItem in equipments)
+            Consumables.DisposeAllAndClear();
+            Equipments.DisposeAllAndClear();
+            Materials.DisposeAllAndClear();
+        }
+
+        #endregion
+        
+        #region Try Get
+
+        public bool TryGetItem(Guid guid, out ItemUsable itemUsable)
+        {
+            foreach (var inventoryItem in Equipments)
             {
-                if (!(inventoryItem.item.Value is Equipment equipment)
+                if (!(inventoryItem.ItemBase.Value is Equipment equipment)
                     || !equipment.ItemId.Equals(guid))
                 {
                     continue;
                 }
-                
+
                 itemUsable = equipment;
                 return true;
             }
@@ -169,7 +228,7 @@ namespace Nekoyume.UI.Model
             itemUsable = null;
             return false;
         }
-        
+
         public bool TryGetEquipment(ItemUsable itemUsable, out InventoryItem inventoryItem)
         {
             if (itemUsable is null)
@@ -177,10 +236,10 @@ namespace Nekoyume.UI.Model
                 inventoryItem = null;
                 return false;
             }
-            
-            foreach (var item in equipments)
+
+            foreach (var item in Equipments)
             {
-                if (!(item.item.Value is Equipment equipment))
+                if (!(item.ItemBase.Value is Equipment equipment))
                 {
                     continue;
                 }
@@ -197,7 +256,7 @@ namespace Nekoyume.UI.Model
             inventoryItem = null;
             return false;
         }
-        
+
         public bool TryGetConsumable(Consumable consumable, out InventoryItem inventoryItem)
         {
             if (consumable is null)
@@ -206,9 +265,9 @@ namespace Nekoyume.UI.Model
                 return false;
             }
 
-            foreach (var item in consumables)
+            foreach (var item in Consumables)
             {
-                if (!(item.item.Value is Consumable food))
+                if (!(item.ItemBase.Value is Consumable food))
                 {
                     continue;
                 }
@@ -221,19 +280,20 @@ namespace Nekoyume.UI.Model
                 inventoryItem = item;
                 return true;
             }
+
             inventoryItem = null;
             return false;
         }
-        
+
         public bool TryGetMaterial(Material material, out InventoryItem inventoryItem)
         {
-            foreach (var item in materials)
+            foreach (var item in Materials)
             {
-                if (item.item.Value.Data.Id != material.Data.Id)
+                if (item.ItemBase.Value.Data.Id != material.Data.Id)
                 {
                     continue;
                 }
-                
+
                 inventoryItem = item;
                 return true;
             }
@@ -241,112 +301,98 @@ namespace Nekoyume.UI.Model
             inventoryItem = null;
             return false;
         }
-        
-        public void DeselectAll()
+
+        #endregion
+
+        public void SelectItemView(InventoryItemView view)
         {
-            if (selectedItemView.Value == null
-                || selectedItemView.Value.Model == null)
-            {
+            if (view is null ||
+                view.Model is null)
                 return;
-            }
-            selectedItemView.Value.Model.selected.Value = false;
-            selectedItemView.Value = null;
-        }
-
-        private void SubscribeDimmedFunc(Func<InventoryItem,bool> func)
-        {
-            if (dimmedFunc.Value == null)
-            {
-                dimmedFunc.Value = DimmedFunc;
-            }
-                
-            foreach (var item in equipments)
-            {
-                item.dimmed.Value = dimmedFunc.Value(item);
-            }
-            foreach (var item in consumables)
-            {
-                item.dimmed.Value = dimmedFunc.Value(item);
-            }
-            foreach (var item in materials)
-            {
-                item.dimmed.Value = dimmedFunc.Value(item);
-            }
-        }
-
-        private void SubscribeOnClick(InventoryItemView view)
-        {
-            var prevSelected = selectedItemView.Value;
-            if (selectedItemView.Value != null)
-            {
-                DeselectAll();
-            }
-            if (prevSelected is null || !ReferenceEquals(prevSelected, view))
-            {
-                SelectView(view);
-            }
-        }
-
-        private void SelectView(InventoryItemView view)
-        {
-            selectedItemView.SetValueAndForceNotify(view);
-            selectedItemView.Value.Model.selected.Value = true;
+            
+            SelectedItemView.Value = view;
+            SelectedItemView.Value.Model.Selected.Value = true;
             SetGlowedAll(false);
         }
 
-        private void UpdateItems(IEnumerable<Game.Item.Inventory.Item> list)
+        public void DeselectItemView()
         {
-            foreach (var item in list)
+            if (SelectedItemView.Value is null ||
+                SelectedItemView.Value.Model is null)
             {
-                var inventoryItem = new InventoryItem(item.item, item.count);
-                InitInventoryItem(inventoryItem);
-                
-                switch (item.item)
-                {
-                    case Equipment equipment:
-                        inventoryItem.equipped.Value = equipment.equipped;
-                        equipments.Add(inventoryItem);
-                        break;
-                    case Consumable _:
-                        consumables.Add(inventoryItem);
-                        break;
-                    default:
-                        materials.Add(inventoryItem);
-                        break;
-                }
+                return;
             }
-            
-            // 정렬.
+
+            SelectedItemView.Value.Model.Selected.Value = false;
+            SelectedItemView.Value = null;
         }
 
-        private void InitInventoryItem(InventoryItem item)
+        #region Subscribe
+
+        private void SubscribeState(ItemType state)
         {
-            item.dimmed.Value = dimmedFunc.Value(item);
-            item.onClick.Subscribe(SubscribeOnClick);
-            item.onDoubleClick.Subscribe(onDoubleClickItemView);
-            item.onRightClick.Subscribe(onRightClickItemView);
+            DeselectItemView();
         }
+
+        private void SubscribeDimmedFunc(Func<InventoryItem, bool> func)
+        {
+            if (DimmedFunc.Value == null)
+            {
+                DimmedFunc.Value = DefaultDimmedFunc;
+            }
+
+            foreach (var item in Equipments)
+            {
+                item.Dimmed.Value = DimmedFunc.Value(item);
+            }
+
+            foreach (var item in Consumables)
+            {
+                item.Dimmed.Value = DimmedFunc.Value(item);
+            }
+
+            foreach (var item in Materials)
+            {
+                item.Dimmed.Value = DimmedFunc.Value(item);
+            }
+        }
+
+        private void SubscribeItemOnClick(InventoryItemView view)
+        {
+            if (view != null &&
+                view == SelectedItemView.Value)
+            {
+                DeselectItemView();
+
+                return;
+            }
         
-        private bool DimmedFunc(InventoryItem inventoryItem)
+            DeselectItemView();
+            SelectItemView(view);
+        }
+
+        #endregion
+
+        private static bool DefaultDimmedFunc(InventoryItem inventoryItem)
         {
             return false;
         }
 
         private void SetGlowedAll(bool value)
         {
-            foreach (var item in equipments)
+            foreach (var item in Equipments)
             {
-                item.glowed.Value = value;
+                item.Glowed.Value = value;
             }
-            
-            foreach (var item in consumables)
+
+            foreach (var item in Consumables)
             {
-                item.glowed.Value = value;
+                item.Glowed.Value = value;
             }
-            
-            foreach (var item in materials)
+
+            foreach (var item in Materials)
             {
-                item.glowed.Value = value;
+                item.Glowed.Value = value;
             }
         }
     }

@@ -54,8 +54,10 @@ namespace Nekoyume.UI
             }
         }
 
-        private void OnEnable()
+        protected override void OnEnable()
         {
+            base.OnEnable();
+            
             toolTip.text = _tips[new System.Random().Next(0, _tips.Count)];
             loadingImage.color = _color;
             _sequences = new[]
@@ -67,7 +69,7 @@ namespace Nekoyume.UI
             };
         }
 
-        private void OnDisable()
+        protected override void OnDisable()
         {
             foreach (var sequence in _sequences)
             {
@@ -76,6 +78,8 @@ namespace Nekoyume.UI
 
             _sequences = null;
             Message = LocalizationManager.Localize("UI_IN_MINING_A_BLOCK");
+            
+            base.OnDisable();
         }
 
         #endregion

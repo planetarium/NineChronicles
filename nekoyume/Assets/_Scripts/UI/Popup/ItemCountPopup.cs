@@ -102,7 +102,7 @@ namespace Nekoyume.UI
             _disposablesForSetData.DisposeAllAndClear();
             _data = data;
             _data.titleText.Subscribe(value => titleText.text = value).AddTo(_disposablesForSetData);
-            _data.item.Value.count.Subscribe(SetCount).AddTo(_disposablesForSetData);
+            _data.item.Value.Count.Subscribe(SetCount).AddTo(_disposablesForSetData);
             _data.countEnabled.Subscribe(countEnabled =>
             {
                 minusButton.gameObject.SetActive(countEnabled);
@@ -131,7 +131,7 @@ namespace Nekoyume.UI
                 return;
             }
             
-            SetCount(_data.item.Value.count.Value);
+            SetCount(_data.item.Value.Count.Value);
         }
         
         private void SetCount(int count)
