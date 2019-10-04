@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
 using Libplanet;
 using Libplanet.Action;
@@ -13,6 +12,7 @@ using Libplanet.Net;
 using Libplanet.Tx;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
+using Nekoyume.Game;
 using NUnit.Framework;
 using UnityEngine;
 
@@ -22,7 +22,7 @@ namespace Tests
     public class MinerFixture
     {
         private readonly string _storePath;
-        private readonly TestAgent _agent;
+        private readonly TestAgentController _agentController;
 
         public MinerFixture()
         {
@@ -34,57 +34,52 @@ namespace Tests
             var privateKey = new PrivateKey(ByteUtil.ParseHex(hex));
             if (File.Exists(_storePath))
                 File.Delete(_storePath);
-            _agent = new TestAgent(privateKey, storeName, new List<Peer>(), new List<IceServer>(),  "", null, true);
+            _agentController = new GameObject().AddComponent<TestAgentController>();
+            _agentController.Init(privateKey, storeName, new List<Peer>(), new List<IceServer>(),  "", null, true);
         }
 
         public IEnumerator CoMine(Transaction<PolymorphicAction<ActionBase>> transaction)
         {
-            yield return _agent.CoMine(transaction);
+            yield return _agentController.CoMine(transaction);
         }
 
         public void TearDown()
         {
-            _agent.TearDown();
+            _agentController.TearDown();
             if (File.Exists(_storePath))
                 File.Delete(_storePath);
         }
 
-        private class TestAgent: Agent
+        private class TestAgentController : AgentController
         {
-            public TestAgent(PrivateKey privateKey, string path, IEnumerable<Peer> peers,
-                IEnumerable<IceServer> iceServers, string host, int? port, bool consoleSink)
-                : base(privateKey, path, peers, iceServers, host, port, consoleSink)
-            {
-            }
-
             public void TearDown()
             {
-                _store.Dispose();
+                store.Dispose();
             }
 
             public IEnumerator CoMine(Transaction<PolymorphicAction<ActionBase>> transaction)
             {
                 Debug.Log("Mine");
                 var task = Task.Run(() =>
-                    _blocks.StageTransactions(
+                    blocks.StageTransactions(
                         ImmutableHashSet<Transaction<PolymorphicAction<ActionBase>>>.Empty.Add(transaction)
                     )
                 );
                 yield return new WaitUntil(() => task.IsCompleted);
                 Debug.Log("Mine 0");
-                var mine = Task.Run(() => _blocks.MineBlock(PrivateKey.PublicKey.ToAddress()));
+                var mine = Task.Run(() => blocks.MineBlock(PrivateKey.PublicKey.ToAddress()));
                 yield return new WaitUntil(() => mine.IsCompleted);
                 Debug.Log("Mine 1");
                 var block = mine.Result;
                 try
                 {
                     Debug.Log("Mine 2");
-                    AgentController.Agent.AppendBlock(block);
+                    Game.instance.agentController.AppendBlock(block);
                     Debug.Log("Mine 3");
                 }
                 catch (Exception e)
                 {
-                    Debug.LogFormat("Miner: {0} NoMiner: {1} Exception: {2}", BlockIndex, AgentController.Agent.BlockIndex, e);
+                    Debug.LogFormat("Miner: {0} NoMiner: {1} Exception: {2}", BlockIndex, Game.instance.agentController.BlockIndex, e);
                 }
             }
         }
