@@ -61,7 +61,8 @@ namespace Tests
                 File.Delete(_backup + ".meta");
             }
 
-            AgentController.instance.Dispose();
+            if (!(Game.instance.agentController is null))
+                Game.instance.agentController.Dispose();
             yield return new WaitForSeconds(2f);
             if (!string.IsNullOrEmpty(_storePath))
             {

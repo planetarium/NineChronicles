@@ -9,7 +9,6 @@ using Libplanet;
 using Libplanet.Crypto;
 using Libplanet.Net;
 using Nekoyume.Helper;
-using Nekoyume.Pattern;
 using Nekoyume.State;
 using Nekoyume.UI;
 using NetMQ;
@@ -21,7 +20,7 @@ namespace Nekoyume.BlockChain
     /// <summary>
     /// Agent를 구동시킨다.
     /// </summary>
-    public class AgentController : MonoSingleton<AgentController>
+    public class AgentController : MonoBehaviour
     {
         public const string PlayerPrefsKeyOfAgentPrivateKey = "private_key_agent";
 #if UNITY_EDITOR
@@ -40,8 +39,7 @@ namespace Nekoyume.BlockChain
         private const string PeersFileName = "peers.dat";
         private const string IceServersFileName = "ice_servers.dat";
 
-        private static readonly string DefaultStoragePath =
-            Path.Combine(Application.persistentDataPath, AgentStoreDirName);
+        private string _defaultStoragePath;
 
         public static Agent Agent { get; private set; }
 
@@ -53,7 +51,12 @@ namespace Nekoyume.BlockChain
         private static IEnumerator _autoPlayer;
         private static IEnumerator _logger;
 
-        public static void Initialize(Action<bool> callback)
+        private void Awake()
+        {
+            _defaultStoragePath = Path.Combine(Application.persistentDataPath, AgentStoreDirName);
+        }
+
+        public void Initialize(Action<bool> callback)
         {
             if (!(Agent is null))
             {
@@ -61,7 +64,7 @@ namespace Nekoyume.BlockChain
                 return;
             }
 
-            instance.InitAgent(callback);
+            InitAgent(callback);
         }
 
         public void InitAgent(Action<bool> callback)
@@ -73,7 +76,7 @@ namespace Nekoyume.BlockChain
             var host = GetHost(options);
             int? port = options.Port;
             bool consoleSink = options.ConsoleSink;
-            var storagePath = options.StoragePath ?? DefaultStoragePath;
+            var storagePath = options.StoragePath ?? _defaultStoragePath;
 
             Agent = new Agent(
                 privateKey: privateKey,
@@ -269,13 +272,11 @@ namespace Nekoyume.BlockChain
 
         #region Mono
 
-        protected override void OnDestroy()
+        protected void OnDestroy()
         {
             ActionRenderHandler.Instance.Stop();
             Agent?.Dispose();
             Agent = null;
-
-            base.OnDestroy();
         }
 
         #endregion

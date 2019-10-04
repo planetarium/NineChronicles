@@ -36,6 +36,7 @@ namespace Nekoyume.Game
     {
         public LocalizationManager.LanguageType languageType = LocalizationManager.LanguageType.English;
         public Stage stage;
+        public AgentController agentController;
 
         public TableSheets TableSheets { get; private set; }
         public bool initialized;
@@ -66,7 +67,7 @@ namespace Nekoyume.Game
             yield return null;
             AudioController.instance.Initialize();
             yield return null;
-            AgentController.Initialize(AgentInitialized);
+            agentController.Initialize(AgentInitialized);
 
             Observable.EveryUpdate()
                 .Where(_ => Input.GetMouseButtonUp(0))
@@ -99,7 +100,11 @@ namespace Nekoyume.Game
 
         public void Init()
         {
-            AgentController.Initialize(AgentInitialized);
+            if (agentController is null)
+            {
+                agentController = gameObject.AddComponent<AgentController>();
+            }
+            agentController.Initialize(AgentInitialized);
         }
     }
 }

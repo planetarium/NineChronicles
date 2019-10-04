@@ -31,7 +31,7 @@ namespace Nekoyume.UI.Module
 
         private void OnEnable()
         {
-            AgentController.instance.blockIndex.ObserveOnMainThread().Subscribe(SetIndex).AddTo(_disposables);
+            Game.Game.instance.agentController.blockIndex.ObserveOnMainThread().Subscribe(SetIndex).AddTo(_disposables);
             ReactiveCurrentAvatarState.NextDailyRewardIndex.Subscribe(SetNextBlockIndex).AddTo(_disposables);
         }
 
