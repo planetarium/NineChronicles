@@ -22,6 +22,7 @@ using Microsoft.ApplicationInsights.Extensibility;
 using Nekoyume.Action;
 using Nekoyume.Game.Item;
 using Nekoyume.Serilog;
+using Nekoyume.State;
 #if BLOCK_LOG_USE
 using Nekoyume.Helper;
 #endif
@@ -84,6 +85,7 @@ namespace Nekoyume.BlockChain
         public event EventHandler PreloadStarted;
         public event EventHandler<PreloadState> PreloadProcessed;
         public event EventHandler PreloadEnded;
+        public event EventHandler<long> TipChanged;
 
         public bool SyncSucceed { get; private set; }
 
@@ -317,6 +319,7 @@ namespace Nekoyume.BlockChain
             _tipInfo += $" -TimeStamp  : {DateTimeOffset.Now}\n";
             _tipInfo += $" -PrevBlock    : [{args.PreviousIndex}] {args.PreviousHash}\n";
             _tipInfo += $" -LatestBlock : [{args.Index}] {args.Hash}";
+            TipChanged?.Invoke(null, args.Index);
         }
 
         public IEnumerator CoTxProcessor()

@@ -66,15 +66,16 @@ namespace Nekoyume.Action
                       $"current avatar: `{States.Instance?.currentAvatarState?.Value?.address}`");
 
             agentState.avatarAddresses.Add(index, avatarAddress);
-            avatarState = CreateAvatarState(name, avatarAddress, ctx);
+            var dailyBlockState = (DailyBlockState) states.GetState(DailyBlockState.Address);
+            avatarState = CreateAvatarState(name, avatarAddress, ctx, dailyBlockState.nextBlockIndex);
 
             states = states.SetState(ctx.Signer, agentState);
             return states.SetState(avatarAddress, avatarState);
         }
 
-        private static AvatarState CreateAvatarState(string name, Address avatarAddress, IActionContext ctx)
+        private static AvatarState CreateAvatarState(string name, Address avatarAddress, IActionContext ctx, long index)
         {
-            var avatarState = new AvatarState(avatarAddress, ctx.Signer, ctx.BlockIndex, name);
+            var avatarState = new AvatarState(avatarAddress, ctx.Signer, ctx.BlockIndex, index, name);
 #if UNITY_EDITOR
             AddItemsForTest(avatarState, ctx.Random);
 #endif

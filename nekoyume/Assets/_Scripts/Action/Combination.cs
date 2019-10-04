@@ -67,6 +67,7 @@ namespace Nekoyume.Action
         public List<Material> Materials { get; private set; }
         public Address avatarAddress;
         public Result result;
+        public const int RequiredPoint = 5;
 
         protected override IImmutableDictionary<string, object> PlainValueInternal =>
             new Dictionary<string, object>
@@ -102,6 +103,13 @@ namespace Nekoyume.Action
             var avatarState = (AvatarState) states.GetState(avatarAddress);
             if (avatarState == null)
                 return states;
+
+            if (avatarState.actionPoint < RequiredPoint)
+            {
+                return states;
+            }
+
+            avatarState.actionPoint -= RequiredPoint;
 
             Debug.Log($"Execute Combination. player : `{avatarAddress}` " +
                       $"node : `{States.Instance?.agentState?.Value?.address}` " +
