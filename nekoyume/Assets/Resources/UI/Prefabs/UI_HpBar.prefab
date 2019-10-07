@@ -1136,6 +1136,21 @@ PrefabInstance:
       propertyPath: m_Name
       value: LevelText
       objectReference: {fileID: 0}
+    - target: {fileID: 114554746353357326, guid: a1f67aab15045ab4eba8586dc20daaef,
+        type: 3}
+      propertyPath: m_FontData.m_FontSize
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 114554746353357326, guid: a1f67aab15045ab4eba8586dc20daaef,
+        type: 3}
+      propertyPath: m_FontData.m_MinSize
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114554746353357326, guid: a1f67aab15045ab4eba8586dc20daaef,
+        type: 3}
+      propertyPath: m_Text
+      value: 888
+      objectReference: {fileID: 0}
     - target: {fileID: 224956313553863500, guid: a1f67aab15045ab4eba8586dc20daaef,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1241,21 +1256,6 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
-    - target: {fileID: 114554746353357326, guid: a1f67aab15045ab4eba8586dc20daaef,
-        type: 3}
-      propertyPath: m_FontData.m_FontSize
-      value: 12
-      objectReference: {fileID: 0}
-    - target: {fileID: 114554746353357326, guid: a1f67aab15045ab4eba8586dc20daaef,
-        type: 3}
-      propertyPath: m_FontData.m_MinSize
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 114554746353357326, guid: a1f67aab15045ab4eba8586dc20daaef,
-        type: 3}
-      propertyPath: m_Text
-      value: 888
-      objectReference: {fileID: 0}
     - target: {fileID: 114597479767927532, guid: a1f67aab15045ab4eba8586dc20daaef,
         type: 3}
       propertyPath: m_UseGraphicAlpha
@@ -1271,17 +1271,17 @@ PrefabInstance:
       propertyPath: m_EffectDistance.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 114252175819063688, guid: a1f67aab15045ab4eba8586dc20daaef,
+        type: 3}
+      propertyPath: m_EffectDistance.y
+      value: -0.5
+      objectReference: {fileID: 0}
     - target: {fileID: 114853169625143362, guid: a1f67aab15045ab4eba8586dc20daaef,
         type: 3}
       propertyPath: m_UseGraphicAlpha
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 114853169625143362, guid: a1f67aab15045ab4eba8586dc20daaef,
-        type: 3}
-      propertyPath: m_EffectDistance.y
-      value: -0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 114252175819063688, guid: a1f67aab15045ab4eba8586dc20daaef,
         type: 3}
       propertyPath: m_EffectDistance.y
       value: -0.5
@@ -1376,12 +1376,12 @@ PrefabInstance:
     - target: {fileID: 5467385540938619002, guid: 3f592bbdd28ed9047860b8c5f43ab585,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: -29.6
       objectReference: {fileID: 0}
     - target: {fileID: 5467385540938619002, guid: 3f592bbdd28ed9047860b8c5f43ab585,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -28.499989
+      value: -29.3
       objectReference: {fileID: 0}
     - target: {fileID: 5467385540938619002, guid: 3f592bbdd28ed9047860b8c5f43ab585,
         type: 3}
