@@ -61,8 +61,7 @@ namespace Tests
                 File.Delete(_backup + ".meta");
             }
 
-            UnityEngine.Object.Destroy(Game.instance.agentController);
-            yield return new WaitUntil(() => Game.instance.agentController == null);
+            yield return Game.instance.TearDown();
             if (!string.IsNullOrEmpty(_storePath))
             {
                 File.Delete($"{_storePath}.ldb");

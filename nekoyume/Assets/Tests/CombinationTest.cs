@@ -60,8 +60,8 @@ namespace Tests
             var loginDetail = Widget.Find<LoginDetail>();
             loginDetail.nameField.text = "combination";
             loginDetail.CreateClick();
-            yield return new WaitUntil(() => Game.instance.agentController.Transactions.Any());
-            var createAvatarTx = Game.instance.agentController.Transactions.First().Value;
+            yield return new WaitUntil(() => Game.instance.agent.Transactions.Any());
+            var createAvatarTx = Game.instance.agent.Transactions.First().Value;
             yield return miner.CoMine(createAvatarTx);
             yield return new WaitWhile(() => States.Instance.currentAvatarState.Value is null);
             yield return new WaitUntil(() => Widget.Find<Login>().ready);
@@ -101,10 +101,10 @@ namespace Tests
                 w.inventory.Tooltip.submitButton.onClick.Invoke();
             }
 
-            var current = Game.instance.agentController.Transactions.Count;
+            var current = Game.instance.agent.Transactions.Count;
             w.combinationButton.onClick.Invoke();
-            yield return new WaitUntil(() => Game.instance.agentController.Transactions.Count > current);
-            var tx = Game.instance.agentController.Transactions.Values.OrderByDescending(t => t.Timestamp).First();
+            yield return new WaitUntil(() => Game.instance.agent.Transactions.Count > current);
+            var tx = Game.instance.agent.Transactions.Values.OrderByDescending(t => t.Timestamp).First();
             yield return miner.CoMine(tx);
             Assert.AreEqual(1, States.Instance.currentAvatarState.Value.mailBox.OfType<CombinationMail>().Count());
         }

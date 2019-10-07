@@ -103,8 +103,8 @@ namespace Tests
             var loginDetail = Widget.Find<LoginDetail>();
             loginDetail.nameField.text = "has";
             loginDetail.CreateClick();
-            yield return new WaitUntil(() => Game.instance.agentController.Transactions.Any());
-            var createAvatarTx = Game.instance.agentController.Transactions.First().Value;
+            yield return new WaitUntil(() => Game.instance.agent.Transactions.Any());
+            var createAvatarTx = Game.instance.agent.Transactions.First().Value;
             yield return miner.CoMine(createAvatarTx);
             yield return new WaitWhile(() => States.Instance.currentAvatarState.Value is null);
             yield return new WaitUntil(() => Widget.Find<Login>().ready);
@@ -123,11 +123,11 @@ namespace Tests
             }
 
             _widget.Show();
-            var current = Game.instance.agentController.Transactions.Count;
+            var current = Game.instance.agent.Transactions.Count;
             _widget.QuestClick(false);
-            yield return new WaitUntil(() => Game.instance.agentController.Transactions.Count > current);
+            yield return new WaitUntil(() => Game.instance.agent.Transactions.Count > current);
             // Transaction.Id 가 랜덤하게 생성되어 순서가 보장이 되지 않기때문에 정렬처리
-            var tx = Game.instance.agentController.Transactions.Values.OrderByDescending(t => t.Timestamp).First();
+            var tx = Game.instance.agent.Transactions.Values.OrderByDescending(t => t.Timestamp).First();
             yield return miner.CoMine(tx);
             yield return new WaitUntil(() => Widget.Find<BattleResult>().isActiveAndEnabled);
             Widget.Find<BattleResult>().GoToMain();

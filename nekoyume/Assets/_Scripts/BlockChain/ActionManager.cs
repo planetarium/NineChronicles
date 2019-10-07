@@ -18,7 +18,7 @@ namespace Nekoyume.BlockChain
     {
         private static void ProcessAction(GameAction action)
         {
-            Game.Game.instance.agentController.EnqueueAction(action);
+            Game.Game.instance.agent.EnqueueAction(action);
         }
 
         #region Actions

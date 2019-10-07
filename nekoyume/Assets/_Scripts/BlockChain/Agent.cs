@@ -35,9 +35,9 @@ using UnityEngine;
 namespace Nekoyume.BlockChain
 {
     /// <summary>
-    /// Agent를 구동시킨다.
+    /// 블록체인 노드 관련 로직을 처리
     /// </summary>
-    public class AgentController : MonoBehaviour, IDisposable
+    public class Agent : MonoBehaviour, IDisposable
     {
         private const string PlayerPrefsKeyOfAgentPrivateKey = "private_key_agent";
 #if UNITY_EDITOR
@@ -509,8 +509,7 @@ namespace Nekoyume.BlockChain
             Debug.Log("PreloadingStarted event was invoked");
 
             var started = DateTimeOffset.UtcNow;
-//            var existingBlocks = blocks?.Tip?.Index ?? 0;
-            var existingBlocks = 0;
+            var existingBlocks = blocks?.Tip?.Index ?? 0;
             Debug.Log("Preloading starts");
 
             // _swarm.PreloadAsync() 에서 대기가 발생하기 때문에

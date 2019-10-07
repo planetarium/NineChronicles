@@ -169,7 +169,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   languageType: 0
   stage: {fileID: 1333831682}
-  agentController: {fileID: 76870000}
+  agent: {fileID: 76870000}
   initialized: 0
 --- !u!114 &76869999
 MonoBehaviour:
@@ -195,6 +195,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e4c8564bcbc4cc5970cf9d23210a8da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  disposed: 0
 --- !u!1 &98550335
 GameObject:
   m_ObjectHideFlags: 0

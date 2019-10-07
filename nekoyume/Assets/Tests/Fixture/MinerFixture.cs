@@ -22,7 +22,7 @@ namespace Tests
     public class MinerFixture
     {
         private readonly string _storePath;
-        private readonly TestAgentController _agentController;
+        private readonly TestAgent _agent;
 
         public MinerFixture()
         {
@@ -34,23 +34,23 @@ namespace Tests
             var privateKey = new PrivateKey(ByteUtil.ParseHex(hex));
             if (File.Exists(_storePath))
                 File.Delete(_storePath);
-            _agentController = new GameObject().AddComponent<TestAgentController>();
-            _agentController.Init(privateKey, storeName, new List<Peer>(), new List<IceServer>(),  "", null, true);
+            _agent = new GameObject().AddComponent<TestAgent>();
+            _agent.Init(privateKey, storeName, new List<Peer>(), new List<IceServer>(),  "", null, true);
         }
 
         public IEnumerator CoMine(Transaction<PolymorphicAction<ActionBase>> transaction)
         {
-            yield return _agentController.CoMine(transaction);
+            yield return _agent.CoMine(transaction);
         }
 
         public void TearDown()
         {
-            _agentController.TearDown();
+            _agent.TearDown();
             if (File.Exists(_storePath))
                 File.Delete(_storePath);
         }
 
-        private class TestAgentController : AgentController
+        private class TestAgent : Agent
         {
             public void TearDown()
             {
@@ -74,12 +74,12 @@ namespace Tests
                 try
                 {
                     Debug.Log("Mine 2");
-                    Game.instance.agentController.AppendBlock(block);
+                    Game.instance.agent.AppendBlock(block);
                     Debug.Log("Mine 3");
                 }
                 catch (Exception e)
                 {
-                    Debug.LogFormat("Miner: {0} NoMiner: {1} Exception: {2}", BlockIndex, Game.instance.agentController.BlockIndex, e);
+                    Debug.LogFormat("Miner: {0} NoMiner: {1} Exception: {2}", BlockIndex, Game.instance.agent.BlockIndex, e);
                 }
             }
         }
