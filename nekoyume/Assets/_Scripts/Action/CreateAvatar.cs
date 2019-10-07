@@ -67,7 +67,9 @@ namespace Nekoyume.Action
 
             agentState.avatarAddresses.Add(index, avatarAddress);
             var dailyBlockState = (DailyBlockState) states.GetState(DailyBlockState.Address);
-            avatarState = CreateAvatarState(name, avatarAddress, ctx, dailyBlockState.nextBlockIndex);
+            // Avoid NullReferenceException in test
+            var nextBlockIndex = dailyBlockState?.nextBlockIndex ?? DailyBlockState.UpdateInterval;
+            avatarState = CreateAvatarState(name, avatarAddress, ctx, nextBlockIndex);
 
             states = states.SetState(ctx.Signer, agentState);
             return states.SetState(avatarAddress, avatarState);

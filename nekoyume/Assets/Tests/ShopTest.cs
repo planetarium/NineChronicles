@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Linq;
 using Nekoyume.BlockChain;
+using Nekoyume.Game;
 using Nekoyume.UI;
 using NUnit.Framework;
 using UnityEngine;
@@ -24,8 +25,8 @@ namespace Tests
             var loginDetail = Widget.Find<LoginDetail>();
             loginDetail.nameField.text = "sell";
             loginDetail.CreateClick();
-            yield return new WaitUntil(() => AgentController.Agent.Transactions.Any());
-            var createAvatarTx = AgentController.Agent.Transactions.First().Value;
+            yield return new WaitUntil(() => Game.instance.agent.Transactions.Any());
+            var createAvatarTx = Game.instance.agent.Transactions.First().Value;
             yield return miner.CoMine(createAvatarTx);
             yield return new WaitWhile(() => States.Instance.currentAvatarState.Value is null);
 
@@ -58,8 +59,8 @@ namespace Tests
             w.inventory.Tooltip.submitButton.onClick.Invoke();
             Assert.IsTrue(w.ItemCountAndPricePopup.isActiveAndEnabled);
             w.ItemCountAndPricePopup.submitButton.onClick.Invoke();
-            yield return new WaitUntil(() => AgentController.Agent.Transactions.Count == 2);
-            var sellTx = AgentController.Agent.Transactions.Values.OrderByDescending(t => t.Timestamp).First();
+            yield return new WaitUntil(() => Game.instance.agent.Transactions.Count == 2);
+            var sellTx = Game.instance.agent.Transactions.Values.OrderByDescending(t => t.Timestamp).First();
             yield return miner.CoMine(sellTx);
             yield return new WaitUntil(() =>
                 States.Instance.shopState.Value.items[States.Instance.agentState.Value.address].Any());
@@ -78,8 +79,8 @@ namespace Tests
             Assert.AreEqual(1, w.SharedModel.ShopItems.Value.RegisteredProducts.Count);
             var shopItem = w.SharedModel.ShopItems.Value.RegisteredProducts.First();
             ActionManager.instance.SellCancellation(shopItem.SellerAgentAddress.Value, shopItem.ProductId.Value);
-            yield return new WaitUntil(() => AgentController.Agent.Transactions.Count == 3);
-            var cancelTx = AgentController.Agent.Transactions.Values.OrderByDescending(t => t.Timestamp).First();
+            yield return new WaitUntil(() => Game.instance.agent.Transactions.Count == 3);
+            var cancelTx = Game.instance.agent.Transactions.Values.OrderByDescending(t => t.Timestamp).First();
             yield return miner.CoMine(cancelTx);
             yield return new WaitWhile(() =>
                 States.Instance.shopState.Value.items[States.Instance.agentState.Value.address].Any());
@@ -98,8 +99,8 @@ namespace Tests
             var loginDetail = Widget.Find<LoginDetail>();
             loginDetail.nameField.text = "buy";
             loginDetail.CreateClick();
-            yield return new WaitUntil(() => AgentController.Agent.Transactions.Any());
-            var createAvatarTx = AgentController.Agent.Transactions.Values.First();
+            yield return new WaitUntil(() => Game.instance.agent.Transactions.Any());
+            var createAvatarTx = Game.instance.agent.Transactions.Values.First();
             yield return miner.CoMine(createAvatarTx);
             yield return new WaitWhile(() => States.Instance.currentAvatarState.Value is null);
 
@@ -123,8 +124,8 @@ namespace Tests
             w.inventory.Tooltip.submitButton.onClick.Invoke();
             Assert.IsTrue(w.ItemCountAndPricePopup.isActiveAndEnabled);
             w.ItemCountAndPricePopup.submitButton.onClick.Invoke();
-            yield return new WaitUntil(() => AgentController.Agent.Transactions.Count == 2);
-            var sellTx = AgentController.Agent.Transactions.Values.OrderByDescending(t => t.Timestamp).First();
+            yield return new WaitUntil(() => Game.instance.agent.Transactions.Count == 2);
+            var sellTx = Game.instance.agent.Transactions.Values.OrderByDescending(t => t.Timestamp).First();
             yield return miner.CoMine(sellTx);
             yield return new WaitUntil(() =>
                 States.Instance.shopState.Value.items[States.Instance.agentState.Value.address].Any());
@@ -158,8 +159,8 @@ namespace Tests
             loginDetail.nameField.text = "buyFail";
             loginDetail.CreateClick();
             Debug.Log(1);
-            yield return new WaitUntil(() => AgentController.Agent.Transactions.Any());
-            var createAvatarTx = AgentController.Agent.Transactions.Values.First();
+            yield return new WaitUntil(() => Game.instance.agent.Transactions.Any());
+            var createAvatarTx = Game.instance.agent.Transactions.Values.First();
             Debug.Log(2);
             yield return miner.CoMine(createAvatarTx);
             Debug.Log(3);
@@ -192,9 +193,9 @@ namespace Tests
             w.inventory.Tooltip.submitButton.onClick.Invoke();
             Assert.IsTrue(w.ItemCountAndPricePopup.isActiveAndEnabled);
             w.ItemCountAndPricePopup.submitButton.onClick.Invoke();
-            yield return new WaitUntil(() => AgentController.Agent.Transactions.Count == 2);
+            yield return new WaitUntil(() => Game.instance.agent.Transactions.Count == 2);
             Debug.Log(5);
-            var sellTx = AgentController.Agent.Transactions.Values.OrderByDescending(t => t.Timestamp).First();
+            var sellTx = Game.instance.agent.Transactions.Values.OrderByDescending(t => t.Timestamp).First();
             yield return miner.CoMine(sellTx);
             Debug.Log(6);
             yield return new WaitUntil(() => States.Instance.shopState.Value.items.Any());
@@ -222,9 +223,9 @@ namespace Tests
             var shopItem = w.SharedModel.ShopItems.Value.RegisteredProducts.First();
             ActionManager.instance.Buy(shopItem.SellerAgentAddress.Value, shopItem.SellerAvatarAddress.Value,
                 shopItem.ProductId.Value);
-            yield return new WaitUntil(() => AgentController.Agent.Transactions.Count == 3);
+            yield return new WaitUntil(() => Game.instance.agent.Transactions.Count == 3);
             Debug.Log(10);
-            var invalidTx = AgentController.Agent.Transactions.Values.OrderByDescending(t => t.Timestamp).First();
+            var invalidTx = Game.instance.agent.Transactions.Values.OrderByDescending(t => t.Timestamp).First();
             yield return miner.CoMine(invalidTx);
             Debug.Log(11);
             Assert.IsNotEmpty(States.Instance.shopState.Value.items[States.Instance.agentState.Value.address]);
