@@ -21,6 +21,7 @@ namespace Nekoyume
         public const decimal CombinationValueL2 = 1m;
         public const decimal CombinationValueR1 = 1.5m; // 2f;
         public const int CombinationDefaultFoodId = 200000;
+        public const int ActionPoint = 300;
         
         #endregion
         
@@ -71,7 +72,5 @@ namespace Nekoyume
             305003,
             305004
         };
-        
-        public static readonly int2 ScreenSize = new int2(1136, 640);
     }
 }

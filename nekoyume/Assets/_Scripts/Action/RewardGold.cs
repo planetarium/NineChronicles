@@ -4,6 +4,7 @@ using System.Globalization;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.State;
+using UnityEngine;
 
 namespace Nekoyume.Action
 {
@@ -30,6 +31,7 @@ namespace Nekoyume.Action
             {
                 states = states.SetState(RankingState.Address, MarkChanged);
                 states = states.SetState(ShopState.Address, MarkChanged);
+                states = states.SetState(DailyBlockState.Address, MarkChanged);
                 return states.SetState(ctx.Miner, MarkChanged);
             }
 
@@ -39,6 +41,14 @@ namespace Nekoyume.Action
             {
                 states = states.SetState(RankingState.Address, new RankingState());
                 states = states.SetState(ShopState.Address, new ShopState());
+                states = states.SetState(DailyBlockState.Address, new DailyBlockState(0));
+            }
+            else
+            {
+                if (ctx.BlockIndex % DailyBlockState.UpdateInterval == 0)
+                {
+                    states = states.SetState(DailyBlockState.Address, new DailyBlockState(ctx.BlockIndex));
+                }
             }
 
             var agentState = (AgentState) states.GetState(ctx.Signer) ?? new AgentState(ctx.Signer);

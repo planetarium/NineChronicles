@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Nekoyume.Game.Mail;
 using Nekoyume.State;
 using UniRx;
@@ -16,6 +13,8 @@ namespace Nekoyume.Model
         public static readonly ReactiveProperty<Inventory> Inventory = new ReactiveProperty<Inventory>();
         public static readonly ReactiveProperty<MailBox> MailBox = new ReactiveProperty<MailBox>();
         public static readonly ReactiveProperty<int> WorldStage = new ReactiveProperty<int>();
+        public static readonly ReactiveProperty<int> ActionPoint = new ReactiveProperty<int>();
+        public static readonly ReactiveProperty<long> NextDailyRewardIndex = new ReactiveProperty<long>();
 
         public static void Initialize(AvatarState avatarState)
         {
@@ -27,6 +26,8 @@ namespace Nekoyume.Model
             Inventory.SetValueAndForceNotify(avatarState.inventory);
             MailBox.SetValueAndForceNotify(avatarState.mailBox);
             WorldStage.SetValueAndForceNotify(avatarState.worldStage);
+            ActionPoint.SetValueAndForceNotify(avatarState.actionPoint);
+            NextDailyRewardIndex.SetValueAndForceNotify(avatarState.nextDailyRewardIndex);
         }
     }
 }

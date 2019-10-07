@@ -13,6 +13,7 @@ using Nekoyume.Pattern;
 using Nekoyume.State;
 using Nekoyume.UI;
 using NetMQ;
+using UniRx;
 using UnityEngine;
 
 namespace Nekoyume.BlockChain
@@ -43,6 +44,8 @@ namespace Nekoyume.BlockChain
             Path.Combine(Application.persistentDataPath, AgentStoreDirName);
 
         public static Agent Agent { get; private set; }
+
+        public ReactiveProperty<long> blockIndex = new ReactiveProperty<long>();
 
         private static IEnumerator _miner;
         private static IEnumerator _txProcessor;
@@ -146,10 +149,10 @@ namespace Nekoyume.BlockChain
                 StartNullableCoroutine(_autoPlayer);
                 callback(Agent.SyncSucceed);
                 Agent.LoadQueuedActions();
+                Agent.TipChanged += (___, index) => { blockIndex.Value = index; };
             };
             _miner = options.NoMiner ? null : Agent.CoMiner();
             _autoPlayer = options.AutoPlay ? Agent.CoAutoPlayer() : null;
-
             StartSystemCoroutines(Agent);
         }
 

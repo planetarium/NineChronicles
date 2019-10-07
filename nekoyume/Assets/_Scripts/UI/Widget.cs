@@ -38,12 +38,12 @@ namespace Nekoyume.UI
             RectTransform = GetComponent<RectTransform>();
         }
 
-        private void OnEnable()
+        protected virtual void OnEnable()
         {
             OnEnableSubject.OnNext(this);
         }
 
-        private void OnDisable()
+        protected virtual void OnDisable()
         {
             OnDisableSubject.OnNext(this);
         }

@@ -43,21 +43,21 @@ namespace Tests
 
             //Check shop state
             Assert.IsTrue(w.isActiveAndEnabled);
-            Assert.AreEqual(Nekoyume.UI.Model.Shop.State.Buy,w.Model.state.Value);
+            Assert.AreEqual(Nekoyume.UI.Model.Shop.StateType.Buy,w.SharedModel.State.Value);
 
             //Switching Sell panel
             w.bottomMenu.switchSellButton.button.onClick.Invoke();
-            Assert.AreEqual(Nekoyume.UI.Model.Shop.State.Sell,w.Model.state.Value);
-            Assert.IsFalse(w.inventoryAndItemInfo.inventory.Tooltip.isActiveAndEnabled);
-            Assert.IsFalse(w.itemCountAndPricePopup.isActiveAndEnabled);
+            Assert.AreEqual(Nekoyume.UI.Model.Shop.StateType.Sell,w.SharedModel.State.Value);
+            Assert.IsFalse(w.inventory.Tooltip.isActiveAndEnabled);
+            Assert.IsFalse(w.ItemCountAndPricePopup.isActiveAndEnabled);
 
             //Sell
-            var item = w.inventoryAndItemInfo.inventory.scrollerController.GetByIndex(0);
+            var item = w.inventory.scrollerController.GetByIndex(0);
             item.GetComponent<Button>().onClick.Invoke();
-            Assert.IsTrue(w.inventoryAndItemInfo.inventory.Tooltip.isActiveAndEnabled);
-            w.inventoryAndItemInfo.inventory.Tooltip.submitButton.onClick.Invoke();
-            Assert.IsTrue(w.itemCountAndPricePopup.isActiveAndEnabled);
-            w.itemCountAndPricePopup.submitButton.onClick.Invoke();
+            Assert.IsTrue(w.inventory.Tooltip.isActiveAndEnabled);
+            w.inventory.Tooltip.submitButton.onClick.Invoke();
+            Assert.IsTrue(w.ItemCountAndPricePopup.isActiveAndEnabled);
+            w.ItemCountAndPricePopup.submitButton.onClick.Invoke();
             yield return new WaitUntil(() => AgentController.Agent.Transactions.Count == 2);
             var sellTx = AgentController.Agent.Transactions.Values.OrderByDescending(t => t.Timestamp).First();
             yield return miner.CoMine(sellTx);
@@ -65,7 +65,7 @@ namespace Tests
                 States.Instance.shopState.Value.items[States.Instance.agentState.Value.address].Any());
 
             //Check shop state
-            Assert.IsFalse(w.inventoryAndItemInfo.inventory.Tooltip.isActiveAndEnabled);
+            Assert.IsFalse(w.inventory.Tooltip.isActiveAndEnabled);
             Assert.AreEqual(1,
                 States.Instance.shopState.Value.items[States.Instance.agentState.Value.address].Count);
             w.Close();
@@ -74,10 +74,10 @@ namespace Tests
             w.Show();
             Assert.IsTrue(w.isActiveAndEnabled);
             w.bottomMenu.switchSellButton.button.onClick.Invoke();
-            Assert.AreEqual(Nekoyume.UI.Model.Shop.State.Sell, w.Model.state.Value);
-            Assert.AreEqual(1, w.Model.shopItems.Value.registeredProducts.Count);
-            var shopItem = w.Model.shopItems.Value.registeredProducts.First();
-            ActionManager.instance.SellCancellation(shopItem.sellerAgentAddress.Value, shopItem.productId.Value);
+            Assert.AreEqual(Nekoyume.UI.Model.Shop.StateType.Sell, w.SharedModel.State.Value);
+            Assert.AreEqual(1, w.SharedModel.ShopItems.Value.RegisteredProducts.Count);
+            var shopItem = w.SharedModel.ShopItems.Value.RegisteredProducts.First();
+            ActionManager.instance.SellCancellation(shopItem.SellerAgentAddress.Value, shopItem.ProductId.Value);
             yield return new WaitUntil(() => AgentController.Agent.Transactions.Count == 3);
             var cancelTx = AgentController.Agent.Transactions.Values.OrderByDescending(t => t.Timestamp).First();
             yield return miner.CoMine(cancelTx);
@@ -108,21 +108,21 @@ namespace Tests
 
             //Check shop state
             Assert.IsTrue(w.isActiveAndEnabled);
-            Assert.AreEqual(Nekoyume.UI.Model.Shop.State.Buy,w.Model.state.Value);
+            Assert.AreEqual(Nekoyume.UI.Model.Shop.StateType.Buy,w.SharedModel.State.Value);
 
             //Switching Sell panel
             w.bottomMenu.switchSellButton.button.onClick.Invoke();
-            Assert.AreEqual(Nekoyume.UI.Model.Shop.State.Sell,w.Model.state.Value);
-            Assert.IsFalse(w.inventoryAndItemInfo.inventory.Tooltip.isActiveAndEnabled);
-            Assert.IsFalse(w.itemCountAndPricePopup.isActiveAndEnabled);
+            Assert.AreEqual(Nekoyume.UI.Model.Shop.StateType.Sell,w.SharedModel.State.Value);
+            Assert.IsFalse(w.inventory.Tooltip.isActiveAndEnabled);
+            Assert.IsFalse(w.ItemCountAndPricePopup.isActiveAndEnabled);
 
             //Sell
-            var item = w.inventoryAndItemInfo.inventory.scrollerController.GetByIndex(0);
+            var item = w.inventory.scrollerController.GetByIndex(0);
             item.GetComponent<Button>().onClick.Invoke();
-            Assert.IsTrue(w.inventoryAndItemInfo.inventory.Tooltip.isActiveAndEnabled);
-            w.inventoryAndItemInfo.inventory.Tooltip.submitButton.onClick.Invoke();
-            Assert.IsTrue(w.itemCountAndPricePopup.isActiveAndEnabled);
-            w.itemCountAndPricePopup.submitButton.onClick.Invoke();
+            Assert.IsTrue(w.inventory.Tooltip.isActiveAndEnabled);
+            w.inventory.Tooltip.submitButton.onClick.Invoke();
+            Assert.IsTrue(w.ItemCountAndPricePopup.isActiveAndEnabled);
+            w.ItemCountAndPricePopup.submitButton.onClick.Invoke();
             yield return new WaitUntil(() => AgentController.Agent.Transactions.Count == 2);
             var sellTx = AgentController.Agent.Transactions.Values.OrderByDescending(t => t.Timestamp).First();
             yield return miner.CoMine(sellTx);
@@ -130,7 +130,7 @@ namespace Tests
                 States.Instance.shopState.Value.items[States.Instance.agentState.Value.address].Any());
 
             //Check shop state
-            Assert.IsFalse(w.inventoryAndItemInfo.inventory.Tooltip.isActiveAndEnabled);
+            Assert.IsFalse(w.inventory.Tooltip.isActiveAndEnabled);
             Assert.IsFalse(Widget.Find<LoadingScreen>().isActiveAndEnabled);
             Assert.AreEqual(1,
                 States.Instance.shopState.Value.items[States.Instance.agentState.Value.address].Count);
@@ -140,8 +140,8 @@ namespace Tests
             w.Show();
             yield return new WaitForEndOfFrame();
             //TODO 다른 주소에서 구매처리하도록 개선해야함
-            Assert.IsNull(w.Model.shopItems.Value.registeredProducts.FirstOrDefault(i =>
-                i.sellerAgentAddress.Value != States.Instance.agentState.Value.address));
+            Assert.IsNull(w.SharedModel.ShopItems.Value.RegisteredProducts.FirstOrDefault(i =>
+                i.SellerAgentAddress.Value != States.Instance.agentState.Value.address));
         }
 
         [UnityTest]
@@ -177,21 +177,21 @@ namespace Tests
 
             //Check shop state
             Assert.IsTrue(w.isActiveAndEnabled);
-            Assert.AreEqual(Nekoyume.UI.Model.Shop.State.Buy,w.Model.state.Value);
+            Assert.AreEqual(Nekoyume.UI.Model.Shop.StateType.Buy,w.SharedModel.State.Value);
 
             //Switching Sell panel
             w.bottomMenu.switchSellButton.button.onClick.Invoke();
-            Assert.AreEqual(Nekoyume.UI.Model.Shop.State.Sell,w.Model.state.Value);
-            Assert.IsFalse(w.inventoryAndItemInfo.inventory.Tooltip.isActiveAndEnabled);
-            Assert.IsFalse(w.itemCountAndPricePopup.isActiveAndEnabled);
+            Assert.AreEqual(Nekoyume.UI.Model.Shop.StateType.Sell,w.SharedModel.State.Value);
+            Assert.IsFalse(w.inventory.Tooltip.isActiveAndEnabled);
+            Assert.IsFalse(w.ItemCountAndPricePopup.isActiveAndEnabled);
 
             //Sell
-            var item = w.inventoryAndItemInfo.inventory.scrollerController.GetByIndex(0);
+            var item = w.inventory.scrollerController.GetByIndex(0);
             item.GetComponent<Button>().onClick.Invoke();
-            Assert.IsTrue(w.inventoryAndItemInfo.inventory.Tooltip.isActiveAndEnabled);
-            w.inventoryAndItemInfo.inventory.Tooltip.submitButton.onClick.Invoke();
-            Assert.IsTrue(w.itemCountAndPricePopup.isActiveAndEnabled);
-            w.itemCountAndPricePopup.submitButton.onClick.Invoke();
+            Assert.IsTrue(w.inventory.Tooltip.isActiveAndEnabled);
+            w.inventory.Tooltip.submitButton.onClick.Invoke();
+            Assert.IsTrue(w.ItemCountAndPricePopup.isActiveAndEnabled);
+            w.ItemCountAndPricePopup.submitButton.onClick.Invoke();
             yield return new WaitUntil(() => AgentController.Agent.Transactions.Count == 2);
             Debug.Log(5);
             var sellTx = AgentController.Agent.Transactions.Values.OrderByDescending(t => t.Timestamp).First();
@@ -201,7 +201,7 @@ namespace Tests
             Debug.Log(7);
 
             //Check shop state
-            Assert.IsFalse(w.inventoryAndItemInfo.inventory.Tooltip.isActiveAndEnabled);
+            Assert.IsFalse(w.inventory.Tooltip.isActiveAndEnabled);
             Assert.IsFalse(Widget.Find<LoadingScreen>().isActiveAndEnabled);
             Assert.AreEqual(1,
                 States.Instance.shopState.Value.items[States.Instance.agentState.Value.address].Count);
@@ -214,14 +214,14 @@ namespace Tests
             yield return new WaitForEndOfFrame();
             Debug.Log(9);
 
-            Assert.IsEmpty(w.shopItems.data.products);
+            Assert.IsEmpty(w.shopItems.data.Products);
             var current = States.Instance.currentAvatarState.Value.inventory.Items.Count();
             var currentGold = States.Instance.agentState.Value.gold;
 
             //Check Buy.Execute
-            var shopItem = w.Model.shopItems.Value.registeredProducts.First();
-            ActionManager.instance.Buy(shopItem.sellerAgentAddress.Value, shopItem.sellerAvatarAddress.Value,
-                shopItem.productId.Value);
+            var shopItem = w.SharedModel.ShopItems.Value.RegisteredProducts.First();
+            ActionManager.instance.Buy(shopItem.SellerAgentAddress.Value, shopItem.SellerAvatarAddress.Value,
+                shopItem.ProductId.Value);
             yield return new WaitUntil(() => AgentController.Agent.Transactions.Count == 3);
             Debug.Log(10);
             var invalidTx = AgentController.Agent.Transactions.Values.OrderByDescending(t => t.Timestamp).First();

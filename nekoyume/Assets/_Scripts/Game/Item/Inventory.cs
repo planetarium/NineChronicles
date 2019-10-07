@@ -54,7 +54,7 @@ namespace Nekoyume.Game.Item
 
         private readonly List<Item> _items = new List<Item>();
 
-        public IEnumerable<Item> Items => _items;
+        public IReadOnlyList<Item> Items => _items;
 
         public Item AddFungibleItem(ItemBase itemBase, int count = 1)
         {

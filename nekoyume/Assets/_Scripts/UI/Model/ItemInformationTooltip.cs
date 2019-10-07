@@ -8,82 +8,82 @@ namespace Nekoyume.UI.Model
 {
     public class ItemInformationTooltip : Tooltip
     {
-        public readonly ItemInformation itemInformation;
+        public readonly ItemInformation ItemInformation;
 
-        public readonly ReactiveProperty<string> titleText = new ReactiveProperty<string>();
+        public readonly ReactiveProperty<string> TitleText = new ReactiveProperty<string>();
 
-        public readonly ReactiveProperty<Func<CountableItem, bool>> submitButtonEnabledFunc =
+        public readonly ReactiveProperty<Func<CountableItem, bool>> SubmitButtonEnabledFunc =
             new ReactiveProperty<Func<CountableItem, bool>>();
 
-        public readonly ReactiveProperty<bool> submitButtonEnabled = new ReactiveProperty<bool>(false);
-        public readonly ReactiveProperty<string> submitButtonText = new ReactiveProperty<string>(null);
+        public readonly ReactiveProperty<bool> SubmitButtonEnabled = new ReactiveProperty<bool>(false);
+        public readonly ReactiveProperty<string> SubmitButtonText = new ReactiveProperty<string>(null);
 
-        public readonly ReactiveProperty<bool> priceEnabled = new ReactiveProperty<bool>(false);
-        public readonly ReactiveProperty<decimal> price = new ReactiveProperty<decimal>(0m);
+        public readonly ReactiveProperty<bool> PriceEnabled = new ReactiveProperty<bool>(false);
+        public readonly ReactiveProperty<decimal> Price = new ReactiveProperty<decimal>(0m);
 
-        public readonly Subject<UI.ItemInformationTooltip> onSubmit = new Subject<UI.ItemInformationTooltip>();
-        public readonly Subject<UI.ItemInformationTooltip> onClose = new Subject<UI.ItemInformationTooltip>();
+        public readonly Subject<UI.ItemInformationTooltip> OnSubmit = new Subject<UI.ItemInformationTooltip>();
+        public readonly Subject<UI.ItemInformationTooltip> OnClose = new Subject<UI.ItemInformationTooltip>();
         
-        public readonly ReadOnlyReactiveProperty<bool> footerRootActive;
+        public readonly ReadOnlyReactiveProperty<bool> FooterRootActive;
 
         public ItemInformationTooltip(CountableItem countableItem = null)
         {
-            itemInformation = new ItemInformation(countableItem);
-            itemInformation.item.Subscribe(item =>
+            ItemInformation = new ItemInformation(countableItem);
+            ItemInformation.item.Subscribe(item =>
             {
                 if (item is null)
                 {
-                    titleText.Value = "";
+                    TitleText.Value = "";
 
                     return;
                 }
 
-                titleText.Value = item.item.Value.Data.GetLocalizedName();
+                TitleText.Value = item.ItemBase.Value.Data.GetLocalizedName();
 
                 if (!(item is ShopItem shopItem))
                 {
-                    priceEnabled.Value = false;
+                    PriceEnabled.Value = false;
 
                     return;
                 }
 
-                priceEnabled.Value = true;
-                price.Value = shopItem.price.Value;
+                PriceEnabled.Value = true;
+                Price.Value = shopItem.Price.Value;
             });
 
-            submitButtonEnabledFunc.Value = SubmitButtonEnabledFunc;
-            submitButtonEnabledFunc.Subscribe(func =>
+            SubmitButtonEnabledFunc.Value = SubmitButtonEnabledFuncDefault;
+            SubmitButtonEnabledFunc.Subscribe(func =>
             {
                 if (func == null)
                 {
-                    submitButtonEnabledFunc.Value = SubmitButtonEnabledFunc;
+                    SubmitButtonEnabledFunc.Value = SubmitButtonEnabledFuncDefault;
                 }
 
-                submitButtonEnabled.Value = submitButtonEnabledFunc.Value(itemInformation.item.Value);
+                SubmitButtonEnabled.Value = SubmitButtonEnabledFunc.Value(ItemInformation.item.Value);
             });
 
-            footerRootActive = Observable.CombineLatest(submitButtonEnabled, priceEnabled)
+            FooterRootActive = Observable.CombineLatest(SubmitButtonEnabled, PriceEnabled)
                 .Select(_ => _[0] || _[1]).ToReadOnlyReactiveProperty();
         }
 
         public override void Dispose()
         {
-            titleText.Dispose();
-            submitButtonEnabledFunc.Dispose();
-            submitButtonEnabled.Dispose();
-            submitButtonText.Dispose();
-            priceEnabled.Dispose();
-            price.Dispose();
+            TitleText.Dispose();
+            SubmitButtonEnabledFunc.Dispose();
+            SubmitButtonEnabled.Dispose();
+            SubmitButtonText.Dispose();
+            PriceEnabled.Dispose();
+            Price.Dispose();
 
-            onSubmit.Dispose();
-            onClose.Dispose();
+            OnSubmit.Dispose();
+            OnClose.Dispose();
 
-            footerRootActive.Dispose();
+            FooterRootActive.Dispose();
             
             base.Dispose();
         }
 
-        private static bool SubmitButtonEnabledFunc(CountableItem model)
+        private static bool SubmitButtonEnabledFuncDefault(CountableItem model)
         {
             return false;
         }

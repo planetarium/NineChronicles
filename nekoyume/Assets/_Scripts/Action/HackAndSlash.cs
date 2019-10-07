@@ -21,6 +21,7 @@ namespace Nekoyume.Action
         public int stage;
         public Address avatarAddress;
         public BattleLog Result { get; private set; }
+        public const int RequiredPoint = 5;
 
         protected override IImmutableDictionary<string, object> PlainValueInternal =>
             new Dictionary<string, object>
@@ -59,6 +60,13 @@ namespace Nekoyume.Action
             {
                 return states;
             }
+
+            if (avatarState.actionPoint < RequiredPoint)
+            {
+                return states;
+            }
+
+            avatarState.actionPoint -= RequiredPoint;
             
             var inventoryEquipments = avatarState.inventory.Items
                 .Select(i => i.item)

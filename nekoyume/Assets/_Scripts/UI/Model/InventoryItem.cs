@@ -6,14 +6,13 @@ namespace Nekoyume.UI.Model
 {
     public class InventoryItem : CountableItem
     {
-        public readonly ReactiveProperty<bool> covered = new ReactiveProperty<bool>(false);
-        public readonly ReactiveProperty<bool> equipped = new ReactiveProperty<bool>(false);
-        public readonly ReactiveProperty<bool> selected = new ReactiveProperty<bool>(false);
-        public readonly ReactiveProperty<bool> glowed = new ReactiveProperty<bool>(false);
+        public readonly ReactiveProperty<bool> Covered = new ReactiveProperty<bool>(false);
+        public readonly ReactiveProperty<bool> Equipped = new ReactiveProperty<bool>(false);
+        public readonly ReactiveProperty<bool> Selected = new ReactiveProperty<bool>(false);
+        public readonly ReactiveProperty<bool> Glowed = new ReactiveProperty<bool>(false);
 
-        public readonly Subject<InventoryItemView> onClick = new Subject<InventoryItemView>();
-        public readonly Subject<InventoryItemView> onDoubleClick = new Subject<InventoryItemView>();
-        public readonly Subject<InventoryItemView> onRightClick = new Subject<InventoryItemView>();
+        public readonly Subject<InventoryItemView> OnClick = new Subject<InventoryItemView>();
+        public readonly Subject<InventoryItemView> OnRightClick = new Subject<InventoryItemView>();
 
         public InventoryItem(ItemBase item, int count) : base(item, count)
         {
@@ -22,14 +21,13 @@ namespace Nekoyume.UI.Model
         public override void Dispose()
         {
             base.Dispose();           
-            covered.Dispose();
-            equipped.Dispose();
-            selected.Dispose();
-            glowed.Dispose();
+            Covered.Dispose();
+            Equipped.Dispose();
+            Selected.Dispose();
+            Glowed.Dispose();
 
-            onClick.Dispose();
-            onDoubleClick.Dispose();
-            onRightClick.Dispose();
+            OnClick.Dispose();
+            OnRightClick.Dispose();
         }
     }
 }

@@ -1,7 +1,7 @@
-using Nekoyume.BlockChain;
+using System;
+using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using Nekoyume.UI.Module;
-using System;
 using UniRx;
 using UnityEngine.UI;
 
@@ -17,54 +17,51 @@ namespace Nekoyume.UI
         public Module.Inventory inventory;
         public Button closeButton;
 
-        public Model.Inventory Model { get; private set; }
-
         private IDisposable _disposableForSelectItem;
 
         protected override void Awake()
         {
             base.Awake();
-            
+
             this.ComponentFieldsNotNullTest();
 
             closeButton.OnClickAsObservable().Subscribe(_ =>
             {
                 AudioController.PlayClick();
                 Find<Status>()?.CloseInventory();
-            }).AddTo(this);
+            }).AddTo(gameObject);
+        }
+
+        #region Widget
+
+        public override void Initialize()
+        {
+            base.Initialize();
+            inventory.SharedModel.SelectedItemView.Subscribe(SubscribeSelectedItemView).AddTo(gameObject);
         }
 
         public override void Show()
         {
-            Model = new Model.Inventory(States.Instance.currentAvatarState.Value.inventory);
-            Model.selectedItemView.Subscribe(view =>
-            {
-                if (!view)
-                {
-                    inventory.Tooltip.Close();
-                    return;
-                }
-
-                inventory.Tooltip.Show(
-                    view.RectTransform,
-                    view.Model,
-                    tooltip =>
-                    {
-                        inventory.Model.DeselectAll();
-                    });
-            });
-            
-            inventory.SetData(Model);
-
             base.Show();
+            inventory.SharedModel.State.Value = ItemType.Equipment;
         }
 
-        public override void Close()
+        #endregion
+
+        private void SubscribeSelectedItemView(InventoryItemView view)
         {
-            Model?.Dispose();
-            Model = null;
-            
-            base.Close();
+            if (view is null ||
+                view.RectTransform == inventory.Tooltip.Target)
+            {
+                inventory.Tooltip.Close();
+
+                return;
+            }
+
+            inventory.Tooltip.Show(
+                view.RectTransform,
+                view.Model,
+                tooltip => inventory.SharedModel.DeselectItemView());
         }
     }
 }

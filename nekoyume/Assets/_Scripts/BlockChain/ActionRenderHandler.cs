@@ -49,6 +49,7 @@ namespace Nekoyume.BlockChain
             RankingReward();
             AddItem();
             AddGold();
+            DailyReward();
         }
 
         public void Stop()
@@ -233,6 +234,14 @@ namespace Nekoyume.BlockChain
                     UpdateAgentState(eval);
                     UpdateCurrentAvatarState(eval);
                 }).AddTo(_disposables);
+        }
+
+        private void DailyReward()
+        {
+            ActionBase.EveryRender<DailyReward>()
+                .Where(ValidateEvaluationForCurrentAvatarState)
+                .ObserveOnMainThread()
+                .Subscribe(UpdateCurrentAvatarState).AddTo(_disposables);
         }
 
         private void ResponseCombination(ActionBase.ActionEvaluation<Combination> evaluation)

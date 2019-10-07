@@ -11,8 +11,9 @@ namespace Nekoyume.Model
     /// </summary>
     public static class ReactiveShopState
     {
-        public static ReactiveDictionary<Address, List<ShopItem>> Items { get; private set; }
-        
+        public static readonly ReactiveProperty<Dictionary<Address, List<ShopItem>>> Items =
+            new ReactiveProperty<Dictionary<Address, List<ShopItem>>>();
+
         public static void Initialize(ShopState shopState)
         {
             if (ReferenceEquals(shopState, null))
@@ -20,7 +21,7 @@ namespace Nekoyume.Model
                 return;
             }
 
-            Items = new ReactiveDictionary<Address, List<ShopItem>>(shopState.items);
+            Items.Value = shopState.items;
         }
     }
 }

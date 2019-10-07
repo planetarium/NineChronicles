@@ -26,8 +26,10 @@ namespace Nekoyume.State
         public QuestList questList;
         public MailBox mailBox;
         public long BlockIndex;
+        public long nextDailyRewardIndex;
+        public int actionPoint;
 
-        public AvatarState(Address address, Address agentAddress, long blockIndex, string name = null) : base(address)
+        public AvatarState(Address address, Address agentAddress, long blockIndex, long rewardIndex, string name = null) : base(address)
         {
             if (address == null)
             {
@@ -45,6 +47,8 @@ namespace Nekoyume.State
             questList = new QuestList();
             mailBox = new MailBox();
             BlockIndex = blockIndex;
+            actionPoint = GameConfig.ActionPoint;
+            nextDailyRewardIndex = rewardIndex;
         }
         
         public AvatarState(AvatarState avatarState) : base(avatarState.address)
