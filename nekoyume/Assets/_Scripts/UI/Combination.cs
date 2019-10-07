@@ -13,7 +13,6 @@ using UnityEngine.UI;
 using Stage = Nekoyume.Game.Stage;
 using Assets.SimpleLocalization;
 using Nekoyume.Helper;
-using Nekoyume.Data;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Factory;
 
