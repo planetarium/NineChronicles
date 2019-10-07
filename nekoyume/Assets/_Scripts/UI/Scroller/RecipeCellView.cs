@@ -5,6 +5,7 @@ using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using System;
 using System.Linq;
+using Nekoyume.BlockChain;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -64,7 +65,8 @@ namespace Nekoyume.UI.Scroller
                 SetItemView(info.id, info.amount, materialItemViews[i], MaterialIconScaleFactor, true, !info.isEnough);
             }
 
-            if (recipeInfo.materialInfos.Any(info => info.id != 0 && !info.isEnough))
+            if (recipeInfo.materialInfos.Any(info => info.id != 0 && !info.isEnough) ||
+                States.Instance.currentAvatarState.Value.actionPoint < Action.Combination.RequiredPoint)
             {
                 combineButton.enabled = false;
                 combineButton.image.sprite = Resources.Load<Sprite>("UI/Textures/button_gray_01");
