@@ -145,12 +145,12 @@ namespace Nekoyume.UI
 
         private void SetInformation(Player player)
         {
-            var level = player.level;
+            var level = player.Level;
             levelInfo.text = $"LV. {level}";
             
-            var expNeed = player.expNeed;
-            var levelExp = player.expMax - expNeed;
-            var currentExp = player.exp - levelExp;
+            var expNeed = player.Exp.Need;
+            var levelExp = player.Exp.Max - expNeed;
+            var currentExp = player.Exp.Current - levelExp;
 
             //hp, exp
             textExp.text = $"{currentExp} / {expNeed}";
@@ -173,12 +173,12 @@ namespace Nekoyume.UI
                 slide.DOValue(percentage, 2.0f).SetEase(Ease.OutCubic);
             }
 
-            var rows = player.GetStatusRow();
-            foreach(var (key, value, additional) in rows)
+            var tuples = player.GetStatTuples();
+            foreach(var (statType, value, additionalValue) in tuples)
             {
                 var go = Instantiate(statusRow, statusGrid.transform);
                 var info = go.GetComponent<StatusInfo>();
-                info.Set(key, value, additional);
+                info.Set(statType, value, additionalValue);
             }
         }
 

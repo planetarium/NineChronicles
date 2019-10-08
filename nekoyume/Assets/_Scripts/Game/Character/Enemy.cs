@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using Nekoyume.TableData;
 using UniRx;
 using UnityEngine;
@@ -8,19 +9,15 @@ namespace Nekoyume.Game.Character
 {
     public class Enemy : CharacterBase
     {
-        protected override Vector3 DamageTextForce => new Vector3(0.0f, 0.8f);
-
-        public Guid id;
-        public override Guid Id => id;
-        
-        public int DataId = 0;
-
         private Player _player;
 
-        public override float Speed => _runSpeed;
+        private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
         
-        protected override Vector3 HUDOffset => animator.GetHUDPosition();
-        private float _runSpeed = -1.0f;
+        public new readonly ReactiveProperty<Model.Enemy> Model = new ReactiveProperty<Model.Enemy>();
+        
+        protected override float RunSpeedDefault => -Model.Value.RunSpeed;
+
+        protected Vector3 DamageTextForce => new Vector3(0.0f, 0.8f);
 
         #region Mono
 
@@ -28,34 +25,46 @@ namespace Nekoyume.Game.Character
         {
             base.Awake();
             
-            animator = new EnemyAnimator(this);
-            animator.OnEvent.Subscribe(OnAnimatorEvent);
-            animator.TimeScale = AnimatorTimeScale;
+            Animator = new EnemyAnimator(this);
+            Animator.OnEvent.Subscribe(OnAnimatorEvent);
+            Animator.TimeScale = AnimatorTimeScale;
             
-            targetTag = Tag.Player;
+            TargetTag = Tag.Player;
         }
 
         private void OnDestroy()
         {
-            animator?.Dispose();
+            Animator?.Dispose();
         }
 
         #endregion
-        
-        public void Init(Model.Monster spawnCharacter, Player player)
+
+        public override void Set(Model.CharacterBase model, bool updateCurrentHP = false)
         {
+            if (!(model is Model.Enemy enemyModel))
+                throw new ArgumentException(nameof(model));
+
+            Set(enemyModel, _player, updateCurrentHP);
+        }
+
+        public void Set(Model.Enemy model, Player player, bool updateCurrentHP)
+        {
+            base.Set(model, updateCurrentHP);
+            
+            _disposablesForModel.DisposeAllAndClear();
+            Model.SetValueAndForceNotify(model);
+
             _player = player;
-            InitStats(spawnCharacter);
-            id = spawnCharacter.id;
+            
             StartRun();
 
-            if (!ShowSpeech("ENEMY", spawnCharacter.data.Id))
+            if (!ShowSpeech("ENEMY", model.RowData.Id))
             {
-                ShowSpeech("ENEMY_INIT", spawnCharacter.spawnIndex);
+                ShowSpeech("ENEMY_INIT", model.spawnIndex);
             }
         }
-        
-        public override IEnumerator CoProcessDamage(Model.Skill.SkillInfo info, bool isConsiderDie, bool isConsiderElementalType)
+
+        protected override IEnumerator CoProcessDamage(Model.Skill.SkillInfo info, bool isConsiderDie, bool isConsiderElementalType)
         {
             yield return StartCoroutine(base.CoProcessDamage(info, isConsiderDie, isConsiderElementalType));
             var position = transform.TransformPoint(0f, 1f, 0f);
@@ -74,34 +83,13 @@ namespace Nekoyume.Game.Character
         protected override IEnumerator Dying()
         {
             ShowSpeech("ENEMY_DEAD");
-            StopRun();
-            animator.Die();
-            yield return new WaitForSeconds(.5f);
-            DisableHUD();
-            yield return new WaitForSeconds(.8f);
-            OnDead();
+            yield return StartCoroutine(base.Dying());
         }
 
         protected override void OnDead()
         {
             Event.OnEnemyDead.Invoke(this);
             base.OnDead();
-        }
-        
-        private void InitStats(Model.Monster character)
-        {
-            var stats = character.data.ToStats(character.level);
-            HP = stats.HP;
-            ATK = stats.ATK;
-            DEF = stats.DEF;
-            Power = 0;
-            HPMax = HP;
-            Range = character.attackRange;
-            //FIXME 캐릭터 순서에 영향을 받아서 전투가 멈추는 버그가 있음
-            // https://app.asana.com/0/958521740385861/1129316006113668
-            //_runSpeed = -character.runSpeed;
-            _runSpeed = -1f;
-            sizeType = character.sizeType;
         }
         
         private void OnAnimatorEvent(string eventName)
@@ -120,15 +108,14 @@ namespace Nekoyume.Game.Character
 
         protected override void ProcessAttack(CharacterBase target, Model.Skill.SkillInfo skill, bool isLastHit, bool isConsiderElementalType)
         {
-            ShowSpeech("ENEMY_SKILL", (int)(skill.Elemental ?? 0), (int)skill.skillCategory);
+            ShowSpeech("ENEMY_SKILL", (int) skill.ElementalType, (int)skill.SkillCategory);
             base.ProcessAttack(target, skill, isLastHit, isConsiderElementalType);
             ShowSpeech("ENEMY_ATTACK");
-            UpdateHpBar(model.buffs);
         }
 
         protected override IEnumerator CoAnimationCast(Model.Skill.SkillInfo info)
         {
-            ShowSpeech("ENEMY_SKILL", (int)(info.Elemental ?? 0), (int)info.skillCategory);
+            ShowSpeech("ENEMY_SKILL", (int) info.ElementalType, (int)info.SkillCategory);
             yield return StartCoroutine(base.CoAnimationCast(info));
         }
     }

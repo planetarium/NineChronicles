@@ -13,6 +13,7 @@ using Nekoyume.UI;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Enemy = Nekoyume.Game.Character.Enemy;
 
 namespace Nekoyume
 {

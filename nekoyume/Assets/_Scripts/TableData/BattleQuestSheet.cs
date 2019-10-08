@@ -9,5 +9,9 @@ namespace Nekoyume.TableData
         public class Row : QuestSheet.Row
         {
         }
+        
+        public BattleQuestSheet() : base(nameof(BattleQuestSheet))
+        {
+        }
     }
 }

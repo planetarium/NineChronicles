@@ -1,9 +1,8 @@
+using System;
 using System.Collections.Generic;
 using Nekoyume.Data;
-using Nekoyume.Data.Table;
 using Nekoyume.EnumType;
 using Nekoyume.TableData;
-using UnityEngine;
 
 namespace Nekoyume.Game
 {
@@ -39,10 +38,14 @@ namespace Nekoyume.Game
 
                     break;
                 case SkillType.Buff:
-                    switch (skillEffectRow.skillTargetType)
+                    switch (skillEffectRow.skillCategory)
                     {
-                        case SkillTargetType.Self:
-                            return new Heal(skillRow, power, chance);
+                        case SkillCategory.Heal:
+                            return new HealSkill(skillRow, power, chance);
+                        case SkillCategory.AttackBuff:
+                            return new BuffSkill(skillRow, power, chance);
+                        default:
+                            throw new ArgumentOutOfRangeException();
                     }
 
                     break;

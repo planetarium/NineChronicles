@@ -20,5 +20,9 @@ namespace Nekoyume.TableData
                 ItemSubType = (ItemSubType) Enum.Parse(typeof(ItemSubType), fields[4]);
             }
         }
+        
+        public CombinationQuestSheet() : base(nameof(CombinationQuestSheet))
+        {
+        }
     }
 }

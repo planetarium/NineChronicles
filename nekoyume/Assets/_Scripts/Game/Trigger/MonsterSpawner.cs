@@ -12,16 +12,16 @@ namespace Nekoyume.Game.Trigger
     {
         public Vector3[] spawnPoints;
 
-        private Monster _monster;
+        private Enemy _enemy;
 
         private int _stageId;
         private int _wave;
         private const float SpawnOffset = 6.0f;
 
-        public void SetData(int stageId, Monster monster)
+        public void SetData(int stageId, Enemy enemy)
         {
             _stageId = stageId;
-            _monster = monster;
+            _enemy = enemy;
             SpawnWave();
         }
 
@@ -37,17 +37,17 @@ namespace Nekoyume.Game.Trigger
                 var pos = new Vector2(
                     spawnPoints[r].x + offsetX,
                     spawnPoints[r].y);
-                factory.Create(_monster, pos, player);
+                factory.Create(_enemy, pos, player);
             }
         }
 
-        public IEnumerator CoSetData(int stageId, List<Monster> monsters)
+        public IEnumerator CoSetData(int stageId, List<Enemy> monsters)
         {
             _stageId = stageId;
             yield return StartCoroutine(CoSpawnWave(monsters));
         }
 
-        private IEnumerator CoSpawnWave(List<Monster> monsters)
+        private IEnumerator CoSpawnWave(List<Enemy> monsters)
         {
             var stage = Game.instance.stage;
             for (var index = 0; index < monsters.Count; index++)
@@ -75,9 +75,9 @@ namespace Nekoyume.Game.Trigger
             }
         }
 
-        private IEnumerator CoSpawnMonster(Monster monster, Vector2 pos, Character.Player player)
+        private IEnumerator CoSpawnMonster(Enemy enemy, Vector2 pos, Character.Player player)
         {
-            Game.instance.stage.enemyFactory.Create(monster, pos, player);
+            Game.instance.stage.enemyFactory.Create(enemy, pos, player);
             yield return new WaitForSeconds(UnityEngine.Random.Range(0.0f, 0.2f));
         }
 

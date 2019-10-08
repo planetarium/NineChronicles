@@ -18,31 +18,24 @@ namespace Nekoyume.Model
             Value = value;
         }
 
-        public virtual void UpdatePlayer(Player player)
+        protected bool Equals(StatData other)
         {
-            switch (StatType)
+            return StatType == other.StatType && Value == other.Value;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((StatData) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
             {
-                case StatType.HP:
-                    player.currentHP += ValueAsInt;
-                    player.hp += ValueAsInt;
-                    break;
-                case StatType.ATK:
-                    player.atk += ValueAsInt;
-                    break;
-                case StatType.DEF:
-                    player.def += ValueAsInt;
-                    break;
-                case StatType.SPD:
-                    player.TurnSpeed = ValueAsInt;
-                    break;
-                case StatType.CRI:
-                    player.luck += ValueAsInt * 0.01m;
-                    break;
-                case StatType.RNG:
-                    player.attackRange = ValueAsInt;
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                return ((int) StatType * 397) ^ Value.GetHashCode();
             }
         }
     }
@@ -63,11 +56,9 @@ namespace Nekoyume.Model
         {
         }
 
-        private bool Equals(StatMap other)
+        protected bool Equals(StatMap other)
         {
-            return string.Equals(StatType, other.StatType) &&
-                   Value.Equals(other.Value) &&
-                   AdditionalValue.Equals(other.AdditionalValue);
+            return base.Equals(other) && AdditionalValue == other.AdditionalValue;
         }
 
         public override bool Equals(object obj)
@@ -82,17 +73,13 @@ namespace Nekoyume.Model
         {
             unchecked
             {
-                var hashCode = (StatType != null ? StatType.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ Value.GetHashCode();
-                hashCode = (hashCode * 397) ^ AdditionalValue.GetHashCode();
-                return hashCode;
+                return (base.GetHashCode() * 397) ^ AdditionalValue.GetHashCode();
             }
         }
 
         public string GetInformation()
         {
-            if (StatType == StatType.SPD ||
-                StatType == StatType.RNG)
+            if (StatType == StatType.SPD)
             {
                 return "";
             }
@@ -113,8 +100,7 @@ namespace Nekoyume.Model
 
         public void GetInformation(out string key, out string value)
         {
-            if (StatType == StatType.SPD ||
-                StatType == StatType.RNG)
+            if (StatType == StatType.SPD)
             {
                 key = "";
                 value = "";
@@ -136,34 +122,6 @@ namespace Nekoyume.Model
             value = AdditionalValue > 0m
                 ? $"<color=#00FF00>(+{AdditionalValue})</color>"
                 : "";
-        }
-
-        public override void UpdatePlayer(Player player)
-        {
-            switch (StatType)
-            {
-                case StatType.HP:
-                    player.currentHP += TotalValueAsInt;
-                    player.hp += TotalValueAsInt;
-                    break;
-                case StatType.ATK:
-                    player.atk += TotalValueAsInt;
-                    break;
-                case StatType.DEF:
-                    player.def += TotalValueAsInt;
-                    break;
-                case StatType.SPD:
-                    player.TurnSpeed = TotalValueAsInt;
-                    break;
-                case StatType.CRI:
-                    player.luck += TotalValueAsInt * 0.01m;
-                    break;
-                case StatType.RNG:
-                    player.attackRange = TotalValueAsInt;
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
         }
     }
 
@@ -266,14 +224,6 @@ namespace Nekoyume.Model
 
             keys = sbKeys.ToString().Trim();
             values = sbValues.ToString().Trim();
-        }
-
-        public void UpdatePlayer(Player player)
-        {
-            foreach (var stat in _statMaps)
-            {
-                stat.Value.UpdatePlayer(player);
-            }
         }
     }
 }

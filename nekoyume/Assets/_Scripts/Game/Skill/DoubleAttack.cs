@@ -5,7 +5,7 @@ using Nekoyume.TableData;
 namespace Nekoyume.Game
 {
     [Serializable]
-    public class DoubleAttack : Attack
+    public class DoubleAttack : AttackSkill
     {
         public DoubleAttack(SkillSheet.Row skillRow, int power, decimal chance) : base(skillRow, power, chance)
         {
@@ -13,14 +13,7 @@ namespace Nekoyume.Game
 
         public override Model.Skill Use(CharacterBase caster)
         {
-            var infos = ProcessDamage(caster);
-            ProcessBuff(caster);
-
-            return new Model.DoubleAttack
-            {
-                character = (CharacterBase) caster.Clone(),
-                skillInfos = infos,
-            };
+            return new Model.DoubleAttack((CharacterBase) caster.Clone(), ProcessDamage(caster), ProcessBuff(caster));
         }
     }
 }

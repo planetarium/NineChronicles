@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
-using Nekoyume.Data.Table;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.VFX;
@@ -14,34 +13,25 @@ using UnityEngine;
 
 namespace Nekoyume.Game.Character
 {
+    // todo: Exp. Mode to CharacterBase.
     public class Player : CharacterBase
     {
-        protected override Vector3 DamageTextForce => new Vector3(-0.1f, 0.5f);
-        
-        public int MP = 0;
+        private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
+
         public long EXP = 0;
-        public int Level = 0;
-        public int MPMax = 0;
-        public float RunSpeedMax = 3.0f;
+        public long EXPMax { get; private set; }
         
         public Item.Inventory Inventory;
         public TouchHandler touchHandler;
-        
-        public override float Speed => RunSpeedMax;
-        
-        public List<Equipment> equipments =>
+
+        public new readonly ReactiveProperty<Model.Player> Model = new ReactiveProperty<Model.Player>();
+
+        public List<Equipment> Equipments =>
             Inventory.Items.Select(i => i.item).OfType<Equipment>().Where(e => e.equipped).ToList();
 
-        public long EXPMax { get; private set; }
+        protected override float RunSpeedDefault => Model.Value.RunSpeed;
 
-        protected override WeightType WeightType => WeightType.Small;
-
-        protected override Vector3 HUDOffset => animator.GetHUDPosition();
-
-        public override Guid Id => model.id;
-        public Model.Player Model => (Model.Player) model;
-
-        public bool InBattle { get; set; }
+        protected Vector3 DamageTextForce => new Vector3(-0.1f, 0.5f);
 
         #region Mono
 
@@ -49,51 +39,73 @@ namespace Nekoyume.Game.Character
         {
             base.Awake();
 
-            animator = new PlayerAnimator(this);
-            animator.OnEvent.Subscribe(OnAnimatorEvent);
-            animator.TimeScale = AnimatorTimeScale;
+            OnUpdateHPBar.Subscribe(_ => Event.OnUpdatePlayerStatus.OnNext(this)).AddTo(gameObject);
+
+            Animator = new PlayerAnimator(this);
+            Animator.OnEvent.Subscribe(OnAnimatorEvent);
+            Animator.TimeScale = AnimatorTimeScale;
 
             Inventory = new Item.Inventory();
 
             touchHandler.onPointerClick.Subscribe(_ =>
                 {
-                    if (InBattle)
+                    if (Game.instance.stage.IsInStage)
                         return;
                     
-                    animator.Touch();
+                    Animator.Touch();
                 })
                 .AddTo(gameObject);
 
-            InBattle = false;
-
-            targetTag = Tag.Enemy;
-            Event.OnUpdateStatus.AddListener(UpdateHpBar);
+            TargetTag = Tag.Enemy;
         }
 
         private void OnDestroy()
         {
-            animator.Dispose();
+            Animator.Dispose();
         }
 
         #endregion
 
-        public override IEnumerator CoProcessDamage(Model.Skill.SkillInfo info, bool isConsiderDie, bool isConsiderElementalType)
+        public override void Set(Model.CharacterBase model, bool updateCurrentHP = false)
+        {
+            if (!(model is Model.Player playerModel))
+                throw new ArgumentException(nameof(model));
+
+            Set(playerModel, updateCurrentHP);
+        }
+
+        public void Set(Model.Player model, bool updateCurrentHP)
+        {
+            base.Set(model, updateCurrentHP);
+
+            _disposablesForModel.DisposeAllAndClear();
+            Model.SetValueAndForceNotify(model);
+
+            InitStats(model);
+            StartCoroutine(CoUpdateSet(Model.Value.armor));
+
+            if (ReferenceEquals(SpeechBubble, null))
+            {
+                SpeechBubble = Widget.Create<SpeechBubble>();
+            }
+
+            SpeechBubble.speechBreakTime = GameConfig.PlayerSpeechBreakTime;
+        }
+
+        protected override IEnumerator CoProcessDamage(Model.Skill.SkillInfo info, bool isConsiderDie, bool isConsiderElementalType)
         {
             yield return StartCoroutine(base.CoProcessDamage(info, isConsiderDie, isConsiderElementalType));
-
             var position = transform.TransformPoint(0f, 1.7f, 0f);
             var force = DamageTextForce;
             PopUpDmg(position, force, info, isConsiderElementalType);
-
-            Event.OnUpdateStatus.Invoke();
         }
-
+        
         protected override IEnumerator Dying()
         {
-            _speechBubble?.Clear();
+            SpeechBubble?.Clear();
             ShowSpeech("PLAYER_LOSE");
             StopRun();
-            animator.Die();
+            Animator.Die();
             yield return new WaitForSeconds(.5f);
             DisableHUD();
             yield return new WaitForSeconds(.8f);
@@ -106,20 +118,6 @@ namespace Nekoyume.Game.Character
             Event.OnPlayerDead.Invoke();
         }
 
-        public void Init(Model.Player character)
-        {
-            model = character;
-            StartCoroutine(CoUpdateSet(Model.armor));
-            InitStats(character);
-
-            if (ReferenceEquals(_speechBubble, null))
-            {
-                _speechBubble = Widget.Create<SpeechBubble>();
-            }
-
-            _speechBubble.speechBreakTime = GameConfig.PlayerSpeechBreakTime;
-        }
-
         public void UpdateSet(Armor armor, Weapon weapon = null)
         {
             StartCoroutine(CoUpdateSet(armor, weapon));
@@ -128,24 +126,24 @@ namespace Nekoyume.Game.Character
         private IEnumerator CoUpdateSet(Armor armor, Weapon weapon = null)
         {
             if (weapon == null)
-                weapon = Model.weapon;
+                weapon = Model.Value.weapon;
 
             var itemId = armor?.Data.Id ?? GameConfig.DefaultAvatarArmorId;
-            if (!ReferenceEquals(animator.Target, null))
+            if (!ReferenceEquals(Animator.Target, null))
             {
-                if (animator.Target.name.Contains(itemId.ToString()))
+                if (Animator.Target.name.Contains(itemId.ToString()))
                 {
                     UpdateWeapon(weapon);
                     yield break;
                 }
-                animator.DestroyTarget();
+                Animator.DestroyTarget();
                 // 오브젝트가 파괴될때까지 기다립니다.
                 // https://docs.unity3d.com/ScriptReference/Object.Destroy.html
                 yield return new WaitForEndOfFrame();
             }
             var origin = Resources.Load<GameObject>($"Character/Player/{itemId}");
             var go = Instantiate(origin, gameObject.transform);
-            animator.ResetTarget(go);
+            Animator.ResetTarget(go);
             UpdateWeapon(weapon);
         }
 
@@ -168,35 +166,27 @@ namespace Nekoyume.Game.Character
                 yield break;
             }
 
-            var level = model.level;
-            Model.GetExp(exp);
+            var level = Level;
+            Model.Value.GetExp(exp);
             EXP += exp;
 
-            if (model.level != level)
+            if (Level != level)
             {
                 AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionStatusLevelUp, level);
                 AudioController.instance.PlaySfx(AudioController.SfxCode.LevelUp);
                 VFXController.instance.Create<BattleLevelUp01VFX>(transform, HUDOffset);
-                _hpBar.UpdateLevel(model.level);
-                InitStats(Model);
+                HPBar.SetLevel(Level);
+                InitStats(Model.Value);
             }
 
-            Event.OnUpdateStatus.Invoke();
+            Event.OnUpdatePlayerStatus.OnNext(this);
         }
 
         private void InitStats(Model.Player character)
         {
-            HP = character.currentHP;
-            HPMax = character.hp;
-            ATK = character.atk;
-            DEF = character.def;
-            EXP = character.exp;
-            Level = character.level;
-            EXPMax = character.expMax;
-            Inventory = character.inventory;
-            Range = character.attackRange;
-            RunSpeedMax = character.runSpeed;
-            sizeType = character.sizeType;
+            EXP = character.Exp.Current;
+            EXPMax = character.Exp.Max;
+            Inventory = character.Inventory;
         }
 
         private void OnAnimatorEvent(string eventName)
@@ -219,7 +209,7 @@ namespace Nekoyume.Game.Character
         {
             var canRun = base.CanRun();
             var enemy = GetComponentsInChildren<CharacterBase>()
-                .Where(c => c.gameObject.CompareTag(targetTag))
+                .Where(c => c.gameObject.CompareTag(TargetTag))
                 .OrderBy(c => c.transform.position.x).FirstOrDefault();
             if (enemy != null)
             {
@@ -231,15 +221,14 @@ namespace Nekoyume.Game.Character
 
         protected override void ProcessAttack(CharacterBase target, Model.Skill.SkillInfo skill, bool isLastHit, bool isConsiderElementalType)
         {
-            ShowSpeech("PLAYER_SKILL", (int)(skill.Elemental ?? 0), (int)skill.skillCategory);
+            ShowSpeech("PLAYER_SKILL", (int) skill.ElementalType, (int)skill.SkillCategory);
             base.ProcessAttack(target, skill, isLastHit, isConsiderElementalType);
             ShowSpeech("PLAYER_ATTACK");
-            Widget.Find<Status>().UpdateBuff(model.buffs);
         }
 
         protected override IEnumerator CoAnimationCast(Model.Skill.SkillInfo info)
         {
-            ShowSpeech("PLAYER_SKILL", (int)(info.Elemental ?? 0), (int)info.skillCategory);
+            ShowSpeech("PLAYER_SKILL", (int) info.ElementalType, (int)info.SkillCategory);
             yield return StartCoroutine(base.CoAnimationCast(info));
         }
 

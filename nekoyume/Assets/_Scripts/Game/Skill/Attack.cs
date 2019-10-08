@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.EnumType;
 using Nekoyume.Model;
-using Unity.Mathematics;
 using Nekoyume.TableData;
+using Unity.Mathematics;
+using UnityEngine;
 
 namespace Nekoyume.Game
 {
     [Serializable]
-    public class Attack : Skill
+    public abstract class Attack : Skill
     {
         protected Attack(SkillSheet.Row skillRow, int power, decimal chance) : base(skillRow, power, chance)
         {
@@ -17,7 +18,7 @@ namespace Nekoyume.Game
 
         protected List<Model.Skill.SkillInfo> ProcessDamage(CharacterBase caster)
         {
-            var targets = GetTarget(caster);
+            var targets = effect.skillTargetType.GetTarget(caster);
             var infos = new List<Model.Skill.SkillInfo>();
             var targetList = targets.ToArray();
             var elemental = skillRow.ElementalType;
@@ -27,11 +28,17 @@ namespace Nekoyume.Game
             {
                 foreach (var target in targetList)
                 {
+                    if (target.Simulator.Random.Next(0, 100) < target.Stats.DOG)
+                    {
+                        Debug.LogWarning($"Dodged! caster: {caster.RowData.Id}, target: {target.RowData.Id}");
+                        continue;
+                    }
+
                     var multiply = multiplier[i];
                     var critical = caster.IsCritical();
                     var dmg = elemental.GetDamage(target.defElementType, skillPower);
                     // https://gamedev.stackexchange.com/questions/129319/rpg-formula-attack-and-defense
-                    dmg = (int) ((long) dmg * dmg / (dmg + target.Def()));
+                    dmg = (int) ((long) dmg * dmg / (dmg + target.DEF));
                     dmg = (int) (dmg * multiply);
                     dmg = math.max(dmg, 1);
                     if (critical)
@@ -39,7 +46,7 @@ namespace Nekoyume.Game
                         dmg = (int) (dmg * CharacterBase.CriticalMultiplier);
                     }
 
-                    target.OnDamage(dmg);
+                    target.CurrentHP -= dmg;
 
                     infos.Add(new Model.Skill.SkillInfo((CharacterBase) target.Clone(), dmg, critical,
                         effect.skillCategory, skillRow.ElementalType));
@@ -51,7 +58,7 @@ namespace Nekoyume.Game
 
         private int CalcSkillPower(CharacterBase caster)
         {
-            var atk = caster.Atk();
+            var atk = caster.ATK;
             // 플레이어가 사용하는 스킬은 기본 공격력 + 스킬 위력으로 스킬이 나가도록 설정합니다.
             if (caster is Player)
             {
@@ -79,11 +86,6 @@ namespace Nekoyume.Game
             }
 
             return multiplier.ToArray();
-        }
-
-        public override Model.Skill Use(CharacterBase caster)
-        {
-            throw new NotImplementedException();
         }
     }
 }

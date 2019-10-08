@@ -197,7 +197,7 @@ namespace Nekoyume.Action
                     var roll = GetRoll(monsterPart.count, 0, normalizedRandomValue);
 
                     if (TryGetStat(monsterPart.row, roll, out var statMap))
-                        equipment.Stats.AddStatAdditionalValue(statMap.StatType, statMap.Value);
+                        equipment.StatsMap.AddStatAdditionalValue(statMap.StatType, statMap.Value);
 
                     if (TryGetSkill(monsterPart.row, roll, out var skill))
                         equipment.Skills.Add(skill);
@@ -428,18 +428,18 @@ namespace Nekoyume.Action
                    DecimalEx.Pow(normalizedRandomValue, GameConfig.CombinationValueR1);
         }
 
-        private static bool TryGetStat(MaterialItemSheet.Row itemRow, decimal roll, out StatMap statMap)
+        private static bool TryGetStat(MaterialItemSheet.Row itemRow, decimal roll, out StatMapEx statMapEx)
         {
             if (!itemRow.StatType.HasValue)
             {
-                statMap = null;
+                statMapEx = null;
 
                 return false;
             }
 
             var key = itemRow.StatType.Value;
             var value = Math.Floor(itemRow.StatMin + (itemRow.StatMax - itemRow.StatMin) * roll);
-            statMap = new StatMap(key, value);
+            statMapEx = new StatMapEx(key, value);
             return true;
         }
 

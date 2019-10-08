@@ -8,10 +8,16 @@ namespace Nekoyume.Model
     [Serializable]
     public class GetReward : EventBase
     {
-        public List<ItemBase> rewards;
+        public readonly List<ItemBase> Rewards;
+        
+        public GetReward(CharacterBase character, List<ItemBase> rewards) : base(character)
+        {
+            Rewards = rewards;
+        }
+        
         public override IEnumerator CoExecute(IStage stage)
         {
-            yield return stage.CoGetReward(rewards);
+            yield return stage.CoGetReward(Rewards);
         }
     }
 }

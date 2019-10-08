@@ -7,46 +7,107 @@ using Libplanet.Action;
 using Nekoyume.Battle;
 using Nekoyume.EnumType;
 using Nekoyume.Game;
-using UniRx;
-using UnityEngine;
+using Nekoyume.TableData;
 
 namespace Nekoyume.Model
 {
     [Serializable]
     public abstract class CharacterBase : ICloneable
     {
-        public readonly List<CharacterBase> targets = new List<CharacterBase>();
-        [InformationField] public int hp;
-        [InformationField] public int atk;
-        [InformationField] public int def;
-        public int currentHP;
-        [InformationField] public decimal luck;
-
         public const decimal CriticalMultiplier = 1.5m;
-        public int level;
-        public abstract float TurnSpeed { get; set; }
-
-        public ElementalType atkElementType;
-        public ElementalType defElementType;
-        public readonly Skills Skills = new Skills();
-
-        private Game.Skill _selectedSkill;
 
         [NonSerialized] private Root _root;
+        private Game.Skill _selectedSkill;
+        private Skill _usedSkill;
 
-        public bool IsDead => currentHP <= 0;
-        public Guid id = Guid.NewGuid();
+        public readonly Guid Id = Guid.NewGuid();
+        [NonSerialized] public readonly Simulator Simulator;
+
+        public ElementalType atkElementType;
         public float attackRange = 1.0f;
-        public float runSpeed = 1.0f;
-        public SizeType sizeType = SizeType.S;
-        public Dictionary<int, Buff> buffs = new Dictionary<int, Buff>();
+        public ElementalType defElementType;
 
-        [NonSerialized] public Simulator Simulator;
+        public readonly Skills Skills = new Skills();
+        public readonly Dictionary<int, Game.Buff> Buffs = new Dictionary<int, Game.Buff>();
+        public readonly List<CharacterBase> Targets = new List<CharacterBase>();
+
+        public CharacterSheet.Row RowData { get; }
+        public SizeType SizeType => RowData?.SizeType ?? SizeType.S;
+        public float RunSpeed => RowData?.RunSpeed ?? 1f;
+        public CharacterStats Stats { get; }
+
+        public int Level
+        {
+            get => Stats.Level;
+            set => Stats.SetLevel(value);
+        }
+
+        public int HP => Stats.HP;
+        public int ATK => Stats.ATK;
+        public int DEF => Stats.DEF;
+        public int CRI => Stats.CRI;
+        public int DOG => Stats.DOG;
+        public int SPD => Stats.SPD;
+
+        public int CurrentHP
+        {
+            get => Stats.CurrentHP;
+            set => Stats.CurrentHP = value;
+        }
+
+        private bool IsDead => CurrentHP <= 0;
 
         protected CharacterBase(Simulator simulator)
         {
             Simulator = simulator;
+            Stats = new CharacterStats();
         }
+
+        protected CharacterBase(Simulator simulator, int characterId, int level)
+        {
+            Simulator = simulator;
+
+            if (!Game.Game.instance.TableSheets.CharacterSheet.TryGetValue(characterId, out var row))
+                throw new SheetRowNotFoundException("CharacterSheet", characterId.ToString());
+
+            RowData = row;
+            Stats = new CharacterStats(RowData, level);
+
+            atkElementType = RowData.ElementalType;
+            attackRange = RowData.AttackRange;
+            defElementType = RowData.ElementalType;
+            CurrentHP = HP;
+        }
+
+        protected CharacterBase(CharacterBase value)
+        {
+            _root = value._root;
+            _selectedSkill = value._selectedSkill;
+            Id = value.Id;
+            Simulator = value.Simulator;
+            atkElementType = value.atkElementType;
+            attackRange = value.attackRange;
+            defElementType = value.defElementType;
+            // 스킬은 변하지 않는다는 가정 하에 얕은 복사.
+            Skills = value.Skills;
+            // 버프는 컨테이너도 옮기고,
+            Buffs = new Dictionary<int, Game.Buff>();
+            foreach (var pair in value.Buffs)
+            {
+                // 깊은 복사까지 꼭.
+                Buffs.Add(pair.Key, (Game.Buff) pair.Value.Clone());
+            }
+
+            // 타갯은 컨테이너만 옮기기.
+            Targets = new List<CharacterBase>(value.Targets);
+            // 캐릭터 테이블 데이타는 변하지 않는다는 가정 하에 얕은 복사.
+            RowData = value.RowData;
+            Stats = (CharacterStats) value.Stats.Clone();
+        }
+
+        public abstract object Clone();
+
+        #region Behaviour Tree
 
         public void InitAI()
         {
@@ -57,9 +118,11 @@ namespace Nekoyume.Model
                 BT.Selector().OpenBranch(
                     BT.If(IsAlive).OpenBranch(
                         BT.Sequence().OpenBranch(
-                            BT.Call(CheckBuff),
+                            BT.Call(BeginningOfTurn),
+                            BT.Call(ReduceDurationOfBuffs),
                             BT.Call(SelectSkill),
-                            BT.Call(UseSkill)
+                            BT.Call(UseSkill),
+                            BT.Call(RemoveBuffs)
                         )
                     ),
                     BT.Terminate()
@@ -72,26 +135,87 @@ namespace Nekoyume.Model
             _root.Tick();
         }
 
+        private void BeginningOfTurn()
+        {
+            _selectedSkill = null;
+            _usedSkill = null;
+        }
+
+        private void ReduceDurationOfBuffs()
+        {
+            // 자신의 기존 버프 턴 조절.
+            foreach (var pair in Buffs)
+            {
+                pair.Value.remainedDuration--;
+            }
+        }
+
+        private void SelectSkill()
+        {
+            _selectedSkill = Skills.Select(Simulator.Random);
+        }
+
         private void UseSkill()
         {
-            var attack = _selectedSkill.Use(this);
-            Simulator.Log.Add(attack);
-            foreach (var info in attack.skillInfos)
+            // 스킬 사용.
+            _usedSkill = _selectedSkill.Use(this);
+            Simulator.Log.Add(_usedSkill);
+
+            foreach (var info in _usedSkill.SkillInfos)
             {
                 if (info.Target.IsDead)
                 {
-                    var target = targets.First(i => i.id == info.Target.id);
+                    var target = Targets.First(i => i.Id == info.Target.Id);
                     target.Die();
                 }
             }
-
-            _selectedSkill = null;
         }
+
+        private void RemoveBuffs()
+        {
+            var isDirtyMySelf = false;
+
+            // 자신의 버프 제거.
+            var keyList = Buffs.Keys.ToList();
+            foreach (var key in keyList)
+            {
+                var buff = Buffs[key];
+                if (buff.remainedDuration > 0)
+                    continue;
+
+                Buffs.Remove(key);
+                isDirtyMySelf = true;
+            }
+
+            if (!isDirtyMySelf)
+                return;
+
+            // 버프를 상태에 반영.
+            Stats.SetBuffs(Buffs.Values, true);
+            Simulator.Log.Add(new RemoveBuffs((CharacterBase) Clone()));
+        }
+
+        #endregion
+
+        #region Buff
+
+        public void AddBuff(Game.Buff buff, bool updateImmediate = false)
+        {
+            if (Buffs.TryGetValue(buff.RowData.GroupId, out var outBuff) &&
+                outBuff.RowData.Id > buff.RowData.Id)
+                return;
+
+            var clone = (Game.Buff) buff.Clone();
+            Buffs[buff.RowData.GroupId] = clone;
+            Stats.AddBuff(clone, updateImmediate);
+        }
+
+        #endregion
 
         public bool IsCritical()
         {
-            var chance = Simulator.Random.Next(0, 100000) * 0.00001m;
-            return chance < luck;
+            var chance = Simulator.Random.Next(0, 100);
+            return chance < CRI;
         }
 
         private bool IsAlive()
@@ -106,16 +230,14 @@ namespace Nekoyume.Model
 
         protected virtual void OnDead()
         {
-            var dead = new Dead
-            {
-                character = (CharacterBase)Clone(),
-            };
+            var dead = new Dead((CharacterBase) Clone());
             Simulator.Log.Add(dead);
         }
 
-        public void OnDamage(int dmg)
+        public void Heal(int heal)
         {
-            currentHP -= dmg;
+            var current = CurrentHP;
+            CurrentHP = Math.Min(heal + current, HP);
         }
 
         protected virtual void SetSkill()
@@ -125,73 +247,8 @@ namespace Nekoyume.Model
                 throw new KeyNotFoundException("100000");
             }
 
-            var attack = SkillFactory.Get(skillRow, atk, 1m);
+            var attack = SkillFactory.Get(skillRow, ATK, 1m);
             Skills.Add(attack);
-        }
-
-        private void SelectSkill()
-        {
-            _selectedSkill = Skills.Select(Simulator.Random);
-        }
-
-        public void Heal(int heal)
-        {
-            var current = currentHP;
-            currentHP = Math.Min(heal + current, hp);
-        }
-
-        public object Clone()
-        {
-            return MemberwiseClone();
-        }
-
-        private void CheckBuff()
-        {
-            var keyList = buffs.Keys.ToList();
-            foreach (var key in keyList)
-            {
-                var buff = buffs[key];
-                var before = buff.remainedDuration;
-                buff.remainedDuration--;
-                Debug.Log($"{this} Decrease {buff} time. from: {before} to: {buff.remainedDuration}");
-                if (buff.remainedDuration <= 0)
-                {
-                    buffs.Remove(key);
-                }
-            }
-        }
-
-        public int Atk()
-        {
-            var calc = atk;
-            foreach (var pair in buffs.Where(pair => pair.Value is AttackBuff))
-            {
-                calc = pair.Value.Use(this);
-            }
-
-            return calc;
-        }
-
-        public int Def()
-        {
-            var calc = def;
-            foreach (var pair in buffs.Where(pair => pair.Value is DefenseBuff))
-            {
-                calc = pair.Value.Use(this);
-            }
-
-            return calc;
-        }
-
-        public void AddBuff(Buff buff)
-        {
-            Debug.Log(
-                $"{this} Add {buff}. Type: {buff.Data.StatType} Effect: {buff.Data.Effect} Time: {buff.remainedDuration} Chance: {buff.Data.Chance}");
-            if (buffs.TryGetValue(buff.Data.GroupId, out var outBuff) &&
-                outBuff.Data.Id > buff.Data.Id)
-                return;
-
-            buffs[buff.Data.GroupId] = (Buff) buff.Clone();
         }
 
         public bool GetChance(int chance)
@@ -237,7 +294,7 @@ namespace Nekoyume.Model
         public Game.Skill Select(IRandom random)
         {
             var selected = _skills
-                .Select(skill => new { skill, chance = random.Next(0, 100000) * 0.00001m })
+                .Select(skill => new {skill, chance = random.Next(0, 100000) * 0.00001m})
                 .Where(t => t.skill.chance > t.chance)
                 .Select(t => t.skill)
                 .OrderBy(s => s.chance)

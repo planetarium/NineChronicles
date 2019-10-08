@@ -1,4 +1,5 @@
 using System;
+using Nekoyume.EnumType;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,36 +11,38 @@ namespace Nekoyume.UI
         public Text value;
         public Text additional;
 
-        public void Set((string key, object value, float additional) tuple)
+        public void Set(StatType statType, int statValue, int additionalStatValue)
         {
-            Set(tuple.key, tuple.value, tuple.additional);
-        }
-
-        public void Set(string statKey, object statValue, float equipValue)
-        {
-            var keyString = statKey.ToUpper();
-            if (keyString == "LUCK")
+            key.text = statType.ToString();
+            
+            switch (statType)
             {
-                key.text = "CRI";
-                value.text = ToPercentage(decimal.ToSingle((decimal) statValue));
-                additional.text = Mathf.Approximately(equipValue, 0f)
-                    ? ""
-                    : $"(+{ToPercentage(equipValue)})";
+                case StatType.HP:
+                case StatType.ATK:
+                case StatType.DEF:
+                case StatType.SPD:
+                    value.text = statValue.ToString();
+                    additional.text = Mathf.Approximately(additionalStatValue, 0f)
+                        ? ""
+                        : $"(+{additionalStatValue})";
+                    break;
+                case StatType.CRI:
+                case StatType.DOG:
+                    value.text = $"{statValue:0.#\\%}";
+                    additional.text = Mathf.Approximately(additionalStatValue, 0f)
+                        ? ""
+                        : $"(+{additionalStatValue:0.#\\%})";
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(statType), statType, null);
             }
-            else
-            {
-                key.text = keyString;
-                value.text = ((int) statValue).ToString();
-                additional.text = Mathf.Approximately(equipValue, 0f)
-                    ? ""
-                    : $"(+{equipValue})";
-            }
+            
             gameObject.SetActive(true);
         }
 
-        private string ToPercentage(float rawValue)
+        private string ToPercentage(int rawValue)
         {
-            return (rawValue * 100f).ToString("0.#\\%");
+            return rawValue.ToString("0.#\\%");
         }
     }
 }

@@ -46,5 +46,9 @@ namespace Nekoyume.TableData
                 }
             }
         }
+        
+        public StageRewardSheet() : base(nameof(StageRewardSheet))
+        {
+        }
     }
 }

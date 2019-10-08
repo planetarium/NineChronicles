@@ -7,6 +7,7 @@ using Nekoyume.Model;
 using Nekoyume.State;
 using NUnit.Framework;
 using UnityEngine.TestTools;
+using CharacterBase = Nekoyume.Game.Character.CharacterBase;
 
 namespace Tests
 {
@@ -43,14 +44,14 @@ namespace Tests
             //FIXME Setup이나 Constructor에서 플레이어를 설정하면 파괴되는 MonoSingleton의 상태가 꼬이는 문제가 있음.
             var go = Game.instance.stage.playerFactory.Create(_avatarState);
             _player = go.GetComponent<Nekoyume.Game.Character.Player>();
-            _player.model.targets.Add(_player.model);
+            _player.Model.Value.Targets.Add(_player.Model.Value);
             Assert.NotNull(_player);
-            Assert.NotNull(_player.model);
+            Assert.NotNull(((CharacterBase) _player).Model);
 
             foreach (var elemental in _elementalTypes)
             {
-                var info = new Nekoyume.Model.Skill.SkillInfo(_player.model, 0, false, SkillCategory.Area, elemental);
-                yield return _player.CoAreaAttack(new []{info});
+                var info = new Nekoyume.Model.Skill.SkillInfo(_player.Model.Value, 0, false, SkillCategory.Area, elemental);
+                yield return _player.CoAreaAttack(new[] {info});
             }
         }
 
@@ -59,14 +60,14 @@ namespace Tests
         {
             var go = Game.instance.stage.playerFactory.Create(_avatarState);
             _player = go.GetComponent<Nekoyume.Game.Character.Player>();
-            _player.model.targets.Add(_player.model);
+            _player.Model.Value.Targets.Add(_player.Model.Value);
             Assert.NotNull(_player);
-            Assert.NotNull(_player.model);
+            Assert.NotNull(((CharacterBase) _player).Model);
 
             foreach (ElementalType elemental in _elementalTypes)
             {
-                var info = new Nekoyume.Model.Skill.SkillInfo(_player.model, 0, false, SkillCategory.Double, elemental);
-                yield return _player.CoDoubleAttack(new []{info});
+                var info = new Nekoyume.Model.Skill.SkillInfo(_player.Model.Value, 0, false, SkillCategory.Double, elemental);
+                yield return _player.CoDoubleAttack(new[] {info});
             }
         }
 
@@ -75,30 +76,14 @@ namespace Tests
         {
             var go = Game.instance.stage.playerFactory.Create(_avatarState);
             _player = go.GetComponent<Nekoyume.Game.Character.Player>();
-            _player.model.targets.Add(_player.model);
+            _player.Model.Value.Targets.Add(_player.Model.Value);
             Assert.NotNull(_player);
-            Assert.NotNull(_player.model);
+            Assert.NotNull(((CharacterBase) _player).Model);
 
             foreach (ElementalType elemental in _elementalTypes)
             {
-                var info = new Nekoyume.Model.Skill.SkillInfo(_player.model, 0, false, SkillCategory.Blow, elemental);
-                yield return _player.CoBlow(new []{info});
-            }
-        }
-
-        [UnityTest]
-        public IEnumerator GetSkillHealVFX()
-        {
-            var go = Game.instance.stage.playerFactory.Create(_avatarState);
-            _player = go.GetComponent<Nekoyume.Game.Character.Player>();
-            _player.model.targets.Add(_player.model);
-            Assert.NotNull(_player);
-            Assert.NotNull(_player.model);
-
-            foreach (ElementalType elemental in _elementalTypes)
-            {
-                var info = new Nekoyume.Model.Skill.SkillInfo(_player.model, 0, false, SkillCategory.Normal, elemental);
-                yield return _player.CoHeal(new []{info});
+                var info = new Nekoyume.Model.Skill.SkillInfo(_player.Model.Value, 0, false, SkillCategory.Blow, elemental);
+                yield return _player.CoHeal(new[] {info});
             }
         }
 
@@ -107,9 +92,9 @@ namespace Tests
         {
             var go = Game.instance.stage.playerFactory.Create(_avatarState);
             _player = go.GetComponent<Nekoyume.Game.Character.Player>();
-            _player.model.targets.Add(_player.model);
+            _player.Model.Value.Targets.Add(_player.Model.Value);
             Assert.NotNull(_player);
-            Assert.NotNull(_player.model);
+            Assert.NotNull(((CharacterBase) _player).Model);
 
             var pool = Game.instance.stage.objectPool;
             var objects = pool.objects["area_l_water"];
@@ -119,7 +104,7 @@ namespace Tests
                 effect.SetActive(true);
             }
 
-            var info = new Nekoyume.Model.Skill.SkillInfo(_player.model, 0, false, SkillCategory.Area,
+            var info = new Nekoyume.Model.Skill.SkillInfo(_player.Model.Value, 0, false, SkillCategory.Area,
                 ElementalType.Water);
             yield return _player.CoAreaAttack(new[] {info});
             Assert.Greater(pool.objects["area_l_water"].Count, current);

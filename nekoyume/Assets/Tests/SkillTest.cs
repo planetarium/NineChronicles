@@ -11,6 +11,8 @@ using Nekoyume.Game.Item;
 using Nekoyume.Model;
 using Nekoyume.State;
 using NUnit.Framework;
+using BlowAttack = Nekoyume.Game.BlowAttack;
+using NormalAttack = Nekoyume.Game.NormalAttack;
 
 namespace Tests
 {
@@ -30,8 +32,8 @@ namespace Tests
             var caster = _simulator.Player;
             var target = (CharacterBase) caster.Clone();
             caster.InitAI();
-            caster.targets.Add(target);
-            target.def = 0;
+            caster.Targets.Add(target);
+            target.Stats.SetStatForTest(StatType.DEF, 0);
         }
 
         [TearDown]
@@ -46,13 +48,13 @@ namespace Tests
             var caster = _simulator.Player;
             var attack = caster.Skills.First(s => s is NormalAttack);
             var result = attack.Use(caster);
-            var target = caster.targets.First();
-            var info = result.skillInfos.First();
-            Assert.AreEqual(target.currentHP, target.hp - info.Effect);
-            Assert.AreEqual(1, result.skillInfos.Count());
+            var target = caster.Targets.First();
+            var info = result.SkillInfos.First();
+            Assert.AreEqual(target.CurrentHP, target.HP - info.Effect);
+            Assert.AreEqual(1, result.SkillInfos.Count());
             Assert.NotNull(info.Target);
-            Assert.AreEqual(SkillCategory.Normal, info.skillCategory);
-            Assert.AreEqual(ElementalType.Normal, info.Elemental);
+            Assert.AreEqual(SkillCategory.Normal, info.SkillCategory);
+            Assert.AreEqual(ElementalType.Normal, info.ElementalType);
         }
 
         [Test]
@@ -68,19 +70,19 @@ namespace Tests
                 
                 return skillEffectRow.skillCategory == SkillCategory.Blow;
             });
-            var blow = new BlowAttack(skillRow, caster.atk, 1m);
+            var blow = new BlowAttack(skillRow, caster.ATK, 1m);
             var result = blow.Use(caster);
-            var target = caster.targets.First();
-            var info = result.skillInfos.First();
-            var atk = caster.atk + blow.power;
+            var target = caster.Targets.First();
+            var info = result.SkillInfos.First();
+            var atk = caster.ATK + blow.power;
             if (info.Critical)
                 atk = (int) (atk * CharacterBase.CriticalMultiplier);
             Assert.AreEqual(atk, info.Effect);
-            Assert.AreEqual(target.currentHP, target.hp - info.Effect);
-            Assert.AreEqual(1, result.skillInfos.Count());
+            Assert.AreEqual(target.CurrentHP, target.HP - info.Effect);
+            Assert.AreEqual(1, result.SkillInfos.Count());
             Assert.NotNull(info.Target);
-            Assert.AreEqual(SkillCategory.Blow, info.skillCategory);
-            Assert.AreEqual(ElementalType.Normal, info.Elemental);
+            Assert.AreEqual(SkillCategory.Blow, info.SkillCategory);
+            Assert.AreEqual(ElementalType.Normal, info.ElementalType);
         }
 
         [Test]
@@ -96,17 +98,17 @@ namespace Tests
                 
                 return skillEffectRow.skillCategory == SkillCategory.Double;
             });
-            var doubleAttack = new Nekoyume.Game.DoubleAttack(skillRow, caster.atk, 1m);
+            var doubleAttack = new Nekoyume.Game.DoubleAttack(skillRow, caster.ATK, 1m);
             var result = doubleAttack.Use(caster);
-            var target = caster.targets.First();
+            var target = caster.Targets.First();
 
-            Assert.AreEqual(target.currentHP, target.hp - result.skillInfos.Sum(i => i.Effect));
-            Assert.AreEqual(2, result.skillInfos.Count());
-            foreach (var info in result.skillInfos)
+            Assert.AreEqual(target.CurrentHP, target.HP - result.SkillInfos.Sum(i => i.Effect));
+            Assert.AreEqual(2, result.SkillInfos.Count());
+            foreach (var info in result.SkillInfos)
             {
                 Assert.NotNull(info.Target);
-                Assert.AreEqual(SkillCategory.Double, info.skillCategory);
-                Assert.AreEqual(ElementalType.Normal, info.Elemental);
+                Assert.AreEqual(SkillCategory.Double, info.SkillCategory);
+                Assert.AreEqual(ElementalType.Normal, info.ElementalType);
             }
         }
 
@@ -124,17 +126,17 @@ namespace Tests
                 
                 return skillEffectRow.skillCategory == SkillCategory.Area;
             });
-            var area = new Nekoyume.Game.AreaAttack(skillRow, caster.atk, 1m);
+            var area = new Nekoyume.Game.AreaAttack(skillRow, caster.ATK, 1m);
             var result = area.Use(caster);
-            var target = caster.targets.First();
+            var target = caster.Targets.First();
 
-            Assert.AreEqual(target.currentHP, target.hp - result.skillInfos.Sum(i => i.Effect));
-            Assert.AreEqual(skillEffectRow.hitCount, result.skillInfos.Count());
-            foreach (var info in result.skillInfos)
+            Assert.AreEqual(target.CurrentHP, target.HP - result.SkillInfos.Sum(i => i.Effect));
+            Assert.AreEqual(skillEffectRow.hitCount, result.SkillInfos.Count());
+            foreach (var info in result.SkillInfos)
             {
                 Assert.NotNull(info.Target);
-                Assert.AreEqual(SkillCategory.Area, info.skillCategory);
-                Assert.AreEqual(ElementalType.Normal, info.Elemental);
+                Assert.AreEqual(SkillCategory.Area, info.SkillCategory);
+                Assert.AreEqual(ElementalType.Normal, info.ElementalType);
             }
         }
 
@@ -151,18 +153,18 @@ namespace Tests
                 
                 return skillEffectRow.skillType == SkillType.Buff;
             });
-            var heal = new Nekoyume.Game.Heal(skillRow, caster.atk, 1m);
-            caster.currentHP -= caster.atk;
+            var heal = new Nekoyume.Game.HealSkill(skillRow, caster.ATK, 1m);
+            caster.CurrentHP -= caster.ATK;
             var result = heal.Use(caster);
 
-            Assert.AreEqual(caster.currentHP, caster.hp);
-            Assert.AreEqual(1, result.skillInfos.Count());
-            var info = result.skillInfos.First();
-            Assert.AreEqual(caster.atk, info.Effect);
+            Assert.AreEqual(caster.CurrentHP, caster.HP);
+            Assert.AreEqual(1, result.SkillInfos.Count());
+            var info = result.SkillInfos.First();
+            Assert.AreEqual(caster.ATK, info.Effect);
             Assert.NotNull(info.Target);
-            Assert.AreEqual(1, result.skillInfos.Count());
-            Assert.AreEqual(SkillCategory.Normal, info.skillCategory);
-            Assert.Null(info.Elemental);
+            Assert.AreEqual(1, result.SkillInfos.Count());
+            Assert.AreEqual(SkillCategory.Normal, info.SkillCategory);
+            Assert.Null(info.ElementalType);
         }
     }
 }

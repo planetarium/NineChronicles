@@ -20,5 +20,9 @@ namespace Nekoyume.TableData
                 int.TryParse(fields[2], out skillId);
             }
         }
+        
+        public EnemySkillSheet() : base(nameof(EnemySkillSheet))
+        {
+        }
     }
 }

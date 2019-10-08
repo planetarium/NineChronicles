@@ -6,10 +6,16 @@ namespace Nekoyume.Model
     [Serializable]
     public class GetExp : EventBase
     {
-        public long exp;
+        public long Exp { get; }
+        
+        public GetExp(CharacterBase character, long exp) : base(character)
+        {
+            Exp = exp;
+        }
+        
         public override IEnumerator CoExecute(IStage stage)
         {
-            yield return stage.CoGetExp(exp);
+            yield return stage.CoGetExp(Exp);
         }
     }
 }

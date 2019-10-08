@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
-using Nekoyume.Data.Table;
 using Nekoyume.EnumType;
-using Nekoyume.Model;
+using Nekoyume.Game;
 
 namespace Nekoyume.TableData
 {
@@ -14,50 +13,62 @@ namespace Nekoyume.TableData
         {
             public override int Key => Id;
             public int Id { get; private set; }
-            public string Name { get; private set; }
-            public SizeType Size { get; private set; }
-            public ElementalType Elemental { get; private set; }
+            public SizeType SizeType { get; private set; }
+            public ElementalType ElementalType { get; private set; }
             public int HP { get; private set; }
             public int ATK { get; private set; }
             public int DEF { get; private set; }
             public decimal CRI { get; private set; }
+            public decimal DOG { get; private set; }
+            public decimal SPD { get; private set; }
             public int LvHP { get; private set; }
             public int LvATK { get; private set; }
             public int LvDEF { get; private set; }
             public decimal LvCRI { get; private set; }
-            public float RNG { get; private set; }
+            public decimal LvDOG { get; private set; }
+            public decimal LvSPD { get; private set; }
+            public float AttackRange { get; private set; }
             public float RunSpeed { get; private set; }
 
             public override void Set(IReadOnlyList<string> fields)
             {
                 Id = int.Parse(fields[0]);
-                Name = fields[1];
-                Size = (SizeType) Enum.Parse(typeof(SizeType), fields[2]);
-                Elemental = Enum.TryParse<ElementalType>(fields[3], out var elementalType)
+                SizeType = (SizeType) Enum.Parse(typeof(SizeType), fields[1]);
+                ElementalType = Enum.TryParse<ElementalType>(fields[2], out var elementalType)
                     ? elementalType
                     : ElementalType.Normal;
-                HP = int.TryParse(fields[4], out var hp) ? hp : 0;
-                ATK = int.TryParse(fields[5], out var damage) ? damage : 0;
-                DEF = int.TryParse(fields[6], out var defense) ? defense : 0;
-                CRI = decimal.TryParse(fields[7], out var luck) ? luck : 0m;
-                LvHP = int.TryParse(fields[8], out var lvHP) ? lvHP : 0;
-                LvATK = int.TryParse(fields[9], out var lvDamage) ? lvDamage : 0;
-                LvDEF = int.TryParse(fields[10], out var lvDefense) ? lvDefense : 0;
-                LvCRI = decimal.TryParse(fields[11], out var lvLuck) ? lvLuck : 0.1m;
-                RNG = int.TryParse(fields[12], out var attackRange) ? attackRange : 1f;
-                RunSpeed = int.TryParse(fields[13], out var runSpeed) ? runSpeed : 1f;
+                HP = int.TryParse(fields[3], out var hp) ? hp : 0;
+                ATK = int.TryParse(fields[4], out var damage) ? damage : 0;
+                DEF = int.TryParse(fields[5], out var defense) ? defense : 0;
+                CRI = decimal.TryParse(fields[6], out var cri) ? cri : 0m;
+                DOG = decimal.TryParse(fields[7], out var dog) ? dog : 0m;
+                SPD = decimal.TryParse(fields[8], out var spd) ? spd : 0m;
+                LvHP = int.TryParse(fields[9], out var lvHP) ? lvHP : 0;
+                LvATK = int.TryParse(fields[10], out var lvDamage) ? lvDamage : 0;
+                LvDEF = int.TryParse(fields[11], out var lvDefense) ? lvDefense : 0;
+                LvCRI = decimal.TryParse(fields[12], out var lvCri) ? lvCri : 0m;
+                LvDOG = decimal.TryParse(fields[13], out var lvDog) ? lvDog : 0m;
+                LvSPD = decimal.TryParse(fields[14], out var lvSpd) ? lvSpd : 0m;
+                AttackRange = int.TryParse(fields[15], out var attackRange) ? attackRange : 1f;
+                RunSpeed = int.TryParse(fields[16], out var runSpeed) ? runSpeed : 1f;
             }
+        }
+        
+        public CharacterSheet() : base(nameof(CharacterSheet))
+        {
         }
     }
 
     public static class CharacterSheetExtension
     {
-        public static Stats ToStats(this CharacterSheet.Row row, int level)
+        public static StatsMap ToStats(this CharacterSheet.Row row, int level)
         {
             var hp = row.HP;
             var atk = row.ATK;
             var def = row.DEF;
             var cri = row.CRI;
+            var dog = row.DOG;
+            var spd = row.SPD;
             if (level > 1)
             {
                 var multiplier = level - 1;
@@ -65,13 +76,17 @@ namespace Nekoyume.TableData
                 atk += row.LvATK * multiplier;
                 def += row.LvDEF * multiplier;
                 cri += row.LvCRI * multiplier;
+                dog += row.LvDOG * multiplier;
+                spd += row.LvSPD * multiplier;
             }
 
-            var stats = new Stats();
+            var stats = new StatsMap();
             stats.AddStatValue(StatType.HP, hp);
             stats.AddStatValue(StatType.ATK, atk);
             stats.AddStatValue(StatType.DEF, def);
             stats.AddStatValue(StatType.CRI, cri);
+            stats.AddStatValue(StatType.DOG, dog);
+            stats.AddStatValue(StatType.SPD, spd);
 
             return stats;
         }

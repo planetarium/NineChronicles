@@ -1,9 +1,8 @@
-﻿using Nekoyume.Game;
-using Nekoyume.Helper;
+﻿using Nekoyume.Helper;
+using Nekoyume.Model;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
-using Nekoyume.Model;
 
 namespace Nekoyume.UI
 {
@@ -11,23 +10,25 @@ namespace Nekoyume.UI
     {
         public Image image;
         public TextMeshProUGUI remainedDurationText;
-        public Buff Data { get; set; }
+        public Game.Buff Data { get; set; }
         public CharacterBase character;
 
-        public void Show(Buff buff)
+        public void Show(Game.Buff buff)
         {
             Data = buff;
             image.enabled = true;
             remainedDurationText.enabled = true;
-            var sprite = SpriteHelper.GetBuffIcon(Data.Data.Id);
+            var sprite = SpriteHelper.GetBuffIcon(Data.RowData.Id);
             image.overrideSprite = sprite;
+            UpdateStatus(Data);
         }
 
-        public void UpdateStatus()
+        public void UpdateStatus(Game.Buff buff)
         {
+            Data = buff;
             remainedDurationText.text = Data.remainedDuration.ToString();
         }
-        
+
         public void Hide()
         {
             image.enabled = false;

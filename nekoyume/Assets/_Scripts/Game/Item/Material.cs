@@ -30,6 +30,11 @@ namespace Nekoyume.Game.Item
             if (obj.GetType() != this.GetType()) return false;
             return Equals((Material) obj);
         }
+        
+        public override int GetHashCode()
+        {
+            return (Data != null ? Data.GetHashCode() : 0);
+        }
 
         // todo: 번역.
         public override string ToItemInfo()

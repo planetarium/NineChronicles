@@ -1,6 +1,7 @@
 using System;
 using Nekoyume.TableData;
 using Nekoyume.EnumType;
+using UnityEngine;
 
 namespace Nekoyume.Game.Item
 {

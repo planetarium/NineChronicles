@@ -1,5 +1,13 @@
-id,group,_name,stat_type,target_type,effect,duration,chance
-101000,101000,공격 강화,ATK,Self,50,3,100
-102000,102000,방어 강화,DEF,Self,50,3,100
-103000,103000,체력 재생,HP,Self,50,3,100
-201000,201000,공격 약화,ATK,Self,-50,3,100
+id,group,_name,chance,duration,target_type,stat_type,modify_type,modify_value
+101000,101000,체력 강화,20,3,Self,HP,Percentage,50
+101001,101000,체력 강화,100,3,Self,HP,Percentage,50
+102000,102000,공격 강화,20,3,Self,ATK,Percentage,50
+102001,102000,공격 강화,100,3,Self,ATK,Percentage,50
+103000,103000,방어 강화,20,3,Self,DEF,Percentage,50
+103001,103000,방어 강화,100,3,Self,DEF,Percentage,50
+104000,104000,치명 강화,20,3,Self,CRI,Percentage,50
+104001,104000,치명 강화,100,3,Self,CRI,Percentage,50
+105000,105000,속도 증가,20,3,Self,SPD,Percentage,50
+105001,105000,속도 증가,100,3,Self,SPD,Percentage,50
+202000,202000,공격 약화,20,3,Enemy,ATK,Percentage,-50
+202001,202000,공격 약화,100,3,Enemy,ATK,Percentage,-50

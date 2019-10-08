@@ -8,49 +8,62 @@ using Nekoyume.TableData;
 namespace Nekoyume.Game
 {
     [Serializable]
-    public abstract class Buff : ICloneable
+    public class Buff : ICloneable
     {
         public int remainedDuration;
 
-        public BuffSheet.Row Data { get; }
+        public BuffSheet.Row RowData { get; }
 
         protected Buff(BuffSheet.Row row)
         {
             remainedDuration = row.Duration;
-            Data = row;
+            RowData = row;
         }
 
-        public abstract int Use(CharacterBase characterBase);
+        protected Buff(Buff value)
+        {
+            remainedDuration = value.remainedDuration;
+            RowData = value.RowData;
+        }
+
+        public int Use(CharacterBase characterBase)
+        {
+            var value = 0;
+            switch (RowData.StatModifier.StatType)
+            {
+                case StatType.HP:
+                    value = characterBase.HP;
+                    break;
+                case StatType.ATK:
+                    value = characterBase.ATK;
+                    break;
+                case StatType.DEF:
+                    value = characterBase.DEF;
+                    break;
+                case StatType.CRI:
+                    value = characterBase.CRI;
+                    break;
+                case StatType.DOG:
+                    value = characterBase.DOG;
+                    break;
+                case StatType.SPD:
+                    value = characterBase.SPD;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+            
+            return RowData.StatModifier.GetModifiedAll(value);
+        }
 
         public IEnumerable<CharacterBase> GetTarget(CharacterBase caster)
         {
-            var targets = caster.targets;
-            IEnumerable<CharacterBase> target;
-            switch (Data.TargetType)
-            {
-                case SkillTargetType.Enemy:
-                    target = new[] {targets.First()};
-                    break;
-                case SkillTargetType.Enemies:
-                    target = caster.targets;
-                    break;
-                case SkillTargetType.Self:
-                    target = new[] {caster};
-                    break;
-                case SkillTargetType.Ally:
-                    target = new[] {caster};
-                    break;
-                default:
-                    target = new[] {targets.First()};
-                    break;
-            }
-
-            return target;
+            return RowData.TargetType.GetTarget(caster);
         }
 
         public object Clone()
         {
-            return MemberwiseClone();
+            return new Buff(this);
         }
     }
 }

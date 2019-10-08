@@ -1,6 +1,10 @@
+using System.Collections.Generic;
+using System.Linq;
 using Assets.SimpleLocalization;
 using Nekoyume.BlockChain;
+using Nekoyume.EnumType;
 using Nekoyume.Game;
+using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
 using Nekoyume.Manager;
@@ -27,7 +31,7 @@ namespace Nekoyume.UI
         public EquipSlot[] consumableSlots;
         public Text equipmentTitleText;
         public EquipmentSlots equipmentSlots;
-        public Button questBtn;
+        public GameObject questBtn;
         public GameObject equipSlotGlow;
         public Button worldMapButton;
         public BottomMenu bottomMenu;
@@ -37,14 +41,13 @@ namespace Nekoyume.UI
         public TextMeshProUGUI requiredPointText;
 
         private Stage _stage;
-        private Game.Character.Player _player;
+        private Player _player;
         private EquipSlot _weaponSlot;
 
         private int _stageId;
-        private readonly List<IDisposable> _disposables = new List<IDisposable>();
-        private readonly ReactiveProperty<bool> _buttonEnabled = new ReactiveProperty<bool>();
 
-        private readonly Dictionary<string, StatusInfo> _stats = new Dictionary<string, StatusInfo>();
+        private readonly Dictionary<StatType, StatusInfo> _stats =
+            new Dictionary<StatType, StatusInfo>(StatTypeComparer.Instance);
 
         #region override
 
@@ -60,7 +63,7 @@ namespace Nekoyume.UI
                 {
                     if (itemView.Model.Dimmed.Value)
                         return;
-                    
+
                     OnClickEquip(itemView.Model);
                 })
                 .AddTo(gameObject);
@@ -91,7 +94,7 @@ namespace Nekoyume.UI
             _player = _stage.GetPlayer(_stage.questPreparationPosition);
             if (_player is null)
             {
-                throw new NotFoundComponentException<Game.Character.Player>();
+                throw new NotFoundComponentException<Player>();
             }
 
             _weaponSlot = equipmentSlots.First(es => es.itemSubType == ItemSubType.Weapon);
@@ -101,7 +104,7 @@ namespace Nekoyume.UI
             _player.gameObject.SetActive(true);
             _player.DoFade(1f, 0.3f);
 
-            foreach (var equipment in _player.equipments)
+            foreach (var equipment in _player.Equipments)
             {
                 if (!equipmentSlots.TryGet(equipment.Data.ItemSubType, out var es))
                     continue;
@@ -111,29 +114,28 @@ namespace Nekoyume.UI
             }
 
             var isStatInitialized = _stats.Count > 0;
-            var rows = _player.Model.GetStatusRow();
+            var tuples = _player.Model.Value.GetStatTuples();
             if (!isStatInitialized)
             {
-                foreach (var row in rows)
+                foreach (var (statType, value, additionalValue) in tuples)
                 {
                     var go = Instantiate(statusRowPrefab, statusRowParent);
                     var info = go.GetComponent<StatusInfo>();
-                    info.Set(row);
-                    _stats.Add(row.key, info);
+                    info.Set(statType, value, additionalValue);
+                    _stats.Add(statType, info);
                 }
             }
             else
             {
-                foreach (var row in rows)
+                foreach (var (statType, value, additionalValue) in tuples)
                 {
-                    _stats[row.key].Set(row);
+                    _stats[statType].Set(statType, value, additionalValue);
                 }
             }
 
+            questBtn.SetActive(true);
             var worldMap = Find<WorldMap>();
             _stageId = worldMap.SelectedStageId;
-            _buttonEnabled.Subscribe(SubscribeReadyToQuest).AddTo(_disposables);
-            ReactiveCurrentAvatarState.ActionPoint.Subscribe(OnActionPointChanged).AddTo(_disposables);
         }
 
         public override void Close()
@@ -149,7 +151,6 @@ namespace Nekoyume.UI
 
             equipmentSlots.Clear();
             base.Close();
-            _disposables.DisposeAllAndClear();
         }
 
         #endregion
@@ -325,7 +326,7 @@ namespace Nekoyume.UI
         {
             Find<LoadingScreen>().Show();
 
-            questBtn.interactable = false;
+            questBtn.SetActive(false);
             _player.StartRun();
             ActionCamera.instance.ChaseX(_player.transform);
 
@@ -408,7 +409,7 @@ namespace Nekoyume.UI
         {
             _stage.LoadBackground("room");
             _player = _stage.GetPlayer(_stage.roomPosition);
-            _player.UpdateSet(_player.Model.armor);
+            _player.UpdateSet(_player.Model.Value.armor);
             Find<Menu>().ShowRoom();
             Close();
             AudioController.PlayClick();

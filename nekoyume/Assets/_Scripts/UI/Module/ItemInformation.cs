@@ -169,7 +169,7 @@ namespace Nekoyume.UI.Module
                 // todo: 장비에 레벨 제한이 들어가면 이곳에서 적용해줘야 함.
                 statsArea.levelLimitText.enabled = false;
                 
-                foreach (var statMap in itemUsable.Stats.StatMaps)
+                foreach (var statMap in itemUsable.StatsMap.StatMaps)
                 {
                     if (statMap.Key.Equals("turnSpeed")
                         || statMap.Key.Equals("attackRange"))

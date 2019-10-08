@@ -71,10 +71,10 @@ namespace Nekoyume.State
         
         public void Update(Player player, List<ItemBase> items)
         {
-            characterId = player.characterId;
-            level = player.level;
-            exp = player.exp;
-            inventory = player.inventory;
+            characterId = player.RowData.Id;
+            level = player.Level;
+            exp = player.Exp.Current;
+            inventory = player.Inventory;
             worldStage = player.worldStage;
             questList.UpdateStageQuest(player, items);
         }
