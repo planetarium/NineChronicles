@@ -16,7 +16,7 @@ namespace Nekoyume.BlockChain
     /// </summary>
     public class ActionManager : MonoSingleton<ActionManager>
     {
-        private static readonly TimeSpan ActionTimeout = TimeSpan.FromSeconds(10);
+        private static readonly TimeSpan ActionTimeout = TimeSpan.FromSeconds(GameConfig.WaitSeconds);
         private static void ProcessAction(GameAction action)
         {
             Game.Game.instance.agent.EnqueueAction(action);
@@ -190,7 +190,8 @@ namespace Nekoyume.BlockChain
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .Take(1)
                 .Last()
-                .ObserveOnMainThread(); // Last() is for completion
+                .ObserveOnMainThread()
+                .Timeout(ActionTimeout); // Last() is for completion
 
         }
 
@@ -207,7 +208,8 @@ namespace Nekoyume.BlockChain
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .Take(1)
                 .Last()
-                .ObserveOnMainThread();
+                .ObserveOnMainThread()
+                .Timeout(ActionTimeout);
         }
 
         #endregion
