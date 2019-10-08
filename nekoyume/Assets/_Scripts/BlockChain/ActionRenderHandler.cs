@@ -342,9 +342,15 @@ namespace Nekoyume.BlockChain
             Widget.Find<ActionFailPopup>().Close();
             Widget.Find<LoadingScreen>().Close();
             Widget.Find<QuestPreparation>().Close();
-            if(Widget.Find<BattleResult>().IsActive()) Widget.Find<BattleResult>().NextStage();
             UpdateCurrentAvatarState(eval);
-            Game.Event.OnStageStart.Invoke(eval.Action.Result);
+            if (Widget.Find<BattleResult>().IsActive())
+            {
+                Widget.Find<BattleResult>().NextStage(eval);
+            }
+            else
+            {
+                Game.Event.OnStageStart.Invoke(eval.Action.Result);
+            }
         }
     }
 }

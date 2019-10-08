@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Assets.SimpleLocalization;
+using Nekoyume.Action;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
@@ -117,7 +118,7 @@ namespace Nekoyume.UI
                 .Subscribe(_ =>
                 {
                     AudioController.PlayClick();
-                    GoToNextStage();
+                    StartCoroutine(CoGoToNextStage());
                     AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickBattleResultNext);
                 })
                 .AddTo(gameObject);
@@ -255,20 +256,20 @@ namespace Nekoyume.UI
                 floatTimeMinusOne = limitSeconds - 1f;
             }
 
-            GoToNextStage();
+            StartCoroutine(CoGoToNextStage());
         }
 
-        private void GoToNextStage()
+        private IEnumerator CoGoToNextStage()
         {
             if (!submitButton.interactable)
-                return;
+                yield break;
             closeButton.interactable = false;
             submitButton.interactable = false;
             suggestionsArea.submitButton1.interactable = false;
             suggestionsArea.submitButton2.interactable = false;
             
             StopCoUpdateBottomText();
-            
+            StartCoroutine(CoFadeOut());
             var stage = Game.Game.instance.stage;
             var stageLoadingScreen = Find<StageLoadingScreen>();
             stageLoadingScreen.Show(stage.zone);
@@ -283,21 +284,24 @@ namespace Nekoyume.UI
             player.DisableHUD();
 
             var stageId = SharedModel.shouldRepeat ? stage.id : stage.id + 1;
-            StartCoroutine(stageLoadingScreen.CoClose());
-            ActionManager.instance.HackAndSlash(player.Equipments, new List<Consumable>(), stageId)
-                .Subscribe((_) => { }, onError: (_) => Find<ActionFailPopup>().Show("Action timeout during HackAndSlash."));
-            StartCoroutine(CoFadeOut());
+            yield return ActionManager.instance.HackAndSlash(player.Equipments, new List<Consumable>(), stageId)
+                .Subscribe(eval =>
+                {
+                    StartCoroutine(CoGoToNextStageClose(eval));
+                }, (_) => Find<ActionFailPopup>().Show("Action timeout during HackAndSlash."));
         }
 
-        public void NextStage()
+        public void NextStage(ActionBase.ActionEvaluation<HackAndSlash> eval)
         {
-            Debug.Log("");
-            StartCoroutine(CoGoToNextStageClose());
+            Debug.Log("NextStage From ResponseHackAndSlash");
+            StartCoroutine(CoGoToNextStageClose(eval));
         }
 
-        private IEnumerator CoGoToNextStageClose()
+        private IEnumerator CoGoToNextStageClose(ActionBase.ActionEvaluation<HackAndSlash> eval)
         {
             yield return StartCoroutine(Find<StageLoadingScreen>().CoClose());
+            yield return StartCoroutine(CoFadeOut());
+            Game.Event.OnStageStart.Invoke(eval.Action.Result);
             Close();
         }
 

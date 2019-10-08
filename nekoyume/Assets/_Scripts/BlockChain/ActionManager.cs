@@ -82,7 +82,7 @@ namespace Nekoyume.BlockChain
                 .Take(1)
                 .Last()
                 .ObserveOnMainThread()
-                .Timeout(TimeSpan.FromSeconds(2f));
+                .Timeout(_actionTimeout);
         }
 
         public IObservable<ActionBase.ActionEvaluation<Action.Combination>> Combination(

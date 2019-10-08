@@ -358,7 +358,7 @@ namespace Nekoyume.UI
                     Find<LoadingScreen>().Close();
                     _stage.repeatStage = repeat;
                     Close();
-                }, onError: e => Widget.Find<ActionFailPopup>().Show("Action timeout during HackAndSlash.")).AddTo(this);
+                }, e => Find<ActionFailPopup>().Show("Action timeout during HackAndSlash.")).AddTo(this);
         }
 
         public EquipSlot FindSelectedItemSlot(ItemSubType type)
