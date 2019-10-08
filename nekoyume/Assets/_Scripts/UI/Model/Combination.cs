@@ -1,9 +1,9 @@
 using System;
 using System.Linq;
 using Assets.SimpleLocalization;
+using Nekoyume.BlockChain;
 using Nekoyume.EnumType;
 using Nekoyume.Manager;
-using Nekoyume.Game.Item;
 using UniRx;
 
 namespace Nekoyume.UI.Model
@@ -246,12 +246,15 @@ namespace Nekoyume.UI.Model
             switch (State.Value)
             {
                 case ItemType.Consumable:
-                    ReadyToCombination.Value = Materials.Count >= 2;
+                    ReadyToCombination.Value =
+                        Materials.Count >= 2 && States.Instance.currentAvatarState.Value.actionPoint >=
+                        Action.Combination.RequiredPoint;
                     break;
                 case ItemType.Equipment:
                     ReadyToCombination.Value = 
                         EquipmentMaterial.Value != null
-                        && Materials.Count >= 1;
+                        && Materials.Count >= 1
+                        && States.Instance.currentAvatarState.Value.actionPoint >= Action.Combination.RequiredPoint;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

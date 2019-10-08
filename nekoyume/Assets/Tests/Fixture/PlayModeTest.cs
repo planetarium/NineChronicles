@@ -61,8 +61,7 @@ namespace Tests
                 File.Delete(_backup + ".meta");
             }
 
-            AgentController.instance.Dispose();
-            yield return new WaitForSeconds(2f);
+            yield return Game.instance.TearDown();
             if (!string.IsNullOrEmpty(_storePath))
             {
                 File.Delete($"{_storePath}.ldb");

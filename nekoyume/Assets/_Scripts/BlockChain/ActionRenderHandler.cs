@@ -280,7 +280,7 @@ namespace Nekoyume.BlockChain
         public static void UpdateLocalAgentState(AgentState agentState)
         {
             Debug.LogFormat("Update local agentSTate. agentAddress: {0} BlockIndex: {1}",
-                agentState.address, AgentController.Agent.BlockIndex);
+                agentState.address, Game.Game.instance.agent.BlockIndex);
             UpdateAgentState(agentState);
         }
 
