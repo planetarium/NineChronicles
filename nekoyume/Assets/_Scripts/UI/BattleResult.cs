@@ -285,10 +285,7 @@ namespace Nekoyume.UI
 
             var stageId = SharedModel.shouldRepeat ? stage.id : stage.id + 1;
             yield return ActionManager.instance.HackAndSlash(player.Equipments, new List<Consumable>(), stageId)
-                .Subscribe(eval =>
-                {
-                    StartCoroutine(CoGoToNextStageClose(eval));
-                }, (_) => Find<ActionFailPopup>().Show("Action timeout during HackAndSlash."));
+                .Subscribe(_ => {}, (_) => Find<ActionFailPopup>().Show("Action timeout during HackAndSlash."));
         }
 
         public void NextStage(ActionBase.ActionEvaluation<HackAndSlash> eval)

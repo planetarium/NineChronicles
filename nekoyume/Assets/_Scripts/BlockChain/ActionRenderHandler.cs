@@ -339,17 +339,15 @@ namespace Nekoyume.BlockChain
         
         private void ResponseHackAndSlash(ActionBase.ActionEvaluation<HackAndSlash> eval)
         {
-            Widget.Find<ActionFailPopup>().Close();
-            Widget.Find<LoadingScreen>().Close();
-            Widget.Find<QuestPreparation>().Close();
             UpdateCurrentAvatarState(eval);
+            Widget.Find<ActionFailPopup>().Close();
+            if (Widget.Find<QuestPreparation>().IsActive())
+            {
+                Widget.Find<QuestPreparation>().GoToStage(eval);
+            }
             if (Widget.Find<BattleResult>().IsActive())
             {
                 Widget.Find<BattleResult>().NextStage(eval);
-            }
-            else
-            {
-                Game.Event.OnStageStart.Invoke(eval.Action.Result);
             }
         }
     }

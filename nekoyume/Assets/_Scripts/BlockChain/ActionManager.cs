@@ -16,7 +16,7 @@ namespace Nekoyume.BlockChain
     /// </summary>
     public class ActionManager : MonoSingleton<ActionManager>
     {
-        private static TimeSpan _actionTimeout = TimeSpan.FromSeconds(10);
+        private static readonly TimeSpan ActionTimeout = TimeSpan.FromSeconds(10);
         private static void ProcessAction(GameAction action)
         {
             Game.Game.instance.agent.EnqueueAction(action);
@@ -40,7 +40,7 @@ namespace Nekoyume.BlockChain
                 .Take(1)
                 .Last()
                 .ObserveOnMainThread()
-                .Timeout(_actionTimeout);
+                .Timeout(ActionTimeout);
         }
 
         public IObservable<ActionBase.ActionEvaluation<DeleteAvatar>> DeleteAvatar(int index)
@@ -58,7 +58,7 @@ namespace Nekoyume.BlockChain
                 .Take(1)
                 .Last()
                 .ObserveOnMainThread()
-                .Timeout(_actionTimeout);
+                .Timeout(ActionTimeout);
         }
 
         public IObservable<ActionBase.ActionEvaluation<HackAndSlash>> HackAndSlash(
@@ -82,7 +82,7 @@ namespace Nekoyume.BlockChain
                 .Take(1)
                 .Last()
                 .ObserveOnMainThread()
-                .Timeout(_actionTimeout);
+                .Timeout(ActionTimeout);
         }
 
         public IObservable<ActionBase.ActionEvaluation<Action.Combination>> Combination(
@@ -100,7 +100,7 @@ namespace Nekoyume.BlockChain
                 .Take(1)
                 .Last()
                 .ObserveOnMainThread()
-                .Timeout(_actionTimeout);
+                .Timeout(ActionTimeout);
         }
 
         public IObservable<ActionBase.ActionEvaluation<Sell>> Sell(ItemUsable itemUsable, decimal price)
@@ -119,7 +119,7 @@ namespace Nekoyume.BlockChain
                 .Take(1)
                 .Last()
                 .ObserveOnMainThread()
-                .Timeout(_actionTimeout); // Last() is for completion
+                .Timeout(ActionTimeout); // Last() is for completion
         }
 
         public IObservable<ActionBase.ActionEvaluation<SellCancellation>> SellCancellation(Address sellerAvatarAddress,
@@ -137,7 +137,7 @@ namespace Nekoyume.BlockChain
                 .Take(1)
                 .Last()
                 .ObserveOnMainThread()
-                .Timeout(_actionTimeout); // Last() is for completion
+                .Timeout(ActionTimeout); // Last() is for completion
         }
 
         public IObservable<ActionBase.ActionEvaluation<Buy>> Buy(Address sellerAgentAddress,
@@ -157,7 +157,7 @@ namespace Nekoyume.BlockChain
                 .Take(1)
                 .Last()
                 .ObserveOnMainThread()
-                .Timeout(_actionTimeout); // Last() is for completion
+                .Timeout(ActionTimeout); // Last() is for completion
         }
 
         public IObservable<ActionBase.ActionEvaluation<AddItem>> AddItem(Guid itemId)
@@ -174,7 +174,7 @@ namespace Nekoyume.BlockChain
                 .Take(1)
                 .Last()
                 .ObserveOnMainThread()
-                .Timeout(_actionTimeout); // Last() is for completion
+                .Timeout(ActionTimeout); // Last() is for completion
         }
 
         public IObservable<ActionBase.ActionEvaluation<AddGold>> AddGold()

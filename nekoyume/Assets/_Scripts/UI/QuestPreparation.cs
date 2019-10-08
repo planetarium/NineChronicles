@@ -351,14 +351,16 @@ namespace Nekoyume.UI
                 }
             }
 
+            _stage.repeatStage = repeat;
             ActionManager.instance.HackAndSlash(equipments, consumables, _stageId)
-                .Subscribe(eval =>
-                {
-                    Game.Event.OnStageStart.Invoke(eval.Action.Result);
-                    Find<LoadingScreen>().Close();
-                    _stage.repeatStage = repeat;
-                    Close();
-                }, e => Find<ActionFailPopup>().Show("Action timeout during HackAndSlash.")).AddTo(this);
+                .Subscribe(_ => {}, e => Find<ActionFailPopup>().Show("Action timeout during HackAndSlash.")).AddTo(this);
+        }
+
+        public void GoToStage(ActionBase.ActionEvaluation<HackAndSlash> eval)
+        {
+            Game.Event.OnStageStart.Invoke(eval.Action.Result);
+            Find<LoadingScreen>().Close();
+            Close();
         }
 
         public EquipSlot FindSelectedItemSlot(ItemSubType type)
