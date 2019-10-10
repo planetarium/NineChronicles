@@ -10,6 +10,8 @@ namespace Nekoyume.UI
     {
         public StageTitle stageTitle;
         public BottomMenu bottomMenu;
+        public BossStatus bossStatus;
+
 
         protected override void Awake()
         {
