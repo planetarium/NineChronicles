@@ -1,20 +1,16 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Assets.SimpleLocalization;
 using Nekoyume.BlockChain;
 using Nekoyume.EnumType;
 using Nekoyume.Game;
-using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
 using Nekoyume.Manager;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Nekoyume.Action;
-using Nekoyume.EnumType;
 using Nekoyume.Model;
 using TMPro;
 using UniRx;
@@ -31,7 +27,7 @@ namespace Nekoyume.UI
         public EquipSlot[] consumableSlots;
         public Text equipmentTitleText;
         public EquipmentSlots equipmentSlots;
-        public GameObject questBtn;
+        public Button questBtn;
         public GameObject equipSlotGlow;
         public Button worldMapButton;
         public BottomMenu bottomMenu;
@@ -41,13 +37,16 @@ namespace Nekoyume.UI
         public TextMeshProUGUI requiredPointText;
 
         private Stage _stage;
-        private Player _player;
+        private Game.Character.Player _player;
         private EquipSlot _weaponSlot;
 
         private int _stageId;
 
         private readonly Dictionary<StatType, StatusInfo> _stats =
             new Dictionary<StatType, StatusInfo>(StatTypeComparer.Instance);
+        private readonly List<IDisposable> _disposables = new List<IDisposable>();
+        private readonly ReactiveProperty<bool> _buttonEnabled = new ReactiveProperty<bool>();
+
 
         #region override
 
@@ -94,7 +93,7 @@ namespace Nekoyume.UI
             _player = _stage.GetPlayer(_stage.questPreparationPosition);
             if (_player is null)
             {
-                throw new NotFoundComponentException<Player>();
+                throw new NotFoundComponentException<Game.Character.Player>();
             }
 
             _weaponSlot = equipmentSlots.First(es => es.itemSubType == ItemSubType.Weapon);
@@ -133,9 +132,11 @@ namespace Nekoyume.UI
                 }
             }
 
-            questBtn.SetActive(true);
             var worldMap = Find<WorldMap>();
             _stageId = worldMap.SelectedStageId;
+            _buttonEnabled.Subscribe(SubscribeReadyToQuest).AddTo(_disposables);
+            ReactiveCurrentAvatarState.ActionPoint.Subscribe(OnActionPointChanged).AddTo(_disposables);
+
         }
 
         public override void Close()
@@ -151,6 +152,8 @@ namespace Nekoyume.UI
 
             equipmentSlots.Clear();
             base.Close();
+            _disposables.DisposeAllAndClear();
+
         }
 
         #endregion
@@ -326,7 +329,7 @@ namespace Nekoyume.UI
         {
             Find<LoadingScreen>().Show();
 
-            questBtn.SetActive(false);
+            questBtn.interactable = false;
             _player.StartRun();
             ActionCamera.instance.ChaseX(_player.transform);
 

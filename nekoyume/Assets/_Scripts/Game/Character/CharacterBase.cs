@@ -170,6 +170,9 @@ namespace Nekoyume.Game.Character
 
         public void UpdateHpBar()
         {
+            if (!Game.instance.stage.IsInStage)
+                return;
+            
             if (!HPBar)
             {
                 HPBar = Widget.Create<HpBar>(true);
