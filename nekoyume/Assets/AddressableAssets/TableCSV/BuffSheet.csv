@@ -7,7 +7,9 @@ id,group,_name,chance,duration,target_type,stat_type,modify_type,modify_value
 103001,103000,방어 강화,100,3,Self,DEF,Percentage,50
 104000,104000,치명 강화,20,3,Self,CRI,Percentage,50
 104001,104000,치명 강화,100,3,Self,CRI,Percentage,50
-105000,105000,속도 증가,20,3,Self,SPD,Percentage,50
-105001,105000,속도 증가,100,3,Self,SPD,Percentage,50
+105000,105000,회피 증가,20,3,Self,DOG,Percentage,50
+105001,105000,회피 증가,100,3,Self,DOG,Percentage,50
+106000,106000,속도 증가,20,3,Self,SPD,Percentage,50
+106001,106000,속도 증가,100,3,Self,SPD,Percentage,50
 202000,202000,공격 약화,20,3,Enemy,ATK,Percentage,-50
 202001,202000,공격 약화,100,3,Enemy,ATK,Percentage,-50
