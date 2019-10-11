@@ -12,6 +12,7 @@ using System.Linq;
 using Nekoyume.Action;
 using Nekoyume.EnumType;
 using Nekoyume.Model;
+using TMPro;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -33,6 +34,7 @@ namespace Nekoyume.UI
         public GameObject statusRowPrefab;
         public Transform statusRowParent;
         public Button questRepeatBtn;
+        public TextMeshProUGUI requiredPointText;
 
         private Stage _stage;
         private Game.Character.Player _player;
@@ -72,6 +74,7 @@ namespace Nekoyume.UI
             bottomMenu.questButton.button.onClick.AddListener(status.ToggleQuest);
             var worldMap = Find<WorldMap>();
             bottomMenu.worldMapButton.button.onClick.AddListener(worldMap.Show);
+            requiredPointText.text = HackAndSlash.RequiredPoint.ToString();
         }
 
         public override void Show()
@@ -421,6 +424,7 @@ namespace Nekoyume.UI
         {
             questBtn.interactable = ready;
             questRepeatBtn.interactable = ready;
+            requiredPointText.color = ready ? Color.white : Color.red;
         }
 
         private void OnActionPointChanged(int point)

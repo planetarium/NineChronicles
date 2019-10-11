@@ -15,10 +15,12 @@ namespace Nekoyume.UI.Module
         public TextMeshProUGUI text;
         public Slider slider;
         public Button button;
+        public CanvasGroup canvasGroup;
 
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
         private long _nextBlockIndex;
         private bool _updateEnable;
+        private Animation _animation;
 
         #region Mono
 
@@ -27,12 +29,14 @@ namespace Nekoyume.UI.Module
             slider.maxValue = DailyBlockState.UpdateInterval;
             text.text = $"0 / {DailyBlockState.UpdateInterval}";
             button.interactable = false;
+            _animation = GetComponent<Animation>();
         }
 
         private void OnEnable()
         {
             Game.Game.instance.agent.blockIndex.ObserveOnMainThread().Subscribe(SetIndex).AddTo(_disposables);
             ReactiveCurrentAvatarState.NextDailyRewardIndex.Subscribe(SetNextBlockIndex).AddTo(_disposables);
+            canvasGroup.alpha = 0;
         }
 
         private void OnDisable()
@@ -50,7 +54,14 @@ namespace Nekoyume.UI.Module
                 var value = Math.Min(index - a, DailyBlockState.UpdateInterval);
                 text.text = $"{value} / {DailyBlockState.UpdateInterval}";
                 slider.value = value;
-                button.interactable = value == DailyBlockState.UpdateInterval;
+
+                var isFull = value == DailyBlockState.UpdateInterval;
+                button.interactable = isFull;
+                canvasGroup.interactable = isFull;
+                if (isFull)
+                {
+                    _animation.Play();
+                }
             }
         }
 
@@ -62,6 +73,9 @@ namespace Nekoyume.UI.Module
             text.text = $"0 / {DailyBlockState.UpdateInterval}";
             button.interactable = false;
             _updateEnable = false;
+            _animation.Stop();
+            canvasGroup.alpha = 0;
+            canvasGroup.interactable = false;
         }
 
         private void SetNextBlockIndex(long index)
