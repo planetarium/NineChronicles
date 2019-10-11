@@ -48,33 +48,5 @@ namespace Nekoyume.Game
                 return (_value.GetHashCode() * 397) ^ (int) StatType;
             }
         }
-
-//        public virtual void AddTo(Model.Player player)
-//        {
-//            switch (StatType)
-//            {
-//                case StatType.HP:
-//                    player.hp += ValueAsInt;
-//                    player.currentHP += ValueAsInt;
-//                    break;
-//                case StatType.ATK:
-//                    player.atk += ValueAsInt;
-//                    break;
-//                case StatType.DEF:
-//                    player.def += ValueAsInt;
-//                    break;
-//                case StatType.CRI:
-//                    player.cri += Value;
-//                    break;
-//                case StatType.DOG:
-//                    player.dog += Value;
-//                    break;
-//                case StatType.SPD:
-//                    player.SPD += ValueAsInt;
-//                    break;
-//                default:
-//                    throw new ArgumentOutOfRangeException();
-//            }
-//        }
     }
 }
