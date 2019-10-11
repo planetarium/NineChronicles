@@ -55,7 +55,7 @@ namespace Tests
         {
             public void TearDown()
             {
-                store.Dispose();
+                Dispose();
             }
 
             public IEnumerator CoMine(Transaction<PolymorphicAction<ActionBase>> transaction)

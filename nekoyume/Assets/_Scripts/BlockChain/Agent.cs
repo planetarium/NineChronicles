@@ -556,6 +556,10 @@ namespace Nekoyume.BlockChain
                 catch (TaskCanceledException)
                 {
                 }
+                //Avoid TerminatingException in test.
+                catch (TerminatingException)
+                {
+                }
                 catch (Exception e)
                 {
                     Debug.LogErrorFormat(

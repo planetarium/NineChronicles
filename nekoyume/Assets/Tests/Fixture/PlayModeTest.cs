@@ -50,7 +50,6 @@ namespace Tests
         [UnityTearDown]
         protected IEnumerator TearDown()
         {
-            Debug.Log("TearDown");
             miner?.TearDown();
             File.Delete(_path);
             File.Delete(_path + ".meta");
