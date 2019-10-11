@@ -1,5 +1,6 @@
 ﻿using Nekoyume.Helper;
 using Nekoyume.Model;
+using Nekoyume.TableData;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -18,7 +19,7 @@ namespace Nekoyume.UI
             Data = buff;
             image.enabled = true;
             remainedDurationText.enabled = true;
-            var sprite = SpriteHelper.GetBuffIcon(Data.RowData.Id);
+            var sprite = Data.RowData.GetIcon();
             image.overrideSprite = sprite;
             UpdateStatus(Data);
         }
