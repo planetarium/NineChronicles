@@ -105,8 +105,8 @@ namespace Nekoyume.Game
             if (GetComponent<Agent>() is null)
             {
                 agent = gameObject.AddComponent<Agent>();
+                agent.Initialize(AgentInitialized);
             }
-            agent.Initialize(AgentInitialized);
         }
 
         public IEnumerator TearDown()
