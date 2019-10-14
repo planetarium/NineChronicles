@@ -78,8 +78,15 @@ namespace Nekoyume.Game
 
         private void OnStageStart(BattleLog log)
         {
-            _battleLog = log;
-            Play(_battleLog);
+            if (_battleLog?.id != log.id)
+            {
+                _battleLog = log;
+                Play(_battleLog);
+            }
+            else
+            {
+                Debug.Log("Skip duplicated battle");
+            }
         }
 
         private void OnNestEnter()

@@ -83,21 +83,5 @@ namespace Nekoyume.UI
         }
 
         #endregion
-
-        private IEnumerator CoWaitForQuit()
-        {
-            yield return new WaitForSeconds(GameConfig.WaitSeconds);
-            Find<ActionFailPopup>().Show();
-        }
-
-        public void Show(bool waitForQuit = true)
-        {
-            base.Show();
-
-            if (waitForQuit)
-            {
-                StartCoroutine(CoWaitForQuit());
-            }
-        }
     }
 }
