@@ -13,7 +13,7 @@ using UnityEngine;
 
 namespace Nekoyume.Game.Character
 {
-    // todo: Exp. Mode to CharacterBase.
+    // todo: 경험치 정보를 `CharacterBase`로 옮기는 것이 좋겠음.
     public class Player : CharacterBase
     {
         private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();

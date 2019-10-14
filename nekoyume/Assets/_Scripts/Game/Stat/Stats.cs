@@ -249,31 +249,9 @@ namespace Nekoyume.Game
             }
         }
         
-        public void EqualizeCurrentWithValue(StatType statType)
+        public void EqualizeCurrentHPWithHP()
         {
-            switch (statType)
-            {
-                case StatType.HP:
-                    _hp.EqualizeCurrentWithValue();
-                    break;
-                case StatType.ATK:
-                    break;
-                case StatType.DEF:
-                    break;
-                case StatType.CRI:
-                    break;
-                case StatType.DOG:
-                    break;
-                case StatType.SPD:
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(statType), statType, null);
-            }
-        }
-
-        public void EqualizeCurrentWithValueAll()
-        {
-            EqualizeCurrentWithValue(StatType.HP);
+            _hp.EqualizeCurrentWithValue();
         }
 
         public virtual object Clone()

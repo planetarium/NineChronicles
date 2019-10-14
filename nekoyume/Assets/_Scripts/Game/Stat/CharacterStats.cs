@@ -4,14 +4,13 @@ using System.Linq;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Item;
 using Nekoyume.TableData;
-using UnityEngine;
 
 namespace Nekoyume.Game
 {
     /// <summary>
     /// 캐릭터의 스탯을 관리한다.
-    /// 스탯은 레벨에 의한 _baseStats > 장비에 의한 _equipmentStats > 소모품에 의한 _consumableStats > 버프에 의한 _buffStats
-    /// 마지막으로 모든 스탯을 합한 _totalStats 순서로 계산한다.
+    /// 스탯은 레벨에 의한 _levelStats > 장비에 의한 _equipmentStats > 소모품에 의한 _consumableStats > 버프에 의한 _buffStats
+    /// 마지막으로 모든 스탯을 합한 CharacterStats 순서로 계산한다.
     /// </summary>
     [Serializable]
     public class CharacterStats : Stats, IAdditionalStats, ICloneable
@@ -48,13 +47,10 @@ namespace Nekoyume.Game
         public bool HasAdditionalDOG => AdditionalDOG > 0;
         public bool HasAdditionalSPD => AdditionalSPD > 0;
 
-        public CharacterStats(CharacterSheet.Row row = null, int level = 1, IReadOnlyList<Equipment> equipments = null,
+        public CharacterStats(CharacterSheet.Row row, int level = 1, IReadOnlyList<Equipment> equipments = null,
             IReadOnlyList<Consumable> consumables = null, IReadOnlyList<Buff> buffs = null)
         {
-            if (row is null)
-                return;
-
-            _row = row;
+            _row = row ?? throw new ArgumentNullException(nameof(row));
             SetAll(level, equipments, consumables, buffs);
         }
 
@@ -98,12 +94,12 @@ namespace Nekoyume.Game
         public CharacterStats SetAll(int level, IReadOnlyList<Equipment> equipments,
             IReadOnlyList<Consumable> consumables, IReadOnlyList<Buff> buffs)
         {
-            SetLevel(level);
-            SetEquipments(equipments);
-            SetConsumables(consumables);
-            SetBuffs(buffs);
+            SetLevel(level, false);
+            SetEquipments(equipments, false);
+            SetConsumables(consumables, false);
+            SetBuffs(buffs, false);
             UpdateLevelStats();
-            EqualizeCurrentWithValueAll();
+            EqualizeCurrentHPWithHP();
 
             return this;
         }
@@ -114,7 +110,7 @@ namespace Nekoyume.Game
         /// <param name="level"></param>
         /// <param name="updateImmediate"></param>
         /// <returns></returns>
-        public CharacterStats SetLevel(int level, bool updateImmediate = false)
+        public CharacterStats SetLevel(int level, bool updateImmediate = true)
         {
             if (level == Level)
                 return this;
@@ -135,7 +131,7 @@ namespace Nekoyume.Game
         /// <param name="value"></param>
         /// <param name="updateImmediate"></param>
         /// <returns></returns>
-        public CharacterStats SetEquipments(IReadOnlyList<Equipment> value, bool updateImmediate = false)
+        public CharacterStats SetEquipments(IReadOnlyList<Equipment> value, bool updateImmediate = true)
         {
             _equipmentStatModifiers.Clear();
             if (!(value is null))
@@ -170,7 +166,7 @@ namespace Nekoyume.Game
         /// <param name="value"></param>
         /// <param name="updateImmediate"></param>
         /// <returns></returns>
-        public CharacterStats SetConsumables(IReadOnlyList<Consumable> value, bool updateImmediate = false)
+        public CharacterStats SetConsumables(IReadOnlyList<Consumable> value, bool updateImmediate = true)
         {
             _consumableStatModifiers.Clear();
             if (!(value is null))
@@ -230,14 +226,14 @@ namespace Nekoyume.Game
         /// <param name="value"></param>
         /// <param name="updateImmediate"></param>
         /// <returns></returns>
-        public CharacterStats SetBuffs(IEnumerable<Buff> value, bool updateImmediate = false)
+        public CharacterStats SetBuffs(IEnumerable<Buff> value, bool updateImmediate = true)
         {
             _buffStatModifiers.Clear();
             if (!(value is null))
             {
                 foreach (var buff in value)
                 {
-                    AddBuff(buff);
+                    AddBuff(buff, false);
                 }   
             }
 
@@ -249,7 +245,7 @@ namespace Nekoyume.Game
             return this;
         }
 
-        public void AddBuff(Buff buff, bool updateImmediate = false)
+        public void AddBuff(Buff buff, bool updateImmediate = true)
         {
             _buffStatModifiers[buff.RowData.GroupId] = buff.RowData.StatModifier;
             
@@ -259,7 +255,7 @@ namespace Nekoyume.Game
             }
         }
 
-        public void RemoveBuff(Buff buff, bool updateImmediate = false)
+        public void RemoveBuff(Buff buff, bool updateImmediate = true)
         {
             if (!_buffStatModifiers.ContainsKey(buff.RowData.GroupId))
                 return;

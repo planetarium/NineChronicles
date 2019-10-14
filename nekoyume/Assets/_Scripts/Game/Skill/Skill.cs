@@ -67,7 +67,7 @@ namespace Nekoyume.Game
                 var targets = buff.GetTarget(caster);
                 foreach (var target in targets.Where(target => target.GetChance(buff.RowData.Chance)))
                 {
-                    target.AddBuff(buff, true);
+                    target.AddBuff(buff);
                     infos.Add(new Model.Skill.SkillInfo((CharacterBase) target.Clone(), 0, false,
                         effect.skillCategory, ElementalType.Normal, buff));
                 }

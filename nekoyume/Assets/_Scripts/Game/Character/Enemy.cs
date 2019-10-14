@@ -12,10 +12,11 @@ namespace Nekoyume.Game.Character
         private Player _player;
 
         private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
-        
+
         public new readonly ReactiveProperty<Model.Enemy> Model = new ReactiveProperty<Model.Enemy>();
-        
-        protected override float RunSpeedDefault => -Model.Value.RunSpeed;
+
+        // todo: 적의 이동속도에 따라서 인게임 연출 버그가 발생할 수 있으니 '-1f'로 값을 고정함. 이후 이 문제를 해결해서 몬스터 별 이동속도를 구현할 필요가 있음.
+        protected override float RunSpeedDefault => -1f; // Model.Value.RunSpeed;
 
         protected Vector3 DamageTextForce => new Vector3(0.0f, 0.8f);
 
@@ -24,11 +25,11 @@ namespace Nekoyume.Game.Character
         protected override void Awake()
         {
             base.Awake();
-            
+
             Animator = new EnemyAnimator(this);
             Animator.OnEvent.Subscribe(OnAnimatorEvent);
             Animator.TimeScale = AnimatorTimeScale;
-            
+
             TargetTag = Tag.Player;
         }
 
@@ -50,12 +51,12 @@ namespace Nekoyume.Game.Character
         public void Set(Model.Enemy model, Player player, bool updateCurrentHP)
         {
             base.Set(model, updateCurrentHP);
-            
+
             _disposablesForModel.DisposeAllAndClear();
             Model.SetValueAndForceNotify(model);
 
             _player = player;
-            
+
             StartRun();
 
             if (!ShowSpeech("ENEMY", model.RowData.Id))
@@ -64,7 +65,8 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        protected override IEnumerator CoProcessDamage(Model.Skill.SkillInfo info, bool isConsiderDie, bool isConsiderElementalType)
+        protected override IEnumerator CoProcessDamage(Model.Skill.SkillInfo info, bool isConsiderDie,
+            bool isConsiderElementalType)
         {
             yield return StartCoroutine(base.CoProcessDamage(info, isConsiderDie, isConsiderElementalType));
             var position = transform.TransformPoint(0f, 1f, 0f);
@@ -74,7 +76,7 @@ namespace Nekoyume.Game.Character
             if (!IsDead())
                 ShowSpeech("ENEMY_DAMAGE");
         }
-        
+
         protected override bool CanRun()
         {
             return base.CanRun() && !TargetInRange(_player);
@@ -91,7 +93,7 @@ namespace Nekoyume.Game.Character
             Event.OnEnemyDead.Invoke(this);
             base.OnDead();
         }
-        
+
         private void OnAnimatorEvent(string eventName)
         {
             switch (eventName)
@@ -106,16 +108,17 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        protected override void ProcessAttack(CharacterBase target, Model.Skill.SkillInfo skill, bool isLastHit, bool isConsiderElementalType)
+        protected override void ProcessAttack(CharacterBase target, Model.Skill.SkillInfo skill, bool isLastHit,
+            bool isConsiderElementalType)
         {
-            ShowSpeech("ENEMY_SKILL", (int) skill.ElementalType, (int)skill.SkillCategory);
+            ShowSpeech("ENEMY_SKILL", (int) skill.ElementalType, (int) skill.SkillCategory);
             base.ProcessAttack(target, skill, isLastHit, isConsiderElementalType);
             ShowSpeech("ENEMY_ATTACK");
         }
 
         protected override IEnumerator CoAnimationCast(Model.Skill.SkillInfo info)
         {
-            ShowSpeech("ENEMY_SKILL", (int) info.ElementalType, (int)info.SkillCategory);
+            ShowSpeech("ENEMY_SKILL", (int) info.ElementalType, (int) info.SkillCategory);
             yield return StartCoroutine(base.CoAnimationCast(info));
         }
     }

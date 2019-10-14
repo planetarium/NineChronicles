@@ -57,12 +57,6 @@ namespace Nekoyume.Model
 
         private bool IsDead => CurrentHP <= 0;
 
-        protected CharacterBase(Simulator simulator)
-        {
-            Simulator = simulator;
-            Stats = new CharacterStats();
-        }
-
         protected CharacterBase(Simulator simulator, int characterId, int level)
         {
             Simulator = simulator;
@@ -191,7 +185,7 @@ namespace Nekoyume.Model
                 return;
 
             // 버프를 상태에 반영.
-            Stats.SetBuffs(Buffs.Values, true);
+            Stats.SetBuffs(Buffs.Values);
             Simulator.Log.Add(new RemoveBuffs((CharacterBase) Clone()));
         }
 
@@ -199,7 +193,7 @@ namespace Nekoyume.Model
 
         #region Buff
 
-        public void AddBuff(Game.Buff buff, bool updateImmediate = false)
+        public void AddBuff(Game.Buff buff, bool updateImmediate = true)
         {
             if (Buffs.TryGetValue(buff.RowData.GroupId, out var outBuff) &&
                 outBuff.RowData.Id > buff.RowData.Id)

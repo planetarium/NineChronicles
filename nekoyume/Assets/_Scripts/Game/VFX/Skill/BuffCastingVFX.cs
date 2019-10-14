@@ -1,6 +1,6 @@
 namespace Nekoyume.Game.VFX.Skill
 {
-    public class BuffCastingVFX : SkillVFX
+    public class BuffCastingVFX : BuffVFX
     {
     }
 }

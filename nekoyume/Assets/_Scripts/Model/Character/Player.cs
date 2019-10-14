@@ -153,7 +153,7 @@ namespace Nekoyume.Model
                 }
             }
 
-            Stats.SetEquipments(Equipments, true);
+            Stats.SetEquipments(Equipments);
         }
 
         public void GetExp(long waveExp, bool log = false)

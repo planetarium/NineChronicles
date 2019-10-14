@@ -8,7 +8,6 @@ namespace Nekoyume.Game
         public enum OperationType
         {
             Add,
-            Multiply,
             Percentage
         }
 
@@ -63,8 +62,6 @@ namespace Nekoyume.Game
             {
                 case OperationType.Add:
                     return Value;
-                case OperationType.Multiply:
-                    return value * Value;
                 case OperationType.Percentage:
                     return (int) (value * Value / 100f);
                 default:
@@ -84,8 +81,6 @@ namespace Nekoyume.Game
             {
                 case OperationType.Add:
                     return Value;
-                case OperationType.Multiply:
-                    return value * Value;
                 case OperationType.Percentage:
                     return value * Value / 100m;
                 default:

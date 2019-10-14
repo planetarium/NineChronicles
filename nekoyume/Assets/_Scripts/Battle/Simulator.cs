@@ -37,7 +37,7 @@ namespace Nekoyume.Battle
             _waves = new List<Wave>();
             Player = new Player(avatarState, this);
             Player.Use(foods);
-            Player.Stats.EqualizeCurrentWithValueAll();
+            Player.Stats.EqualizeCurrentHPWithHP();
             if (!ReferenceEquals(skill, null))
                 Player.OverrideSkill(skill);
             _waveRewards = new List<List<ItemBase>>();
