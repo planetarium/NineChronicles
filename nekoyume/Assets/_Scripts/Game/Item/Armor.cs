@@ -11,10 +11,5 @@ namespace Nekoyume.Game.Item
         public Armor(EquipmentItemSheet.Row data, Guid id) : base(data, id)
         {
         }
-
-        public override Sprite GetIconSprite()
-        {
-            return SpriteHelper.GetItemIcon(Data.Id);
-        }
     }
 }

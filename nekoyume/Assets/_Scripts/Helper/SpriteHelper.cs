@@ -14,7 +14,7 @@ namespace Nekoyume.Helper
         private const string ItemBackgroundDefaultPath = "UI/Textures/item_bg_0";
         private const string ItemBackgroundPathFormat = "UI/Textures/item_bg_{0}";
 
-        private const string BuffIconDefaultPath = "UI/Icons/Buff/1";
+        private const string BuffIconDefaultPath = "UI/Icons/Buff/icon_buff_resurrection";
         private const string BuffIconPathFormat = "UI/Icons/Buff/{0}";
 
         public static Sprite GetCharacterIcon(int characterId)
@@ -40,9 +40,9 @@ namespace Nekoyume.Helper
                    Resources.Load<Sprite>(ItemBackgroundDefaultPath);
         }
 
-        public static Sprite GetBuffIcon(int buffId)
+        public static Sprite GetBuffIcon(string iconResource)
         {
-            return Resources.Load<Sprite>(string.Format(BuffIconPathFormat, buffId)) ??
+            return Resources.Load<Sprite>(string.Format(BuffIconPathFormat, iconResource)) ??
                    Resources.Load<Sprite>(BuffIconDefaultPath);
         }
     }

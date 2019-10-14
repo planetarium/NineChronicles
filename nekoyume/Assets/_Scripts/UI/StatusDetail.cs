@@ -67,15 +67,15 @@ namespace Nekoyume.UI
             if (equipmentSlots is null)
                 throw new NotFoundComponentException<EquipmentSlots>();
 
-            foreach (var equipment in _player.equipments)
+            foreach (var equipment in _player.Equipments)
             {
                 if (equipmentSlots.TryGet(equipment.Data.ItemSubType, out var slot))
                     slot.Set(equipment);
             }
 
             // status info
-            var rows = player.GetStatusRow();
-            foreach (var (key, value, additional) in rows)
+            var tuples = player.Value.GetStatTuples();
+            foreach (var (key, value, additional) in tuples)
             {
                 var go = Instantiate(statusInfo, group.transform);
                 var info = go.GetComponent<StatusInfo>();
@@ -84,7 +84,7 @@ namespace Nekoyume.UI
 
 
             //option info
-            foreach (var option in player.GetOptions())
+            foreach (var option in player.Value.GetOptions())
             {
                 GameObject go = Instantiate(textOption, optionGroup.transform);
                 var text = go.GetComponent<Text>();

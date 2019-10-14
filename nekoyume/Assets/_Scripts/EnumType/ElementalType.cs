@@ -38,44 +38,44 @@ namespace Nekoyume.EnumType
 
         private const float Multiplier = .5f;
 
-        private static readonly Dictionary<ElementalType, Dictionary<string, List<string>>> GetOptionsCache =
-            new Dictionary<ElementalType, Dictionary<string, List<string>>>(ElementalTypeComparer.Instance);
+        private static readonly Dictionary<ElementalType, Dictionary<StatType, List<string>>> GetOptionsCache =
+            new Dictionary<ElementalType, Dictionary<StatType, List<string>>>(ElementalTypeComparer.Instance);
 
         public static string GetLocalizedString(this ElementalType value)
         {
             return LocalizationManager.Localize($"ELEMENTAL_TYPE_{value.ToString().ToUpper()}");
         }
 
-        public static IEnumerable<string> GetOptions(this ElementalType from, string stat)
+        public static IEnumerable<string> GetOptions(this ElementalType from, StatType statType)
         {
-            if (!stat.Equals("damage") &&
-                !stat.Equals("defense"))
+            if (statType != StatType.ATK &&
+                statType != StatType.DEF)
                 return new List<string>();
             
             if (GetOptionsCache.ContainsKey(from) &&
-                GetOptionsCache[from].ContainsKey(stat))
+                GetOptionsCache[from].ContainsKey(statType))
             {
-                return GetOptionsCache[from][stat];
+                return GetOptionsCache[from][statType];
             }
 
             if (!GetOptionsCache.ContainsKey(from))
             {
-                GetOptionsCache[from] = new Dictionary<string, List<string>>();
+                GetOptionsCache[from] = new Dictionary<StatType, List<string>>(StatTypeComparer.Instance);
             }
             
             var dict = GetOptionsCache[from];
 
-            if (!dict.ContainsKey(stat))
+            if (!dict.ContainsKey(statType))
             {
-                dict[stat] = new List<string>();
+                dict[statType] = new List<string>();
             }
             
-            var list = dict[stat];
+            var list = dict[statType];
             
             if (from == ElementalType.Normal)
                 return list;
 
-            if (stat.Equals("damage"))
+            if (statType == StatType.ATK)
             {
                 if (from.TryGetWinCase(out var lose))
                 {

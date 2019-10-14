@@ -18,7 +18,7 @@ namespace Nekoyume.Game.Item
 
         protected bool Equals(ItemBase other)
         {
-            return Equals(Data, other.Data);
+            return Data.Id == other.Data.Id;
         }
 
         public override bool Equals(object obj)
@@ -36,12 +36,12 @@ namespace Nekoyume.Game.Item
 
         public abstract string ToItemInfo();
 
-        public virtual Sprite GetIconSprite()
+        public Sprite GetIconSprite()
         {
             return SpriteHelper.GetItemIcon(Data.Id);
         }
         
-        public virtual Sprite GetBackgroundSprite()
+        public Sprite GetBackgroundSprite()
         {
             return SpriteHelper.GetItemBackground(Data.Grade);
         }

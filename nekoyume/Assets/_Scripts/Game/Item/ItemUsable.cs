@@ -14,17 +14,17 @@ namespace Nekoyume.Game.Item
     {
         public new ConsumableItemSheet.Row Data { get; }
 
-        public Stats Stats { get; }
+        public StatsMap StatsMap { get; }
         public List<Skill> Skills { get; }
         public Guid ItemId { get; }
 
         protected ItemUsable(ConsumableItemSheet.Row data, Guid id) : base(data)
         {
             Data = data;
-            Stats = new Stats();
+            StatsMap = new StatsMap();
             foreach (var statData in data.Stats)
             {
-                Stats.AddStatValue(statData.StatType, statData.Value);
+                StatsMap.AddStatValue(statData.StatType, statData.Value);
             }
 
             Skills = new List<Skill>();
@@ -44,20 +44,17 @@ namespace Nekoyume.Game.Item
             if (obj.GetType() != this.GetType()) return false;
             return Equals((ItemUsable) obj);
         }
-
+        
         public override int GetHashCode()
         {
-            unchecked
-            {
-                return (base.GetHashCode() * 397) ^ ItemId.GetHashCode();
-            }
+            return (Data != null ? Data.GetHashCode() : 0) ^ ItemId.GetHashCode();
         }
 
         // todo: 번역.
         public override string ToItemInfo()
         {
             var sb = new StringBuilder();
-            sb.AppendLine(Stats.GetInformation());
+            sb.AppendLine(StatsMap.GetInformation());
 
             if (Skills.Count == 0)
             {
@@ -73,17 +70,6 @@ namespace Nekoyume.Game.Item
             }
 
             return sb.ToString().Trim();
-        }
-
-        public override Sprite GetIconSprite()
-        {
-            return SpriteHelper.GetItemIcon(Data.Id);
-        }
-
-        public void UpdatePlayer(Player player)
-        {
-            Stats.UpdatePlayer(player);
-            Skills.ForEach(skill => player.Skills.Add(skill));
         }
     }
 }

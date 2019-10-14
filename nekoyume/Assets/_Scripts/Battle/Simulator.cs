@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Libplanet.Action;
-using Nekoyume.Data;
 using Nekoyume.Game.Factory;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Util;
@@ -18,7 +17,7 @@ namespace Nekoyume.Battle
     {
         public readonly IRandom Random;
         private readonly int _worldStage;
-        private readonly List<MonsterWave> _waves;
+        private readonly List<Wave> _waves;
         public readonly BattleLog Log;
         public bool Lose = false;
         public readonly Player Player;
@@ -35,9 +34,10 @@ namespace Nekoyume.Battle
             Random = random;
             _worldStage = worldStage;
             Log = new BattleLog();
-            _waves = new List<MonsterWave>();
+            _waves = new List<Wave>();
             Player = new Player(avatarState, this);
             Player.Use(foods);
+            Player.Stats.EqualizeCurrentHPWithHP();
             if (!ReferenceEquals(skill, null))
                 Player.OverrideSkill(skill);
             _waveRewards = new List<List<ItemBase>>();
@@ -51,7 +51,7 @@ namespace Nekoyume.Battle
             foreach (var wave in _waves)
             {
                 Characters = new SimplePriorityQueue<CharacterBase>();
-                Characters.Enqueue(Player, TurnPriority / Player.TurnSpeed);
+                Characters.Enqueue(Player, TurnPriority / Player.SPD);
                 int lastWave = _totalWave - 1;
                 wave.Spawn(this);
                 while (true)
@@ -66,16 +66,13 @@ namespace Nekoyume.Battle
                     }
 
 
-                    if (!Player.targets.Any())
+                    if (!Player.Targets.Any())
                     {
                         var index = Math.Min(_waves.IndexOf(wave), lastWave);
                         var items = _waveRewards[index];
-                        Player.GetExp(wave.EXP, true);
+                        Player.GetExp(wave.Exp, true);
 
-                        var dropBox = new DropBox
-                        {
-                            items = items
-                        };
+                        var dropBox = new DropBox(null, items);
                         Log.Add(dropBox);
 
                         if (index == lastWave)
@@ -90,10 +87,7 @@ namespace Nekoyume.Battle
                             _result = BattleLog.Result.Win;
                             var rewards = _waveRewards.SelectMany(i => i).ToList();
                             Player.GetRewards(rewards);
-                            var getReward = new GetReward
-                            {
-                                rewards = rewards,
-                            };
+                            var getReward = new GetReward(null, rewards);
                             Log.Add(getReward);
                         }
 
@@ -113,7 +107,7 @@ namespace Nekoyume.Battle
                         Characters.UpdatePriority(other, speed);
                     }
 
-                    Characters.Enqueue(character, TurnPriority / character.TurnSpeed);
+                    Characters.Enqueue(character, TurnPriority / character.SPD);
                 }
 
                 if (Lose)
@@ -142,24 +136,22 @@ namespace Nekoyume.Battle
             }
         }
 
-        private MonsterWave SpawnWave(StageSheet.WaveData waveData)
+        private Wave SpawnWave(StageSheet.WaveData waveData)
         {
-            var wave = new MonsterWave();
+            var wave = new Wave();
             var monsterTable = Game.Game.instance.TableSheets.CharacterSheet;
             foreach (var monsterData in waveData.Monsters)
             {
                 for (int i = 0; i < monsterData.Count; i++)
                 {
-                    if (!monsterTable.TryGetValue(monsterData.CharacterId, out var characterRow))
-                    {
-                        Debug.Log(monsterData.CharacterId);
-                    }
+                    monsterTable.TryGetValue(monsterData.CharacterId, out var row, true);
+                    var enemyModel = new Enemy(Player, row, monsterData.Level);
 
-                    wave.Add(new Monster(characterRow, monsterData.Level, Player));
+                    wave.Add(enemyModel);
                     wave.IsBoss = waveData.IsBoss;
                 }
 
-                wave.EXP = waveData.Exp;
+                wave.Exp = waveData.Exp;
             }
 
             return wave;

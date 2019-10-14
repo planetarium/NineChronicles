@@ -17,5 +17,9 @@ namespace Nekoyume.TableData
                 ItemId = int.Parse(fields[3]);
             }
         }
+        
+        public CollectQuestSheet() : base(nameof(CollectQuestSheet))
+        {
+        }
     }
 }

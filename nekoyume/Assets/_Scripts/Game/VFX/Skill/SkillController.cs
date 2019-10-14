@@ -27,9 +27,9 @@ namespace Nekoyume.Game.VFX.Skill
             var position = target.transform.position;
             position.x -= 0.2f;
             position.y += 0.32f;
-            var size = target.sizeType == SizeType.XS ? SizeType.S : SizeType.M;
-            var elemental = skillInfo.Elemental;
-            if (skillInfo.skillCategory == SkillCategory.Area)
+            var size = target.SizeType == SizeType.XS ? SizeType.S : SizeType.M;
+            var elemental = skillInfo.ElementalType;
+            if (skillInfo.SkillCategory == SkillCategory.Area)
             {
                 size = SizeType.L;
                 //FIXME 현재 무속성 범위공격 이펙트는 존재하지 않기때문에 임시처리.
@@ -40,7 +40,7 @@ namespace Nekoyume.Game.VFX.Skill
                 position.x = pos.x + 0.5f;
                 position.y = Stage.StageStartPosition;
             }
-            var skillName = $"{skillInfo.skillCategory}_{size}_{elemental}".ToLower();
+            var skillName = $"{skillInfo.SkillCategory}_{size}_{elemental}".ToLower();
             var go = _pool.Get(skillName, false, position);
             if (go == null)
             {
@@ -58,7 +58,7 @@ namespace Nekoyume.Game.VFX.Skill
 
         public SkillCastingVFX Get(Vector3 position, Model.Skill.SkillInfo skillInfo)
         {
-            var elemental = skillInfo.Elemental ?? ElementalType.Normal;
+            var elemental = skillInfo.ElementalType;
             var skillName = $"casting_{elemental}".ToLower();
             var go = _pool.Get(skillName, false, position);
             var effect = go.GetComponent<SkillCastingVFX>();

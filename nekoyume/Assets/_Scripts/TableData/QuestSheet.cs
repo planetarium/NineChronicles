@@ -21,5 +21,9 @@ namespace Nekoyume.TableData
                 Reward = decimal.Parse(fields[2]);
             }
         }
+        
+        public QuestSheet() : base(nameof(QuestSheet))
+        {
+        }
     }
 }

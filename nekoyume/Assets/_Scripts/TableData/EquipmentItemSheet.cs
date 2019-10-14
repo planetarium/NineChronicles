@@ -19,6 +19,10 @@ namespace Nekoyume.TableData
                 AttackRange = decimal.Parse(fields[9]);
             }
         }
+        
+        public EquipmentItemSheet() : base(nameof(EquipmentItemSheet))
+        {
+        }
 
         protected override void AddRow(int key, Row value)
         {

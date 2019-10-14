@@ -2,7 +2,10 @@ using Nekoyume.Game.Character;
 using Nekoyume.Game.Item;
 using Nekoyume.Model;
 using Nekoyume.UI;
+using UniRx;
 using UnityEngine.Events;
+using Enemy = Nekoyume.Game.Character.Enemy;
+using Player = Nekoyume.Game.Character.Player;
 
 namespace Nekoyume.Game
 {
@@ -18,7 +21,7 @@ namespace Nekoyume.Game
         public static readonly EnemyDead OnEnemyDead = new EnemyDead();
         public static readonly UnityEvent OnStageClear = new UnityEvent();
 
-        public static readonly UnityEvent OnUpdateStatus = new UnityEvent();
+        public static readonly Subject<Player> OnUpdatePlayerStatus = new Subject<Player>();
 
         public class GetItem : UnityEvent<DropItem>
         {

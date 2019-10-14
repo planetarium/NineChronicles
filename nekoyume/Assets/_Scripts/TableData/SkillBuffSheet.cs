@@ -26,6 +26,10 @@ namespace Nekoyume.TableData
                 });
             }
         }
+        
+        public SkillBuffSheet() : base(nameof(SkillBuffSheet))
+        {
+        }
 
         protected override void AddRow(int key, Row value)
         {

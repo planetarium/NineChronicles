@@ -18,5 +18,9 @@ namespace Nekoyume.TableData
                 Type = (TradeType) Enum.Parse(typeof(TradeType), fields[3]);
             }
         }
+        
+        public TradeQuestSheet() : base(nameof(TradeQuestSheet))
+        {
+        }
     }
 }

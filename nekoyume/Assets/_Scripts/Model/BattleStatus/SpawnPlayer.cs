@@ -8,7 +8,11 @@ namespace Nekoyume.Model
     {
         public override IEnumerator CoExecute(IStage stage)
         {
-            yield return stage.CoSpawnPlayer((Player) character);
+            yield return stage.CoSpawnPlayer((Player) Character);
+        }
+
+        public SpawnPlayer(CharacterBase character) : base(character)
+        {
         }
     }
 }
