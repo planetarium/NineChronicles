@@ -13,3 +13,4 @@ id,group,_name,chance,duration,target_type,stat_type,modify_type,modify_value,ic
 106001,106000,속도 증가,100,3,Self,SPD,Percentage,50,icon_buff_plus_speed
 202000,202000,공격 약화,20,3,Enemy,ATK,Percentage,-50,icon_buff_minus_attack
 202001,202000,공격 약화,100,3,Enemy,ATK,Percentage,-50,icon_buff_minus_attack
+204001,204000,치명 약화,100,3,Enemy,CRI,Percentage,-50,icon_buff_minus_critical
