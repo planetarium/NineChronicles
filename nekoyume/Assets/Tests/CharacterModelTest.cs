@@ -69,10 +69,13 @@ namespace Tests
             _player.Targets.Add(_player);
             var skill = _player.Skills.First();
             skill.buffs = skill.skillRow.GetBuffs().Select(BuffFactory.Get).ToList();
-            Assert.AreEqual(2, skill.buffs.Count);
             Assert.AreEqual(0, _player.Buffs.Count);
-            skill.Use(_player);
-            Assert.AreEqual(2, _player.Buffs.Count);
+            var model = skill.Use(_player);
+            if (model.BuffInfos is null)
+                return;
+            
+            Assert.AreEqual(model.BuffInfos.Count(), _player.Buffs.Count);
+                
             foreach (var pair in _player.Buffs)
             {
                 var playerBuff = pair.Value;

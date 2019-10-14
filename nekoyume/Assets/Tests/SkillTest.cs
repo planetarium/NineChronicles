@@ -116,6 +116,8 @@ namespace Tests
         public void AreaAttack()
         {
             var caster = _simulator.Player;
+            var target = caster.Targets.First();
+            var lastHPOfTarget = target.HP;
             SkillEffect skillEffectRow = null;
             var skillRow = ATestSetUp.tableSheets.SkillSheet.OrderedList.First(r =>
             {
@@ -128,9 +130,8 @@ namespace Tests
             });
             var area = new Nekoyume.Game.AreaAttack(skillRow, caster.ATK, 1m);
             var result = area.Use(caster);
-            var target = caster.Targets.First();
 
-            Assert.AreEqual(target.CurrentHP, target.HP - result.SkillInfos.Sum(i => i.Effect));
+            Assert.AreEqual(target.CurrentHP, lastHPOfTarget - result.SkillInfos.Sum(i => i.Effect));
             Assert.AreEqual(skillEffectRow.hitCount, result.SkillInfos.Count());
             foreach (var info in result.SkillInfos)
             {
