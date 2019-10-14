@@ -23,8 +23,8 @@ namespace Nekoyume.UI.Module
 
         public void UpdateText(Buff data)
         {
-            var name = data.Data.GetLocalizedName();
-            var description = data.Data.GetLocalizedDescription();
+            var name = data.RowData.GetLocalizedName();
+            var description = data.RowData.GetLocalizedDescription();
 
             descriptionText.text = string.Format(descriptionFormat, name, description);
             durationText.text = string.Format(durationFormat, data.remainedDuration);

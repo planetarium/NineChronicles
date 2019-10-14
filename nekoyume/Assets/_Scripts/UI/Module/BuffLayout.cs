@@ -1,9 +1,7 @@
-﻿using UnityEngine.UI;
-using UnityEngine;
+﻿using UnityEngine;
 using Nekoyume.Game;
 using System.Collections.Generic;
-using Nekoyume.Helper;
-using Nekoyume.Model;
+using System.Linq;
 
 namespace Nekoyume.UI.Module
 {
@@ -12,10 +10,7 @@ namespace Nekoyume.UI.Module
         public GameObject iconPrefab;
 
         private Transform _buffParent;
-        private readonly Dictionary<int, BuffIcon> _icons = new Dictionary<int, BuffIcon>();
         private readonly List<BuffIcon> _pool = new List<BuffIcon>(10);
-        private readonly List<Buff> _addList = new List<Buff>(10);
-        private readonly List<int> _deleteList = new List<int>(10);
 
         public void Awake()
         {
@@ -23,54 +18,22 @@ namespace Nekoyume.UI.Module
             CreateImage(10);
         }
 
-        public void UpdateBuff(IEnumerable<Buff> buffs)
+        public void UpdateBuff(IEnumerable<Game.Buff> buffs)
         {
-            _addList.Clear();
-            _deleteList.Clear();
-            _deleteList.AddRange(_icons.Keys);
-
-            foreach(var buff in buffs)
+            var ordered = buffs
+                .Where(buff => buff.remainedDuration > 0)
+                .OrderBy(buff => buff.RowData.Id);
+            
+            foreach (var icon in _pool)
             {
-                int id = buff.Data.Id;
-                if (!_icons.ContainsKey(id))
-                    _addList.Add(buff);
-                else
-                    _deleteList.Remove(id);
+                if (icon.image.enabled)
+                    icon.Hide();
             }
 
-            AddBuff(_addList);
-            DeleteBuff(_deleteList);
-            UpdateStatus();
-        }
-
-        public void AddBuff(IEnumerable<Buff> buffs)
-        {
-            foreach (var buff in buffs)
+            foreach (var buff in ordered)
             {
-                int id = buff.Data.Id;
-                if (id <= 0 || _icons.ContainsKey(id)) continue;
                 var icon = GetDisabledIcon();
                 icon.Show(buff);
-                _icons.Add(id, icon);
-            }
-        }
-
-        public void DeleteBuff(IEnumerable<int> buffs)
-        {
-            foreach (var id in buffs)
-            {
-                if (id <= 0 || !_icons.ContainsKey(id)) continue;
-                _icons[id].Hide();
-                _icons.Remove(id);
-            }
-        }
-
-        public void UpdateStatus()
-        {
-            foreach (var icon in _icons.Values)
-            {
-                if (icon.enabled)
-                    icon.UpdateStatus();
             }
         }
 

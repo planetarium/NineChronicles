@@ -39,7 +39,7 @@ namespace Nekoyume.Game.Factory
                 throw new NotFoundComponentException<Character.Player>();
             }
 
-            player.Init(model);
+            player.Set(model, true);
 
             return player.gameObject;
         }

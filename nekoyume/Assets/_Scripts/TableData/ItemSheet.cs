@@ -26,6 +26,10 @@ namespace Nekoyume.TableData
                 ElementalType = (ElementalType) Enum.Parse(typeof(ElementalType), fields[3]);
             }
         }
+        
+        public ItemSheet() : base(nameof(ItemSheet))
+        {
+        }
     }
     
     public static class ItemSheetExtension

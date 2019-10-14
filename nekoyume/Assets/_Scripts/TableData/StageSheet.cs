@@ -103,6 +103,10 @@ namespace Nekoyume.TableData
                 TotalExp = Waves.Sum(wave => wave.Exp);
             }
         }
+        
+        public StageSheet() : base(nameof(StageSheet))
+        {
+        }
 
         protected override void AddRow(int key, Row value)
         {

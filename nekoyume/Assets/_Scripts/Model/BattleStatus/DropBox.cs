@@ -8,11 +8,16 @@ namespace Nekoyume.Model
     [Serializable]
     public class DropBox : EventBase
     {
-        public List<ItemBase> items;
+        public readonly List<ItemBase> Items;
 
+        public DropBox(CharacterBase character, List<ItemBase> items) : base(character)
+        {
+            Items = items;
+        }
+        
         public override IEnumerator CoExecute(IStage stage)
         {
-            yield return stage.CoDropBox(items);
+            yield return stage.CoDropBox(Items);
         }
     }
 }

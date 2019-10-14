@@ -57,7 +57,7 @@ namespace Nekoyume.Game.Entrance
                     yield return null;
                 }
             playerComp.RunSpeed = 0.0f;
-            playerComp.animator.Idle();
+            playerComp.Animator.Idle();
 
             var dialog = Widget.Find<Dialog>();
             dialog.Show(1);

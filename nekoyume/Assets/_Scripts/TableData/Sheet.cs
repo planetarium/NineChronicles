@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using JetBrains.Annotations;
 using UnityEngine;
 
 namespace Nekoyume.TableData
@@ -18,9 +19,15 @@ namespace Nekoyume.TableData
         private TValue _first;
         private TValue _last;
 
+        public string Name { get; private set; }
         public IReadOnlyList<TValue> OrderedList => _orderedList;
-        public TValue First => _first;
-        public TValue Last => _last;
+        [CanBeNull] public TValue First => _first;
+        [CanBeNull] public TValue Last => _last;
+
+        public Sheet(string name)
+        {
+            Name = name;
+        }
 
         public void Set(string csv)
         {
@@ -86,6 +93,17 @@ namespace Nekoyume.TableData
             return _enumerable.GetEnumerator();
         }
 
+        public bool TryGetValue(TKey key, out TValue value, bool throwException = false)
+        {
+            if (base.TryGetValue(key, out value))
+                return true;
+
+            if (throwException)
+                throw new SheetRowNotFoundException(Name, key.ToString());
+
+            return false;
+        }
+
         protected virtual void AddRow(TKey key, TValue value)
         {
             Add(key, value);
@@ -100,8 +118,8 @@ namespace Nekoyume.TableData
 
             _enumerable = Values.OrderBy(value => value.Key);
             _orderedList = _enumerable.ToList();
-            _first = _orderedList.First();
-            _last = _orderedList.Last();
+            _first = _orderedList.FirstOrDefault();
+            _last = _orderedList.LastOrDefault();
         }
 
         private bool TryGetRow(string csv, out TValue row)

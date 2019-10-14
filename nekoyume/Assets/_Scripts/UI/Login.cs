@@ -74,7 +74,7 @@ namespace Nekoyume.UI
         {
             base.Show();
 
-            var stage = Nekoyume.Game.Game.instance.stage;
+            var stage = Game.Game.instance.stage;
             for (var i = 0; i < slots.Length; i++)
             {
                 var slot = slots[i];

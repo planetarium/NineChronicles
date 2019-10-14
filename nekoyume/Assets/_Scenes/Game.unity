@@ -560,6 +560,7 @@ GameObject:
   - component: {fileID: 1333831685}
   - component: {fileID: 1333831686}
   - component: {fileID: 1333831688}
+  - component: {fileID: 1333831689}
   m_Layer: 0
   m_Name: Stage
   m_TagString: Untagged
@@ -584,6 +585,7 @@ MonoBehaviour:
   enemyFactory: {fileID: 1333831685}
   dropItemFactory: {fileID: 1333831686}
   skillController: {fileID: 1333831688}
+  buffController: {fileID: 1333831689}
   spawner: {fileID: 157041507}
   background: {fileID: 0}
   dummy: {fileID: 282372974}
@@ -722,6 +724,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   skills: []
+--- !u!114 &1333831689
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1333831681}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c442313ba3114c33bfba88b928bd8075, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  buffs: []
 --- !u!1 &1346351531
 GameObject:
   m_ObjectHideFlags: 0

@@ -43,9 +43,9 @@ namespace Tests
         [Test]
         public void ShowWithRing()
         {
-            Assert.IsEmpty(_player.equipments.Where(i => i is Ring));
+            Assert.IsEmpty(_player.Equipments.Where(i => i is Ring));
             _ring.Equip();
-            Assert.AreEqual(1, _player.equipments.Count(i => i is Ring));
+            Assert.AreEqual(1, _player.Equipments.Count(i => i is Ring));
             _widget.Show();
             var ringSlots = _widget.equipmentSlots.Where(i => i.itemSubType == ItemSubType.Ring).ToList();
             Assert.AreEqual(2, ringSlots.Count);
@@ -55,12 +55,12 @@ namespace Tests
         [Test]
         public void ShowWithRings()
         {
-            Assert.IsEmpty(_player.equipments.Where(i => i is Ring));
+            Assert.IsEmpty(_player.Equipments.Where(i => i is Ring));
             _ring.Equip();
             var ring = new Ring(_ring.Data, Guid.NewGuid());
             ring.Equip();
             _player.Inventory.AddNonFungibleItem(ring);
-            Assert.AreEqual(2, _player.equipments.Count(i => i is Ring));
+            Assert.AreEqual(2, _player.Equipments.Count(i => i is Ring));
             _widget.Show();
             var ringSlots = _widget.equipmentSlots.Where(i => i.itemSubType == ItemSubType.Ring).ToList();
             Assert.AreEqual(2, ringSlots.Count);

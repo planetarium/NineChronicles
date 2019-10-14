@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Nekoyume.EnumType;
-using Nekoyume.Model;
+using Nekoyume.Game;
 
 namespace Nekoyume.TableData
 {
@@ -14,13 +14,13 @@ namespace Nekoyume.TableData
             public override ItemType ItemType => ItemType.Consumable;
 
             public int SetId { get; private set; }
-            public List<StatData> Stats { get; private set; }
+            public List<StatMap> Stats { get; private set; }
 
             public override void Set(IReadOnlyList<string> fields)
             {
                 base.Set(fields);
                 SetId = string.IsNullOrEmpty(fields[4]) ? 0 : int.Parse(fields[4]);
-                Stats = new List<StatData>();
+                Stats = new List<StatMap>();
 
                 for (var i = 0; i < 2; i++)
                 {
@@ -28,11 +28,15 @@ namespace Nekoyume.TableData
                         string.IsNullOrEmpty(fields[6 + i * 2]))
                         return;
 
-                    Stats.Add(new StatData(
+                    Stats.Add(new StatMap(
                         (StatType) Enum.Parse(typeof(StatType), fields[5 + i * 2]),
                         decimal.Parse(fields[6 + i * 2])));
                 }
             }
+        }
+        
+        public ConsumableItemSheet() : base(nameof(ConsumableItemSheet))
+        {
         }
 
         protected override void AddRow(int key, Row value)

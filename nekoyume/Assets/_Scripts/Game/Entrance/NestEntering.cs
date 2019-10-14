@@ -48,7 +48,7 @@ namespace Nekoyume.Game.Entrance
                 if (States.Instance.avatarStates.TryGetValue(i, out var avatarState))
                 {
                     player = factory.Create(avatarState).GetComponent<Player>();
-                    player.animator.Appear();
+                    player.Animator.Appear();
                     active = true;
                 }
                 else
@@ -62,7 +62,7 @@ namespace Nekoyume.Game.Entrance
                 var place = Instantiate(placeRes, playerTransform);
 
                 // player animator
-                player.animator.Target.SetActive(active);
+                player.Animator.Target.SetActive(active);
 
                 var tween = place.GetComponentInChildren<DOTweenSpriteAlpha>();
                 tween.gameObject.SetActive(active);

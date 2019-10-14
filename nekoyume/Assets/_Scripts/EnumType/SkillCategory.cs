@@ -6,5 +6,7 @@ namespace Nekoyume.EnumType
         Blow,
         Double,
         Area,
+        Heal,
+        AttackBuff,
     }
 }

@@ -18,8 +18,6 @@ namespace Nekoyume.Game
         public readonly SkillEffect effect;
         public List<Buff> buffs;
 
-        public abstract Model.Skill Use(CharacterBase caster);
-
         protected Skill(SkillSheet.Row skillRow, int power, decimal chance)
         {
             this.skillRow = skillRow;
@@ -33,6 +31,8 @@ namespace Nekoyume.Game
             }
         }
 
+        public abstract Model.Skill Use(CharacterBase caster);
+
         protected bool Equals(Skill other)
         {
             return skillRow.Equals(other.skillRow) && power == other.power && chance.Equals(other.chance) &&
@@ -44,7 +44,7 @@ namespace Nekoyume.Game
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((Skill)obj);
+            return Equals((Skill) obj);
         }
 
         public override int GetHashCode()
@@ -59,46 +59,21 @@ namespace Nekoyume.Game
             }
         }
 
-        protected IEnumerable<CharacterBase> GetTarget(CharacterBase caster)
+        protected IEnumerable<Model.Skill.SkillInfo> ProcessBuff(CharacterBase caster)
         {
-            var targets = caster.targets;
-            IEnumerable<CharacterBase> target;
-            switch (effect.skillTargetType)
-            {
-                case SkillTargetType.Enemy:
-                    target = new[] { targets.First() };
-                    break;
-                case SkillTargetType.Enemies:
-                    target = caster.targets;
-                    break;
-                case SkillTargetType.Self:
-                    target = new[] { caster };
-                    break;
-                case SkillTargetType.Ally:
-                    target = new[] { caster };
-                    break;
-                default:
-                    target = new[] { targets.First() };
-                    break;
-            }
-
-            return target;
-        }
-
-        protected void ProcessBuff(CharacterBase caster)
-        {
+            var infos = new List<Model.Skill.SkillInfo>();
             foreach (var buff in buffs)
             {
                 var targets = buff.GetTarget(caster);
-                foreach (var target in targets)
+                foreach (var target in targets.Where(target => target.GetChance(buff.RowData.Chance)))
                 {
-                    var canBuff = target.GetChance(buff.Data.Chance);
-                    if (canBuff)
-                    {
-                        caster.AddBuff(buff);
-                    }
+                    target.AddBuff(buff);
+                    infos.Add(new Model.Skill.SkillInfo((CharacterBase) target.Clone(), 0, false,
+                        effect.skillCategory, ElementalType.Normal, buff));
                 }
             }
+
+            return infos;
         }
     }
 }

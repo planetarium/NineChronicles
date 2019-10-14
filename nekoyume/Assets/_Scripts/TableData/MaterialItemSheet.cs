@@ -35,5 +35,9 @@ namespace Nekoyume.TableData
                 SkillChanceMax = string.IsNullOrEmpty(fields[11]) ? 0m : decimal.Parse(fields[11]);
             }
         }
+        
+        public MaterialItemSheet() : base(nameof(MaterialItemSheet))
+        {
+        }
     }
 }

@@ -11,15 +11,14 @@ namespace Nekoyume.UI
         public BuffLayout buffLayout;
         public Text levelText;
 
-        public void UpdateBuff(Dictionary<int, Buff> modelBuffs)
+        public void SetBuffs(IReadOnlyDictionary<int, Buff> value)
         {
-            var buffs = modelBuffs.Values.OrderBy(r => r.Data.Id);
-            buffLayout.UpdateBuff(buffs);
+            buffLayout.UpdateBuff(value.Values);
         }
 
-        public void UpdateLevel(int level)
+        public void SetLevel(int value)
         {
-            levelText.text = level.ToString();
+            levelText.text = value.ToString();
         }
     }
 }

@@ -21,20 +21,20 @@ namespace Nekoyume.TableData
                 ExpNeed = long.TryParse(fields[2], out var expNeed) ? expNeed : 0L;
             }
         }
+        
+        public LevelSheet() : base(nameof(LevelSheet))
+        {
+        }
 
         public int GetLevel(long exp)
         {
-            var e = GetEnumerator();
-            while (e.MoveNext())
+            foreach (var row in OrderedList)
             {
-                var row = e.Current;
                 if (row.Exp + row.ExpNeed > exp)
                 {
                     return row.Key;
                 }
             }
-
-            e.Dispose();
 
             return 0;
         }

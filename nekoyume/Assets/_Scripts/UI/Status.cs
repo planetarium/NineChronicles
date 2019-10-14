@@ -8,6 +8,8 @@ using Nekoyume.Game.Controller;
 using UnityEngine;
 using UnityEngine.UI;
 using Nekoyume.UI.Module;
+using UniRx;
+using Unity.Mathematics;
 
 namespace Nekoyume.UI
 {
@@ -35,7 +37,7 @@ namespace Nekoyume.UI
             base.Awake();
 
             Game.Event.OnRoomEnter.AddListener(OnRoomEnter);
-            Game.Event.OnUpdateStatus.AddListener(OnUpdateStatus);
+            Game.Event.OnUpdatePlayerStatus.Subscribe(SubscribeOnUpdatePlayerStatus).AddTo(gameObject);
         }
 
         #endregion
@@ -49,7 +51,7 @@ namespace Nekoyume.UI
             {
                 throw new NotFoundComponentException<StatusDetail>();
             }
-            
+
             _inventory = Find<Inventory>();
             if (_inventory is null)
             {
@@ -66,11 +68,21 @@ namespace Nekoyume.UI
             buffLayout.UpdateBuff(new List<Buff>());
         }
 
+        private void SubscribeOnUpdatePlayerStatus(Player player)
+        {
+            if (player is null ||
+                player.Model.Value is null)
+                return;
+            
+            UpdateExp();
+            SetBuffs(player.Model.Value.Buffs);
+        }
+        
         public void UpdatePlayer(GameObject playerObj)
         {
             Show();
 
-            if (playerObj != null)
+            if (playerObj)
             {
                 _player = playerObj.GetComponent<Player>();
             }
@@ -78,12 +90,20 @@ namespace Nekoyume.UI
             UpdateExp();
         }
 
+        #region Buff
+
+        public void SetBuffs(Dictionary<int, Buff> value)
+        {
+            buffLayout.UpdateBuff(value.Values);
+        }
+
         public void ShowBuffTooltip(GameObject sender)
         {
             var icon = sender.GetComponent<BuffIcon>();
             buffTooltip.gameObject.SetActive(true);
             buffTooltip.UpdateText(icon.Data);
-            buffTooltip.RectTransform.anchoredPosition = icon.image.rectTransform.anchoredPosition + Vector2.down * (icon.image.rectTransform.sizeDelta.y);
+            buffTooltip.RectTransform.anchoredPosition = icon.image.rectTransform.anchoredPosition +
+                                                         Vector2.down * (icon.image.rectTransform.sizeDelta.y);
         }
 
         public void HideBuffTooltip()
@@ -91,35 +111,38 @@ namespace Nekoyume.UI
             buffTooltip.gameObject.SetActive(false);
         }
 
+        #endregion
+
         private void UpdateExp()
         {
-            if (_player != null)
-            {
-                var level = _player.Level;
+            if (!_player)
+                return;
 
-                _avatarName = States.Instance.currentAvatarState.Value.name;
-                TextLevelName.text = $"LV. {level} {_avatarName}";
-                TextHP.text = $"{_player.HP}/{_player.HPMax}";
-                TextExp.text = $"{_player.EXPMax - _player.EXP}";
+            var level = _player.Level;
 
-                float hpValue = _player.HP / (float) _player.HPMax;
-                HPBar.fillRect.gameObject.SetActive(hpValue > 0.0f);
-                hpValue = Mathf.Min(Mathf.Max(hpValue, 0.1f), 1.0f);
-                HPBar.value = hpValue;
+            _avatarName = States.Instance.currentAvatarState.Value.name;
+            TextLevelName.text = $"LV. {level} {_avatarName}";
+            var displayHp = _player.CurrentHP;
+            TextHP.text = $"{displayHp} / {_player.HP}";
+            TextExp.text = $"{_player.EXPMax - _player.EXP}";
 
-                var expNeed = _player.Model.expNeed;
-                var levelExp = _player.EXPMax - expNeed;
-                var expValue = (float) (_player.EXP - levelExp) / expNeed;
-                ExpBar.fillRect.gameObject.SetActive(expValue > 0.0f);
-                expValue = Mathf.Min(Mathf.Max(expValue, 0.1f), 1.0f);
-                ExpBar.value = expValue;
-            }
+            var hpValue = (float) _player.CurrentHP / _player.HP;
+            HPBar.fillRect.gameObject.SetActive(hpValue > 0.0f);
+            hpValue = Mathf.Min(Mathf.Max(hpValue, 0.1f), 1.0f);
+            HPBar.value = hpValue;
+
+            var expNeed = _player.Model.Value.Exp.Need;
+            var levelExp = _player.EXPMax - expNeed;
+            var expValue = (float) (_player.EXP - levelExp) / expNeed;
+            ExpBar.fillRect.gameObject.SetActive(expValue > 0.0f);
+            expValue = Mathf.Min(Mathf.Max(expValue, 0.1f), 1.0f);
+            ExpBar.value = expValue;
         }
 
         public void ToggleInventory()
         {
             Toggle(_inventory);
-                
+
             AnalyticsManager.Instance.OnEvent(Find<Menu>().gameObject.activeSelf
                 ? AnalyticsManager.EventName.ClickMainInventory
                 : AnalyticsManager.EventName.ClickBattleInventory);
@@ -131,7 +154,7 @@ namespace Nekoyume.UI
             {
                 return;
             }
-            
+
             _inventory.Close();
         }
 
@@ -150,7 +173,7 @@ namespace Nekoyume.UI
             {
                 return;
             }
-            
+
             _statusDetail.Close();
         }
 
@@ -164,12 +187,6 @@ namespace Nekoyume.UI
             Toggle(_quest);
         }
 
-        public void UpdateBuff(Dictionary<int, Buff> modelBuffs)
-        {
-            var buffs = modelBuffs.Values.OrderBy(r => r.Data.Id);
-            buffLayout.UpdateBuff(buffs);
-        }
-
         private void Toggle(Widget selected)
         {
             AudioController.PlayClick();
@@ -179,21 +196,17 @@ namespace Nekoyume.UI
             {
                 return;
             }
-            foreach (var widget in new Widget[] { _inventory, _statusDetail, _quest })
+
+            foreach (var widget in new Widget[] {_inventory, _statusDetail, _quest})
             {
                 if (selected != widget)
                     widget.Close();
             }
         }
-        
+
         private void OnRoomEnter()
         {
             Find<Menu>()?.ShowRoom();
-        }
-
-        private void OnUpdateStatus()
-        {
-            UpdateExp();
         }
     }
 }

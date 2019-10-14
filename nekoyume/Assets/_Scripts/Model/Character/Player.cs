@@ -10,13 +10,42 @@ using Nekoyume.TableData;
 namespace Nekoyume.Model
 {
     [Serializable]
-    public class Player : CharacterBase
+    public class Player : CharacterBase, ICloneable
     {
-        public int characterId;
-        public long exp;
-        public long expMax;
-        public long expNeed;
+        [Serializable]
+        public class ExpData : ICloneable
+        {
+            public long Max { get; private set; }
+            public long Need { get; private set; }
+            public long Current { get; set; }
+
+            public ExpData()
+            {
+            }
+
+            protected ExpData(ExpData value)
+            {
+                Max = value.Max;
+                Need = value.Need;
+                Current = value.Current;
+            }
+
+            public void Set(LevelSheet.Row row)
+            {
+                Max = row.Exp + row.ExpNeed;
+                Need = row.ExpNeed;
+            }
+
+            public object Clone()
+            {
+                return new ExpData(this);
+            }
+        }
+
+        public readonly ExpData Exp = new ExpData();
+        public readonly Inventory Inventory;
         public int worldStage;
+        
         public Weapon weapon;
         public Armor armor;
         public Belt belt;
@@ -24,48 +53,58 @@ namespace Nekoyume.Model
         public Ring ring;
         public Helm helm;
         public SetItem set;
-        public sealed override float TurnSpeed { get; set; }
-
-        public readonly Inventory inventory;
-        public readonly long blockIndex;
-
+        
         private List<Equipment> Equipments { get; set; }
 
-        public Player(AvatarState avatarState, Simulator simulator = null) : base(simulator)
+        public Player(AvatarState avatarState, Simulator simulator = null) : base(simulator, avatarState.characterId, avatarState.level)
         {
-            characterId = avatarState.characterId;
-            level = avatarState.level;
-            exp = avatarState.exp;
+            Exp.Current = avatarState.exp;
+            Inventory = avatarState.inventory;
             worldStage = avatarState.worldStage;
-            inventory = avatarState.inventory;
-            blockIndex = avatarState.BlockIndex;
             PostConstruction();
         }
 
-        public Player(int level) : base(null)
+        public Player(int level) : base(null, GameConfig.DefaultAvatarCharacterId, level)
         {
-            characterId = GameConfig.DefaultAvatarCharacterId;
-            this.level = level;
-            exp = 0;
+            Exp.Current = 0;
+            Inventory = new Inventory();
             worldStage = 1;
-            inventory = new Inventory();
             PostConstruction();
+        }
+
+        protected Player(Player value) : base(value)
+        {
+            Exp = (ExpData) value.Exp.Clone();
+            Inventory = value.Inventory;
+            worldStage = value.worldStage;
+            
+            weapon = value.weapon;
+            armor = value.armor;
+            belt = value.belt;
+            necklace = value.necklace;
+            ring = value.ring;
+            helm = value.helm;
+            set = value.set;
+
+            Equipments = value.Equipments;
         }
 
         private void PostConstruction()
         {
-            atkElementType = ElementalType.Normal;
-            defElementType = ElementalType.Normal;
-            TurnSpeed = 1.8f;
-
-            Equip(inventory.Items);
-            CalcStats(level);
+            UpdateExp();
+            Equip(Inventory.Items);
         }
 
-        public void RemoveTarget(Monster monster)
+        private void UpdateExp()
         {
-            targets.Remove(monster);
-            Simulator.Characters.TryRemove(monster);
+            Game.Game.instance.TableSheets.LevelSheet.TryGetValue(Level, out var row, true);
+            Exp.Set(row);
+        }
+
+        public void RemoveTarget(Enemy enemy)
+        {
+            Targets.Remove(enemy);
+            Simulator.Characters.TryRemove(enemy);
         }
 
         protected override void OnDead()
@@ -73,86 +112,7 @@ namespace Nekoyume.Model
             base.OnDead();
             Simulator.Lose = true;
         }
-
-        private void CalcStats(int level)
-        {
-            var game = Game.Game.instance;
-            if (!game.TableSheets.CharacterSheet.TryGetValue(characterId, out var characterRow))
-            {
-                throw new KeyNotFoundException(nameof(characterId));
-            }
-
-            if (!game.TableSheets.LevelSheet.TryGetValue(level, out var levelRow))
-            {
-                throw new KeyNotFoundException(nameof(level));
-            }
-
-            var statsData = characterRow.ToStats(level);
-            currentHP = statsData.HP;
-            atk = statsData.ATK;
-            def = statsData.DEF;
-            hp = statsData.HP;
-            expMax = levelRow.Exp + levelRow.ExpNeed;
-            expNeed = levelRow.ExpNeed;
-            luck = statsData.CRI;
-            runSpeed = characterRow.RunSpeed;
-            sizeType = characterRow.Size;
-            var setMap = new Dictionary<int, int>();
-            foreach (var equipment in Equipments)
-            {
-                var key = equipment.Data.SetId;
-                if (!setMap.TryGetValue(key, out _))
-                {
-                    setMap[key] = 0;
-                }
-
-                setMap[key] += 1;
-                equipment.UpdatePlayer(this);
-            }
-
-            // 플레이어 사거리가 장비에 영향을 안받도록 고정시킴.
-            attackRange = characterRow.RNG;
-
-            foreach (var pair in setMap)
-            {
-                var setEffect = Game.Game.instance.TableSheets.SetEffectSheet.GetSetEffect(pair.Key, pair.Value);
-                foreach (var statMap in setEffect)
-                {
-                    statMap.UpdatePlayer(this);
-                }
-            }
-        }
-
-        public void GetExp(long waveExp, bool log = false)
-        {
-            exp += waveExp;
-
-            if (log)
-            {
-                var getExp = new GetExp
-                {
-                    exp = waveExp,
-                    character = (CharacterBase) Clone(),
-                };
-                Simulator.Log.Add(getExp);
-            }
-
-            if (exp < expMax)
-                return;
-
-            LevelUp();
-            CalcStats(level);
-        }
-
-        // ToDo. 지금은 스테이지에서 재료 아이템만 주고 있음. 추후 대체 불가능 아이템도 줄 경우 수정 대상.
-        public void GetRewards(List<ItemBase> items)
-        {
-            foreach (var item in items)
-            {
-                inventory.AddFungibleItem(item);
-            }
-        }
-
+        
         private void Equip(IEnumerable<Inventory.Item> items)
         {
             Equipments = items.Select(i => i.item)
@@ -192,74 +152,72 @@ namespace Nekoyume.Model
                         throw new InvalidEquipmentException();
                 }
             }
+
+            Stats.SetEquipments(Equipments);
+        }
+
+        public void GetExp(long waveExp, bool log = false)
+        {
+            Exp.Current += waveExp;
+
+            if (log)
+            {
+                var getExp = new GetExp((CharacterBase) Clone(), waveExp);
+                Simulator.Log.Add(getExp);
+            }
+
+            if (Exp.Current < Exp.Max)
+                return;
+
+            Level = Game.Game.instance.TableSheets.LevelSheet.GetLevel(Exp.Current);
+        }
+
+        // ToDo. 지금은 스테이지에서 재료 아이템만 주고 있음. 추후 대체 불가능 아이템도 줄 경우 수정 대상.
+        public void GetRewards(List<ItemBase> items)
+        {
+            foreach (var item in items)
+            {
+                Inventory.AddFungibleItem(item);
+            }
         }
 
         public void Spawn()
         {
             InitAI();
-            var spawn = new SpawnPlayer
-            {
-                character = (CharacterBase) Clone(),
-            };
+            var spawn = new SpawnPlayer((CharacterBase) Clone());
             Simulator.Log.Add(spawn);
         }
 
-        private void LevelUp()
+        public IEnumerable<(StatType statType, int value, int additionalValue)> GetStatTuples()
         {
-            level = Game.Game.instance.TableSheets.LevelSheet.GetLevel(exp);
-        }
+            if (Stats.HasHP)
+                yield return (StatType.HP, Stats.LevelStats.HP, Stats.AdditionalHP);
 
-
-        public IEnumerable<(string key, object value, float additional)> GetStatusRow()
-        {
-            var fields = GetType().GetFields();
-            var tuples = fields
-                .Where(field => field.IsDefined(typeof(InformationFieldAttribute), true))
-                .Select(field => (field.Name, field.GetValue(this), decimal.ToSingle(GetAdditionalStatus(field.Name))));
-            return tuples;
-        }
-
-        public decimal GetAdditionalStatus(string key)
-        {
-            var game = Game.Game.instance;
-            if (!game.TableSheets.CharacterSheet.TryGetValue(characterId, out var characterRow))
-            {
-                throw new KeyNotFoundException($"invalid character id: `{characterId}`.");
-            }
-
-            var statsData = characterRow.ToStats(level);
-
-            decimal value;
-            switch (key)
-            {
-                case "atk":
-                    value = atk - statsData.ATK;
-                    break;
-                case "def":
-                    value = def - statsData.DEF;
-                    break;
-                case "hp":
-                    value = hp - statsData.HP;
-                    break;
-                case "luck":
-                    value = (luck - statsData.CRI);
-                    break;
-                default:
-                    throw new InvalidCastException($"invalid status key: `{key}`.");
-            }
-
-            return value;
+            if (Stats.HasATK)
+                yield return (StatType.ATK, Stats.LevelStats.ATK, Stats.AdditionalATK);
+            
+            if (Stats.HasDEF)
+                yield return (StatType.DEF, Stats.LevelStats.DEF, Stats.AdditionalDEF);
+            
+            if (Stats.HasCRI)
+                yield return (StatType.CRI, Stats.LevelStats.CRI, Stats.AdditionalCRI);
+            
+            if (Stats.HasDOG)
+                yield return (StatType.DOG, Stats.LevelStats.DOG, Stats.AdditionalDOG);
+            
+            if (Stats.HasSPD)
+                yield return (StatType.SPD, Stats.LevelStats.SPD, Stats.AdditionalSPD);
         }
 
         public IEnumerable<string> GetOptions()
         {
-            var atkOptions = atkElementType.GetOptions("damage");
+            var atkOptions = atkElementType.GetOptions(StatType.ATK);
             foreach (var atkOption in atkOptions)
             {
                 yield return atkOption;
             }
 
-            var defOptions = defElementType.GetOptions("defense");
+            var defOptions = defElementType.GetOptions(StatType.DEF);
             foreach (var defOption in defOptions)
             {
                 yield return defOption;
@@ -268,10 +226,14 @@ namespace Nekoyume.Model
 
         public void Use(List<Consumable> foods)
         {
+            Stats.SetConsumables(foods);
             foreach (var food in foods)
             {
-                food.UpdatePlayer(this);
-                inventory.RemoveNonFungibleItem(food);
+                foreach (var skill in food.Skills)
+                {
+                    Skills.Add(skill);
+                }
+                Inventory.RemoveNonFungibleItem(food);
             }
         }
 
@@ -279,6 +241,11 @@ namespace Nekoyume.Model
         {
             Skills.Clear();
             Skills.Add(skill);
+        }
+
+        public override object Clone()
+        {
+            return new Player(this);
         }
     }
 

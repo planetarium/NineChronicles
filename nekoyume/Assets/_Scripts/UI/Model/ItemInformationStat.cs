@@ -1,6 +1,6 @@
 using System;
 using Nekoyume.EnumType;
-using Nekoyume.Model;
+using Nekoyume.Game;
 using Nekoyume.TableData;
 using UniRx;
 
@@ -19,10 +19,10 @@ namespace Nekoyume.UI.Model
             value.Value = $"{itemRow.StatMin} - {itemRow.StatMax}";
         }
 
-        public ItemInformationStat(StatMap statMap)
+        public ItemInformationStat(StatMapEx statMapEx)
         {
-            key.Value = statMap.StatType.GetLocalizedString();
-            value.Value = $"{statMap.TotalValueAsInt}";
+            key.Value = statMapEx.StatType.GetLocalizedString();
+            value.Value = $"{statMapEx.TotalValueAsInt}";
         }
 
         public void Dispose()

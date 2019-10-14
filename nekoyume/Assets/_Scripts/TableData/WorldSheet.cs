@@ -28,6 +28,10 @@ namespace Nekoyume.TableData
                 StagesCount = StageEnd - StageBegin + 1;
             }
         }
+        
+        public WorldSheet() : base(nameof(WorldSheet))
+        {
+        }
     }
 
     public static class WorldSheetExtension

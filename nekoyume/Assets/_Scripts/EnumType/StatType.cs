@@ -22,24 +22,19 @@ namespace Nekoyume.EnumType
         DEF,
 
         /// <summary>
-        /// Speed
-        /// </summary>
-        SPD,
-
-        /// <summary>
-        /// Critical
+        /// Critical Chance
         /// </summary>
         CRI,
         
-//        /// <summary>
-//        /// Dodge
-//        /// </summary>
-//        DOG,
-
         /// <summary>
-        /// Attack Range
+        /// Dodge
         /// </summary>
-        RNG,
+        DOG,
+        
+        /// <summary>
+        /// Speed
+        /// </summary>
+        SPD
     }
 
     [Serializable]

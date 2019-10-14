@@ -35,39 +35,6 @@ namespace Nekoyume.TableData
 
         public IEnumerator CoInitialize()
         {
-#if UNITY_EDITOR
-            return CoInitializeForEditor();
-#else
-            return CoInitializeForPlayer();
-#endif
-        }
-
-        public IEnumerator CoInitializeForEditor()
-        {
-            loadProgress.Value = 0f;
-
-            var loadLocationOperation = Addressables.LoadResourceLocationsAsync("TableCSV");
-            yield return loadLocationOperation;
-            var locations = loadLocationOperation.Result;
-            var loadTaskCount = locations.Count;
-            var loadedTaskCount = 0;
-            foreach (var location in locations)
-            {
-                var loadAssetOperation = Addressables.LoadAssetAsync<TextAsset>(location);
-                yield return loadAssetOperation;
-                var textAsset = loadAssetOperation.Result;
-                SetToSheet(textAsset.name, textAsset.text);
-                loadedTaskCount++;
-                loadProgress.Value = (float)loadedTaskCount / loadTaskCount;
-            }
-
-            loadProgress.Value = 1f;
-
-            PostInitialize();
-        }
-
-        public IEnumerator CoInitializeForPlayer()
-        {
             loadProgress.Value = 0f;
 
             var request = Resources.LoadAsync<AddressableAssetsContainer>("AddressableAssetsContainer");
@@ -90,11 +57,6 @@ namespace Nekoyume.TableData
 
             loadProgress.Value = 1f;
 
-            PostInitialize();
-        }
-
-        private void PostInitialize()
-        {
             ItemSheetInitialize();
             QuestSheetInitialize();
         }
