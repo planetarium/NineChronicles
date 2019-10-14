@@ -9,7 +9,8 @@ namespace Planetarium.Nekoyume.Editor
         public int callbackOrder { get; }
         public void OnPreprocessBuild(BuildReport report)
         {
-            AddressableAssetSettings.BuildPlayerContent();
+            // todo: 패치 전략이 수립되고 나면, 게임 내 리소스 관리에 `AddressableAsset`을 적극적으로 사용하게 될 것으로 생각됨. 지금은 사용하지 않도록 함. 
+            // AddressableAssetSettings.BuildPlayerContent();
         }
     }
 }
