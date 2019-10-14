@@ -90,7 +90,7 @@ namespace Nekoyume.UI
                     var avatarState = AvatarManager.SetIndex(_selectedIndex);
                     OnDidAvatarStateLoaded(avatarState);
                     Find<GrayLoadingScreen>()?.Close();
-                });
+                }, onError: e => Widget.Find<ActionFailPopup>().Show("Action timeout during CreateAvatar."));
             AudioController.PlayClick();
         }
 

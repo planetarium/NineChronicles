@@ -64,8 +64,6 @@ namespace Nekoyume.UI
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-
-            StartCoroutine(CoWaitForQuit());
         }
 
         protected override void OnDisable()
@@ -96,12 +94,6 @@ namespace Nekoyume.UI
                 .Append(koreanImage.DOFade(1f, 0.3f))
                 .Append(koreanImage.DOFade(AlphaToBeginning, 0.6f))
                 .SetLoops(-1);
-        }
-
-        private IEnumerator CoWaitForQuit()
-        {
-            yield return new WaitForSeconds(GameConfig.WaitSeconds);
-            Find<ActionFailPopup>().Show();
         }
     }
 }

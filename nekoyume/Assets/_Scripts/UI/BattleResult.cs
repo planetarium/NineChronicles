@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Assets.SimpleLocalization;
+using Nekoyume.Action;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
@@ -268,8 +269,7 @@ namespace Nekoyume.UI
             suggestionsArea.submitButton2.interactable = false;
             
             StopCoUpdateBottomText();
-            var coFadeOut = StartCoroutine(CoFadeOut());
-            
+            StartCoroutine(CoFadeOut());
             var stage = Game.Game.instance.stage;
             var stageLoadingScreen = Find<StageLoadingScreen>();
             stageLoadingScreen.Show(stage.zone);
@@ -284,12 +284,21 @@ namespace Nekoyume.UI
             player.DisableHUD();
 
             var stageId = SharedModel.shouldRepeat ? stage.id : stage.id + 1;
-            var action = ActionManager.instance.HackAndSlash(player.Equipments, new List<Consumable>(), stageId)
-                .ToYieldInstruction();
-            yield return action;
-            yield return StartCoroutine(stageLoadingScreen.CoClose());
-            yield return coFadeOut;
-            Game.Event.OnStageStart.Invoke(action.Result.Action.Result);
+            yield return ActionManager.instance.HackAndSlash(player.Equipments, new List<Consumable>(), stageId)
+                .Subscribe(_ => {}, (_) => Find<ActionFailPopup>().Show("Action timeout during HackAndSlash."));
+        }
+
+        public void NextStage(ActionBase.ActionEvaluation<HackAndSlash> eval)
+        {
+            Debug.Log("NextStage From ResponseHackAndSlash");
+            StartCoroutine(CoGoToNextStageClose(eval));
+        }
+
+        private IEnumerator CoGoToNextStageClose(ActionBase.ActionEvaluation<HackAndSlash> eval)
+        {
+            yield return StartCoroutine(Find<StageLoadingScreen>().CoClose());
+            yield return StartCoroutine(CoFadeOut());
+            Game.Event.OnStageStart.Invoke(eval.Action.Result);
             Close();
         }
 

@@ -64,7 +64,7 @@ namespace Nekoyume.UI
                         var layout = slots[index].GetComponentInChildren<HorizontalLayoutGroup>();
                         layout.CalculateLayoutInputHorizontal();
                         layout.SetLayoutHorizontal();
-                    });
+                    }, onError: e => Widget.Find<ActionFailPopup>().Show("Action timeout during DeleteAvatar."));
             };
 
             AudioController.PlayClick();
