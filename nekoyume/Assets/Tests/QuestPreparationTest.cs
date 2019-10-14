@@ -23,18 +23,17 @@ namespace Tests
         [UnitySetUp]
         public IEnumerator QuestPreparationSetup()
         {
-            yield return SetUp();
             _widget = Widget.Find<QuestPreparation>();
             var data = Game.instance.TableSheets.EquipmentItemSheet.OrderedList.FirstOrDefault(row =>
                 row.ItemSubType == ItemSubType.Ring);
             var ring = new Ring(data, Guid.NewGuid());
             _ring = ring;
+            yield return null;
         }
 
         [UnityTearDown]
         public IEnumerator QuestPreparationTearDown()
         {
-            yield return TearDown();
             foreach (var es in _widget.equipmentSlots)
             {
                 es.Unequip();

@@ -13,6 +13,7 @@ using Libplanet.Tx;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
+using NetMQ;
 using NUnit.Framework;
 using UnityEngine;
 
@@ -21,6 +22,7 @@ namespace Tests
     [TestFixture]
     public class MinerFixture
     {
+        private const string Hex = "02ed49dbe0f2c34d9dff8335d6dd9097f7a3ef17dfb5f048382eebc7f451a50aa1";
         private readonly string _storePath;
         private readonly TestAgent _agent;
 
@@ -30,8 +32,7 @@ namespace Tests
         public MinerFixture(string storeName)
         {
             _storePath = $"{storeName}.ldb";
-            const string hex = "02ed49dbe0f2c34d9dff8335d6dd9097f7a3ef17dfb5f048382eebc7f451a50aa1";
-            var privateKey = new PrivateKey(ByteUtil.ParseHex(hex));
+            var privateKey = new PrivateKey(ByteUtil.ParseHex(Hex));
             if (File.Exists(_storePath))
                 File.Delete(_storePath);
             _agent = new GameObject().AddComponent<TestAgent>();
@@ -54,7 +55,7 @@ namespace Tests
         {
             public void TearDown()
             {
-                store.Dispose();
+                Dispose();
             }
 
             public IEnumerator CoMine(Transaction<PolymorphicAction<ActionBase>> transaction)

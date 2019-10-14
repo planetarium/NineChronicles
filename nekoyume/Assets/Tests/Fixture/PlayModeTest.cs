@@ -3,7 +3,6 @@ using System.Collections;
 using System.IO;
 using Libplanet;
 using Libplanet.Crypto;
-using Nekoyume.BlockChain;
 using Nekoyume.Game;
 using Nekoyume.Helper;
 using UnityEngine;
@@ -51,7 +50,6 @@ namespace Tests
         [UnityTearDown]
         protected IEnumerator TearDown()
         {
-            Debug.Log("TearDown");
             miner?.TearDown();
             File.Delete(_path);
             File.Delete(_path + ".meta");
@@ -64,7 +62,11 @@ namespace Tests
             yield return Game.instance.TearDown();
             if (!string.IsNullOrEmpty(_storePath))
             {
-                File.Delete($"{_storePath}.ldb");
+                var dir = Directory.GetCurrentDirectory();
+                var path = Path.Combine(dir, $"{_storePath}.ldb");
+                Debug.Log($"Delete {path}");
+                File.Delete(path);
+                yield return new WaitWhile(() => File.Exists(path));
             }
         }
     }

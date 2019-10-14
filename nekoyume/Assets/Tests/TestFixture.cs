@@ -2,7 +2,6 @@ using System.IO;
 using NUnit.Framework;
 using Planetarium.Nekoyume.Editor;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace Tests
 {
@@ -28,7 +27,6 @@ namespace Tests
             }
             File.Copy(path, _path);
             LibplanetEditor.DeleteAllEditor();
-//            SceneManager.LoadScene("Game");
         }
 
         [OneTimeTearDown]

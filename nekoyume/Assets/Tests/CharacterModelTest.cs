@@ -22,7 +22,6 @@ namespace Tests
         [UnitySetUp]
         public IEnumerator CharacterModelSetup()
         {
-            yield return SetUp();
             _random = new TestRandom();
             var address = new Address();
             var agentAddress = new Address();
@@ -30,6 +29,7 @@ namespace Tests
             var simulator = new Simulator(_random, avatarState, new List<Consumable>(), 1);
             _player = simulator.Player;
             _player.InitAI();
+            yield return null;
         }
 
         [Test]
