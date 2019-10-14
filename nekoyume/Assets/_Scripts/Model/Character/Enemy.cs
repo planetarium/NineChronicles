@@ -30,7 +30,7 @@ namespace Nekoyume.Model
         protected sealed override void SetSkill()
         {
             base.SetSkill();
-            //TODO 몬스터별 스킬 구현
+            
             var dmg = (int) (ATK * 1.3m);
             var chance = 1m;
             var skillIds = Game.Game.instance.TableSheets.EnemySkillSheet.Values.Where(r => r.characterId == RowData.Id)
