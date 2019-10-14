@@ -8,5 +8,9 @@ namespace Nekoyume.EnumType
         Area,
         Heal,
         AttackBuff,
+        DefenseBuff,
+        CriticalBuff,
+        DodgeBuff,
+        SpeedBuff,
     }
 }
