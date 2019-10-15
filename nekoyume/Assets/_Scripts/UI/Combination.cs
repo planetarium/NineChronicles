@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Manager;
 using Nekoyume.BlockChain;
-using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
@@ -15,7 +14,9 @@ using Assets.SimpleLocalization;
 using Nekoyume.Helper;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Factory;
+using Nekoyume.Model;
 using Nekoyume.State;
+using TMPro;
 
 namespace Nekoyume.UI
 {
@@ -35,9 +36,11 @@ namespace Nekoyume.UI
         public Button closeButton;
         public Button recipeCloseButton;
         public Recipe recipe;
+        public TextMeshProUGUI requiredPointText;
 
         private Stage _stage;
-        private Player _player;
+        private Game.Character.Player _player;
+        private IDisposable _disposable;
 
         private SimpleItemCountPopup SimpleItemCountPopup { get; set; }
         public Model.Combination SharedModel { get; private set; }
@@ -152,6 +155,7 @@ namespace Nekoyume.UI
             bottomMenu.goToMainButton.button.onClick.AddListener(GoToMenu);
             var status = Find<Status>();
             bottomMenu.questButton.button.onClick.AddListener(status.ToggleQuest);
+            requiredPointText.text = Action.Combination.RequiredPoint.ToString();
         }
 
         public override void Show()
@@ -163,6 +167,7 @@ namespace Nekoyume.UI
             _stage.LoadBackground("combination");
             _player = _stage.GetPlayer();
             _player.gameObject.SetActive(false);
+            _disposable = ReactiveCurrentAvatarState.ActionPoint.Subscribe(CheckPoint);
 
             AudioController.instance.PlayMusic(AudioController.MusicCode.Combination);
         }
@@ -175,6 +180,7 @@ namespace Nekoyume.UI
             }
 
             base.Close();
+            _disposable.Dispose();
 
             AudioController.instance.PlayMusic(AudioController.MusicCode.Main);
         }
@@ -326,7 +332,6 @@ namespace Nekoyume.UI
             {
                 combinationButton.enabled = true;
                 combinationButtonImage.sprite = Resources.Load<Sprite>("UI/Textures/button_blue_01");
-                combinationButtonText.color = Color.white;
             }
             else
             {
@@ -439,6 +444,11 @@ namespace Nekoyume.UI
         {
             Close();
             Find<Menu>().ShowRoom();
+        }
+
+        private void CheckPoint(int actionPoint)
+        {
+            requiredPointText.color = actionPoint >= Action.Combination.RequiredPoint ? Color.white : Color.red;
         }
     }
 }
