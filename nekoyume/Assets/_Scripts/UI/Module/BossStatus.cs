@@ -6,11 +6,11 @@ namespace Nekoyume.UI.Module
 {
     public class BossStatus : MonoBehaviour
     {
-        public Slider hpBar;
-        public Text hpText;
+        public Image hpBar;
+        public TextMeshProUGUI hpText;
         public TextMeshProUGUI levelText;
         public TextMeshProUGUI nameText;
-        public Image profileImage;
+        public Image portrait;
         public BuffLayout buffLayout;
 
         public void Show() => gameObject.SetActive(true);
@@ -20,7 +20,7 @@ namespace Nekoyume.UI.Module
         public void SetHp(int current, int max)
         {
             current = Mathf.Max(current, 0);
-            hpBar.value = (float) current / max;
+            hpBar.fillAmount = (float) current / max;
             hpText.text = $"{current}/{max}";
         }
 
@@ -28,7 +28,7 @@ namespace Nekoyume.UI.Module
         {
             levelText.text = $"Lv.{level}";
             nameText.text = name;
-            profileImage.overrideSprite = null;
+            portrait.overrideSprite = sprite; 
         }
 
         public void SetBuff()

@@ -11,6 +11,7 @@ namespace Nekoyume.UI
         public StageTitle stageTitle;
         public BottomMenu bottomMenu;
         public BossStatus bossStatus;
+        public bool IsBossAlive => bossStatus.hpBar.fillAmount > 0f;
 
 
         protected override void Awake()

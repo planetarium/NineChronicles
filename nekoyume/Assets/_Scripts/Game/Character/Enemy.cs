@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Nekoyume.TableData;
 using UniRx;
 using UnityEngine;
 
