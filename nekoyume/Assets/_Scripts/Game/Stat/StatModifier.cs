@@ -13,7 +13,7 @@ namespace Nekoyume.Game
 
         public StatType StatType { get; }
         public OperationType Operation { get; }
-        public int Value { get; }
+        public int Value { get; private set; }
 
         public StatModifier(StatType statType, OperationType operation, int value)
         {
@@ -139,5 +139,14 @@ namespace Nekoyume.Game
             
             value.AddCurrent(GetModifiedPart(Value));
         }
+
+        #region PlayModeTest
+
+        public void SetForTest(int value)
+        {
+            Value = value;
+        }
+
+        #endregion
     }
 }

@@ -21,21 +21,22 @@ namespace Nekoyume.Game.VFX.Skill
             }
         }
 
-        public T Get<T>(CharacterBase target, Model.Skill.SkillInfo skillInfo) where T : BuffVFX
+        public T Get<T>(CharacterBase target, Buff buff) where T : BuffVFX
         {
             var position = target.transform.position;
             position.x -= 0.2f;
             position.y += 0.32f;
-            var skillName = "buff_plus_attack";
-            var go = _pool.Get(skillName, false, position);
+            var resource = buff.RowData.IconResource;
+            var resourceName = resource.Replace("icon_", "");
+            var go = _pool.Get(resourceName, false, position);
             if (go == null)
             {
-                go = _pool.Get(skillName, true, position);
+                go = _pool.Get(resourceName, true, position);
             }
             var effect = go.GetComponent<T>();
             if (effect == null)
             {
-                Debug.LogError(skillName);
+                Debug.LogError(resourceName);
             }
             effect.target = target;
             effect.Stop();
@@ -44,7 +45,7 @@ namespace Nekoyume.Game.VFX.Skill
 
         public BuffCastingVFX Get(Vector3 position, Buff buff)
         {
-            var buffName = "buff_plus_casting";
+            var buffName = buff.RowData.StatModifier.Value > 0 ? "buff_plus_casting" : "buff_minus_casting";
             var go = _pool.Get(buffName, false, position);
             var effect = go.GetComponent<BuffCastingVFX>();
             effect.Stop();

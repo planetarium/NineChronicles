@@ -296,6 +296,13 @@ namespace Nekoyume.Game
         private void UpdateTotalStats()
         {
             Set(_levelStats, _equipmentStats, _consumableStats, _buffStats);
+            // 최소값 보정
+            hp.SetValue(Math.Max(0, hp.Value));
+            atk.SetValue(Math.Max(0, atk.Value));
+            def.SetValue(Math.Max(0, def.Value));
+            cri.SetValue(Math.Max(0, cri.Value));
+            dog.SetValue(Math.Max(0, dog.Value));
+            spd.SetValue(Math.Max(0, spd.Value));
         }
 
         public override object Clone()

@@ -367,7 +367,7 @@ namespace Nekoyume.Game.Character
                 var position = transform.TransformPoint(0f, 1.7f, 0f);
                 var force = new Vector3(-0.1f, 0.5f);
                 var buff = info.Buff;
-                var effect = Game.instance.stage.buffController.Get<AttackBuffVFX>(target, info);
+                var effect = Game.instance.stage.buffController.Get<BuffVFX>(target, buff);
                 effect.Play();
                 target.UpdateHpBar();
             }

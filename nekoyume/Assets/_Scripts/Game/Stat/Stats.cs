@@ -8,19 +8,19 @@ namespace Nekoyume.Game
     [Serializable]
     public class Stats : IStats, ICloneable
     {
-        private readonly IntStatWithCurrent _hp = new IntStatWithCurrent(StatType.HP);
-        private readonly IntStat _atk = new IntStat(StatType.ATK);
-        private readonly IntStat _def = new IntStat(StatType.DEF);
-        private readonly DecimalStat _cri = new DecimalStat(StatType.CRI);
-        private readonly DecimalStat _dog = new DecimalStat(StatType.DOG);
-        private readonly DecimalStat _spd = new DecimalStat(StatType.SPD);
+        protected readonly IntStatWithCurrent hp = new IntStatWithCurrent(StatType.HP);
+        protected readonly IntStat atk = new IntStat(StatType.ATK);
+        protected readonly IntStat def = new IntStat(StatType.DEF);
+        protected readonly DecimalStat cri = new DecimalStat(StatType.CRI);
+        protected readonly DecimalStat dog = new DecimalStat(StatType.DOG);
+        protected readonly DecimalStat spd = new DecimalStat(StatType.SPD);
 
-        public int HP => _hp.Value;
-        public int ATK => _atk.Value;
-        public int DEF => _def.Value;
-        public int CRI => _cri.ValueAsInt;
-        public int DOG => _dog.ValueAsInt;
-        public int SPD => _spd.ValueAsInt;
+        public int HP => hp.Value;
+        public int ATK => atk.Value;
+        public int DEF => def.Value;
+        public int CRI => cri.ValueAsInt;
+        public int DOG => dog.ValueAsInt;
+        public int SPD => spd.ValueAsInt;
         
         public bool HasHP => HP > 0;
         public bool HasATK => ATK > 0;
@@ -31,8 +31,8 @@ namespace Nekoyume.Game
 
         public int CurrentHP
         {
-            get => _hp.Current;
-            set => _hp.SetCurrent(value);
+            get => hp.Current;
+            set => hp.SetCurrent(value);
         }
 
         public Stats()
@@ -41,22 +41,22 @@ namespace Nekoyume.Game
 
         protected Stats(Stats value)
         {
-            _hp = (IntStatWithCurrent) value._hp.Clone();
-            _atk = (IntStat) value._atk.Clone();
-            _def = (IntStat) value._def.Clone();
-            _cri = (DecimalStat) value._cri.Clone();
-            _dog = (DecimalStat) value._dog.Clone();
-            _spd = (DecimalStat) value._spd.Clone();
+            hp = (IntStatWithCurrent) value.hp.Clone();
+            atk = (IntStat) value.atk.Clone();
+            def = (IntStat) value.def.Clone();
+            cri = (DecimalStat) value.cri.Clone();
+            dog = (DecimalStat) value.dog.Clone();
+            spd = (DecimalStat) value.spd.Clone();
         }
 
         public void Reset()
         {
-            _hp.Reset();
-            _atk.Reset();
-            _def.Reset();
-            _cri.Reset();
-            _dog.Reset();
-            _spd.Reset();
+            hp.Reset();
+            atk.Reset();
+            def.Reset();
+            cri.Reset();
+            dog.Reset();
+            spd.Reset();
         }
 
         /// <summary>
@@ -65,12 +65,12 @@ namespace Nekoyume.Game
         /// <param name="statsArray"></param>
         public void Set(params Stats[] statsArray)
         {
-            _hp.SetValue(statsArray.Sum(stats => stats._hp.Value));
-            _atk.SetValue(statsArray.Sum(stats => stats._atk.Value));
-            _def.SetValue(statsArray.Sum(stats => stats._def.Value));
-            _cri.SetValue(statsArray.Sum(stats => stats._cri.Value));
-            _dog.SetValue(statsArray.Sum(stats => stats._dog.Value));
-            _spd.SetValue(statsArray.Sum(stats => stats._spd.Value));
+            hp.SetValue(statsArray.Sum(stats => stats.hp.Value));
+            atk.SetValue(statsArray.Sum(stats => stats.atk.Value));
+            def.SetValue(statsArray.Sum(stats => stats.def.Value));
+            cri.SetValue(statsArray.Sum(stats => stats.cri.Value));
+            dog.SetValue(statsArray.Sum(stats => stats.dog.Value));
+            spd.SetValue(statsArray.Sum(stats => stats.spd.Value));
         }
 
         /// <summary>
@@ -88,22 +88,22 @@ namespace Nekoyume.Game
                 switch (statModifier.StatType)
                 {
                     case StatType.HP:
-                        _hp.AddValue(statModifier.GetModifiedPart(baseStatsArray.Sum(stats => stats._hp.Value)));
+                        hp.AddValue(statModifier.GetModifiedPart(baseStatsArray.Sum(stats => stats.hp.Value)));
                         break;
                     case StatType.ATK:
-                        _atk.AddValue(statModifier.GetModifiedPart(baseStatsArray.Sum(stats => stats._atk.Value)));
+                        atk.AddValue(statModifier.GetModifiedPart(baseStatsArray.Sum(stats => stats.atk.Value)));
                         break;
                     case StatType.DEF:
-                        _def.AddValue(statModifier.GetModifiedPart(baseStatsArray.Sum(stats => stats._def.Value)));
+                        def.AddValue(statModifier.GetModifiedPart(baseStatsArray.Sum(stats => stats.def.Value)));
                         break;
                     case StatType.CRI:
-                        _cri.AddValue(statModifier.GetModifiedPart(baseStatsArray.Sum(stats => stats._cri.Value)));
+                        cri.AddValue(statModifier.GetModifiedPart(baseStatsArray.Sum(stats => stats.cri.Value)));
                         break;
                     case StatType.DOG:
-                        _dog.AddValue(statModifier.GetModifiedPart(baseStatsArray.Sum(stats => stats._dog.Value)));
+                        dog.AddValue(statModifier.GetModifiedPart(baseStatsArray.Sum(stats => stats.dog.Value)));
                         break;
                     case StatType.SPD:
-                        _spd.AddValue(statModifier.GetModifiedPart(baseStatsArray.Sum(stats => stats._spd.Value)));
+                        spd.AddValue(statModifier.GetModifiedPart(baseStatsArray.Sum(stats => stats.spd.Value)));
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -117,12 +117,12 @@ namespace Nekoyume.Game
         /// <param name="value"></param>
         public void Set(StatsMap value)
         {
-            _hp.SetValue(value.HP);
-            _atk.SetValue(value.ATK);
-            _def.SetValue(value.DEF);
-            _cri.SetValue(value.CRI);
-            _dog.SetValue(value.DOG);
-            _spd.SetValue(value.SPD);
+            hp.SetValue(value.HP);
+            atk.SetValue(value.ATK);
+            def.SetValue(value.DEF);
+            cri.SetValue(value.CRI);
+            dog.SetValue(value.DOG);
+            spd.SetValue(value.SPD);
         }
         
         /// <summary>
@@ -136,22 +136,22 @@ namespace Nekoyume.Game
             switch (statType)
             {
                 case StatType.HP:
-                    _hp.SetValue(value);
+                    hp.SetValue(value);
                     break;
                 case StatType.ATK:
-                    _atk.SetValue(value);
+                    atk.SetValue(value);
                     break;
                 case StatType.DEF:
-                    _def.SetValue(value);
+                    def.SetValue(value);
                     break;
                 case StatType.CRI:
-                    _cri.SetValue(value);
+                    cri.SetValue(value);
                     break;
                 case StatType.DOG:
-                    _dog.SetValue(value);
+                    dog.SetValue(value);
                     break;
                 case StatType.SPD:
-                    _spd.SetValue(value);
+                    spd.SetValue(value);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(statType), statType, null);
@@ -163,22 +163,22 @@ namespace Nekoyume.Game
             switch (value.StatType)
             {
                 case StatType.HP:
-                    _hp.AddValue(value.ValueAsInt);
+                    hp.AddValue(value.ValueAsInt);
                     break;
                 case StatType.ATK:
-                    _atk.AddValue(value.ValueAsInt);
+                    atk.AddValue(value.ValueAsInt);
                     break;
                 case StatType.DEF:
-                    _def.AddValue(value.ValueAsInt);
+                    def.AddValue(value.ValueAsInt);
                     break;
                 case StatType.CRI:
-                    _cri.AddValue(value.Value);
+                    cri.AddValue(value.Value);
                     break;
                 case StatType.DOG:
-                    _dog.AddValue(value.Value);
+                    dog.AddValue(value.Value);
                     break;
                 case StatType.SPD:
-                    _spd.AddValue(value.Value);
+                    spd.AddValue(value.Value);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -190,22 +190,22 @@ namespace Nekoyume.Game
             switch (value.StatType)
             {
                 case StatType.HP:
-                    _hp.AddValue(value.TotalValueAsInt);
+                    hp.AddValue(value.TotalValueAsInt);
                     break;
                 case StatType.ATK:
-                    _atk.AddValue(value.TotalValueAsInt);
+                    atk.AddValue(value.TotalValueAsInt);
                     break;
                 case StatType.DEF:
-                    _def.AddValue(value.TotalValueAsInt);
+                    def.AddValue(value.TotalValueAsInt);
                     break;
                 case StatType.CRI:
-                    _cri.AddValue(value.TotalValue);
+                    cri.AddValue(value.TotalValue);
                     break;
                 case StatType.DOG:
-                    _dog.AddValue(value.TotalValue);
+                    dog.AddValue(value.TotalValue);
                     break;
                 case StatType.SPD:
-                    _spd.AddValue(value.TotalValue);
+                    spd.AddValue(value.TotalValue);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -214,12 +214,12 @@ namespace Nekoyume.Game
 
         public void Add(StatsMap value)
         {
-            _hp.AddValue(value.HP);
-            _atk.AddValue(value.ATK);
-            _def.AddValue(value.DEF);
-            _cri.AddValue(value.CRI);
-            _dog.AddValue(value.DOG);
-            _spd.AddValue(value.SPD);
+            hp.AddValue(value.HP);
+            atk.AddValue(value.ATK);
+            def.AddValue(value.DEF);
+            cri.AddValue(value.CRI);
+            dog.AddValue(value.DOG);
+            spd.AddValue(value.SPD);
         }
 
         public void Add(StatModifier value)
@@ -227,22 +227,22 @@ namespace Nekoyume.Game
             switch (value.StatType)
             {
                 case StatType.HP:
-                    value.Modify(_hp);
+                    value.Modify(hp);
                     break;
                 case StatType.ATK:
-                    value.Modify(_atk);
+                    value.Modify(atk);
                     break;
                 case StatType.DEF:
-                    value.Modify(_def);
+                    value.Modify(def);
                     break;
                 case StatType.CRI:
-                    value.Modify(_cri);
+                    value.Modify(cri);
                     break;
                 case StatType.DOG:
-                    value.Modify(_dog);
+                    value.Modify(dog);
                     break;
                 case StatType.SPD:
-                    value.Modify(_spd);
+                    value.Modify(spd);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -251,7 +251,7 @@ namespace Nekoyume.Game
         
         public void EqualizeCurrentHPWithHP()
         {
-            _hp.EqualizeCurrentWithValue();
+            hp.EqualizeCurrentWithValue();
         }
 
         public virtual object Clone()

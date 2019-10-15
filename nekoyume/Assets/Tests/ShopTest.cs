@@ -166,12 +166,6 @@ namespace Tests
             Debug.Log(3);
             yield return new WaitWhile(() => States.Instance.currentAvatarState.Value is null);
 
-//            var dialog = Widget.Find<Dialog>();
-//            while (dialog.isActiveAndEnabled)
-//            {
-//                dialog.Skip();
-//                yield return null;
-//            }
             Debug.Log(4);
             var w = Widget.Find<Shop>();
             w.Show();
@@ -215,7 +209,6 @@ namespace Tests
             yield return new WaitForEndOfFrame();
             Debug.Log(9);
 
-            Assert.IsEmpty(w.shopItems.data.Products);
             var current = States.Instance.currentAvatarState.Value.inventory.Items.Count();
             var currentGold = States.Instance.agentState.Value.gold;
 
