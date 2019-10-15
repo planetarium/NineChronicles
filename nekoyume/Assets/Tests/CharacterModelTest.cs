@@ -4,6 +4,7 @@ using System.Linq;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Battle;
+using Nekoyume.Data;
 using Nekoyume.Game;
 using Nekoyume.Game.Item;
 using Nekoyume.Model;
@@ -86,6 +87,55 @@ namespace Tests
             }
         }
 
+        [Test]
+        public void StatsWithIntDebuff()
+        {
+            var row = Game.instance.TableSheets.BuffSheet.Values.First(i => i.Id == 202001);
+            var debuff = BuffFactory.Get(row);
+            var currentAtk = _player.ATK;
+            Assert.AreEqual(9, currentAtk);
+            _player.AddBuff(debuff);
+            Assert.AreEqual(5, _player.ATK);
+
+        }
+
+        [Test]
+        public void StatsWithMinusDebuff()
+        {
+            var row = Game.instance.TableSheets.BuffSheet.Values.First(i => i.Id == 202001);
+            row.StatModifier.SetForTest(-200);
+            var debuff = BuffFactory.Get(row);
+            var currentAtk = _player.ATK;
+            Assert.AreEqual(9, currentAtk);
+            _player.AddBuff(debuff);
+            Assert.AreEqual(0, _player.ATK);
+
+        }
+
+        [Test]
+        public void StatsWithDecimalDebuff()
+        {
+            var row = Game.instance.TableSheets.BuffSheet.Values.First(i => i.Id == 204001);
+            var debuff = BuffFactory.Get(row);
+            var currentCri = _player.CRI;
+            Assert.AreEqual(7, currentCri);
+            _player.AddBuff(debuff);
+            Assert.AreEqual(3, _player.CRI);
+
+        }
+
+        [Test]
+        public void StatsWithMinusDecimalDebuff()
+        {
+            var row = Game.instance.TableSheets.BuffSheet.Values.First(i => i.Id == 204001);
+            row.StatModifier.SetForTest(-200);
+            var debuff = BuffFactory.Get(row);
+            var currentCri = _player.CRI;
+            Assert.AreEqual(7, currentCri);
+            _player.AddBuff(debuff);
+            Assert.AreEqual(0, _player.CRI);
+
+        }
         private class TestRandom : IRandom
         {
             public int Next()

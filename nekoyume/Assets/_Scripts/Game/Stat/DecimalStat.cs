@@ -39,7 +39,7 @@ namespace Nekoyume.Game
 
         public void SetValue(decimal value)
         {
-            Value = Math.Max(0, value);
+            Value = value;
         }
         
         public void AddValue(decimal value)

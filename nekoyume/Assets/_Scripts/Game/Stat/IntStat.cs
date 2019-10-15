@@ -32,7 +32,7 @@ namespace Nekoyume.Game
 
         public void SetValue(int value)
         {
-            Value = Math.Max(0, value);
+            Value = value;
         }
 
         public void AddValue(int value)

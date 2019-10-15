@@ -37,20 +37,21 @@ namespace Nekoyume.Game
                     }
 
                     break;
+                case SkillType.Debuff:
                 case SkillType.Buff:
                     switch (skillEffectRow.skillCategory)
                     {
                         case SkillCategory.Heal:
                             return new HealSkill(skillRow, power, chance);
+                        case SkillCategory.DefenseBuff:
+                        case SkillCategory.CriticalBuff:
+                        case SkillCategory.DodgeBuff:
+                        case SkillCategory.SpeedBuff:
                         case SkillCategory.AttackBuff:
                             return new BuffSkill(skillRow, power, chance);
                         default:
                             throw new ArgumentOutOfRangeException();
                     }
-
-                    break;
-                case SkillType.Debuff:
-                    break;
             }
 
             throw new UnexpectedOperationException(
