@@ -1,8 +1,9 @@
 using System.Collections;
-using Libplanet;
+using System.Linq;
+using Nekoyume.BlockChain;
 using Nekoyume.Game;
 using Nekoyume.Game.Character;
-using Nekoyume.State;
+using Nekoyume.UI;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -14,11 +15,22 @@ namespace Tests
         [UnityTest]
         public IEnumerator DoFade()
         {
-            var address = new Address();
-            var agentAddress = new Address();
-            var avatarState = new AvatarState(address, agentAddress, 1, 20);
-            var go = Game.instance.stage.playerFactory.Create(avatarState);
-            var player = go.GetComponent<Player>();
+            miner = new MinerFixture("player_doFade");
+
+            // CreateAvatar
+            Widget.Find<Title>().OnClick();
+            Widget.Find<Synopsis>().End();
+            yield return new WaitUntil(() => Widget.Find<Login>().ready);
+            Widget.Find<Login>().SlotClick(2);
+            var loginDetail = Widget.Find<LoginDetail>();
+            loginDetail.nameField.text = "doFade";
+            loginDetail.CreateClick();
+            yield return new WaitUntil(() => Game.instance.agent.Transactions.Any());
+            var createAvatarTx = Game.instance.agent.Transactions.First().Value;
+            yield return miner.CoMine(createAvatarTx);
+            yield return new WaitWhile(() => States.Instance.currentAvatarState.Value is null);
+
+            var player = Game.instance.stage.GetPlayer();
             var skeleton = player.GetComponentInChildren<SkeletonAnimationController>().SkeletonAnimation.skeleton;
             Assert.AreEqual(1f, skeleton.A);
             player.DoFade(0f, 1f);
