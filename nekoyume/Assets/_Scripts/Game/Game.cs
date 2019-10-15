@@ -51,7 +51,7 @@ namespace Nekoyume.Game
             LocalizationManager.Read();
 #endif
             MainCanvas.instance.InitializeFirst();
-            Widget.Find<LoadingScreen>().Show(false);
+            Widget.Find<LoadingScreen>().Show();
         }
 
         private IEnumerator Start()

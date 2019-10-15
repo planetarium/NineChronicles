@@ -1,11 +1,14 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
     public class ActionFailPopup : SystemPopup
     {
-        public override void Show()
+        public Text contentTextField;
+        public void Show(string msg)
         {
+            contentTextField.text = msg;
             CloseCallback = Application.Quit;
             base.Show();
         }
