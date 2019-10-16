@@ -8,6 +8,7 @@ using Nekoyume.Battle;
 using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.TableData;
+using UniRx;
 
 namespace Nekoyume.Model
 {

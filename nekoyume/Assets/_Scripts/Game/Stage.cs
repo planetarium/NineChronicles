@@ -50,11 +50,12 @@ namespace Nekoyume.Game
         public bool repeatStage;
         public string zone;
 
-        public bool IsInStage { get; private set; }
         private Camera _camera;
         private BattleLog _battleLog;
         private BattleResult.Model _battleResultModel;
-        private Enemy _boss;
+
+        public bool IsInStage { get; private set; }
+        public Enemy Boss { get; private set; }
 
         protected void Awake()
         {
@@ -262,7 +263,7 @@ namespace Nekoyume.Game
 
         private IEnumerator CoStageEnd(BattleLog log)
         {
-            _boss = null;
+            Boss = null;
             yield return new WaitForSeconds(2.0f);
             var battle = Widget.Find<UI.Battle>();
             battle.bossStatus.Close();
@@ -408,12 +409,6 @@ namespace Nekoyume.Game
         private IEnumerator CoAfterSkill(Character.CharacterBase character,
             IEnumerable<Model.Skill.SkillInfo> buffInfos)
         {
-            var battle = Widget.Find<UI.Battle>();
-            if (!(_boss is null) && battle.IsBossAlive)
-            {
-                battle.bossStatus.SetHp(_boss.CurrentHP, _boss.HP);
-            }
-
             if (!character)
                 throw new ArgumentNullException(nameof(character));
 
@@ -475,7 +470,7 @@ namespace Nekoyume.Game
                 yield return new WaitForSeconds(2.0f);
                 var boss = enemies[0];
                 boss.isBoss = true;
-                _boss = boss;
+                Boss = boss;
                 var sprite = SpriteHelper.GetCharacterIcon(boss.RowData.Id);
                 battle.bossStatus.Show();
                 battle.bossStatus.SetHp(boss.HP, boss.HP);

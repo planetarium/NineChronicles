@@ -1,3 +1,4 @@
+using Nekoyume.UI;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -62,6 +63,18 @@ namespace Nekoyume.Game.Character
             {
                 ShowSpeech("ENEMY_INIT", model.spawnIndex);
             }
+        }
+
+        public override void UpdateHpBar()
+        {
+            base.UpdateHpBar();
+
+            var boss = Game.instance.stage.Boss;
+            if (!(boss is null) && !Id.Equals(boss.Id))
+                return;
+
+            var battle = Widget.Find<UI.Battle>();
+            battle.bossStatus.SetHp(CurrentHP, HP);
         }
 
         protected override IEnumerator CoProcessDamage(Model.Skill.SkillInfo info, bool isConsiderDie,

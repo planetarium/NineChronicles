@@ -168,7 +168,7 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        public void UpdateHpBar()
+        public virtual void UpdateHpBar()
         {
             if (!Game.instance.stage.IsInStage)
                 return;
