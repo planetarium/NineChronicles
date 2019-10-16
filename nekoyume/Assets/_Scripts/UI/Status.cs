@@ -124,14 +124,14 @@ namespace Nekoyume.UI
             TextLevel.text = $"LV. {level}";
             var displayHp = math.max(_player.CurrentHP, 0);
             TextHP.text = $"HP {displayHp} / {_player.HP}";
-            TextExp.text = $"EXP {_player.Model.Exp.Need - _player.EXPMax + _player.EXP} / {_player.Model.Exp.Need}";
+            TextExp.text = $"EXP {_player.Model.Value.Exp.Need - _player.EXPMax + _player.EXP} / {_player.Model.Value.Exp.Need}";
 
             float hpValue = _player.CurrentHP / (float)_player.HP;
             HPBar.gameObject.SetActive(hpValue > 0.0f);
             hpValue = Mathf.Min(Mathf.Max(hpValue, 0.1f), 1.0f);
             HPBar.fillAmount = hpValue;
 
-            var expNeed = _player.Model.Exp.Need;
+            var expNeed = _player.Model.Value.Exp.Need;
             var levelExp = _player.EXPMax - expNeed;
             var expValue = (float)(_player.EXP - levelExp) / expNeed;
             ExpBar.gameObject.SetActive(expValue > 0.0f);

@@ -31,15 +31,16 @@ namespace Nekoyume.Game
         public EnemyFactory enemyFactory;
         public DropItemFactory dropItemFactory;
         public SkillController skillController;
-        
+        public BuffController buffController;
+
         public MonsterSpawner spawner;
-        
+
         public GameObject background;
         // dummy for stage background moving.
         public GameObject dummy;
         public ParticleSystem defaultBGVFX;
         public ParticleSystem bosswaveBGVFX;
-        
+
         public int id;
         public Character.Player selectedPlayer;
         public Vector3 selectPositionBegin(int index) => new Vector3(-2.2f + index * 2.22f, -2.6f, 0.0f);
@@ -48,7 +49,8 @@ namespace Nekoyume.Game
         public readonly Vector2 roomPosition = new Vector2(-2.66f, -1.85f);
         public bool repeatStage;
         public string zone;
-        
+
+        public bool IsInStage { get; private set; }
         private Camera _camera;
         private BattleLog _battleLog;
         private BattleResult.Model _battleResultModel;
@@ -76,8 +78,15 @@ namespace Nekoyume.Game
 
         private void OnStageStart(BattleLog log)
         {
-            _battleLog = log;
-            Play(_battleLog);
+            if (_battleLog?.id != log.id)
+            {
+                _battleLog = log;
+                Play(_battleLog);
+            }
+            else
+            {
+                Debug.Log("Skip duplicated battle");
+            }
         }
 
         private void OnNestEnter()
@@ -108,7 +117,7 @@ namespace Nekoyume.Game
                         anim.Target.SetActive(true);
                         var skeleton = anim.Target.GetComponentInChildren<SkeletonAnimation>().skeleton;
                         skeleton.A = 0.0f;
-                        DOTween.To(() => skeleton.A, x=> skeleton.A = x, 1.0f, 1.0f);
+                        DOTween.To(() => skeleton.A, x => skeleton.A = x, 1.0f, 1.0f);
                         anim.Appear();
                     }
 
@@ -226,13 +235,15 @@ namespace Nekoyume.Game
 
         private IEnumerator CoStageEnter(int stage)
         {
+            IsInStage = true;
+
             if (!Game.instance.TableSheets.BackgroundSheet.TryGetValue(stage, out var data))
             {
                 yield break;
             }
-            
+
             _battleResultModel = new BattleResult.Model();
-            
+
             id = stage;
             zone = data.Background;
             LoadBackground(zone, 3.0f);
@@ -275,6 +286,7 @@ namespace Nekoyume.Game
             _battleResultModel.shouldRepeat = repeatStage;
             Widget.Find<BattleResult>().Show(_battleResultModel);
 
+            IsInStage = false;
             yield return null;
         }
 
@@ -290,8 +302,7 @@ namespace Nekoyume.Game
         public IEnumerator CoSpawnPlayer(Player character)
         {
             var playerCharacter = RunPlayer();
-            playerCharacter.InBattle = true;
-            playerCharacter.Init(character);
+            playerCharacter.Set(character, true);
             playerCharacter.ShowSpeech("PLAYER_INIT");
             var player = playerCharacter.gameObject;
 
@@ -307,80 +318,65 @@ namespace Nekoyume.Game
             yield return null;
         }
 
-        public IEnumerator CoAttack(CharacterBase caster, IEnumerable<Model.Skill.SkillInfo> skillInfos)
+        #region Skill
+
+        public IEnumerator CoNormalAttack(CharacterBase caster, IEnumerable<Model.Skill.SkillInfo> skillInfos,
+            IEnumerable<Model.Skill.SkillInfo> buffInfos)
         {
             var character = GetCharacter(caster);
-            var infos = skillInfos.ToList();
-
-            if (character)
-            {
-                yield return StartCoroutine(BeforeSkill(character));
-
-                yield return StartCoroutine(character.CoAttack(infos));
-
-                yield return StartCoroutine(AfterSkill(character));
-            }
+            yield return StartCoroutine(CoSkill(character, skillInfos, buffInfos, character.CoNormalAttack));
         }
 
-        public IEnumerator CoAreaAttack(CharacterBase caster, IEnumerable<Model.Skill.SkillInfo> skillInfos)
+        public IEnumerator CoBlowAttack(CharacterBase caster, IEnumerable<Model.Skill.SkillInfo> skillInfos,
+            IEnumerable<Model.Skill.SkillInfo> buffInfos)
         {
             var character = GetCharacter(caster);
-            var infos = skillInfos.ToList();
-
-            if (character)
-            {
-                yield return StartCoroutine(BeforeSkill(character));
-
-                yield return StartCoroutine(character.CoAreaAttack(infos));
-
-                yield return StartCoroutine(AfterSkill(character));
-            }
+            yield return StartCoroutine(CoSkill(character, skillInfos, buffInfos, character.CoBlowAttack));
         }
 
-        public IEnumerator CoDoubleAttack(CharacterBase caster, IEnumerable<Model.Skill.SkillInfo> skillInfos)
+        public IEnumerator CoDoubleAttack(CharacterBase caster, IEnumerable<Model.Skill.SkillInfo> skillInfos,
+            IEnumerable<Model.Skill.SkillInfo> buffInfos)
         {
             var character = GetCharacter(caster);
-            var infos = skillInfos.ToList();
-
-            if (character)
-            {
-                yield return StartCoroutine(BeforeSkill(character));
-
-                yield return StartCoroutine(character.CoDoubleAttack(infos));
-
-                yield return StartCoroutine(AfterSkill(character));
-            }
+            yield return StartCoroutine(CoSkill(character, skillInfos, buffInfos, character.CoDoubleAttack));
         }
 
-        public IEnumerator CoBlow(CharacterBase caster, IEnumerable<Model.Skill.SkillInfo> skillInfos)
+        public IEnumerator CoAreaAttack(CharacterBase caster, IEnumerable<Model.Skill.SkillInfo> skillInfos,
+            IEnumerable<Model.Skill.SkillInfo> buffInfos)
         {
             var character = GetCharacter(caster);
-            var infos = skillInfos.ToList();
-
-            if (character)
-            {
-                yield return StartCoroutine(BeforeSkill(character));
-
-                yield return StartCoroutine(character.CoBlow(infos));
-
-                yield return StartCoroutine(AfterSkill(character));
-            }
+            yield return StartCoroutine(CoSkill(character, skillInfos, buffInfos, character.CoAreaAttack));
         }
 
-        public IEnumerator CoHeal(CharacterBase caster, IEnumerable<Model.Skill.SkillInfo> skillInfos)
+        public IEnumerator CoHeal(CharacterBase caster, IEnumerable<Model.Skill.SkillInfo> skillInfos,
+            IEnumerable<Model.Skill.SkillInfo> buffInfos)
         {
             var character = GetCharacter(caster);
-            var infos = skillInfos.ToList();
-
-            if (character)
-            {
-                yield return StartCoroutine(BeforeSkill(character));
-
-                yield return StartCoroutine(character.CoHeal(infos));
-
-                yield return StartCoroutine(AfterSkill(character));
-            }
+            yield return StartCoroutine(CoSkill(character, skillInfos, buffInfos, character.CoHeal));
         }
+
+        public IEnumerator CoBuff(CharacterBase caster, IEnumerable<Model.Skill.SkillInfo> skillInfos,
+            IEnumerable<Model.Skill.SkillInfo> buffInfos)
+        {
+            var character = GetCharacter(caster);
+            yield return StartCoroutine(CoSkill(character, skillInfos, buffInfos, character.CoBuff));
+        }
+
+        private IEnumerator CoSkill(Character.CharacterBase character, IEnumerable<Model.Skill.SkillInfo> skillInfos,
+            IEnumerable<Model.Skill.SkillInfo> buffInfos,
+            Func<IReadOnlyList<Model.Skill.SkillInfo>, IEnumerator> func)
+        {
+            if (!character)
+                throw new ArgumentNullException(nameof(character));
+
+            yield return StartCoroutine(CoBeforeSkill(character));
+
+            yield return StartCoroutine(func(skillInfos.ToList()));
+
+            yield return StartCoroutine(CoAfterSkill(character, buffInfos));
+        }
+
+        #endregion
 
         public IEnumerator CoDropBox(List<ItemBase> items)
         {
@@ -396,6 +392,58 @@ namespace Nekoyume.Game
             yield return null;
         }
 
+        private IEnumerator CoBeforeSkill(Character.CharacterBase character)
+        {
+            if (!character)
+                throw new ArgumentNullException(nameof(character));
+
+            var enemy = GetComponentsInChildren<Character.CharacterBase>()
+                .Where(c => c.gameObject.CompareTag(character.TargetTag) && c.IsAlive())
+                .OrderBy(c => c.transform.position.x).FirstOrDefault();
+            if (enemy == null || character.TargetInRange(enemy)) yield break;
+            character.StartRun();
+            yield return new WaitUntil(() => character.TargetInRange(enemy));
+        }
+
+        private IEnumerator CoAfterSkill(Character.CharacterBase character,
+            IEnumerable<Model.Skill.SkillInfo> buffInfos)
+        {
+            var battle = Widget.Find<UI.Battle>();
+            if (!(_boss is null) && battle.IsBossAlive)
+            {
+                battle.bossStatus.SetHp(_boss.CurrentHP, _boss.HP);
+            }
+
+            if (!character)
+                throw new ArgumentNullException(nameof(character));
+
+            character.UpdateHpBar();
+
+            if (!(buffInfos is null))
+            {
+                foreach (var buffInfo in buffInfos)
+                {
+                    var buffCharacter = GetCharacter(buffInfo.Target);
+                    buffCharacter.UpdateHpBar();
+                }
+            }
+
+            yield return new WaitForSeconds(SkillDelay);
+            var enemy = GetComponentsInChildren<Character.CharacterBase>()
+                .Where(c => c.gameObject.CompareTag(character.TargetTag) && c.IsAlive())
+                .OrderBy(c => c.transform.position.x).FirstOrDefault();
+            if (enemy != null && !character.TargetInRange(enemy))
+                character.StartRun();
+        }
+
+        public IEnumerator CoRemoveBuffs(CharacterBase caster)
+        {
+            var character = GetCharacter(caster);
+            character.UpdateHpBar();
+
+            yield break;
+        }
+
         public IEnumerator CoGetReward(List<ItemBase> rewards)
         {
             foreach (var item in rewards)
@@ -407,7 +455,7 @@ namespace Nekoyume.Game
             yield return null;
         }
 
-        public IEnumerator CoSpawnWave(List<Enemy> monsters, bool isBoss)
+        public IEnumerator CoSpawnWave(List<Enemy> enemies, bool isBoss)
         {
             var playerCharacter = GetPlayer();
             playerCharacter.StartRun();
@@ -425,7 +473,7 @@ namespace Nekoyume.Game
                 yield return new WaitForSeconds(2.0f);
                 StartCoroutine(Widget.Find<Blind>().FadeOut(0.2f));
                 yield return new WaitForSeconds(2.0f);
-                var boss = monsters[0];
+                var boss = enemies[0];
                 boss.isBoss = true;
                 _boss = boss;
                 var sprite = SpriteHelper.GetCharacterIcon(boss.RowData.Id);
@@ -435,7 +483,7 @@ namespace Nekoyume.Game
                 playerCharacter.ShowSpeech("PLAYER_BOSS_ENCOUNTER");
             }
 
-            yield return StartCoroutine(spawner.CoSetData(id, monsters));
+            yield return StartCoroutine(spawner.CoSetData(id, enemies));
         }
 
         public IEnumerator CoGetExp(long exp)
@@ -450,7 +498,7 @@ namespace Nekoyume.Game
             var player = GetComponentInChildren<Character.Player>();
             if (player != null)
                 return player;
-            
+
             var go = playerFactory.Create(States.Instance.currentAvatarState.Value);
             player = go.GetComponent<Character.Player>();
 
@@ -480,48 +528,23 @@ namespace Nekoyume.Game
             return player;
         }
 
+        /// <summary>
+        /// 게임 캐릭터를 갖고 올 때 사용함.
+        /// 갖고 올 때 매번 모델을 할당해주고 있음.
+        /// 모델을 매번 할당하지 않고, 모델이 변경되는 로직 마다 바꿔주게 하는 것이 좋겠음. 물론 연출도 그때에 맞춰서 해주는 식.
+        /// </summary>
+        /// <param name="caster"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
         public Character.CharacterBase GetCharacter(CharacterBase caster)
         {
             if (caster is null)
                 throw new ArgumentNullException(nameof(caster));
-            
+
             var character = GetComponentsInChildren<Character.CharacterBase>().FirstOrDefault(c => c.Id == caster.Id);
             if (!(character is null))
-                character.Init(caster);
+                character.Set(caster);
             return character;
-        }
-
-        private IEnumerator BeforeSkill(Character.CharacterBase character)
-        {
-            if (character)
-            {
-                var enemy = GetComponentsInChildren<Character.CharacterBase>()
-                    .Where(c => c.gameObject.CompareTag(character.TargetTag) && c.IsAlive())
-                    .OrderBy(c => c.transform.position.x).FirstOrDefault();
-                if (enemy == null || character.TargetInRange(enemy)) yield break;
-                character.StartRun();
-                yield return new WaitUntil(() => character.TargetInRange(enemy));
-            }
-        }
-
-        private IEnumerator AfterSkill(Character.CharacterBase character)
-        {
-            var battle = Widget.Find<UI.Battle>();
-            if (!(_boss is null) && battle.IsBossAlive)
-            {
-                battle.bossStatus.SetHp(_boss.CurrentHP, _boss.HP);
-            }
-
-            if (character)
-            {
-                character.UpdateBuffs();
-                yield return new WaitForSeconds(SkillDelay);
-                var enemy = GetComponentsInChildren<Character.CharacterBase>()
-                    .Where(c => c.gameObject.CompareTag(character.TargetTag) && c.IsAlive())
-                    .OrderBy(c => c.transform.position.x).FirstOrDefault();
-                if (enemy != null && !character.TargetInRange(enemy))
-                    character.StartRun();
-            }
         }
 
         private void PlayBGVFX(bool isBoss)
