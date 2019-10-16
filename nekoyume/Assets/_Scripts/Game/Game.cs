@@ -41,14 +41,16 @@ namespace Nekoyume.Game
         public TableSheets TableSheets { get; private set; }
         public bool initialized;
 
+        #region Mono & Initialization
+        
         protected override void Awake()
         {
             Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
             base.Awake();
 #if UNITY_EDITOR
-            LocalizationManager.Read(languageType);
+            LocalizationManager.Initialize(languageType);
 #else
-            LocalizationManager.Read();
+            LocalizationManager.Initialize();
 #endif
             MainCanvas.instance.InitializeFirst();
             Widget.Find<LoadingScreen>().Show();
@@ -89,6 +91,17 @@ namespace Nekoyume.Game
             {
                 Widget.Find<UpdatePopup>().Show();
             }
+        }
+        
+        #endregion
+
+        public void Quit()
+        {
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+#else
+            Application.Quit();
+#endif
         }
 
         private void PlayMouseOnClickVFX(Vector3 position)

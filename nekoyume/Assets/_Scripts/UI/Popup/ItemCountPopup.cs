@@ -41,7 +41,7 @@ namespace Nekoyume.UI
             minusButton.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
-                    _data.onClickMinus.OnNext(_data);
+                    _data.OnClickMinus.OnNext(_data);
                     AudioController.PlayClick();
                 })
                 .AddTo(_disposablesForAwake);
@@ -49,7 +49,7 @@ namespace Nekoyume.UI
             plusButton.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
-                    _data.onClickPlus.OnNext(_data);
+                    _data.OnClickPlus.OnNext(_data);
                     AudioController.PlayClick();
                 })
                 .AddTo(_disposablesForAwake);
@@ -57,7 +57,7 @@ namespace Nekoyume.UI
             cancelButton.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
-                    _data.onClickCancel.OnNext(_data);
+                    _data.OnClickCancel.OnNext(_data);
                     AudioController.PlayCancel();
                 })
                 .AddTo(_disposablesForAwake);
@@ -65,7 +65,7 @@ namespace Nekoyume.UI
             submitButton.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
-                    _data.onClickSubmit.OnNext(_data);
+                    _data.OnClickSubmit.OnNext(_data);
                     AudioController.PlayClick();
                 })
                 .AddTo(_disposablesForAwake);
@@ -101,15 +101,15 @@ namespace Nekoyume.UI
             
             _disposablesForSetData.DisposeAllAndClear();
             _data = data;
-            _data.titleText.Subscribe(value => titleText.text = value).AddTo(_disposablesForSetData);
-            _data.item.Value.Count.Subscribe(SetCount).AddTo(_disposablesForSetData);
-            _data.countEnabled.Subscribe(countEnabled =>
+            _data.TitleText.Subscribe(value => titleText.text = value).AddTo(_disposablesForSetData);
+            _data.Item.Value.Count.Subscribe(SetCount).AddTo(_disposablesForSetData);
+            _data.CountEnabled.Subscribe(countEnabled =>
             {
                 minusButton.gameObject.SetActive(countEnabled);
                 plusButton.gameObject.SetActive(countEnabled);
             }).AddTo(_disposablesForSetData);
-            _data.submitText.Subscribe(value => submitButtonText.text = value).AddTo(_disposablesForSetData);
-            itemView.SetData(_data.item.Value);
+            _data.SubmitText.Subscribe(value => submitButtonText.text = value).AddTo(_disposablesForSetData);
+            itemView.SetData(_data.Item.Value);
             
             UpdateView();
         }
@@ -131,7 +131,7 @@ namespace Nekoyume.UI
                 return;
             }
             
-            SetCount(_data.item.Value.Count.Value);
+            SetCount(_data.Item.Value.Count.Value);
         }
         
         private void SetCount(int count)

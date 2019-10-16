@@ -189,7 +189,7 @@ namespace Nekoyume
             base.Show();
         }
 
-        public override void Close()
+        public override void Close(bool ignoreCloseAnimation = false)
         {
             Peers.Find("Scrollbar").GetComponent<Scrollbar>().onValueChanged.RemoveAllListeners();
             StagedTxs.Find("Scrollbar").GetComponent<Scrollbar>().onValueChanged.RemoveAllListeners();

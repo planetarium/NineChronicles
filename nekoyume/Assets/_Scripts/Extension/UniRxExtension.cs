@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using TMPro;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -30,14 +31,29 @@ namespace Nekoyume
             collection.Clear();
         }
         
+        public static IDisposable SubscribeToGameObject(this IObservable<bool> source, GameObject gameObject)
+        {
+            return source.SubscribeWithState(gameObject, (x, t) => gameObject.SetActive(x));
+        }
+        
         public static IDisposable SubscribeToBehaviour(this IObservable<bool> source, Behaviour behaviour)
         {
             return source.SubscribeWithState(behaviour, (x, t) => behaviour.enabled = x);
         }
         
-        public static IDisposable SubscribeToImage(this IObservable<Sprite> source, Image text)
+        public static IDisposable SubscribeToImage(this IObservable<Sprite> source, Image image)
         {
-            return source.SubscribeWithState(text, (x, t) => t.sprite = x);
+            return source.SubscribeWithState(image, (x, t) => t.sprite = x);
+        }
+        
+        public static IDisposable SubscribeToText(this IObservable<string> source, TextMeshProUGUI text)
+        {
+            return source.SubscribeWithState(text, (x, t) => t.text = x);
+        }
+        
+        public static IDisposable SubscribeTo<T>(this IObservable<T> source, ReactiveProperty<T> reactiveProperty)
+        {
+            return source.SubscribeWithState(reactiveProperty, (x, t) => t.Value = x);
         }
     }
 }

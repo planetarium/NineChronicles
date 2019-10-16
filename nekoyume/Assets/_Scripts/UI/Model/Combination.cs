@@ -49,11 +49,11 @@ namespace Nekoyume.UI.Model
         public Combination()
         {
             ItemCountPopup.Value = new SimpleItemCountPopup();
-            ItemCountPopup.Value.titleText.Value =
+            ItemCountPopup.Value.TitleText.Value =
                 LocalizationManager.Localize("UI_COMBINATION_MATERIAL_COUNT_SELECTION");
 
             State.Subscribe(SubscribeState);
-            ItemCountPopup.Value.onClickSubmit.Subscribe(OnClickSubmitItemCountPopup);
+            ItemCountPopup.Value.OnClickSubmit.Subscribe(OnClickSubmitItemCountPopup);
             Materials.ObserveAdd().Subscribe(_ => OnMaterialAdd(_.Value));
             Materials.ObserveRemove().Subscribe(_ => OnMaterialRemove(_.Value));
         }
@@ -94,14 +94,14 @@ namespace Nekoyume.UI.Model
         private void OnClickSubmitItemCountPopup(SimpleItemCountPopup data)
         {
             if (ReferenceEquals(data, null)
-                || ReferenceEquals(data.item.Value, null))
+                || ReferenceEquals(data.Item.Value, null))
             {
-                ItemCountPopup.Value.item.Value = null;
+                ItemCountPopup.Value.Item.Value = null;
                 return;
             }
 
-            RegisterToStagedItems(data.item.Value);
-            ItemCountPopup.Value.item.Value = null;
+            RegisterToStagedItems(data.Item.Value);
+            ItemCountPopup.Value.Item.Value = null;
         }
 
         public void RemoveEquipmentMaterial()

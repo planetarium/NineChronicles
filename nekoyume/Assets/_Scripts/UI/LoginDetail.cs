@@ -191,10 +191,10 @@ namespace Nekoyume.UI
             nameField.ActivateInputField();
         }
 
-        public override void Close()
+        public override void Close(bool ignoreCloseAnimation = false)
         {
             Clear();
-            base.Close();
+            base.Close(ignoreCloseAnimation);
         }
 
         private void Clear()

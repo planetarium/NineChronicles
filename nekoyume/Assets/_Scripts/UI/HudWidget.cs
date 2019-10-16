@@ -6,7 +6,7 @@ namespace Nekoyume.UI
     {
         public override WidgetType WidgetType => WidgetType.Hud;
         
-        public override void Close()
+        public override void Close(bool ignoreCloseAnimation = false)
         {
             Destroy(gameObject);
         }

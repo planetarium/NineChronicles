@@ -35,11 +35,11 @@ namespace Nekoyume.UI
             base.Show();
         }
 
-        public override void Close()
+        public override void Close(bool ignoreCloseAnimation = false)
         {
             CloseCallback?.Invoke();
             Game.Controller.AudioController.PlayClick();
-            base.Close();
+            base.Close(ignoreCloseAnimation);
         }
     }
 }

@@ -36,26 +36,28 @@ namespace Nekoyume.UI
 
         public class ViewModel
         {
-            public readonly ReactiveProperty<bool> isWorldShown = new ReactiveProperty<bool>(false);
-            public readonly ReactiveProperty<int> selectedStageId = new ReactiveProperty<int>(1);
+            public readonly ReactiveProperty<bool> IsWorldShown = new ReactiveProperty<bool>(false);
+            public readonly ReactiveProperty<int> SelectedStageId = new ReactiveProperty<int>(1);
         }
+
+        public List<WorldMapWorld> worlds = new List<WorldMapWorld>();
+        public NormalButton worldMapButton;
 
         public GameObject worldMapRoot;
         public Button alfheimButton;
         public Button svartalfaheimrButton;
         public Button asgardButton;
-        public List<WorldMapWorld> worlds = new List<WorldMapWorld>();
+
         public StageInformation stageInformation;
         public Button submitButton;
         public TextMeshProUGUI submitText;
-        public BottomMenu bottomMenu;
 
         public ViewModel SharedViewModel { get; private set; }
 
         public int SelectedStageId
         {
-            get => SharedViewModel.selectedStageId.Value;
-            private set => SharedViewModel.selectedStageId.Value = value;
+            get => SharedViewModel.SelectedStageId.Value;
+            private set => SharedViewModel.SelectedStageId.Value = value;
         }
 
         #region Mono
@@ -63,12 +65,12 @@ namespace Nekoyume.UI
         public override void Initialize()
         {
             base.Initialize();
-            var firstStageId = Game.Game.instance.TableSheets.StageSheet.First.Id;
+            var firstStageId = Game.Game.instance.TableSheets.StageSheet.First?.Id ?? 1;
             SharedViewModel = new ViewModel();
-            SharedViewModel.selectedStageId.Value = firstStageId;
-            SharedViewModel.isWorldShown.Subscribe(worldMapRoot.SetActive)
+            SharedViewModel.SelectedStageId.Value = firstStageId;
+            SharedViewModel.IsWorldShown.Subscribe(worldMapRoot.SetActive)
                 .AddTo(gameObject);
-            SharedViewModel.selectedStageId.Subscribe(UpdateStageInformation)
+            SharedViewModel.SelectedStageId.Subscribe(UpdateStageInformation)
                 .AddTo(gameObject);
 
             var sheet = Game.Game.instance.TableSheets.WorldSheet;
@@ -84,7 +86,7 @@ namespace Nekoyume.UI
                 foreach (var stage in world.pages.SelectMany(page => page.stages))
                 {
                     stage.onClick.Subscribe(worldMapStage =>
-                            SharedViewModel.selectedStageId.Value = worldMapStage.SharedViewModel.stageId)
+                            SharedViewModel.SelectedStageId.Value = worldMapStage.SharedViewModel.stageId)
                         .AddTo(gameObject);
                 }
             }
@@ -92,8 +94,6 @@ namespace Nekoyume.UI
             stageInformation.monstersArea.text.text = LocalizationManager.Localize("UI_WORLD_MAP_MONSTERS");
             stageInformation.rewardsArea.text.text = LocalizationManager.Localize("UI_WORLD_MAP_REWARDS");
             submitText.text = LocalizationManager.Localize("UI_WORLD_MAP_PREPARE");
-            bottomMenu.worldMapButton.text.text = LocalizationManager.Localize("UI_WORLD_MAP");
-            bottomMenu.stageButton.text.text = LocalizationManager.Localize("UI_STAGE");
 
             alfheimButton.OnClickAsObservable()
                 .Subscribe(_ =>
@@ -119,23 +119,11 @@ namespace Nekoyume.UI
                     AudioController.PlayClick();
                     GoToQuestPreparation();
                 }).AddTo(gameObject);
-            bottomMenu.goToMainButton.button.OnClickAsObservable()
+            worldMapButton.button.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
                     AudioController.PlayClick();
-                    GoToMain();
-                }).AddTo(gameObject);
-            bottomMenu.worldMapButton.button.OnClickAsObservable()
-                .Subscribe(_ =>
-                {
-                    AudioController.PlayClick();
-                    SharedViewModel.isWorldShown.Value = true;
-                }).AddTo(gameObject);
-            bottomMenu.stageButton.button.OnClickAsObservable()
-                .Subscribe(_ =>
-                {
-                    AudioController.PlayClick();
-                    SharedViewModel.isWorldShown.Value = false;
+                    SharedViewModel.IsWorldShown.Value = true;
                 }).AddTo(gameObject);
 
             ReactiveCurrentAvatarState.WorldStage.Subscribe(clearedStageId =>
@@ -149,7 +137,7 @@ namespace Nekoyume.UI
 
         #endregion
 
-        public void ShowByStageId(int stageId)
+        public void Show(int stageId)
         {
             SelectedStageId = stageId;
             var tableSheets = Game.Game.instance.TableSheets;
@@ -169,12 +157,20 @@ namespace Nekoyume.UI
             }
 
             Show();
+
+            Find<BottomMenu>()?.Show(UINavigator.NavigationType.Back, SubscribeBackButtonClick);
+        }
+
+        public override void Close(bool ignoreCloseAnimation = false)
+        {
+            Find<BottomMenu>()?.Close(ignoreCloseAnimation);
+            base.Close(ignoreCloseAnimation);
         }
 
         private void ChangeWorld(string value)
         {
-            SharedViewModel.isWorldShown.Value = false;
-            
+            SharedViewModel.IsWorldShown.Value = false;
+
             foreach (var world in worlds)
             {
                 if (world.worldName.Equals(value))
@@ -193,7 +189,7 @@ namespace Nekoyume.UI
             var tableSheets = Game.Game.instance.TableSheets;
             if (!tableSheets.StageSheet.TryGetValue(stageId, out var stageRow))
                 throw new SheetRowNotFoundException("StageSheet", SelectedStageId.ToString());
-            
+
             stageInformation.titleText.text = $"Stage #{SelectedStageId}";
             stageInformation.descriptionText.text = stageRow.GetLocalizedDescription();
 
@@ -230,12 +226,19 @@ namespace Nekoyume.UI
             stageInformation.expText.text = $"EXP +{stageRow.TotalExp}";
         }
 
-        private void GoToMain()
+        private void SubscribeBackButtonClick(BottomMenu bottomMenu)
         {
-            Find<Menu>().ShowRoom();
-            Close();
+            if (SharedViewModel.IsWorldShown.Value)
+            {
+                SharedViewModel.IsWorldShown.Value = false;
+            }
+            else
+            {
+                Close();
+                Find<Menu>().ShowRoom();
+            }
         }
-        
+
         private void GoToQuestPreparation()
         {
             Close();

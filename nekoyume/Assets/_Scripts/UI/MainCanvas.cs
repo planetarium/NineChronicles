@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Nekoyume.EnumType;
 using Nekoyume.Pattern;
+using Nekoyume.UI.Module;
 using UnityEngine;
 
 namespace Nekoyume.UI
@@ -74,9 +75,9 @@ namespace Nekoyume.UI
 #endif
             };
 
-            foreach (var widget in _firstWidgets)
+            foreach (var value in _firstWidgets)
             {
-                widget.Initialize();
+                value.Initialize();
             }
 
             Notification.RegisterWidgetTypeForUX<Mail>();
@@ -121,6 +122,8 @@ namespace Nekoyume.UI
             yield return null;
 
             // 모듈류.
+            _secondWidgets.Add(Widget.Create<BottomMenu>());
+            yield return null;
             _secondWidgets.Add(Widget.Create<StatusDetail>());
             yield return null;
             _secondWidgets.Add(Widget.Create<Inventory>());
@@ -146,9 +149,17 @@ namespace Nekoyume.UI
             _secondWidgets.Add(Widget.Create<Confirm>());
             yield return null;
 
-            foreach (var widget in _secondWidgets)
+            Widget last = null;
+            foreach (var value in _secondWidgets)
             {
-                widget.Initialize();
+                if (value is null)
+                {
+                    Debug.LogWarning($"value is null. last is {last.name}");
+                    continue;
+                }
+                
+                value.Initialize();
+                last = value;
             }
 
             Notification.RegisterWidgetTypeForUX<Mail>();

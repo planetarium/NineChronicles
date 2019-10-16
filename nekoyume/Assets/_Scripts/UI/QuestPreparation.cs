@@ -2,16 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Assets.SimpleLocalization;
+using Nekoyume.Action;
 using Nekoyume.BlockChain;
 using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
 using Nekoyume.Manager;
+using Nekoyume.Model;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
-using Nekoyume.Action;
-using Nekoyume.Model;
 using TMPro;
 using UniRx;
 using UnityEngine;
@@ -27,13 +27,12 @@ namespace Nekoyume.UI
         public EquipSlot[] consumableSlots;
         public Text equipmentTitleText;
         public EquipmentSlots equipmentSlots;
-        public Button questBtn;
+
+        public Button questButton;
+        public NormalButton questRepeatButton;
         public GameObject equipSlotGlow;
-        public Button worldMapButton;
-        public BottomMenu bottomMenu;
         public GameObject statusRowPrefab;
         public Transform statusRowParent;
-        public Button questRepeatBtn;
         public TextMeshProUGUI requiredPointText;
 
         private Stage _stage;
@@ -44,6 +43,7 @@ namespace Nekoyume.UI
 
         private readonly Dictionary<StatType, StatusInfo> _stats =
             new Dictionary<StatType, StatusInfo>(StatTypeComparer.Instance);
+
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
         private readonly ReactiveProperty<bool> _buttonEnabled = new ReactiveProperty<bool>();
 
@@ -67,15 +67,6 @@ namespace Nekoyume.UI
                 })
                 .AddTo(gameObject);
 
-            worldMapButton.OnClickAsObservable()
-                .Subscribe(_ => GoToWorldMap())
-                .AddTo(gameObject);
-
-            bottomMenu.goToMainButton.button.onClick.AddListener(GoToMenu);
-            var status = Find<Status>();
-            bottomMenu.questButton.button.onClick.AddListener(status.ToggleQuest);
-            var worldMap = Find<WorldMap>();
-            bottomMenu.worldMapButton.button.onClick.AddListener(worldMap.Show);
             requiredPointText.text = HackAndSlash.RequiredPoint.ToString();
         }
 
@@ -134,16 +125,20 @@ namespace Nekoyume.UI
 
             var worldMap = Find<WorldMap>();
             _stageId = worldMap.SelectedStageId;
-            _buttonEnabled.Subscribe(SubscribeReadyToQuest).AddTo(_disposables);
-            ReactiveCurrentAvatarState.ActionPoint.Subscribe(OnActionPointChanged).AddTo(_disposables);
 
+            Find<BottomMenu>().Show(UINavigator.NavigationType.Back, SubscribeBackButtonClick);
+
+            _buttonEnabled.Subscribe(SubscribeReadyToQuest).AddTo(_disposables);
+            ReactiveCurrentAvatarState.ActionPoint.Subscribe(SubscribeActionPoint).AddTo(_disposables);
         }
 
-        public override void Close()
+        public override void Close(bool ignoreCloseAnimation = false)
         {
-            Find<Inventory>().Close();
-            Find<StatusDetail>().Close();
-            Find<Quest>().Close();
+            Find<BottomMenu>().Close(ignoreCloseAnimation);
+            
+            Find<Inventory>().Close(ignoreCloseAnimation);
+            Find<StatusDetail>().Close(ignoreCloseAnimation);
+            Find<Quest>().Close(ignoreCloseAnimation);
 
             foreach (var slot in consumableSlots)
             {
@@ -151,9 +146,8 @@ namespace Nekoyume.UI
             }
 
             equipmentSlots.Clear();
-            base.Close();
+            base.Close(ignoreCloseAnimation);
             _disposables.DisposeAllAndClear();
-
         }
 
         #endregion
@@ -224,6 +218,24 @@ namespace Nekoyume.UI
             }
 
             ShowTooltip(view);
+        }
+
+        private void SubscribeBackButtonClick(BottomMenu bottomMenu)
+        {
+            Close();
+            Find<WorldMap>().Show(_stageId);
+        }
+
+        private void SubscribeReadyToQuest(bool ready)
+        {
+            questButton.interactable = ready;
+            questRepeatButton.button.interactable = ready;
+            requiredPointText.color = ready ? Color.white : Color.red;
+        }
+
+        private void SubscribeActionPoint(int point)
+        {
+            _buttonEnabled.Value = point >= HackAndSlash.RequiredPoint;
         }
 
         #endregion
@@ -329,7 +341,7 @@ namespace Nekoyume.UI
         {
             Find<LoadingScreen>().Show();
 
-            questBtn.interactable = false;
+            questButton.interactable = false;
             _player.StartRun();
             ActionCamera.instance.ChaseX(_player.transform);
 
@@ -408,34 +420,6 @@ namespace Nekoyume.UI
             {
                 equipSlotGlow.SetActive(false);
             }
-        }
-
-        public void GoToMenu()
-        {
-            _stage.LoadBackground("room");
-            _player = _stage.GetPlayer(_stage.roomPosition);
-            _player.UpdateSet(_player.Model.Value.armor);
-            Find<Menu>().ShowRoom();
-            Close();
-            AudioController.PlayClick();
-        }
-
-        private void GoToWorldMap()
-        {
-            Close();
-            Find<WorldMap>().ShowByStageId(_stageId);
-        }
-
-        private void SubscribeReadyToQuest(bool ready)
-        {
-            questBtn.interactable = ready;
-            questRepeatBtn.interactable = ready;
-            requiredPointText.color = ready ? Color.white : Color.red;
-        }
-
-        private void OnActionPointChanged(int point)
-        {
-            _buttonEnabled.Value = point >= HackAndSlash.RequiredPoint;
         }
     }
 }

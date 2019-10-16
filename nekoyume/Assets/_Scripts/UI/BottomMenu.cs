@@ -1,130 +1,202 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Assets.SimpleLocalization;
 using Nekoyume.Game.Mail;
 using Nekoyume.Model;
-using TMPro;
 using UniRx;
-using UnityEngine;
-using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
-    public class BottomMenu : MonoBehaviour
+    public class BottomMenu : Widget
     {
-        [Serializable]
-        public struct Button
+//        public enum ToggleGroupState
+//        {
+//            None,
+//            Mail,
+//            Quest,
+//            Chat,
+//            IllustratedBook,
+//            Settings
+//        }
+
+        public class Model
         {
-            public UnityEngine.UI.Button button;
-            public Image image;
-            public TextMeshProUGUI text;
-            public string localizationKey;
+            public readonly ReactiveProperty<UINavigator.NavigationType> NavigationType =
+                new ReactiveProperty<UINavigator.NavigationType>(UINavigator.NavigationType.Back);
+
+            public Action<BottomMenu> NavigationAction;
+//            public readonly ReactiveProperty<ToggleGroupState> ShowToggleGroup =
+//                new ReactiveProperty<ToggleGroupState>(ToggleGroupState.None);
+
+            public readonly ReactiveProperty<bool> HasNotificationInMail = new ReactiveProperty<bool>();
+            public readonly ReactiveProperty<bool> HasNotificationInQuest = new ReactiveProperty<bool>();
+            public readonly ReactiveProperty<bool> HasNotificationInChat = new ReactiveProperty<bool>();
+            public readonly ReactiveProperty<bool> HasNotificationInIllustratedBook = new ReactiveProperty<bool>();
+            public readonly ReactiveProperty<bool> HasNotificationInSettings = new ReactiveProperty<bool>();
         }
 
-        public Image hasNewMail;
+        // 네비게이션 버튼.
+        public NormalButton backButton;
+        public NormalButton mainButton;
+        public NormalButton quitButton;
 
-        public Mail mail;
+        // 토글 그룹과 버튼.
+        private ToggleGroup _toggleGroup;
+        public NotifiableButton mailButton;
+        public NotifiableButton questButton;
+        public NotifiableButton chatButton;
+        public NotifiableButton illustratedBookButton;
+        public NotifiableButton settingsButton;
 
-        // 공용 버튼.
-        public Button goToMainButton;
-        public Button mailButton;
-        public Button questButton;
-        public Button chatButton;
-        public Button collectionButton;
+        private readonly List<IDisposable> _disposablesAtOnEnable = new List<IDisposable>();
 
-        public Button settingButton;
+        public readonly Model SharedModel = new Model();
+        
+        #region Mono
 
-        // 추가 버튼.
-        public Button avatarInfoButton;
-        public Button inventoryButton;
-        public Button switchBuyButton;
-        public Button switchSellButton;
-        public Button combinationEquipmentButton;
-        public Button combinationConsumableButton;
-        public Button combinationRecipeButton;
-        public Button worldMapButton;
-        public Button stageButton;
-        public Button autoRepeatButton;
-
-        private Button[] _buttons;
-        private readonly List<IDisposable> _disposables = new List<IDisposable>();
-        private bool _isInitialized = false;
-
-
-        public void Awake()
+        public override void Initialize()
         {
-            void ShowUnderConstructPopup()
-            {
-                var alert = Widget.Find<Alert>();
-                alert.Show(null, "UI_NOT_IMPLEMENTED", "UI_OK", true);
-            }
+            base.Initialize();
+            
+            SharedModel.NavigationType.Subscribe(SubscribeNavigationType).AddTo(gameObject);
+//            SharedModel.ShowToggleGroup.Subscribe(SubscribeShowToggleGroup).AddTo(gameObject);
+            SharedModel.HasNotificationInMail.SubscribeTo(mailButton.SharedModel.HasNotification).AddTo(gameObject);
+            SharedModel.HasNotificationInQuest.SubscribeTo(questButton.SharedModel.HasNotification).AddTo(gameObject);
+            SharedModel.HasNotificationInChat.SubscribeTo(chatButton.SharedModel.HasNotification).AddTo(gameObject);
+            SharedModel.HasNotificationInIllustratedBook.SubscribeTo(illustratedBookButton.SharedModel.HasNotification)
+                .AddTo(gameObject);
+            SharedModel.HasNotificationInSettings.SubscribeTo(settingsButton.SharedModel.HasNotification)
+                .AddTo(gameObject);
 
-            hasNewMail.gameObject.SetActive(false);
-            mailButton.button.onClick.AddListener(mail.Toggle);
+            backButton.button.OnClickAsObservable().Subscribe(SubscribeNavigationButtonClick).AddTo(gameObject);
+            mainButton.button.OnClickAsObservable().Subscribe(SubscribeNavigationButtonClick).AddTo(gameObject);
+            quitButton.button.OnClickAsObservable().Subscribe(SubscribeNavigationButtonClick).AddTo(gameObject);
 
-            if (!_isInitialized)
-            {
-                _buttons = new Button[]
-                {
-                    goToMainButton,
-                    mailButton,
-                    questButton,
-                    chatButton,
-                    collectionButton,
-                    settingButton,
-                    avatarInfoButton,
-                    inventoryButton,
-                    switchBuyButton,
-                    switchSellButton,
-                    combinationEquipmentButton,
-                    combinationConsumableButton,
-                    combinationRecipeButton,
-                    worldMapButton,
-                    stageButton,
-                    autoRepeatButton
-                };
-
-                chatButton.button.onClick.AddListener(ShowUnderConstructPopup);
-                collectionButton.button.onClick.AddListener(ShowUnderConstructPopup);
-                settingButton.button.onClick.AddListener(ShowUnderConstructPopup);
-            }
-
-            foreach (var btn in _buttons)
-            {
-                if (btn.text != null)
-                {
-                    btn.text.text = LocalizationManager.Localize(btn.localizationKey);
-                }
-            }
-
-            _isInitialized = true;
+            _toggleGroup = new ToggleGroup();
+            _toggleGroup.OnToggledOn.Subscribe(SubscribeOnToggledOn).AddTo(gameObject);
+            _toggleGroup.OnToggledOff.Subscribe(SubscribeOnToggledOff).AddTo(gameObject);
+            _toggleGroup.RegisterToggleable(mailButton);
+            _toggleGroup.RegisterToggleable(questButton);
+            _toggleGroup.RegisterToggleable(chatButton);
+            _toggleGroup.RegisterToggleable(illustratedBookButton);
+            _toggleGroup.RegisterToggleable(settingsButton);
+            mailButton.SetWidgetType<Mail>();
+            questButton.SetWidgetType<Quest>();
+//            chatButton.SetWidgetType<Chat>();
+//            illustratedBookButton.SetWidgetType<IllustratedBook>();
+//            settingsButton.SetWidgetType<Settings>();
         }
 
-        private void OnEnable()
+        protected override void OnEnable()
         {
-            if (ReactiveCurrentAvatarState.MailBox is null)
+            base.OnEnable();
+            _disposablesAtOnEnable.DisposeAllAndClear();
+            ReactiveCurrentAvatarState.MailBox?.Subscribe(SubscribeAvatarMailBox).AddTo(_disposablesAtOnEnable);
+        }
+
+        protected override void OnDisable()
+        {
+            _toggleGroup?.SetToggledOffAll();
+            _disposablesAtOnEnable.DisposeAllAndClear();
+            base.OnDisable();
+        }
+
+        #endregion
+        
+        public void Show(UINavigator.NavigationType navigationType, Action<BottomMenu> navigationAction = null)
+        {
+            base.Show();
+            SharedModel.NavigationType.Value = navigationType;
+            SharedModel.NavigationAction = navigationAction;
+        }
+
+        // 이 위젯은 애니메이션 없이 바로 닫히는 것을 기본으로 함.
+        public override void Close(bool ignoreCloseAnimation = false)
+        {
+            base.Close(true);
+        }
+
+        #region Subscribe
+
+        private void SubscribeNavigationType(UINavigator.NavigationType navigationType)
+        {
+            switch (navigationType)
+            {
+                case UINavigator.NavigationType.None:
+                    backButton.Hide();
+                    mainButton.Hide();
+                    quitButton.Hide();
+                    break;
+                case UINavigator.NavigationType.Back:
+                    backButton.Show();
+                    mainButton.Hide();
+                    quitButton.Hide();
+                    break;
+                case UINavigator.NavigationType.Main:
+                    backButton.Hide();
+                    mainButton.Show();
+                    quitButton.Hide();
+                    break;
+                case UINavigator.NavigationType.Quit:
+                    backButton.Hide();
+                    mainButton.Hide();
+                    quitButton.Show();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(navigationType), navigationType, null);
+            }
+        }
+
+//        private void SubscribeShowToggleGroup(ToggleGroupState toggleGroupState)
+//        {
+//            switch (toggleGroupState)
+//            {
+//                case ToggleGroupState.None:
+//                    break;
+//                case ToggleGroupState.Mail:
+//                    break;
+//                case ToggleGroupState.Quest:
+//                    break;
+//                case ToggleGroupState.Chat:
+//                    break;
+//                case ToggleGroupState.IllustratedBook:
+//                    break;
+//                case ToggleGroupState.Settings:
+//                    break;
+//                default:
+//                    throw new ArgumentOutOfRangeException(nameof(toggleGroupState), toggleGroupState, null);
+//            }
+//        }
+
+        private void SubscribeNavigationButtonClick(Unit unit)
+        {
+            SharedModel.NavigationAction?.Invoke(this);
+        }
+
+        private static void SubscribeOnToggledOn(IToggleable toggleable)
+        {
+            if (!(toggleable is IWidgetControllable widgetControllable))
                 return;
 
-            _disposables.DisposeAllAndClear();
-            ReactiveCurrentAvatarState.MailBox.Subscribe(HasNewMail).AddTo(_disposables);
+            widgetControllable.ShowWidget();
         }
 
-        private void OnDisable()
+        private static void SubscribeOnToggledOff(IToggleable toggleable)
         {
-            foreach (var btn in _buttons)
-            {
-                if (btn.image != null)
-                    btn.image.SetNativeSize();
-            }
+            if (!(toggleable is IWidgetControllable widgetControllable))
+                return;
 
-            mail.gameObject.SetActive(false);
-            _disposables.DisposeAllAndClear();
+            widgetControllable.HideWidget();
         }
 
-        private void HasNewMail(MailBox mailBox)
+        private void SubscribeAvatarMailBox(MailBox mailBox)
         {
-            hasNewMail.gameObject.SetActive(!(mailBox is null) && mailBox.Any(i => i.New));
+            if (mailBox is null)
+                return;
+
+            mailButton.SharedModel.HasNotification.Value = mailBox.Any(i => i.New);
         }
+        
+        #endregion
     }
 }

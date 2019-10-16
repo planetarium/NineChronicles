@@ -48,7 +48,7 @@ namespace Nekoyume.UI
         {
             base.Initialize();
 
-            bottomMenu.goToMainButton.button.onClick.AddListener(GoToMenu);
+            bottomMenu.mainButton.button.onClick.AddListener(GoToMenu);
             var status = Find<Status>();
             bottomMenu.questButton.button.onClick.AddListener(status.ToggleQuest);
         }
@@ -72,12 +72,12 @@ namespace Nekoyume.UI
             AudioController.instance.PlayMusic(AudioController.MusicCode.Ranking);
         }
 
-        public override void Close()
+        public override void Close(bool ignoreCloseAnimation = false)
         {
             _avatarStates = null;
             ClearBoard();
 
-            base.Close();
+            base.Close(ignoreCloseAnimation);
 
             AudioController.instance.PlayMusic(AudioController.MusicCode.Main);
         }

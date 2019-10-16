@@ -42,24 +42,27 @@ namespace Assets.SimpleLocalization
         /// <summary>
         /// Read localization spreadsheets.
         /// </summary>
-        public static void Read(string path = "Localization")
+        public static void Initialize(string path = "Localization")
         {
-            if (Dictionary.Count > 0) return;
+            if (Dictionary.Count > 0)
+                return;
 
-            ReadInternal();
+            InitializeInternal();
             var languageType = SystemLanguage;
         }
 
-        public static void Read(LanguageType languageType, string path = "Localization")
+        public static void Initialize(LanguageType languageType, string path = "Localization")
         {
-            if (Dictionary.Count > 0) return;
+            if (Dictionary.Count > 0)
+                return;
 
-            ReadInternal();
+            InitializeInternal();
         }
 
-        private static void ReadInternal(string path = "Localization")
+        private static void InitializeInternal(string path = "Localization")
         {
-            if (Dictionary.Count > 0) return;
+            if (Dictionary.Count > 0)
+                return;
 
             var textAssets = Resources.LoadAll<TextAsset>(path);
 
@@ -80,7 +83,7 @@ namespace Assets.SimpleLocalization
                 }
 
                 // csv파일 저장형식이 라인피드로만 처리되고 있어서 윈도우에서 줄바꿈이 제대로 안되는 문제가 있음
-                var lines = text.Split(new[] { "\n", "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+                var lines = text.Split(new[] {"\n", "\r\n"}, StringSplitOptions.RemoveEmptyEntries);
                 var languages = lines[0]
                     .Split(',')
                     .Skip(1)
@@ -129,13 +132,11 @@ namespace Assets.SimpleLocalization
         {
             if (Dictionary.Count == 0)
             {
-                Read();
+                Initialize();
             }
 
             if (!Dictionary.ContainsKey(Language))
-            {
                 throw new KeyNotFoundException("Language not found: " + Language);
-            }
 
             return Dictionary[Language].ContainsKey(localizationKey)
                 ? Dictionary[Language][localizationKey]
@@ -171,22 +172,18 @@ namespace Assets.SimpleLocalization
         {
             if (Dictionary.Count == 0)
             {
-                Read();
+                Initialize();
             }
 
             if (!Dictionary.ContainsKey(Language))
-            {
                 throw new KeyNotFoundException("Language not found: " + Language);
-            }
 
             // FixMe. 무한루프 가능성이 열려 있음.
             var count = 0;
             while (true)
             {
                 if (!Dictionary[Language].ContainsKey($"{localizationKey}{count}"))
-                {
                     return count;
-                }
 
                 count++;
             }
@@ -198,7 +195,7 @@ namespace Assets.SimpleLocalization
 
             if (Dictionary.Count == 0)
             {
-                Read();
+                Initialize();
             }
 
             var dict = Dictionary[Language];
