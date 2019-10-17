@@ -9,7 +9,7 @@ namespace Nekoyume.UI
         public void Show(string msg)
         {
             contentTextField.text = msg;
-            CloseCallback = Application.Quit;
+            SubmitCallback = Application.Quit;
             base.Show();
         }
     }
