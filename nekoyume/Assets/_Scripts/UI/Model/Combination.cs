@@ -129,7 +129,7 @@ namespace Nekoyume.UI.Model
                 return false;
 
             if (State.Value == ItemType.Equipment
-                && GameConfig.EquipmentMaterials.Contains(countEditableItem.ItemBase.Value.Data.Id))
+                && countEditableItem.ItemBase.Value.Data.ItemSubType == ItemSubType.EquipmentMaterial)
             {
                 RemoveEquipmentMaterial();
                 

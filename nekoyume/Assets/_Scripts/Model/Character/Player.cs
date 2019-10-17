@@ -152,8 +152,18 @@ namespace Nekoyume.Model
                         throw new InvalidEquipmentException();
                 }
             }
-
+            
             Stats.SetEquipments(Equipments);
+
+            foreach (var skill in Equipments.SelectMany(equipment => equipment.Skills))
+            {
+                Skills.Add(skill);
+            }
+            
+            foreach (var buffSkill in Equipments.SelectMany(equipment => equipment.BuffSkills))
+            {
+                Skills.Add(buffSkill);
+            }
         }
 
         public void GetExp(long waveExp, bool log = false)
@@ -233,6 +243,12 @@ namespace Nekoyume.Model
                 {
                     Skills.Add(skill);
                 }
+
+                foreach (var buffSkill in food.BuffSkills)
+                {
+                    BuffSkills.Add(buffSkill);
+                }
+                
                 Inventory.RemoveNonFungibleItem(food);
             }
         }

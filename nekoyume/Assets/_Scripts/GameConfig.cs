@@ -9,6 +9,7 @@ namespace Nekoyume
         public const float WaitSeconds = 180f;
         public const string AvatarNickNamePattern = @"^[0-9가-힣a-zA-Z]{2,20}$";
         public const float PlayerSpeechBreakTime = 2f;
+        
         #region action
 
         public const int DefaultAvatarCharacterId = 100010;
@@ -24,53 +25,5 @@ namespace Nekoyume
         public const int ActionPoint = 300;
         
         #endregion
-        
-        public static readonly int[] EquipmentMaterials =
-        {
-            303000,
-            303001,
-            303002,
-            303100,
-            303101,
-            303102,
-            303200,
-            303201,
-            303202,
-            303300,
-            303301,
-            303302,
-            303400,
-            303401,
-            303402
-        };
-        
-        public static readonly int[] ConsumableMaterials =
-        {
-            302000,
-            302001,
-            302002,
-            302003,
-            302004,
-            302005,
-            302006,
-            302007,
-            302008,
-            302009
-        };
-        
-        public static readonly int[] PaintMaterials =
-        {
-            100000,
-            301000,
-            304000,
-            304002,
-            304001,
-            304003,
-            305000,
-            305001,
-            305002,
-            305003,
-            305004
-        };
     }
 }

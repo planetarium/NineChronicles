@@ -16,6 +16,7 @@ namespace Nekoyume.Game.Item
 
         public StatsMap StatsMap { get; }
         public List<Skill> Skills { get; }
+        public List<BuffSkill> BuffSkills { get; }
         public Guid ItemId { get; }
 
         protected ItemUsable(ConsumableItemSheet.Row data, Guid id) : base(data)
@@ -28,6 +29,7 @@ namespace Nekoyume.Game.Item
             }
 
             Skills = new List<Skill>();
+            BuffSkills = new List<BuffSkill>();
 
             ItemId = id;
         }
@@ -56,17 +58,20 @@ namespace Nekoyume.Game.Item
             var sb = new StringBuilder();
             sb.AppendLine(StatsMap.GetInformation());
 
-            if (Skills.Count == 0)
-            {
-                return sb.ToString().Trim();
-            }
-
             foreach (var skill in Skills)
             {
                 sb.Append($"{skill.chance * 100}% 확률로");
                 sb.Append($" {skill.effect.skillTargetType}에게");
                 sb.Append($" {skill.power} 위력의");
                 sb.Append($" {skill.skillRow.ElementalType}속성 {skill.effect.skillType}");
+            }
+            
+            foreach (var buffSkill in BuffSkills)
+            {
+                sb.Append($"{buffSkill.chance * 100}% 확률로");
+                sb.Append($" {buffSkill.effect.skillTargetType}에게");
+                sb.Append($" {buffSkill.power} 위력의");
+                sb.Append($" {buffSkill.skillRow.ElementalType}속성 {buffSkill.effect.skillType}");
             }
 
             return sb.ToString().Trim();

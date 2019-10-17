@@ -3,6 +3,7 @@ using Nekoyume.EnumType;
 
 namespace Nekoyume.Game
 {
+    [Serializable]
     public class StatModifier
     {
         public enum OperationType

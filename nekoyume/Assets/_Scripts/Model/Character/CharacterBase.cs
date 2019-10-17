@@ -28,6 +28,7 @@ namespace Nekoyume.Model
         public ElementalType defElementType;
 
         public readonly Skills Skills = new Skills();
+        public readonly Skills BuffSkills = new Skills();
         public readonly Dictionary<int, Game.Buff> Buffs = new Dictionary<int, Game.Buff>();
         public readonly List<CharacterBase> Targets = new List<CharacterBase>();
 
@@ -66,6 +67,7 @@ namespace Nekoyume.Model
 
             RowData = row;
             Stats = new CharacterStats(RowData, level);
+            Skills.Clear();
 
             atkElementType = RowData.ElementalType;
             attackRange = RowData.AttackRange;
