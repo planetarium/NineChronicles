@@ -116,6 +116,16 @@ namespace Nekoyume.UI.Model
             OnMaterialRemove(temp);
         }
 
+        public void RemoveMaterialsAll()
+        {
+            RemoveEquipmentMaterial();
+            
+            while (Materials.Count > 0)
+            {
+                Materials.RemoveAt(0);
+            }
+        }
+
         public bool RegisterToStagedItems(CountableItem countEditableItem)
         {
             if (countEditableItem is null)
