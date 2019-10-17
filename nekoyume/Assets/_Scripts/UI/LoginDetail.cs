@@ -76,8 +76,10 @@ namespace Nekoyume.UI
             if (!Regex.IsMatch(nickName, GameConfig.AvatarNickNamePattern))
             {
                 Find<Alert>().Show(
-                    LocalizationManager.Localize("UI_ERROR"),
-                    LocalizationManager.Localize("UI_INVALID_NICKNAME"));
+                    "UI_ERROR",
+                    "UI_INVALID_NICKNAME",
+                    "UI_OK",
+                    true);
                 return;
             }
 

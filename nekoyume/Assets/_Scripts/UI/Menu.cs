@@ -113,7 +113,7 @@ namespace Nekoyume.UI
             bottomMenu.goToMainButton.button.onClick.AddListener(() =>
             {
                 var confirm = Find<Confirm>();
-                confirm.Show(null, "UI_REASKQUIT");
+                confirm.Show(null, "UI_REASKQUIT", "UI_YES", "UI_NO", true);
                 confirm.CloseCallback = result =>
                 {
                     if (result == ConfirmResult.Yes)
