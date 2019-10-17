@@ -25,8 +25,8 @@ namespace Tests
             var loginDetail = Widget.Find<LoginDetail>();
             loginDetail.nameField.text = "doFade";
             loginDetail.CreateClick();
-            yield return new WaitUntil(() => Game.instance.agent.Transactions.Any());
-            var createAvatarTx = Game.instance.agent.Transactions.First().Value;
+            yield return new WaitUntil(() => Game.instance.agent.StagedTransactions.Any());
+            var createAvatarTx = Game.instance.agent.StagedTransactions.First();
             yield return miner.CoMine(createAvatarTx);
             yield return new WaitWhile(() => States.Instance.currentAvatarState.Value is null);
 
