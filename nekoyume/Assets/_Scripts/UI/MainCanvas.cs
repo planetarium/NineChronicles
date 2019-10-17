@@ -141,7 +141,7 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<StageTitle>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<MessageBox>());
+            _secondWidgets.Add(Widget.Create<Alert>());
             yield return null;
             _secondWidgets.Add(Widget.Create<Confirm>());
             yield return null;
