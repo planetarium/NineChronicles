@@ -9,8 +9,8 @@ using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.Game.VFX.Skill;
 using Nekoyume.UI;
-using UniRx;
 using UnityEngine;
+using UniRx;
 
 namespace Nekoyume.Game.Character
 {
@@ -168,7 +168,7 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        public void UpdateHpBar()
+        public virtual void UpdateHpBar()
         {
             if (!Game.instance.stage.IsInStage)
                 return;

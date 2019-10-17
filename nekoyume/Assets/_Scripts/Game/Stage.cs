@@ -13,6 +13,7 @@ using Nekoyume.Game.Trigger;
 using Nekoyume.Game.Util;
 using Nekoyume.Game.VFX;
 using Nekoyume.Game.VFX.Skill;
+using Nekoyume.Helper;
 using Nekoyume.Model;
 using Nekoyume.UI;
 using Nekoyume.UI.Model;
@@ -35,7 +36,6 @@ namespace Nekoyume.Game
         public MonsterSpawner spawner;
 
         public GameObject background;
-
         // dummy for stage background moving.
         public GameObject dummy;
         public ParticleSystem defaultBGVFX;
@@ -55,6 +55,7 @@ namespace Nekoyume.Game
         private BattleResult.Model _battleResultModel;
 
         public bool IsInStage { get; private set; }
+        public Enemy Boss { get; private set; }
 
         protected void Awake()
         {
@@ -262,13 +263,15 @@ namespace Nekoyume.Game
 
         private IEnumerator CoStageEnd(BattleLog log)
         {
+            Boss = null;
             yield return new WaitForSeconds(2.0f);
+            var battle = Widget.Find<UI.Battle>();
+            battle.bossStatus.Close();
             Widget.Find<UI.Battle>().Close();
             if (log.result == BattleLog.Result.Win)
             {
                 yield return new WaitForSeconds(0.75f);
                 yield return StartCoroutine(CoDialog(log.worldStage));
-
                 var playerCharacter = GetPlayer();
                 playerCharacter.Animator.Win();
                 playerCharacter.ShowSpeech("PLAYER_WIN");
@@ -285,6 +288,7 @@ namespace Nekoyume.Game
             Widget.Find<BattleResult>().Show(_battleResultModel);
 
             IsInStage = false;
+            yield return null;
         }
 
         private IEnumerator CoSlideBg()
@@ -373,6 +377,22 @@ namespace Nekoyume.Game
             yield return StartCoroutine(CoAfterSkill(character, buffInfos));
         }
 
+        #endregion
+
+        public IEnumerator CoDropBox(List<ItemBase> items)
+        {
+            if (items.Count > 0)
+            {
+                var dropItemFactory = GetComponent<DropItemFactory>();
+                var player = GetPlayer();
+                var position = player.transform.position;
+                position.x += 1.0f;
+                yield return StartCoroutine(dropItemFactory.CoCreate(items, position));
+            }
+
+            yield return null;
+        }
+
         private IEnumerator CoBeforeSkill(Character.CharacterBase character)
         {
             if (!character)
@@ -411,28 +431,12 @@ namespace Nekoyume.Game
                 character.StartRun();
         }
 
-        #endregion
-
         public IEnumerator CoRemoveBuffs(CharacterBase caster)
         {
             var character = GetCharacter(caster);
             character.UpdateHpBar();
 
             yield break;
-        }
-
-        public IEnumerator CoDropBox(List<ItemBase> items)
-        {
-            if (items.Count > 0)
-            {
-                var dropItemFactory = GetComponent<DropItemFactory>();
-                var player = GetPlayer();
-                var position = player.transform.position;
-                position.x += 1.0f;
-                yield return StartCoroutine(dropItemFactory.CoCreate(items, position));
-            }
-
-            yield return null;
         }
 
         public IEnumerator CoGetReward(List<ItemBase> rewards)
@@ -450,6 +454,7 @@ namespace Nekoyume.Game
         {
             var playerCharacter = GetPlayer();
             playerCharacter.StartRun();
+            var battle = Widget.Find<UI.Battle>();
 
             if (isBoss)
             {
@@ -463,6 +468,12 @@ namespace Nekoyume.Game
                 yield return new WaitForSeconds(2.0f);
                 StartCoroutine(Widget.Find<Blind>().FadeOut(0.2f));
                 yield return new WaitForSeconds(2.0f);
+                var boss = enemies[0];
+                Boss = boss;
+                var sprite = SpriteHelper.GetCharacterIcon(boss.RowData.Id);
+                battle.bossStatus.Show();
+                battle.bossStatus.SetHp(boss.HP, boss.HP);
+                battle.bossStatus.SetProfile(boss.Level, boss.RowData.Id.ToString(), sprite);
                 playerCharacter.ShowSpeech("PLAYER_BOSS_ENCOUNTER");
             }
 
@@ -512,9 +523,9 @@ namespace Nekoyume.Game
         }
 
         /// <summary>
-        /// ê²Œì„ ìºë¦­í„°ë¥¼ ê°–ê³  ì˜¬ ë•Œ ì‚¬ìš©í•¨.
-        /// ê°–ê³  ì˜¬ ë•Œ ë§¤ë²ˆ ëª¨ë¸ì„ í• ë‹¹í•´ì£¼ê³  ìˆìŒ.
-        /// ëª¨ë¸ì„ ë§¤ë²ˆ í• ë‹¹í•˜ì§€ ì•Šê³ , ëª¨ë¸ì´ ë³€ê²½ë˜ëŠ” ë¡œì§ ë§ˆë‹¤ ë°”ê¿”ì£¼ê²Œ í•˜ëŠ” ê²ƒì´ ì¢‹ê² ìŒ. ë¬¼ë¡  ì—°ì¶œë„ ê·¸ë•Œì— ë§ì¶°ì„œ í•´ì£¼ëŠ” ì‹.
+        /// °ÔÀÓ Ä³¸¯ÅÍ¸¦ °®°í ¿Ã ¶§ »ç¿ëÇÔ.
+        /// °®°í ¿Ã ¶§ ¸Å¹ø ¸ğµ¨À» ÇÒ´çÇØÁÖ°í ÀÖÀ½.
+        /// ¸ğµ¨À» ¸Å¹ø ÇÒ´çÇÏÁö ¾Ê°í, ¸ğµ¨ÀÌ º¯°æµÇ´Â ·ÎÁ÷ ¸¶´Ù ¹Ù²ãÁÖ°Ô ÇÏ´Â °ÍÀÌ ÁÁ°ÚÀ½. ¹°·Ğ ¿¬Ãâµµ ±×¶§¿¡ ¸ÂÃç¼­ ÇØÁÖ´Â ½Ä.
         /// </summary>
         /// <param name="caster"></param>
         /// <returns></returns>

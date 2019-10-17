@@ -8,6 +8,7 @@ using Nekoyume.Battle;
 using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.TableData;
+using UniRx;
 
 namespace Nekoyume.Model
 {
@@ -56,7 +57,7 @@ namespace Nekoyume.Model
             set => Stats.CurrentHP = value;
         }
 
-        private bool IsDead => CurrentHP <= 0;
+        public bool IsDead => CurrentHP <= 0;
 
         protected CharacterBase(Simulator simulator, int characterId, int level)
         {
