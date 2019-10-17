@@ -10,7 +10,7 @@ namespace Nekoyume.UI
 
         public void Show(long idx)
         {
-            CloseCallback = Application.Quit;
+            SubmitCallback = Application.Quit;
             _index = idx;
             base.Show();
             StartCoroutine(CoCheckBlockIndex());
@@ -19,7 +19,7 @@ namespace Nekoyume.UI
         private IEnumerator CoCheckBlockIndex()
         {
             yield return new WaitWhile(() => Game.Game.instance.agent.BlockIndex == _index);
-            CloseCallback = null;
+            SubmitCallback = null;
             Close();
         }
     }
