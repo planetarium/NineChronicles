@@ -15,6 +15,7 @@ using Nekoyume.Helper;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Factory;
 using Nekoyume.Model;
+using Nekoyume.Game.Item;
 using Nekoyume.State;
 using TMPro;
 
@@ -445,6 +446,17 @@ namespace Nekoyume.UI
         private void CheckPoint(int actionPoint)
         {
             requiredPointText.color = actionPoint >= Action.Combination.RequiredPoint ? Color.white : Color.red;
+        }
+
+        public void ItemEnhancement()
+        {
+            var equipments = _player.Inventory.Items.Select(i => i.item).OfType<Equipment>().ToList();
+            var itemId = equipments.First().ItemId;
+            var materialIds = new List<Guid>
+            {
+                equipments[1].ItemId
+            };
+            ActionManager.instance.ItemEnhancement(itemId, materialIds);
         }
     }
 }

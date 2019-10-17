@@ -10,6 +10,9 @@ namespace Nekoyume.Game.Item
 
         public new EquipmentItemSheet.Row Data { get; }
 
+        public int level;
+        public int levelStats = 5;
+
         public Equipment(EquipmentItemSheet.Row data, Guid id) : base(data, id)
         {
             Data = data;
@@ -17,6 +20,7 @@ namespace Nekoyume.Game.Item
 
         public bool Equip()
         {
+
             equipped = true;
             return true;
         }
@@ -26,5 +30,15 @@ namespace Nekoyume.Game.Item
             equipped = false;
             return true;
         }
+
+        public void LevelUp()
+        {
+            level++;
+            foreach (var statData in Data.Stats)
+            {
+                StatsMap.AddStatAdditionalValue(statData.StatType, level * levelStats);
+            }
+        }
+
     }
 }

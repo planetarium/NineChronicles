@@ -235,5 +235,27 @@ namespace Nekoyume.Game.Item
 
         public bool HasItemUsable(Guid itemId) =>
             _items.Select(i => i.item).OfType<ItemUsable>().Any(i => i.ItemId == itemId);
+
+        public bool TryGetNonFungibleItem(Guid itemId, out ItemUsable outNonFungibleItem)
+        {
+            foreach (var item in _items)
+            {
+                if (!(item.item is ItemUsable nonFungibleItem))
+                {
+                    continue;
+                }
+
+                if (nonFungibleItem.ItemId != itemId)
+                {
+                    continue;
+                }
+
+                outNonFungibleItem = nonFungibleItem;
+                return true;
+            }
+
+            outNonFungibleItem = null;
+            return false;
+        }
     }
 }

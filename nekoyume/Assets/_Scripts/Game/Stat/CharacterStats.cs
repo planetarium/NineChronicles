@@ -4,6 +4,7 @@ using System.Linq;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Item;
 using Nekoyume.TableData;
+using UnityEngine;
 
 namespace Nekoyume.Game
 {
@@ -138,9 +139,41 @@ namespace Nekoyume.Game
             {
                 foreach (var equipment in value)
                 {
-                    foreach (var statMap in equipment.Data.Stats)
+                    var statMap = equipment.StatsMap;
+                    if (statMap.HasHP)
                     {
-                        _equipmentStatModifiers.Add(new StatModifier(statMap));
+                        _equipmentStatModifiers.Add(new StatModifier(StatType.HP, StatModifier.OperationType.Add,
+                            statMap.HP));
+                    }
+
+                    if (statMap.HasATK)
+                    {
+                        _equipmentStatModifiers.Add(new StatModifier(StatType.ATK, StatModifier.OperationType.Add,
+                            statMap.ATK));
+                    }
+
+                    if (statMap.HasDEF)
+                    {
+                        _equipmentStatModifiers.Add(new StatModifier(StatType.DEF, StatModifier.OperationType.Add,
+                            statMap.DEF));
+                    }
+
+                    if (statMap.HasCRI)
+                    {
+                        _equipmentStatModifiers.Add(new StatModifier(StatType.CRI, StatModifier.OperationType.Add,
+                            statMap.CRI));
+                    }
+
+                    if (statMap.HasDOG)
+                    {
+                        _equipmentStatModifiers.Add(new StatModifier(StatType.DOG, StatModifier.OperationType.Add,
+                            statMap.DOG));
+                    }
+
+                    if (statMap.HasSPD)
+                    {
+                        _equipmentStatModifiers.Add(new StatModifier(StatType.SPD, StatModifier.OperationType.Add,
+                            statMap.SPD));
                     }
                 }
 

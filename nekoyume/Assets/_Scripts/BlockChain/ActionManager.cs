@@ -212,6 +212,23 @@ namespace Nekoyume.BlockChain
                 .Timeout(ActionTimeout);
         }
 
+        public IObservable<ActionBase.ActionEvaluation<ItemEnhancement>> ItemEnhancement(Guid itemId, List<Guid> materialIds)
+        {
+            var action = new ItemEnhancement
+            {
+                itemId = itemId,
+                materialIds = materialIds,
+                avatarAddress = States.Instance.currentAvatarState.Value.address,
+            };
+            ProcessAction(action);
+
+            return ActionBase.EveryRender<ItemEnhancement>()
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .Take(1)
+                .Last()
+                .ObserveOnMainThread()
+                .Timeout(ActionTimeout);
+        }
         #endregion
     }
 }
