@@ -49,14 +49,22 @@ namespace Nekoyume.UI.Module
 
         private Button[] _buttons;
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
+        private bool _isInitialized = false;
 
 
         public void Awake()
         {
+            void ShowUnderConstructPopup()
+            {
+                var alert = Widget.Find<Alert>();
+                alert.Show(null, "UI_NOT_IMPLEMENTED", "UI_OK", true);
+            }
+
             hasNewMail.gameObject.SetActive(false);
             mailButton.button.onClick.AddListener(mail.Toggle);
 
-            if (_buttons is null)
+            if (!_isInitialized)
+            {
                 _buttons = new Button[]
                 {
                     goToMainButton,
@@ -77,11 +85,20 @@ namespace Nekoyume.UI.Module
                     autoRepeatButton
                 };
 
+                chatButton.button.onClick.AddListener(ShowUnderConstructPopup);
+                collectionButton.button.onClick.AddListener(ShowUnderConstructPopup);
+                settingButton.button.onClick.AddListener(ShowUnderConstructPopup);
+            }
+
             foreach (var btn in _buttons)
             {
                 if (btn.text != null)
+                {
                     btn.text.text = LocalizationManager.Localize(btn.localizationKey);
+                }
             }
+
+            _isInitialized = true;
         }
 
         private void OnEnable()
