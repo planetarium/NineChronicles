@@ -92,6 +92,7 @@ namespace Nekoyume.UI
             SharedModel.Materials.ObserveAdd().Subscribe(SubscribeMaterialAdd).AddTo(gameObject);
             SharedModel.Materials.ObserveRemove().Subscribe(SubscribeMaterialRemove).AddTo(gameObject);
             SharedModel.Materials.ObserveReplace().Subscribe(_ => UpdateStagedItems()).AddTo(gameObject);
+            SharedModel.Materials.ObserveReset().Subscribe(_ => UpdateStagedItems()).AddTo(gameObject);
             SharedModel.ShowMaterialsCount.Subscribe(SubscribeShowMaterialsCount).AddTo(gameObject);
             SharedModel.ReadyToCombination.Subscribe(SubscribeReadyToCombination).AddTo(gameObject);
             SharedModel.OnMaterialAdded.Subscribe(materialId => SubscribeOnMaterial(materialId, true))
@@ -174,11 +175,9 @@ namespace Nekoyume.UI
 
         public override void Close()
         {
-            foreach (var item in materialViews)
-            {
-                item.Clear();
-            }
-
+            SharedModel.RemoveEquipmentMaterial();
+            SharedModel.Materials.Clear();
+        
             base.Close();
             _disposable.Dispose();
 
@@ -362,7 +361,7 @@ namespace Nekoyume.UI
         {
             if (SharedModel.State.Value == ItemType.Equipment)
             {
-                if (SharedModel.EquipmentMaterial.Value == null)
+                if (SharedModel.EquipmentMaterial.Value is null)
                 {
                     equipmentMaterialView.Clear();
                 }
@@ -420,21 +419,18 @@ namespace Nekoyume.UI
             ActionRenderHandler.UpdateLocalAvatarState(newState, index);
 
             ActionManager.instance.Combination(materials)
-                .Subscribe((_) => { }, (_) => Find<ActionFailPopup>().Show("Timeout occurred during Combination"));
+                .Subscribe(_ => { }, _ => Find<ActionFailPopup>().Show("Timeout occurred during Combination"));
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickCombinationCombination);
             Find<CombinationLoadingScreen>().Show();
-            inventory.SharedModel.RemoveItems(materials);
-            SharedModel.RemoveEquipmentMaterial();
+            
             foreach (var material in materials)
             {
                 States.Instance.currentAvatarState.Value.inventory.RemoveFungibleItem(material.ItemBase.Value.Data.Id,
                     material.Count.Value);
             }
-
-            while (SharedModel.Materials.Count > 0)
-            {
-                SharedModel.Materials.RemoveAt(0);
-            }
+            
+            SharedModel.RemoveMaterialsAll();
+            inventory.SharedModel.RemoveItems(materials);
 
             // 에셋의 버그 때문에 스크롤 맨 끝 포지션으로 스크롤 포지션 설정 시 스크롤이 비정상적으로 표시되는 문제가 있음.
             recipe.Reload(recipe.scrollerController.scroller.ScrollPosition - 0.1f);
