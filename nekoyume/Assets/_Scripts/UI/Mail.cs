@@ -86,6 +86,21 @@ namespace Nekoyume.UI
             Notification.Push($"{attachment.shopItem.price:n0} 골드 획득");
         }
 
+        public void Read(ItemEnhanceMail itemEnhanceMail)
+        {
+            var attachment = (ItemEnhancement.Result) itemEnhanceMail.attachment;
+            var popup = Find<CombinationResultPopup>();
+            var item = attachment.itemUsable;
+            var model = new UI.Model.CombinationResultPopup(new CountableItem(item, 1))
+            {
+                isSuccess = true,
+                materialItems = new List<CombinationMaterial>()
+            };
+            popup.Pop(model);
+
+            AddItem(item);
+        }
+
         private static void AddItem(ItemUsable item)
         {
             //아바타상태 인벤토리 업데이트
