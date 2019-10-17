@@ -86,8 +86,11 @@ namespace Nekoyume.BlockChain
 
         private string _tipInfo = string.Empty;
 
-        public IDictionary<TxId, Transaction<PolymorphicAction<ActionBase>>> Transactions => blocks.Transactions;
         public long BlockIndex => blocks?.Tip?.Index ?? 0;
+
+        public IEnumerable<Transaction<PolymorphicAction<ActionBase>>> StagedTransactions =>
+            store.IterateStagedTransactionIds()
+                .Select(store.GetTransaction<PolymorphicAction<ActionBase>>);
 
         protected PrivateKey PrivateKey { get; private set; }
         private Address Address { get; set; }

@@ -1,0 +1,118 @@
+
+204011.png
+size: 128,128
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+arm_L
+  rotate: false
+  xy: 58, 31
+  size: 15, 14
+  orig: 15, 14
+  offset: 0, 0
+  index: -1
+arm_R
+  rotate: false
+  xy: 58, 47
+  size: 17, 15
+  orig: 17, 15
+  offset: 0, 0
+  index: -1
+body_01
+  rotate: false
+  xy: 2, 53
+  size: 54, 46
+  orig: 54, 46
+  offset: 0, 0
+  index: -1
+body_02
+  rotate: true
+  xy: 40, 32
+  size: 19, 16
+  orig: 19, 16
+  offset: 0, 0
+  index: -1
+body_03
+  rotate: true
+  xy: 79, 90
+  size: 9, 7
+  orig: 9, 7
+  offset: 0, 0
+  index: -1
+body_04
+  rotate: false
+  xy: 123, 111
+  size: 3, 3
+  orig: 3, 3
+  offset: 0, 0
+  index: -1
+face_01
+  rotate: false
+  xy: 2, 23
+  size: 36, 28
+  orig: 36, 28
+  offset: 0, 0
+  index: -1
+face_02
+  rotate: false
+  xy: 86, 104
+  size: 35, 20
+  orig: 35, 20
+  offset: 0, 0
+  index: -1
+face_03
+  rotate: false
+  xy: 2, 3
+  size: 34, 18
+  orig: 34, 18
+  offset: 0, 0
+  index: -1
+face_04
+  rotate: true
+  xy: 58, 64
+  size: 35, 19
+  orig: 35, 19
+  offset: 0, 0
+  index: -1
+rock_1
+  rotate: true
+  xy: 123, 116
+  size: 8, 3
+  orig: 8, 3
+  offset: 0, 0
+  index: -1
+rock_2
+  rotate: false
+  xy: 40, 22
+  size: 12, 8
+  orig: 12, 8
+  offset: 0, 0
+  index: -1
+rock_3
+  rotate: false
+  xy: 79, 71
+  size: 6, 4
+  orig: 6, 4
+  offset: 0, 0
+  index: -1
+rock_4
+  rotate: false
+  xy: 79, 77
+  size: 7, 4
+  orig: 7, 4
+  offset: 0, 0
+  index: -1
+rock_5
+  rotate: false
+  xy: 79, 83
+  size: 7, 5
+  orig: 7, 5
+  offset: 0, 0
+  index: -1
+shadow
+  rotate: false
+  xy: 2, 101
+  size: 82, 23
+  orig: 82, 23
+  offset: 0, 0
+  index: -1
