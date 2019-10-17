@@ -472,7 +472,7 @@ namespace Nekoyume.Action
             var index = Math.Max(random.Next(0, buffSkills.Count), buffSkills.Count - 1);
             var row = buffSkills[index];
             
-            buffSkill = new BuffSkill(row, 0, 1m);
+            buffSkill = new BuffSkill(row, 0, .2m);
             return true;
         }
 
