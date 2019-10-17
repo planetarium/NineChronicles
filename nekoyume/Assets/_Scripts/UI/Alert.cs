@@ -12,22 +12,23 @@ namespace Nekoyume.UI
         public Text labelOK;
         public GameObject titleBorder;
         public AlertDelegate CloseCallback { get; set; }
-        public void Show(string title, string content, string btnSubmit = "OK", bool localize = false)
+        public void Show(string title, string content, string btnOK = "OK", bool localize = false)
         {
+            bool titleExists = !string.IsNullOrEmpty(title);
             if (localize)
             {
-                this.title.text = LocalizationManager.Localize(title);
+                if (titleExists)
+                    this.title.text = LocalizationManager.Localize(title);
                 this.content.text = LocalizationManager.Localize(content);
-                labelOK.text = LocalizationManager.Localize(btnSubmit);
+                labelOK.text = LocalizationManager.Localize(btnOK);
             }
             else
             {
                 this.title.text = title;
                 this.content.text = content;
-                labelOK.text = btnSubmit;
+                labelOK.text = btnOK;
             }
 
-            bool titleExists = !string.IsNullOrEmpty(title);
             this.title.gameObject.SetActive(titleExists);
             titleBorder.SetActive(titleExists);
 
