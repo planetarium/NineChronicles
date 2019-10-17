@@ -112,11 +112,19 @@ namespace Nekoyume.UI
             var status = Find<Status>();
             bottomMenu.goToMainButton.button.onClick.AddListener(() =>
             {
+                var confirm = Find<Confirm>();
+                confirm.Show(null, "UI_REASK_QUIT", "UI_YES", "UI_NO", true);
+                confirm.CloseCallback = result =>
+                {
+                    if (result == ConfirmResult.Yes)
+                    {
 #if UNITY_EDITOR
-                UnityEditor.EditorApplication.isPlaying = false;
+                        UnityEditor.EditorApplication.isPlaying = false;
 #else
-                bottomMenu.goToMainButton.button.onClick.AddListener(Application.Quit);
+                        bottomMenu.goToMainButton.button.onClick.AddListener(Application.Quit);
 #endif
+                    }
+                };
             });
             bottomMenu.goToMainButton.text.text = LocalizationManager.Localize("UI_GAMEEXIT");
             bottomMenu.inventoryButton.button.onClick.AddListener(status.ToggleInventory);

@@ -102,6 +102,7 @@ UI_TIPS_0,If you want to your character to be more powerful? Try to use set item
 UI_TIPS_1,You just go to the auction when you feel difficult to make a nice weapon.,좋은 무기를 만들기 너무 어려우신가요? 경매장에서 물건을 골라보세요.
 UI_TIPS_2,Don't mistake when prepare the battle. Fire fears a fire truck full of water.,전열을 가다듬을 때에는 장비의 속성을 확인하세요. 특정 속성의 몬스터에게는 무용지물일 수도 있습니다.
 UI_CREATE_CHARACTER,NEW CHRACTER,캐릭터 생성
+UI_DELETE_CHARACTER,DELETE CHRACTER,캐릭터 삭제
 UI_CREATE_CHARACTER_CONFIRM,CREATE,생성하기
 UI_GAME_START,GAME START,게임 시작
 UI_HAIR,Hair,머리카락
@@ -172,3 +173,6 @@ UI_WORLD_MAP_MONSTERS,Monsters,몬스터
 UI_WORLD_MAP_REWARDS,Rewards,보상
 UI_STAGE,Stage,스테이지
 UI_REMAININGTURN,Remaining Turn : {0},남은 턴 : {0}
+UI_REASK_QUIT,Are you sure to quit the game?,정말 게임을 종료하시겠습니까?
+UI_REASK_DELETE_CHARACTER,Are you sure to delete this character?,정말 이 캐릭터를 삭제하시겠습니까?
+UI_NOT_IMPLEMENTED,This feature is currently under construction.,준비 중입니다.

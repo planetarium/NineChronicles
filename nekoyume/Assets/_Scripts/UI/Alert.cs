@@ -1,3 +1,5 @@
+using Assets.SimpleLocalization;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
@@ -8,14 +10,17 @@ namespace Nekoyume.UI
         public Text title;
         public Text content;
         public Text labelOK;
+        public GameObject titleBorder;
         public AlertDelegate CloseCallback { get; set; }
-        public void Show(string title, string content, string btnOK="OK", bool localize=false)
+        public void Show(string title, string content, string btnOK = "OK", bool localize = false)
         {
+            bool titleExists = !string.IsNullOrEmpty(title);
             if (localize)
             {
-                this.title.text = Assets.SimpleLocalization.LocalizationManager.Localize(title);
-                this.content.text = Assets.SimpleLocalization.LocalizationManager.Localize(content);
-                labelOK.text = Assets.SimpleLocalization.LocalizationManager.Localize(btnOK);
+                if (titleExists)
+                    this.title.text = LocalizationManager.Localize(title);
+                this.content.text = LocalizationManager.Localize(content);
+                labelOK.text = LocalizationManager.Localize(btnOK);
             }
             else
             {
@@ -24,17 +29,15 @@ namespace Nekoyume.UI
                 labelOK.text = btnOK;
             }
 
-            this.title.gameObject.SetActive(!string.IsNullOrEmpty(title));
+            this.title.gameObject.SetActive(titleExists);
+            titleBorder.SetActive(titleExists);
 
             base.Show();
         }
 
         public override void Close()
         {
-            if (CloseCallback != null)
-            {
-                CloseCallback();
-            }
+            CloseCallback?.Invoke();
             Game.Controller.AudioController.PlayClick();
             base.Close();
         }

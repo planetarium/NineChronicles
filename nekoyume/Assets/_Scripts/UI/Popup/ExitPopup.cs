@@ -1,5 +1,4 @@
 using System.Collections;
-using Nekoyume.BlockChain;
 using UnityEngine;
 
 namespace Nekoyume.UI
