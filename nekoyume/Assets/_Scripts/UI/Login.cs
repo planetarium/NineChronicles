@@ -42,8 +42,8 @@ namespace Nekoyume.UI
             if (!ready)
                 return;
 
-            var confirm = Create<Confirm>();
-            confirm.Show("캐릭터 삭제", "정말 삭제하시겠습니까?", "삭제합니다", "아니오");
+            var confirm = Find<Confirm>();
+            confirm.Show("UI_DELETE_CHARACTER", "UI_REASK_DELETE_CHARACTER", "UI_YES", "UI_NO", true);
             confirm.CloseCallback = result =>
             {
                 if (result != ConfirmResult.Yes)
