@@ -158,7 +158,7 @@ namespace Nekoyume.UI
 
             Show();
 
-            Find<BottomMenu>()?.Show(UINavigator.NavigationType.Back, SubscribeBackButtonClick);
+            Find<BottomMenu>()?.Show(UINavigator.NavigationType.Back, SubscribeBackButtonClick, true);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)

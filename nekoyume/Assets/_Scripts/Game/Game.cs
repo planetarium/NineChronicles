@@ -42,7 +42,7 @@ namespace Nekoyume.Game
         public bool initialized;
 
         #region Mono & Initialization
-        
+
         protected override void Awake()
         {
             Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
@@ -92,16 +92,24 @@ namespace Nekoyume.Game
                 Widget.Find<UpdatePopup>().Show();
             }
         }
-        
+
         #endregion
 
-        public void Quit()
+        public static void Quit()
         {
+            var confirm = Widget.Find<Confirm>();
+            confirm.CloseCallback = result =>
+            {
+                if (result == ConfirmResult.No)
+                    return;
+                
 #if UNITY_EDITOR
-            UnityEditor.EditorApplication.isPlaying = false;
+                UnityEditor.EditorApplication.isPlaying = false;
 #else
-            Application.Quit();
+                Application.Quit();
 #endif
+            };
+            confirm.Show("UI_CONFIRM_QUIT_TITLE", "UI_CONFIRM_QUIT_CONTENT");
         }
 
         private void PlayMouseOnClickVFX(Vector3 position)
@@ -129,6 +137,5 @@ namespace Nekoyume.Game
         }
 
         #endregion
-
     }
 }

@@ -20,7 +20,7 @@ namespace Nekoyume.UI
             base.Show();
             stageTitle.Show(stage);
 
-            Find<BottomMenu>()?.Show(UINavigator.NavigationType.None);
+            Find<BottomMenu>()?.Show(UINavigator.NavigationType.None, null, true);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)

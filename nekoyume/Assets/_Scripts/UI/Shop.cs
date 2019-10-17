@@ -47,7 +47,7 @@ namespace Nekoyume.UI
         public ShopItems shopItems;
         public GameObject shopNotice;
 
-        public readonly Model.Shop SharedModel = new Model.Shop();
+        public Model.Shop SharedModel { get; private set; }
 
         public ItemCountAndPricePopup ItemCountAndPricePopup { get; private set; }
 
@@ -58,6 +58,8 @@ namespace Nekoyume.UI
             _defaultAnchoredPositionXOfBg1 = bg1.anchoredPosition.x;
             _defaultAnchoredPositionXOfRight = right.anchoredPosition.x;
             base.Awake();
+            
+            SharedModel = new Model.Shop();
         }
 
         protected override void OnEnable()

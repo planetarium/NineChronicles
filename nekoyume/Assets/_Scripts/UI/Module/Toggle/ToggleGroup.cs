@@ -7,8 +7,11 @@ namespace Nekoyume.UI.Module
     public class ToggleGroup : IToggleListener
     {
         private readonly Dictionary<int, IToggleable> _idAndToggleablePairs = new Dictionary<int, IToggleable>();
+        
         public readonly Subject<IToggleable> OnToggledOn = new Subject<IToggleable>();
         public readonly Subject<IToggleable> OnToggledOff = new Subject<IToggleable>();
+
+        public IEnumerable<IToggleable> Toggleables => _idAndToggleablePairs.Values;
 
         #region IToggleListener
 

@@ -22,8 +22,8 @@ namespace Nekoyume.UI
         public GameObject titleBorder;
         public ConfirmDelegate CloseCallback { get; set; }
 
-        public void Show(string title, string content, string btnYes = "OK", string btnNo = "CANCEL",
-            bool localize = false)
+        public void Show(string title, string content, string btnYes = "UI_OK", string btnNo = "UI_CANCEL",
+            bool localize = true)
         {
             bool titleExists = !string.IsNullOrEmpty(title);
             if (localize)

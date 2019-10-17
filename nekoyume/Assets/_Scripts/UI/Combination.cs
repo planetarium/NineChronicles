@@ -11,22 +11,19 @@ using Nekoyume.Game.Item;
 using Nekoyume.Game.Factory;
 using Nekoyume.Helper;
 using Nekoyume.Manager;
-using Nekoyume.Model;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
-using Stage = Nekoyume.Game.Stage;
-using TMPro;
 
 namespace Nekoyume.UI
 {
     public class Combination : Widget
     {
-        public NormalButton equipmentButton;
-        public NormalButton consumableButton;
+        public NormalButton combineEquipmentButton;
+        public NormalButton combineConsumableButton;
         public NormalButton recipeButton;
 
         public Module.Inventory inventory;
@@ -41,13 +38,11 @@ namespace Nekoyume.UI
         public GameObject recipeCombination;
         public Button recipeCloseButton;
         public Recipe recipe;
-        public TextMeshProUGUI requiredPointText;
 
         private Stage _stage;
-        private Game.Character.Player _player;
-        private IDisposable _disposable;
+        private Player _player;
 
-        public readonly Model.Combination SharedModel = new Model.Combination();
+        public Model.Combination SharedModel { get; private set; }
 
         private SimpleItemCountPopup SimpleItemCountPopup { get; set; }
 
@@ -58,6 +53,7 @@ namespace Nekoyume.UI
             base.Awake();
 
             _stage = Game.Game.instance.stage;
+            SharedModel = new Model.Combination();
         }
 
         #endregion
@@ -101,14 +97,14 @@ namespace Nekoyume.UI
             SharedModel.OnMaterialRemoved.Subscribe(materialId => SubscribeOnMaterial(materialId, false))
                 .AddTo(gameObject);
 
-            equipmentButton.button.OnClickAsObservable()
+            combineEquipmentButton.button.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
                     AudioController.PlayClick();
                     SharedModel.State.Value = ItemType.Equipment;
                 })
                 .AddTo(gameObject);
-            consumableButton.button.OnClickAsObservable()
+            combineConsumableButton.button.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
                     AudioController.PlayClick();
@@ -156,7 +152,6 @@ namespace Nekoyume.UI
             _stage.LoadBackground("combination");
             _player = _stage.GetPlayer();
             _player.gameObject.SetActive(false);
-            _disposable = ReactiveCurrentAvatarState.ActionPoint.Subscribe(CheckPoint);
 
             Find<BottomMenu>().Show(UINavigator.NavigationType.Back, SubscribeBackButtonClick);
 
@@ -167,7 +162,6 @@ namespace Nekoyume.UI
         {
             Find<BottomMenu>().Close(ignoreCloseAnimation);
 
-            _disposable.Dispose();
             foreach (var item in materialViews)
             {
                 item.Clear();
@@ -211,15 +205,15 @@ namespace Nekoyume.UI
             {
                 case ItemType.Consumable:
                     inventory.SharedModel.DimmedFunc.Value = DimmedFuncForConsumables;
-                    equipmentButton.button.interactable = true;
-                    consumableButton.button.interactable = false;
+                    combineEquipmentButton.button.interactable = true;
+                    combineConsumableButton.button.interactable = false;
                     equipmentMaterialView.gameObject.SetActive(false);
                     materialViewsPlusImageContainer.SetActive(false);
                     break;
                 case ItemType.Equipment:
                     inventory.SharedModel.DimmedFunc.Value = DimmedFuncForEquipments;
-                    equipmentButton.button.interactable = false;
-                    consumableButton.button.interactable = true;
+                    combineEquipmentButton.button.interactable = false;
+                    combineConsumableButton.button.interactable = true;
                     equipmentMaterialView.gameObject.SetActive(true);
                     materialViewsPlusImageContainer.SetActive(true);
                     break;
@@ -325,6 +319,7 @@ namespace Nekoyume.UI
             {
                 combinationButton.enabled = true;
                 combinationButtonImage.sprite = Resources.Load<Sprite>("UI/Textures/button_blue_01");
+                combinationButtonText.color = Color.white;
             }
             else
             {

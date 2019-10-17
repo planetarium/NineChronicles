@@ -9,15 +9,14 @@ namespace Nekoyume.UI.Module
 {
     public class BottomMenu : Widget
     {
-//        public enum ToggleGroupState
-//        {
-//            None,
-//            Mail,
-//            Quest,
-//            Chat,
-//            IllustratedBook,
-//            Settings
-//        }
+        public enum ToggleableType
+        {
+            Mail,
+            Quest,
+            Chat,
+            IllustratedBook,
+            Settings
+        }
 
         public class Model
         {
@@ -25,8 +24,6 @@ namespace Nekoyume.UI.Module
                 new ReactiveProperty<UINavigator.NavigationType>(UINavigator.NavigationType.Back);
 
             public Action<BottomMenu> NavigationAction;
-//            public readonly ReactiveProperty<ToggleGroupState> ShowToggleGroup =
-//                new ReactiveProperty<ToggleGroupState>(ToggleGroupState.None);
 
             public readonly ReactiveProperty<bool> HasNotificationInMail = new ReactiveProperty<bool>();
             public readonly ReactiveProperty<bool> HasNotificationInQuest = new ReactiveProperty<bool>();
@@ -51,15 +48,14 @@ namespace Nekoyume.UI.Module
         private readonly List<IDisposable> _disposablesAtOnEnable = new List<IDisposable>();
 
         public readonly Model SharedModel = new Model();
-        
+
         #region Mono
 
         public override void Initialize()
         {
             base.Initialize();
-            
+
             SharedModel.NavigationType.Subscribe(SubscribeNavigationType).AddTo(gameObject);
-//            SharedModel.ShowToggleGroup.Subscribe(SubscribeShowToggleGroup).AddTo(gameObject);
             SharedModel.HasNotificationInMail.SubscribeTo(mailButton.SharedModel.HasNotification).AddTo(gameObject);
             SharedModel.HasNotificationInQuest.SubscribeTo(questButton.SharedModel.HasNotification).AddTo(gameObject);
             SharedModel.HasNotificationInChat.SubscribeTo(chatButton.SharedModel.HasNotification).AddTo(gameObject);
@@ -102,12 +98,54 @@ namespace Nekoyume.UI.Module
         }
 
         #endregion
-        
-        public void Show(UINavigator.NavigationType navigationType, Action<BottomMenu> navigationAction = null)
+
+        public void Show(UINavigator.NavigationType navigationType, Action<BottomMenu> navigationAction,
+            bool useShowButtons = false, params ToggleableType[] showButtons)
         {
             base.Show();
             SharedModel.NavigationType.Value = navigationType;
             SharedModel.NavigationAction = navigationAction;
+
+            if (!useShowButtons)
+            {
+                mailButton.Show();
+                questButton.Show();
+                chatButton.Show();
+                illustratedBookButton.Show();
+                settingsButton.Show();
+                
+                return;
+            }
+            
+            mailButton.Hide();
+            questButton.Hide();
+            chatButton.Hide();
+            illustratedBookButton.Hide();
+            settingsButton.Hide();
+            
+            foreach (var toggleableType in showButtons)
+            {
+                switch (toggleableType)
+                {
+                    case ToggleableType.Mail:
+                        mailButton.Show();
+                        break;
+                    case ToggleableType.Quest:
+                        questButton.Show();
+                        break;
+                    case ToggleableType.Chat:
+                        chatButton.Show();
+                        break;
+                    case ToggleableType.IllustratedBook:
+                        illustratedBookButton.Show();
+                        break;
+                    case ToggleableType.Settings:
+                        settingsButton.Show();
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
         }
 
         // 이 위젯은 애니메이션 없이 바로 닫히는 것을 기본으로 함.
@@ -147,27 +185,6 @@ namespace Nekoyume.UI.Module
             }
         }
 
-//        private void SubscribeShowToggleGroup(ToggleGroupState toggleGroupState)
-//        {
-//            switch (toggleGroupState)
-//            {
-//                case ToggleGroupState.None:
-//                    break;
-//                case ToggleGroupState.Mail:
-//                    break;
-//                case ToggleGroupState.Quest:
-//                    break;
-//                case ToggleGroupState.Chat:
-//                    break;
-//                case ToggleGroupState.IllustratedBook:
-//                    break;
-//                case ToggleGroupState.Settings:
-//                    break;
-//                default:
-//                    throw new ArgumentOutOfRangeException(nameof(toggleGroupState), toggleGroupState, null);
-//            }
-//        }
-
         private void SubscribeNavigationButtonClick(Unit unit)
         {
             SharedModel.NavigationAction?.Invoke(this);
@@ -196,7 +213,7 @@ namespace Nekoyume.UI.Module
 
             mailButton.SharedModel.HasNotification.Value = mailBox.Any(i => i.New);
         }
-        
+
         #endregion
     }
 }

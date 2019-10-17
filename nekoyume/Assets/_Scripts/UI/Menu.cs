@@ -128,7 +128,7 @@ namespace Nekoyume.UI
         {
             base.Show();
             Find<Status>().Show();
-            Find<BottomMenu>().Show(UINavigator.NavigationType.Quit, _ => Game.Game.instance.Quit());
+            Find<BottomMenu>().Show(UINavigator.NavigationType.Quit, _ => Game.Game.Quit());
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
