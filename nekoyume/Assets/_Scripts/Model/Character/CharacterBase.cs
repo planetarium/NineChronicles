@@ -67,6 +67,7 @@ namespace Nekoyume.Model
 
             RowData = row;
             Stats = new CharacterStats(RowData, level);
+            Skills.Clear();
 
             atkElementType = RowData.ElementalType;
             attackRange = RowData.AttackRange;
