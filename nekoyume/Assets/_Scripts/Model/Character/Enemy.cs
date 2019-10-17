@@ -9,7 +9,6 @@ namespace Nekoyume.Model
     public class Enemy : CharacterBase, ICloneable
     {
         public int spawnIndex = -1;
-        public bool isBoss = false;
 
         public Enemy(CharacterBase player, CharacterSheet.Row rowData, int monsterLevel) : base(player.Simulator, rowData.Id, monsterLevel)
         {
