@@ -233,6 +233,12 @@ namespace Nekoyume.Model
                 {
                     Skills.Add(skill);
                 }
+
+                foreach (var buffSkill in food.BuffSkills)
+                {
+                    BuffSkills.Add(buffSkill);
+                }
+                
                 Inventory.RemoveNonFungibleItem(food);
             }
         }

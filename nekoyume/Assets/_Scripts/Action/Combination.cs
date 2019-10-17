@@ -162,7 +162,7 @@ namespace Nekoyume.Action
                     return states;
                 }
 
-                var elementalType = GetElementalType(monsterParts, ctx.Random);
+                var elementalType = GetElementalType(ctx.Random, monsterParts);
 
                 var itemId = ctx.Random.GenerateRandomGuid();
                 Equipment equipment = null;
@@ -193,14 +193,14 @@ namespace Nekoyume.Action
                         }
                     }
 
-                    var normalizedRandomValue = ctx.Random.Next(0, 100000) * 0.00001m;
-                    var roll = GetRoll(monsterPart.count, 0, normalizedRandomValue);
-
-                    if (TryGetStat(monsterPart.row, roll, out var statMap))
+                    if (TryGetStat(monsterPart.row, GetRoll(ctx.Random, monsterPart.count, 0), out var statMap))
                         equipment.StatsMap.AddStatAdditionalValue(statMap.StatType, statMap.Value);
 
-                    if (TryGetSkill(monsterPart.row, roll, out var skill))
+                    if (TryGetSkill(monsterPart.row, GetRoll(ctx.Random, monsterPart.count, 0), out var skill))
                         equipment.Skills.Add(skill);
+                    
+                    if (TryGetBuffSkill(ctx.Random, out var buffSkill))
+                        equipment.BuffSkills.Add(buffSkill);
                 }
 
                 result.itemUsable = equipment;
@@ -271,7 +271,7 @@ namespace Nekoyume.Action
             return zippedMaterialRows;
         }
 
-        private static ElementalType GetElementalType(IEnumerable<MaterialRow> monsterParts, IRandom random)
+        private static ElementalType GetElementalType(IRandom random, IEnumerable<MaterialRow> monsterParts)
         {
             var elementalTypeCountForEachGrades =
                 new Dictionary<ElementalType, Dictionary<int, int>>(ElementalTypeComparer.Instance);
@@ -367,6 +367,7 @@ namespace Nekoyume.Action
             {
                 index--;
             }
+            
             return maxGradeCountElementalTypes[index];
         }
 
@@ -411,12 +412,12 @@ namespace Nekoyume.Action
             }
 
             outItemEquipmentRow = null;
-
             return false;
         }
 
-        private static decimal GetRoll(int monsterPartsCount, int deltaLevel, decimal normalizedRandomValue)
+        private static decimal GetRoll(IRandom random, int monsterPartsCount, int deltaLevel)
         {
+            var normalizedRandomValue = random.Next(0, 100000) * 0.00001m;
             var rollMax = DecimalEx.Pow(1m / (1m + GameConfig.CombinationValueP1 / monsterPartsCount),
                               GameConfig.CombinationValueP2) *
                           (deltaLevel <= 0
@@ -428,18 +429,18 @@ namespace Nekoyume.Action
                    DecimalEx.Pow(normalizedRandomValue, GameConfig.CombinationValueR1);
         }
 
-        private static bool TryGetStat(MaterialItemSheet.Row itemRow, decimal roll, out StatMapEx statMapEx)
+        private static bool TryGetStat(MaterialItemSheet.Row itemRow, decimal roll, out StatMap statMap)
         {
             if (!itemRow.StatType.HasValue)
             {
-                statMapEx = null;
+                statMap = null;
 
                 return false;
             }
 
             var key = itemRow.StatType.Value;
             var value = Math.Floor(itemRow.StatMin + (itemRow.StatMax - itemRow.StatMin) * roll);
-            statMapEx = new StatMapEx(key, value);
+            statMap = new StatMap(key, value);
             return true;
         }
 
@@ -456,15 +457,23 @@ namespace Nekoyume.Action
                                              (monsterParts.SkillDamageMax - monsterParts.SkillDamageMin) * roll);
 
                 skill = SkillFactory.Get(skillRow, value, chance);
-
                 return true;
             }
             catch (InvalidOperationException)
             {
                 skill = null;
-
                 return false;
             }
+        }
+        
+        private static bool TryGetBuffSkill(IRandom random, out BuffSkill buffSkill)
+        {
+            var buffSkills = Game.Game.instance.TableSheets.SkillSheet.OrderedList.Where(item => item.Id >= 200000).ToList();
+            var index = Math.Max(random.Next(0, buffSkills.Count), buffSkills.Count - 1);
+            var row = buffSkills[index];
+            
+            buffSkill = new BuffSkill(row, 0, 1m);
+            return true;
         }
 
         private static ItemUsable GetFood(ConsumableItemSheet.Row equipmentItemRow, Guid itemId)
