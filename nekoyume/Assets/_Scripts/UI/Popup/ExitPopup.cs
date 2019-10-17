@@ -1,5 +1,4 @@
 using System.Collections;
-using Nekoyume.BlockChain;
 using UnityEngine;
 
 namespace Nekoyume.UI
@@ -10,7 +9,7 @@ namespace Nekoyume.UI
 
         public void Show(long idx)
         {
-            SubmitCallback = Application.Quit;
+            CloseCallback = Application.Quit;
             _index = idx;
             base.Show();
             StartCoroutine(CoCheckBlockIndex());
@@ -19,7 +18,7 @@ namespace Nekoyume.UI
         private IEnumerator CoCheckBlockIndex()
         {
             yield return new WaitWhile(() => Game.Game.instance.agent.BlockIndex == _index);
-            SubmitCallback = null;
+            CloseCallback = null;
             Close();
         }
     }
