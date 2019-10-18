@@ -66,7 +66,7 @@ namespace Nekoyume.UI.Scroller
             }
 
             if (recipeInfo.materialInfos.Any(info => info.id != 0 && !info.isEnough) ||
-                States.Instance.currentAvatarState.Value.actionPoint < Action.Combination.RequiredPoint)
+                States.Instance.CurrentAvatarState.Value.actionPoint < Action.Combination.RequiredPoint)
             {
                 combineButton.enabled = false;
                 combineButton.image.sprite = Resources.Load<Sprite>("UI/Textures/button_gray_01");

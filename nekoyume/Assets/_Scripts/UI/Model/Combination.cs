@@ -295,14 +295,14 @@ namespace Nekoyume.UI.Model
                 case CombinationState.Recipe:
                 case CombinationState.Consumable:
                     ReadyToCombination.Value =
-                        Materials.Count >= 2 && States.Instance.currentAvatarState.Value.actionPoint >=
+                        Materials.Count >= 2 && States.Instance.CurrentAvatarState.Value.actionPoint >=
                         Action.Combination.RequiredPoint;
                     break;
                 case CombinationState.Equipment:
                     ReadyToCombination.Value = 
                         EquipmentMaterial.Value != null
                         && Materials.Count >= 1
-                        && States.Instance.currentAvatarState.Value.actionPoint >= Action.Combination.RequiredPoint;
+                        && States.Instance.CurrentAvatarState.Value.actionPoint >= Action.Combination.RequiredPoint;
                     break;
                 case CombinationState.Enhancement:
                     break;

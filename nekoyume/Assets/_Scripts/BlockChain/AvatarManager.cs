@@ -27,7 +27,7 @@ namespace Nekoyume.BlockChain
 
         public static bool DeleteAvatarPrivateKey(int index)
         {
-            if (States.Instance.currentAvatarKey.Value == index)
+            if (States.Instance.CurrentAvatarKey.Value == index)
             {
                 ResetIndex();
             }
@@ -39,18 +39,18 @@ namespace Nekoyume.BlockChain
 
         public static AvatarState SetIndex(int index)
         {
-            if (!States.Instance.avatarStates.ContainsKey(index))
+            if (!States.Instance.AvatarStates.ContainsKey(index))
             {
                 return null;
             }
             
-            States.Instance.currentAvatarKey.Value = index;
-            return States.Instance.currentAvatarState.Value;
+            States.Instance.CurrentAvatarKey.Value = index;
+            return States.Instance.CurrentAvatarState.Value;
         }
 
         private static void ResetIndex()
         {
-            States.Instance.currentAvatarKey.Value = -1;
+            States.Instance.CurrentAvatarKey.Value = -1;
         }
     }
 }

@@ -114,7 +114,7 @@ namespace Nekoyume.UI
         {
             _selectedIndex = index;
             Player player;
-            _isCreateMode = !States.Instance.avatarStates.ContainsKey(index);
+            _isCreateMode = !States.Instance.AvatarStates.ContainsKey(index);
             if (_isCreateMode)
             {
                 player = new Player(1);
@@ -123,9 +123,9 @@ namespace Nekoyume.UI
             }
             else
             {
-                States.Instance.currentAvatarState.Value = States.Instance.avatarStates[_selectedIndex];
-                player = new Player(States.Instance.currentAvatarState.Value);
-                nameInfo.text = States.Instance.currentAvatarState.Value.name;
+                States.Instance.CurrentAvatarState.Value = States.Instance.AvatarStates[_selectedIndex];
+                player = new Player(States.Instance.CurrentAvatarState.Value);
+                nameInfo.text = States.Instance.CurrentAvatarState.Value.name;
             }
             
             // create new or login

@@ -65,7 +65,7 @@ namespace Nekoyume.Action
             result = new Result
             {
                 shopItem = outUnregisteredItem,
-                itemUsable = outUnregisteredItem.itemUsable
+                itemUsable = outUnregisteredItem.ItemUsable
             };
             var mail = new SellCancelMail(result, ctx.BlockIndex);
             avatarState.Update(mail);

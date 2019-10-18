@@ -21,7 +21,7 @@ namespace Nekoyume.Model
                 return;
             }
 
-            Items.Value = shopState.items;
+            Items.Value = shopState.AgentProducts;
         }
     }
 }

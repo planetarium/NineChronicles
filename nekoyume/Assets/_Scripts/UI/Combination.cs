@@ -473,9 +473,9 @@ namespace Nekoyume.UI
         private void RequestCombination(List<CombinationMaterial> materials)
         {
             //게임상의 액션포인트 업데이트
-            var newState = (AvatarState) States.Instance.currentAvatarState.Value.Clone();
+            var newState = (AvatarState) States.Instance.CurrentAvatarState.Value.Clone();
             newState.actionPoint -= Action.Combination.RequiredPoint;
-            var index = States.Instance.currentAvatarKey.Value;
+            var index = States.Instance.CurrentAvatarKey.Value;
             ActionRenderHandler.UpdateLocalAvatarState(newState, index);
 
             ActionManager.instance.Combination(materials)
@@ -485,7 +485,7 @@ namespace Nekoyume.UI
             
             foreach (var material in materials)
             {
-                States.Instance.currentAvatarState.Value.inventory.RemoveFungibleItem(material.ItemBase.Value.Data.Id,
+                States.Instance.CurrentAvatarState.Value.inventory.RemoveFungibleItem(material.ItemBase.Value.Data.Id,
                     material.Count.Value);
             }
             

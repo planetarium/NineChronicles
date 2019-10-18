@@ -45,7 +45,7 @@ namespace Nekoyume.BlockChain
 
         public IObservable<ActionBase.ActionEvaluation<DeleteAvatar>> DeleteAvatar(int index)
         {
-            var avatarAddress = States.Instance.avatarStates[index].address;
+            var avatarAddress = States.Instance.AvatarStates[index].address;
             var action = new DeleteAvatar
             {
                 index = index,
@@ -71,7 +71,7 @@ namespace Nekoyume.BlockChain
                 equipments = equipments,
                 foods = foods,
                 stage = stage,
-                avatarAddress = States.Instance.currentAvatarState.Value.address,
+                avatarAddress = States.Instance.CurrentAvatarState.Value.address,
             };
             ProcessAction(action);
 
@@ -92,7 +92,7 @@ namespace Nekoyume.BlockChain
 
             var action = new Action.Combination();
             materials.ForEach(m => action.Materials.Add(new Action.Combination.Material(m)));
-            action.avatarAddress = States.Instance.currentAvatarState.Value.address;
+            action.avatarAddress = States.Instance.CurrentAvatarState.Value.address;
             ProcessAction(action);
 
             return ActionBase.EveryRender<Action.Combination>()
@@ -107,7 +107,7 @@ namespace Nekoyume.BlockChain
         {
             var action = new Sell
             {
-                sellerAvatarAddress = States.Instance.currentAvatarState.Value.address,
+                sellerAvatarAddress = States.Instance.CurrentAvatarState.Value.address,
                 productId = Guid.NewGuid(),
                 itemUsable = itemUsable,
                 price = price
@@ -128,7 +128,7 @@ namespace Nekoyume.BlockChain
             var action = new SellCancellation
             {
                 productId = productId,
-                sellerAvatarAddress = States.Instance.currentAvatarState.Value.address,
+                sellerAvatarAddress = States.Instance.CurrentAvatarState.Value.address,
             };
             ProcessAction(action);
 
@@ -145,7 +145,7 @@ namespace Nekoyume.BlockChain
         {
             var action = new Buy
             {
-                buyerAvatarAddress = States.Instance.currentAvatarState.Value.address,
+                buyerAvatarAddress = States.Instance.CurrentAvatarState.Value.address,
                 sellerAgentAddress = sellerAgentAddress,
                 sellerAvatarAddress = sellerAvatarAddress,
                 productId = productId
@@ -164,7 +164,7 @@ namespace Nekoyume.BlockChain
         {
             var action = new AddItem
             {
-                avatarAddress = States.Instance.currentAvatarState.Value.address,
+                avatarAddress = States.Instance.CurrentAvatarState.Value.address,
                 itemId = itemId,
             };
             ProcessAction(action);
@@ -181,8 +181,8 @@ namespace Nekoyume.BlockChain
         {
             var action = new AddGold
             {
-                agentAddress = States.Instance.agentState.Value.address,
-                avatarAddress = States.Instance.currentAvatarState.Value.address,
+                agentAddress = States.Instance.AgentState.Value.address,
+                avatarAddress = States.Instance.CurrentAvatarState.Value.address,
             };
             ProcessAction(action);
 
@@ -199,7 +199,7 @@ namespace Nekoyume.BlockChain
         {
             var action = new DailyReward
             {
-                avatarAddress = States.Instance.currentAvatarState.Value.address,
+                avatarAddress = States.Instance.CurrentAvatarState.Value.address,
                 refillPoint = GameConfig.ActionPoint
             };
             ProcessAction(action);
@@ -218,7 +218,7 @@ namespace Nekoyume.BlockChain
             {
                 itemId = itemId,
                 materialIds = materialIds,
-                avatarAddress = States.Instance.currentAvatarState.Value.address,
+                avatarAddress = States.Instance.CurrentAvatarState.Value.address,
             };
             ProcessAction(action);
 
