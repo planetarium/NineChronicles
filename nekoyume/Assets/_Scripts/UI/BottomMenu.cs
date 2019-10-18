@@ -78,11 +78,8 @@ namespace Nekoyume.UI.Module
             _toggleGroup.RegisterToggleable(settingsButton);
             mailButton.SetWidgetType<Mail>();
             questButton.SetWidgetType<Quest>();
-//            chatButton.SetWidgetType<Chat>();
             chatButton.button.OnClickAsObservable().Subscribe(SubscribeOnClick).AddTo(gameObject);
-//            illustratedBookButton.SetWidgetType<IllustratedBook>();
             illustratedBookButton.button.OnClickAsObservable().Subscribe(SubscribeOnClick).AddTo(gameObject);
-//            settingsButton.SetWidgetType<Settings>();
             settingsButton.button.OnClickAsObservable().Subscribe(SubscribeOnClick).AddTo(gameObject);
         }
 

@@ -114,6 +114,7 @@ namespace Nekoyume.Game.Item
             }
             else
             {
+                // todo: 인벤토리 아이콘 위치 논의 후 활성화.
 //                _inventoryPosition = _battle.bottomMenu.inventoryButton.image.transform.position;
                 _inventoryPosition.z = transform.position.z;
             }

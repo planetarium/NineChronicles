@@ -31,6 +31,7 @@ namespace Nekoyume.UI
 
         private void OnGetItem(DropItem dropItem)
         {
+            // todo: 인벤토리 아이콘 위치 논의 후 활성화.
 //            VFXController.instance.Create<DropItemInventoryVFX>(bottomMenu.inventoryButton.image.transform, Vector3.zero);
         }
 

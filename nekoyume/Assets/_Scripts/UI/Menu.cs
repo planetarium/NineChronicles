@@ -105,25 +105,6 @@ namespace Nekoyume.UI
             AudioController.PlayClick();
         }
 
-        public override void Initialize()
-        {
-            base.Initialize();
-
-//            var status = Find<Status>();
-//            bottomMenu.mainButton.button.onClick.AddListener(() =>
-//            {
-//#if UNITY_EDITOR
-//                UnityEditor.EditorApplication.isPlaying = false;
-//#else
-//                bottomMenu.mainButton.button.onClick.AddListener(Application.Quit);
-//#endif
-//            });
-//            bottomMenu.mainButton.text.text = LocalizationManager.Localize("UI_EXIT_GAME");
-//            bottomMenu.inventoryButton.button.onClick.AddListener(status.ToggleInventory);
-//            bottomMenu.questButton.button.onClick.AddListener(status.ToggleQuest);
-//            bottomMenu.avatarInfoButton.button.onClick.AddListener(status.ToggleStatus);
-        }
-
         public override void Show()
         {
             base.Show();
