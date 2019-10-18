@@ -214,15 +214,11 @@ namespace Nekoyume.UI.Model
             RegisteredProducts.Clear();
             
             if (_shopItems.Count == 0)
-            {
                 return;
-            }
 
             var key = States.Instance.agentState.Value.address;
             if (!_shopItems.ContainsKey(key))
-            {
                 return;
-            }
 
             var items = _shopItems[key];
             foreach (var item in items)

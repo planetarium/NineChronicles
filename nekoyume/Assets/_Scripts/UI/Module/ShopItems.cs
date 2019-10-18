@@ -18,8 +18,7 @@ namespace Nekoyume.UI.Module
         private Shop.StateType _stateType;
         public Model.ShopItems data;
         
-        private readonly List<IDisposable> _disposablesForAwake = new List<IDisposable>();
-        private readonly List<IDisposable> _disposablesForSetData = new List<IDisposable>();
+        private readonly List<IDisposable> _disposablesAtSetData = new List<IDisposable>();
         
         #region Mono
         
@@ -33,13 +32,7 @@ namespace Nekoyume.UI.Module
             {
                 AudioController.PlayClick();
                 data?.OnRefresh.OnNext(data);
-            }).AddTo(_disposablesForAwake);
-        }
-
-        private void OnDestroy()
-        {
-            _disposablesForAwake.DisposeAllAndClear();
-            Clear();
+            }).AddTo(gameObject);
         }
 
         #endregion
@@ -52,24 +45,25 @@ namespace Nekoyume.UI.Module
         
         public void SetData(Model.ShopItems data)
         {
-            if (ReferenceEquals(data, null))
+            if (data is null)
             {
                 Clear();
                 return;
             }
 
+            _disposablesAtSetData.DisposeAllAndClear();
             this.data = data;
-            this.data.Products.ObserveAdd().Subscribe(_ => UpdateView()).AddTo(_disposablesForSetData);
-            this.data.Products.ObserveRemove().Subscribe(_ => UpdateView()).AddTo(_disposablesForSetData);
-            this.data.RegisteredProducts.ObserveAdd().Subscribe(_ => UpdateView()).AddTo(_disposablesForSetData);
-            this.data.RegisteredProducts.ObserveRemove().Subscribe(_ => UpdateView()).AddTo(_disposablesForSetData);
+            this.data.Products.ObserveAdd().Subscribe(_ => UpdateView()).AddTo(_disposablesAtSetData);
+            this.data.Products.ObserveRemove().Subscribe(_ => UpdateView()).AddTo(_disposablesAtSetData);
+            this.data.RegisteredProducts.ObserveAdd().Subscribe(_ => UpdateView()).AddTo(_disposablesAtSetData);
+            this.data.RegisteredProducts.ObserveRemove().Subscribe(_ => UpdateView()).AddTo(_disposablesAtSetData);
             
             UpdateView();
         }
 
         public void Clear()
         {
-            _disposablesForSetData.DisposeAllAndClear();
+            _disposablesAtSetData.DisposeAllAndClear();
             data = null;
             
             UpdateView();
@@ -100,25 +94,23 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        private void UpdateViewWithItems(IEnumerable<ShopItem> data)
+        private void UpdateViewWithItems(IEnumerable<ShopItem> models)
         {
-            using (var uiItems = items.GetEnumerator())
-            using (var dataItems = data.GetEnumerator())
+            using (var itemViews = items.GetEnumerator())
+            using (var itemModels = models.GetEnumerator())
             {
-                while (uiItems.MoveNext())
+                while (itemViews.MoveNext())
                 {
-                    if (ReferenceEquals(uiItems.Current, null))
-                    {
+                    if (itemViews.Current is null)
                         continue;
-                    }
                     
-                    if (!dataItems.MoveNext())
+                    if (!itemModels.MoveNext())
                     {
-                        uiItems.Current.Clear();
+                        itemViews.Current.Clear();
                         continue;
                     }
                         
-                    uiItems.Current.SetData(dataItems.Current);
+                    itemViews.Current.SetData(itemModels.Current);
                 }
             }
         }
