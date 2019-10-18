@@ -74,7 +74,6 @@ namespace Nekoyume.UI.Scroller
 
         public void SetData(ReactiveCollection<Model.InventoryItem> dataList)
         {
-            Debug.LogWarning("InventoryScrollerController.SetData() called.");
             if (dataList is null)
             {
                 dataList = new ReactiveCollection<Model.InventoryItem>();

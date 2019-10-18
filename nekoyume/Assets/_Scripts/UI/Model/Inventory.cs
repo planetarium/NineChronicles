@@ -51,9 +51,6 @@ namespace Nekoyume.UI.Model
 
         public void ResetItems(Game.Item.Inventory inventory)
         {
-            Debug.LogWarning(
-                $"Model.Inventory.ResetItems() called. inventory.Items.Count is {inventory?.Items.Count ?? 0}");
-
             RemoveItemsAll();
 
             if (inventory is null)
