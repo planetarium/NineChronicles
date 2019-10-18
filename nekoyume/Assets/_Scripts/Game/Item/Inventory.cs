@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Data;
+using Nekoyume.EnumType;
 using Nekoyume.Game.Factory;
 using Nekoyume.TableData;
 using UnityEngine;
@@ -56,6 +57,22 @@ namespace Nekoyume.Game.Item
 
         public IReadOnlyList<Item> Items => _items;
 
+        public void AddItem(ItemBase itemBase, int count = 1)
+        {
+            switch (itemBase.Data.ItemType)
+            {
+                case ItemType.Consumable:
+                case ItemType.Equipment:
+                    AddNonFungibleItem((ItemUsable) itemBase);
+                    break;
+                case ItemType.Material:
+                    AddFungibleItem(itemBase, count);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+        
         public Item AddFungibleItem(ItemBase itemBase, int count = 1)
         {
             if (TryGetFungibleItem(itemBase, out var fungibleItem))

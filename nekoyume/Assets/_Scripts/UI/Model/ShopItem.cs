@@ -16,7 +16,7 @@ namespace Nekoyume.UI.Model
         public new readonly Subject<ShopItemView> OnClick = new Subject<ShopItemView>();
         
         public ShopItem(Address sellerAgentAddress, Game.Item.ShopItem item)
-            : this(sellerAgentAddress, item.sellerAvatarAddress, item.price, item.productId, item.itemUsable)
+            : this(sellerAgentAddress, item.SellerAvatarAddress, item.Price, item.ProductId, item.ItemUsable)
         {
         }
 

@@ -76,7 +76,7 @@ namespace Nekoyume.UI
         public void QuestClick()
         {
             Close();
-            var avatarState = States.Instance.currentAvatarState.Value;
+            var avatarState = States.Instance.CurrentAvatarState.Value;
             Find<WorldMap>().Show(avatarState.worldStage);
             AudioController.PlayClick();
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickMainBattle);

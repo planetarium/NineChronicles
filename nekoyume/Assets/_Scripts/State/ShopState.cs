@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Libplanet;
 using Nekoyume.Game.Item;
 
@@ -46,26 +47,27 @@ namespace Nekoyume.State
             return shopItem;
         }
 
-        public bool Unregister(Address sellerAgentAddress,
-            ShopItem shopItem)
+        public bool Unregister(Address sellerAgentAddress, ShopItem shopItem)
+        {
+            return Unregister(sellerAgentAddress, shopItem.ProductId);
+        }
+
+        public bool Unregister(Address sellerAgentAddress, Guid productId)
         {
             if (!AgentProducts.ContainsKey(sellerAgentAddress))
-            {
                 return false;
-            }
 
             var shopItems = AgentProducts[sellerAgentAddress];
-            if (!shopItems.Contains(shopItem))
-            {
+            var shopItem = shopItems.FirstOrDefault(item => item.ProductId.Equals(productId));
+            if (shopItem is null)
                 return false;
-            }
-
+            
             shopItems.Remove(shopItem);
             if (shopItems.Count == 0)
             {
                 AgentProducts.Remove(sellerAgentAddress);
             }
-            
+
             return true;
         }
 
@@ -81,7 +83,7 @@ namespace Nekoyume.State
 
             foreach (var shopItem in list)
             {
-                if (shopItem.productId != productId)
+                if (shopItem.ProductId != productId)
                 {
                     continue;
                 }

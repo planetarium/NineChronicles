@@ -28,7 +28,7 @@ namespace Tests
             yield return new WaitUntil(() => Game.instance.agent.StagedTransactions.Any());
             var createAvatarTx = Game.instance.agent.StagedTransactions.First();
             yield return miner.CoMine(createAvatarTx);
-            yield return new WaitWhile(() => States.Instance.currentAvatarState.Value is null);
+            yield return new WaitWhile(() => States.Instance.CurrentAvatarState.Value is null);
 
 //            var dialog = Widget.Find<Dialog>();
 //            if (dialog.isActiveAndEnabled)
@@ -63,12 +63,12 @@ namespace Tests
             var sellTx = Game.instance.agent.StagedTransactions.First();
             yield return miner.CoMine(sellTx);
             yield return new WaitUntil(() =>
-                States.Instance.shopState.Value.AgentProducts[States.Instance.agentState.Value.address].Any());
+                States.Instance.ShopState.Value.AgentProducts[States.Instance.AgentState.Value.address].Any());
 
             //Check shop state
             Assert.IsFalse(w.inventory.Tooltip.isActiveAndEnabled);
             Assert.AreEqual(1,
-                States.Instance.shopState.Value.AgentProducts[States.Instance.agentState.Value.address].Count);
+                States.Instance.ShopState.Value.AgentProducts[States.Instance.AgentState.Value.address].Count);
             w.Close();
 
             //Sell Cancel
@@ -83,8 +83,8 @@ namespace Tests
             var cancelTx = Game.instance.agent.StagedTransactions.First();
             yield return miner.CoMine(cancelTx);
             yield return new WaitWhile(() =>
-                States.Instance.shopState.Value.AgentProducts[States.Instance.agentState.Value.address].Any());
-            Assert.IsEmpty(States.Instance.shopState.Value.AgentProducts[States.Instance.agentState.Value.address]);
+                States.Instance.ShopState.Value.AgentProducts[States.Instance.AgentState.Value.address].Any());
+            Assert.IsEmpty(States.Instance.ShopState.Value.AgentProducts[States.Instance.AgentState.Value.address]);
         }
 
         [UnityTest]
@@ -102,7 +102,7 @@ namespace Tests
             yield return new WaitUntil(() => Game.instance.agent.StagedTransactions.Any());
             var createAvatarTx = Game.instance.agent.StagedTransactions.First();
             yield return miner.CoMine(createAvatarTx);
-            yield return new WaitWhile(() => States.Instance.currentAvatarState.Value is null);
+            yield return new WaitWhile(() => States.Instance.CurrentAvatarState.Value is null);
 
             var w = Widget.Find<Shop>();
             w.Show();
@@ -128,13 +128,13 @@ namespace Tests
             var sellTx = Game.instance.agent.StagedTransactions.First();
             yield return miner.CoMine(sellTx);
             yield return new WaitUntil(() =>
-                States.Instance.shopState.Value.AgentProducts[States.Instance.agentState.Value.address].Any());
+                States.Instance.ShopState.Value.AgentProducts[States.Instance.AgentState.Value.address].Any());
 
             //Check shop state
             Assert.IsFalse(w.inventory.Tooltip.isActiveAndEnabled);
             Assert.IsFalse(Widget.Find<LoadingScreen>().isActiveAndEnabled);
             Assert.AreEqual(1,
-                States.Instance.shopState.Value.AgentProducts[States.Instance.agentState.Value.address].Count);
+                States.Instance.ShopState.Value.AgentProducts[States.Instance.AgentState.Value.address].Count);
 
             w.Close();
             yield return new WaitForEndOfFrame();
@@ -142,7 +142,7 @@ namespace Tests
             yield return new WaitForEndOfFrame();
             //TODO 다른 주소에서 구매처리하도록 개선해야함
             Assert.IsNull(w.shopItems.SharedModel.CurrentAgentsProducts.FirstOrDefault(i =>
-                i.SellerAgentAddress.Value != States.Instance.agentState.Value.address));
+                i.SellerAgentAddress.Value != States.Instance.AgentState.Value.address));
         }
 
         [UnityTest]
@@ -164,7 +164,7 @@ namespace Tests
             Debug.Log(2);
             yield return miner.CoMine(createAvatarTx);
             Debug.Log(3);
-            yield return new WaitWhile(() => States.Instance.currentAvatarState.Value is null);
+            yield return new WaitWhile(() => States.Instance.CurrentAvatarState.Value is null);
 
             Debug.Log(4);
             var w = Widget.Find<Shop>();
@@ -192,14 +192,14 @@ namespace Tests
             var sellTx = Game.instance.agent.StagedTransactions.First();
             yield return miner.CoMine(sellTx);
             Debug.Log(6);
-            yield return new WaitUntil(() => States.Instance.shopState.Value.AgentProducts.Any());
+            yield return new WaitUntil(() => States.Instance.ShopState.Value.AgentProducts.Any());
             Debug.Log(7);
 
             //Check shop state
             Assert.IsFalse(w.inventory.Tooltip.isActiveAndEnabled);
             Assert.IsFalse(Widget.Find<LoadingScreen>().isActiveAndEnabled);
             Assert.AreEqual(1,
-                States.Instance.shopState.Value.AgentProducts[States.Instance.agentState.Value.address].Count);
+                States.Instance.ShopState.Value.AgentProducts[States.Instance.AgentState.Value.address].Count);
 
             //Buy
             w.Close();
@@ -209,8 +209,8 @@ namespace Tests
             yield return new WaitForEndOfFrame();
             Debug.Log(9);
 
-            var current = States.Instance.currentAvatarState.Value.inventory.Items.Count();
-            var currentGold = States.Instance.agentState.Value.gold;
+            var current = States.Instance.CurrentAvatarState.Value.inventory.Items.Count();
+            var currentGold = States.Instance.AgentState.Value.gold;
 
             //Check Buy.Execute
             var shopItem = w.shopItems.SharedModel.CurrentAgentsProducts.First();
@@ -221,9 +221,9 @@ namespace Tests
             var invalidTx = Game.instance.agent.StagedTransactions.First();
             yield return miner.CoMine(invalidTx);
             Debug.Log(11);
-            Assert.IsNotEmpty(States.Instance.shopState.Value.AgentProducts[States.Instance.agentState.Value.address]);
-            Assert.AreEqual(current, States.Instance.currentAvatarState.Value.inventory.Items.Count());
-            Assert.AreEqual(currentGold, States.Instance.agentState.Value.gold);
+            Assert.IsNotEmpty(States.Instance.ShopState.Value.AgentProducts[States.Instance.AgentState.Value.address]);
+            Assert.AreEqual(current, States.Instance.CurrentAvatarState.Value.inventory.Items.Count());
+            Assert.AreEqual(currentGold, States.Instance.AgentState.Value.gold);
         }
     }
 }

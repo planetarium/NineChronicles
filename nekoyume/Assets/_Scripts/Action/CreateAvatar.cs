@@ -62,8 +62,8 @@ namespace Nekoyume.Action
             }
 
             Debug.Log($"Execute CreateAvatar. player : `{avatarAddress}` " +
-                      $"node : `{States.Instance?.agentState?.Value?.address}` " +
-                      $"current avatar: `{States.Instance?.currentAvatarState?.Value?.address}`");
+                      $"node : `{States.Instance?.AgentState?.Value?.address}` " +
+                      $"current avatar: `{States.Instance?.CurrentAvatarState?.Value?.address}`");
 
             agentState.avatarAddresses.Add(index, avatarAddress);
             var dailyBlockState = (DailyBlockState) states.GetState(DailyBlockState.Address);

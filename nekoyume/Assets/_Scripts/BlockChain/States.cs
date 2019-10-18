@@ -12,92 +12,95 @@ namespace Nekoyume.BlockChain
     /// </summary>
     public class States
     {
+        public const string CurrentAvatarFileNameFormat = "agent_{0}_avatar_{1}.dat";
+        
         public static States Instance => _instance ?? (_instance = new States());
-
         private static States _instance;
 
-        public readonly ReactiveProperty<AgentState> agentState = new ReactiveProperty<AgentState>();
-        public readonly ReactiveDictionary<int, AvatarState> avatarStates = new ReactiveDictionary<int, AvatarState>();
-        public readonly ReactiveProperty<int> currentAvatarKey = new ReactiveProperty<int>(-1);
-        public readonly ReactiveProperty<AvatarState> currentAvatarState = new ReactiveProperty<AvatarState>();
-        public readonly ReactiveProperty<RankingState> rankingState = new ReactiveProperty<RankingState>();
-        public readonly ReactiveProperty<ShopState> shopState = new ReactiveProperty<ShopState>();
-
-        public const string CurrentAvatarFileNameFormat = "agent_{0}_avatar_{1}.dat";
+        public readonly ReactiveProperty<AgentState> AgentState = new ReactiveProperty<AgentState>();
+        public readonly ReactiveDictionary<int, AvatarState> AvatarStates = new ReactiveDictionary<int, AvatarState>();
+        public readonly ReactiveProperty<int> CurrentAvatarKey = new ReactiveProperty<int>(-1);
+        public readonly ReactiveProperty<AvatarState> CurrentAvatarState = new ReactiveProperty<AvatarState>();
+        public readonly ReactiveProperty<RankingState> RankingState = new ReactiveProperty<RankingState>();
+        public readonly ReactiveProperty<ShopState> ShopState = new ReactiveProperty<ShopState>();
 
         private States()
         {
-            agentState.Subscribe(SubscribeAgent);
-            avatarStates.ObserveAdd().Subscribe(SubscribeAvatarStatesAdd);
-            avatarStates.ObserveRemove().Subscribe(SubscribeAvatarStatesRemove);
-            avatarStates.ObserveReplace().Subscribe(SubscribeAvatarStatesReplace);
-            avatarStates.ObserveReset().Subscribe(SubscribeAvatarStatesReset);
-            currentAvatarKey.Subscribe(SubscribeCurrentAvatarKey);
-            currentAvatarState.Subscribe(SubscribeCurrentAvatar);
-            rankingState.Subscribe(SubscribeRanking);
-            shopState.Subscribe(SubscribeShop);
+            AgentState.Subscribe(SubscribeAgent);
+            AvatarStates.ObserveAdd().Subscribe(SubscribeAvatarStatesAdd);
+            AvatarStates.ObserveRemove().Subscribe(SubscribeAvatarStatesRemove);
+            AvatarStates.ObserveReplace().Subscribe(SubscribeAvatarStatesReplace);
+            AvatarStates.ObserveReset().Subscribe(SubscribeAvatarStatesReset);
+            CurrentAvatarKey.Subscribe(SubscribeCurrentAvatarKey);
+            CurrentAvatarState.Subscribe(SubscribeCurrentAvatar);
+            RankingState.Subscribe(SubscribeRanking);
+            ShopState.Subscribe(SubscribeShop);
         }
 
-        private void SubscribeAgent(AgentState value)
+        #region Subscribe
+        
+        private static void SubscribeAgent(AgentState value)
         {
             ReactiveAgentState.Initialize(value);
+        }
+        
+        private static void SubscribeCurrentAvatar(AvatarState value)
+        {
+            ReactiveCurrentAvatarState.Initialize(value);
+        }
+        
+        private static void SubscribeRanking(RankingState value)
+        {
+            ReactiveRankingState.Initialize(value);
+        }
+        
+        private static void SubscribeShop(ShopState value)
+        {
+            ReactiveShopState.Initialize(value);
         }
 
         private void SubscribeAvatarStatesAdd(DictionaryAddEvent<int, AvatarState> e)
         {
-            if (e.Key == currentAvatarKey.Value)
+            if (e.Key == CurrentAvatarKey.Value)
             {
-                currentAvatarState.Value = avatarStates[e.Key];
+                CurrentAvatarState.Value = AvatarStates[e.Key];
             }
         }
         
         private void SubscribeAvatarStatesRemove(DictionaryRemoveEvent<int, AvatarState> e)
         {
-            if (e.Key == currentAvatarKey.Value)
+            if (e.Key == CurrentAvatarKey.Value)
             {
-                currentAvatarKey.Value = -1;
+                CurrentAvatarKey.Value = -1;
             }
         }
         
         private void SubscribeAvatarStatesReplace(DictionaryReplaceEvent<int, AvatarState> e)
         {
-            if (e.Key == currentAvatarKey.Value)
+            if (e.Key == CurrentAvatarKey.Value)
             {
-                SubscribeCurrentAvatarKey(currentAvatarKey.Value);
+                SubscribeCurrentAvatarKey(e.Key);
             }
         }
         
         private void SubscribeAvatarStatesReset(Unit unit)
         {
-            currentAvatarKey.Value = -1;
+            CurrentAvatarKey.Value = -1;
         }
 
         private void SubscribeCurrentAvatarKey(int value)
         {
-            if (!avatarStates.ContainsKey(value))
+            if (!AvatarStates.ContainsKey(value))
             {
-                currentAvatarState.Value = null;
+                CurrentAvatarState.Value = null;
                 return;
             }
 
-            currentAvatarState.Value = avatarStates[value];
-        }
-        
-        private void SubscribeCurrentAvatar(AvatarState value)
-        {
-            ReactiveCurrentAvatarState.Initialize(value);
-        }
-        
-        private void SubscribeRanking(RankingState value)
-        {
-            ReactiveRankingState.Initialize(value);
-        }
-        
-        private void SubscribeShop(ShopState value)
-        {
-            ReactiveShopState.Initialize(value);
+            CurrentAvatarState.Value = AvatarStates[value];
         }
 
+        #endregion
+        
         private static bool WantsToQuit()
         {
             SaveLocalAvatarState();
@@ -112,18 +115,17 @@ namespace Nekoyume.BlockChain
 
         private static void SaveLocalAvatarState()
         {
-            if (!(Instance.currentAvatarState?.Value is null))
-            {
-                var avatarState = Instance.currentAvatarState.Value;
-                Debug.LogFormat("Save local avatarState. agentAddress: {0} address: {1} BlockIndex: {2}",
-                    avatarState.agentAddress, avatarState.address, avatarState.BlockIndex);
+            if (Instance.CurrentAvatarState?.Value is null)
+                return;
+            
+            var avatarState = Instance.CurrentAvatarState.Value;
+            Debug.LogFormat("Save local avatarState. agentAddress: {0} address: {1} BlockIndex: {2}",
+                avatarState.agentAddress, avatarState.address, avatarState.BlockIndex);
 
-                var fileName = string.Format(CurrentAvatarFileNameFormat, avatarState.agentAddress,
-                    avatarState.address);
-                var path = Path.Combine(Application.persistentDataPath, fileName);
-                File.WriteAllBytes(path, ByteSerializer.Serialize(avatarState));
-            }
-
+            var fileName = string.Format(CurrentAvatarFileNameFormat, avatarState.agentAddress,
+                avatarState.address);
+            var path = Path.Combine(Application.persistentDataPath, fileName);
+            File.WriteAllBytes(path, ByteSerializer.Serialize(avatarState));
         }
 
         internal static void Dispose()

@@ -28,7 +28,7 @@ namespace Tests
             yield return new WaitUntil(() => Game.instance.agent.StagedTransactions.Any());
             var createAvatarTx = Game.instance.agent.StagedTransactions.First();
             yield return miner.CoMine(createAvatarTx);
-            yield return new WaitWhile(() => States.Instance.currentAvatarState.Value is null);
+            yield return new WaitWhile(() => States.Instance.CurrentAvatarState.Value is null);
 
             var player = Game.instance.stage.GetPlayer();
             var skeleton = player.GetComponentInChildren<SkeletonAnimationController>().SkeletonAnimation.skeleton;

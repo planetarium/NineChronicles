@@ -121,7 +121,7 @@ namespace Nekoyume.UI
 
             var level = _player.Level;
 
-            _avatarName = States.Instance.currentAvatarState.Value.name;
+            _avatarName = States.Instance.CurrentAvatarState.Value.name;
             TextLevel.text = $"LV. {level}";
             TextName.text = _avatarName;
             var displayHp = math.max(_player.CurrentHP, 0);

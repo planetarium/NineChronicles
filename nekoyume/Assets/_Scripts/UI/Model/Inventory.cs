@@ -51,22 +51,19 @@ namespace Nekoyume.UI.Model
 
         public void ResetItems(Game.Item.Inventory inventory)
         {
-            Debug.LogWarning($"Model.Inventory.ResetItems() called. inventory.Items.Count is {inventory?.Items.Count ?? 0}");
-            
+            Debug.LogWarning(
+                $"Model.Inventory.ResetItems() called. inventory.Items.Count is {inventory?.Items.Count ?? 0}");
+
             RemoveItemsAll();
 
             if (inventory is null)
-            {
                 return;
-            }
 
             foreach (var item in inventory.Items)
             {
                 AddItem(item.item, item.count);
             }
 
-            // 정렬.
-            
             State.SetValueAndForceNotify(State.Value);
         }
 
@@ -74,10 +71,11 @@ namespace Nekoyume.UI.Model
 
         private InventoryItem CreateInventoryItem(ItemBase itemBase, int count)
         {
-            var item = new InventoryItem(itemBase, count);
+            InventoryItem item = new InventoryItem(itemBase, count);
             item.Dimmed.Value = DimmedFunc.Value(item);
             item.OnClick.Subscribe(SubscribeItemOnClick);
             item.OnRightClick.Subscribe(OnRightClickItemView);
+
             return item;
         }
 
@@ -85,50 +83,33 @@ namespace Nekoyume.UI.Model
 
         #region Add Item
 
-        public InventoryItem AddItem(ItemBase itemBase, int count = 1)
+        public void AddItem(ItemBase itemBase, int count = 1)
         {
-            switch (itemBase)
+            InventoryItem inventoryItem;
+            switch (itemBase.Data.ItemType)
             {
-                case Equipment equipment:
-                    return AddItem(equipment);
-                case Consumable consumable:
-                    return AddItem(consumable);
-                case Material material:
-                    return AddItem(material, count);
+                case ItemType.Consumable:
+                    inventoryItem = CreateInventoryItem(itemBase, 1);
+                    Consumables.Add(inventoryItem);
+                    break;
+                case ItemType.Equipment:
+                    inventoryItem = CreateInventoryItem(itemBase, 1);
+                    inventoryItem.Equipped.Value = ((Equipment) itemBase).equipped;
+                    Equipments.Add(inventoryItem);
+                    break;
+                case ItemType.Material:
+                    var material = (Material) itemBase;
+                    if (TryGetMaterial(material, out inventoryItem))
+                    {
+                        inventoryItem.Count.Value += count;
+                        return;
+                    }
+                    inventoryItem = CreateInventoryItem(itemBase, 1);
+                    Materials.Add(inventoryItem);
+                    break;
                 default:
-                    return null;
+                    throw new ArgumentOutOfRangeException();
             }
-        }
-
-        public InventoryItem AddItem(Equipment equipment)
-        {
-            var inventoryItem = CreateInventoryItem(equipment, 1);
-            inventoryItem.Equipped.Value = equipment.equipped;
-            Equipments.Add(inventoryItem);
-
-            return inventoryItem;
-        }
-
-        public InventoryItem AddItem(Consumable consumable)
-        {
-            var inventoryItem = CreateInventoryItem(consumable, 1);
-            Consumables.Add(inventoryItem);
-
-            return inventoryItem;
-        }
-
-        public InventoryItem AddItem(Material material, int count)
-        {
-            if (TryGetMaterial(material, out var inventoryItem))
-            {
-                inventoryItem.Count.Value += count;
-                return inventoryItem;
-            }
-
-            inventoryItem = CreateInventoryItem(material, count);
-            Materials.Add(inventoryItem);
-
-            return inventoryItem;
         }
 
         #endregion
@@ -137,56 +118,34 @@ namespace Nekoyume.UI.Model
 
         public void RemoveItem(ItemBase itemBase, int count = 1)
         {
-            InventoryItem item = null;
-            switch (itemBase)
+            InventoryItem inventoryItem;
+            switch (itemBase.Data.ItemType)
             {
-                case Equipment equipment:
-                    item = RemoveItem(equipment);
+                case ItemType.Consumable:
+                    if (!TryGetEquipment((ItemUsable) itemBase, out inventoryItem))
+                        return;
+
+                    Equipments.Remove(inventoryItem);
                     break;
-                case Consumable consumable:
-                    item = RemoveItem(consumable);
+                case ItemType.Equipment:
+                    if (!TryGetConsumable((ItemUsable) itemBase, out inventoryItem))
+                        return;
+
+                    Consumables.Remove(inventoryItem);
                     break;
-                case Material material:
-                    item = RemoveItem(material, count);
+                case ItemType.Material:
+                    if (!TryGetMaterial((Material) itemBase, out inventoryItem))
+                        return;
+
+                    inventoryItem.Count.Value -= count;
+                    if (inventoryItem.Count.Value > 0)
+                        return;
+
+                    Materials.Remove(inventoryItem);
                     break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
-            
-            item?.Dispose();
-        }
-
-        public InventoryItem RemoveItem(Equipment equipment)
-        {
-            if (!TryGetEquipment(equipment, out var inventoryItem))
-                return null;
-
-            Equipments.Remove(inventoryItem);
-
-            return inventoryItem;
-        }
-
-        public InventoryItem RemoveItem(Consumable consumable)
-        {
-            if (!TryGetConsumable(consumable, out var inventoryItem))
-                return null;
-
-            Consumables.Remove(inventoryItem);
-
-            return inventoryItem;
-        }
-
-        public InventoryItem RemoveItem(Material material, int count)
-        {
-            if (!TryGetMaterial(material, out var inventoryItem))
-                return null;
-
-            inventoryItem.Count.Value -= count;
-            if (inventoryItem.Count.Value > 0)
-                return null;
-
-
-            Materials.Remove(inventoryItem);
-
-            return inventoryItem;
         }
 
         public void RemoveItems(IEnumerable<CountEditableItem> collection)
@@ -208,7 +167,7 @@ namespace Nekoyume.UI.Model
         }
 
         #endregion
-        
+
         #region Try Get
 
         public bool TryGetItem(Guid guid, out ItemUsable itemUsable)
@@ -257,9 +216,9 @@ namespace Nekoyume.UI.Model
             return false;
         }
 
-        public bool TryGetConsumable(Consumable consumable, out InventoryItem inventoryItem)
+        public bool TryGetConsumable(ItemUsable itemUsable, out InventoryItem inventoryItem)
         {
-            if (consumable is null)
+            if (itemUsable is null)
             {
                 inventoryItem = null;
                 return false;
@@ -272,7 +231,7 @@ namespace Nekoyume.UI.Model
                     continue;
                 }
 
-                if (food.ItemId != consumable.ItemId)
+                if (food.ItemId != itemUsable.ItemId)
                 {
                     continue;
                 }
@@ -309,7 +268,7 @@ namespace Nekoyume.UI.Model
             if (view is null ||
                 view.Model is null)
                 return;
-            
+
             SelectedItemView.Value = view;
             SelectedItemView.Value.Model.Selected.Value = true;
             SetGlowedAll(false);
@@ -366,7 +325,7 @@ namespace Nekoyume.UI.Model
 
                 return;
             }
-        
+
             DeselectItemView();
             SelectItemView(view);
         }

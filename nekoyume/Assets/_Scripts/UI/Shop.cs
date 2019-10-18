@@ -343,13 +343,9 @@ namespace Nekoyume.UI
             var price = SharedModel.ItemCountAndPricePopup.Value.Price.Value;
             SharedModel.ItemCountAndPricePopup.Value.Item.Value = null;
             
-            var newState = (AvatarState) States.Instance.currentAvatarState.Value.Clone();
-            newState.inventory.RemoveNonFungibleItem((ItemUsable) item.ItemBase.Value);
+            States.Instance.CurrentAvatarState.Value.inventory.RemoveNonFungibleItem((ItemUsable) item.ItemBase.Value);
+            inventory.SharedModel.RemoveItem(item.ItemBase.Value);
             
-            var index = States.Instance.currentAvatarKey.Value;
-            ActionRenderHandler.UpdateLocalAvatarState(newState, index);
-            // 인벤토리가 윗 줄에서 업데이트 될 것으로 예상함.
-//            inventory.SharedModel.RemoveItem(item.ItemBase.Value);
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
             Notification.Push(
                 $"{item.ItemBase.Value.Data.GetLocalizedName()} 아이템을 상점에 등록합니다.\n아이템 판매시 {price} gold의 8%를 세금으로 차감합니다.");
@@ -362,8 +358,9 @@ namespace Nekoyume.UI
             var sellerAgentAddress = shopItem.SellerAgentAddress.Value;
             var productId = shopItem.ProductId.Value;
 
-            shopItems.SharedModel.RemoveProduct(sellerAgentAddress, productId);
+            States.Instance.ShopState.Value.Unregister(sellerAgentAddress, productId);
             shopItems.SharedModel.RemoveCurrentAgentsProduct(productId);
+            
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
             Notification.Push($"{shopItem.ItemBase.Value.Data.GetLocalizedName()} 아이템을 판매 취소합니다.");
         }
@@ -371,10 +368,13 @@ namespace Nekoyume.UI
         private void ResponseBuy(ShopItem shopItem)
         {
             SharedModel.ItemCountAndPricePopup.Value.Item.Value = null;
+            
+            var sellerAgentAddress = shopItem.SellerAgentAddress.Value;
             var productId = shopItem.ProductId.Value;
             
-            shopItems.SharedModel.RemoveProduct(shopItem.SellerAvatarAddress.Value, productId);
+            States.Instance.ShopState.Value.Unregister(sellerAgentAddress, productId);
             shopItems.SharedModel.RemoveOtherProduct(productId);
+            
             AudioController.instance.PlaySfx(AudioController.SfxCode.BuyItem);
             Notification.Push($"{shopItem.ItemBase.Value.Data.GetLocalizedName()} 아이템을 구매합니다.");
         }

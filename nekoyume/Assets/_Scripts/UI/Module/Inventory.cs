@@ -87,7 +87,7 @@ namespace Nekoyume.UI.Module
             SharedModel = new Model.Inventory();
             SharedModel.State.Subscribe(SubscribeState).AddTo(gameObject);
             SharedModel.SelectedItemView.Subscribe(SubscribeSelectedItemView).AddTo(gameObject);
-
+            
             equipmentsButton.OnClickAsObservable().Subscribe(_ =>
             {
                 AudioController.PlayClick();
@@ -107,14 +107,18 @@ namespace Nekoyume.UI.Module
 
         private void OnEnable()
         {
-            ReactiveCurrentAvatarState.Inventory.Subscribe(SharedModel.ResetItems)
+            ReactiveCurrentAvatarState.Inventory.Subscribe(value =>
+                {
+                    scrollerController.DisposeAddedAtSetData();
+                    SharedModel.ResetItems(value);
+                    SubscribeState(SharedModel.State.Value);
+                })
                 .AddTo(_disposablesAtOnEnable);
         }
 
         private void OnDisable()
         {
             _disposablesAtOnEnable.DisposeAllAndClear();
-            scrollerController.Clear();
             Tooltip.Close();
         }
 

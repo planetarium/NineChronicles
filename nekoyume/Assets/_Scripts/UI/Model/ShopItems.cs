@@ -103,7 +103,7 @@ namespace Nekoyume.UI.Model
 
             foreach (var shopItem in _shopItems[sellerAgentAddress])
             {
-                if (shopItem.productId != productId)
+                if (shopItem.ProductId != productId)
                 {
                     continue;
                 }
@@ -173,7 +173,7 @@ namespace Nekoyume.UI.Model
 
                 foreach (var shopItem in keyValuePair.Value)
                 {
-                    if (keyValuePair.Key.Equals(States.Instance.agentState.Value.address))
+                    if (keyValuePair.Key.Equals(States.Instance.AgentState.Value.address))
                         continue;
                     
                     OtherProducts.Add(new ShopItem(keyValuePair.Key, shopItem));
@@ -195,7 +195,7 @@ namespace Nekoyume.UI.Model
             if (_shopItems.Count == 0)
                 return;
 
-            var key = States.Instance.agentState.Value.address;
+            var key = States.Instance.AgentState.Value.address;
             if (!_shopItems.ContainsKey(key))
                 return;
 

@@ -493,7 +493,7 @@ namespace Nekoyume.Game
             if (!(player is null))
                 return player;
 
-            var go = playerFactory.Create(States.Instance.currentAvatarState.Value);
+            var go = playerFactory.Create(States.Instance.CurrentAvatarState.Value);
             player = go.GetComponent<Character.Player>();
 
             if (player is null)
