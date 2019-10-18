@@ -5,12 +5,12 @@ using Assets.SimpleLocalization;
 using Nekoyume.BlockChain;
 using Nekoyume.EnumType;
 using Nekoyume.Game;
-using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Factory;
 using Nekoyume.Helper;
 using Nekoyume.Manager;
+using Nekoyume.Model;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
@@ -40,11 +40,16 @@ namespace Nekoyume.UI
         public Button recipeCloseButton;
         public Recipe recipe;
         public TextMeshProUGUI requiredPointText;
+        public GameObject itemEnhancement;
+        public Button itemEnhancementPopupButton;
+        public ItemEnhancementView equipmentEnhanceView;
+        public ItemEnhancementView[] equipmentEnhanceMaterialViews;
 
         private Stage _stage;
-        private Player _player;
+        private Game.Character.Player _player;
+        private IDisposable _disposable;
 
-        public Model.Combination SharedModel { get; private set; }
+        private Model.Combination SharedModel { get; set; }
 
         private SimpleItemCountPopup SimpleItemCountPopup { get; set; }
 
@@ -83,7 +88,6 @@ namespace Nekoyume.UI
             SimpleItemCountPopup = Find<SimpleItemCountPopup>();
 
             SharedModel.State.Subscribe(SubscribeState).AddTo(gameObject);
-            SharedModel.RecipeEnabled.Subscribe(SubscribeRecipeEnabled).AddTo(gameObject);
             SharedModel.ItemCountPopup.Value.Item.Subscribe(SubscribeItemPopup).AddTo(gameObject);
             SharedModel.ItemCountPopup.Value.OnClickCancel.Subscribe(SubscribeItemPopupOnClickCancel)
                 .AddTo(gameObject);
@@ -98,26 +102,32 @@ namespace Nekoyume.UI
                 .AddTo(gameObject);
             SharedModel.OnMaterialRemoved.Subscribe(materialId => SubscribeOnMaterial(materialId, false))
                 .AddTo(gameObject);
+            SharedModel.enhanceEquipment.Subscribe(equipmentEnhanceView.SetData).AddTo(gameObject);
+            SharedModel.enhanceMaterials.ObserveAdd().Subscribe(SubscribeEnhanceMaterialAdd).AddTo(gameObject);
+            SharedModel.enhanceMaterials.ObserveRemove().Subscribe(SubscribeEnhanceMaterialRemove).AddTo(gameObject);
 
             combineEquipmentButton.button.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
                     AudioController.PlayClick();
-                    SharedModel.State.Value = ItemType.Equipment;
+                    SetState(Model.Combination.CombinationState.Equipment);
                 })
                 .AddTo(gameObject);
             combineConsumableButton.button.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
                     AudioController.PlayClick();
-                    SharedModel.State.Value = ItemType.Consumable;
+                    SetState(Model.Combination.CombinationState.Consumable);
                 })
                 .AddTo(gameObject);
             recipeButton.button.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
                     AudioController.PlayClick();
-                    SharedModel.RecipeEnabled.Value = !SharedModel.RecipeEnabled.Value;
+                    var state = SharedModel.State.Value == Model.Combination.CombinationState.Recipe
+                        ? Model.Combination.CombinationState.Equipment
+                        : Model.Combination.CombinationState.Recipe;
+                    SetState(state);
                 })
                 .AddTo(gameObject);
             combinationButton.OnClickAsObservable()
@@ -131,7 +141,7 @@ namespace Nekoyume.UI
                 .Subscribe(_ =>
                 {
                     AudioController.PlayClick();
-                    SharedModel.RecipeEnabled.Value = false;
+                    SetState(Model.Combination.CombinationState.Equipment);
                 })
                 .AddTo(gameObject);
             recipe.scrollerController.onClickCellView
@@ -156,6 +166,7 @@ namespace Nekoyume.UI
             _player.gameObject.SetActive(false);
 
             Find<BottomMenu>().Show(UINavigator.NavigationType.Back, SubscribeBackButtonClick);
+            _disposable = ReactiveCurrentAvatarState.ActionPoint.Subscribe(CheckPoint);
 
             AudioController.instance.PlayMusic(AudioController.MusicCode.Combination);
         }
@@ -170,6 +181,7 @@ namespace Nekoyume.UI
             }
 
             base.Close(ignoreCloseAnimation);
+            _disposable.Dispose();
 
             AudioController.instance.PlayMusic(AudioController.MusicCode.Main);
         }
@@ -201,40 +213,50 @@ namespace Nekoyume.UI
                 tooltip => inventory.SharedModel.DeselectItemView());
         }
 
-        private void SubscribeState(ItemType value)
+        private void SubscribeState(Model.Combination.CombinationState value)
         {
+            combineEquipmentButton.button.interactable = false;
+            combineConsumableButton.button.interactable = false;
+            equipmentMaterialView.gameObject.SetActive(false);
+            materialViewsPlusImageContainer.SetActive(false);
+            recipeCombination.SetActive(false);
+            manualCombination.SetActive(false);
+            itemEnhancementPopupButton.gameObject.SetActive(true);
+            itemEnhancement.SetActive(false);
+
             switch (value)
             {
-                case ItemType.Consumable:
+                case Model.Combination.CombinationState.Consumable:
                     inventory.SharedModel.DimmedFunc.Value = DimmedFuncForConsumables;
                     combineEquipmentButton.button.interactable = true;
-                    combineConsumableButton.button.interactable = false;
-                    equipmentMaterialView.gameObject.SetActive(false);
-                    materialViewsPlusImageContainer.SetActive(false);
+                    manualCombination.SetActive(true);
                     break;
-                case ItemType.Equipment:
+                case Model.Combination.CombinationState.Equipment:
                     inventory.SharedModel.DimmedFunc.Value = DimmedFuncForEquipments;
-                    combineEquipmentButton.button.interactable = false;
                     combineConsumableButton.button.interactable = true;
                     equipmentMaterialView.gameObject.SetActive(true);
                     materialViewsPlusImageContainer.SetActive(true);
+                    manualCombination.SetActive(true);
+                    break;
+                case Model.Combination.CombinationState.Enhancement:
+                    inventory.SharedModel.DimmedFunc.Value = DimmedFuncForEnhancement;
+                    itemEnhancement.SetActive(true);
+                    itemEnhancementPopupButton.gameObject.SetActive(false);
+                    inventory.SharedModel.State.Value = ItemType.Equipment;
+                    break;
+                case Model.Combination.CombinationState.Recipe:
+                    inventory.SharedModel.DimmedFunc.Value = DimmedFuncForConsumables;
+                    recipe.Reload();
+                    combineEquipmentButton.button.interactable = true;
+                    combineConsumableButton.button.interactable = true;
+                    recipeCombination.SetActive(true);
+                    itemEnhancementPopupButton.gameObject.SetActive(false);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(value), value, null);
             }
 
             inventory.Tooltip.Close();
-        }
-
-        private void SubscribeRecipeEnabled(bool value)
-        {
-            if (value)
-            {
-                recipe.Reload();
-            }
-
-            manualCombination.SetActive(!value);
-            recipeCombination.SetActive(value);
         }
 
         private void SubscribeOnMaterial(int materialId, bool isAdded)
@@ -337,6 +359,41 @@ namespace Nekoyume.UI
             Find<Menu>().ShowRoom();
         }
 
+        private void SubscribeEnhanceMaterialAdd(CollectionAddEvent<EnhanceEquipment> e)
+        {
+            if (e.Index >= equipmentEnhanceMaterialViews.Length)
+            {
+                SharedModel.enhanceMaterials.RemoveAt(e.Index);
+                throw new AddOutOfSpecificRangeException<CollectionAddEvent<CountEditableItem>>(
+                    equipmentEnhanceMaterialViews.Length);
+            }
+
+            equipmentEnhanceMaterialViews[e.Index].SetData(e.Value);
+        }
+
+        private void SubscribeEnhanceMaterialRemove(CollectionRemoveEvent<EnhanceEquipment> e)
+        {
+            if (e.Index >= equipmentEnhanceMaterialViews.Length)
+            {
+                return;
+            }
+
+            var dataCount = SharedModel.enhanceMaterials.Count;
+            for (var i = e.Index; i <= dataCount; i++)
+            {
+                var item = equipmentEnhanceMaterialViews[i];
+
+                if (i < dataCount)
+                {
+                    item.SetData(SharedModel.enhanceMaterials[i]);
+                }
+                else
+                {
+                    item.Clear();
+                }
+            }
+        }
+
         #endregion
 
         private static bool DimmedFuncForConsumables(InventoryItem inventoryItem)
@@ -354,9 +411,15 @@ namespace Nekoyume.UI
                    row.ItemSubType != ItemSubType.MonsterPart;
         }
 
+        private static bool DimmedFuncForEnhancement(InventoryItem inventoryItem)
+        {
+            var row = inventoryItem.ItemBase.Value.Data;
+            return row.ItemType != ItemType.Equipment;
+        }
+
         private void UpdateStagedItems(int startIndex = 0)
         {
-            if (SharedModel.State.Value == ItemType.Equipment)
+            if (SharedModel.State.Value == Model.Combination.CombinationState.Equipment)
             {
                 if (SharedModel.EquipmentMaterial.Value is null)
                 {
@@ -440,13 +503,31 @@ namespace Nekoyume.UI
 
         public void ItemEnhancement()
         {
-            var equipments = _player.Inventory.Items.Select(i => i.item).OfType<Equipment>().ToList();
-            var itemId = equipments.First().ItemId;
-            var materialIds = new List<Guid>
-            {
-                equipments[1].ItemId
-            };
+            var materialIds = SharedModel.enhanceMaterials.Select(model => (Equipment) model.ItemBase.Value)
+                .Select(material => material.ItemId).ToList();
+            var equipment = (Equipment) SharedModel.enhanceEquipment.Value.ItemBase.Value;
+            var itemId = equipment.ItemId;
             ActionManager.instance.ItemEnhancement(itemId, materialIds);
+            SharedModel.RemoveEnhanceEquipment();
+        }
+
+        private void SetState(Model.Combination.CombinationState state)
+        {
+            SharedModel.State.Value = state;
+        }
+
+        public void PopupItemEnhancement()
+        {
+            SetState(Model.Combination.CombinationState.Enhancement);
+            AudioController.PlayClick();
+        }
+
+        public void CloseItemEnhancement()
+        {
+            SetState(Model.Combination.CombinationState.Equipment);
+            //FIXME 인벤토리 탭 상태변경을 SubscribeState 내부에서 처리하면 첫 진입시 UI블로킹이 생기는 문제때문에 따로 처리
+            inventory.SharedModel.State.Value = ItemType.Material;
+            AudioController.PlayClick();
         }
     }
 }

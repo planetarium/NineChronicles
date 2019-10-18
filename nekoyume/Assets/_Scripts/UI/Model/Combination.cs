@@ -24,12 +24,17 @@ namespace Nekoyume.UI.Model
             ItemSubType.Food,
             ItemSubType.Shoes
         };
-        
-        public readonly ReactiveProperty<ItemType> State =
-            new ReactiveProperty<ItemType>(ItemType.Equipment);
 
-        public readonly ReactiveProperty<bool> RecipeEnabled =
-            new ReactiveProperty<bool>(false);
+        public enum CombinationState
+        {
+            Consumable,
+            Equipment,
+            Enhancement,
+            Recipe,
+        }
+
+        public readonly ReactiveProperty<CombinationState> State =
+            new ReactiveProperty<CombinationState>(CombinationState.Equipment);
 
         public readonly ReactiveProperty<SimpleItemCountPopup> ItemCountPopup =
             new ReactiveProperty<SimpleItemCountPopup>();
@@ -39,6 +44,10 @@ namespace Nekoyume.UI.Model
         
         public readonly ReactiveCollection<CombinationMaterial> Materials =
             new ReactiveCollection<CombinationMaterial>();
+
+        public readonly ReactiveProperty<EnhanceEquipment> enhanceEquipment = new ReactiveProperty<EnhanceEquipment>();
+
+        public readonly ReactiveCollection<EnhanceEquipment> enhanceMaterials = new ReactiveCollection<EnhanceEquipment>();
 
         public readonly ReactiveProperty<int> ShowMaterialsCount = new ReactiveProperty<int>();
         public readonly ReactiveProperty<bool> ReadyToCombination = new ReactiveProperty<bool>();
@@ -61,22 +70,24 @@ namespace Nekoyume.UI.Model
         public void Dispose()
         {
             State.Dispose();
-            RecipeEnabled.Dispose();
             ItemCountPopup.DisposeAll();
             EquipmentMaterial.Dispose();
             Materials.DisposeAllAndClear();
             ShowMaterialsCount.Dispose();
             ReadyToCombination.Dispose();
+            enhanceEquipment.Dispose();
         }
 
-        private void SubscribeState(ItemType value)
+        private void SubscribeState(CombinationState value)
         {
             switch (value)
             {
-                case ItemType.Consumable:
+                case CombinationState.Recipe:
+                case CombinationState.Consumable:
                     ShowMaterialsCount.Value = 5;
                     break;
-                case ItemType.Equipment:
+                case CombinationState.Enhancement:
+                case CombinationState.Equipment:
                     ShowMaterialsCount.Value = 4;
                     break;
                 default:
@@ -84,11 +95,13 @@ namespace Nekoyume.UI.Model
             }
 
             RemoveEquipmentMaterial();
-            
+
             while (Materials.Count > 0)
             {
                 Materials.RemoveAt(0);
             }
+
+            RemoveEnhanceEquipment();
         }
 
         private void OnClickSubmitItemCountPopup(SimpleItemCountPopup data)
@@ -138,18 +151,42 @@ namespace Nekoyume.UI.Model
             if (sum >= countEditableItem.Count.Value)
                 return false;
 
-            if (State.Value == ItemType.Equipment
+            if (State.Value == CombinationState.Enhancement)
+            {
+                // 강화할 아이템 우선 설정
+                if (enhanceEquipment.Value is null)
+                {
+                    enhanceEquipment.Value = new EnhanceEquipment(countEditableItem.ItemBase.Value);
+                    return true;
+                }
+
+                foreach (var enhanceMaterial in enhanceMaterials)
+                {
+                    if (countEditableItem.Count.Value == 0)
+                    {
+                        enhanceMaterials.Remove(enhanceMaterial);
+                    }
+                }
+
+                if (enhanceMaterials.Count >= ShowMaterialsCount.Value)
+                    return false;
+
+                enhanceMaterials.Add(new EnhanceEquipment(countEditableItem.ItemBase.Value));
+                return true;
+            }
+
+            if (State.Value == CombinationState.Equipment
                 && countEditableItem.ItemBase.Value.Data.ItemSubType == ItemSubType.EquipmentMaterial)
             {
                 RemoveEquipmentMaterial();
-                
+
                 EquipmentMaterial.Value = new CombinationMaterial(
                     countEditableItem.ItemBase.Value,
                     1,
                     0,
                     countEditableItem.Count.Value);
                 OnMaterialAdd(EquipmentMaterial.Value);
-                
+
                 return true;
             }
 
@@ -176,7 +213,7 @@ namespace Nekoyume.UI.Model
                 1,
                 0,
                 countEditableItem.Count.Value));
-            
+
             return true;
         }
 
@@ -203,8 +240,8 @@ namespace Nekoyume.UI.Model
                 }
 
                 var sum = Materials
-                .Where(item => obj.ItemBase.Value.Data.Id == item.ItemBase.Value.Data.Id)
-                .Sum(item => item.Count.Value);
+                    .Where(item => obj.ItemBase.Value.Data.Id == item.ItemBase.Value.Data.Id)
+                    .Sum(item => item.Count.Value);
                 if (sum < obj.MaxCount.Value)
                 {
                     obj.Count.Value++;
@@ -217,7 +254,7 @@ namespace Nekoyume.UI.Model
                     return;
                 }
 
-                if (State.Value == ItemType.Equipment
+                if (State.Value == CombinationState.Equipment
                     && EquipmentMaterial.Value != null
                     && EquipmentMaterial.Value.ItemBase.Value.Data.Id == obj.ItemBase.Value.Data.Id)
                 {
@@ -255,19 +292,32 @@ namespace Nekoyume.UI.Model
         {
             switch (State.Value)
             {
-                case ItemType.Consumable:
+                case CombinationState.Recipe:
+                case CombinationState.Consumable:
                     ReadyToCombination.Value =
                         Materials.Count >= 2 && States.Instance.CurrentAvatarState.Value.actionPoint >=
                         Action.Combination.RequiredPoint;
                     break;
-                case ItemType.Equipment:
+                case CombinationState.Equipment:
                     ReadyToCombination.Value = 
                         EquipmentMaterial.Value != null
                         && Materials.Count >= 1
                         && States.Instance.CurrentAvatarState.Value.actionPoint >= Action.Combination.RequiredPoint;
                     break;
+                case CombinationState.Enhancement:
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        public void RemoveEnhanceEquipment()
+        {
+            enhanceEquipment.Value = null;
+
+            while (enhanceMaterials.Count > 0)
+            {
+                enhanceMaterials.RemoveAt(0);
             }
         }
     }
