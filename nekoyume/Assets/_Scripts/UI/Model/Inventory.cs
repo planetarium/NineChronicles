@@ -122,16 +122,16 @@ namespace Nekoyume.UI.Model
             switch (itemBase.Data.ItemType)
             {
                 case ItemType.Consumable:
-                    if (!TryGetEquipment((ItemUsable) itemBase, out inventoryItem))
-                        return;
-
-                    Equipments.Remove(inventoryItem);
-                    break;
-                case ItemType.Equipment:
                     if (!TryGetConsumable((ItemUsable) itemBase, out inventoryItem))
                         return;
 
                     Consumables.Remove(inventoryItem);
+                    break;
+                case ItemType.Equipment:
+                    if (!TryGetEquipment((ItemUsable) itemBase, out inventoryItem))
+                        return;
+
+                    Equipments.Remove(inventoryItem);
                     break;
                 case ItemType.Material:
                     if (!TryGetMaterial((Material) itemBase, out inventoryItem))
