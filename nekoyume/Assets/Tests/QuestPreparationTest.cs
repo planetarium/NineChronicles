@@ -105,7 +105,7 @@ namespace Tests
             yield return new WaitUntil(() => Game.instance.agent.StagedTransactions.Any());
             var createAvatarTx = Game.instance.agent.StagedTransactions.First();
             yield return miner.CoMine(createAvatarTx);
-            yield return new WaitWhile(() => States.Instance.currentAvatarState.Value is null);
+            yield return new WaitWhile(() => States.Instance.CurrentAvatarState.Value is null);
             yield return new WaitUntil(() => Widget.Find<Login>().ready);
 
             // Login

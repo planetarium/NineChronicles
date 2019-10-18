@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Libplanet;
 using Nekoyume.Game.Item;
 
@@ -29,59 +30,60 @@ namespace Nekoyume.State
             }
         );
 
-        public readonly Dictionary<Address, List<ShopItem>> items = new Dictionary<Address, List<ShopItem>>();
+        public readonly Dictionary<Address, List<ShopItem>> AgentProducts = new Dictionary<Address, List<ShopItem>>();
 
         public ShopState() : base(Address)
         {
         }
         
-        public ShopItem Register(Address sellerAgentAddress, ShopItem item)
+        public ShopItem Register(Address sellerAgentAddress, ShopItem shopItem)
         {
-            if (!items.ContainsKey(sellerAgentAddress))
+            if (!AgentProducts.ContainsKey(sellerAgentAddress))
             {
-                items.Add(sellerAgentAddress, new List<ShopItem>());
+                AgentProducts.Add(sellerAgentAddress, new List<ShopItem>());
             }
 
-            items[sellerAgentAddress].Add(item);
-            return item;
+            AgentProducts[sellerAgentAddress].Add(shopItem);
+            return shopItem;
         }
 
-        public bool Unregister(Address sellerAgentAddress,
-            ShopItem shopItem)
+        public bool Unregister(Address sellerAgentAddress, ShopItem shopItem)
         {
-            if (!items.ContainsKey(sellerAgentAddress))
-            {
-                return false;
-            }
+            return Unregister(sellerAgentAddress, shopItem.ProductId);
+        }
 
-            var shopItems = items[sellerAgentAddress];
-            if (!shopItems.Contains(shopItem))
-            {
+        public bool Unregister(Address sellerAgentAddress, Guid productId)
+        {
+            if (!AgentProducts.ContainsKey(sellerAgentAddress))
                 return false;
-            }
 
+            var shopItems = AgentProducts[sellerAgentAddress];
+            var shopItem = shopItems.FirstOrDefault(item => item.ProductId.Equals(productId));
+            if (shopItem is null)
+                return false;
+            
             shopItems.Remove(shopItem);
             if (shopItems.Count == 0)
             {
-                items.Remove(sellerAgentAddress);
+                AgentProducts.Remove(sellerAgentAddress);
             }
-            
+
             return true;
         }
 
         public bool TryGet(Address sellerAgentAddress, Guid productId,
             out KeyValuePair<Address, ShopItem> outPair)
         {
-            if (!items.ContainsKey(sellerAgentAddress))
+            if (!AgentProducts.ContainsKey(sellerAgentAddress))
             {
                 return false;
             }
 
-            var list = items[sellerAgentAddress];
+            var list = AgentProducts[sellerAgentAddress];
 
             foreach (var shopItem in list)
             {
-                if (shopItem.productId != productId)
+                if (shopItem.ProductId != productId)
                 {
                     continue;
                 }
@@ -102,7 +104,7 @@ namespace Nekoyume.State
                 return false;
             }
             
-            items[outPair.Key].Remove(outPair.Value);
+            AgentProducts[outPair.Key].Remove(outPair.Value);
 
             outUnregisteredItem = outPair.Value;
             return true;

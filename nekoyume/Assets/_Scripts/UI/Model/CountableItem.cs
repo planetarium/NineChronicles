@@ -14,7 +14,7 @@ namespace Nekoyume.UI.Model
         
         public CountableItem(ItemBase item, int count) : base(item)
         {
-            this.Count.Value = count;
+            Count.Value = count;
             CountEnabledFunc.Value = CountEnabledFuncDefault;
 
             CountEnabledFunc.Subscribe(func =>

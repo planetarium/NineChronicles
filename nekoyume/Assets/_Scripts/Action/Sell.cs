@@ -11,7 +11,6 @@ using UnityEngine;
 
 namespace Nekoyume.Action
 {
-    [Serializable]
     [ActionType("sell")]
     public class Sell : GameAction
     {
@@ -71,8 +70,8 @@ namespace Nekoyume.Action
             var shopState = (ShopState) states.GetState(ShopState.Address);
 
             Debug.Log($"Execute Sell. seller : `{sellerAvatarAddress}` " +
-                      $"node : `{States.Instance?.agentState?.Value?.address}` " +
-                      $"current avatar: `{States.Instance?.currentAvatarState?.Value?.address}`");
+                      $"node : `{States.Instance?.AgentState?.Value?.address}` " +
+                      $"current avatar: `{States.Instance?.CurrentAvatarState?.Value?.address}`");
 
             // 인벤토리에서 판매할 아이템을 선택하고 수량을 조절한다.
             if (!avatarState.inventory.TryGetNonFungibleItem(itemUsable, out ItemUsable nonFungibleItem))
@@ -81,19 +80,18 @@ namespace Nekoyume.Action
             }
 
             avatarState.inventory.RemoveNonFungibleItem(nonFungibleItem);
-            if(nonFungibleItem is Equipment equipment)
+            if (nonFungibleItem is Equipment equipment)
             {
                 equipment.equipped = false;
             }
-            
+
             // 상점에 아이템을 등록한다.
-            shopState.Register(ctx.Signer, new ShopItem
-            {
-                sellerAvatarAddress = sellerAvatarAddress,
-                productId = productId,
-                itemUsable = nonFungibleItem,
-                price = price
-            });
+            shopState.Register(ctx.Signer, new ShopItem(
+                sellerAvatarAddress,
+                productId,
+                nonFungibleItem,
+                price
+            ));
 
             avatarState.updatedAt = DateTimeOffset.UtcNow;
             avatarState.BlockIndex = ctx.BlockIndex;

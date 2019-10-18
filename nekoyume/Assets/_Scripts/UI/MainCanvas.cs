@@ -114,8 +114,6 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<RankingBoard>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<Dialog>());
-            yield return null;
             _secondWidgets.Add(Widget.Create<Battle>());
             yield return null;
 
@@ -132,6 +130,8 @@ namespace Nekoyume.UI
             yield return null;
 
             // 팝업류.
+            _secondWidgets.Add(Widget.Create<Dialog>());
+            yield return null;
             _secondWidgets.Add(Widget.Create<BattleResult>());
             yield return null;
             _secondWidgets.Add(Widget.Create<SimpleItemCountPopup>());

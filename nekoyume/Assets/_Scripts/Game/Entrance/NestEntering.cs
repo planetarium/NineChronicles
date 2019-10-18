@@ -45,7 +45,7 @@ namespace Nekoyume.Game.Entrance
                 var placeRes = Resources.Load<GameObject>("Prefab/PlayerPlace");
                 if (i % 2 == 0)
                     endPos.y = -1.1f;
-                if (States.Instance.avatarStates.TryGetValue(i, out var avatarState))
+                if (States.Instance.AvatarStates.TryGetValue(i, out var avatarState))
                 {
                     player = factory.Create(avatarState).GetComponent<Player>();
                     player.Animator.Appear();

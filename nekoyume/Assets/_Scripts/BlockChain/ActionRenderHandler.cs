@@ -62,22 +62,22 @@ namespace Nekoyume.BlockChain
 
         private bool ValidateEvaluationForAgentState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
         {
-            if (States.Instance.agentState.Value == null)
+            if (States.Instance.AgentState.Value == null)
             {
                 return false;
             }
 
-            return evaluation.OutputStates.UpdatedAddresses.Contains(States.Instance.agentState.Value.address);
+            return evaluation.OutputStates.UpdatedAddresses.Contains(States.Instance.AgentState.Value.address);
         }
 
         private bool ValidateEvaluationForCurrentAvatarState<T>(ActionBase.ActionEvaluation<T> evaluation)
             where T : ActionBase =>
-            !(States.Instance.currentAvatarState.Value is null)
-            && evaluation.OutputStates.UpdatedAddresses.Contains(States.Instance.currentAvatarState.Value.address);
+            !(States.Instance.CurrentAvatarState.Value is null)
+            && evaluation.OutputStates.UpdatedAddresses.Contains(States.Instance.CurrentAvatarState.Value.address);
 
         private AgentState GetAgentState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
         {
-            var agentAddress = States.Instance.agentState.Value.address;
+            var agentAddress = States.Instance.AgentState.Value.address;
             return (AgentState) evaluation.OutputStates.GetState(agentAddress);
         }
 
@@ -93,14 +93,14 @@ namespace Nekoyume.BlockChain
         {
             Debug.LogFormat("Called UpdateAvatarState<{0}>. Updated Addresses : `{1}`", evaluation.Action,
                 string.Join(",", evaluation.OutputStates.UpdatedAddresses));
-            if (!States.Instance.agentState.Value.avatarAddresses.ContainsKey(index))
+            if (!States.Instance.AgentState.Value.avatarAddresses.ContainsKey(index))
             {
-                States.Instance.avatarStates.Remove(index);
+                States.Instance.AvatarStates.Remove(index);
                 AvatarManager.DeleteAvatarPrivateKey(index);
                 return;
             }
 
-            var avatarAddress = States.Instance.agentState.Value.avatarAddresses[index];
+            var avatarAddress = States.Instance.AgentState.Value.avatarAddresses[index];
             var avatarState = (AvatarState) evaluation.OutputStates.GetState(avatarAddress);
             if (avatarState == null)
             {
@@ -112,17 +112,17 @@ namespace Nekoyume.BlockChain
 
         private void UpdateCurrentAvatarState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
         {
-            UpdateAvatarState(evaluation, States.Instance.currentAvatarKey.Value);
+            UpdateAvatarState(evaluation, States.Instance.CurrentAvatarKey.Value);
         }
 
         private void UpdateShopState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
         {
-            States.Instance.shopState.Value = (ShopState) evaluation.OutputStates.GetState(ShopState.Address);
+            States.Instance.ShopState.Value = (ShopState) evaluation.OutputStates.GetState(ShopState.Address);
         }
 
         private void UpdateRankingState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
         {
-            States.Instance.rankingState.Value = (RankingState) evaluation.OutputStates.GetState(RankingState.Address);
+            States.Instance.RankingState.Value = (RankingState) evaluation.OutputStates.GetState(RankingState.Address);
         }
 
         private void Shop()
@@ -270,19 +270,19 @@ namespace Nekoyume.BlockChain
 
         private static void UpdateAvatarState(AvatarState avatarState, int index)
         {
-            if (States.Instance.avatarStates.ContainsKey(index))
+            if (States.Instance.AvatarStates.ContainsKey(index))
             {
-                States.Instance.avatarStates[index] = avatarState;
+                States.Instance.AvatarStates[index] = avatarState;
             }
             else
             {
-                States.Instance.avatarStates.Add(index, avatarState);
+                States.Instance.AvatarStates.Add(index, avatarState);
             }
         }
 
         private static void UpdateAgentState(AgentState state)
         {
-            States.Instance.agentState.Value = state;
+            States.Instance.AgentState.Value = state;
         }
 
         public static void UpdateLocalAvatarState(AvatarState avatarState, int index)
@@ -301,12 +301,12 @@ namespace Nekoyume.BlockChain
 
         private void LoadLocalAvatarState()
         {
-            if (!(States.Instance.agentState?.Value is null))
+            if (!(States.Instance.AgentState?.Value is null))
             {
-                foreach (var avatarAddress in States.Instance.agentState.Value.avatarAddresses)
+                foreach (var avatarAddress in States.Instance.AgentState.Value.avatarAddresses)
                 {
                     var fileName = string.Format(States.CurrentAvatarFileNameFormat,
-                        States.Instance.agentState.Value.address,
+                        States.Instance.AgentState.Value.address,
                         avatarAddress.Value);
                     var path = Path.Combine(Application.persistentDataPath, fileName);
                     if (File.Exists(path))
@@ -336,7 +336,7 @@ namespace Nekoyume.BlockChain
 
         private void ResponseBuy(ActionBase.ActionEvaluation<Buy> eval)
         {
-            if (eval.Action.buyerAvatarAddress == States.Instance.currentAvatarState.Value.address)
+            if (eval.Action.buyerAvatarAddress == States.Instance.CurrentAvatarState.Value.address)
             {
                 UI.Notification.Push($"{eval.Action.buyerResult.itemUsable.Data.GetLocalizedName()} 구매 완료.");
             }

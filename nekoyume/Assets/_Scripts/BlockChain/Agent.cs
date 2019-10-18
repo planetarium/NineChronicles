@@ -210,20 +210,20 @@ namespace Nekoyume.BlockChain
             PreloadEnded += (_, __) =>
             {
                 // 에이전트의 준비단계가 끝나면 에이전트의 상태를 한 번 동기화 한다.
-                States.Instance.agentState.Value = (AgentState) GetState(Address) ??
+                States.Instance.AgentState.Value = (AgentState) GetState(Address) ??
                                                    new AgentState(Address);
                 // 에이전트에 포함된 모든 아바타의 상태를 한 번씩 동기화 한다.
-                foreach (var pair in States.Instance.agentState.Value.avatarAddresses)
+                foreach (var pair in States.Instance.AgentState.Value.avatarAddresses)
                 {
                     var avatarState = (AvatarState) GetState(pair.Value);
-                    States.Instance.avatarStates.Add(pair.Key, avatarState);
+                    States.Instance.AvatarStates.Add(pair.Key, avatarState);
                 }
 
                 // 랭킹의 상태를 한 번 동기화 한다.
-                States.Instance.rankingState.Value =
+                States.Instance.RankingState.Value =
                     (RankingState) GetState(RankingState.Address) ?? new RankingState();
                 // 상점의 상태를 한 번 동기화 한다.
-                States.Instance.shopState.Value = (ShopState) GetState(ShopState.Address) ?? new ShopState();
+                States.Instance.ShopState.Value = (ShopState) GetState(ShopState.Address) ?? new ShopState();
                 // 그리고 모든 액션에 대한 랜더를 핸들링하기 시작한다.
                 ActionRenderHandler.Instance.Start();
                 // 그리고 마이닝을 시작한다.
@@ -756,7 +756,7 @@ namespace Nekoyume.BlockChain
                     gold1 = 10,
                     gold2 = 5,
                     gold3 = 3,
-                    agentAddresses = States.Instance.rankingState.Value.GetAgentAddresses(3, null),
+                    agentAddresses = States.Instance.RankingState.Value.GetAgentAddresses(3, null),
                 }
             };
             return MakeTransaction(actions, false);

@@ -15,41 +15,15 @@ namespace Nekoyume.UI.Model
     public class Shop : IDisposable
     {
         public readonly ReactiveProperty<UI.Shop.StateType> State = new ReactiveProperty<UI.Shop.StateType>();
-        public readonly ReactiveProperty<ShopItems> ShopItems = new ReactiveProperty<ShopItems>(new ShopItems());
 
         public readonly ReactiveProperty<ItemCountAndPricePopup> ItemCountAndPricePopup =
             new ReactiveProperty<ItemCountAndPricePopup>(new ItemCountAndPricePopup());
 
-        public Shop()
-        {
-            State.Subscribe(SubscribeState);
-        }
-
         public void Dispose()
         {
             State.Dispose();
-            ShopItems.DisposeAll();
             ItemCountAndPricePopup.DisposeAll();
         }
-
-        public void ResetItems(Dictionary<Address, List<Game.Item.ShopItem>> items)
-        {
-            if (items is null)
-            {
-                return;
-            }
-
-            ShopItems.Value.ResetItems(items);
-        }
-
-        #region Subscribe
-
-        private void SubscribeState(UI.Shop.StateType value)
-        {
-            ShopItems.Value.DeselectItemView();
-        }
-
-        #endregion
 
         public void ShowItemPopup(CountableItem inventoryItem)
         {

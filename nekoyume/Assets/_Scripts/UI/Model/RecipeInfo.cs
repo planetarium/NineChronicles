@@ -19,7 +19,7 @@ namespace Nekoyume.UI.Model
             public MaterialInfo(int id)
             {
                 this.id = id;
-                var inventory = States.Instance.currentAvatarState.Value.inventory;
+                var inventory = States.Instance.CurrentAvatarState.Value.inventory;
                 isEnough = inventory.HasItem(id);
                 isObtained = true;
             }

@@ -31,7 +31,7 @@ namespace Nekoyume.UI
 
         public static string GetPlayerPrefsKeyOfCurrentAvatarState(int dialogId)
         {
-            var addr = States.Instance.currentAvatarState.Value.address.ToString();
+            var addr = States.Instance.CurrentAvatarState.Value.address.ToString();
             return $"DIALOG_{addr}_{dialogId}";
         }
 

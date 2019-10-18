@@ -6,6 +6,7 @@ using Nekoyume.BlockChain;
 using Nekoyume.Game.Factory;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Mail;
+using Nekoyume.Model;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Scroller;
@@ -19,7 +20,7 @@ namespace Nekoyume.UI
 
         public override void Show()
         {
-            var mailBox = States.Instance.currentAvatarState.Value.mailBox;
+            var mailBox = States.Instance.CurrentAvatarState.Value.mailBox;
             scroller.SetData(mailBox);
             base.Show();
         }
@@ -51,9 +52,14 @@ namespace Nekoyume.UI
             var popup = Find<ItemCountAndPricePopup>();
             var model = new UI.Model.ItemCountAndPricePopup();
             model.PriceInteractable.Value = true;
-            model.Price.Value = attachment.shopItem.price;
+            model.Price.Value = attachment.shopItem.Price;
             model.CountEnabled.Value = false;
             model.Item.Value = new CountEditableItem(item, 1, 1, 1);
+            model.OnClickSubmit.Subscribe(_ =>
+            {
+                AddItem(item);
+                popup.Close();
+            }).AddTo(gameObject);
             model.OnClickCancel.Subscribe(_ =>
             {
                 AddItem(item);
@@ -83,7 +89,7 @@ namespace Nekoyume.UI
             var attachment = (Buy.SellerResult) sellerMail.attachment;
             //TODO 관련 기획이 끝나면 별도 UI를 생성
             AddGold(attachment.gold);
-            Notification.Push($"{attachment.shopItem.price:n0} 골드 획득");
+            Notification.Push($"{attachment.shopItem.Price:n0} 골드 획득");
         }
 
         public void Read(ItemEnhanceMail itemEnhanceMail)
@@ -107,10 +113,7 @@ namespace Nekoyume.UI
             ActionManager.instance.AddItem(item.ItemId);
 
             //게임상의 인벤토리 업데이트
-            var newState = (AvatarState) States.Instance.currentAvatarState.Value.Clone();
-            newState.inventory.AddNonFungibleItem(item);
-            var index = States.Instance.currentAvatarKey.Value;
-            ActionRenderHandler.UpdateLocalAvatarState(newState, index);
+            States.Instance.CurrentAvatarState.Value.inventory.AddItem(item);
         }
 
         private static void AddGold(decimal gold)
@@ -119,12 +122,8 @@ namespace Nekoyume.UI
             ActionManager.instance.AddGold();
 
             //게임상의 골드 업데이트
-            var newAgentState = (AgentState) States.Instance.agentState.Value.Clone();
-            newAgentState.gold += gold;
-            ActionRenderHandler.UpdateLocalAgentState(newAgentState);
-            var newAvatarState = (AvatarState) States.Instance.currentAvatarState.Value.Clone();
-            var index = States.Instance.currentAvatarKey.Value;
-            ActionRenderHandler.UpdateLocalAvatarState(newAvatarState, index);
+            States.Instance.AgentState.Value.gold += gold;
+            ReactiveAgentState.Gold.SetValueAndForceNotify(States.Instance.AgentState.Value.gold);
         }
 
     }

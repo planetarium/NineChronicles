@@ -20,7 +20,7 @@ namespace Nekoyume.UI.Model
 
         public override void Dispose()
         {
-            base.Dispose();           
+            base.Dispose();
             Covered.Dispose();
             Equipped.Dispose();
             Selected.Dispose();

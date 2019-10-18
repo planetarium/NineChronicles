@@ -86,7 +86,7 @@ namespace Nekoyume.UI
                 slotRect.anchoredPosition = targetPosition.ToCanvasPosition(Game.ActionCamera.instance.Cam,
                     MainCanvas.instance.Canvas);
 
-                if (States.Instance.avatarStates.TryGetValue(i, out var avatarState))
+                if (States.Instance.AvatarStates.TryGetValue(i, out var avatarState))
                 {
                     playerSlot.LabelLevel.text = $"LV.{avatarState.level}";
                     playerSlot.LabelName.text = $"{avatarState.name}";
