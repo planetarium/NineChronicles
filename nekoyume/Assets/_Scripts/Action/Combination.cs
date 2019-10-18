@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using Bencodex.Types;
 using DecimalMath;
 using Libplanet;
 using Libplanet.Action;
@@ -24,7 +25,7 @@ namespace Nekoyume.Action
     public class Combination : GameAction
     {
         [Serializable]
-        public class Material
+        public class Material : IState
         {
             public int id;
             public int count;
@@ -38,12 +39,48 @@ namespace Nekoyume.Action
                 this.id = id;
                 this.count = count;
             }
+
+            public Material(Bencodex.Types.Dictionary serialized)
+                : this(
+                    (int) ((Integer) serialized[(Text) "id"]).Value,
+                    (int) ((Integer) serialized[(Text) "count"]).Value
+                )
+            {
+            }
+
+            public IValue Serialize() =>
+                new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
+                {
+                    [(Text) "id"] = (Integer) id,
+                    [(Text) "count"] = (Integer) count,
+                });
         }
 
         [Serializable]
         public class Result : AttachmentActionResult
         {
             public List<Material> materials;
+
+            protected override string TypeId => "combination.result";
+
+            public Result()
+            {
+            }
+
+            public Result(Dictionary serialized) : base(serialized)
+            {
+                materials = ((Bencodex.Types.List) serialized[(Text) "materials"])
+                    .Select(m => new Material((Bencodex.Types.Dictionary) m))
+                    .ToList();
+            }
+
+            public override IValue Serialize() =>
+                new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
+                {
+                    [(Text) "materials"] = new Bencodex.Types.List(
+                        materials.Select(m => m.Serialize())
+                    ),
+                }.Union((Bencodex.Types.Dictionary) base.Serialize()));
         }
 
         public class MaterialRow
@@ -69,11 +106,11 @@ namespace Nekoyume.Action
         public Result result;
         public const int RequiredPoint = 5;
 
-        protected override IImmutableDictionary<string, object> PlainValueInternal =>
-            new Dictionary<string, object>
+        protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
+            new Dictionary<string, IValue>
             {
-                ["Materials"] = ByteSerializer.Serialize(Materials),
-                ["avatarAddress"] = avatarAddress.ToByteArray(),
+                ["Materials"] = Materials.Select(m => m.Serialize()).Serialize(),
+                ["avatarAddress"] = avatarAddress.Serialize(),
             }.ToImmutableDictionary();
 
         public Combination()
@@ -81,10 +118,12 @@ namespace Nekoyume.Action
             Materials = new List<Material>();
         }
 
-        protected override void LoadPlainValueInternal(IImmutableDictionary<string, object> plainValue)
+        protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
         {
-            Materials = ByteSerializer.Deserialize<List<Material>>((byte[]) plainValue["Materials"]);
-            avatarAddress = new Address((byte[]) plainValue["avatarAddress"]);
+            Materials = plainValue["Materials"].ToList(
+                d => new Material((Bencodex.Types.Dictionary) d)
+            );
+            avatarAddress = plainValue["avatarAddress"].ToAddress();
         }
 
         public override IAccountStateDelta Execute(IActionContext ctx)
@@ -96,13 +135,10 @@ namespace Nekoyume.Action
                 return states.SetState(ctx.Signer, MarkChanged);
             }
 
-            var agentState = (AgentState) states.GetState(ctx.Signer);
-            if (!agentState.avatarAddresses.ContainsValue(avatarAddress))
+            if (!states.GetAgentAvatarStates(ctx.Signer, avatarAddress, out AgentState agentState, out AvatarState avatarState))
+            {
                 return states;
-
-            var avatarState = (AvatarState) states.GetState(avatarAddress);
-            if (avatarState == null)
-                return states;
+            }
 
             if (avatarState.actionPoint < RequiredPoint)
             {
@@ -245,8 +281,9 @@ namespace Nekoyume.Action
 
             avatarState.updatedAt = DateTimeOffset.UtcNow;
             avatarState.BlockIndex = ctx.BlockIndex;
-            states = states.SetState(avatarAddress, avatarState);
-            return states.SetState(ctx.Signer, agentState);
+            return states
+                .SetState(avatarAddress, avatarState.Serialize())
+                .SetState(ctx.Signer, agentState.Serialize());
         }
 
         private static List<MaterialRow> Zip(IEnumerable<MaterialRow> materialRows)

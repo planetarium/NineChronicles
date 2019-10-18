@@ -1,7 +1,5 @@
 using System;
-using Nekoyume.Helper;
 using Nekoyume.TableData;
-using UnityEngine;
 
 namespace Nekoyume.Game.Item
 {

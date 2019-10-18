@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using Bencodex.Types;
 using Nekoyume.Data;
 using Nekoyume.EnumType;
+using Nekoyume.State;
 using Nekoyume.TableData;
 
 namespace Nekoyume.Game
@@ -57,5 +59,12 @@ namespace Nekoyume.Game
             throw new UnexpectedOperationException(
                 $"{skillRow.Id}, {skillEffectRow.skillType}, {skillEffectRow.skillTargetType}, {skillEffectRow.skillCategory}");
         }
+
+        public static Skill Deserialize(Bencodex.Types.Dictionary serialized) =>
+            Get(
+                SkillSheet.Row.Deserialize((Bencodex.Types.Dictionary) serialized[(Text) "skillRow"]),
+                (int) ((Integer) serialized[(Text) "power"]).Value,
+                serialized[(Text) "chance"].ToDecimal()
+            );
     }
 }

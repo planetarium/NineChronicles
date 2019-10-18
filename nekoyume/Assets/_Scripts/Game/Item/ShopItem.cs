@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
+using Bencodex.Types;
 using Libplanet;
-using Nekoyume.TableData;
+using Nekoyume.Game.Factory;
+using Nekoyume.State;
 
 namespace Nekoyume.Game.Item
 {
@@ -20,6 +23,16 @@ namespace Nekoyume.Game.Item
             Price = price;
         }
 
+        public ShopItem(Bencodex.Types.Dictionary serialized)
+        {
+            SellerAvatarAddress = serialized[(Text) "sellerAvatarAddress"].ToAddress();
+            ProductId = serialized[(Text) "productId"].ToGuid();
+            ItemUsable = (ItemUsable) ItemFactory.Deserialize(
+                (Dictionary) serialized[(Text) "itemUsable"]
+            );
+            Price = serialized[(Text) "price"].ToDecimal();
+        }
+
         protected bool Equals(ShopItem other)
         {
             return ProductId.Equals(other.ProductId);
@@ -37,5 +50,14 @@ namespace Nekoyume.Game.Item
         {
             return ProductId.GetHashCode();
         }
+
+        public IValue Serialize() =>
+            new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
+            {
+                [(Text) "sellerAvatarAddress"] = SellerAvatarAddress.Serialize(),
+                [(Text) "productId"] = ProductId.Serialize(),
+                [(Text) "itemUsable"] = ItemUsable.Serialize(),
+                [(Text) "price"] = Price.Serialize(),
+            });
     }
 }

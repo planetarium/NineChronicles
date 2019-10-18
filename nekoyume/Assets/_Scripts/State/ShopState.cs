@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Bencodex.Types;
 using Libplanet;
 using Nekoyume.Game.Item;
 
@@ -34,6 +35,17 @@ namespace Nekoyume.State
 
         public ShopState() : base(Address)
         {
+        }
+
+        public ShopState(Bencodex.Types.Dictionary serialized)
+            : base(serialized)
+        {
+            AgentProducts = ((Bencodex.Types.Dictionary) serialized[(Text) "agentProducts"]).ToDictionary(
+                kv => kv.Key.ToAddress(),
+                kv => ((Bencodex.Types.List) kv.Value)
+                    .Select(d => new ShopItem((Bencodex.Types.Dictionary) d))
+                    .ToList()
+            );
         }
         
         public ShopItem Register(Address sellerAgentAddress, ShopItem shopItem)
@@ -109,5 +121,18 @@ namespace Nekoyume.State
             outUnregisteredItem = outPair.Value;
             return true;
         }
+
+        public override IValue Serialize() =>
+            new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
+            {
+                [(Text) "agentProducts"] = new Bencodex.Types.Dictionary(
+                    AgentProducts.Select(kv =>
+                        new KeyValuePair<IKey, IValue>(
+                            (Binary) kv.Key.Serialize(),
+                            new Bencodex.Types.List(kv.Value.Select(i => i.Serialize()))
+                        )
+                    )
+                )
+            }.Union((Bencodex.Types.Dictionary) base.Serialize()));
     }
 }

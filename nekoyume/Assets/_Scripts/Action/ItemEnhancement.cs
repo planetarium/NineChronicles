@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
+using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Game.Item;
@@ -21,6 +23,16 @@ namespace Nekoyume.Action
         [Serializable]
         public class Result : AttachmentActionResult
         {
+            protected override string TypeId => "itemEnhancement.result";
+
+            public Result()
+            {
+            }
+
+            public Result(Bencodex.Types.Dictionary serialized)
+                : base(serialized)
+            {
+            }
         }
 
         public override IAccountStateDelta Execute(IActionContext ctx)
@@ -32,12 +44,7 @@ namespace Nekoyume.Action
                 return states.SetState(ctx.Signer, MarkChanged);
             }
 
-            var agentState = (AgentState) states.GetState(ctx.Signer);
-            if (!agentState.avatarAddresses.ContainsValue(avatarAddress))
-                return states;
-
-            var avatarState = (AvatarState) states.GetState(avatarAddress);
-            if (avatarState == null)
+            if (!states.GetAgentAvatarStates(ctx.Signer, avatarAddress, out AgentState agentState, out AvatarState avatarState))
             {
                 return states;
             }
@@ -76,22 +83,23 @@ namespace Nekoyume.Action
             var mail = new ItemEnhanceMail(result, ctx.BlockIndex);
             avatarState.inventory.RemoveNonFungibleItem(equipment);
             avatarState.Update(mail);
-            states = states.SetState(ctx.Signer, agentState);
-            states = states.SetState(avatarAddress, avatarState);
-            return states;
+            return states
+                .SetState(ctx.Signer, agentState.Serialize())
+                .SetState(avatarAddress, avatarState.Serialize());
         }
 
-        protected override IImmutableDictionary<string, object> PlainValueInternal => new Dictionary<string, object>
+        protected override IImmutableDictionary<string, IValue> PlainValueInternal => new Dictionary<string, IValue>
         {
-            ["itemId"] = itemId.ToString(),
-            ["materialIds"] = ByteSerializer.Serialize(materialIds),
-            ["avatarAddress"] = avatarAddress.ToByteArray(),
+            ["itemId"] = itemId.Serialize(),
+            ["materialIds"] = materialIds.Select(g => g.Serialize()).Serialize(),
+            ["avatarAddress"] = avatarAddress.Serialize(),
         }.ToImmutableDictionary();
-        protected override void LoadPlainValueInternal(IImmutableDictionary<string, object> plainValue)
+
+        protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
         {
-            itemId = new Guid((string) plainValue["itemId"]);
-            materialIds = ByteSerializer.Deserialize<List<Guid>>((byte[]) plainValue["materialIds"]);
-            avatarAddress = new Address((byte[]) plainValue["avatarAddress"]);
+            itemId = plainValue["itemId"].ToGuid();
+            materialIds = plainValue["materialIds"].ToList(StateExtensions.ToGuid);
+            avatarAddress = plainValue["avatarAddress"].ToAddress();
         }
     }
 }

@@ -1,10 +1,13 @@
 using System;
+using System.Collections.Generic;
+using Bencodex.Types;
 using Nekoyume.EnumType;
+using Nekoyume.State;
 
 namespace Nekoyume.Game
 {
     [Serializable]
-    public class StatMap
+    public class StatMap : IState
     {
         private decimal _value;
         
@@ -27,6 +30,14 @@ namespace Nekoyume.Game
             StatType = statType;
             Value = value;
         }
+
+        public StatMap(Bencodex.Types.Dictionary serialized)
+            : this(
+                StatTypeExtension.Deserialize((Binary) serialized[(Text) "statType"]),
+                serialized[(Text) "value"].ToDecimal()
+            )
+        {
+        }
         
         protected bool Equals(StatMap other)
         {
@@ -48,5 +59,12 @@ namespace Nekoyume.Game
                 return (_value.GetHashCode() * 397) ^ (int) StatType;
             }
         }
+
+        public virtual IValue Serialize() =>
+            new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
+            {
+                [(Text) "statType"] = StatType.Serialize(),
+                [(Text) "value"] = Value.Serialize(),
+            });
     }
 }

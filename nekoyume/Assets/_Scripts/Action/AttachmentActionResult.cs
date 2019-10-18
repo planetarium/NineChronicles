@@ -1,11 +1,83 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using Bencodex.Types;
+using Nekoyume.Game.Factory;
 using Nekoyume.Game.Item;
+using Nekoyume.State;
+using UnityEngine;
 
 namespace Nekoyume.Action
 {
     [Serializable]
-    public abstract class AttachmentActionResult
+    public abstract class AttachmentActionResult : IState
     {
+        private static readonly Dictionary<string, Func<Dictionary, AttachmentActionResult>>
+            Deserializers = new Dictionary<string, Func<Dictionary, AttachmentActionResult>>
+            {
+                ["buy.buyerResult"] = d => new Buy.BuyerResult(d),
+                ["buy.sellerResult"] = d => new Buy.SellerResult(d),
+                ["combination.result"] = d => new Combination.Result(d),
+                ["itemEnhancement.result"] = d => new ItemEnhancement.Result(d),
+                ["sellCancellation.result"] = d => new SellCancellation.Result(d),
+            };
+
         public ItemUsable itemUsable;
+
+        protected abstract string TypeId { get; }
+
+        protected AttachmentActionResult()
+        {
+            if (!Deserializers.ContainsKey(TypeId))
+            {
+                throw new InvalidOperationException(
+                    $"Deserializer for the typeId \"{TypeId}\" seems not registered yet."
+                );
+            }
+        }
+
+        protected AttachmentActionResult(Bencodex.Types.Dictionary serialized)
+        {
+            itemUsable = (ItemUsable) ItemFactory.Deserialize(
+                (Bencodex.Types.Dictionary) serialized[(Text) "itemUsable"]
+            );
+        }
+
+        public virtual IValue Serialize() =>
+            new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
+            {
+                [(Text) "typeId"] = (Text) TypeId,
+                [(Text) "itemUsable"] = itemUsable.Serialize(),
+            });
+
+        public static AttachmentActionResult Deserialize(Bencodex.Types.Dictionary serialized)
+        {
+            string typeId = ((Text) serialized[(Text) "typeId"]).Value;
+            Func<Dictionary, AttachmentActionResult> deserializer;
+            try
+            {
+                deserializer = Deserializers[typeId];
+            }
+            catch (KeyNotFoundException)
+            {
+                string typeIds = string.Join(
+                    ", ",
+                    Deserializers.Keys.OrderBy(k => k, StringComparer.InvariantCulture)
+                );
+                throw new ArgumentException(
+                    $"Unregistered typeId: {typeId}; available typeIds: {typeIds}"
+                );
+            }
+
+            try
+            {
+                return deserializer(serialized);
+            }
+            catch (Exception e)
+            {
+                Debug.LogErrorFormat("{0} was raised during deserialize: {1}", e.GetType().FullName, serialized);
+                throw;
+            }
+        }
     }
 }

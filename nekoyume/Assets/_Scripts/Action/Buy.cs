@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
+using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.BlockChain;
 using Nekoyume.EnumType;
+using Nekoyume.Game.Item;
 using Nekoyume.Game.Mail;
 using Nekoyume.State;
 using UnityEngine;
@@ -25,6 +28,23 @@ namespace Nekoyume.Action
         public class BuyerResult : AttachmentActionResult
         {
             public Game.Item.ShopItem shopItem;
+
+            protected override string TypeId => "buy.buyerResult";
+
+            public BuyerResult()
+            {
+            }
+
+            public BuyerResult(Bencodex.Types.Dictionary serialized) : base(serialized)
+            {
+                shopItem = new ShopItem((Bencodex.Types.Dictionary) serialized[(Text) "shopItem"]);
+            }
+
+            public override IValue Serialize() =>
+                new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
+                {
+                    [(Text) "shopItem"] = shopItem.Serialize(),
+                }.Union((Bencodex.Types.Dictionary) base.Serialize()));
         }
 
         [Serializable]
@@ -32,29 +52,48 @@ namespace Nekoyume.Action
         {
             public Game.Item.ShopItem shopItem;
             public decimal gold;
+
+            protected override string TypeId => "buy.sellerResult";
+
+            public SellerResult()
+            {
+            }
+
+            public SellerResult(Bencodex.Types.Dictionary serialized) : base(serialized)
+            {
+                shopItem = new ShopItem((Bencodex.Types.Dictionary) serialized[(Text) "shopItem"]);
+                gold = serialized[(Text) "price"].ToDecimal();
+            }
+
+            public override IValue Serialize() =>
+                new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
+                {
+                    [(Text) "shopItem"] = shopItem.Serialize(),
+                    [(Text) "gold"] = gold.Serialize(),
+                }.Union((Bencodex.Types.Dictionary) base.Serialize()));
         }
 
-        protected override IImmutableDictionary<string, object> PlainValueInternal => new Dictionary<string, object>
+        protected override IImmutableDictionary<string, IValue> PlainValueInternal => new Dictionary<string, IValue>
         {
-            ["buyerAvatarAddress"] = buyerAvatarAddress.ToByteArray(),
-            ["sellerAgentAddress"] = sellerAgentAddress.ToByteArray(),
-            ["sellerAvatarAddress"] = sellerAvatarAddress.ToByteArray(),
-            ["productId"] = productId.ToByteArray(),
+            ["buyerAvatarAddress"] = buyerAvatarAddress.Serialize(),
+            ["sellerAgentAddress"] = sellerAgentAddress.Serialize(),
+            ["sellerAvatarAddress"] = sellerAvatarAddress.Serialize(),
+            ["productId"] = productId.Serialize(),
         }.ToImmutableDictionary();
 
-        protected override void LoadPlainValueInternal(IImmutableDictionary<string, object> plainValue)
+        protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
         {
-            buyerAvatarAddress = new Address((byte[]) plainValue["buyerAvatarAddress"]);
-            sellerAgentAddress = new Address((byte[]) plainValue["sellerAgentAddress"]);
-            sellerAvatarAddress = new Address((byte[]) plainValue["sellerAvatarAddress"]);
-            productId = new Guid((byte[]) plainValue["productId"]);
+            buyerAvatarAddress = plainValue["buyerAvatarAddress"].ToAddress();
+            sellerAgentAddress = plainValue["sellerAgentAddress"].ToAddress();
+            sellerAvatarAddress = plainValue["sellerAvatarAddress"].ToAddress();
+            productId = plainValue["productId"].ToGuid();
         }
 
         public override IAccountStateDelta Execute(IActionContext ctx)
         {
             var states = ctx.PreviousStates;
             if (ctx.Rehearsal)
-            {   
+            {
                 states = states.SetState(buyerAvatarAddress, MarkChanged);
                 states = states.SetState(ctx.Signer, MarkChanged);
                 states = states.SetState(sellerAvatarAddress, MarkChanged);
@@ -65,23 +104,17 @@ namespace Nekoyume.Action
             if (ctx.Signer.Equals(sellerAgentAddress))
                 return states;
 
-            var buyerAgentState = (AgentState) states.GetState(ctx.Signer);
-            if (buyerAgentState == null)
+            if (!states.GetAgentAvatarStates(ctx.Signer, buyerAvatarAddress, out AgentState buyerAgentState, out AvatarState buyerAvatarState))
             {
                 return states;
             }
 
-            if (!buyerAgentState.avatarAddresses.ContainsValue(buyerAvatarAddress))
-                return states;
-
-            
-            var buyerAvatarState = (AvatarState) states.GetState(buyerAvatarAddress);
-            if (buyerAvatarState == null)
+            ShopState shopState;
+            if (!states.TryGetState(ShopState.Address, out Bencodex.Types.Dictionary d))
             {
                 return states;
             }
-
-            var shopState = (ShopState) states.GetState(ShopState.Address);
+            shopState = new ShopState(d);
 
             Debug.Log($"Execute Buy. buyer : `{buyerAvatarAddress}` seller: `{sellerAvatarAddress}`" +
                       $"node : `{States.Instance?.AgentState?.Value?.address}` " +
@@ -92,34 +125,26 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            var sellerAgentState = (AgentState) states.GetState(sellerAgentAddress);
-            if (sellerAgentState is null)
+            if (!states.GetAgentAvatarStates(sellerAgentAddress, sellerAvatarAddress, out AgentState sellerAgentState, out AvatarState sellerAvatarState))
             {
                 return states;
             }
-
-            if (!sellerAgentState.avatarAddresses.ContainsValue(sellerAvatarAddress))
-                return states;
-
-            var sellerAvatarState = (AvatarState) states.GetState(outPair.Value.SellerAvatarAddress);
-            if (sellerAvatarState is null)
-                return states;
 
             // 돈은 있냐?
             if (buyerAgentState.gold < outPair.Value.Price)
             {
                 return states;
             }
-            
+
             // 상점에서 구매할 아이템을 제거한다.
             if (!shopState.Unregister(sellerAgentAddress, outPair.Value))
             {
                 return states;
             }
-            
+
             // 구매자의 돈을 감소 시킨다.
             buyerAgentState.gold -= outPair.Value.Price;
-                
+
             // 구매자, 판매자에게 결과 메일 전송
             buyerResult = new BuyerResult
             {
@@ -148,11 +173,12 @@ namespace Nekoyume.Action
             sellerAvatarState.updatedAt = timestamp;
             sellerAvatarState.BlockIndex = ctx.BlockIndex;
 
-            states = states.SetState(buyerAvatarAddress, buyerAvatarState);
-            states = states.SetState(ctx.Signer, buyerAgentState);
-            states = states.SetState(sellerAvatarAddress, sellerAvatarState);
-            states = states.SetState(sellerAgentAddress, sellerAgentState);
-            return states.SetState(ShopState.Address, shopState);
+            return states
+                .SetState(buyerAvatarAddress, buyerAvatarState.Serialize())
+                .SetState(ctx.Signer, buyerAgentState.Serialize())
+                .SetState(sellerAvatarAddress, sellerAvatarState.Serialize())
+                .SetState(sellerAgentAddress, sellerAgentState.Serialize())
+                .SetState(ShopState.Address, shopState.Serialize());
         }
     }
 }

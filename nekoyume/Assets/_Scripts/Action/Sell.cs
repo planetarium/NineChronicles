@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Globalization;
+using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.BlockChain;
+using Nekoyume.Game.Factory;
 using Nekoyume.Game.Item;
 using Nekoyume.State;
 using UnityEngine;
@@ -26,20 +28,22 @@ namespace Nekoyume.Action
         public ItemUsable itemUsable;
         public decimal price;
 
-        protected override IImmutableDictionary<string, object> PlainValueInternal => new Dictionary<string, object>
+        protected override IImmutableDictionary<string, IValue> PlainValueInternal => new Dictionary<string, IValue>
         {
-            ["sellerAvatarAddress"] = sellerAvatarAddress.ToByteArray(),
-            ["productId"] = productId.ToByteArray(),
-            ["itemUsable"] = ByteSerializer.Serialize(itemUsable),
-            ["price"] = price.ToString(CultureInfo.InvariantCulture),
+            ["sellerAvatarAddress"] = sellerAvatarAddress.Serialize(),
+            ["productId"] = productId.Serialize(),
+            ["itemUsable"] = itemUsable.Serialize(),
+            ["price"] = price.Serialize(),
         }.ToImmutableDictionary();
 
-        protected override void LoadPlainValueInternal(IImmutableDictionary<string, object> plainValue)
+        protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
         {
-            sellerAvatarAddress = new Address((byte[]) plainValue["sellerAvatarAddress"]);
-            productId = new Guid((byte[]) plainValue["productId"]);
-            itemUsable = ByteSerializer.Deserialize<ItemUsable>((byte[]) plainValue["itemUsable"]);
-            price = decimal.Parse(plainValue["price"].ToString());
+            sellerAvatarAddress = plainValue["sellerAvatarAddress"].ToAddress();
+            productId = plainValue["productId"].ToGuid();
+            itemUsable = (ItemUsable) ItemFactory.Deserialize(
+                (Bencodex.Types.Dictionary) plainValue["itemUsable"]
+            );
+            price = plainValue["price"].ToDecimal();
         }
 
         public override IAccountStateDelta Execute(IActionContext ctx)
@@ -57,17 +61,16 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            var agentState = (AgentState) states.GetState(ctx.Signer);
-            if (!agentState.avatarAddresses.ContainsValue(sellerAvatarAddress))
-                return states;
-
-            var avatarState = (AvatarState) states.GetState(sellerAvatarAddress);
-            if (avatarState == null)
+            if (!states.GetAgentAvatarStates(ctx.Signer, sellerAvatarAddress, out AgentState agentState, out AvatarState avatarState))
             {
                 return states;
             }
 
-            var shopState = (ShopState) states.GetState(ShopState.Address);
+            if (!states.TryGetState(ShopState.Address, out Bencodex.Types.Dictionary d))
+            {
+                return states;
+            }
+            ShopState shopState = new ShopState(d);
 
             Debug.Log($"Execute Sell. seller : `{sellerAvatarAddress}` " +
                       $"node : `{States.Instance?.AgentState?.Value?.address}` " +
@@ -96,9 +99,10 @@ namespace Nekoyume.Action
             avatarState.updatedAt = DateTimeOffset.UtcNow;
             avatarState.BlockIndex = ctx.BlockIndex;
 
-            states = states.SetState(sellerAvatarAddress, avatarState);
-            states = states.SetState(ctx.Signer, agentState);
-            return states.SetState(ShopState.Address, shopState);
+            return states
+                .SetState(sellerAvatarAddress, avatarState.Serialize())
+                .SetState(ctx.Signer, agentState.Serialize())
+                .SetState(ShopState.Address, shopState.Serialize());
         }
     }
 }

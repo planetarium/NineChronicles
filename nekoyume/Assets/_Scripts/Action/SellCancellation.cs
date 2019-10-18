@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
+using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
+using Nekoyume.Game.Item;
 using Nekoyume.Game.Mail;
 using Nekoyume.State;
 
@@ -19,18 +22,35 @@ namespace Nekoyume.Action
         public class Result : AttachmentActionResult
         {
             public Game.Item.ShopItem shopItem;
+
+            protected override string TypeId => "sellCancellation.result";
+
+            public Result()
+            {
+            }
+
+            public Result(Bencodex.Types.Dictionary serialized) : base(serialized)
+            {
+                shopItem = new ShopItem((Bencodex.Types.Dictionary) serialized[(Text) "shopItem"]);
+            }
+
+            public override IValue Serialize() =>
+                new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
+                {
+                    [(Text) "shopItem"] = shopItem.Serialize(),
+                }.Union((Bencodex.Types.Dictionary) base.Serialize()));
         }
 
-        protected override IImmutableDictionary<string, object> PlainValueInternal => new Dictionary<string, object>
+        protected override IImmutableDictionary<string, IValue> PlainValueInternal => new Dictionary<string, IValue>
         {
-            ["productId"] = productId.ToByteArray(),
-            ["sellerAvatarAddress"] = sellerAvatarAddress.ToByteArray(),
+            ["productId"] = productId.Serialize(),
+            ["sellerAvatarAddress"] = sellerAvatarAddress.Serialize(),
         }.ToImmutableDictionary();
 
-        protected override void LoadPlainValueInternal(IImmutableDictionary<string, object> plainValue)
+        protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
         {
-            productId = new Guid((byte[]) plainValue["productId"]);
-            sellerAvatarAddress = new Address((byte[]) plainValue["sellerAvatarAddress"]);
+            productId = plainValue["productId"].ToGuid();
+            sellerAvatarAddress = plainValue["sellerAvatarAddress"].ToAddress();
         }
 
         public override IAccountStateDelta Execute(IActionContext ctx)
@@ -43,17 +63,16 @@ namespace Nekoyume.Action
                 return states.SetState(ctx.Signer, MarkChanged);
             }
 
-            var agentState = (AgentState) states.GetState(ctx.Signer);
-            if (!agentState.avatarAddresses.ContainsValue(sellerAvatarAddress))
-                return states;
-
-            var avatarState = (AvatarState) states.GetState(sellerAvatarAddress);
-            if (avatarState == null)
+            if (!states.GetAgentAvatarStates(ctx.Signer, sellerAvatarAddress, out AgentState agentState, out AvatarState avatarState))
             {
                 return states;
             }
 
-            var shopState = (ShopState) states.GetState(ShopState.Address);
+            if (!states.TryGetState(ShopState.Address, out Bencodex.Types.Dictionary d))
+            {
+                return states;
+            }
+            ShopState shopState = new ShopState(d);
 
             // 상점에서 아이템을 빼온다.
             if (!shopState.TryUnregister(ctx.Signer, productId, out var outUnregisteredItem))
@@ -72,9 +91,10 @@ namespace Nekoyume.Action
             avatarState.updatedAt = DateTimeOffset.UtcNow;
             avatarState.BlockIndex = ctx.BlockIndex;
             
-            states = states.SetState(ctx.Signer, agentState);
-            states = states.SetState(sellerAvatarAddress, avatarState);
-            return states.SetState(ShopState.Address, shopState);
+            return states
+                .SetState(ctx.Signer, agentState.Serialize())
+                .SetState(sellerAvatarAddress, avatarState.Serialize())
+                .SetState(ShopState.Address, shopState.Serialize());
         }
     }
 }

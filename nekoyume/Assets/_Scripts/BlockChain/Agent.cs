@@ -10,6 +10,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using AsyncIO;
+using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Blockchain;
@@ -210,20 +211,29 @@ namespace Nekoyume.BlockChain
             PreloadEnded += (_, __) =>
             {
                 // 에이전트의 준비단계가 끝나면 에이전트의 상태를 한 번 동기화 한다.
-                States.Instance.AgentState.Value = (AgentState) GetState(Address) ??
-                                                   new AgentState(Address);
+                States.Instance.AgentState.Value =
+                    GetState(Address) is Bencodex.Types.Dictionary agentDict
+                        ? new AgentState(agentDict)
+                        : new AgentState(Address);
                 // 에이전트에 포함된 모든 아바타의 상태를 한 번씩 동기화 한다.
                 foreach (var pair in States.Instance.AgentState.Value.avatarAddresses)
                 {
-                    var avatarState = (AvatarState) GetState(pair.Value);
+                    var avatarState = new AvatarState(
+                        (Bencodex.Types.Dictionary) GetState(pair.Value)
+                    );
                     States.Instance.AvatarStates.Add(pair.Key, avatarState);
                 }
 
                 // 랭킹의 상태를 한 번 동기화 한다.
                 States.Instance.RankingState.Value =
-                    (RankingState) GetState(RankingState.Address) ?? new RankingState();
+                    GetState(RankingState.Address) is Bencodex.Types.Dictionary rankingDict
+                        ? new RankingState(rankingDict)
+                        : new RankingState();
                 // 상점의 상태를 한 번 동기화 한다.
-                States.Instance.ShopState.Value = (ShopState) GetState(ShopState.Address) ?? new ShopState();
+                States.Instance.ShopState.Value =
+                    GetState(ShopState.Address) is Bencodex.Types.Dictionary shopDict
+                        ? new ShopState(shopDict)
+                        : new ShopState();
                 // 그리고 모든 액션에 대한 랜더를 핸들링하기 시작한다.
                 ActionRenderHandler.Instance.Start();
                 // 그리고 마이닝을 시작한다.
@@ -728,7 +738,7 @@ namespace Nekoyume.BlockChain
 
         public object GetState(Address address)
         {
-            var states = blocks.GetStates(new[] {address});
+            var states = blocks.GetState(address);
             states.TryGetValue(address, out var value);
             return value;
         }

@@ -6,7 +6,14 @@ namespace Nekoyume.Game.Mail
     [Serializable]
     public class CombinationMail : AttachmentMail
     {
+        protected override string TypeId => "combinationMail";
+
         public CombinationMail(Combination.Result attachmentActionResult, long blockIndex) : base(attachmentActionResult, blockIndex)
+        {
+        }
+
+        public CombinationMail(Bencodex.Types.Dictionary serialized)
+            : base(serialized)
         {
         }
 
@@ -19,6 +26,5 @@ namespace Nekoyume.Game.Mail
         {
             mail.Read(this);
         }
-
     }
 }

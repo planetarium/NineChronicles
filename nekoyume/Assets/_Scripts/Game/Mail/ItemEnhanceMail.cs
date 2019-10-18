@@ -6,7 +6,14 @@ namespace Nekoyume.Game.Mail
     [Serializable]
     public class ItemEnhanceMail : AttachmentMail
     {
+        protected override string TypeId => "itemEnhance";
+
         public ItemEnhanceMail(AttachmentActionResult attachmentActionResult, long blockIndex) : base(attachmentActionResult, blockIndex)
+        {
+        }
+
+        public ItemEnhanceMail(Bencodex.Types.Dictionary serialized)
+            : base(serialized)
         {
         }
 

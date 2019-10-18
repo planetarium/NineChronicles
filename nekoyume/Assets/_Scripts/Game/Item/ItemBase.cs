@@ -1,13 +1,15 @@
 using System;
-using Nekoyume.Data;
+using System.Collections.Generic;
+using Bencodex.Types;
 using Nekoyume.Helper;
+using Nekoyume.State;
 using Nekoyume.TableData;
 using UnityEngine;
 
 namespace Nekoyume.Game.Item
 {
     [Serializable]
-    public abstract class ItemBase
+    public abstract class ItemBase : IState
     {
         public ItemSheet.Row Data { get; }
 
@@ -45,5 +47,11 @@ namespace Nekoyume.Game.Item
         {
             return SpriteHelper.GetItemBackground(Data.Grade);
         }
+
+        public virtual IValue Serialize() =>
+            new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
+            {
+                [(Text) "data"] = Data.Serialize(),
+            });
     }
 }

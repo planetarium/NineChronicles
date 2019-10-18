@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
+using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.State;
@@ -17,21 +18,22 @@ namespace Nekoyume.Action
         public decimal gold3;
         public Address[] agentAddresses;
 
-        public override IImmutableDictionary<string, object> PlainValue =>
-            new Dictionary<string, object>
+        public override IValue PlainValue =>
+            new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
             {
-                ["gold1"] = gold1.ToString(CultureInfo.InvariantCulture),
-                ["gold2"] = gold2.ToString(CultureInfo.InvariantCulture),
-                ["gold3"] = gold3.ToString(CultureInfo.InvariantCulture),
-                ["agentAddresses"] = ByteSerializer.Serialize(agentAddresses),
-            }.ToImmutableDictionary();
+                [(Text) "gold1"] = gold1.Serialize(),
+                [(Text) "gold2"] = gold2.Serialize(),
+                [(Text) "gold3"] = gold3.Serialize(),
+                [(Text) "agentAddresses"] = agentAddresses.Select(a => a.Serialize()).Serialize(),
+            });
 
-        public override void LoadPlainValue(IImmutableDictionary<string, object> plainValue)
+        public override void LoadPlainValue(IValue plainValue)
         {
-            gold1 = decimal.Parse(plainValue["gold1"].ToString());
-            gold2 = decimal.Parse(plainValue["gold2"].ToString());
-            gold3 = decimal.Parse(plainValue["gold3"].ToString());
-            agentAddresses = ByteSerializer.Deserialize<Address[]>((byte[]) plainValue["agentAddresses"]);
+            var dict = (Bencodex.Types.Dictionary) plainValue;
+            gold1 = dict[(Text) "gold1"].ToDecimal();
+            gold2 = dict[(Text) "gold2"].ToDecimal();
+            gold3 = dict[(Text) "gold3"].ToDecimal();
+            agentAddresses = dict[(Text) "agentAddresses"].ToArray(StateExtensions.ToAddress);
         }
 
         public override IAccountStateDelta Execute(IActionContext ctx)
@@ -48,7 +50,13 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            var ranking = (RankingState) states.GetState(RankingState.Address);
+            RankingState ranking;
+            if (!states.TryGetState(RankingState.Address, out Bencodex.Types.Dictionary d))
+            {
+                return states;
+            }
+            ranking = new RankingState(d);
+
             var rewards = new List<decimal>
             {
                 gold1,
@@ -59,19 +67,21 @@ namespace Nekoyume.Action
             for (var index = 0; index < agentAddresses.Length; index++)
             {
                 var address = agentAddresses[index];
+                AgentState agentState = states.GetAgentState(address);
+                if (agentState is null)
+                {
+                    continue;
+                }
                 try
                 {
-                    var agentState = (AgentState) states.GetState(address);
                     agentState.gold += rewards[index];
-                    states = states.SetState(address, agentState);
-                }
-                catch (InvalidCastException)
-                {
                 }
                 catch (IndexOutOfRangeException)
                 {
                     break;
                 }
+
+                states = states.SetState(address, agentState.Serialize());
             }
 
             return states;

@@ -1,16 +1,18 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Bencodex.Types;
 using Nekoyume.Data;
 using Nekoyume.Data.Table;
 using Nekoyume.EnumType;
 using Nekoyume.Model;
+using Nekoyume.State;
 using Nekoyume.TableData;
 
 namespace Nekoyume.Game
 {
     [Serializable]
-    public abstract class Skill
+    public abstract class Skill : IState
     {
         public readonly SkillSheet.Row skillRow;
         public readonly int power;
@@ -75,5 +77,13 @@ namespace Nekoyume.Game
 
             return infos;
         }
+
+        public IValue Serialize() =>
+            new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
+            {
+                [(Text) "skillRow"] = skillRow.Serialize(),
+                [(Text) "power"] = (Integer) power,
+                [(Text) "chance"] = chance.Serialize(),
+            });
     }
 }

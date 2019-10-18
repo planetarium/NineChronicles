@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Nekoyume.Data;
-using Nekoyume.Data.Table;
 using Nekoyume.EnumType;
 using Nekoyume.TableData;
 

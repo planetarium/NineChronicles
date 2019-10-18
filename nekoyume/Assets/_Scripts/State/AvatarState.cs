@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Bencodex.Types;
 using Libplanet;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Mail;
@@ -68,7 +70,26 @@ namespace Nekoyume.State
             clearedAt = avatarState.clearedAt;
             agentAddress = avatarState.agentAddress;
         }
-        
+
+        public AvatarState(Bencodex.Types.Dictionary serialized)
+            : base(serialized)
+        {
+            name = ((Text) serialized[(Text) "name"]).Value;
+            characterId = (int) ((Integer) serialized[(Text) "characterId"]).Value;
+            level = (int) ((Integer) serialized[(Text) "level"]).Value;
+            exp = (long) ((Integer) serialized[(Text) "exp"]).Value;
+            inventory = new Inventory((Bencodex.Types.List) serialized[(Text) "inventory"]);
+            worldStage = (int) ((Integer) serialized[(Text) "worldStage"]).Value;
+            updatedAt = serialized[(Text) "updatedAt"].ToDateTimeOffset();
+            clearedAt = serialized[(Text) "clearedAt"].ToNullableDateTimeOffset();
+            agentAddress = new Address(((Binary) serialized[(Text) "agentAddress"]).Value);
+            questList = new QuestList((Bencodex.Types.List) serialized[(Text) "questList"]);
+            mailBox = new MailBox((Bencodex.Types.List) serialized[(Text) "mailBox"]);
+            BlockIndex = (long) ((Integer) serialized[(Text) "blockIndex"]).Value;
+            nextDailyRewardIndex = (long) ((Integer) serialized[(Text) "nextDailyRewardIndex"]).Value;
+            actionPoint = (int) ((Integer) serialized[(Text) "actionPoint"]).Value;
+        }
+
         public void Update(Player player, List<ItemBase> items)
         {
             characterId = player.RowData.Id;
@@ -88,5 +109,24 @@ namespace Nekoyume.State
         {
             mailBox.Add(mail);
         }
+
+        public override IValue Serialize() =>
+            new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
+            {
+                [(Text) "name"] = (Text) name,
+                [(Text) "characterId"] = (Integer) characterId,
+                [(Text) "level"] = (Integer) level,
+                [(Text) "exp"] = (Integer) exp,
+                [(Text) "inventory"] = inventory.Serialize(),
+                [(Text) "worldStage"] = (Integer) worldStage,
+                [(Text) "updatedAt"] = updatedAt.Serialize(),
+                [(Text) "clearedAt"] = clearedAt.Serialize(),
+                [(Text) "agentAddress"] = agentAddress.Serialize(),
+                [(Text) "questList"] = questList.Serialize(),
+                [(Text) "mailBox"] = mailBox.Serialize(),
+                [(Text) "blockIndex"] = (Integer) BlockIndex,
+                [(Text) "nextDailyRewardIndex"] = (Integer) nextDailyRewardIndex,
+                [(Text) "actionPoint"] = (Integer) actionPoint,
+            }.Union((Bencodex.Types.Dictionary) base.Serialize()));
     }
 }

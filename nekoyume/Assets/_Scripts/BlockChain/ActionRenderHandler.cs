@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Bencodex.Types;
 using Nekoyume.Action;
 using Nekoyume.Manager;
 using Nekoyume.State;
@@ -78,7 +79,7 @@ namespace Nekoyume.BlockChain
         private AgentState GetAgentState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
         {
             var agentAddress = States.Instance.AgentState.Value.address;
-            return (AgentState) evaluation.OutputStates.GetState(agentAddress);
+            return evaluation.OutputStates.GetAgentState(agentAddress);
         }
 
         private void UpdateAgentState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
@@ -101,8 +102,8 @@ namespace Nekoyume.BlockChain
             }
 
             var avatarAddress = States.Instance.AgentState.Value.avatarAddresses[index];
-            var avatarState = (AvatarState) evaluation.OutputStates.GetState(avatarAddress);
-            if (avatarState == null)
+            var avatarState = evaluation.OutputStates.GetAvatarState(avatarAddress);
+            if (avatarState is null)
             {
                 return;
             }
@@ -117,12 +118,16 @@ namespace Nekoyume.BlockChain
 
         private void UpdateShopState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
         {
-            States.Instance.ShopState.Value = (ShopState) evaluation.OutputStates.GetState(ShopState.Address);
+            States.Instance.ShopState.Value = new ShopState(
+                (Bencodex.Types.Dictionary) evaluation.OutputStates.GetState(ShopState.Address)
+            );
         }
 
         private void UpdateRankingState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
         {
-            States.Instance.RankingState.Value = (RankingState) evaluation.OutputStates.GetState(RankingState.Address);
+            States.Instance.RankingState.Value = new RankingState(
+                (Bencodex.Types.Dictionary) evaluation.OutputStates.GetState(RankingState.Address)
+            );
         }
 
         private void Shop()
