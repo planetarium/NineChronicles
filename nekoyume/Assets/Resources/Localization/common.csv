@@ -115,7 +115,7 @@ UI_SHOP,AUCTION,경매장
 UI_RANKING,RANKING,랭킹
 UI_EQUIP_CONSUMABLES,Food to eat,소모품을 장착하세요.
 UI_EQUIP_EQUIPMENTS,Equipments,장비를 장착하세요.
-UI_BATTLE_CONTINUOUS,Auto Repeat,반복 전투
+UI_BATTLE_AUTO_REPEAT,Auto Repeat,반복 전투
 UI_OVERALL_RANKING,Overall Ranking,전체 랭킹
 UI_RANKING_IN_24HOURS,24 Hour Ranking,24시간 내 랭킹
 UI_REFRESH,Refresh,새로고침
@@ -142,8 +142,8 @@ NPC_04_NAME,Gerimnir,제림니르
 NPC_05_NAME,Craft Shop Cat,공방 주인
 NPC_06_NAME,Auction Cat,경매장 주인
 NPC_07_NAME,The Godness Freya,여신 프레이야
-UI_COMBINE_EQUIPMENTS,Combine Equipments,장비 제작
-UI_COMBINE_CONSUMABLES,Combine Consumables,소모품 제작
+UI_COMBINE_EQUIPMENT,Combine Equipment,장비 제작
+UI_COMBINE_CONSUMABLE,Combine Consumable,소모품 제작
 UI_RECIPE,Recipe,레시피
 UI_SKILL,Skill,스킬
 UI_SKILL_POWER,Power,위력
@@ -157,14 +157,16 @@ UI_BATTLE_RESULT_DEFEAT_SUGGESTION_1,Level up with battles!,반복 전투로 레
 UI_BATTLE_RESULT_DEFEAT_SUGGESTION_1_BUTTON,A월드맵으로 가기,월드맵으로 가기
 UI_BATTLE_RESULT_DEFEAT_SUGGESTION_2,Make strong equipments!,장비를 만들어 장착!
 UI_BATTLE_RESULT_DEFEAT_SUGGESTION_2_BUTTON,A조합하러 가기,조합하러 가기
+UI_GO_BACK,Back,뒤로가기
+UI_GO_MAIN,Main,메인
+UI_QUIT,Quit,종료
 UI_EXIT,Exit,나가기
-UI_GAMEEXIT,Exit Game,게임 종료
 UI_ERROR,Error,에러
 UI_INVALID_NICKNAME,Nickname should be 2~20 characters long and only able to contain Hangul[comma] English letters or numbers.,닉네임은 2~20자여야 하며 한글[comma] 영문자[comma] 숫자만 사용할 수 있습니다.
 UI_MAIL,Mail,우편
 UI_QUEST,Quest,퀘스트
 UI_CHAT,Chat,채팅
-UI_COLLECTION,Collection,도감
+UI_ILLUSTRATED_BOOK,Illustrated Book,도감
 UI_SETTINGS,Settings,설정
 UI_AVATARINFO,Avatar Info,아바타 정보
 UI_WORLD_MAP_PREPARE,Prepare,준비
@@ -173,6 +175,9 @@ UI_WORLD_MAP_MONSTERS,Monsters,몬스터
 UI_WORLD_MAP_REWARDS,Rewards,보상
 UI_STAGE,Stage,스테이지
 UI_REMAININGTURN,Remaining Turn : {0},남은 턴 : {0}
-UI_REASK_QUIT,Are you sure to quit the game?,정말 게임을 종료하시겠습니까?
-UI_REASK_DELETE_CHARACTER,Are you sure to delete this character?,정말 이 캐릭터를 삭제하시겠습니까?
-UI_NOT_IMPLEMENTED,This feature is currently under construction.,준비 중입니다.
+UI_ALERT_NOT_IMPLEMENTED_TITLE,In Prepare,준비 중
+UI_ALERT_NOT_IMPLEMENTED_CONTENT,This feature is currently under construction.,준비 중입니다.
+UI_CONFIRM_DELETE_CHARACTER_TITLE,Delete Character,캐릭터 삭제
+UI_CONFIRM_DELETE_CHARACTER_CONTENT,Do you want to delete this character?,정말 삭제하겠습니까?
+UI_CONFIRM_QUIT_TITLE,Quit Game,게임 종료
+UI_CONFIRM_QUIT_CONTENT,Do you want to quit game?,게임을 종료하겠습니까?

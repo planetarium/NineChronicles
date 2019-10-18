@@ -37,12 +37,12 @@ namespace Nekoyume.UI
             Show();
         }
         
-        public override void Close()
+        public override void Close(bool ignoreCloseAnimation = false)
         {
             _disposablesForModel.DisposeAllAndClear();
             Model = null;
             
-            base.Close();
+            base.Close(ignoreCloseAnimation);
         }
         
         protected virtual void SubscribeTarget(RectTransform target)

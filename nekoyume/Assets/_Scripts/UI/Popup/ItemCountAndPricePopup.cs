@@ -31,7 +31,7 @@ namespace Nekoyume.UI
                     {
                         price = 0;
                     }
-                    _data.price.Value = price;
+                    _data.Price.Value = price;
                 }).AddTo(_disposablesForAwake);
         }
 
@@ -67,7 +67,7 @@ namespace Nekoyume.UI
 
             _disposablesForSetData.DisposeAllAndClear();
             _data = data;
-            _data.priceInteractable.Subscribe(interactable => priceInputField.interactable = interactable)
+            _data.PriceInteractable.Subscribe(interactable => priceInputField.interactable = interactable)
                 .AddTo(_disposablesForSetData);
 
             UpdateView();
@@ -88,8 +88,8 @@ namespace Nekoyume.UI
                 return;
             }
 
-            priceInputField.text = _data.price.Value.ToString("N0");
-            priceInputField.interactable = _data.priceInteractable.Value;
+            priceInputField.text = _data.Price.Value.ToString("N0");
+            priceInputField.interactable = _data.PriceInteractable.Value;
             priceInputField.Select();
         }
     }

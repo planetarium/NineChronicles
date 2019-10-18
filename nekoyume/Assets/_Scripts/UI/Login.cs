@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using Assets.SimpleLocalization;
 using Nekoyume.BlockChain;
 using Nekoyume.Game.Controller;
 using UniRx;
@@ -42,8 +43,8 @@ namespace Nekoyume.UI
             if (!ready)
                 return;
 
-            var confirm = Find<Confirm>();
-            confirm.Show("UI_DELETE_CHARACTER", "UI_REASK_DELETE_CHARACTER", "UI_YES", "UI_NO", true);
+            var confirm = Create<Confirm>();
+            confirm.Show("UI_CONFIRM_DELETE_CHARACTER_TITLE", "UI_CONFIRM_DELETE_CHARACTER_CONTENT");
             confirm.CloseCallback = result =>
             {
                 if (result != ConfirmResult.Yes)

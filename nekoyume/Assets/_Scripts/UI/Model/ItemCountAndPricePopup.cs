@@ -4,13 +4,13 @@ namespace Nekoyume.UI.Model
 {
     public class ItemCountAndPricePopup : ItemCountPopup<ItemCountAndPricePopup>
     {
-        public readonly ReactiveProperty<decimal> price = new ReactiveProperty<decimal>(10);
-        public readonly ReactiveProperty<bool> priceInteractable = new ReactiveProperty<bool>(true);
+        public readonly ReactiveProperty<decimal> Price = new ReactiveProperty<decimal>(10);
+        public readonly ReactiveProperty<bool> PriceInteractable = new ReactiveProperty<bool>(true);
         
         public override void Dispose()
         {
-            price.Dispose();
-            priceInteractable.Dispose();
+            Price.Dispose();
+            PriceInteractable.Dispose();
             
             base.Dispose();
         }

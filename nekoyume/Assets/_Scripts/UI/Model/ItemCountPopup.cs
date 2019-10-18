@@ -6,23 +6,23 @@ namespace Nekoyume.UI.Model
 {
     public class ItemCountPopup<T> : IDisposable where T : ItemCountPopup<T>
     {
-        public static readonly string OK = LocalizationManager.Localize("UI_OK");
-        
-        public readonly ReactiveProperty<string> titleText = new ReactiveProperty<string>("");
-        public readonly ReactiveProperty<CountEditableItem> item = new ReactiveProperty<CountEditableItem>(null);
-        public readonly ReactiveProperty<bool> countEnabled = new ReactiveProperty<bool>(true);
-        public readonly ReactiveProperty<string> submitText = new ReactiveProperty<string>(OK);
-        
-        public readonly Subject<T> onClickMinus = new Subject<T>();
-        public readonly Subject<T> onClickPlus = new Subject<T>();
-        public readonly Subject<T> onClickSubmit = new Subject<T>();
-        public readonly Subject<T> onClickCancel = new Subject<T>();
-
         private int _originalCount;
+        
+        public readonly ReactiveProperty<string> TitleText = new ReactiveProperty<string>("");
+        public readonly ReactiveProperty<CountEditableItem> Item = new ReactiveProperty<CountEditableItem>(null);
+        public readonly ReactiveProperty<bool> CountEnabled = new ReactiveProperty<bool>(true);
+        public readonly ReactiveProperty<string> SubmitText = new ReactiveProperty<string>("");
+        
+        public readonly Subject<T> OnClickMinus = new Subject<T>();
+        public readonly Subject<T> OnClickPlus = new Subject<T>();
+        public readonly Subject<T> OnClickSubmit = new Subject<T>();
+        public readonly Subject<T> OnClickCancel = new Subject<T>();
 
         public ItemCountPopup()
         {
-            item.Subscribe(value =>
+            SubmitText.Value = LocalizationManager.Localize("UI_OK");
+            
+            Item.Subscribe(value =>
             {
                 if (ReferenceEquals(value, null))
                 {
@@ -33,42 +33,42 @@ namespace Nekoyume.UI.Model
                 _originalCount = value.Count.Value;
             });
             
-            onClickMinus.Subscribe(value =>
+            OnClickMinus.Subscribe(value =>
             {
                 if (ReferenceEquals(value, null) ||
-                    value.item.Value.Count.Value <= item.Value.MinCount.Value)
+                    value.Item.Value.Count.Value <= Item.Value.MinCount.Value)
                 {
                     return;
                 }
 
-                value.item.Value.Count.Value--;
+                value.Item.Value.Count.Value--;
             });
             
-            onClickPlus.Subscribe(value =>
+            OnClickPlus.Subscribe(value =>
             {
                 if (ReferenceEquals(value, null) ||
-                    value.item.Value.Count.Value >= item.Value.MaxCount.Value)
+                    value.Item.Value.Count.Value >= Item.Value.MaxCount.Value)
                 {
                     return;
                 }
 
-                value.item.Value.Count.Value++;
+                value.Item.Value.Count.Value++;
             });
 
-            onClickCancel.Subscribe(value => value.item.Value.Count.Value = _originalCount);
+            OnClickCancel.Subscribe(value => value.Item.Value.Count.Value = _originalCount);
         }
         
         public virtual void Dispose()
         {
-            titleText.Dispose();
-            item.Dispose();
-            countEnabled.Dispose();
-            submitText.Dispose();
+            TitleText.Dispose();
+            Item.Dispose();
+            CountEnabled.Dispose();
+            SubmitText.Dispose();
             
-            onClickMinus.Dispose();
-            onClickPlus.Dispose();
-            onClickSubmit.Dispose();
-            onClickCancel.Dispose();
+            OnClickMinus.Dispose();
+            OnClickPlus.Dispose();
+            OnClickSubmit.Dispose();
+            OnClickCancel.Dispose();
         }
     }
 }

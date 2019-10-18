@@ -32,7 +32,7 @@ namespace Nekoyume.UI
                 .Append(loadingImage.DOFade(1f, 0.3f))
                 .Append(loadingImage.DOFade(AlphaToBeginning, 0.6f))
                 .SetLoops(3)
-                .OnComplete(Close);
+                .OnComplete(() => Close());
         }
 
         protected override void OnDisable()

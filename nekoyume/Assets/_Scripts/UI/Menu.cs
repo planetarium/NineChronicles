@@ -12,7 +12,6 @@ namespace Nekoyume.UI
 {
     public class Menu : Widget
     {
-        public BottomMenu bottomMenu;
         public GameObject btnQuest;
         public Text btnQuestText;
         public GameObject btnCombination;
@@ -54,6 +53,7 @@ namespace Nekoyume.UI
             stage.GetPlayer(stage.roomPosition);
 
             var player = stage.GetPlayer();
+            player.UpdateSet(player.Model.Value.armor);
             player.gameObject.SetActive(true);
 
             Show();
@@ -77,7 +77,7 @@ namespace Nekoyume.UI
         {
             Close();
             var avatarState = States.Instance.currentAvatarState.Value;
-            Find<WorldMap>().ShowByStageId(avatarState.worldStage);
+            Find<WorldMap>().Show(avatarState.worldStage);
             AudioController.PlayClick();
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickMainBattle);
         }
@@ -105,40 +105,14 @@ namespace Nekoyume.UI
             AudioController.PlayClick();
         }
 
-        public override void Initialize()
-        {
-            base.Initialize();
-
-            var status = Find<Status>();
-            bottomMenu.goToMainButton.button.onClick.AddListener(() =>
-            {
-                var confirm = Find<Confirm>();
-                confirm.Show(null, "UI_REASK_QUIT", "UI_YES", "UI_NO", true);
-                confirm.CloseCallback = result =>
-                {
-                    if (result == ConfirmResult.Yes)
-                    {
-#if UNITY_EDITOR
-                        UnityEditor.EditorApplication.isPlaying = false;
-#else
-                        bottomMenu.goToMainButton.button.onClick.AddListener(Application.Quit);
-#endif
-                    }
-                };
-            });
-            bottomMenu.goToMainButton.text.text = LocalizationManager.Localize("UI_GAMEEXIT");
-            bottomMenu.inventoryButton.button.onClick.AddListener(status.ToggleInventory);
-            bottomMenu.questButton.button.onClick.AddListener(status.ToggleQuest);
-            bottomMenu.avatarInfoButton.button.onClick.AddListener(status.ToggleStatus);
-        }
-
         public override void Show()
         {
             base.Show();
             Find<Status>().Show();
+            Find<BottomMenu>().Show(UINavigator.NavigationType.Quit, _ => Game.Game.Quit());
         }
 
-        public override void Close()
+        public override void Close(bool ignoreCloseAnimation = false)
         {
             StopCoroutine(ShowSpeeches());
             foreach (var speechBubble in SpeechBubbles)
@@ -146,11 +120,13 @@ namespace Nekoyume.UI
                 speechBubble.Hide();
             }
             
-            Find<Inventory>().Close();
-            Find<StatusDetail>().Close();
-            Find<Quest>().Close();
-            Find<Status>().Close();
-            base.Close();
+            Find<Inventory>().Close(ignoreCloseAnimation);
+            Find<StatusDetail>().Close(ignoreCloseAnimation);
+            Find<Quest>().Close(ignoreCloseAnimation);
+            
+            Find<BottomMenu>().Close(ignoreCloseAnimation);
+            Find<Status>().Close(ignoreCloseAnimation);
+            base.Close(ignoreCloseAnimation);
         }
 
         private IEnumerator ShowSpeeches()

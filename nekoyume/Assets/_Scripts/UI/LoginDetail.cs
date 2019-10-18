@@ -75,11 +75,7 @@ namespace Nekoyume.UI
             var nickName = nameField.text;
             if (!Regex.IsMatch(nickName, GameConfig.AvatarNickNamePattern))
             {
-                Find<Alert>().Show(
-                    "UI_ERROR",
-                    "UI_INVALID_NICKNAME",
-                    "UI_OK",
-                    true);
+                Find<Alert>().Show("UI_ERROR", "UI_INVALID_NICKNAME");
                 return;
             }
 
@@ -191,10 +187,10 @@ namespace Nekoyume.UI
             nameField.ActivateInputField();
         }
 
-        public override void Close()
+        public override void Close(bool ignoreCloseAnimation = false)
         {
             Clear();
-            base.Close();
+            base.Close(ignoreCloseAnimation);
         }
 
         private void Clear()

@@ -15,7 +15,7 @@ namespace Nekoyume.UI.Module
         public Button refreshButton;
         public Text refreshButtonText;
 
-        private Model.Shop.StateType _stateType;
+        private Shop.StateType _stateType;
         public Model.ShopItems data;
         
         private readonly List<IDisposable> _disposablesForAwake = new List<IDisposable>();
@@ -44,7 +44,7 @@ namespace Nekoyume.UI.Module
 
         #endregion
         
-        public void SetState(Model.Shop.StateType stateType)
+        public void SetState(Shop.StateType stateType)
         {
             _stateType = stateType;
             UpdateView();
@@ -89,11 +89,11 @@ namespace Nekoyume.UI.Module
             
             switch (_stateType)
             {
-                case Model.Shop.StateType.Buy:
+                case Shop.StateType.Buy:
                     UpdateViewWithItems(data.Products);
                     refreshButton.gameObject.SetActive(true);
                     break;
-                case Model.Shop.StateType.Sell:
+                case Shop.StateType.Sell:
                     UpdateViewWithItems(data.RegisteredProducts);
                     refreshButton.gameObject.SetActive(false);
                     break;

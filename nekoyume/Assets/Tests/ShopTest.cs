@@ -44,11 +44,11 @@ namespace Tests
 
             //Check shop state
             Assert.IsTrue(w.isActiveAndEnabled);
-            Assert.AreEqual(Nekoyume.UI.Model.Shop.StateType.Buy,w.SharedModel.State.Value);
+            Assert.AreEqual(Shop.StateType.Buy,w.SharedModel.State.Value);
 
             //Switching Sell panel
-            w.bottomMenu.switchSellButton.button.onClick.Invoke();
-            Assert.AreEqual(Nekoyume.UI.Model.Shop.StateType.Sell,w.SharedModel.State.Value);
+            w.sellButton.button.onClick.Invoke();
+            Assert.AreEqual(Shop.StateType.Sell,w.SharedModel.State.Value);
             Assert.IsFalse(w.inventory.Tooltip.isActiveAndEnabled);
             Assert.IsFalse(w.ItemCountAndPricePopup.isActiveAndEnabled);
 
@@ -74,8 +74,8 @@ namespace Tests
             //Sell Cancel
             w.Show();
             Assert.IsTrue(w.isActiveAndEnabled);
-            w.bottomMenu.switchSellButton.button.onClick.Invoke();
-            Assert.AreEqual(Nekoyume.UI.Model.Shop.StateType.Sell, w.SharedModel.State.Value);
+            w.sellButton.button.onClick.Invoke();
+            Assert.AreEqual(Shop.StateType.Sell, w.SharedModel.State.Value);
             Assert.AreEqual(1, w.SharedModel.ShopItems.Value.RegisteredProducts.Count);
             var shopItem = w.SharedModel.ShopItems.Value.RegisteredProducts.First();
             ActionManager.instance.SellCancellation(shopItem.SellerAgentAddress.Value, shopItem.ProductId.Value);
@@ -109,11 +109,11 @@ namespace Tests
 
             //Check shop state
             Assert.IsTrue(w.isActiveAndEnabled);
-            Assert.AreEqual(Nekoyume.UI.Model.Shop.StateType.Buy,w.SharedModel.State.Value);
+            Assert.AreEqual(Shop.StateType.Buy,w.SharedModel.State.Value);
 
             //Switching Sell panel
-            w.bottomMenu.switchSellButton.button.onClick.Invoke();
-            Assert.AreEqual(Nekoyume.UI.Model.Shop.StateType.Sell,w.SharedModel.State.Value);
+            w.sellButton.button.onClick.Invoke();
+            Assert.AreEqual(Shop.StateType.Sell,w.SharedModel.State.Value);
             Assert.IsFalse(w.inventory.Tooltip.isActiveAndEnabled);
             Assert.IsFalse(w.ItemCountAndPricePopup.isActiveAndEnabled);
 
@@ -172,11 +172,11 @@ namespace Tests
 
             //Check shop state
             Assert.IsTrue(w.isActiveAndEnabled);
-            Assert.AreEqual(Nekoyume.UI.Model.Shop.StateType.Buy,w.SharedModel.State.Value);
+            Assert.AreEqual(Shop.StateType.Buy,w.SharedModel.State.Value);
 
             //Switching Sell panel
-            w.bottomMenu.switchSellButton.button.onClick.Invoke();
-            Assert.AreEqual(Nekoyume.UI.Model.Shop.StateType.Sell,w.SharedModel.State.Value);
+            w.sellButton.button.onClick.Invoke();
+            Assert.AreEqual(Shop.StateType.Sell,w.SharedModel.State.Value);
             Assert.IsFalse(w.inventory.Tooltip.isActiveAndEnabled);
             Assert.IsFalse(w.ItemCountAndPricePopup.isActiveAndEnabled);
 

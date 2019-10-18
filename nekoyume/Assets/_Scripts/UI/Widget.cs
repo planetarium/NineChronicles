@@ -60,47 +60,43 @@ namespace Nekoyume.UI
             var names = type.ToString().Split('.');
             var resName = $"UI/Prefabs/UI_{names[names.Length - 1]}";
             var res = Resources.Load<GameObject>(resName);
-            if (!ReferenceEquals(res, null))
+            if (res is null)
+                throw new FailedToLoadResourceException<GameObject>(resName);
+            
+            if (Pool.ContainsKey(type))
             {
-                if (Pool.ContainsKey(type))
-                {
-                    Debug.LogWarning($"Duplicated create widget: {type}");
-                    Pool[type].gameObject.SetActive(activate);
+                Debug.LogWarning($"Duplicated create widget: {type}");
+                Pool[type].gameObject.SetActive(activate);
 
-                    return (T) Pool[type].widget;
-                }
-
-                var go = Instantiate(res, MainCanvas.instance.transform);
-                var widget = go.GetComponent<T>();
-                switch (widget.WidgetType)
-                {
-                    case WidgetType.Popup:
-                    case WidgetType.Screen:
-                    case WidgetType.Tooltip:
-                    case WidgetType.Widget:
-                    case WidgetType.SystemInfo:
-                        go.transform.SetParent(MainCanvas.instance.widget.transform);
-                        go.SetActive(activate);
-                        Pool.Add(type, new PoolElementModel
-                        {
-                            gameObject = go,
-                            widget = widget
-                        });
-                        break;
-                    case WidgetType.Hud:
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-
-                go.transform.SetParent(MainCanvas.instance.GetTransform(widget.WidgetType));
-                go.SetActive(activate);
-                return widget;
+                return (T) Pool[type].widget;
             }
 
-            Debug.LogWarning(($"widget not exist: {type}"));
+            var go = Instantiate(res, MainCanvas.instance.transform);
+            var widget = go.GetComponent<T>();
+            switch (widget.WidgetType)
+            {
+                case WidgetType.Popup:
+                case WidgetType.Screen:
+                case WidgetType.Tooltip:
+                case WidgetType.Widget:
+                case WidgetType.SystemInfo:
+                    go.transform.SetParent(MainCanvas.instance.widget.transform);
+                    go.SetActive(activate);
+                    Pool.Add(type, new PoolElementModel
+                    {
+                        gameObject = go,
+                        widget = widget
+                    });
+                    break;
+                case WidgetType.Hud:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
 
-            return null;
+            go.transform.SetParent(MainCanvas.instance.GetTransform(widget.WidgetType));
+            go.SetActive(activate);
+            return widget;
         }
 
         public static T Find<T>() where T : Widget
@@ -155,7 +151,7 @@ namespace Nekoyume.UI
             StartCoroutine(Blur());
         }
         
-        public virtual void Close()
+        public virtual void Close(bool ignoreCloseAnimation = false)
         {
             StopAllCoroutines();
             if (!gameObject.activeSelf)
@@ -163,6 +159,13 @@ namespace Nekoyume.UI
                 return;
             }
 
+            if (ignoreCloseAnimation)
+            {
+                OnCompleteOfCloseAnimation();
+                gameObject.SetActive(false);
+                return;
+            }
+            
             // TODO : wait close animation
             StartCoroutine(CoClose());
         }

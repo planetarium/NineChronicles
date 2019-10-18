@@ -50,11 +50,11 @@ namespace Nekoyume.UI
             //TODO 관련 기획이 끝나면 별도 UI를 생성
             var popup = Find<ItemCountAndPricePopup>();
             var model = new UI.Model.ItemCountAndPricePopup();
-            model.priceInteractable.Value = true;
-            model.price.Value = attachment.shopItem.price;
-            model.countEnabled.Value = false;
-            model.item.Value = new CountEditableItem(item, 1, 1, 1);
-            model.onClickCancel.Subscribe(_ =>
+            model.PriceInteractable.Value = true;
+            model.Price.Value = attachment.shopItem.price;
+            model.CountEnabled.Value = false;
+            model.Item.Value = new CountEditableItem(item, 1, 1, 1);
+            model.OnClickCancel.Subscribe(_ =>
             {
                 AddItem(item);
                 popup.Close();

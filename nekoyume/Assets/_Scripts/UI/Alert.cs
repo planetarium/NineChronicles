@@ -12,7 +12,7 @@ namespace Nekoyume.UI
         public Text labelOK;
         public GameObject titleBorder;
         public AlertDelegate CloseCallback { get; set; }
-        public void Show(string title, string content, string btnOK = "OK", bool localize = false)
+        public void Show(string title, string content, string labelOK = "UI_OK", bool localize = true)
         {
             bool titleExists = !string.IsNullOrEmpty(title);
             if (localize)
@@ -20,13 +20,13 @@ namespace Nekoyume.UI
                 if (titleExists)
                     this.title.text = LocalizationManager.Localize(title);
                 this.content.text = LocalizationManager.Localize(content);
-                labelOK.text = LocalizationManager.Localize(btnOK);
+                this.labelOK.text = LocalizationManager.Localize(labelOK);
             }
             else
             {
                 this.title.text = title;
                 this.content.text = content;
-                labelOK.text = btnOK;
+                this.labelOK.text = labelOK;
             }
 
             this.title.gameObject.SetActive(titleExists);
@@ -35,11 +35,11 @@ namespace Nekoyume.UI
             base.Show();
         }
 
-        public override void Close()
+        public override void Close(bool ignoreCloseAnimation = false)
         {
             CloseCallback?.Invoke();
             Game.Controller.AudioController.PlayClick();
-            base.Close();
+            base.Close(ignoreCloseAnimation);
         }
     }
 }

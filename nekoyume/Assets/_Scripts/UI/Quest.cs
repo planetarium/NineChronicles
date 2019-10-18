@@ -23,7 +23,7 @@ namespace Nekoyume.UI
             base.Show();
         }
 
-        public override void Close()
+        public override void Close(bool ignoreCloseAnimation = false)
         {
             foreach (Transform child in list.content.transform)
             {
@@ -32,7 +32,7 @@ namespace Nekoyume.UI
 
             list.verticalNormalizedPosition = 1f;
 
-            base.Close();
+            base.Close(ignoreCloseAnimation);
         }
     }
 }

@@ -83,13 +83,13 @@ namespace Nekoyume.UI
             StartCoroutine(CoUpdate());
         }
 
-        public override void Close()
+        public override void Close(bool ignoreCloseAnimation = false)
         {
             Model.OnClose.OnNext(this);
             _disposablesForModel.DisposeAllAndClear();
             Model.target.Value = null;
             Model.ItemInformation.item.Value = null;
-            base.Close();
+            base.Close(ignoreCloseAnimation);
         }
         
         protected override void SubscribeTarget(RectTransform target)

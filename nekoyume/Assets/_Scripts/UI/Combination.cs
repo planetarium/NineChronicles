@@ -1,30 +1,33 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Nekoyume.Manager;
+using Assets.SimpleLocalization;
 using Nekoyume.BlockChain;
+using Nekoyume.EnumType;
+using Nekoyume.Game;
+using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
+using Nekoyume.Game.Item;
+using Nekoyume.Game.Factory;
+using Nekoyume.Helper;
+using Nekoyume.Manager;
+using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
+using TMPro;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
-using Stage = Nekoyume.Game.Stage;
-using Assets.SimpleLocalization;
-using Nekoyume.Helper;
-using Nekoyume.EnumType;
-using Nekoyume.Game.Factory;
-using Nekoyume.Model;
-using Nekoyume.Game.Item;
-using Nekoyume.State;
-using TMPro;
 
 namespace Nekoyume.UI
 {
     public class Combination : Widget
     {
+        public NormalButton combineEquipmentButton;
+        public NormalButton combineConsumableButton;
+        public NormalButton recipeButton;
+
         public Module.Inventory inventory;
-        public BottomMenu bottomMenu;
         public GameObject manualCombination;
         public Text materialsTitleText;
         public CombinationMaterialView equipmentMaterialView;
@@ -34,60 +37,55 @@ namespace Nekoyume.UI
         public Image combinationButtonImage;
         public Text combinationButtonText;
         public GameObject recipeCombination;
-        public Button closeButton;
         public Button recipeCloseButton;
         public Recipe recipe;
         public TextMeshProUGUI requiredPointText;
 
         private Stage _stage;
-        private Game.Character.Player _player;
-        private IDisposable _disposable;
+        private Player _player;
+
+        public Model.Combination SharedModel { get; private set; }
 
         private SimpleItemCountPopup SimpleItemCountPopup { get; set; }
-        public Model.Combination SharedModel { get; private set; }
 
         #region Mono
 
         protected override void Awake()
         {
             base.Awake();
-            
+
             _stage = Game.Game.instance.stage;
-            
             SharedModel = new Model.Combination();
         }
 
         #endregion
-        
+
         #region Override
 
         public override void Initialize()
         {
             base.Initialize();
-            
+
             inventory.SharedModel.SelectedItemView.Subscribe(SubscribeInventorySelectedItemView);
             inventory.SharedModel.OnRightClickItemView
                 .Subscribe(itemView =>
                 {
                     if (itemView.Model.Dimmed.Value)
                         return;
-                    
+
                     SharedModel.RegisterToStagedItems(itemView.Model);
                 })
                 .AddTo(gameObject);
 
-            bottomMenu.combinationEquipmentButton.text.text = LocalizationManager.Localize("UI_COMBINE_EQUIPMENTS");
-            bottomMenu.combinationConsumableButton.text.text = LocalizationManager.Localize("UI_COMBINE_CONSUMABLES");
-            bottomMenu.combinationRecipeButton.text.text = LocalizationManager.Localize("UI_RECIPE");
             materialsTitleText.text = LocalizationManager.Localize("UI_COMBINATION_MATERIALS");
             combinationButtonText.text = LocalizationManager.Localize("UI_COMBINATION_ITEM");
 
             SimpleItemCountPopup = Find<SimpleItemCountPopup>();
-            
+
             SharedModel.State.Subscribe(SubscribeState).AddTo(gameObject);
             SharedModel.RecipeEnabled.Subscribe(SubscribeRecipeEnabled).AddTo(gameObject);
-            SharedModel.ItemCountPopup.Value.item.Subscribe(SubscribeItemPopup).AddTo(gameObject);
-            SharedModel.ItemCountPopup.Value.onClickCancel.Subscribe(SubscribeItemPopupOnClickCancel)
+            SharedModel.ItemCountPopup.Value.Item.Subscribe(SubscribeItemPopup).AddTo(gameObject);
+            SharedModel.ItemCountPopup.Value.OnClickCancel.Subscribe(SubscribeItemPopupOnClickCancel)
                 .AddTo(gameObject);
             SharedModel.EquipmentMaterial.Subscribe(equipmentMaterialView.SetData).AddTo(gameObject);
             SharedModel.Materials.ObserveAdd().Subscribe(SubscribeMaterialAdd).AddTo(gameObject);
@@ -101,25 +99,24 @@ namespace Nekoyume.UI
             SharedModel.OnMaterialRemoved.Subscribe(materialId => SubscribeOnMaterial(materialId, false))
                 .AddTo(gameObject);
 
-            bottomMenu.combinationEquipmentButton.button.OnClickAsObservable()
+            combineEquipmentButton.button.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
                     AudioController.PlayClick();
                     SharedModel.State.Value = ItemType.Equipment;
                 })
                 .AddTo(gameObject);
-            bottomMenu.combinationConsumableButton.button.OnClickAsObservable()
+            combineConsumableButton.button.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
                     AudioController.PlayClick();
                     SharedModel.State.Value = ItemType.Consumable;
                 })
                 .AddTo(gameObject);
-            bottomMenu.combinationRecipeButton.button.OnClickAsObservable()
+            recipeButton.button.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
                     AudioController.PlayClick();
-
                     SharedModel.RecipeEnabled.Value = !SharedModel.RecipeEnabled.Value;
                 })
                 .AddTo(gameObject);
@@ -128,13 +125,6 @@ namespace Nekoyume.UI
                 {
                     AudioController.PlayClick();
                     RequestCombination(SharedModel);
-                })
-                .AddTo(gameObject);
-            closeButton.OnClickAsObservable()
-                .Subscribe(_ =>
-                {
-                    AudioController.PlayClick();
-                    GoToMenu();
                 })
                 .AddTo(gameObject);
             recipeCloseButton.OnClickAsObservable()
@@ -153,34 +143,33 @@ namespace Nekoyume.UI
                 .AddTo(gameObject);
 
             UpdateStagedItems();
-
-            bottomMenu.goToMainButton.button.onClick.AddListener(GoToMenu);
-            var status = Find<Status>();
-            bottomMenu.questButton.button.onClick.AddListener(status.ToggleQuest);
-            requiredPointText.text = Action.Combination.RequiredPoint.ToString();
         }
 
         public override void Show()
         {
             base.Show();
-            
+
             inventory.SharedModel.State.Value = ItemType.Material;
 
             _stage.LoadBackground("combination");
             _player = _stage.GetPlayer();
             _player.gameObject.SetActive(false);
-            _disposable = ReactiveCurrentAvatarState.ActionPoint.Subscribe(CheckPoint);
+
+            Find<BottomMenu>().Show(UINavigator.NavigationType.Back, SubscribeBackButtonClick);
 
             AudioController.instance.PlayMusic(AudioController.MusicCode.Combination);
         }
 
-        public override void Close()
+        public override void Close(bool ignoreCloseAnimation = false)
         {
-            SharedModel.RemoveEquipmentMaterial();
-            SharedModel.Materials.Clear();
-        
-            base.Close();
-            _disposable.Dispose();
+            Find<BottomMenu>().Close(ignoreCloseAnimation);
+
+            foreach (var item in materialViews)
+            {
+                item.Clear();
+            }
+
+            base.Close(ignoreCloseAnimation);
 
             AudioController.instance.PlayMusic(AudioController.MusicCode.Main);
         }
@@ -218,15 +207,15 @@ namespace Nekoyume.UI
             {
                 case ItemType.Consumable:
                     inventory.SharedModel.DimmedFunc.Value = DimmedFuncForConsumables;
-                    bottomMenu.combinationEquipmentButton.button.interactable = true;
-                    bottomMenu.combinationConsumableButton.button.interactable = false;
+                    combineEquipmentButton.button.interactable = true;
+                    combineConsumableButton.button.interactable = false;
                     equipmentMaterialView.gameObject.SetActive(false);
                     materialViewsPlusImageContainer.SetActive(false);
                     break;
                 case ItemType.Equipment:
                     inventory.SharedModel.DimmedFunc.Value = DimmedFuncForEquipments;
-                    bottomMenu.combinationEquipmentButton.button.interactable = false;
-                    bottomMenu.combinationConsumableButton.button.interactable = true;
+                    combineEquipmentButton.button.interactable = false;
+                    combineConsumableButton.button.interactable = true;
                     equipmentMaterialView.gameObject.SetActive(true);
                     materialViewsPlusImageContainer.SetActive(true);
                     break;
@@ -279,7 +268,7 @@ namespace Nekoyume.UI
 
         private void SubscribeItemPopupOnClickCancel(Model.SimpleItemCountPopup data)
         {
-            SharedModel.ItemCountPopup.Value.item.Value = null;
+            SharedModel.ItemCountPopup.Value.Item.Value = null;
             SimpleItemCountPopup.Close();
         }
 
@@ -332,6 +321,7 @@ namespace Nekoyume.UI
             {
                 combinationButton.enabled = true;
                 combinationButtonImage.sprite = Resources.Load<Sprite>("UI/Textures/button_blue_01");
+                combinationButtonText.color = Color.white;
             }
             else
             {
@@ -339,6 +329,12 @@ namespace Nekoyume.UI
                 combinationButtonImage.sprite = Resources.Load<Sprite>("UI/Textures/button_gray_01");
                 combinationButtonText.color = ColorHelper.HexToColorRGB("92A3B5");
             }
+        }
+
+        private void SubscribeBackButtonClick(BottomMenu bottomMenu)
+        {
+            Close();
+            Find<Menu>().ShowRoom();
         }
 
         #endregion
@@ -435,12 +431,6 @@ namespace Nekoyume.UI
 
             // 에셋의 버그 때문에 스크롤 맨 끝 포지션으로 스크롤 포지션 설정 시 스크롤이 비정상적으로 표시되는 문제가 있음.
             recipe.Reload(recipe.scrollerController.scroller.ScrollPosition - 0.1f);
-        }
-
-        private void GoToMenu()
-        {
-            Close();
-            Find<Menu>().ShowRoom();
         }
 
         private void CheckPoint(int actionPoint)

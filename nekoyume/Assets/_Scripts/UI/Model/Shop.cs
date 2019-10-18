@@ -14,29 +14,15 @@ namespace Nekoyume.UI.Model
 {
     public class Shop : IDisposable
     {
-        public enum StateType
-        {
-            Show,
-            Buy,
-            Sell
-        }
-
-        public readonly ReactiveProperty<StateType> State = new ReactiveProperty<StateType>();
+        public readonly ReactiveProperty<UI.Shop.StateType> State = new ReactiveProperty<UI.Shop.StateType>();
         public readonly ReactiveProperty<ShopItems> ShopItems = new ReactiveProperty<ShopItems>(new ShopItems());
 
         public readonly ReactiveProperty<ItemCountAndPricePopup> ItemCountAndPricePopup =
             new ReactiveProperty<ItemCountAndPricePopup>(new ItemCountAndPricePopup());
 
-        public readonly Subject<Shop> OnClickSwitchBuy = new Subject<Shop>();
-        public readonly Subject<Shop> OnClickSwitchSell = new Subject<Shop>();
-        public readonly Subject<Shop> OnClickClose = new Subject<Shop>();
-
         public Shop()
         {
             State.Subscribe(SubscribeState);
-
-            OnClickSwitchBuy.Subscribe(_ => State.Value = StateType.Buy);
-            OnClickSwitchSell.Subscribe(_ => State.Value = StateType.Sell);
         }
 
         public void Dispose()
@@ -44,10 +30,6 @@ namespace Nekoyume.UI.Model
             State.Dispose();
             ShopItems.DisposeAll();
             ItemCountAndPricePopup.DisposeAll();
-
-            OnClickSwitchBuy.Dispose();
-            OnClickSwitchSell.Dispose();
-            OnClickClose.Dispose();
         }
 
         public void ResetItems(Dictionary<Address, List<Game.Item.ShopItem>> items)
@@ -62,7 +44,7 @@ namespace Nekoyume.UI.Model
 
         #region Subscribe
 
-        private void SubscribeState(StateType value)
+        private void SubscribeState(UI.Shop.StateType value)
         {
             ShopItems.Value.DeselectItemView();
         }
@@ -77,21 +59,21 @@ namespace Nekoyume.UI.Model
                     return;
                 case ShopItem shopItem:
                 {
-                    if (State.Value == StateType.Buy)
+                    if (State.Value == UI.Shop.StateType.Buy)
                     {
                         // 구매하겠습니까?
-                        ItemCountAndPricePopup.Value.titleText.Value = LocalizationManager.Localize("UI_BUY");
+                        ItemCountAndPricePopup.Value.TitleText.Value = LocalizationManager.Localize("UI_BUY");
                     }
                     else
                     {
                         // 판매 취소하겠습니까?
-                        ItemCountAndPricePopup.Value.titleText.Value = LocalizationManager.Localize("UI_RETRIEVE");
+                        ItemCountAndPricePopup.Value.TitleText.Value = LocalizationManager.Localize("UI_RETRIEVE");
                     }
 
-                    ItemCountAndPricePopup.Value.countEnabled.Value = false;
-                    ItemCountAndPricePopup.Value.price.Value = shopItem.Price.Value;
-                    ItemCountAndPricePopup.Value.priceInteractable.Value = false;
-                    ItemCountAndPricePopup.Value.item.Value = new CountEditableItem(
+                    ItemCountAndPricePopup.Value.CountEnabled.Value = false;
+                    ItemCountAndPricePopup.Value.Price.Value = shopItem.Price.Value;
+                    ItemCountAndPricePopup.Value.PriceInteractable.Value = false;
+                    ItemCountAndPricePopup.Value.Item.Value = new CountEditableItem(
                         inventoryItem.ItemBase.Value,
                         shopItem.Count.Value,
                         shopItem.Count.Value,
@@ -102,10 +84,10 @@ namespace Nekoyume.UI.Model
             }
 
             // 판매하겠습니까?
-            ItemCountAndPricePopup.Value.titleText.Value = LocalizationManager.Localize("UI_SELL");
-            ItemCountAndPricePopup.Value.countEnabled.Value = true;
-            ItemCountAndPricePopup.Value.priceInteractable.Value = true;
-            ItemCountAndPricePopup.Value.item.Value = new CountEditableItem(
+            ItemCountAndPricePopup.Value.TitleText.Value = LocalizationManager.Localize("UI_SELL");
+            ItemCountAndPricePopup.Value.CountEnabled.Value = true;
+            ItemCountAndPricePopup.Value.PriceInteractable.Value = true;
+            ItemCountAndPricePopup.Value.Item.Value = new CountEditableItem(
                 inventoryItem.ItemBase.Value,
                 1,
                 1,
