@@ -14,6 +14,7 @@ using Nekoyume.Manager;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
+using TMPro;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -38,6 +39,7 @@ namespace Nekoyume.UI
         public GameObject recipeCombination;
         public Button recipeCloseButton;
         public Recipe recipe;
+        public TextMeshProUGUI requiredPointText;
 
         private Stage _stage;
         private Player _player;

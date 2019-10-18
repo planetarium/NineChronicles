@@ -49,8 +49,6 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
-            this.ComponentFieldsNotNullTest();
-
             Canvas = GetComponent<Canvas>();
             RectTransform = GetComponent<RectTransform>();
         }
