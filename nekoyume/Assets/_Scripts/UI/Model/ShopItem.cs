@@ -8,8 +8,8 @@ namespace Nekoyume.UI.Model
 {
     public class ShopItem : InventoryItem
     {
-        public readonly ReactiveProperty<Address> SellerAvatarAddress = new ReactiveProperty<Address>();
         public readonly ReactiveProperty<Address> SellerAgentAddress = new ReactiveProperty<Address>();
+        public readonly ReactiveProperty<Address> SellerAvatarAddress = new ReactiveProperty<Address>();
         public readonly ReactiveProperty<decimal> Price = new ReactiveProperty<decimal>();
         public readonly ReactiveProperty<Guid> ProductId = new ReactiveProperty<Guid>();
         
@@ -23,8 +23,8 @@ namespace Nekoyume.UI.Model
         private ShopItem(Address sellerAgentAddress, Address sellerAvatarAddress, decimal price, Guid productId,
             ItemBase item) : base(item, 1)
         {
-            SellerAvatarAddress.Value = sellerAvatarAddress;
             SellerAgentAddress.Value = sellerAgentAddress;
+            SellerAvatarAddress.Value = sellerAvatarAddress;
             Price.Value = price;
             ProductId.Value = productId;
         }
@@ -33,9 +33,10 @@ namespace Nekoyume.UI.Model
         {
             base.Dispose();
             
-            ProductId.Dispose();
+            SellerAgentAddress.Dispose();
             SellerAvatarAddress.Dispose();
             Price.Dispose();
+            ProductId.Dispose();
             
             OnClick.Dispose();
         }

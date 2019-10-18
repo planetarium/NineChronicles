@@ -490,16 +490,14 @@ namespace Nekoyume.Game
         public Character.Player GetPlayer()
         {
             var player = GetComponentInChildren<Character.Player>();
-            if (player != null)
+            if (!(player is null))
                 return player;
 
             var go = playerFactory.Create(States.Instance.currentAvatarState.Value);
             player = go.GetComponent<Character.Player>();
 
             if (player is null)
-            {
                 throw new NotFoundComponentException<Character.Player>();
-            }
 
             return player;
         }
@@ -523,9 +521,9 @@ namespace Nekoyume.Game
         }
 
         /// <summary>
-        /// °ÔÀÓ Ä³¸¯ÅÍ¸¦ °®°í ¿Ã ¶§ »ç¿ëÇÔ.
-        /// °®°í ¿Ã ¶§ ¸Å¹ø ¸ðµ¨À» ÇÒ´çÇØÁÖ°í ÀÖÀ½.
-        /// ¸ðµ¨À» ¸Å¹ø ÇÒ´çÇÏÁö ¾Ê°í, ¸ðµ¨ÀÌ º¯°æµÇ´Â ·ÎÁ÷ ¸¶´Ù ¹Ù²ãÁÖ°Ô ÇÏ´Â °ÍÀÌ ÁÁ°ÚÀ½. ¹°·Ð ¿¬Ãâµµ ±×¶§¿¡ ¸ÂÃç¼­ ÇØÁÖ´Â ½Ä.
+        /// ï¿½ï¿½ï¿½ï¿½ Ä³ï¿½ï¿½ï¿½Í¸ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½.
+        /// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½Å¹ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ò´ï¿½ï¿½ï¿½ï¿½Ö°ï¿½ ï¿½ï¿½ï¿½ï¿½.
+        /// ï¿½ï¿½ï¿½ï¿½ ï¿½Å¹ï¿½ ï¿½Ò´ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê°ï¿½, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ç´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ù²ï¿½ï¿½Ö°ï¿½ ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½. ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½âµµ ï¿½×¶ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ç¼­ ï¿½ï¿½ï¿½Ö´ï¿½ ï¿½ï¿½.
         /// </summary>
         /// <param name="caster"></param>
         /// <returns></returns>

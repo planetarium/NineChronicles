@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
 using Assets.SimpleLocalization;
+using Libplanet;
+using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
+using Nekoyume.Model;
 using Nekoyume.UI.Model;
 using UniRx;
 using UnityEngine;
@@ -15,63 +18,57 @@ namespace Nekoyume.UI.Module
         public Button refreshButton;
         public Text refreshButtonText;
 
-        private Shop.StateType _stateType;
-        public Model.ShopItems data;
+        private readonly List<IDisposable> _disposablesAtOnEnable = new List<IDisposable>();
         
-        private readonly List<IDisposable> _disposablesAtSetData = new List<IDisposable>();
+        public Model.ShopItems SharedModel { get; private set; }
         
         #region Mono
         
         private void Awake()
         {
-            this.ComponentFieldsNotNullTest();
+            SharedModel = new Model.ShopItems();
+            SharedModel.State.Subscribe(_ => UpdateView()).AddTo(gameObject);
+            SharedModel.OtherProducts.ObserveAdd().Subscribe(_ => UpdateView()).AddTo(gameObject);
+            SharedModel.OtherProducts.ObserveRemove().Subscribe(_ => UpdateView()).AddTo(gameObject);
+            SharedModel.CurrentAgentsProducts.ObserveAdd().Subscribe(_ => UpdateView()).AddTo(gameObject);
+            SharedModel.CurrentAgentsProducts.ObserveRemove().Subscribe(_ => UpdateView()).AddTo(gameObject);
 
             refreshButtonText.text = LocalizationManager.Localize("UI_REFRESH");
 
             refreshButton.onClick.AsObservable().Subscribe(_ =>
             {
                 AudioController.PlayClick();
-                data?.OnRefresh.OnNext(data);
+                SharedModel?.ResetOtherProducts();
             }).AddTo(gameObject);
+        }
+        
+        private void OnEnable()
+        {
+            ReactiveShopState.Items.Subscribe(ResetProducts)
+                .AddTo(_disposablesAtOnEnable);
+        }
+
+        private void OnDisable()
+        {
+            _disposablesAtOnEnable.DisposeAllAndClear();
+        }
+
+        private void OnDestroy()
+        {
+            SharedModel.Dispose();
+            SharedModel = null;
         }
 
         #endregion
         
-        public void SetState(Shop.StateType stateType)
+        public void ResetProducts(IDictionary<Address, List<Game.Item.ShopItem>> products)
         {
-            _stateType = stateType;
-            UpdateView();
-        }
-        
-        public void SetData(Model.ShopItems data)
-        {
-            if (data is null)
-            {
-                Clear();
-                return;
-            }
-
-            _disposablesAtSetData.DisposeAllAndClear();
-            this.data = data;
-            this.data.Products.ObserveAdd().Subscribe(_ => UpdateView()).AddTo(_disposablesAtSetData);
-            this.data.Products.ObserveRemove().Subscribe(_ => UpdateView()).AddTo(_disposablesAtSetData);
-            this.data.RegisteredProducts.ObserveAdd().Subscribe(_ => UpdateView()).AddTo(_disposablesAtSetData);
-            this.data.RegisteredProducts.ObserveRemove().Subscribe(_ => UpdateView()).AddTo(_disposablesAtSetData);
-            
-            UpdateView();
-        }
-
-        public void Clear()
-        {
-            _disposablesAtSetData.DisposeAllAndClear();
-            data = null;
-            
-            UpdateView();
+            SharedModel?.ResetProducts(products);
         }
 
         private void UpdateView()
         {
-            if (ReferenceEquals(data, null))
+            if (SharedModel is null)
             {
                 foreach (var item in items)
                 {
@@ -81,14 +78,14 @@ namespace Nekoyume.UI.Module
                 return;
             }
             
-            switch (_stateType)
+            switch (SharedModel.State.Value)
             {
                 case Shop.StateType.Buy:
-                    UpdateViewWithItems(data.Products);
+                    UpdateViewWithItems(SharedModel.OtherProducts);
                     refreshButton.gameObject.SetActive(true);
                     break;
                 case Shop.StateType.Sell:
-                    UpdateViewWithItems(data.RegisteredProducts);
+                    UpdateViewWithItems(SharedModel.CurrentAgentsProducts);
                     refreshButton.gameObject.SetActive(false);
                     break;
             }

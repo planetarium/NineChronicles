@@ -63,12 +63,12 @@ namespace Tests
             var sellTx = Game.instance.agent.StagedTransactions.First();
             yield return miner.CoMine(sellTx);
             yield return new WaitUntil(() =>
-                States.Instance.shopState.Value.items[States.Instance.agentState.Value.address].Any());
+                States.Instance.shopState.Value.AgentProducts[States.Instance.agentState.Value.address].Any());
 
             //Check shop state
             Assert.IsFalse(w.inventory.Tooltip.isActiveAndEnabled);
             Assert.AreEqual(1,
-                States.Instance.shopState.Value.items[States.Instance.agentState.Value.address].Count);
+                States.Instance.shopState.Value.AgentProducts[States.Instance.agentState.Value.address].Count);
             w.Close();
 
             //Sell Cancel
@@ -76,15 +76,15 @@ namespace Tests
             Assert.IsTrue(w.isActiveAndEnabled);
             w.sellButton.button.onClick.Invoke();
             Assert.AreEqual(Shop.StateType.Sell, w.SharedModel.State.Value);
-            Assert.AreEqual(1, w.SharedModel.ShopItems.Value.RegisteredProducts.Count);
-            var shopItem = w.SharedModel.ShopItems.Value.RegisteredProducts.First();
+            Assert.AreEqual(1, w.shopItems.SharedModel.CurrentAgentsProducts.Count);
+            var shopItem = w.shopItems.SharedModel.CurrentAgentsProducts.First();
             ActionManager.instance.SellCancellation(shopItem.SellerAgentAddress.Value, shopItem.ProductId.Value);
             yield return new WaitUntil(() => Game.instance.agent.StagedTransactions.Any());
             var cancelTx = Game.instance.agent.StagedTransactions.First();
             yield return miner.CoMine(cancelTx);
             yield return new WaitWhile(() =>
-                States.Instance.shopState.Value.items[States.Instance.agentState.Value.address].Any());
-            Assert.IsEmpty(States.Instance.shopState.Value.items[States.Instance.agentState.Value.address]);
+                States.Instance.shopState.Value.AgentProducts[States.Instance.agentState.Value.address].Any());
+            Assert.IsEmpty(States.Instance.shopState.Value.AgentProducts[States.Instance.agentState.Value.address]);
         }
 
         [UnityTest]
@@ -128,20 +128,20 @@ namespace Tests
             var sellTx = Game.instance.agent.StagedTransactions.First();
             yield return miner.CoMine(sellTx);
             yield return new WaitUntil(() =>
-                States.Instance.shopState.Value.items[States.Instance.agentState.Value.address].Any());
+                States.Instance.shopState.Value.AgentProducts[States.Instance.agentState.Value.address].Any());
 
             //Check shop state
             Assert.IsFalse(w.inventory.Tooltip.isActiveAndEnabled);
             Assert.IsFalse(Widget.Find<LoadingScreen>().isActiveAndEnabled);
             Assert.AreEqual(1,
-                States.Instance.shopState.Value.items[States.Instance.agentState.Value.address].Count);
+                States.Instance.shopState.Value.AgentProducts[States.Instance.agentState.Value.address].Count);
 
             w.Close();
             yield return new WaitForEndOfFrame();
             w.Show();
             yield return new WaitForEndOfFrame();
             //TODO 다른 주소에서 구매처리하도록 개선해야함
-            Assert.IsNull(w.SharedModel.ShopItems.Value.RegisteredProducts.FirstOrDefault(i =>
+            Assert.IsNull(w.shopItems.SharedModel.CurrentAgentsProducts.FirstOrDefault(i =>
                 i.SellerAgentAddress.Value != States.Instance.agentState.Value.address));
         }
 
@@ -192,14 +192,14 @@ namespace Tests
             var sellTx = Game.instance.agent.StagedTransactions.First();
             yield return miner.CoMine(sellTx);
             Debug.Log(6);
-            yield return new WaitUntil(() => States.Instance.shopState.Value.items.Any());
+            yield return new WaitUntil(() => States.Instance.shopState.Value.AgentProducts.Any());
             Debug.Log(7);
 
             //Check shop state
             Assert.IsFalse(w.inventory.Tooltip.isActiveAndEnabled);
             Assert.IsFalse(Widget.Find<LoadingScreen>().isActiveAndEnabled);
             Assert.AreEqual(1,
-                States.Instance.shopState.Value.items[States.Instance.agentState.Value.address].Count);
+                States.Instance.shopState.Value.AgentProducts[States.Instance.agentState.Value.address].Count);
 
             //Buy
             w.Close();
@@ -213,7 +213,7 @@ namespace Tests
             var currentGold = States.Instance.agentState.Value.gold;
 
             //Check Buy.Execute
-            var shopItem = w.SharedModel.ShopItems.Value.RegisteredProducts.First();
+            var shopItem = w.shopItems.SharedModel.CurrentAgentsProducts.First();
             ActionManager.instance.Buy(shopItem.SellerAgentAddress.Value, shopItem.SellerAvatarAddress.Value,
                 shopItem.ProductId.Value);
             yield return new WaitUntil(() => Game.instance.agent.StagedTransactions.Any());
@@ -221,7 +221,7 @@ namespace Tests
             var invalidTx = Game.instance.agent.StagedTransactions.First();
             yield return miner.CoMine(invalidTx);
             Debug.Log(11);
-            Assert.IsNotEmpty(States.Instance.shopState.Value.items[States.Instance.agentState.Value.address]);
+            Assert.IsNotEmpty(States.Instance.shopState.Value.AgentProducts[States.Instance.agentState.Value.address]);
             Assert.AreEqual(current, States.Instance.currentAvatarState.Value.inventory.Items.Count());
             Assert.AreEqual(currentGold, States.Instance.agentState.Value.gold);
         }

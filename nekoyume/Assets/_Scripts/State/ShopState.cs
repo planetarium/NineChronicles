@@ -29,32 +29,32 @@ namespace Nekoyume.State
             }
         );
 
-        public readonly Dictionary<Address, List<ShopItem>> items = new Dictionary<Address, List<ShopItem>>();
+        public readonly Dictionary<Address, List<ShopItem>> AgentProducts = new Dictionary<Address, List<ShopItem>>();
 
         public ShopState() : base(Address)
         {
         }
         
-        public ShopItem Register(Address sellerAgentAddress, ShopItem item)
+        public ShopItem Register(Address sellerAgentAddress, ShopItem shopItem)
         {
-            if (!items.ContainsKey(sellerAgentAddress))
+            if (!AgentProducts.ContainsKey(sellerAgentAddress))
             {
-                items.Add(sellerAgentAddress, new List<ShopItem>());
+                AgentProducts.Add(sellerAgentAddress, new List<ShopItem>());
             }
 
-            items[sellerAgentAddress].Add(item);
-            return item;
+            AgentProducts[sellerAgentAddress].Add(shopItem);
+            return shopItem;
         }
 
         public bool Unregister(Address sellerAgentAddress,
             ShopItem shopItem)
         {
-            if (!items.ContainsKey(sellerAgentAddress))
+            if (!AgentProducts.ContainsKey(sellerAgentAddress))
             {
                 return false;
             }
 
-            var shopItems = items[sellerAgentAddress];
+            var shopItems = AgentProducts[sellerAgentAddress];
             if (!shopItems.Contains(shopItem))
             {
                 return false;
@@ -63,7 +63,7 @@ namespace Nekoyume.State
             shopItems.Remove(shopItem);
             if (shopItems.Count == 0)
             {
-                items.Remove(sellerAgentAddress);
+                AgentProducts.Remove(sellerAgentAddress);
             }
             
             return true;
@@ -72,12 +72,12 @@ namespace Nekoyume.State
         public bool TryGet(Address sellerAgentAddress, Guid productId,
             out KeyValuePair<Address, ShopItem> outPair)
         {
-            if (!items.ContainsKey(sellerAgentAddress))
+            if (!AgentProducts.ContainsKey(sellerAgentAddress))
             {
                 return false;
             }
 
-            var list = items[sellerAgentAddress];
+            var list = AgentProducts[sellerAgentAddress];
 
             foreach (var shopItem in list)
             {
@@ -102,7 +102,7 @@ namespace Nekoyume.State
                 return false;
             }
             
-            items[outPair.Key].Remove(outPair.Value);
+            AgentProducts[outPair.Key].Remove(outPair.Value);
 
             outUnregisteredItem = outPair.Value;
             return true;

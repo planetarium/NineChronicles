@@ -22,26 +22,32 @@ namespace Nekoyume.UI
 {
     public class Shop : Widget
     {
-        public BottomMenu bottomMenu;
-        public CanvasGroup canvasGroup;
-        public RectTransform bg1;
-        public RectTransform right;
-        public Text catQuoteText;
-        public Module.Inventory inventory;
-        public ShopItems shopItems;
-        public Button closeButton;
-        public GameObject shopNotice;
+        public enum StateType
+        {
+            Show,
+            Buy,
+            Sell
+        }
 
         private float _defaultAnchoredPositionXOfBg1;
         private float _defaultAnchoredPositionXOfRight;
         private float _goOutTweenX = 800f;
 
         private Sequence _sequenceOfShopItems;
-        
-        private readonly List<IDisposable> _disposablesAtOnEnable = new List<IDisposable>();
+
+        public CanvasGroup canvasGroup;
+        public RectTransform bg1;
+        public NormalButton buyButton;
+        public NormalButton sellButton;
+        public RectTransform right;
+        public Text catQuoteText;
+        public Module.Inventory inventory;
+        public ShopItems shopItems;
+        public GameObject shopNotice;
+
+        public Model.Shop SharedModel { get; private set; }
 
         public ItemCountAndPricePopup ItemCountAndPricePopup { get; private set; }
-        public Model.Shop SharedModel { get; private set; }
 
         #region Mono
 
@@ -54,18 +60,6 @@ namespace Nekoyume.UI
             SharedModel = new Model.Shop();
         }
 
-        protected override void OnEnable()
-        {
-            base.OnEnable();
-            ReactiveShopState.Items.Subscribe(SharedModel.ResetItems).AddTo(_disposablesAtOnEnable);
-        }
-
-        protected override void OnDisable()
-        {
-            _disposablesAtOnEnable.DisposeAllAndClear();
-            base.OnDisable();
-        }
-
         #endregion
 
         #region Override
@@ -73,70 +67,43 @@ namespace Nekoyume.UI
         public override void Initialize()
         {
             base.Initialize();
-            
+
             ItemCountAndPricePopup = Find<ItemCountAndPricePopup>();
 
             inventory.SharedModel.SelectedItemView.Subscribe(SubscribeInventorySelectedItemView)
                 .AddTo(gameObject);
-            
-            SharedModel.State.Value = UI.Model.Shop.StateType.Show;
-            SharedModel.State.Subscribe(SubscribeState).AddTo(gameObject);
-            SharedModel.ShopItems.Subscribe(shopItems.SetData).AddTo(gameObject);
-            SharedModel.ShopItems.Value.SelectedItemView.Subscribe(SubscribeShopItemsSelectedItem)
+            shopItems.SharedModel.SelectedItemView.Subscribe(SubscribeShopItemsSelectedItemView)
                 .AddTo(gameObject);
-            SharedModel.ItemCountAndPricePopup.Value.item.Subscribe(SubscribeItemPopup).AddTo(gameObject);
-            SharedModel.ItemCountAndPricePopup.Value.onClickSubmit.Subscribe(SubscribeItemPopupSubmit)
-                .AddTo(gameObject);
-            SharedModel.ItemCountAndPricePopup.Value.onClickCancel.Subscribe(SubscribeItemPopupCancel)
-                .AddTo(gameObject);
-            SharedModel.OnClickClose.Subscribe(_ => GoToMenu()).AddTo(gameObject);
 
-            bottomMenu.switchBuyButton.text.text = LocalizationManager.Localize("UI_BUY");
-            bottomMenu.switchSellButton.text.text = LocalizationManager.Localize("UI_SELL");
+            SharedModel.State.Value = StateType.Show;
+            SharedModel.State.Subscribe(SubscribeState).AddTo(gameObject);
+            SharedModel.ItemCountAndPricePopup.Value.Item.Subscribe(SubscribeItemPopup).AddTo(gameObject);
+            SharedModel.ItemCountAndPricePopup.Value.OnClickSubmit.Subscribe(SubscribeItemPopupSubmit)
+                .AddTo(gameObject);
+            SharedModel.ItemCountAndPricePopup.Value.OnClickCancel.Subscribe(SubscribeItemPopupCancel)
+                .AddTo(gameObject);
+
             catQuoteText.text = LocalizationManager.Localize("SPEECH_SHOP_0");
 
-            bottomMenu.switchBuyButton.button.onClick.AsObservable().Subscribe(_ =>
-                {
-                    AudioController.PlayClick();
-                    SharedModel?.OnClickSwitchBuy.OnNext(SharedModel);
-                })
+            buyButton.button.OnClickAsObservable()
+                .Subscribe(_ => SharedModel.State.Value = StateType.Buy)
                 .AddTo(gameObject);
-            bottomMenu.switchSellButton.button.onClick.AsObservable().Subscribe(_ =>
-                {
-                    AudioController.PlayClick();
-                    SharedModel?.OnClickSwitchSell.OnNext(SharedModel);
-                })
+            sellButton.button.OnClickAsObservable()
+                .Subscribe(_ => SharedModel.State.Value = StateType.Sell)
                 .AddTo(gameObject);
-            closeButton.onClick.AsObservable().Subscribe(_ =>
-                {
-                    AudioController.PlayClick();
-                    SharedModel?.OnClickClose.OnNext(SharedModel);
-                })
-                .AddTo(gameObject);
-
-            bottomMenu.goToMainButton.button.onClick.AddListener(GoToMenu);
-            var status = Find<Status>();
-            bottomMenu.questButton.button.onClick.AddListener(status.ToggleQuest);
         }
 
         public override void Show()
         {
-            var stage = Game.Game.instance.stage;
-            var player = stage.GetPlayer();
-            if (ReferenceEquals(player, null))
-            {
-                throw new NotFoundComponentException<Game.Character.Player>();
-            }
-
-            if (player)
-            {
-                player.gameObject.SetActive(false);
-            }
+            Game.Game.instance.stage.GetPlayer().gameObject.SetActive(false);
 
             base.Show();
-            
+
             inventory.SharedModel.State.Value = ItemType.Equipment;
-            SharedModel.State.Value = Model.Shop.StateType.Show;
+            shopItems.SharedModel.State.Value = StateType.Buy;
+            SharedModel.State.Value = StateType.Show;
+
+            Find<BottomMenu>().Show(UINavigator.NavigationType.Back, SubscribeBackButtonClick);
 
             AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
         }
@@ -147,15 +114,15 @@ namespace Nekoyume.UI
             canvasGroup.interactable = true;
         }
 
-        public override void Close()
+        public override void Close(bool ignoreCloseAnimation = false)
         {
+            Find<BottomMenu>().Close(ignoreCloseAnimation);
+
             _sequenceOfShopItems?.Kill();
             bg1.anchoredPosition = new Vector2(_defaultAnchoredPositionXOfBg1, bg1.anchoredPosition.y);
             right.anchoredPosition = new Vector2(_defaultAnchoredPositionXOfRight, right.anchoredPosition.y);
 
-            shopItems.Clear();
-
-            base.Close();
+            base.Close(ignoreCloseAnimation);
 
             AudioController.instance.PlayMusic(AudioController.MusicCode.Main);
         }
@@ -164,44 +131,81 @@ namespace Nekoyume.UI
 
         #region Subscribe
 
-        private void SubscribeState(Model.Shop.StateType stateType)
+        private void SubscribeState(StateType stateType)
         {
             switch (stateType)
             {
-                case UI.Model.Shop.StateType.Show:
-                    shopItems.SetState(stateType);
-                    SharedModel.State.Value = UI.Model.Shop.StateType.Buy;
+                case StateType.Show:
+                    shopItems.SharedModel.State.Value = stateType;
+                    SharedModel.State.Value = StateType.Buy;
                     return;
-                case UI.Model.Shop.StateType.Buy:
+                case StateType.Buy:
                     inventory.SharedModel.DimmedFunc.Value = null;
-                    bottomMenu.switchBuyButton.button.interactable = false;
-                    bottomMenu.switchSellButton.button.interactable = true;
+                    buyButton.button.interactable = false;
+                    sellButton.button.interactable = true;
                     shopNotice.SetActive(false);
                     break;
-                case UI.Model.Shop.StateType.Sell:
+                case StateType.Sell:
                     inventory.SharedModel.DimmedFunc.Value = DimmedFuncForSell;
                     inventory.SharedModel.EquippedFunc.Value = EquippedFuncForSell;
-                    bottomMenu.switchBuyButton.button.interactable = true;
-                    bottomMenu.switchSellButton.button.interactable = false;
+                    buyButton.button.interactable = true;
+                    sellButton.button.interactable = false;
                     shopNotice.SetActive(true);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(stateType), stateType, null);
             }
 
-            inventory.SharedModel.DeselectItemView();
             inventory.Tooltip.Close();
+            inventory.SharedModel.DeselectItemView();
+            shopItems.SharedModel.DeselectItemView();
 
             canvasGroup.interactable = false;
             _sequenceOfShopItems?.Kill();
             _sequenceOfShopItems = DOTween.Sequence();
             SetSequenceOfShopItems(true, ref _sequenceOfShopItems);
-            _sequenceOfShopItems.AppendCallback(() => shopItems.SetState(stateType));
+            _sequenceOfShopItems.AppendCallback(() => shopItems.SharedModel.State.Value = stateType);
             SetSequenceOfShopItems(false, ref _sequenceOfShopItems);
             _sequenceOfShopItems.OnComplete(() => canvasGroup.interactable = true);
         }
 
-        private void SubscribeShopItemsSelectedItem(ShopItemView view)
+        private void SubscribeInventorySelectedItemView(InventoryItemView view)
+        {
+            shopItems.SharedModel.DeselectItemView();
+            
+            if (view is null ||
+                view.RectTransform == inventory.Tooltip.Target)
+            {
+                inventory.Tooltip.Close();
+
+                return;
+            }
+            
+            if (inventory.Tooltip.Model.target.Value == view.RectTransform)
+            {
+                inventory.Tooltip.Close();
+                return;
+            }
+
+            if (SharedModel.State.Value == StateType.Buy)
+            {
+                inventory.Tooltip.Show(view.RectTransform, view.Model);
+            }
+            else
+            {
+                inventory.Tooltip.Show(view.RectTransform, view.Model,
+                    value => !DimmedFuncForSell(view.Model),
+                    LocalizationManager.Localize("UI_SELL"),
+                    tooltip =>
+                    {
+                        SharedModel.ShowItemPopup(tooltip.itemInformation.Model.item.Value);
+                        inventory.Tooltip.Close();
+                    },
+                    tooltip => inventory.SharedModel.DeselectItemView());
+            }
+        }
+        
+        private void SubscribeShopItemsSelectedItemView(ShopItemView view)
         {
             inventory.SharedModel.DeselectItemView();
 
@@ -219,7 +223,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            if (SharedModel.State.Value == UI.Model.Shop.StateType.Buy)
+            if (SharedModel.State.Value == StateType.Buy)
             {
                 inventory.Tooltip.Show(view.RectTransform, view.Model,
                     value => ButtonEnabledFuncForBuy(view.Model),
@@ -229,7 +233,7 @@ namespace Nekoyume.UI
                         SharedModel.ShowItemPopup(tooltip.itemInformation.Model.item.Value);
                         inventory.Tooltip.Close();
                     },
-                    tooltip => { shopItems.data.DeselectItemView(); });
+                    tooltip => { shopItems.SharedModel.DeselectItemView(); });
             }
             else
             {
@@ -241,10 +245,10 @@ namespace Nekoyume.UI
                         SharedModel.ShowItemPopup(tooltip.itemInformation.Model.item.Value);
                         inventory.Tooltip.Close();
                     },
-                    tooltip => { shopItems.data.DeselectItemView(); });
+                    tooltip => { shopItems.SharedModel.DeselectItemView(); });
             }
         }
-
+        
         private void SubscribeItemPopup(CountableItem data)
         {
             if (data is null)
@@ -258,10 +262,10 @@ namespace Nekoyume.UI
 
         private void SubscribeItemPopupSubmit(Model.ItemCountAndPricePopup data)
         {
-            if (SharedModel.State.Value == UI.Model.Shop.StateType.Buy)
+            if (SharedModel.State.Value == StateType.Buy)
             {
-                var shopItem = SharedModel.ShopItems.Value.Products
-                    .FirstOrDefault(i => i.ItemBase.Value.Equals(data.item.Value.ItemBase.Value));
+                var shopItem = shopItems.SharedModel.OtherProducts
+                    .FirstOrDefault(i => i.ItemBase.Value.Equals(data.Item.Value.ItemBase.Value));
                 if (shopItem is null)
                     return;
                 ActionManager.instance
@@ -271,11 +275,11 @@ namespace Nekoyume.UI
             }
             else
             {
-                var shopItem = SharedModel.ShopItems.Value.RegisteredProducts
-                    .FirstOrDefault(i => i.ItemBase.Value.Equals(data.item.Value.ItemBase.Value));
+                var shopItem = shopItems.SharedModel.CurrentAgentsProducts
+                    .FirstOrDefault(i => i.ItemBase.Value.Equals(data.Item.Value.ItemBase.Value));
                 if (shopItem is null)
                 {
-                    ActionManager.instance.Sell((ItemUsable) data.item.Value.ItemBase.Value, data.price.Value);
+                    ActionManager.instance.Sell((ItemUsable) data.Item.Value.ItemBase.Value, data.Price.Value);
                     ResponseSell();
                     return;
                 }
@@ -287,36 +291,8 @@ namespace Nekoyume.UI
 
         private void SubscribeItemPopupCancel(Model.ItemCountAndPricePopup data)
         {
-            SharedModel.ItemCountAndPricePopup.Value.item.Value = null;
+            SharedModel.ItemCountAndPricePopup.Value.Item.Value = null;
             ItemCountAndPricePopup.Close();
-        }
-
-        private void SubscribeInventorySelectedItemView(InventoryItemView view)
-        {
-            if (view is null ||
-                view.RectTransform == inventory.Tooltip.Target)
-            {
-                inventory.Tooltip.Close();
-
-                return;
-            }
-
-            if (SharedModel.State.Value == UI.Model.Shop.StateType.Buy)
-            {
-                inventory.Tooltip.Show(view.RectTransform, view.Model);
-            }
-            else
-            {
-                inventory.Tooltip.Show(view.RectTransform, view.Model,
-                    value => !DimmedFuncForSell(view.Model),
-                    LocalizationManager.Localize("UI_SELL"),
-                    tooltip =>
-                    {
-                        SharedModel.ShowItemPopup(tooltip.itemInformation.Model.item.Value);
-                        inventory.Tooltip.Close();
-                    },
-                    tooltip => inventory.SharedModel.DeselectItemView());
-            }
         }
 
         #endregion
@@ -363,14 +339,17 @@ namespace Nekoyume.UI
 
         private void ResponseSell()
         {
-            var item = SharedModel.ItemCountAndPricePopup.Value.item.Value;
-            var price = SharedModel.ItemCountAndPricePopup.Value.price.Value;
+            var item = SharedModel.ItemCountAndPricePopup.Value.Item.Value;
+            var price = SharedModel.ItemCountAndPricePopup.Value.Price.Value;
+            SharedModel.ItemCountAndPricePopup.Value.Item.Value = null;
+            
             var newState = (AvatarState) States.Instance.currentAvatarState.Value.Clone();
             newState.inventory.RemoveNonFungibleItem((ItemUsable) item.ItemBase.Value);
+            
             var index = States.Instance.currentAvatarKey.Value;
             ActionRenderHandler.UpdateLocalAvatarState(newState, index);
-            inventory.SharedModel.RemoveItem(item.ItemBase.Value);
-            SharedModel.ItemCountAndPricePopup.Value.item.Value = null;
+            // 인벤토리가 윗 줄에서 업데이트 될 것으로 예상함.
+//            inventory.SharedModel.RemoveItem(item.ItemBase.Value);
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
             Notification.Push(
                 $"{item.ItemBase.Value.Data.GetLocalizedName()} 아이템을 상점에 등록합니다.\n아이템 판매시 {price} gold의 8%를 세금으로 차감합니다.");
@@ -378,35 +357,34 @@ namespace Nekoyume.UI
 
         private void ResponseSellCancellation(ShopItem shopItem)
         {
-            SharedModel.ItemCountAndPricePopup.Value.item.Value = null;
+            SharedModel.ItemCountAndPricePopup.Value.Item.Value = null;
 
             var sellerAgentAddress = shopItem.SellerAgentAddress.Value;
             var productId = shopItem.ProductId.Value;
 
-            SharedModel.ShopItems.Value.RemoveShopItem(sellerAgentAddress, productId);
-            SharedModel.ShopItems.Value.RemoveProduct(productId);
-            SharedModel.ShopItems.Value.RemoveRegisteredProduct(productId);
+            shopItems.SharedModel.RemoveProduct(sellerAgentAddress, productId);
+            shopItems.SharedModel.RemoveCurrentAgentsProduct(productId);
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
             Notification.Push($"{shopItem.ItemBase.Value.Data.GetLocalizedName()} 아이템을 판매 취소합니다.");
         }
 
         private void ResponseBuy(ShopItem shopItem)
         {
-            SharedModel.ItemCountAndPricePopup.Value.item.Value = null;
+            SharedModel.ItemCountAndPricePopup.Value.Item.Value = null;
             var productId = shopItem.ProductId.Value;
-            SharedModel.ShopItems.Value.RemoveShopItem(shopItem.SellerAvatarAddress.Value, productId);
-            SharedModel.ShopItems.Value.RemoveProduct(productId);
-            SharedModel.ShopItems.Value.RemoveRegisteredProduct(productId);
+            
+            shopItems.SharedModel.RemoveProduct(shopItem.SellerAvatarAddress.Value, productId);
+            shopItems.SharedModel.RemoveOtherProduct(productId);
             AudioController.instance.PlaySfx(AudioController.SfxCode.BuyItem);
             Notification.Push($"{shopItem.ItemBase.Value.Data.GetLocalizedName()} 아이템을 구매합니다.");
         }
 
         #endregion
 
-        private void GoToMenu()
+        private void SubscribeBackButtonClick(BottomMenu bottomMenu)
         {
-            Find<Menu>().ShowRoom();
             Close();
+            Find<Menu>().ShowRoom();
         }
 
         private void SetSequenceOfShopItems(bool isGoOut, ref Sequence sequence)
