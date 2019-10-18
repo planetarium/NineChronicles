@@ -1,7 +1,6 @@
 version: 2.1
 orbs:
   azure-acr: circleci/azure-acr@0.1.2
-  azure-aks: circleci/azure-aks@0.2.0
   azure-cli: circleci/azure-cli@1.1.0
   kubernetes: circleci/kubernetes@0.3.0
 
@@ -63,55 +62,6 @@ jobs:
           name: ensure-tests-pass
           command: '[ "$(cat /tmp/test-result/result.txt)" = "Passed" ]'
 
-  deploy-application:
-    executor: azure-aks/default
-    parameters:
-      cluster-name:
-        description: Name of the AKS cluster
-        type: string
-      docker-image-name:
-        description: Name of the docker image to be deployed
-        type: string
-      version-info:
-        description: App version information
-        type: string
-      resource-group:
-        description: Resource group
-        type: string
-        default: ""
-    steps:
-      - checkout
-      - azure-aks/update-kubeconfig-with-credentials:
-          perform-login: true
-          install-kubectl: true
-          cluster-name: << parameters.cluster-name >>
-          resource-group: << parameters.resource-group >>
-      - run:
-          name: Create deployment & service manifest
-          command: |
-            CLUSTER_RG=$(az aks show --resource-group << parameters.resource-group >> --name << parameters.cluster-name >> --query nodeResourceGroup -o tsv)
-            MINER_IP=$(az network public-ip show --resource-group "$CLUSTER_RG" --name nekoalpha-miner-ip --query ipAddress --output tsv )
-            < k8s/nekoalpha/deployment.yaml.template \
-            sed "\
-            s|DOCKER_IMAGE_NAME|<< parameters.docker-image-name >>|g;\
-            s|VERSION_INFO_VALUE|<< parameters.version-info >>|g;\
-            s|MINER_IP|$MINER_IP|g;\
-            s|NEKOALPHA_PRIVATE_KEY|$NEKOALPHA_PRIVATE_KEY|g" > k8s/nekoalpha/deployment.yaml
-            < k8s/nekoalpha/service.yaml.template \
-            sed "s|MINER_IP|$MINER_IP|g" > k8s/nekoalpha/service.yaml
-      - kubernetes/create-or-update-resource:
-          resource-file-path: "k8s/nekoalpha/storageclass.yaml"
-      - kubernetes/create-or-update-resource:
-          resource-file-path: "k8s/nekoalpha/pvc-role.yaml"
-      - kubernetes/create-or-update-resource:
-          resource-file-path: "k8s/nekoalpha/pvc.yaml"
-      - kubernetes/create-or-update-resource:
-          resource-file-path: "k8s/nekoalpha/deployment.yaml"
-          get-rollout-status: true
-          resource-name: deployment/miner
-      - kubernetes/create-or-update-resource:
-          resource-file-path: "k8s/nekoalpha/service.yaml"
-
 workflows:
   version: 2
   build_and_deploy:
@@ -120,7 +70,7 @@ workflows:
           name: build-and-push-image
           tag: "git-$CIRCLE_SHA1"
           login-server-name: "$DOCKER_SERVER"
-          registry-name: "planetariumtest"
+          registry-name: "planetarium"
           repo: $CIRCLE_PROJECT_REPONAME
           extra-build-args: '--build-arg ulf="$ULF"'
           executor: default
@@ -130,22 +80,3 @@ workflows:
           docker-image-name: "$DOCKER_SERVER/$CIRCLE_PROJECT_REPONAME-build:git-$CIRCLE_SHA1"
           requires:
             - build-and-push-image
-
-      - azure-aks/create-cluster:
-          name: create-cluster
-          node-count: 1
-          cluster-name: "nekoyume-alpha"
-          resource-group: "nekoyume-alpha"
-          requires:
-            - build-and-push-image
-          filters:
-            branches:
-              only: master
-
-      - deploy-application:
-          cluster-name: "nekoyume-alpha"
-          resource-group: "nekoyume-alpha"
-          docker-image-name: "$DOCKER_SERVER/$CIRCLE_PROJECT_REPONAME:git-$CIRCLE_SHA1"
-          version-info: "$CIRCLE_SHA1"
-          requires:
-            - create-cluster
