@@ -22,7 +22,7 @@ namespace Nekoyume.UI
         public GameObject titleBorder;
         public ConfirmDelegate CloseCallback { get; set; }
 
-        public void Show(string title, string content, string btnYes = "UI_OK", string btnNo = "UI_CANCEL",
+        public void Show(string title, string content, string labelYes = "UI_OK", string labelNo = "UI_CANCEL",
             bool localize = true)
         {
             bool titleExists = !string.IsNullOrEmpty(title);
@@ -31,15 +31,15 @@ namespace Nekoyume.UI
                 if (titleExists)
                     this.title.text = LocalizationManager.Localize(title);
                 this.content.text = LocalizationManager.Localize(content);
-                labelYes.text = LocalizationManager.Localize(btnYes);
-                labelNo.text = LocalizationManager.Localize(btnNo);
+                this.labelYes.text = LocalizationManager.Localize(labelYes);
+                this.labelNo.text = LocalizationManager.Localize(labelNo);
             }
             else
             {
                 this.title.text = title;
                 this.content.text = content;
-                labelYes.text = "OK";
-                labelNo.text = "CANCEL";
+                this.labelYes.text = "OK";
+                this.labelNo.text = "CANCEL";
             }
 
             this.title.gameObject.SetActive(titleExists);

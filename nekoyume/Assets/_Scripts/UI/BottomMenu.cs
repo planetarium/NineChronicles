@@ -79,8 +79,16 @@ namespace Nekoyume.UI.Module
             mailButton.SetWidgetType<Mail>();
             questButton.SetWidgetType<Quest>();
 //            chatButton.SetWidgetType<Chat>();
+            chatButton.button.OnClickAsObservable().Subscribe(SubscribeOnClick).AddTo(gameObject);
 //            illustratedBookButton.SetWidgetType<IllustratedBook>();
+            illustratedBookButton.button.OnClickAsObservable().Subscribe(SubscribeOnClick).AddTo(gameObject);
 //            settingsButton.SetWidgetType<Settings>();
+            settingsButton.button.OnClickAsObservable().Subscribe(SubscribeOnClick).AddTo(gameObject);
+        }
+
+        private void SubscribeOnClick(Unit unit)
+        {
+            Find<Alert>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE", "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
         }
 
         protected override void OnEnable()

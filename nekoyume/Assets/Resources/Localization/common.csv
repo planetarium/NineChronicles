@@ -175,7 +175,8 @@ UI_WORLD_MAP_MONSTERS,Monsters,몬스터
 UI_WORLD_MAP_REWARDS,Rewards,보상
 UI_STAGE,Stage,스테이지
 UI_REMAININGTURN,Remaining Turn : {0},남은 턴 : {0}
-UI_NOT_IMPLEMENTED,This feature is currently under construction.,준비 중입니다.
+UI_ALERT_NOT_IMPLEMENTED_TITLE,In Prepare,준비 중
+UI_ALERT_NOT_IMPLEMENTED_CONTENT,This feature is currently under construction.,준비 중입니다.
 UI_CONFIRM_DELETE_CHARACTER_TITLE,Delete Character,캐릭터 삭제
 UI_CONFIRM_DELETE_CHARACTER_CONTENT,Do you want to delete this character?,정말 삭제하겠습니까?
 UI_CONFIRM_QUIT_TITLE,Quit Game,게임 종료

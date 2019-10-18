@@ -75,11 +75,7 @@ namespace Nekoyume.UI
             var nickName = nameField.text;
             if (!Regex.IsMatch(nickName, GameConfig.AvatarNickNamePattern))
             {
-                Find<Alert>().Show(
-                    "UI_ERROR",
-                    "UI_INVALID_NICKNAME",
-                    "UI_OK",
-                    true);
+                Find<Alert>().Show("UI_ERROR", "UI_INVALID_NICKNAME");
                 return;
             }
 
