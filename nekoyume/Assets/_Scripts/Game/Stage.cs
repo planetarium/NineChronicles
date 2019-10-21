@@ -146,11 +146,14 @@ namespace Nekoyume.Game
         {
         }
 
+        // todo: 배경 캐싱.
         public void LoadBackground(string prefabName, float fadeTime = 0.0f)
         {
-            if (background != null)
+            if (background)
             {
-                if (background.name.Equals(prefabName)) return;
+                if (background.name.Equals(prefabName))
+                    return;
+                
                 if (fadeTime > 0.0f)
                 {
                     var sprites = background.GetComponentsInChildren<SpriteRenderer>();
@@ -171,26 +174,28 @@ namespace Nekoyume.Game
                 background = null;
             }
 
-            var resName = $"Prefab/Background/{prefabName}";
-            var prefab = Resources.Load<GameObject>(resName);
-            if (ReferenceEquals(prefab, null)) return;
+            var path = $"Prefab/Background/{prefabName}";
+            var prefab = Resources.Load<GameObject>(path);
+            if (!prefab)
+                throw new FailedToLoadResourceException<GameObject>(path);
+            
             background = Instantiate(prefab, transform);
             background.name = prefabName;
             foreach (Transform child in background.transform)
             {
-                string name = child.name;
-                if (name.StartsWith("bgvfx"))
+                var childName = child.name;
+                if (!childName.StartsWith("bgvfx"))
+                    continue;
+                
+                var num = childName.Substring(childName.Length - 2);
+                switch (num)
                 {
-                    string num = name.Substring(name.Length - 2);
-                    switch (num)
-                    {
-                        case "01":
-                            defaultBGVFX = child.GetComponent<ParticleSystem>();
-                            break;
-                        case "02":
-                            bosswaveBGVFX = child.GetComponent<ParticleSystem>();
-                            break;
-                    }
+                    case "01":
+                        defaultBGVFX = child.GetComponent<ParticleSystem>();
+                        break;
+                    case "02":
+                        bosswaveBGVFX = child.GetComponent<ParticleSystem>();
+                        break;
                 }
             }
         }

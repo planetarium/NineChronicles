@@ -1,6 +1,7 @@
 using System;
 using Assets.SimpleLocalization;
 using Nekoyume.BlockChain;
+using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.State;
@@ -13,67 +14,54 @@ namespace Nekoyume.UI
 {
     public class RankingBoard : Widget
     {
-        public BottomMenu bottomMenu;
+        public enum StateType
+        {
+            Filtered,
+            Overall
+        }
+
+        public CategoryButton filteredButton;
+        public CategoryButton overallButton;
         public RankingInfo rankingBase;
         public ScrollRect board;
-        public GameObject filterHeader;
-        public GameObject allHeader;
-        public Text[] rankingButtonTexts;
-        public Text[] filteredRankingButtonTexts;
-        public Button closeButton;
 
-        private Player _player;
         private AvatarState[] _avatarStates;
+        
+        private readonly ReactiveProperty<StateType> _state = new ReactiveProperty<StateType>(StateType.Filtered);
 
         protected override void Awake()
         {
             base.Awake();
 
-            foreach (var rankingButtonText in rankingButtonTexts)
-            {
-                rankingButtonText.text = LocalizationManager.Localize("UI_OVERALL_RANKING");
-            }
+            _state.Subscribe(SubscribeState).AddTo(gameObject);
 
-            foreach (var filteredRankingButtonText in filteredRankingButtonTexts)
-            {
-                filteredRankingButtonText.text = LocalizationManager.Localize("UI_RANKING_IN_24HOURS");
-            }
-
-            closeButton.OnClickAsObservable()
-                .Subscribe(_ => GoToMenu())
+            filteredButton.button.OnClickAsObservable()
+                .Subscribe(_ => _state.Value = StateType.Filtered)
+                .AddTo(gameObject);
+            overallButton.button.OnClickAsObservable()
+                .Subscribe(_ => _state.Value = StateType.Overall)
                 .AddTo(gameObject);
         }
 
-        public override void Initialize()
-        {
-            base.Initialize();
-
-            bottomMenu.mainButton.button.onClick.AddListener(GoToMenu);
-            var status = Find<Status>();
-            bottomMenu.questButton.button.onClick.AddListener(status.ToggleQuest);
-        }
-
-        public override void Show()
+        public void Show(StateType stateType = StateType.Filtered)
         {
             base.Show();
 
             var stage = Game.Game.instance.stage;
             stage.LoadBackground("ranking");
+            stage.GetPlayer().gameObject.SetActive(false);
 
-            _player = stage.GetPlayer();
-            if (ReferenceEquals(_player, null))
-            {
-                throw new NotFoundComponentException<Player>();
-            }
-
-            _player.gameObject.SetActive(false);
-            // Call from animation GetFilteredRanking(); 
+            _state.Value = stateType;
+            
+            Find<BottomMenu>()?.Show(UINavigator.NavigationType.Back, SubscribeBackButtonClick, true);
 
             AudioController.instance.PlayMusic(AudioController.MusicCode.Ranking);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
+            Find<BottomMenu>()?.Close();
+            
             _avatarStates = null;
             ClearBoard();
 
@@ -82,11 +70,23 @@ namespace Nekoyume.UI
             AudioController.instance.PlayMusic(AudioController.MusicCode.Main);
         }
 
-        private void GetAvatars(DateTimeOffset? dt)
+        private void SubscribeState(StateType stateType)
         {
-            var rankingBoard = (RankingState) Game.Game.instance.agent.GetState(RankingState.Address);
-            Debug.LogWarningFormat("rankingBoard: {0}", rankingBoard);
-            _avatarStates = rankingBoard?.GetAvatars(dt) ?? new AvatarState[0];
+            switch (stateType)
+            {
+                case StateType.Filtered:
+                    filteredButton.SetToggledOn();
+                    overallButton.SetToggledOff();
+                    UpdateBoard(DateTimeOffset.UtcNow);
+                    break;
+                case StateType.Overall:
+                    filteredButton.SetToggledOff();
+                    overallButton.SetToggledOn();
+                    UpdateBoard(null);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(stateType), stateType, null);
+            }
         }
 
         private void UpdateBoard(DateTimeOffset? dt)
@@ -112,19 +112,11 @@ namespace Nekoyume.UI
                 rankingInfo.gameObject.SetActive(true);
             }
         }
-
-        public void GetFilteredRanking()
+        
+        private void GetAvatars(DateTimeOffset? dt)
         {
-            filterHeader.SetActive(true);
-            allHeader.SetActive(false);
-            UpdateBoard(DateTimeOffset.UtcNow);
-        }
-
-        public void GetRanking()
-        {
-            filterHeader.SetActive(false);
-            allHeader.SetActive(true);
-            UpdateBoard(null);
+            var rankingBoard = (RankingState) Game.Game.instance.agent.GetState(RankingState.Address);
+            _avatarStates = rankingBoard?.GetAvatars(dt) ?? new AvatarState[0];
         }
 
         private void ClearBoard()
@@ -135,7 +127,7 @@ namespace Nekoyume.UI
             }
         }
 
-        private void GoToMenu()
+        private void SubscribeBackButtonClick(BottomMenu bottomMenu)
         {
             Close();
             Find<Menu>().ShowRoom();

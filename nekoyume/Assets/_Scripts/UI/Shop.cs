@@ -37,8 +37,8 @@ namespace Nekoyume.UI
 
         public CanvasGroup canvasGroup;
         public RectTransform bg1;
-        public NormalButton buyButton;
-        public NormalButton sellButton;
+        public CategoryButton buyButton;
+        public CategoryButton sellButton;
         public RectTransform right;
         public Text catQuoteText;
         public Module.Inventory inventory;
@@ -108,7 +108,7 @@ namespace Nekoyume.UI
             AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
         }
 
-        public override void OnCompleteOfShowAnimation()
+        protected override void OnCompleteOfShowAnimation()
         {
             base.OnCompleteOfShowAnimation();
             canvasGroup.interactable = true;
@@ -138,12 +138,16 @@ namespace Nekoyume.UI
                 case StateType.Show:
                     shopItems.SharedModel.State.Value = stateType;
                     SharedModel.State.Value = StateType.Buy;
+                    buyButton.SetToggledOn();
+                    sellButton.SetToggledOff();
                     return;
                 case StateType.Buy:
                     inventory.SharedModel.DimmedFunc.Value = null;
                     buyButton.button.interactable = false;
                     sellButton.button.interactable = true;
                     shopNotice.SetActive(false);
+                    buyButton.SetToggledOn();
+                    sellButton.SetToggledOff();
                     break;
                 case StateType.Sell:
                     inventory.SharedModel.DimmedFunc.Value = DimmedFuncForSell;
@@ -151,6 +155,8 @@ namespace Nekoyume.UI
                     buyButton.button.interactable = true;
                     sellButton.button.interactable = false;
                     shopNotice.SetActive(true);
+                    buyButton.SetToggledOff();
+                    sellButton.SetToggledOn();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(stateType), stateType, null);
