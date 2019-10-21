@@ -10,7 +10,7 @@ namespace Nekoyume.State
     /// Agent의 상태 모델이다.
     /// </summary>
     [Serializable]
-    public class AgentState : State, ICloneable, IState
+    public class AgentState : State, ICloneable
     {
         //F&F 테스트용 노마이너 기본 소지 골드
         public decimal gold = 1000;
