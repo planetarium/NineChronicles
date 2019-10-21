@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Nekoyume.Action
 {
-    public static class AccountStateDelta
+    public static class AccountStateDeltaExtensions
     {
         public static bool TryGetState<T>(this IAccountStateDelta states, Address address, out T result)
             where T : IValue
