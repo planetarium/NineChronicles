@@ -7,6 +7,7 @@ using Nekoyume.Game.Factory;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Mail;
 using Nekoyume.Helper;
+using Nekoyume.Model;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Scroller;
@@ -80,7 +81,7 @@ namespace Nekoyume.UI
         public override void Show()
         {
             tabState = MailTabState.All;
-            _mailBox = States.Instance.currentAvatarState.Value.mailBox;
+            _mailBox = States.Instance.CurrentAvatarState.Value.mailBox;
             ChangeState(0);
             base.Show();
         }

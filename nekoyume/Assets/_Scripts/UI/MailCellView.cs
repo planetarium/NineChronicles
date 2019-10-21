@@ -69,6 +69,8 @@ namespace Nekoyume.UI
 
             data.New = false;
             button.interactable = false;
+            foreach (var shadow in _textShadows)
+                shadow.effectColor = Color.black;
             label.color = ColorHelper.HexToColorRGB("7a7a7a");
             data.Read(_mail);
         }
