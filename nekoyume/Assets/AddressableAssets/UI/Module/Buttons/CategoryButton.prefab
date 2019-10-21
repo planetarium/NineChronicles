@@ -12,9 +12,9 @@ GameObject:
   - component: {fileID: 2835283092288971522}
   - component: {fileID: 8087319300551316670}
   - component: {fileID: 1501235471248933866}
-  - component: {fileID: -1655370076528185621}
+  - component: {fileID: 5591983893492074739}
   m_Layer: 5
-  m_Name: IconButton
+  m_Name: CategoryButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -96,7 +96,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -123,7 +123,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
---- !u!114 &-1655370076528185621
+--- !u!114 &5591983893492074739
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -132,13 +132,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 2051761505041589587}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4ac4a96b57dc41fcb17626936cf5d5e2, type: 3}
+  m_Script: {fileID: 11500000, guid: f86ff1580317420884f34ee0eafb0c64, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   button: {fileID: 1501235471248933866}
   image: {fileID: 8087319300551316670}
   text: {fileID: 3279318938025584017}
   localizationKey: 
+  toggledOn: {fileID: 21300000, guid: e43de33f6883e49aba224419f42b985a, type: 3}
+  toggledOff: {fileID: 21300000, guid: 4995a50843e4946b78770f8ba3acdc7f, type: 3}
 --- !u!1 &5252571423916628639
 GameObject:
   m_ObjectHideFlags: 0

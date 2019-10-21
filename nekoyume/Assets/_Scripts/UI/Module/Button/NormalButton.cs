@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using Assets.SimpleLocalization;
 using Nekoyume.Game.Controller;
 using TMPro;
