@@ -1,5 +1,9 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using Bencodex.Types;
 using Nekoyume.EnumType;
+using Nekoyume.State;
 
 namespace Nekoyume.Game
 {
@@ -30,6 +34,11 @@ namespace Nekoyume.Game
 
         public StatMapEx(StatMap statMap) : this(statMap.StatType, statMap.Value)
         {
+        }
+
+        public StatMapEx(Bencodex.Types.Dictionary serialized) : base(serialized)
+        {
+            AdditionalValue = serialized[(Text) "additionalValue"].ToDecimal();
         }
 
         protected bool Equals(StatMapEx other)
@@ -99,5 +108,11 @@ namespace Nekoyume.Game
                 ? $"<color=#00FF00>(+{AdditionalValueAsInt})</color>"
                 : "";
         }
+
+        public override IValue Serialize() =>
+            new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
+            {
+                [(Text) "additionalValue"] = (Text) AdditionalValue.Serialize(),
+            }.Union((Bencodex.Types.Dictionary) base.Serialize()));
     }
 }

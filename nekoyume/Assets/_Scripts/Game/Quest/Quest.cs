@@ -1,11 +1,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
-using Nekoyume.Data;
+using Bencodex.Types;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Item;
 using Nekoyume.Model;
+using Nekoyume.State;
 using Nekoyume.TableData;
 
 namespace Nekoyume.Game.Quest
@@ -23,10 +25,17 @@ namespace Nekoyume.Game.Quest
 
         public abstract void Check(Player player, List<ItemBase> items);
         public abstract string ToInfo();
+
+        public Quest Copy(bool complete)
+        {
+            Quest clone = (Quest) MemberwiseClone();
+            clone.Complete = complete;
+            return clone;
+        }
     }
 
     [Serializable]
-    public class QuestList : IEnumerable<Quest>
+    public class QuestList : IEnumerable<Quest>, IState
     {
         private readonly List<Quest> quests;
         
@@ -56,6 +65,16 @@ namespace Nekoyume.Game.Quest
                 var quest = new TradeQuest(tradeQuestData);
                 quests.Add(quest);
             }
+        }
+
+        public QuestList(Bencodex.Types.List serialized) : this()
+        {
+            ImmutableHashSet<QuestSheet.Row> completedQuests = serialized
+                .Select(q => QuestSheet.Row.Deserialize((Bencodex.Types.Dictionary) q))
+                .ToImmutableHashSet();
+            quests = quests
+                .Select(q => completedQuests.Contains(q.Data) ? q.Copy(true) : q)
+                .ToList();
         }
 
         public void UpdateStageQuest(Player player, List<ItemBase> items)
@@ -92,5 +111,8 @@ namespace Nekoyume.Game.Quest
                 .FirstOrDefault(i => i.Data.Type == type && !i.Complete);
             quest?.Check(null, null);
         }
+
+        public IValue Serialize() =>
+            new Bencodex.Types.List(this.Where(q => q.Complete).Select(q => q.Data.Serialize()));
     }
 }

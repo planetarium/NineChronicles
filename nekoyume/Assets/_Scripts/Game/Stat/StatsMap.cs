@@ -1,12 +1,15 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using Bencodex.Types;
 using Nekoyume.EnumType;
+using Nekoyume.State;
 
 namespace Nekoyume.Game
 {
     [Serializable]
-    public class StatsMap : IStats, IAdditionalStats
+    public class StatsMap : IStats, IAdditionalStats, IState
     {
         public IReadOnlyDictionary<StatType, StatMapEx> StatMaps => _statMaps;
 
@@ -40,6 +43,10 @@ namespace Nekoyume.Game
 
         private readonly Dictionary<StatType, StatMapEx> _statMaps =
             new Dictionary<StatType, StatMapEx>(StatTypeComparer.Instance);
+
+        public StatsMap()
+        {
+        }
 
         protected bool Equals(StatsMap other)
         {
@@ -114,6 +121,25 @@ namespace Nekoyume.Game
 
             keys = sbKeys.ToString().Trim();
             values = sbValues.ToString().Trim();
+        }
+
+        public IValue Serialize() =>
+            new Bencodex.Types.Dictionary(
+                StatMaps.Select(kv =>
+                    new KeyValuePair<IKey, IValue>(
+                        kv.Key.Serialize(),
+                        kv.Value.Serialize()
+                    )
+                )
+            );
+
+        public void Deserialize(Bencodex.Types.Dictionary serialized)
+        {
+            foreach (KeyValuePair<IKey, IValue> kv in serialized)
+            {
+                _statMaps[StatTypeExtension.Deserialize((Binary) kv.Key)] =
+                    new StatMapEx((Bencodex.Types.Dictionary) kv.Value);
+            }
         }
     }
 }

@@ -1,10 +1,8 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Globalization;
-using Libplanet;
+using Bencodex.Types;
 using Libplanet.Action;
 using Nekoyume.State;
-using UnityEngine;
 
 namespace Nekoyume.Action
 {
@@ -12,16 +10,17 @@ namespace Nekoyume.Action
     public class RewardGold : ActionBase
     {
         public decimal gold;
-        
-        public override IImmutableDictionary<string, object> PlainValue =>
-            new Dictionary<string, object>
-            {
-                ["gold"] = gold.ToString(CultureInfo.InvariantCulture),
-            }.ToImmutableDictionary();
 
-        public override void LoadPlainValue(IImmutableDictionary<string, object> plainValue)
+        public override IValue PlainValue =>
+            new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
+            {
+                [(Text) "gold"] = gold.Serialize(),
+            });
+
+        public override void LoadPlainValue(IValue plainValue)
         {
-            gold = decimal.Parse(plainValue["gold"].ToString());
+            var dict = (Bencodex.Types.Dictionary) plainValue;
+            gold = dict[(Text) "gold"].ToDecimal();
         }
 
         public override IAccountStateDelta Execute(IActionContext ctx)
@@ -39,22 +38,26 @@ namespace Nekoyume.Action
             // 다른 액션에서는 항상 블록체인에 상태들이 존재한다고 가정합니다.
             if (ctx.BlockIndex == 0)
             {
-                states = states.SetState(RankingState.Address, new RankingState());
-                states = states.SetState(ShopState.Address, new ShopState());
-                states = states.SetState(DailyBlockState.Address, new DailyBlockState(0));
+                states = states
+                    .SetState(RankingState.Address, new RankingState().Serialize())
+                    .SetState(ShopState.Address, new ShopState().Serialize())
+                    .SetState(DailyBlockState.Address, new DailyBlockState(0).Serialize());
             }
             else
             {
                 if (ctx.BlockIndex % DailyBlockState.UpdateInterval == 0)
                 {
-                    states = states.SetState(DailyBlockState.Address, new DailyBlockState(ctx.BlockIndex));
+                    states = states.SetState(
+                        DailyBlockState.Address,
+                        new DailyBlockState(ctx.BlockIndex).Serialize()
+                    );
                 }
             }
 
-            var agentState = (AgentState) states.GetState(ctx.Signer) ?? new AgentState(ctx.Signer);
+            AgentState agentState = states.GetAgentState(ctx.Signer) ?? new AgentState(ctx.Signer);
             agentState.gold += gold;
 
-            return states.SetState(ctx.Miner, agentState);
+            return states.SetState(ctx.Miner, agentState.Serialize());
         }
     }
 }

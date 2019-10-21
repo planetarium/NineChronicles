@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Bencodex.Types;
 using Libplanet;
 
 namespace Nekoyume.State
@@ -25,6 +26,15 @@ namespace Nekoyume.State
         public RankingState() : base(Address)
         {
             _map = new Dictionary<Address, AvatarState>();
+        }
+
+        public RankingState(Bencodex.Types.Dictionary serialized)
+            : base(serialized)
+        {
+            _map = ((Bencodex.Types.Dictionary) serialized[(Text) "map"]).ToDictionary(
+                kv => kv.Key.ToAddress(),
+                kv => new AvatarState((Bencodex.Types.Dictionary) kv.Value)
+            );
         }
         
         public void Update(AvatarState state)
@@ -67,5 +77,16 @@ namespace Nekoyume.State
 
             return result.ToArray();
         }
+
+        public override IValue Serialize() =>
+            new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
+            {
+                [(Text) "map"] = new Bencodex.Types.Dictionary(_map.Select(kv =>
+                    new KeyValuePair<IKey, IValue>(
+                        (Binary) kv.Key.Serialize(),
+                        kv.Value.Serialize()
+                    )
+                ))
+            }.Union((Bencodex.Types.Dictionary) base.Serialize()));
     }
 }

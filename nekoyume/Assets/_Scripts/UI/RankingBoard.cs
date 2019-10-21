@@ -1,8 +1,4 @@
 using System;
-using Assets.SimpleLocalization;
-using Nekoyume.BlockChain;
-using Nekoyume.EnumType;
-using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
@@ -26,7 +22,7 @@ namespace Nekoyume.UI
         public ScrollRect board;
 
         private AvatarState[] _avatarStates;
-        
+
         private readonly ReactiveProperty<StateType> _state = new ReactiveProperty<StateType>(StateType.Filtered);
 
         protected override void Awake()
@@ -51,8 +47,8 @@ namespace Nekoyume.UI
             stage.LoadBackground("ranking");
             stage.GetPlayer().gameObject.SetActive(false);
 
-            _state.Value = stateType;
-            
+            _state.SetValueAndForceNotify(stateType);
+
             Find<BottomMenu>()?.Show(UINavigator.NavigationType.Back, SubscribeBackButtonClick, true);
 
             AudioController.instance.PlayMusic(AudioController.MusicCode.Ranking);
@@ -61,7 +57,7 @@ namespace Nekoyume.UI
         public override void Close(bool ignoreCloseAnimation = false)
         {
             Find<BottomMenu>()?.Close();
-            
+
             _avatarStates = null;
             ClearBoard();
 
@@ -112,10 +108,11 @@ namespace Nekoyume.UI
                 rankingInfo.gameObject.SetActive(true);
             }
         }
-        
+
         private void GetAvatars(DateTimeOffset? dt)
         {
-            var rankingBoard = (RankingState) Game.Game.instance.agent.GetState(RankingState.Address);
+            var dict = (Bencodex.Types.Dictionary) Game.Game.instance.agent.GetState(RankingState.Address);
+            var rankingBoard = new RankingState(dict);
             _avatarStates = rankingBoard?.GetAvatars(dt) ?? new AvatarState[0];
         }
 

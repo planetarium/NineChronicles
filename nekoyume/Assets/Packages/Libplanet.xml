@@ -23,7 +23,7 @@
         <member name="M:Libplanet.Action.AccountStateDeltaImpl.Libplanet#Action#IAccountStateDelta#GetState(Libplanet.Address)">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Action.AccountStateDeltaImpl.Libplanet#Action#IAccountStateDelta#SetState(Libplanet.Address,System.Object)">
+        <member name="M:Libplanet.Action.AccountStateDeltaImpl.Libplanet#Action#IAccountStateDelta#SetState(Libplanet.Address,Bencodex.Types.IValue)">
             <inheritdoc/>
         </member>
         <member name="T:Libplanet.Action.AccountStateGetter">
@@ -157,7 +157,7 @@
             Creates an empty map.
             </summary>
         </member>
-        <member name="M:Libplanet.Action.AddressStateMap.#ctor(System.Collections.Immutable.IImmutableDictionary{Libplanet.Address,System.Object})">
+        <member name="M:Libplanet.Action.AddressStateMap.#ctor(System.Collections.Immutable.IImmutableDictionary{Libplanet.Address,Bencodex.Types.IValue})">
             <summary>
             Creates a new map from the items of the
             <paramref name="dictionary"/>.
@@ -177,16 +177,16 @@
         <member name="P:Libplanet.Action.AddressStateMap.Item(Libplanet.Address)">
             <inheritdoc />
         </member>
-        <member name="M:Libplanet.Action.AddressStateMap.Add(Libplanet.Address,System.Object)">
+        <member name="M:Libplanet.Action.AddressStateMap.Add(Libplanet.Address,Bencodex.Types.IValue)">
             <inheritdoc />
         </member>
-        <member name="M:Libplanet.Action.AddressStateMap.AddRange(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{Libplanet.Address,System.Object}})">
+        <member name="M:Libplanet.Action.AddressStateMap.AddRange(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{Libplanet.Address,Bencodex.Types.IValue}})">
             <inheritdoc />
         </member>
         <member name="M:Libplanet.Action.AddressStateMap.Clear">
             <inheritdoc />
         </member>
-        <member name="M:Libplanet.Action.AddressStateMap.Contains(System.Collections.Generic.KeyValuePair{Libplanet.Address,System.Object})">
+        <member name="M:Libplanet.Action.AddressStateMap.Contains(System.Collections.Generic.KeyValuePair{Libplanet.Address,Bencodex.Types.IValue})">
             <inheritdoc />
         </member>
         <member name="M:Libplanet.Action.AddressStateMap.ContainsKey(Libplanet.Address)">
@@ -201,16 +201,16 @@
         <member name="M:Libplanet.Action.AddressStateMap.RemoveRange(System.Collections.Generic.IEnumerable{Libplanet.Address})">
             <inheritdoc />
         </member>
-        <member name="M:Libplanet.Action.AddressStateMap.SetItem(Libplanet.Address,System.Object)">
+        <member name="M:Libplanet.Action.AddressStateMap.SetItem(Libplanet.Address,Bencodex.Types.IValue)">
             <inheritdoc />
         </member>
-        <member name="M:Libplanet.Action.AddressStateMap.SetItems(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{Libplanet.Address,System.Object}})">
+        <member name="M:Libplanet.Action.AddressStateMap.SetItems(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{Libplanet.Address,Bencodex.Types.IValue}})">
             <inheritdoc />
         </member>
         <member name="M:Libplanet.Action.AddressStateMap.TryGetKey(Libplanet.Address,Libplanet.Address@)">
             <inheritdoc />
         </member>
-        <member name="M:Libplanet.Action.AddressStateMap.TryGetValue(Libplanet.Address,System.Object@)">
+        <member name="M:Libplanet.Action.AddressStateMap.TryGetValue(Libplanet.Address,Bencodex.Types.IValue@)">
             <inheritdoc />
         </member>
         <member name="M:Libplanet.Action.AddressStateMap.System#Collections#IEnumerable#GetEnumerator">
@@ -244,7 +244,7 @@
             </list>
             </summary>
             <remarks>
-            This interface is immutable.  <see cref="M:Libplanet.Action.IAccountStateDelta.SetState(Libplanet.Address,System.Object)"/>
+            This interface is immutable.  <see cref="M:Libplanet.Action.IAccountStateDelta.SetState(Libplanet.Address,Bencodex.Types.IValue)"/>
             method does not manipulate the instance, but returns a new
             <see cref="T:Libplanet.Action.IAccountStateDelta"/> instance with updated states.
             </remarks>
@@ -265,7 +265,7 @@
             If it has never been set to any state it returns <c>null</c>
             instead.</returns>
         </member>
-        <member name="M:Libplanet.Action.IAccountStateDelta.SetState(Libplanet.Address,System.Object)">
+        <member name="M:Libplanet.Action.IAccountStateDelta.SetState(Libplanet.Address,Bencodex.Types.IValue)">
             <summary>
             Gets a new instance that the account state of the given
             <paramref name="address"/> is set to the given
@@ -284,232 +284,224 @@
             </remarks>
         </member>
         <member name="T:Libplanet.Action.IAction">
-             <summary>
-             An in-game action.  Every action should be replayable, because
-             multiple nodes in a network should execute an action and get the same
-             result.
-             <para>A &#x201c;class&#x201d; which implements this interface is
-             analogous to a function, and its instance is analogous to a
-             <a href="https://en.wikipedia.org/wiki/Partial_application">partial
-             function application</a>, in other words, a function with some bound
-             arguments.  Those parameters that will be bound at runtime should be
-             represented as fields or properties in an action class, and bound
-             argument values to these parameters should be received through
-             a constructor parameters of that class.</para>
-             <para>From a perspective of security, an action class belongs to
-             the network protocol, and property values in an action belong to
-             a node's will (i.e., a user/player's choice).
-             That means if you define an action class it also defines what every
-             honest node can do in the network.  Even if a malicious node changes
-             their own action code it won't affect other honest nodes in
-             the network.</para>
-             <para>For example, where honest nodes share the common action
-             <c>Heal(Target) => PreviousStates[Target] + 1</c>, suppose a malicious
-             node <c>m</c> changes their own <c>Heal</c> action code to
-             <c>Heal(Target) => PreviousStates[Target] + 2</c> (2 instead of 1),
-             and then send an action <c>Heal(m)</c>.
-             Fortunately, this action does not work as <c>m</c>'s intention,
-             because the changed code in itself is not used by other honest nodes,
-             so they still increase only 1, not 2.  The effect of that double healing
-             is a sort of &#x201c;illusion&#x201d; only visible to the malicious node
-             alone.</para>
-             <para>In conclusion, action code is a part of the protocol and it works with
-             consensus in the network, so only things each node can affect the network
-             in general is property values of each action they sign and send,
-             not code of an action.</para>
-             </summary>
-             <example>
-             The following example shows how to implement an action of three types
-             of in-game logic:
-             <code><![CDATA[
-             using System;
-             using System.Collections.Immutable;
-             using Libplanet;
-             using Libplanet.Action;
-            
-             public class MyAction : IAction
-             {
-                 // Declare an enum type to distinguish types of in-game logic.
-                 public enum ActType { CreateCharacter, Attack, Heal }
-            
-                 // Declare properties (or fields) to store "bound" argument values.
-                 public ActType Type { get; private set; }
-                 public Address TargetAddress { get; private set; }
-            
-                 // Action must has a public parameterless constructor.
-                 // Usually this is used only by Libplanet's internals.
-                 public MyAction() {}
-            
-                 // Take argument values to "bind" through constructor parameters.
-                 public MyAction(ActType type, Address targetAddress)
-                 {
-                     Type = type;
-                     TargetAddress = targetAddress;
-                 }
-            
-                 // The main game logic belongs to here.  It takes the
-                 // previous states through its parameter named context,
-                 // and is offered "bound" argument values through
-                 // its own properties (or fields).
-                 IAccountStateDelta IAction.Execute(IActionContext context)
-                 {
-                     // Gets the state immediately before this action is executed.
-                     // ImmutableDictionary<string, uint> is just for example,
-                     // As far as it is serializable, you can store any types.
-                     // (We recommend to use immutable types though.)
-                     var state = (ImmutableDictionary<string, uint>)
-                         context.PreviousStates.GetState(TargetAddress);
-            
-                     // This variable purposes to store the state
-                     // right after this action finishes.
-                     ImmutableDictionary<string, uint> nextState;
-            
-                     // Does different things depending on the action's type.
-                     // This way is against the common principals of programming
-                     // as it is just an example.  You could compare this with
-                     // a better example of PolymorphicAction<T> class.
-                     switch (Type)
-                     {
-                         case ActType.CreateCharacter:
-                             if (!TargetAddress.Equals(context.Signer))
-                                 throw new Exception(
-                                     "TargetAddress of CreateCharacter action " +
-                                     "only can be the same address to the " +
-                                     "Transaction<T>.Signer.");
-                             else if (!(state is null))
-                                 throw new Exception(
-                                     "Character was already created.");
-            
-                             nextState = ImmutableDictionary<string, uint>.Empty
-                                 .Add("hp", 20);
-                             break;
-            
-                         case ActType.Attack:
-                             nextState =
-                                 state.SetItem("hp", Math.Max(state["hp"] - 5, 0));
-                             break;
-            
-                         case ActType.Heal:
-                             nextState =
-                                 state.SetItem("hp", Math.Min(state["hp"] + 5, 20));
-                             break;
-            
-                         default:
-                             throw new Exception(
-                                 "Properties are not properly initialized.");
-                     }
-            
-                     // Builds a delta (dirty) from previous to next states, and
-                     // returns it.
-                     return context.PreviousStates.SetState(TargetAddress,
-                         nextState);
-                 }
-            
-                 // Side effects, i.e., any effects on other than states, are
-                 // done here.
-                 void IAction.Render(
-                     IActionContext context,
-                     IAccountStateDelta nextStates)
-                 {
-                     Character c;
-            
-                     // You could compare this with a better example of
-                     // PolymorphicAction<T> class.
-                     switch (Type)
-                     {
-                         case ActType.CreateCharacter:
-                             c = new Character
-                             {
-                                 Address = TargetAddress,
-                                 Hp = 0,
-                             };
-                             break;
-            
-                         case ActType.Attack:
-                         case ActType.Heal:
-                             c = Character.GetByAddress(TargetAddress);
-                             break;
-            
-                         default:
-                             break;
-                     }
-            
-                     c?.Hp = nextStates.GetState(TargetAddress)["hp"];
-                     c?.Draw();
-                 }
-            
-                 // Sometimes a block to which an action belongs can be
-                 // a "stale."  If that action already has been rendered,
-                 // it should be undone.
-                 void IAction.Unrender(
-                     IActionContext context,
-                     IAccountStateDelta nextStates)
-                 {
-                     Character c = Character.GetByAddress(TargetAddress);
-            
-                     // You could compare this with a better example of
-                     // PolymorphicAction<T> class.
-                     switch (Type)
-                     {
-                         case ActType.CreateCharacter:
-                             c.Hide();
-                             break;
-            
-                         case ActType.Attack:
-                         case ActType.Heal:
-                             IAccountStateDelta prevStates = context.PreviousStates;
-                             c.Hp = prevStates.GetState(TargetAddress)["hp"];
-                             c.Draw();
-                             break;
-            
-                         default:
-                             break;
-                     }
-                 }
-            
-                 // Serializes its "bound arguments" so that they are transmitted
-                 // over network or stored to the persistent storage.
-                 // It uses .NET's built-in serialization mechanism.
-                 IImmutableDictionary<string, object> IAction.PlainValue =>
-                     ImmutableDictionary<string, object>.Empty
-                         .Add("type", Type)
-                         .Add("target_address", TargetAddress);
-            
-                 // Deserializes "bound arguments".  That is, it is inverse
-                 // of PlainValue property.
-                 void IAction.LoadPlainValue(
-                     IImmutableDictionary<string, object> plainValue)
-                 {
-                     Type = (ActType)plainValue["type"];
-                     TargetAddress = (Address)plainValue["target_address"];
-                 }
-             }
-             ]]></code>
-             <para>Note that the above example has several bad practices.
-             Compare this example with <see cref="T:Libplanet.Action.PolymorphicAction`1"/>'s
-             example.</para>
-             </example>
+            <summary>
+            An in-game action.  Every action should be replayable, because
+            multiple nodes in a network should execute an action and get the same
+            result.
+            <para>A &#x201c;class&#x201d; which implements this interface is
+            analogous to a function, and its instance is analogous to a
+            <a href="https://en.wikipedia.org/wiki/Partial_application">partial
+            function application</a>, in other words, a function with some bound
+            arguments.  Those parameters that will be bound at runtime should be
+            represented as fields or properties in an action class, and bound
+            argument values to these parameters should be received through
+            a constructor parameters of that class.</para>
+            <para>From a perspective of security, an action class belongs to
+            the network protocol, and property values in an action belong to
+            a node's will (i.e., a user/player's choice).
+            That means if you define an action class it also defines what every
+            honest node can do in the network.  Even if a malicious node changes
+            their own action code it won't affect other honest nodes in
+            the network.</para>
+            <para>For example, where honest nodes share the common action
+            <c>Heal(Target) => PreviousStates[Target] + 1</c>, suppose a malicious
+            node <c>m</c> changes their own <c>Heal</c> action code to
+            <c>Heal(Target) => PreviousStates[Target] + 2</c> (2 instead of 1),
+            and then send an action <c>Heal(m)</c>.
+            Fortunately, this action does not work as <c>m</c>'s intention,
+            because the changed code in itself is not used by other honest nodes,
+            so they still increase only 1, not 2.  The effect of that double healing
+            is a sort of &#x201c;illusion&#x201d; only visible to the malicious node
+            alone.</para>
+            <para>In conclusion, action code is a part of the protocol and it works with
+            consensus in the network, so only things each node can affect the network
+            in general is property values of each action they sign and send,
+            not code of an action.</para>
+            </summary>
+            <example>
+            The following example shows how to implement an action of three types
+            of in-game logic:
+            <code><![CDATA[
+            using System;
+            using System.Collections.Generic;
+            using System.Collections.Immutable;
+            using Bencodex.Types;
+            using Libplanet;
+            using Libplanet.Action;
+            public class MyAction : IAction
+            {
+                // Declare an enum type to distinguish types of in-game logic.
+                public enum ActType { CreateCharacter, Attack, Heal }
+                // Declare properties (or fields) to store "bound" argument values.
+                public ActType Type { get; private set; }
+                public Address TargetAddress { get; private set; }
+                // Action must has a public parameterless constructor.
+                // Usually this is used only by Libplanet's internals.
+                public MyAction() {}
+                // Take argument values to "bind" through constructor parameters.
+                public MyAction(ActType type, Address targetAddress)
+                {
+                    Type = type;
+                    TargetAddress = targetAddress;
+                }
+                // The main game logic belongs to here.  It takes the
+                // previous states through its parameter named context,
+                // and is offered "bound" argument values through
+                // its own properties (or fields).
+                IAccountStateDelta IAction.Execute(IActionContext context)
+                {
+                    // Gets the state immediately before this action is executed.
+                    // ImmutableDictionary<string, uint> is just for example,
+                    // As far as it is serializable, you can store any types.
+                    // (We recommend to use immutable types though.)
+                    var state =
+                        context.PreviousStates.GetState(TargetAddress);
+                    Dictionary dictionary;
+                    // This variable purposes to store the state
+                    // right after this action finishes.
+                    IImmutableDictionary<IKey, IValue> nextState;
+                    // Does different things depending on the action's type.
+                    // This way is against the common principals of programming
+                    // as it is just an example.  You could compare this with
+                    // a better example of PolymorphicAction<T> class.
+                    switch (Type)
+                    {
+                        case ActType.CreateCharacter:
+                            if (!TargetAddress.Equals(context.Signer))
+                                throw new Exception(
+                                    "TargetAddress of CreateCharacter action " +
+                                    "only can be the same address to the " +
+                                    "Transaction<T>.Signer.");
+                            else if (!(state is null))
+                                throw new Exception(
+                                    "Character was already created.");
+                            nextState = ImmutableDictionary<IKey, IValue>.Empty
+                                .Add((Text)"hp", (Integer)20);
+                            break;
+                        case ActType.Attack:
+                            dictionary = (Bencodex.Types.Dictionary)state;
+                            nextState =
+                                dictionary.SetItem(
+                                    (Text)"hp",
+                                    (Integer)Math.Max(
+                                        (int)dictionary.GetValue<Integer>("hp").Value - 5,
+                                        0)
+                                );
+                            break;
+                        case ActType.Heal:
+                            dictionary = (Bencodex.Types.Dictionary)state;
+                            nextState =
+                                dictionary.SetItem(
+                                    (Text)"hp",
+                                    (Integer)Math.Min(
+                                        (int)dictionary.GetValue<Integer>("hp").Value + 5,
+                                        20)
+                                );
+                            break;
+                        default:
+                            throw new Exception(
+                                "Properties are not properly initialized.");
+                    }
+                    // Builds a delta (dirty) from previous to next states, and
+                    // returns it.
+                    return context.PreviousStates.SetState(TargetAddress,
+                        (Dictionary)nextState);
+                }
+                // Side effects, i.e., any effects on other than states, are
+                // done here.
+                void IAction.Render(
+                    IActionContext context,
+                    IAccountStateDelta nextStates)
+                {
+                    Character c;
+                    // You could compare this with a better example of
+                    // PolymorphicAction<T> class.
+                    switch (Type)
+                    {
+                        case ActType.CreateCharacter:
+                            c = new Character
+                            {
+                                Address = TargetAddress,
+                                Hp = 0,
+                            };
+                            break;
+                        case ActType.Attack:
+                        case ActType.Heal:
+                            c = Character.GetByAddress(TargetAddress);
+                            break;
+                        default:
+                            return;
+                    }
+                    c.Hp =
+                        (int)((Bencodex.Types.Dictionary)nextStates.GetState(TargetAddress))
+                            .GetValue<Integer>("hp").Value;
+                    c.Draw();
+                }
+                // Sometimes a block to which an action belongs can be
+                // a "stale."  If that action already has been rendered,
+                // it should be undone.
+                void IAction.Unrender(
+                    IActionContext context,
+                    IAccountStateDelta nextStates)
+                {
+                    Character c = Character.GetByAddress(TargetAddress);
+                    // You could compare this with a better example of
+                    // PolymorphicAction<T> class.
+                    switch (Type)
+                    {
+                        case ActType.CreateCharacter:
+                            c.Hide();
+                            break;
+                        case ActType.Attack:
+                        case ActType.Heal:
+                            IAccountStateDelta prevStates = context.PreviousStates;
+                            c.Hp = (int)((Bencodex.Types.Dictionary)prevStates.GetState(TargetAddress))
+                                .GetValue<Integer>("hp").Value;
+                            c.Draw();
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                // Serializes its "bound arguments" so that they are transmitted
+                // over network or stored to the persistent storage.
+                IValue IAction.PlainValue =>
+                    new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
+                    {
+                        [(Text)"type"] = (Integer)((int)Type),
+                        [(Text)"target_address"] = (Binary)TargetAddress.ToByteArray(),
+                    });
+                // Deserializes "bound arguments".  That is, it is inverse
+                // of PlainValue property.
+                void IAction.LoadPlainValue(
+                    IValue plainValue)
+                {
+                    var dictionary = (Bencodex.Types.Dictionary)plainValue;
+                    Type = (ActType)(int)dictionary.GetValue<Integer>("type").Value;
+                    TargetAddress =
+                        new Address(dictionary.GetValue<Binary>("target_address").Value);
+                }
+            }
+            ]]></code>
+            <para>Note that the above example has several bad practices.
+            Compare this example with <see cref="T:Libplanet.Action.PolymorphicAction`1"/>'s
+            example.</para>
+            </example>
         </member>
         <member name="P:Libplanet.Action.IAction.PlainValue">
             <summary>
             Serializes values bound to an action, which is held by properties
             (or fields) of an action, so that they can be transmitted over
             network or saved to persistent storage.
-            <para>Serialized values are deserialized by <see
-            cref="M:Libplanet.Action.IAction.LoadPlainValue(System.Collections.Immutable.IImmutableDictionary{System.String,System.Object})"/> method
-            later.</para>
-            <para>It uses <a href=
-            "https://docs.microsoft.com/en-us/dotnet/standard/serialization/"
-            >.NET's built-in serialization mechanism</a>.</para>
+            <para>Serialized values are deserialized by
+            <see cref="M:Libplanet.Action.IAction.LoadPlainValue(Bencodex.Types.IValue)"/> method later.</para>
             </summary>
-            <returns>A value which encodes this action's bound values (held
-            by properties or fields).  It has to be <a href=
-            "https://docs.microsoft.com/en-us/dotnet/standard/serialization/"
-            >serializable</a>.</returns>
-            <seealso
-            cref="M:Libplanet.Action.IAction.LoadPlainValue(System.Collections.Immutable.IImmutableDictionary{System.String,System.Object})"/>
+            <returns>A Bencodex value which encodes this action's bound values (held
+            by properties or fields).
+            </returns>
+            <seealso cref="M:Libplanet.Action.IAction.LoadPlainValue(Bencodex.Types.IValue)"/>
         </member>
-        <member name="M:Libplanet.Action.IAction.LoadPlainValue(System.Collections.Immutable.IImmutableDictionary{System.String,System.Object})">
+        <member name="M:Libplanet.Action.IAction.LoadPlainValue(Bencodex.Types.IValue)">
             <summary>
             Deserializes serialized data (i.e., data <see cref="P:Libplanet.Action.IAction.PlainValue"/>
             property made), and then fills this action's properties (or fields)
@@ -688,40 +680,40 @@
         <member name="M:Libplanet.Action.IRandom.Next(System.Int32)">
             <summary>
             Gets a non-negative random integer that is less than the specified
-            <paramref name="maxValue"/>.
+            <paramref name="upperBound"/>.
             </summary>
-            <param name="maxValue">The exclusive upper bound of the random
+            <param name="upperBound">The exclusive upper bound of the random
             number to be generated.  It must be greater than or equal to 0.
             </param>
             <returns>A 32-bit signed integer that is greater than or equal to
-            0 and less than <paramref name="maxValue"/>; that is, the range of
+            0 and less than <paramref name="upperBound"/>; that is, the range of
             return values ordinarily includes 0 but not <paramref
-            name="maxValue"/>.  However, if <paramref name="maxValue"/> equals
-            to 0, <paramref name="maxValue"/> is returned.</returns>
+            name="upperBound"/>.  However, if <paramref name="upperBound"/> equals
+            to 0, <paramref name="upperBound"/> is returned.</returns>
             <exception cref="T:System.ArgumentOutOfRangeException">Thrown when
-            <paramref name="maxValue"/> is less than 0.</exception>
+            <paramref name="upperBound"/> is less than 0.</exception>
             <seealso cref="M:System.Random.Next(System.Int32)"/>
         </member>
         <member name="M:Libplanet.Action.IRandom.Next(System.Int32,System.Int32)">
             <summary>
             Gets a random integer that is within a specified range.
             </summary>
-            <param name="minValue">The inclusive lower bound of the random
+            <param name="lowerBound">The inclusive lower bound of the random
             number to be generated.</param>
-            <param name="maxValue">The exclusive upper bound of the random
+            <param name="upperBound">The exclusive upper bound of the random
             number to be generated.  It must be greater than or equal to
-            <paramref name="minValue"/>.
+            <paramref name="lowerBound"/>.
             </param>
             <returns>A 32-bit signed integer that is greater than or equal to
-            <paramref name="minValue"/> and less than <paramref
-            name="maxValue"/>; that is, the range of return values ordinarily
-            includes <paramref name="minValue"/> but not <paramref
-            name="maxValue"/>.  If <paramref name="maxValue"/> equals to
-            <paramref name="minValue"/>, <paramref name="minValue"/> is
+            <paramref name="lowerBound"/> and less than <paramref
+            name="upperBound"/>; that is, the range of return values ordinarily
+            includes <paramref name="lowerBound"/> but not <paramref
+            name="upperBound"/>.  If <paramref name="upperBound"/> equals to
+            <paramref name="lowerBound"/>, <paramref name="lowerBound"/> is
             returned.</returns>
             <exception cref="T:System.ArgumentOutOfRangeException">Thrown when
-            <paramref name="maxValue"/> is less than <paramref
-            name="minValue"/>.</exception>
+            <paramref name="upperBound"/> is less than <paramref
+            name="lowerBound"/>.</exception>
             <seealso cref="M:System.Random.Next(System.Int32,System.Int32)"/>
         </member>
         <member name="M:Libplanet.Action.IRandom.NextBytes(System.Byte[])">
@@ -759,190 +751,194 @@
             </summary>
         </member>
         <member name="T:Libplanet.Action.PolymorphicAction`1">
-             <summary>
-             A decorator to enable subtype polymorphism for action classes.
-             <para>By convention, concrete action subclasses are named with verb
-             phrases, e.g., <c>Heal</c>, <c>Sell</c>.</para>
-             <para>One downside of this compared to the vanilla <see cref="T:Libplanet.Action.IAction"/>
-             is the fact that it uses reflection under the hood.  This may cause
-             compatibility issues on certain platforms, and is slightly slower.
-             </para>
-             </summary>
-             <typeparam name="T">An action base class which implements
-             <see cref="T:Libplanet.Action.IAction"/> and has subclasses.  Usually an abstract
-             class.</typeparam>
-             <example>
-             The following example shows how polymorphic actions look like
-             (compare this with an <see cref="T:Libplanet.Action.IAction"/> example without
-             subtype polymorphism):
-             <code><![CDATA[
-             using System;
-             using System.Collections.Immutable;
-             using Libplanet;
-             using Libplanet.Action;
-            
-             // Instead of having multiple in-game actions in a class,
-             // in this example, we declare one abstract base class
-             // and its three concrete subclasses.
-             public abstract class ActionBase : IAction
-             {
-                 public ActionBase() { }
-            
-                 public ActionBase(Address targetAddress)
-                 {
-                     TargetAddress = targetAddress;
-                 }
-            
-                 public Address TargetAddress { get; private set; }
-            
-                 // Leaves Execute() abstract so that concrete subclasses
-                 // implement their own logic.
-                 public abstract IAccountStateDelta Execute(IActionContext context);
-            
-                 // Makes Render() no-op by default, but overrideable by subclasses.
-                 public virtual void Render(
-                     IActionContext context,
-                     IAccountStateDelta nextStates)
-                 {
-                 }
-            
-                 // Makes Unrender() no-op by default,
-                 // but overrideable by subclasses.
-                 public virtual void Unrender(
-                     IActionContext context,
-                     IAccountStateDelta nextStates)
-                 {
-                 }
-            
-                 IImmutableDictionary<string, object> IAction.PlainValue =>
-                     ImmutableDictionary<string, object>.Empty
-                         .Add("target_address", TargetAddress);
-            
-                 void IAction.LoadPlainValue(
-                     IImmutableDictionary<string, object> plainValue)
-                 {
-                     TargetAddress = (Address)plainValue["target_address"];
-                 }
-             }
-            
-             // PolymorphicAction<T> requires concrete action classes marked with
-             // ActionTypeAttribute.
-             // There is only one required parameter to ActionTypeAttribute,
-             // which takes a unique identifier of the action type.
-             // This is used for serialization and deserialization under the hood.
-             [ActionType("create_character")]
-             public sealed class CreateCharacter : ActionBase
-             {
-                 public override IAccountStateDelta Execute(IActionContext context)
-                 {
-                     var state = (ImmutableDictionary<string, uint>)
-                         context.PreviousStates.GetState(TargetAddress);
-                     if (!TargetAddress.Equals(context.Signer))
-                         throw new Exception(
-                             "TargetAddress of CreateCharacter action only can be " +
-                             "the same address to the Transaction<T>.Signer."
-                         );
-                     else if (!(state is null))
-                         throw new Exception("Character was already created.");
-                     return context.PreviousStates.SetState(
-                         TargetAddress,
-                         ImmutableDictionary<string, uint>.Empty.Add("hp", 20)
-                     );
-                 }
-            
-                 void IAction.Render(
-                     IActionContext context,
-                     IAccountStateDelta nextStates)
-                 {
-                     var c = new Character
-                     {
-                         Address = TargetAddress,
-                         Hp = nextStates.GetState(TargetAddress)["hp"],
-                     };
-                     c.Draw();
-                     break;
-                 }
-            
-                 void IAction.Unrender(
-                     IActionContext context,
-                     IAccountStateDelta nextStates)
-                 {
-                     Character c = Character.GetByAddress(TargetAddress);
-                     c.Hide();
-                 }
-             }
-            
-             [ActionType("attack")]
-             public sealed class Attack : ActionBase
-             {
-                 public override IAccountStateDelta Execute(IActionContext context)
-                 {
-                     var state = (ImmutableDictionary<string, uint>)
-                         context.PreviousStates.GetState(TargetAddress);
-                     return context.PreviousStates.SetState(
-                         TargetAddress,
-                         state.SetItem("hp", Math.Max(state["hp"] - 5, 0))
-                     );
-                 }
-            
-                 void IAction.Render(
-                     IActionContext context,
-                     IAccountStateDelta nextStates)
-                 {
-                     Character c = Character.GetByAddress(TargetAddress);
-                     c.Hp = nextStates.GetState(TargetAddress)["hp"];
-                     c.Draw();
-                 }
-            
-                 void IAction.Unrender(
-                     IActionContext context,
-                     IAccountStateDelta nextStates)
-                 {
-                     Character c = Character.GetByAddress(TargetAddress);
-                     c.Hp = context.PreviousStates.GetState(TargetAddress)["hp"];
-                     c.Draw();
-                 }
-             }
-            
-             [ActionType("heal")]
-             public sealed class Heal : ActionBase
-             {
-                 public override IAccountStateDelta Execute(IActionContext context)
-                 {
-                     var state = (ImmutableDictionary<string, uint>)
-                         context.PreviousStates.GetState(TargetAddress);
-                     return context.PreviousStates.SetState(
-                         TargetAddress,
-                         state.SetItem("hp", Math.Min(state["hp"] + 5, 20))
-                     );
-                 }
-            
-                 void IAction.Render(
-                     IActionContext context,
-                     IAccountStateDelta nextStates)
-                 {
-                     Character c = Character.GetByAddress(TargetAddress);
-                     c.Hp = nextStates.GetState(TargetAddress)["hp"];
-                     c.Draw();
-                 }
-            
-                 void IAction.Unrender(
-                     IActionContext context,
-                     IAccountStateDelta nextStates)
-                 {
-                     Character c = Character.GetByAddress(TargetAddress);
-                     c.Hp = context.PreviousStates.GetState(TargetAddress)["hp"];
-                     c.Draw();
-                 }
-             }
-             ]]></code>
-             </example>
-             <remarks>Every concrete action subclass of <typeparamref name="T"/>
-             has to be marked with the <see cref="T:Libplanet.Action.ActionTypeAttribute"/>.
-             Even if a superclass is marked with
-             the <see cref="T:Libplanet.Action.ActionTypeAttribute"/> its subclass also should be
-             marked with the <see cref="T:Libplanet.Action.ActionTypeAttribute"/> if it is concrete.
-             </remarks>
+            <summary>
+            A decorator to enable subtype polymorphism for action classes.
+            <para>By convention, concrete action subclasses are named with verb
+            phrases, e.g., <c>Heal</c>, <c>Sell</c>.</para>
+            <para>One downside of this compared to the vanilla <see cref="T:Libplanet.Action.IAction"/>
+            is the fact that it uses reflection under the hood.  This may cause
+            compatibility issues on certain platforms, and is slightly slower.
+            </para>
+            </summary>
+            <typeparam name="T">An action base class which implements
+            <see cref="T:Libplanet.Action.IAction"/> and has subclasses.  Usually an abstract
+            class.</typeparam>
+            <example>
+            The following example shows how polymorphic actions look like
+            (compare this with an <see cref="T:Libplanet.Action.IAction"/> example without
+            subtype polymorphism):
+            <code><![CDATA[
+            using System;
+            using System.Collections.Generic;
+            using Bencodex.Types;
+            using Libplanet;
+            using Libplanet.Action;
+            // Instead of having multiple in-game actions in a class,
+            // in this example, we declare one abstract base class
+            // and its three concrete subclasses.
+            public abstract class ActionBase : IAction
+            {
+                public ActionBase() { }
+                public ActionBase(Address targetAddress)
+                {
+                    TargetAddress = targetAddress;
+                }
+                public Address TargetAddress { get; private set; }
+                // Leaves Execute() abstract so that concrete subclasses
+                // implement their own logic.
+                public abstract IAccountStateDelta Execute(IActionContext context);
+                // Makes Render() no-op by default, but overrideable by subclasses.
+                public virtual void Render(
+                    IActionContext context,
+                    IAccountStateDelta nextStates)
+                {
+                }
+                // Makes Unrender() no-op by default,
+                // but overrideable by subclasses.
+                public virtual void Unrender(
+                    IActionContext context,
+                    IAccountStateDelta nextStates)
+                {
+                }
+                IValue IAction.PlainValue =>
+                    new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
+                    {
+                        [(Text)"target_address"] = (Binary)TargetAddress.ToByteArray(),
+                    });
+                void IAction.LoadPlainValue(
+                    IValue plainValue)
+                {
+                    var dictionary = (Bencodex.Types.Dictionary)plainValue;
+                    TargetAddress =
+                        new Address(dictionary.GetValue<Binary>("target_address").Value);
+                }
+            }
+            // PolymorphicAction<T> requires concrete action classes marked with
+            // ActionTypeAttribute.
+            // There is only one required parameter to ActionTypeAttribute,
+            // which takes a unique identifier of the action type.
+            // This is used for serialization and deserialization under the hood.
+            [ActionType("create_character")]
+            public sealed class CreateCharacter : ActionBase
+            {
+                public override IAccountStateDelta Execute(IActionContext context)
+                {
+                    var state =
+                        context.PreviousStates.GetState(TargetAddress);
+                    if (!TargetAddress.Equals(context.Signer))
+                        throw new Exception(
+                            "TargetAddress of CreateCharacter action only can be " +
+                            "the same address to the Transaction<T>.Signer."
+                        );
+                    else if (!(state is null))
+                        throw new Exception("Character was already created.");
+                    return context.PreviousStates.SetState(
+                        TargetAddress,
+                        new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
+                        {
+                            [(Text)"hp"] = (Integer)20,
+                        })
+                    );
+                }
+                void IAction.Render(
+                    IActionContext context,
+                    IAccountStateDelta nextStates)
+                {
+                    var c = new Character
+                    {
+                        Address = TargetAddress,
+                        Hp = (int)((Integer)nextStates.GetState(TargetAddress)).Value,
+                    };
+                    c.Draw();
+                    break;
+                }
+                void IAction.Unrender(
+                    IActionContext context,
+                    IAccountStateDelta nextStates)
+                {
+                    Character c = Character.GetByAddress(TargetAddress);
+                    c.Hide();
+                }
+            }
+            [ActionType("attack")]
+            public sealed class Attack : ActionBase
+            {
+                public override IAccountStateDelta Execute(IActionContext context)
+                {
+                    var state =
+                        (Bencodex.Types.Dictionary)context.PreviousStates.GetState(TargetAddress);
+                    return context.PreviousStates.SetState(
+                        TargetAddress,
+                        (Bencodex.Types.Dictionary)state
+                            .SetItem(
+                                (Text)"hp",
+                                (Integer)Math.Max((int)state.GetValue<Integer>("hp").Value - 5, 0))
+                    );
+                }
+                void IAction.Render(
+                    IActionContext context,
+                    IAccountStateDelta nextStates)
+                {
+                    Character c = Character.GetByAddress(TargetAddress);
+                    c.Hp = (int)((Bencodex.Types.Dictionary)nextStates.GetState(TargetAddress))
+                        .GetValue<Integer>("hp").Value;
+                    c.Draw();
+                }
+                void IAction.Unrender(
+                    IActionContext context,
+                    IAccountStateDelta nextStates)
+                {
+                    Character c = Character.GetByAddress(TargetAddress);
+                    var target =
+                        (Bencodex.Types.Dictionary)context.PreviousStates.GetState(TargetAddress);
+                    c.Hp = (int)target.GetValue<Integer>("hp").Value;
+                    c.Draw();
+                }
+            }
+            [ActionType("heal")]
+            public sealed class Heal : ActionBase
+            {
+                public override IAccountStateDelta Execute(IActionContext context)
+                {
+                    var state =
+                        (Bencodex.Types.Dictionary)context.PreviousStates.GetState(TargetAddress);
+                    return context.PreviousStates.SetState(
+                        TargetAddress,
+                        (Bencodex.Types.Dictionary)state
+                            .SetItem(
+                                (Text)"hp",
+                                (Integer)Math.Min((int)state.GetValue<Integer>("hp").Value + 5, 20))
+                    );
+                }
+                void IAction.Render(
+                    IActionContext context,
+                    IAccountStateDelta nextStates)
+                {
+                    Character c = Character.GetByAddress(TargetAddress);
+                    var target =
+                        (Bencodex.Types.Dictionary)context.PreviousStates.GetState(TargetAddress);
+                    c.Hp = (int)target.GetValue<Integer>("hp").Value;
+                    c.Draw();
+                }
+                void IAction.Unrender(
+                    IActionContext context,
+                    IAccountStateDelta nextStates)
+                {
+                    Character c = Character.GetByAddress(TargetAddress);
+                    var target =
+                        (Bencodex.Types.Dictionary)context.PreviousStates.GetState(TargetAddress);
+                    c.Hp = (int)target.GetValue<Integer>("hp").Value;
+                    c.Draw();
+                }
+            }
+            ]]></code>
+            </example>
+            <remarks>Every concrete action subclass of <typeparamref name="T"/>
+            has to be marked with the <see cref="T:Libplanet.Action.ActionTypeAttribute"/>.
+            Even if a superclass is marked with
+            the <see cref="T:Libplanet.Action.ActionTypeAttribute"/> its subclass also should be
+            marked with the <see cref="T:Libplanet.Action.ActionTypeAttribute"/> if it is concrete.
+            </remarks>
         </member>
         <member name="M:Libplanet.Action.PolymorphicAction`1.#ctor">
             <summary>
@@ -967,9 +963,6 @@
             (or one of its subtypes).
             </summary>
         </member>
-        <member name="P:Libplanet.Action.PolymorphicAction`1.PlainValue">
-            <inheritdoc/>
-        </member>
         <member name="M:Libplanet.Action.PolymorphicAction`1.op_Implicit(`0)~Libplanet.Action.PolymorphicAction{`0}">
             <summary>
             For convenience, an inner action <typeparamref name="T"/> can be
@@ -983,7 +976,7 @@
             when the class of the given <paramref name="innerAction"/>
             is not annotated with <see cref="T:Libplanet.Action.ActionTypeAttribute"/>.</exception>
         </member>
-        <member name="M:Libplanet.Action.PolymorphicAction`1.LoadPlainValue(System.Collections.Immutable.IImmutableDictionary{System.String,System.Object})">
+        <member name="M:Libplanet.Action.PolymorphicAction`1.LoadPlainValue(Bencodex.Types.IValue)">
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Action.PolymorphicAction`1.Execute(Libplanet.Action.IActionContext)">
@@ -1006,7 +999,8 @@
         </member>
         <member name="M:Libplanet.Action.RandomExtension.GenerateRandomGuid(Libplanet.Action.IRandom)">
             <summary>
-            Generates a random <see cref="T:System.Guid"/>.
+            Generates a UUID version 4, i.e., a random <see cref="T:System.Guid"/>.
+            Please refer to <a href="https://tools.ietf.org/html/rfc4122#section-4.4">RFC 4122</a>.
             </summary>
             <param name="random"> <see cref="T:Libplanet.Action.IRandom"/> to generate
             a random <see cref="T:System.Guid"/>.</param>
@@ -1242,6 +1236,17 @@
             <paramref name="publicKey"/>.</returns>
             <seealso cref="M:Libplanet.Address.#ctor(Libplanet.Crypto.PublicKey)"/>
         </member>
+        <member name="E:Libplanet.Blockchain.BlockChain`1.TipChanged">
+            <summary>
+            An event which is invoked when <see cref="P:Libplanet.Blockchain.BlockChain`1.Tip"/> is changed.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Blockchain.BlockChain`1.Tip">
+            <summary>
+            The topmost <see cref="T:Libplanet.Blocks.Block`1"/> of the current blockchain.
+            Can be <c>null</c> if the blockchain is empty.
+            </summary>
+        </member>
         <member name="P:Libplanet.Blockchain.BlockChain`1.Blocks">
             <summary>
             All <see cref="T:Libplanet.Blocks.Block`1"/>s in the <see cref="T:Libplanet.Blockchain.BlockChain`1"/>
@@ -1270,13 +1275,21 @@
         <member name="P:Libplanet.Blockchain.BlockChain`1.Item(System.Int32)">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain`1.GetStates(System.Collections.Generic.IEnumerable{Libplanet.Address},System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.Boolean)">
+        <member name="M:Libplanet.Blockchain.BlockChain`1.LongCount">
             <summary>
-            Gets the state of the given <paramref name="addresses"/> in the
+            Returns a <see cref="T:System.Int64"/> integer that represents the number of elements in the
+            <see cref="T:Libplanet.Blockchain.BlockChain`1"/>.
+            </summary>
+            <returns>A number that represents how many elements in the <see cref="T:Libplanet.Blockchain.BlockChain`1"/>.
+            </returns>
+        </member>
+        <member name="M:Libplanet.Blockchain.BlockChain`1.GetState(Libplanet.Address,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.Boolean)">
+            <summary>
+            Gets the state of the given <paramref name="address"/> in the
             <see cref="T:Libplanet.Blockchain.BlockChain`1"/> from <paramref name="offset"/>.
             </summary>
-            <param name="addresses">The list of <see cref="T:Libplanet.Address"/>es to get
-            their states.</param>
+            <param name="address">An <see cref="T:Libplanet.Address"/> to get
+            the states of.</param>
             <param name="offset">The <see cref="T:Libplanet.HashDigest`1"/> of the block to
             start finding the state. It will be The tip of the
             <see cref="T:Libplanet.Blockchain.BlockChain`1"/> if it is <c>null</c>.</param>
@@ -1290,7 +1303,7 @@
             Just-in-time calculation of states could take a long time so that
             the overall latency of an application may rise.</param>
             <returns>The <see cref="T:Libplanet.Action.AddressStateMap"/> of given
-            <paramref name="addresses"/>.</returns>
+            <paramref name="address"/>.</returns>
             <exception cref="T:Libplanet.Blockchain.IncompleteBlockStatesException">Thrown when
             the <see cref="T:Libplanet.Blockchain.BlockChain`1"/> instance does not contain
             states dirty of the block which lastly updated states of a requested
@@ -1365,6 +1378,20 @@
             <returns>The next <see cref="P:Libplanet.Tx.Transaction`1.Nonce"/> value of the
             <paramref name="address"/>.</returns>
         </member>
+        <member name="M:Libplanet.Blockchain.BlockChain`1.MineBlock(Libplanet.Address,System.DateTimeOffset,System.Threading.CancellationToken)">
+            <summary>
+            Mine a <see cref="T:Libplanet.Blocks.Block`1"/> using staged <see cref="T:Libplanet.Tx.Transaction`1"/>s.
+            </summary>
+            <param name="miner">The <see cref="T:Libplanet.Address"/> of miner that mined the block.</param>
+            <param name="currentTime">The <see cref="T:System.DateTimeOffset"/> when mining started.</param>
+            <param name="cancellationToken">
+            A cancellation token used to propagate notification that this
+            operation should be canceled.
+            </param>
+            <returns>An awaitable task with a <see cref="T:Libplanet.Blocks.Block`1"/> that is mined.</returns>
+            <exception cref="T:System.OperationCanceledException">Thrown when
+            <see cref="P:Libplanet.Blockchain.BlockChain`1.Tip"/> is changed while mining.</exception>
+        </member>
         <member name="M:Libplanet.Blockchain.BlockChain`1.MakeTransaction(Libplanet.Crypto.PrivateKey,System.Collections.Generic.IEnumerable{`0},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Nullable{System.DateTimeOffset},System.Boolean)">
             <summary>
             Creates a new <see cref="T:Libplanet.Tx.Transaction`1"/> and stage the transaction.
@@ -1403,6 +1430,33 @@
             <param name="locator">A block locator that contains candidate common ancestors.</param>
             <returns>An approximate to the topmost common ancestor.  If it failed to find anything
             returns <c>null</c>.</returns>
+        </member>
+        <member name="T:Libplanet.Blockchain.BlockChain`1.TipChangedEventArgs">
+            <summary>
+            Provides data for the <see cref="E:Libplanet.Blockchain.BlockChain`1.TipChanged"/> event.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Blockchain.BlockChain`1.TipChangedEventArgs.PreviousIndex">
+            <summary>
+            The <see cref="P:Libplanet.Blocks.Block`1.Index"/> of <see cref="P:Libplanet.Blockchain.BlockChain`1.Tip"/> <em>before</em> changed.
+            Can be <c>null</c> if the blockchain was empty before.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Blockchain.BlockChain`1.TipChangedEventArgs.PreviousHash">
+            <summary>
+            The <see cref="P:Libplanet.Blocks.Block`1.Hash"/> of <see cref="P:Libplanet.Blockchain.BlockChain`1.Tip"/> <em>before</em> changed.
+            Can be <c>null</c> if the blockchain was empty before.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Blockchain.BlockChain`1.TipChangedEventArgs.Index">
+            <summary>
+            The <see cref="P:Libplanet.Blocks.Block`1.Index"/> of <see cref="P:Libplanet.Blockchain.BlockChain`1.Tip"/> <em>after</em> changed.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Blockchain.BlockChain`1.TipChangedEventArgs.Hash">
+            <summary>
+            The <see cref="P:Libplanet.Blocks.Block`1.Hash"/> of <see cref="P:Libplanet.Blockchain.BlockChain`1.Tip"/> <em>after</em> changed.
+            </summary>
         </member>
         <member name="T:Libplanet.Blockchain.IncompleteBlockStatesException">
             <summary>
@@ -1556,6 +1610,49 @@
             followed by a new <see cref="T:Libplanet.Blocks.Block`1"/> to be mined.</param>
             <returns>A right <see cref="P:Libplanet.Blocks.Block`1.Difficulty"/>
             for a new <see cref="T:Libplanet.Blocks.Block`1"/> to be mined.</returns>
+        </member>
+        <member name="M:Libplanet.Blocks.Block`1.#ctor(System.Int64,System.Int64,Libplanet.Nonce,System.Nullable{Libplanet.Address},System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.DateTimeOffset,System.Collections.Generic.IEnumerable{Libplanet.Tx.Transaction{`0}})">
+            <summary>
+            Creates a <see cref="T:Libplanet.Blocks.Block`1"/> instance by manually filling all field values.
+            For a more automated way, see also <see cref="M:Libplanet.Blocks.Block`1.Mine(System.Int64,System.Int64,Libplanet.Address,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.DateTimeOffset,System.Collections.Generic.IEnumerable{Libplanet.Tx.Transaction{`0}},System.Threading.CancellationToken)"/> method.
+            </summary>
+            <param name="index">The height of the block to create.  Goes to the <see cref="P:Libplanet.Blocks.Block`1.Index"/>.
+            </param>
+            <param name="difficulty">The mining difficulty that <paramref name="nonce"/> has to
+            satisfy.  Goes to the <see cref="P:Libplanet.Blocks.Block`1.Difficulty"/>.</param>
+            <param name="nonce">The nonce which satisfy the given <paramref name="difficulty"/> with
+            any other field values.  Goes to the <see cref="P:Libplanet.Blocks.Block`1.Nonce"/>.</param>
+            <param name="miner">An optional address refers to who mines this block.
+            Goes to the <see cref="P:Libplanet.Blocks.Block`1.Miner"/>.</param>
+            <param name="previousHash">The previous block's <see cref="P:Libplanet.Blocks.Block`1.Hash"/>.  If it's a genesis
+            block (i.e., <paramref name="index"/> is 0) this should be <c>null</c>.
+            Goes to the <see cref="P:Libplanet.Blocks.Block`1.PreviousHash"/>.</param>
+            <param name="timestamp">The time this block is created.  Goes to
+            the <see cref="P:Libplanet.Blocks.Block`1.Timestamp"/>.</param>
+            <param name="transactions">The transactions to be mined together with this block.
+            Transactions become sorted in an unpredicted-before-mined order and then go to
+            the <see cref="P:Libplanet.Blocks.Block`1.Transactions"/> property.
+            </param>
+            <seealso cref="M:Libplanet.Blocks.Block`1.Mine(System.Int64,System.Int64,Libplanet.Address,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.DateTimeOffset,System.Collections.Generic.IEnumerable{Libplanet.Tx.Transaction{`0}},System.Threading.CancellationToken)"/>
+        </member>
+        <member name="M:Libplanet.Blocks.Block`1.Mine(System.Int64,System.Int64,Libplanet.Address,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.DateTimeOffset,System.Collections.Generic.IEnumerable{Libplanet.Tx.Transaction{`0}},System.Threading.CancellationToken)">
+            <summary>
+            Generate a block with given <paramref name="transactions"/>.
+            </summary>
+            <param name="index">Index of the block.</param>
+            <param name="difficulty">Difficulty to find the <see cref="T:Libplanet.Blocks.Block`1"/>
+            <see cref="P:Libplanet.Blocks.Block`1.Nonce"/>.</param>
+            <param name="miner">The <see cref="T:Libplanet.Address"/> of miner that mined the block.</param>
+            <param name="previousHash">
+            The <see cref="T:Libplanet.HashDigest`1"/> of previous block.
+            </param>
+            <param name="timestamp">The <see cref="T:System.DateTimeOffset"/> when mining started.</param>
+            <param name="transactions"><see cref="T:Libplanet.Tx.Transaction`1"/>s that are going to be included
+            in the block.</param>
+            <param name="cancellationToken">
+            A cancellation token used to propagate notification that this
+            operation should be canceled.</param>
+            <returns>A <see cref="T:Libplanet.Blocks.Block`1"/> that mined.</returns>
         </member>
         <member name="M:Libplanet.Blocks.Block`1.EvaluateActionsPerTx(Libplanet.Action.AccountStateGetter)">
             <summary>
@@ -2013,15 +2110,15 @@
             should not vary for different <paramref name="nonce"/>s.</para>
             </summary>
             <param name="nonce">An arbitrary nonce for an attempt, provided
-            by <see cref="M:Libplanet.Hashcash.Answer(Libplanet.Hashcash.Stamp,System.Int64)"/> method.</param>
+            by <see cref="M:Libplanet.Hashcash.Answer(Libplanet.Hashcash.Stamp,System.Int64,System.Threading.CancellationToken)"/> method.</param>
             <returns>A <see cref="T:System.Byte"/> array determined from the given
             <paramref name="nonce"/>.  It should return consistently
             an equivalent array for equivalent <paramref name="nonce"/>
             values.</returns>
-            <seealso cref="M:Libplanet.Hashcash.Answer(Libplanet.Hashcash.Stamp,System.Int64)"/>
+            <seealso cref="M:Libplanet.Hashcash.Answer(Libplanet.Hashcash.Stamp,System.Int64,System.Threading.CancellationToken)"/>
             <seealso cref="T:Libplanet.Nonce"/>
         </member>
-        <member name="M:Libplanet.Hashcash.Answer(Libplanet.Hashcash.Stamp,System.Int64)">
+        <member name="M:Libplanet.Hashcash.Answer(Libplanet.Hashcash.Stamp,System.Int64,System.Threading.CancellationToken)">
             <summary>
             Finds a <see cref="T:Libplanet.Nonce"/> that satisfies the given
             <paramref name="difficulty"/>.  This process is so-called
@@ -2034,6 +2131,10 @@
             <see cref="T:Libplanet.Nonce"/> value.</param>
             <param name="difficulty">A number to calculate the target number
             for which the returned answer should be less than.</param>
+            <param name="cancellationToken">
+            A cancellation token used to propagate notification that this
+            operation should be canceled.
+            </param>
             <returns>A <see cref="T:Libplanet.Nonce"/> value which satisfies the given
             <paramref name="difficulty"/>.</returns>
             <seealso cref="T:Libplanet.Hashcash.Stamp"/>
@@ -2299,7 +2400,7 @@
         <member name="T:Libplanet.Net.DifferentProtocolVersionEventArgs">
             <summary>
             The event data that provides a value when
-            <see cref="E:Libplanet.Net.Swarm`1.DifferentVersionPeerEncountered" /> is occured.
+            <see cref="E:Libplanet.Net.Swarm`1.DifferentVersionPeerEncountered" /> is occurred.
             </summary>
         </member>
         <member name="P:Libplanet.Net.DifferentProtocolVersionEventArgs.ExpectedVersion">
@@ -2413,6 +2514,9 @@
         <member name="M:Libplanet.Net.Peer.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
             <inheritdoc/>
         </member>
+        <member name="M:Libplanet.Net.Peer.ToString">
+            <inheritdoc/>
+        </member>
         <member name="F:Libplanet.Net.PreloadState.TotalPhase">
             <summary>
             The number of total phases.
@@ -2422,6 +2526,59 @@
             <summary>
             The current phase.
             </summary>
+        </member>
+        <member name="M:Libplanet.Net.Protocols.KademliaProtocol`1.RefreshTableAsync(System.TimeSpan,System.Threading.CancellationToken)">
+            <summary>
+            Periodically checks whether <see cref="T:Libplanet.Net.Peer"/>s in <see cref="T:Libplanet.Net.Protocols.RoutingTable"/> is
+            online by sending <see cref="T:Libplanet.Net.Messages.Ping"/>.
+            </summary>
+            <param name="period">The cycle in which the operation is executed.</param>
+            <param name="cancellationToken">A cancellation token used to propagate notification
+            that this operation should be canceled.</param>
+            <returns>An awaitable task without value.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Protocols.KademliaProtocol`1.RebuildConnectionAsync(System.TimeSpan,System.Threading.CancellationToken)">
+            <summary>
+            Reconstructs network connection between peers on network. It runs operation once
+            right after called, repeated every <see cref="T:System.TimeSpan"/> of <paramref name="period"/>.
+            </summary>
+            <param name="period">The cycle in which the operation is executed.</param>
+            <param name="cancellationToken">A cancellation token used to propagate notification
+            that this operation should be canceled.</param>
+            <returns>>An awaitable task without value.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Protocols.KademliaProtocol`1.FindPeerAsync(Libplanet.Address,Libplanet.Net.BoundPeer,System.Int32,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
+            <summary>
+            Send <see cref="T:Libplanet.Net.Messages.FindNeighbors"/> messages to <paramref name="viaPeer"/>
+            to find <see cref="T:Libplanet.Net.Peer"/>s near <paramref name="target"/>.
+            </summary>
+            <param name="target">The <see cref="T:Libplanet.Address"/> to find.</param>
+            <param name="viaPeer">The target <see cref="T:Libplanet.Net.Peer"/> to send <see cref="T:Libplanet.Net.Messages.FindNeighbors"/>
+            message. If null, selects 3 <see cref="T:Libplanet.Net.Peer"/>s from <see cref="T:Libplanet.Net.Protocols.RoutingTable"/> of
+            self.</param>
+            <param name="depth">Target depth of recursive operation.</param>
+            <param name="timeout"><see cref="T:System.TimeSpan"/> for waiting reply of
+            <see cref="T:Libplanet.Net.Messages.FindNeighbors"/>.</param>
+            <param name="cancellationToken">A cancellation token used to propagate notification
+            that this operation should be canceled.</param>
+            <returns>An awaitable task without value.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Protocols.KademliaProtocol`1.ProcessFoundAsync(System.Collections.Immutable.ImmutableList{Libplanet.Net.BoundPeer},Libplanet.Address,System.Int32,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
+            <summary>
+            Process <see cref="T:Libplanet.Net.Peer"/>s that is replied by sending <see cref="T:Libplanet.Net.Messages.FindNeighbors"/>
+            request.
+            </summary>
+            <param name="found"><see cref="T:Libplanet.Net.Peer"/>s that found.</param>
+            <param name="target">The target <see cref="T:Libplanet.Address"/> to search.</param>
+            <param name="depth">Target depth of recursive operation. If -1 is given,
+            it runs until the closest peer is found.</param>
+            <param name="timeout"><see cref="T:System.TimeSpan"/> for next depth's
+            <see cref="M:Libplanet.Net.Protocols.KademliaProtocol`1.FindPeerAsync(Libplanet.Address,Libplanet.Net.BoundPeer,System.Int32,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)"/> operation.</param>
+            <param name="cancellationToken">A cancellation token used to propagate notification
+            that this operation should be canceled.</param>
+            <returns>An awaitable task without value.</returns>
+            <exception cref="T:System.TimeoutException">Thrown when all peers that found are
+            not online.</exception>
         </member>
         <member name="T:Libplanet.Net.StateReferenceDownloadState">
             <summary>
@@ -2604,7 +2761,7 @@
         <member name="M:Libplanet.Store.BaseStore.PutBlock``1(Libplanet.Blocks.Block{``0})">
             <inheritdoc />
         </member>
-        <member name="M:Libplanet.Store.BaseStore.IterateStateReferences(System.Guid,Libplanet.Address)">
+        <member name="M:Libplanet.Store.BaseStore.IterateStateReferences(System.Guid,Libplanet.Address,System.Nullable{System.Int64},System.Nullable{System.Int64},System.Nullable{System.Int32})">
             <inheritdoc />
         </member>
         <member name="M:Libplanet.Store.BaseStore.ForkStateReferences``1(System.Guid,System.Guid,Libplanet.Blocks.Block{``0})">
@@ -2672,7 +2829,7 @@
             <param name="chainId">The ID of a new canonical chain.</param>
             <seealso cref="M:Libplanet.Store.IStore.GetCanonicalChainId"/>
         </member>
-        <member name="M:Libplanet.Store.IStore.IterateIndex(System.Guid,System.Int32,System.Nullable{System.Int32})">
+        <member name="M:Libplanet.Store.IStore.IterateIndexes(System.Guid,System.Int32,System.Nullable{System.Int32})">
             <summary>
             Lists all block hashes in the <parmaref name="chainId"/>.
             </summary>
@@ -2697,7 +2854,7 @@
             to fork.</param>
             <exception cref="T:Libplanet.Store.ChainIdNotFoundException">Thrown when the given
             <paramref name="sourceChainId"/> does not exist.</exception>
-            <seealso cref="M:Libplanet.Store.IStore.IterateIndex(System.Guid,System.Int32,System.Nullable{System.Int32})"/>
+            <seealso cref="M:Libplanet.Store.IStore.IterateIndexes(System.Guid,System.Int32,System.Nullable{System.Int32})"/>
             <seealso cref="M:Libplanet.Store.IStore.AppendIndex(System.Guid,Libplanet.HashDigest{System.Security.Cryptography.SHA256})"/>
         </member>
         <member name="M:Libplanet.Store.IStore.ListAddresses(System.Guid)">
@@ -2786,16 +2943,24 @@
             <c>b = 1; c = 1</c> (delta).</para>
             </remarks>
         </member>
-        <member name="M:Libplanet.Store.IStore.IterateStateReferences(System.Guid,Libplanet.Address)">
+        <member name="M:Libplanet.Store.IStore.IterateStateReferences(System.Guid,Libplanet.Address,System.Nullable{System.Int64},System.Nullable{System.Int64},System.Nullable{System.Int32})">
             <summary>
             Gets pairs of a state reference and a corresponding <see cref="P:Libplanet.Blocks.Block`1.Index"/> of
             the requested <paramref name="address"/> in the specified <paramref name="chainId"/>.
             </summary>
             <param name="chainId">The chain ID.</param>
             <param name="address">The <see cref="T:Libplanet.Address"/> to get state references.</param>
+            <param name="highestIndex">The highest index of state references to get. If it is
+            <c>null</c>, it will be the highest index possible.</param>
+            <param name="lowestIndex">The lowest index of state references to get.  If it is
+            <c>null</c>, it will be the lowest index possible.</param>
+            <param name="limit">The maximum number of state references to get.  If it is
+            <c>null</c>, it does not limit the number of state references.</param>
             <returns><em>Ordered</em> pairs of a state reference and a corresponding
             <see cref="P:Libplanet.Blocks.Block`1.Index"/>.  The highest index (i.e., the closest to the tip) goes
             first and the lowest index (i.e., the closest to the genesis) goes last.</returns>
+            <exception cref="T:System.ArgumentException">Thrown when the given
+            <paramref name="highestIndex"/> is less than <paramref name="lowestIndex"/>.</exception>
             <seealso
             cref="M:Libplanet.Store.IStore.StoreStateReference(System.Guid,System.Collections.Immutable.IImmutableSet{Libplanet.Address},Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Int64)"/>
         </member>
@@ -2813,7 +2978,7 @@
             <param name="blockIndex">The <see cref="P:Libplanet.Blocks.Block`1.Index"/> which has the state
             of the <see cref="T:Libplanet.Address"/>. This must refer to the same block
             that <paramref name="blockHash"/> refers to.</param>
-            <seealso cref="M:Libplanet.Store.IStore.IterateStateReferences(System.Guid,Libplanet.Address)"/>
+            <seealso cref="M:Libplanet.Store.IStore.IterateStateReferences(System.Guid,Libplanet.Address,System.Nullable{System.Int64},System.Nullable{System.Int64},System.Nullable{System.Int32})"/>
         </member>
         <member name="M:Libplanet.Store.IStore.ForkStateReferences``1(System.Guid,System.Guid,Libplanet.Blocks.Block{``0})">
             <summary>
@@ -2832,7 +2997,7 @@
             <paramref name="branchPoint"/>.</typeparam>
             <exception cref="T:Libplanet.Store.ChainIdNotFoundException">Thrown when the given
             <paramref name="sourceChainId"/> does not exist.</exception>
-            <seealso cref="M:Libplanet.Store.IStore.IterateStateReferences(System.Guid,Libplanet.Address)"/>
+            <seealso cref="M:Libplanet.Store.IStore.IterateStateReferences(System.Guid,Libplanet.Address,System.Nullable{System.Int64},System.Nullable{System.Int64},System.Nullable{System.Int32})"/>
             <seealso
             cref="M:Libplanet.Store.IStore.StoreStateReference(System.Guid,System.Collections.Immutable.IImmutableSet{Libplanet.Address},Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Int64)"/>
         </member>
@@ -2884,15 +3049,15 @@
             <summary>
             Creates a new <seealso cref="T:Libplanet.Store.LiteDBStore"/>.
             </summary>
-            <param name="path">The path where the storage file will be saved.</param>
+            <param name="path">The path where the storage file will be saved.  If the path is
+            <c>null</c>, The database is created in memory with <see cref="T:System.IO.MemoryStream"/>.</param>
             <param name="journal">
             Enables or disables double write check to ensure durability.
             </param>
             <param name="cacheSize">Max number of pages in the cache.</param>
             <param name="flush">Writes data direct to disk avoiding OS cache.  Turned on by default.
             </param>
-            <param name="readOnly">Opens database readonly mode. Turned off by default.
-            </param>
+            <param name="readOnly">Opens database readonly mode. Turned off by default.</param>
         </member>
         <member name="M:Libplanet.Store.LiteDBStore.ListChainIds">
             <inheritdoc/>
@@ -2909,7 +3074,7 @@
         <member name="M:Libplanet.Store.LiteDBStore.CountIndex(System.Guid)">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Store.LiteDBStore.IterateIndex(System.Guid,System.Int32,System.Nullable{System.Int32})">
+        <member name="M:Libplanet.Store.LiteDBStore.IterateIndexes(System.Guid,System.Int32,System.Nullable{System.Int32})">
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Store.LiteDBStore.IndexBlockHash(System.Guid,System.Int64)">
@@ -2963,7 +3128,7 @@
         <member name="M:Libplanet.Store.LiteDBStore.SetBlockStates(Libplanet.HashDigest{System.Security.Cryptography.SHA256},Libplanet.Action.AddressStateMap)">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Store.LiteDBStore.IterateStateReferences(System.Guid,Libplanet.Address)">
+        <member name="M:Libplanet.Store.LiteDBStore.IterateStateReferences(System.Guid,Libplanet.Address,System.Nullable{System.Int64},System.Nullable{System.Int64},System.Nullable{System.Int32})">
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Store.LiteDBStore.StoreStateReference(System.Guid,System.Collections.Immutable.IImmutableSet{Libplanet.Address},Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Int64)">
@@ -3003,7 +3168,7 @@
             <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> class used with
             <paramref name="lookupUntil"/>.</typeparam>
             <seealso cref="M:Libplanet.Store.IStore.StoreStateReference(System.Guid,System.Collections.Immutable.IImmutableSet{Libplanet.Address},Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Int64)"/>
-            <seealso cref="M:Libplanet.Store.IStore.IterateStateReferences(System.Guid,Libplanet.Address)"/>
+            <seealso cref="M:Libplanet.Store.IStore.IterateStateReferences(System.Guid,Libplanet.Address,System.Nullable{System.Int64},System.Nullable{System.Int64},System.Nullable{System.Int32})"/>
         </member>
         <member name="M:Libplanet.Store.StoreExtension.ListAllStateReferences(Libplanet.Store.IStore,System.Guid,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}})">
             <summary>

@@ -58,6 +58,11 @@ namespace Nekoyume.Game
 
         private IEnumerator Start()
         {
+            Tables.instance.Initialize();
+            yield return Addressables.InitializeAsync();
+            TableSheets = new TableSheets();
+            yield return StartCoroutine(TableSheets.CoInitialize());
+
             var agentInitialized = false;
             var agentInitializeSucceed = false;
             agent.Initialize(succeed =>
@@ -68,10 +73,6 @@ namespace Nekoyume.Game
             yield return new WaitUntil(() => agentInitialized);
             Debug.LogWarning(agentInitializeSucceed);
             
-            Tables.instance.Initialize();
-            yield return Addressables.InitializeAsync();
-            TableSheets = new TableSheets();
-            yield return StartCoroutine(TableSheets.CoInitialize());
             yield return StartCoroutine(MainCanvas.instance.InitializeSecond());
             stage.objectPool.Initialize();
             yield return null;

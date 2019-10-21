@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Game.Mail;
@@ -25,12 +26,7 @@ namespace Nekoyume.Action
                 return states.SetState(ctx.Signer, MarkChanged);
             }
 
-            var agentState = (AgentState) states.GetState(ctx.Signer);
-            if (!agentState.avatarAddresses.ContainsValue(avatarAddress))
-                return states;
-
-            var avatarState = (AvatarState) states.GetState(avatarAddress);
-            if (avatarState == null)
+            if (!states.TryGetAgentAvatarStates(ctx.Signer, avatarAddress, out AgentState agentState, out AvatarState avatarState))
             {
                 return states;
             }
@@ -43,20 +39,20 @@ namespace Nekoyume.Action
             mail.New = false;
             avatarState.inventory.AddNonFungibleItem(mail.attachment.itemUsable);
             avatarState.BlockIndex = ctx.BlockIndex;
-            states = states.SetState(avatarAddress, avatarState);
+            states = states.SetState(avatarAddress, avatarState.Serialize());
             return states;
         }
 
-        protected override IImmutableDictionary<string, object> PlainValueInternal => new Dictionary<string, object>
+        protected override IImmutableDictionary<string, IValue> PlainValueInternal => new Dictionary<string, IValue>
         {
-            ["itemId"] = itemId.ToString(),
-            ["avatarAddress"] = avatarAddress.ToByteArray(),
+            ["itemId"] = itemId.Serialize(),
+            ["avatarAddress"] = avatarAddress.Serialize(),
         }.ToImmutableDictionary();
 
-        protected override void LoadPlainValueInternal(IImmutableDictionary<string, object> plainValue)
+        protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
         {
-            itemId = new Guid((string) plainValue["itemId"]);
-            avatarAddress = new Address((byte[]) plainValue["avatarAddress"]);
+            itemId = plainValue["itemId"].ToGuid();
+            avatarAddress = plainValue["avatarAddress"].ToAddress();
         }
     }
 }

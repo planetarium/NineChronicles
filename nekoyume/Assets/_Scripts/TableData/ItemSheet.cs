@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Assets.SimpleLocalization;
+using Bencodex.Types;
 using Nekoyume.EnumType;
 
 namespace Nekoyume.TableData
@@ -24,6 +25,18 @@ namespace Nekoyume.TableData
                 ItemSubType = (ItemSubType) Enum.Parse(typeof(ItemSubType), fields[1]);
                 Grade = int.Parse(fields[2]);
                 ElementalType = (ElementalType) Enum.Parse(typeof(ElementalType), fields[3]);
+            }
+
+            public IValue Serialize() =>
+                new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
+                {
+                    [(Text) "key"] = (Integer) Key,
+                });
+
+            public static Row Deserialize(Bencodex.Types.Dictionary serialized)
+            {
+                var key = (int) ((Integer) serialized[(Text) "key"]).Value;
+                return Game.Game.instance.TableSheets.ItemSheet[key];
             }
         }
         

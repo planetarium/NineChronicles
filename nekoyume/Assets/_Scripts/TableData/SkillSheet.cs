@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
 using Assets.SimpleLocalization;
-using Nekoyume.Data.Table;
+using Bencodex.Types;
 using Nekoyume.EnumType;
+using Nekoyume.State;
 using UnityEngine;
 
 namespace Nekoyume.TableData
@@ -11,7 +12,7 @@ namespace Nekoyume.TableData
     public class SkillSheet : Sheet<int, SkillSheet.Row>
     {
         [Serializable]
-        public class Row : SheetRow<int>
+        public class Row : SheetRow<int>, IState
         {
             public override int Key => Id;
             public int Id { get; private set; }
@@ -25,6 +26,18 @@ namespace Nekoyume.TableData
                     ? elementalType
                     : ElementalType.Normal;
                 SkillEffectId = int.TryParse(fields[2], out var skillEffectId) ? skillEffectId : 0;
+            }
+
+            public IValue Serialize() =>
+                new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
+                {
+                    [(Text) "key"] = (Integer) Key,
+                });
+
+            public static Row Deserialize(Bencodex.Types.Dictionary serialized)
+            {
+                var key = (int) ((Integer) serialized[(Text) "key"]).Value;
+                return Game.Game.instance.TableSheets.SkillSheet[key];
             }
         }
         

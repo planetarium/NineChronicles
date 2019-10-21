@@ -1,4 +1,7 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using Bencodex.Types;
 using Libplanet;
 
 namespace Nekoyume.State
@@ -21,5 +24,17 @@ namespace Nekoyume.State
         {
             nextBlockIndex = index + UpdateInterval;
         }
+
+        public DailyBlockState(Bencodex.Types.Dictionary serialized)
+            : base(serialized)
+        {
+            nextBlockIndex = (long) ((Integer) serialized[(Text) "nextBlockIndex"]).Value;
+        }
+
+        public override IValue Serialize() =>
+            new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
+            {
+                [(Text) "nextBlockIndex"] = (Integer) nextBlockIndex,
+            }.Union((Bencodex.Types.Dictionary) base.Serialize()));
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.BlockChain;
@@ -21,18 +22,18 @@ namespace Nekoyume.Action
         public int index;
         public string name;
 
-        protected override IImmutableDictionary<string, object> PlainValueInternal => new Dictionary<string, object>()
+        protected override IImmutableDictionary<string, IValue> PlainValueInternal => new Dictionary<string, IValue>()
         {
-            ["avatarAddress"] = avatarAddress.ToByteArray(),
-            ["index"] = index.ToString(),
-            ["name"] = name,
+            ["avatarAddress"] = avatarAddress.Serialize(),
+            ["index"] = (Integer) index,
+            ["name"] = (Text) name,
         }.ToImmutableDictionary();
 
-        protected override void LoadPlainValueInternal(IImmutableDictionary<string, object> plainValue)
+        protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
         {
-            avatarAddress = new Address((byte[]) plainValue["avatarAddress"]);
-            index = int.Parse(plainValue["index"].ToString());
-            name = (string) plainValue["name"];
+            avatarAddress = plainValue["avatarAddress"].ToAddress();
+            index = (int) ((Integer) plainValue["index"]).Value;
+            name = (Text) plainValue["name"];
         }
 
         public override IAccountStateDelta Execute(IActionContext ctx)
@@ -49,9 +50,9 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            var agentState = (AgentState) states.GetState(ctx.Signer) ?? new AgentState(ctx.Signer);
-            var avatarState = (AvatarState) states.GetState(avatarAddress);
-            if (avatarState != null)
+            AgentState agentState = states.GetAgentState(ctx.Signer) ?? new AgentState(ctx.Signer);
+            AvatarState avatarState = states.GetAvatarState(avatarAddress);
+            if (!(avatarState is null))
             {
                 return states;
             }
@@ -66,13 +67,18 @@ namespace Nekoyume.Action
                       $"current avatar: `{States.Instance?.CurrentAvatarState?.Value?.address}`");
 
             agentState.avatarAddresses.Add(index, avatarAddress);
-            var dailyBlockState = (DailyBlockState) states.GetState(DailyBlockState.Address);
+            if (!states.TryGetState(DailyBlockState.Address, out Bencodex.Types.Dictionary d))
+            {
+                return states;
+            }
+            var dailyBlockState = new DailyBlockState(d);
             // Avoid NullReferenceException in test
             var nextBlockIndex = dailyBlockState?.nextBlockIndex ?? DailyBlockState.UpdateInterval;
             avatarState = CreateAvatarState(name, avatarAddress, ctx, nextBlockIndex);
 
-            states = states.SetState(ctx.Signer, agentState);
-            return states.SetState(avatarAddress, avatarState);
+            return states
+                .SetState(ctx.Signer, agentState.Serialize())
+                .SetState(avatarAddress, avatarState.Serialize());
         }
 
         private static AvatarState CreateAvatarState(string name, Address avatarAddress, IActionContext ctx, long index)

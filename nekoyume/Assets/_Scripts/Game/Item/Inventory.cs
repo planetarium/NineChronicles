@@ -3,18 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Data;
 using Nekoyume.EnumType;
+using Bencodex.Types;
 using Nekoyume.Game.Factory;
-using Nekoyume.TableData;
+using Nekoyume.State;
 using UnityEngine;
 
 namespace Nekoyume.Game.Item
 {
     [Serializable]
-    public class Inventory
+    public class Inventory : IState
     {
         // ToDo. Item 클래스를 FungibleItem과 NonFungibleItem으로 분리하기.
         [Serializable]
-        public class Item
+        public class Item : IState
         {
             public ItemBase item;
             public int count = 0;
@@ -29,6 +30,14 @@ namespace Nekoyume.Game.Item
             {
                 item = itemUsable;
                 this.count = count;
+            }
+
+            public Item(Bencodex.Types.Dictionary serialized)
+            {
+                item = ItemFactory.Deserialize(
+                    (Bencodex.Types.Dictionary) serialized[(Text) "item"]
+                );
+                count = (int) ((Integer) serialized[(Text) "count"]).Value;
             }
 
             protected bool Equals(Item other)
@@ -51,11 +60,33 @@ namespace Nekoyume.Game.Item
                     return ((item != null ? item.GetHashCode() : 0) * 397) ^ count;
                 }
             }
+
+            public IValue Serialize()
+            {
+                return new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
+                {
+                    [(Text) "item"] = item.Serialize(),
+                    [(Text) "count"] = (Integer) count,
+                });
+            }
         }
 
         private readonly List<Item> _items = new List<Item>();
 
         public IReadOnlyList<Item> Items => _items;
+
+        public Inventory()
+        {
+        }
+
+        public Inventory(Bencodex.Types.List serialized) : this()
+        {
+            _items.Capacity = serialized.Value.Length;
+            foreach (IValue item in serialized)
+            {
+                _items.Add(new Item((Bencodex.Types.Dictionary) item));
+            }
+        }
 
         public void AddItem(ItemBase itemBase, int count = 1)
         {
@@ -274,5 +305,8 @@ namespace Nekoyume.Game.Item
             outNonFungibleItem = null;
             return false;
         }
+
+        public IValue Serialize() =>
+            new Bencodex.Types.List(Items.Select(i => i.Serialize()));
     }
 }

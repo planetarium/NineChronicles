@@ -6,7 +6,14 @@ namespace Nekoyume.Game.Mail
     [Serializable]
     public class SellCancelMail : AttachmentMail
     {
+        protected override string TypeId => "sellCancel";
+
         public SellCancelMail(SellCancellation.Result attachmentActionResult, long blockIndex) : base(attachmentActionResult, blockIndex)
+        {
+        }
+
+        public SellCancelMail(Bencodex.Types.Dictionary serialized)
+            : base(serialized)
         {
         }
 

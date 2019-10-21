@@ -6,7 +6,14 @@ namespace Nekoyume.Game.Mail
     [Serializable]
     public class BuyerMail : AttachmentMail
     {
+        protected override string TypeId => "buyerMail";
+
         public BuyerMail(AttachmentActionResult attachmentActionResult, long blockIndex) : base(attachmentActionResult, blockIndex)
+        {
+        }
+
+        public BuyerMail(Bencodex.Types.Dictionary serialized)
+            : base(serialized)
         {
         }
 

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.State;
@@ -20,29 +21,36 @@ namespace Nekoyume.Action
                 return states.SetState(avatarAddress, MarkChanged);
             }
 
-            var avatarState = (AvatarState) states.GetState(avatarAddress);
-            if (avatarState is null)
+            if (!states.TryGetAgentAvatarStates(ctx.Signer, avatarAddress, out AgentState agentState, out AvatarState avatarState))
+            {
                 return states;
+            }
 
-            var dailyBlockState = (DailyBlockState) states.GetState(DailyBlockState.Address);
+            if (!states.TryGetState(DailyBlockState.Address, out Bencodex.Types.Dictionary d))
+            {
+                return states;
+            }
+            var dailyBlockState = new DailyBlockState(d);
+
             if (avatarState.nextDailyRewardIndex <= dailyBlockState.nextBlockIndex)
             {
                 avatarState.nextDailyRewardIndex = dailyBlockState.nextBlockIndex;
                 avatarState.actionPoint = refillPoint;
             }
 
-            return states.SetState(avatarAddress, avatarState);
+            return states.SetState(avatarAddress, avatarState.Serialize());
         }
 
-        protected override IImmutableDictionary<string, object> PlainValueInternal => new Dictionary<string, object>
+        protected override IImmutableDictionary<string, IValue> PlainValueInternal => new Dictionary<string, IValue>
         {
-            ["avatarAddress"] = avatarAddress.ToByteArray(),
-            ["refillPoint"] = ByteSerializer.Serialize(refillPoint)
+            ["avatarAddress"] = avatarAddress.Serialize(),
+            ["refillPoint"] = (Integer) refillPoint,
         }.ToImmutableDictionary();
-        protected override void LoadPlainValueInternal(IImmutableDictionary<string, object> plainValue)
+
+        protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
         {
-            avatarAddress = new Address((byte[]) plainValue["avatarAddress"]);
-            refillPoint = ByteSerializer.Deserialize<int>((byte[]) plainValue["refillPoint"]);
+            avatarAddress = plainValue["avatarAddress"].ToAddress();
+            refillPoint = (int) ((Integer) plainValue["refillPoint"]).Value;
         }
     }
 }

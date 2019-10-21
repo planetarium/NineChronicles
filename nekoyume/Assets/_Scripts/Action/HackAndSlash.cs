@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Battle;
 using Nekoyume.BlockChain;
+using Nekoyume.Game.Factory;
 using Nekoyume.Game.Item;
 using Nekoyume.Model;
 using Nekoyume.State;
@@ -23,22 +25,26 @@ namespace Nekoyume.Action
         public BattleLog Result { get; private set; }
         public const int RequiredPoint = 5;
 
-        protected override IImmutableDictionary<string, object> PlainValueInternal =>
-            new Dictionary<string, object>
+        protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
+            new Dictionary<string, IValue>
             {
-                ["equipments"] = ByteSerializer.Serialize(equipments),
-                ["foods"] = ByteSerializer.Serialize(foods),
-                ["stage"] = ByteSerializer.Serialize(stage),
-                ["avatarAddress"] = avatarAddress.ToByteArray(),
+                ["equipments"] = new Bencodex.Types.List(equipments.Select(e => e.Serialize())),
+                ["foods"] = new Bencodex.Types.List(foods.Select(e => e.Serialize())),
+                ["stage"] = (Integer) stage,
+                ["avatarAddress"] = avatarAddress.Serialize(),
             }.ToImmutableDictionary();
 
 
-        protected override void LoadPlainValueInternal(IImmutableDictionary<string, object> plainValue)
+        protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
         {
-            equipments = ByteSerializer.Deserialize<List<Equipment>>((byte[]) plainValue["equipments"]);
-            foods = ByteSerializer.Deserialize<List<Consumable>>((byte[]) plainValue["foods"]);
-            stage = ByteSerializer.Deserialize<int>((byte[]) plainValue["stage"]);
-            avatarAddress = new Address((byte[]) plainValue["avatarAddress"]);
+            equipments = ((Bencodex.Types.List) plainValue["equipments"]).Select(
+                e => (Equipment) ItemFactory.Deserialize((Bencodex.Types.Dictionary) e)
+            ).ToList();
+            foods = ((Bencodex.Types.List) plainValue["foods"]).Select(
+                e => (Consumable) ItemFactory.Deserialize((Bencodex.Types.Dictionary) e)
+            ).ToList();
+            stage = (int) ((Integer) plainValue["stage"]).Value;
+            avatarAddress = plainValue["avatarAddress"].ToAddress();
         }
 
         public override IAccountStateDelta Execute(IActionContext ctx)
@@ -51,12 +57,7 @@ namespace Nekoyume.Action
                 return states.SetState(ctx.Signer, MarkChanged);
             }
 
-            var agentState = (AgentState) states.GetState(ctx.Signer);
-            if (!agentState.avatarAddresses.ContainsValue(avatarAddress))
-                return states;
-
-            var avatarState = (AvatarState) states.GetState(avatarAddress);
-            if (avatarState == null)
+            if (!states.TryGetAgentAvatarStates(ctx.Signer, avatarAddress, out AgentState agentState, out AvatarState avatarState))
             {
                 return states;
             }
@@ -96,15 +97,20 @@ namespace Nekoyume.Action
             avatarState.updatedAt = DateTimeOffset.UtcNow;
             if (avatarState.worldStage > stage)
             {
-                var ranking = (RankingState) states.GetState(RankingState.Address);
+                if (!states.TryGetState(RankingState.Address, out Bencodex.Types.Dictionary d))
+                {
+                    return states;
+                }
+
+                var ranking = new RankingState(d);
                 avatarState.clearedAt = DateTimeOffset.UtcNow;
                 ranking.Update(avatarState);
-                states = states.SetState(RankingState.Address, ranking);
+                states = states.SetState(RankingState.Address, ranking.Serialize());
             }
 
-            states = states.SetState(avatarAddress, avatarState);
+            states = states.SetState(avatarAddress, avatarState.Serialize());
             Result = simulator.Log;
-            return states.SetState(ctx.Signer, agentState);
+            return states.SetState(ctx.Signer, agentState.Serialize());
         }
     }
 }

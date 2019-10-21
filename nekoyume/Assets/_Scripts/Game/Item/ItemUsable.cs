@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
-using Nekoyume.Data.Table;
-using Nekoyume.Helper;
-using Nekoyume.Model;
+using Bencodex.Types;
+using Nekoyume.State;
 using Nekoyume.TableData;
-using UnityEngine;
 
 namespace Nekoyume.Game.Item
 {
@@ -76,5 +75,13 @@ namespace Nekoyume.Game.Item
 
             return sb.ToString().Trim();
         }
+
+        public override IValue Serialize() =>
+            new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
+            {
+                [(Text) "statsMap"] = StatsMap.Serialize(),
+                [(Text) "skills"] = new Bencodex.Types.List(Skills.Select(s => s.Serialize())),
+                [(Text) "itemId"] = ItemId.Serialize(),
+            }.Union((Bencodex.Types.Dictionary) base.Serialize()));
     }
 }

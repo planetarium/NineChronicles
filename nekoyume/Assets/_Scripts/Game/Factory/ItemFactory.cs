@@ -1,7 +1,8 @@
-﻿using Nekoyume.Data;
-using Nekoyume.Game.Item;
+﻿using Nekoyume.Game.Item;
 using System;
+using Bencodex.Types;
 using Nekoyume.EnumType;
+using Nekoyume.State;
 using Nekoyume.TableData;
 using UnityEngine;
 using Material = Nekoyume.Game.Item.Material;
@@ -59,6 +60,27 @@ namespace Nekoyume.Game.Factory
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+        }
+
+        public static ItemBase Deserialize(Bencodex.Types.Dictionary serialized)
+        {
+            var data = (Bencodex.Types.Dictionary) serialized[(Text) "data"];
+            serialized.TryGetValue((Text) "itemId", out IValue id);
+            var item = Create(
+                ItemSheet.Row.Deserialize(data),
+                id is null ? default : id.ToGuid()
+            );
+            if (item is ItemUsable itemUsable &&
+                serialized.TryGetValue((Text) "statsMap", out var statsMap) &&
+                serialized.TryGetValue((Text) "skills", out var skills))
+            {
+                itemUsable.StatsMap.Deserialize((Bencodex.Types.Dictionary) statsMap);
+                foreach (IValue skill in (Bencodex.Types.List) skills)
+                {
+                    itemUsable.Skills.Add(SkillFactory.Deserialize((Dictionary) skill));
+                }
+            }
+            return item;
         }
     }
 }

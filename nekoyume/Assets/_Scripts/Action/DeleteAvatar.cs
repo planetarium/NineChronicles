@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.State;
@@ -13,16 +14,16 @@ namespace Nekoyume.Action
         public int index;
         public Address avatarAddress;
 
-        protected override IImmutableDictionary<string, object> PlainValueInternal => new Dictionary<string, object>
+        protected override IImmutableDictionary<string, IValue> PlainValueInternal => new Dictionary<string, IValue>
         {
-            ["index"] = index.ToString(),
-            ["avatarAddress"] = avatarAddress.ToByteArray(),
+            ["index"] = (Integer) index,
+            ["avatarAddress"] = avatarAddress.Serialize(),
         }.ToImmutableDictionary();
 
-        protected override void LoadPlainValueInternal(IImmutableDictionary<string, object> plainValue)
+        protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
         {
-            index = int.Parse(plainValue["index"].ToString());
-            avatarAddress = new Address((byte[]) plainValue["avatarAddress"]);
+            index = (int) ((Integer) plainValue["index"]).Value;
+            avatarAddress = plainValue["avatarAddress"].ToAddress();
         }
 
         public override IAccountStateDelta Execute(IActionContext ctx)
@@ -34,8 +35,7 @@ namespace Nekoyume.Action
                 return states.SetState(avatarAddress, MarkChanged);
             }
 
-            var agentState = (AgentState) states.GetState(ctx.Signer);
-            if (agentState == null)
+            if (!states.TryGetAgentAvatarStates(ctx.Signer, avatarAddress, out AgentState agentState, out AvatarState avatarState))
             {
                 return states;
             }
@@ -52,12 +52,14 @@ namespace Nekoyume.Action
 
             agentState.avatarAddresses.Remove(index);
 
-            var deletedAvatarState = new DeletedAvatarState(
-                (AvatarState) states.GetState(avatarAddress),
-                DateTimeOffset.UtcNow) {BlockIndex = ctx.BlockIndex};
+            var deletedAvatarState = new DeletedAvatarState(avatarState, DateTimeOffset.UtcNow)
+            {
+                BlockIndex = ctx.BlockIndex,
+            };
 
-            states = states.SetState(ctx.Signer, agentState);
-            return states.SetState(avatarAddress, deletedAvatarState);
+            return states
+                .SetState(ctx.Signer, agentState.Serialize())
+                .SetState(avatarAddress, deletedAvatarState.Serialize());
         }
     }
 }
