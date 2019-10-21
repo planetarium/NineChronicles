@@ -214,13 +214,13 @@ namespace Nekoyume.UI
         }
 
         #region Call From Animation
-        
-        public virtual void OnCompleteOfShowAnimation()
+
+        protected virtual void OnCompleteOfShowAnimation()
         {
             _animator.enabled = false;
         }
 
-        public virtual void OnCompleteOfCloseAnimation()
+        protected virtual void OnCompleteOfCloseAnimation()
         {
             _animator.enabled = false;
             _isCloseAnimationCompleted = true;

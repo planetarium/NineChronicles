@@ -84,8 +84,8 @@ namespace Nekoyume.Action
             var shopState = (ShopState) states.GetState(ShopState.Address);
 
             Debug.Log($"Execute Buy. buyer : `{buyerAvatarAddress}` seller: `{sellerAvatarAddress}`" +
-                      $"node : `{States.Instance?.agentState?.Value?.address}` " +
-                      $"current avatar: `{States.Instance?.currentAvatarState?.Value?.address}`");
+                      $"node : `{States.Instance?.AgentState?.Value?.address}` " +
+                      $"current avatar: `{States.Instance?.CurrentAvatarState?.Value?.address}`");
             // 상점에서 구매할 아이템을 찾는다.
             if (!shopState.TryGet(sellerAgentAddress, productId, out var outPair))
             {
@@ -101,12 +101,12 @@ namespace Nekoyume.Action
             if (!sellerAgentState.avatarAddresses.ContainsValue(sellerAvatarAddress))
                 return states;
 
-            var sellerAvatarState = (AvatarState) states.GetState(outPair.Value.sellerAvatarAddress);
+            var sellerAvatarState = (AvatarState) states.GetState(outPair.Value.SellerAvatarAddress);
             if (sellerAvatarState is null)
                 return states;
 
             // 돈은 있냐?
-            if (buyerAgentState.gold < outPair.Value.price)
+            if (buyerAgentState.gold < outPair.Value.Price)
             {
                 return states;
             }
@@ -118,13 +118,13 @@ namespace Nekoyume.Action
             }
             
             // 구매자의 돈을 감소 시킨다.
-            buyerAgentState.gold -= outPair.Value.price;
+            buyerAgentState.gold -= outPair.Value.Price;
                 
             // 구매자, 판매자에게 결과 메일 전송
             buyerResult = new BuyerResult
             {
                 shopItem = outPair.Value,
-                itemUsable = outPair.Value.itemUsable
+                itemUsable = outPair.Value.ItemUsable
             };
             var buyerMail = new BuyerMail(buyerResult, ctx.BlockIndex);
             buyerAvatarState.Update(buyerMail);
@@ -132,8 +132,8 @@ namespace Nekoyume.Action
             sellerResult = new SellerResult
             {
                 shopItem = outPair.Value,
-                itemUsable = outPair.Value.itemUsable,
-                gold = decimal.Round(outPair.Value.price * 0.92m)
+                itemUsable = outPair.Value.ItemUsable,
+                gold = decimal.Round(outPair.Value.Price * 0.92m)
             };
             var sellerMail = new SellerMail(sellerResult, ctx.BlockIndex);
             sellerAvatarState.Update(sellerMail);

@@ -58,6 +58,16 @@ namespace Nekoyume.Game
 
         private IEnumerator Start()
         {
+            var agentInitialized = false;
+            var agentInitializeSucceed = false;
+            agent.Initialize(succeed =>
+            {
+                agentInitialized = true;
+                agentInitializeSucceed = succeed;
+            });
+            yield return new WaitUntil(() => agentInitialized);
+            Debug.LogWarning(agentInitializeSucceed);
+            
             Tables.instance.Initialize();
             yield return Addressables.InitializeAsync();
             TableSheets = new TableSheets();
@@ -69,16 +79,17 @@ namespace Nekoyume.Game
             yield return null;
             AudioController.instance.Initialize();
             yield return null;
-            agent.Initialize(AgentInitialized);
 
             Observable.EveryUpdate()
                 .Where(_ => Input.GetMouseButtonUp(0))
                 .Select(_ => Input.mousePosition)
                 .Subscribe(PlayMouseOnClickVFX)
                 .AddTo(gameObject);
+            
+            ShowNext(agentInitializeSucceed);
         }
 
-        private void AgentInitialized(bool succeed)
+        private void ShowNext(bool succeed)
         {
             initialized = true;
             Debug.LogWarning(succeed);
@@ -126,7 +137,7 @@ namespace Nekoyume.Game
             if (GetComponent<Agent>() is null)
             {
                 agent = gameObject.AddComponent<Agent>();
-                agent.Initialize(AgentInitialized);
+                agent.Initialize(ShowNext);
             }
         }
 

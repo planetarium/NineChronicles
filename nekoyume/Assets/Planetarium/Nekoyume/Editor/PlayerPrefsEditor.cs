@@ -11,7 +11,7 @@ namespace Planetarium.Nekoyume.Editor
         public static bool ValidateDeleteDialogPlayerPrefsOfCurrentAvatarState()
         {
             return Application.isPlaying
-                && States.Instance.currentAvatarState.Value != null;
+                && States.Instance.CurrentAvatarState.Value != null;
         }
         
         [MenuItem("Tools/Delete Dialog PlayerPrefs Of Current AvatarState(Play Mode)", false)]

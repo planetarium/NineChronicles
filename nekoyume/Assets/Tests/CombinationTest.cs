@@ -63,7 +63,7 @@ namespace Tests
             yield return new WaitUntil(() => Game.instance.agent.StagedTransactions.Any());
             var createAvatarTx = Game.instance.agent.StagedTransactions.First();
             yield return miner.CoMine(createAvatarTx);
-            yield return new WaitWhile(() => States.Instance.currentAvatarState.Value is null);
+            yield return new WaitWhile(() => States.Instance.CurrentAvatarState.Value is null);
             yield return new WaitUntil(() => Widget.Find<Login>().ready);
 
             // Login
@@ -80,7 +80,7 @@ namespace Tests
             var rect = w.inventory.scrollerController.GetComponentInChildren<ScrollRect>();
             foreach (var material in new[] {row.Material1, row.Material2})
             {
-                var index = States.Instance.currentAvatarState.Value.inventory.Items.ToList()
+                var index = States.Instance.CurrentAvatarState.Value.inventory.Items.ToList()
                     .FindIndex(i => i.item.Data.Id == material);
                 InventoryItemView item;
                 while (true)
@@ -105,7 +105,7 @@ namespace Tests
             yield return new WaitUntil(() => Game.instance.agent.StagedTransactions.Any());
             var tx = Game.instance.agent.StagedTransactions.First();
             yield return miner.CoMine(tx);
-            Assert.AreEqual(1, States.Instance.currentAvatarState.Value.mailBox.OfType<CombinationMail>().Count());
+            Assert.AreEqual(1, States.Instance.CurrentAvatarState.Value.mailBox.OfType<CombinationMail>().Count());
         }
     }
 }

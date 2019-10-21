@@ -12,7 +12,7 @@ namespace Nekoyume.UI
 
         public override void Show()
         {
-            var questList = States.Instance.currentAvatarState.Value.questList;
+            var questList = States.Instance.CurrentAvatarState.Value.questList;
             questInfo.gameObject.SetActive(true);
             foreach (var quest in questList)
             {

@@ -146,11 +146,14 @@ namespace Nekoyume.Game
         {
         }
 
+        // todo: ë°°ê²½ ìºì‹±.
         public void LoadBackground(string prefabName, float fadeTime = 0.0f)
         {
-            if (background != null)
+            if (background)
             {
-                if (background.name.Equals(prefabName)) return;
+                if (background.name.Equals(prefabName))
+                    return;
+                
                 if (fadeTime > 0.0f)
                 {
                     var sprites = background.GetComponentsInChildren<SpriteRenderer>();
@@ -171,26 +174,28 @@ namespace Nekoyume.Game
                 background = null;
             }
 
-            var resName = $"Prefab/Background/{prefabName}";
-            var prefab = Resources.Load<GameObject>(resName);
-            if (ReferenceEquals(prefab, null)) return;
+            var path = $"Prefab/Background/{prefabName}";
+            var prefab = Resources.Load<GameObject>(path);
+            if (!prefab)
+                throw new FailedToLoadResourceException<GameObject>(path);
+            
             background = Instantiate(prefab, transform);
             background.name = prefabName;
             foreach (Transform child in background.transform)
             {
-                string name = child.name;
-                if (name.StartsWith("bgvfx"))
+                var childName = child.name;
+                if (!childName.StartsWith("bgvfx"))
+                    continue;
+                
+                var num = childName.Substring(childName.Length - 2);
+                switch (num)
                 {
-                    string num = name.Substring(name.Length - 2);
-                    switch (num)
-                    {
-                        case "01":
-                            defaultBGVFX = child.GetComponent<ParticleSystem>();
-                            break;
-                        case "02":
-                            bosswaveBGVFX = child.GetComponent<ParticleSystem>();
-                            break;
-                    }
+                    case "01":
+                        defaultBGVFX = child.GetComponent<ParticleSystem>();
+                        break;
+                    case "02":
+                        bosswaveBGVFX = child.GetComponent<ParticleSystem>();
+                        break;
                 }
             }
         }
@@ -490,16 +495,14 @@ namespace Nekoyume.Game
         public Character.Player GetPlayer()
         {
             var player = GetComponentInChildren<Character.Player>();
-            if (player != null)
+            if (!(player is null))
                 return player;
 
-            var go = playerFactory.Create(States.Instance.currentAvatarState.Value);
+            var go = playerFactory.Create(States.Instance.CurrentAvatarState.Value);
             player = go.GetComponent<Character.Player>();
 
             if (player is null)
-            {
                 throw new NotFoundComponentException<Character.Player>();
-            }
 
             return player;
         }
@@ -523,9 +526,9 @@ namespace Nekoyume.Game
         }
 
         /// <summary>
-        /// °ÔÀÓ Ä³¸¯ÅÍ¸¦ °®°í ¿Ã ¶§ »ç¿ëÇÔ.
-        /// °®°í ¿Ã ¶§ ¸Å¹ø ¸ğµ¨À» ÇÒ´çÇØÁÖ°í ÀÖÀ½.
-        /// ¸ğµ¨À» ¸Å¹ø ÇÒ´çÇÏÁö ¾Ê°í, ¸ğµ¨ÀÌ º¯°æµÇ´Â ·ÎÁ÷ ¸¶´Ù ¹Ù²ãÁÖ°Ô ÇÏ´Â °ÍÀÌ ÁÁ°ÚÀ½. ¹°·Ğ ¿¬Ãâµµ ±×¶§¿¡ ¸ÂÃç¼­ ÇØÁÖ´Â ½Ä.
+        /// ê²Œì„ ìºë¦­í„°ë¥¼ ê°–ê³  ì˜¬ ë•Œ ì‚¬ìš©í•¨.
+        /// ê°–ê³  ì˜¬ ë•Œ ë§¤ë²ˆ ëª¨ë¸ì„ í• ë‹¹í•´ì£¼ê³  ìˆìŒ.
+        /// ëª¨ë¸ì„ ë§¤ë²ˆ í• ë‹¹í•˜ì§€ ì•Šê³ , ëª¨ë¸ì´ ë³€ê²½ë˜ëŠ” ë¡œì§ ë§ˆë‹¤ ë°”ê¿”ì£¼ê²Œ í•˜ëŠ” ê²ƒì´ ì¢‹ê² ìŒ. ë¬¼ë¡  ì—°ì¶œë„ ê·¸ë•Œì— ë§ì¶°ì„œ í•´ì£¼ëŠ” ì‹.
         /// </summary>
         /// <param name="caster"></param>
         /// <returns></returns>

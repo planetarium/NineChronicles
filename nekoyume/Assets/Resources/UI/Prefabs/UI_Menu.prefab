@@ -953,7 +953,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ded8021858983437eab04b38bf769d43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bottomMenu: {fileID: 0}
   btnQuest: {fileID: 1690004906704222}
   btnQuestText: {fileID: 114646154997950382}
   btnCombination: {fileID: 1054939152201896}
@@ -2588,7 +2587,7 @@ PrefabInstance:
     - target: {fileID: 2724828359984488557, guid: 9650ef7bcb7aa3b43a2448bfc607864d,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -50
+      value: -5
       objectReference: {fileID: 0}
     - target: {fileID: 2724828359984488557, guid: 9650ef7bcb7aa3b43a2448bfc607864d,
         type: 3}
@@ -3318,7 +3317,7 @@ PrefabInstance:
     - target: {fileID: 3053886975560591763, guid: 6eb4474f608217a448203f87a5cc8085,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -50
+      value: -5
       objectReference: {fileID: 0}
     - target: {fileID: 3053886975560591763, guid: 6eb4474f608217a448203f87a5cc8085,
         type: 3}
@@ -3478,7 +3477,7 @@ PrefabInstance:
     - target: {fileID: 4382485805452441107, guid: 22d90b298edd44f2fab40fb448a103d0,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -50
+      value: -5
       objectReference: {fileID: 0}
     - target: {fileID: 4382485805452441107, guid: 22d90b298edd44f2fab40fb448a103d0,
         type: 3}
