@@ -10,7 +10,7 @@ namespace Nekoyume.Action
     [Serializable]
     public abstract class ActionBase : IAction
     {
-        public static IValue MarkChanged = default(Null);
+        public static readonly IValue MarkChanged = default(Null);
         
         public abstract IValue PlainValue { get; }
         public abstract void LoadPlainValue(IValue plainValue);
