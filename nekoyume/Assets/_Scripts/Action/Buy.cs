@@ -104,7 +104,7 @@ namespace Nekoyume.Action
             if (ctx.Signer.Equals(sellerAgentAddress))
                 return states;
 
-            if (!states.GetAgentAvatarStates(ctx.Signer, buyerAvatarAddress, out AgentState buyerAgentState, out AvatarState buyerAvatarState))
+            if (!states.TryGetAgentAvatarStates(ctx.Signer, buyerAvatarAddress, out AgentState buyerAgentState, out AvatarState buyerAvatarState))
             {
                 return states;
             }
@@ -125,7 +125,7 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            if (!states.GetAgentAvatarStates(sellerAgentAddress, sellerAvatarAddress, out AgentState sellerAgentState, out AvatarState sellerAvatarState))
+            if (!states.TryGetAgentAvatarStates(sellerAgentAddress, sellerAvatarAddress, out AgentState sellerAgentState, out AvatarState sellerAvatarState))
             {
                 return states;
             }

@@ -79,7 +79,7 @@ namespace Nekoyume.Action
             }
         }
 
-        public static bool GetAgentAvatarStates(
+        public static bool TryGetAgentAvatarStates(
             this IAccountStateDelta states,
             Address agentAddress,
             Address avatarAddress,

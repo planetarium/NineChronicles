@@ -61,7 +61,7 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            if (!states.GetAgentAvatarStates(ctx.Signer, sellerAvatarAddress, out AgentState agentState, out AvatarState avatarState))
+            if (!states.TryGetAgentAvatarStates(ctx.Signer, sellerAvatarAddress, out AgentState agentState, out AvatarState avatarState))
             {
                 return states;
             }
