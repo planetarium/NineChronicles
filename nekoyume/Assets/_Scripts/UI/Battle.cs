@@ -35,7 +35,7 @@ namespace Nekoyume.UI
 //            VFXController.instance.Create<DropItemInventoryVFX>(bottomMenu.inventoryButton.image.transform, Vector3.zero);
         }
 
-        public override void OnCompleteOfCloseAnimation()
+        protected override void OnCompleteOfCloseAnimation()
         {
             base.OnCompleteOfCloseAnimation();
             stageTitle.Close();

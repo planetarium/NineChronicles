@@ -108,7 +108,7 @@ namespace Nekoyume.UI
             AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
         }
 
-        public override void OnCompleteOfShowAnimation()
+        protected override void OnCompleteOfShowAnimation()
         {
             base.OnCompleteOfShowAnimation();
             canvasGroup.interactable = true;
