@@ -20,8 +20,9 @@ namespace Nekoyume.Action
             }
 
             Debug.LogErrorFormat(
-                "Expected a dictionary, but got invalid state ({0}): {1}",
+                "Expected a dictionary, but got invalid state ({0}): ({1}) {2}",
                 address.ToHex(),
+                raw.GetType().Name,
                 raw
             );
             result = default;
