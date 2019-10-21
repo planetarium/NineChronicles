@@ -19,7 +19,7 @@ namespace Nekoyume.UI
             new ReactiveCollection<NotificationCellView.Model>();
         
         private static readonly List<Type> WidgetTypesForUX = new List<Type>();
-        
+
         private static int _widgetEnableCount;
 
         public static IReadOnlyCollection<NotificationCellView.Model> SharedModels => Models;
