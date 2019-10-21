@@ -1,7 +1,6 @@
 using EnhancedUI.EnhancedScroller;
 using Nekoyume.Helper;
 using System;
-using Nekoyume.Game.Mail;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,6 +9,7 @@ namespace Nekoyume.UI
 {
     public class MailCellView : EnhancedScrollerCellView
     {
+        private static readonly Color _highlightedColor = ColorHelper.HexToColorRGB("001870");
         public Image icon;
         public Text label;
         public Game.Mail.Mail data;
@@ -18,6 +18,7 @@ namespace Nekoyume.UI
         public IDisposable onClickDisposable;
 
         private Mail _mail;
+        private Shadow[] _textShadows;
 
         #region Mono
 
@@ -36,6 +37,7 @@ namespace Nekoyume.UI
 
         public void SetData(Game.Mail.Mail mail)
         {
+            _textShadows = button.GetComponentsInChildren<Shadow>();
             _mail = Widget.Find<Mail>();
             data = mail;
             var text = mail.ToInfo();
@@ -45,14 +47,15 @@ namespace Nekoyume.UI
             {
                 sprite = Resources.Load<Sprite>("UI/Textures/UI_icon_quest_01");
                 color = ColorHelper.HexToColorRGB("fff9dd");
-                button.interactable = true;
             }
             else
             {
                 sprite = Resources.Load<Sprite>("UI/Textures/UI_icon_quest_02");
                 color = ColorHelper.HexToColorRGB("7a7a7a");
-                button.interactable = false;
             }
+            button.interactable = mail.New;
+            foreach (var shadow in _textShadows)
+                shadow.effectColor = mail.New ? _highlightedColor : Color.black;
             icon.sprite = sprite;
             icon.SetNativeSize();
             label.text = text;

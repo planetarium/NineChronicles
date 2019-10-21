@@ -2,15 +2,22 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Nekoyume.Action;
 
 namespace Nekoyume.Game.Mail
 {
+    public enum MailType
+    {
+        Forge = 1,
+        Auction,
+        System
+    }
+
     [Serializable]
     public abstract class Mail
     {
         public bool New;
         public long blockIndex;
+        public virtual MailType MailType { get => MailType.System; }
 
         protected Mail(long blockIndex)
         {
@@ -46,6 +53,5 @@ namespace Nekoyume.Game.Mail
         {
             _mails.Add(mail);
         }
-
     }
 }

@@ -6,8 +6,11 @@ namespace Nekoyume.Game.Mail
     [Serializable]
     public class SellerMail : AttachmentMail
     {
+        public override MailType MailType { get => MailType.Auction; }
+
         public SellerMail(AttachmentActionResult attachmentActionResult, long blockIndex) : base(attachmentActionResult, blockIndex)
         {
+            
         }
 
         public override string ToInfo()

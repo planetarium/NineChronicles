@@ -6,8 +6,11 @@ namespace Nekoyume.Game.Mail
     [Serializable]
     public class CombinationMail : AttachmentMail
     {
+        public override MailType MailType { get => MailType.Forge; }
+
         public CombinationMail(Combination.Result attachmentActionResult, long blockIndex) : base(attachmentActionResult, blockIndex)
         {
+            
         }
 
         public override string ToInfo()
