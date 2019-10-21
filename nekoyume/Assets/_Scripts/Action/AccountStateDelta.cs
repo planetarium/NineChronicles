@@ -105,12 +105,7 @@ namespace Nekoyume.Action
             }
 
             avatarState = states.GetAvatarState(avatarAddress);
-            if (avatarState is null)
-            {
-                return false;
-            }
-
-            return true;
+            return !(avatarState is null);
         }
     }
 }
