@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using EnhancedUI.EnhancedScroller;
 using UniRx;
-using Nekoyume.Game.Mail;
+using System.Collections.Generic;
 
 namespace Nekoyume.UI.Scroller
 {
@@ -11,7 +11,7 @@ namespace Nekoyume.UI.Scroller
         public MailCellView cellViewPrefab;
         public readonly Subject<MailCellView> onClickCellView = new Subject<MailCellView>();
 
-        private MailBox _mailBox;
+        private List<Game.Mail.Mail> _data;
         private float _cellViewHeight = 40f;
 
         #region Mono
@@ -35,7 +35,7 @@ namespace Nekoyume.UI.Scroller
             }
             
             cellView.name = $"Cell {dataIndex}";
-            cellView.SetData(_mailBox[dataIndex]);
+            cellView.SetData(_data[dataIndex]);
             if (cellView.onClickDisposable is null)
             {
                 cellView.onClickDisposable = cellView.onClickButton
@@ -56,12 +56,12 @@ namespace Nekoyume.UI.Scroller
 
         public int GetNumberOfCells(EnhancedScroller scroller)
         {
-            return _mailBox.Count;
+            return _data.Count;
         }
 
-        public void SetData(MailBox mailBox)
+        public void SetData(List<Game.Mail.Mail> mailBox)
         {
-            _mailBox = mailBox;
+            _data = mailBox;
             scroller.ReloadData();
         }
     }

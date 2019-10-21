@@ -162,8 +162,9 @@ namespace Nekoyume.Model
             {
                 if (info.Target.IsDead)
                 {
-                    var target = Targets.First(i => i.Id == info.Target.Id);
-                    target.Die();
+                    var target = Targets.FirstOrDefault(i => i.Id == info.Target.Id);
+                    if (target != null)
+                        target.Die();
                 }
             }
         }
