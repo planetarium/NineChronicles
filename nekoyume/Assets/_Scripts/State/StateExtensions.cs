@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text;
 using Bencodex.Types;
 using Libplanet;
 
@@ -67,13 +68,17 @@ namespace Nekoyume.State
             Deserialize(ToDecimal, serialized);
 
         public static IValue Serialize(this DateTimeOffset dateTime) =>
-            (Integer) dateTime.ToUnixTimeMilliseconds();
+            new Binary(Encoding.ASCII.GetBytes(dateTime.ToString("O")));
 
         public static IValue Serialize(this DateTimeOffset? dateTime) =>
             Serialize(Serialize, dateTime);
 
         public static DateTimeOffset ToDateTimeOffset(this IValue serialized) =>
-            DateTimeOffset.FromUnixTimeMilliseconds((long) ((Integer) serialized).Value);
+            DateTimeOffset.Parse(
+                Encoding.ASCII.GetString(((Binary) serialized).Value),
+                null,
+                DateTimeStyles.RoundtripKind
+            );
 
         public static DateTimeOffset? ToNullableDateTimeOffset(this IValue serialized) =>
             Deserialize(ToDateTimeOffset, serialized);
