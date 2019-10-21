@@ -64,7 +64,7 @@ namespace Nekoyume.Game.Factory
 
         public static ItemBase Deserialize(Bencodex.Types.Dictionary serialized)
         {
-            var data = (Dictionary) serialized[(Text) "data"];
+            var data = (Bencodex.Types.Dictionary) serialized[(Text) "data"];
             serialized.TryGetValue((Text) "itemId", out IValue id);
             var item = Create(
                 ItemSheet.Row.Deserialize(data),

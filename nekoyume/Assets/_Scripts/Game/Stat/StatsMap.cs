@@ -138,7 +138,7 @@ namespace Nekoyume.Game
             foreach (KeyValuePair<IKey, IValue> kv in serialized)
             {
                 _statMaps[StatTypeExtension.Deserialize((Binary) kv.Key)] =
-                    new StatMapEx((Dictionary) kv.Value);
+                    new StatMapEx((Bencodex.Types.Dictionary) kv.Value);
             }
         }
     }

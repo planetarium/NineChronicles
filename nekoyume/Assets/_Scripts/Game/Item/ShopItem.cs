@@ -28,7 +28,7 @@ namespace Nekoyume.Game.Item
             SellerAvatarAddress = serialized[(Text) "sellerAvatarAddress"].ToAddress();
             ProductId = serialized[(Text) "productId"].ToGuid();
             ItemUsable = (ItemUsable) ItemFactory.Deserialize(
-                (Dictionary) serialized[(Text) "itemUsable"]
+                (Bencodex.Types.Dictionary) serialized[(Text) "itemUsable"]
             );
             Price = serialized[(Text) "price"].ToDecimal();
         }
