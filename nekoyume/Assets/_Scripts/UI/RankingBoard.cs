@@ -13,14 +13,12 @@ namespace Nekoyume.UI
 {
     public class RankingBoard : Widget
     {
-        public BottomMenu bottomMenu;
         public RankingInfo rankingBase;
         public ScrollRect board;
         public GameObject filterHeader;
         public GameObject allHeader;
         public Text[] rankingButtonTexts;
         public Text[] filteredRankingButtonTexts;
-        public Button closeButton;
 
         private Player _player;
         private AvatarState[] _avatarStates;
@@ -38,19 +36,6 @@ namespace Nekoyume.UI
             {
                 filteredRankingButtonText.text = LocalizationManager.Localize("UI_RANKING_IN_24HOURS");
             }
-
-            closeButton.OnClickAsObservable()
-                .Subscribe(_ => GoToMenu())
-                .AddTo(gameObject);
-        }
-
-        public override void Initialize()
-        {
-            base.Initialize();
-
-            bottomMenu.mainButton.button.onClick.AddListener(GoToMenu);
-            var status = Find<Status>();
-            bottomMenu.questButton.button.onClick.AddListener(status.ToggleQuest);
         }
 
         public override void Show()
@@ -59,21 +44,18 @@ namespace Nekoyume.UI
 
             var stage = Game.Game.instance.stage;
             stage.LoadBackground("ranking");
-
-            _player = stage.GetPlayer();
-            if (ReferenceEquals(_player, null))
-            {
-                throw new NotFoundComponentException<Player>();
-            }
-
-            _player.gameObject.SetActive(false);
-            // Call from animation GetFilteredRanking(); 
+            stage.GetPlayer().gameObject.SetActive(false);
+            // Call from animation GetFilteredRanking();
+            
+            Find<BottomMenu>()?.Show(UINavigator.NavigationType.Back, SubscribeBackButtonClick, true);
 
             AudioController.instance.PlayMusic(AudioController.MusicCode.Ranking);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
+            Find<BottomMenu>()?.Close();
+            
             _avatarStates = null;
             ClearBoard();
 
@@ -135,7 +117,7 @@ namespace Nekoyume.UI
             }
         }
 
-        private void GoToMenu()
+        private void SubscribeBackButtonClick(BottomMenu bottomMenu)
         {
             Close();
             Find<Menu>().ShowRoom();
