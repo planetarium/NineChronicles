@@ -50,13 +50,6 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            RankingState ranking;
-            if (!states.TryGetState(RankingState.Address, out Bencodex.Types.Dictionary d))
-            {
-                return states;
-            }
-            ranking = new RankingState(d);
-
             var rewards = new List<decimal>
             {
                 gold1,
