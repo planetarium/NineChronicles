@@ -32,7 +32,6 @@ namespace Nekoyume.Action
 
         public static AgentState GetAgentState(this IAccountStateDelta states, Address address)
         {
-            AgentState agentState;
             var serializedAgent = states.GetState(address);
             if (serializedAgent is null)
             {
