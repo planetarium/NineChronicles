@@ -15,7 +15,7 @@ spec:
       - name: miner
         image: <<DOCKER_IMAGE_NAME>>
         command:
-          - /app/nekoyume
+          - /scripts/entrypoint.sh
           - --peer=<<PUBLIC_KEY>>,52.231.74.24,31234
           - --storage-path=/data/miner
         volumeMounts:
@@ -45,7 +45,7 @@ spec:
       - name: seed
         image: <<DOCKER_IMAGE_NAME>>
         command:
-          - /app/nekoyume
+          - /scripts/entrypoint.sh
           - --no-miner
           - --host=52.231.74.24
           - --port=31234
