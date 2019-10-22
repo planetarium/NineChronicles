@@ -86,11 +86,11 @@ namespace Nekoyume.UI.Model
             switch (itemBase.Data.ItemType)
             {
                 case ItemType.Consumable:
-                    inventoryItem = CreateInventoryItem(itemBase, 1);
+                    inventoryItem = CreateInventoryItem(itemBase, count);
                     Consumables.Add(inventoryItem);
                     break;
                 case ItemType.Equipment:
-                    inventoryItem = CreateInventoryItem(itemBase, 1);
+                    inventoryItem = CreateInventoryItem(itemBase, count);
                     inventoryItem.Equipped.Value = ((Equipment) itemBase).equipped;
                     Equipments.Add(inventoryItem);
                     break;
@@ -101,7 +101,7 @@ namespace Nekoyume.UI.Model
                         inventoryItem.Count.Value += count;
                         return;
                     }
-                    inventoryItem = CreateInventoryItem(itemBase, 1);
+                    inventoryItem = CreateInventoryItem(itemBase, count);
                     Materials.Add(inventoryItem);
                     break;
                 default:
