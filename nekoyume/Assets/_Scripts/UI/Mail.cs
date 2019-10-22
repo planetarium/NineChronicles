@@ -57,7 +57,9 @@ namespace Nekoyume.UI
                     shadow.effectColor = isHighlighted ? _highlightedColor : Color.black;
             }
         }
-        
+
+        public static readonly Dictionary<MailType, Sprite> mailIcons = new Dictionary<MailType, Sprite>();
+
         public MailTabState tabState;
         public MailScrollerController scroller;
         public TabButton allButton;
@@ -72,6 +74,14 @@ namespace Nekoyume.UI
         {
             base.Initialize();
             _selectedButtonSprite = Resources.Load<Sprite>("UI/Textures/button_blue_01");
+
+            var path = "UI/Textures/icon_mail_Auction";
+            mailIcons.Add(MailType.Auction, Resources.Load<Sprite>(path));
+            path = "UI/Textures/icon_mail_Forge";
+            mailIcons.Add(MailType.Forge, Resources.Load<Sprite>(path));
+            path = "UI/Textures/icon_mail_System";
+            mailIcons.Add(MailType.System, Resources.Load<Sprite>(path));
+
             allButton.Init(MailTabState.All);
             forgeButton.Init(MailTabState.Forge);
             auctionButton.Init(MailTabState.Auction);
@@ -167,7 +177,7 @@ namespace Nekoyume.UI
             var attachment = (Buy.SellerResult) sellerMail.attachment;
             //TODO 관련 기획이 끝나면 별도 UI를 생성
             AddGold(attachment.gold);
-            Notification.Push($"{attachment.shopItem.Price:n0} 골드 획득");
+            Notification.Push(MailType.Auction, $"{attachment.shopItem.Price:n0} 골드 획득");
         }
 
         public void Read(ItemEnhanceMail itemEnhanceMail)

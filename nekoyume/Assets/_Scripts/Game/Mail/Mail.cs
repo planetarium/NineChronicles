@@ -30,7 +30,7 @@ namespace Nekoyume.Game.Mail
 
         public bool New;
         public long blockIndex;
-        public virtual MailType MailType { get => MailType.System; }
+        public virtual MailType MailType => MailType.System;
 
         protected Mail(long blockIndex)
         {
