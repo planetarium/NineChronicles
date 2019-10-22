@@ -1236,6 +1236,42 @@
             <paramref name="publicKey"/>.</returns>
             <seealso cref="M:Libplanet.Address.#ctor(Libplanet.Crypto.PublicKey)"/>
         </member>
+        <member name="T:Libplanet.Blockchain.BlockChain`1">
+            <summary>
+            A class have <see cref="T:Libplanet.Blocks.Block`1"/>s, <see cref="T:Libplanet.Tx.Transaction`1"/>s, and the chain
+            information.
+            </summary>
+            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match
+            to <see cref="T:Libplanet.Blocks.Block`1"/>'s type parameter.</typeparam>
+            <seealso cref="T:Libplanet.Action.IAction"/>
+            <seealso cref="T:Libplanet.Blocks.Block`1"/>
+            <seealso cref="T:Libplanet.Tx.Transaction`1"/>
+        </member>
+        <member name="F:Libplanet.Blockchain.BlockChain`1._blocks">
+            <summary>
+            All <see cref="T:Libplanet.Blocks.Block`1"/>s in the <see cref="T:Libplanet.Blockchain.BlockChain`1"/>
+            storage, including orphan <see cref="T:Libplanet.Blocks.Block`1"/>s.
+            Keys are <see cref="P:Libplanet.Blocks.Block`1.Hash"/>es and values are
+            their corresponding <see cref="T:Libplanet.Blocks.Block`1"/>s.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Blockchain.BlockChain`1._transactions">
+            <summary>
+            All <see cref="T:Libplanet.Tx.Transaction`1"/>s in the <see cref="T:Libplanet.Blockchain.BlockChain`1"/>
+            storage, including orphan <see cref="T:Libplanet.Tx.Transaction`1"/>s.
+            Keys are <see cref="P:Libplanet.Tx.Transaction`1.Id"/>s and values are
+            their corresponding <see cref="T:Libplanet.Tx.Transaction`1"/>s.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Blockchain.BlockChain`1.#ctor(Libplanet.Blockchain.Policies.IBlockPolicy{`0},Libplanet.Store.IStore)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Libplanet.Blockchain.BlockChain`1"/> class.
+            </summary>
+            <param name="policy"><see cref="T:Libplanet.Blockchain.Policies.IBlockPolicy`1"/> to use in the
+            <see cref="T:Libplanet.Blockchain.BlockChain`1"/>.</param>
+            <param name="store"><see cref="T:Libplanet.Store.IStore"/> to store <see cref="T:Libplanet.Blocks.Block`1"/>s,
+            <see cref="T:Libplanet.Tx.Transaction`1"/>s, and <see cref="T:Libplanet.Blockchain.BlockChain`1"/> information.</param>
+        </member>
         <member name="E:Libplanet.Blockchain.BlockChain`1.TipChanged">
             <summary>
             An event which is invoked when <see cref="P:Libplanet.Blockchain.BlockChain`1.Tip"/> is changed.
@@ -1245,22 +1281,6 @@
             <summary>
             The topmost <see cref="T:Libplanet.Blocks.Block`1"/> of the current blockchain.
             Can be <c>null</c> if the blockchain is empty.
-            </summary>
-        </member>
-        <member name="P:Libplanet.Blockchain.BlockChain`1.Blocks">
-            <summary>
-            All <see cref="T:Libplanet.Blocks.Block`1"/>s in the <see cref="T:Libplanet.Blockchain.BlockChain`1"/>
-            storage, including orphan <see cref="T:Libplanet.Blocks.Block`1"/>s.
-            Keys are <see cref="P:Libplanet.Blocks.Block`1.Hash"/>es and values are
-            their corresponding <see cref="T:Libplanet.Blocks.Block`1"/>s.
-            </summary>
-        </member>
-        <member name="P:Libplanet.Blockchain.BlockChain`1.Transactions">
-            <summary>
-            All <see cref="T:Libplanet.Tx.Transaction`1"/>s in the <see cref="T:Libplanet.Blockchain.BlockChain`1"/>
-            storage, including orphan <see cref="T:Libplanet.Tx.Transaction`1"/>s.
-            Keys are <see cref="P:Libplanet.Tx.Transaction`1.Id"/>s and values are
-            their corresponding <see cref="T:Libplanet.Tx.Transaction`1"/>s.
             </summary>
         </member>
         <member name="P:Libplanet.Blockchain.BlockChain`1.BlockHashes">
@@ -1273,7 +1293,63 @@
             <inheritdoc/>
         </member>
         <member name="P:Libplanet.Blockchain.BlockChain`1.Item(System.Int32)">
-            <inheritdoc/>
+            <summary>
+            Gets the block corresponding to the <paramref name="index"/>.
+            </summary>
+            <param name="index">A number of index of <see cref="T:Libplanet.Blocks.Block`1"/>.</param>
+            <exception cref="T:System.ArgumentOutOfRangeException">Thrown when the given index of
+            <see cref="T:Libplanet.Blocks.Block`1"/> does not exist.</exception>
+        </member>
+        <member name="P:Libplanet.Blockchain.BlockChain`1.Item(System.Int64)">
+            <summary>
+            Gets the block corresponding to the <paramref name="index"/>.
+            </summary>
+            <param name="index">A number of index of <see cref="T:Libplanet.Blocks.Block`1"/>.</param>
+            <exception cref="T:System.ArgumentOutOfRangeException">Thrown when the given index of
+            <see cref="T:Libplanet.Blocks.Block`1"/> does not exist.</exception>
+        </member>
+        <member name="P:Libplanet.Blockchain.BlockChain`1.Item(Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
+            <summary>
+            Gets the block corresponding to the <paramref name="hash"/>.
+            </summary>
+            <param name="hash">A <see cref="P:Libplanet.Blocks.Block`1.Hash"/> of the <see cref="T:Libplanet.Blocks.Block`1"/> to get.
+            </param>
+            <exception cref="T:System.Collections.Generic.KeyNotFoundException">Thrown when there is no <see cref="T:Libplanet.Blocks.Block`1"/>
+            with a given <paramref name="hash"/>.</exception>
+        </member>
+        <member name="M:Libplanet.Blockchain.BlockChain`1.Contains(Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
+            <summary>
+            Determines whether the <see cref="T:Libplanet.Blockchain.BlockChain`1"/> contains <see cref="T:Libplanet.Blocks.Block`1"/>
+            the specified <paramref name="hash"/>.
+            </summary>
+            <param name="hash">The <see cref="T:Libplanet.HashDigest`1"/> of the <see cref="T:Libplanet.Blocks.Block`1"/> to
+            check if it is in the <see cref="T:Libplanet.Blockchain.BlockChain`1"/>.</param>
+            <returns>
+            <c>true</c> if the <see cref="T:Libplanet.Blockchain.BlockChain`1"/> contains <see cref="T:Libplanet.Blocks.Block`1"/> with
+            the specified <paramref name="hash"/>; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Libplanet.Blockchain.BlockChain`1.Contains(Libplanet.Tx.TxId)">
+            <summary>
+            Determines whether the <see cref="T:Libplanet.Blockchain.BlockChain`1"/> contains <see cref="T:Libplanet.Tx.Transaction`1"/>
+            the specified <paramref name="txId"/>.
+            </summary>
+            <param name="txId">The <see cref="T:Libplanet.HashDigest`1"/> of the <see cref="T:Libplanet.Tx.Transaction`1"/>
+            to check if it is in the <see cref="T:Libplanet.Blockchain.BlockChain`1"/>.</param>
+            <returns>
+            <c>true</c> if the <see cref="T:Libplanet.Blockchain.BlockChain`1"/> contains <see cref="T:Libplanet.Tx.Transaction`1"/>
+            with the specified <paramref name="txId"/>; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Libplanet.Blockchain.BlockChain`1.GetTransaction(Libplanet.Tx.TxId)">
+            <summary>
+            Gets the transaction corresponding to the <paramref name="txId"/>.
+            </summary>
+            <param name="txId">A <see cref="T:Libplanet.Tx.TxId"/> of the <see cref="T:Libplanet.Tx.Transaction`1"/> to get.
+            </param>
+            <returns><see cref="T:Libplanet.Tx.Transaction`1"/> with <paramref name="txId"/>.</returns>
+            <exception cref="T:System.Collections.Generic.KeyNotFoundException">Thrown when there is no
+            <see cref="T:Libplanet.Tx.Transaction`1"/> with a given <paramref name="txId"/>.</exception>
         </member>
         <member name="M:Libplanet.Blockchain.BlockChain`1.LongCount">
             <summary>
@@ -1409,15 +1485,28 @@
             <paramref name="privateKey"/>.</returns>
             <seealso cref="M:Libplanet.Tx.Transaction`1.Create(System.Int64,Libplanet.Crypto.PrivateKey,System.Collections.Generic.IEnumerable{`0},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Nullable{System.DateTimeOffset})" />
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain`1.ExecuteActions(Libplanet.Blocks.Block{`0},System.Boolean)">
+        <member name="M:Libplanet.Blockchain.BlockChain`1.RenderBlocks(System.Int64)">
+            <summary>
+            Render actions from block index of <paramref name="offset"/>.
+            </summary>
+            <param name="offset">Index of the block to start rendering from.</param>
+        </member>
+        <member name="M:Libplanet.Blockchain.BlockChain`1.RenderBlock(System.Collections.Generic.IReadOnlyList{Libplanet.Action.ActionEvaluation},Libplanet.Blocks.Block{`0})">
+            <summary>
+            Render actions of the given <paramref name="block"/>.
+            </summary>
+            <param name="evaluations"><see cref="T:Libplanet.Action.ActionEvaluation"/>s of the block.  If it is
+            <c>null</c>, evaluate actions of the <paramref name="block"/> again.</param>
+            <param name="block"><see cref="T:Libplanet.Blocks.Block`1"/> to render actions.</param>
+        </member>
+        <member name="M:Libplanet.Blockchain.BlockChain`1.ExecuteActions(Libplanet.Blocks.Block{`0})">
             <summary>
             Evaluates actions in the given <paramref name="block"/> and fills states with the
-            results, and renders them if <paramref name="render"/> is turned on.
+            results.
             </summary>
             <param name="block">A block to execute.</param>
-            <param name="render">Whether to render actions.  This is not idempotent; even if
-            the given <paramref name="block"/> has executed before in the blockchain,
-            its actions are rendered anyway.</param>
+            <returns>The result of action evaluations of the given <paramref name="block"/>.
+            </returns>
             <remarks>This method is idempotent (except for rendering).  If the given
             <paramref name="block"/> has executed before, it does not execute it nor mutate states.
             </remarks>
@@ -2547,6 +2636,16 @@
             that this operation should be canceled.</param>
             <returns>>An awaitable task without value.</returns>
         </member>
+        <member name="M:Libplanet.Net.Protocols.KademliaProtocol`1.ValidateAsync(Libplanet.Net.BoundPeer,System.TimeSpan,System.Threading.CancellationToken)">
+            <summary>
+            Validate peer by send <see cref="T:Libplanet.Net.Messages.Ping"/> to <paramref name="peer"/>.
+            </summary>
+            <param name="peer">A <see cref="T:Libplanet.Net.BoundPeer"/> to validate.</param>
+            <param name="timeout">Timeout for waiting reply of <see cref="T:Libplanet.Net.Messages.Ping"/>.</param>
+            <param name="cancellationToken">A cancellation token used to propagate notification
+            that this operation should be canceled.</param>
+            <returns>An awaitable task without value.</returns>
+        </member>
         <member name="M:Libplanet.Net.Protocols.KademliaProtocol`1.FindPeerAsync(Libplanet.Address,Libplanet.Net.BoundPeer,System.Int32,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
             <summary>
             Send <see cref="T:Libplanet.Net.Messages.FindNeighbors"/> messages to <paramref name="viaPeer"/>
@@ -2622,10 +2721,13 @@
             <returns>A <see cref="T:System.Threading.Tasks.Task"/> completed when <see cref="P:Libplanet.Net.Swarm`1.Running"/>
             property becomes <c>true</c>.</returns>
         </member>
-        <member name="M:Libplanet.Net.Swarm`1.StartAsync(System.TimeSpan,System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Net.Swarm`1.StartAsync(System.TimeSpan,System.TimeSpan,System.Threading.CancellationToken)">
             <summary>
             Starts to periodically synchronize the <see cref="P:Libplanet.Net.Swarm`1.BlockChain"/>.
             </summary>
+            <param name="dialTimeout">
+            A timeout value for dialing.
+            </param>
             <param name="broadcastTxInterval">The time period of exchange of staged transactions.
             </param>
             /// <param name="cancellationToken">
@@ -2641,7 +2743,7 @@
             so that there are a lot of calls to <see cref="M:Libplanet.Action.IAction.Render(Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/> method in a short
             period of time.  This can lead a game startup slow.  If you want to omit rendering of
             these actions in the behind blocks use <see cref=
-            "M:Libplanet.Net.Swarm`1.PreloadAsync(System.IProgress{Libplanet.Net.PreloadState},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Threading.CancellationToken)"
+            "M:Libplanet.Net.Swarm`1.PreloadAsync(System.Nullable{System.TimeSpan},System.IProgress{Libplanet.Net.PreloadState},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Threading.CancellationToken)"
             /> method too.</remarks>
         </member>
         <member name="M:Libplanet.Net.Swarm`1.BootstrapAsync(System.Collections.Generic.IEnumerable{Libplanet.Net.Peer},System.Nullable{System.TimeSpan},System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
@@ -2657,10 +2759,13 @@
             <exception cref="T:Libplanet.Net.SwarmException">Thrown when this <see cref="T:Libplanet.Net.Swarm`1"/> instance is
             not <see cref="P:Libplanet.Net.Swarm`1.Running"/>.</exception>
         </member>
-        <member name="M:Libplanet.Net.Swarm`1.PreloadAsync(System.IProgress{Libplanet.Net.PreloadState},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Net.Swarm`1.PreloadAsync(System.Nullable{System.TimeSpan},System.IProgress{Libplanet.Net.PreloadState},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Threading.CancellationToken)">
             <summary>
             Preemptively downloads blocks from registered <see cref="T:Libplanet.Net.Peer"/>s.
             </summary>
+            <param name="dialTimeout">
+            A timeout value for dialing.
+            </param>
             <param name="progress">
             An instance that receives progress updates for block downloads.
             </param>
@@ -2683,7 +2788,7 @@
             </returns>
             <remarks>This does not render downloaded <see cref="T:Libplanet.Action.IAction"/>s, but fills states only.
             If you want to render all <see cref="T:Libplanet.Action.IAction"/>s from the genesis block to the recent
-            blocks use <see cref="M:Libplanet.Net.Swarm`1.StartAsync(System.TimeSpan,System.Threading.CancellationToken)"/> method
+            blocks use <see cref="M:Libplanet.Net.Swarm`1.StartAsync(System.TimeSpan,System.TimeSpan,System.Threading.CancellationToken)"/> method
             instead.</remarks>
         </member>
         <member name="T:Libplanet.Nonce">
