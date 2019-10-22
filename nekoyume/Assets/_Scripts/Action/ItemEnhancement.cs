@@ -5,6 +5,9 @@ using System.Linq;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
+using Nekoyume.Data;
+using Nekoyume.EnumType;
+using Nekoyume.Game;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Mail;
 using Nekoyume.State;
@@ -66,6 +69,7 @@ namespace Nekoyume.Action
 
             var equipment = (Equipment) item;
             equipment.LevelUp();
+            equipment.BuffSkills.Add(GetRandomBuffSkill(ctx.Random));
             var requiredGold = Math.Max(RequiredGoldPerLevel, RequiredGoldPerLevel * equipment.level * equipment.level);
 
             if (agentState.gold < requiredGold)
@@ -100,6 +104,16 @@ namespace Nekoyume.Action
             itemId = plainValue["itemId"].ToGuid();
             materialIds = plainValue["materialIds"].ToList(StateExtensions.ToGuid);
             avatarAddress = plainValue["avatarAddress"].ToAddress();
+        }
+
+        private static BuffSkill GetRandomBuffSkill(IRandom random)
+        {
+            var skillRows = Game.Game.instance.TableSheets.SkillSheet.OrderedList
+                .Where(i => (i.SkillType == SkillType.Debuff || i.SkillType == SkillType.Buff) &&
+                            i.SkillCategory != SkillCategory.Heal)
+                .ToList();
+            var skillRow = skillRows[random.Next(0, skillRows.Count)];
+            return (BuffSkill) SkillFactory.Get(skillRow, 0, 1m);
         }
     }
 }

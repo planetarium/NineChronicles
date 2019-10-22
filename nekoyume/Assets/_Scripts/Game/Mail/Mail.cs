@@ -25,6 +25,7 @@ namespace Nekoyume.Game.Mail
                 ["combinationMail"] = d => new CombinationMail(d),
                 ["sellCancel"] = d => new SellCancelMail(d),
                 ["seller"] = d => new SellerMail(d),
+                ["itemEnhance"] = d => new ItemEnhanceMail(d),
             };
 
         public bool New;
