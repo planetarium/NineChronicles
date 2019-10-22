@@ -187,9 +187,16 @@ namespace Nekoyume.Action
                     if (TryGetSkill(monsterPart.Key, GetRoll(ctx.Random, monsterPart.Value, 0), out var skill))
                         equipment.Skills.Add(skill);
 
-                    
-                    if (TryGetBuffSkill(ctx.Random, out var buffSkill))
-                        equipment.BuffSkills.Add(buffSkill);
+                    Game.Game.instance.TableSheets.ItemConfigForGradeSheet.TryGetValue(equipmentMaterial.Grade,
+                        out var config, true);
+                    var buffSkillCount = ctx.Random.Next(config.RandomBuffSkillMinCountForCombination,
+                        config.RandomBuffSkillMaxCountForCombination + 1);
+                    buffSkillCount = Math.Min(buffSkillCount, config.RandomBuffSkillMaxCountForCombination);
+                    for (var i = 0; i < buffSkillCount; i++)
+                    {
+                        if (TryGetBuffSkill(ctx.Random, out var buffSkill))
+                            equipment.BuffSkills.Add(buffSkill);
+                    }
                 }
 
                 Result.itemUsable = equipment;
