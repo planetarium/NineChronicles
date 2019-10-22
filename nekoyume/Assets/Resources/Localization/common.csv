@@ -89,6 +89,7 @@ UI_DELETE,Delete,삭제
 UI_COMBINATION_ITEM,Combine,아이템 제작
 UI_COMBINATION_ERROR,Error,조합 에러
 UI_COMBINATION_SUCCESS,Success!,조합 성공!
+UI_COMBINATION_NOTIFY_FORMAT,<size=14><color=#a2b4d6>[Workshop Cat]</color></size>[newline]Finished making <color=#ffd201>[{0}]</color>.,<size=14><color=#a2b4d6>[대장장이 고양이]</color></size>[newline]<color=#ffd201>[{0}]</color> 제작을 완료하였네.
 UI_COMBINATION_FAIL,Failed..,조합 실패
 UI_COMBINATION_MATERIAL_COUNT_SELECTION,Material Amount,재료 수량 선택
 UI_TOTAL_COUNT_N,Total {0},총 {0}개
@@ -139,8 +140,8 @@ NPC_01_NAME,Frey's Cat,프레이야의 하수인
 NPC_02_NAME,Fox Wizard,여우부족 마도사
 NPC_03_NAME,Fox Thief,여우부족 대장
 NPC_04_NAME,Gerimnir,제림니르
-NPC_05_NAME,Craft Shop Cat,공방 주인
-NPC_06_NAME,Auction Cat,경매장 주인
+NPC_05_NAME,Workshop Cat,대장장이 고양이
+NPC_06_NAME,Auction Cat,경매장 고양이
 NPC_07_NAME,The Godness Freya,여신 프레이야
 UI_COMBINE_EQUIPMENT,Combine Equipment,장비 제작
 UI_COMBINE_CONSUMABLE,Combine Consumable,소모품 제작

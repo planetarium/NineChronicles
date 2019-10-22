@@ -7,6 +7,7 @@ using Nekoyume.BlockChain;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
+using Nekoyume.Game.Mail;
 using Nekoyume.Model;
 using Nekoyume.State;
 using Nekoyume.TableData;
@@ -353,7 +354,7 @@ namespace Nekoyume.UI
             inventory.SharedModel.RemoveItem(item.ItemBase.Value);
             
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
-            Notification.Push(
+            Notification.Push(MailType.Auction, 
                 $"{item.ItemBase.Value.Data.GetLocalizedName()} 아이템을 상점에 등록합니다.\n아이템 판매시 {price} gold의 8%를 세금으로 차감합니다.");
         }
 
@@ -368,7 +369,7 @@ namespace Nekoyume.UI
             shopItems.SharedModel.RemoveCurrentAgentsProduct(productId);
             
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
-            Notification.Push($"{shopItem.ItemBase.Value.Data.GetLocalizedName()} 아이템을 판매 취소합니다.");
+            Notification.Push(MailType.Auction, $"{shopItem.ItemBase.Value.Data.GetLocalizedName()} 아이템을 판매 취소합니다.");
         }
 
         private void ResponseBuy(ShopItem shopItem)
@@ -382,7 +383,7 @@ namespace Nekoyume.UI
             shopItems.SharedModel.RemoveOtherProduct(productId);
             
             AudioController.instance.PlaySfx(AudioController.SfxCode.BuyItem);
-            Notification.Push($"{shopItem.ItemBase.Value.Data.GetLocalizedName()} 아이템을 구매합니다.");
+            Notification.Push(MailType.Auction, $"{shopItem.ItemBase.Value.Data.GetLocalizedName()} 아이템을 구매합니다.");
         }
 
         #endregion
