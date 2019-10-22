@@ -176,7 +176,7 @@ namespace Nekoyume
             var skills = new List<Game.Skill>();
             foreach (var skillRow in Game.Game.instance.TableSheets.SkillSheet)
             {
-                var skill = SkillFactory.Get(skillRow, 50, 1m);
+                var skill = SkillFactory.Get(skillRow, 50, 100);
                 skills.Add(skill);
                 Button newButton = Instantiate(buttonBase, skillList.content);
                 newButton.GetComponentInChildren<Text>().text = $"{skillRow.GetLocalizedName()}_{skillRow.ElementalType}";

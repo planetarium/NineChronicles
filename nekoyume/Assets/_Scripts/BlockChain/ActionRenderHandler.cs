@@ -266,7 +266,7 @@ namespace Nekoyume.BlockChain
 
         private void ResponseCombination(ActionBase.ActionEvaluation<Combination> evaluation)
         {
-            var isSuccess = !(evaluation.Action.result.itemUsable is null);
+            var isSuccess = !(evaluation.Action.Result.itemUsable is null);
             AnalyticsManager.Instance.OnEvent(isSuccess
                 ? AnalyticsManager.EventName.ActionCombinationSuccess
                 : AnalyticsManager.EventName.ActionCombinationFail);

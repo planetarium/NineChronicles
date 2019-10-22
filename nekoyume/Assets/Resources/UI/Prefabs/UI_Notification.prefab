@@ -201,7 +201,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   scroller: {fileID: 7579444259102893924}
-  sfx: {fileID: 82256233218848282, guid: 91aa3806f7c3a4aeca757f0ca1dd72f1, type: 3}
 --- !u!1 &7971991183536313995
 GameObject:
   m_ObjectHideFlags: 0
@@ -234,11 +233,11 @@ RectTransform:
   m_Father: {fileID: 7971991182463500575}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 400, y: 400}
-  m_Pivot: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 0.5}
+  m_AnchorMax: {x: 0, y: 0.5}
+  m_AnchoredPosition: {x: 60, y: 170}
+  m_SizeDelta: {x: 500, y: 400}
+  m_Pivot: {x: 0, y: 1}
 --- !u!114 &7579444259102893924
 MonoBehaviour:
   m_ObjectHideFlags: 0

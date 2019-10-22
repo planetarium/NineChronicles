@@ -91,8 +91,20 @@ namespace Nekoyume.BlockChain
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionCombination);
 
             var action = new Action.Combination();
-            materials.ForEach(m => action.Materials.Add(new Action.Combination.Material(m)));
-            action.avatarAddress = States.Instance.CurrentAvatarState.Value.address;
+            materials.ForEach(m =>
+            {
+                var id = m.ItemBase.Value.Data.Id;
+                var count = m.Count.Value;
+                if (action.Materials.ContainsKey(id))
+                {
+                    action.Materials[id] += count;
+                }
+                else
+                {
+                    action.Materials.Add(id, count);
+                }
+            });
+            action.AvatarAddress = States.Instance.CurrentAvatarState.Value.address;
             ProcessAction(action);
 
             return ActionBase.EveryRender<Action.Combination>()

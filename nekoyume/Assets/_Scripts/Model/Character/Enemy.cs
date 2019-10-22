@@ -32,14 +32,13 @@ namespace Nekoyume.Model
             base.SetSkill();
             
             var dmg = (int) (ATK * 1.3m);
-            var chance = 1m;
             var skillIds = Game.Game.instance.TableSheets.EnemySkillSheet.Values.Where(r => r.characterId == RowData.Id)
                 .Select(r => r.skillId).ToList();
             var enemySkills = Game.Game.instance.TableSheets.SkillSheet.Values.Where(r => skillIds.Contains(r.Id))
                 .ToList();
             foreach (var skillRow in enemySkills)
             {
-                var skill = SkillFactory.Get(skillRow, dmg, chance);
+                var skill = SkillFactory.Get(skillRow, dmg, 100);
                 Skills.Add(skill);
             }
         }

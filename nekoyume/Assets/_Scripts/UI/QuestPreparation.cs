@@ -67,7 +67,7 @@ namespace Nekoyume.UI
                 })
                 .AddTo(gameObject);
 
-            requiredPointText.text = HackAndSlash.RequiredPoint.ToString();
+            requiredPointText.text = GameConfig.HackAndSlashCost.ToString();
         }
 
         public override void Show()
@@ -235,7 +235,7 @@ namespace Nekoyume.UI
 
         private void SubscribeActionPoint(int point)
         {
-            _buttonEnabled.Value = point >= HackAndSlash.RequiredPoint;
+            _buttonEnabled.Value = point >= GameConfig.HackAndSlashCost;
         }
 
         #endregion

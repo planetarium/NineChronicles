@@ -18612,10 +18612,9 @@ GameObject:
   - component: {fileID: 3546005169955048567}
   - component: {fileID: 2813493790557948518}
   - component: {fileID: 8501237450653231258}
-  - component: {fileID: -5117699764338652171}
   - component: {fileID: 2038673577586868662}
   m_Layer: 12
-  m_Name: double_m_normal
+  m_Name: doubleattack_m_normal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -23298,18 +23297,6 @@ ParticleSystemRenderer:
   m_Mesh2: {fileID: 0}
   m_Mesh3: {fileID: 0}
   m_MaskInteraction: 0
---- !u!114 &-5117699764338652171
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5113818173955824041}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d3e184ea0bbb472fafbd7635f288e78b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &2038673577586868662
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -23322,6 +23309,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 986a991047a04898bacd2f22b176ba88, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  target: {fileID: 0}
   first: {fileID: 6462702335693572595}
   second: {fileID: 4947077702801192981}
 --- !u!1 &5115125610535211626

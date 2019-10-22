@@ -178,10 +178,10 @@ namespace Nekoyume.Game
                 }
 
                 // set effects.
-                var setEffectRows = Game.instance.TableSheets.SetEffectSheet.GetSetEffectRows(value);
-                foreach (var statMap in setEffectRows.SelectMany(row => row.Stats))
+                var setEffectRows = Game.instance.TableSheets.EquipmentItemSetEffectSheet.GetSetEffectRows(value);
+                foreach (var statModifier in setEffectRows.SelectMany(row => row.StatModifiers.Values))
                 {
-                    _equipmentStatModifiers.Add(new StatModifier(statMap));
+                    _equipmentStatModifiers.Add(statModifier);
                 }
             }
 

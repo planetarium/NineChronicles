@@ -94,5 +94,28 @@ namespace Nekoyume.State
 
         public static Guid? ToNullableGuid(this IValue serialized) =>
             Deserialize(ToGuid, serialized);
+
+        #region Generic
+        
+        public static IValue Serialize(this Dictionary<int, int> value)
+        {
+            return new Bencodex.Types.Dictionary(
+                value.ToDictionary<KeyValuePair<int, int>, IKey, IValue>(
+                    pair => new Binary(BitConverter.GetBytes(pair.Key)),
+                    pair => (Integer) pair.Value
+                )
+            );
+        }
+        
+        public static Dictionary<int, int> ToDictionary(this IValue serialized)
+        {
+            return ((Bencodex.Types.Dictionary) serialized)
+                .ToDictionary(
+                    pair => BitConverter.ToInt32(((Binary) pair.Key).Value, 0),
+                    pair => (int) ((Integer) pair.Value).Value
+                );
+        }
+
+        #endregion
     }
 }

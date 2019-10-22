@@ -3,12 +3,15 @@ set -e
 
 source "$(dirname $0)/_common.sh"
 
+title "Unity license"
+install_license
+
 title "Unit tests (Editor)"
 /opt/Unity/Editor/Unity \
   -batchmode \
   -nographics \
   -logFile \
-  -projectPath /src/ \
+  -projectPath "$(dirname $0)/../nekoyume" \
   -runTests \
   -testResults /tmp/test/nunit.xml \
   -testPlatform playmode \

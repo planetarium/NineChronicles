@@ -8,6 +8,13 @@ using UnityEngine;
 
 namespace Nekoyume.Game.Mail
 {
+    public enum MailType
+    {
+        Forge = 1,
+        Auction,
+        System
+    }
+
     [Serializable]
     public abstract class Mail : IState
     {
@@ -18,10 +25,12 @@ namespace Nekoyume.Game.Mail
                 ["combinationMail"] = d => new CombinationMail(d),
                 ["sellCancel"] = d => new SellCancelMail(d),
                 ["seller"] = d => new SellerMail(d),
+                ["itemEnhance"] = d => new ItemEnhanceMail(d),
             };
 
         public bool New;
         public long blockIndex;
+        public virtual MailType MailType { get => MailType.System; }
 
         protected Mail(long blockIndex)
         {

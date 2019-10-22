@@ -13,117 +13,61 @@ using Nekoyume.Game;
 using Nekoyume.Game.Factory;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Mail;
-using Nekoyume.Model;
 using Nekoyume.State;
 using Nekoyume.TableData;
 using UnityEngine;
-using Skill = Nekoyume.Game.Skill;
 
 namespace Nekoyume.Action
 {
     [ActionType("combination")]
     public class Combination : GameAction
     {
+        // todo: ResultModel.materials는 Combination.Materials 와 같은 값이기 때문에 추가로 더해주지 않아도 될 것으로 보임.
+        // 클라이언트가 이미 알고 있거나 알 수 있는 액션의 구분자를 통해서 갖고 오는 형태가 좋아 보임.
         [Serializable]
-        public class Material : IState
+        public class ResultModel : AttachmentActionResult
         {
-            public int id;
-            public int count;
+            public Dictionary<int, int> materials;
 
-            public Material(UI.Model.CountableItem item) : this(item.ItemBase.Value.Data.Id, item.Count.Value)
+            protected override string TypeId => "combination.result-model";
+
+            public ResultModel()
             {
             }
 
-            public Material(int id, int count)
+            public ResultModel(Dictionary serialized) : base(serialized)
             {
-                this.id = id;
-                this.count = count;
-            }
-
-            public Material(Bencodex.Types.Dictionary serialized)
-                : this(
-                    (int) ((Integer) serialized[(Text) "id"]).Value,
-                    (int) ((Integer) serialized[(Text) "count"]).Value
-                )
-            {
-            }
-
-            public IValue Serialize() =>
-                new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
-                {
-                    [(Text) "id"] = (Integer) id,
-                    [(Text) "count"] = (Integer) count,
-                });
-        }
-
-        [Serializable]
-        public class Result : AttachmentActionResult
-        {
-            public List<Material> materials;
-
-            protected override string TypeId => "combination.result";
-
-            public Result()
-            {
-            }
-
-            public Result(Dictionary serialized) : base(serialized)
-            {
-                materials = ((Bencodex.Types.List) serialized[(Text) "materials"])
-                    .Select(m => new Material((Bencodex.Types.Dictionary) m))
-                    .ToList();
+                materials = serialized[(Text) "materials"].ToDictionary();
             }
 
             public override IValue Serialize() =>
-                new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
+                new Dictionary(new Dictionary<IKey, IValue>
                 {
-                    [(Text) "materials"] = new Bencodex.Types.List(
-                        materials.Select(m => m.Serialize())
-                    ),
-                }.Union((Bencodex.Types.Dictionary) base.Serialize()));
+                    [(Text) "materials"] = materials.Serialize(),
+                }.Union((Dictionary) base.Serialize()));
         }
 
-        public class MaterialRow
-        {
-            public MaterialItemSheet.Row row;
-            public int count;
-
-            public MaterialRow(Material material)
-            {
-                var sheet = Game.Game.instance.TableSheets.MaterialItemSheet;
-                if (!sheet.TryGetValue(material.id, out var outRow))
-                {
-                    throw new SheetRowNotFoundException(nameof(sheet), material.id.ToString());
-                }
-
-                row = outRow;
-                count = material.count;
-            }
-        }
-
-        public List<Material> Materials { get; private set; }
-        public Address avatarAddress;
-        public Result result;
+        public Dictionary<int, int> Materials { get; private set; }
+        public Address AvatarAddress;
+        public ResultModel Result;
         public const int RequiredPoint = 5;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>
             {
-                ["Materials"] = Materials.Select(m => m.Serialize()).Serialize(),
-                ["avatarAddress"] = avatarAddress.Serialize(),
+                ["Materials"] = Materials.Serialize(),
+                ["avatarAddress"] = AvatarAddress.Serialize(),
             }.ToImmutableDictionary();
 
         public Combination()
         {
-            Materials = new List<Material>();
+            Materials = new Dictionary<int, int>();
         }
 
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
         {
-            Materials = plainValue["Materials"].ToList(
-                d => new Material((Bencodex.Types.Dictionary) d)
-            );
-            avatarAddress = plainValue["avatarAddress"].ToAddress();
+            Materials = plainValue["Materials"].ToDictionary();
+            AvatarAddress = plainValue["avatarAddress"].ToAddress();
         }
 
         public override IAccountStateDelta Execute(IActionContext ctx)
@@ -131,11 +75,12 @@ namespace Nekoyume.Action
             var states = ctx.PreviousStates;
             if (ctx.Rehearsal)
             {
-                states = states.SetState(avatarAddress, MarkChanged);
+                states = states.SetState(AvatarAddress, MarkChanged);
                 return states.SetState(ctx.Signer, MarkChanged);
             }
 
-            if (!states.TryGetAgentAvatarStates(ctx.Signer, avatarAddress, out AgentState agentState, out AvatarState avatarState))
+            if (!states.TryGetAgentAvatarStates(ctx.Signer, AvatarAddress, out AgentState agentState,
+                out AvatarState avatarState))
             {
                 return states;
             }
@@ -147,19 +92,22 @@ namespace Nekoyume.Action
 
             avatarState.actionPoint -= RequiredPoint;
 
-            Debug.Log($"Execute Combination. player : `{avatarAddress}` " +
+            Debug.Log($"Execute Combination. player : `{AvatarAddress}` " +
                       $"node : `{States.Instance?.AgentState?.Value?.address}` " +
                       $"current avatar: `{States.Instance?.CurrentAvatarState?.Value?.address}`");
 
             // 사용한 재료를 인벤토리에서 제거.
-            foreach (var material in Materials)
+            foreach (var pair in Materials)
             {
-                if (!avatarState.inventory.RemoveFungibleItem(material.id, material.count))
+                if (!avatarState.inventory.RemoveFungibleItem(pair.Key, pair.Value))
+                {
+                    // 재료 부족 에러.
                     return states;
+                }
             }
 
             // 액션 결과
-            result = new Result
+            Result = new ResultModel
             {
                 materials = Materials,
             };
@@ -168,29 +116,32 @@ namespace Nekoyume.Action
             var recipeTable = Tables.instance.Recipe;
 
             // 모든 재료를 테이블 값으로.
-            var materialRows = Materials.Select(material => new MaterialRow(material)).ToList();
-            var isEquipment = materialRows.Any(row => row.row.ItemSubType == ItemSubType.EquipmentMaterial);
-            if (isEquipment)
+            var materialRows = Materials
+                .Where(pair => Game.Game.instance.TableSheets.MaterialItemSheet.ContainsKey(pair.Key))
+                .ToDictionary(
+                    pair => Game.Game.instance.TableSheets.MaterialItemSheet[pair.Key],
+                    pair => pair.Value);
+
+            var equipmentMaterials = materialRows
+                .Where(materialRow => materialRow.Key.ItemSubType == ItemSubType.EquipmentMaterial)
+                .ToList();
+            if (equipmentMaterials.Count > 0)
             {
-                var zippedMaterialRows = Zip(materialRows);
-                var equipmentMaterials = zippedMaterialRows
-                    .Where(materialRow => materialRow.row.ItemSubType == ItemSubType.EquipmentMaterial)
-                    .ToList();
-                if (equipmentMaterials.Count == 0 || equipmentMaterials.Count > 1)
+                if (equipmentMaterials.Count != 1)
                 {
                     // 장비 베이스의 수량 에러.
                     return states;
                 }
 
-                var equipmentMaterial = equipmentMaterials[0];
-                if (!TryGetItemType(equipmentMaterial.row.Id, out var outItemType))
+                var equipmentMaterial = equipmentMaterials[0].Key;
+                if (!TryGetItemType(equipmentMaterial.Id, out var outItemType))
                 {
                     // 장비 베이스의 Id로 장비의 타입을 추측할 수 없는 에러.
                     return states;
                 }
 
-                var monsterParts = zippedMaterialRows
-                    .Where(materialRow => materialRow.row.ItemSubType != ItemSubType.EquipmentMaterial)
+                var monsterParts = materialRows
+                    .Where(materialRow => materialRow.Key.ItemSubType == ItemSubType.MonsterPart)
                     .ToList();
                 if (monsterParts.Count == 0 || monsterParts.Count > 4)
                 {
@@ -209,7 +160,8 @@ namespace Nekoyume.Action
                     {
                         isFirst = false;
 
-                        if (!TryGetItemEquipmentRow(outItemType, elementalType, equipmentMaterial.row.Grade,
+                        if (!TryGetItemEquipmentRow(outItemType, elementalType,
+                            equipmentMaterial.Grade,
                             out var itemEquipmentRow))
                         {
                             // 장비 테이블 값 가져오기 실패.
@@ -229,24 +181,36 @@ namespace Nekoyume.Action
                         }
                     }
 
-                    if (TryGetStat(monsterPart.row, GetRoll(ctx.Random, monsterPart.count, 0), out var statMap))
+                    if (TryGetStat(monsterPart.Key, GetRoll(ctx.Random, monsterPart.Value, 0), out var statMap))
                         equipment.StatsMap.AddStatAdditionalValue(statMap.StatType, statMap.Value);
 
-                    if (TryGetSkill(monsterPart.row, GetRoll(ctx.Random, monsterPart.count, 0), out var skill))
+                    if (TryGetSkill(monsterPart.Key, GetRoll(ctx.Random, monsterPart.Value, 0), out var skill))
                         equipment.Skills.Add(skill);
-                    
+                }
+
+                Game.Game.instance.TableSheets.ItemConfigForGradeSheet.TryGetValue(equipmentMaterial.Grade,
+                    out var config, true);
+                var buffSkillCount = Math.Min(
+                    ctx.Random.Next(config.RandomBuffSkillMinCountForCombination,
+                        config.RandomBuffSkillMaxCountForCombination + 1),
+                    config.RandomBuffSkillMaxCountForCombination);
+                for (var i = 0; i < buffSkillCount; i++)
+                {
                     if (TryGetBuffSkill(ctx.Random, out var buffSkill))
                         equipment.BuffSkills.Add(buffSkill);
                 }
 
-                result.itemUsable = equipment;
-                var mail = new CombinationMail(result, ctx.BlockIndex);
+                Result.itemUsable = equipment;
+                var mail = new CombinationMail(Result, ctx.BlockIndex);
                 avatarState.Update(mail);
                 avatarState.questList.UpdateCombinationQuest(equipment);
             }
             else
             {
-                var foodMaterials = materialRows.OrderBy(order => order.row.Id).ToList();
+                var foodMaterials = materialRows
+                    .Where(pair => pair.Key.ItemSubType == ItemSubType.FoodMaterial)
+                    .OrderBy(order => order.Key.Id)
+                    .ToList();
                 ConsumableItemSheet.Row itemEquipmentRow = null;
                 // 소모품
                 foreach (var recipe in recipeTable)
@@ -273,8 +237,8 @@ namespace Nekoyume.Action
                 // 조합 결과 획득.
                 var itemId = ctx.Random.GenerateRandomGuid();
                 var itemUsable = GetFood(itemEquipmentRow, itemId);
-                result.itemUsable = itemUsable;
-                var mail = new CombinationMail(result, ctx.BlockIndex);
+                Result.itemUsable = itemUsable;
+                var mail = new CombinationMail(Result, ctx.BlockIndex);
                 avatarState.Update(mail);
                 avatarState.questList.UpdateCombinationQuest(itemUsable);
             }
@@ -282,33 +246,12 @@ namespace Nekoyume.Action
             avatarState.updatedAt = DateTimeOffset.UtcNow;
             avatarState.BlockIndex = ctx.BlockIndex;
             return states
-                .SetState(avatarAddress, avatarState.Serialize())
+                .SetState(AvatarAddress, avatarState.Serialize())
                 .SetState(ctx.Signer, agentState.Serialize());
         }
 
-        private static List<MaterialRow> Zip(IEnumerable<MaterialRow> materialRows)
-        {
-            var zippedMaterialRows = new List<MaterialRow>();
-            foreach (var source in materialRows)
-            {
-                var shouldToAdd = true;
-                foreach (var target in zippedMaterialRows.Where(target => target.row.Id == source.row.Id))
-                {
-                    target.count += source.count;
-                    shouldToAdd = false;
-                    break;
-                }
-
-                if (shouldToAdd)
-                {
-                    zippedMaterialRows.Add(source);
-                }
-            }
-
-            return zippedMaterialRows;
-        }
-
-        private static ElementalType GetElementalType(IRandom random, IEnumerable<MaterialRow> monsterParts)
+        private static ElementalType GetElementalType(IRandom random,
+            IEnumerable<KeyValuePair<MaterialItemSheet.Row, int>> monsterParts)
         {
             var elementalTypeCountForEachGrades =
                 new Dictionary<ElementalType, Dictionary<int, int>>(ElementalTypeComparer.Instance);
@@ -321,8 +264,8 @@ namespace Nekoyume.Action
 
             foreach (var monsterPart in monsterParts)
             {
-                var key = monsterPart.row.ElementalType;
-                var grade = Math.Max(1, monsterPart.row.Grade);
+                var key = monsterPart.Key.ElementalType;
+                var grade = Math.Max(1, monsterPart.Key.Grade);
                 if (grade > maxGrade)
                 {
                     maxGrade = grade;
@@ -337,16 +280,16 @@ namespace Nekoyume.Action
                 {
                     elementalTypeCountForEachGrades[key][grade] = 0;
                 }
-                
-                elementalTypeCountForEachGrades[key][grade] += monsterPart.count;
 
-                var weight = (int) Math.Pow(10, grade - 1) * monsterPart.count;
+                elementalTypeCountForEachGrades[key][grade] += monsterPart.Value;
+
+                var weight = (int) Math.Pow(10, grade - 1) * monsterPart.Value;
 
                 if (!elementalTypeWeights.ContainsKey(key))
                 {
                     elementalTypeWeights[key] = 0;
                 }
-                
+
                 elementalTypeWeights[key] += weight;
 
                 var totalWeight = elementalTypeWeights[key];
@@ -404,10 +347,11 @@ namespace Nekoyume.Action
             {
                 index--;
             }
-            
+
             return maxGradeCountElementalTypes[index];
         }
 
+        // todo: 하드코딩을 피할 방법 필요.
         private static bool TryGetItemType(int itemId, out ItemSubType outItemType)
         {
             var type = itemId.ToString().Substring(0, 4);
@@ -487,11 +431,11 @@ namespace Nekoyume.Action
             {
                 var skillRow =
                     Game.Game.instance.TableSheets.SkillSheet.OrderedList.First(r => r.Id == monsterParts.SkillId);
-                var chance = Math.Floor(monsterParts.SkillChanceMin +
-                                        (monsterParts.SkillChanceMax - monsterParts.SkillChanceMin) * roll);
+                var chance = (int) (monsterParts.SkillChanceMin +
+                                    (monsterParts.SkillChanceMax - monsterParts.SkillChanceMin) * roll);
                 chance = Math.Max(monsterParts.SkillChanceMin, chance);
-                var value = (int) Math.Floor(monsterParts.SkillDamageMin +
-                                             (monsterParts.SkillDamageMax - monsterParts.SkillDamageMin) * roll);
+                var value = (int) (monsterParts.SkillDamageMin +
+                                   (monsterParts.SkillDamageMax - monsterParts.SkillDamageMin) * roll);
 
                 skill = SkillFactory.Get(skillRow, value, chance);
                 return true;
@@ -502,14 +446,16 @@ namespace Nekoyume.Action
                 return false;
             }
         }
-        
+
         private static bool TryGetBuffSkill(IRandom random, out BuffSkill buffSkill)
         {
-            var buffSkills = Game.Game.instance.TableSheets.SkillSheet.OrderedList.Where(item => item.Id >= 200000).ToList();
-            var index = Math.Max(random.Next(0, buffSkills.Count), buffSkills.Count - 1);
+            var buffSkills = Game.Game.instance.TableSheets.SkillSheet.OrderedList
+                .Where(item => item.SkillType == SkillType.Buff)
+                .ToList();
+            var index = Math.Min(random.Next(0, buffSkills.Count), buffSkills.Count - 1);
             var row = buffSkills[index];
-            
-            buffSkill = new BuffSkill(row, 0, .2m);
+
+            buffSkill = new BuffSkill(row, 0, 20);
             return true;
         }
 

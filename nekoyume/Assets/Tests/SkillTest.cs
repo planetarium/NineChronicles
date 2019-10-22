@@ -53,7 +53,7 @@ namespace Tests
             Assert.AreEqual(target.CurrentHP, target.HP - info.Effect);
             Assert.AreEqual(1, result.SkillInfos.Count());
             Assert.NotNull(info.Target);
-            Assert.AreEqual(SkillCategory.Normal, info.SkillCategory);
+            Assert.AreEqual(SkillCategory.NormalAttack, info.SkillCategory);
             Assert.AreEqual(ElementalType.Normal, info.ElementalType);
         }
 
@@ -61,16 +61,8 @@ namespace Tests
         public void BlowAttack()
         {
             var caster = _simulator.Player;
-            var skillRow = Game.instance.TableSheets.SkillSheet.OrderedList.First(r =>
-            {
-                if (!Tables.instance.SkillEffect.TryGetValue(r.SkillEffectId, out var skillEffectRow))
-                {
-                    throw new KeyNotFoundException(nameof(r.SkillEffectId));
-                }
-                
-                return skillEffectRow.skillCategory == SkillCategory.Blow;
-            });
-            var blow = new BlowAttack(skillRow, caster.ATK, 1m);
+            var skillRow = Game.instance.TableSheets.SkillSheet.OrderedList.First(r => r.SkillCategory == SkillCategory.BlowAttack);
+            var blow = new BlowAttack(skillRow, caster.ATK, 100);
             var result = blow.Use(caster);
             var target = caster.Targets.First();
             var info = result.SkillInfos.First();
@@ -81,7 +73,7 @@ namespace Tests
             Assert.AreEqual(target.CurrentHP, target.HP - info.Effect);
             Assert.AreEqual(1, result.SkillInfos.Count());
             Assert.NotNull(info.Target);
-            Assert.AreEqual(SkillCategory.Blow, info.SkillCategory);
+            Assert.AreEqual(SkillCategory.BlowAttack, info.SkillCategory);
             Assert.AreEqual(ElementalType.Normal, info.ElementalType);
         }
 
@@ -90,7 +82,7 @@ namespace Tests
         {
             var caster = _simulator.Player;
             var skillRow = Game.instance.TableSheets.SkillSheet.OrderedList.First(r => r.Id == 100002);
-            var doubleAttack = new Nekoyume.Game.DoubleAttack(skillRow, caster.ATK, 1m);
+            var doubleAttack = new Nekoyume.Game.DoubleAttack(skillRow, caster.ATK, 100);
             var result = doubleAttack.Use(caster);
             var target = caster.Targets.First();
 
@@ -99,7 +91,7 @@ namespace Tests
             foreach (var info in result.SkillInfos)
             {
                 Assert.NotNull(info.Target);
-                Assert.AreEqual(SkillCategory.Double, info.SkillCategory);
+                Assert.AreEqual(SkillCategory.DoubleAttack, info.SkillCategory);
                 Assert.AreEqual(ElementalType.Normal, info.ElementalType);
             }
         }
@@ -111,15 +103,15 @@ namespace Tests
             var target = caster.Targets.First();
             var lastHPOfTarget = target.HP;
             var skillRow = Game.instance.TableSheets.SkillSheet.OrderedList.First(r => r.Id == 100003);
-            var area = new Nekoyume.Game.AreaAttack(skillRow, caster.ATK, 1m);
+            var area = new Nekoyume.Game.AreaAttack(skillRow, caster.ATK, 100);
             var result = area.Use(caster);
 
             Assert.AreEqual(target.CurrentHP, lastHPOfTarget - result.SkillInfos.Sum(i => i.Effect));
-            Assert.AreEqual(area.effect.hitCount, result.SkillInfos.Count());
+            Assert.AreEqual(area.skillRow.HitCount, result.SkillInfos.Count());
             foreach (var info in result.SkillInfos)
             {
                 Assert.NotNull(info.Target);
-                Assert.AreEqual(SkillCategory.Area, info.SkillCategory);
+                Assert.AreEqual(SkillCategory.AreaAttack, info.SkillCategory);
                 Assert.AreEqual(ElementalType.Normal, info.ElementalType);
             }
         }
@@ -129,7 +121,7 @@ namespace Tests
         {
             var caster = _simulator.Player;
             var skillRow = Game.instance.TableSheets.SkillSheet.OrderedList.First(r => r.Id == 200000);
-            var heal = new Nekoyume.Game.HealSkill(skillRow, caster.ATK, 1m);
+            var heal = new Nekoyume.Game.HealSkill(skillRow, caster.ATK, 100);
             caster.CurrentHP -= caster.ATK;
             var result = heal.Use(caster);
 

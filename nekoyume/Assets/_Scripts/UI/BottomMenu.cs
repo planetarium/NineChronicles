@@ -156,6 +156,14 @@ namespace Nekoyume.UI.Module
         // 이 위젯은 애니메이션 없이 바로 닫히는 것을 기본으로 함.
         public override void Close(bool ignoreCloseAnimation = false)
         {
+            foreach (var toggleable in _toggleGroup.Toggleables)
+            {
+                if (!(toggleable is IWidgetControllable widgetControllable))
+                    continue;
+                
+                widgetControllable.HideWidget();
+            }
+            
             base.Close(true);
         }
 

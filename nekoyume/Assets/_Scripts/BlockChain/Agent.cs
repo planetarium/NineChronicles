@@ -140,8 +140,6 @@ namespace Nekoyume.BlockChain
                 blocks,
                 privateKey,
                 appProtocolVersion: 1,
-                millisecondsDialTimeout: SwarmDialTimeout,
-                millisecondsLinger: SwarmLinger,
                 host: host,
                 listenPort: port,
                 iceServers: iceServers,
@@ -457,7 +455,10 @@ namespace Nekoyume.BlockChain
         {
             _cancellationTokenSource?.Cancel();
             // `_swarm`의 내부 큐가 비워진 다음 완전히 종료할 때까지 더 기다립니다.
-            Task.Run(async () => await _swarm?.StopAsync()).ContinueWith(_ => { store?.Dispose(); })
+            Task.Run(async () => 
+            {
+                await _swarm?.StopAsync(TimeSpan.FromMilliseconds(SwarmLinger));
+            }).ContinueWith(_ => { store?.Dispose(); })
                 .Wait(SwarmLinger + 1 * 1000);
 
             States.Dispose();
@@ -525,6 +526,7 @@ namespace Nekoyume.BlockChain
             var swarmPreloadTask = Task.Run(async () =>
             {
                 await _swarm.PreloadAsync(
+                    TimeSpan.FromMilliseconds(SwarmDialTimeout),
                     new Progress<PreloadState>(state =>
                         PreloadProcessed?.Invoke(this, state)
                     ),
@@ -701,7 +703,7 @@ namespace Nekoyume.BlockChain
                         {
                             if (ex is InvalidTxNonceException invalidTxNonceException)
                             {
-                                var invalidNonceTx = blocks.Transactions[invalidTxNonceException.TxId];
+                                var invalidNonceTx = blocks.GetTransaction(invalidTxNonceException.TxId);
 
                                 if (invalidNonceTx.Signer == Address)
                                 {
@@ -713,7 +715,7 @@ namespace Nekoyume.BlockChain
                             if (ex is InvalidTxException invalidTxException)
                             {
                                 Debug.Log($"Tx[{invalidTxException.TxId}] is invalid. mark to unstage.");
-                                invalidTxs.Add(blocks.Transactions[invalidTxException.TxId]);
+                                invalidTxs.Add(blocks.GetTransaction(invalidTxException.TxId));
                             }
 
                             Debug.LogException(ex);
