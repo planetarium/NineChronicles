@@ -68,18 +68,34 @@ namespace Nekoyume.Game.Factory
             serialized.TryGetValue((Text) "itemId", out IValue id);
             var item = Create(
                 ItemSheet.Row.Deserialize(data),
-                id is null ? default : id.ToGuid()
+                id?.ToGuid() ?? default
             );
-            if (item is ItemUsable itemUsable &&
-                serialized.TryGetValue((Text) "statsMap", out var statsMap) &&
-                serialized.TryGetValue((Text) "skills", out var skills))
+            if (item is ItemUsable itemUsable)
             {
-                itemUsable.StatsMap.Deserialize((Bencodex.Types.Dictionary) statsMap);
-                foreach (IValue skill in (Bencodex.Types.List) skills)
+                if (serialized.TryGetValue((Text) "statsMap", out var statsMap) &&
+                    serialized.TryGetValue((Text) "skills", out var skills))
                 {
-                    itemUsable.Skills.Add(SkillFactory.Deserialize((Dictionary) skill));
+                    itemUsable.StatsMap.Deserialize((Bencodex.Types.Dictionary) statsMap);
+                    foreach (var skill in (Bencodex.Types.List) skills)
+                    {
+                        itemUsable.Skills.Add(SkillFactory.Deserialize((Dictionary) skill));
+                    }
+                }
+
+                if (serialized.TryGetValue((Text) "buffSkills", out var buffSkills))
+                {
+                    foreach (var buffSkill in (Bencodex.Types.List) buffSkills)
+                    {
+                        itemUsable.BuffSkills.Add((BuffSkill) SkillFactory.Deserialize((Dictionary) buffSkill));
+                    }
+                }
+
+                if (itemUsable is Equipment equipment && serialized.TryGetValue((Text) "equipped", out var equipped))
+                {
+                    equipment.equipped = ((Bencodex.Types.Boolean) equipped).Value;
                 }
             }
+
             return item;
         }
     }

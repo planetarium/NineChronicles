@@ -1,4 +1,7 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using Bencodex.Types;
 using Nekoyume.TableData;
 
 namespace Nekoyume.Game.Item
@@ -39,6 +42,12 @@ namespace Nekoyume.Game.Item
                 StatsMap.AddStatAdditionalValue(statData.StatType, level * levelStats);
             }
         }
+
+        public override IValue Serialize() =>
+            new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
+            {
+                [(Text) "equipped"] = new Bencodex.Types.Boolean(equipped)
+            }.Union((Bencodex.Types.Dictionary) base.Serialize()));
 
     }
 }

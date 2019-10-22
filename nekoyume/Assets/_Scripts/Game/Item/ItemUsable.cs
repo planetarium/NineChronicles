@@ -82,6 +82,7 @@ namespace Nekoyume.Game.Item
                 [(Text) "statsMap"] = StatsMap.Serialize(),
                 [(Text) "skills"] = new Bencodex.Types.List(Skills.Select(s => s.Serialize())),
                 [(Text) "itemId"] = ItemId.Serialize(),
+                [(Text) "buffSkills"] = new Bencodex.Types.List(BuffSkills.Select(s => s.Serialize())),
             }.Union((Bencodex.Types.Dictionary) base.Serialize()));
     }
 }
