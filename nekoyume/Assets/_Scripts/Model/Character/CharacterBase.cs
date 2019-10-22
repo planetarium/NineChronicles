@@ -292,8 +292,8 @@ namespace Nekoyume.Model
             var selected = _skills
                 .Select(skill => new {skill, chance = Math.Min(random.Next(0, 100), 99)})
                 .Where(t => t.skill.chance > t.chance)
-                .OrderBy(t => t.chance == 0 ? 1m : (decimal) t.chance / t.skill.chance)
-                .ThenBy(t => t.skill.skillRow.Id)
+                .OrderBy(t => t.skill.skillRow.Id)
+                .ThenBy(t => t.chance == 0 ? 1m : (decimal) t.chance / t.skill.chance)
                 .Select(t => t.skill)
                 .ToList();
 
