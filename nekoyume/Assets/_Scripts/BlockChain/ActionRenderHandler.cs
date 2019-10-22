@@ -4,6 +4,7 @@ using System.IO;
 using Assets.SimpleLocalization;
 using Bencodex.Types;
 using Nekoyume.Action;
+using Nekoyume.Game.Mail;
 using Nekoyume.Manager;
 using Nekoyume.State;
 using Nekoyume.TableData;
@@ -331,14 +332,14 @@ namespace Nekoyume.BlockChain
         private void ResponseSell(ActionBase.ActionEvaluation<Sell> eval)
         {
             var format = LocalizationManager.Localize("NOTIFICATION_SELL_COMPLETE");
-            UI.Notification.Push(string.Format(format, eval.Action.itemUsable.Data.GetLocalizedName()));
+            UI.Notification.Push(MailType.Auction, string.Format(format, eval.Action.itemUsable.Data.GetLocalizedName()));
             UpdateCurrentAvatarState(eval);
         }
 
         private void ResponseSellCancellation(ActionBase.ActionEvaluation<SellCancellation> eval)
         {
             var format = LocalizationManager.Localize("NOTIFICATION_SELL_CANCEL_COMPLETE");
-            UI.Notification.Push(string.Format(format, eval.Action.result.itemUsable.Data.GetLocalizedName()));
+            UI.Notification.Push(MailType.Auction, string.Format(format, eval.Action.result.itemUsable.Data.GetLocalizedName()));
             UpdateCurrentAvatarState(eval);
         }
 
@@ -347,13 +348,13 @@ namespace Nekoyume.BlockChain
             if (eval.Action.buyerAvatarAddress == States.Instance.CurrentAvatarState.Value.address)
             {
                 var format = LocalizationManager.Localize("NOTIFICATION_BUY_BUYER_COMPLETE");
-                UI.Notification.Push(string.Format(format, eval.Action.buyerResult.itemUsable.Data.GetLocalizedName()));
+                UI.Notification.Push(MailType.Auction, string.Format(format, eval.Action.buyerResult.itemUsable.Data.GetLocalizedName()));
             }
             else
             {
                 var format = LocalizationManager.Localize("NOTIFICATION_BUY_SELLER_COMPLETE");
                 var result = eval.Action.sellerResult;
-                UI.Notification.Push(string.Format(format, result.itemUsable.Data.GetLocalizedName(), result.gold));
+                UI.Notification.Push(MailType.Auction, string.Format(format, result.itemUsable.Data.GetLocalizedName(), result.gold));
             }
 
             UpdateCurrentAvatarState(eval);

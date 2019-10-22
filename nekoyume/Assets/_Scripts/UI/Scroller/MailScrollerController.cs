@@ -36,16 +36,6 @@ namespace Nekoyume.UI.Scroller
             
             cellView.name = $"Cell {dataIndex}";
             cellView.SetData(_data[dataIndex]);
-            if (cellView.onClickDisposable is null)
-            {
-                cellView.onClickDisposable = cellView.onClickButton
-                    .Subscribe(_ =>
-                    {
-                        onClickCellView.OnNext(cellView);
-                        cellView.onClickDisposable.Dispose();
-                        cellView.onClickDisposable = null;
-                    }).AddTo(cellView.gameObject);
-            }
             return cellView;
         }
 

@@ -7,7 +7,7 @@ namespace Nekoyume.Game.Mail
     public class SellerMail : AttachmentMail
     {
         protected override string TypeId => "seller";
-        public override MailType MailType { get => MailType.Auction; }
+        public override MailType MailType => MailType.Auction;
 
         public SellerMail(AttachmentActionResult attachmentActionResult, long blockIndex) : base(attachmentActionResult, blockIndex)
         {

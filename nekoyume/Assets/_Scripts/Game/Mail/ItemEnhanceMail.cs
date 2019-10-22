@@ -7,7 +7,7 @@ namespace Nekoyume.Game.Mail
     public class ItemEnhanceMail : AttachmentMail
     {
         protected override string TypeId => "itemEnhance";
-        public override MailType MailType { get => MailType.Forge; }
+        public override MailType MailType => MailType.Forge;
 
         public ItemEnhanceMail(AttachmentActionResult attachmentActionResult, long blockIndex) : base(attachmentActionResult, blockIndex)
         {

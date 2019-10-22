@@ -7,7 +7,7 @@ namespace Nekoyume.Game.Mail
     public class SellCancelMail : AttachmentMail
     {
         protected override string TypeId => "sellCancel";
-        public override MailType MailType { get => MailType.Auction; }
+        public override MailType MailType => MailType.Auction;
 
         public SellCancelMail(SellCancellation.Result attachmentActionResult, long blockIndex) : base(attachmentActionResult, blockIndex)
         {
