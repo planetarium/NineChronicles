@@ -39,7 +39,7 @@ namespace Nekoyume.Game.Item
             level++;
             foreach (var statData in Data.Stats)
             {
-                StatsMap.AddStatAdditionalValue(statData.StatType, level * levelStats);
+                StatsMap.SetStatAdditionalValue(statData.StatType, level * levelStats);
             }
         }
 

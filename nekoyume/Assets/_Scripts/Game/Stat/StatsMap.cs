@@ -86,6 +86,16 @@ namespace Nekoyume.Game
             _statMaps[key].AdditionalValue += additionalValue;
         }
 
+        public void SetStatAdditionalValue(StatType key, decimal additionalValue)
+        {
+            if (!_statMaps.ContainsKey(key))
+            {
+                _statMaps.Add(key, new StatMapEx(key));
+            }
+
+            _statMaps[key].AdditionalValue = additionalValue;
+        }
+
         public string GetInformation()
         {
             var sb = new StringBuilder();
