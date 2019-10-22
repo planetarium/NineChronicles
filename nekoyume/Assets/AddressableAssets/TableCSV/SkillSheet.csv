@@ -1,28 +1,29 @@
-id,_name,elemental_type,skill_type,skill_target_type,skill_target_count,hit_count
-100000,기본 공격,Normal,0,0,0,1
-100001,일격,Normal,0,1,0,1
-100002,연사,Normal,0,2,0,2
-100003,광역 난사,Normal,0,3,1,5
-110000,불 공격,Fire,0,0,0,1
-110001,불꽃 일격,Fire,0,1,0,1
-110002,불꽃 연사,Fire,0,2,0,2
-110003,용암 해일,Fire,0,3,1,5
-120000,물 공격,Water,0,0,0,1
-120001,얼음 일격,Water,0,1,0,1
-120002,얼음 연사,Water,0,2,0,2
-120003,얼음 해일,Water,0,3,1,5
-130000,땅 공격,Land,0,0,0,1
-130001,모래 일격,Land,0,1,0,1
-130002,모래 연사,Land,0,2,0,2
-130003,모래 폭풍,Land,0,3,1,5
-140000,바람 공격,Wind,0,0,0,1
-140001,바람 일격,Wind,0,1,0,1
-140002,바람 연사,Wind,0,2,0,2
-140003,거대 태풍,Wind,0,3,1,5
-200000,체력 강화,Normal,1,4,2,1
-210000,공격 강화,Normal,1,5,2,1
-220000,방어 강화,Normal,1,6,2,1
-230000,치명 증가,Normal,1,7,2,1
-240000,회피 증가,Normal,1,8,2,1
-250000,속도 증가,Normal,1,9,2,1
-260000,공격 약화,Normal,2,5,0,1
+id,_name,elemental_type,skill_type,skill_category,skill_target_type,hit_count
+100000,기본 공격,Normal,Attack,NormalAttack,Enemy,1
+100001,일격,Normal,Attack,BlowAttack,Enemy,1
+100002,연사,Normal,Attack,DoubleAttack,Enemy,2
+100003,광역 난사,Normal,Attack,AreaAttack,Enemies,5
+110000,불 공격,Fire,Attack,NormalAttack,Enemy,1
+110001,불꽃 일격,Fire,Attack,BlowAttack,Enemy,1
+110002,불꽃 연사,Fire,Attack,DoubleAttack,Enemy,2
+110003,용암 해일,Fire,Attack,AreaAttack,Enemies,5
+120000,물 공격,Water,Attack,NormalAttack,Enemy,1
+120001,얼음 일격,Water,Attack,BlowAttack,Enemy,1
+120002,얼음 연사,Water,Attack,DoubleAttack,Enemy,2
+120003,얼음 해일,Water,Attack,AreaAttack,Enemies,5
+130000,땅 공격,Land,Attack,NormalAttack,Enemy,1
+130001,모래 일격,Land,Attack,BlowAttack,Enemy,1
+130002,모래 연사,Land,Attack,DoubleAttack,Enemy,2
+130003,모래 폭풍,Land,Attack,AreaAttack,Enemies,5
+140000,바람 공격,Wind,Attack,NormalAttack,Enemy,1
+140001,바람 일격,Wind,Attack,BlowAttack,Enemy,1
+140002,바람 연사,Wind,Attack,DoubleAttack,Enemy,2
+140003,거대 태풍,Wind,Attack,AreaAttack,Enemies,5
+200000,힐,Normal,Heal,Heal,Self,1
+300000,체력 강화,Normal,Buff,HPBuff,Self,1
+310000,공격 강화,Normal,Buff,AttackBuff,Self,1
+320000,방어 강화,Normal,Buff,DefenseBuff,Self,1
+330000,치명 증가,Normal,Buff,CriticalBuff,Self,1
+340000,회피 증가,Normal,Buff,DodgeBuff,Self,1
+350000,속도 증가,Normal,Buff,SpeedBuff,Self,1
+360000,공격 약화,Normal,Debuff,AttackBuff,Enemy,1

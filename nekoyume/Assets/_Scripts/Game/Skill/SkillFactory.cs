@@ -20,11 +20,11 @@ namespace Nekoyume.Game
                         case SkillTargetType.Enemy:
                             switch (skillRow.SkillCategory)
                             {
-                                case SkillCategory.Normal:
+                                case SkillCategory.NormalAttack:
                                     return new NormalAttack(skillRow, power, chance);
-                                case SkillCategory.Double:
+                                case SkillCategory.DoubleAttack:
                                     return new DoubleAttack(skillRow, power, chance);
-                                case SkillCategory.Blow:
+                                case SkillCategory.BlowAttack:
                                     return new BlowAttack(skillRow, power, chance);
                                 default:
                                     return new NormalAttack(skillRow, power, chance);
@@ -34,21 +34,12 @@ namespace Nekoyume.Game
                     }
 
                     break;
-                case SkillType.Debuff:
+                case SkillType.Heal:
+                    return new HealSkill(skillRow, power, chance);
+                // todo: 코드상에서 버프와 디버프를 버프로 함께 구분하고 있는데, 고도화 될 수록 디버프를 구분해주게 될 것으로 보임.
                 case SkillType.Buff:
-                    switch (skillRow.SkillCategory)
-                    {
-                        case SkillCategory.Heal:
-                            return new HealSkill(skillRow, power, chance);
-                        case SkillCategory.DefenseBuff:
-                        case SkillCategory.CriticalBuff:
-                        case SkillCategory.DodgeBuff:
-                        case SkillCategory.SpeedBuff:
-                        case SkillCategory.AttackBuff:
-                            return new BuffSkill(skillRow, power, chance);
-                        default:
-                            throw new ArgumentOutOfRangeException();
-                    }
+                case SkillType.Debuff:
+                    return new BuffSkill(skillRow, power, chance);
             }
 
             throw new UnexpectedOperationException(

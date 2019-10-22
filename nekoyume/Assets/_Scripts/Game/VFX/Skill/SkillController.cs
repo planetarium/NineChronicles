@@ -29,7 +29,7 @@ namespace Nekoyume.Game.VFX.Skill
             position.y += 0.32f;
             var size = target.SizeType == SizeType.XS ? SizeType.S : SizeType.M;
             var elemental = skillInfo.ElementalType;
-            if (skillInfo.SkillCategory == SkillCategory.Area)
+            if (skillInfo.SkillCategory == SkillCategory.AreaAttack)
             {
                 size = SizeType.L;
                 //FIXME 현재 무속성 범위공격 이펙트는 존재하지 않기때문에 임시처리.

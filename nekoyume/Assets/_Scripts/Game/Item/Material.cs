@@ -78,6 +78,9 @@ namespace Nekoyume.Game.Item
                 case SkillType.Attack:
                     sb.AppendLine($"{Data.SkillChanceMin}% ~ {Data.SkillChanceMax}% 확률로 {targetString} {Data.SkillDamageMin} ~ {Data.SkillDamageMax}의 데미지를 입힌다.");
                     break;
+                case SkillType.Heal:
+                    sb.AppendLine($"{Data.SkillChanceMin}% ~ {Data.SkillChanceMax}% 확률로 {targetString} {Data.SkillDamageMin} ~ {Data.SkillDamageMax}의 체력을 회복한다.");
+                    break;
                 case SkillType.Buff:
                     sb.AppendLine($"{Data.SkillChanceMin}% ~ {Data.SkillChanceMax}% 확률로 {targetString} {Data.SkillDamageMin} ~ {Data.SkillDamageMax}의 버프를 사용한다.");
                     break;
