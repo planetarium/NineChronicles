@@ -61,7 +61,7 @@ namespace Tests
         public void BlowAttack()
         {
             var caster = _simulator.Player;
-            var skillRow = Game.instance.TableSheets.SkillSheet.OrderedList.First(r => r.skillCategory == SkillCategory.Blow);
+            var skillRow = Game.instance.TableSheets.SkillSheet.OrderedList.First(r => r.SkillCategory == SkillCategory.Blow);
             var blow = new BlowAttack(skillRow, caster.ATK, 1m);
             var result = blow.Use(caster);
             var target = caster.Targets.First();
@@ -107,7 +107,7 @@ namespace Tests
             var result = area.Use(caster);
 
             Assert.AreEqual(target.CurrentHP, lastHPOfTarget - result.SkillInfos.Sum(i => i.Effect));
-            Assert.AreEqual(area.skillRow.hitCount, result.SkillInfos.Count());
+            Assert.AreEqual(area.skillRow.HitCount, result.SkillInfos.Count());
             foreach (var info in result.SkillInfos)
             {
                 Assert.NotNull(info.Target);

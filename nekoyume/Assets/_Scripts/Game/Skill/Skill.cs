@@ -63,7 +63,7 @@ namespace Nekoyume.Game
                 {
                     target.AddBuff(buff);
                     infos.Add(new Model.Skill.SkillInfo((CharacterBase) target.Clone(), 0, false,
-                        skillRow.skillCategory, ElementalType.Normal, buff));
+                        skillRow.SkillCategory, ElementalType.Normal, buff));
                 }
             }
 

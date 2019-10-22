@@ -55,7 +55,7 @@ namespace Nekoyume.Game.Item
             }
 
             string targetString;
-            switch (skillRow.skillTargetType)
+            switch (skillRow.SkillTargetType)
             {
                 case SkillTargetType.Enemy:
                     targetString = "단일 적에게";
@@ -73,7 +73,7 @@ namespace Nekoyume.Game.Item
                     throw new ArgumentOutOfRangeException();
             }
 
-            switch (skillRow.skillType)
+            switch (skillRow.SkillType)
             {
                 case SkillType.Attack:
                     sb.AppendLine($"{Data.SkillChanceMin}% ~ {Data.SkillChanceMax}% 확률로 {targetString} {Data.SkillDamageMin} ~ {Data.SkillDamageMax}의 데미지를 입힌다.");

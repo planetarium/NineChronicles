@@ -24,13 +24,13 @@ namespace Nekoyume.Game
         /// <returns></returns>
         protected IEnumerable<Model.Skill.SkillInfo> ProcessDamage(CharacterBase caster)
         {
-            var targets = skillRow.skillTargetType.GetTarget(caster);
+            var targets = skillRow.SkillTargetType.GetTarget(caster);
             var infos = new List<Model.Skill.SkillInfo>();
             var targetList = targets.ToArray();
             var elemental = skillRow.ElementalType;
-            var multiplier = GetMultiplier(skillRow.hitCount, 1);
+            var multiplier = GetMultiplier(skillRow.HitCount, 1);
             var skillDamage = caster.ATK + power;
-            for (var i = 0; i < skillRow.hitCount; i++)
+            for (var i = 0; i < skillRow.HitCount; i++)
             {
                 foreach (var target in targetList)
                 {
@@ -55,7 +55,7 @@ namespace Nekoyume.Game
                     target.CurrentHP -= damage;
 
                     infos.Add(new Model.Skill.SkillInfo((CharacterBase) target.Clone(), damage, critical,
-                        skillRow.skillCategory, skillRow.ElementalType));
+                        skillRow.SkillCategory, skillRow.ElementalType));
                 }
             }
 

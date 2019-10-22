@@ -17,19 +17,19 @@ namespace Nekoyume.TableData
             public override int Key => Id;
             public int Id { get; private set; }
             public ElementalType ElementalType { get; private set; }
-            public SkillType skillType { get; private set; }
-            public SkillCategory skillCategory { get; private set; }
-            public SkillTargetType skillTargetType { get; private set; }
-            public int hitCount { get; private set; }
+            public SkillType SkillType { get; private set; }
+            public SkillCategory SkillCategory { get; private set; }
+            public SkillTargetType SkillTargetType { get; private set; }
+            public int HitCount { get; private set; }
 
             public override void Set(IReadOnlyList<string> fields)
             {
                 Id = int.Parse(fields[0]);
                 ElementalType = (ElementalType) Enum.Parse(typeof(ElementalType), fields[1]);
-                skillType = (SkillType) Enum.Parse(typeof(SkillType), fields[2]);
-                skillCategory = (SkillCategory) Enum.Parse(typeof(SkillCategory), fields[3]);
-                skillTargetType = (SkillTargetType) Enum.Parse(typeof(SkillTargetType), fields[4]);
-                hitCount = int.Parse(fields[5]);
+                SkillType = (SkillType) Enum.Parse(typeof(SkillType), fields[2]);
+                SkillCategory = (SkillCategory) Enum.Parse(typeof(SkillCategory), fields[3]);
+                SkillTargetType = (SkillTargetType) Enum.Parse(typeof(SkillTargetType), fields[4]);
+                HitCount = int.Parse(fields[5]);
             }
 
             public IValue Serialize() =>
