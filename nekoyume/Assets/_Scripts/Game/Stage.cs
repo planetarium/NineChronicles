@@ -290,6 +290,8 @@ namespace Nekoyume.Game
 
             _battleResultModel.State = log.result;
             _battleResultModel.ShouldRepeat = repeatStage;
+            _battleResultModel.ActionPointNotEnough =
+                States.Instance.CurrentAvatarState.Value.actionPoint < GameConfig.HackAndSlashCost;
             Widget.Find<BattleResult>().Show(_battleResultModel);
 
             IsInStage = false;

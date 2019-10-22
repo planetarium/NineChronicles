@@ -15,6 +15,9 @@ namespace Nekoyume
         public const int DefaultAvatarCharacterId = 100010;
         public const int DefaultAvatarWeaponId = 10100000;
         public const int DefaultAvatarArmorId = 10200000;
+        public const int ActionPoint = 300;
+        
+        public const int HackAndSlashCost = 5;
         
         public const decimal CombinationValueP1 = 3m; // 30f;
         public const decimal CombinationValueP2 = 1m; // 1.2f;
@@ -22,7 +25,6 @@ namespace Nekoyume
         public const decimal CombinationValueL2 = 1m;
         public const decimal CombinationValueR1 = 1.5m; // 2f;
         public const int CombinationDefaultFoodId = 200000;
-        public const int ActionPoint = 300;
         
         #endregion
     }
