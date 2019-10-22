@@ -100,7 +100,10 @@ namespace Nekoyume.Action
             foreach (var pair in Materials)
             {
                 if (!avatarState.inventory.RemoveFungibleItem(pair.Key, pair.Value))
+                {
+                    // 재료 부족 에러.
                     return states;
+                }
             }
 
             // 액션 결과
@@ -119,12 +122,11 @@ namespace Nekoyume.Action
                     pair => Game.Game.instance.TableSheets.MaterialItemSheet[pair.Key],
                     pair => pair.Value);
 
-            var isEquipment = materialRows.Any(row => row.Key.ItemSubType == ItemSubType.EquipmentMaterial);
-            if (isEquipment)
+            var equipmentMaterials = materialRows
+                .Where(materialRow => materialRow.Key.ItemSubType == ItemSubType.EquipmentMaterial)
+                .ToList();
+            if (equipmentMaterials.Count > 0)
             {
-                var equipmentMaterials = materialRows
-                    .Where(materialRow => materialRow.Key.ItemSubType == ItemSubType.EquipmentMaterial)
-                    .ToList();
                 if (equipmentMaterials.Count != 1)
                 {
                     // 장비 베이스의 수량 에러.
@@ -132,6 +134,12 @@ namespace Nekoyume.Action
                 }
 
                 var equipmentMaterial = equipmentMaterials[0].Key;
+                if (!TryGetItemType(equipmentMaterial.Id, out var outItemType))
+                {
+                    // 장비 베이스의 Id로 장비의 타입을 추측할 수 없는 에러.
+                    return states;
+                }
+
                 var monsterParts = materialRows
                     .Where(materialRow => materialRow.Key.ItemSubType == ItemSubType.MonsterPart)
                     .ToList();
@@ -152,7 +160,7 @@ namespace Nekoyume.Action
                     {
                         isFirst = false;
 
-                        if (!TryGetItemEquipmentRow(equipmentMaterial.ItemSubType, elementalType,
+                        if (!TryGetItemEquipmentRow(outItemType, elementalType,
                             equipmentMaterial.Grade,
                             out var itemEquipmentRow))
                         {
@@ -332,6 +340,33 @@ namespace Nekoyume.Action
             }
 
             return maxGradeCountElementalTypes[index];
+        }
+
+        // todo: 하드코딩을 피할 방법 필요.
+        private static bool TryGetItemType(int itemId, out ItemSubType outItemType)
+        {
+            var type = itemId.ToString().Substring(0, 4);
+            switch (type)
+            {
+                case "3030":
+                    outItemType = ItemSubType.Weapon;
+                    return true;
+                case "3031":
+                    outItemType = ItemSubType.Armor;
+                    return true;
+                case "3032":
+                    outItemType = ItemSubType.Belt;
+                    return true;
+                case "3033":
+                    outItemType = ItemSubType.Necklace;
+                    return true;
+                case "3034":
+                    outItemType = ItemSubType.Ring;
+                    return true;
+                default:
+                    outItemType = ItemSubType.Armor;
+                    return false;
+            }
         }
 
         private static bool TryGetItemEquipmentRow(ItemSubType itemSubType, ElementalType elementalType,
