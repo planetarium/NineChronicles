@@ -1,4 +1,5 @@
 using System;
+using Nekoyume.BlockChain;
 using Nekoyume.Game.Controller;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
@@ -111,9 +112,7 @@ namespace Nekoyume.UI
 
         private void GetAvatars(DateTimeOffset? dt)
         {
-            var dict = (Bencodex.Types.Dictionary) Game.Game.instance.agent.GetState(RankingState.Address);
-            var rankingBoard = new RankingState(dict);
-            _avatarStates = rankingBoard?.GetAvatars(dt) ?? new AvatarState[0];
+            _avatarStates = States.Instance.RankingState.Value?.GetAvatars(dt) ?? new AvatarState[0];
         }
 
         private void ClearBoard()
