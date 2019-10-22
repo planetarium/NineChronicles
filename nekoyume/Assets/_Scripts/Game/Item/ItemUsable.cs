@@ -12,15 +12,15 @@ namespace Nekoyume.Game.Item
     public abstract class ItemUsable : ItemBase
     {
         public new ConsumableItemSheet.Row Data { get; }
-
+        public Guid ItemId { get; }
         public StatsMap StatsMap { get; }
         public List<Skill> Skills { get; }
         public List<BuffSkill> BuffSkills { get; }
-        public Guid ItemId { get; }
 
         protected ItemUsable(ConsumableItemSheet.Row data, Guid id) : base(data)
         {
             Data = data;
+            ItemId = id;
             StatsMap = new StatsMap();
             foreach (var statData in data.Stats)
             {
@@ -29,8 +29,6 @@ namespace Nekoyume.Game.Item
 
             Skills = new List<Skill>();
             BuffSkills = new List<BuffSkill>();
-
-            ItemId = id;
         }
 
         protected bool Equals(ItemUsable other)
@@ -79,9 +77,9 @@ namespace Nekoyume.Game.Item
         public override IValue Serialize() =>
             new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
             {
+                [(Text) "itemId"] = ItemId.Serialize(),
                 [(Text) "statsMap"] = StatsMap.Serialize(),
                 [(Text) "skills"] = new Bencodex.Types.List(Skills.Select(s => s.Serialize())),
-                [(Text) "itemId"] = ItemId.Serialize(),
                 [(Text) "buffSkills"] = new Bencodex.Types.List(BuffSkills.Select(s => s.Serialize())),
             }.Union((Bencodex.Types.Dictionary) base.Serialize()));
     }

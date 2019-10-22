@@ -257,7 +257,7 @@ namespace Nekoyume.Game.Character
                 ActionCamera.instance.Shake();
                 AudioController.PlayDamagedCritical();
                 CriticalText.Show(position, force, dmg);
-                if (info.SkillCategory == SkillCategory.Normal)
+                if (info.SkillCategory == SkillCategory.NormalAttack)
                     VFXController.instance.Create<BattleAttackCritical01VFX>(pos);
             }
             else
@@ -266,7 +266,7 @@ namespace Nekoyume.Game.Character
                     ? info.ElementalType
                     : ElementalType.Normal);
                 DamageText.Show(position, force, dmg);
-                if (info.SkillCategory == SkillCategory.Normal)
+                if (info.SkillCategory == SkillCategory.NormalAttack)
                     VFXController.instance.Create<BattleAttack01VFX>(pos);
             }
         }

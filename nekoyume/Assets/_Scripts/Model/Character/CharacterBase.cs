@@ -25,7 +25,7 @@ namespace Nekoyume.Model
         [NonSerialized] public readonly Simulator Simulator;
 
         public ElementalType atkElementType;
-        public float attackRange = 1.0f;
+        public float attackRange;
         public ElementalType defElementType;
 
         public readonly Skills Skills = new Skills();
@@ -241,11 +241,9 @@ namespace Nekoyume.Model
         protected virtual void SetSkill()
         {
             if (!Game.Game.instance.TableSheets.SkillSheet.TryGetValue(100000, out var skillRow))
-            {
                 throw new KeyNotFoundException("100000");
-            }
 
-            var attack = SkillFactory.Get(skillRow, ATK, 1m);
+            var attack = SkillFactory.Get(skillRow, ATK, 100);
             Skills.Add(attack);
         }
 
@@ -292,11 +290,11 @@ namespace Nekoyume.Model
         public Game.Skill Select(IRandom random)
         {
             var selected = _skills
-                .Select(skill => new {skill, chance = random.Next(0, 100000) * 0.00001m})
+                .Select(skill => new {skill, chance = Math.Min(random.Next(0, 100), 99)})
                 .Where(t => t.skill.chance > t.chance)
+                .OrderBy(t => t.skill.skillRow.Id)
+                .ThenBy(t => t.chance == 0 ? 1m : (decimal) t.chance / t.skill.chance)
                 .Select(t => t.skill)
-                .OrderBy(s => s.chance)
-                .ThenBy(s => s.skillRow.Id)
                 .ToList();
 
             return selected[random.Next(selected.Count)];

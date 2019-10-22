@@ -16,10 +16,10 @@ namespace Nekoyume.Game
     {
         public readonly SkillSheet.Row skillRow;
         public readonly int power;
-        public readonly decimal chance;
+        public readonly int chance;
         public List<Buff> buffs;
 
-        protected Skill(SkillSheet.Row skillRow, int power, decimal chance)
+        protected Skill(SkillSheet.Row skillRow, int power, int chance)
         {
             this.skillRow = skillRow;
             this.power = power;
@@ -75,7 +75,7 @@ namespace Nekoyume.Game
             {
                 [(Text) "skillRow"] = skillRow.Serialize(),
                 [(Text) "power"] = (Integer) power,
-                [(Text) "chance"] = chance.Serialize(),
+                [(Text) "chance"] = (Integer) chance,
             });
     }
 }

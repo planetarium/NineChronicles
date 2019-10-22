@@ -12,7 +12,7 @@ namespace Nekoyume.Game
     [Serializable]
     public abstract class AttackSkill : Skill
     {
-        protected AttackSkill(SkillSheet.Row skillRow, int power, decimal chance) : base(skillRow, power, chance)
+        protected AttackSkill(SkillSheet.Row skillRow, int power, int chance) : base(skillRow, power, chance)
         {
         }
 

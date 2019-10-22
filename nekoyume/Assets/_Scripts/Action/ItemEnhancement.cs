@@ -133,7 +133,7 @@ namespace Nekoyume.Action
                             i.SkillCategory != SkillCategory.Heal)
                 .ToList();
             var skillRow = skillRows[random.Next(0, skillRows.Count)];
-            return (BuffSkill) SkillFactory.Get(skillRow, 0, 1m);
+            return (BuffSkill) SkillFactory.Get(skillRow, 0, 100);
         }
     }
 }

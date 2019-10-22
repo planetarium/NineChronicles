@@ -105,12 +105,12 @@ namespace Nekoyume.UI
 
         public void Read(CombinationMail mail)
         {
-            var attachment = (Action.Combination.Result) mail.attachment;
+            var attachment = (Action.Combination.ResultModel) mail.attachment;
             var item = attachment.itemUsable;
             var popup = Find<CombinationResultPopup>();
             var materialItems = attachment.materials
-                .Select(material => new {material, item = ItemFactory.CreateMaterial(material.id, Guid.Empty)})
-                .Select(t => new CombinationMaterial(t.item, t.material.count, t.material.count, t.material.count))
+                .Select(pair => new {pair, item = ItemFactory.CreateMaterial(pair.Key, Guid.Empty)})
+                .Select(t => new CombinationMaterial(t.item, t.pair.Value, t.pair.Value, t.pair.Value))
                 .ToList();
             var model = new UI.Model.CombinationResultPopup(new CountableItem(item, 1))
             {

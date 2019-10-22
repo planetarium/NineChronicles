@@ -50,7 +50,7 @@ namespace Tests
 
             foreach (var elemental in _elementalTypes)
             {
-                var info = new Nekoyume.Model.Skill.SkillInfo(_player.Model.Value, 0, false, SkillCategory.Area, elemental);
+                var info = new Nekoyume.Model.Skill.SkillInfo(_player.Model.Value, 0, false, SkillCategory.AreaAttack, elemental);
                 yield return _player.CoAreaAttack(new[] {info});
             }
         }
@@ -66,7 +66,7 @@ namespace Tests
 
             foreach (ElementalType elemental in _elementalTypes)
             {
-                var info = new Nekoyume.Model.Skill.SkillInfo(_player.Model.Value, 0, false, SkillCategory.Double, elemental);
+                var info = new Nekoyume.Model.Skill.SkillInfo(_player.Model.Value, 0, false, SkillCategory.DoubleAttack, elemental);
                 yield return _player.CoDoubleAttack(new[] {info});
             }
         }
@@ -82,7 +82,7 @@ namespace Tests
 
             foreach (ElementalType elemental in _elementalTypes)
             {
-                var info = new Nekoyume.Model.Skill.SkillInfo(_player.Model.Value, 0, false, SkillCategory.Blow, elemental);
+                var info = new Nekoyume.Model.Skill.SkillInfo(_player.Model.Value, 0, false, SkillCategory.BlowAttack, elemental);
                 yield return _player.CoHeal(new[] {info});
             }
         }
@@ -104,7 +104,7 @@ namespace Tests
                 effect.SetActive(true);
             }
 
-            var info = new Nekoyume.Model.Skill.SkillInfo(_player.Model.Value, 0, false, SkillCategory.Area,
+            var info = new Nekoyume.Model.Skill.SkillInfo(_player.Model.Value, 0, false, SkillCategory.AreaAttack,
                 ElementalType.Water);
             yield return _player.CoAreaAttack(new[] {info});
             Assert.Greater(pool.objects["area_l_water"].Count, current);

@@ -54,7 +54,7 @@ namespace Tests
             Assert.AreEqual(1, _player.Skills.Count());
             foreach (var skillRow in Game.instance.TableSheets.SkillSheet)
             {
-                var skill = SkillFactory.Get(skillRow, (int) 1.3m, .1m);
+                var skill = SkillFactory.Get(skillRow, (int) 1.3m, 10);
                 _player.Skills.Add(skill);
             }
             Assert.AreEqual(1 + Game.instance.TableSheets.SkillSheet.Count, _player.Skills.Count());
