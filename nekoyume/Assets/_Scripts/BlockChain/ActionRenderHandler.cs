@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using Bencodex.Types;
 using Nekoyume.Action;
+using Nekoyume.Game.Mail;
 using Nekoyume.Manager;
 using Nekoyume.State;
 using Nekoyume.TableData;
@@ -329,13 +330,13 @@ namespace Nekoyume.BlockChain
 
         private void ResponseSell(ActionBase.ActionEvaluation<Sell> eval)
         {
-            UI.Notification.Push($"{eval.Action.itemUsable.Data.GetLocalizedName()} 상점 등록 완료.");
+            UI.Notification.Push(MailType.Auction, $"{eval.Action.itemUsable.Data.GetLocalizedName()} 상점 등록 완료.");
             UpdateCurrentAvatarState(eval);
         }
 
         private void ResponseSellCancellation(ActionBase.ActionEvaluation<SellCancellation> eval)
         {
-            UI.Notification.Push($"{eval.Action.result.itemUsable.Data.GetLocalizedName()} 판매 취소 완료.");
+            UI.Notification.Push(MailType.Auction, $"{eval.Action.result.itemUsable.Data.GetLocalizedName()} 판매 취소 완료.");
             UpdateCurrentAvatarState(eval);
         }
 
@@ -343,12 +344,12 @@ namespace Nekoyume.BlockChain
         {
             if (eval.Action.buyerAvatarAddress == States.Instance.CurrentAvatarState.Value.address)
             {
-                UI.Notification.Push($"{eval.Action.buyerResult.itemUsable.Data.GetLocalizedName()} 구매 완료.");
+                UI.Notification.Push(MailType.Auction, $"{eval.Action.buyerResult.itemUsable.Data.GetLocalizedName()} 구매 완료.");
             }
             else
             {
                 var result = eval.Action.sellerResult;
-                UI.Notification.Push(
+                UI.Notification.Push(MailType.Auction,
                     $"{result.itemUsable.Data.GetLocalizedName()} 판매 완료.\n세금 8% 제외 {result.gold}gold 획득");
             }
 
