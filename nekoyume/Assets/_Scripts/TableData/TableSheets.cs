@@ -30,8 +30,9 @@ namespace Nekoyume.TableData
         public CombinationQuestSheet CombinationQuestSheet { get; private set; }
         public TradeQuestSheet TradeQuestSheet { get; private set; }
         public SkillBuffSheet SkillBuffSheet { get; private set; }
-        public SetEffectSheet SetEffectSheet { get; private set; }
+        public EquipmentItemSetEffectSheet EquipmentItemSetEffectSheet { get; private set; }
         public EnemySkillSheet EnemySkillSheet { get; private set; }
+        public ItemConfigForGradeSheet ItemConfigForGradeSheet { get; private set; }
 
         public IEnumerator CoInitialize()
         {
@@ -129,13 +130,17 @@ namespace Nekoyume.TableData
                     SkillBuffSheet = new SkillBuffSheet();
                     SkillBuffSheet.Set(csv);
                     break;
-                case nameof(TableData.SetEffectSheet):
-                    SetEffectSheet = new SetEffectSheet();
-                    SetEffectSheet.Set(csv);
+                case nameof(TableData.EquipmentItemSetEffectSheet):
+                    EquipmentItemSetEffectSheet = new EquipmentItemSetEffectSheet();
+                    EquipmentItemSetEffectSheet.Set(csv);
                     break;
                 case nameof(TableData.EnemySkillSheet):
                     EnemySkillSheet = new EnemySkillSheet();
                     EnemySkillSheet.Set(csv);
+                    break;
+                case nameof(TableData.ItemConfigForGradeSheet):
+                    ItemConfigForGradeSheet = new ItemConfigForGradeSheet();
+                    ItemConfigForGradeSheet.Set(csv);
                     break;
                 default:
                     throw new InvalidDataException($"Not found {name} class in namespace `TableData`");

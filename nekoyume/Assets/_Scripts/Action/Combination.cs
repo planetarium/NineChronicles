@@ -187,6 +187,7 @@ namespace Nekoyume.Action
                     if (TryGetSkill(monsterPart.Key, GetRoll(ctx.Random, monsterPart.Value, 0), out var skill))
                         equipment.Skills.Add(skill);
 
+                    
                     if (TryGetBuffSkill(ctx.Random, out var buffSkill))
                         equipment.BuffSkills.Add(buffSkill);
                 }
