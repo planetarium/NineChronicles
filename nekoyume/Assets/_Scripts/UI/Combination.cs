@@ -180,6 +180,7 @@ namespace Nekoyume.UI
 
             base.Close(ignoreCloseAnimation);
             _disposable.Dispose();
+            CloseItemEnhancement();
 
             AudioController.instance.PlayMusic(AudioController.MusicCode.Main);
         }
