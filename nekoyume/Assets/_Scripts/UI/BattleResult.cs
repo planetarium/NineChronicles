@@ -22,10 +22,11 @@ namespace Nekoyume.UI
     {
         public class Model
         {
-            public BattleLog.Result state;
-            public long exp;
-            public readonly List<CountableItem> rewards = new List<CountableItem>();
-            public bool shouldRepeat;
+            public BattleLog.Result State;
+            public long Exp;
+            public readonly List<CountableItem> Rewards = new List<CountableItem>();
+            public bool ShouldRepeat;
+            
         }
 
         [Serializable]
@@ -134,7 +135,7 @@ namespace Nekoyume.UI
 
         private void UpdateView()
         {
-            switch (SharedModel.state)
+            switch (SharedModel.State)
             {
                 case BattleLog.Result.Win:
                     StartCoroutine(CoUpdateViewAsVictory());
@@ -157,14 +158,14 @@ namespace Nekoyume.UI
             victoryImageContainer.SetActive(true);
             defeatImageContainer.SetActive(false);
             topArea.topText.text = LocalizationManager.Localize("UI_BATTLE_RESULT_VICTORY_MESSAGE");
-            topArea.expValueText.text = SharedModel.exp.ToString();
+            topArea.expValueText.text = SharedModel.Exp.ToString();
             topArea.expContainer.SetActive(true);
             suggestionsArea.root.SetActive(false);
             bottomText.enabled = false;
             closeButton.interactable = true;
             closeButtonText.text = LocalizationManager.Localize("UI_MAIN");
             submitButton.interactable = true;
-            submitButtonText.text = SharedModel.shouldRepeat
+            submitButtonText.text = SharedModel.ShouldRepeat
                 ? LocalizationManager.Localize("UI_BATTLE_AGAIN")
                 : LocalizationManager.Localize("UI_NEXT_STAGE");
             submitButton.gameObject.SetActive(true);
@@ -197,7 +198,7 @@ namespace Nekoyume.UI
 
         private IEnumerator CoUpdateRewards()
         {
-            if (SharedModel.rewards.Count > 0)
+            if (SharedModel.Rewards.Count > 0)
             {
                 rewardsArea.root.SetActive(true);
                 
@@ -209,14 +210,14 @@ namespace Nekoyume.UI
                 for (var i = 0; i < rewardsArea.rewards.Length; i++)
                 {
                     var view = rewardsArea.rewards[i];
-                    if (SharedModel.rewards.Count <= i)
+                    if (SharedModel.Rewards.Count <= i)
                     {
                         break;
                     }
                     
                     yield return new WaitForSeconds(0.5f);
 
-                    var model = SharedModel.rewards[i];
+                    var model = SharedModel.Rewards[i];
                     view.SetData(model);
                     view.gameObject.SetActive(true);
                     yield return null;
@@ -283,7 +284,7 @@ namespace Nekoyume.UI
             var player = stage.RunPlayer();
             player.DisableHUD();
 
-            var stageId = SharedModel.shouldRepeat ? stage.id : stage.id + 1;
+            var stageId = SharedModel.ShouldRepeat ? stage.id : stage.id + 1;
             yield return ActionManager.instance.HackAndSlash(player.Equipments, new List<Consumable>(), stageId)
                 .Subscribe(_ => {}, (_) => Find<ActionFailPopup>().Show("Action timeout during HackAndSlash."));
         }
@@ -340,7 +341,7 @@ namespace Nekoyume.UI
         {
             var stage = Game.Game.instance.stage;
             stage.repeatStage = false;
-            SharedModel.shouldRepeat = false;
+            SharedModel.ShouldRepeat = false;
         }
 
         private void StopCoUpdateBottomText()
