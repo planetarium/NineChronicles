@@ -7,9 +7,11 @@ namespace Nekoyume.Game.Mail
     public class CombinationMail : AttachmentMail
     {
         protected override string TypeId => "combinationMail";
+        public override MailType MailType { get => MailType.Forge; }
 
         public CombinationMail(Combination.Result attachmentActionResult, long blockIndex) : base(attachmentActionResult, blockIndex)
         {
+            
         }
 
         public CombinationMail(Bencodex.Types.Dictionary serialized)

@@ -6,23 +6,101 @@ using Nekoyume.BlockChain;
 using Nekoyume.Game.Factory;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Mail;
+using Nekoyume.Helper;
 using Nekoyume.Model;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Scroller;
 using UniRx;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
     public class Mail : Widget, IMail
     {
+        public enum MailTabState
+        {
+            All = 0,
+            Forge,
+            Auction,
+            System
+        }
+
+        [Serializable]
+        public class TabButton
+        {
+            private static readonly Color _highlightedColor = ColorHelper.HexToColorRGB("001870");
+            private static readonly Vector2 _highlightedSize = new Vector2(143f, 60f);
+            private static readonly Vector2 _unHighlightedSize = new Vector2(116f, 36f);
+            public Sprite highlightedSprite;
+            public Button button;
+            public Image image;
+            public Image icon;
+            public Text text;
+            public MailTabState state;
+            private Shadow[] _textShadows;
+
+            public void Init(MailTabState state)
+            {
+                if (!button) return;
+                _textShadows = button.GetComponentsInChildren<Shadow>();
+            }
+
+            public void ChangeColor(bool isHighlighted = false)
+            {
+                image.overrideSprite = isHighlighted ? _selectedButtonSprite : null;
+                // 금색 버튼 리소스로 변경 시 주석 해제
+                // image.rectTransform.sizeDelta = isHighlighted ? _highlightedSize : _unHighlightedSize;
+                icon.overrideSprite = isHighlighted ? highlightedSprite : null;
+                foreach (var shadow in _textShadows)
+                    shadow.effectColor = isHighlighted ? _highlightedColor : Color.black;
+            }
+        }
+        
+        public MailTabState tabState;
         public MailScrollerController scroller;
+        public TabButton allButton;
+        public TabButton forgeButton;
+        public TabButton auctionButton;
+        public TabButton systemButton;
+
+        private static Sprite _selectedButtonSprite;
+        private MailBox _mailBox;
+
+        public override void Initialize()
+        {
+            base.Initialize();
+            _selectedButtonSprite = Resources.Load<Sprite>("UI/Textures/button_blue_01");
+            allButton.Init(MailTabState.All);
+            forgeButton.Init(MailTabState.Forge);
+            auctionButton.Init(MailTabState.Auction);
+            systemButton.Init(MailTabState.System);
+        }
 
         public override void Show()
         {
-            var mailBox = States.Instance.CurrentAvatarState.Value.mailBox;
-            scroller.SetData(mailBox);
+            tabState = MailTabState.All;
+            _mailBox = States.Instance.CurrentAvatarState.Value.mailBox;
+            ChangeState(0);
             base.Show();
+        }
+
+        public void ChangeState(int state)
+        {
+            tabState = (MailTabState) state;
+            allButton.ChangeColor(tabState == MailTabState.All);
+            forgeButton.ChangeColor(tabState == MailTabState.Forge);
+            auctionButton.ChangeColor(tabState == MailTabState.Auction);
+            systemButton.ChangeColor(tabState == MailTabState.System);
+
+            var list = _mailBox.ToList();
+            if (state > 0)
+            {
+                list = list.FindAll(mail => mail.MailType == (MailType) state);
+            }
+
+            scroller.SetData(list);
         }
 
         public void Read(CombinationMail mail)
