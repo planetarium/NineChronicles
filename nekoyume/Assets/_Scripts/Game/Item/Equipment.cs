@@ -46,7 +46,8 @@ namespace Nekoyume.Game.Item
         public override IValue Serialize() =>
             new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
             {
-                [(Text) "equipped"] = new Bencodex.Types.Boolean(equipped)
+                [(Text) "equipped"] = new Bencodex.Types.Boolean(equipped),
+                [(Text) "level"] = (Integer) level,
             }.Union((Bencodex.Types.Dictionary) base.Serialize()));
 
     }

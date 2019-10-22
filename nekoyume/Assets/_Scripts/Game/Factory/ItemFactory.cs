@@ -90,9 +90,16 @@ namespace Nekoyume.Game.Factory
                     }
                 }
 
-                if (itemUsable is Equipment equipment && serialized.TryGetValue((Text) "equipped", out var equipped))
+                if (itemUsable is Equipment equipment)
                 {
-                    equipment.equipped = ((Bencodex.Types.Boolean) equipped).Value;
+                    if (serialized.TryGetValue((Text) "equipped", out var equipped))
+                    {
+                        equipment.equipped = ((Bencodex.Types.Boolean) equipped).Value;
+                    }
+                    if (serialized.TryGetValue((Text) "level", out var level))
+                    {
+                        equipment.level = (int) ((Integer) level).Value;
+                    }
                 }
             }
 
