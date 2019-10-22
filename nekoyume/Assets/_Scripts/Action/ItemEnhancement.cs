@@ -11,6 +11,7 @@ using Nekoyume.Game;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Mail;
 using Nekoyume.State;
+using UnityEngine;
 
 namespace Nekoyume.Action
 {
@@ -64,6 +65,25 @@ namespace Nekoyume.Action
                 {
                     return states;
                 }
+
+                if (materials.Contains(material))
+                {
+                    Debug.LogWarning($"Duplicate materials found. {material}");
+                    return states;
+                }
+
+                if (item.ItemId == materialId)
+                {
+                    return states;
+                }
+
+                if (material.Data.ItemSubType != item.Data.ItemSubType)
+                {
+                    Debug.LogWarning($"Expected ItemSubType is {item.Data.ItemSubType}. " +
+                                     "but Material SubType is {material.Data.ItemSubType}");
+                    return states;
+                }
+
                 materials.Add(material);
             }
 
