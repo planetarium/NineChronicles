@@ -9,4 +9,4 @@ if [ -d $SHARED_DLL_PATH ]; then
 fi
 
 # entrypoint.
-/app/nekoyume $@
+/app/nekoyume "$@"
