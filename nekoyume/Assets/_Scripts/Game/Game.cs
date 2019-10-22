@@ -64,7 +64,7 @@ namespace Nekoyume.Game
                 agentInitialized = true;
                 agentInitializeSucceed = succeed;
             });
-            yield return new WaitUntil(() => agentInitialized);
+            yield return new WaitWhile(() => agentInitialized);
             Tables.instance.Initialize();
             yield return Addressables.InitializeAsync();
             TableSheets = new TableSheets();

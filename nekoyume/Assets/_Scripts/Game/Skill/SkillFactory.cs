@@ -12,18 +12,13 @@ namespace Nekoyume.Game
     {
         public static Skill Get(SkillSheet.Row skillRow, int power, decimal chance)
         {
-            if (!Tables.instance.SkillEffect.TryGetValue(skillRow.SkillEffectId, out var skillEffectRow))
-            {
-                throw new KeyNotFoundException(nameof(skillRow.SkillEffectId));
-            }
-
-            switch (skillEffectRow.skillType)
+            switch (skillRow.skillType)
             {
                 case SkillType.Attack:
-                    switch (skillEffectRow.skillTargetType)
+                    switch (skillRow.skillTargetType)
                     {
                         case SkillTargetType.Enemy:
-                            switch (skillEffectRow.skillCategory)
+                            switch (skillRow.skillCategory)
                             {
                                 case SkillCategory.Normal:
                                     return new NormalAttack(skillRow, power, chance);
@@ -41,7 +36,7 @@ namespace Nekoyume.Game
                     break;
                 case SkillType.Debuff:
                 case SkillType.Buff:
-                    switch (skillEffectRow.skillCategory)
+                    switch (skillRow.skillCategory)
                     {
                         case SkillCategory.Heal:
                             return new HealSkill(skillRow, power, chance);
@@ -57,7 +52,7 @@ namespace Nekoyume.Game
             }
 
             throw new UnexpectedOperationException(
-                $"{skillRow.Id}, {skillEffectRow.skillType}, {skillEffectRow.skillTargetType}, {skillEffectRow.skillCategory}");
+                $"{skillRow.Id}, {skillRow.skillType}, {skillRow.skillTargetType}, {skillRow.skillCategory}");
         }
 
         public static Skill Deserialize(Bencodex.Types.Dictionary serialized) =>

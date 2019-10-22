@@ -12,16 +12,12 @@ namespace Nekoyume.Data
     public class Tables : MonoSingleton<Tables>
     {
         public Table<Recipe> Recipe { get; private set; }
-        public Table<SkillEffect> SkillEffect { get; private set; }
         public Table<StageDialog> StageDialogs { get; private set; }
 
         public void Initialize()
         {
             Recipe = new Table<Recipe>();
             Load(Recipe, "DataTable/recipe");
-
-            SkillEffect = new Table<SkillEffect>();
-            Load(SkillEffect, "DataTable/skill_effect");
 
             StageDialogs = new Table<StageDialog>();
             Load(StageDialogs, "DataTable/stage_dialog");
