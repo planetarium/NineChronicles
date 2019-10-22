@@ -24,7 +24,7 @@ namespace Nekoyume.Pattern
             {
                 if (_applicationIsQuitting)
                 {
-                    Debug.LogError(
+                    Debug.Log(
                         $"[MonoSingleton]Instance '{typeof(T)}' already destroyed on application quit. Won't create again - returning null.");
                     return _instance;
                 }

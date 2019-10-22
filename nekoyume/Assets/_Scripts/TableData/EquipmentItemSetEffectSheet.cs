@@ -45,14 +45,15 @@ namespace Nekoyume.TableData
 
                 return;
             }
-
+            
             if (value.StatModifiers.Count == 0)
                 return;
 
-            if (row.StatModifiers.ContainsKey(key))
-                throw new Exception($"[{nameof(EquipmentItemSetEffectSheet)}]Already contained key: {key}");
-
-            row.StatModifiers.Add(key, value.StatModifiers.First().Value);
+            var pair = value.StatModifiers.First();
+            if (row.StatModifiers.ContainsKey(pair.Key))
+                throw new Exception($"[{nameof(EquipmentItemSetEffectSheet)}]Already contained key: {pair.Key}");
+            
+            row.StatModifiers.Add(pair.Key, pair.Value);
         }
     }
 
