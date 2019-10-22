@@ -152,6 +152,7 @@ namespace Nekoyume.UI
                 .AddTo(gameObject);
 
             UpdateStagedItems();
+            requiredPointText.text = Action.Combination.RequiredPoint.ToString();
         }
 
         public override void Show()
