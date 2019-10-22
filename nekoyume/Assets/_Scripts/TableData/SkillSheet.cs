@@ -17,15 +17,19 @@ namespace Nekoyume.TableData
             public override int Key => Id;
             public int Id { get; private set; }
             public ElementalType ElementalType { get; private set; }
-            public int SkillEffectId { get; private set; }
+            public SkillType SkillType { get; private set; }
+            public SkillCategory SkillCategory { get; private set; }
+            public SkillTargetType SkillTargetType { get; private set; }
+            public int HitCount { get; private set; }
 
             public override void Set(IReadOnlyList<string> fields)
             {
-                Id = int.TryParse(fields[0], out var id) ? id : 0;
-                ElementalType = Enum.TryParse<ElementalType>(fields[1], out var elementalType)
-                    ? elementalType
-                    : ElementalType.Normal;
-                SkillEffectId = int.TryParse(fields[2], out var skillEffectId) ? skillEffectId : 0;
+                Id = int.Parse(fields[0]);
+                ElementalType = (ElementalType) Enum.Parse(typeof(ElementalType), fields[1]);
+                SkillType = (SkillType) Enum.Parse(typeof(SkillType), fields[2]);
+                SkillCategory = (SkillCategory) Enum.Parse(typeof(SkillCategory), fields[3]);
+                SkillTargetType = (SkillTargetType) Enum.Parse(typeof(SkillTargetType), fields[4]);
+                HitCount = int.Parse(fields[5]);
             }
 
             public IValue Serialize() =>
@@ -40,7 +44,7 @@ namespace Nekoyume.TableData
                 return Game.Game.instance.TableSheets.SkillSheet[key];
             }
         }
-        
+
         public SkillSheet() : base(nameof(SkillSheet))
         {
         }
@@ -49,8 +53,9 @@ namespace Nekoyume.TableData
     public static class SkillSheetExtension
     {
         private const string DefaultIconPath = "UI/Icons/Skill/100000";
-        
-        private static readonly Dictionary<int, List<BuffSheet.Row>> SkillBuffs = new Dictionary<int, List<BuffSheet.Row>>(); 
+
+        private static readonly Dictionary<int, List<BuffSheet.Row>> SkillBuffs =
+            new Dictionary<int, List<BuffSheet.Row>>();
 
         public static string GetLocalizedName(this SkillSheet.Row row)
         {
@@ -76,14 +81,14 @@ namespace Nekoyume.TableData
         {
             if (SkillBuffs.ContainsKey(row.Id))
                 return SkillBuffs[row.Id];
-            
+
             var buffs = new List<BuffSheet.Row>();
             SkillBuffs[row.Id] = buffs;
 
             var skillBuffSheet = Game.Game.instance.TableSheets.SkillBuffSheet;
             if (!skillBuffSheet.TryGetValue(row.Id, out var skillBuffRow))
                 return buffs;
-            
+
             var buffSheet = Game.Game.instance.TableSheets.BuffSheet;
             foreach (var buffId in skillBuffRow.BuffIds)
             {

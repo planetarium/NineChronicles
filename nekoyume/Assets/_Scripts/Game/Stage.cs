@@ -288,8 +288,10 @@ namespace Nekoyume.Game
                 objectPool.ReleaseAll();
             }
 
-            _battleResultModel.state = log.result;
-            _battleResultModel.shouldRepeat = repeatStage;
+            _battleResultModel.State = log.result;
+            _battleResultModel.ShouldRepeat = repeatStage;
+            _battleResultModel.ActionPointNotEnough =
+                States.Instance.CurrentAvatarState.Value.actionPoint < GameConfig.HackAndSlashCost;
             Widget.Find<BattleResult>().Show(_battleResultModel);
 
             IsInStage = false;
@@ -449,7 +451,7 @@ namespace Nekoyume.Game
             foreach (var item in rewards)
             {
                 var countableItem = new CountableItem(item, 1);
-                _battleResultModel.rewards.Add(countableItem);
+                _battleResultModel.Rewards.Add(countableItem);
             }
 
             yield return null;
@@ -487,7 +489,7 @@ namespace Nekoyume.Game
 
         public IEnumerator CoGetExp(long exp)
         {
-            _battleResultModel.exp += exp;
+            _battleResultModel.Exp += exp;
             var player = GetPlayer();
             yield return StartCoroutine(player.CoGetExp(exp));
         }

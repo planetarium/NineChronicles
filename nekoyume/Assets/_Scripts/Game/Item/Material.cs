@@ -49,13 +49,13 @@ namespace Nekoyume.Game.Item
                 return sb.ToString();
             }
             
-            if (!Tables.instance.SkillEffect.TryGetValue(Data.SkillId, out var skillEffect))
+            if (!Game.instance.TableSheets.SkillSheet.TryGetValue(Data.SkillId, out var skillRow))
             {
                 throw new KeyNotFoundException($"SkillEffect: {Data.SkillId}");
             }
 
             string targetString;
-            switch (skillEffect.skillTargetType)
+            switch (skillRow.SkillTargetType)
             {
                 case SkillTargetType.Enemy:
                     targetString = "단일 적에게";
@@ -73,7 +73,7 @@ namespace Nekoyume.Game.Item
                     throw new ArgumentOutOfRangeException();
             }
 
-            switch (skillEffect.skillType)
+            switch (skillRow.SkillType)
             {
                 case SkillType.Attack:
                     sb.AppendLine($"{Data.SkillChanceMin}% ~ {Data.SkillChanceMax}% 확률로 {targetString} {Data.SkillDamageMin} ~ {Data.SkillDamageMax}의 데미지를 입힌다.");

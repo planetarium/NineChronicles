@@ -59,9 +59,9 @@ namespace Nekoyume.UI
             {
                 // 스크린 영역. 로딩창류.
                 Widget.Create<GrayLoadingScreen>(),
-                Widget.Create<LoadingScreen>(),
                 Widget.Create<StageLoadingScreen>(),
                 Widget.Create<CombinationLoadingScreen>(),
+                Widget.Create<LoadingScreen>(true),
 
                 //최상단 알림 영역.
                 Widget.Create<UpdatePopup>(),

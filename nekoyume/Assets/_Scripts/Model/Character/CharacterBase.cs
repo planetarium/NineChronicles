@@ -296,7 +296,7 @@ namespace Nekoyume.Model
                 .Where(t => t.skill.chance > t.chance)
                 .Select(t => t.skill)
                 .OrderBy(s => s.chance)
-                .ThenBy(s => s.effect.id)
+                .ThenBy(s => s.skillRow.Id)
                 .ToList();
 
             return selected[random.Next(selected.Count)];
