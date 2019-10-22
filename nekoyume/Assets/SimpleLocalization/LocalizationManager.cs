@@ -22,7 +22,7 @@ namespace Assets.SimpleLocalization
         /// </summary>
         public static event Action LocalizationChanged = delegate { };
 
-        public const LanguageType DefaultLanguage = LanguageType.Korean;
+        public const LanguageType DefaultLanguage = LanguageType.English;
 
         private static readonly Dictionary<LanguageType, Dictionary<string, string>> Dictionary =
             new Dictionary<LanguageType, Dictionary<string, string>>();
