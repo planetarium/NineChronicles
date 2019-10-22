@@ -174,10 +174,8 @@ namespace Nekoyume.UI
         {
             Find<BottomMenu>().Close(ignoreCloseAnimation);
 
-            foreach (var item in materialViews)
-            {
-                item.Clear();
-            }
+            SharedModel.RemoveEquipmentMaterial();
+            SharedModel.Materials.Clear();
 
             base.Close(ignoreCloseAnimation);
             _disposable.Dispose();
