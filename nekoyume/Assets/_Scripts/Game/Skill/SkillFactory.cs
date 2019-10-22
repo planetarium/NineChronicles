@@ -10,7 +10,7 @@ namespace Nekoyume.Game
 {
     public static class SkillFactory
     {
-        public static Skill Get(SkillSheet.Row skillRow, int power, decimal chance)
+        public static Skill Get(SkillSheet.Row skillRow, int power, int chance)
         {
             switch (skillRow.SkillType)
             {
@@ -50,7 +50,7 @@ namespace Nekoyume.Game
             Get(
                 SkillSheet.Row.Deserialize((Bencodex.Types.Dictionary) serialized[(Text) "skillRow"]),
                 (int) ((Integer) serialized[(Text) "power"]).Value,
-                serialized[(Text) "chance"].ToDecimal()
+                (int) ((Integer) serialized[(Text) "chance"]).Value
             );
     }
 }

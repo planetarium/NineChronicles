@@ -186,17 +186,18 @@ namespace Nekoyume.Action
 
                     if (TryGetSkill(monsterPart.Key, GetRoll(ctx.Random, monsterPart.Value, 0), out var skill))
                         equipment.Skills.Add(skill);
+                }
 
-                    Game.Game.instance.TableSheets.ItemConfigForGradeSheet.TryGetValue(equipmentMaterial.Grade,
-                        out var config, true);
-                    var buffSkillCount = ctx.Random.Next(config.RandomBuffSkillMinCountForCombination,
-                        config.RandomBuffSkillMaxCountForCombination + 1);
-                    buffSkillCount = Math.Min(buffSkillCount, config.RandomBuffSkillMaxCountForCombination);
-                    for (var i = 0; i < buffSkillCount; i++)
-                    {
-                        if (TryGetBuffSkill(ctx.Random, out var buffSkill))
-                            equipment.BuffSkills.Add(buffSkill);
-                    }
+                Game.Game.instance.TableSheets.ItemConfigForGradeSheet.TryGetValue(equipmentMaterial.Grade,
+                    out var config, true);
+                var buffSkillCount = Math.Min(
+                    ctx.Random.Next(config.RandomBuffSkillMinCountForCombination,
+                        config.RandomBuffSkillMaxCountForCombination + 1),
+                    config.RandomBuffSkillMaxCountForCombination);
+                for (var i = 0; i < buffSkillCount; i++)
+                {
+                    if (TryGetBuffSkill(ctx.Random, out var buffSkill))
+                        equipment.BuffSkills.Add(buffSkill);
                 }
 
                 Result.itemUsable = equipment;
@@ -430,11 +431,11 @@ namespace Nekoyume.Action
             {
                 var skillRow =
                     Game.Game.instance.TableSheets.SkillSheet.OrderedList.First(r => r.Id == monsterParts.SkillId);
-                var chance = Math.Floor(monsterParts.SkillChanceMin +
-                                        (monsterParts.SkillChanceMax - monsterParts.SkillChanceMin) * roll);
+                var chance = (int) (monsterParts.SkillChanceMin +
+                                    (monsterParts.SkillChanceMax - monsterParts.SkillChanceMin) * roll);
                 chance = Math.Max(monsterParts.SkillChanceMin, chance);
-                var value = (int) Math.Floor(monsterParts.SkillDamageMin +
-                                             (monsterParts.SkillDamageMax - monsterParts.SkillDamageMin) * roll);
+                var value = (int) (monsterParts.SkillDamageMin +
+                                   (monsterParts.SkillDamageMax - monsterParts.SkillDamageMin) * roll);
 
                 skill = SkillFactory.Get(skillRow, value, chance);
                 return true;
@@ -448,12 +449,13 @@ namespace Nekoyume.Action
 
         private static bool TryGetBuffSkill(IRandom random, out BuffSkill buffSkill)
         {
-            var buffSkills = Game.Game.instance.TableSheets.SkillSheet.OrderedList.Where(item => item.Id >= 200000)
+            var buffSkills = Game.Game.instance.TableSheets.SkillSheet.OrderedList
+                .Where(item => item.SkillType == SkillType.Buff)
                 .ToList();
-            var index = Math.Max(random.Next(0, buffSkills.Count), buffSkills.Count - 1);
+            var index = Math.Min(random.Next(0, buffSkills.Count), buffSkills.Count - 1);
             var row = buffSkills[index];
 
-            buffSkill = new BuffSkill(row, 0, .2m);
+            buffSkill = new BuffSkill(row, 0, 20);
             return true;
         }
 

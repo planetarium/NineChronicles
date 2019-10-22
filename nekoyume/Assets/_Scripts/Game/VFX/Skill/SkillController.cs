@@ -15,7 +15,7 @@ namespace Nekoyume.Game.VFX.Skill
         private void Awake()
         {
             _pool = FindObjectOfType<ObjectPool>();
-            skills = Resources.LoadAll<SkillVFX>("VFX/Prefabs");
+            skills = Resources.LoadAll<SkillVFX>("VFX/Skills");
             foreach (var skill in skills)
             {
                 _pool.Add(skill.gameObject, InitCount);

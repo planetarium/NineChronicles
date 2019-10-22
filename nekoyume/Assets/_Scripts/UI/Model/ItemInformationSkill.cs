@@ -27,7 +27,7 @@ namespace Nekoyume.UI.Model
             power.Value =
                 $"{LocalizationManager.Localize("UI_SKILL_POWER")}: {itemRow.SkillDamageMin} - {itemRow.SkillDamageMax}";
             chance.Value =
-                $"{LocalizationManager.Localize("UI_SKILL_CHANCE")}: {itemRow.SkillChanceMin:0%} - {itemRow.SkillChanceMax:0%}";
+                $"{LocalizationManager.Localize("UI_SKILL_CHANCE")}: {itemRow.SkillChanceMin}% - {itemRow.SkillChanceMax}%";
         }
 
         public ItemInformationSkill(Skill skill)
@@ -35,7 +35,7 @@ namespace Nekoyume.UI.Model
             iconSprite.Value = skill.skillRow.GetIcon();
             name.Value = skill.skillRow.GetLocalizedName();
             power.Value = $"{LocalizationManager.Localize("UI_SKILL_POWER")}: {skill.power}";
-            chance.Value = $"{LocalizationManager.Localize("UI_SKILL_CHANCE")}: {skill.chance:0%}";
+            chance.Value = $"{LocalizationManager.Localize("UI_SKILL_CHANCE")}: {skill.chance}%";
         }
 
         public void Dispose()

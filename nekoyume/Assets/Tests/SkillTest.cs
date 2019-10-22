@@ -62,7 +62,7 @@ namespace Tests
         {
             var caster = _simulator.Player;
             var skillRow = Game.instance.TableSheets.SkillSheet.OrderedList.First(r => r.SkillCategory == SkillCategory.BlowAttack);
-            var blow = new BlowAttack(skillRow, caster.ATK, 1m);
+            var blow = new BlowAttack(skillRow, caster.ATK, 100);
             var result = blow.Use(caster);
             var target = caster.Targets.First();
             var info = result.SkillInfos.First();
@@ -82,7 +82,7 @@ namespace Tests
         {
             var caster = _simulator.Player;
             var skillRow = Game.instance.TableSheets.SkillSheet.OrderedList.First(r => r.Id == 100002);
-            var doubleAttack = new Nekoyume.Game.DoubleAttack(skillRow, caster.ATK, 1m);
+            var doubleAttack = new Nekoyume.Game.DoubleAttack(skillRow, caster.ATK, 100);
             var result = doubleAttack.Use(caster);
             var target = caster.Targets.First();
 
@@ -103,7 +103,7 @@ namespace Tests
             var target = caster.Targets.First();
             var lastHPOfTarget = target.HP;
             var skillRow = Game.instance.TableSheets.SkillSheet.OrderedList.First(r => r.Id == 100003);
-            var area = new Nekoyume.Game.AreaAttack(skillRow, caster.ATK, 1m);
+            var area = new Nekoyume.Game.AreaAttack(skillRow, caster.ATK, 100);
             var result = area.Use(caster);
 
             Assert.AreEqual(target.CurrentHP, lastHPOfTarget - result.SkillInfos.Sum(i => i.Effect));
@@ -121,7 +121,7 @@ namespace Tests
         {
             var caster = _simulator.Player;
             var skillRow = Game.instance.TableSheets.SkillSheet.OrderedList.First(r => r.Id == 200000);
-            var heal = new Nekoyume.Game.HealSkill(skillRow, caster.ATK, 1m);
+            var heal = new Nekoyume.Game.HealSkill(skillRow, caster.ATK, 100);
             caster.CurrentHP -= caster.ATK;
             var result = heal.Use(caster);
 

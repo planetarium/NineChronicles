@@ -9,7 +9,7 @@ namespace Nekoyume.Game
     [Serializable]
     public class HealSkill : Skill
     {
-        public HealSkill(SkillSheet.Row skillRow, int power, decimal chance) : base(skillRow, power, chance)
+        public HealSkill(SkillSheet.Row skillRow, int power, int chance) : base(skillRow, power, chance)
         {
         }
 

@@ -7,7 +7,7 @@ namespace Nekoyume.Game
     [Serializable]
     public class DoubleAttack : AttackSkill
     {
-        public DoubleAttack(SkillSheet.Row skillRow, int power, decimal chance) : base(skillRow, power, chance)
+        public DoubleAttack(SkillSheet.Row skillRow, int power, int chance) : base(skillRow, power, chance)
         {
         }
 
