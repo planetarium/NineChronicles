@@ -75,6 +75,8 @@ namespace Nekoyume.UI
         private static Sprite _selectedButtonSprite;
         private MailBox _mailBox;
 
+        #region override
+
         public override void Initialize()
         {
             base.Initialize();
@@ -100,6 +102,7 @@ namespace Nekoyume.UI
             ChangeState(0);
             base.Show();
         }
+        #endregion
 
         public void ChangeState(int state)
         {

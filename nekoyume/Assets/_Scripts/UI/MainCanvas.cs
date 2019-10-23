@@ -128,6 +128,8 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<Mail>());
             yield return null;
+            _secondWidgets.Add(Widget.Create<Achievement>());
+            yield return null;
 
             // 팝업류.
             _secondWidgets.Add(Widget.Create<Dialog>());
