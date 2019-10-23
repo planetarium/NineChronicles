@@ -11,7 +11,7 @@ namespace Nekoyume.Game.Mail
     {
         private static readonly string _format = LocalizationManager.Localize("UI_COMBINATION_NOTIFY_FORMAT");
         protected override string TypeId => "combinationMail";
-        public override MailType MailType => MailType.Forge;
+        public override MailType MailType => MailType.Workshop;
 
         public CombinationMail(Combination.ResultModel attachmentActionResult, long blockIndex) : base(attachmentActionResult, blockIndex)
         {

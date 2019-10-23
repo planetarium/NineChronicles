@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using Assets.SimpleLocalization;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
 using Nekoyume.Game.Factory;
@@ -22,7 +24,7 @@ namespace Nekoyume.UI
         public enum MailTabState
         {
             All = 0,
-            Forge,
+            Workshop,
             Auction,
             System
         }
@@ -41,10 +43,13 @@ namespace Nekoyume.UI
             public MailTabState state;
             private Shadow[] _textShadows;
 
-            public void Init(MailTabState state)
+            public void Init(MailTabState state, string localizationKey)
             {
                 if (!button) return;
                 _textShadows = button.GetComponentsInChildren<Shadow>();
+                var localized = LocalizationManager.Localize(localizationKey);
+                var content = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(localized.ToLower());
+                text.text = content;
             }
 
             public void ChangeColor(bool isHighlighted = false)
@@ -63,7 +68,7 @@ namespace Nekoyume.UI
         public MailTabState tabState;
         public MailScrollerController scroller;
         public TabButton allButton;
-        public TabButton forgeButton;
+        public TabButton workshopButton;
         public TabButton auctionButton;
         public TabButton systemButton;
 
@@ -77,15 +82,15 @@ namespace Nekoyume.UI
 
             var path = "UI/Textures/icon_mail_Auction";
             mailIcons.Add(MailType.Auction, Resources.Load<Sprite>(path));
-            path = "UI/Textures/icon_mail_Forge";
-            mailIcons.Add(MailType.Forge, Resources.Load<Sprite>(path));
+            path = "UI/Textures/icon_mail_Workshop";
+            mailIcons.Add(MailType.Workshop, Resources.Load<Sprite>(path));
             path = "UI/Textures/icon_mail_System";
             mailIcons.Add(MailType.System, Resources.Load<Sprite>(path));
 
-            allButton.Init(MailTabState.All);
-            forgeButton.Init(MailTabState.Forge);
-            auctionButton.Init(MailTabState.Auction);
-            systemButton.Init(MailTabState.System);
+            allButton.Init(MailTabState.All, "ALL");
+            workshopButton.Init(MailTabState.Workshop, "UI_COMBINATION");
+            auctionButton.Init(MailTabState.Auction, "UI_SHOP");
+            systemButton.Init(MailTabState.System, "SYSTEM");
         }
 
         public override void Show()
@@ -100,7 +105,7 @@ namespace Nekoyume.UI
         {
             tabState = (MailTabState) state;
             allButton.ChangeColor(tabState == MailTabState.All);
-            forgeButton.ChangeColor(tabState == MailTabState.Forge);
+            workshopButton.ChangeColor(tabState == MailTabState.Workshop);
             auctionButton.ChangeColor(tabState == MailTabState.Auction);
             systemButton.ChangeColor(tabState == MailTabState.System);
 

@@ -10,7 +10,7 @@ namespace Nekoyume.Game.Mail
 {
     public enum MailType
     {
-        Forge = 1,
+        Workshop = 1,
         Auction,
         System
     }
