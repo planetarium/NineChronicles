@@ -84,7 +84,7 @@ namespace Nekoyume.UI.Module
         }
 
         private void SubscribeOnClick(Unit unit)
-        {
+        {   
             Find<Alert>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE", "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
         }
 
