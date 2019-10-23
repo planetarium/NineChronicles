@@ -353,8 +353,8 @@ namespace Nekoyume.UI
             inventory.SharedModel.RemoveItem(item.ItemBase.Value);
             
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
-            Notification.Push(
-                $"{item.ItemBase.Value.Data.GetLocalizedName()} 아이템을 상점에 등록합니다.\n아이템 판매시 {price} gold의 8%를 세금으로 차감합니다.");
+            var format = LocalizationManager.Localize("NOTIFICATION_SELL_START");
+            Notification.Push(string.Format(format, item.ItemBase.Value.Data.GetLocalizedName()));
         }
 
         private void ResponseSellCancellation(ShopItem shopItem)
@@ -368,7 +368,8 @@ namespace Nekoyume.UI
             shopItems.SharedModel.RemoveCurrentAgentsProduct(productId);
             
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
-            Notification.Push($"{shopItem.ItemBase.Value.Data.GetLocalizedName()} 아이템을 판매 취소합니다.");
+            var format = LocalizationManager.Localize("NOTIFICATION_SELL_CANCEL_START");
+            Notification.Push(string.Format(format, shopItem.ItemBase.Value.Data.GetLocalizedName()));
         }
 
         private void ResponseBuy(ShopItem shopItem)
@@ -382,7 +383,8 @@ namespace Nekoyume.UI
             shopItems.SharedModel.RemoveOtherProduct(productId);
             
             AudioController.instance.PlaySfx(AudioController.SfxCode.BuyItem);
-            Notification.Push($"{shopItem.ItemBase.Value.Data.GetLocalizedName()} 아이템을 구매합니다.");
+            var format = LocalizationManager.Localize("NOTIFICATION_BUY_START");
+            Notification.Push(string.Format(format, shopItem.ItemBase.Value.Data.GetLocalizedName()));
         }
 
         #endregion
