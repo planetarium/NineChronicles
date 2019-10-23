@@ -7,6 +7,7 @@ using Nekoyume.BlockChain;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
+using Nekoyume.Game.Mail;
 using Nekoyume.Model;
 using Nekoyume.State;
 using Nekoyume.TableData;
@@ -357,7 +358,7 @@ namespace Nekoyume.UI
             
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
             var format = LocalizationManager.Localize("NOTIFICATION_SELL_START");
-            Notification.Push(string.Format(format, item.ItemBase.Value.Data.GetLocalizedName()));
+            Notification.Push(MailType.Auction, string.Format(format, item.ItemBase.Value.Data.GetLocalizedName()));
         }
 
         private void ResponseSellCancellation(ShopItem shopItem)
@@ -372,7 +373,7 @@ namespace Nekoyume.UI
             
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
             var format = LocalizationManager.Localize("NOTIFICATION_SELL_CANCEL_START");
-            Notification.Push(string.Format(format, shopItem.ItemBase.Value.Data.GetLocalizedName()));
+            Notification.Push(MailType.Auction, string.Format(format, shopItem.ItemBase.Value.Data.GetLocalizedName()));
         }
 
         private void ResponseBuy(ShopItem shopItem)
@@ -387,7 +388,7 @@ namespace Nekoyume.UI
             
             AudioController.instance.PlaySfx(AudioController.SfxCode.BuyItem);
             var format = LocalizationManager.Localize("NOTIFICATION_BUY_START");
-            Notification.Push(string.Format(format, shopItem.ItemBase.Value.Data.GetLocalizedName()));
+            Notification.Push(MailType.Auction, string.Format(format, shopItem.ItemBase.Value.Data.GetLocalizedName()));
         }
 
         #endregion

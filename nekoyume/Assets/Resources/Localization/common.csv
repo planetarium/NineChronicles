@@ -1,7 +1,9 @@
 Key,English,Korean
 TITLE,Nine Chronicles,나인 크로니클
+ALL,All,전체
 ACTION_HANDLE,Action handling,액션 처리
 BLOCK_DOWNLOAD,Block downloading,블록 다운로드
+SYSTEM,System,시스템
 SPEECH_SHOP_0,Did you make something nice?[newline]Then come and sell it here.,괜찮은 물건을 제작했어?[newline]그럼 여기 와서 팔아봐
 SPEECH_SHOP_1,There's a lot of[newline]good stuff coming up.,좋은 물건이 많이 올라와있어![newline]시간 나면 보고 가
 SPEECH_SHOP_2,When you're worried about[newline]selling prices[newline]check out what other people[newline]put up on them.,판매 가격이 고민되면[newline]다른 사람들이[newline]얼마에 올렸는지 잘 살펴봐
@@ -92,6 +94,7 @@ UI_DELETE,Delete,삭제
 UI_COMBINATION_ITEM,Combine,아이템 제작
 UI_COMBINATION_ERROR,Error,조합 에러
 UI_COMBINATION_SUCCESS,Success!,조합 성공!
+UI_COMBINATION_NOTIFY_FORMAT,<size=14><color=#a2b4d6>[Workshop Cat]</color></size>[newline]Finished making <color=#ffd201>[{0}]</color>.,<size=14><color=#a2b4d6>[대장장이 고양이]</color></size>[newline]<color=#ffd201>[{0}]</color> 제작을 완료하였네.
 UI_COMBINATION_FAIL,Failed..,조합 실패
 UI_COMBINATION_MATERIAL_COUNT_SELECTION,Material Amount,재료 수량 선택
 UI_TOTAL_COUNT_N,Total {0},총 {0}개
@@ -142,8 +145,8 @@ NPC_01_NAME,Frey's Cat,프레이야의 하수인
 NPC_02_NAME,Fox Wizard,여우부족 마도사
 NPC_03_NAME,Fox Thief,여우부족 대장
 NPC_04_NAME,Gerimnir,제림니르
-NPC_05_NAME,Craft Shop Cat,공방 주인
-NPC_06_NAME,Auction Cat,경매장 주인
+NPC_05_NAME,Workshop Cat,대장장이 고양이
+NPC_06_NAME,Auction Cat,경매장 고양이
 NPC_07_NAME,The Godness Freya,여신 프레이야
 UI_COMBINE_EQUIPMENT,Equip,장비 제작
 UI_COMBINE_CONSUMABLE,Food,소모품 제작
@@ -193,3 +196,5 @@ UI_SHOP_NOTICE,Tax 8% of sales item price,판매가의 8%를 세금으로 징수
 UI_LOADING_BOOTSTRAP_START,Connect to Network...,네트워크 연결을 수립하고 있습니다...
 UI_LOADING_BLOCK_DOWNLOAD,Download Block... {0} / {1},블록 다운로드 중... {0} / {1}
 UI_LOADING_STATE_REFERENCE_DOWNLOAD,Download State... {0} / {1},상태 다운로드 중... {0} / {1}
+UI_CONFIRM_QUIT_CONTENT,Do you want to quit game?,게임을 종료하시겠습니까?
+UI_RECEIVE,Receive,받기

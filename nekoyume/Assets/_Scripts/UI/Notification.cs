@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using DefaultNamespace;
 using Nekoyume.Game.Controller;
+using Nekoyume.Game.Mail;
 using Nekoyume.UI.Scroller;
 using UniRx;
 using UnityEngine;
@@ -26,12 +27,12 @@ namespace Nekoyume.UI
 
         public NotificationScrollerController scroller;
 
-        public static void Push(string message)
+        public static void Push(MailType mailType, string message)
         {
-            Push(message, string.Empty, null);
+            Push(mailType, message, string.Empty, null);
         }
 
-        public static void Push(string message, string submitText, System.Action submitAction)
+        public static void Push(MailType mailType, string message, string submitText, System.Action submitAction)
         {
             if (_widgetEnableCount > 0)
             {
@@ -40,6 +41,7 @@ namespace Nekoyume.UI
             
             Models.Add(new NotificationCellView.Model
             {
+                mailType = mailType,
                 message = message,
                 submitText = submitText,
                 submitAction = submitAction,
