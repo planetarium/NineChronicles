@@ -21,7 +21,7 @@ namespace Nekoyume.Game.Quest
             Data = data;
         }
 
-        public override void Check(Player player, List<ItemBase> items)
+        public override void Check()
         {
             if (Complete)
                 return;

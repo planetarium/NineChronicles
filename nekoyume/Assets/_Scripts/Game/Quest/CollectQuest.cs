@@ -21,11 +21,10 @@ namespace Nekoyume.Game.Quest
             Data = data;
         }
 
-        public override void Check(Player player, List<ItemBase> items)
+        public override void Check()
         {
             if (Complete)
                 return;
-            Update(items);
             Complete = current >= Data.Goal;
         }
 
@@ -36,7 +35,7 @@ namespace Nekoyume.Game.Quest
             return string.Format(format, itemName, current, Data.Goal);
         }
 
-        private void Update(List<ItemBase> rewards)
+        public void Update(List<ItemBase> rewards)
         {
             current += rewards.Count(i => i.Data.Id == Data.ItemId);
         }

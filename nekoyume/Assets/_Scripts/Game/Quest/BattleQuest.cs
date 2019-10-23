@@ -1,8 +1,5 @@
 using System;
-using System.Collections.Generic;
 using Assets.SimpleLocalization;
-using Nekoyume.Game.Item;
-using Nekoyume.Model;
 using Nekoyume.TableData;
 
 namespace Nekoyume.Game.Quest
@@ -12,21 +9,28 @@ namespace Nekoyume.Game.Quest
     {
         public override QuestType QuestType => QuestType.Adventure;
 
+        private int _worldStage;
         public BattleQuest(BattleQuestSheet.Row data) : base(data)
         {
         }
 
-        public override void Check(Player player, List<ItemBase> items)
+        public override void Check()
         {
             if (Complete)
                 return;
-            Complete = player.worldStage > Data.Goal;
+            Complete = _worldStage > Data.Goal;
         }
 
         public override string ToInfo()
         {
             var format = LocalizationManager.Localize("QUEST_BATTLE_CURRENT_INFO_FORMAT");
             return string.Format(format, Data.Goal);
+        }
+
+        public void Update(int stage)
+        {
+            _worldStage = stage;
+            Check();
         }
     }
 }

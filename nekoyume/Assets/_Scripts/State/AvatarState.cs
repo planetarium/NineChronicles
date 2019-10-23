@@ -90,14 +90,15 @@ namespace Nekoyume.State
             actionPoint = (int) ((Integer) serialized[(Text) "actionPoint"]).Value;
         }
 
-        public void Update(Player player, List<ItemBase> items)
+        public void Update(Simulator simulator)
         {
+            var player = simulator.Player;
             characterId = player.RowData.Id;
             level = player.Level;
             exp = player.Exp.Current;
             inventory = player.Inventory;
             worldStage = player.worldStage;
-            questList.UpdateStageQuest(player, items);
+            questList.UpdateStageQuest(simulator);
         }
 
         public object Clone()

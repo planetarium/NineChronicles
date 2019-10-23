@@ -9,19 +9,19 @@ using Nekoyume.Model;
 using Nekoyume.State;
 using Nekoyume.TableData;
 using Priority_Queue;
-using UnityEngine;
 
 namespace Nekoyume.Battle
 {
     public class Simulator
     {
         public readonly IRandom Random;
-        private readonly int _worldStage;
+        public readonly int WorldStage;
         private readonly List<Wave> _waves;
         public readonly BattleLog Log;
         public bool Lose = false;
         public readonly Player Player;
         private BattleLog.Result _result;
+        public BattleLog.Result Result => _result;
         private int _totalWave;
         public SimplePriorityQueue<CharacterBase> Characters;
         private readonly List<List<ItemBase>> _waveRewards;
@@ -32,7 +32,7 @@ namespace Nekoyume.Battle
             Game.Skill skill = null)
         {
             Random = random;
-            _worldStage = worldStage;
+            WorldStage = worldStage;
             Log = new BattleLog();
             _waves = new List<Wave>();
             Player = new Player(avatarState, this);
@@ -46,7 +46,7 @@ namespace Nekoyume.Battle
 
         public Player Simulate()
         {
-            Log.worldStage = _worldStage;
+            Log.worldStage = WorldStage;
             Player.Spawn();
             foreach (var wave in _waves)
             {
@@ -78,7 +78,7 @@ namespace Nekoyume.Battle
                         if (index == lastWave)
                         {
                             var stageSheet = Game.Game.instance.TableSheets.StageSheet;
-                            if (_worldStage == Player.worldStage
+                            if (WorldStage == Player.worldStage
                                 && Player.worldStage < stageSheet.Last.Id)
                             {
                                 Player.worldStage++;
@@ -123,8 +123,8 @@ namespace Nekoyume.Battle
         private void SetWave()
         {
             var stageSheet = Game.Game.instance.TableSheets.StageSheet;
-            if (!stageSheet.TryGetValue(_worldStage, out var stageRow))
-                throw new SheetRowNotFoundException(nameof(stageSheet), _worldStage.ToString());
+            if (!stageSheet.TryGetValue(WorldStage, out var stageRow))
+                throw new SheetRowNotFoundException(nameof(stageSheet), WorldStage.ToString());
 
             var waves = stageRow.Waves;
             _totalWave = waves.Count;

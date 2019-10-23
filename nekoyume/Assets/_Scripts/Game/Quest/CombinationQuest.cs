@@ -4,7 +4,6 @@ using System.Linq;
 using Assets.SimpleLocalization;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Item;
-using Nekoyume.Model;
 using Nekoyume.TableData;
 
 namespace Nekoyume.Game.Quest
@@ -22,11 +21,10 @@ namespace Nekoyume.Game.Quest
             Data = data;
         }
 
-        public override void Check(Player player, List<ItemBase> items)
+        public override void Check()
         {
             if (Complete)
                 return;
-            Update(items);
             Complete = current >= Data.Goal;
         }
 
@@ -36,10 +34,11 @@ namespace Nekoyume.Game.Quest
             return string.Format(format, Data.ItemSubType.GetLocalizedString(), current, Data.Goal);
         }
 
-        private void Update(List<ItemBase> items)
+        public void Update(List<ItemBase> items)
         {
             current += items.Count(i => i.Data.ItemType == Data.ItemType &&
                                         i.Data.ItemSubType == Data.ItemSubType);
+            Check();
         }
     }
 }

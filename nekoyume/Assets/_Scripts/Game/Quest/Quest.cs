@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Bencodex.Types;
+using Nekoyume.Battle;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Item;
 using Nekoyume.Model;
@@ -32,7 +33,7 @@ namespace Nekoyume.Game.Quest
             Data = data;
         }
 
-        public abstract void Check(Player player, List<ItemBase> items);
+        public abstract void Check();
         public abstract string ToInfo();
 
         public Quest Copy(bool complete)
@@ -86,12 +87,19 @@ namespace Nekoyume.Game.Quest
                 .ToList();
         }
 
-        public void UpdateStageQuest(Player player, List<ItemBase> items)
+        public void UpdateStageQuest(Simulator simulator)
         {
-            var questList = quests.Where(q => q is BattleQuest || q is CollectQuest).ToArray();
-            foreach (var quest in questList)
+            foreach (var quest in quests)
             {
-                quest.Check(player, items);
+                switch (quest)
+                {
+                    case BattleQuest bq:
+                        bq.Update(simulator.Player.worldStage);
+                        break;
+                    case CollectQuest cq:
+                        cq.Update(simulator.rewards);
+                        break;
+                }
             }
         }
 
@@ -111,14 +119,14 @@ namespace Nekoyume.Game.Quest
                 .FirstOrDefault(i => i.Data.ItemType == itemUsable.Data.ItemType &&
                                      i.Data.ItemSubType == itemUsable.Data.ItemSubType &&
                                      !i.Complete);
-            quest?.Check(null, new List<ItemBase> {itemUsable});
+            quest?.Update(new List<ItemBase> {itemUsable});
         }
 
         public void UpdateTradeQuest(TradeType type)
         {
             var quest = quests.OfType<TradeQuest>()
                 .FirstOrDefault(i => i.Data.Type == type && !i.Complete);
-            quest?.Check(null, null);
+            quest?.Check();
         }
 
         public IValue Serialize() =>
