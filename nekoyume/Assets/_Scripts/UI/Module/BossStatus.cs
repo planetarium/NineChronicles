@@ -8,8 +8,7 @@ namespace Nekoyume.UI.Module
     {
         public Image hpBar;
         public TextMeshProUGUI hpText;
-        public TextMeshProUGUI levelText;
-        public TextMeshProUGUI nameText;
+        public TextMeshProUGUI infoText;
         public Image portrait;
         public BuffLayout buffLayout;
 
@@ -26,8 +25,7 @@ namespace Nekoyume.UI.Module
 
         public void SetProfile(int level, string name, Sprite sprite = null)
         {
-            levelText.text = $"Lv.{level}";
-            nameText.text = name;
+            infoText.text = $"<color=#B38271>Lv.{level}</color> {name}";
             portrait.overrideSprite = sprite; 
         }
 
