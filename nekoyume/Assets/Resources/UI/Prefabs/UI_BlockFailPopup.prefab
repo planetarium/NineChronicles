@@ -119,7 +119,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 6622058416479901414}
+      - m_Target: {fileID: 8317938912015892596}
         m_MethodName: Close
         m_Mode: 6
         m_Arguments:
@@ -271,10 +271,10 @@ GameObject:
   - component: {fileID: 222668420831161334}
   - component: {fileID: 95256010546860014}
   - component: {fileID: 8333806674666052705}
-  - component: {fileID: 6622058416479901414}
   - component: {fileID: 8764631578142727728}
+  - component: {fileID: 8317938912015892596}
   m_Layer: 5
-  m_Name: UI_ActionFailPopup
+  m_Name: UI_BlockFailPopup
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -356,22 +356,6 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
---- !u!114 &6622058416479901414
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1907849136098932}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ae3a3f4a0f794df8866afb2f4a62c00d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  title: {fileID: 7668724544641614381}
-  content: {fileID: 114240972812031658}
-  labelOK: {fileID: 114678270254923368}
-  titleBorder: {fileID: 8413180054573326355}
 --- !u!114 &8764631578142727728
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -412,6 +396,22 @@ MonoBehaviour:
     m_DisabledTrigger: Disabled
   m_Interactable: 0
   m_TargetGraphic: {fileID: 8333806674666052705}
+--- !u!114 &8317938912015892596
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1907849136098932}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f532a238ce22489d99229303f6bf720e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  title: {fileID: 7668724544641614381}
+  content: {fileID: 114240972812031658}
+  labelOK: {fileID: 114678270254923368}
+  titleBorder: {fileID: 8413180054573326355}
 --- !u!1 &1927058489689590
 GameObject:
   m_ObjectHideFlags: 0
