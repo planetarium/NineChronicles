@@ -69,7 +69,7 @@ namespace Nekoyume.UI
                 })
                 .AddTo(gameObject);
 
-            requiredPointText.text = GameConfig.HackAndSlashCost.ToString();
+            requiredPointText.text = GameConfig.HackAndSlashCostAP.ToString();
         }
 
         public override void Show()
@@ -172,11 +172,7 @@ namespace Nekoyume.UI
                 view.Model.Equipped.Value
                     ? LocalizationManager.Localize("UI_UNEQUIP")
                     : LocalizationManager.Localize("UI_EQUIP"),
-                tooltip =>
-                {
-                    OnClickEquip(tooltip.itemInformation.Model.item.Value);
-                    inventory.Tooltip.Close();
-                },
+                tooltip => OnClickEquip(tooltip.itemInformation.Model.item.Value),
                 tooltip =>
                 {
                     equipSlotGlow.SetActive(false);
@@ -238,7 +234,7 @@ namespace Nekoyume.UI
 
         private void SubscribeActionPoint(int point)
         {
-            _buttonEnabled.Value = point >= GameConfig.HackAndSlashCost;
+            _buttonEnabled.Value = point >= GameConfig.HackAndSlashCostAP;
         }
 
         #endregion

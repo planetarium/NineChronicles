@@ -11,6 +11,7 @@ using Nekoyume.Game.Mail;
 using Nekoyume.Helper;
 using Nekoyume.Model;
 using Nekoyume.UI.Model;
+using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
 using UniRx;
 using UnityEngine;

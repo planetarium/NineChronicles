@@ -23,8 +23,6 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
-            this.ComponentFieldsNotNullTest();
-
             closeButton.OnClickAsObservable().Subscribe(_ =>
             {
                 AudioController.PlayClick();

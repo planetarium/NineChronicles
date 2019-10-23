@@ -28,7 +28,6 @@ namespace Nekoyume.UI.Scroller
 
         private void Awake()
         {
-            this.ComponentFieldsNotNullTest();
             onClickDisposable = button.OnClickAsObservable()
                 .Subscribe(_ => onClickSubmitButton?.Invoke(this))
                 .AddTo(gameObject);

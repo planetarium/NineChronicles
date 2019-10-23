@@ -10,18 +10,13 @@ using UnityEngine.EventSystems;
 
 namespace Nekoyume.UI.Module
 {
-    [RequireComponent(typeof(Button))]
-    public class InventoryItemView : CountableItemView<Model.InventoryItem>, IPointerClickHandler
+    public class InventoryItemView : CountableItemView<Model.InventoryItem>
     {
-        public Image equippedIcon;
         public Image coverImage;
-        public Image selectionImage;
         public Image glowImage;
-        public TextMeshProUGUI equipmentText;
+        public Image equippedIcon;
 
-        private Button _button;
-
-        private readonly List<IDisposable> _disposablesForClear = new List<IDisposable>();
+        private readonly List<IDisposable> _disposablesAtSetData = new List<IDisposable>();
 
         public InventoryCellView InventoryCellView { get; private set; }
 
@@ -31,23 +26,9 @@ namespace Nekoyume.UI.Module
         {
             base.Awake();
 
-            this.ComponentFieldsNotNullTest();
-
-            _button = GetComponent<Button>();
             InventoryCellView = transform.parent.GetComponent<InventoryCellView>();
-            if(ReferenceEquals(InventoryCellView, null))
-            {
+            if(InventoryCellView is null)
                 Debug.LogError("InventoryCellView not attached to the parent GameObject!");
-            }
-
-            var buttonClickStream = _button.OnClickAsObservable();
-            buttonClickStream
-                .Subscribe(_=>
-                {
-                    AudioController.PlaySelect();
-                    Model?.OnClick.OnNext(this);
-                })
-                .AddTo(gameObject);
         }
 
         protected override void OnDestroy()
@@ -61,27 +42,24 @@ namespace Nekoyume.UI.Module
 
         public override void SetData(Model.InventoryItem model)
         {
-            if (ReferenceEquals(model, null))
+            if (model is null)
             {
                 Clear();
                 return;
             }
             
             base.SetData(model);
-            _disposablesForClear.DisposeAllAndClear();
-            Model.Covered.Subscribe(SetCover).AddTo(_disposablesForClear);
-            Model.Dimmed.Subscribe(SetDim).AddTo(_disposablesForClear);
-            Model.Selected.Subscribe(SetSelect).AddTo(_disposablesForClear);
-            Model.Glowed.Subscribe(SetGlow).AddTo(_disposablesForClear);
-            Model.Count.Subscribe(SetCount).AddTo(_disposablesForClear);
-            Model.Equipped.Subscribe(SetEquipped).AddTo(_disposablesForClear);
-
+            _disposablesAtSetData.DisposeAllAndClear();
+            Model.Covered.SubscribeTo(coverImage).AddTo(_disposablesAtSetData);
+            Model.Glowed.SubscribeTo(glowImage).AddTo(_disposablesAtSetData);
+            Model.Equipped.SubscribeTo(equippedIcon).AddTo(_disposablesAtSetData);
+            Model.View = this;
             UpdateView();
         }
 
         public override void Clear()
         {
-            _disposablesForClear.DisposeAllAndClear();
+            _disposablesAtSetData.DisposeAllAndClear();
             base.Clear();
 
             UpdateView();
@@ -90,60 +68,30 @@ namespace Nekoyume.UI.Module
         protected override void SetDim(bool isDim)
         {
             base.SetDim(isDim);
-
-            selectionImage.color = isDim ? DimColor : DefaultColor;
+            
+            coverImage.color = isDim ? DimColor : DefaultColor;
+            glowImage.color = isDim ? DimColor : DefaultColor;
+            equippedIcon.color = isDim ? DimColor : DefaultColor;
         }
 
         #endregion
 
-        public void ClearHighlights()
-        {
-            coverImage.enabled = false;
-            selectionImage.enabled = false;
-            SetDim(false);
-            SetEquipped(false);
-        }
-
-        public void OnPointerClick(PointerEventData eventData)
-        {
-            if (eventData.button == PointerEventData.InputButton.Right)
-            {
-                Model?.OnRightClick.OnNext(this);
-            }
-        }
-
         private void UpdateView()
         {
-            if (ReferenceEquals(Model, null))
+            if (Model is null)
             {
-                ClearHighlights();
+                selectionImage.enabled = false;
+                coverImage.enabled = false;
+                glowImage.enabled = false;
+                equippedIcon.enabled = false;
+                
                 return;
             }
 
-            coverImage.enabled = Model.Covered.Value;
             selectionImage.enabled = Model.Selected.Value;
-            SetDim(Model.Dimmed.Value);
-            SetEquipped(Model.Equipped.Value);
-        }
-
-        private void SetCover(bool isCover)
-        {
-            coverImage.enabled = isCover;
-        }
-
-        private void SetSelect(bool isSelect)
-        {
-            selectionImage.enabled = isSelect;
-        }
-
-        private void SetGlow(bool isGlow)
-        {
-            glowImage.enabled = isGlow;
-        }
-
-        protected void SetEquipped(bool isEquipped)
-        {
-            equippedIcon.enabled = isEquipped;
+            coverImage.enabled = Model.Covered.Value;
+            glowImage.enabled = Model.Glowed.Value;
+            equippedIcon.enabled = Model.Equipped.Value;
         }
     }
 }

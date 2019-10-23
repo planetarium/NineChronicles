@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using EnhancedUI.EnhancedScroller;
+using Nekoyume.Game.Controller;
 using Nekoyume.UI.Model;
 using UniRx;
 
@@ -10,7 +11,7 @@ namespace Nekoyume.UI.Scroller
     {
         public EnhancedScroller scroller;
         public RecipeCellView cellViewPrefab;
-        public readonly Subject<RecipeCellView> onClickCellView = new Subject<RecipeCellView>();
+        public readonly Subject<RecipeCellView> OnSubmitClick = new Subject<RecipeCellView>();
 
         private List<RecipeInfo> _recipeList = new List<RecipeInfo>();
         private float _cellViewHeight = 90f;
@@ -19,8 +20,6 @@ namespace Nekoyume.UI.Scroller
 
         private void Awake()
         {
-            this.ComponentFieldsNotNullTest();
-
             scroller.Delegate = this;
             _cellViewHeight = cellViewPrefab.GetComponent<RectTransform>().rect.height;
         }
@@ -39,12 +38,13 @@ namespace Nekoyume.UI.Scroller
             cellView.SetData(_recipeList[dataIndex]);
             if (cellView.onClickDisposable == null)
             {
-                cellView.onClickDisposable = cellView.combineButtonOnClick
+                cellView.onClickDisposable = cellView.submitButtonOnClick
                     .Subscribe(_ =>
                     {
-                        onClickCellView.OnNext(cellView);
+                        AudioController.PlayClick();
                         cellView.onClickDisposable.Dispose();
                         cellView.onClickDisposable = null;
+                        OnSubmitClick.OnNext(cellView);
                     }).AddTo(cellView.gameObject);
             }
             return cellView;

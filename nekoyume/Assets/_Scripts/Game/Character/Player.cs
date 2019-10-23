@@ -47,7 +47,7 @@ namespace Nekoyume.Game.Character
 
             Inventory = new Item.Inventory();
 
-            touchHandler.onPointerClick.Subscribe(_ =>
+            touchHandler.OnClick.Subscribe(_ =>
                 {
                     if (Game.instance.stage.IsInStage)
                         return;

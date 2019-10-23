@@ -7,6 +7,7 @@ using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.Model;
+using Nekoyume.UI.Model;
 using Nekoyume.UI.Scroller;
 using UniRx;
 using UniRx.Async;
@@ -44,6 +45,7 @@ namespace Nekoyume.UI.Module
         private Sprite _materialsButtonIconSpriteBlack;
         private Sprite _materialsButtonIconSpriteBlue;
 
+        // todo: 분리..
         private ItemInformationTooltip _tooltip;
 
         private readonly Dictionary<ItemType, RectTransform> _switchButtonTransforms =
@@ -53,6 +55,7 @@ namespace Nekoyume.UI.Module
 
         public RectTransform RectTransform { get; private set; }
 
+        // todo: 분리..
         public ItemInformationTooltip Tooltip => _tooltip
             ? _tooltip
             : _tooltip = Widget.Find<ItemInformationTooltip>();
@@ -63,8 +66,6 @@ namespace Nekoyume.UI.Module
 
         protected void Awake()
         {
-            this.ComponentFieldsNotNullTest();
-
             _selectedButtonSprite = Resources.Load<Sprite>("UI/Textures/button_yellow_02");
             _deselectedButtonSprite = Resources.Load<Sprite>("UI/Textures/button_brown_01");
             _equipmentsButtonIconSpriteBlack = Resources.Load<Sprite>("UI/Textures/icon_inventory_01_black");
@@ -111,7 +112,6 @@ namespace Nekoyume.UI.Module
                 {
                     scrollerController.DisposeAddedAtSetData();
                     SharedModel.ResetItems(value);
-                    SubscribeState(SharedModel.State.Value);
                 })
                 .AddTo(_disposablesAtOnEnable);
         }
@@ -203,7 +203,7 @@ namespace Nekoyume.UI.Module
 
             AdjustmentScrollPosition(view);
         }
-
+        
         #endregion
 
         private void AdjustmentScrollPosition(InventoryItemView view)
@@ -223,19 +223,6 @@ namespace Nekoyume.UI.Module
                 scroller.ScrollPosition =
                     scroller.GetScrollPositionForCellViewIndex(index, EnhancedScroller.CellViewPositionEnum.Before);
             }
-        }
-
-        private void ShowTooltip(InventoryItemView view)
-        {
-            if (view is null ||
-                view.RectTransform == Tooltip.Target)
-            {
-                Tooltip.Close();
-
-                return;
-            }
-
-            Tooltip.Show(view.RectTransform, view.Model);
         }
     }
 }

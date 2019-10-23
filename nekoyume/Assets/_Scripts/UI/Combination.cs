@@ -4,69 +4,37 @@ using System.Linq;
 using Assets.SimpleLocalization;
 using Nekoyume.BlockChain;
 using Nekoyume.EnumType;
-using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
-using Nekoyume.Game.Factory;
-using Nekoyume.Helper;
-using Nekoyume.Manager;
 using Nekoyume.Model;
-using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
-using TMPro;
+using Nekoyume.UI.Scroller;
 using UniRx;
-using UnityEngine;
-using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
     public class Combination : Widget
     {
-        public CategoryButton combineEquipmentButton;
-        public CategoryButton combineConsumableButton;
-        public CategoryButton recipeButton;
-
-        public Module.Inventory inventory;
-        public GameObject manualCombination;
-        public Text materialsTitleText;
-        public CombinationMaterialView equipmentMaterialView;
-        public CombinationMaterialView[] materialViews;
-        public GameObject materialViewsPlusImageContainer;
-        public Button combinationButton;
-        public Image combinationButtonImage;
-        public Text combinationButtonText;
-        public GameObject recipeCombination;
-        public Button recipeCloseButton;
-        public Recipe recipe;
-        public TextMeshProUGUI requiredPointText;
-        public GameObject itemEnhancement;
-        public Button itemEnhancementPopupButton;
-        public ItemEnhancementView equipmentEnhanceView;
-        public ItemEnhancementView[] equipmentEnhanceMaterialViews;
-        public Text itemEnhancementPopupButtonText;
-        public Text itemEnhancementButtonText;
-        public Text recipeCloseButtonText;
-
-        private Stage _stage;
-        private Game.Character.Player _player;
-        private IDisposable _disposable;
-
-        private Model.Combination SharedModel { get; set; }
-
-        private SimpleItemCountPopup SimpleItemCountPopup { get; set; }
-
-        #region Mono
-
-        protected override void Awake()
+        public enum StateType
         {
-            base.Awake();
-
-            _stage = Game.Game.instance.stage;
-            SharedModel = new Model.Combination();
+            CombineConsumable,
+            CombineEquipment,
+            EnhanceEquipment
         }
 
-        #endregion
+        public readonly ReactiveProperty<StateType> State =
+            new ReactiveProperty<StateType>(StateType.CombineEquipment);
+
+        public CategoryButton combineConsumableCategoryButton;
+        public CategoryButton combineEquipmentCategoryButton;
+        public CategoryButton enhanceEquipmentCategoryButton;
+
+        public Module.Inventory inventory;
+
+        public CombineConsumable combineConsumable;
+        public CombineEquipment combineEquipment;
+        public EnhanceEquipment enhanceEquipment;
 
         #region Override
 
@@ -74,105 +42,63 @@ namespace Nekoyume.UI
         {
             base.Initialize();
 
-            inventory.SharedModel.SelectedItemView.Subscribe(SubscribeInventorySelectedItemView);
-            inventory.SharedModel.OnRightClickItemView
-                .Subscribe(itemView =>
-                {
-                    if (itemView.Model.Dimmed.Value)
-                        return;
+            State.Subscribe(SubscribeState).AddTo(gameObject);
 
-                    SharedModel.RegisterToStagedItems(itemView.Model);
-                })
+            inventory.SharedModel.SelectedItemView.Subscribe(ShowTooltip).AddTo(gameObject);
+            inventory.SharedModel.OnRightClickItemView.Subscribe(StageMaterial).AddTo(gameObject);
+            
+            combineConsumable.RemoveMaterialsAll();
+            combineConsumable.OnMaterialAdd.Subscribe(SubscribeOnMaterialAddOrRemove).AddTo(gameObject);
+            combineConsumable.OnMaterialRemove.Subscribe(SubscribeOnMaterialAddOrRemove).AddTo(gameObject);
+            combineConsumable.OnSubmitClick.Subscribe(_ => ActionCombineConsumable()).AddTo(gameObject);
+            combineConsumable.recipe.scrollerController.OnSubmitClick.Subscribe(ActionCombineConsumable)
                 .AddTo(gameObject);
+            
+            combineEquipment.RemoveMaterialsAll();
+            combineEquipment.OnMaterialAdd.Subscribe(SubscribeOnMaterialAddOrRemove).AddTo(gameObject);
+            combineEquipment.OnMaterialRemove.Subscribe(SubscribeOnMaterialAddOrRemove).AddTo(gameObject);
+            combineEquipment.OnSubmitClick.Subscribe(_ => ActionCombineEquipment()).AddTo(gameObject);
+            
+            enhanceEquipment.RemoveMaterialsAll();
+            enhanceEquipment.OnMaterialAdd.Subscribe(SubscribeOnMaterialAddOrRemove).AddTo(gameObject);
+            enhanceEquipment.OnMaterialRemove.Subscribe(SubscribeOnMaterialAddOrRemove).AddTo(gameObject);
+            enhanceEquipment.OnSubmitClick.Subscribe(_ => ActionEnhanceEquipment()).AddTo(gameObject);
 
-            materialsTitleText.text = LocalizationManager.Localize("UI_COMBINATION_MATERIALS");
-            combinationButtonText.text = LocalizationManager.Localize("UI_COMBINATION_ITEM");
-            itemEnhancementPopupButtonText.text = LocalizationManager.Localize("UI_COMBINATION_ENHANCEMENT_POPUP");
-            itemEnhancementButtonText.text = LocalizationManager.Localize("UI_COMBINATION_ENHANCEMENT");
-            recipeCloseButtonText.text = LocalizationManager.Localize("UI_COMBINATION_RECIPE_CLOSE");
-
-            SimpleItemCountPopup = Find<SimpleItemCountPopup>();
-
-            SharedModel.State.Subscribe(SubscribeState).AddTo(gameObject);
-            SharedModel.ItemCountPopup.Value.Item.Subscribe(SubscribeItemPopup).AddTo(gameObject);
-            SharedModel.ItemCountPopup.Value.OnClickCancel.Subscribe(SubscribeItemPopupOnClickCancel)
-                .AddTo(gameObject);
-            SharedModel.EquipmentMaterial.Subscribe(equipmentMaterialView.SetData).AddTo(gameObject);
-            SharedModel.Materials.ObserveAdd().Subscribe(SubscribeMaterialAdd).AddTo(gameObject);
-            SharedModel.Materials.ObserveRemove().Subscribe(SubscribeMaterialRemove).AddTo(gameObject);
-            SharedModel.Materials.ObserveReplace().Subscribe(_ => UpdateStagedItems()).AddTo(gameObject);
-            SharedModel.Materials.ObserveReset().Subscribe(_ => UpdateStagedItems()).AddTo(gameObject);
-            SharedModel.ShowMaterialsCount.Subscribe(SubscribeShowMaterialsCount).AddTo(gameObject);
-            SharedModel.ReadyToCombination.Subscribe(SubscribeReadyToCombination).AddTo(gameObject);
-            SharedModel.OnMaterialAdded.Subscribe(materialId => SubscribeOnMaterial(materialId, true))
-                .AddTo(gameObject);
-            SharedModel.OnMaterialRemoved.Subscribe(materialId => SubscribeOnMaterial(materialId, false))
-                .AddTo(gameObject);
-            SharedModel.enhanceEquipment.Subscribe(SubscribeEnhanceEquipment).AddTo(gameObject);
-            SharedModel.enhanceMaterials.ObserveAdd().Subscribe(SubscribeEnhanceMaterialAdd).AddTo(gameObject);
-            SharedModel.enhanceMaterials.ObserveRemove().Subscribe(SubscribeEnhanceMaterialRemove).AddTo(gameObject);
-
-            combineEquipmentButton.button.OnClickAsObservable()
+            combineEquipmentCategoryButton.button.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
                     AudioController.PlayClick();
-                    SharedModel.State.Value = Model.Combination.CombinationState.Equipment;
+                    State.Value = StateType.CombineEquipment;
                 })
                 .AddTo(gameObject);
-            combineConsumableButton.button.OnClickAsObservable()
+            combineConsumableCategoryButton.button.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
                     AudioController.PlayClick();
-                    SharedModel.State.Value = Model.Combination.CombinationState.Consumable;
+                    State.Value = StateType.CombineConsumable;
                 })
                 .AddTo(gameObject);
-            recipeButton.button.OnClickAsObservable()
+            enhanceEquipmentCategoryButton.button.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
                     AudioController.PlayClick();
-                    SharedModel.State.Value = SharedModel.State.Value == Model.Combination.CombinationState.Recipe
-                        ? Model.Combination.CombinationState.Equipment
-                        : Model.Combination.CombinationState.Recipe;
+                    State.Value = StateType.EnhanceEquipment;
                 })
                 .AddTo(gameObject);
-            combinationButton.OnClickAsObservable()
-                .Subscribe(_ =>
-                {
-                    AudioController.PlayClick();
-                    RequestCombination(SharedModel);
-                })
-                .AddTo(gameObject);
-            recipeCloseButton.OnClickAsObservable()
-                .Subscribe(_ =>
-                {
-                    AudioController.PlayClick();
-                    SharedModel.State.Value = Model.Combination.CombinationState.Equipment;
-                })
-                .AddTo(gameObject);
-            recipe.scrollerController.onClickCellView
-                .Subscribe(cellView =>
-                {
-                    AudioController.PlayClick();
-                    RequestCombination(cellView.Model);
-                })
-                .AddTo(gameObject);
-
-            UpdateStagedItems();
-            requiredPointText.text = Action.Combination.RequiredPoint.ToString();
         }
 
         public override void Show()
         {
             base.Show();
 
-            inventory.SharedModel.State.Value = ItemType.Material;
+            var stage = Game.Game.instance.stage;
+            stage.LoadBackground("combination");
+            var player = stage.GetPlayer();
+            player.gameObject.SetActive(false);
 
-            _stage.LoadBackground("combination");
-            _player = _stage.GetPlayer();
-            _player.gameObject.SetActive(false);
+            State.SetValueAndForceNotify(StateType.CombineEquipment);
 
             Find<BottomMenu>().Show(UINavigator.NavigationType.Back, SubscribeBackButtonClick);
-            _disposable = ReactiveCurrentAvatarState.ActionPoint.Subscribe(CheckPoint);
 
             AudioController.instance.PlayMusic(AudioController.MusicCode.Combination);
         }
@@ -181,193 +107,101 @@ namespace Nekoyume.UI
         {
             Find<BottomMenu>().Close(ignoreCloseAnimation);
 
-            SharedModel.RemoveEquipmentMaterial();
-            SharedModel.Materials.Clear();
+            combineConsumable.RemoveMaterialsAll();
+            combineEquipment.RemoveMaterialsAll();
+            enhanceEquipment.RemoveMaterialsAll();
 
             base.Close(ignoreCloseAnimation);
-            _disposable.Dispose();
-            CloseItemEnhancement();
-
-            AudioController.instance.PlayMusic(AudioController.MusicCode.Main);
         }
 
         #endregion
 
-        #region Subscribe
+        private void SubscribeState(StateType value)
+        {
+            inventory.Tooltip.Close();
+            inventory.SharedModel.DeselectItemView();
 
-        private void SubscribeInventorySelectedItemView(InventoryItemView view)
+            switch (value)
+            {
+                case StateType.CombineConsumable:
+                    combineConsumableCategoryButton.SetToggledOn();
+                    combineEquipmentCategoryButton.SetToggledOff();
+                    enhanceEquipmentCategoryButton.SetToggledOff();
+
+                    inventory.SharedModel.State.Value = ItemType.Material;
+                    inventory.SharedModel.DimmedFunc.Value = combineConsumable.DimFunc;
+                    
+                    combineConsumable.Show();
+                    combineEquipment.Hide();
+                    enhanceEquipment.Hide();
+                    break;
+                case StateType.CombineEquipment:
+                    combineConsumableCategoryButton.SetToggledOff();
+                    combineEquipmentCategoryButton.SetToggledOn();
+                    enhanceEquipmentCategoryButton.SetToggledOff();
+
+                    inventory.SharedModel.State.Value = ItemType.Material;
+                    inventory.SharedModel.DimmedFunc.Value = combineEquipment.DimFunc;
+                    
+                    combineConsumable.Hide();
+                    combineEquipment.Show();
+                    enhanceEquipment.Hide();
+                    break;
+                case StateType.EnhanceEquipment:
+                    combineConsumableCategoryButton.SetToggledOff();
+                    combineEquipmentCategoryButton.SetToggledOff();
+                    enhanceEquipmentCategoryButton.SetToggledOn();
+
+                    inventory.SharedModel.State.Value = ItemType.Equipment;
+                    inventory.SharedModel.DimmedFunc.Value = enhanceEquipment.DimFunc;
+                    
+                    combineConsumable.Hide();
+                    combineEquipment.Hide();
+                    enhanceEquipment.Show();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(value), value, null);
+            }
+        }
+
+        private void ShowTooltip(InventoryItemView view)
         {
             if (view is null ||
                 view.RectTransform == inventory.Tooltip.Target)
             {
                 inventory.Tooltip.Close();
-
                 return;
             }
 
             inventory.Tooltip.Show(
                 view.RectTransform,
                 view.Model,
-                value => !view.Model.Dimmed.Value,
+                value => !view.Model?.Dimmed.Value ?? false,
                 LocalizationManager.Localize("UI_COMBINATION_REGISTER_MATERIAL"),
-                tooltip =>
-                {
-                    SharedModel.RegisterToStagedItems(tooltip.itemInformation.Model.item.Value);
-                    inventory.Tooltip.Close();
-                },
+                tooltip => StageMaterial(view),
                 tooltip => inventory.SharedModel.DeselectItemView());
         }
 
-        private void SubscribeState(Model.Combination.CombinationState value)
+        private void StageMaterial(InventoryItemView itemView)
         {
-            combineEquipmentButton.button.interactable = false;
-            combineConsumableButton.button.interactable = false;
-            equipmentMaterialView.gameObject.SetActive(false);
-            materialViewsPlusImageContainer.SetActive(false);
-            recipeCombination.SetActive(false);
-            manualCombination.SetActive(false);
-            itemEnhancementPopupButton.gameObject.SetActive(true);
-            itemEnhancement.SetActive(false);
-
-            switch (value)
+            switch (State.Value)
             {
-                case Model.Combination.CombinationState.Consumable:
-                    inventory.SharedModel.DimmedFunc.Value = DimmedFuncForConsumables;
-                    combineEquipmentButton.button.interactable = true;
-                    manualCombination.SetActive(true);
-                    combineConsumableButton.SetToggledOn();
-                    combineEquipmentButton.SetToggledOff();
-                    recipeButton.SetToggledOff();
+                case StateType.CombineConsumable:
+                    combineConsumable.TryAddMaterial(itemView);
                     break;
-                case Model.Combination.CombinationState.Equipment:
-                    inventory.SharedModel.DimmedFunc.Value = DimmedFuncForEquipments;
-                    combineConsumableButton.button.interactable = true;
-                    equipmentMaterialView.gameObject.SetActive(true);
-                    materialViewsPlusImageContainer.SetActive(true);
-                    manualCombination.SetActive(true);
-                    combineConsumableButton.SetToggledOff();
-                    combineEquipmentButton.SetToggledOn();
-                    recipeButton.SetToggledOff();
+                case StateType.CombineEquipment:
+                    combineEquipment.TryAddMaterial(itemView);
                     break;
-                case Model.Combination.CombinationState.Enhancement:
-                    inventory.SharedModel.DimmedFunc.Value = DimmedFuncForEnhancement;
-                    itemEnhancement.SetActive(true);
-                    itemEnhancementPopupButton.gameObject.SetActive(false);
-                    inventory.SharedModel.State.Value = ItemType.Equipment;
-                    combineConsumableButton.SetToggledOff();
-                    combineEquipmentButton.SetToggledOff();
-                    recipeButton.SetToggledOff();
-                    break;
-                case Model.Combination.CombinationState.Recipe:
-                    inventory.SharedModel.DimmedFunc.Value = DimmedFuncForConsumables;
-                    recipe.Reload();
-                    combineEquipmentButton.button.interactable = true;
-                    combineConsumableButton.button.interactable = true;
-                    recipeCombination.SetActive(true);
-                    itemEnhancementPopupButton.gameObject.SetActive(false);
-                    combineConsumableButton.SetToggledOff();
-                    combineEquipmentButton.SetToggledOff();
-                    recipeButton.SetToggledOn();
+                case StateType.EnhanceEquipment:
+                    enhanceEquipment.TryAddMaterial(itemView);
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(value), value, null);
-            }
-
-            inventory.Tooltip.Close();
-        }
-
-        private void SubscribeOnMaterial(int materialId, bool isAdded)
-        {
-            foreach (var item in inventory.SharedModel.Materials)
-            {
-                if (item.ItemBase.Value.Data.Id != materialId)
-                {
-                    continue;
-                }
-
-                item.Covered.Value = isAdded;
-                item.Dimmed.Value = isAdded;
-
-                inventory.SharedModel.DimmedFunc.SetValueAndForceNotify(inventory.SharedModel.DimmedFunc.Value);
-
-                break;
+                    throw new ArgumentOutOfRangeException();
             }
         }
-
-        private void SubscribeItemPopup(CountableItem data)
-        {
-            if (ReferenceEquals(data, null))
-            {
-                SimpleItemCountPopup.Close();
-                return;
-            }
-
-            SimpleItemCountPopup.Pop(SharedModel.ItemCountPopup.Value);
-        }
-
-        private void SubscribeItemPopupOnClickCancel(Model.SimpleItemCountPopup data)
-        {
-            SharedModel.ItemCountPopup.Value.Item.Value = null;
-            SimpleItemCountPopup.Close();
-        }
-
-        private void SubscribeMaterialAdd(CollectionAddEvent<CombinationMaterial> e)
-        {
-            if (e.Index >= materialViews.Length)
-            {
-                SharedModel.Materials.RemoveAt(e.Index);
-                throw new AddOutOfSpecificRangeException<CollectionAddEvent<CountEditableItem>>(
-                    materialViews.Length);
-            }
-
-            materialViews[e.Index].SetData(e.Value);
-        }
-
-        private void SubscribeMaterialRemove(CollectionRemoveEvent<CombinationMaterial> e)
-        {
-            if (e.Index >= materialViews.Length)
-            {
-                return;
-            }
-
-            var dataCount = SharedModel.Materials.Count;
-            for (var i = e.Index; i <= dataCount; i++)
-            {
-                var item = materialViews[i];
-
-                if (i < dataCount)
-                {
-                    item.SetData(SharedModel.Materials[i]);
-                }
-                else
-                {
-                    item.Clear();
-                }
-            }
-        }
-
-        private void SubscribeShowMaterialsCount(int value)
-        {
-            for (var i = 0; i < materialViews.Length; i++)
-            {
-                materialViews[i].gameObject.SetActive(i < value);
-            }
-        }
-
-        private void SubscribeReadyToCombination(bool isActive)
-        {
-            if (isActive)
-            {
-                combinationButton.enabled = true;
-                combinationButtonImage.sprite = Resources.Load<Sprite>("UI/Textures/button_blue_01");
-                combinationButtonText.color = Color.white;
-            }
-            else
-            {
-                combinationButton.enabled = false;
-                combinationButtonImage.sprite = Resources.Load<Sprite>("UI/Textures/button_gray_01");
-                combinationButtonText.color = ColorHelper.HexToColorRGB("92A3B5");
-            }
+        private void SubscribeOnMaterialAddOrRemove(InventoryItem viewModel)
+        {   
+            inventory.SharedModel.UpdateDimAll();
         }
 
         private void SubscribeBackButtonClick(BottomMenu bottomMenu)
@@ -376,196 +210,111 @@ namespace Nekoyume.UI
             Find<Menu>().ShowRoom();
         }
 
-        private void SubscribeEnhanceMaterialAdd(CollectionAddEvent<EnhanceEquipment> e)
+        #region Action
+
+        private void ActionCombineConsumable()
         {
-            if (e.Index >= equipmentEnhanceMaterialViews.Length)
-            {
-                SharedModel.enhanceMaterials.RemoveAt(e.Index);
-                throw new AddOutOfSpecificRangeException<CollectionAddEvent<CountEditableItem>>(
-                    equipmentEnhanceMaterialViews.Length);
-            }
-
-            equipmentEnhanceMaterialViews[e.Index].SetData(e.Value);
-            inventory.SharedModel.DimmedFunc.SetValueAndForceNotify(DimmedFuncForEnhancement);
-        }
-
-        private void SubscribeEnhanceMaterialRemove(CollectionRemoveEvent<EnhanceEquipment> e)
-        {
-            if (e.Index >= equipmentEnhanceMaterialViews.Length)
-            {
-                return;
-            }
-
-            var dataCount = SharedModel.enhanceMaterials.Count;
-            for (var i = e.Index; i <= dataCount; i++)
-            {
-                var item = equipmentEnhanceMaterialViews[i];
-
-                if (i < dataCount)
-                {
-                    item.SetData(SharedModel.enhanceMaterials[i]);
-                }
-                else
-                {
-                    item.Clear();
-                }
-            }
-
-            inventory.SharedModel.DimmedFunc.SetValueAndForceNotify(DimmedFuncForEnhancement);
-        }
-
-        private void SubscribeEnhanceEquipment(EnhanceEquipment e)
-        {
-            equipmentEnhanceView.SetData(e);
-            if (e is null)
-                return;
-
-            inventory.SharedModel.DimmedFunc.SetValueAndForceNotify(DimmedFuncForEnhancement);
-        }
-
-        #endregion
-
-        private static bool DimmedFuncForConsumables(InventoryItem inventoryItem)
-        {
-            var row = inventoryItem.ItemBase.Value.Data;
-            return row.ItemType != ItemType.Material ||
-                   row.ItemSubType != ItemSubType.FoodMaterial;
-        }
-
-        private static bool DimmedFuncForEquipments(InventoryItem inventoryItem)
-        {
-            var row = inventoryItem.ItemBase.Value.Data;
-            return row.ItemType != ItemType.Material ||
-                   row.ItemSubType != ItemSubType.EquipmentMaterial &&
-                   row.ItemSubType != ItemSubType.MonsterPart;
-        }
-
-        private bool DimmedFuncForEnhancement(InventoryItem inventoryItem)
-        {
-            var row = inventoryItem.ItemBase.Value.Data;
-            var dimmed = row.ItemType != ItemType.Equipment;
-            var enhancementEquipment = SharedModel.enhanceEquipment.Value?.ItemBase.Value;
-            if (!(inventoryItem.ItemBase.Value is Equipment equipment) || enhancementEquipment is null)
-            {
-                return dimmed;
-            }
-
-            return dimmed
-                   || row.ItemSubType != enhancementEquipment.Data.ItemSubType
-                   || equipment.ItemId == ((Equipment) enhancementEquipment).ItemId
-                   || SharedModel.enhanceMaterials
-                       .Select(i => i.ItemBase.Value)
-                       .OfType<Equipment>()
-                       .Select(i => i.ItemId).Contains(equipment.ItemId);
-
-        }
-
-        private void UpdateStagedItems(int startIndex = 0)
-        {
-            if (SharedModel.State.Value == Model.Combination.CombinationState.Equipment)
-            {
-                if (SharedModel.EquipmentMaterial.Value is null)
-                {
-                    equipmentMaterialView.Clear();
-                }
-                else
-                {
-                    equipmentMaterialView.SetData(SharedModel.EquipmentMaterial.Value);
-                }
-            }
-
-            var dataCount = SharedModel.Materials.Count;
-            for (var i = startIndex; i < materialViews.Length; i++)
-            {
-                var item = materialViews[i];
-                if (i < dataCount)
-                {
-                    item.SetData(SharedModel.Materials[i]);
-                }
-                else
-                {
-                    item.Clear();
-                }
-            }
-        }
-
-        private void RequestCombination(Model.Combination data)
-        {
-            var materials = new List<CombinationMaterial>();
-            if (data.EquipmentMaterial.Value != null)
-            {
-                materials.Add(data.EquipmentMaterial.Value);
-            }
-
-            materials.AddRange(data.Materials);
-
-            RequestCombination(materials);
-        }
-
-        private void RequestCombination(RecipeInfo info)
-        {
-            var materials = info.materialInfos
-                .Where(materialInfo => materialInfo.id != 0)
-                .Select(materialInfo => new CombinationMaterial(
-                    ItemFactory.CreateMaterial(materialInfo.id), 1, 1, 1))
+            var materialInfoList = combineConsumable.otherMaterials
+                .Where(e => !(e is null) && !(e.Model is null))
+                .Select(e => (e.Model.ItemBase.Value.Data.Id, e.Model.Count.Value))
                 .ToList();
 
-            RequestCombination(materials);
+            UpdateCurrentAvatarState(combineConsumable, materialInfoList);
+            CreateCombinationAction(materialInfoList);
+            combineConsumable.RemoveMaterialsAll();
         }
 
-        private void RequestCombination(List<CombinationMaterial> materials)
+        private void ActionCombineConsumable(RecipeCellView view)
         {
-            //게임상의 액션포인트 업데이트
-            var newState = (AvatarState) States.Instance.CurrentAvatarState.Value.Clone();
-            newState.actionPoint -= Action.Combination.RequiredPoint;
-            var index = States.Instance.CurrentAvatarKey.Value;
-            ActionRenderHandler.UpdateLocalAvatarState(newState, index);
+            var materialInfoList = view.Model.MaterialInfos
+                .Where(materialInfo => materialInfo.Id != 0)
+                .Select(materialInfo => (materialInfo.Id, materialInfo.Amount))
+                .ToList();
 
-            ActionManager.instance.Combination(materials)
-                .Subscribe(_ => { }, _ => Find<ActionFailPopup>().Show("Timeout occurred during Combination"));
-            AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickCombinationCombination);
-            Find<CombinationLoadingScreen>().Show();
+            UpdateCurrentAvatarState(combineConsumable, materialInfoList);
+            CreateCombinationAction(materialInfoList);
             
-            foreach (var material in materials)
-            {
-                States.Instance.CurrentAvatarState.Value.inventory.RemoveFungibleItem(material.ItemBase.Value.Data.Id,
-                    material.Count.Value);
-            }
-            
-            SharedModel.RemoveMaterialsAll();
-            inventory.SharedModel.RemoveItems(materials);
-
             // 에셋의 버그 때문에 스크롤 맨 끝 포지션으로 스크롤 포지션 설정 시 스크롤이 비정상적으로 표시되는 문제가 있음.
-            recipe.Reload(recipe.scrollerController.scroller.ScrollPosition - 0.1f);
+            var scroller = combineConsumable.recipe.scrollerController.scroller; 
+            scroller.ReloadData(scroller.ScrollPosition - 0.1f);
         }
 
-        private void CheckPoint(int actionPoint)
+        private void ActionCombineEquipment()
         {
-            requiredPointText.color = actionPoint >= Action.Combination.RequiredPoint ? Color.white : Color.red;
+            var materialInfoList = new List<(int id, int value)>();
+            materialInfoList.Add((
+                combineEquipment.baseMaterial.Model.ItemBase.Value.Data.Id,
+                combineEquipment.baseMaterial.Model.Count.Value));
+            materialInfoList.AddRange(combineEquipment.otherMaterials
+                .Where(e => !(e is null) && !(e.Model is null))
+                .Select(e => (e.Model.ItemBase.Value.Data.Id, e.Model.Count.Value)));
+
+            UpdateCurrentAvatarState(combineEquipment, materialInfoList);
+            CreateCombinationAction(materialInfoList);
+            combineEquipment.RemoveMaterialsAll();
         }
 
-        public void ItemEnhancement()
+        private void ActionEnhanceEquipment()
         {
-            var materialIds = SharedModel.enhanceMaterials.Select(model => (Equipment) model.ItemBase.Value)
-                .Select(material => material.ItemId).ToList();
-            var equipment = (Equipment) SharedModel.enhanceEquipment.Value.ItemBase.Value;
-            var itemId = equipment.ItemId;
-            ActionManager.instance.ItemEnhancement(itemId, materialIds);
-            SharedModel.RemoveEnhanceEquipment();
+            var baseEquipmentGuid = ((Equipment) enhanceEquipment.baseMaterial.Model.ItemBase.Value).ItemId;
+            var otherEquipmentGuidList = enhanceEquipment.otherMaterials
+                .Select(e => ((Equipment) e.Model.ItemBase.Value).ItemId)
+                .ToList();
+
+            UpdateCurrentAvatarState(enhanceEquipment, baseEquipmentGuid, otherEquipmentGuidList);
+            CreateItemEnhancementAction(baseEquipmentGuid, otherEquipmentGuidList);
+            enhanceEquipment.RemoveMaterialsAll();
         }
 
-        public void PopupItemEnhancement()
+        private void UpdateCurrentAvatarState(ICombinationPanel combinationPanel,
+            IEnumerable<(int itemId, int count)> materialInfoList)
         {
-            SharedModel.State.Value = Model.Combination.CombinationState.Enhancement;
-            AudioController.PlayClick();
+            States.Instance.AgentState.Value.gold -= combinationPanel.CostNCG;
+            States.Instance.CurrentAvatarState.Value.actionPoint -= combinationPanel.CostAP;
+            ReactiveCurrentAvatarState.ActionPoint.SetValueAndForceNotify(
+                States.Instance.CurrentAvatarState.Value.actionPoint);
+            foreach (var (itemId, count) in materialInfoList)
+            {
+                States.Instance.CurrentAvatarState.Value.inventory.RemoveFungibleItem(itemId, count);
+            }
+
+            ReactiveCurrentAvatarState.Inventory.SetValueAndForceNotify(
+                States.Instance.CurrentAvatarState.Value.inventory);
         }
 
-        public void CloseItemEnhancement()
+        private void UpdateCurrentAvatarState(ICombinationPanel combinationPanel, Guid baseItemGuid,
+            IEnumerable<Guid> otherItemGuidList)
         {
-            SharedModel.State.Value = Model.Combination.CombinationState.Equipment;
-            //FIXME 인벤토리 탭 상태변경을 SubscribeState 내부에서 처리하면 첫 진입시 UI블로킹이 생기는 문제때문에 따로 처리
-            inventory.SharedModel.State.Value = ItemType.Material;
-            AudioController.PlayClick();
+            States.Instance.AgentState.Value.gold -= combinationPanel.CostNCG;
+            States.Instance.CurrentAvatarState.Value.actionPoint -= combinationPanel.CostAP;
+            ReactiveCurrentAvatarState.ActionPoint.SetValueAndForceNotify(
+                States.Instance.CurrentAvatarState.Value.actionPoint);
+            States.Instance.CurrentAvatarState.Value.inventory.RemoveNonFungibleItem(baseItemGuid);
+            foreach (var itemGuid in otherItemGuidList)
+            {
+                States.Instance.CurrentAvatarState.Value.inventory.RemoveNonFungibleItem(itemGuid);
+            }
+
+            ReactiveCurrentAvatarState.Inventory.SetValueAndForceNotify(
+                States.Instance.CurrentAvatarState.Value.inventory);
         }
+
+        private void CreateCombinationAction(List<(int itemId, int count)> materialInfoList)
+        {
+            Find<CombinationLoadingScreen>().Show();
+
+            ActionManager.instance.Combination(materialInfoList)
+                .Subscribe(_ => { }, _ => Find<ActionFailPopup>().Show("Timeout occurred during Combination"));
+        }
+
+        private void CreateItemEnhancementAction(Guid baseItemGuid, IEnumerable<Guid> otherItemGuidList)
+        {
+            Find<CombinationLoadingScreen>().Show();
+
+            ActionManager.instance.ItemEnhancement(baseItemGuid, otherItemGuidList)
+                .Subscribe(_ => { }, _ => Find<ActionFailPopup>().Show("Timeout occurred during ItemEnhancement"));
+        }
+        
+        #endregion
     }
 }

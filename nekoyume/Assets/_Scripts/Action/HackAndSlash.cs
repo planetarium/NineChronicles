@@ -61,12 +61,12 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            if (avatarState.actionPoint < GameConfig.HackAndSlashCost)
+            if (avatarState.actionPoint < GameConfig.HackAndSlashCostAP)
             {
                 return states;
             }
 
-            avatarState.actionPoint -= GameConfig.HackAndSlashCost;
+            avatarState.actionPoint -= GameConfig.HackAndSlashCostAP;
             
             var inventoryEquipments = avatarState.inventory.Items
                 .Select(i => i.item)

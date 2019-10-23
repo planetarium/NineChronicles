@@ -2,6 +2,7 @@ using System.Collections;
 using System.Linq;
 using Nekoyume.BlockChain;
 using Nekoyume.Data;
+using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.Game.Factory;
 using Nekoyume.Game.Item;
@@ -71,14 +72,14 @@ namespace Tests
             Widget.Find<LoginDetail>().LoginClick();
             yield return new WaitUntil(() => GameObject.Find("room"));
 
+            //Combine Consumable
             var w = Widget.Find<Combination>();
             w.Show();
             yield return new WaitUntil(() => w.isActiveAndEnabled);
-
-            //Combination
-            var row = Tables.instance.Recipe.Values.First();
+            w.State.Value = Combination.StateType.CombineConsumable;
+            var row = Game.instance.TableSheets.ConsumableItemRecipeSheet.Values.First();
             var rect = w.inventory.scrollerController.GetComponentInChildren<ScrollRect>();
-            foreach (var material in new[] {row.Material1, row.Material2})
+            foreach (var material in row.MaterialItemIds)
             {
                 var index = States.Instance.CurrentAvatarState.Value.inventory.Items.ToList()
                     .FindIndex(i => i.item.Data.Id == material);
@@ -92,16 +93,14 @@ namespace Tests
                         yield return null;
                     }
                     else
-                    {
                         break;
-                    }
                 }
 
                 item.GetComponent<Button>().onClick.Invoke();
                 w.inventory.Tooltip.submitButton.onClick.Invoke();
             }
 
-            w.combinationButton.onClick.Invoke();
+            w.combineConsumable.submitButton.onClick.Invoke();
             yield return new WaitUntil(() => Game.instance.agent.StagedTransactions.Any());
             var tx = Game.instance.agent.StagedTransactions.First();
             yield return miner.CoMine(tx);

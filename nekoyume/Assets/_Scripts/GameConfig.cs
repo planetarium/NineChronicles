@@ -1,9 +1,6 @@
-﻿using System.Collections.Generic;
-using Unity.Mathematics;
-
-namespace Nekoyume
+﻿namespace Nekoyume
 {
-    public class GameConfig
+    public static class GameConfig
     {
         public const int SlotCount = 3;
         public const float WaitSeconds = 180f;
@@ -17,8 +14,12 @@ namespace Nekoyume
         public const int DefaultAvatarArmorId = 10200000;
         public const int ActionPoint = 300;
         
-        public const int HackAndSlashCost = 5;
-        
+        public const int HackAndSlashCostAP = 5;
+
+        public const int CombineConsumableCostAP = 5;
+        public const int CombineEquipmentCostAP = 5;
+        public const int CombineEquipmentCostNCG = 5;
+        public const int EnhanceEquipmentCostAP = 5;
         public const decimal CombinationValueP1 = 3m; // 30f;
         public const decimal CombinationValueP2 = 1m; // 1.2f;
         public const decimal CombinationValueL1 = 10m;

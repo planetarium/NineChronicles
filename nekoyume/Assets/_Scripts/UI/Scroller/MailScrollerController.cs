@@ -18,8 +18,6 @@ namespace Nekoyume.UI.Scroller
 
         private void Awake()
         {
-            this.ComponentFieldsNotNullTest();
-
             scroller.Delegate = this;
             _cellViewHeight = cellViewPrefab.GetComponent<RectTransform>().rect.height;
         }

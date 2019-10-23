@@ -6,14 +6,10 @@ namespace Nekoyume.Data
 {
     public class Tables : MonoSingleton<Tables>
     {
-        public Table<Recipe> Recipe { get; private set; }
         public Table<StageDialog> StageDialogs { get; private set; }
 
         public void Initialize()
         {
-            Recipe = new Table<Recipe>();
-            Load(Recipe, "DataTable/recipe");
-
             StageDialogs = new Table<StageDialog>();
             Load(StageDialogs, "DataTable/stage_dialog");
         }

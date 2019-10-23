@@ -6,14 +6,14 @@ using UniRx;
 
 namespace Nekoyume.UI.Model
 {
-    public class ShopItem : InventoryItem
+    public class ShopItem : CountableItem
     {
         public readonly ReactiveProperty<Address> SellerAgentAddress = new ReactiveProperty<Address>();
         public readonly ReactiveProperty<Address> SellerAvatarAddress = new ReactiveProperty<Address>();
         public readonly ReactiveProperty<decimal> Price = new ReactiveProperty<decimal>();
         public readonly ReactiveProperty<Guid> ProductId = new ReactiveProperty<Guid>();
         
-        public new readonly Subject<ShopItemView> OnClick = new Subject<ShopItemView>();
+        public ShopItemView View;
         
         public ShopItem(Address sellerAgentAddress, Game.Item.ShopItem item)
             : this(sellerAgentAddress, item.SellerAvatarAddress, item.Price, item.ProductId, item.ItemUsable)
@@ -23,6 +23,7 @@ namespace Nekoyume.UI.Model
         private ShopItem(Address sellerAgentAddress, Address sellerAvatarAddress, decimal price, Guid productId,
             ItemBase item) : base(item, 1)
         {
+            GradeEnabled.Value = false;
             SellerAgentAddress.Value = sellerAgentAddress;
             SellerAvatarAddress.Value = sellerAvatarAddress;
             Price.Value = price;
@@ -37,8 +38,6 @@ namespace Nekoyume.UI.Model
             SellerAvatarAddress.Dispose();
             Price.Dispose();
             ProductId.Dispose();
-            
-            OnClick.Dispose();
         }
     }
 }

@@ -9,14 +9,12 @@ namespace Nekoyume.UI.Module
 {
     public class CountEditableItemView<T> : CountableItemView<T> where T : Model.CountEditableItem
     {
-        public Image backgroundImage;
-        public Button itemButton;
         public Button minusButton;
         public Button plusButton;
-        public Button deleteButton;
-        public Text deleteButtonText;
-
-        private readonly List<IDisposable> _disposablesForClear = new List<IDisposable>();
+        
+        public readonly Subject<CountEditableItemView<T>> OnMinus = new Subject<CountEditableItemView<T>>();
+        public readonly Subject<CountEditableItemView<T>> OnPlus = new Subject<CountEditableItemView<T>>();
+        public readonly Subject<int> OnCountChange = new Subject<int>();
 
         #region Mono
 
@@ -24,61 +22,57 @@ namespace Nekoyume.UI.Module
         {
             base.Awake();
 
-            this.ComponentFieldsNotNullTest();
-
-            deleteButtonText.text = LocalizationManager.Localize("UI_DELETE");
-
-            itemButton.OnClickAsObservable()
-                .Subscribe(_ =>
-                {
-                    Model?.OnClick.OnNext(Model);
-                    AudioController.PlayClick();
-                })
-                .AddTo(gameObject);
             minusButton.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
-                    Model?.OnMinus.OnNext(Model);
                     AudioController.PlayClick();
+                    DecreaseCount();
+                    OnMinus.OnNext(this);
                 })
                 .AddTo(gameObject);
             
             plusButton.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
-                    Model?.OnPlus.OnNext(Model);
                     AudioController.PlayClick();
+                    IncreaseCount();
+                    OnPlus.OnNext(this);
                 })
                 .AddTo(gameObject);
-            
-            deleteButton.OnClickAsObservable()
-                .Subscribe(_ =>
-                {
-                    Model?.OnDelete.OnNext(Model);
-                    AudioController.PlayClick();
-                })
-                .AddTo(gameObject);
+        }
+        
+        protected override void OnDestroy()
+        {
+            OnMinus.Dispose();
+            OnPlus.Dispose();
+            OnCountChange.Dispose();
+            base.OnDestroy();
         }
 
         #endregion
 
-        public override void SetData(T model)
+        public void IncreaseCount(int value = 1)
         {
-            if (ReferenceEquals(model, null))
-            {
-                Clear();
+            if (Model is null)
                 return;
-            }
 
-            _disposablesForClear.DisposeAllAndClear();
-            base.SetData(model);
-            Model.Count.Subscribe(SetCount).AddTo(_disposablesForClear);
+            if (Model.Count.Value + value > Model.MaxCount.Value)
+                return;
+                
+            Model.Count.Value += value;
+            OnCountChange.OnNext(Model.Count.Value);
         }
 
-        public override void Clear()
+        public void DecreaseCount(int value = 1)
         {
-            _disposablesForClear.DisposeAllAndClear();
-            base.Clear();
+            if (Model is null)
+                return;
+
+            if (Model.Count.Value - value < Model.MinCount.Value)
+                return;
+                
+            Model.Count.Value -= value;
+            OnCountChange.OnNext(Model.Count.Value);
         }
     }
 }

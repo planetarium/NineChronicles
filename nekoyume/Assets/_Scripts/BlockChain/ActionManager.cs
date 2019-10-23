@@ -7,6 +7,7 @@ using Nekoyume.Game.Item;
 using Nekoyume.Manager;
 using Nekoyume.Pattern;
 using Nekoyume.UI.Model;
+using Nekoyume.UI.Module;
 using UniRx;
 
 namespace Nekoyume.BlockChain
@@ -85,29 +86,28 @@ namespace Nekoyume.BlockChain
                 .Timeout(ActionTimeout);
         }
 
-        public IObservable<ActionBase.ActionEvaluation<Action.Combination>> Combination(
-            List<CombinationMaterial> materials)
+        public IObservable<ActionBase.ActionEvaluation<Combination>> Combination(
+            List<(int itemId, int count)> materialInfoList)
         {
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionCombination);
 
-            var action = new Action.Combination();
-            materials.ForEach(m =>
+            var action = new Combination();
+            materialInfoList.ForEach(info =>
             {
-                var id = m.ItemBase.Value.Data.Id;
-                var count = m.Count.Value;
-                if (action.Materials.ContainsKey(id))
+                var (itemId, count) = info;
+                if (action.Materials.ContainsKey(itemId))
                 {
-                    action.Materials[id] += count;
+                    action.Materials[itemId] += count;
                 }
                 else
                 {
-                    action.Materials.Add(id, count);
+                    action.Materials.Add(itemId, count);
                 }
             });
             action.AvatarAddress = States.Instance.CurrentAvatarState.Value.address;
             ProcessAction(action);
 
-            return ActionBase.EveryRender<Action.Combination>()
+            return ActionBase.EveryRender<Combination>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .Take(1)
                 .Last()
@@ -225,7 +225,7 @@ namespace Nekoyume.BlockChain
                 .Timeout(ActionTimeout);
         }
 
-        public IObservable<ActionBase.ActionEvaluation<ItemEnhancement>> ItemEnhancement(Guid itemId, List<Guid> materialIds)
+        public IObservable<ActionBase.ActionEvaluation<ItemEnhancement>> ItemEnhancement(Guid itemId, IEnumerable<Guid> materialIds)
         {
             var action = new ItemEnhancement
             {

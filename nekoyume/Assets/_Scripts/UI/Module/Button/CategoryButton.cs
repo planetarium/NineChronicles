@@ -21,10 +21,12 @@ namespace Nekoyume.UI.Module
         
         public void SetToggledOn()
         {
+            button.interactable = false;
             image.sprite = toggledOn;
         }
         public void SetToggledOff()
         {
+            button.interactable = true;
             image.sprite = toggledOff;
         }
     }

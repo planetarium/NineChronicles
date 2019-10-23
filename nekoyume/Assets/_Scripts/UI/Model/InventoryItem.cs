@@ -8,12 +8,10 @@ namespace Nekoyume.UI.Model
     {
         public readonly ReactiveProperty<bool> Covered = new ReactiveProperty<bool>(false);
         public readonly ReactiveProperty<bool> Equipped = new ReactiveProperty<bool>(false);
-        public readonly ReactiveProperty<bool> Selected = new ReactiveProperty<bool>(false);
         public readonly ReactiveProperty<bool> Glowed = new ReactiveProperty<bool>(false);
 
-        public readonly Subject<InventoryItemView> OnClick = new Subject<InventoryItemView>();
-        public readonly Subject<InventoryItemView> OnRightClick = new Subject<InventoryItemView>();
-
+        public InventoryItemView View;
+        
         public InventoryItem(ItemBase item, int count) : base(item, count)
         {
         }
@@ -23,11 +21,7 @@ namespace Nekoyume.UI.Model
             base.Dispose();
             Covered.Dispose();
             Equipped.Dispose();
-            Selected.Dispose();
             Glowed.Dispose();
-
-            OnClick.Dispose();
-            OnRightClick.Dispose();
         }
     }
 }

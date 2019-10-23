@@ -10,7 +10,7 @@ namespace Nekoyume.TableData
             
             public int Id { get; private set; }
             public int MonsterPartsCountForCombination { get; private set; }
-            public int MonsterPartsCountForCombinationWithCash { get; private set; }
+            public int MonsterPartsCountForCombinationWithNCG { get; private set; }
             public int RandomBuffSkillMinCountForCombination { get; private set; }
             public int RandomBuffSkillMaxCountForCombination { get; private set; }
             public int EnhancementLimit { get; private set; }
@@ -19,7 +19,7 @@ namespace Nekoyume.TableData
             {
                 Id = int.Parse(fields[0]);
                 MonsterPartsCountForCombination = int.Parse(fields[1]);
-                MonsterPartsCountForCombinationWithCash = int.Parse(fields[2]);
+                MonsterPartsCountForCombinationWithNCG = int.Parse(fields[2]);
                 RandomBuffSkillMinCountForCombination = int.Parse(fields[3]);
                 RandomBuffSkillMaxCountForCombination = int.Parse(fields[4]);
                 EnhancementLimit = int.Parse(fields[5]);

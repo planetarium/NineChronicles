@@ -18,10 +18,10 @@ namespace Nekoyume.TableData
 
             public override void EndOfSheetInitialize()
             {
-                BuffIds.Sort((a, b) =>
+                BuffIds.Sort((left, right) =>
                 {
-                    if (a > b) return 1;
-                    if (a < b) return -1;
+                    if (left > right) return 1;
+                    if (left < right) return -1;
                     return 0;
                 });
             }

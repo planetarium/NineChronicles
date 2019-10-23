@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Nekoyume.Game.Controller;
 using Nekoyume.UI.Model;
 using UniRx;
 using UnityEngine;
@@ -32,7 +33,12 @@ namespace Nekoyume.UI
             base.Awake();
             
             Model = new Model.ItemInformationTooltip();
-            submitButton.OnClickAsObservable().Subscribe(_ => Model.OnSubmit.OnNext(this)).AddTo(gameObject);
+            submitButton.OnClickAsObservable().Subscribe(_ =>
+            {
+                AudioController.PlayClick();
+                Model.OnSubmitClick.OnNext(this);
+                Close();
+            }).AddTo(gameObject);
         }
 
         private void OnDestroy()
@@ -41,12 +47,12 @@ namespace Nekoyume.UI
             Model = null;
         }
 
-        public void Show(RectTransform target, InventoryItem item, Action<ItemInformationTooltip> onClose = null)
+        public void Show(RectTransform target, CountableItem item, Action<ItemInformationTooltip> onClose = null)
         {
             Show(target, item, null, null, null, onClose);
         }
 
-        public void Show(RectTransform target, InventoryItem item, Func<CountableItem, bool> submitEnabledFunc, string submitText, Action<ItemInformationTooltip> onSubmit, Action<ItemInformationTooltip> onClose = null)
+        public void Show(RectTransform target, CountableItem item, Func<CountableItem, bool> submitEnabledFunc, string submitText, Action<ItemInformationTooltip> onSubmit, Action<ItemInformationTooltip> onClose = null)
         {
             if (item is null)
             {
@@ -66,14 +72,14 @@ namespace Nekoyume.UI
             
             Model.TitleText.SubscribeToText(titleText).AddTo(_disposablesForModel);
             Model.PriceEnabled.Subscribe(priceContainer.SetActive).AddTo(_disposablesForModel);
-            Model.PriceEnabled.SubscribeToBehaviour(priceText).AddTo(_disposablesForModel);
+            Model.PriceEnabled.SubscribeTo(priceText).AddTo(_disposablesForModel);
             Model.Price.SubscribeToText(priceText).AddTo(_disposablesForModel);
             Model.SubmitButtonText.SubscribeToText(submitButtonText).AddTo(_disposablesForModel);
             Model.SubmitButtonEnabled.Subscribe(submitGameObject.SetActive).AddTo(_disposablesForModel);
-            Model.OnSubmit.Subscribe(onSubmit).AddTo(_disposablesForModel);
+            Model.OnSubmitClick.Subscribe(onSubmit).AddTo(_disposablesForModel);
             if (onClose != null)
             {
-                Model.OnClose.Subscribe(onClose).AddTo(_disposablesForModel);
+                Model.OnCloseClick.Subscribe(onClose).AddTo(_disposablesForModel);
             }
             Model.FooterRootActive.Subscribe(footerRoot.SetActive).AddTo(_disposablesForModel);
             // Model.itemInformation.item을 마지막으로 구독해야 위에서의 구독으로 인해 바뀌는 레이아웃 상태를 모두 반영할 수 있음.
@@ -85,7 +91,6 @@ namespace Nekoyume.UI
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
-            Model.OnClose.OnNext(this);
             _disposablesForModel.DisposeAllAndClear();
             Model.target.Value = null;
             Model.ItemInformation.item.Value = null;
@@ -111,6 +116,7 @@ namespace Nekoyume.UI
                         yield break;
                     }
                     
+                    Model.OnCloseClick.OnNext(this);
                     Close();
                     yield break;
                 }

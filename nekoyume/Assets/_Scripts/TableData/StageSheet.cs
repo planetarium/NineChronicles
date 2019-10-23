@@ -84,10 +84,10 @@ namespace Nekoyume.TableData
 
             public override void EndOfSheetInitialize()
             {
-                Waves.Sort((a, b) =>
+                Waves.Sort((left, right) =>
                 {
-                    if (a.Number > b.Number) return 1;
-                    if (a.Number < b.Number) return -1;
+                    if (left.Number > right.Number) return 1;
+                    if (left.Number < right.Number) return -1;
                     return 0;
                 });
 
