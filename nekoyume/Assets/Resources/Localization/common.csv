@@ -1,8 +1,12 @@
 Key,English,Korean
 TITLE,Nine Chronicles,나인 크로니클
 ALL,All,전체
+ADVENTURE,Adventure,모험
 ACTION_HANDLE,Action handling,액션 처리
 BLOCK_DOWNLOAD,Block downloading,블록 다운로드
+CRAFT,Craft,제작
+EXCHANGE,Exchange,거래
+OBTAIN,Obtain,획득
 SYSTEM,System,시스템
 SPEECH_SHOP_0,Did you make something nice?[newline]Then come and sell it here.,괜찮은 물건을 제작했어?[newline]그럼 여기 와서 팔아봐
 SPEECH_SHOP_1,There's a lot of[newline]good stuff coming up.,좋은 물건이 많이 올라와있어![newline]시간 나면 보고 가
@@ -94,7 +98,7 @@ UI_DELETE,Delete,삭제
 UI_COMBINATION_ITEM,Combine,아이템 제작
 UI_COMBINATION_ERROR,Error,조합 에러
 UI_COMBINATION_SUCCESS,Success!,조합 성공!
-UI_COMBINATION_NOTIFY_FORMAT,<size=14><color=#a2b4d6>[Workshop Cat]</color></size>[newline]Finished making <color=#ffd201>[{0}]</color>.,<size=14><color=#a2b4d6>[대장장이 고양이]</color></size>[newline]<color=#ffd201>[{0}]</color> 제작을 완료하였네.
+UI_COMBINATION_NOTIFY_FORMAT,<size=14><color=#a2b4d6>[Workshop Cat]</color></size>[newline]Finished crafting <color=#ffd201>[{0}]</color>.,<size=14><color=#a2b4d6>[대장장이 고양이]</color></size>[newline]<color=#ffd201>[{0}]</color> 제작을 완료하였네.
 UI_COMBINATION_FAIL,Failed..,조합 실패
 UI_COMBINATION_MATERIAL_COUNT_SELECTION,Material Amount,재료 수량 선택
 UI_TOTAL_COUNT_N,Total {0},총 {0}개
@@ -193,7 +197,7 @@ UI_COMBINATION_ENHANCEMENT,Item Enhancement,아이템 강화
 UI_COMBINATION_RECIPE_CLOSE,Recipe Close,레시피 닫기
 UI_RECIPE_COMBINATION,Combine,조합
 UI_SHOP_NOTICE,Tax 8% of sales item price,판매가의 8%를 세금으로 징수합니다.
-UI_LOADING_BOOTSTRAP_START,Connect to Network...,네트워크 연결을 수립하고 있습니다...
+ UI_LOADING_BOOTSTRAP_START,Connect to Network...,네트워크 연결을 수립하고 있습니다...
 UI_LOADING_BLOCK_DOWNLOAD,Download Block... {0} / {1},블록 다운로드 중... {0} / {1}
 UI_LOADING_STATE_REFERENCE_DOWNLOAD,Download State... {0} / {1},상태 다운로드 중... {0} / {1}
 UI_RECEIVE,Receive,받기
