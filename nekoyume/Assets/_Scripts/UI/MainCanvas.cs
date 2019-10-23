@@ -65,7 +65,7 @@ namespace Nekoyume.UI
 
                 //최상단 알림 영역.
                 Widget.Create<UpdatePopup>(),
-                Widget.Create<ExitPopup>(),
+                Widget.Create<BlockFailPopup>(),
                 Widget.Create<ActionFailPopup>(),
                 Widget.Create<Notification>(true),
 #if DEBUG

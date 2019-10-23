@@ -362,7 +362,9 @@ namespace Nekoyume.BlockChain
         private void ResponseHackAndSlash(ActionBase.ActionEvaluation<HackAndSlash> eval)
         {
             UpdateCurrentAvatarState(eval);
-            Widget.Find<ActionFailPopup>().Close();
+            var actionFailPopup = Widget.Find<ActionFailPopup>();
+            actionFailPopup.CloseCallback = null;
+            actionFailPopup.Close();
             if (Widget.Find<QuestPreparation>().IsActive())
             {
                 Widget.Find<QuestPreparation>().GoToStage(eval);
