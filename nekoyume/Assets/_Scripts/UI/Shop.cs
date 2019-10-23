@@ -12,6 +12,7 @@ using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
+using TMPro;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -44,6 +45,7 @@ namespace Nekoyume.UI
         public Module.Inventory inventory;
         public ShopItems shopItems;
         public GameObject shopNotice;
+        public TextMeshProUGUI noticeText;
 
         public Model.Shop SharedModel { get; private set; }
 
@@ -58,6 +60,7 @@ namespace Nekoyume.UI
             base.Awake();
             
             SharedModel = new Model.Shop();
+            noticeText.text = LocalizationManager.Localize("UI_SHOP_NOTICE");
         }
 
         #endregion
