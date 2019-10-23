@@ -1,5 +1,7 @@
 Key,English,Korean
 TITLE,Nine Chronicles,나인 크로니클
+ACTION_HANDLE,Action handling,액션 처리
+BLOCK_DOWNLOAD,Block downloading,블록 다운로드
 SPEECH_SHOP_0,Did you make something nice?[newline]Then come and sell it here.,괜찮은 물건을 제작했어?[newline]그럼 여기 와서 팔아봐
 SPEECH_SHOP_1,There's a lot of[newline]good stuff coming up.,좋은 물건이 많이 올라와있어![newline]시간 나면 보고 가
 SPEECH_SHOP_2,When you're worried about[newline]selling prices[newline]check out what other people[newline]put up on them.,판매 가격이 고민되면[newline]다른 사람들이[newline]얼마에 올렸는지 잘 살펴봐
@@ -164,6 +166,7 @@ UI_QUIT,Quit,종료
 UI_EXIT,Exit,나가기
 UI_ERROR,Error,에러
 UI_INVALID_NICKNAME,Nickname can only be used in Korean[comma] English[comma] and numbers between 2 and 20.,닉네임은 2~20자여야 하며 한글[comma] 영문자[comma] 숫자만 사용할 수 있습니다.
+UI_ERROR_FORMAT,Error occurred. ({0})[newline]Please restart the game.[newline]Press OK to quit the game.,오류가 발생했습니다. ({0})[newline]게임을 다시 실행해 주세요.[newline]확인을 누르면 게임이 종료됩니다.
 UI_MAIL,Mail,우편
 UI_QUEST,Quest,퀘스트
 UI_CHAT,Chat,채팅

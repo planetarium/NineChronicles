@@ -256,7 +256,7 @@ namespace Nekoyume.BlockChain
                 yield return new WaitForSeconds(180f);
                 if (BlockIndex == current)
                 {
-                    Widget.Find<ExitPopup>().Show(current);
+                    Widget.Find<BlockFailPopup>().Show(current);
                     break;
                 }
             }
