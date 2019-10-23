@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Assets.SimpleLocalization;
 using Bencodex.Types;
 using Nekoyume.Action;
 using Nekoyume.Manager;
@@ -329,13 +330,15 @@ namespace Nekoyume.BlockChain
 
         private void ResponseSell(ActionBase.ActionEvaluation<Sell> eval)
         {
-            UI.Notification.Push($"{eval.Action.itemUsable.Data.GetLocalizedName()} 상점 등록 완료.");
+            var format = LocalizationManager.Localize("NOTIFICATION_SELL_COMPLETE");
+            UI.Notification.Push(string.Format(format, eval.Action.itemUsable.Data.GetLocalizedName()));
             UpdateCurrentAvatarState(eval);
         }
 
         private void ResponseSellCancellation(ActionBase.ActionEvaluation<SellCancellation> eval)
         {
-            UI.Notification.Push($"{eval.Action.result.itemUsable.Data.GetLocalizedName()} 판매 취소 완료.");
+            var format = LocalizationManager.Localize("NOTIFICATION_SELL_CANCEL_COMPLETE");
+            UI.Notification.Push(string.Format(format, eval.Action.result.itemUsable.Data.GetLocalizedName()));
             UpdateCurrentAvatarState(eval);
         }
 
@@ -343,13 +346,14 @@ namespace Nekoyume.BlockChain
         {
             if (eval.Action.buyerAvatarAddress == States.Instance.CurrentAvatarState.Value.address)
             {
-                UI.Notification.Push($"{eval.Action.buyerResult.itemUsable.Data.GetLocalizedName()} 구매 완료.");
+                var format = LocalizationManager.Localize("NOTIFICATION_BUY_BUYER_COMPLETE");
+                UI.Notification.Push(string.Format(format, eval.Action.buyerResult.itemUsable.Data.GetLocalizedName()));
             }
             else
             {
+                var format = LocalizationManager.Localize("NOTIFICATION_BUY_SELLER_COMPLETE");
                 var result = eval.Action.sellerResult;
-                UI.Notification.Push(
-                    $"{result.itemUsable.Data.GetLocalizedName()} 판매 완료.\n세금 8% 제외 {result.gold}gold 획득");
+                UI.Notification.Push(string.Format(format, result.itemUsable.Data.GetLocalizedName(), result.gold));
             }
 
             UpdateCurrentAvatarState(eval);

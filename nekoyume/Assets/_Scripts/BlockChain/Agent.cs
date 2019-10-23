@@ -9,6 +9,7 @@ using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Assets.SimpleLocalization;
 using AsyncIO;
 using Bencodex.Types;
 using Libplanet;
@@ -170,23 +171,26 @@ namespace Nekoyume.BlockChain
 
             // 별도 쓰레드에서는 GameObject.GetComponent<T> 를 사용할 수 없기때문에 미리 선언.
             var loadingScreen = Widget.Find<LoadingScreen>();
-            BootstrapStarted += (_, state) => { loadingScreen.Message = "네트워크 연결을 수립하고 있습니다..."; };
+            BootstrapStarted += (_, state) => { loadingScreen.Message = LocalizationManager.Localize("UI_LOADING_BOOTSTRAP_START"); };
             PreloadProcessed += (_, state) =>
             {
                 if (loadingScreen)
                 {
                     string text;
+                    string format;
 
                     switch (state)
                     {
                         case BlockDownloadState blockDownloadState:
-                            text = "블록 다운로드 중... " +
-                                   $"{blockDownloadState.ReceivedBlockCount} / {blockDownloadState.TotalBlockCount}";
+                            format = LocalizationManager.Localize("UI_LOADING_BLOCK_DOWNLOAD");
+                            text = string.Format(format, blockDownloadState.ReceivedBlockCount,
+                                blockDownloadState.TotalBlockCount);
                             break;
 
                         case StateReferenceDownloadState stateReferenceDownloadState:
-                            text = "상태 다운로드 중... " +
-                                   $"{stateReferenceDownloadState.ReceivedStateReferenceCount} / {stateReferenceDownloadState.TotalStateReferenceCount}";
+                            format = LocalizationManager.Localize("UI_LOADING_STATE_DOWNLOAD");
+                            text = string.Format(format, stateReferenceDownloadState.ReceivedStateReferenceCount,
+                                stateReferenceDownloadState.TotalStateReferenceCount);
                             break;
 
                         case BlockStateDownloadState blockStateDownloadState:
