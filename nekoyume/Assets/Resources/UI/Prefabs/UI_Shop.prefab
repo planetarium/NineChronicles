@@ -66,8 +66,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_text: "\uC544\uC774\uD15C \uD310\uB9E4 \uC2DC \uD310\uB9E4\uAC00\uC758 8%\uB97C
-    \uC138\uAE08\uC73C\uB85C \uCC28\uAC10\uD569\uB2C8\uB2E4."
+  m_text: 8% of the selling price is collected in taxes.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 76f23b4f2b0bc49c18792f72986c9673, type: 2}
   m_sharedMaterial: {fileID: -7447916340868117875, guid: 76f23b4f2b0bc49c18792f72986c9673,
@@ -137,14 +136,14 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_textInfo:
     textComponent: {fileID: 4885652540751934527}
-    characterCount: 29
+    characterCount: 46
     spriteCount: 0
-    spaceCount: 6
-    wordCount: 8
+    spaceCount: 8
+    wordCount: 9
     linkCount: 0
     lineCount: 1
     pageCount: 1
-    materialCount: 2
+    materialCount: 1
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_spriteAnimator: {fileID: 0}
@@ -1106,8 +1105,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -55, y: 210}
-  m_SizeDelta: {x: 170, y: 50}
+  m_AnchoredPosition: {x: -64.2, y: 210}
+  m_SizeDelta: {x: 151.6, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3176563903349607560
 CanvasRenderer:
@@ -1139,7 +1138,7 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 12800000, guid: f6d6d9b64c6777d439f040bd011035f3, type: 3}
-    m_FontSize: 17
+    m_FontSize: 14
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 1
