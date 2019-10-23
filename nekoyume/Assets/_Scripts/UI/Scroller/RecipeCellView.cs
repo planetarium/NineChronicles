@@ -5,6 +5,7 @@ using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using System;
 using System.Linq;
+using Assets.SimpleLocalization;
 using Nekoyume.BlockChain;
 using UniRx;
 using UnityEngine;
@@ -42,6 +43,7 @@ namespace Nekoyume.UI.Scroller
         {
             this.ComponentFieldsNotNullTest();
             combineButtonOnClick = combineButton.OnClickAsObservable();
+            combineText.text = LocalizationManager.Localize("UI_RECIPE_COMBINATION");
         }
 
         private void OnDisable()

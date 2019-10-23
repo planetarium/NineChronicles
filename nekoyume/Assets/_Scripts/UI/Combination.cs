@@ -44,6 +44,9 @@ namespace Nekoyume.UI
         public Button itemEnhancementPopupButton;
         public ItemEnhancementView equipmentEnhanceView;
         public ItemEnhancementView[] equipmentEnhanceMaterialViews;
+        public Text itemEnhancementPopupButtonText;
+        public Text itemEnhancementButtonText;
+        public Text recipeCloseButtonText;
 
         private Stage _stage;
         private Game.Character.Player _player;
@@ -84,6 +87,9 @@ namespace Nekoyume.UI
 
             materialsTitleText.text = LocalizationManager.Localize("UI_COMBINATION_MATERIALS");
             combinationButtonText.text = LocalizationManager.Localize("UI_COMBINATION_ITEM");
+            itemEnhancementPopupButtonText.text = LocalizationManager.Localize("UI_COMBINATION_ENHANCEMENT_POPUP");
+            itemEnhancementButtonText.text = LocalizationManager.Localize("UI_COMBINATION_ENHANCEMENT");
+            recipeCloseButtonText.text = LocalizationManager.Localize("UI_COMBINATION_RECIPE_CLOSE");
 
             SimpleItemCountPopup = Find<SimpleItemCountPopup>();
 

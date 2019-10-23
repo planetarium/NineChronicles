@@ -3993,11 +3993,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: CombineButton
       objectReference: {fileID: 0}
-    - target: {fileID: 2502086263600563004, guid: 19858599dbc2e42379cee2444fa9d644,
-        type: 3}
-      propertyPath: m_Text
-      value: "\uB9CC\uB4E4\uAE30\n"
-      objectReference: {fileID: 0}
     - target: {fileID: 1840297032024698369, guid: 19858599dbc2e42379cee2444fa9d644,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -4112,6 +4107,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Text
       value: "\uC870\uD569"
+      objectReference: {fileID: 0}
+    - target: {fileID: 2502086263600563004, guid: 19858599dbc2e42379cee2444fa9d644,
+        type: 3}
+      propertyPath: m_Text
+      value: "\uB9CC\uB4E4\uAE30\n"
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 19858599dbc2e42379cee2444fa9d644, type: 3}
