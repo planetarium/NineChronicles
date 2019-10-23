@@ -569,7 +569,7 @@ MonoBehaviour:
   icon: {fileID: 2715277585602074103}
   content: {fileID: 1355623074940685725}
   button: {fileID: 7459628909637905972}
-  submitText: {fileID: 0}
+  submitText: {fileID: 6321181374029956239}
 --- !u!1001 &6210360637888206465
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -686,15 +686,20 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
-    - target: {fileID: 114554746353357326, guid: a1f67aab15045ab4eba8586dc20daaef,
+    - target: {fileID: 114853169625143362, guid: a1f67aab15045ab4eba8586dc20daaef,
         type: 3}
-      propertyPath: m_FontData.m_FontSize
-      value: 16
+      propertyPath: m_EffectDistance.y
+      value: -0.5
       objectReference: {fileID: 0}
-    - target: {fileID: 114554746353357326, guid: a1f67aab15045ab4eba8586dc20daaef,
+    - target: {fileID: 114853169625143362, guid: a1f67aab15045ab4eba8586dc20daaef,
         type: 3}
-      propertyPath: m_Text
-      value: "\uBC1B\uAE30"
+      propertyPath: m_EffectColor.g
+      value: 0.09411765
+      objectReference: {fileID: 0}
+    - target: {fileID: 114853169625143362, guid: a1f67aab15045ab4eba8586dc20daaef,
+        type: 3}
+      propertyPath: m_EffectColor.b
+      value: 0.4392157
       objectReference: {fileID: 0}
     - target: {fileID: 114597479767927532, guid: a1f67aab15045ab4eba8586dc20daaef,
         type: 3}
@@ -726,20 +731,15 @@ PrefabInstance:
       propertyPath: m_EffectColor.g
       value: 0.09411765
       objectReference: {fileID: 0}
-    - target: {fileID: 114853169625143362, guid: a1f67aab15045ab4eba8586dc20daaef,
+    - target: {fileID: 114554746353357326, guid: a1f67aab15045ab4eba8586dc20daaef,
         type: 3}
-      propertyPath: m_EffectDistance.y
-      value: -0.5
+      propertyPath: m_FontData.m_FontSize
+      value: 16
       objectReference: {fileID: 0}
-    - target: {fileID: 114853169625143362, guid: a1f67aab15045ab4eba8586dc20daaef,
+    - target: {fileID: 114554746353357326, guid: a1f67aab15045ab4eba8586dc20daaef,
         type: 3}
-      propertyPath: m_EffectColor.g
-      value: 0.09411765
-      objectReference: {fileID: 0}
-    - target: {fileID: 114853169625143362, guid: a1f67aab15045ab4eba8586dc20daaef,
-        type: 3}
-      propertyPath: m_EffectColor.b
-      value: 0.4392157
+      propertyPath: m_Text
+      value: "\uBC1B\uAE30"
       objectReference: {fileID: 0}
     - target: {fileID: 114252175819063688, guid: a1f67aab15045ab4eba8586dc20daaef,
         type: 3}
@@ -759,3 +759,15 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 6210360637888206465}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &6321181374029956239 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 114554746353357326, guid: a1f67aab15045ab4eba8586dc20daaef,
+    type: 3}
+  m_PrefabInstance: {fileID: 6210360637888206465}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 708705254, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

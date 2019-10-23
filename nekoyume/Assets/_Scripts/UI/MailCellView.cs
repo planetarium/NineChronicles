@@ -5,6 +5,7 @@ using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using Assets.SimpleLocalization;
 
 namespace Nekoyume.UI
 {
@@ -48,6 +49,7 @@ namespace Nekoyume.UI
             var text = mail.ToInfo();
             Color32 color = mail.New ? ColorHelper.HexToColorRGB("fff9dd") : ColorHelper.HexToColorRGB("7a7a7a");
             button.interactable = mail.New;
+            submitText.text = LocalizationManager.Localize("UI_RECEIVE");
             foreach (var shadow in _textShadows)
                 shadow.effectColor = mail.New ? _highlightedColor : Color.black;
             icon.overrideSprite = Mail.mailIcons[mail.MailType];
