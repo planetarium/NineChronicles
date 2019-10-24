@@ -33,6 +33,7 @@ namespace Nekoyume.State
         public int actionPoint;
         public CollectionMap stageMap;
         public CollectionMap monsterMap;
+        public CollectionMap itemMap;
 
         public AvatarState(Address address, Address agentAddress, long blockIndex, long rewardIndex, string name = null) : base(address)
         {
@@ -56,6 +57,7 @@ namespace Nekoyume.State
             nextDailyRewardIndex = rewardIndex;
             stageMap = new CollectionMap();
             monsterMap = new CollectionMap();
+            itemMap = new CollectionMap();
         }
         
         public AvatarState(AvatarState avatarState) : base(avatarState.address)
@@ -96,6 +98,7 @@ namespace Nekoyume.State
             stageMap = new CollectionMap((Bencodex.Types.Dictionary) serialized[(Text) "stageMap"]);
             serialized.TryGetValue((Text) "monsterMap", out var value2);
             monsterMap = value2 is null ? new CollectionMap() : new CollectionMap((Bencodex.Types.Dictionary) value2);
+            itemMap = new CollectionMap((Bencodex.Types.Dictionary) serialized[(Text) "itemMap"]);
         }
 
         public void Update(Simulator simulator)
@@ -115,8 +118,14 @@ namespace Nekoyume.State
                 stageMap.Add(new KeyValuePair<int, int>(simulator.WorldStage, 1));
             }
 
+            foreach (var pair in simulator.ItemMap)
+            {
+                itemMap.Add(pair);
+            }
+
             questList.UpdateStageQuest(stageMap);
             questList.UpdateMonsterQuest(monsterMap);
+            questList.UpdateCollectQuest(itemMap);
         }
 
         public object Clone()

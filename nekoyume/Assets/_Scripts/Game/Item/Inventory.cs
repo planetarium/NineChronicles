@@ -88,7 +88,7 @@ namespace Nekoyume.Game.Item
             }
         }
 
-        public void AddItem(ItemBase itemBase, int count = 1)
+        public KeyValuePair<int, int> AddItem(ItemBase itemBase, int count = 1)
         {
             switch (itemBase.Data.ItemType)
             {
@@ -102,9 +102,10 @@ namespace Nekoyume.Game.Item
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+            return new KeyValuePair<int, int>(itemBase.Data.Id, count);
         }
         
-        public Item AddFungibleItem(ItemBase itemBase, int count = 1)
+        private Item AddFungibleItem(ItemBase itemBase, int count = 1)
         {
             if (TryGetFungibleItem(itemBase, out var fungibleItem))
             {
@@ -117,7 +118,7 @@ namespace Nekoyume.Game.Item
             return fungibleItem;
         }
 
-        public void AddFungibleItem(int id, int count = 1)
+        private void AddFungibleItem(int id, int count = 1)
         {
             if (TryGetFungibleItem(id, out var fungibleItem))
             {
@@ -136,7 +137,7 @@ namespace Nekoyume.Game.Item
         }
 
         // Todo. NonFungibleItem 개발 후 `ItemBase itemBase` 인자를 `NonFungibleItem nonFungibleItem`로 수정.
-        public Item AddNonFungibleItem(ItemUsable itemBase)
+        private Item AddNonFungibleItem(ItemUsable itemBase)
         {
             var nonFungibleItem = new Item(itemBase);
             _items.Add(nonFungibleItem);

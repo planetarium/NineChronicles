@@ -141,19 +141,6 @@ namespace Nekoyume.Game.Quest
                 .ToList();
         }
 
-        public void UpdateStageQuest(Simulator simulator)
-        {
-            foreach (var quest in quests)
-            {
-                switch (quest)
-                {
-                    case CollectQuest cq:
-                        cq.Update(simulator.rewards);
-                        break;
-                }
-            }
-        }
-
         public IEnumerator<Quest> GetEnumerator()
         {
             return quests.GetEnumerator();
@@ -198,6 +185,14 @@ namespace Nekoyume.Game.Quest
         }
 
 
+        public void UpdateCollectQuest(CollectionMap itemMap)
+        {
+            var collectQuests = quests.OfType<CollectQuest>().ToList();
+            foreach (var quest in collectQuests)
+            {
+                quest.Update(itemMap);
+            }
+        }
 
         public IValue Serialize() =>
             new Bencodex.Types.List(this.Select(q => q.Serialize()));

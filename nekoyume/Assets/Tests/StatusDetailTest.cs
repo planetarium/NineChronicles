@@ -29,7 +29,7 @@ namespace Tests
             var data = Game.instance.TableSheets.EquipmentItemSheet.OrderedList.FirstOrDefault(row =>
                 row.ItemSubType == ItemSubType.Ring);
             _ring = new Ring(data, Guid.NewGuid());
-            _player.Inventory.AddNonFungibleItem(_ring);
+            _player.Inventory.AddItem(_ring);
             _widget = Widget.Find<StatusDetail>();
 
         }
@@ -59,7 +59,7 @@ namespace Tests
             _ring.Equip();
             var ring = new Ring(_ring.Data, Guid.NewGuid());
             ring.Equip();
-            _player.Inventory.AddNonFungibleItem(ring);
+            _player.Inventory.AddItem(ring);
             Assert.AreEqual(2, _player.Equipments.Count(i => i is Ring));
             _widget.Show();
             var ringSlots = _widget.equipmentSlots.Where(i => i.itemSubType == ItemSubType.Ring).ToList();

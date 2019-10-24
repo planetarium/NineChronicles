@@ -27,6 +27,7 @@ namespace Nekoyume.Battle
         private readonly List<List<ItemBase>> _waveRewards;
         public List<ItemBase> rewards => _waveRewards.SelectMany(i => i).ToList();
         public const float TurnPriority = 100f;
+        public CollectionMap ItemMap = new CollectionMap();
 
         public Simulator(IRandom random, AvatarState avatarState, List<Consumable> foods, int worldStage,
             Game.Skill skill = null)
@@ -86,7 +87,7 @@ namespace Nekoyume.Battle
 
                             _result = BattleLog.Result.Win;
                             var rewards = _waveRewards.SelectMany(i => i).ToList();
-                            Player.GetRewards(rewards);
+                            ItemMap = Player.GetRewards(rewards);
                             var getReward = new GetReward(null, rewards);
                             Log.Add(getReward);
                         }
