@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using Bencodex.Types;
 using Nekoyume.Battle;
@@ -10,6 +9,7 @@ using Nekoyume.Game.Item;
 using Nekoyume.Model;
 using Nekoyume.State;
 using Nekoyume.TableData;
+using UnityEngine;
 
 namespace Nekoyume.Game.Quest
 {
@@ -22,25 +22,76 @@ namespace Nekoyume.Game.Quest
     }
 
     [Serializable]
-    public abstract class Quest
+    public abstract class Quest : IState
     {
         public virtual QuestType QuestType { get; }
-        public QuestSheet.Row Data { get; }
+
+        private static readonly Dictionary<string, Func<Dictionary, Quest>> Deserializers =
+            new Dictionary<string, Func<Dictionary, Quest>>
+            {
+                ["collectQuest"] = d => new CollectQuest(d),
+                ["combinationQuest"] = d => new CombinationQuest(d),
+                ["tradeQuest"] = d => new TradeQuest(d),
+                ["worldQuest"] = d => new WorldQuest(d),
+            };
+
         public bool Complete { get; protected set; }
+
+        protected int Goal { get; }
         
         protected Quest(QuestSheet.Row data)
         {
-            Data = data;
+            Goal = data.Goal;
         }
 
         public abstract void Check();
         public abstract string ToInfo();
 
-        public Quest Copy(bool complete)
+        protected abstract string TypeId { get; }
+
+        protected Quest(Bencodex.Types.Dictionary serialized)
         {
-            Quest clone = (Quest) MemberwiseClone();
-            clone.Complete = complete;
-            return clone;
+            Complete = ((Bencodex.Types.Boolean) serialized[(Text) "complete"]).Value;
+            Goal = (int) ((Integer) serialized[(Bencodex.Types.Text) "goal"]).Value;
+        }
+
+        public virtual IValue Serialize() =>
+            new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
+            {
+                [(Bencodex.Types.Text) "typeId"] = (Bencodex.Types.Text) TypeId,
+                [(Bencodex.Types.Text) "complete"] = new Bencodex.Types.Boolean(Complete),
+                [(Text) "goal"] = (Integer) Goal,
+                [(Text) "id"] = (Integer) Id,
+            });
+
+        public static Quest Deserialize(Bencodex.Types.Dictionary serialized)
+        {
+            string typeId = ((Text) serialized[(Text) "typeId"]).Value;
+            Func<Dictionary, Quest> deserializer;
+            try
+            {
+                deserializer = Deserializers[typeId];
+            }
+            catch (KeyNotFoundException)
+            {
+                string typeIds = string.Join(
+                    ", ",
+                    Deserializers.Keys.OrderBy(k => k, StringComparer.InvariantCulture)
+                );
+                throw new ArgumentException(
+                    $"Unregistered typeId: {typeId}; available typeIds: {typeIds}"
+                );
+            }
+
+            try
+            {
+                return deserializer(serialized);
+            }
+            catch (Exception e)
+            {
+                Debug.LogErrorFormat("{0} was raised during deserialize: {1}", e.GetType().FullName, serialized);
+                throw;
+            }
         }
     }
 
@@ -75,15 +126,12 @@ namespace Nekoyume.Game.Quest
                 var quest = new TradeQuest(tradeQuestData);
                 quests.Add(quest);
             }
+
         }
 
         public QuestList(Bencodex.Types.List serialized) : this()
         {
-            ImmutableHashSet<QuestSheet.Row> completedQuests = serialized
-                .Select(q => QuestSheet.Row.Deserialize((Bencodex.Types.Dictionary) q))
-                .ToImmutableHashSet();
-            quests = quests
-                .Select(q => completedQuests.Contains(q.Data) ? q.Copy(true) : q)
+            quests = serialized.Select(q => Quest.Deserialize((Bencodex.Types.Dictionary) q))
                 .ToList();
         }
 
@@ -113,8 +161,8 @@ namespace Nekoyume.Game.Quest
         public void UpdateCombinationQuest(ItemUsable itemUsable)
         {
             var quest = quests.OfType<CombinationQuest>()
-                .FirstOrDefault(i => i.Data.ItemType == itemUsable.Data.ItemType &&
-                                     i.Data.ItemSubType == itemUsable.Data.ItemSubType &&
+                .FirstOrDefault(i => i.ItemType == itemUsable.Data.ItemType &&
+                                     i.ItemSubType == itemUsable.Data.ItemSubType &&
                                      !i.Complete);
             quest?.Update(new List<ItemBase> {itemUsable});
         }
@@ -122,7 +170,7 @@ namespace Nekoyume.Game.Quest
         public void UpdateTradeQuest(TradeType type)
         {
             var quest = quests.OfType<TradeQuest>()
-                .FirstOrDefault(i => i.Data.Type == type && !i.Complete);
+                .FirstOrDefault(i => i.Type == type && !i.Complete);
             quest?.Check();
         }
 
@@ -135,7 +183,9 @@ namespace Nekoyume.Game.Quest
             }
         }
 
+
+
         public IValue Serialize() =>
-            new Bencodex.Types.List(this.Where(q => q.Complete).Select(q => q.Data.Serialize()));
+            new Bencodex.Types.List(this.Select(q => q.Serialize()));
     }
 }
