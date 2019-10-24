@@ -25,7 +25,7 @@ namespace Nekoyume.TableData
         public EquipmentItemSheet EquipmentItemSheet { get; private set; }
         public ConsumableItemSheet ConsumableItemSheet { get; private set; }
         public QuestSheet QuestSheet { get; private set; }
-        public BattleQuestSheet BattleQuestSheet { get; private set; }
+        public WorldQuestSheet WorldQuestSheet { get; private set; }
         public CollectQuestSheet CollectQuestSheet { get; private set; }
         public CombinationQuestSheet CombinationQuestSheet { get; private set; }
         public TradeQuestSheet TradeQuestSheet { get; private set; }
@@ -110,9 +110,9 @@ namespace Nekoyume.TableData
                     ConsumableItemSheet = new ConsumableItemSheet();
                     ConsumableItemSheet.Set(csv);
                     break;
-                case nameof(TableData.BattleQuestSheet):
-                    BattleQuestSheet = new BattleQuestSheet();
-                    BattleQuestSheet.Set(csv);
+                case nameof(TableData.WorldQuestSheet):
+                    WorldQuestSheet = new WorldQuestSheet();
+                    WorldQuestSheet.Set(csv);
                     break;
                 case nameof(TableData.CollectQuestSheet):
                     CollectQuestSheet = new CollectQuestSheet();
@@ -158,7 +158,7 @@ namespace Nekoyume.TableData
         private void QuestSheetInitialize()
         {
             QuestSheet = new QuestSheet();
-            QuestSheet.Set(BattleQuestSheet, false);
+            QuestSheet.Set(WorldQuestSheet, false);
             QuestSheet.Set(CollectQuestSheet, false);
             QuestSheet.Set(CombinationQuestSheet, false);
             QuestSheet.Set(TradeQuestSheet);

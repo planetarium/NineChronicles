@@ -52,9 +52,9 @@ namespace Nekoyume.Game.Quest
         public QuestList()
         {
             quests = new List<Quest>();
-            foreach (var data in Game.instance.TableSheets.BattleQuestSheet.OrderedList)
+            foreach (var data in Game.instance.TableSheets.WorldQuestSheet.OrderedList)
             {
-                var quest = new BattleQuest(data);
+                var quest = new WorldQuest(data);
                 quests.Add(quest);
             }
 
@@ -93,9 +93,6 @@ namespace Nekoyume.Game.Quest
             {
                 switch (quest)
                 {
-                    case BattleQuest bq:
-                        bq.Update(simulator.Player.worldStage);
-                        break;
                     case CollectQuest cq:
                         cq.Update(simulator.rewards);
                         break;
@@ -127,6 +124,15 @@ namespace Nekoyume.Game.Quest
             var quest = quests.OfType<TradeQuest>()
                 .FirstOrDefault(i => i.Data.Type == type && !i.Complete);
             quest?.Check();
+        }
+
+        public void UpdateStageQuest(CollectionMap stageMap)
+        {
+            var stageQuests = quests.OfType<WorldQuest>().ToList();
+            foreach (var quest in stageQuests)
+            {
+                quest.Update(stageMap);
+            }
         }
 
         public IValue Serialize() =>
