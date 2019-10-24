@@ -31,6 +31,7 @@ namespace Nekoyume.Game.Quest
             {
                 ["collectQuest"] = d => new CollectQuest(d),
                 ["combinationQuest"] = d => new CombinationQuest(d),
+                ["monsterQuest"] = d => new MonsterQuest(d),
                 ["tradeQuest"] = d => new TradeQuest(d),
                 ["worldQuest"] = d => new WorldQuest(d),
             };
@@ -127,6 +128,11 @@ namespace Nekoyume.Game.Quest
                 quests.Add(quest);
             }
 
+            foreach (var monsterQuestData in Game.instance.TableSheets.MonsterQuestSheet.OrderedList)
+            {
+                var quest = new MonsterQuest(monsterQuestData);
+                quests.Add(quest);
+            }
         }
 
         public QuestList(Bencodex.Types.List serialized) : this()
@@ -180,6 +186,14 @@ namespace Nekoyume.Game.Quest
             foreach (var quest in stageQuests)
             {
                 quest.Update(stageMap);
+            }
+        }
+        public void UpdateMonsterQuest(CollectionMap monsterMap)
+        {
+            var monsterQuests = quests.OfType<MonsterQuest>().ToList();
+            foreach (var quest in monsterQuests)
+            {
+                quest.Update(monsterMap);
             }
         }
 

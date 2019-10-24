@@ -1,10 +1,8 @@
 using System;
 using System.Collections;
 using System.IO;
-using Nekoyume.UI.Model;
 using UniRx;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
 
 namespace Nekoyume.TableData
 {
@@ -30,6 +28,7 @@ namespace Nekoyume.TableData
         public CombinationQuestSheet CombinationQuestSheet { get; private set; }
         public TradeQuestSheet TradeQuestSheet { get; private set; }
         public SkillBuffSheet SkillBuffSheet { get; private set; }
+        public MonsterQuestSheet MonsterQuestSheet { get; private set; }
         public EquipmentItemSetEffectSheet EquipmentItemSetEffectSheet { get; private set; }
         public EnemySkillSheet EnemySkillSheet { get; private set; }
         public ItemConfigForGradeSheet ItemConfigForGradeSheet { get; private set; }
@@ -126,6 +125,10 @@ namespace Nekoyume.TableData
                     TradeQuestSheet = new TradeQuestSheet();
                     TradeQuestSheet.Set(csv);
                     break;
+                case nameof(TableData.MonsterQuestSheet):
+                    MonsterQuestSheet = new MonsterQuestSheet();
+                    MonsterQuestSheet.Set(csv);
+                    break;
                 case nameof(TableData.SkillBuffSheet):
                     SkillBuffSheet = new SkillBuffSheet();
                     SkillBuffSheet.Set(csv);
@@ -161,7 +164,8 @@ namespace Nekoyume.TableData
             QuestSheet.Set(WorldQuestSheet, false);
             QuestSheet.Set(CollectQuestSheet, false);
             QuestSheet.Set(CombinationQuestSheet, false);
-            QuestSheet.Set(TradeQuestSheet);
+            QuestSheet.Set(TradeQuestSheet, false);
+            QuestSheet.Set(MonsterQuestSheet);
         }
     }
 }

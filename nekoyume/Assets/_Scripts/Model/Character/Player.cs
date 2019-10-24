@@ -53,7 +53,8 @@ namespace Nekoyume.Model
         public Ring ring;
         public Helm helm;
         public SetItem set;
-        
+        public CollectionMap monsterMap;
+
         private List<Equipment> Equipments { get; set; }
 
         public Player(AvatarState avatarState, Simulator simulator = null) : base(simulator, avatarState.characterId, avatarState.level)
@@ -61,6 +62,7 @@ namespace Nekoyume.Model
             Exp.Current = avatarState.exp;
             Inventory = avatarState.inventory;
             worldStage = avatarState.worldStage;
+            monsterMap = new CollectionMap();
             PostConstruction();
         }
 
@@ -103,6 +105,7 @@ namespace Nekoyume.Model
 
         public void RemoveTarget(Enemy enemy)
         {
+            monsterMap.Add(new KeyValuePair<int, int>(enemy.RowData.Id, 1));
             Targets.Remove(enemy);
             Simulator.Characters.TryRemove(enemy);
         }

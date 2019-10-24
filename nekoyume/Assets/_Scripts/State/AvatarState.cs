@@ -32,6 +32,7 @@ namespace Nekoyume.State
         public long nextDailyRewardIndex;
         public int actionPoint;
         public CollectionMap stageMap;
+        public CollectionMap monsterMap;
 
         public AvatarState(Address address, Address agentAddress, long blockIndex, long rewardIndex, string name = null) : base(address)
         {
@@ -54,6 +55,7 @@ namespace Nekoyume.State
             actionPoint = GameConfig.ActionPoint;
             nextDailyRewardIndex = rewardIndex;
             stageMap = new CollectionMap();
+            monsterMap = new CollectionMap();
         }
         
         public AvatarState(AvatarState avatarState) : base(avatarState.address)
@@ -92,6 +94,8 @@ namespace Nekoyume.State
             nextDailyRewardIndex = (long) ((Integer) serialized[(Text) "nextDailyRewardIndex"]).Value;
             actionPoint = (int) ((Integer) serialized[(Text) "actionPoint"]).Value;
             stageMap = new CollectionMap((Bencodex.Types.Dictionary) serialized[(Text) "stageMap"]);
+            serialized.TryGetValue((Text) "monsterMap", out var value2);
+            monsterMap = value2 is null ? new CollectionMap() : new CollectionMap((Bencodex.Types.Dictionary) value2);
         }
 
         public void Update(Simulator simulator)
@@ -102,12 +106,17 @@ namespace Nekoyume.State
             exp = player.Exp.Current;
             inventory = player.Inventory;
             worldStage = player.worldStage;
+            foreach (var pair in player.monsterMap)
+            {
+                monsterMap.Add(pair);
+            }
             if (simulator.Result == BattleLog.Result.Win)
             {
                 stageMap.Add(new KeyValuePair<int, int>(simulator.WorldStage, 1));
             }
 
             questList.UpdateStageQuest(stageMap);
+            questList.UpdateMonsterQuest(monsterMap);
         }
 
         public object Clone()
@@ -138,6 +147,8 @@ namespace Nekoyume.State
                 [(Text) "nextDailyRewardIndex"] = (Integer) nextDailyRewardIndex,
                 [(Text) "actionPoint"] = (Integer) actionPoint,
                 [(Text) "stageMap"] = stageMap.Serialize(),
+                [(Text) "monsterMap"] = monsterMap.Serialize(),
+                [(Text) "itemMap"] = itemMap.Serialize(),
             }.Union((Bencodex.Types.Dictionary) base.Serialize()));
     }
 }

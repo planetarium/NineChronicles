@@ -77,11 +77,6 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - TableCSV
-  - m_GUID: b5f9f2c3ca5844c30907904f7413f75f
-    m_Address: Assets/AddressableAssets/TableCSV/BattleQuestSheet.csv
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - TableCSV
   - m_GUID: c47ace85da330454098f65864699958b
     m_Address: Assets/AddressableAssets/TableCSV/ItemConfigForGradeSheet.csv
     m_ReadOnly: 0
@@ -109,6 +104,16 @@ MonoBehaviour:
     - TableCSV
   - m_GUID: f8453298aafb44de3aebe3158240166b
     m_Address: Assets/AddressableAssets/TableCSV/EquipmentItemSetEffectSheet.csv
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - TableCSV
+  - m_GUID: f917470c05c72e2428b63e8302a98f9a
+    m_Address: Assets/AddressableAssets/TableCSV/MonsterQuestSheet.csv
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - TableCSV
+  - m_GUID: fe3cd94352f8121479d47d5c4be9fbf4
+    m_Address: Assets/AddressableAssets/TableCSV/WorldQuestSheet.csv
     m_ReadOnly: 0
     m_SerializedLabels:
     - TableCSV
