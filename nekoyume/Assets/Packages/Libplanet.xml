@@ -1468,7 +1468,7 @@
             <exception cref="T:System.OperationCanceledException">Thrown when
             <see cref="P:Libplanet.Blockchain.BlockChain`1.Tip"/> is changed while mining.</exception>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain`1.MakeTransaction(Libplanet.Crypto.PrivateKey,System.Collections.Generic.IEnumerable{`0},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Nullable{System.DateTimeOffset},System.Boolean)">
+        <member name="M:Libplanet.Blockchain.BlockChain`1.MakeTransaction(Libplanet.Crypto.PrivateKey,System.Collections.Generic.IEnumerable{`0},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Nullable{System.DateTimeOffset})">
             <summary>
             Creates a new <see cref="T:Libplanet.Tx.Transaction`1"/> and stage the transaction.
             </summary>
@@ -1480,7 +1480,6 @@
             <paramref name="actions"/>.</param>
             <param name="timestamp">The time this <see cref="T:Libplanet.Tx.Transaction`1"/> is created and
             signed.</param>
-            <param name="broadcast">Whether to broadcast created transaction.</param>
             <returns>A created new <see cref="T:Libplanet.Tx.Transaction`1"/> signed by the given
             <paramref name="privateKey"/>.</returns>
             <seealso cref="M:Libplanet.Tx.Transaction`1.Create(System.Int64,Libplanet.Crypto.PrivateKey,System.Collections.Generic.IEnumerable{`0},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Nullable{System.DateTimeOffset})" />
@@ -2618,27 +2617,36 @@
         </member>
         <member name="M:Libplanet.Net.Protocols.KademliaProtocol`1.RefreshTableAsync(System.TimeSpan,System.Threading.CancellationToken)">
             <summary>
-            Periodically checks whether <see cref="T:Libplanet.Net.Peer"/>s in <see cref="T:Libplanet.Net.Protocols.RoutingTable"/> is
-            online by sending <see cref="T:Libplanet.Net.Messages.Ping"/>.
+            Checks whether <see cref="T:Libplanet.Net.Peer"/>s in <see cref="T:Libplanet.Net.Protocols.RoutingTable"/> is online by
+            sending <see cref="T:Libplanet.Net.Messages.Ping"/>.
             </summary>
-            <param name="period">The cycle in which the operation is executed.</param>
+            <param name="maxAge">Maximum age of peer to validate.</param>
             <param name="cancellationToken">A cancellation token used to propagate notification
             that this operation should be canceled.</param>
             <returns>An awaitable task without value.</returns>
         </member>
-        <member name="M:Libplanet.Net.Protocols.KademliaProtocol`1.RebuildConnectionAsync(System.TimeSpan,System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Net.Protocols.KademliaProtocol`1.RebuildConnectionAsync(System.Threading.CancellationToken)">
             <summary>
-            Reconstructs network connection between peers on network. It runs operation once
-            right after called, repeated every <see cref="T:System.TimeSpan"/> of <paramref name="period"/>.
+            Reconstructs network connection between peers on network.
             </summary>
-            <param name="period">The cycle in which the operation is executed.</param>
+            <param name="cancellationToken">A cancellation token used to propagate notification
+            that this operation should be canceled.</param>
+            <returns>>An awaitable task without value.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Protocols.KademliaProtocol`1.CheckReplacementCacheAsync(System.Threading.CancellationToken)">
+            <summary>
+            Checks the <see cref="T:Libplanet.Net.Protocols.KBucket"/> in the <see cref="T:Libplanet.Net.Protocols.RoutingTable"/> and if
+            there is an empty <see cref="T:Libplanet.Net.Protocols.KBucket"/>, fill it with <see cref="T:Libplanet.Net.Peer"/>s
+            in the <see cref="P:Libplanet.Net.Protocols.KBucket.ReplacementCache"/>.
+            </summary>
             <param name="cancellationToken">A cancellation token used to propagate notification
             that this operation should be canceled.</param>
             <returns>>An awaitable task without value.</returns>
         </member>
         <member name="M:Libplanet.Net.Protocols.KademliaProtocol`1.ValidateAsync(Libplanet.Net.BoundPeer,System.TimeSpan,System.Threading.CancellationToken)">
             <summary>
-            Validate peer by send <see cref="T:Libplanet.Net.Messages.Ping"/> to <paramref name="peer"/>.
+            Validate peer by send <see cref="T:Libplanet.Net.Messages.Ping"/> to <paramref name="peer"/>. If target peer
+            does not responds, remove it from the table.
             </summary>
             <param name="peer">A <see cref="T:Libplanet.Net.BoundPeer"/> to validate.</param>
             <param name="timeout">Timeout for waiting reply of <see cref="T:Libplanet.Net.Messages.Ping"/>.</param>

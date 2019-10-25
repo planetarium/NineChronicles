@@ -630,7 +630,7 @@ namespace Nekoyume.BlockChain
 
                 if (actions.Any())
                 {
-                    var task = Task.Run(() => MakeTransaction(actions, true));
+                    var task = Task.Run(() => MakeTransaction(actions));
                     yield return new WaitUntil(() => task.IsCompleted);
                 }
             }
@@ -730,7 +730,7 @@ namespace Nekoyume.BlockChain
 
                     foreach (var retryAction in retryActions)
                     {
-                        MakeTransaction(retryAction, true);
+                        MakeTransaction(retryAction);
                     }
                 }
             }
@@ -775,7 +775,7 @@ namespace Nekoyume.BlockChain
                     agentAddresses = States.Instance.RankingState.Value.GetAgentAddresses(3, null),
                 }
             };
-            return MakeTransaction(actions, false);
+            return MakeTransaction(actions);
         }
 
         public void AppendBlock(Block<PolymorphicAction<ActionBase>> block)
@@ -784,12 +784,12 @@ namespace Nekoyume.BlockChain
         }
 
         private Transaction<PolymorphicAction<ActionBase>> MakeTransaction(
-            IEnumerable<PolymorphicAction<ActionBase>> actions, bool broadcast)
+            IEnumerable<PolymorphicAction<ActionBase>> actions)
         {
             var polymorphicActions = actions.ToArray();
             Debug.LogFormat("Make Transaction with Actions: `{0}`",
                 string.Join(",", polymorphicActions.Select(i => i.InnerAction)));
-            return blocks.MakeTransaction(PrivateKey, polymorphicActions, broadcast: broadcast);
+            return blocks.MakeTransaction(PrivateKey, polymorphicActions);
         }
 
         private void LoadQueuedActions()
