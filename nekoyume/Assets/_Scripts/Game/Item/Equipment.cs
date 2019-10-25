@@ -23,7 +23,6 @@ namespace Nekoyume.Game.Item
 
         public bool Equip()
         {
-
             equipped = true;
             return true;
         }

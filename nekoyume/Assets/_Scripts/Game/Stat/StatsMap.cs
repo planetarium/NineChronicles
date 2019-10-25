@@ -151,5 +151,15 @@ namespace Nekoyume.Game
                     new StatMapEx((Bencodex.Types.Dictionary) kv.Value);
             }
         }
+
+        public IEnumerable<(StatType, int)> GetStats()
+        {
+            yield return (StatType.HP, HP);
+            yield return (StatType.ATK, ATK);
+            yield return (StatType.DEF, DEF);
+            yield return (StatType.DOG, DOG);
+            yield return (StatType.CRI, CRI);
+            yield return (StatType.SPD, SPD);
+        }
     }
 }
