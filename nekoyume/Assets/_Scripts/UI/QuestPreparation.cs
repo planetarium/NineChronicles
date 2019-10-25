@@ -44,6 +44,8 @@ namespace Nekoyume.UI
         private readonly Dictionary<StatType, StatusInfo> _stats =
             new Dictionary<StatType, StatusInfo>(StatTypeComparer.Instance);
 
+        private readonly Dictionary<StatType, int> _additionalStats = new Dictionary<StatType, int>();
+
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
         private readonly ReactiveProperty<bool> _buttonEnabled = new ReactiveProperty<bool>();
 
@@ -113,6 +115,7 @@ namespace Nekoyume.UI
                     var info = go.GetComponent<StatusInfo>();
                     info.Set(statType, value, additionalValue);
                     _stats.Add(statType, info);
+                    _additionalStats.Add(statType, additionalValue);
                 }
             }
             else
@@ -120,6 +123,7 @@ namespace Nekoyume.UI
                 foreach (var (statType, value, additionalValue) in tuples)
                 {
                     _stats[statType].Set(statType, value, additionalValue);
+                    _additionalStats[statType] = additionalValue;
                 }
             }
 
@@ -127,7 +131,6 @@ namespace Nekoyume.UI
             _stageId = worldMap.SelectedStageId;
 
             Find<BottomMenu>().Show(UINavigator.NavigationType.Back, SubscribeBackButtonClick);
-
             _buttonEnabled.Subscribe(SubscribeReadyToQuest).AddTo(_disposables);
             ReactiveCurrentAvatarState.ActionPoint.Subscribe(SubscribeActionPoint).AddTo(_disposables);
         }
@@ -262,7 +265,9 @@ namespace Nekoyume.UI
 
             var slotItem = slot.item;
 
-            slot.Unequip();
+            SubEquipmentStat(slotItem);
+
+            slot.Unequip(); 
             if (slot.itemSubType == ItemSubType.Armor)
             {
                 var armor = (Armor) slot.item;
@@ -301,26 +306,30 @@ namespace Nekoyume.UI
 
             var slot = FindSelectedItemSlot(itemSubType);
 
-            AudioController.instance.PlaySfx(itemSubType == ItemSubType.Food
-                ? AudioController.SfxCode.ChainMail2
-                : AudioController.SfxCode.Equipment);
-
+            var equipable = countableItem.ItemBase.Value as ItemUsable;
             if (slot != null)
             {
+                if (slot.item != null)
+                    SubEquipmentStat(slot.item);
+
                 if (inventory.SharedModel.TryGetEquipment(slot.item, out var inventoryItem) ||
                     inventory.SharedModel.TryGetConsumable(slot.item as Consumable, out inventoryItem))
                 {
                     inventoryItem.Equipped.Value = false;
                 }
 
-                slot.Set(countableItem.ItemBase.Value as ItemUsable);
+                slot.Set(equipable);
                 slot.SetOnClickAction(ShowTooltip, Unequip);
                 SetGlowEquipSlot(false);
             }
 
+            AudioController.instance.PlaySfx(itemSubType == ItemSubType.Food
+                ? AudioController.SfxCode.ChainMail2
+                : AudioController.SfxCode.Equipment);
+
             if (itemSubType == ItemSubType.Armor)
             {
-                var armor = (Armor) countableItem.ItemBase.Value;
+                var armor = (Armor) equipable;
                 var weapon = (Weapon) _weaponSlot.item;
                 _player.UpdateSet(armor, weapon);
             }
@@ -334,7 +343,31 @@ namespace Nekoyume.UI
                 item.Equipped.Value = true;
             }
 
+            AddEquipmentStat(equipable);
+            
             inventory.Tooltip.Close();
+        }
+
+        private void AddEquipmentStat(ItemUsable equip)
+        {
+            var statMap = equip.StatsMap.GetStats();
+            foreach (var (type, value) in statMap)
+            {
+                if (value == 0) continue;
+                _additionalStats[type] += value;
+                _stats[type].SetAdditional(type, _additionalStats[type]);
+            }
+        }
+
+        private void SubEquipmentStat(ItemUsable equip)
+        {
+            var statMap = equip.StatsMap.GetStats();
+            foreach (var (type, value) in statMap)
+            {
+                if (value == 0) continue;
+                _additionalStats[type] -= value;
+                _stats[type].SetAdditional(type, _additionalStats[type]);
+            }
         }
 
         private void Quest(bool repeat)
