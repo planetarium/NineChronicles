@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Bencodex.Types;
-using Nekoyume.Battle;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Item;
 using Nekoyume.Model;
@@ -34,6 +33,7 @@ namespace Nekoyume.Game.Quest
                 ["monsterQuest"] = d => new MonsterQuest(d),
                 ["tradeQuest"] = d => new TradeQuest(d),
                 ["worldQuest"] = d => new WorldQuest(d),
+                ["itemEnhancementQuest"] = d => new ItemEnhancementQuest(d),
             };
 
         public bool Complete { get; protected set; }
@@ -137,6 +137,12 @@ namespace Nekoyume.Game.Quest
                 var quest = new MonsterQuest(monsterQuestData);
                 quests.Add(quest);
             }
+
+            foreach (var itemEnhancementQuestData in Game.instance.TableSheets.ItemEnhancementQuestSheet.OrderedList)
+            {
+                var quest = new ItemEnhancementQuest(itemEnhancementQuestData);
+                quests.Add(quest);
+            }
         }
 
         public QuestList(Bencodex.Types.List serialized) : this()
@@ -200,6 +206,13 @@ namespace Nekoyume.Game.Quest
             {
                 quest.Update(itemMap);
             }
+        }
+
+        public void UpdateItemEnhancementQuest(Equipment equipment)
+        {
+            var quest = quests.OfType<ItemEnhancementQuest>()
+                .FirstOrDefault(i => !i.Complete && i.Grade == equipment.Data.Grade);
+            quest?.Update(equipment);
         }
 
         public IValue Serialize() =>
