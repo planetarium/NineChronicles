@@ -12,9 +12,18 @@ using Nekoyume.TableData;
 
 namespace Nekoyume.Game.Quest
 {
+    public enum QuestType
+    {
+        Adventure,
+        Obtain,
+        Craft,
+        Exchange
+    }
+
     [Serializable]
     public abstract class Quest
     {
+        public virtual QuestType QuestType { get; }
         public QuestSheet.Row Data { get; }
         public bool Complete { get; protected set; }
         

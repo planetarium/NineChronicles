@@ -102,6 +102,7 @@ namespace Nekoyume.UI
             ChangeState(0);
             base.Show();
         }
+
         #endregion
 
         public void ChangeState(int state)

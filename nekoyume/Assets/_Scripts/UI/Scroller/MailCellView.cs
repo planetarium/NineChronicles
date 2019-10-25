@@ -7,7 +7,7 @@ using UnityEngine.UI;
 using TMPro;
 using Assets.SimpleLocalization;
 
-namespace Nekoyume.UI
+namespace Nekoyume.UI.Scroller
 {
     public class MailCellView : EnhancedScrollerCellView
     {

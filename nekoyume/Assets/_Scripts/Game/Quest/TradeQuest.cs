@@ -14,6 +14,7 @@ namespace Nekoyume.Game.Quest
         private int _current;
         
         public new TradeQuestSheet.Row Data { get; }
+        public override QuestType QuestType => QuestType.Exchange;
 
         public TradeQuest(TradeQuestSheet.Row data) : base(data)
         {
@@ -30,7 +31,7 @@ namespace Nekoyume.Game.Quest
 
         public override string ToInfo()
         {
-            var format = LocalizationManager.Localize("QUEST_COLLECT_CURRENT_INFO_FORMAT");
+            var format = LocalizationManager.Localize("QUEST_TRADE_CURRENT_INFO_FORMAT");
             return string.Format(format, Data.Type.GetLocalizedString(), _current, Data.Goal);
         }
     }

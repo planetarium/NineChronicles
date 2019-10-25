@@ -14,6 +14,7 @@ namespace Nekoyume.Game.Quest
         public int current;
         
         public new CollectQuestSheet.Row Data { get; }
+        public override QuestType QuestType => QuestType.Obtain;
 
         public CollectQuest(CollectQuestSheet.Row data) : base(data)
         {

@@ -124,11 +124,9 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<Inventory>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<Quest>());
-            yield return null;
             _secondWidgets.Add(Widget.Create<Mail>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<Achievement>());
+            _secondWidgets.Add(Widget.Create<Quest>());
             yield return null;
 
             // 팝업류.

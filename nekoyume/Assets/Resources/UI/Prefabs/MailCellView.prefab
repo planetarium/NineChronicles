@@ -581,6 +581,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: UI_Text
       objectReference: {fileID: 0}
+    - target: {fileID: 114554746353357326, guid: a1f67aab15045ab4eba8586dc20daaef,
+        type: 3}
+      propertyPath: m_FontData.m_FontSize
+      value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: 114554746353357326, guid: a1f67aab15045ab4eba8586dc20daaef,
+        type: 3}
+      propertyPath: m_Text
+      value: "\uBC1B\uAE30"
+      objectReference: {fileID: 0}
     - target: {fileID: 224956313553863500, guid: a1f67aab15045ab4eba8586dc20daaef,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -730,16 +740,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_EffectColor.g
       value: 0.09411765
-      objectReference: {fileID: 0}
-    - target: {fileID: 114554746353357326, guid: a1f67aab15045ab4eba8586dc20daaef,
-        type: 3}
-      propertyPath: m_FontData.m_FontSize
-      value: 16
-      objectReference: {fileID: 0}
-    - target: {fileID: 114554746353357326, guid: a1f67aab15045ab4eba8586dc20daaef,
-        type: 3}
-      propertyPath: m_Text
-      value: "\uBC1B\uAE30"
       objectReference: {fileID: 0}
     - target: {fileID: 114252175819063688, guid: a1f67aab15045ab4eba8586dc20daaef,
         type: 3}

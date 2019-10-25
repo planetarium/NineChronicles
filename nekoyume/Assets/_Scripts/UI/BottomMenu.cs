@@ -78,7 +78,7 @@ namespace Nekoyume.UI.Module
             _toggleGroup.RegisterToggleable(settingsButton);
             mailButton.SetWidgetType<Mail>();
             questButton.SetWidgetType<Quest>();
-            illustratedBookButton.SetWidgetType<Achievement>();
+            illustratedBookButton.button.OnClickAsObservable().Subscribe(SubscribeOnClick).AddTo(gameObject);
             chatButton.button.OnClickAsObservable().Subscribe(SubscribeOnClick).AddTo(gameObject);
             settingsButton.button.OnClickAsObservable().Subscribe(SubscribeOnClick).AddTo(gameObject);
         }
