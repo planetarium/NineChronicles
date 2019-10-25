@@ -10,6 +10,8 @@ namespace Nekoyume.Game.Quest
     [Serializable]
     public class BattleQuest : Quest
     {
+        public override QuestType QuestType => QuestType.Adventure;
+
         public BattleQuest(BattleQuestSheet.Row data) : base(data)
         {
         }
