@@ -39,9 +39,12 @@ namespace Nekoyume.Game.Quest
         public bool Complete { get; protected set; }
 
         protected int Goal { get; }
+
+        public int Id { get; }
         
         protected Quest(QuestSheet.Row data)
         {
+            Id = data.Id;
             Goal = data.Goal;
         }
 
@@ -54,6 +57,7 @@ namespace Nekoyume.Game.Quest
         {
             Complete = ((Bencodex.Types.Boolean) serialized[(Text) "complete"]).Value;
             Goal = (int) ((Integer) serialized[(Bencodex.Types.Text) "goal"]).Value;
+            Id = (int) ((Integer) serialized[(Bencodex.Types.Text) "id"]).Value;
         }
 
         public virtual IValue Serialize() =>
@@ -137,7 +141,11 @@ namespace Nekoyume.Game.Quest
 
         public QuestList(Bencodex.Types.List serialized) : this()
         {
-            quests = serialized.Select(q => Quest.Deserialize((Bencodex.Types.Dictionary) q))
+            var current = serialized.Select(q => Quest.Deserialize((Bencodex.Types.Dictionary) q))
+                .ToList();
+            var currentIds = current.Select(i => i.Id).ToList();
+            quests = quests
+                .Select(q => currentIds.Contains(q.Id) ? current.First(i => i.Id == q.Id) : q)
                 .ToList();
         }
 
