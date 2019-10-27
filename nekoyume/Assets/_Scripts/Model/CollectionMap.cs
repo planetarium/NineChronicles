@@ -96,7 +96,7 @@ namespace Nekoyume.Model
         public int this[int key]
         {
             get => _dictionary[key];
-            set => Add(new KeyValuePair<int, int>(key, value));
+            set => _dictionary[key] = value;
         }
 
         public ICollection<int> Keys => _dictionary.Keys;
