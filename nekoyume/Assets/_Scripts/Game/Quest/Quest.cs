@@ -35,6 +35,7 @@ namespace Nekoyume.Game.Quest
                 ["worldQuest"] = d => new WorldQuest(d),
                 ["itemEnhancementQuest"] = d => new ItemEnhancementQuest(d),
                 ["generalQuest"] = d => new GeneralQuest(d),
+                ["itemGradeQuest"] = d => new ItemGradeQuest(d),
             };
 
         public bool Complete { get; protected set; }
@@ -105,52 +106,51 @@ namespace Nekoyume.Game.Quest
     public class QuestList : IEnumerable<Quest>, IState
     {
         private readonly List<Quest> quests;
-        
+
         public QuestList()
         {
             quests = new List<Quest>();
-            foreach (var data in Game.instance.TableSheets.WorldQuestSheet.OrderedList)
+            foreach (var questData in Game.instance.TableSheets.QuestSheet.OrderedList)
             {
-                var quest = new WorldQuest(data);
-                quests.Add(quest);
-            }
-
-            foreach (var collectData in Game.instance.TableSheets.CollectQuestSheet.OrderedList)
-            {
-                var quest = new CollectQuest(collectData);
-                quests.Add(quest);
-            }
-
-            foreach (var combinationData in Game.instance.TableSheets.CombinationQuestSheet.OrderedList)
-            {
-                var quest = new CombinationQuest(combinationData);
-                quests.Add(quest);
-            }
-
-            foreach (var tradeQuestData in Game.instance.TableSheets.TradeQuestSheet.OrderedList)
-            {
-                var quest = new TradeQuest(tradeQuestData);
-                quests.Add(quest);
-            }
-
-            foreach (var monsterQuestData in Game.instance.TableSheets.MonsterQuestSheet.OrderedList)
-            {
-                var quest = new MonsterQuest(monsterQuestData);
-                quests.Add(quest);
-            }
-
-            foreach (var itemEnhancementQuestData in Game.instance.TableSheets.ItemEnhancementQuestSheet.OrderedList)
-            {
-                var quest = new ItemEnhancementQuest(itemEnhancementQuestData);
-                quests.Add(quest);
-            }
-
-            foreach (var generalQuestData in Game.instance.TableSheets.GeneralQuestSheet.OrderedList)
-            {
-                var quest = new GeneralQuest(generalQuestData);
-                quests.Add(quest);
+                Quest quest;
+                switch (questData)
+                {
+                    case CollectQuestSheet.Row row:
+                        quest = new CollectQuest(row);
+                        quests.Add(quest);
+                        break;
+                    case CombinationQuestSheet.Row row1:
+                        quest = new CombinationQuest(row1);
+                        quests.Add(quest);
+                        break;
+                    case GeneralQuestSheet.Row row2:
+                        quest = new GeneralQuest(row2);
+                        quests.Add(quest);
+                        break;
+                    case ItemEnhancementQuestSheet.Row row3:
+                        quest = new ItemEnhancementQuest(row3);
+                        quests.Add(quest);
+                        break;
+                    case ItemGradeQuestSheet.Row row4:
+                        quest = new ItemGradeQuest(row4);
+                        quests.Add(quest);
+                        break;
+                    case MonsterQuestSheet.Row row5:
+                        quest = new MonsterQuest(row5);
+                        quests.Add(quest);
+                        break;
+                    case TradeQuestSheet.Row row6:
+                        quest = new TradeQuest(row6);
+                        quests.Add(quest);
+                        break;
+                    case WorldQuestSheet.Row row7:
+                        quest = new WorldQuest(row7);
+                        quests.Add(quest);
+                        break;
+                }
             }
         }
+
 
         public QuestList(Bencodex.Types.List serialized) : this()
         {
@@ -242,5 +242,12 @@ namespace Nekoyume.Game.Quest
 
         public IValue Serialize() =>
             new Bencodex.Types.List(this.Select(q => q.Serialize()));
+
+        public void UpdateItemGradeQuest(ItemUsable itemUsable)
+        {
+            var quest = quests.OfType<ItemGradeQuest>()
+                .FirstOrDefault(i => i.Grade == itemUsable.Data.Grade && !i.Complete);
+            quest?.Update(itemUsable);
+        }
     }
 }

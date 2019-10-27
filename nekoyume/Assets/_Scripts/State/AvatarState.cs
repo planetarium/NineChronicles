@@ -187,6 +187,13 @@ namespace Nekoyume.State
             UpdateCompletedQuest();
         }
 
+        public void UpdateItemGradeQuest(ItemUsable itemUsable)
+        {
+            itemMap.Add(inventory.AddItem(itemUsable));
+            questList.UpdateItemGradeQuest(itemUsable);
+            UpdateCompletedQuest();
+        }
+
         public override IValue Serialize() =>
             new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
             {
