@@ -54,6 +54,7 @@ namespace Nekoyume.Model
         public Helm helm;
         public SetItem set;
         public CollectionMap monsterMap;
+        public CollectionMap eventMap;
 
         private List<Equipment> Equipments { get; set; }
 
@@ -63,6 +64,7 @@ namespace Nekoyume.Model
             Inventory = avatarState.inventory;
             worldStage = avatarState.worldStage;
             monsterMap = new CollectionMap();
+            eventMap = new CollectionMap();
             PostConstruction();
         }
 
@@ -113,6 +115,7 @@ namespace Nekoyume.Model
         protected override void OnDead()
         {
             base.OnDead();
+            eventMap.Add(new KeyValuePair<int, int>((int) QuestEventType.Die, 1));
             Simulator.Lose = true;
         }
         
@@ -182,7 +185,13 @@ namespace Nekoyume.Model
             if (Exp.Current < Exp.Max)
                 return;
 
+            var level = Level;
             Level = Game.Game.instance.TableSheets.LevelSheet.GetLevel(Exp.Current);
+            // UI에서 레벨업 처리시 NRE 회피
+            if (level < Level && !(eventMap is null))
+            {
+                eventMap[(int) QuestEventType.Level] = Level;
+            }
             UpdateExp();
         }
 

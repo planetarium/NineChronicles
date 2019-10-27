@@ -29,6 +29,7 @@ namespace Nekoyume.TableData
         public TradeQuestSheet TradeQuestSheet { get; private set; }
 
         public ItemEnhancementQuestSheet ItemEnhancementQuestSheet { get; private set; }
+        public GeneralQuestSheet GeneralQuestSheet { get; private set; }
         public SkillBuffSheet SkillBuffSheet { get; private set; }
         public MonsterQuestSheet MonsterQuestSheet { get; private set; }
         public EquipmentItemSetEffectSheet EquipmentItemSetEffectSheet { get; private set; }
@@ -135,6 +136,10 @@ namespace Nekoyume.TableData
                     ItemEnhancementQuestSheet = new ItemEnhancementQuestSheet();
                     ItemEnhancementQuestSheet.Set(csv);
                     break;
+                case nameof(TableData.GeneralQuestSheet):
+                    GeneralQuestSheet = new GeneralQuestSheet();
+                    GeneralQuestSheet.Set(csv);
+                    break;
                 case nameof(TableData.SkillBuffSheet):
                     SkillBuffSheet = new SkillBuffSheet();
                     SkillBuffSheet.Set(csv);
@@ -172,7 +177,8 @@ namespace Nekoyume.TableData
             QuestSheet.Set(CombinationQuestSheet, false);
             QuestSheet.Set(TradeQuestSheet, false);
             QuestSheet.Set(MonsterQuestSheet, false);
-            QuestSheet.Set(ItemEnhancementQuestSheet);
+            QuestSheet.Set(ItemEnhancementQuestSheet, false);
+            QuestSheet.Set(GeneralQuestSheet);
         }
     }
 }

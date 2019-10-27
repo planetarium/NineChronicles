@@ -4,6 +4,7 @@ using System.Linq;
 using Bencodex.Types;
 using Libplanet;
 using Nekoyume.Battle;
+using Nekoyume.EnumType;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Mail;
 using Nekoyume.Game.Quest;
@@ -21,7 +22,7 @@ namespace Nekoyume.State
         public int characterId;
         public int level;
         public long exp;
-        public Inventory inventory;
+        public Game.Item.Inventory inventory;
         public int worldStage;
         public DateTimeOffset updatedAt;
         public DateTimeOffset? clearedAt;
@@ -34,6 +35,7 @@ namespace Nekoyume.State
         public CollectionMap stageMap;
         public CollectionMap monsterMap;
         public CollectionMap itemMap;
+        public CollectionMap eventMap;
 
         public AvatarState(Address address, Address agentAddress, long blockIndex, long rewardIndex, string name = null) : base(address)
         {
@@ -46,7 +48,7 @@ namespace Nekoyume.State
             characterId = GameConfig.DefaultAvatarCharacterId;
             level = 1;
             exp = 0;
-            inventory = new Inventory();
+            inventory = new Game.Item.Inventory();
             worldStage = 1;
             updatedAt = DateTimeOffset.UtcNow;
             this.agentAddress = agentAddress;
@@ -58,6 +60,15 @@ namespace Nekoyume.State
             stageMap = new CollectionMap();
             monsterMap = new CollectionMap();
             itemMap = new CollectionMap();
+            const QuestEventType createEvent = QuestEventType.Create;
+            const QuestEventType levelEvent = QuestEventType.Level;
+            eventMap = new CollectionMap
+            {
+                new KeyValuePair<int, int>((int) createEvent, 1),
+                new KeyValuePair<int, int>((int) levelEvent, level),
+            };
+            UpdateGeneralQuest(new []{createEvent, levelEvent});
+            UpdateCompletedQuest();
         }
         
         public AvatarState(AvatarState avatarState) : base(avatarState.address)
@@ -85,7 +96,7 @@ namespace Nekoyume.State
             characterId = (int) ((Integer) serialized[(Text) "characterId"]).Value;
             level = (int) ((Integer) serialized[(Text) "level"]).Value;
             exp = (long) ((Integer) serialized[(Text) "exp"]).Value;
-            inventory = new Inventory((Bencodex.Types.List) serialized[(Text) "inventory"]);
+            inventory = new Game.Item.Inventory((Bencodex.Types.List) serialized[(Text) "inventory"]);
             worldStage = (int) ((Integer) serialized[(Text) "worldStage"]).Value;
             updatedAt = serialized[(Text) "updatedAt"].ToDateTimeOffset();
             clearedAt = serialized[(Text) "clearedAt"].ToNullableDateTimeOffset();
@@ -99,6 +110,7 @@ namespace Nekoyume.State
             serialized.TryGetValue((Text) "monsterMap", out var value2);
             monsterMap = value2 is null ? new CollectionMap() : new CollectionMap((Bencodex.Types.Dictionary) value2);
             itemMap = new CollectionMap((Bencodex.Types.Dictionary) serialized[(Text) "itemMap"]);
+            eventMap = new CollectionMap((Bencodex.Types.Dictionary) serialized[(Text) "eventMap"]);
         }
 
         public void Update(Simulator simulator)
@@ -113,19 +125,20 @@ namespace Nekoyume.State
             {
                 monsterMap.Add(pair);
             }
+            foreach (var pair in player.eventMap)
+            {
+                eventMap.Add(pair);
+            }
             if (simulator.Result == BattleLog.Result.Win)
             {
                 stageMap.Add(new KeyValuePair<int, int>(simulator.WorldStage, 1));
             }
-
             foreach (var pair in simulator.ItemMap)
             {
                 itemMap.Add(pair);
             }
 
-            questList.UpdateStageQuest(stageMap);
-            questList.UpdateMonsterQuest(monsterMap);
-            questList.UpdateCollectQuest(itemMap);
+            UpdateStageQuest();
         }
 
         public object Clone()
@@ -133,9 +146,45 @@ namespace Nekoyume.State
             return MemberwiseClone();
         }
 
-        public void Update(Mail mail)
+        public void Update(Game.Mail.Mail mail)
         {
             mailBox.Add(mail);
+        }
+
+        public void UpdateGeneralQuest(IEnumerable<QuestEventType> types)
+        {
+            eventMap = questList.UpdateGeneralQuest(types, eventMap);
+        }
+
+        private void UpdateCompletedQuest()
+        {
+            eventMap = questList.UpdateCompletedQuest(eventMap);
+        }
+
+        private void UpdateStageQuest()
+        {
+            questList.UpdateStageQuest(stageMap);
+            questList.UpdateMonsterQuest(monsterMap);
+            questList.UpdateCollectQuest(itemMap);
+            UpdateGeneralQuest(new []{QuestEventType.Level, QuestEventType.Die});
+            UpdateCompletedQuest();
+        }
+
+        public void UpdateCombinationQuest(ItemUsable itemUsable)
+        {
+            questList.UpdateCombinationQuest(itemUsable);
+            var type = itemUsable is Equipment ? QuestEventType.Equipment : QuestEventType.Consumable;
+            eventMap.Add(new KeyValuePair<int, int>((int) type, 1));
+            UpdateGeneralQuest(new[] {type});
+            UpdateCompletedQuest();
+        }
+        public void UpdateItemEnhancementQuest(Equipment equipment)
+        {
+            questList.UpdateItemEnhancementQuest(equipment);
+            var type = QuestEventType.Enhancement;
+            eventMap.Add(new KeyValuePair<int, int>((int) type, 1));
+            UpdateGeneralQuest(new[] {type});
+            UpdateCompletedQuest();
         }
 
         public override IValue Serialize() =>
@@ -158,6 +207,7 @@ namespace Nekoyume.State
                 [(Text) "stageMap"] = stageMap.Serialize(),
                 [(Text) "monsterMap"] = monsterMap.Serialize(),
                 [(Text) "itemMap"] = itemMap.Serialize(),
+                [(Text) "eventMap"] = eventMap.Serialize(),
             }.Union((Bencodex.Types.Dictionary) base.Serialize()));
     }
 }

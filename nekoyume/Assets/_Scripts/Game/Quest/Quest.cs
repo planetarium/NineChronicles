@@ -34,6 +34,7 @@ namespace Nekoyume.Game.Quest
                 ["tradeQuest"] = d => new TradeQuest(d),
                 ["worldQuest"] = d => new WorldQuest(d),
                 ["itemEnhancementQuest"] = d => new ItemEnhancementQuest(d),
+                ["generalQuest"] = d => new GeneralQuest(d),
             };
 
         public bool Complete { get; protected set; }
@@ -143,6 +144,12 @@ namespace Nekoyume.Game.Quest
                 var quest = new ItemEnhancementQuest(itemEnhancementQuestData);
                 quests.Add(quest);
             }
+
+            foreach (var generalQuestData in Game.instance.TableSheets.GeneralQuestSheet.OrderedList)
+            {
+                var quest = new GeneralQuest(generalQuestData);
+                quests.Add(quest);
+            }
         }
 
         public QuestList(Bencodex.Types.List serialized) : this()
@@ -213,6 +220,24 @@ namespace Nekoyume.Game.Quest
             var quest = quests.OfType<ItemEnhancementQuest>()
                 .FirstOrDefault(i => !i.Complete && i.Grade == equipment.Data.Grade);
             quest?.Update(equipment);
+        }
+
+        public CollectionMap UpdateGeneralQuest(IEnumerable<QuestEventType> types, CollectionMap eventMap)
+        {
+            foreach (var type in types)
+            {
+                var quest = quests.OfType<GeneralQuest>()
+                    .FirstOrDefault(i => i.Event == type && !i.Complete);
+                quest?.Update(eventMap);
+            }
+            return eventMap;
+        }
+
+        public CollectionMap UpdateCompletedQuest(CollectionMap eventMap)
+        {
+            const QuestEventType type = QuestEventType.Complete;
+            eventMap[(int) type] = quests.Count(i => i.Complete);
+            return UpdateGeneralQuest(new[] {type}, eventMap);
         }
 
         public IValue Serialize() =>
