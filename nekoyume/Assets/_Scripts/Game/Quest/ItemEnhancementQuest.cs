@@ -26,6 +26,8 @@ namespace Nekoyume.Game.Quest
             _current = (int) ((Integer) serialized[(Bencodex.Types.Text) "current"]).Value;
         }
 
+        public override QuestType QuestType => QuestType.Craft;
+
         public override void Check()
         {
             Complete = _count == _current;

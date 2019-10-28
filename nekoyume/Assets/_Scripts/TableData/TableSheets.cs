@@ -35,6 +35,7 @@ namespace Nekoyume.TableData
         public MonsterQuestSheet MonsterQuestSheet { get; private set; }
         public ItemGradeQuestSheet ItemGradeQuestSheet { get; private set; }
         public ItemTypeCollectQuestSheet ItemTypeCollectQuestSheet { get; private set; }
+        public GoldQuestSheet GoldQuestSheet { get; private set; }
         public EquipmentItemSetEffectSheet EquipmentItemSetEffectSheet { get; private set; }
         public EnemySkillSheet EnemySkillSheet { get; private set; }
         public ItemConfigForGradeSheet ItemConfigForGradeSheet { get; private set; }
@@ -159,6 +160,10 @@ namespace Nekoyume.TableData
                     ItemTypeCollectQuestSheet = new ItemTypeCollectQuestSheet();
                     ItemTypeCollectQuestSheet.Set(csv);
                     break;
+                case nameof(TableData.GoldQuestSheet):
+                    GoldQuestSheet= new GoldQuestSheet();
+                    GoldQuestSheet.Set(csv);
+                    break;
                 case nameof(TableData.EnemySkillSheet):
                     EnemySkillSheet = new EnemySkillSheet();
                     EnemySkillSheet.Set(csv);
@@ -191,7 +196,8 @@ namespace Nekoyume.TableData
             QuestSheet.Set(ItemEnhancementQuestSheet, false);
             QuestSheet.Set(GeneralQuestSheet, false);
             QuestSheet.Set(ItemGradeQuestSheet, false);
-            QuestSheet.Set(ItemTypeCollectQuestSheet);
+            QuestSheet.Set(ItemTypeCollectQuestSheet, false);
+            QuestSheet.Set(GoldQuestSheet);
         }
     }
 }

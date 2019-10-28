@@ -37,6 +37,7 @@ namespace Nekoyume.Game.Quest
                 ["generalQuest"] = d => new GeneralQuest(d),
                 ["itemGradeQuest"] = d => new ItemGradeQuest(d),
                 ["itemTypeCollectQuest"] = d => new ItemTypeCollectQuest(d),
+                ["GoldQuest"] = d => new GoldQuest(d),
             };
 
         public bool Complete { get; protected set; }
@@ -152,6 +153,10 @@ namespace Nekoyume.Game.Quest
                         quest = new ItemTypeCollectQuest(row8);
                         quests.Add(quest);
                         break;
+                    case GoldQuestSheet.Row row9:
+                        quest = new GoldQuest(row9);
+                        quests.Add(quest);
+                        break;
                 }
             }
         }
@@ -186,11 +191,14 @@ namespace Nekoyume.Game.Quest
             quest?.Update(new List<ItemBase> {itemUsable});
         }
 
-        public void UpdateTradeQuest(TradeType type)
+        public void UpdateTradeQuest(TradeType type, decimal price)
         {
             var quest = quests.OfType<TradeQuest>()
                 .FirstOrDefault(i => i.Type == type && !i.Complete);
             quest?.Check();
+            var goldQuest = quests.OfType<GoldQuest>()
+                .FirstOrDefault(i => i.Type == type && !i.Complete);
+            goldQuest?.Update(price);
         }
 
         public void UpdateStageQuest(CollectionMap stageMap)

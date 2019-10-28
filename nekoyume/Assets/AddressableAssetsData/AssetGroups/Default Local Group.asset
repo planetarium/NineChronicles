@@ -77,6 +77,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - TableCSV
+  - m_GUID: b69d4684822424a48a856b465bbbd3df
+    m_Address: Assets/AddressableAssets/TableCSV/ItemGradeQuestSheet.csv
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - TableCSV
   - m_GUID: c47ace85da330454098f65864699958b
     m_Address: Assets/AddressableAssets/TableCSV/ItemConfigForGradeSheet.csv
     m_ReadOnly: 0
@@ -99,6 +104,11 @@ MonoBehaviour:
     - TableCSV
   - m_GUID: efb441575b9840b4195d878f528b4bb0
     m_Address: Assets/AddressableAssets/TableCSV/ItemEnhancementQuestSheet.csv
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - TableCSV
+  - m_GUID: f418509c5d37fb04e835423f6a82e6ad
+    m_Address: Assets/AddressableAssets/TableCSV/ItemTypeCollectQuestSheet.csv
     m_ReadOnly: 0
     m_SerializedLabels:
     - TableCSV
