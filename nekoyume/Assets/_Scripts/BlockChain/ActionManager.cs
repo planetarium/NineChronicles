@@ -172,12 +172,13 @@ namespace Nekoyume.BlockChain
                 .Timeout(ActionTimeout); // Last() is for completion
         }
 
-        public IObservable<ActionBase.ActionEvaluation<AddItem>> AddItem(Guid itemId)
+        public IObservable<ActionBase.ActionEvaluation<AddItem>> AddItem(Guid itemId, bool canceled)
         {
             var action = new AddItem
             {
                 avatarAddress = States.Instance.CurrentAvatarState.Value.address,
                 itemId = itemId,
+                canceled = canceled
             };
             ProcessAction(action);
 

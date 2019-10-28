@@ -189,14 +189,19 @@ namespace Nekoyume.State
             UpdateCompletedQuest();
         }
 
-        public void UpdateQuestFromAddItem(ItemUsable itemUsable)
+        public void UpdateQuestFromAddItem(ItemUsable itemUsable, bool canceled)
         {
+            var pair = inventory.AddItem(itemUsable);
             if (!itemMap.ContainsKey(itemUsable.Data.Id))
             {
-                itemMap.Add(inventory.AddItem(itemUsable));
+                itemMap.Add(pair);
             }
-            questList.UpdateItemGradeQuest(itemUsable);
-            questList.UpdateItemTypeCollectQuest(new []{itemUsable});
+
+            if (!canceled)
+            {
+                questList.UpdateItemGradeQuest(itemUsable);
+                questList.UpdateItemTypeCollectQuest(new []{itemUsable});
+            }
             UpdateCompletedQuest();
 
         }

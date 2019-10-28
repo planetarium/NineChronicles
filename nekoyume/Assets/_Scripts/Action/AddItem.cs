@@ -16,6 +16,7 @@ namespace Nekoyume.Action
     {
         public Guid itemId;
         public Address avatarAddress;
+        public bool canceled;
 
         public override IAccountStateDelta Execute(IActionContext ctx)
         {
@@ -37,7 +38,7 @@ namespace Nekoyume.Action
                 return states;
 
             mail.New = false;
-            avatarState.UpdateQuestFromAddItem(mail.attachment.itemUsable);
+            avatarState.UpdateQuestFromAddItem(mail.attachment.itemUsable, canceled);
             avatarState.BlockIndex = ctx.BlockIndex;
             states = states.SetState(avatarAddress, avatarState.Serialize());
             return states;
@@ -47,12 +48,14 @@ namespace Nekoyume.Action
         {
             ["itemId"] = itemId.Serialize(),
             ["avatarAddress"] = avatarAddress.Serialize(),
+            ["canceled"] = new Bencodex.Types.Boolean(canceled),
         }.ToImmutableDictionary();
 
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
         {
             itemId = plainValue["itemId"].ToGuid();
             avatarAddress = plainValue["avatarAddress"].ToAddress();
+            canceled = ((Bencodex.Types.Boolean) plainValue["canceled"]).Value;
         }
     }
 }
