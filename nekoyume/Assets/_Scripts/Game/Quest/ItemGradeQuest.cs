@@ -12,12 +12,10 @@ namespace Nekoyume.Game.Quest
     {
         public readonly int Grade;
         private int _count;
-        private readonly int _goal;
-        private List<int> _itemIds = new List<int>();
+        private readonly List<int> _itemIds = new List<int>();
 
         public ItemGradeQuest(ItemGradeQuestSheet.Row data) : base(data)
         {
-            _goal = data.Goal;
             Grade = data.Grade;
         }
 
@@ -25,7 +23,6 @@ namespace Nekoyume.Game.Quest
         {
             Grade = (int) ((Integer) serialized[(Bencodex.Types.Text) "grade"]).Value;
             _count = (int) ((Integer) serialized[(Bencodex.Types.Text) "count"]).Value;
-            _goal = (int) ((Integer) serialized[(Bencodex.Types.Text) "goal"]).Value;
             _itemIds = serialized[(Bencodex.Types.Text) "itemIds"].ToList(i => (int) ((Integer) i).Value);
         }
 
@@ -57,7 +54,6 @@ namespace Nekoyume.Game.Quest
             {
                 [(Text) "grade"] = (Integer) Grade,
                 [(Text) "count"] = (Integer) _count,
-                [(Text) "goal"] = (Integer) _goal,
                 [(Text) "itemIds"] = (Bencodex.Types.List) _itemIds.Select(i => (Integer) i).Serialize(),
             }.Union((Bencodex.Types.Dictionary) base.Serialize()));
 

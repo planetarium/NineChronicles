@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.IO;
+using System.Linq;
 using UniRx;
 using UnityEngine;
 
@@ -33,6 +34,7 @@ namespace Nekoyume.TableData
         public SkillBuffSheet SkillBuffSheet { get; private set; }
         public MonsterQuestSheet MonsterQuestSheet { get; private set; }
         public ItemGradeQuestSheet ItemGradeQuestSheet { get; private set; }
+        public ItemTypeCollectQuestSheet ItemTypeCollectQuestSheet { get; private set; }
         public EquipmentItemSetEffectSheet EquipmentItemSetEffectSheet { get; private set; }
         public EnemySkillSheet EnemySkillSheet { get; private set; }
         public ItemConfigForGradeSheet ItemConfigForGradeSheet { get; private set; }
@@ -153,6 +155,10 @@ namespace Nekoyume.TableData
                     ItemGradeQuestSheet = new ItemGradeQuestSheet();
                     ItemGradeQuestSheet.Set(csv);
                     break;
+                case nameof(TableData.ItemTypeCollectQuestSheet):
+                    ItemTypeCollectQuestSheet = new ItemTypeCollectQuestSheet();
+                    ItemTypeCollectQuestSheet.Set(csv);
+                    break;
                 case nameof(TableData.EnemySkillSheet):
                     EnemySkillSheet = new EnemySkillSheet();
                     EnemySkillSheet.Set(csv);
@@ -184,7 +190,8 @@ namespace Nekoyume.TableData
             QuestSheet.Set(MonsterQuestSheet, false);
             QuestSheet.Set(ItemEnhancementQuestSheet, false);
             QuestSheet.Set(GeneralQuestSheet, false);
-            QuestSheet.Set(ItemGradeQuestSheet);
+            QuestSheet.Set(ItemGradeQuestSheet, false);
+            QuestSheet.Set(ItemTypeCollectQuestSheet);
         }
     }
 }

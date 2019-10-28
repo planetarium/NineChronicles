@@ -138,7 +138,7 @@ namespace Nekoyume.State
                 itemMap.Add(pair);
             }
 
-            UpdateStageQuest();
+            UpdateStageQuest(simulator.rewards);
         }
 
         public object Clone()
@@ -161,11 +161,12 @@ namespace Nekoyume.State
             eventMap = questList.UpdateCompletedQuest(eventMap);
         }
 
-        private void UpdateStageQuest()
+        private void UpdateStageQuest(IEnumerable<ItemBase> items)
         {
             questList.UpdateStageQuest(stageMap);
             questList.UpdateMonsterQuest(monsterMap);
             questList.UpdateCollectQuest(itemMap);
+            questList.UpdateItemTypeCollectQuest(items);
             UpdateGeneralQuest(new []{QuestEventType.Level, QuestEventType.Die});
             UpdateCompletedQuest();
         }
@@ -173,6 +174,7 @@ namespace Nekoyume.State
         public void UpdateCombinationQuest(ItemUsable itemUsable)
         {
             questList.UpdateCombinationQuest(itemUsable);
+            questList.UpdateItemTypeCollectQuest(new []{itemUsable});
             var type = itemUsable is Equipment ? QuestEventType.Equipment : QuestEventType.Consumable;
             eventMap.Add(new KeyValuePair<int, int>((int) type, 1));
             UpdateGeneralQuest(new[] {type});
@@ -187,13 +189,17 @@ namespace Nekoyume.State
             UpdateCompletedQuest();
         }
 
-        public void UpdateItemGradeQuest(ItemUsable itemUsable)
+        public void UpdateQuestFromAddItem(ItemUsable itemUsable)
         {
-            itemMap.Add(inventory.AddItem(itemUsable));
+            if (!itemMap.ContainsKey(itemUsable.Data.Id))
+            {
+                itemMap.Add(inventory.AddItem(itemUsable));
+            }
             questList.UpdateItemGradeQuest(itemUsable);
+            questList.UpdateItemTypeCollectQuest(new []{itemUsable});
             UpdateCompletedQuest();
-        }
 
+        }
         public override IValue Serialize() =>
             new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
             {

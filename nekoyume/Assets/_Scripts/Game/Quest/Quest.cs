@@ -36,6 +36,7 @@ namespace Nekoyume.Game.Quest
                 ["itemEnhancementQuest"] = d => new ItemEnhancementQuest(d),
                 ["generalQuest"] = d => new GeneralQuest(d),
                 ["itemGradeQuest"] = d => new ItemGradeQuest(d),
+                ["itemTypeCollectQuest"] = d => new ItemTypeCollectQuest(d),
             };
 
         public bool Complete { get; protected set; }
@@ -147,6 +148,10 @@ namespace Nekoyume.Game.Quest
                         quest = new WorldQuest(row7);
                         quests.Add(quest);
                         break;
+                    case ItemTypeCollectQuestSheet.Row row8:
+                        quest = new ItemTypeCollectQuest(row8);
+                        quests.Add(quest);
+                        break;
                 }
             }
         }
@@ -248,6 +253,16 @@ namespace Nekoyume.Game.Quest
             var quest = quests.OfType<ItemGradeQuest>()
                 .FirstOrDefault(i => i.Grade == itemUsable.Data.Grade && !i.Complete);
             quest?.Update(itemUsable);
+        }
+
+        public void UpdateItemTypeCollectQuest(IEnumerable<ItemBase> items)
+        {
+            foreach (var item in items)
+            {
+                var quest = quests.OfType<ItemTypeCollectQuest>()
+                    .FirstOrDefault(i => i.ItemType == item.Data.ItemType && !i.Complete);
+                quest?.Update(item);
+            }
         }
     }
 }
