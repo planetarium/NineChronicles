@@ -24,6 +24,9 @@ RUN /scripts/build.sh
 
 FROM bitnami/minideb:stretch
 
+RUN apt update && \
+  apt install -y ca-certificates
+
 COPY --from=build /src/Build/LinuxHeadless /app
 COPY --from=build /scripts/entrypoint.sh /entrypoint.sh
 VOLUME /data
