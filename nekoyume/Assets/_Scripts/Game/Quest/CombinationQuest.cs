@@ -15,6 +15,7 @@ namespace Nekoyume.Game.Quest
         public int current;
 
         public new CombinationQuestSheet.Row Data { get; }
+        public override QuestType QuestType => QuestType.Craft;
 
         public CombinationQuest(CombinationQuestSheet.Row data) : base(data)
         {
@@ -31,7 +32,7 @@ namespace Nekoyume.Game.Quest
 
         public override string ToInfo()
         {
-            var format = LocalizationManager.Localize("QUEST_COLLECT_CURRENT_INFO_FORMAT");
+            var format = LocalizationManager.Localize("QUEST_COMBINATION_CURRENT_INFO_FORMAT");
             return string.Format(format, Data.ItemSubType.GetLocalizedString(), current, Data.Goal);
         }
 

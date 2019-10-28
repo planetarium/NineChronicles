@@ -5,9 +5,13 @@ using System.Linq;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
+using Nekoyume.Data;
+using Nekoyume.EnumType;
+using Nekoyume.Game;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Mail;
 using Nekoyume.State;
+using UnityEngine;
 
 namespace Nekoyume.Action
 {
@@ -61,11 +65,31 @@ namespace Nekoyume.Action
                 {
                     return states;
                 }
+
+                if (materials.Contains(material))
+                {
+                    Debug.LogWarning($"Duplicate materials found. {material}");
+                    return states;
+                }
+
+                if (item.ItemId == materialId)
+                {
+                    return states;
+                }
+
+                if (material.Data.ItemSubType != item.Data.ItemSubType)
+                {
+                    Debug.LogWarning($"Expected ItemSubType is {item.Data.ItemSubType}. " +
+                                     "but Material SubType is {material.Data.ItemSubType}");
+                    return states;
+                }
+
                 materials.Add(material);
             }
 
             var equipment = (Equipment) item;
             equipment.LevelUp();
+            equipment.BuffSkills.Add(GetRandomBuffSkill(ctx.Random));
             var requiredGold = Math.Max(RequiredGoldPerLevel, RequiredGoldPerLevel * equipment.level * equipment.level);
 
             if (agentState.gold < requiredGold)
@@ -100,6 +124,16 @@ namespace Nekoyume.Action
             itemId = plainValue["itemId"].ToGuid();
             materialIds = plainValue["materialIds"].ToList(StateExtensions.ToGuid);
             avatarAddress = plainValue["avatarAddress"].ToAddress();
+        }
+
+        private static BuffSkill GetRandomBuffSkill(IRandom random)
+        {
+            var skillRows = Game.Game.instance.TableSheets.SkillSheet.OrderedList
+                .Where(i => (i.SkillType == SkillType.Debuff || i.SkillType == SkillType.Buff) &&
+                            i.SkillCategory != SkillCategory.Heal)
+                .ToList();
+            var skillRow = skillRows[random.Next(0, skillRows.Count)];
+            return (BuffSkill) SkillFactory.Get(skillRow, 0, 100);
         }
     }
 }

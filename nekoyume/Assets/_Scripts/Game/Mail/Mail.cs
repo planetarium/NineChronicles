@@ -10,7 +10,7 @@ namespace Nekoyume.Game.Mail
 {
     public enum MailType
     {
-        Forge = 1,
+        Workshop = 1,
         Auction,
         System
     }
@@ -25,11 +25,12 @@ namespace Nekoyume.Game.Mail
                 ["combinationMail"] = d => new CombinationMail(d),
                 ["sellCancel"] = d => new SellCancelMail(d),
                 ["seller"] = d => new SellerMail(d),
+                ["itemEnhance"] = d => new ItemEnhanceMail(d),
             };
 
         public bool New;
         public long blockIndex;
-        public virtual MailType MailType { get => MailType.System; }
+        public virtual MailType MailType => MailType.System;
 
         protected Mail(long blockIndex)
         {

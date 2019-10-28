@@ -15,8 +15,7 @@ namespace Nekoyume.UI
 {
     public class Status : Widget
     {
-        public Text TextLevel;
-        public Text TextName;
+        public Text TextLvName;
         public Text TextHP;
         public Text TextExp;
         public Image HPBar;
@@ -122,8 +121,7 @@ namespace Nekoyume.UI
             var level = _player.Level;
 
             _avatarName = States.Instance.CurrentAvatarState.Value.name;
-            TextLevel.text = $"LV. {level}";
-            TextName.text = _avatarName;
+            TextLvName.text = $"<color=#B38271>LV. {level}</color> {_avatarName}";
             var displayHp = math.max(_player.CurrentHP, 0);
             TextHP.text = $"HP {displayHp} / {_player.HP}";
             TextExp.text = $"EXP {_player.Model.Value.Exp.Need - _player.EXPMax + _player.EXP} / {_player.Model.Value.Exp.Need}";

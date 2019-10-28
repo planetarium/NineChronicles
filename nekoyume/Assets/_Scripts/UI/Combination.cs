@@ -44,6 +44,9 @@ namespace Nekoyume.UI
         public Button itemEnhancementPopupButton;
         public ItemEnhancementView equipmentEnhanceView;
         public ItemEnhancementView[] equipmentEnhanceMaterialViews;
+        public Text itemEnhancementPopupButtonText;
+        public Text itemEnhancementButtonText;
+        public Text recipeCloseButtonText;
 
         private Stage _stage;
         private Game.Character.Player _player;
@@ -84,6 +87,9 @@ namespace Nekoyume.UI
 
             materialsTitleText.text = LocalizationManager.Localize("UI_COMBINATION_MATERIALS");
             combinationButtonText.text = LocalizationManager.Localize("UI_COMBINATION_ITEM");
+            itemEnhancementPopupButtonText.text = LocalizationManager.Localize("UI_COMBINATION_ENHANCEMENT_POPUP");
+            itemEnhancementButtonText.text = LocalizationManager.Localize("UI_COMBINATION_ENHANCEMENT");
+            recipeCloseButtonText.text = LocalizationManager.Localize("UI_COMBINATION_RECIPE_CLOSE");
 
             SimpleItemCountPopup = Find<SimpleItemCountPopup>();
 
@@ -102,7 +108,7 @@ namespace Nekoyume.UI
                 .AddTo(gameObject);
             SharedModel.OnMaterialRemoved.Subscribe(materialId => SubscribeOnMaterial(materialId, false))
                 .AddTo(gameObject);
-            SharedModel.enhanceEquipment.Subscribe(equipmentEnhanceView.SetData).AddTo(gameObject);
+            SharedModel.enhanceEquipment.Subscribe(SubscribeEnhanceEquipment).AddTo(gameObject);
             SharedModel.enhanceMaterials.ObserveAdd().Subscribe(SubscribeEnhanceMaterialAdd).AddTo(gameObject);
             SharedModel.enhanceMaterials.ObserveRemove().Subscribe(SubscribeEnhanceMaterialRemove).AddTo(gameObject);
 
@@ -152,6 +158,7 @@ namespace Nekoyume.UI
                 .AddTo(gameObject);
 
             UpdateStagedItems();
+            requiredPointText.text = Action.Combination.RequiredPoint.ToString();
         }
 
         public override void Show()
@@ -174,13 +181,12 @@ namespace Nekoyume.UI
         {
             Find<BottomMenu>().Close(ignoreCloseAnimation);
 
-            foreach (var item in materialViews)
-            {
-                item.Clear();
-            }
+            SharedModel.RemoveEquipmentMaterial();
+            SharedModel.Materials.Clear();
 
             base.Close(ignoreCloseAnimation);
             _disposable.Dispose();
+            CloseItemEnhancement();
 
             AudioController.instance.PlayMusic(AudioController.MusicCode.Main);
         }
@@ -380,6 +386,7 @@ namespace Nekoyume.UI
             }
 
             equipmentEnhanceMaterialViews[e.Index].SetData(e.Value);
+            inventory.SharedModel.DimmedFunc.SetValueAndForceNotify(DimmedFuncForEnhancement);
         }
 
         private void SubscribeEnhanceMaterialRemove(CollectionRemoveEvent<EnhanceEquipment> e)
@@ -403,6 +410,17 @@ namespace Nekoyume.UI
                     item.Clear();
                 }
             }
+
+            inventory.SharedModel.DimmedFunc.SetValueAndForceNotify(DimmedFuncForEnhancement);
+        }
+
+        private void SubscribeEnhanceEquipment(EnhanceEquipment e)
+        {
+            equipmentEnhanceView.SetData(e);
+            if (e is null)
+                return;
+
+            inventory.SharedModel.DimmedFunc.SetValueAndForceNotify(DimmedFuncForEnhancement);
         }
 
         #endregion
@@ -422,10 +440,24 @@ namespace Nekoyume.UI
                    row.ItemSubType != ItemSubType.MonsterPart;
         }
 
-        private static bool DimmedFuncForEnhancement(InventoryItem inventoryItem)
+        private bool DimmedFuncForEnhancement(InventoryItem inventoryItem)
         {
             var row = inventoryItem.ItemBase.Value.Data;
-            return row.ItemType != ItemType.Equipment;
+            var dimmed = row.ItemType != ItemType.Equipment;
+            var enhancementEquipment = SharedModel.enhanceEquipment.Value?.ItemBase.Value;
+            if (!(inventoryItem.ItemBase.Value is Equipment equipment) || enhancementEquipment is null)
+            {
+                return dimmed;
+            }
+
+            return dimmed
+                   || row.ItemSubType != enhancementEquipment.Data.ItemSubType
+                   || equipment.ItemId == ((Equipment) enhancementEquipment).ItemId
+                   || SharedModel.enhanceMaterials
+                       .Select(i => i.ItemBase.Value)
+                       .OfType<Equipment>()
+                       .Select(i => i.ItemId).Contains(equipment.ItemId);
+
         }
 
         private void UpdateStagedItems(int startIndex = 0)

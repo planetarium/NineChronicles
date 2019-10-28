@@ -12,15 +12,15 @@ namespace Nekoyume.Game.Item
     public abstract class ItemUsable : ItemBase
     {
         public new ConsumableItemSheet.Row Data { get; }
-
+        public Guid ItemId { get; }
         public StatsMap StatsMap { get; }
         public List<Skill> Skills { get; }
         public List<BuffSkill> BuffSkills { get; }
-        public Guid ItemId { get; }
 
         protected ItemUsable(ConsumableItemSheet.Row data, Guid id) : base(data)
         {
             Data = data;
+            ItemId = id;
             StatsMap = new StatsMap();
             foreach (var statData in data.Stats)
             {
@@ -29,8 +29,6 @@ namespace Nekoyume.Game.Item
 
             Skills = new List<Skill>();
             BuffSkills = new List<BuffSkill>();
-
-            ItemId = id;
         }
 
         protected bool Equals(ItemUsable other)
@@ -60,17 +58,17 @@ namespace Nekoyume.Game.Item
             foreach (var skill in Skills)
             {
                 sb.Append($"{skill.chance * 100}% 확률로");
-                sb.Append($" {skill.effect.skillTargetType}에게");
+                sb.Append($" {skill.skillRow.SkillTargetType}에게");
                 sb.Append($" {skill.power} 위력의");
-                sb.Append($" {skill.skillRow.ElementalType}속성 {skill.effect.skillType}");
+                sb.Append($" {skill.skillRow.ElementalType}속성 {skill.skillRow.SkillType}");
             }
             
             foreach (var buffSkill in BuffSkills)
             {
                 sb.Append($"{buffSkill.chance * 100}% 확률로");
-                sb.Append($" {buffSkill.effect.skillTargetType}에게");
+                sb.Append($" {buffSkill.skillRow.SkillTargetType}에게");
                 sb.Append($" {buffSkill.power} 위력의");
-                sb.Append($" {buffSkill.skillRow.ElementalType}속성 {buffSkill.effect.skillType}");
+                sb.Append($" {buffSkill.skillRow.ElementalType}속성 {buffSkill.skillRow.SkillType}");
             }
 
             return sb.ToString().Trim();
@@ -79,9 +77,10 @@ namespace Nekoyume.Game.Item
         public override IValue Serialize() =>
             new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
             {
+                [(Text) "itemId"] = ItemId.Serialize(),
                 [(Text) "statsMap"] = StatsMap.Serialize(),
                 [(Text) "skills"] = new Bencodex.Types.List(Skills.Select(s => s.Serialize())),
-                [(Text) "itemId"] = ItemId.Serialize(),
+                [(Text) "buffSkills"] = new Bencodex.Types.List(BuffSkills.Select(s => s.Serialize())),
             }.Union((Bencodex.Types.Dictionary) base.Serialize()));
     }
 }

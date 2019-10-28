@@ -86,6 +86,16 @@ namespace Nekoyume.Game
             _statMaps[key].AdditionalValue += additionalValue;
         }
 
+        public void SetStatAdditionalValue(StatType key, decimal additionalValue)
+        {
+            if (!_statMaps.ContainsKey(key))
+            {
+                _statMaps.Add(key, new StatMapEx(key));
+            }
+
+            _statMaps[key].AdditionalValue = additionalValue;
+        }
+
         public string GetInformation()
         {
             var sb = new StringBuilder();
@@ -140,6 +150,16 @@ namespace Nekoyume.Game
                 _statMaps[StatTypeExtension.Deserialize((Binary) kv.Key)] =
                     new StatMapEx((Bencodex.Types.Dictionary) kv.Value);
             }
+        }
+
+        public IEnumerable<(StatType, int)> GetStats()
+        {
+            yield return (StatType.HP, HP);
+            yield return (StatType.ATK, ATK);
+            yield return (StatType.DEF, DEF);
+            yield return (StatType.DOG, DOG);
+            yield return (StatType.CRI, CRI);
+            yield return (StatType.SPD, SPD);
         }
     }
 }

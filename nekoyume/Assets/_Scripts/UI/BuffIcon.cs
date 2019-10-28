@@ -1,5 +1,4 @@
-﻿using Nekoyume.Helper;
-using Nekoyume.Model;
+﻿using Nekoyume.Model;
 using Nekoyume.TableData;
 using TMPro;
 using UnityEngine;

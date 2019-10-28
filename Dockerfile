@@ -28,6 +28,7 @@ RUN apt update && \
   apt install -y ca-certificates
 
 COPY --from=build /src/Build/LinuxHeadless /app
+COPY --from=build /scripts/entrypoint.sh /entrypoint.sh
 VOLUME /data
 
-ENTRYPOINT ["/app/nekoyume", "--storage-path=/data/planetarium"]
+ENTRYPOINT ["/entrypoint.sh", "--storage-path=/data/planetarium"]

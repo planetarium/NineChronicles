@@ -44,8 +44,8 @@ namespace Tests
 
             //Check selected skill is first
             var skill = monster.Skills.Select(_random);
-            var id = monster.Skills.OrderBy(i => i.chance).First().skillRow.SkillEffectId;
-            Assert.AreEqual(id, skill.effect.id);
+            var id = monster.Skills.OrderBy(i => i.chance).First().skillRow.Id;
+            Assert.AreEqual(id, skill.skillRow.Id);
         }
 
         [Test]
@@ -54,14 +54,14 @@ namespace Tests
             Assert.AreEqual(1, _player.Skills.Count());
             foreach (var skillRow in Game.instance.TableSheets.SkillSheet)
             {
-                var skill = SkillFactory.Get(skillRow, (int) 1.3m, .1m);
+                var skill = SkillFactory.Get(skillRow, (int) 1.3m, 10);
                 _player.Skills.Add(skill);
             }
             Assert.AreEqual(1 + Game.instance.TableSheets.SkillSheet.Count, _player.Skills.Count());
 
             //Check selected skill is first
             var selected = _player.Skills.Select(_random);
-            Assert.AreEqual(1, selected.effect.id);
+            Assert.AreEqual(1, selected.skillRow.Id);
         }
 
         [Test]

@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using Assets.SimpleLocalization;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
 using Nekoyume.Game.Factory;
@@ -22,7 +24,7 @@ namespace Nekoyume.UI
         public enum MailTabState
         {
             All = 0,
-            Forge,
+            Workshop,
             Auction,
             System
         }
@@ -41,10 +43,13 @@ namespace Nekoyume.UI
             public MailTabState state;
             private Shadow[] _textShadows;
 
-            public void Init(MailTabState state)
+            public void Init(MailTabState state, string localizationKey)
             {
                 if (!button) return;
                 _textShadows = button.GetComponentsInChildren<Shadow>();
+                var localized = LocalizationManager.Localize(localizationKey);
+                var content = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(localized.ToLower());
+                text.text = content;
             }
 
             public void ChangeColor(bool isHighlighted = false)
@@ -57,25 +62,37 @@ namespace Nekoyume.UI
                     shadow.effectColor = isHighlighted ? _highlightedColor : Color.black;
             }
         }
-        
+
+        public static readonly Dictionary<MailType, Sprite> mailIcons = new Dictionary<MailType, Sprite>();
+
         public MailTabState tabState;
         public MailScrollerController scroller;
         public TabButton allButton;
-        public TabButton forgeButton;
+        public TabButton workshopButton;
         public TabButton auctionButton;
         public TabButton systemButton;
 
         private static Sprite _selectedButtonSprite;
         private MailBox _mailBox;
 
+        #region override
+
         public override void Initialize()
         {
             base.Initialize();
             _selectedButtonSprite = Resources.Load<Sprite>("UI/Textures/button_blue_01");
-            allButton.Init(MailTabState.All);
-            forgeButton.Init(MailTabState.Forge);
-            auctionButton.Init(MailTabState.Auction);
-            systemButton.Init(MailTabState.System);
+
+            var path = "UI/Textures/icon_mail_Auction";
+            mailIcons.Add(MailType.Auction, Resources.Load<Sprite>(path));
+            path = "UI/Textures/icon_mail_Workshop";
+            mailIcons.Add(MailType.Workshop, Resources.Load<Sprite>(path));
+            path = "UI/Textures/icon_mail_System";
+            mailIcons.Add(MailType.System, Resources.Load<Sprite>(path));
+
+            allButton.Init(MailTabState.All, "ALL");
+            workshopButton.Init(MailTabState.Workshop, "UI_COMBINATION");
+            auctionButton.Init(MailTabState.Auction, "UI_SHOP");
+            systemButton.Init(MailTabState.System, "SYSTEM");
         }
 
         public override void Show()
@@ -86,11 +103,13 @@ namespace Nekoyume.UI
             base.Show();
         }
 
+        #endregion
+
         public void ChangeState(int state)
         {
             tabState = (MailTabState) state;
             allButton.ChangeColor(tabState == MailTabState.All);
-            forgeButton.ChangeColor(tabState == MailTabState.Forge);
+            workshopButton.ChangeColor(tabState == MailTabState.Workshop);
             auctionButton.ChangeColor(tabState == MailTabState.Auction);
             systemButton.ChangeColor(tabState == MailTabState.System);
 
@@ -105,12 +124,12 @@ namespace Nekoyume.UI
 
         public void Read(CombinationMail mail)
         {
-            var attachment = (Action.Combination.Result) mail.attachment;
+            var attachment = (Action.Combination.ResultModel) mail.attachment;
             var item = attachment.itemUsable;
             var popup = Find<CombinationResultPopup>();
             var materialItems = attachment.materials
-                .Select(material => new {material, item = ItemFactory.CreateMaterial(material.id, Guid.Empty)})
-                .Select(t => new CombinationMaterial(t.item, t.material.count, t.material.count, t.material.count))
+                .Select(pair => new {pair, item = ItemFactory.CreateMaterial(pair.Key, Guid.Empty)})
+                .Select(t => new CombinationMaterial(t.item, t.pair.Value, t.pair.Value, t.pair.Value))
                 .ToList();
             var model = new UI.Model.CombinationResultPopup(new CountableItem(item, 1))
             {
@@ -167,7 +186,7 @@ namespace Nekoyume.UI
             var attachment = (Buy.SellerResult) sellerMail.attachment;
             //TODO 관련 기획이 끝나면 별도 UI를 생성
             AddGold(attachment.gold);
-            Notification.Push($"{attachment.shopItem.Price:n0} 골드 획득");
+            Notification.Push(MailType.Auction, $"{attachment.shopItem.Price:n0} 골드 획득");
         }
 
         public void Read(ItemEnhanceMail itemEnhanceMail)

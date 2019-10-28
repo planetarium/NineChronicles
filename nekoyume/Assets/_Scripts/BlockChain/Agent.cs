@@ -9,6 +9,7 @@ using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Assets.SimpleLocalization;
 using AsyncIO;
 using Bencodex.Types;
 using Libplanet;
@@ -140,8 +141,6 @@ namespace Nekoyume.BlockChain
                 blocks,
                 privateKey,
                 appProtocolVersion: 1,
-                millisecondsDialTimeout: SwarmDialTimeout,
-                millisecondsLinger: SwarmLinger,
                 host: host,
                 listenPort: port,
                 iceServers: iceServers,
@@ -172,23 +171,26 @@ namespace Nekoyume.BlockChain
 
             // 별도 쓰레드에서는 GameObject.GetComponent<T> 를 사용할 수 없기때문에 미리 선언.
             var loadingScreen = Widget.Find<LoadingScreen>();
-            BootstrapStarted += (_, state) => { loadingScreen.Message = "네트워크 연결을 수립하고 있습니다..."; };
+            BootstrapStarted += (_, state) => { loadingScreen.Message = LocalizationManager.Localize("UI_LOADING_BOOTSTRAP_START"); };
             PreloadProcessed += (_, state) =>
             {
                 if (loadingScreen)
                 {
                     string text;
+                    string format;
 
                     switch (state)
                     {
                         case BlockDownloadState blockDownloadState:
-                            text = "블록 다운로드 중... " +
-                                   $"{blockDownloadState.ReceivedBlockCount} / {blockDownloadState.TotalBlockCount}";
+                            format = LocalizationManager.Localize("UI_LOADING_BLOCK_DOWNLOAD");
+                            text = string.Format(format, blockDownloadState.ReceivedBlockCount,
+                                blockDownloadState.TotalBlockCount);
                             break;
 
                         case StateReferenceDownloadState stateReferenceDownloadState:
-                            text = "상태 다운로드 중... " +
-                                   $"{stateReferenceDownloadState.ReceivedStateReferenceCount} / {stateReferenceDownloadState.TotalStateReferenceCount}";
+                            format = LocalizationManager.Localize("UI_LOADING_STATE_DOWNLOAD");
+                            text = string.Format(format, stateReferenceDownloadState.ReceivedStateReferenceCount,
+                                stateReferenceDownloadState.TotalStateReferenceCount);
                             break;
 
                         case BlockStateDownloadState blockStateDownloadState:
@@ -258,7 +260,7 @@ namespace Nekoyume.BlockChain
                 yield return new WaitForSeconds(180f);
                 if (BlockIndex == current)
                 {
-                    Widget.Find<ExitPopup>().Show(current);
+                    Widget.Find<BlockFailPopup>().Show(current);
                     break;
                 }
             }
@@ -457,7 +459,10 @@ namespace Nekoyume.BlockChain
         {
             _cancellationTokenSource?.Cancel();
             // `_swarm`의 내부 큐가 비워진 다음 완전히 종료할 때까지 더 기다립니다.
-            Task.Run(async () => await _swarm?.StopAsync()).ContinueWith(_ => { store?.Dispose(); })
+            Task.Run(async () => 
+            {
+                await _swarm?.StopAsync(TimeSpan.FromMilliseconds(SwarmLinger));
+            }).ContinueWith(_ => { store?.Dispose(); })
                 .Wait(SwarmLinger + 1 * 1000);
 
             States.Dispose();
@@ -525,6 +530,7 @@ namespace Nekoyume.BlockChain
             var swarmPreloadTask = Task.Run(async () =>
             {
                 await _swarm.PreloadAsync(
+                    TimeSpan.FromMilliseconds(SwarmDialTimeout),
                     new Progress<PreloadState>(state =>
                         PreloadProcessed?.Invoke(this, state)
                     ),
@@ -624,7 +630,7 @@ namespace Nekoyume.BlockChain
 
                 if (actions.Any())
                 {
-                    var task = Task.Run(() => MakeTransaction(actions, true));
+                    var task = Task.Run(() => MakeTransaction(actions));
                     yield return new WaitUntil(() => task.IsCompleted);
                 }
             }
@@ -701,7 +707,7 @@ namespace Nekoyume.BlockChain
                         {
                             if (ex is InvalidTxNonceException invalidTxNonceException)
                             {
-                                var invalidNonceTx = blocks.Transactions[invalidTxNonceException.TxId];
+                                var invalidNonceTx = blocks.GetTransaction(invalidTxNonceException.TxId);
 
                                 if (invalidNonceTx.Signer == Address)
                                 {
@@ -713,7 +719,7 @@ namespace Nekoyume.BlockChain
                             if (ex is InvalidTxException invalidTxException)
                             {
                                 Debug.Log($"Tx[{invalidTxException.TxId}] is invalid. mark to unstage.");
-                                invalidTxs.Add(blocks.Transactions[invalidTxException.TxId]);
+                                invalidTxs.Add(blocks.GetTransaction(invalidTxException.TxId));
                             }
 
                             Debug.LogException(ex);
@@ -724,7 +730,7 @@ namespace Nekoyume.BlockChain
 
                     foreach (var retryAction in retryActions)
                     {
-                        MakeTransaction(retryAction, true);
+                        MakeTransaction(retryAction);
                     }
                 }
             }
@@ -769,7 +775,7 @@ namespace Nekoyume.BlockChain
                     agentAddresses = States.Instance.RankingState.Value.GetAgentAddresses(3, null),
                 }
             };
-            return MakeTransaction(actions, false);
+            return MakeTransaction(actions);
         }
 
         public void AppendBlock(Block<PolymorphicAction<ActionBase>> block)
@@ -778,12 +784,12 @@ namespace Nekoyume.BlockChain
         }
 
         private Transaction<PolymorphicAction<ActionBase>> MakeTransaction(
-            IEnumerable<PolymorphicAction<ActionBase>> actions, bool broadcast)
+            IEnumerable<PolymorphicAction<ActionBase>> actions)
         {
             var polymorphicActions = actions.ToArray();
             Debug.LogFormat("Make Transaction with Actions: `{0}`",
                 string.Join(",", polymorphicActions.Select(i => i.InnerAction)));
-            return blocks.MakeTransaction(PrivateKey, polymorphicActions, broadcast: broadcast);
+            return blocks.MakeTransaction(PrivateKey, polymorphicActions);
         }
 
         private void LoadQueuedActions()

@@ -78,13 +78,13 @@ namespace Nekoyume.UI.Module
             _toggleGroup.RegisterToggleable(settingsButton);
             mailButton.SetWidgetType<Mail>();
             questButton.SetWidgetType<Quest>();
-            chatButton.button.OnClickAsObservable().Subscribe(SubscribeOnClick).AddTo(gameObject);
             illustratedBookButton.button.OnClickAsObservable().Subscribe(SubscribeOnClick).AddTo(gameObject);
+            chatButton.button.OnClickAsObservable().Subscribe(SubscribeOnClick).AddTo(gameObject);
             settingsButton.button.OnClickAsObservable().Subscribe(SubscribeOnClick).AddTo(gameObject);
         }
 
         private void SubscribeOnClick(Unit unit)
-        {
+        {   
             Find<Alert>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE", "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
         }
 
@@ -156,6 +156,14 @@ namespace Nekoyume.UI.Module
         // 이 위젯은 애니메이션 없이 바로 닫히는 것을 기본으로 함.
         public override void Close(bool ignoreCloseAnimation = false)
         {
+            foreach (var toggleable in _toggleGroup.Toggleables)
+            {
+                if (!(toggleable is IWidgetControllable widgetControllable))
+                    continue;
+                
+                widgetControllable.HideWidget();
+            }
+            
             base.Close(true);
         }
 

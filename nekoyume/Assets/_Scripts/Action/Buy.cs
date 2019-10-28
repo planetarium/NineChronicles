@@ -62,7 +62,7 @@ namespace Nekoyume.Action
             public SellerResult(Bencodex.Types.Dictionary serialized) : base(serialized)
             {
                 shopItem = new ShopItem((Bencodex.Types.Dictionary) serialized[(Text) "shopItem"]);
-                gold = serialized[(Text) "price"].ToDecimal();
+                gold = serialized[(Text) "gold"].ToDecimal();
             }
 
             public override IValue Serialize() =>

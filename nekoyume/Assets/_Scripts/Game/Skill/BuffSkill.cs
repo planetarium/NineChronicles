@@ -7,7 +7,7 @@ namespace Nekoyume.Game
     [Serializable]
     public class BuffSkill : Skill
     {
-        public BuffSkill(SkillSheet.Row skillRow, int power, decimal chance) : base(skillRow, power, chance)
+        public BuffSkill(SkillSheet.Row skillRow, int power, int chance) : base(skillRow, power, chance)
         {
         }
 

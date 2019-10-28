@@ -17,8 +17,8 @@ namespace Nekoyume.TableData
             public int SkillId { get; private set; }
             public int SkillDamageMin { get; private set; }
             public int SkillDamageMax { get; private set; }
-            public decimal SkillChanceMin { get; private set; }
-            public decimal SkillChanceMax { get; private set; }
+            public int SkillChanceMin { get; private set; }
+            public int SkillChanceMax { get; private set; }
 
             public override void Set(IReadOnlyList<string> fields)
             {
@@ -31,8 +31,8 @@ namespace Nekoyume.TableData
                 SkillId = string.IsNullOrEmpty(fields[7]) ? 0 : int.Parse(fields[7]);
                 SkillDamageMin = string.IsNullOrEmpty(fields[8]) ? 0 : int.Parse(fields[8]);
                 SkillDamageMax = string.IsNullOrEmpty(fields[9]) ? 0 : int.Parse(fields[9]);
-                SkillChanceMin = string.IsNullOrEmpty(fields[10]) ? 0m : decimal.Parse(fields[10]);
-                SkillChanceMax = string.IsNullOrEmpty(fields[11]) ? 0m : decimal.Parse(fields[11]);
+                SkillChanceMin = string.IsNullOrEmpty(fields[10]) ? 0 : int.Parse(fields[10]);
+                SkillChanceMax = string.IsNullOrEmpty(fields[11]) ? 0 : int.Parse(fields[11]);
             }
         }
         

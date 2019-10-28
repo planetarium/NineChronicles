@@ -11,46 +11,17 @@ executors:
 
 jobs:
   unittest:
-    executor: default
-    parameters:
-      docker-image-name:
-        description: The Docker image which contains test results
-        type: string
+    docker:
+      - image: gableroux/unity3d:2019.1.0f2
     steps:
       - checkout
-
-      - run:
-          name: build-image-for-unittest
-          command: |
-            docker build \
-              -t "<< parameters.docker-image-name >>" \
-              --target build \
-              --build-arg ulf="$ULF" \
-              .
       - run:
           name: run-unittest
           command: |
-            mkdir -p /tmp/test-result/ /tmp/test/
-            docker run \
-              --entrypoint=/bin/bash \
-              -v /tmp/test/:/tmp/test/ \
-              "<< parameters.docker-image-name >>" \
-              /scripts/test.sh
-            docker run \
-              --entrypoint=/bin/ls \
-              -v /tmp/test/:/tmp/test/ \
-              "<< parameters.docker-image-name >>" \
-              -al /tmp/test/
-            docker run \
-              --entrypoint=/bin/cat \
-              -v /tmp/test/:/tmp/test/ \
-              "<< parameters.docker-image-name >>" \
-              /tmp/test/result.txt > /tmp/test-result/result.txt
-            docker run \
-              --entrypoint=/bin/cat \
-              -v /tmp/test/:/tmp/test/ \
-              "<< parameters.docker-image-name >>" \
-              /tmp/test/junit.xml > /tmp/test-result/junit.xml
+            ./scripts/test.sh
+            ls -al /tmp/test/
+            cat /tmp/test/result.txt > /tmp/test-result/result.txt
+            cat /tmp/test/junit.xml > /tmp/test-result/junit.xml
 
       - store_test_results:
           path: /tmp/test-result
@@ -66,17 +37,14 @@ workflows:
   version: 2
   build_and_deploy:
     jobs:
+      - unittest:
+          name: unittest
+
       - azure-acr/build-and-push-image:
           name: build-and-push-image
           tag: "git-$CIRCLE_SHA1"
           login-server-name: "$DOCKER_SERVER"
           registry-name: "planetarium"
           repo: $CIRCLE_PROJECT_REPONAME
-          extra-build-args: '--build-arg ulf="$ULF"'
-          executor: default
-
-      - unittest:
-          name: unittest
-          docker-image-name: "$DOCKER_SERVER/$CIRCLE_PROJECT_REPONAME-build:git-$CIRCLE_SHA1"
-          requires:
-            - build-and-push-image
+          extra-build-args: >-
+            --build-arg ulf="$ULF"

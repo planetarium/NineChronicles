@@ -1,5 +1,6 @@
 using System;
 using EnhancedUI.EnhancedScroller;
+using Nekoyume.Game.Mail;
 using TMPro;
 using UniRx;
 using UnityEngine;
@@ -11,6 +12,7 @@ namespace Nekoyume.UI.Scroller
     {
         public struct Model
         {
+            public MailType mailType;
             public string message;
             public string submitText;
             public System.Action submitAction;
@@ -42,7 +44,7 @@ namespace Nekoyume.UI.Scroller
         public void SetModel(Model model)
         {
             SharedModel = model;
-
+            iconImage.overrideSprite = Mail.mailIcons[SharedModel.mailType];
             messageText.text = model.message;
 
             if (string.IsNullOrEmpty(model.submitText))
