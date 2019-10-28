@@ -38,6 +38,8 @@ namespace Nekoyume.Game.Quest
             Check();
         }
 
+        public override QuestType QuestType => QuestType.Obtain;
+
         public override void Check()
         {
             Complete = _count >= Goal;

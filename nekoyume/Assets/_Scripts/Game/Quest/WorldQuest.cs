@@ -19,6 +19,8 @@ namespace Nekoyume.Game.Quest
         {
         }
 
+        public override QuestType QuestType => QuestType.Adventure;
+
         public override void Check()
         {
         }

@@ -26,6 +26,8 @@ namespace Nekoyume.Game.Quest
             _itemIds = serialized[(Bencodex.Types.Text) "itemIds"].ToList(i => (int) ((Integer) i).Value);
         }
 
+        public override QuestType QuestType => QuestType.Craft;
+
         public override void Check()
         {
             Complete = _count >= Goal;

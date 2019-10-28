@@ -23,7 +23,7 @@ namespace Nekoyume.Game.Quest
     [Serializable]
     public abstract class Quest : IState
     {
-        public virtual QuestType QuestType { get; }
+        public abstract QuestType QuestType { get; }
 
         private static readonly Dictionary<string, Func<Dictionary, Quest>> Deserializers =
             new Dictionary<string, Func<Dictionary, Quest>>

@@ -23,6 +23,8 @@ namespace Nekoyume.Game.Quest
             _monsterId = (int) ((Integer) serialized[(Bencodex.Types.Text) "monsterId"]).Value;
         }
 
+        public override QuestType QuestType => QuestType.Adventure;
+
         public override void Check()
         {
             Complete = _count >= Goal;

@@ -26,6 +26,28 @@ namespace Nekoyume.Game.Quest
             Event = (QuestEventType) (int) ((Integer) serialized[(Bencodex.Types.Text) "event"]).Value;
         }
 
+        public override QuestType QuestType
+        {
+            get
+            {
+                switch (Event)
+                {
+                    case QuestEventType.Create:
+                    case QuestEventType.Level:
+                    case QuestEventType.Die:
+                    case QuestEventType.Complete:
+                        return QuestType.Adventure;
+                    case QuestEventType.Enhancement:
+                        return QuestType.Craft;
+                    case QuestEventType.Equipment:
+                    case QuestEventType.Consumable:
+                        return QuestType.Obtain;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+        }
+
         public override void Check()
         {
             Complete = _current >= Goal;
