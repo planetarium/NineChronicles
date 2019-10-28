@@ -21,9 +21,11 @@ namespace Nekoyume.UI
         private static readonly Dictionary<Type, PoolElementModel> Pool = new Dictionary<Type, PoolElementModel>();
         private static readonly int Radius = Shader.PropertyToID("_Radius");
 
-        private Material _glass;
+        private static Material _glass;
+        private Material _glassOriginal;
         private Animator _animator;
         private bool _isCloseAnimationCompleted;
+        private float _originalBlurRadius;
 
         public RectTransform RectTransform { get; private set; }
         public virtual WidgetType WidgetType => WidgetType.Widget;
@@ -119,7 +121,11 @@ namespace Nekoyume.UI
                 return;
             }
 
-            _glass = image.material;
+            _glassOriginal = image.material;
+            _originalBlurRadius = _glassOriginal.GetFloat(Radius);
+            if (!_glass)
+                _glass = new Material(_glassOriginal);
+            image.material = _glass;
         }
         
         public virtual bool IsActive()
@@ -165,7 +171,7 @@ namespace Nekoyume.UI
                 gameObject.SetActive(false);
                 return;
             }
-            
+
             // TODO : wait close animation
             StartCoroutine(CoClose());
         }
@@ -191,7 +197,7 @@ namespace Nekoyume.UI
             }
 
             var from = 0f;
-            var to = _glass.GetFloat(Radius);
+            var to = _originalBlurRadius;
 
             _glass.SetFloat(Radius, from);
             var time = 0f;
