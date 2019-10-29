@@ -225,6 +225,7 @@ namespace Nekoyume.UI.Module
                 return;
 
             mailButton.SharedModel.HasNotification.Value = mailBox.Any(i => i.New);
+            Find<Mail>().UpdateList();
         }
 
         #endregion
