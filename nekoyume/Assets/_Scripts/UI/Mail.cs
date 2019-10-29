@@ -104,6 +104,17 @@ namespace Nekoyume.UI
 
         #endregion
 
+        public void UpdateList()
+        {
+            _mailBox = States.Instance.CurrentAvatarState.Value.mailBox;
+            if (_mailBox is null)
+                return;
+
+            float pos = scroller.scroller.ScrollPosition;
+            ChangeState((int) tabState);
+            scroller.scroller.ScrollPosition = pos;
+        }
+
         public void ChangeState(int state)
         {
             tabState = (MailTabState) state;
