@@ -20,7 +20,7 @@ namespace Nekoyume.Action
     {
         public const decimal RequiredGoldPerLevel = 5m;
         public Guid itemId;
-        public List<Guid> materialIds;
+        public IEnumerable<Guid> materialIds;
         public Address avatarAddress;
         public Result result;
 
@@ -53,7 +53,7 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            if (!avatarState.inventory.TryGetNonFungibleItem(itemId, out var item))
+            if (!avatarState.inventory.TryGetNonFungibleItem(itemId, out ItemUsable item))
             {
                 return states;
             }
@@ -61,7 +61,7 @@ namespace Nekoyume.Action
             var materials = new List<ItemUsable>();
             foreach (var materialId in materialIds)
             {
-                if (!avatarState.inventory.TryGetNonFungibleItem(materialId, out var material))
+                if (!avatarState.inventory.TryGetNonFungibleItem(materialId, out ItemUsable material))
                 {
                     return states;
                 }

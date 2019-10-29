@@ -16,24 +16,37 @@ namespace Nekoyume.TableData
 
         private IOrderedEnumerable<TValue> _enumerable;
         private List<TValue> _orderedList;
-        private TValue _first;
-        private TValue _last;
 
-        public string Name { get; private set; }
+        public string Name { get; }
         public IReadOnlyList<TValue> OrderedList => _orderedList;
-        [CanBeNull] public TValue First => _first;
-        [CanBeNull] public TValue Last => _last;
+        [CanBeNull]
+        public TValue First { get; private set; }
+        [CanBeNull]
+        public TValue Last { get; private set; }
 
-        public Sheet(string name)
+        protected Sheet(string name)
         {
             Name = name;
         }
 
-        public void Set(string csv)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="csv"></param>
+        /// <param name="isReversed">true: csv값의 column과 row가 뒤집혀서 작성되어 있다고 판단합니다.</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="InvalidDataException"></exception>
+        public void Set(string csv, bool isReversed = false)
         {
             if (string.IsNullOrEmpty(csv))
             {
                 throw new ArgumentNullException(nameof(csv));
+            }
+
+            // todo: 리버스 로직 작성 필요.
+            if (isReversed)
+            {
+                return;
             }
 
             var lines = csv
@@ -118,13 +131,13 @@ namespace Nekoyume.TableData
 
             _enumerable = Values.OrderBy(value => value.Key);
             _orderedList = _enumerable.ToList();
-            _first = _orderedList.FirstOrDefault();
-            _last = _orderedList.LastOrDefault();
+            First = _orderedList.FirstOrDefault();
+            Last = _orderedList.LastOrDefault();
         }
 
-        private bool TryGetRow(string csv, out TValue row)
+        private bool TryGetRow(string line, out TValue row)
         {
-            var fields = csv.Trim().Split(',')
+            var fields = line.Trim().Split(',')
                 .Where((column, index) => !_invalidColumnIndexes.Contains(index))
                 .ToArray();
             row = new TValue();

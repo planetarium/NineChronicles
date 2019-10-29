@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Nekoyume.UI.Module;
 using UniRx;
 
 namespace Nekoyume.UI.Model

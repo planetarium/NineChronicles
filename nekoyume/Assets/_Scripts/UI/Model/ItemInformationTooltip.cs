@@ -21,8 +21,8 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<bool> PriceEnabled = new ReactiveProperty<bool>(false);
         public readonly ReactiveProperty<decimal> Price = new ReactiveProperty<decimal>(0m);
 
-        public readonly Subject<UI.ItemInformationTooltip> OnSubmit = new Subject<UI.ItemInformationTooltip>();
-        public readonly Subject<UI.ItemInformationTooltip> OnClose = new Subject<UI.ItemInformationTooltip>();
+        public readonly Subject<UI.ItemInformationTooltip> OnSubmitClick = new Subject<UI.ItemInformationTooltip>();
+        public readonly Subject<UI.ItemInformationTooltip> OnCloseClick = new Subject<UI.ItemInformationTooltip>();
         
         public readonly ReadOnlyReactiveProperty<bool> FooterRootActive;
 
@@ -75,8 +75,8 @@ namespace Nekoyume.UI.Model
             PriceEnabled.Dispose();
             Price.Dispose();
 
-            OnSubmit.Dispose();
-            OnClose.Dispose();
+            OnSubmitClick.Dispose();
+            OnCloseClick.Dispose();
 
             FooterRootActive.Dispose();
             

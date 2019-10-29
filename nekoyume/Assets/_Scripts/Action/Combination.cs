@@ -19,6 +19,7 @@ using UnityEngine;
 
 namespace Nekoyume.Action
 {
+    // todo: `CombineEquipment`와 `CombineConsumable`로 분리해야 함. 공용 로직은 별도로 뺌.
     [ActionType("combination")]
     public class Combination : GameAction
     {
@@ -50,7 +51,6 @@ namespace Nekoyume.Action
         public Dictionary<int, int> Materials { get; private set; }
         public Address AvatarAddress;
         public ResultModel Result;
-        public const int RequiredPoint = 5;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>
@@ -85,12 +85,14 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            if (avatarState.actionPoint < RequiredPoint)
+            if (avatarState.actionPoint < GameConfig.CombineConsumableCostAP)
             {
+                // ap 부족 에러.
                 return states;
             }
 
-            avatarState.actionPoint -= RequiredPoint;
+            // ap 차감.
+            avatarState.actionPoint -= GameConfig.CombineConsumableCostAP;
 
             Debug.Log($"Execute Combination. player : `{AvatarAddress}` " +
                       $"node : `{States.Instance?.AgentState?.Value?.address}` " +
@@ -111,9 +113,6 @@ namespace Nekoyume.Action
             {
                 materials = Materials,
             };
-
-            // 조합식 테이블 로드.
-            var recipeTable = Tables.instance.Recipe;
 
             // 모든 재료를 테이블 값으로.
             var materialRows = Materials
@@ -143,44 +142,59 @@ namespace Nekoyume.Action
                 var monsterParts = materialRows
                     .Where(materialRow => materialRow.Key.ItemSubType == ItemSubType.MonsterPart)
                     .ToList();
-                if (monsterParts.Count == 0 || monsterParts.Count > 4)
+                var monsterPartsCount = monsterParts.Count;
+                if (monsterPartsCount == 0)
                 {
                     // 몬스터 파츠의 수량 에러.
                     return states;
                 }
 
-                var elementalType = GetElementalType(ctx.Random, monsterParts);
-
-                var itemId = ctx.Random.GenerateRandomGuid();
-                Equipment equipment = null;
-                var isFirst = true;
-                foreach (var monsterPart in monsterParts)
+                if (!Game.Game.instance.TableSheets.ItemConfigForGradeSheet.TryGetValue(equipmentMaterial.Grade,
+                    out var configRow))
                 {
-                    if (isFirst)
+                    // 아이템 설정 테이블 값 가져오기 실패.
+                    return states;
+                }
+
+                var ncgSlotCount = Math.Max(0, monsterPartsCount - configRow.MonsterPartsCountForCombination);
+                if (ncgSlotCount > 0)
+                {
+                    if (ncgSlotCount > configRow.MonsterPartsCountForCombinationWithNCG)
                     {
-                        isFirst = false;
-
-                        if (!TryGetItemEquipmentRow(outItemType, elementalType,
-                            equipmentMaterial.Grade,
-                            out var itemEquipmentRow))
-                        {
-                            // 장비 테이블 값 가져오기 실패.
-                            return states;
-                        }
-
-                        try
-                        {
-                            equipment = (Equipment) ItemFactory.Create(itemEquipmentRow, itemId);
-                        }
-                        catch (ArgumentOutOfRangeException e)
-                        {
-                            // 장비 생성 실패.
-                            Debug.LogException(e);
-
-                            return states;
-                        }
+                        // 유료 슬롯 개수 제한 초과 에러.
+                        return states;
                     }
 
+                    var costNCG = ncgSlotCount * GameConfig.CombineEquipmentCostNCG;
+                    if (agentState.gold < costNCG)
+                    {
+                        // gold 부족 에러.
+                        return states;
+                    }
+
+                    // gold 차감.
+                    agentState.gold -= costNCG;
+                }
+
+                if (!TryGetItemEquipmentRow(
+                    outItemType,
+                    GetElementalType(ctx.Random, monsterParts),
+                    equipmentMaterial.Grade,
+                    out var itemEquipmentRow))
+                {
+                    // 장비 테이블 값 가져오기 실패.
+                    return states;
+                }
+
+                var equipment = (Equipment) ItemFactory.Create(itemEquipmentRow, ctx.Random.GenerateRandomGuid());
+                if (equipment is null)
+                {
+                    // 장비 생성 실패.
+                    return states;
+                }
+
+                foreach (var monsterPart in monsterParts)
+                {
                     if (TryGetStat(monsterPart.Key, GetRoll(ctx.Random, monsterPart.Value, 0), out var statMap))
                         equipment.StatsMap.AddStatAdditionalValue(statMap.StatType, statMap.Value);
 
@@ -188,12 +202,10 @@ namespace Nekoyume.Action
                         equipment.Skills.Add(skill);
                 }
 
-                Game.Game.instance.TableSheets.ItemConfigForGradeSheet.TryGetValue(equipmentMaterial.Grade,
-                    out var config, true);
                 var buffSkillCount = Math.Min(
-                    ctx.Random.Next(config.RandomBuffSkillMinCountForCombination,
-                        config.RandomBuffSkillMaxCountForCombination + 1),
-                    config.RandomBuffSkillMaxCountForCombination);
+                    ctx.Random.Next(configRow.RandomBuffSkillMinCountForCombination,
+                        configRow.RandomBuffSkillMaxCountForCombination + 1),
+                    configRow.RandomBuffSkillMaxCountForCombination);
                 for (var i = 0; i < buffSkillCount; i++)
                 {
                     if (TryGetBuffSkill(ctx.Random, out var buffSkill))
@@ -207,28 +219,16 @@ namespace Nekoyume.Action
             }
             else
             {
-                var foodMaterials = materialRows
-                    .Where(pair => pair.Key.ItemSubType == ItemSubType.FoodMaterial)
-                    .OrderBy(order => order.Key.Id)
-                    .ToList();
-                ConsumableItemSheet.Row itemEquipmentRow = null;
-                // 소모품
-                foreach (var recipe in recipeTable)
+                if (!Game.Game.instance.TableSheets.ConsumableItemRecipeSheet.TryGetValue(
+                    materialRows.Keys.Where(pair => pair.ItemSubType == ItemSubType.FoodMaterial),
+                    out var recipeRow))
                 {
-                    if (!recipe.Value.IsMatchForConsumable(foodMaterials))
-                        continue;
-
-                    if (!Game.Game.instance.TableSheets.ConsumableItemSheet.TryGetValue(recipe.Value.ResultId,
-                        out itemEquipmentRow))
-                        break;
-
-                    if (recipe.Value.GetCombinationResultCountForConsumable(foodMaterials) == 0)
-                        break;
+                    // 재료가 레시피에 맞지 않는 에러.
+                    return states;
                 }
 
-                if (itemEquipmentRow == null &&
-                    !Game.Game.instance.TableSheets.ConsumableItemSheet
-                        .TryGetValue(GameConfig.CombinationDefaultFoodId, out itemEquipmentRow))
+                if (!Game.Game.instance.TableSheets.ConsumableItemSheet.TryGetValue(recipeRow.ResultConsumableItemId,
+                    out var consumableItemRow))
                 {
                     // 소모품 테이블 값 가져오기 실패.
                     return states;
@@ -236,7 +236,7 @@ namespace Nekoyume.Action
 
                 // 조합 결과 획득.
                 var itemId = ctx.Random.GenerateRandomGuid();
-                var itemUsable = GetFood(itemEquipmentRow, itemId);
+                var itemUsable = GetFood(consumableItemRow, itemId);
                 Result.itemUsable = itemUsable;
                 var mail = new CombinationMail(Result, ctx.BlockIndex);
                 avatarState.Update(mail);

@@ -12,11 +12,6 @@ namespace Nekoyume.UI.Scroller
 
         #region Mono
 
-        private void Awake()
-        {
-            this.ComponentFieldsNotNullTest();
-        }
-
         private void OnDisable()
         {
             Clear();
@@ -38,7 +33,7 @@ namespace Nekoyume.UI.Scroller
                 var index = firstIndex + i;
                 var item = items[i];
 
-                item.SetData((index < dataCount) ? dataList[index] : null);
+                item.SetData(index < dataCount ? dataList[index] : null);
                 item.gameObject.SetActive(true);
             }
         }

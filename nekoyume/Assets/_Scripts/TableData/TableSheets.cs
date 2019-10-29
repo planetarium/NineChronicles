@@ -39,6 +39,7 @@ namespace Nekoyume.TableData
         public EquipmentItemSetEffectSheet EquipmentItemSetEffectSheet { get; private set; }
         public EnemySkillSheet EnemySkillSheet { get; private set; }
         public ItemConfigForGradeSheet ItemConfigForGradeSheet { get; private set; }
+        public ConsumableItemRecipeSheet ConsumableItemRecipeSheet { get; private set; }
 
         public IEnumerator CoInitialize()
         {
@@ -47,9 +48,7 @@ namespace Nekoyume.TableData
             var request = Resources.LoadAsync<AddressableAssetsContainer>("AddressableAssetsContainer");
             yield return request;
             if (!(request.asset is AddressableAssetsContainer addressableAssetsContainer))
-            {
                 throw new NullReferenceException(nameof(addressableAssetsContainer));
-            }
 
             var tableCsvAssets = addressableAssetsContainer.tableCsvAssets;
             var loadTaskCount = tableCsvAssets.Count;
@@ -171,6 +170,10 @@ namespace Nekoyume.TableData
                 case nameof(TableData.ItemConfigForGradeSheet):
                     ItemConfigForGradeSheet = new ItemConfigForGradeSheet();
                     ItemConfigForGradeSheet.Set(csv);
+                    break;
+                case nameof(TableData.ConsumableItemRecipeSheet):
+                    ConsumableItemRecipeSheet = new ConsumableItemRecipeSheet();
+                    ConsumableItemRecipeSheet.Set(csv);
                     break;
                 default:
                     throw new InvalidDataException($"Not found {name} class in namespace `TableData`");

@@ -18,7 +18,10 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveCollection<InventoryItem> Materials = new ReactiveCollection<InventoryItem>();
 
         public readonly ReactiveProperty<InventoryItemView> SelectedItemView =
-            new ReactiveProperty<InventoryItemView>(null);
+            new ReactiveProperty<InventoryItemView>();
+
+        public readonly ReactiveProperty<InventoryItem> SelectedItemViewModel =
+            new ReactiveProperty<InventoryItem>();
 
         public readonly ReactiveProperty<Func<InventoryItem, bool>> DimmedFunc =
             new ReactiveProperty<Func<InventoryItem, bool>>();
@@ -44,6 +47,7 @@ namespace Nekoyume.UI.Model
             Equipments.Dispose();
             Materials.Dispose();
             SelectedItemView.Dispose();
+            SelectedItemViewModel.Dispose();
             DimmedFunc.Dispose();
             EquippedFunc.Dispose();
             OnRightClickItemView.Dispose();
@@ -68,10 +72,22 @@ namespace Nekoyume.UI.Model
 
         private InventoryItem CreateInventoryItem(ItemBase itemBase, int count)
         {
-            InventoryItem item = new InventoryItem(itemBase, count);
+            var item = new InventoryItem(itemBase, count);
             item.Dimmed.Value = DimmedFunc.Value(item);
-            item.OnClick.Subscribe(SubscribeItemOnClick);
-            item.OnRightClick.Subscribe(OnRightClickItemView);
+            item.OnClick.Subscribe(model =>
+            {
+                if (!(model is InventoryItem inventoryItem))
+                    return;
+
+                SubscribeItemOnClick(inventoryItem.View);
+            });
+            item.OnRightClick.Subscribe(model =>
+            {
+                if (!(model is InventoryItem inventoryItem))
+                    return;
+
+                OnRightClickItemView.OnNext(inventoryItem.View);
+            });
 
             return item;
         }
@@ -101,6 +117,7 @@ namespace Nekoyume.UI.Model
                         inventoryItem.Count.Value += count;
                         return;
                     }
+
                     inventoryItem = CreateInventoryItem(itemBase, count);
                     Materials.Add(inventoryItem);
                     break;
@@ -260,27 +277,48 @@ namespace Nekoyume.UI.Model
 
         #endregion
 
+        private void SubscribeItemOnClick(InventoryItemView view)
+        {
+            if (view != null &&
+                view == SelectedItemView.Value)
+            {
+                DeselectItemView();
+                return;
+            }
+
+            SelectItemView(view);
+        }
+        
         public void SelectItemView(InventoryItemView view)
         {
             if (view is null ||
                 view.Model is null)
                 return;
 
+            DeselectItemView();
+
             SelectedItemView.Value = view;
-            SelectedItemView.Value.Model.Selected.Value = true;
+            SelectedItemViewModel.Value = view.Model;
+            SelectedItemViewModel.Value.Selected.Value = true;
             SetGlowedAll(false);
         }
 
         public void DeselectItemView()
         {
             if (SelectedItemView.Value is null ||
-                SelectedItemView.Value.Model is null)
+                SelectedItemViewModel.Value is null)
             {
                 return;
             }
 
-            SelectedItemView.Value.Model.Selected.Value = false;
+            SelectedItemViewModel.Value.Selected.Value = false;
+            SelectedItemViewModel.Value = null;
             SelectedItemView.Value = null;
+        }
+
+        public void UpdateDimAll()
+        {
+            SubscribeDimmedFunc(DimmedFunc.Value);
         }
 
         #region Subscribe
@@ -311,20 +349,6 @@ namespace Nekoyume.UI.Model
             {
                 item.Dimmed.Value = DimmedFunc.Value(item);
             }
-        }
-
-        private void SubscribeItemOnClick(InventoryItemView view)
-        {
-            if (view != null &&
-                view == SelectedItemView.Value)
-            {
-                DeselectItemView();
-
-                return;
-            }
-
-            DeselectItemView();
-            SelectItemView(view);
         }
 
         #endregion

@@ -171,6 +171,11 @@ namespace Nekoyume.Game.Item
         {
             return TryGetNonFungibleItem(itemUsable, out Item item) && _items.Remove(item);
         }
+        
+        public bool RemoveNonFungibleItem(Guid itemGuid)
+        {
+            return TryGetNonFungibleItem(itemGuid, out Item item) && _items.Remove(item);
+        }
 
         public bool TryGetFungibleItem(ItemBase itemBase, out Item outFungibleItem)
         {
@@ -236,6 +241,11 @@ namespace Nekoyume.Game.Item
 
         public bool TryGetNonFungibleItem(ItemUsable itemUsable, out Item outNonFungibleItem)
         {
+            return TryGetNonFungibleItem(itemUsable.ItemId, out outNonFungibleItem);
+        }
+        
+        public bool TryGetNonFungibleItem(Guid itemGuid, out Item outNonFungibleItem)
+        {
             foreach (var item in _items)
             {
                 if (!(item.item is ItemUsable nonFungibleItem))
@@ -243,7 +253,7 @@ namespace Nekoyume.Game.Item
                     continue;
                 }
 
-                if (nonFungibleItem.ItemId != itemUsable.ItemId)
+                if (nonFungibleItem.ItemId != itemGuid)
                 {
                     continue;
                 }

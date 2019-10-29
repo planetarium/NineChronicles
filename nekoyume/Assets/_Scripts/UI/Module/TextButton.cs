@@ -22,8 +22,6 @@ namespace Nekoyume.UI.Module
 
         protected void Awake()
         {
-            this.ComponentFieldsNotNullTest();
-
             button.onClick.AsObservable().Subscribe(_ =>
             {
                 AudioController.PlayClick();

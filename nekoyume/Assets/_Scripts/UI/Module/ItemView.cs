@@ -1,22 +1,33 @@
 using System;
+using System.Collections.Generic;
+using JetBrains.Annotations;
 using Nekoyume.EnumType;
-using Nekoyume.Game.Item;
-using Nekoyume.Helper;
+using Nekoyume.Game.Character;
+using Nekoyume.Game.Controller;
 using UniRx;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
-    public class ItemView<T> : MonoBehaviour where T : Model.Item
+    public class ItemView<TViewModel> : MonoBehaviour
+        where TViewModel : Model.Item
     {
         protected static readonly Color DefaultColor = Color.white;
         protected static readonly Color DimColor = new Color(1f, 1f, 1f, 0.3f);
 
+        public TouchHandler touchHandler;
+        public Button itemButton;
+        public Image backgroundImage;
         public Image iconImage;
         public Image gradeImage;
+        public Image selectionImage;
+
+        private readonly List<IDisposable> _disposablesAtSetData = new List<IDisposable>();
 
         public RectTransform RectTransform { get; private set; }
+
         public Vector3 CenterOffsetAsPosition
         {
             get
@@ -27,33 +38,59 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        public T Model { get; private set; }
+        [CanBeNull] public TViewModel Model { get; private set; }
+        public bool IsEmpty => Model?.ItemBase.Value is null;
+
+        public readonly Subject<ItemView<TViewModel>> OnClick = new Subject<ItemView<TViewModel>>();
+        public readonly Subject<ItemView<TViewModel>> OnRightClick = new Subject<ItemView<TViewModel>>();
 
         #region Mono
-        
+
         protected virtual void Awake()
         {
-            this.ComponentFieldsNotNullTest();
-            
             RectTransform = GetComponent<RectTransform>();
+
+            touchHandler.OnRightClick.Subscribe(_ =>
+            {
+                OnRightClick.OnNext(this);
+                Model?.OnRightClick.OnNext(Model);
+            }).AddTo(gameObject);
+
+            itemButton.OnClickAsObservable()
+                .Subscribe(_ =>
+                {
+                    if (Model is null)
+                        return;
+
+                    AudioController.PlayClick();
+                    OnClick.OnNext(this);
+                    Model.OnClick.OnNext(Model);
+                })
+                .AddTo(gameObject);
         }
 
         protected virtual void OnDestroy()
         {
+            Model?.Dispose();
+            OnClick.Dispose();
+            OnRightClick.Dispose();
             Clear();
         }
 
         #endregion
 
-        public virtual void SetData(T model)
+        public virtual void SetData(TViewModel model)
         {
-            if (ReferenceEquals(model, null))
+            if (model is null)
             {
                 Clear();
                 return;
             }
 
+            _disposablesAtSetData.DisposeAllAndClear();
             Model = model;
+            Model.GradeEnabled.SubscribeTo(gradeImage).AddTo(_disposablesAtSetData);
+            Model.Selected.SubscribeTo(selectionImage).AddTo(_disposablesAtSetData);
 
             UpdateView();
         }
@@ -61,6 +98,7 @@ namespace Nekoyume.UI.Module
         public virtual void Clear()
         {
             Model = null;
+            _disposablesAtSetData.DisposeAllAndClear();
 
             UpdateView();
         }
@@ -68,7 +106,8 @@ namespace Nekoyume.UI.Module
         protected virtual void SetDim(bool isDim)
         {
             iconImage.color = isDim ? DimColor : DefaultColor;
-            if (gradeImage) gradeImage.color = isDim ? DimColor : DefaultColor;
+            gradeImage.color = isDim ? DimColor : DefaultColor;
+            selectionImage.color = isDim ? DimColor : DefaultColor;
         }
 
         private void UpdateView()
@@ -77,7 +116,8 @@ namespace Nekoyume.UI.Module
                 Model.ItemBase.Value is null)
             {
                 iconImage.enabled = false;
-                if (gradeImage) gradeImage.enabled = false;
+                gradeImage.enabled = false;
+                selectionImage.enabled = false;
                 return;
             }
 
@@ -95,15 +135,9 @@ namespace Nekoyume.UI.Module
 
             var gradeSprite = item.GetBackgroundSprite();
             if (gradeSprite is null)
-            {
                 throw new FailedToLoadResourceException<Sprite>(item.Data.Grade.ToString());
-            }
 
-            if (gradeImage)
-            {
-                gradeImage.enabled = true;
-                gradeImage.overrideSprite = gradeSprite;
-            }
+            gradeImage.overrideSprite = gradeSprite;
         }
     }
 }

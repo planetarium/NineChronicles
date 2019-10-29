@@ -29,8 +29,6 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
-            this.ComponentFieldsNotNullTest();
-
             materialText.text = LocalizationManager.Localize("UI_COMBINATION_MATERIALS");
             submitButtonText.text = LocalizationManager.Localize("UI_OK");
             

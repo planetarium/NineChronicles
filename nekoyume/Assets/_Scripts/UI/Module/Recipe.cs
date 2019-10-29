@@ -1,35 +1,45 @@
-using Nekoyume.Data;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Scroller;
 using System.Collections.Generic;
+using Nekoyume.Game.Controller;
+using UniRx;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
     public class Recipe : MonoBehaviour
     {
         public RecipeScrollerController scrollerController;
+        public Button closeButton;
 
-        public void Reload(float scrollPos = 0)
+        private void Awake()
         {
-            var recipeInfoList = new List<RecipeInfo>();
-            var recipeTable = Tables.instance.Recipe;
-            foreach (var pair in recipeTable)
+            closeButton.OnClickAsObservable().Subscribe(_ =>
             {
-                var info = new RecipeInfo(
-                    pair.Value.Id,
-                    pair.Value.ResultId,
-                    pair.Value.Material1,
-                    pair.Value.Material2,
-                    pair.Value.Material3,
-                    pair.Value.Material4,
-                    pair.Value.Material5);
+                AudioController.PlayClick();
+                Hide();
+            }).AddTo(gameObject);
+        }
 
+        public void Show(float scrollPos = 0)
+        {
+            gameObject.SetActive(true);
+            
+            var recipeInfoList = new List<RecipeInfo>();
+            foreach (var row in Game.Game.instance.TableSheets.ConsumableItemRecipeSheet)
+            {
+                var info = new RecipeInfo(row);
                 recipeInfoList.Add(info);
             }
-            recipeInfoList.Sort((x, y) => x.recipeId - y.recipeId);
+            recipeInfoList.Sort((x, y) => x.Row.Id - y.Row.Id);
             scrollerController.SetData(recipeInfoList);
             scrollerController.scroller.ScrollPosition = scrollPos;
+        }
+
+        public void Hide()
+        {
+            gameObject.SetActive(false);
         }
     }
 }

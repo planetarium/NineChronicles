@@ -7,6 +7,7 @@ using System;
 using System.Linq;
 using Assets.SimpleLocalization;
 using Nekoyume.BlockChain;
+using TMPro;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -23,17 +24,18 @@ namespace Nekoyume.UI.Scroller
             public Text mark;
         }
 
-        public Text resultNameText;
-        public Button combineButton;
-        public IObservable<Unit> combineButtonOnClick;
-        public IDisposable onClickDisposable;
-        public Text combineText;
-        public SimpleCountableItemView resultItemView;
-        public SimpleCountableItemView[] materialItemViews;
-
         private const float ResultIconScaleFactor = 1.2f;
         private const float MaterialIconScaleFactor = 0.7f;
-        private readonly Color DimmedColor = new Color(0.3f, 0.3f, 0.3f);
+        private static readonly Color DimmedColor = new Color(0.3f, 0.3f, 0.3f);
+        
+        public SimpleCountableItemView resultItemView;
+        public TextMeshProUGUI resultItemNameText;
+        public SimpleCountableItemView[] materialItemViews;
+        public Button submitButton;
+        public TextMeshProUGUI submitText;
+        
+        public IObservable<Unit> submitButtonOnClick;
+        public IDisposable onClickDisposable;
 
         public RecipeInfo Model { get; private set; }
 
@@ -41,9 +43,8 @@ namespace Nekoyume.UI.Scroller
 
         private void Awake()
         {
-            this.ComponentFieldsNotNullTest();
-            combineButtonOnClick = combineButton.OnClickAsObservable();
-            combineText.text = LocalizationManager.Localize("UI_RECIPE_COMBINATION");
+            submitButtonOnClick = submitButton.OnClickAsObservable();
+            submitText.text = LocalizationManager.Localize("UI_RECIPE_COMBINATION");
         }
 
         private void OnDisable()
@@ -56,23 +57,26 @@ namespace Nekoyume.UI.Scroller
         public void SetData(RecipeInfo recipeInfo)
         {
             Model = recipeInfo;
-            resultNameText.text = recipeInfo.resultName;
+            resultItemNameText.text = recipeInfo.ResultItemName;
 
-            SetItemView(recipeInfo.resultId, recipeInfo.resultAmount, resultItemView, ResultIconScaleFactor, false);
+            SetItemView(recipeInfo.Row.ResultConsumableItemId, recipeInfo.ResultItemAmount, resultItemView, ResultIconScaleFactor, false);
 
-            for (var i = 0; i < recipeInfo.materialInfos.Length; ++i)
+            var materialInfosCount = recipeInfo.MaterialInfos.Count;
+            for (var i = 0; i < materialItemViews.Length; i++)
             {
-                var info = recipeInfo.materialInfos[i];
-                if (info.id == 0) break;
-                SetItemView(info.id, info.amount, materialItemViews[i], MaterialIconScaleFactor, true, !info.isEnough);
+                if (i >= materialInfosCount)
+                    break;
+
+                var info = recipeInfo.MaterialInfos[i];
+                SetItemView(info.Id, info.Amount, materialItemViews[i], MaterialIconScaleFactor, true, !info.IsEnough);
             }
 
-            if (recipeInfo.materialInfos.Any(info => info.id != 0 && !info.isEnough) ||
-                States.Instance.CurrentAvatarState.Value.actionPoint < Action.Combination.RequiredPoint)
+            if (recipeInfo.MaterialInfos.Any(info => info.Id != 0 && !info.IsEnough) ||
+                States.Instance.CurrentAvatarState.Value.actionPoint < GameConfig.CombineConsumableCostAP)
             {
-                combineButton.enabled = false;
-                combineButton.image.sprite = Resources.Load<Sprite>("UI/Textures/button_gray_01");
-                combineText.color = ColorHelper.HexToColorRGB("92A3B5");
+                submitButton.enabled = false;
+                submitButton.image.sprite = Resources.Load<Sprite>("UI/Textures/button_gray_01");
+                submitText.color = ColorHelper.HexToColorRGB("92A3B5");
             }
         }
 
@@ -102,9 +106,9 @@ namespace Nekoyume.UI.Scroller
             {
                 materialItemViews[i].Clear();
                 materialItemViews[i].gameObject.SetActive(false);
-                combineButton.enabled = true;
-                combineButton.image.sprite = Resources.Load<Sprite>("UI/Textures/button_blue_01");
-                combineText.color = Color.white;
+                submitButton.enabled = true;
+                submitButton.image.sprite = Resources.Load<Sprite>("UI/Textures/button_blue_01");
+                submitText.color = Color.white;
             }
         }
     }
