@@ -67,6 +67,7 @@ namespace Nekoyume.State
         public static decimal? ToNullableDecimal(this IValue serialized) =>
             Deserialize(ToDecimal, serialized);
 
+        public static int ToInt(this IValue serialized) => int.Parse(((Text) serialized).Value);
         public static IValue Serialize(this DateTimeOffset dateTime) =>
             new Binary(Encoding.ASCII.GetBytes(dateTime.ToString("O")));
 

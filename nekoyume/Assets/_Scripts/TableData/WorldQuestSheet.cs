@@ -3,14 +3,14 @@ using System;
 namespace Nekoyume.TableData
 {
     [Serializable]
-    public class BattleQuestSheet : Sheet<int, BattleQuestSheet.Row>
+    public class WorldQuestSheet : Sheet<int, WorldQuestSheet.Row>
     {
         [Serializable]
         public class Row : QuestSheet.Row
         {
         }
         
-        public BattleQuestSheet() : base(nameof(BattleQuestSheet))
+        public WorldQuestSheet() : base(nameof(WorldQuestSheet))
         {
         }
     }
