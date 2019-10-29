@@ -45,9 +45,10 @@ namespace Nekoyume.UI
             new Dictionary<StatType, StatusInfo>(StatTypeComparer.Instance);
 
         private readonly Dictionary<StatType, int> _additionalStats = new Dictionary<StatType, int>();
-
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
         private readonly ReactiveProperty<bool> _buttonEnabled = new ReactiveProperty<bool>();
+
+        private CharacterStats _tempStats;
 
 
         #region override
@@ -133,6 +134,7 @@ namespace Nekoyume.UI
             Find<BottomMenu>().Show(UINavigator.NavigationType.Back, SubscribeBackButtonClick);
             _buttonEnabled.Subscribe(SubscribeReadyToQuest).AddTo(_disposables);
             ReactiveCurrentAvatarState.ActionPoint.Subscribe(SubscribeActionPoint).AddTo(_disposables);
+            _tempStats = _player.Model.Value.Stats.Clone() as CharacterStats;
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -265,8 +267,6 @@ namespace Nekoyume.UI
 
             var slotItem = slot.item;
 
-            SubEquipmentStat(slotItem);
-
             slot.Unequip(); 
             if (slot.itemSubType == ItemSubType.Armor)
             {
@@ -289,6 +289,8 @@ namespace Nekoyume.UI
                 inventoryItem.Equipped.Value = false;
             }
 
+            UpdateStats();
+
             inventory.Tooltip.Close();
         }
 
@@ -309,9 +311,6 @@ namespace Nekoyume.UI
             var equipable = countableItem.ItemBase.Value as ItemUsable;
             if (slot != null)
             {
-                if (slot.item != null)
-                    SubEquipmentStat(slot.item);
-
                 if (inventory.SharedModel.TryGetEquipment(slot.item, out var inventoryItem) ||
                     inventory.SharedModel.TryGetConsumable(slot.item as Consumable, out inventoryItem))
                 {
@@ -343,30 +342,27 @@ namespace Nekoyume.UI
                 item.Equipped.Value = true;
             }
 
-            AddEquipmentStat(equipable);
+            UpdateStats();
             
             inventory.Tooltip.Close();
         }
 
-        private void AddEquipmentStat(ItemUsable equip)
+        private void UpdateStats()
         {
-            var statMap = equip.StatsMap.GetStats();
-            foreach (var (type, value) in statMap)
-            {
-                if (value == 0) continue;
-                _additionalStats[type] += value;
-                _stats[type].SetAdditional(type, _additionalStats[type]);
-            }
-        }
+            var equipments = equipmentSlots.slots
+                .Select(x => x.item as Equipment)
+                .Where(x => !(x is null))
+                .ToList();
+            var consumables = consumableSlots
+                .Select(x => x.item as Consumable)
+                .Where(x => !(x is null))
+                .ToList();
 
-        private void SubEquipmentStat(ItemUsable equip)
-        {
-            var statMap = equip.StatsMap.GetStats();
+            var stats = _tempStats.SetAll(_tempStats.Level, equipments, consumables, null);
+            var statMap = stats.GetAdditionalStats();
             foreach (var (type, value) in statMap)
             {
-                if (value == 0) continue;
-                _additionalStats[type] -= value;
-                _stats[type].SetAdditional(type, _additionalStats[type]);
+                _stats[type].SetAdditional(type, value);
             }
         }
 

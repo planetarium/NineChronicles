@@ -342,5 +342,15 @@ namespace Nekoyume.Game
         {
             return new CharacterStats(this);
         }
+
+        public IEnumerable<(StatType, int)> GetAdditionalStats()
+        {
+            yield return (StatType.HP, AdditionalHP);
+            yield return (StatType.ATK, AdditionalATK);
+            yield return (StatType.DEF, AdditionalDEF);
+            yield return (StatType.DOG, AdditionalDOG);
+            yield return (StatType.CRI, AdditionalCRI);
+            yield return (StatType.SPD, AdditionalSPD);
+        }
     }
 }
