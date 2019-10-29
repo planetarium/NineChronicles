@@ -1,7 +1,7 @@
-id,goal,reward,type
-400001,1,0,Sell
-400002,3,0,Sell
-400003,5,0,Sell
-400004,1,0,Buy
-400005,3,0,Buy
-400006,5,0,Buy
+id,goal,quest_reward_id,type
+400001,1,1,Sell
+400002,3,1,Sell
+400003,5,1,Sell
+400004,1,1,Buy
+400005,3,1,Buy
+400006,5,1,Buy

@@ -1,6 +1,11 @@
 using System;
 using System.Collections.Generic;
 using Bencodex.Types;
+using Nekoyume.Data;
+using Nekoyume.Data.Table;
+using Nekoyume.EnumType;
+using Nekoyume.Game.Factory;
+using Nekoyume.Game.Item;
 using Nekoyume.State;
 
 namespace Nekoyume.TableData
@@ -14,13 +19,13 @@ namespace Nekoyume.TableData
             public override int Key => Id;
             public int Id { get; private set; }
             public int Goal { get; private set; }
-            public decimal Reward { get; private set; }
+            public int QuestRewardId { get; private set; }
             
             public override void Set(IReadOnlyList<string> fields)
             {
                 Id = int.Parse(fields[0]);
                 Goal = int.Parse(fields[1]);
-                Reward = decimal.Parse(fields[2]);
+                QuestRewardId = int.Parse(fields[2]);
             }
 
             public IValue Serialize() =>

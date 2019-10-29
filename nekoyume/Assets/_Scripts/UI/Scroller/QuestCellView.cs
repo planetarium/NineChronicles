@@ -2,6 +2,10 @@
 using EnhancedUI.EnhancedScroller;
 using Nekoyume.Helper;
 using System;
+using System.Linq;
+using Nekoyume.Game.Factory;
+using Nekoyume.UI.Model;
+using Nekoyume.UI.Module;
 using TMPro;
 using UniRx;
 using UnityEngine;
@@ -18,6 +22,7 @@ namespace Nekoyume.UI.Scroller
         public Text buttonText;
         public Button button;
         public Game.Quest.Quest data;
+        public SimpleCountableItemView[] rewardViews;
 
         public IDisposable onClickDisposable;
         private Shadow[] _textShadows;
@@ -52,6 +57,18 @@ namespace Nekoyume.UI.Scroller
             button.interactable = quest.Complete;
             foreach (var shadow in _textShadows)
                 shadow.effectColor = button.interactable ? _highlightedColor : Color.black;
+
+            var itemMap = data.Reward.ItemMap;
+            for (var i = 0; i < itemMap.Count; i++)
+            {
+                var pair = itemMap.ElementAt(i);
+                var info = rewardViews[i];
+                var row = Game.Game.instance.TableSheets.ItemSheet.Values.First(itemRow => itemRow.Id == pair.Key);
+                var item = ItemFactory.Create(row, new Guid());
+                var countableItem = new CountableItem(item, pair.Value);
+                info.SetData(countableItem);
+                info.gameObject.SetActive(true);
+            }
 
         }
 

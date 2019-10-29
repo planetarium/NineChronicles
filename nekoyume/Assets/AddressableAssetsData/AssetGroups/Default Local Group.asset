@@ -22,6 +22,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - TableCSV
+  - m_GUID: 1c1e07a983d0aaa4d8e5e65f066ff785
+    m_Address: Assets/AddressableAssets/TableCSV/QuestRewardSheet.csv
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - TableCSV
   - m_GUID: 1ddd193f5f195481d92ca512633e7072
     m_Address: Assets/AddressableAssets/TableCSV/WorldSheet.csv
     m_ReadOnly: 0
@@ -59,6 +64,11 @@ MonoBehaviour:
     - TableCSV
   - m_GUID: 5fb195c2ff01eb644b9aea6396bff952
     m_Address: Assets/AddressableAssets/TableCSV/BuffSheet.csv
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - TableCSV
+  - m_GUID: 67e772e1cf254ae41ad7400dbcf25f7a
+    m_Address: Assets/AddressableAssets/TableCSV/QuestItemRewardSheet.csv
     m_ReadOnly: 0
     m_SerializedLabels:
     - TableCSV
