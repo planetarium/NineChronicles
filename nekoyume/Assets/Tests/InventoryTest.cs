@@ -18,7 +18,7 @@ namespace Tests
             var updatedInventory = new Inventory();
             var row = Nekoyume.Game.Game.instance.TableSheets.EquipmentItemSheet.First;
             var itemUsable = (ItemUsable) ItemFactory.Create(row, new Guid());
-            updatedInventory.AddNonFungibleItem(itemUsable);
+            updatedInventory.AddItem(itemUsable);
             Assert.IsTrue(updatedInventory.TryGetAddedItemFrom(inventory, out var result1));
             Assert.AreEqual(itemUsable, result1);
         }
@@ -30,9 +30,9 @@ namespace Tests
             var updatedInventory = new Inventory();
             var row = Nekoyume.Game.Game.instance.TableSheets.EquipmentItemSheet.First;
             var itemUsable = (ItemUsable) ItemFactory.Create(row, new Guid());
-            inventory.AddNonFungibleItem(itemUsable);
-            updatedInventory.AddNonFungibleItem(itemUsable);
-            updatedInventory.AddNonFungibleItem(itemUsable);
+            inventory.AddItem(itemUsable);
+            updatedInventory.AddItem(itemUsable);
+            updatedInventory.AddItem(itemUsable);
             Assert.IsFalse(updatedInventory.TryGetAddedItemFrom(inventory, out var result2));
             Assert.IsNull(result2);
 
@@ -46,7 +46,7 @@ namespace Tests
             var row = Nekoyume.Game.Game.instance.TableSheets.MaterialItemSheet.First;
             var item = (Nekoyume.Game.Item.Material) ItemFactory.Create(row, new Guid());
             LogAssert.Expect(LogType.Error, "Item Material: 100000 is not ItemUsable.");
-            updatedInventory.AddFungibleItem(item);
+            updatedInventory.AddItem(item);
             Assert.IsFalse(updatedInventory.TryGetAddedItemFrom(inventory, out var result2));
             Assert.IsNull(result2);
         }

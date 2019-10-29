@@ -1,5 +1,18 @@
 Key,English,Korean
-QUEST_BATTLE_CURRENT_INFO_FORMAT,Clear Stage #{0},스테이지 #{0} 클리어 하기
+QUEST_WORLD_FORMAT,Arrival in {0},{0} 도착
+QUEST_MONSTER_FORMAT,Kill {0}. {1} / {2},{0} 잡기. {1} / {2}
 QUEST_COLLECT_CURRENT_INFO_FORMAT,Collect '{0}' ({1} / {2}),'{0}' 모으기 ({1} / {2})
 QUEST_COMBINATION_CURRENT_INFO_FORMAT,Craft '{0}' ({1} / {2}),'{0}' 제작하기 ({1} / {2})
 QUEST_TRADE_CURRENT_INFO_FORMAT,{0} Item ({1} / {2}), 아이템 {0} ({1} / {2})
+QUEST_ITEM_ENHANCEMENT_FORMAT,Enhancement {0} Grade Equipment Lv.{1} {2} / {3},{0} 등급 장비 Lv.{1} 강화 {2} / {3}
+QUEST_ITEM_GRADE_FORMAT,Collect {0} Grade Equipment {1} / {2},{0} 등급 장비 모으기 {1} / {2}
+QUEST_ITEM_TYPE_FORMAT,Collect {0} Item {1} / {2},{0} 분류 아이템 모으기 {1} / {2}
+QUEST_GENERAL_Create_FORMAT,Start Adventure,모험의 시작
+QUEST_GENERAL_Enhancement_FORMAT,Enhancment Equipment {0} / {1},장비 강화 {0} / {1}
+QUEST_GENERAL_Level_FORMAT,Reach Level {0} / {1},레벨 달성 {0} / {1}
+QUEST_GENERAL_Die_FORMAT,Character Die {0} / {1},캐릭터 사망 {0} / {1}
+QUEST_GENERAL_Complete_FORMAT,Complete Quest {0} / {1},퀘스트 완료 {0} / {1}
+QUEST_GENERAL_Equipment_FORMAT,Combination Equipment {0} / {1},장비 조합 {0} / {1}
+QUEST_GENERAL_Consumable_FORMAT,Combination Consumable {0} / {1},소모품 조합 {0} / {1}
+QUEST_GOLD_Buy_FORMAT,Spent {0} gold on buy {1} / {2},구매에 {0} gold 사용하기 {1} / {2}
+QUEST_GOLD_Sell_FORMAT,Get {0} gold on sell {1} / {2},판매로 {0} gold 획득하기 {1} / {2}

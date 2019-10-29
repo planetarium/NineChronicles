@@ -164,8 +164,8 @@ namespace Nekoyume.Action
             sellerAvatarState.Update(sellerMail);
 
             // 퀘스트 업데이트
-            buyerAvatarState.questList.UpdateTradeQuest(TradeType.Buy);
-            sellerAvatarState.questList.UpdateTradeQuest(TradeType.Sell);
+            buyerAvatarState.questList.UpdateTradeQuest(TradeType.Buy, outPair.Value.Price);
+            sellerAvatarState.questList.UpdateTradeQuest(TradeType.Sell, outPair.Value.Price);
 
             var timestamp = DateTimeOffset.UtcNow;
             buyerAvatarState.updatedAt = timestamp;

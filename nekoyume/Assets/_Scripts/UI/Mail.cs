@@ -10,7 +10,6 @@ using Nekoyume.Game.Item;
 using Nekoyume.Game.Mail;
 using Nekoyume.Helper;
 using Nekoyume.Model;
-using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Scroller;
 using UniRx;
@@ -138,7 +137,7 @@ namespace Nekoyume.UI
             };
             popup.Pop(model);
 
-            AddItem(item);
+            AddItem(item, false);
         }
 
         public void Read(SellCancelMail mail)
@@ -154,12 +153,12 @@ namespace Nekoyume.UI
             model.Item.Value = new CountEditableItem(item, 1, 1, 1);
             model.OnClickSubmit.Subscribe(_ =>
             {
-                AddItem(item);
+                AddItem(item, true);
                 popup.Close();
             }).AddTo(gameObject);
             model.OnClickCancel.Subscribe(_ =>
             {
-                AddItem(item);
+                AddItem(item, true);
                 popup.Close();
             }).AddTo(gameObject);
             //TODO 재판매 처리추가되야함
@@ -178,7 +177,7 @@ namespace Nekoyume.UI
             };
             popup.Pop(model);
 
-            AddItem(item);
+            AddItem(item, false);
         }
 
         public void Read(SellerMail sellerMail)
@@ -186,7 +185,6 @@ namespace Nekoyume.UI
             var attachment = (Buy.SellerResult) sellerMail.attachment;
             //TODO 관련 기획이 끝나면 별도 UI를 생성
             AddGold(attachment.gold);
-            Notification.Push(MailType.Auction, $"{attachment.shopItem.Price:n0} 골드 획득");
         }
 
         public void Read(ItemEnhanceMail itemEnhanceMail)
@@ -201,13 +199,13 @@ namespace Nekoyume.UI
             };
             popup.Pop(model);
 
-            AddItem(item);
+            AddItem(item, false);
         }
 
-        private static void AddItem(ItemUsable item)
+        private static void AddItem(ItemUsable item, bool canceled)
         {
             //아바타상태 인벤토리 업데이트
-            ActionManager.instance.AddItem(item.ItemId);
+            ActionManager.instance.AddItem(item.ItemId, canceled);
 
             //게임상의 인벤토리 업데이트
             States.Instance.CurrentAvatarState.Value.inventory.AddItem(item);

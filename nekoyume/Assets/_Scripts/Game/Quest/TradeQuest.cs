@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Assets.SimpleLocalization;
+using Bencodex.Types;
 using Nekoyume.EnumType;
-using Nekoyume.Game.Item;
-using Nekoyume.Model;
 using Nekoyume.TableData;
 
 namespace Nekoyume.Game.Quest
@@ -12,27 +12,41 @@ namespace Nekoyume.Game.Quest
     public class TradeQuest : Quest
     {
         private int _current;
-        
-        public new TradeQuestSheet.Row Data { get; }
         public override QuestType QuestType => QuestType.Exchange;
+        public readonly TradeType Type;
 
         public TradeQuest(TradeQuestSheet.Row data) : base(data)
         {
-            Data = data;
+            Type = data.Type;
         }
 
-        public override void Check(Player player, List<ItemBase> items)
+        public TradeQuest(Dictionary serialized) : base(serialized)
+        {
+            _current = (int) ((Integer) serialized[(Bencodex.Types.Text) "current"]).Value;
+            Type = (TradeType) (int) ((Integer) serialized[(Bencodex.Types.Text) "type"]).Value;
+        }
+
+        public override void Check()
         {
             if (Complete)
                 return;
             _current += 1;
-            Complete = _current >= Data.Goal;
+            Complete = _current >= Goal;
         }
 
         public override string ToInfo()
         {
-            var format = LocalizationManager.Localize("QUEST_TRADE_CURRENT_INFO_FORMAT");
-            return string.Format(format, Data.Type.GetLocalizedString(), _current, Data.Goal);
+            var format = LocalizationManager.Localize("QUEST_COLLECT_CURRENT_INFO_FORMAT");
+            return string.Format(format, Type.GetLocalizedString(), _current, Goal);
         }
+
+        protected override string TypeId => "tradeQuest";
+        public override IValue Serialize() =>
+            new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
+            {
+                [(Text) "current"] = (Integer) _current,
+                [(Text) "type"] = (Integer) (int) Type,
+            }.Union((Dictionary) base.Serialize()));
+
     }
 }

@@ -53,7 +53,9 @@ namespace Nekoyume.Model
         public Ring ring;
         public Helm helm;
         public SetItem set;
-        
+        public CollectionMap monsterMap;
+        public CollectionMap eventMap;
+
         private List<Equipment> Equipments { get; set; }
 
         public Player(AvatarState avatarState, Simulator simulator = null) : base(simulator, avatarState.characterId, avatarState.level)
@@ -61,6 +63,8 @@ namespace Nekoyume.Model
             Exp.Current = avatarState.exp;
             Inventory = avatarState.inventory;
             worldStage = avatarState.worldStage;
+            monsterMap = new CollectionMap();
+            eventMap = new CollectionMap();
             PostConstruction();
         }
 
@@ -103,6 +107,7 @@ namespace Nekoyume.Model
 
         public void RemoveTarget(Enemy enemy)
         {
+            monsterMap.Add(new KeyValuePair<int, int>(enemy.RowData.Id, 1));
             Targets.Remove(enemy);
             Simulator.Characters.TryRemove(enemy);
         }
@@ -110,6 +115,7 @@ namespace Nekoyume.Model
         protected override void OnDead()
         {
             base.OnDead();
+            eventMap.Add(new KeyValuePair<int, int>((int) QuestEventType.Die, 1));
             Simulator.Lose = true;
         }
         
@@ -179,17 +185,26 @@ namespace Nekoyume.Model
             if (Exp.Current < Exp.Max)
                 return;
 
+            var level = Level;
             Level = Game.Game.instance.TableSheets.LevelSheet.GetLevel(Exp.Current);
+            // UI에서 레벨업 처리시 NRE 회피
+            if (level < Level && !(eventMap is null))
+            {
+                eventMap[(int) QuestEventType.Level] = Level;
+            }
             UpdateExp();
         }
 
         // ToDo. 지금은 스테이지에서 재료 아이템만 주고 있음. 추후 대체 불가능 아이템도 줄 경우 수정 대상.
-        public void GetRewards(List<ItemBase> items)
+        public CollectionMap GetRewards(List<ItemBase> items)
         {
+            var map = new CollectionMap();
             foreach (var item in items)
             {
-                Inventory.AddFungibleItem(item);
+                map.Add(Inventory.AddItem(item));
             }
+
+            return map;
         }
 
         public void Spawn()

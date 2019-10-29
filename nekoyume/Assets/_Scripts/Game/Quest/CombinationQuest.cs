@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Assets.SimpleLocalization;
+using Bencodex.Types;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Item;
-using Nekoyume.Model;
 using Nekoyume.TableData;
 
 namespace Nekoyume.Game.Quest
@@ -13,33 +13,52 @@ namespace Nekoyume.Game.Quest
     public class CombinationQuest : Quest
     {
         public int current;
+        public readonly ItemType ItemType;
+        public readonly ItemSubType ItemSubType;
 
-        public new CombinationQuestSheet.Row Data { get; }
         public override QuestType QuestType => QuestType.Craft;
 
         public CombinationQuest(CombinationQuestSheet.Row data) : base(data)
         {
-            Data = data;
+            ItemType = data.ItemType;
+            ItemSubType = data.ItemSubType;
         }
 
-        public override void Check(Player player, List<ItemBase> items)
+        public CombinationQuest(Bencodex.Types.Dictionary serialized) : base(serialized)
+        {
+            current = (int) ((Integer) serialized[(Bencodex.Types.Text) "current"]).Value;
+            ItemType = (ItemType) (int) ((Integer) serialized[(Bencodex.Types.Text) "itemType"]).Value;
+            ItemSubType = (ItemSubType) (int) ((Integer) serialized[(Bencodex.Types.Text) "itemSubType"]).Value;
+        }
+
+        public override void Check()
         {
             if (Complete)
                 return;
-            Update(items);
-            Complete = current >= Data.Goal;
+            Complete = current >= Goal;
         }
 
         public override string ToInfo()
         {
-            var format = LocalizationManager.Localize("QUEST_COMBINATION_CURRENT_INFO_FORMAT");
-            return string.Format(format, Data.ItemSubType.GetLocalizedString(), current, Data.Goal);
+            var format = LocalizationManager.Localize("QUEST_COLLECT_CURRENT_INFO_FORMAT");
+            return string.Format(format, ItemSubType.GetLocalizedString(), current, Goal);
         }
 
-        private void Update(List<ItemBase> items)
+        protected override string TypeId => "combinationQuest";
+
+        public void Update(List<ItemBase> items)
         {
-            current += items.Count(i => i.Data.ItemType == Data.ItemType &&
-                                        i.Data.ItemSubType == Data.ItemSubType);
+            current += items.Count(i => i.Data.ItemType == ItemType && i.Data.ItemSubType == ItemSubType);
+            Check();
         }
+
+        public override IValue Serialize() =>
+            new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
+            {
+                [(Text) "current"] = (Integer) current,
+                [(Text) "itemType"] = (Integer) (int) ItemType,
+                [(Text) "itemSubType"] = (Integer) (int) ItemSubType,
+            }.Union((Bencodex.Types.Dictionary) base.Serialize()));
+
     }
 }

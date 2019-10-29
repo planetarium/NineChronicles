@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Assets.SimpleLocalization;
-using Nekoyume.Game.Item;
+using Bencodex.Types;
 using Nekoyume.Model;
 using Nekoyume.TableData;
 
@@ -11,34 +11,51 @@ namespace Nekoyume.Game.Quest
     [Serializable]
     public class CollectQuest : Quest
     {
-        public int current;
-        
-        public new CollectQuestSheet.Row Data { get; }
         public override QuestType QuestType => QuestType.Obtain;
+
+        private int _current;
+
+        private readonly int _itemId;
 
         public CollectQuest(CollectQuestSheet.Row data) : base(data)
         {
-            Data = data;
+            _itemId = data.ItemId;
         }
 
-        public override void Check(Player player, List<ItemBase> items)
+        public CollectQuest(Dictionary serialized) : base(serialized)
+        {
+            _itemId = (int) ((Integer) serialized[(Bencodex.Types.Text) "itemId"]).Value;
+            _current = (int) ((Integer) serialized[(Bencodex.Types.Text) "current"]).Value;
+        }
+
+        public override void Check()
         {
             if (Complete)
                 return;
-            Update(items);
-            Complete = current >= Data.Goal;
+            Complete = _current >= Goal;
         }
 
         public override string ToInfo()
         {
             var format = LocalizationManager.Localize("QUEST_COLLECT_CURRENT_INFO_FORMAT");
-            var itemName = LocalizationManager.LocalizeItemName(Data.ItemId);
-            return string.Format(format, itemName, current, Data.Goal);
+            var itemName = LocalizationManager.LocalizeItemName(_itemId);
+            return string.Format(format, itemName, _current, Goal);
         }
 
-        private void Update(List<ItemBase> rewards)
+        protected override string TypeId => "collectQuest";
+
+        public void Update(CollectionMap itemMap)
         {
-            current += rewards.Count(i => i.Data.Id == Data.ItemId);
+            itemMap.TryGetValue(_itemId, out _current);
+            Check();
         }
+
+        public override IValue Serialize() =>
+            new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
+            {
+                [(Text) "current"] = (Integer) _current,
+                [(Text) "itemId"] = (Integer) _itemId,
+            }.Union((Bencodex.Types.Dictionary) base.Serialize()));
+
     }
 }
