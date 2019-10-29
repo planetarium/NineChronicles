@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using Bencodex.Types;
 using Libplanet;
+using Libplanet.Action;
 using Nekoyume.Battle;
 using Nekoyume.EnumType;
+using Nekoyume.Game.Factory;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Mail;
 using Nekoyume.Game.Quest;
@@ -205,6 +207,29 @@ namespace Nekoyume.State
             UpdateCompletedQuest();
 
         }
+
+        public void UpdateFromQuestReward(Quest quest, IRandom random)
+        {
+            var items = new List<ItemBase>();
+            foreach (var pair in quest.Reward.ItemMap)
+            {
+                var row = Game.Game.instance.TableSheets.ItemSheet.Values.First(itemRow => itemRow.Id == pair.Key);
+                var item = ItemFactory.Create(row, random.GenerateRandomGuid());
+                var map = inventory.AddItem(item, pair.Value);
+                itemMap.Add(map);
+                items.Add(item);
+                if (item is ItemUsable itemUsable)
+                {
+                    questList.UpdateItemGradeQuest(itemUsable);
+                }
+
+            }
+            questList.UpdateCollectQuest(itemMap);
+            questList.UpdateItemTypeCollectQuest(items);
+            UpdateCompletedQuest();
+
+        }
+
         public override IValue Serialize() =>
             new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
             {
@@ -227,5 +252,9 @@ namespace Nekoyume.State
                 [(Text) "itemMap"] = itemMap.Serialize(),
                 [(Text) "eventMap"] = eventMap.Serialize(),
             }.Union((Bencodex.Types.Dictionary) base.Serialize()));
+
+        public void UpdateQuestFromQuestReward(Dictionary<int, int> rewardItemMap, IRandom random)
+        {
+        }
     }
 }

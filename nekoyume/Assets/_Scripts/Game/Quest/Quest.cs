@@ -47,6 +47,8 @@ namespace Nekoyume.Game.Quest
         public int Id { get; }
 
         public QuestReward Reward { get; }
+
+        public bool Receive { get; set; }
         
         protected Quest(QuestSheet.Row data)
         {
@@ -77,6 +79,8 @@ namespace Nekoyume.Game.Quest
             Goal = (int) ((Integer) serialized[(Bencodex.Types.Text) "goal"]).Value;
             Id = (int) ((Integer) serialized[(Bencodex.Types.Text) "id"]).Value;
             Reward = new QuestReward((Dictionary) serialized[(Text) "reward"]);
+            serialized.TryGetValue((Text) "receive", out var receive);
+            Receive = ((Bencodex.Types.Boolean?) receive)?.Value ?? false;
         }
 
         public virtual IValue Serialize() =>
@@ -87,6 +91,7 @@ namespace Nekoyume.Game.Quest
                 [(Text) "goal"] = (Integer) Goal,
                 [(Text) "id"] = (Integer) Id,
                 [(Text) "reward"] = Reward.Serialize(),
+                [(Bencodex.Types.Text) "receive"] = new Bencodex.Types.Boolean(Receive),
             });
 
         public static Quest Deserialize(Bencodex.Types.Dictionary serialized)

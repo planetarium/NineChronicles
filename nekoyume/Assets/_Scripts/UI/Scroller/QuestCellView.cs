@@ -3,6 +3,7 @@ using EnhancedUI.EnhancedScroller;
 using Nekoyume.Helper;
 using System;
 using System.Linq;
+using Nekoyume.BlockChain;
 using Nekoyume.Game.Factory;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
@@ -54,7 +55,7 @@ namespace Nekoyume.UI.Scroller
             content.color = color;
 
             buttonText.text = LocalizationManager.Localize("UI_GET_REWARD");
-            button.interactable = quest.Complete;
+            button.interactable = quest.Complete && !quest.Receive;
             foreach (var shadow in _textShadows)
                 shadow.effectColor = button.interactable ? _highlightedColor : Color.black;
 
@@ -77,6 +78,7 @@ namespace Nekoyume.UI.Scroller
             button.interactable = false;
             foreach (var shadow in _textShadows)
                 shadow.effectColor = Color.black;
+            ActionManager.instance.QuestReward(data.Id);
         }
     }
 }
