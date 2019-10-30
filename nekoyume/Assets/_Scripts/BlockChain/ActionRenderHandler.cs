@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using Assets.SimpleLocalization;
 using Bencodex.Types;
 using Nekoyume.Action;
@@ -292,7 +293,7 @@ namespace Nekoyume.BlockChain
             ActionBase.EveryRender<QuestReward>()
                 .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
-                .Subscribe(UpdateCurrentAvatarState).AddTo(_disposables);
+                .Subscribe(ResponseQuestReward).AddTo(_disposables);
         }
 
         private void ResponseCombination(ActionBase.ActionEvaluation<Combination> evaluation)
@@ -403,6 +404,14 @@ namespace Nekoyume.BlockChain
             {
                 Widget.Find<BattleResult>().NextStage(eval);
             }
+        }
+
+        private void ResponseQuestReward(ActionBase.ActionEvaluation<QuestReward> eval)
+        {
+            UpdateCurrentAvatarState(eval);
+            var format = LocalizationManager.Localize("NOTIFICATION_QUEST_REWARD");
+            var msg = string.Format(format, eval.Action.Result.GetName());
+            UI.Notification.Push(MailType.System, msg);
         }
     }
 }
