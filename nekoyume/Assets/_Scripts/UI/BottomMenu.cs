@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Game.Mail;
+using Nekoyume.Game.Quest;
 using Nekoyume.Model;
 using UniRx;
 
@@ -93,6 +94,7 @@ namespace Nekoyume.UI.Module
             base.OnEnable();
             _disposablesAtOnEnable.DisposeAllAndClear();
             ReactiveCurrentAvatarState.MailBox?.Subscribe(SubscribeAvatarMailBox).AddTo(_disposablesAtOnEnable);
+            ReactiveCurrentAvatarState.QuestList.Subscribe(SubscribeAvatarQuestList).AddTo(_disposablesAtOnEnable);
         }
 
         protected override void OnDisable()
@@ -226,6 +228,14 @@ namespace Nekoyume.UI.Module
 
             mailButton.SharedModel.HasNotification.Value = mailBox.Any(i => i.New);
             Find<Mail>().UpdateList();
+        }
+
+        private void SubscribeAvatarQuestList(QuestList questList)
+        {
+            if (questList is null)
+                return;
+
+            questButton.SharedModel.HasNotification.Value = questList.Any(i => i.Complete && !i.Receive);
         }
 
         #endregion
