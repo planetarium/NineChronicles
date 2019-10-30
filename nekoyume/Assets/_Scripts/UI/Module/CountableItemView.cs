@@ -27,7 +27,6 @@ namespace Nekoyume.UI.Module
             _disposablesForSetData.DisposeAllAndClear();
             Model.Count.Subscribe(SetCount).AddTo(_disposablesForSetData);
             Model.CountEnabled.SubscribeTo(countText).AddTo(_disposablesForSetData);
-            Model.Dimmed.Subscribe(SetDim).AddTo(_disposablesForSetData);
 
             UpdateView();
         }
@@ -44,7 +43,8 @@ namespace Nekoyume.UI.Module
         {
             base.SetDim(isDim);
 
-            countText.color = isDim ? DimColor : DefaultColor;
+            var alpha = isDim ? .3f : 1f;
+            countText.color = GetColor(countText.color, alpha);
         }
 
         #endregion

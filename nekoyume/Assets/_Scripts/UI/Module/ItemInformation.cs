@@ -152,7 +152,7 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            descriptionArea.text.text = Model.item.Value.ItemBase.Value.Data.GetLocalizedDescription();
+            descriptionArea.text.text = Model.item.Value.ItemBase.Value.GetLocalizedDescription();
             descriptionArea.root.gameObject.SetActive(true);
         }
 

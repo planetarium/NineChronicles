@@ -341,14 +341,14 @@ namespace Nekoyume.BlockChain
         private void ResponseSell(ActionBase.ActionEvaluation<Sell> eval)
         {
             var format = LocalizationManager.Localize("NOTIFICATION_SELL_COMPLETE");
-            UI.Notification.Push(MailType.Auction, string.Format(format, eval.Action.itemUsable.Data.GetLocalizedName()));
+            UI.Notification.Push(MailType.Auction, string.Format(format, eval.Action.itemUsable.GetLocalizedName()));
             UpdateCurrentAvatarState(eval);
         }
 
         private void ResponseSellCancellation(ActionBase.ActionEvaluation<SellCancellation> eval)
         {
             var format = LocalizationManager.Localize("NOTIFICATION_SELL_CANCEL_COMPLETE");
-            UI.Notification.Push(MailType.Auction, string.Format(format, eval.Action.result.itemUsable.Data.GetLocalizedName()));
+            UI.Notification.Push(MailType.Auction, string.Format(format, eval.Action.result.itemUsable.GetLocalizedName()));
             UpdateCurrentAvatarState(eval);
         }
 
@@ -357,13 +357,13 @@ namespace Nekoyume.BlockChain
             if (eval.Action.buyerAvatarAddress == States.Instance.CurrentAvatarState.Value.address)
             {
                 var format = LocalizationManager.Localize("NOTIFICATION_BUY_BUYER_COMPLETE");
-                UI.Notification.Push(MailType.Auction, string.Format(format, eval.Action.buyerResult.itemUsable.Data.GetLocalizedName()));
+                UI.Notification.Push(MailType.Auction, string.Format(format, eval.Action.buyerResult.itemUsable.GetLocalizedName()));
             }
             else
             {
                 var format = LocalizationManager.Localize("NOTIFICATION_BUY_SELLER_COMPLETE");
                 var result = eval.Action.sellerResult;
-                UI.Notification.Push(MailType.Auction, string.Format(format, result.itemUsable.Data.GetLocalizedName(), result.gold));
+                UI.Notification.Push(MailType.Auction, string.Format(format, result.itemUsable.GetLocalizedName(), result.gold));
             }
 
             UpdateCurrentAvatarState(eval);
