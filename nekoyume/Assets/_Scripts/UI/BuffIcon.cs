@@ -1,4 +1,7 @@
-﻿using Nekoyume.Model;
+﻿using Nekoyume.Game;
+using Nekoyume.Game.Controller;
+using Nekoyume.Game.VFX;
+using Nekoyume.Model;
 using Nekoyume.TableData;
 using TMPro;
 using UnityEngine;
@@ -21,13 +24,14 @@ namespace Nekoyume.UI
             var sprite = Data.RowData.GetIcon();
             image.overrideSprite = sprite;
             UpdateStatus(Data);
+            var vfx = VFXController.instance.CreateAndChaseCam<DropItemInventoryVFX>(image.rectTransform.anchoredPosition);
         }
 
         public void UpdateStatus(Game.Buff buff)
         {
             Data = buff;
             remainedDurationText.text = Data.remainedDuration.ToString();
-        }
+        } 
 
         public void Hide()
         {
