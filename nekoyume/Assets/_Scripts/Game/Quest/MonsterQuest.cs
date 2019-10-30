@@ -4,6 +4,7 @@ using Assets.SimpleLocalization;
 using Bencodex.Types;
 using Nekoyume.Model;
 using Nekoyume.TableData;
+using Org.BouncyCastle.Asn1.CryptoPro;
 
 namespace Nekoyume.Game.Quest
 {
@@ -32,8 +33,13 @@ namespace Nekoyume.Game.Quest
 
         public override string ToInfo()
         {
+            return string.Format(GoalFormat, GetName(), _count, Goal);
+        }
+
+        public override string GetName()
+        {
             var format = LocalizationManager.Localize("QUEST_MONSTER_FORMAT");
-            return string.Format(format, LocalizationManager.LocalizeCharacterName(_monsterId), _count, Goal);
+            return string.Format(format, LocalizationManager.LocalizeCharacterName(_monsterId));
         }
 
         protected override string TypeId => "monsterQuest";

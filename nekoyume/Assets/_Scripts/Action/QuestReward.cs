@@ -13,6 +13,7 @@ namespace Nekoyume.Action
     {
         public int questId;
         public Address avatarAddress;
+        public Game.Quest.Quest Result;
 
         public override IAccountStateDelta Execute(IActionContext ctx)
         {
@@ -37,6 +38,8 @@ namespace Nekoyume.Action
             quest.Receive = true;
 
             avatarState.UpdateFromQuestReward(quest, ctx.Random);
+
+            Result = quest;
 
             return states
                 .SetState(avatarAddress, avatarState.Serialize());

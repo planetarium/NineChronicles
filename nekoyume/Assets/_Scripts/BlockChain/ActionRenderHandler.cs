@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text;
 using Assets.SimpleLocalization;
 using Bencodex.Types;
 using Nekoyume.Action;
@@ -116,6 +118,25 @@ namespace Nekoyume.BlockChain
 
         private void UpdateCurrentAvatarState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
         {
+            var avatarState = evaluation.OutputStates.GetAvatarState(States.Instance.CurrentAvatarState.Value.address);
+            var questList = avatarState.questList.Where(i => i.Complete && !i.Receive).ToList();
+            if (questList.Count >= 1)
+            {
+                if (questList.Count == 1)
+                {
+                    var quest = questList.First();
+                    var format = LocalizationManager.Localize("NOTIFICATION_QUEST_COMPLETE");
+                    var msg = string.Format(format, quest.GetName());
+                    UI.Notification.Push(MailType.System, msg);
+                }
+                else
+                {
+                    var format = LocalizationManager.Localize("NOTIFICATION_MULTIPLE_QUEST_COMPLETE");
+                    var msg = string.Format(format, questList.Count);
+                    UI.Notification.Push(MailType.System, msg);
+
+                }
+            }
             UpdateAvatarState(evaluation, States.Instance.CurrentAvatarKey.Value);
         }
 
@@ -272,7 +293,7 @@ namespace Nekoyume.BlockChain
             ActionBase.EveryRender<QuestReward>()
                 .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
-                .Subscribe(UpdateCurrentAvatarState).AddTo(_disposables);
+                .Subscribe(ResponseQuestReward).AddTo(_disposables);
         }
 
         private void ResponseCombination(ActionBase.ActionEvaluation<Combination> evaluation)
@@ -383,6 +404,14 @@ namespace Nekoyume.BlockChain
             {
                 Widget.Find<BattleResult>().NextStage(eval);
             }
+        }
+
+        private void ResponseQuestReward(ActionBase.ActionEvaluation<QuestReward> eval)
+        {
+            UpdateCurrentAvatarState(eval);
+            var format = LocalizationManager.Localize("NOTIFICATION_QUEST_REWARD");
+            var msg = string.Format(format, eval.Action.Result.GetName());
+            UI.Notification.Push(MailType.System, msg);
         }
     }
 }

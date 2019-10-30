@@ -47,8 +47,13 @@ namespace Nekoyume.Game.Quest
 
         public override string ToInfo()
         {
+            return string.Format(GoalFormat, GetName(), _count, Goal);
+        }
+
+        public override string GetName()
+        {
             var format = LocalizationManager.Localize("QUEST_ITEM_TYPE_FORMAT");
-            return string.Format(format, ItemType.GetLocalizedString(), _count, Goal);
+            return string.Format(format, ItemType.GetLocalizedString());
         }
 
         protected override string TypeId => "itemTypeCollectQuest";

@@ -49,6 +49,8 @@ namespace Nekoyume.Game.Quest
         public QuestReward Reward { get; }
 
         public bool Receive { get; set; }
+
+        public const string GoalFormat = "{0}. {1} / {2}";
         
         protected Quest(QuestSheet.Row data)
         {
@@ -70,7 +72,7 @@ namespace Nekoyume.Game.Quest
 
         public abstract void Check();
         public abstract string ToInfo();
-
+        public abstract string GetName();
         protected abstract string TypeId { get; }
 
         protected Quest(Bencodex.Types.Dictionary serialized)
