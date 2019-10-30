@@ -1,4 +1,7 @@
-﻿using Nekoyume.Model;
+﻿using Nekoyume.Game;
+using Nekoyume.Game.Controller;
+using Nekoyume.Game.VFX;
+using Nekoyume.Model;
 using Nekoyume.TableData;
 using TMPro;
 using UnityEngine;
@@ -27,7 +30,7 @@ namespace Nekoyume.UI
         {
             Data = buff;
             remainedDurationText.text = Data.remainedDuration.ToString();
-        }
+        } 
 
         public void Hide()
         {

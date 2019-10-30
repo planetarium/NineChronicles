@@ -9,13 +9,14 @@ namespace Nekoyume.Game
     [Serializable]
     public class Buff : ICloneable
     {
+        public int originalDuration;
         public int remainedDuration;
 
         public BuffSheet.Row RowData { get; }
 
         protected Buff(BuffSheet.Row row)
         {
-            remainedDuration = row.Duration;
+            originalDuration = remainedDuration = row.Duration;
             RowData = row;
         }
 
