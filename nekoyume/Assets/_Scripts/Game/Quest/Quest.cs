@@ -45,11 +45,27 @@ namespace Nekoyume.Game.Quest
         protected int Goal { get; }
 
         public int Id { get; }
+
+        public QuestReward Reward { get; }
+
+        public bool Receive { get; set; }
         
         protected Quest(QuestSheet.Row data)
         {
             Id = data.Id;
             Goal = data.Goal;
+            var itemMap = new Dictionary<int, int>();
+            if (Game.instance.TableSheets.QuestRewardSheet.TryGetValue(data.QuestRewardId, out var questRewardRow))
+            {
+                foreach (var rewardId in questRewardRow.RewardIds)
+                {
+                    if (Game.instance.TableSheets.QuestItemRewardSheet.TryGetValue(rewardId, out var itemRewardRow))
+                    {
+                        itemMap[itemRewardRow.ItemId] = itemRewardRow.Count;
+                    }
+                }
+            }
+            Reward = new QuestReward(itemMap);
         }
 
         public abstract void Check();
@@ -62,6 +78,9 @@ namespace Nekoyume.Game.Quest
             Complete = ((Bencodex.Types.Boolean) serialized[(Text) "complete"]).Value;
             Goal = (int) ((Integer) serialized[(Bencodex.Types.Text) "goal"]).Value;
             Id = (int) ((Integer) serialized[(Bencodex.Types.Text) "id"]).Value;
+            Reward = new QuestReward((Dictionary) serialized[(Text) "reward"]);
+            serialized.TryGetValue((Text) "receive", out var receive);
+            Receive = ((Bencodex.Types.Boolean?) receive)?.Value ?? false;
         }
 
         public virtual IValue Serialize() =>
@@ -71,6 +90,8 @@ namespace Nekoyume.Game.Quest
                 [(Bencodex.Types.Text) "complete"] = new Bencodex.Types.Boolean(Complete),
                 [(Text) "goal"] = (Integer) Goal,
                 [(Text) "id"] = (Integer) Id,
+                [(Text) "reward"] = Reward.Serialize(),
+                [(Bencodex.Types.Text) "receive"] = new Bencodex.Types.Boolean(Receive),
             });
 
         public static Quest Deserialize(Bencodex.Types.Dictionary serialized)

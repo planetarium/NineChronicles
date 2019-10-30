@@ -41,6 +41,9 @@ namespace Nekoyume.TableData
         public ItemConfigForGradeSheet ItemConfigForGradeSheet { get; private set; }
         public ConsumableItemRecipeSheet ConsumableItemRecipeSheet { get; private set; }
 
+        public QuestRewardSheet QuestRewardSheet { get; private set; }
+        public QuestItemRewardSheet QuestItemRewardSheet { get; set; }
+
         public IEnumerator CoInitialize()
         {
             loadProgress.Value = 0f;
@@ -174,6 +177,14 @@ namespace Nekoyume.TableData
                 case nameof(TableData.ConsumableItemRecipeSheet):
                     ConsumableItemRecipeSheet = new ConsumableItemRecipeSheet();
                     ConsumableItemRecipeSheet.Set(csv);
+                    break;
+                case nameof(TableData.QuestRewardSheet):
+                    QuestRewardSheet = new QuestRewardSheet();
+                    QuestRewardSheet.Set(csv);
+                    break;
+                case nameof(TableData.QuestItemRewardSheet):
+                    QuestItemRewardSheet = new QuestItemRewardSheet();
+                    QuestItemRewardSheet.Set(csv);
                     break;
                 default:
                     throw new InvalidDataException($"Not found {name} class in namespace `TableData`");

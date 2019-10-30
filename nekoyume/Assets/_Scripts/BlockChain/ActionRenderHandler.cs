@@ -56,6 +56,7 @@ namespace Nekoyume.BlockChain
             AddGold();
             DailyReward();
             ItemEnhancement();
+            QuestReward();
         }
 
         public void Stop()
@@ -261,6 +262,14 @@ namespace Nekoyume.BlockChain
         private void DailyReward()
         {
             ActionBase.EveryRender<DailyReward>()
+                .Where(ValidateEvaluationForCurrentAvatarState)
+                .ObserveOnMainThread()
+                .Subscribe(UpdateCurrentAvatarState).AddTo(_disposables);
+        }
+
+        private void QuestReward()
+        {
+            ActionBase.EveryRender<QuestReward>()
                 .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
                 .Subscribe(UpdateCurrentAvatarState).AddTo(_disposables);
