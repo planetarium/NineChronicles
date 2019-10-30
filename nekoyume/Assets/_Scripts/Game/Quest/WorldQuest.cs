@@ -27,6 +27,11 @@ namespace Nekoyume.Game.Quest
 
         public override string ToInfo()
         {
+            return GetName();
+        }
+
+        public override string GetName()
+        {
             if (Game.instance.TableSheets.WorldSheet.TryGetByStageId(Goal, out var worldRow))
             {
                 var format = LocalizationManager.Localize("QUEST_WORLD_FORMAT");

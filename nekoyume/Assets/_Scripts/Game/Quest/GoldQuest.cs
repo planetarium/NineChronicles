@@ -33,8 +33,12 @@ namespace Nekoyume.Game.Quest
 
         public override string ToInfo()
         {
-            var format = LocalizationManager.Localize($"QUEST_GOLD_{Type}_FORMAT");
-            return string.Format(format, Goal, _current, Goal);
+            return string.Format(GoalFormat, GetName(), _current, Goal);
+        }
+
+        public override string GetName()
+        {
+            return string.Format(LocalizationManager.Localize($"QUEST_GOLD_{Type}_FORMAT"), Goal);
         }
 
         protected override string TypeId => "GoldQuest";
