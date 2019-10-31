@@ -24,6 +24,12 @@ namespace Nekoyume.UI
             var sprite = Data.RowData.GetIcon();
             image.overrideSprite = sprite;
             UpdateStatus(Data);
+
+            if (buff.originalDuration == buff.remainedDuration)
+            {
+                var vfx = VFXController.instance.CreateAndChaseRectTransform<DropItemInventoryVFX>
+                    (image.transform.position, image.rectTransform);
+            }
         }
 
         public void UpdateStatus(Game.Buff buff)

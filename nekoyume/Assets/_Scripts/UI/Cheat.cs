@@ -17,7 +17,7 @@ using Enemy = Nekoyume.Game.Character.Enemy;
 
 namespace Nekoyume
 {
-    public class Cheat : ScreenWidget
+    public class Cheat : PopupWidget
     {
         private static Cheat Instance;
 
