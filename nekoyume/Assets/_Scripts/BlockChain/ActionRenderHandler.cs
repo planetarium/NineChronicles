@@ -273,11 +273,7 @@ namespace Nekoyume.BlockChain
             ActionBase.EveryRender<ItemEnhancement>()
                 .Where(ValidateEvaluationForAgentState)
                 .ObserveOnMainThread()
-                .Subscribe(eval =>
-                {
-                    UpdateAgentState(eval);
-                    UpdateCurrentAvatarState(eval);
-                }).AddTo(_disposables);
+                .Subscribe(ResponseItemEnhancement).AddTo(_disposables);
         }
 
         private void DailyReward()
@@ -298,10 +294,20 @@ namespace Nekoyume.BlockChain
 
         private void ResponseCombination(ActionBase.ActionEvaluation<Combination> evaluation)
         {
-            var isSuccess = !(evaluation.Action.Result.itemUsable is null);
-            AnalyticsManager.Instance.OnEvent(isSuccess
-                ? AnalyticsManager.EventName.ActionCombinationSuccess
-                : AnalyticsManager.EventName.ActionCombinationFail);
+            var itemUsable = evaluation.Action.Result.itemUsable;
+            var isSuccess = !(itemUsable is null);
+            if (isSuccess)
+            {
+                var format = LocalizationManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");
+                UI.Notification.Push(MailType.Workshop, string.Format(format, itemUsable.Data.GetLocalizedName()));
+                AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionCombinationSuccess);
+            }
+            else
+            {
+                AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionCombinationFail);
+                var format = LocalizationManager.Localize("NOTIFICATION_COMBINATION_FAIL");
+                UI.Notification.Push(MailType.Workshop, format);
+            }
             UpdateCurrentAvatarState(evaluation);
         }
 
@@ -412,6 +418,15 @@ namespace Nekoyume.BlockChain
             var format = LocalizationManager.Localize("NOTIFICATION_QUEST_REWARD");
             var msg = string.Format(format, eval.Action.Result.GetName());
             UI.Notification.Push(MailType.System, msg);
+        }
+
+        private void ResponseItemEnhancement(ActionBase.ActionEvaluation<ItemEnhancement> eval)
+        {
+            var format = LocalizationManager.Localize("NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE");
+            UI.Notification.Push(MailType.Workshop,
+                string.Format(format, eval.Action.result.itemUsable.Data.GetLocalizedName()));
+            UpdateAgentState(eval);
+            UpdateCurrentAvatarState(eval);
         }
     }
 }
