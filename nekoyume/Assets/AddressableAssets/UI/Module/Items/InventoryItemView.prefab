@@ -84,6 +84,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1574773698835721262}
   - component: {fileID: 1680758268937204102}
+  - component: {fileID: 5108685952006870881}
   m_Layer: 5
   m_Name: InventoryItemView
   m_TagString: Untagged
@@ -137,6 +138,26 @@ MonoBehaviour:
   coverImage: {fileID: 1680072034014358554}
   glowImage: {fileID: 537691525163953925}
   equippedIcon: {fileID: 2829839195611581940}
+--- !u!114 &5108685952006870881
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1641122085261224214}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1679637790, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreLayout: 0
+  m_MinWidth: 64
+  m_MinHeight: 64
+  m_PreferredWidth: 64
+  m_PreferredHeight: 64
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
+  m_LayoutPriority: 1
 --- !u!1 &4368882388499870128
 GameObject:
   m_ObjectHideFlags: 0
@@ -428,6 +449,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 1997991965690462128, guid: 5a7ec89f001bf46e686e8583d2f3a60e, type: 3}
+    - {fileID: 4194215539597630542, guid: 5a7ec89f001bf46e686e8583d2f3a60e, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 5a7ec89f001bf46e686e8583d2f3a60e, type: 3}
 --- !u!224 &5054824016854436034 stripped
 RectTransform:
