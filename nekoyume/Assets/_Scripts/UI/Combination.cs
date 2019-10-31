@@ -301,7 +301,6 @@ namespace Nekoyume.UI
 
         private void CreateCombinationAction(List<(int itemId, int count)> materialInfoList)
         {
-            Find<CombinationLoadingScreen>().Show();
 
             ActionManager.instance.Combination(materialInfoList)
                 .Subscribe(_ => { }, _ => Find<ActionFailPopup>().Show("Timeout occurred during Combination"));
@@ -309,7 +308,6 @@ namespace Nekoyume.UI
 
         private void CreateItemEnhancementAction(Guid baseItemGuid, IEnumerable<Guid> otherItemGuidList)
         {
-            Find<CombinationLoadingScreen>().Show();
 
             ActionManager.instance.ItemEnhancement(baseItemGuid, otherItemGuidList)
                 .Subscribe(_ => { }, _ => Find<ActionFailPopup>().Show("Timeout occurred during ItemEnhancement"));
