@@ -62,14 +62,14 @@ namespace Nekoyume.UI
                 Widget.Create<StageLoadingScreen>(),
                 Widget.Create<LoadingScreen>(true),
 
+#if DEBUG
+                Widget.Create<Cheat>(true),
+#endif
                 //최상단 알림 영역.
                 Widget.Create<UpdatePopup>(),
                 Widget.Create<BlockFailPopup>(),
                 Widget.Create<ActionFailPopup>(),
                 Widget.Create<Notification>(true),
-#if DEBUG
-                Widget.Create<Cheat>(true),
-#endif
             };
 
             foreach (var value in _firstWidgets)
