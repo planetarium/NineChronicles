@@ -6,6 +6,7 @@ using Nekoyume.BlockChain;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
+using Nekoyume.Game.Mail;
 using Nekoyume.Model;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
@@ -301,16 +302,16 @@ namespace Nekoyume.UI
 
         private void CreateCombinationAction(List<(int itemId, int count)> materialInfoList)
         {
-            Find<CombinationLoadingScreen>().Show();
-
+            var msg = LocalizationManager.Localize("NOTIFICATION_COMBINATION_START");
+            Notification.Push(MailType.Workshop, msg);
             ActionManager.instance.Combination(materialInfoList)
                 .Subscribe(_ => { }, _ => Find<ActionFailPopup>().Show("Timeout occurred during Combination"));
         }
 
         private void CreateItemEnhancementAction(Guid baseItemGuid, IEnumerable<Guid> otherItemGuidList)
         {
-            Find<CombinationLoadingScreen>().Show();
-
+            var msg = LocalizationManager.Localize("NOTIFICATION_ITEM_ENHANCEMENT_START");
+            Notification.Push(MailType.Workshop, msg);
             ActionManager.instance.ItemEnhancement(baseItemGuid, otherItemGuidList)
                 .Subscribe(_ => { }, _ => Find<ActionFailPopup>().Show("Timeout occurred during ItemEnhancement"));
         }

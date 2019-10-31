@@ -35,8 +35,13 @@ namespace Nekoyume.Game.Quest
 
         public override string ToInfo()
         {
+            return string.Format(GoalFormat, GetName(), _current, _count);
+        }
+
+        public override string GetName()
+        {
             var format = LocalizationManager.Localize("QUEST_ITEM_ENHANCEMENT_FORMAT");
-            return string.Format(format, Grade, Goal, _current, _count);
+            return string.Format(format, Grade, Goal);
         }
 
         public void Update(Equipment equipment)

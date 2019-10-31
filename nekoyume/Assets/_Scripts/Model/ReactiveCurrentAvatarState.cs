@@ -1,4 +1,5 @@
 using Nekoyume.Game.Mail;
+using Nekoyume.Game.Quest;
 using Nekoyume.State;
 using UniRx;
 using Inventory = Nekoyume.Game.Item.Inventory;
@@ -15,6 +16,7 @@ namespace Nekoyume.Model
         public static readonly ReactiveProperty<int> WorldStage = new ReactiveProperty<int>();
         public static readonly ReactiveProperty<int> ActionPoint = new ReactiveProperty<int>();
         public static readonly ReactiveProperty<long> NextDailyRewardIndex = new ReactiveProperty<long>();
+        public static readonly ReactiveProperty<QuestList> QuestList = new ReactiveProperty<QuestList>();
 
         public static void Initialize(AvatarState avatarState)
         {
@@ -28,6 +30,7 @@ namespace Nekoyume.Model
             WorldStage.SetValueAndForceNotify(avatarState.worldStage);
             ActionPoint.SetValueAndForceNotify(avatarState.actionPoint);
             NextDailyRewardIndex.SetValueAndForceNotify(avatarState.nextDailyRewardIndex);
+            QuestList.SetValueAndForceNotify(avatarState.questList);
         }
     }
 }
