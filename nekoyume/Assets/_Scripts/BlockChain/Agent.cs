@@ -11,13 +11,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using Assets.SimpleLocalization;
 using AsyncIO;
-using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Blockchain;
 using Libplanet.Blockchain.Policies;
 using Libplanet.Blocks;
 using Libplanet.Crypto;
+using Libplanet.KeyStore;
 using Libplanet.Net;
 using Libplanet.Store;
 using Libplanet.Tx;
@@ -282,17 +282,101 @@ namespace Nekoyume.BlockChain
 
         private static PrivateKey GetPrivateKey(CommandLineOptions options)
         {
-            PrivateKey privateKey;
-            var privateKeyHex = options.PrivateKey ?? PlayerPrefs.GetString(PlayerPrefsKeyOfAgentPrivateKey, "");
-
-            if (string.IsNullOrEmpty(privateKeyHex))
+            if (!Directory.Exists(options.KeyStorePath))
             {
-                privateKey = new PrivateKey();
-                PlayerPrefs.SetString(PlayerPrefsKeyOfAgentPrivateKey, ByteUtil.Hex(privateKey.ByteArray));
+                Directory.CreateDirectory(options.KeyStorePath);
+            }
+
+            PrivateKey privateKey = null;
+
+            if (string.IsNullOrEmpty(options.PrivateKey))
+            {
+                IEnumerable<string> keyPaths = Directory.EnumerateFiles(options.KeyStorePath);
+
+                var ppks = new Dictionary<string, ProtectedPrivateKey>();
+                foreach (string keyPath in keyPaths)
+                {
+                    if (Path.GetFileName(keyPath) is string f && f.StartsWith("."))
+                    {
+                        continue;
+                    }
+
+                    using (Stream stream = new FileStream(keyPath, FileMode.Open))
+                    using (StreamReader reader = new StreamReader(stream))
+                    {
+                        try
+                        {
+                            ppks[keyPath] = ProtectedPrivateKey.FromJson(reader.ReadToEnd());
+                        }
+                        catch (Exception e)
+                        {
+                            Debug.LogWarningFormat("The key file {0} is invalid: {1}", keyPath, e);
+                        }
+                    }
+                }
+
+                Debug.LogFormat(
+                    "Loaded {0} protected keys in the keystore:\n{1}",
+                    ppks.Count,
+                    string.Join("\n", ppks.Select(kv => $"- {kv.Value}: {kv.Key}"))
+                );
+
+                // FIXME: 키가 여러 개 있을 수 있으므로 UI에서 목록으로 표시하고 유저가 선택하게 해야 함.
+                foreach (KeyValuePair<string, ProtectedPrivateKey> kv in ppks)
+                {
+                    try
+                    {
+                        privateKey = kv.Value.Unprotect(passphrase: "");
+                        // FIXME: passphrase 제대로 UI 통해서 입력 받아야 함 -^
+                    }
+                    catch (IncorrectPassphraseException)
+                    {
+                        Debug.LogWarningFormat(
+                            "The key file {0} is protected with a passphrase; failed to load: {1}",
+                            kv.Value.Address,
+                            kv.Key
+                        );
+                    }
+
+                    Debug.LogFormat(
+                        "The key file {0} was successfully loaded using passphrase: {1}",
+                        kv.Value.Address, kv.Key
+                    );
+                    break;
+                }
             }
             else
             {
-                privateKey = new PrivateKey(ByteUtil.ParseHex(privateKeyHex));
+                privateKey = new PrivateKey(ByteUtil.ParseHex(options.PrivateKey));
+                Debug.LogWarningFormat(
+                    "As --private-key option is used, keystore files are ignored.\n" +
+                    "Loaded key (address): {0}",
+                    privateKey.PublicKey.ToAddress()
+                );
+            }
+
+            if (privateKey is null)
+            {
+                privateKey = new PrivateKey();
+                ProtectedPrivateKey ppk = ProtectedPrivateKey.Protect(privateKey, "");
+                // FIXME: passphrase 제대로 UI 통해서 입력 받아야 함. --------------------^
+
+                Guid keyId = Guid.NewGuid();
+                DateTimeOffset now = DateTimeOffset.UtcNow;
+                string keyPath = Path.Combine(
+                    options.KeyStorePath,
+                    $"UTC--{now:yyyy-MM-dd}T{now:HH:mm:ss}Z--{keyId:D}"
+                );
+                using (Stream f = new FileStream(keyPath, FileMode.CreateNew))
+                {
+                    ppk.WriteJson(f, keyId);
+                }
+
+                Debug.LogFormat(
+                    "As there hadn't been any key file, a new key file was created ({0}): {1}",
+                    ppk.Address,
+                    keyPath
+                );
             }
 
             return privateKey;
