@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Assets.SimpleLocalization;
 using Bencodex.Types;
 using Nekoyume.Helper;
 using Nekoyume.State;
@@ -37,6 +38,16 @@ namespace Nekoyume.Game.Item
         }
 
         public abstract string ToItemInfo();
+        
+        public virtual string GetLocalizedName()
+        {
+            return Data.GetLocalizedName();
+        }
+
+        public string GetLocalizedDescription()
+        {
+            return Data.GetLocalizedDescription();
+        }
 
         public Sprite GetIconSprite()
         {

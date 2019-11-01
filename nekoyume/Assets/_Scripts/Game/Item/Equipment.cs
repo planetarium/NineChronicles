@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Assets.SimpleLocalization;
 using Bencodex.Types;
 using Nekoyume.TableData;
 
@@ -40,6 +41,15 @@ namespace Nekoyume.Game.Item
             {
                 StatsMap.SetStatAdditionalValue(statData.StatType, level * levelStats);
             }
+        }
+        
+        public override string GetLocalizedName()
+        {
+            var name = base.GetLocalizedName();
+
+            return level > 0
+                ? $"{name} +{level}"
+                : name;
         }
 
         public override IValue Serialize() =>
