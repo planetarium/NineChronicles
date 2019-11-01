@@ -412,16 +412,7 @@ namespace Nekoyume.UI.Module
 
         private void UpdateSubmittable()
         {
-            if (IsSubmittable)
-            {
-                submitButton.button.enabled = true;
-                submitButton.submitText.color = Color.white;
-            }
-            else
-            {
-                submitButton.button.enabled = false;
-                submitButton.submitText.color = ColorHelper.HexToColorRGB("92A3B5");
-            }
+            submitButton.button.interactable = IsSubmittable;
         }
     }
 }

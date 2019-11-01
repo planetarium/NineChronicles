@@ -107,7 +107,7 @@ namespace Nekoyume.UI.Module
                     else if (i < configRow.MonsterPartsCountForCombination +
                              configRow.MonsterPartsCountForCombinationWithNCG)
                     {
-                        material.Unlock();
+                        material.UnlockAsNCG();
                     }
                     else
                     {

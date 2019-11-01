@@ -51,17 +51,21 @@ namespace Nekoyume.UI.Module
 
         public void Lock()
         {
-            // 잠긴 배경. 버튼 비활성화.
-//            backgroundImage.sprite
             Clear();
             itemButton.interactable = false;
+//            backgroundImage.sprite
         }
         
         public void Unlock()
         {
-            // 열린 배경. 버튼 활성화.
-//            backgroundImage.sprite
             itemButton.interactable = true;
+//            backgroundImage.sprite
+        }
+
+        public void UnlockAsNCG()
+        {
+            itemButton.interactable = true;
+//            backgroundImage.sprite
         }
 
         private void SetEnableEffectImages(bool enable)
