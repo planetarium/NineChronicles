@@ -243,7 +243,7 @@ namespace Nekoyume.Model
             if (!Game.Game.instance.TableSheets.SkillSheet.TryGetValue(100000, out var skillRow))
                 throw new KeyNotFoundException("100000");
 
-            var attack = SkillFactory.Get(skillRow, ATK, 100);
+            var attack = SkillFactory.Get(skillRow, 0, 100);
             Skills.Add(attack);
         }
 
