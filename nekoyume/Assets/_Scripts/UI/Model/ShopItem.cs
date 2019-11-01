@@ -32,12 +32,11 @@ namespace Nekoyume.UI.Model
 
         public override void Dispose()
         {
-            base.Dispose();
-            
             SellerAgentAddress.Dispose();
             SellerAvatarAddress.Dispose();
             Price.Dispose();
             ProductId.Dispose();
+            base.Dispose();
         }
     }
 }

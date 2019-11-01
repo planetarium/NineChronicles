@@ -13,9 +13,8 @@ namespace Nekoyume.UI.Model
 
         public override void Dispose()
         {
-            base.Dispose();
-            
             IsRequireNCG.Dispose();
+            base.Dispose();
         }
     }
 }

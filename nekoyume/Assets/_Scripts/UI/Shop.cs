@@ -163,7 +163,6 @@ namespace Nekoyume.UI
                     break;
                 case StateType.Sell:
                     inventory.SharedModel.DimmedFunc.Value = DimmedFuncForSell;
-                    inventory.SharedModel.EquippedFunc.Value = EquippedFuncForSell;
                     buyButton.button.interactable = true;
                     sellButton.button.interactable = false;
                     shopNotice.SetActive(true);

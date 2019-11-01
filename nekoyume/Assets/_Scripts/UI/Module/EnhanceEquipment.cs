@@ -3,11 +3,19 @@ using Assets.SimpleLocalization;
 using Nekoyume.BlockChain;
 using Nekoyume.EnumType;
 using Nekoyume.UI.Model;
+using TMPro;
 
 namespace Nekoyume.UI.Module
 {
     public class EnhanceEquipment : CombinationPanel<EnhanceEquipment>
     {
+        public TextMeshProUGUI baseMaterialTitleText;
+        public TextMeshProUGUI baseMaterialItemNameText;
+        public StatView baseMaterialStatView;
+        public TextMeshProUGUI[] otherMaterialTitleTexts;
+        public TextMeshProUGUI[] otherMaterialItemNameTexts;
+        public StatView[] otherMaterialStatViews;
+        
         public override bool IsSubmittable =>
             !(States.Instance.AgentState.Value is null) &&
             States.Instance.AgentState.Value.gold >= CostNCG &&
@@ -24,7 +32,7 @@ namespace Nekoyume.UI.Module
             if (baseMaterial is null)
                 throw new SerializeFieldNullException();
 
-            submitButtonText.text = LocalizationManager.Localize("UI_COMBINATION_ENHANCEMENT");
+            submitButton.submitText.text = LocalizationManager.Localize("UI_COMBINATION_ENHANCEMENT");
         }
 
         public override void Show()
@@ -41,6 +49,9 @@ namespace Nekoyume.UI.Module
 
         public override bool DimFunc(InventoryItem inventoryItem)
         {
+            if (!IsThereAnyUnlockedEmptyMaterialView)
+                return true;
+            
             var row = inventoryItem.ItemBase.Value.Data;
             if (row.ItemType != ItemType.Equipment)
                 return true;
@@ -52,7 +63,7 @@ namespace Nekoyume.UI.Module
                     return true;
             }
 
-            return base.DimFunc(inventoryItem);
+            return false;
         }
 
         protected override int GetCostNCG()
@@ -62,7 +73,7 @@ namespace Nekoyume.UI.Module
 
         protected override int GetCostAP()
         {
-            return GameConfig.EnhanceEquipmentCostAP;
+            return baseMaterial.IsEmpty ? 0 : GameConfig.EnhanceEquipmentCostAP;
         }
 
         protected override bool TryAddBaseMaterial(InventoryItemView view)
@@ -94,7 +105,7 @@ namespace Nekoyume.UI.Module
 
             foreach (var materialView in otherMaterials)
             {
-                materialView.Set(null);
+                materialView.Clear();
                 materialView.Lock();
             }
 

@@ -2,15 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
-using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
 using Nekoyume.Helper;
 using Nekoyume.Model;
 using Nekoyume.UI.Model;
-using TMPro;
 using UniRx;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
@@ -26,13 +23,8 @@ namespace Nekoyume.UI.Module
         private readonly List<IDisposable> _disposablesAtShow = new List<IDisposable>();
 
         [CanBeNull] public CombinationMaterialView baseMaterial;
-        public List<CombinationMaterialView> otherMaterials;
-        public GameObject costNCG;
-        public TextMeshProUGUI costNCGText;
-        public GameObject costAP;
-        public TextMeshProUGUI costAPText;
-        public Button submitButton;
-        public TextMeshProUGUI submitButtonText;
+        public CombinationMaterialView[] otherMaterials;
+        public SubmitWithCostButton submitButton;
 
         public readonly Subject<InventoryItem> OnMaterialAdd = new Subject<InventoryItem>();
         public readonly Subject<InventoryItem> OnBaseMaterialAdd = new Subject<InventoryItem>();
@@ -43,12 +35,10 @@ namespace Nekoyume.UI.Module
         public readonly Subject<int> OnCostNCGChange = new Subject<int>();
         public readonly Subject<int> OnCostAPChange = new Subject<int>();
 
-        public readonly Subject<CombinationPanel<T>> OnSubmitClick =
-            new Subject<CombinationPanel<T>>();
-
         public int CostNCG { get; private set; }
         public int CostAP { get; private set; }
         
+        public bool IsThereAnyUnlockedEmptyMaterialView { get; private set; }
         public abstract bool IsSubmittable { get; }
 
         #region Initialize & Terminate
@@ -64,12 +54,6 @@ namespace Nekoyume.UI.Module
             {
                 InitMaterialView(otherMaterial);
             }
-
-            submitButton.OnClickAsObservable().Subscribe(_ =>
-            {
-                AudioController.PlayClick();
-                OnSubmitClick.OnNext(this);
-            }).AddTo(gameObject);
         }
 
         protected virtual void OnDestroy()
@@ -82,7 +66,6 @@ namespace Nekoyume.UI.Module
             OnOtherMaterialRemove.Dispose();
             OnCostNCGChange.Dispose();
             OnCostAPChange.Dispose();
-            OnSubmitClick.Dispose();
         }
 
         private void InitMaterialView(CombinationMaterialView view)
@@ -113,9 +96,10 @@ namespace Nekoyume.UI.Module
         public virtual void Show()
         {
             gameObject.SetActive(true);
+            OnMaterialAddedOrRemoved();
+            OnMaterialCountChanged();
             ReactiveAgentState.Gold.Subscribe(SubscribeNCG).AddTo(_disposablesAtShow);
             ReactiveCurrentAvatarState.ActionPoint.Subscribe(SubscribeActionPoint).AddTo(_disposablesAtShow);
-            OnMaterialCountChanged();
         }
 
         public virtual void Hide()
@@ -127,7 +111,21 @@ namespace Nekoyume.UI.Module
             gameObject.SetActive(false);
         }
 
-        public virtual bool DimFunc(InventoryItem inventoryItem)
+        /// <summary>
+        /// 인자로 받은 인벤토리 아이템이 재료로 등록될 수 있는지 여부를 리턴한다.
+        /// 이곳에서는 빈 재료 슬롯이 있으지에 대해서 처리한다.
+        /// 상속 하는 곳에서는 추가적으로 `true`를 반환하는 경우에 대해서 작성하고, 마지막으로 이 함수를 반환하도록 한다. 
+        /// </summary>
+        /// <param name="inventoryItem"></param>
+        /// <returns></returns>
+        public abstract bool DimFunc(InventoryItem inventoryItem);
+        
+        /// <summary>
+        /// 이미 재료로 등록된 인벤토리 아이템의 이펙트를 처리한다.
+        /// </summary>
+        /// <param name="inventoryItem"></param>
+        /// <returns></returns>
+        public virtual bool Contains(InventoryItem inventoryItem)
         {
             if (inventoryItem.ItemBase.Value is ItemUsable itemUsable)
             {
@@ -179,22 +177,25 @@ namespace Nekoyume.UI.Module
         public virtual bool TryAddMaterial(InventoryItemView view)
         {
             if (view is null ||
-                view.Model is null)
+                view.Model is null ||
+                view.Model.Dimmed.Value)
                 return false;
 
             if (TryAddBaseMaterial(view))
             {
+                OnMaterialAddedOrRemoved();
+                OnMaterialCountChanged();
                 OnMaterialAdd.OnNext(view.Model);
                 OnBaseMaterialAdd.OnNext(view.Model);
-                OnMaterialCountChanged();
                 return true;
             }
 
             if (TryAddOtherMaterial(view))
             {
+                OnMaterialAddedOrRemoved();
+                OnMaterialCountChanged();
                 OnMaterialAdd.OnNext(view.Model);
                 OnOtherMaterialAdd.OnNext(view.Model);
-                OnMaterialCountChanged();
                 return true;
             }
 
@@ -259,17 +260,21 @@ namespace Nekoyume.UI.Module
 
             if (TryRemoveBaseMaterial(view))
             {
+                OnMaterialAddedOrRemoved();
+                OnMaterialCountChanged();
                 OnMaterialRemove.OnNext(inventoryItemView);
                 OnBaseMaterialRemove.OnNext(inventoryItemView);
-                OnMaterialCountChanged();
                 return true;
             }
 
             if (TryRemoveOtherMaterial(view))
             {
+                ReorderOtherMaterials();
+                
+                OnMaterialAddedOrRemoved();
+                OnMaterialCountChanged();
                 OnMaterialRemove.OnNext(inventoryItemView);
                 OnOtherMaterialRemove.OnNext(inventoryItemView);
-                OnMaterialCountChanged();
                 return true;
             }
 
@@ -285,7 +290,7 @@ namespace Nekoyume.UI.Module
                 baseMaterial.Model.ItemBase.Value.Data.Id != view.Model.ItemBase.Value.Data.Id)
                 return false;
 
-            baseMaterial.Set(null);
+            baseMaterial.Clear();
             return true;
         }
 
@@ -302,58 +307,100 @@ namespace Nekoyume.UI.Module
             if (sameMaterial is null)
                 return false;
 
-            sameMaterial.Set(null);
+            sameMaterial.Clear();
             return true;
         }
 
-        public virtual void RemoveMaterialsAll()
+        public void RemoveMaterialsAll()
         {
             if (!(baseMaterial is null))
             {
-                OnMaterialRemove.OnNext(baseMaterial.InventoryItemViewModel);
-                baseMaterial.Set(null);
+                var model = baseMaterial.InventoryItemViewModel;
+                baseMaterial.Clear();
+                OnMaterialAddedOrRemoved();
+                OnMaterialCountChanged();
+                OnMaterialRemove.OnNext(model);
+                OnBaseMaterialRemove.OnNext(model);
             }
 
             foreach (var material in otherMaterials)
             {
-                OnMaterialRemove.OnNext(material.InventoryItemViewModel);
-                material.Set(null);
+                var model = material.InventoryItemViewModel;
+                material.Clear();
+                OnMaterialAddedOrRemoved();
+                OnMaterialCountChanged();
+                OnMaterialRemove.OnNext(model);
+                OnOtherMaterialRemove.OnNext(model);
             }
-
-            OnMaterialCountChanged();
         }
 
         #endregion
-
-        protected virtual void SubscribeNCG(decimal ncg)
+        
+        private void SubscribeNCG(decimal ncg)
         {
             if (CostNCG > 0)
             {
-                costNCG.SetActive(true);
-                costNCGText.text = CostNCG.ToString();
-                costNCGText.color = ncg >= CostNCG ? Color.white : Color.red;
+                submitButton.ShowNCG(CostNCG, ncg >= CostNCG);
             }
             else
             {
-                costNCG.SetActive(false);
+                submitButton.HideNCG();
             }
         }
 
-        protected virtual void SubscribeActionPoint(int actionPoint)
+        private void SubscribeActionPoint(int ap)
         {
             if (CostAP > 0)
             {
-                costAP.SetActive(true);
-                costAPText.text = CostAP.ToString();
-                costAPText.color = actionPoint >= CostAP ? Color.white : Color.red;
+                submitButton.ShowAP(CostAP, ap >= CostAP);
             }
             else
             {
-                costAP.SetActive(false);
+                submitButton.HideAP();
             }
         }
 
-        protected virtual void OnMaterialCountChanged()
+        private void ReorderOtherMaterials()
+        {
+            for (var i = 0; i < otherMaterials.Length; i++)
+            {
+                var dstMaterial = otherMaterials[i];
+                if (!dstMaterial.IsEmpty)
+                    continue;
+                
+                CombinationMaterialView srcMaterial = null;
+                for (var j = i + 1; j < otherMaterials.Length; j++)
+                {
+                    var tempMaterial = otherMaterials[j];
+                    if (tempMaterial.IsEmpty)
+                        continue;
+
+                    srcMaterial = tempMaterial;
+                    break;
+                }
+
+                if (srcMaterial is null)
+                    break;
+                    
+                dstMaterial.Set(srcMaterial.InventoryItemViewModel);
+                srcMaterial.Clear();
+            }
+        }
+        
+        private void OnMaterialAddedOrRemoved()
+        {
+            if (!(baseMaterial is null) &&
+                baseMaterial.IsEmpty)
+            {
+                IsThereAnyUnlockedEmptyMaterialView = true;
+                return;
+            }
+
+            IsThereAnyUnlockedEmptyMaterialView =
+                otherMaterials.Any(otherMaterial => !otherMaterial.IsLocked && otherMaterial.IsEmpty);
+        }
+
+        private void OnMaterialCountChanged()
         {
             CostNCG = GetCostNCG();
             SubscribeNCG(ReactiveAgentState.Gold.Value);
@@ -367,13 +414,13 @@ namespace Nekoyume.UI.Module
         {
             if (IsSubmittable)
             {
-                submitButton.enabled = true;
-                submitButtonText.color = Color.white;
+                submitButton.button.enabled = true;
+                submitButton.submitText.color = Color.white;
             }
             else
             {
-                submitButton.enabled = false;
-                submitButtonText.color = ColorHelper.HexToColorRGB("92A3B5");
+                submitButton.button.enabled = false;
+                submitButton.submitText.color = ColorHelper.HexToColorRGB("92A3B5");
             }
         }
     }

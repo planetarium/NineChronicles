@@ -100,7 +100,7 @@ namespace Tests
                 w.inventory.Tooltip.submitButton.onClick.Invoke();
             }
 
-            w.combineConsumable.submitButton.onClick.Invoke();
+            w.combineConsumable.submitButton.button.onClick.Invoke();
             yield return new WaitUntil(() => Game.instance.agent.StagedTransactions.Any());
             var tx = Game.instance.agent.StagedTransactions.First();
             yield return miner.CoMine(tx);

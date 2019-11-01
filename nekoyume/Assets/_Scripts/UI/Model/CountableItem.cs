@@ -30,11 +30,10 @@ namespace Nekoyume.UI.Model
         
         public override void Dispose()
         {
-            base.Dispose();
-            
             Count.Dispose();
             CountEnabled.Dispose();
             CountEnabledFunc.Dispose();
+            base.Dispose();
         }
 
         private bool CountEnabledFuncDefault(CountableItem countableItem)
