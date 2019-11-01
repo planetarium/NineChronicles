@@ -9,6 +9,7 @@ using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Text.RegularExpressions;
+using Nekoyume.UI.Module;
 
 namespace Nekoyume.UI
 {

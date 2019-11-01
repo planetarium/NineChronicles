@@ -26,7 +26,10 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<Func<InventoryItem, bool>> DimmedFunc =
             new ReactiveProperty<Func<InventoryItem, bool>>();
 
-        public readonly ReactiveProperty<Func<InventoryItem, bool>> EquippedFunc =
+        public readonly ReactiveProperty<Func<InventoryItem, bool>> EffectEnabledFunc =
+            new ReactiveProperty<Func<InventoryItem, bool>>();
+        
+        public readonly ReactiveProperty<Func<InventoryItem, bool>> EquippedEnabledFunc =
             new ReactiveProperty<Func<InventoryItem, bool>>();
 
         public readonly Subject<InventoryItemView> OnRightClickItemView = new Subject<InventoryItemView>();
@@ -38,6 +41,8 @@ namespace Nekoyume.UI.Model
 
             State.Subscribe(SubscribeState);
             DimmedFunc.Subscribe(SubscribeDimmedFunc);
+            EffectEnabledFunc.Subscribe(SubscribeEffectEnabledFunc);
+            EquippedEnabledFunc.Subscribe(SubscribeEquippedEnabledFunc);
         }
 
         public void Dispose()
@@ -49,7 +54,7 @@ namespace Nekoyume.UI.Model
             SelectedItemView.Dispose();
             SelectedItemViewModel.Dispose();
             DimmedFunc.Dispose();
-            EquippedFunc.Dispose();
+            EquippedEnabledFunc.Dispose();
             OnRightClickItemView.Dispose();
         }
 
@@ -107,7 +112,7 @@ namespace Nekoyume.UI.Model
                     break;
                 case ItemType.Equipment:
                     inventoryItem = CreateInventoryItem(itemBase, count);
-                    inventoryItem.Equipped.Value = ((Equipment) itemBase).equipped;
+                    inventoryItem.EquippedEnabled.Value = ((Equipment) itemBase).equipped;
                     Equipments.Add(inventoryItem);
                     break;
                 case ItemType.Material:
@@ -320,6 +325,11 @@ namespace Nekoyume.UI.Model
         {
             SubscribeDimmedFunc(DimmedFunc.Value);
         }
+        
+        public void UpdateEffectAll()
+        {
+            SubscribeEffectEnabledFunc(EffectEnabledFunc.Value);
+        }
 
         #region Subscribe
 
@@ -350,6 +360,52 @@ namespace Nekoyume.UI.Model
                 item.Dimmed.Value = DimmedFunc.Value(item);
             }
         }
+        
+        private void SubscribeEffectEnabledFunc(Func<InventoryItem, bool> func)
+        {
+            if (EffectEnabledFunc.Value == null)
+            {
+                EffectEnabledFunc.Value = DefaultCoveredFunc;
+            }
+
+            foreach (var item in Equipments)
+            {
+                item.EffectEnabled.Value = EffectEnabledFunc.Value(item);
+            }
+
+            foreach (var item in Consumables)
+            {
+                item.EffectEnabled.Value = EffectEnabledFunc.Value(item);
+            }
+
+            foreach (var item in Materials)
+            {
+                item.EffectEnabled.Value = EffectEnabledFunc.Value(item);
+            }
+        }
+        
+        private void SubscribeEquippedEnabledFunc(Func<InventoryItem, bool> func)
+        {
+            if (EquippedEnabledFunc.Value == null)
+            {
+                EquippedEnabledFunc.Value = DefaultEquippedFunc;
+            }
+
+            foreach (var item in Equipments)
+            {
+                item.EquippedEnabled.Value = EquippedEnabledFunc.Value(item);
+            }
+
+            foreach (var item in Consumables)
+            {
+                item.EquippedEnabled.Value = EquippedEnabledFunc.Value(item);
+            }
+
+            foreach (var item in Materials)
+            {
+                item.EquippedEnabled.Value = EquippedEnabledFunc.Value(item);
+            }
+        }
 
         #endregion
 
@@ -357,22 +413,35 @@ namespace Nekoyume.UI.Model
         {
             return false;
         }
+        
+        private static bool DefaultCoveredFunc(InventoryItem inventoryItem)
+        {
+            return false;
+        }
+        
+        private static bool DefaultEquippedFunc(InventoryItem inventoryItem)
+        {
+            if (!(inventoryItem.ItemBase.Value is Equipment equipment))
+                return false;
+
+            return equipment.equipped;
+        }
 
         private void SetGlowedAll(bool value)
         {
             foreach (var item in Equipments)
             {
-                item.Glowed.Value = value;
+                item.GlowEnabled.Value = value;
             }
 
             foreach (var item in Consumables)
             {
-                item.Glowed.Value = value;
+                item.GlowEnabled.Value = value;
             }
 
             foreach (var item in Materials)
             {
-                item.Glowed.Value = value;
+                item.GlowEnabled.Value = value;
             }
         }
     }

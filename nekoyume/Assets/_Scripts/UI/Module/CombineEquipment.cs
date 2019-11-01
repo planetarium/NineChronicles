@@ -26,7 +26,7 @@ namespace Nekoyume.UI.Module
             if (baseMaterial is null)
                 throw new SerializeFieldNullException();
 
-            submitButtonText.text = LocalizationManager.Localize("UI_COMBINATION_ITEM");
+            submitButton.submitText.text = LocalizationManager.Localize("UI_COMBINATION_ITEM");
         }
 
         public override void Show()
@@ -47,6 +47,12 @@ namespace Nekoyume.UI.Module
             if (row.ItemType != ItemType.Material)
                 return true;
 
+            if (!IsThereAnyUnlockedEmptyMaterialView)
+            {
+                if (row.ItemSubType != ItemSubType.EquipmentMaterial)
+                    return true;
+            }
+            
             if (baseMaterial.IsEmpty)
             {
                 if (row.ItemSubType != ItemSubType.EquipmentMaterial)
@@ -56,7 +62,7 @@ namespace Nekoyume.UI.Module
                      row.ItemSubType != ItemSubType.MonsterPart)
                 return true;
 
-            return base.DimFunc(inventoryItem);
+            return false;
         }
 
         protected override int GetCostNCG()
@@ -76,7 +82,7 @@ namespace Nekoyume.UI.Module
 
         protected override int GetCostAP()
         {
-            return GameConfig.CombineEquipmentCostAP;
+            return baseMaterial.IsEmpty ? 0 : GameConfig.CombineEquipmentCostAP;
         }
 
         protected override bool TryAddBaseMaterial(InventoryItemView view)
@@ -91,7 +97,7 @@ namespace Nekoyume.UI.Module
                 Game.Game.instance.TableSheets.ItemConfigForGradeSheet.TryGetValue(view.Model.ItemBase.Value.Data.Grade,
                     out var configRow, true);
 
-                for (var i = 0; i < otherMaterials.Count; i++)
+                for (var i = 0; i < otherMaterials.Length; i++)
                 {
                     var material = otherMaterials[i];
                     if (i < configRow.MonsterPartsCountForCombination)
@@ -101,7 +107,7 @@ namespace Nekoyume.UI.Module
                     else if (i < configRow.MonsterPartsCountForCombination +
                              configRow.MonsterPartsCountForCombinationWithNCG)
                     {
-                        material.Unlock();
+                        material.UnlockAsNCG();
                     }
                     else
                     {
@@ -122,7 +128,7 @@ namespace Nekoyume.UI.Module
 
             foreach (var otherMaterial in otherMaterials)
             {
-                otherMaterial.Set(null);
+                otherMaterial.Clear();
                 otherMaterial.Lock();
             }
 

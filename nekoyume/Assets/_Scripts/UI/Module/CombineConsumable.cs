@@ -25,7 +25,7 @@ namespace Nekoyume.UI.Module
         {
             base.Awake();
             
-            submitButtonText.text = LocalizationManager.Localize("UI_COMBINATION_ITEM");
+            submitButton.submitText.text = LocalizationManager.Localize("UI_COMBINATION_ITEM");
 
             recipeButton.OnClickAsObservable()
                 .Subscribe(_ =>
@@ -54,12 +54,15 @@ namespace Nekoyume.UI.Module
 
         public override bool DimFunc(InventoryItem inventoryItem)
         {
+            if (!IsThereAnyUnlockedEmptyMaterialView)
+                return true;
+            
             var row = inventoryItem.ItemBase.Value.Data;
             if (row.ItemType != ItemType.Material ||
                 row.ItemSubType != ItemSubType.FoodMaterial)
                 return true;
 
-            return base.DimFunc(inventoryItem);
+            return false;
         }
 
         protected override int GetCostNCG()
@@ -69,7 +72,7 @@ namespace Nekoyume.UI.Module
 
         protected override int GetCostAP()
         {
-            return GameConfig.CombineConsumableCostAP;
+            return otherMaterials.Any(e => !e.IsEmpty) ? GameConfig.CombineConsumableCostAP : 0;
         }
 
         protected override bool TryAddOtherMaterial(InventoryItemView view)

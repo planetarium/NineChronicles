@@ -6,9 +6,9 @@ namespace Nekoyume.UI.Model
 {
     public class InventoryItem : CountableItem
     {
-        public readonly ReactiveProperty<bool> Covered = new ReactiveProperty<bool>(false);
-        public readonly ReactiveProperty<bool> Equipped = new ReactiveProperty<bool>(false);
-        public readonly ReactiveProperty<bool> Glowed = new ReactiveProperty<bool>(false);
+        public readonly ReactiveProperty<bool> EffectEnabled = new ReactiveProperty<bool>(false);
+        public readonly ReactiveProperty<bool> GlowEnabled = new ReactiveProperty<bool>(false);
+        public readonly ReactiveProperty<bool> EquippedEnabled = new ReactiveProperty<bool>(false);
 
         public InventoryItemView View;
         
@@ -18,10 +18,10 @@ namespace Nekoyume.UI.Model
 
         public override void Dispose()
         {
+            EffectEnabled.Dispose();
+            GlowEnabled.Dispose();
+            EquippedEnabled.Dispose();
             base.Dispose();
-            Covered.Dispose();
-            Equipped.Dispose();
-            Glowed.Dispose();
         }
     }
 }

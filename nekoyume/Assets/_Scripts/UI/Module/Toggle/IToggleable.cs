@@ -1,5 +1,3 @@
-using UniRx;
-
 namespace Nekoyume.UI.Module
 {
     public interface IToggleable
@@ -9,10 +7,5 @@ namespace Nekoyume.UI.Module
         void RegisterToggleListener(IToggleListener toggleListener);
         void SetToggledOn();
         void SetToggledOff();
-    }
-
-    public interface IToggleListener
-    {
-        void OnToggled(IToggleable toggleable);
     }
 }
