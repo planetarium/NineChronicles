@@ -35,8 +35,13 @@ namespace Nekoyume.Game.Quest
 
         public override string ToInfo()
         {
+            return string.Format(GoalFormat, GetName(), _count, Goal);
+        }
+
+        public override string GetName()
+        {
             var format = LocalizationManager.Localize("QUEST_ITEM_GRADE_FORMAT");
-            return string.Format(format, Grade, _count, Goal);
+            return string.Format(format, Grade);
         }
 
         public void Update(ItemUsable itemUsable)

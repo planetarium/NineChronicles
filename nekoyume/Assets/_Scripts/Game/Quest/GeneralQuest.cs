@@ -55,8 +55,12 @@ namespace Nekoyume.Game.Quest
 
         public override string ToInfo()
         {
-            var format = LocalizationManager.Localize($"QUEST_GENERAL_{Event}_FORMAT");
-            return string.Format(format, _current, Goal);
+            return string.Format(GoalFormat, GetName(), _current, Goal);
+        }
+
+        public override string GetName()
+        {
+            return LocalizationManager.Localize($"QUEST_GENERAL_{Event}_FORMAT");
         }
 
         protected override string TypeId => "generalQuest";

@@ -50,6 +50,15 @@ namespace Nekoyume.Game.Controller
             return vfx;
         }
 
+        public T CreateAndChaseRectTransform<T>(Vector3 position, RectTransform target) where T : VFX.VFX
+        {
+            var offset = position - target.position;
+            offset.z += 10f;
+            var vfx = _pool.Get<T>(target.position + offset);
+            StartCoroutine(CoChaseTarget(vfx, target, offset));
+            return vfx;
+        }
+
         private static IEnumerator CoChaseTarget(Component vfx, Transform target, Vector3 offset)
         {
             var g = vfx.gameObject;

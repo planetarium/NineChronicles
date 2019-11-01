@@ -36,8 +36,13 @@ namespace Nekoyume.Game.Quest
 
         public override string ToInfo()
         {
+            return string.Format(GoalFormat, GetName(), _current, Goal);
+        }
+
+        public override string GetName()
+        {
             var format = LocalizationManager.Localize("QUEST_COLLECT_CURRENT_INFO_FORMAT");
-            return string.Format(format, Type.GetLocalizedString(), _current, Goal);
+            return string.Format(format, Type.GetLocalizedString());
         }
 
         protected override string TypeId => "tradeQuest";

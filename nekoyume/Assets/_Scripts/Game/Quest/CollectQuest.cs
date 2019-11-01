@@ -37,9 +37,14 @@ namespace Nekoyume.Game.Quest
 
         public override string ToInfo()
         {
+            return string.Format(GoalFormat, GetName(), _current, Goal);
+        }
+
+        public override string GetName()
+        {
             var format = LocalizationManager.Localize("QUEST_COLLECT_CURRENT_INFO_FORMAT");
             var itemName = LocalizationManager.LocalizeItemName(_itemId);
-            return string.Format(format, itemName, _current, Goal);
+            return string.Format(format, itemName);
         }
 
         protected override string TypeId => "collectQuest";
