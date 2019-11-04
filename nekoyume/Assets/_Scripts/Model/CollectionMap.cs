@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,6 +7,7 @@ using Nekoyume.State;
 
 namespace Nekoyume.Model
 {
+    [Serializable]
     public class CollectionMap : IState, IDictionary<int, int>
     {
         private readonly Dictionary<int, int> _dictionary = new Dictionary<int, int>();

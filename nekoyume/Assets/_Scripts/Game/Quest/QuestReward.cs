@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Bencodex.Types;
@@ -5,6 +6,7 @@ using Nekoyume.State;
 
 namespace Nekoyume.Game.Quest
 {
+    [Serializable]
     public class QuestReward : IState
     {
         public readonly Dictionary<int, int> ItemMap;
