@@ -1,5 +1,5 @@
 using Nekoyume.UI.Model;
-using UniRx;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
@@ -8,6 +8,7 @@ namespace Nekoyume.UI.Module
     {
         public Image[] effectImages;
 
+        public override bool IsEmpty => base.IsEmpty && !IsLocked;
         public bool IsLocked => !itemButton.interactable;
 
         public InventoryItem InventoryItemViewModel { get; private set; }
@@ -53,19 +54,19 @@ namespace Nekoyume.UI.Module
         {
             Clear();
             itemButton.interactable = false;
-//            backgroundImage.sprite
+            backgroundImage.sprite = Resources.Load<Sprite>("UI/Textures/ui_box_Inventory_05");
         }
         
         public void Unlock()
         {
             itemButton.interactable = true;
-//            backgroundImage.sprite
+            backgroundImage.sprite = Resources.Load<Sprite>("UI/Textures/ui_box_Inventory_02");
         }
 
         public void UnlockAsNCG()
         {
             itemButton.interactable = true;
-//            backgroundImage.sprite
+            backgroundImage.sprite = Resources.Load<Sprite>("UI/Textures/ui_box_Inventory_04");
         }
 
         private void SetEnableEffectImages(bool enable)
