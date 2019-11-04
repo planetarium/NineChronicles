@@ -110,6 +110,7 @@ namespace Nekoyume.UI
             var tuples = _player.Model.Value.GetStatTuples();
             if (!isStatInitialized)
             {
+                statusRowPrefab.SetActive(true);
                 foreach (var (statType, value, additionalValue) in tuples)
                 {
                     var go = Instantiate(statusRowPrefab, statusRowParent);
@@ -118,6 +119,7 @@ namespace Nekoyume.UI
                     _stats.Add(statType, info);
                     _additionalStats.Add(statType, additionalValue);
                 }
+                statusRowPrefab.SetActive(false);
             }
             else
             {
