@@ -89,6 +89,15 @@ namespace Nekoyume.State
             updatedAt = avatarState.updatedAt;
             clearedAt = avatarState.clearedAt;
             agentAddress = avatarState.agentAddress;
+            questList = avatarState.questList;
+            mailBox = avatarState.mailBox;
+            BlockIndex = avatarState.BlockIndex;
+            nextDailyRewardIndex = avatarState.nextDailyRewardIndex;
+            actionPoint = avatarState.actionPoint;
+            stageMap = avatarState.stageMap;
+            monsterMap = avatarState.monsterMap;
+            itemMap = avatarState.itemMap;
+            eventMap = avatarState.eventMap;
         }
 
         public AvatarState(Bencodex.Types.Dictionary serialized)

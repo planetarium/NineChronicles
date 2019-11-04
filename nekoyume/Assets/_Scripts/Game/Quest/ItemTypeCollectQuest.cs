@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Assets.SimpleLocalization;
@@ -9,6 +10,7 @@ using Nekoyume.TableData;
 
 namespace Nekoyume.Game.Quest
 {
+    [Serializable]
     public class ItemTypeCollectQuest : Quest
     {
         public readonly ItemType ItemType;
