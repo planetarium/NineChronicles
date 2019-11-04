@@ -54,13 +54,13 @@ namespace Nekoyume.UI.Module
 
         public override bool DimFunc(InventoryItem inventoryItem)
         {
-            if (!IsThereAnyUnlockedEmptyMaterialView)
-                return true;
-            
             var row = inventoryItem.ItemBase.Value.Data;
             if (row.ItemType != ItemType.Material ||
                 row.ItemSubType != ItemSubType.FoodMaterial)
                 return true;
+            
+            if (!IsThereAnyUnlockedEmptyMaterialView)
+                return !Contains(inventoryItem);
 
             return false;
         }
