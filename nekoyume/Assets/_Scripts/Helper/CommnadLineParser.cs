@@ -2,6 +2,7 @@ using CommandLine;
 using CommandLine.Text;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using UnityEngine;
 
@@ -12,6 +13,14 @@ namespace Nekoyume.Helper
     {
         // JSON 직렬화를 위해 필드와 속성을 둘 다 기술합니다.
         public string privateKey;
+
+        public string keyStorePath = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+            "planetarium",
+            "keystore"
+        );
+        // Linux/macOS: $HOME/.config/planetarium/keystore
+        // Windows: %USERPROFILE%\AppData\Roaming\planetarium\keystore
 
         public string host;
 
@@ -29,6 +38,13 @@ namespace Nekoyume.Helper
 
         [Option("private-key", Required = false, HelpText = "The private key to use.")]
         public string PrivateKey { get => privateKey; set => privateKey = value; }
+
+        [Option("keystore-path", Required = false, HelpText = "The keystore path.")]
+        public string KeyStorePath
+        {
+            get => keyStorePath;
+            set => keyStorePath = value;
+        }
 
         [Option("host", Required = false, HelpText = "The host name to use.")]
         public string Host { get => host; set => host = value; }

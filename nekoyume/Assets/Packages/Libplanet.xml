@@ -1847,6 +1847,18 @@
             <exception cref="T:System.ArgumentNullException">Thrown when the given
             <paramref name="bytes"/> is <c>null</c>.</exception>
         </member>
+        <member name="M:Libplanet.ByteUtil.Hex(System.Collections.Immutable.ImmutableArray{System.Byte}@)">
+            <summary>
+            Renders a hexadecimal string from a <see cref="T:System.Byte"/> array.
+            </summary>
+            <param name="bytes">A <see cref="T:System.Byte"/> array to renders
+            the corresponding hexadecimal string.  It must not be <c>null</c>.
+            </param>
+            <returns>A hexadecimal string which encodes the given
+            <paramref name="bytes"/>.</returns>
+            <exception cref="T:System.ArgumentNullException">Thrown when the given
+            <paramref name="bytes"/> is <c>null</c>.</exception>
+        </member>
         <member name="M:Libplanet.ByteUtil.CalculateHashCode(System.Byte[])">
             <summary>
             Calculates a deterministic hash code from a given
@@ -1902,9 +1914,8 @@
             <param name="privateKey">A valid <see cref="T:System.Byte"/> array that
             encodes an ECDSA private key.
             </param>
-            <remarks>A valid <see cref="T:System.Byte"/> array for
-            a <see cref="T:Libplanet.Crypto.PrivateKey"/> can be encoded using
-            <see cref="P:Libplanet.Crypto.PrivateKey.ByteArray"/> property.
+            <remarks>A valid <see cref="T:System.Byte"/> array for a <see cref="T:Libplanet.Crypto.PrivateKey"/>.
+            Can be encoded using <see cref="P:Libplanet.Crypto.PrivateKey.ByteArray"/> property.
             </remarks>
             <seealso cref="P:Libplanet.Crypto.PrivateKey.ByteArray"/>
         </member>
@@ -2362,6 +2373,337 @@
             (i.e., <typeparamref name="T"/> requires.</exception>
             <seealso cref="M:Libplanet.HashDigest`1.FromString(System.String)"/>
             <seealso cref="M:Libplanet.HashDigest`1.ToString"/>
+        </member>
+        <member name="T:Libplanet.KeyStore.Ciphers.Aes128Ctr">
+            <summary>
+            AES-128-CTR (AES 128-bit in counter moder).
+            </summary>
+        </member>
+        <member name="M:Libplanet.KeyStore.Ciphers.Aes128Ctr.#ctor(System.Byte[])">
+            <summary>
+            Creates an <see cref="T:Libplanet.KeyStore.Ciphers.Aes128Ctr"/> instance with the given <paramref name="iv"/>.
+            </summary>
+            <param name="iv">Initialization vector.</param>
+            <exception cref="T:System.ArgumentException">Thrown when the length of <paramref name="iv"/> is
+            invalid.</exception>
+        </member>
+        <member name="M:Libplanet.KeyStore.Ciphers.Aes128Ctr.#ctor(System.Collections.Immutable.ImmutableArray{System.Byte}@)">
+            <summary>
+            Creates an <see cref="T:Libplanet.KeyStore.Ciphers.Aes128Ctr"/> instance with the given <paramref name="iv"/>.
+            </summary>
+            <param name="iv">Initialization vector.</param>
+            <exception cref="T:System.ArgumentException">Thrown when the length of <paramref name="iv"/> is
+            invalid.</exception>
+        </member>
+        <member name="P:Libplanet.KeyStore.Ciphers.Aes128Ctr.Iv">
+            <summary>
+            Initialization vector.
+            </summary>
+        </member>
+        <member name="M:Libplanet.KeyStore.Ciphers.Aes128Ctr.Encrypt(System.Collections.Immutable.ImmutableArray{System.Byte}@,System.Collections.Immutable.ImmutableArray{System.Byte}@)">
+            <inheritdoc />
+        </member>
+        <member name="M:Libplanet.KeyStore.Ciphers.Aes128Ctr.Decrypt(System.Collections.Immutable.ImmutableArray{System.Byte}@,System.Collections.Immutable.ImmutableArray{System.Byte}@)">
+            <inheritdoc />
+        </member>
+        <member name="M:Libplanet.KeyStore.Ciphers.Aes128Ctr.WriteJson(System.Text.Json.Utf8JsonWriter)">
+            <inheritdoc />
+        </member>
+        <member name="T:Libplanet.KeyStore.Ciphers.ICipher">
+            <summary>
+            An interface to define symmetric cipher algorithm.
+            </summary>
+        </member>
+        <member name="M:Libplanet.KeyStore.Ciphers.ICipher.Encrypt(System.Collections.Immutable.ImmutableArray{System.Byte}@,System.Collections.Immutable.ImmutableArray{System.Byte}@)">
+            <summary>
+            Encrypts the given <paramref name="plaintext"/> using the given <paramref name="key"/>.
+            </summary>
+            <param name="key">A symmetric key.</param>
+            <param name="plaintext">An immutable <see cref="T:System.Byte"/> array to encrypt.</param>
+            <returns>The ciphertext made from the <paramref name="plaintext"/>
+            using the <paramref name="key"/>.</returns>
+        </member>
+        <member name="M:Libplanet.KeyStore.Ciphers.ICipher.Decrypt(System.Collections.Immutable.ImmutableArray{System.Byte}@,System.Collections.Immutable.ImmutableArray{System.Byte}@)">
+            <summary>
+            Decrypts the given <paramref name="ciphertext"/> using the given <paramref name="key"/>.
+            </summary>
+            <param name="key">A symmetric key.</param>
+            <param name="ciphertext">An immutable <see cref="T:System.Byte"/> array to decrypt.</param>
+            <returns>The plain text decrypted from the <paramref name="ciphertext"/>
+            using the <paramref name="key"/>.</returns>
+        </member>
+        <member name="M:Libplanet.KeyStore.Ciphers.ICipher.WriteJson(System.Text.Json.Utf8JsonWriter)">
+            <summary>
+            Dumps the cipher parameters as a JSON representation according to Ethereum's
+            <a href="https://github.com/ethereum/wiki/wiki/Web3-Secret-Storage-Definition">Web3
+            Secret Storage Definition</a>.
+            </summary>
+            <param name="writer">A JSON writer which has not begun object nor array.</param>
+            <returns>A unique identifier of the cipher algorithm.  This is going to be the
+            <c>crypto.cipher</c> field in the key JSON file.</returns>
+        </member>
+        <member name="T:Libplanet.KeyStore.IncorrectPassphraseException">
+            <summary>
+            The exception that is thrown when a user input passphrase (i.e., password) is incorrect.
+            </summary>
+        </member>
+        <member name="M:Libplanet.KeyStore.IncorrectPassphraseException.#ctor(System.String,System.String,System.Collections.Immutable.ImmutableArray{System.Byte}@,System.Collections.Immutable.ImmutableArray{System.Byte}@)">
+            <summary>
+            Creates a new <see cref="T:Libplanet.KeyStore.IncorrectPassphraseException"/> object.
+            </summary>
+            <param name="message">The error message that explains the reason for the exception.
+            </param>
+            <param name="paramName">The name of the parameter that caused the current exception.
+            </param>
+            <param name="expectedMac">The expected MAC of the correct passphrase.
+            It is automatically included to the <paramref name="message"/> string.</param>
+            <param name="inputMac">The actual MAC of the user input passphrase.
+            It is automatically included to the <paramref name="message"/> string.</param>
+        </member>
+        <member name="P:Libplanet.KeyStore.IncorrectPassphraseException.ExpectedMac">
+            <summary>
+            The expected MAC of the correct passphrase.
+            </summary>
+        </member>
+        <member name="P:Libplanet.KeyStore.IncorrectPassphraseException.InputMac">
+            <summary>
+            The actual MAC of the user input passphrase.
+            </summary>
+        </member>
+        <member name="T:Libplanet.KeyStore.InvalidKeyJsonException">
+            <summary>
+            The exception that is thrown when a key JSON is invalid, e.g., missing field.
+            </summary>
+        </member>
+        <member name="M:Libplanet.KeyStore.InvalidKeyJsonException.#ctor(System.String)">
+            <summary>
+            Creates a new <see cref="T:Libplanet.KeyStore.InvalidKeyJsonException"/> instance.
+            </summary>
+            <param name="message">A detailed exception message.</param>
+        </member>
+        <member name="T:Libplanet.KeyStore.Kdfs.IKdf">
+            <summary>
+            An interface to form key derivation functions (KDF) that are used to derive a valid
+            cryptographic key from a user input passphrase (i.e., password).
+            </summary>
+        </member>
+        <member name="M:Libplanet.KeyStore.Kdfs.IKdf.Derive(System.String)">
+            <summary>
+            Derives a cryptographic key in <see cref="T:System.Byte"/>s from a user input
+            <paramref name="passphrase"/>.
+            </summary>
+            <param name="passphrase">A user input passphrase.</param>
+            <returns>A derived cryptographic key.</returns>
+        </member>
+        <member name="M:Libplanet.KeyStore.Kdfs.IKdf.WriteJson(System.Text.Json.Utf8JsonWriter)">
+            <summary>
+            Dumps the KDF parameters as a JSON representation.
+            </summary>
+            <param name="writer">A JSON writer which has not begun object nor array.</param>
+            <returns>A unique identifier of the KDF.  This is going to be the
+            <c>crypto.kdf</c> field in the key JSON file.</returns>
+        </member>
+        <member name="T:Libplanet.KeyStore.Kdfs.Pbkdf2`1">
+            <summary>
+            <a href="https://en.wikipedia.org/wiki/PBKDF2">PBKDF2</a>.
+            </summary>
+            <typeparam name="T">PRF (pseudorandom function) to use, e.g.,
+            <see cref="T:Org.BouncyCastle.Crypto.Digests.Sha256Digest"/>.</typeparam>
+        </member>
+        <member name="M:Libplanet.KeyStore.Kdfs.Pbkdf2`1.#ctor(System.Int32,System.Byte[],System.Int32)">
+            <summary>
+            Configures parameters of <a href="https://en.wikipedia.org/wiki/PBKDF2">PBKDF2</a>.
+            </summary>
+            <param name="iterations">The number of iterations desired.
+            Corresponds to <c>c</c>.</param>
+            <param name="salt">A cryptographic salt.</param>
+            <param name="keyLength">The desired byte-length of the derived key.
+            Corresponds to <c>dkLen</c> except that it's not bit-wise but byte-wise.</param>
+        </member>
+        <member name="M:Libplanet.KeyStore.Kdfs.Pbkdf2`1.#ctor(System.Int32,System.Collections.Immutable.ImmutableArray{System.Byte}@,System.Int32)">
+            <summary>
+            Configures parameters of <a href="https://en.wikipedia.org/wiki/PBKDF2">PBKDF2</a>.
+            </summary>
+            <param name="iterations">The number of iterations desired.
+            Corresponds to <c>c</c>.</param>
+            <param name="salt">A cryptographic salt.</param>
+            <param name="keyLength">The desired byte-length of the derived key.
+            Corresponds to <c>dkLen</c> except that it's not bit-wise but byte-wise.</param>
+        </member>
+        <member name="P:Libplanet.KeyStore.Kdfs.Pbkdf2`1.Iterations">
+            <summary>
+            The number of iterations desired.  Corresponds to <c>c</c>.
+            </summary>
+        </member>
+        <member name="P:Libplanet.KeyStore.Kdfs.Pbkdf2`1.KeyLength">
+            <summary>
+            The desired byte-length of the derived key.
+            Corresponds to <c>dkLen</c> except that it's not bit-wise but byte-wise.
+            </summary>
+        </member>
+        <member name="P:Libplanet.KeyStore.Kdfs.Pbkdf2`1.Salt">
+            <summary>
+            A cryptographic salt.
+            </summary>
+        </member>
+        <member name="M:Libplanet.KeyStore.Kdfs.Pbkdf2`1.Derive(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.KeyStore.Kdfs.Pbkdf2`1.WriteJson(System.Text.Json.Utf8JsonWriter)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Libplanet.KeyStore.KeyJsonException">
+            <summary>
+            Serves as the base class for exceptions thrown by
+            <see cref="M:Libplanet.KeyStore.ProtectedPrivateKey.FromJson(System.String)"/> method.
+            </summary>
+        </member>
+        <member name="M:Libplanet.KeyStore.KeyJsonException.#ctor(System.String)">
+            <summary>
+            Creates a new <see cref="T:Libplanet.KeyStore.KeyJsonException"/> instance with a message.
+            </summary>
+            <param name="message">A detailed exception message.</param>
+        </member>
+        <member name="T:Libplanet.KeyStore.MismatchedAddressException">
+            <summary>
+            The exception that is thrown when an unprotected private key's actual address does
+            not match to the expected address.
+            </summary>
+        </member>
+        <member name="M:Libplanet.KeyStore.MismatchedAddressException.#ctor(System.String,Libplanet.Address@,Libplanet.Address@)">
+            <summary>
+            Creates a new <see cref="T:Libplanet.KeyStore.MismatchedAddressException"/> object.
+            </summary>
+            <param name="message">The error message that explains the reason for the exception.
+            </param>
+            <param name="expectedAddress">The expected address of a protected private key.
+            It is automatically included to the <paramref name="message"/> string.</param>
+            <param name="actualAddress">The actual address of an unprotected private key.
+            It is automatically included to the <paramref name="message"/> string.</param>
+        </member>
+        <member name="P:Libplanet.KeyStore.MismatchedAddressException.ExpectedAddress">
+            <summary>
+            The expected address of the protected private key.
+            </summary>
+        </member>
+        <member name="P:Libplanet.KeyStore.MismatchedAddressException.ActualAddress">
+            <summary>
+            The actual address of the unprotected private key.
+            </summary>
+        </member>
+        <member name="T:Libplanet.KeyStore.ProtectedPrivateKey">
+            <summary>
+            Protects a <see cref="T:Libplanet.Crypto.PrivateKey"/> with a passphrase (i.e., password).
+            </summary>
+        </member>
+        <member name="M:Libplanet.KeyStore.ProtectedPrivateKey.#ctor(Libplanet.Address,Libplanet.KeyStore.Kdfs.IKdf,System.Byte[],Libplanet.KeyStore.Ciphers.ICipher,System.Byte[])">
+            <summary>
+            Loads a protected private key.
+            </summary>
+            <param name="address">The address of the protected private key.</param>
+            <param name="kdf">A key derivation function to derive a symmetric key to decrypt
+            a <see cref="T:Libplanet.Crypto.PrivateKey"/>.</param>
+            <param name="mac">MAC digest to check if a derived key is correct or not.</param>
+            <param name="cipher">A symmetric cipher to decrypt a <see cref="T:Libplanet.Crypto.PrivateKey"/>.</param>
+            <param name="ciphertext">An encrypted <see cref="T:Libplanet.Crypto.PrivateKey"/>.</param>
+        </member>
+        <member name="M:Libplanet.KeyStore.ProtectedPrivateKey.#ctor(Libplanet.Address,Libplanet.KeyStore.Kdfs.IKdf,System.Collections.Immutable.ImmutableArray{System.Byte},Libplanet.KeyStore.Ciphers.ICipher,System.Collections.Immutable.ImmutableArray{System.Byte})">
+            <summary>
+            Loads a protected private key.
+            </summary>
+            <param name="address">The address of the protected private key.</param>
+            <param name="kdf">A key derivation function to derive a symmetric key to decrypt
+            a <see cref="T:Libplanet.Crypto.PrivateKey"/>.</param>
+            <param name="mac">MAC digest to check if a derived key is correct or not.</param>
+            <param name="cipher">A symmetric cipher to decrypt a <see cref="T:Libplanet.Crypto.PrivateKey"/>.</param>
+            <param name="ciphertext">An encrypted <see cref="T:Libplanet.Crypto.PrivateKey"/>.</param>
+        </member>
+        <member name="P:Libplanet.KeyStore.ProtectedPrivateKey.Address">
+            <summary>
+            The address of the protected private key.
+            </summary>
+        </member>
+        <member name="P:Libplanet.KeyStore.ProtectedPrivateKey.Kdf">
+            <summary>
+            A key derivation function to derive a symmetric key to decrypt
+            a <see cref="T:Libplanet.Crypto.PrivateKey"/>.
+            </summary>
+        </member>
+        <member name="P:Libplanet.KeyStore.ProtectedPrivateKey.Cipher">
+            <summary>
+            A symmetric cipher to decrypt a <see cref="T:Libplanet.Crypto.PrivateKey"/>.
+            </summary>
+        </member>
+        <member name="P:Libplanet.KeyStore.ProtectedPrivateKey.Ciphertext">
+            <summary>
+            An encrypted <see cref="T:Libplanet.Crypto.PrivateKey"/>.
+            </summary>
+        </member>
+        <member name="M:Libplanet.KeyStore.ProtectedPrivateKey.Protect(Libplanet.Crypto.PrivateKey,System.String)">
+            <summary>
+            Protects a bare <see cref="T:Libplanet.Crypto.PrivateKey"/> using a user input
+            <paramref name="passphrase"/>.
+            </summary>
+            <param name="privateKey">A bare private key to protect.</param>
+            <param name="passphrase">A user input passphrase (i.e., password).</param>
+            <returns>A passphrase-protected private key.</returns>
+        </member>
+        <member name="M:Libplanet.KeyStore.ProtectedPrivateKey.FromJson(System.String)">
+            <summary>
+            Loads a <see cref="T:Libplanet.KeyStore.ProtectedPrivateKey"/> from a JSON, according to Ethereum's
+            <a href="https://github.com/ethereum/wiki/wiki/Web3-Secret-Storage-Definition">Web3
+            Secret Storage Definition</a>.
+            </summary>
+            <param name="json">A JSON string that encodes a <see cref="T:Libplanet.KeyStore.ProtectedPrivateKey"/>.
+            </param>
+            <returns>A protected private key loaded from the given <paramref name="json"/>.
+            </returns>
+            <exception cref="T:System.Text.Json.JsonException">Thrown when the given <paramref name="json"/> is not
+            a valid JSON.</exception>
+            <exception cref="T:Libplanet.KeyStore.InvalidKeyJsonException">Thrown when the given key data lacks some
+            required fields or consists of wrong types.</exception>
+            <exception cref="T:Libplanet.KeyStore.UnsupportedKeyJsonException">Thrown when the given key data depends on
+            an unsupported features (e.g., KDF).</exception>
+        </member>
+        <member name="M:Libplanet.KeyStore.ProtectedPrivateKey.Unprotect(System.String)">
+            <summary>
+            Gets the protected <see cref="T:Libplanet.Crypto.PrivateKey"/> using a user input
+            <paramref name="passphrase"/>.
+            </summary>
+            <param name="passphrase">A user input passphrase (i.e., password).</param>
+            <returns>A bare <see cref="T:Libplanet.Crypto.PrivateKey"/>.</returns>
+        </member>
+        <member name="M:Libplanet.KeyStore.ProtectedPrivateKey.WriteJson(System.Text.Json.Utf8JsonWriter,System.Nullable{System.Guid}@)">
+            <summary>
+            Dumps the cipher parameters as a JSON representation according to Ethereum's
+            <a href="https://github.com/ethereum/wiki/wiki/Web3-Secret-Storage-Definition">Web3
+            Secret Storage Definition</a>.
+            </summary>
+            <param name="writer">A JSON writer which has not begun object nor array.</param>
+            <param name="id">A unique identifier, which goes to the <c>id</c> field in the key JSON
+            file.  If <c>null</c> (which is default) it is random-generated.</param>
+        </member>
+        <member name="M:Libplanet.KeyStore.ProtectedPrivateKey.WriteJson(System.IO.Stream,System.Nullable{System.Guid}@)">
+            <summary>
+            Dumps the cipher parameters as a JSON representation according to Ethereum's
+            <a href="https://github.com/ethereum/wiki/wiki/Web3-Secret-Storage-Definition">Web3
+            Secret Storage Definition</a>.
+            </summary>
+            <param name="stream">The destination for writing JSON text.</param>
+            <param name="id">A unique identifier, which goes to the <c>id</c> field in the key JSON
+            file.  If <c>null</c> (which is default) it is random-generated.</param>
+        </member>
+        <member name="T:Libplanet.KeyStore.UnsupportedKeyJsonException">
+            <summary>
+            The exception that is thrown when a key JSON is valid but uses an unsupported feature,
+            e.g., unsupported cipher algorithm.
+            </summary>
+        </member>
+        <member name="M:Libplanet.KeyStore.UnsupportedKeyJsonException.#ctor(System.String)">
+            <summary>
+            Creates a new <see cref="T:Libplanet.KeyStore.UnsupportedKeyJsonException"/> instance with a message.
+            </summary>
+            <param name="message">A detailed exception message.</param>
         </member>
         <member name="T:Libplanet.Net.ActionExecutionState">
             <summary>
