@@ -38,7 +38,7 @@ namespace Nekoyume.UI.Module
         }
 
         [CanBeNull] public TViewModel Model { get; private set; }
-        public bool IsEmpty => Model?.ItemBase.Value is null;
+        public virtual bool IsEmpty => Model?.ItemBase.Value is null;
 
         public readonly Subject<ItemView<TViewModel>> OnClick = new Subject<ItemView<TViewModel>>();
         public readonly Subject<ItemView<TViewModel>> OnRightClick = new Subject<ItemView<TViewModel>>();

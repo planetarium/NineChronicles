@@ -110,21 +110,9 @@ namespace Nekoyume.UI.Module
 
             gameObject.SetActive(false);
         }
-
-        /// <summary>
-        /// 인자로 받은 인벤토리 아이템이 재료로 등록될 수 있는지 여부를 리턴한다.
-        /// 이곳에서는 빈 재료 슬롯이 있으지에 대해서 처리한다.
-        /// 상속 하는 곳에서는 추가적으로 `true`를 반환하는 경우에 대해서 작성하고, 마지막으로 이 함수를 반환하도록 한다. 
-        /// </summary>
-        /// <param name="inventoryItem"></param>
-        /// <returns></returns>
+        
         public abstract bool DimFunc(InventoryItem inventoryItem);
         
-        /// <summary>
-        /// 이미 재료로 등록된 인벤토리 아이템의 이펙트를 처리한다.
-        /// </summary>
-        /// <param name="inventoryItem"></param>
-        /// <returns></returns>
         public virtual bool Contains(InventoryItem inventoryItem)
         {
             if (inventoryItem.ItemBase.Value is ItemUsable itemUsable)
