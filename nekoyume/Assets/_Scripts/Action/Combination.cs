@@ -219,16 +219,16 @@ namespace Nekoyume.Action
             }
             else
             {
-                if (!Game.Game.instance.TableSheets.ConsumableItemRecipeSheet.TryGetValue(
-                    materialRows.Keys.Where(pair => pair.ItemSubType == ItemSubType.FoodMaterial),
-                    out var recipeRow))
-                {
-                    // 재료가 레시피에 맞지 않는 에러.
-                    return states;
-                }
+                var consumableItemRecipeSheet = Game.Game.instance.TableSheets.ConsumableItemRecipeSheet;
+                var consumableItemSheet = Game.Game.instance.TableSheets.ConsumableItemSheet;
+                var foodMaterials = materialRows.Keys.Where(pair => pair.ItemSubType == ItemSubType.FoodMaterial);
 
-                if (!Game.Game.instance.TableSheets.ConsumableItemSheet.TryGetValue(recipeRow.ResultConsumableItemId,
-                    out var consumableItemRow))
+                // 재료가 레시피에 맞지 않다면 200000(맛 없는 요리).
+                var resultConsumableItemId = !consumableItemRecipeSheet.TryGetValue(foodMaterials, out var recipeRow)
+                    ? 200000
+                    : recipeRow.ResultConsumableItemId;
+
+                if (!consumableItemSheet.TryGetValue(resultConsumableItemId, out var consumableItemRow))
                 {
                     // 소모품 테이블 값 가져오기 실패.
                     return states;
