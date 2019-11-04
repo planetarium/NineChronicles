@@ -365,7 +365,7 @@ namespace Nekoyume.BlockChain
                 DateTimeOffset now = DateTimeOffset.UtcNow;
                 string keyPath = Path.Combine(
                     options.KeyStorePath,
-                    $"UTC--{now:yyyy-MM-dd}T{now:HH:mm:ss}Z--{keyId:D}"
+                    $"UTC--{now:yyyy-MM-dd}T{now:HH-mm-ss}Z--{keyId:D}"
                 );
                 using (Stream f = new FileStream(keyPath, FileMode.CreateNew))
                 {
