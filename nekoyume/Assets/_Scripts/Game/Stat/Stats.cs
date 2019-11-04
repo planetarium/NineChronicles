@@ -157,6 +157,34 @@ namespace Nekoyume.Game
                     throw new ArgumentOutOfRangeException(nameof(statType), statType, null);
             }
         }
+        
+        public IEnumerable<(StatType, int)> GetStats(bool ignoreZero = false)
+        {
+            if (ignoreZero)
+            {
+                if (HasHP)
+                    yield return (StatType.HP, HP);
+                if (HasATK)
+                    yield return (StatType.ATK, ATK);
+                if (HasDEF)
+                    yield return (StatType.DEF, DEF);
+                if (HasDOG)
+                    yield return (StatType.DOG, DOG);
+                if (HasCRI)
+                    yield return (StatType.CRI, CRI);
+                if (HasSPD)
+                    yield return (StatType.SPD, SPD);
+            }
+            else
+            {
+                yield return (StatType.HP, HP);
+                yield return (StatType.ATK, ATK);
+                yield return (StatType.DEF, DEF);
+                yield return (StatType.DOG, DOG);
+                yield return (StatType.CRI, CRI);
+                yield return (StatType.SPD, SPD);
+            }
+        }
 
         public void Add(StatMap value)
         {

@@ -6,6 +6,7 @@ using Nekoyume.State;
 
 namespace Nekoyume.Game
 {
+    // todo: `StatModifier`로 대체되어야 함.
     [Serializable]
     public class StatMap : IState
     {

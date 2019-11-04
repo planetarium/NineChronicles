@@ -43,10 +43,17 @@ namespace Nekoyume.Game.Item
             if (obj.GetType() != this.GetType()) return false;
             return Equals((ItemUsable) obj);
         }
-        
+
         public override int GetHashCode()
         {
             return (Data != null ? Data.GetHashCode() : 0) ^ ItemId.GetHashCode();
+        }
+
+        public int GetOptionCount()
+        {
+            return StatsMap.GetAdditionalStats(true).Count()
+                   + Skills.Count
+                   + BuffSkills.Count;
         }
 
         // todo: 번역.
@@ -62,7 +69,7 @@ namespace Nekoyume.Game.Item
                 sb.Append($" {skill.power} 위력의");
                 sb.Append($" {skill.skillRow.ElementalType}속성 {skill.skillRow.SkillType}");
             }
-            
+
             foreach (var buffSkill in BuffSkills)
             {
                 sb.Append($"{buffSkill.chance * 100}% 확률로");
