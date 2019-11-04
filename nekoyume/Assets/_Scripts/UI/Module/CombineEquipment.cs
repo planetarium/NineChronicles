@@ -49,8 +49,10 @@ namespace Nekoyume.UI.Module
 
             if (!IsThereAnyUnlockedEmptyMaterialView)
             {
-                if (row.ItemSubType != ItemSubType.EquipmentMaterial)
-                    return true;
+                if (row.ItemSubType == ItemSubType.EquipmentMaterial)
+                    return false;
+                
+                return !Contains(inventoryItem);
             }
             
             if (baseMaterial.IsEmpty)
@@ -67,15 +69,14 @@ namespace Nekoyume.UI.Module
 
         protected override int GetCostNCG()
         {
-            if (baseMaterial is null ||
-                baseMaterial.Model is null)
+            if (baseMaterial.IsEmpty)
                 return 0;
 
             Game.Game.instance.TableSheets.ItemConfigForGradeSheet.TryGetValue(
                 baseMaterial.Model.ItemBase.Value.Data.Grade,
                 out var configRow, true);
 
-            var otherMaterialsCount = otherMaterials.Count(e => !e.IsEmpty);
+            var otherMaterialsCount = otherMaterials.Count(e => !e.IsEmpty && !e.IsLocked);
             var ncgCount = Math.Max(0, otherMaterialsCount - configRow.MonsterPartsCountForCombination);
             return ncgCount * GameConfig.CombineEquipmentCostNCG;
         }

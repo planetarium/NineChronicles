@@ -2,6 +2,7 @@ using System.Linq;
 using Assets.SimpleLocalization;
 using Nekoyume.BlockChain;
 using Nekoyume.EnumType;
+using Nekoyume.Game.Item;
 using Nekoyume.UI.Model;
 using TMPro;
 
@@ -58,6 +59,9 @@ namespace Nekoyume.UI.Module
 
             if (!baseMaterial.IsEmpty)
             {
+                if (Contains(inventoryItem))
+                    return true;
+                
                 if (baseMaterial.Model.ItemBase.Value.Data.ItemSubType != row.ItemSubType ||
                     baseMaterial.Model.ItemBase.Value.Data.Grade != row.Grade)
                     return true;
