@@ -32,10 +32,9 @@ namespace Nekoyume.UI.Model
         
         public override void Dispose()
         {
-            base.Dispose();
-
             MinCount.Dispose();
             MaxCount.Dispose();
+            base.Dispose();
         }
     }
 }

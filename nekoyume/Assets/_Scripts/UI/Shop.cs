@@ -163,7 +163,6 @@ namespace Nekoyume.UI
                     break;
                 case StateType.Sell:
                     inventory.SharedModel.DimmedFunc.Value = DimmedFuncForSell;
-                    inventory.SharedModel.EquippedFunc.Value = EquippedFuncForSell;
                     buyButton.button.interactable = true;
                     sellButton.button.interactable = false;
                     shopNotice.SetActive(true);
@@ -352,7 +351,7 @@ namespace Nekoyume.UI
 
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
             var format = LocalizationManager.Localize("NOTIFICATION_SELL_START");
-            Notification.Push(MailType.Auction, string.Format(format, item.ItemBase.Value.Data.GetLocalizedName()));
+            Notification.Push(MailType.Auction, string.Format(format, item.ItemBase.Value.GetLocalizedName()));
         }
 
         private void ResponseSellCancellation(ShopItem shopItem)
@@ -367,7 +366,7 @@ namespace Nekoyume.UI
 
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
             var format = LocalizationManager.Localize("NOTIFICATION_SELL_CANCEL_START");
-            Notification.Push(MailType.Auction, string.Format(format, shopItem.ItemBase.Value.Data.GetLocalizedName()));
+            Notification.Push(MailType.Auction, string.Format(format, shopItem.ItemBase.Value.GetLocalizedName()));
         }
 
         private void ResponseBuy(ShopItem shopItem)
@@ -382,7 +381,7 @@ namespace Nekoyume.UI
 
             AudioController.instance.PlaySfx(AudioController.SfxCode.BuyItem);
             var format = LocalizationManager.Localize("NOTIFICATION_BUY_START");
-            Notification.Push(MailType.Auction, string.Format(format, shopItem.ItemBase.Value.Data.GetLocalizedName()));
+            Notification.Push(MailType.Auction, string.Format(format, shopItem.ItemBase.Value.GetLocalizedName()));
         }
 
         #endregion

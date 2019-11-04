@@ -171,7 +171,7 @@ namespace Nekoyume.UI
 
             inventory.Tooltip.Show(view.RectTransform, view.Model,
                 value => !view.Model.Dimmed.Value,
-                view.Model.Equipped.Value
+                view.Model.EquippedEnabled.Value
                     ? LocalizationManager.Localize("UI_UNEQUIP")
                     : LocalizationManager.Localize("UI_EQUIP"),
                 tooltip => OnClickEquip(tooltip.itemInformation.Model.item.Value),
@@ -255,7 +255,7 @@ namespace Nekoyume.UI
                 equipSlotGlow.SetActive(false);
                 foreach (var item in inventory.SharedModel.Equipments)
                 {
-                    item.Glowed.Value = item.ItemBase.Value.Data.ItemSubType == slot.itemSubType;
+                    item.GlowEnabled.Value = item.ItemBase.Value.Data.ItemSubType == slot.itemSubType;
                 }
 
                 return;
@@ -282,7 +282,7 @@ namespace Nekoyume.UI
             if (inventory.SharedModel.TryGetEquipment(slotItem, out var inventoryItem) ||
                 inventory.SharedModel.TryGetConsumable(slotItem as Consumable, out inventoryItem))
             {
-                inventoryItem.Equipped.Value = false;
+                inventoryItem.EquippedEnabled.Value = false;
             }
 
             UpdateStats();
@@ -295,7 +295,7 @@ namespace Nekoyume.UI
             var item = countableItem as InventoryItem;
             var itemSubType = countableItem.ItemBase.Value.Data.ItemSubType;
 
-            if (item != null && item.Equipped.Value)
+            if (item != null && item.EquippedEnabled.Value)
             {
                 var equipSlot = FindSlot(item.ItemBase.Value as ItemUsable, itemSubType);
                 if (equipSlot) Unequip(equipSlot);
@@ -310,7 +310,7 @@ namespace Nekoyume.UI
                 if (inventory.SharedModel.TryGetEquipment(slot.item, out var inventoryItem) ||
                     inventory.SharedModel.TryGetConsumable(slot.item as Consumable, out inventoryItem))
                 {
-                    inventoryItem.Equipped.Value = false;
+                    inventoryItem.EquippedEnabled.Value = false;
                 }
 
                 slot.Set(equipable);
@@ -335,7 +335,7 @@ namespace Nekoyume.UI
 
             if (item != null)
             {
-                item.Equipped.Value = true;
+                item.EquippedEnabled.Value = true;
             }
 
             UpdateStats();

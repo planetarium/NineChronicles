@@ -273,11 +273,7 @@ namespace Nekoyume.BlockChain
             ActionBase.EveryRender<ItemEnhancement>()
                 .Where(ValidateEvaluationForAgentState)
                 .ObserveOnMainThread()
-                .Subscribe(eval =>
-                {
-                    UpdateAgentState(eval);
-                    UpdateCurrentAvatarState(eval);
-                }).AddTo(_disposables);
+                .Subscribe(ResponseItemEnhancement).AddTo(_disposables);
         }
 
         private void DailyReward()
@@ -298,10 +294,20 @@ namespace Nekoyume.BlockChain
 
         private void ResponseCombination(ActionBase.ActionEvaluation<Combination> evaluation)
         {
-            var isSuccess = !(evaluation.Action.Result.itemUsable is null);
-            AnalyticsManager.Instance.OnEvent(isSuccess
-                ? AnalyticsManager.EventName.ActionCombinationSuccess
-                : AnalyticsManager.EventName.ActionCombinationFail);
+            var itemUsable = evaluation.Action.Result.itemUsable;
+            var isSuccess = !(itemUsable is null);
+            if (isSuccess)
+            {
+                var format = LocalizationManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");
+                UI.Notification.Push(MailType.Workshop, string.Format(format, itemUsable.Data.GetLocalizedName()));
+                AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionCombinationSuccess);
+            }
+            else
+            {
+                AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionCombinationFail);
+                var format = LocalizationManager.Localize("NOTIFICATION_COMBINATION_FAIL");
+                UI.Notification.Push(MailType.Workshop, format);
+            }
             UpdateCurrentAvatarState(evaluation);
         }
 
@@ -362,14 +368,14 @@ namespace Nekoyume.BlockChain
         private void ResponseSell(ActionBase.ActionEvaluation<Sell> eval)
         {
             var format = LocalizationManager.Localize("NOTIFICATION_SELL_COMPLETE");
-            UI.Notification.Push(MailType.Auction, string.Format(format, eval.Action.itemUsable.Data.GetLocalizedName()));
+            UI.Notification.Push(MailType.Auction, string.Format(format, eval.Action.itemUsable.GetLocalizedName()));
             UpdateCurrentAvatarState(eval);
         }
 
         private void ResponseSellCancellation(ActionBase.ActionEvaluation<SellCancellation> eval)
         {
             var format = LocalizationManager.Localize("NOTIFICATION_SELL_CANCEL_COMPLETE");
-            UI.Notification.Push(MailType.Auction, string.Format(format, eval.Action.result.itemUsable.Data.GetLocalizedName()));
+            UI.Notification.Push(MailType.Auction, string.Format(format, eval.Action.result.itemUsable.GetLocalizedName()));
             UpdateCurrentAvatarState(eval);
         }
 
@@ -378,13 +384,13 @@ namespace Nekoyume.BlockChain
             if (eval.Action.buyerAvatarAddress == States.Instance.CurrentAvatarState.Value.address)
             {
                 var format = LocalizationManager.Localize("NOTIFICATION_BUY_BUYER_COMPLETE");
-                UI.Notification.Push(MailType.Auction, string.Format(format, eval.Action.buyerResult.itemUsable.Data.GetLocalizedName()));
+                UI.Notification.Push(MailType.Auction, string.Format(format, eval.Action.buyerResult.itemUsable.GetLocalizedName()));
             }
             else
             {
                 var format = LocalizationManager.Localize("NOTIFICATION_BUY_SELLER_COMPLETE");
                 var result = eval.Action.sellerResult;
-                UI.Notification.Push(MailType.Auction, string.Format(format, result.itemUsable.Data.GetLocalizedName(), result.gold));
+                UI.Notification.Push(MailType.Auction, string.Format(format, result.itemUsable.GetLocalizedName(), result.gold));
             }
 
             UpdateCurrentAvatarState(eval);
@@ -412,6 +418,15 @@ namespace Nekoyume.BlockChain
             var format = LocalizationManager.Localize("NOTIFICATION_QUEST_REWARD");
             var msg = string.Format(format, eval.Action.Result.GetName());
             UI.Notification.Push(MailType.System, msg);
+        }
+
+        private void ResponseItemEnhancement(ActionBase.ActionEvaluation<ItemEnhancement> eval)
+        {
+            var format = LocalizationManager.Localize("NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE");
+            UI.Notification.Push(MailType.Workshop,
+                string.Format(format, eval.Action.result.itemUsable.Data.GetLocalizedName()));
+            UpdateAgentState(eval);
+            UpdateCurrentAvatarState(eval);
         }
     }
 }

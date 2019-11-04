@@ -12,7 +12,7 @@ namespace Nekoyume.Game.Mail
     public abstract class AttachmentMail : Mail
     {
         public AttachmentActionResult attachment;
-        public string AttachmentName => (attachment.itemUsable as ItemBase).Data.GetLocalizedName();
+        public string AttachmentName => attachment.itemUsable.GetLocalizedName();
 
         protected AttachmentMail(AttachmentActionResult attachmentActionResult, long blockIndex) : base(blockIndex)
         {

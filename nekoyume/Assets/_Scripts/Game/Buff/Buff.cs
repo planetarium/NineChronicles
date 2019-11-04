@@ -22,6 +22,7 @@ namespace Nekoyume.Game
 
         protected Buff(Buff value)
         {
+            originalDuration = value.RowData.Duration;
             remainedDuration = value.remainedDuration;
             RowData = value.RowData;
         }

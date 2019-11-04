@@ -6,6 +6,7 @@ using Nekoyume.BlockChain;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
+using Nekoyume.Game.Mail;
 using Nekoyume.Model;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
@@ -46,23 +47,23 @@ namespace Nekoyume.UI
 
             inventory.SharedModel.SelectedItemView.Subscribe(ShowTooltip).AddTo(gameObject);
             inventory.SharedModel.OnRightClickItemView.Subscribe(StageMaterial).AddTo(gameObject);
-            
+
             combineConsumable.RemoveMaterialsAll();
             combineConsumable.OnMaterialAdd.Subscribe(SubscribeOnMaterialAddOrRemove).AddTo(gameObject);
             combineConsumable.OnMaterialRemove.Subscribe(SubscribeOnMaterialAddOrRemove).AddTo(gameObject);
-            combineConsumable.OnSubmitClick.Subscribe(_ => ActionCombineConsumable()).AddTo(gameObject);
+            combineConsumable.submitButton.OnSubmitClick.Subscribe(_ => ActionCombineConsumable()).AddTo(gameObject);
             combineConsumable.recipe.scrollerController.OnSubmitClick.Subscribe(ActionCombineConsumable)
                 .AddTo(gameObject);
-            
+
             combineEquipment.RemoveMaterialsAll();
             combineEquipment.OnMaterialAdd.Subscribe(SubscribeOnMaterialAddOrRemove).AddTo(gameObject);
             combineEquipment.OnMaterialRemove.Subscribe(SubscribeOnMaterialAddOrRemove).AddTo(gameObject);
-            combineEquipment.OnSubmitClick.Subscribe(_ => ActionCombineEquipment()).AddTo(gameObject);
-            
+            combineEquipment.submitButton.OnSubmitClick.Subscribe(_ => ActionCombineEquipment()).AddTo(gameObject);
+
             enhanceEquipment.RemoveMaterialsAll();
             enhanceEquipment.OnMaterialAdd.Subscribe(SubscribeOnMaterialAddOrRemove).AddTo(gameObject);
             enhanceEquipment.OnMaterialRemove.Subscribe(SubscribeOnMaterialAddOrRemove).AddTo(gameObject);
-            enhanceEquipment.OnSubmitClick.Subscribe(_ => ActionEnhanceEquipment()).AddTo(gameObject);
+            enhanceEquipment.submitButton.OnSubmitClick.Subscribe(_ => ActionEnhanceEquipment()).AddTo(gameObject);
 
             combineEquipmentCategoryButton.button.OnClickAsObservable()
                 .Subscribe(_ =>
@@ -130,7 +131,8 @@ namespace Nekoyume.UI
 
                     inventory.SharedModel.State.Value = ItemType.Material;
                     inventory.SharedModel.DimmedFunc.Value = combineConsumable.DimFunc;
-                    
+                    inventory.SharedModel.EffectEnabledFunc.Value = combineConsumable.Contains;
+
                     combineConsumable.Show();
                     combineEquipment.Hide();
                     enhanceEquipment.Hide();
@@ -142,7 +144,8 @@ namespace Nekoyume.UI
 
                     inventory.SharedModel.State.Value = ItemType.Material;
                     inventory.SharedModel.DimmedFunc.Value = combineEquipment.DimFunc;
-                    
+                    inventory.SharedModel.EffectEnabledFunc.Value = combineEquipment.Contains;
+
                     combineConsumable.Hide();
                     combineEquipment.Show();
                     enhanceEquipment.Hide();
@@ -154,7 +157,8 @@ namespace Nekoyume.UI
 
                     inventory.SharedModel.State.Value = ItemType.Equipment;
                     inventory.SharedModel.DimmedFunc.Value = enhanceEquipment.DimFunc;
-                    
+                    inventory.SharedModel.EffectEnabledFunc.Value = enhanceEquipment.Contains;
+
                     combineConsumable.Hide();
                     combineEquipment.Hide();
                     enhanceEquipment.Show();
@@ -199,9 +203,11 @@ namespace Nekoyume.UI
                     throw new ArgumentOutOfRangeException();
             }
         }
+
         private void SubscribeOnMaterialAddOrRemove(InventoryItem viewModel)
-        {   
+        {
             inventory.SharedModel.UpdateDimAll();
+            inventory.SharedModel.UpdateEffectAll();
         }
 
         private void SubscribeBackButtonClick(BottomMenu bottomMenu)
@@ -233,9 +239,9 @@ namespace Nekoyume.UI
 
             UpdateCurrentAvatarState(combineConsumable, materialInfoList);
             CreateCombinationAction(materialInfoList);
-            
+
             // 에셋의 버그 때문에 스크롤 맨 끝 포지션으로 스크롤 포지션 설정 시 스크롤이 비정상적으로 표시되는 문제가 있음.
-            var scroller = combineConsumable.recipe.scrollerController.scroller; 
+            var scroller = combineConsumable.recipe.scrollerController.scroller;
             scroller.ReloadData(scroller.ScrollPosition - 0.1f);
         }
 
@@ -301,20 +307,20 @@ namespace Nekoyume.UI
 
         private void CreateCombinationAction(List<(int itemId, int count)> materialInfoList)
         {
-            Find<CombinationLoadingScreen>().Show();
-
+            var msg = LocalizationManager.Localize("NOTIFICATION_COMBINATION_START");
+            Notification.Push(MailType.Workshop, msg);
             ActionManager.instance.Combination(materialInfoList)
                 .Subscribe(_ => { }, _ => Find<ActionFailPopup>().Show("Timeout occurred during Combination"));
         }
 
         private void CreateItemEnhancementAction(Guid baseItemGuid, IEnumerable<Guid> otherItemGuidList)
         {
-            Find<CombinationLoadingScreen>().Show();
-
+            var msg = LocalizationManager.Localize("NOTIFICATION_ITEM_ENHANCEMENT_START");
+            Notification.Push(MailType.Workshop, msg);
             ActionManager.instance.ItemEnhancement(baseItemGuid, otherItemGuidList)
                 .Subscribe(_ => { }, _ => Find<ActionFailPopup>().Show("Timeout occurred during ItemEnhancement"));
         }
-        
+
         #endregion
     }
 }
