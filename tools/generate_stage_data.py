@@ -8,51 +8,13 @@ from operator import itemgetter
 ### EDIT: WORLD
 MONSTER_PARTS_DROP_RATE = 0.03
 STAGES_PER_WORLD = 150
-STAGES_PER_MONSTER_LV = 1
+STAGES_PER_MONSTER_LV = 5
 BASE_EXP = 50
 ADDITIONAL_EXP_PER_STAGE = 8
 MIN_WAVES = 4
 MAX_WAVES = 8
 CSV_OUTPUT_FOLDER_PATH = "nekoyume/Assets/AddressableAssets/TableCSV"
 WAVE_CSV_NAME = "waves.csv"
-
-
-### EDIT: MAP DATA ###
-# 100	이그드라실의 씨앗
-# 101	이그드라실의 새싹
-# 102	이그드라실의 새싹
-# 103	이그드라실의 꽃
-# 104	이그드라실의 열매
-# 105	이그드라실의 모종
-# 200	여우부족 졸개
-# 201	여우부족 훈련병
-# 202	여우부족 도적
-# 203	여우부족 전사
-# 204	여우부족 주술사
-# 205	여우부족 견습 마법사
-# 206	여우부족 마도사
-# 207	여우부족 대장
-# 300	돼지부족 졸개
-# 301	돼지부족 훈련병
-# 302	돼지부족 견습 법사
-# 303	돼지부족 전사
-# 304	돼지부족 성기사
-# 305	돼지부족 도살자
-# 306	돼지부족 마도사
-# 307	제림니르
-# 400	이그드라실의 부산물
-# 410	이그드라실의 부산물
-# 401	이그드라실의 부산물(대지)
-# 411	이그드라실의 부산물(대지)
-# 402	이그드라실의 부산물(불)
-# 412	이그드라실의 부산물(불)
-# 403	이그드라실의 부산물(바람)
-# 413	이그드라실의 부산물(바람)
-# 404	이그드라실의 부산물(물)
-# 414	이그드라실의 부산물(물)
-# 500	영혼의 병정
-# 503	영혼의 기사
-#
 
 
 # monster_id -> parts_id
@@ -226,16 +188,13 @@ for idx, row in enumerate(stage_to_wave_csv):
     if idx > 0:
         stage_dict[int(row_id)] = waves
 
-print wave_dict
-print stage_dict
-
 ## LOGIC ##
 reward_id = 0
 for stage in range(1, STAGES_PER_WORLD+1):
     waves = stage_dict[stage]
     exp = BASE_EXP + ADDITIONAL_EXP_PER_STAGE * stage
     # monster level increases 1 per 3 stages
-    level = int((stage - 1) / STAGES_PER_MONSTER_LV) + 1
+    m_level = int((stage - 1) / STAGES_PER_MONSTER_LV) + 1
     #dstage = (stage-1) % int(STAGES_PER_MONSTER_LV) # between 0 and 2
 
     monster_parts = []
@@ -247,7 +206,6 @@ for stage in range(1, STAGES_PER_WORLD+1):
         is_boss_wave = int(bool(is_last_wave and is_boss_level))
 
         monster_picked = wave_dict[wave]
-        print monster_picked
         monster_count = Counter(monster_picked)
         monster_ids = sorted(monster_count.keys())
 
@@ -259,7 +217,7 @@ for stage in range(1, STAGES_PER_WORLD+1):
             if (i < len(monster_ids)):
                 mid = monster_ids[i]
                 #row += [mid, level, '', monster_count[mid]]
-                row += [mid, 1, monster_count[mid]]
+                row += [mid, m_level, monster_count[mid]]
             else:
                 row += ['', '', '']
         if is_last_wave: # if last wave, check if boss, add exp and reward
