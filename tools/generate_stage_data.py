@@ -1,3 +1,4 @@
+# coding=UTF-8
 import random
 import math
 import csv
@@ -6,25 +7,53 @@ from operator import itemgetter
 
 ### EDIT: WORLD
 MONSTER_PARTS_DROP_RATE = 0.03
-STAGES_PER_WORLD = 50
+STAGES_PER_WORLD = 150
 STAGES_PER_MONSTER_LV = 1
 BASE_EXP = 50
 ADDITIONAL_EXP_PER_STAGE = 8
 MIN_WAVES = 4
 MAX_WAVES = 8
+CSV_OUTPUT_FOLDER_PATH = "nekoyume/Assets/AddressableAssets/TableCSV"
+WAVE_CSV_NAME = "waves.csv"
 
 
 ### EDIT: MAP DATA ###
-# 204000, 204001, 204002, 204003, 204004, 204010, 204011, 204012, 204013, 204014 공용
-# 201000, 201001, 201002, 201003, 201004, 201005 똥글이, 꽃들 (W1)
-# 202000, 202001, 202002, 202003, 202004, 202005, 202006 여우 (W1)
-# 203000, 203001, 203002, 203003, 203004, 203005, 203006 멧돼지 (W2)
-# 
-WORLD_MONSTERS = {
-    1: [204010, 204000, 201000, 204011, 204001, 201001, 204012, 204002, 201002, 202001, 204013, 204003, 201003, 204014, 204004, 201004, 202003, 202004, 202005],
-    2: [204010, 204000, 203000, 204011, 204001, 203001, 204012, 204002, 203002, 204013, 204003, 203003, 204014, 204004, 203004, 203005],
-    3: [204010, 204000, 205000, 204011, 204001, 203001, 204012, 204002, 203002, 204013, 204003, 205003, 204014, 204004, 203004, 203005],
-}
+# 100	이그드라실의 씨앗
+# 101	이그드라실의 새싹
+# 102	이그드라실의 새싹
+# 103	이그드라실의 꽃
+# 104	이그드라실의 열매
+# 105	이그드라실의 모종
+# 200	여우부족 졸개
+# 201	여우부족 훈련병
+# 202	여우부족 도적
+# 203	여우부족 전사
+# 204	여우부족 주술사
+# 205	여우부족 견습 마법사
+# 206	여우부족 마도사
+# 207	여우부족 대장
+# 300	돼지부족 졸개
+# 301	돼지부족 훈련병
+# 302	돼지부족 견습 법사
+# 303	돼지부족 전사
+# 304	돼지부족 성기사
+# 305	돼지부족 도살자
+# 306	돼지부족 마도사
+# 307	제림니르
+# 400	이그드라실의 부산물
+# 410	이그드라실의 부산물
+# 401	이그드라실의 부산물(대지)
+# 411	이그드라실의 부산물(대지)
+# 402	이그드라실의 부산물(불)
+# 412	이그드라실의 부산물(불)
+# 403	이그드라실의 부산물(바람)
+# 413	이그드라실의 부산물(바람)
+# 404	이그드라실의 부산물(물)
+# 414	이그드라실의 부산물(물)
+# 500	영혼의 병정
+# 503	영혼의 기사
+#
+
 
 # monster_id -> parts_id
 MONSTER_PARTS = {
@@ -136,7 +165,7 @@ BOSS_LOCATION = {
         20: 203006,
         30: 203006,
         40: 203006,
-        50: 203007        
+        50: 203007
     },
     3: {
         10: 202007,
@@ -150,11 +179,11 @@ BOSS_LOCATION = {
 ## OTHER CONSTS ##
 #REWARD_BASE = 101000
 STAGE_FIELD_NAMES = [
-    "id","stage","wave",
-    "monster1_id","monster1_level","monster1_visual","monster1_count",
-    "monster2_id","monster2_level","monster2_visual","monster2_count",
-    "monster3_id","monster3_level","monster3_visual","monster3_count",
-    "monster4_id","monster4_level","monster4_visual","monster4_count",
+    "id","wave",
+    "monster1_id","monster1_level","monster1_count",
+    "monster2_id","monster2_level","monster2_count",
+    "monster3_id","monster3_level","monster3_count",
+    "monster4_id","monster4_level","monster4_count",
     "is_boss","reward","exp"
 ]
 
@@ -167,89 +196,93 @@ REWARD_FIELD_NAMES = [
     "item5","item5_ratio","item5_min","item5_max",
 ]
 
+def expand_wave_id(wid):
+    return "20" + wid[0] + "0" + wid[1:]
+
+
 ## CSV SETUP ##
-stage_file = open("stage.csv", "w")
+stage_file = open("StageSheet.csv", "w")
 reward_file = open("stage_reward.csv", "w")
 stage_csv = csv.writer(stage_file)
 reward_csv = csv.writer(reward_file)
 stage_csv.writerow(STAGE_FIELD_NAMES)
 reward_csv.writerow(REWARD_FIELD_NAMES)
 
+wave_csv = csv.reader(open("WaveTable/sheet-waves.csv", "r"))
+stage_to_wave_csv = csv.reader(open("WaveTable/sheet-stage_to_waves.csv", "r"))
+
+wave_dict = {}
+stage_dict = {}
+
+for idx, row in enumerate(wave_csv):
+    row_id = row[0]
+    monsters = sorted(map(expand_wave_id, filter(lambda x: x, row[1:])))
+    if idx > 0:
+        wave_dict[row_id] = monsters
+
+for idx, row in enumerate(stage_to_wave_csv):
+    row_id = row[0]
+    waves = filter(lambda x: x, row[1:])
+    if idx > 0:
+        stage_dict[int(row_id)] = waves
+
+print wave_dict
+print stage_dict
+
 ## LOGIC ##
-stage_id = 0
 reward_id = 0
-for world, monster_list in WORLD_MONSTERS.items():
-    for stage in range(1, STAGES_PER_WORLD+1):
-        # exp per stage
-        exp = BASE_EXP + ADDITIONAL_EXP_PER_STAGE * stage
-        # monster level increases 1 per 3 stages
-        level = int((((world - 1) * STAGES_PER_WORLD) + stage - 1) / STAGES_PER_MONSTER_LV) + 1
-        dstage = (stage-1) % int(STAGES_PER_MONSTER_LV) # between 0 and 2
-        boss_id = BOSS_LOCATION.get(world,{}).get(stage)
-        # number of waves varies from 5 to 8
-        if MIN_WAVES == MAX_WAVES:
-            waves = MAX_WAVES
-        else:
-            waves = random.randrange(
-                MIN_WAVES,
-                int(MAX_WAVES + (MAX_WAVES - MIN_WAVES) * dstage / STAGES_PER_MONSTER_LV))
-        monster_parts = []
-        for wave in range(1, waves+1):
-            is_last_wave = (wave == waves)
-            is_boss_wave = int(bool(is_last_wave and boss_id))
+for stage in range(1, STAGES_PER_WORLD+1):
+    waves = stage_dict[stage]
+    exp = BASE_EXP + ADDITIONAL_EXP_PER_STAGE * stage
+    # monster level increases 1 per 3 stages
+    level = int((stage - 1) / STAGES_PER_MONSTER_LV) + 1
+    #dstage = (stage-1) % int(STAGES_PER_MONSTER_LV) # between 0 and 2
 
-            monster_picked = []
+    monster_parts = []
+    # Append each wave
+    # print waves
+    is_boss_level = (stage % 5 == 0)
+    for wave_idx, wave in enumerate(waves):
+        is_last_wave = (wave_idx == len(waves) - 1)
+        is_boss_wave = int(bool(is_last_wave and is_boss_level))
 
-            monster_count = random.randrange(3, min(3 + wave, 12))
-            if is_boss_wave:
-                monster_count = 5
-            # add 3 to 5 monsters
-            for idx in range(0, monster_count):
-                if (idx == 0) and is_boss_wave:
-                    monster_picked.append(boss_id)
-                else:
-                    last_monster = math.ceil(
-                        len(monster_list) * (float(stage)/(STAGES_PER_WORLD+1))
-                    )
-                    random_monster = random.choice(monster_list[max(0, last_monster - 6):last_monster])
-                    monster_picked.append(random_monster)
-                    monster_parts.append(MONSTER_PARTS[random_monster])
+        monster_picked = wave_dict[wave]
+        print monster_picked
+        monster_count = Counter(monster_picked)
+        monster_ids = sorted(monster_count.keys())
 
+        # add 3 to 5 monsters
+        # add row
+        row = [stage, wave_idx+1]
+        for i in range(0, 4):
             # sort monsters by count
-            monster_count = Counter(monster_picked)
-            monster_ids = monster_count.keys()
-            monster_ids = sorted(monster_ids)
-
-            stage_id += 1
-            # add row
-            row = [stage_id, ((world - 1) * STAGES_PER_WORLD) + stage, wave]
-            for i in range(0, 4):
-                if (i < len(monster_ids)):
-                    mid = monster_ids[i]
-                    row += [mid, level + (1 if is_boss_wave else 0), '', monster_count[mid]]
-                else:
-                    row += ['', '', '', '']
-            if is_last_wave: # if last wave, check if boss, add exp and reward
-                row += [is_boss_wave, ((world - 1) * STAGES_PER_WORLD) + stage, exp]
+            if (i < len(monster_ids)):
+                mid = monster_ids[i]
+                #row += [mid, level, '', monster_count[mid]]
+                row += [mid, 1, monster_count[mid]]
             else:
-                row += [0, 0, 0]
-            stage_csv.writerow(row)
+                row += ['', '', '']
+        if is_last_wave: # if last wave, check if boss, add exp and reward
+            row += [is_boss_wave, stage, exp]
+        else:
+            row += [0, 0, 0]
+        stage_csv.writerow(row)
 
-        # setup stage reward
-        reward_row = [((world - 1) * STAGES_PER_WORLD) + stage]
-        parts = Counter(monster_parts)
-        # five rows, prioritize stage specific reward and boss parts reward
-        additional_mat = MATERIAL_LOCATION.get(world, {}).get(stage)
-        if additional_mat:
-            reward_row += [additional_mat, 1, 1, 2]
-        if boss_id:
-            reward_row += [MONSTER_PARTS[boss_id], 1, 1, 2]
-        # add rest of them
-        parts_sorted_by_count = OrderedDict(sorted(parts.items(), key=itemgetter(1)))
-        for parts_id in parts_sorted_by_count:
-            if len(reward_row) < len(REWARD_FIELD_NAMES):
-                parts_cnt = int(max(math.ceil(MONSTER_PARTS_DROP_RATE * parts_sorted_by_count[parts_id]), 1))
-                reward_row += [parts_id, 1, parts_cnt, parts_cnt+1]
+    ## setup stage reward
+    #reward_row = [((world - 1) * STAGES_PER_WORLD) + stage]
+    #parts = Counter(monster_parts)
+    ## five rows, prioritize stage specific reward and boss parts reward
+    #additional_mat = MATERIAL_LOCATION.get(world, {}).get(stage)
+    #if additional_mat:
+    #    reward_row += [additional_mat, 1, 1, 2]
+    #if boss_id:
+    #    reward_row += [MONSTER_PARTS[boss_id], 1, 1, 2]
+    ## add rest of them
+    #parts_sorted_by_count = OrderedDict(sorted(parts.items(), key=itemgetter(1)))
+    #for parts_id in parts_sorted_by_count:
+    #    if len(reward_row) < len(REWARD_FIELD_NAMES):
+    #        parts_cnt = int(max(math.ceil(MONSTER_PARTS_DROP_RATE * parts_sorted_by_count[parts_id]), 1))
+    #        reward_row += [parts_id, 1, parts_cnt, parts_cnt+1]
 
-        reward_row += [None] * (len(REWARD_FIELD_NAMES) - len(reward_row))
-        reward_csv.writerow(reward_row)
+    #reward_row += [None] * (len(REWARD_FIELD_NAMES) - len(reward_row))
+    #reward_csv.writerow(reward_row)

@@ -475,7 +475,7 @@ namespace Nekoyume.Game
                 yield return new WaitForSeconds(2.0f);
                 StartCoroutine(Widget.Find<Blind>().FadeOut(0.2f));
                 yield return new WaitForSeconds(2.0f);
-                var boss = enemies[0];
+                var boss = enemies.Last();
                 Boss = boss;
                 var sprite = SpriteHelper.GetCharacterIcon(boss.RowData.Id);
                 battle.bossStatus.Show();
