@@ -38,7 +38,7 @@ namespace Nekoyume.UI
             SetValue((float) current / max);
         }
 
-        private void SetText(string text)
+        protected void SetText(string text)
         {
             label.text = text;
 
@@ -48,7 +48,7 @@ namespace Nekoyume.UI
             }
         }
 
-        private void SetValue(float value)
+        protected void SetValue(float value)
         {
             slider.value = value;
 
