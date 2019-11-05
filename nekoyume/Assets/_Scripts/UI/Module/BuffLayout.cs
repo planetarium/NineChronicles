@@ -2,15 +2,21 @@
 using Nekoyume.Game;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.EnumType;
 
 namespace Nekoyume.UI.Module
 {
     public class BuffLayout : MonoBehaviour
     {
         public GameObject iconPrefab;
+        public readonly HashSet<Buff> addedBuffs = new HashSet<Buff>();
+        public IReadOnlyDictionary<int, Buff> buffData;
 
         private Transform _buffParent;
         private readonly List<BuffIcon> _pool = new List<BuffIcon>(10);
+
+        public bool IsBuffAdded(StatType statType) => addedBuffs.Any(buff => buff.RowData.StatModifier.StatType == statType);
+        public bool HasBuff(StatType statType) => buffData.Any(buff => buff.Value.RowData.StatModifier.StatType == statType);
 
         public void Awake()
         {
@@ -18,22 +24,38 @@ namespace Nekoyume.UI.Module
             CreateImage(10);
         }
 
-        public void UpdateBuff(IEnumerable<Game.Buff> buffs)
+        public void SetBuff(IReadOnlyDictionary<int, Game.Buff> buffs)
         {
-            var ordered = buffs
-                .Where(buff => buff.remainedDuration > 0)
-                .OrderBy(buff => buff.RowData.Id);
-            
             foreach (var icon in _pool)
             {
                 if (icon.image.enabled)
                     icon.Hide();
             }
 
+            if (buffs is null)
+            {
+                return;
+            }
+
+            addedBuffs.Clear();
+            foreach (var buff in buffs)
+            {
+                if (!buffData.ContainsKey(buff.Key) || buffData[buff.Key].remainedDuration < buffs[buff.Key].remainedDuration)
+                {
+                    addedBuffs.Add(buff.Value);
+                }
+            }
+
+            buffData = buffs;
+
+            var ordered = buffs.Values
+                .Where(buff => buff.remainedDuration > 0)
+                .OrderBy(buff => buff.RowData.Id);
+
             foreach (var buff in ordered)
             {
                 var icon = GetDisabledIcon();
-                icon.Show(buff);
+                icon.Show(buff, addedBuffs.Contains(buff));
             }
         }
 

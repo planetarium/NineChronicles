@@ -180,7 +180,7 @@ namespace Nekoyume.Game.Character
             }
 
             HPBar.UpdatePosition(gameObject, HUDOffset);
-            HPBar.Set(CurrentHP, HP);
+            HPBar.Set(CurrentHP, Model.Value.Stats.BuffStats.HP, HP);
             HPBar.SetBuffs(Model.Value.Buffs);
             
             OnUpdateHPBar.OnNext(this);
