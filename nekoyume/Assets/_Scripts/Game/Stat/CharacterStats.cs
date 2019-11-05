@@ -47,7 +47,8 @@ namespace Nekoyume.Game
         public bool HasAdditionalCRI => AdditionalCRI > 0;
         public bool HasAdditionalDOG => AdditionalDOG > 0;
         public bool HasAdditionalSPD => AdditionalSPD > 0;
-
+        public bool HasAdditionalStats => HasAdditionalHP || HasAdditionalATK || HasAdditionalDEF || HasAdditionalCRI ||
+                                          HasAdditionalDOG || HasAdditionalSPD;
         public CharacterStats(CharacterSheet.Row row, int level = 1, IReadOnlyList<Equipment> equipments = null,
             IReadOnlyList<Consumable> consumables = null, IReadOnlyList<Buff> buffs = null)
         {

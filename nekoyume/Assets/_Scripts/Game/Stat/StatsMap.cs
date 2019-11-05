@@ -41,6 +41,9 @@ namespace Nekoyume.Game
         public bool HasAdditionalDOG => StatMaps.ContainsKey(StatType.DOG);
         public bool HasAdditionalSPD => StatMaps.ContainsKey(StatType.SPD);
 
+        public bool HasAdditionalStats => HasAdditionalHP || HasAdditionalATK || HasAdditionalDEF || HasAdditionalCRI ||
+                                          HasAdditionalDOG || HasAdditionalSPD;
+
         private readonly Dictionary<StatType, StatMapEx> _statMaps =
             new Dictionary<StatType, StatMapEx>(StatTypeComparer.Instance);
 
@@ -160,6 +163,39 @@ namespace Nekoyume.Game
             yield return (StatType.DOG, DOG);
             yield return (StatType.CRI, CRI);
             yield return (StatType.SPD, SPD);
+        }
+
+        public void ClearAdditionalStats()
+        {
+            if (HasAdditionalHP)
+            {
+                SetStatAdditionalValue(StatType.HP, 0);
+            }
+
+            if (HasAdditionalATK)
+            {
+                SetStatAdditionalValue(StatType.ATK, 0);
+            }
+
+            if (HasAdditionalCRI)
+            {
+                SetStatAdditionalValue(StatType.CRI, 0);
+            }
+
+            if (HasAdditionalDEF)
+            {
+                SetStatAdditionalValue(StatType.DEF, 0);
+            }
+
+            if (HasAdditionalDOG)
+            {
+                SetStatAdditionalValue(StatType.DOG, 0);
+            }
+
+            if (HasAdditionalSPD)
+            {
+                SetStatAdditionalValue(StatType.SPD, 0);
+            }
         }
     }
 }

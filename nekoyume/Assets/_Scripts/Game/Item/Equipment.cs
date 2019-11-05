@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Assets.SimpleLocalization;
 using Bencodex.Types;
 using Nekoyume.TableData;
 
@@ -39,7 +38,7 @@ namespace Nekoyume.Game.Item
             level++;
             foreach (var statData in Data.Stats)
             {
-                StatsMap.SetStatAdditionalValue(statData.StatType, level * levelStats);
+                StatsMap.AddStatValue(statData.StatType, levelStats);
             }
         }
         
@@ -59,5 +58,16 @@ namespace Nekoyume.Game.Item
                 [(Text) "level"] = (Integer) level,
             }.Union((Bencodex.Types.Dictionary) base.Serialize()));
 
+        public List<object> GetOptions()
+        {
+            var options = new List<object>();
+            options.AddRange(Skills);
+            options.AddRange(BuffSkills);
+            if (StatsMap.HasAdditionalStats)
+            {
+                options.Add(StatsMap);
+            }
+            return options;
+        }
     }
 }
