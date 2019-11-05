@@ -75,5 +75,16 @@ namespace Nekoyume.Game.Item
                 [(Text) "level"] = (Integer) level,
             }.Union((Bencodex.Types.Dictionary) base.Serialize()));
 
+        public List<object> GetOptions()
+        {
+            var options = new List<object>();
+            options.AddRange(Skills);
+            options.AddRange(BuffSkills);
+            if (StatsMap.HasAdditionalStats)
+            {
+                options.Add(StatsMap);
+            }
+            return options;
+        }
     }
 }
