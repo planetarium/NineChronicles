@@ -11,6 +11,7 @@ using Nekoyume.Game;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Mail;
 using Nekoyume.State;
+using Unity.Mathematics;
 using UnityEngine;
 
 namespace Nekoyume.Action
@@ -58,17 +59,19 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            var materials = new List<ItemUsable>();
+            var materials = new List<Equipment>();
+            var options = new List<object>();
+            var materialOptionCount = 0;
             foreach (var materialId in materialIds)
             {
-                if (!avatarState.inventory.TryGetNonFungibleItem(materialId, out ItemUsable material))
+                if (!avatarState.inventory.TryGetNonFungibleItem(materialId, out ItemUsable nonFungibleItem))
                 {
                     return states;
                 }
 
-                if (materials.Contains(material))
+                if (materials.Contains(nonFungibleItem))
                 {
-                    Debug.LogWarning($"Duplicate materials found. {material}");
+                    Debug.LogWarning($"Duplicate materials found. {nonFungibleItem}");
                     return states;
                 }
 
@@ -77,19 +80,25 @@ namespace Nekoyume.Action
                     return states;
                 }
 
-                if (material.Data.ItemSubType != item.Data.ItemSubType)
+                if (nonFungibleItem.Data.ItemSubType != item.Data.ItemSubType)
                 {
                     Debug.LogWarning($"Expected ItemSubType is {item.Data.ItemSubType}. " +
                                      "but Material SubType is {material.Data.ItemSubType}");
                     return states;
                 }
 
+                var material = (Equipment) nonFungibleItem;
                 materials.Add(material);
+                var materialOptions = material.GetOptions();
+                options.AddRange(materialOptions);
+                materialOptionCount = Math.Max(materialOptionCount, materialOptions.Count);
             }
 
             var equipment = (Equipment) item;
-            equipment.LevelUp();
-            equipment.BuffSkills.Add(GetRandomBuffSkill(ctx.Random));
+            var equipmentOptions = equipment.GetOptions();
+            options.AddRange(equipmentOptions);
+            var equipmentOptionCount = Math.Max(materialOptionCount, equipmentOptions.Count);
+            equipment = UpgradeEquipment(equipment, ctx.Random, options, equipmentOptionCount);
             var requiredGold = Math.Max(RequiredGoldPerLevel, RequiredGoldPerLevel * equipment.level * equipment.level);
 
             if (agentState.gold < requiredGold)
@@ -135,6 +144,62 @@ namespace Nekoyume.Action
                 .ToList();
             var skillRow = skillRows[random.Next(0, skillRows.Count)];
             return (BuffSkill) SkillFactory.Get(skillRow, 0, 100);
+        }
+
+        private static Equipment UpgradeEquipment(Equipment equipment, IRandom random, IEnumerable<object> options, int count)
+        {
+            equipment.BuffSkills.Clear();
+            equipment.Skills.Clear();
+            equipment.StatsMap.ClearAdditionalStats();
+
+            var sortedSkills = options.Select(option => new {option, guid = random.GenerateRandomGuid()})
+                .OrderBy(i => i.guid).ToList();
+            for (var i = 0; i < count; i++)
+            {
+                var selected = sortedSkills[random.Next(sortedSkills.Count)];
+                switch (selected.option)
+                {
+                    case BuffSkill buffSkill:
+                        equipment.BuffSkills.Add(buffSkill);
+                        break;
+                    case AttackSkill attackSkill:
+                        equipment.Skills.Add(attackSkill);
+                        break;
+                    case StatsMap statsMap:
+                    {
+                        if (statsMap.HasAdditionalHP)
+                        {
+                            equipment.StatsMap.SetStatAdditionalValue(StatType.HP, statsMap.AdditionalHP);
+                        }
+                        if (statsMap.HasAdditionalATK)
+                        {
+                            equipment.StatsMap.SetStatAdditionalValue(StatType.ATK, statsMap.AdditionalATK);
+                        }
+                        if (statsMap.HasAdditionalCRI)
+                        {
+                            equipment.StatsMap.SetStatAdditionalValue(StatType.CRI, statsMap.AdditionalCRI);
+                        }
+                        if (statsMap.HasAdditionalDEF)
+                        {
+                            equipment.StatsMap.SetStatAdditionalValue(StatType.DEF, statsMap.AdditionalDEF);
+                        }
+                        if (statsMap.HasAdditionalDOG)
+                        {
+                            equipment.StatsMap.SetStatAdditionalValue(StatType.DOG, statsMap.AdditionalDOG);
+                        }
+                        if (statsMap.HasAdditionalSPD)
+                        {
+                            equipment.StatsMap.SetStatAdditionalValue(StatType.SPD, statsMap.AdditionalSPD);
+                        }
+                        break;
+                    }
+                }
+                sortedSkills.Remove(selected);
+            }
+
+            equipment.LevelUp();
+
+            return equipment;
         }
     }
 }
