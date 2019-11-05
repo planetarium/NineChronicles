@@ -16,8 +16,6 @@ namespace Nekoyume.UI.Module
         public GameObject costAP;
         public TextMeshProUGUI costAPText;
         public TextMeshProUGUI submitText;
-        public Material submitTextMaterialForSubmittable;
-//        public Material submitTextMaterialForsubmittable;
         public GameObject rightSpacer;
         
         public readonly Subject<SubmitWithCostButton> OnSubmitClick = new Subject<SubmitWithCostButton>();

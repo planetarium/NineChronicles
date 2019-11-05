@@ -225,7 +225,7 @@ namespace Nekoyume.Action
 
                 // 재료가 레시피에 맞지 않다면 200000(맛 없는 요리).
                 var resultConsumableItemId = !consumableItemRecipeSheet.TryGetValue(foodMaterials, out var recipeRow)
-                    ? 200000
+                    ? GameConfig.CombinationDefaultFoodId
                     : recipeRow.ResultConsumableItemId;
 
                 if (!consumableItemSheet.TryGetValue(resultConsumableItemId, out var consumableItemRow))
