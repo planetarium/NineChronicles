@@ -1,4 +1,7 @@
-﻿namespace Nekoyume
+﻿using Nekoyume.Helper;
+using UnityEngine;
+
+namespace Nekoyume
 {
     public static class GameConfig
     {
@@ -27,6 +30,22 @@
         public const decimal CombinationValueR1 = 1.5m; // 2f;
         public const int CombinationDefaultFoodId = 200000;
         
+        #endregion
+
+        #region Color
+        
+        public const string ColorHexForGrade1 = "fff9dd";
+        public const string ColorHexForGrade2 = "12ff00";
+        public const string ColorHexForGrade3 = "0f91ff";
+        public const string ColorHexForGrade4 = "ffae00";
+        public const string ColorHexForGrade5 = "f73e26";
+
+        public static readonly Color ColorForGrade1 = ColorHelper.HexToColorRGB(ColorHexForGrade1);
+        public static readonly Color ColorForGrade2 = ColorHelper.HexToColorRGB(ColorHexForGrade2);
+        public static readonly Color ColorForGrade3 = ColorHelper.HexToColorRGB(ColorHexForGrade3);
+        public static readonly Color ColorForGrade4 = ColorHelper.HexToColorRGB(ColorHexForGrade4);
+        public static readonly Color ColorForGrade5 = ColorHelper.HexToColorRGB(ColorHexForGrade5);
+
         #endregion
     }
 }

@@ -8,23 +8,36 @@ using Nekoyume.TableData;
 
 namespace Nekoyume.Game.Item
 {
+    // todo: 소모품과 장비가 함께 쓰기에는 장비 위주의 모델이 된 느낌. 아이템 정리하면서 정리를 흐음..
     [Serializable]
     public abstract class ItemUsable : ItemBase
     {
-        public new ConsumableItemSheet.Row Data { get; }
+        public new ItemSheet.Row Data { get; }
         public Guid ItemId { get; }
         public StatsMap StatsMap { get; }
         public List<Skill> Skills { get; }
         public List<BuffSkill> BuffSkills { get; }
 
-        protected ItemUsable(ConsumableItemSheet.Row data, Guid id) : base(data)
+        protected ItemUsable(ItemSheet.Row data, Guid id) : base(data)
         {
             Data = data;
             ItemId = id;
             StatsMap = new StatsMap();
-            foreach (var statData in data.Stats)
+
+            switch (data)
             {
-                StatsMap.AddStatValue(statData.StatType, statData.Value);
+                case ConsumableItemSheet.Row consumableItemRow:
+                {
+                    foreach (var statData in consumableItemRow.Stats)
+                    {
+                        StatsMap.AddStatValue(statData.StatType, statData.Value);
+                    }
+
+                    break;
+                }
+                case EquipmentItemSheet.Row equipmentItemRow:
+                    StatsMap.AddStatValue(equipmentItemRow.Stat.Type, equipmentItemRow.Stat.Value);
+                    break;
             }
 
             Skills = new List<Skill>();
@@ -54,31 +67,6 @@ namespace Nekoyume.Game.Item
             return StatsMap.GetAdditionalStats(true).Count()
                    + Skills.Count
                    + BuffSkills.Count;
-        }
-
-        // todo: 번역.
-        public override string ToItemInfo()
-        {
-            var sb = new StringBuilder();
-            sb.AppendLine(StatsMap.GetInformation());
-
-            foreach (var skill in Skills)
-            {
-                sb.Append($"{skill.chance * 100}% 확률로");
-                sb.Append($" {skill.skillRow.SkillTargetType}에게");
-                sb.Append($" {skill.power} 위력의");
-                sb.Append($" {skill.skillRow.ElementalType}속성 {skill.skillRow.SkillType}");
-            }
-
-            foreach (var buffSkill in BuffSkills)
-            {
-                sb.Append($"{buffSkill.chance * 100}% 확률로");
-                sb.Append($" {buffSkill.skillRow.SkillTargetType}에게");
-                sb.Append($" {buffSkill.power} 위력의");
-                sb.Append($" {buffSkill.skillRow.ElementalType}속성 {buffSkill.skillRow.SkillType}");
-            }
-
-            return sb.ToString().Trim();
         }
 
         public override IValue Serialize() =>

@@ -10,7 +10,10 @@ namespace Nekoyume.Game
 {
     /// <summary>
     /// 캐릭터의 스탯을 관리한다.
-    /// 스탯은 레벨에 의한 _levelStats > 장비에 의한 _equipmentStats > 소모품에 의한 _consumableStats > 버프에 의한 _buffStats
+    /// 스탯은에 레벨에 의한 _levelStats를 기본으로 하고
+    /// > 장비에 의한 _equipmentStats
+    /// > 소모품에 의한 _consumableStats
+    /// > 버프에 의한 _buffStats
     /// 마지막으로 모든 스탯을 합한 CharacterStats 순서로 계산한다.
     /// </summary>
     [Serializable]

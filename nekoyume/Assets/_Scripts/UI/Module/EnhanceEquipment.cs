@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Assets.SimpleLocalization;
 using Nekoyume.BlockChain;
@@ -5,18 +6,15 @@ using Nekoyume.EnumType;
 using Nekoyume.Game.Item;
 using Nekoyume.UI.Model;
 using TMPro;
+using UnityEngine;
 
 namespace Nekoyume.UI.Module
 {
-    public class EnhanceEquipment : CombinationPanel<EnhanceEquipment>
+    public class EnhanceEquipment : CombinationPanel<EnhancementMaterialView>
     {
-        public TextMeshProUGUI baseMaterialTitleText;
-        public TextMeshProUGUI baseMaterialItemNameText;
-        public StatView baseMaterialStatView;
-        public TextMeshProUGUI[] otherMaterialTitleTexts;
-        public TextMeshProUGUI[] otherMaterialItemNameTexts;
-        public StatView[] otherMaterialStatViews;
-        
+        public GameObject message;
+        public TextMeshProUGUI messageText;
+
         public override bool IsSubmittable =>
             !(States.Instance.AgentState.Value is null) &&
             States.Instance.AgentState.Value.gold >= CostNCG &&
@@ -33,6 +31,13 @@ namespace Nekoyume.UI.Module
             if (baseMaterial is null)
                 throw new SerializeFieldNullException();
 
+            baseMaterial.titleText.text = LocalizationManager.Localize("UI_ENHANCEMENT_EQUIPMENT_TO_ENHANCE");
+            foreach (var otherMaterial in otherMaterials)
+            {
+                otherMaterial.titleText.text = LocalizationManager.Localize("UI_ENHANCEMENT_EQUIPMENT_TO_CONSUME");
+            }
+
+            message.SetActive(false);
             submitButton.submitText.text = LocalizationManager.Localize("UI_COMBINATION_ENHANCEMENT");
         }
 
@@ -84,38 +89,79 @@ namespace Nekoyume.UI.Module
             return baseMaterial.IsEmpty ? 0 : GameConfig.EnhanceEquipmentCostAP;
         }
 
-        protected override bool TryAddBaseMaterial(InventoryItemView view)
+        protected override bool TryAddBaseMaterial(InventoryItemView view, out EnhancementMaterialView materialView)
         {
             if (view.Model is null ||
                 view.Model.ItemBase.Value.Data.ItemType != ItemType.Equipment)
+            {
+                materialView = null;
                 return false;
+            }
 
             if (!baseMaterial.IsEmpty)
-                return false;
-
-            if (base.TryAddBaseMaterial(view))
             {
-                foreach (var otherMaterial in otherMaterials)
-                {
-                    otherMaterial.Unlock();
-                }
-
-                return true;
+                materialView = null;
+                return false;
             }
+
+            if (!base.TryAddBaseMaterial(view, out materialView))
+                return false;
+            
+            if (!(view.Model.ItemBase.Value is Equipment equipment))
+                throw new InvalidCastException(nameof(view.Model.ItemBase.Value));
+
+            foreach (var otherMaterial in otherMaterials)
+            {
+                otherMaterial.Unlock();
+            }
+
+            message.SetActive(true);
+            messageText.text = string.Format(
+                LocalizationManager.Localize("UI_ENHANCEMENT_N_OPTION_RANDOMLY_SELECT"),
+                equipment.GetOptionCount());
 
             return false;
         }
-        
-        protected override bool TryRemoveBaseMaterial(CombinationMaterialView view)
+
+        protected override bool TryRemoveBaseMaterial(CombinationMaterialView view, out EnhancementMaterialView materialView)
         {
-            if (!base.TryRemoveBaseMaterial(view))
+            if (!base.TryRemoveBaseMaterial(view, out materialView))
                 return false;
 
-            foreach (var materialView in otherMaterials)
+            foreach (var otherMaterial in otherMaterials)
             {
-                materialView.Clear();
-                materialView.Lock();
+                otherMaterial.Clear();
+                otherMaterial.Lock();
             }
+
+            message.SetActive(false);
+
+            return true;
+        }
+
+        protected override bool TryAddOtherMaterial(InventoryItemView view, out EnhancementMaterialView materialView)
+        {
+            if (!base.TryAddOtherMaterial(view, out materialView))
+                return false;
+            
+            materialView.statView.Hide();
+            
+            if (!(baseMaterial.Model.ItemBase.Value is Equipment baseEquipment))
+                throw new InvalidCastException(nameof(view.Model.ItemBase.Value));
+
+            var maxCount = baseEquipment.GetOptionCount();
+
+            foreach (var otherMaterial in otherMaterials.Where(e => !e.IsEmpty && !e.IsLocked))
+            {
+                if (!(otherMaterial.Model.ItemBase.Value is Equipment otherEquipment))
+                    throw new InvalidCastException(nameof(view.Model.ItemBase.Value));
+                
+                maxCount = Math.Max(maxCount, otherEquipment.GetOptionCount());
+            }
+            
+            messageText.text = string.Format(
+                LocalizationManager.Localize("UI_ENHANCEMENT_N_OPTION_RANDOMLY_SELECT"),
+                maxCount);
 
             return true;
         }

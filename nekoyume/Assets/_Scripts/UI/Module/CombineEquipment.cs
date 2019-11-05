@@ -7,7 +7,7 @@ using Nekoyume.UI.Model;
 
 namespace Nekoyume.UI.Module
 {
-    public class CombineEquipment : CombinationPanel<CombineEquipment>
+    public class CombineEquipment : CombinationPanel<CombinationMaterialView>
     {
         public override bool IsSubmittable =>
             !(States.Instance.AgentState.Value is null) &&
@@ -86,14 +86,17 @@ namespace Nekoyume.UI.Module
             return baseMaterial.IsEmpty ? 0 : GameConfig.CombineEquipmentCostAP;
         }
 
-        protected override bool TryAddBaseMaterial(InventoryItemView view)
+        protected override bool TryAddBaseMaterial(InventoryItemView view, out CombinationMaterialView materialView)
         {
             if (view.Model is null ||
                 view.Model.ItemBase.Value.Data.ItemType != ItemType.Material ||
                 view.Model.ItemBase.Value.Data.ItemSubType != ItemSubType.EquipmentMaterial)
+            {
+                materialView = null;
                 return false;
+            }
 
-            if (base.TryAddBaseMaterial(view))
+            if (base.TryAddBaseMaterial(view, out materialView))
             {
                 Game.Game.instance.TableSheets.ItemConfigForGradeSheet.TryGetValue(view.Model.ItemBase.Value.Data.Grade,
                     out var configRow, true);
@@ -122,9 +125,9 @@ namespace Nekoyume.UI.Module
             return false;
         }
 
-        protected override bool TryRemoveBaseMaterial(CombinationMaterialView view)
+        protected override bool TryRemoveBaseMaterial(CombinationMaterialView view, out CombinationMaterialView materialView)
         {
-            if (!base.TryRemoveBaseMaterial(view))
+            if (!base.TryRemoveBaseMaterial(view, out materialView))
                 return false;
 
             foreach (var otherMaterial in otherMaterials)

@@ -37,8 +37,6 @@ namespace Nekoyume.Game.Item
             return (Data != null ? Data.GetHashCode() : 0);
         }
 
-        public abstract string ToItemInfo();
-        
         public virtual string GetLocalizedName()
         {
             return Data.GetLocalizedName();

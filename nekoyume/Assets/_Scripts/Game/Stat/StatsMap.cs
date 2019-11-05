@@ -8,7 +8,7 @@ using Nekoyume.State;
 
 namespace Nekoyume.Game
 {
-    // todo: `StatModifier`와 `Stats`로 대체되어야 함. 
+    // todo: `Stats`나 `StatModifier`로 대체되어야 함.
     [Serializable]
     public class StatsMap : IStats, IAdditionalStats, IState
     {
@@ -98,6 +98,27 @@ namespace Nekoyume.Game
             }
 
             _statMaps[key].AdditionalValue = additionalValue;
+        }
+        
+        public int GetValue(StatType statType, bool ignoreAdditional = false)
+        {
+            switch (statType)
+            {
+                case StatType.HP:
+                    return ignoreAdditional ? HP - AdditionalHP : HP;
+                case StatType.ATK:
+                    return ignoreAdditional ? ATK - AdditionalATK : ATK;
+                case StatType.DEF:
+                    return ignoreAdditional ? DEF - AdditionalDEF : DEF;
+                case StatType.CRI:
+                    return ignoreAdditional ? CRI - AdditionalCRI : CRI;
+                case StatType.DOG:
+                    return ignoreAdditional ? DOG - AdditionalDOG : DOG;
+                case StatType.SPD:
+                    return ignoreAdditional ? SPD - AdditionalSPD : SPD;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(statType), statType, null);
+            }
         }
 
         public string GetInformation()
