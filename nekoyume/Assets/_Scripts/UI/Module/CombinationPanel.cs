@@ -67,7 +67,7 @@ namespace Nekoyume.UI.Module
             OnCostAPChange.Dispose();
         }
 
-        private void InitMaterialView(CombinationMaterialView view)
+        private void InitMaterialView(TMaterialView view)
         {
             view.OnClick.Subscribe(_ =>
                 {
@@ -81,8 +81,7 @@ namespace Nekoyume.UI.Module
                 .AddTo(gameObject);
             view.OnRightClick.Subscribe(_ =>
             {
-                Debug.LogWarning("view.OnRightClick!!");
-                if (_ is CombinationMaterialView materialView)
+                if (_ is TMaterialView materialView)
                 {
                     TryRemoveMaterial(materialView);
                 }
@@ -252,12 +251,12 @@ namespace Nekoyume.UI.Module
 
         #region Remove Material
 
-        public bool TryRemoveMaterial(CombinationMaterialView view)
+        public bool TryRemoveMaterial(TMaterialView view)
         {
             return TryRemoveMaterial(view, out var materialView);
         }
         
-        public virtual bool TryRemoveMaterial(CombinationMaterialView view, out TMaterialView materialView)
+        public virtual bool TryRemoveMaterial(TMaterialView view, out TMaterialView materialView)
         {
             if (view is null ||
                 view.Model is null)
@@ -292,7 +291,7 @@ namespace Nekoyume.UI.Module
             return false;
         }
         
-        protected virtual bool TryRemoveBaseMaterial(CombinationMaterialView view, out TMaterialView materialView)
+        protected virtual bool TryRemoveBaseMaterial(TMaterialView view, out TMaterialView materialView)
         {
             if (baseMaterial is null ||
                 baseMaterial.Model?.ItemBase.Value is null ||
@@ -311,7 +310,7 @@ namespace Nekoyume.UI.Module
             return true;
         }
         
-        protected virtual bool TryRemoveOtherMaterial(CombinationMaterialView view, out TMaterialView materialView)
+        protected virtual bool TryRemoveOtherMaterial(TMaterialView view, out TMaterialView materialView)
         {
             var sameMaterial = otherMaterials.FirstOrDefault(e =>
             {

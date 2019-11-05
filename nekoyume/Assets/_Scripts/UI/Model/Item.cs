@@ -16,6 +16,8 @@ namespace Nekoyume.UI.Model
 
         public readonly Subject<Item> OnClick = new Subject<Item>();
         public readonly Subject<Item> OnRightClick = new Subject<Item>();
+        // todo: `OnRightClick`을 `OnDoubleClick`으로 대체해야 함.
+        public readonly Subject<Item> OnDoubleClick = new Subject<Item>();
         
         public Item(ItemBase value)
         {

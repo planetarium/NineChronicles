@@ -123,7 +123,7 @@ namespace Nekoyume.UI.Module
             return false;
         }
 
-        protected override bool TryRemoveBaseMaterial(CombinationMaterialView view, out EnhancementMaterialView materialView)
+        protected override bool TryRemoveBaseMaterial(EnhancementMaterialView view, out EnhancementMaterialView materialView)
         {
             if (!base.TryRemoveBaseMaterial(view, out materialView))
                 return false;
