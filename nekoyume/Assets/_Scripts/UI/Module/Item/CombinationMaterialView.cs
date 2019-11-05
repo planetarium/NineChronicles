@@ -24,7 +24,7 @@ namespace Nekoyume.UI.Module
             Set(inventoryItemView.Model);
         }
 
-        public void Set(InventoryItem inventoryItemViewModel)
+        public virtual void Set(InventoryItem inventoryItemViewModel)
         {
             if (inventoryItemViewModel is null ||
                 inventoryItemViewModel.ItemBase.Value is null)

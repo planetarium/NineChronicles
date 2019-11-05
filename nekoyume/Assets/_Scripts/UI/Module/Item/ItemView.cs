@@ -42,6 +42,8 @@ namespace Nekoyume.UI.Module
 
         public readonly Subject<ItemView<TViewModel>> OnClick = new Subject<ItemView<TViewModel>>();
         public readonly Subject<ItemView<TViewModel>> OnRightClick = new Subject<ItemView<TViewModel>>();
+        // todo: `OnRightClick`을 `OnDoubleClick`으로 대체해야 함.
+        public readonly Subject<ItemView<TViewModel>> OnDoubleClick = new Subject<ItemView<TViewModel>>();
 
         #region Mono
 

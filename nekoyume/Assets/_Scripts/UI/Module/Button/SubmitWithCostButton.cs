@@ -9,6 +9,8 @@ namespace Nekoyume.UI.Module
     public class SubmitWithCostButton : MonoBehaviour
     {
         public Button button;
+        public Image backgroundImage;
+        public Image backgroundImageForSubmittable;
         public GameObject costNCG;
         public TextMeshProUGUI costNCGText;
         public GameObject costAP;
@@ -25,6 +27,14 @@ namespace Nekoyume.UI.Module
                 AudioController.PlayClick();
                 OnSubmitClick.OnNext(this);
             }).AddTo(gameObject);
+        }
+
+        public void SetSubmittable(bool submittable)
+        {
+            button.interactable = submittable;
+            backgroundImage.enabled = !submittable;
+            backgroundImageForSubmittable.enabled = submittable;
+            submitText.alpha = submittable ? 1f : .3f;
         }
 
         public void ShowNCG(decimal ncg, bool isEnough)

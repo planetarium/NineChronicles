@@ -8,6 +8,7 @@ using Nekoyume.State;
 
 namespace Nekoyume.Game
 {
+    // todo: `Stats`나 `StatModifier`로 대체되어야 함.
     [Serializable]
     public class StatsMap : IStats, IAdditionalStats, IState
     {
@@ -20,12 +21,12 @@ namespace Nekoyume.Game
         public int DOG => HasDOG ? StatMaps[StatType.DOG].TotalValueAsInt : 0;
         public int SPD => HasSPD ? StatMaps[StatType.SPD].TotalValueAsInt : 0;
         
-        public bool HasHP => StatMaps.ContainsKey(StatType.HP);
-        public bool HasATK => StatMaps.ContainsKey(StatType.ATK);
-        public bool HasDEF => StatMaps.ContainsKey(StatType.DEF);
-        public bool HasCRI => StatMaps.ContainsKey(StatType.CRI);
-        public bool HasDOG => StatMaps.ContainsKey(StatType.DOG);
-        public bool HasSPD => StatMaps.ContainsKey(StatType.SPD);
+        public bool HasHP => StatMaps.ContainsKey(StatType.HP) && StatMaps[StatType.HP].Value > 0m;
+        public bool HasATK => StatMaps.ContainsKey(StatType.ATK) && StatMaps[StatType.ATK].Value > 0m;
+        public bool HasDEF => StatMaps.ContainsKey(StatType.DEF) && StatMaps[StatType.DEF].Value > 0m;
+        public bool HasCRI => StatMaps.ContainsKey(StatType.CRI) && StatMaps[StatType.CRI].Value > 0m;
+        public bool HasDOG => StatMaps.ContainsKey(StatType.DOG) && StatMaps[StatType.DOG].Value > 0m;
+        public bool HasSPD => StatMaps.ContainsKey(StatType.SPD) && StatMaps[StatType.SPD].Value > 0m;
 
         public int AdditionalHP => HasAdditionalHP ? StatMaps[StatType.HP].AdditionalValueAsInt : 0;
         public int AdditionalATK => HasAdditionalATK ? StatMaps[StatType.ATK].AdditionalValueAsInt : 0;
@@ -34,12 +35,12 @@ namespace Nekoyume.Game
         public int AdditionalDOG => HasAdditionalDOG ? StatMaps[StatType.DOG].AdditionalValueAsInt : 0;
         public int AdditionalSPD => HasAdditionalSPD ? StatMaps[StatType.SPD].AdditionalValueAsInt : 0;
         
-        public bool HasAdditionalHP => StatMaps.ContainsKey(StatType.HP);
-        public bool HasAdditionalATK => StatMaps.ContainsKey(StatType.ATK);
-        public bool HasAdditionalDEF => StatMaps.ContainsKey(StatType.DEF);
-        public bool HasAdditionalCRI => StatMaps.ContainsKey(StatType.CRI);
-        public bool HasAdditionalDOG => StatMaps.ContainsKey(StatType.DOG);
-        public bool HasAdditionalSPD => StatMaps.ContainsKey(StatType.SPD);
+        public bool HasAdditionalHP => StatMaps.ContainsKey(StatType.HP) && StatMaps[StatType.HP].AdditionalValue > 0m;
+        public bool HasAdditionalATK => StatMaps.ContainsKey(StatType.ATK) && StatMaps[StatType.ATK].AdditionalValue > 0m;
+        public bool HasAdditionalDEF => StatMaps.ContainsKey(StatType.DEF) && StatMaps[StatType.DEF].AdditionalValue > 0m;
+        public bool HasAdditionalCRI => StatMaps.ContainsKey(StatType.CRI) && StatMaps[StatType.CRI].AdditionalValue > 0m;
+        public bool HasAdditionalDOG => StatMaps.ContainsKey(StatType.DOG) && StatMaps[StatType.DOG].AdditionalValue > 0m;
+        public bool HasAdditionalSPD => StatMaps.ContainsKey(StatType.SPD) && StatMaps[StatType.SPD].AdditionalValue > 0m;
 
         public bool HasAdditionalStats => HasAdditionalHP || HasAdditionalATK || HasAdditionalDEF || HasAdditionalCRI ||
                                           HasAdditionalDOG || HasAdditionalSPD;
@@ -98,6 +99,27 @@ namespace Nekoyume.Game
 
             _statMaps[key].AdditionalValue = additionalValue;
         }
+        
+        public int GetValue(StatType statType, bool ignoreAdditional = false)
+        {
+            switch (statType)
+            {
+                case StatType.HP:
+                    return ignoreAdditional ? HP - AdditionalHP : HP;
+                case StatType.ATK:
+                    return ignoreAdditional ? ATK - AdditionalATK : ATK;
+                case StatType.DEF:
+                    return ignoreAdditional ? DEF - AdditionalDEF : DEF;
+                case StatType.CRI:
+                    return ignoreAdditional ? CRI - AdditionalCRI : CRI;
+                case StatType.DOG:
+                    return ignoreAdditional ? DOG - AdditionalDOG : DOG;
+                case StatType.SPD:
+                    return ignoreAdditional ? SPD - AdditionalSPD : SPD;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(statType), statType, null);
+            }
+        }
 
         public string GetInformation()
         {
@@ -114,26 +136,6 @@ namespace Nekoyume.Game
             }
 
             return sb.ToString().Trim();
-        }
-
-        public void GetInformation(out string keys, out string values)
-        {
-            var sbKeys = new StringBuilder();
-            var sbValues = new StringBuilder();
-            foreach (var pair in _statMaps)
-            {
-                pair.Value.GetInformation(out var key, out var value);
-                if (string.IsNullOrEmpty(key))
-                {
-                    continue;
-                }
-
-                sbKeys.AppendLine(key);
-                sbValues.AppendLine(value);
-            }
-
-            keys = sbKeys.ToString().Trim();
-            values = sbValues.ToString().Trim();
         }
 
         public IValue Serialize() =>
@@ -155,14 +157,60 @@ namespace Nekoyume.Game
             }
         }
 
-        public IEnumerable<(StatType, int)> GetStats()
+        public IEnumerable<(StatType, int)> GetStats(bool ignoreZero = false)
         {
-            yield return (StatType.HP, HP);
-            yield return (StatType.ATK, ATK);
-            yield return (StatType.DEF, DEF);
-            yield return (StatType.DOG, DOG);
-            yield return (StatType.CRI, CRI);
-            yield return (StatType.SPD, SPD);
+            if (ignoreZero)
+            {
+                if (HasHP)
+                    yield return (StatType.HP, HP);
+                if (HasATK)
+                    yield return (StatType.ATK, ATK);
+                if (HasDEF)
+                    yield return (StatType.DEF, DEF);
+                if (HasDOG)
+                    yield return (StatType.DOG, DOG);
+                if (HasCRI)
+                    yield return (StatType.CRI, CRI);
+                if (HasSPD)
+                    yield return (StatType.SPD, SPD);
+            }
+            else
+            {
+                yield return (StatType.HP, HP);
+                yield return (StatType.ATK, ATK);
+                yield return (StatType.DEF, DEF);
+                yield return (StatType.DOG, DOG);
+                yield return (StatType.CRI, CRI);
+                yield return (StatType.SPD, SPD);
+            }
+        }
+        
+        public IEnumerable<(StatType, int)> GetAdditionalStats(bool ignoreZero = false)
+        {
+            if (ignoreZero)
+            {
+                if (HasAdditionalHP)
+                    yield return (StatType.HP, AdditionalHP);
+                if (HasAdditionalATK)
+                    yield return (StatType.ATK, AdditionalATK);
+                if (HasAdditionalDEF)
+                    yield return (StatType.DEF, AdditionalDEF);
+                if (HasAdditionalDOG)
+                    yield return (StatType.DOG, AdditionalDOG);
+                if (HasAdditionalCRI)
+                    yield return (StatType.CRI, AdditionalCRI);
+                if (HasAdditionalSPD)
+                    yield return (StatType.SPD, AdditionalSPD);
+            }
+            else
+            {
+                yield return (StatType.HP, AdditionalHP);
+                yield return (StatType.ATK, AdditionalATK);
+                yield return (StatType.DEF, AdditionalDEF);
+                yield return (StatType.DOG, AdditionalDOG);
+                yield return (StatType.CRI, AdditionalCRI);
+                yield return (StatType.SPD, AdditionalSPD);
+            }
         }
 
         public void ClearAdditionalStats()

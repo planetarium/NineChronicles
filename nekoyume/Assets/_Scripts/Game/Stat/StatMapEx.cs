@@ -7,6 +7,7 @@ using Nekoyume.State;
 
 namespace Nekoyume.Game
 {
+    // todo: 없어질 대상.
     [Serializable]
     public class StatMapEx : StatMap
     {

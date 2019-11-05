@@ -1,78 +1,78 @@
-id,_name,item_sub_type,grade,elemental_type,set_id,stat_type_1,stat_value_1,stat_type_2,stat_value_2,attack_range
-10100000,나뭇가지,Weapon,0,Normal,0,ATK,1,,,2
-10110000,검,Weapon,1,Normal,1,ATK,10,,,2
-10111000,검(불),Weapon,1,Fire,2,ATK,10,,,2
-10112000,검(물),Weapon,1,Water,3,ATK,10,,,2
-10113000,검(땅),Weapon,1,Land,4,ATK,10,,,2
-10114000,검(바람),Weapon,1,Wind,5,ATK,10,,,2
-10120000,마력 검,Weapon,2,Normal,6,ATK,20,,,2
-10121000,마력 검(불),Weapon,2,Fire,7,ATK,20,,,2
-10122000,마력 검(물),Weapon,2,Water,8,ATK,20,,,2
-10123000,마력 검(땅),Weapon,2,Land,9,ATK,20,,,2
-10124000,마력 검(바람),Weapon,2,Wind,10,ATK,20,,,2
-10130000,어둠 검,Weapon,3,Normal,11,ATK,30,,,2
-10131000,어둠 검(불),Weapon,3,Fire,12,ATK,30,,,2
-10132000,어둠 검(물),Weapon,3,Water,13,ATK,30,,,2
-10133000,어둠 검(땅),Weapon,3,Land,14,ATK,30,,,2
-10134000,어둠 검(바람),Weapon,3,Wind,15,ATK,30,,,2
-10200000,누더기,Armor,0,Normal,0,DEF,1,,,2
-10210000,옷,Armor,1,Normal,1,DEF,10,,,2
-10211000,옷(불),Armor,1,Fire,2,DEF,10,,,2
-10212000,옷(물),Armor,1,Water,3,DEF,10,,,2
-10213000,옷(땅),Armor,1,Land,4,DEF,10,,,2
-10214000,옷(바람),Armor,1,Wind,5,DEF,10,,,2
-10220000,마력 전투복,Armor,2,Normal,6,DEF,20,,,2
-10221000,마력 전투복(불),Armor,2,Fire,7,DEF,20,,,2
-10222000,마력 전투복(물),Armor,2,Water,8,DEF,20,,,2
-10223000,마력 전투복(땅),Armor,2,Land,9,DEF,20,,,2
-10224000,마력 전투복(바람),Armor,2,Wind,10,DEF,20,,,2
-10230000,어둠 의상,Armor,3,Normal,11,DEF,30,,,2
-10231000,어둠 의상(불),Armor,3,Fire,12,DEF,30,,,2
-10232000,어둠 의상(물),Armor,3,Water,13,DEF,30,,,2
-10233000,어둠 의상(땅),Armor,3,Land,14,DEF,30,,,2
-10234000,어둠 의상(바람),Armor,3,Wind,15,DEF,30,,,2
-10310000,장식띠,Belt,1,Normal,1,HP,30,,,2
-10311000,장식띠(불),Belt,1,Fire,2,HP,30,,,2
-10312000,장식띠(물),Belt,1,Water,3,HP,30,,,2
-10313000,장식띠(땅),Belt,1,Land,4,HP,30,,,2
-10314000,장식띠(바람),Belt,1,Wind,5,HP,30,,,2
-10320000,마력의 죔쇠,Belt,2,Normal,6,HP,60,,,2
-10321000,마력의 죔쇠(불),Belt,2,Fire,7,HP,60,,,2
-10322000,마력의 죔쇠(물),Belt,2,Water,8,HP,60,,,2
-10323000,마력의 죔쇠(땅),Belt,2,Land,9,HP,60,,,2
-10324000,마력의 죔쇠(바람),Belt,2,Wind,10,HP,60,,,2
-10330000,어둠의 요대,Belt,3,Normal,11,HP,90,,,2
-10331000,어둠의 요대(불),Belt,3,Fire,12,HP,90,,,2
-10332000,어둠의 요대(물),Belt,3,Water,13,HP,90,,,2
-10333000,어둠의 요대(땅),Belt,3,Land,14,HP,90,,,2
-10334000,어둠의 요대(바람),Belt,3,Wind,15,HP,90,,,2
-10410000,얇은 목걸이,Necklace,1,Normal,1,HP,10,,,0
-10411000,얇은 목걸이(불),Necklace,1,Fire,2,HP,10,,,0
-10412000,얇은 목걸이(물),Necklace,1,Water,3,HP,10,,,0
-10413000,얇은 목걸이(땅),Necklace,1,Land,4,HP,10,,,0
-10414000,얇은 목걸이(바람),Necklace,1,Wind,5,HP,10,,,0
-10420000,수호의 목걸이,Necklace,2,Normal,6,HP,20,,,0
-10421000,수호의 목걸이(불),Necklace,2,Fire,7,HP,20,,,0
-10422000,수호의 목걸이(물),Necklace,2,Water,8,HP,20,,,0
-10423000,수호의 목걸이(땅),Necklace,2,Land,9,HP,20,,,0
-10424000,수호의 목걸이(바람),Necklace,2,Wind,10,HP,20,,,0
-10430000,전사의 목걸이,Necklace,3,Normal,11,HP,30,,,0
-10431000,전사의 목걸이(불),Necklace,3,Fire,12,HP,30,,,0
-10432000,전사의 목걸이(물),Necklace,3,Water,13,HP,30,,,0
-10433000,전사의 목걸이(땅),Necklace,3,Land,14,HP,30,,,0
-10434000,전사의 목걸이(바람),Necklace,3,Wind,15,HP,30,,,0
-10510000,얇은 반지,Ring,1,Normal,1,DEF,10,,,0
-10511000,얇은 반지(불),Ring,1,Fire,2,DEF,10,,,0
-10512000,얇은 반지(물),Ring,1,Water,3,DEF,10,,,0
-10513000,얇은 반지(땅),Ring,1,Land,4,DEF,10,,,0
-10514000,얇은 반지(바람),Ring,1,Wind,5,DEF,10,,,0
-10520000,수호의 반지,Ring,2,Normal,6,DEF,20,,,0
-10521000,수호의 반지(불),Ring,2,Fire,7,DEF,20,,,0
-10522000,수호의 반지(물),Ring,2,Water,8,DEF,20,,,0
-10523000,수호의 반지(땅),Ring,2,Land,9,DEF,20,,,0
-10524000,수호의 반지(바람),Ring,2,Wind,10,DEF,20,,,0
-10530000,전사의 반지,Ring,3,Normal,11,DEF,30,,,0
-10531000,전사의 반지(불),Ring,3,Fire,12,DEF,30,,,0
-10532000,전사의 반지(물),Ring,3,Water,13,DEF,30,,,0
-10533000,전사의 반지(땅),Ring,3,Land,14,DEF,30,,,0
-10534000,전사의 반지(바람),Ring,3,Wind,15,DEF,30,,,0
+id,_name,item_sub_type,grade,elemental_type,set_id,stat_type,stat_value,attack_range
+10100000,나뭇가지,Weapon,0,Normal,0,ATK,1,2
+10110000,검,Weapon,1,Normal,1,ATK,10,2
+10111000,검(불),Weapon,1,Fire,2,ATK,10,2
+10112000,검(물),Weapon,1,Water,3,ATK,10,2
+10113000,검(땅),Weapon,1,Land,4,ATK,10,2
+10114000,검(바람),Weapon,1,Wind,5,ATK,10,2
+10120000,마력 검,Weapon,2,Normal,6,ATK,20,2
+10121000,마력 검(불),Weapon,2,Fire,7,ATK,20,2
+10122000,마력 검(물),Weapon,2,Water,8,ATK,20,2
+10123000,마력 검(땅),Weapon,2,Land,9,ATK,20,2
+10124000,마력 검(바람),Weapon,2,Wind,10,ATK,20,2
+10130000,어둠 검,Weapon,3,Normal,11,ATK,30,2
+10131000,어둠 검(불),Weapon,3,Fire,12,ATK,30,2
+10132000,어둠 검(물),Weapon,3,Water,13,ATK,30,2
+10133000,어둠 검(땅),Weapon,3,Land,14,ATK,30,2
+10134000,어둠 검(바람),Weapon,3,Wind,15,ATK,30,2
+10200000,누더기,Armor,0,Normal,0,DEF,1,2
+10210000,옷,Armor,1,Normal,1,DEF,10,2
+10211000,옷(불),Armor,1,Fire,2,DEF,10,2
+10212000,옷(물),Armor,1,Water,3,DEF,10,2
+10213000,옷(땅),Armor,1,Land,4,DEF,10,2
+10214000,옷(바람),Armor,1,Wind,5,DEF,10,2
+10220000,마력 전투복,Armor,2,Normal,6,DEF,20,2
+10221000,마력 전투복(불),Armor,2,Fire,7,DEF,20,2
+10222000,마력 전투복(물),Armor,2,Water,8,DEF,20,2
+10223000,마력 전투복(땅),Armor,2,Land,9,DEF,20,2
+10224000,마력 전투복(바람),Armor,2,Wind,10,DEF,20,2
+10230000,어둠 의상,Armor,3,Normal,11,DEF,30,2
+10231000,어둠 의상(불),Armor,3,Fire,12,DEF,30,2
+10232000,어둠 의상(물),Armor,3,Water,13,DEF,30,2
+10233000,어둠 의상(땅),Armor,3,Land,14,DEF,30,2
+10234000,어둠 의상(바람),Armor,3,Wind,15,DEF,30,2
+10310000,장식띠,Belt,1,Normal,1,HP,30,2
+10311000,장식띠(불),Belt,1,Fire,2,HP,30,2
+10312000,장식띠(물),Belt,1,Water,3,HP,30,2
+10313000,장식띠(땅),Belt,1,Land,4,HP,30,2
+10314000,장식띠(바람),Belt,1,Wind,5,HP,30,2
+10320000,마력의 죔쇠,Belt,2,Normal,6,HP,60,2
+10321000,마력의 죔쇠(불),Belt,2,Fire,7,HP,60,2
+10322000,마력의 죔쇠(물),Belt,2,Water,8,HP,60,2
+10323000,마력의 죔쇠(땅),Belt,2,Land,9,HP,60,2
+10324000,마력의 죔쇠(바람),Belt,2,Wind,10,HP,60,2
+10330000,어둠의 요대,Belt,3,Normal,11,HP,90,2
+10331000,어둠의 요대(불),Belt,3,Fire,12,HP,90,2
+10332000,어둠의 요대(물),Belt,3,Water,13,HP,90,2
+10333000,어둠의 요대(땅),Belt,3,Land,14,HP,90,2
+10334000,어둠의 요대(바람),Belt,3,Wind,15,HP,90,2
+10410000,얇은 목걸이,Necklace,1,Normal,1,HP,10,0
+10411000,얇은 목걸이(불),Necklace,1,Fire,2,HP,10,0
+10412000,얇은 목걸이(물),Necklace,1,Water,3,HP,10,0
+10413000,얇은 목걸이(땅),Necklace,1,Land,4,HP,10,0
+10414000,얇은 목걸이(바람),Necklace,1,Wind,5,HP,10,0
+10420000,수호의 목걸이,Necklace,2,Normal,6,HP,20,0
+10421000,수호의 목걸이(불),Necklace,2,Fire,7,HP,20,0
+10422000,수호의 목걸이(물),Necklace,2,Water,8,HP,20,0
+10423000,수호의 목걸이(땅),Necklace,2,Land,9,HP,20,0
+10424000,수호의 목걸이(바람),Necklace,2,Wind,10,HP,20,0
+10430000,전사의 목걸이,Necklace,3,Normal,11,HP,30,0
+10431000,전사의 목걸이(불),Necklace,3,Fire,12,HP,30,0
+10432000,전사의 목걸이(물),Necklace,3,Water,13,HP,30,0
+10433000,전사의 목걸이(땅),Necklace,3,Land,14,HP,30,0
+10434000,전사의 목걸이(바람),Necklace,3,Wind,15,HP,30,0
+10510000,얇은 반지,Ring,1,Normal,1,DEF,10,0
+10511000,얇은 반지(불),Ring,1,Fire,2,DEF,10,0
+10512000,얇은 반지(물),Ring,1,Water,3,DEF,10,0
+10513000,얇은 반지(땅),Ring,1,Land,4,DEF,10,0
+10514000,얇은 반지(바람),Ring,1,Wind,5,DEF,10,0
+10520000,수호의 반지,Ring,2,Normal,6,DEF,20,0
+10521000,수호의 반지(불),Ring,2,Fire,7,DEF,20,0
+10522000,수호의 반지(물),Ring,2,Water,8,DEF,20,0
+10523000,수호의 반지(땅),Ring,2,Land,9,DEF,20,0
+10524000,수호의 반지(바람),Ring,2,Wind,10,DEF,20,0
+10530000,전사의 반지,Ring,3,Normal,11,DEF,30,0
+10531000,전사의 반지(불),Ring,3,Fire,12,DEF,30,0
+10532000,전사의 반지(물),Ring,3,Water,13,DEF,30,0
+10533000,전사의 반지(땅),Ring,3,Land,14,DEF,30,0
+10534000,전사의 반지(바람),Ring,3,Wind,15,DEF,30,0

@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Assets.SimpleLocalization;
 using Bencodex.Types;
+using Nekoyume.EnumType;
 using Nekoyume.TableData;
 
 namespace Nekoyume.Game.Item
@@ -32,14 +34,18 @@ namespace Nekoyume.Game.Item
             equipped = false;
             return true;
         }
+        
+        public bool TryGetUniqueStat(out StatType statType, out int value, bool ignoreAdditional = false)
+        {
+            statType = Data.Stat.Type;
+            value = StatsMap.GetValue(statType, ignoreAdditional);
+            return true;
+        }
 
         public void LevelUp()
         {
             level++;
-            foreach (var statData in Data.Stats)
-            {
-                StatsMap.AddStatValue(statData.StatType, levelStats);
-            }
+            StatsMap.AddStatValue(Data.Stat.Type, levelStats);
         }
         
         public override string GetLocalizedName()
@@ -47,8 +53,27 @@ namespace Nekoyume.Game.Item
             var name = base.GetLocalizedName();
 
             return level > 0
-                ? $"{name} +{level}"
-                : name;
+                ? $"<color=#{GetColorHexByGrade()}>+{level} {name}</color>"
+                : $"<color=#{GetColorHexByGrade()}>{name}</color>";
+        }
+
+        private string GetColorHexByGrade()
+        {
+            switch (Data.Grade)
+            {
+                case 1:
+                    return GameConfig.ColorHexForGrade1;
+                case 2:
+                    return GameConfig.ColorHexForGrade2;
+                case 3:
+                    return GameConfig.ColorHexForGrade3;
+                case 4:
+                    return GameConfig.ColorHexForGrade4;
+                case 5:
+                    return GameConfig.ColorHexForGrade5;
+                default:
+                    return GameConfig.ColorHexForGrade1;
+            }
         }
 
         public override IValue Serialize() =>

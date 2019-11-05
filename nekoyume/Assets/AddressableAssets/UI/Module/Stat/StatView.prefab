@@ -94,14 +94,14 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 22
-  m_fontSizeBase: 22
+  m_fontSize: 18
+  m_fontSizeBase: 18
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
-  m_textAlignment: 257
+  m_textAlignment: 2049
   m_characterSpacing: 0
   m_wordSpacing: 0
   m_lineSpacing: 0
@@ -252,14 +252,14 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 22
-  m_fontSizeBase: 22
+  m_fontSize: 18
+  m_fontSizeBase: 18
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
-  m_textAlignment: 257
+  m_textAlignment: 2049
   m_characterSpacing: 0
   m_wordSpacing: 0
   m_lineSpacing: 0
@@ -328,6 +328,7 @@ GameObject:
   - component: {fileID: 351057662446003731}
   - component: {fileID: 8392729951291582032}
   - component: {fileID: 1068118335301300007}
+  - component: {fileID: 8120847402702563647}
   m_Layer: 5
   m_Name: StatView
   m_TagString: Untagged
@@ -409,3 +410,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   statTypeText: {fileID: 2582966022442302826}
   valueText: {fileID: 7461163998194178364}
+--- !u!114 &8120847402702563647
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6727771671823695404}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1679637790, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreLayout: 0
+  m_MinWidth: -1
+  m_MinHeight: -1
+  m_PreferredWidth: -1
+  m_PreferredHeight: 25
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
+  m_LayoutPriority: 1

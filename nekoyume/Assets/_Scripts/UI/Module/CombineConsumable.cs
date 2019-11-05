@@ -9,7 +9,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
-    public class CombineConsumable : CombinationPanel<CombineConsumable>
+    public class CombineConsumable : CombinationPanel<CombinationMaterialView>
     {
         public Button recipeButton;
         public Recipe recipe;
@@ -75,14 +75,17 @@ namespace Nekoyume.UI.Module
             return otherMaterials.Any(e => !e.IsEmpty) ? GameConfig.CombineConsumableCostAP : 0;
         }
 
-        protected override bool TryAddOtherMaterial(InventoryItemView view)
+        protected override bool TryAddOtherMaterial(InventoryItemView view, out CombinationMaterialView materialView)
         {
             if (view.Model is null ||
                 view.Model.ItemBase.Value.Data.ItemType != ItemType.Material ||
                 view.Model.ItemBase.Value.Data.ItemSubType != ItemSubType.FoodMaterial)
+            {
+                materialView = null;
                 return false;
+            }
 
-            return base.TryAddOtherMaterial(view);
+            return base.TryAddOtherMaterial(view, out materialView);
         }
     }
 }
