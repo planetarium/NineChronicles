@@ -61,9 +61,13 @@ namespace Nekoyume.UI.Module
             {
                 if (Contains(inventoryItem))
                     return true;
-                
-                if (baseMaterial.Model.ItemBase.Value.Data.ItemSubType != row.ItemSubType ||
-                    baseMaterial.Model.ItemBase.Value.Data.Grade != row.Grade)
+
+                var baseEquipment = (Equipment) baseMaterial.Model.ItemBase.Value;
+                if (baseEquipment.Data.ItemSubType != row.ItemSubType || baseEquipment.Data.Grade != row.Grade)
+                    return true;
+
+                var material = (Equipment) inventoryItem.ItemBase.Value;
+                if (baseEquipment.level != material.level)
                     return true;
             }
 
