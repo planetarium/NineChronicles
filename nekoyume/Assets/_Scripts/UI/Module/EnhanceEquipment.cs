@@ -120,7 +120,7 @@ namespace Nekoyume.UI.Module
                 LocalizationManager.Localize("UI_ENHANCEMENT_N_OPTION_RANDOMLY_SELECT"),
                 equipment.GetOptionCount());
 
-            return false;
+            return true;
         }
 
         protected override bool TryRemoveBaseMaterial(EnhancementMaterialView view, out EnhancementMaterialView materialView)
