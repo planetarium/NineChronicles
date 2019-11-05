@@ -56,7 +56,7 @@ namespace Nekoyume.Game.Character
 
         public float RunSpeed { get; set; }
 
-        protected HpBar HPBar { get; private set; }
+        public HpBar HPBar { get; private set; }
         private ProgressBar CastingBar { get; set; }
         protected SpeechBubble SpeechBubble { get; set; }
 

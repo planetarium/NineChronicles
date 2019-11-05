@@ -14,7 +14,7 @@ namespace Nekoyume.UI
         public Text levelText;
         public Slider additionalSlider;
 
-        private HpBarVFX _hpVFX;
+        public HpBarVFX HpVFX { get; protected set; }
 
         public void SetBuffs(IReadOnlyDictionary<int, Buff> buffs)
         {
@@ -22,14 +22,14 @@ namespace Nekoyume.UI
 
             if (buffLayout.IsBuffAdded(EnumType.StatType.HP))
             {
-                _hpVFX?.Stop();
+                HpVFX?.Stop();
                 var rectTransform = bar.rectTransform;
-                _hpVFX = VFXController.instance.CreateAndChaseRectTransform<HpBarVFX>(rectTransform.position, rectTransform);
-                _hpVFX.Play();
+                HpVFX = VFXController.instance.CreateAndChaseRectTransform<HpBarVFX>(rectTransform.position, rectTransform);
+                HpVFX.Play();
             }
             else if (!buffLayout.HasBuff(EnumType.StatType.HP))
             {
-                _hpVFX?.Stop();
+                HpVFX?.Stop();
             }
         }
 
