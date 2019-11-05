@@ -521,8 +521,6 @@ namespace Nekoyume.Game.Character
 
                 ProcessAttack(target, info, i == skillInfosCount - 1, true);
             }
-
-            yield return new WaitForSeconds(1.2f);
         }
 
         public IEnumerator CoAreaAttack(IReadOnlyList<Model.Skill.SkillInfo> skillInfos)
