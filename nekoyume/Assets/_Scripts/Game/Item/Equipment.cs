@@ -35,7 +35,7 @@ namespace Nekoyume.Game.Item
             return true;
         }
         
-        public bool TryGetBaseStat(out StatType statType, out int value, bool ignoreAdditional = false)
+        public bool TryGetUniqueStat(out StatType statType, out int value, bool ignoreAdditional = false)
         {
             statType = Data.Stat.Type;
             value = StatsMap.GetValue(statType, ignoreAdditional);

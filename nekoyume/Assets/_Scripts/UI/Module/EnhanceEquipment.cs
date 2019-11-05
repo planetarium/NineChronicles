@@ -148,7 +148,7 @@ namespace Nekoyume.UI.Module
                 return false;
 
             var equipment = (Equipment) baseMaterial.Model.ItemBase.Value;
-            var resultValue = equipment.TryGetBaseStat(out var statType, out var value)
+            var resultValue = equipment.TryGetUniqueStat(out var statType, out var value, true)
                 ? value + equipment.levelStats
                 : equipment.levelStats;
             baseMaterial.UpdateStatView(
