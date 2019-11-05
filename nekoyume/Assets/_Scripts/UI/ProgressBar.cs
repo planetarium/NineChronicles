@@ -23,7 +23,6 @@ namespace Nekoyume.UI
         protected override void Awake()
         {
             base.Awake();
-            slider = gameObject.GetComponent<Slider>();
             labelShadows = transform.Find("TextShadow").GetComponentsInChildren<Text>();
         }
 
