@@ -3,6 +3,7 @@ using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.UI.Module;
+using Unity.Mathematics;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
@@ -39,7 +40,8 @@ namespace Nekoyume.UI
 
         public void Set(int current, int additional, int max)
         {
-            Set(current, max);
+            SetText($"{current} / {max}");
+            SetValue((float) math.min(current, max - additional) / max);
 
             bool isHPBoosted = additional > 0;
             additionalSlider.gameObject.SetActive(isHPBoosted);
