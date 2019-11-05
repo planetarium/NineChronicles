@@ -7,11 +7,13 @@ using Nekoyume.Game.Item;
 using Nekoyume.UI.Model;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
     public class EnhanceEquipment : CombinationPanel<EnhancementMaterialView>
     {
+        public Image arrowImage;
         public GameObject message;
         public TextMeshProUGUI messageText;
 
@@ -57,7 +59,7 @@ namespace Nekoyume.UI.Module
         {
             if (!IsThereAnyUnlockedEmptyMaterialView)
                 return true;
-            
+
             var row = inventoryItem.ItemBase.Value.Data;
             if (row.ItemType != ItemType.Equipment)
                 return true;
@@ -106,7 +108,7 @@ namespace Nekoyume.UI.Module
 
             if (!base.TryAddBaseMaterial(view, out materialView))
                 return false;
-            
+
             if (!(view.Model.ItemBase.Value is Equipment equipment))
                 throw new InvalidCastException(nameof(view.Model.ItemBase.Value));
 
@@ -123,7 +125,8 @@ namespace Nekoyume.UI.Module
             return true;
         }
 
-        protected override bool TryRemoveBaseMaterial(EnhancementMaterialView view, out EnhancementMaterialView materialView)
+        protected override bool TryRemoveBaseMaterial(EnhancementMaterialView view,
+            out EnhancementMaterialView materialView)
         {
             if (!base.TryRemoveBaseMaterial(view, out materialView))
                 return false;
@@ -143,9 +146,15 @@ namespace Nekoyume.UI.Module
         {
             if (!base.TryAddOtherMaterial(view, out materialView))
                 return false;
-            
+
+            var equipment = (Equipment) baseMaterial.Model.ItemBase.Value;
+            var resultValue = equipment.TryGetBaseStat(out var statType, out var value)
+                ? value + equipment.levelStats
+                : equipment.levelStats;
+            baseMaterial.UpdateStatView(
+                $" -> <color=#00ff00><size=120%>{resultValue}</size></color>");
             materialView.statView.Hide();
-            
+
             if (!(baseMaterial.Model.ItemBase.Value is Equipment baseEquipment))
                 throw new InvalidCastException(nameof(view.Model.ItemBase.Value));
 
@@ -155,13 +164,24 @@ namespace Nekoyume.UI.Module
             {
                 if (!(otherMaterial.Model.ItemBase.Value is Equipment otherEquipment))
                     throw new InvalidCastException(nameof(view.Model.ItemBase.Value));
-                
+
                 maxCount = Math.Max(maxCount, otherEquipment.GetOptionCount());
             }
-            
+
             messageText.text = string.Format(
                 LocalizationManager.Localize("UI_ENHANCEMENT_N_OPTION_RANDOMLY_SELECT"),
                 maxCount);
+
+            return true;
+        }
+
+        protected override bool TryRemoveOtherMaterial(EnhancementMaterialView view,
+            out EnhancementMaterialView materialView)
+        {
+            if (!base.TryRemoveOtherMaterial(view, out materialView))
+                return false;
+
+            baseMaterial.UpdateStatView();
 
             return true;
         }

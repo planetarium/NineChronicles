@@ -1,4 +1,3 @@
-using System.Globalization;
 using Nekoyume.EnumType;
 using Nekoyume.Game;
 using TMPro;

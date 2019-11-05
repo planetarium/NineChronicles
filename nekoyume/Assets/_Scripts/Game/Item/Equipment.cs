@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Assets.SimpleLocalization;
 using Bencodex.Types;
+using Nekoyume.EnumType;
 using Nekoyume.TableData;
 
 namespace Nekoyume.Game.Item
@@ -31,6 +32,13 @@ namespace Nekoyume.Game.Item
         public bool Unequip()
         {
             equipped = false;
+            return true;
+        }
+        
+        public bool TryGetBaseStat(out StatType statType, out int value, bool ignoreAdditional = false)
+        {
+            statType = Data.Stat.Type;
+            value = StatsMap.GetValue(statType, ignoreAdditional);
             return true;
         }
 

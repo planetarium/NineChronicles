@@ -9,12 +9,10 @@ namespace Nekoyume.UI.Module
         public TextMeshProUGUI titleText;
         public TextMeshProUGUI itemNameText;
         public StatView statView;
-        
+
         public override void Set(InventoryItem inventoryItemViewModel)
         {
-            if (inventoryItemViewModel is null ||
-                inventoryItemViewModel.ItemBase.Value is null ||
-                !(inventoryItemViewModel.ItemBase.Value is Equipment equipment))
+            if (!(inventoryItemViewModel?.ItemBase.Value is Equipment equipment))
             {
                 Clear();
                 return;
@@ -24,10 +22,25 @@ namespace Nekoyume.UI.Module
 
             itemNameText.enabled = true;
             itemNameText.text = equipment.GetLocalizedName();
-            statView.Show(equipment.Data.Stat.Type,
-                equipment.StatsMap.GetValue(equipment.Data.Stat.Type, true));
+            UpdateStatView();
         }
-        
+
+        public void UpdateStatView(string additionalValueText = null)
+        {
+            if (!(Model?.ItemBase.Value is Equipment equipment))
+                return;
+
+            equipment.TryGetBaseStat(out var type, out var value, true);            
+            if (string.IsNullOrEmpty(additionalValueText))
+            {
+                statView.Show(type, value);
+            }
+            else
+            {
+                statView.Show(type.ToString(), $"{value}{additionalValueText}");
+            }
+        }
+
         public override void Clear()
         {
             itemNameText.enabled = false;
