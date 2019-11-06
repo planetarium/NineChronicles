@@ -13,9 +13,12 @@ namespace Nekoyume.UI.Scroller
     {
         public Action<MailCellView> onClickSubmitButton;
 
-        private static readonly Color _highlightedColor = ColorHelper.HexToColorRGB("001870");
+        private static readonly Vector2 _leftBottom = new Vector2(-14f, -10.5f);
+        private static readonly Vector2 _minusRightTop = new Vector2(14f, 13f);
+        private static readonly Color _highlightedColor = ColorHelper.HexToColorRGB("a35400");
         public Game.Mail.Mail data;
         public Image icon;
+        public Image buttonImage;
         public TextMeshProUGUI content;
         public Button button;
         public Text submitText;
@@ -51,6 +54,8 @@ namespace Nekoyume.UI.Scroller
             submitText.text = LocalizationManager.Localize("UI_RECEIVE");
             foreach (var shadow in _textShadows)
                 shadow.effectColor = mail.New ? _highlightedColor : Color.black;
+            buttonImage.rectTransform.offsetMin = mail.New ? _leftBottom : Vector2.zero;
+            buttonImage.rectTransform.offsetMax = mail.New ? _minusRightTop : Vector2.zero;
             icon.overrideSprite = Mail.mailIcons[mail.MailType];
             icon.SetNativeSize();
             content.text = text;
@@ -59,6 +64,8 @@ namespace Nekoyume.UI.Scroller
 
         public void Read()
         {
+            buttonImage.rectTransform.offsetMin = Vector2.zero;
+            buttonImage.rectTransform.offsetMax = Vector2.zero;
             if (!data.New)
                 return;
 
