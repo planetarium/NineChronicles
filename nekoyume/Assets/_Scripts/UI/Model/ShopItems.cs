@@ -19,7 +19,7 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<ShopItem> SelectedItemViewModel =
             new ReactiveProperty<ShopItem>();
 
-        public readonly Subject<ShopItemView> OnRightClickItemView = new Subject<ShopItemView>();
+        public readonly Subject<ShopItemView> OnDoubleClickItemView = new Subject<ShopItemView>();
 
         private IDictionary<Address, List<Game.Item.ShopItem>> _shopItems;
 
@@ -38,7 +38,7 @@ namespace Nekoyume.UI.Model
             OtherProducts.DisposeAllAndClear();
             SelectedItemView.Dispose();
             SelectedItemViewModel.Dispose();
-            OnRightClickItemView.Dispose();
+            OnDoubleClickItemView.Dispose();
         }
 
         public void ResetProducts(IDictionary<Address, List<Game.Item.ShopItem>> shopItems)
@@ -216,12 +216,13 @@ namespace Nekoyume.UI.Model
 
                 SubscribeItemOnClick(shopItemViewModel.View);
             });
-            item.OnRightClick.Subscribe(model =>
+            item.OnDoubleClick.Subscribe(model =>
             {
                 if (!(model is ShopItem shopItemViewModel))
                     return;
 
-                OnRightClickItemView.OnNext(shopItemViewModel.View);
+                DeselectItemView();
+                OnDoubleClickItemView.OnNext(shopItemViewModel.View);
             });
 
             return item;
