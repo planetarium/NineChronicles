@@ -108,6 +108,8 @@ namespace Nekoyume.UI.Module
 
             if (!base.TryAddBaseMaterial(view, out materialView))
                 return false;
+            
+            materialView.effectImage.enabled = true;
 
             if (!(view.Model.ItemBase.Value is Equipment equipment))
                 throw new InvalidCastException(nameof(view.Model.ItemBase.Value));
@@ -130,6 +132,8 @@ namespace Nekoyume.UI.Module
         {
             if (!base.TryRemoveBaseMaterial(view, out materialView))
                 return false;
+            
+            materialView.effectImage.enabled = false;
 
             foreach (var otherMaterial in otherMaterials)
             {

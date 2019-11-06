@@ -663,6 +663,11 @@ PrefabInstance:
       propertyPath: effectImages.Array.data[1]
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 4760254493046273996, guid: e6f257f43b229489591d9554d64bdd4d,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6633413938061366867, guid: e6f257f43b229489591d9554d64bdd4d,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -792,6 +797,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2223352431407276539, guid: e6f257f43b229489591d9554d64bdd4d,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 82
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 6810825788932283673, guid: e6f257f43b229489591d9554d64bdd4d, type: 3}
