@@ -38,7 +38,7 @@ namespace Nekoyume.UI.Module
         }
 
         [CanBeNull] public TViewModel Model { get; private set; }
-        public virtual bool IsEmpty => Model?.ItemBase.Value is null;
+        public bool IsEmpty => Model?.ItemBase.Value is null;
 
         public readonly Subject<ItemView<TViewModel>> OnClick = new Subject<ItemView<TViewModel>>();
         public readonly Subject<ItemView<TViewModel>> OnRightClick = new Subject<ItemView<TViewModel>>();
@@ -99,6 +99,14 @@ namespace Nekoyume.UI.Module
             UpdateView();
         }
 
+        public virtual void SetToUnknown()
+        {
+            Clear();
+            iconImage.enabled = true;
+            iconImage.overrideSprite = Resources.Load<Sprite>("UI/Textures/UI_icon_item_question");
+            iconImage.SetNativeSize();
+        }
+
         public virtual void Clear()
         {
             Model = null;
@@ -143,9 +151,7 @@ namespace Nekoyume.UI.Module
 
             var itemSprite = item.GetIconSprite();
             if (itemSprite is null)
-            {
                 throw new FailedToLoadResourceException<Sprite>(item.Data.Id.ToString());
-            }
 
             iconImage.enabled = true;
             iconImage.overrideSprite = itemSprite;

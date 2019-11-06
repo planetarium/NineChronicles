@@ -10,7 +10,7 @@ namespace Nekoyume.UI.Module
         public TextMeshProUGUI itemNameText;
         public StatView statView;
 
-        public override void Set(InventoryItem inventoryItemViewModel)
+        public override void Set(InventoryItem inventoryItemViewModel, int count = 1)
         {
             if (!(inventoryItemViewModel?.ItemBase.Value is Equipment equipment))
             {
@@ -18,7 +18,7 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            base.Set(inventoryItemViewModel);
+            base.Set(inventoryItemViewModel, count);
 
             itemNameText.enabled = true;
             itemNameText.text = equipment.GetLocalizedName();

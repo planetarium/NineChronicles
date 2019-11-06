@@ -49,20 +49,17 @@ namespace Nekoyume.UI
             inventory.SharedModel.OnRightClickItemView.Subscribe(StageMaterial).AddTo(gameObject);
 
             combineConsumable.RemoveMaterialsAll();
-            combineConsumable.OnMaterialAdd.Subscribe(SubscribeOnMaterialAddOrRemove).AddTo(gameObject);
-            combineConsumable.OnMaterialRemove.Subscribe(SubscribeOnMaterialAddOrRemove).AddTo(gameObject);
+            combineConsumable.OnMaterialChange.Subscribe(SubscribeOnMaterialChange).AddTo(gameObject);
             combineConsumable.submitButton.OnSubmitClick.Subscribe(_ => ActionCombineConsumable()).AddTo(gameObject);
             combineConsumable.recipe.scrollerController.OnSubmitClick.Subscribe(ActionCombineConsumable)
                 .AddTo(gameObject);
 
             combineEquipment.RemoveMaterialsAll();
-            combineEquipment.OnMaterialAdd.Subscribe(SubscribeOnMaterialAddOrRemove).AddTo(gameObject);
-            combineEquipment.OnMaterialRemove.Subscribe(SubscribeOnMaterialAddOrRemove).AddTo(gameObject);
+            combineEquipment.OnMaterialChange.Subscribe(SubscribeOnMaterialChange).AddTo(gameObject);
             combineEquipment.submitButton.OnSubmitClick.Subscribe(_ => ActionCombineEquipment()).AddTo(gameObject);
 
             enhanceEquipment.RemoveMaterialsAll();
-            enhanceEquipment.OnMaterialAdd.Subscribe(SubscribeOnMaterialAddOrRemove).AddTo(gameObject);
-            enhanceEquipment.OnMaterialRemove.Subscribe(SubscribeOnMaterialAddOrRemove).AddTo(gameObject);
+            enhanceEquipment.OnMaterialChange.Subscribe(SubscribeOnMaterialChange).AddTo(gameObject);
             enhanceEquipment.submitButton.OnSubmitClick.Subscribe(_ => ActionEnhanceEquipment()).AddTo(gameObject);
 
             combineEquipmentCategoryButton.button.OnClickAsObservable()
@@ -204,7 +201,13 @@ namespace Nekoyume.UI
             }
         }
 
-        private void SubscribeOnMaterialAddOrRemove(InventoryItem viewModel)
+        private void SubscribeOnMaterialChange(CombinationPanel<CombinationMaterialView> viewModel)
+        {
+            inventory.SharedModel.UpdateDimAll();
+            inventory.SharedModel.UpdateEffectAll();
+        }
+        
+        private void SubscribeOnMaterialChange(CombinationPanel<EnhancementMaterialView> viewModel)
         {
             inventory.SharedModel.UpdateDimAll();
             inventory.SharedModel.UpdateEffectAll();
@@ -221,7 +224,7 @@ namespace Nekoyume.UI
         private void ActionCombineConsumable()
         {
             var materialInfoList = combineConsumable.otherMaterials
-                .Where(e => !(e is null) && !(e.Model is null))
+                .Where(e => !(e is null) && !e.IsEmpty)
                 .Select(e => (e.Model.ItemBase.Value.Data.Id, e.Model.Count.Value))
                 .ToList();
 

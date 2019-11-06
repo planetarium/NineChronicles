@@ -6,14 +6,14 @@ namespace Nekoyume.UI.Module
 {
     public class CombinationMaterialView : CountEditableItemView<CombinationMaterial>, ILockable
     {
+        public Image effectImage;
         public Image[] effectImages;
 
-        public override bool IsEmpty => base.IsEmpty && !IsLocked;
         public bool IsLocked => !itemButton.interactable;
 
         public InventoryItem InventoryItemViewModel { get; private set; }
 
-        public void Set(InventoryItemView inventoryItemView)
+        public void Set(InventoryItemView inventoryItemView, int count = 1)
         {
             if (inventoryItemView is null)
             {
@@ -21,10 +21,10 @@ namespace Nekoyume.UI.Module
                 return;
             }
             
-            Set(inventoryItemView.Model);
+            Set(inventoryItemView.Model, count);
         }
 
-        public virtual void Set(InventoryItem inventoryItemViewModel)
+        public virtual void Set(InventoryItem inventoryItemViewModel, int count = 1)
         {
             if (inventoryItemViewModel is null ||
                 inventoryItemViewModel.ItemBase.Value is null)
@@ -35,7 +35,7 @@ namespace Nekoyume.UI.Module
 
             var model = new CombinationMaterial(
                 inventoryItemViewModel.ItemBase.Value,
-                1,
+                count,
                 1,
                 inventoryItemViewModel.Count.Value);
             base.SetData(model);
@@ -46,6 +46,7 @@ namespace Nekoyume.UI.Module
         public override void Clear()
         {
             InventoryItemViewModel = null;
+            effectImage.enabled = false;
             SetEnableEffectImages(false);
             base.Clear();
         }
@@ -55,18 +56,21 @@ namespace Nekoyume.UI.Module
             Clear();
             itemButton.interactable = false;
             backgroundImage.sprite = Resources.Load<Sprite>("UI/Textures/ui_box_Inventory_05");
+            effectImage.enabled = false;
         }
         
         public void Unlock()
         {
             itemButton.interactable = true;
             backgroundImage.sprite = Resources.Load<Sprite>("UI/Textures/ui_box_Inventory_02");
+            effectImage.enabled = false;
         }
 
         public void UnlockAsNCG()
         {
             itemButton.interactable = true;
             backgroundImage.sprite = Resources.Load<Sprite>("UI/Textures/ui_box_Inventory_04");
+            effectImage.enabled = false;
         }
 
         private void SetEnableEffectImages(bool enable)

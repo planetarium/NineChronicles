@@ -28,9 +28,11 @@ namespace Nekoyume.TableData
                 ResultConsumableItemId = int.Parse(fields[5]);
             }
 
-            public bool Equals(IEnumerable<int> materialItemIds)
+            public bool IsMatch(IEnumerable<int> materialItemIds)
             {
-                return materialItemIds.All(materialItemId => MaterialItemIds.Contains(materialItemId));
+                var itemIds = materialItemIds as int[] ?? materialItemIds.ToArray();
+                return MaterialItemIds.Count == itemIds.Length &&
+                    MaterialItemIds.All(itemIds.Contains);
             }
         }
 
@@ -40,7 +42,7 @@ namespace Nekoyume.TableData
 
         public bool TryGetValue(IEnumerable<int> materialItemIds, out Row row, bool throwException = false)
         {
-            foreach (var value in Values.Where(value => value.Equals(materialItemIds)))
+            foreach (var value in Values.Where(value => value.IsMatch(materialItemIds)))
             {
                 row = value;
                 return true;
