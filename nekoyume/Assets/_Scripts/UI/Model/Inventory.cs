@@ -32,7 +32,7 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<Func<InventoryItem, bool>> EquippedEnabledFunc =
             new ReactiveProperty<Func<InventoryItem, bool>>();
 
-        public readonly Subject<InventoryItemView> OnRightClickItemView = new Subject<InventoryItemView>();
+        public readonly Subject<InventoryItemView> OnDoubleClickItemView = new Subject<InventoryItemView>();
 
         public Inventory(ItemType stateType = ItemType.Equipment)
         {
@@ -55,7 +55,7 @@ namespace Nekoyume.UI.Model
             SelectedItemViewModel.Dispose();
             DimmedFunc.Dispose();
             EquippedEnabledFunc.Dispose();
-            OnRightClickItemView.Dispose();
+            OnDoubleClickItemView.Dispose();
         }
 
         public void ResetItems(Game.Item.Inventory inventory)
@@ -86,12 +86,13 @@ namespace Nekoyume.UI.Model
 
                 SubscribeItemOnClick(inventoryItem.View);
             });
-            item.OnRightClick.Subscribe(model =>
+            item.OnDoubleClick.Subscribe(model =>
             {
                 if (!(model is InventoryItem inventoryItem))
                     return;
 
-                OnRightClickItemView.OnNext(inventoryItem.View);
+                DeselectItemView();
+                OnDoubleClickItemView.OnNext(inventoryItem.View);
             });
 
             return item;

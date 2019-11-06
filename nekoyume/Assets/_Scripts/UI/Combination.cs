@@ -46,7 +46,7 @@ namespace Nekoyume.UI
             State.Subscribe(SubscribeState).AddTo(gameObject);
 
             inventory.SharedModel.SelectedItemView.Subscribe(ShowTooltip).AddTo(gameObject);
-            inventory.SharedModel.OnRightClickItemView.Subscribe(StageMaterial).AddTo(gameObject);
+            inventory.SharedModel.OnDoubleClickItemView.Subscribe(StageMaterial).AddTo(gameObject);
 
             combineConsumable.RemoveMaterialsAll();
             combineConsumable.OnMaterialChange.Subscribe(SubscribeOnMaterialChange).AddTo(gameObject);
