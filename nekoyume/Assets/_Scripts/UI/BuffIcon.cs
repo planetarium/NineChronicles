@@ -16,7 +16,7 @@ namespace Nekoyume.UI
         public Game.Buff Data { get; set; }
         public CharacterBase character;
 
-        public void Show(Game.Buff buff)
+        public void Show(Game.Buff buff, bool isAdded)
         {
             Data = buff;
             image.enabled = true;
@@ -25,7 +25,7 @@ namespace Nekoyume.UI
             image.overrideSprite = sprite;
             UpdateStatus(Data);
 
-            if (buff.originalDuration == buff.remainedDuration)
+            if (isAdded)
             {
                 var vfx = VFXController.instance.CreateAndChaseRectTransform<DropItemInventoryVFX>
                     (image.transform.position, image.rectTransform);
