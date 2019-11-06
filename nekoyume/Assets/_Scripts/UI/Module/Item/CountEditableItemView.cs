@@ -16,6 +16,9 @@ namespace Nekoyume.UI.Module
         public readonly Subject<CountEditableItemView<T>> OnPlus = new Subject<CountEditableItemView<T>>();
         public readonly Subject<int> OnCountChange = new Subject<int>();
 
+        public bool IsMinCount => !(Model is null) && Model.Count.Value == Model.MinCount.Value;
+        public bool IsMaxCount => !(Model is null) && Model.Count.Value == Model.MaxCount.Value;
+
         #region Mono
 
         protected override void Awake()
@@ -26,7 +29,7 @@ namespace Nekoyume.UI.Module
                 .Subscribe(_ =>
                 {
                     AudioController.PlayClick();
-                    DecreaseCount();
+                    TryDecreaseCount();
                     OnMinus.OnNext(this);
                 })
                 .AddTo(gameObject);
@@ -35,7 +38,7 @@ namespace Nekoyume.UI.Module
                 .Subscribe(_ =>
                 {
                     AudioController.PlayClick();
-                    IncreaseCount();
+                    TryIncreaseCount();
                     OnPlus.OnNext(this);
                 })
                 .AddTo(gameObject);
@@ -51,28 +54,30 @@ namespace Nekoyume.UI.Module
 
         #endregion
 
-        public void IncreaseCount(int value = 1)
+        public bool TryIncreaseCount(int value = 1)
         {
             if (Model is null)
-                return;
+                return false;
 
             if (Model.Count.Value + value > Model.MaxCount.Value)
-                return;
+                return false;
                 
             Model.Count.Value += value;
             OnCountChange.OnNext(Model.Count.Value);
+            return true;
         }
 
-        public void DecreaseCount(int value = 1)
+        public bool TryDecreaseCount(int value = 1)
         {
             if (Model is null)
-                return;
+                return false;
 
             if (Model.Count.Value - value < Model.MinCount.Value)
-                return;
+                return false;
                 
             Model.Count.Value -= value;
             OnCountChange.OnNext(Model.Count.Value);
+            return true;
         }
     }
 }

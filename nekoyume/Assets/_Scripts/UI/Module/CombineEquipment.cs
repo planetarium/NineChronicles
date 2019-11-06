@@ -76,7 +76,7 @@ namespace Nekoyume.UI.Module
                 baseMaterial.Model.ItemBase.Value.Data.Grade,
                 out var configRow, true);
 
-            var otherMaterialsCount = otherMaterials.Count(e => !e.IsEmpty && !e.IsLocked);
+            var otherMaterialsCount = otherMaterials.Count(e => !e.IsLocked && !e.IsEmpty);
             var ncgCount = Math.Max(0, otherMaterialsCount - configRow.MonsterPartsCountForCombination);
             return ncgCount * GameConfig.CombineEquipmentCostNCG;
         }

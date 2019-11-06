@@ -46,6 +46,11 @@ namespace Nekoyume
             return source.SubscribeWithState(image, (x, t) => t.sprite = x);
         }
         
+        public static IDisposable SubscribeTo(this IObservable<int> source, TextMeshProUGUI text)
+        {
+            return source.SubscribeWithState(text, (x, t) => t.text = x.ToString());
+        }
+        
         public static IDisposable SubscribeTo(this IObservable<string> source, TextMeshProUGUI text)
         {
             return source.SubscribeWithState(text, (x, t) => t.text = x);

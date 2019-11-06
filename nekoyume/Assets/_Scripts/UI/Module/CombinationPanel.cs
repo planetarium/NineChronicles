@@ -31,6 +31,7 @@ namespace Nekoyume.UI.Module
         public readonly Subject<InventoryItem> OnMaterialRemove = new Subject<InventoryItem>();
         public readonly Subject<InventoryItem> OnBaseMaterialRemove = new Subject<InventoryItem>();
         public readonly Subject<InventoryItem> OnOtherMaterialRemove = new Subject<InventoryItem>();
+        public readonly Subject<CombinationPanel<TMaterialView>> OnMaterialChange = new Subject<CombinationPanel<TMaterialView>>();
         public readonly Subject<int> OnCostNCGChange = new Subject<int>();
         public readonly Subject<int> OnCostAPChange = new Subject<int>();
 
@@ -53,6 +54,11 @@ namespace Nekoyume.UI.Module
             {
                 InitMaterialView(otherMaterial);
             }
+
+            OnMaterialAdd
+                .Merge(OnMaterialRemove)
+                .Subscribe(_ => OnMaterialChange.OnNext(this))
+                .AddTo(gameObject);
         }
 
         protected virtual void OnDestroy()
@@ -63,6 +69,7 @@ namespace Nekoyume.UI.Module
             OnMaterialRemove.Dispose();
             OnBaseMaterialRemove.Dispose();
             OnOtherMaterialRemove.Dispose();
+            OnMaterialChange.Dispose();
             OnCostNCGChange.Dispose();
             OnCostAPChange.Dispose();
         }
@@ -228,7 +235,7 @@ namespace Nekoyume.UI.Module
             if (sameMaterial is null)
             {
                 // 새로 더하기.
-                var possibleMaterial = otherMaterials.FirstOrDefault(e => e.IsEmpty && !e.IsLocked);
+                var possibleMaterial = otherMaterials.FirstOrDefault(e => !e.IsLocked && e.IsEmpty);
                 if (possibleMaterial is null)
                 {
                     // 제료가 이미 가득 찼어요!
@@ -242,7 +249,7 @@ namespace Nekoyume.UI.Module
             }
 
             // 하나 증가.
-            sameMaterial.IncreaseCount();
+            sameMaterial.TryIncreaseCount();
             materialView = sameMaterial;
             return true;
         }
@@ -278,12 +285,11 @@ namespace Nekoyume.UI.Module
 
             if (TryRemoveOtherMaterial(view, out materialView))
             {
-                ReorderOtherMaterials();
-                
                 OnMaterialAddedOrRemoved();
                 OnMaterialCountChanged();
                 OnMaterialRemove.OnNext(inventoryItemView);
                 OnOtherMaterialRemove.OnNext(inventoryItemView);
+                ReorderOtherMaterials();
                 return true;
             }
 
@@ -331,7 +337,7 @@ namespace Nekoyume.UI.Module
             return true;
         }
 
-        public void RemoveMaterialsAll()
+        public virtual void RemoveMaterialsAll()
         {
             if (!(baseMaterial is null))
             {
@@ -388,7 +394,7 @@ namespace Nekoyume.UI.Module
                 if (!dstMaterial.IsEmpty)
                     continue;
                 
-                CombinationMaterialView srcMaterial = null;
+                TMaterialView srcMaterial = null;
                 for (var j = i + 1; j < otherMaterials.Length; j++)
                 {
                     var tempMaterial = otherMaterials[j];
@@ -401,9 +407,11 @@ namespace Nekoyume.UI.Module
 
                 if (srcMaterial is null)
                     break;
-                    
-                dstMaterial.Set(srcMaterial.InventoryItemViewModel);
-                srcMaterial.Clear();
+
+                var inventoryItemView = srcMaterial.InventoryItemViewModel.View;
+                if (!TryRemoveOtherMaterial(srcMaterial, out srcMaterial) ||
+                    !TryAddOtherMaterial(inventoryItemView, out dstMaterial))
+                    break;
             }
         }
         
@@ -420,14 +428,16 @@ namespace Nekoyume.UI.Module
                 otherMaterials.Any(otherMaterial => !otherMaterial.IsLocked && otherMaterial.IsEmpty);
         }
 
-        private void OnMaterialCountChanged()
+        protected virtual void OnMaterialCountChanged()
         {
             CostNCG = GetCostNCG();
             SubscribeNCG(ReactiveAgentState.Gold.Value);
             CostAP = GetCostAP();
             SubscribeActionPoint(ReactiveCurrentAvatarState.ActionPoint.Value);
-            OnCostAPChange.OnNext(CostAP);
             UpdateSubmittable();
+            OnCostNCGChange.OnNext(CostNCG);
+            OnCostAPChange.OnNext(CostAP);
+            OnMaterialChange.OnNext(this);
         }
 
         private void UpdateSubmittable()
