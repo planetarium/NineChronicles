@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections;
-using Assets.SimpleLocalization;
-using Nekoyume.Action;
-using Nekoyume.Game.Controller;
+﻿using Assets.SimpleLocalization;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
