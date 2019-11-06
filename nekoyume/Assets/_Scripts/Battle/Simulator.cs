@@ -173,16 +173,22 @@ namespace Nekoyume.Battle
                     }
 
                     itemSelector.Add(r.ItemId, r.Ratio);
-                    var itemId = itemSelector.Pop();
-                    if (Game.Game.instance.TableSheets.MaterialItemSheet.TryGetValue(itemId, out var itemData))
+                    try
                     {
-                        var count = Random.Next(r.Min, r.Max);
-                        for (int i = 0; i < count; i++)
+                        var itemId = itemSelector.Pop();
+                        if (Game.Game.instance.TableSheets.MaterialItemSheet.TryGetValue(itemId, out var itemData))
                         {
-                            var guid = Random.GenerateRandomGuid();
-                            var item = ItemFactory.Create(itemData, guid);
-                            items.Add(item);
+                            var count = Random.Next(r.Min, r.Max);
+                            for (var i = 0; i < count; i++)
+                            {
+                                var guid = Random.GenerateRandomGuid();
+                                var item = ItemFactory.Create(itemData, guid);
+                                items.Add(item);
+                            }
                         }
+                    }
+                    catch (ArgumentOutOfRangeException)
+                    {
                     }
                 }
             }
