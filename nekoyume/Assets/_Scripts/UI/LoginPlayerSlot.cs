@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections;
-using Assets.SimpleLocalization;
-using Nekoyume.Action;
-using Nekoyume.Game.Controller;
+﻿using Assets.SimpleLocalization;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,13 +8,13 @@ namespace Nekoyume.UI
     public class LoginPlayerSlot : MonoBehaviour
     {
         public GameObject NameView;
-        public Text LabelLevel;
+        public TextMeshProUGUI LabelLevel;
         public Image Icon;
-        public Text LabelName;
+        public TextMeshProUGUI LabelName;
         public GameObject CreateView;
-        public Text CreateViewText;
+        public TextMeshProUGUI CreateViewText;
         public GameObject DeleteView;
-        public Text DeleteViewButtonText;
+        public TextMeshProUGUI DeleteViewButtonText;
 
         private void Awake()
         {

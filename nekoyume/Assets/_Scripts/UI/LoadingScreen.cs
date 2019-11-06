@@ -1,8 +1,8 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Assets.SimpleLocalization;
 using DG.Tweening;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,8 +11,8 @@ namespace Nekoyume.UI
     public class LoadingScreen : ScreenWidget
     {
         public Image loadingImage;
-        public Text loadingText;
-        public Text toolTip;
+        public TextMeshProUGUI loadingText;
+        public TextMeshProUGUI toolTip;
 
         public string Message { get; internal set; }
 
