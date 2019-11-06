@@ -20,8 +20,8 @@ namespace Nekoyume.UI
         public TextMeshProUGUI btnLoginText;
         public GameObject btnCreate;
         public TextMeshProUGUI btnCreateText;
-        public TMP_InputField nameField;
-        public TextMeshProUGUI namePlaceHolder;
+        public InputField nameField;
+        public Text namePlaceHolder;
         public TextMeshProUGUI textExp;
         public Slider expBar;
         public TextMeshProUGUI levelInfo;
