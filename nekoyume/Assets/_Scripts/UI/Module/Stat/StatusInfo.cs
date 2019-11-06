@@ -1,5 +1,6 @@
 using System;
 using Nekoyume.EnumType;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,9 +8,9 @@ namespace Nekoyume.UI.Module
 {
     public class StatusInfo : MonoBehaviour
     {
-        public Text key;
-        public Text value;
-        public Text additional;
+        public TextMeshProUGUI key;
+        public TextMeshProUGUI value;
+        public TextMeshProUGUI additional;
 
         public void Set(StatType statType, int statValue, int additionalStatValue)
         {
