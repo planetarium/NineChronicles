@@ -88,6 +88,7 @@ namespace Nekoyume.Action
                 }
 
                 var material = (Equipment) nonFungibleItem;
+                material.Unequip();
                 materials.Add(material);
                 var materialOptions = material.GetOptions();
                 options.AddRange(materialOptions);
@@ -95,6 +96,7 @@ namespace Nekoyume.Action
             }
 
             var equipment = (Equipment) item;
+            equipment.Unequip();
             var equipmentOptions = equipment.GetOptions();
             options.AddRange(equipmentOptions);
             var equipmentOptionCount = Math.Max(materialOptionCount, equipmentOptions.Count);
