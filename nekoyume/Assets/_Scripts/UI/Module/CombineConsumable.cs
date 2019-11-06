@@ -5,10 +5,12 @@ using Nekoyume.BlockChain;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Factory;
+using Nekoyume.Helper;
 using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using TMPro;
 using UniRx;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
@@ -168,7 +170,7 @@ namespace Nekoyume.UI.Module
                     resultItemView.SetData(new Item(itemBase));
                     resultItemNameText.gameObject.SetActive(true);
                     resultItemNameText.text = itemRow.GetLocalizedName();
-//                    resultItemNameText.color =
+                    resultItemNameText.color = Color.white;
                 }
                 else
                 {
@@ -181,7 +183,7 @@ namespace Nekoyume.UI.Module
                 resultItemView.gameObject.SetActive(false);
                 resultItemNameText.gameObject.SetActive(true);
                 resultItemNameText.text = LocalizationManager.Localize("UI_ENHANCEMENT_REGISTER_THE_MATERIAL");
-//                resultItemNameText.color = 
+                resultItemNameText.color = ColorHelper.HexToColorRGB("81564C");
             }
         }
 

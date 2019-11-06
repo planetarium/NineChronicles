@@ -412,9 +412,6 @@ namespace Nekoyume.UI.Module
                 if (!TryRemoveOtherMaterial(srcMaterial, out srcMaterial) ||
                     !TryAddOtherMaterial(inventoryItemView, out dstMaterial))
                     break;
-                    
-//                dstMaterial.Set(srcMaterial.InventoryItemViewModel, srcMaterial.Model.Count.Value);
-//                srcMaterial.Clear();
             }
         }
         
