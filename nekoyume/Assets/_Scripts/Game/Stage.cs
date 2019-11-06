@@ -442,6 +442,7 @@ namespace Nekoyume.Game
         {
             var character = GetCharacter(caster);
             character.UpdateHpBar();
+            character.HPBar.HpVFX.Stop();
 
             yield break;
         }

@@ -65,7 +65,7 @@ namespace Nekoyume.UI
             }
 
             HPBar.transform.parent.gameObject.SetActive(false);
-            buffLayout.UpdateBuff(new List<Buff>());
+            buffLayout.SetBuff(null);
         }
 
         private void SubscribeOnUpdatePlayerStatus(Player player)
@@ -92,9 +92,9 @@ namespace Nekoyume.UI
 
         #region Buff
 
-        public void SetBuffs(Dictionary<int, Buff> value)
+        public void SetBuffs(IReadOnlyDictionary<int, Buff> value)
         {
-            buffLayout.UpdateBuff(value.Values);
+            buffLayout.SetBuff(value);
         }
 
         public void ShowBuffTooltip(GameObject sender)

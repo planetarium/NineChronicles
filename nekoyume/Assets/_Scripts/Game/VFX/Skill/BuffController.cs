@@ -44,7 +44,16 @@ namespace Nekoyume.Game.VFX.Skill
 
         public BuffCastingVFX Get(Vector3 position, Buff buff)
         {
-            var buffName = buff.RowData.StatModifier.Value > 0 ? "buff_plus_casting" : "buff_minus_casting";
+            string buffName;
+            if (buff is HPBuff)
+            {
+                buffName = "buff_hp_casting";
+            }
+            else
+            {
+                buffName = buff.RowData.StatModifier.Value > 0 ? "buff_plus_casting" : "buff_minus_casting";
+            }
+
             position.y += 0.55f;
             var go = _pool.Get(buffName, false, position);
             var effect = go.GetComponent<BuffCastingVFX>();
