@@ -85,15 +85,6 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            if (avatarState.actionPoint < GameConfig.CombineConsumableCostAP)
-            {
-                // ap 부족 에러.
-                return states;
-            }
-
-            // ap 차감.
-            avatarState.actionPoint -= GameConfig.CombineConsumableCostAP;
-
             Debug.Log($"Execute Combination. player : `{AvatarAddress}` " +
                       $"node : `{States.Instance?.AgentState?.Value?.address}` " +
                       $"current avatar: `{States.Instance?.CurrentAvatarState?.Value?.address}`");
@@ -126,6 +117,15 @@ namespace Nekoyume.Action
                 .ToList();
             if (equipmentMaterials.Count > 0)
             {
+                if (avatarState.actionPoint < GameConfig.CombineEquipmentCostAP)
+                {
+                    // ap 부족 에러.
+                    return states;
+                }
+
+                // ap 차감.
+                avatarState.actionPoint -= GameConfig.CombineEquipmentCostAP;
+                
                 if (equipmentMaterials.Count != 1)
                 {
                     // 장비 베이스의 수량 에러.
@@ -223,6 +223,16 @@ namespace Nekoyume.Action
                 var consumableItemSheet = Game.Game.instance.TableSheets.ConsumableItemSheet;
                 var foodMaterials = materialRows.Keys.Where(pair => pair.ItemSubType == ItemSubType.FoodMaterial);
                 var foodCount = materialRows.Min(pair => pair.Value);
+                var costAP = foodCount * GameConfig.CombineConsumableCostAP;
+                
+                if (avatarState.actionPoint < costAP)
+                {
+                    // ap 부족 에러.
+                    return states;
+                }
+
+                // ap 차감.
+                avatarState.actionPoint -= costAP;
 
                 // 재료가 레시피에 맞지 않다면 200000(맛 없는 요리).
                 var resultConsumableItemId = !consumableItemRecipeSheet.TryGetValue(foodMaterials, out var recipeRow)

@@ -19,7 +19,6 @@ namespace Nekoyume.Action
     [ActionType("item_enhancement")]
     public class ItemEnhancement : GameAction
     {
-        public const decimal RequiredGoldPerLevel = 5m;
         public Guid itemId;
         public IEnumerable<Guid> materialIds;
         public Address avatarAddress;
@@ -49,7 +48,8 @@ namespace Nekoyume.Action
                 return states.SetState(ctx.Signer, MarkChanged);
             }
 
-            if (!states.TryGetAgentAvatarStates(ctx.Signer, avatarAddress, out AgentState agentState, out AvatarState avatarState))
+            if (!states.TryGetAgentAvatarStates(ctx.Signer, avatarAddress, out AgentState agentState,
+                out AvatarState avatarState))
             {
                 return states;
             }
@@ -101,7 +101,8 @@ namespace Nekoyume.Action
             options.AddRange(equipmentOptions);
             var equipmentOptionCount = Math.Max(materialOptionCount, equipmentOptions.Count);
             equipment = UpgradeEquipment(equipment, ctx.Random, options, equipmentOptionCount);
-            var requiredGold = Math.Max(RequiredGoldPerLevel, RequiredGoldPerLevel * equipment.level * equipment.level);
+            var requiredGold = Math.Max(GameConfig.EnhanceEquipmentCostAP,
+                GameConfig.EnhanceEquipmentCostAP * equipment.level * equipment.level);
 
             if (agentState.gold < requiredGold)
             {
@@ -148,7 +149,8 @@ namespace Nekoyume.Action
             return (BuffSkill) SkillFactory.Get(skillRow, 0, 100);
         }
 
-        private static Equipment UpgradeEquipment(Equipment equipment, IRandom random, IEnumerable<object> options, int count)
+        private static Equipment UpgradeEquipment(Equipment equipment, IRandom random, IEnumerable<object> options,
+            int count)
         {
             equipment.BuffSkills.Clear();
             equipment.Skills.Clear();
@@ -173,29 +175,36 @@ namespace Nekoyume.Action
                         {
                             equipment.StatsMap.SetStatAdditionalValue(StatType.HP, statsMap.AdditionalHP);
                         }
+
                         if (statsMap.HasAdditionalATK)
                         {
                             equipment.StatsMap.SetStatAdditionalValue(StatType.ATK, statsMap.AdditionalATK);
                         }
+
                         if (statsMap.HasAdditionalCRI)
                         {
                             equipment.StatsMap.SetStatAdditionalValue(StatType.CRI, statsMap.AdditionalCRI);
                         }
+
                         if (statsMap.HasAdditionalDEF)
                         {
                             equipment.StatsMap.SetStatAdditionalValue(StatType.DEF, statsMap.AdditionalDEF);
                         }
+
                         if (statsMap.HasAdditionalDOG)
                         {
                             equipment.StatsMap.SetStatAdditionalValue(StatType.DOG, statsMap.AdditionalDOG);
                         }
+
                         if (statsMap.HasAdditionalSPD)
                         {
                             equipment.StatsMap.SetStatAdditionalValue(StatType.SPD, statsMap.AdditionalSPD);
                         }
+
                         break;
                     }
                 }
+
                 sortedSkills.Remove(selected);
             }
 

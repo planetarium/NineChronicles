@@ -102,22 +102,28 @@ namespace Nekoyume.UI.Module
 
         #endregion
 
-        public virtual void Show()
+        public virtual bool Show()
         {
+            if (gameObject.activeSelf)
+                return false;
+            
             gameObject.SetActive(true);
             OnMaterialAddedOrRemoved();
             OnMaterialCountChanged();
             ReactiveAgentState.Gold.Subscribe(SubscribeNCG).AddTo(_disposablesAtShow);
             ReactiveCurrentAvatarState.ActionPoint.Subscribe(SubscribeActionPoint).AddTo(_disposablesAtShow);
+            return true;
         }
 
-        public virtual void Hide()
+        public virtual bool Hide()
         {
+            if (!gameObject.activeSelf)
+                return false;
+            
             _disposablesAtShow.DisposeAllAndClear();
-
             RemoveMaterialsAll();
-
             gameObject.SetActive(false);
+            return true;
         }
 
         public abstract bool DimFunc(InventoryItem inventoryItem);
@@ -168,15 +174,21 @@ namespace Nekoyume.UI.Module
 
         protected abstract int GetCostNCG();
         protected abstract int GetCostAP();
+        protected abstract void UpdateOtherMaterialsEffect();
 
         #region Add Material
 
-        public bool TryAddMaterial(InventoryItemView view)
+        public bool TryAddMaterial(InventoryItemView view, int count = 1)
         {
-            return TryAddMaterial(view, out var materialView);
+            return TryAddMaterial(view, count, out var materialView);
         }
 
         public virtual bool TryAddMaterial(InventoryItemView view, out TMaterialView materialView)
+        {
+            return TryAddMaterial(view, 1, out materialView);
+        }
+
+        public virtual bool TryAddMaterial(InventoryItemView view, int count, out TMaterialView materialView)
         {
             if (view is null ||
                 view.Model is null ||
@@ -186,7 +198,7 @@ namespace Nekoyume.UI.Module
                 return false;
             }
 
-            if (TryAddBaseMaterial(view, out materialView))
+            if (TryAddBaseMaterial(view, count, out materialView))
             {
                 OnMaterialAddedOrRemoved();
                 OnMaterialCountChanged();
@@ -195,7 +207,7 @@ namespace Nekoyume.UI.Module
                 return true;
             }
 
-            if (TryAddOtherMaterial(view, out materialView))
+            if (TryAddOtherMaterial(view, count, out materialView))
             {
                 OnMaterialAddedOrRemoved();
                 OnMaterialCountChanged();
@@ -207,7 +219,7 @@ namespace Nekoyume.UI.Module
             return false;
         }
 
-        protected virtual bool TryAddBaseMaterial(InventoryItemView view, out TMaterialView materialView)
+        protected virtual bool TryAddBaseMaterial(InventoryItemView view, int count, out TMaterialView materialView)
         {
             if (baseMaterial is null)
             {
@@ -221,12 +233,12 @@ namespace Nekoyume.UI.Module
                 OnBaseMaterialRemove.OnNext(baseMaterial.InventoryItemViewModel);
             }
 
-            baseMaterial.Set(view);
+            baseMaterial.Set(view, count);
             materialView = baseMaterial;
             return true;
         }
 
-        protected virtual bool TryAddOtherMaterial(InventoryItemView view, out TMaterialView materialView)
+        protected virtual bool TryAddOtherMaterial(InventoryItemView view, int count, out TMaterialView materialView)
         {
             var sameMaterial = otherMaterials.FirstOrDefault(e =>
             {
@@ -247,7 +259,7 @@ namespace Nekoyume.UI.Module
                     return false;
                 }
 
-                possibleMaterial.Set(view);
+                possibleMaterial.Set(view, count);
                 materialView = possibleMaterial;
                 return true;
             }
@@ -257,6 +269,25 @@ namespace Nekoyume.UI.Module
             materialView = sameMaterial;
             return true;
         }
+
+        #endregion
+
+        #region Move Material
+
+        protected virtual bool TryMoveMaterial(TMaterialView fromView, TMaterialView toView)
+        {
+            if (fromView is null ||
+                fromView.Model is null ||
+                toView is null ||
+                toView.IsLocked ||
+                !toView.IsEmpty)
+                return false;
+            
+            toView.Set(fromView.InventoryItemViewModel, fromView.Model.Count.Value);
+            fromView.Clear();
+            OnMaterialMoved();
+            return true;
+        } 
 
         #endregion
 
@@ -373,7 +404,7 @@ namespace Nekoyume.UI.Module
         }
 
         #endregion
-
+        
         private void SubscribeNCG(decimal ncg)
         {
             if (CostNCG > 0)
@@ -417,18 +448,15 @@ namespace Nekoyume.UI.Module
                     break;
                 }
 
-                if (srcMaterial is null)
-                    break;
-
-                var inventoryItemView = srcMaterial.InventoryItemViewModel.View;
-                if (!TryRemoveOtherMaterial(srcMaterial, out srcMaterial) ||
-                    !TryAddOtherMaterial(inventoryItemView, out dstMaterial))
+                if (!TryMoveMaterial(srcMaterial, dstMaterial))
                     break;
             }
         }
 
         private void OnMaterialAddedOrRemoved()
         {
+            UpdateOtherMaterialsEffect();
+            
             if (!(baseMaterial is null) &&
                 baseMaterial.IsEmpty)
             {
@@ -440,7 +468,12 @@ namespace Nekoyume.UI.Module
                 otherMaterials.Any(otherMaterial => !otherMaterial.IsLocked && otherMaterial.IsEmpty);
         }
 
-        protected virtual void OnMaterialCountChanged()
+        private void OnMaterialMoved()
+        {
+            UpdateOtherMaterialsEffect();
+        }
+
+        private void OnMaterialCountChanged()
         {
             CostNCG = GetCostNCG();
             SubscribeNCG(ReactiveAgentState.Gold.Value);
