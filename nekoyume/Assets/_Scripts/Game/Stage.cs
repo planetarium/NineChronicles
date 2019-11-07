@@ -464,7 +464,10 @@ namespace Nekoyume.Game
             if (character)
             {
                 character.UpdateHpBar();
-                character.HPBar.HpVFX.Stop();
+                if (character.HPBar.HpVFX != null)
+                {
+                    character.HPBar.HpVFX.Stop();
+                }
             }
 
             yield break;
