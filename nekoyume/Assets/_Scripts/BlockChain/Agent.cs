@@ -126,6 +126,8 @@ namespace Nekoyume.BlockChain
         public void Init(PrivateKey privateKey, string path, IEnumerable<Peer> peers,
             IEnumerable<IceServer> iceServers, string host, int? port, bool consoleSink)
         {
+            InitializeLogger(consoleSink);
+
             Debug.Log(path);
             var policy = GetPolicy();
             PrivateKey = privateKey;
@@ -135,7 +137,6 @@ namespace Nekoyume.BlockChain
 #if BLOCK_LOG_USE
             FileHelper.WriteAllText("Block.log", "");
 #endif
-            InitializeLogger(consoleSink);
 
             _swarm = new Swarm<PolymorphicAction<ActionBase>>(
                 blocks,

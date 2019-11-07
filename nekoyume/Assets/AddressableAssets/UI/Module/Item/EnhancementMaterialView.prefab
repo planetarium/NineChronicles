@@ -135,6 +135,7 @@ MonoBehaviour:
   countText: {fileID: 5725448963532472889}
   minusButton: {fileID: 2483000468064007811}
   plusButton: {fileID: 3663047549477885051}
+  ncgEffectImage: {fileID: 7182495184464594313}
   effectImage: {fileID: 2577655870809027329}
   effectImages: []
   titleText: {fileID: 3945040049247962112}
@@ -845,6 +846,18 @@ MonoBehaviour:
 --- !u!114 &2577655870809027329 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4760254493046273996, guid: e6f257f43b229489591d9554d64bdd4d,
+    type: 3}
+  m_PrefabInstance: {fileID: 7046583543907960013}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -765806418, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &7182495184464594313 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 173150226784715076, guid: e6f257f43b229489591d9554d64bdd4d,
     type: 3}
   m_PrefabInstance: {fileID: 7046583543907960013}
   m_PrefabAsset: {fileID: 0}
