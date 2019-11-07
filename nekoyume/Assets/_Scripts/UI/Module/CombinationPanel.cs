@@ -171,12 +171,17 @@ namespace Nekoyume.UI.Module
 
         #region Add Material
 
-        public bool TryAddMaterial(InventoryItemView view)
+        public bool TryAddMaterial(InventoryItemView view, int count = 1)
         {
-            return TryAddMaterial(view, out var materialView);
+            return TryAddMaterial(view, count, out var materialView);
         }
 
         public virtual bool TryAddMaterial(InventoryItemView view, out TMaterialView materialView)
+        {
+            return TryAddMaterial(view, 1, out materialView);
+        }
+
+        public virtual bool TryAddMaterial(InventoryItemView view, int count, out TMaterialView materialView)
         {
             if (view is null ||
                 view.Model is null ||
@@ -186,7 +191,7 @@ namespace Nekoyume.UI.Module
                 return false;
             }
 
-            if (TryAddBaseMaterial(view, out materialView))
+            if (TryAddBaseMaterial(view, count, out materialView))
             {
                 OnMaterialAddedOrRemoved();
                 OnMaterialCountChanged();
@@ -195,7 +200,7 @@ namespace Nekoyume.UI.Module
                 return true;
             }
 
-            if (TryAddOtherMaterial(view, out materialView))
+            if (TryAddOtherMaterial(view, count, out materialView))
             {
                 OnMaterialAddedOrRemoved();
                 OnMaterialCountChanged();
@@ -207,7 +212,7 @@ namespace Nekoyume.UI.Module
             return false;
         }
 
-        protected virtual bool TryAddBaseMaterial(InventoryItemView view, out TMaterialView materialView)
+        protected virtual bool TryAddBaseMaterial(InventoryItemView view, int count, out TMaterialView materialView)
         {
             if (baseMaterial is null)
             {
@@ -221,12 +226,12 @@ namespace Nekoyume.UI.Module
                 OnBaseMaterialRemove.OnNext(baseMaterial.InventoryItemViewModel);
             }
 
-            baseMaterial.Set(view);
+            baseMaterial.Set(view, count);
             materialView = baseMaterial;
             return true;
         }
 
-        protected virtual bool TryAddOtherMaterial(InventoryItemView view, out TMaterialView materialView)
+        protected virtual bool TryAddOtherMaterial(InventoryItemView view, int count, out TMaterialView materialView)
         {
             var sameMaterial = otherMaterials.FirstOrDefault(e =>
             {
@@ -247,7 +252,7 @@ namespace Nekoyume.UI.Module
                     return false;
                 }
 
-                possibleMaterial.Set(view);
+                possibleMaterial.Set(view, count);
                 materialView = possibleMaterial;
                 return true;
             }
@@ -257,6 +262,28 @@ namespace Nekoyume.UI.Module
             materialView = sameMaterial;
             return true;
         }
+
+        #endregion
+
+        #region Move Material
+
+        protected virtual bool TryMoveMaterial(TMaterialView fromView, TMaterialView toView)
+        {
+            if (fromView is null ||
+                fromView.Model is null ||
+                toView is null ||
+                toView.IsLocked ||
+                !toView.IsEmpty)
+            {
+                Debug.LogWarning("TryMoveMaterial() called. some argument is null.");
+                return false;
+            }
+            
+            toView.Set(fromView.InventoryItemViewModel, fromView.Model.Count.Value);
+            fromView.Clear();
+            Debug.LogWarning("TryMoveMaterial() called. return true.");
+            return true;
+        } 
 
         #endregion
 
@@ -417,12 +444,16 @@ namespace Nekoyume.UI.Module
                     break;
                 }
 
-                if (srcMaterial is null)
-                    break;
-
-                var inventoryItemView = srcMaterial.InventoryItemViewModel.View;
-                if (!TryRemoveOtherMaterial(srcMaterial, out srcMaterial) ||
-                    !TryAddOtherMaterial(inventoryItemView, out dstMaterial))
+//                if (srcMaterial is null ||
+//                    srcMaterial.Model is null)
+//                    break;
+//
+//                var inventoryItemView = srcMaterial.InventoryItemViewModel.View;
+//                var count = srcMaterial.Model.Count.Value;
+//                if (!TryRemoveOtherMaterial(srcMaterial, out srcMaterial) ||
+//                    !TryAddOtherMaterial(inventoryItemView, count, out dstMaterial))
+//                    break;
+                if (!TryMoveMaterial(srcMaterial, dstMaterial))
                     break;
             }
         }

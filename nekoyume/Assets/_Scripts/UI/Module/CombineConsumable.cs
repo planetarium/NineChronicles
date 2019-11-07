@@ -52,7 +52,7 @@ namespace Nekoyume.UI.Module
                     recipe.Show();
                 }).AddTo(gameObject);
 
-            _count.Subscribe(SubscribeCount).AddTo(gameObject);
+            _count.SubscribeTo(countText).AddTo(gameObject);
         }
 
         public override void Show()
@@ -64,9 +64,9 @@ namespace Nekoyume.UI.Module
                 otherMaterial.Unlock();
             }
 
-            UpdateResultItem();
-
             _count.SetValueAndForceNotify(1);
+            UpdateResultItem();
+            UpdateCountButtons();
         }
 
         public override void Hide()
@@ -95,10 +95,12 @@ namespace Nekoyume.UI.Module
 
         protected override int GetCostAP()
         {
-            return otherMaterials.Any(e => !e.IsEmpty) ? GameConfig.CombineConsumableCostAP : 0;
+            return otherMaterials.Any(e => !e.IsEmpty)
+                ? GameConfig.CombineConsumableCostAP * _count.Value
+                : 0;
         }
         
-        protected override bool TryAddOtherMaterial(InventoryItemView view, out CombinationMaterialView materialView)
+        protected override bool TryAddOtherMaterial(InventoryItemView view, int count, out CombinationMaterialView materialView)
         {
             if (view.Model is null ||
                 view.Model.ItemBase.Value.Data.ItemType != ItemType.Material ||
@@ -110,11 +112,10 @@ namespace Nekoyume.UI.Module
                 return false;
             }
 
-            if (!base.TryAddOtherMaterial(view, out materialView))
+            if (!base.TryAddOtherMaterial(view, count, out materialView))
                 return false;
             
             materialView.effectImage.enabled = true;
-
             materialView.TryIncreaseCount(_count.Value - materialView.Model.Count.Value);
 
             UpdateResultItem();
@@ -122,25 +123,32 @@ namespace Nekoyume.UI.Module
 
             return true;
         }
-        
+
+        protected override bool TryMoveMaterial(CombinationMaterialView fromView, CombinationMaterialView toView)
+        {
+            if (!base.TryMoveMaterial(fromView, toView))
+                return false;
+
+            toView.effectImage.enabled = true;
+
+            return true;
+        }
+
         protected override bool TryRemoveOtherMaterial(CombinationMaterialView view,
             out CombinationMaterialView materialView)
         {
             if (!base.TryRemoveOtherMaterial(view, out materialView))
                 return false;
             
-            materialView.effectImage.enabled = false;
-
-            UpdateResultItem();
-
             if (otherMaterials.Where(e => !e.IsLocked).All(e => e.IsEmpty))
             {
                 _count.SetValueAndForceNotify(1);
             }
-            else
-            {
-                UpdateCountButtons();
-            }
+            
+            materialView.effectImage.enabled = false;
+            
+            UpdateResultItem();
+            UpdateCountButtons();
 
             return true;
         }
@@ -149,8 +157,9 @@ namespace Nekoyume.UI.Module
         {
             base.RemoveMaterialsAll();
 
-            UpdateResultItem();
             _count.SetValueAndForceNotify(1);
+            UpdateResultItem();
+            UpdateCountButtons();
         }
 
         private void UpdateResultItem()
@@ -203,28 +212,22 @@ namespace Nekoyume.UI.Module
         private void SubscribeCountMinusClick(Unit unit)
         {
             AudioController.PlayClick();
+            _count.Value--;
             foreach (var otherMaterial in otherMaterials)
             {
                 otherMaterial.TryDecreaseCount();
             }
-
-            _count.Value--;
+            UpdateCountButtons();
         }
 
         private void SubscribeCountPlusClick(Unit unit)
         {
             AudioController.PlayClick();
+            _count.Value++;
             foreach (var otherMaterial in otherMaterials)
             {
                 otherMaterial.TryIncreaseCount();
             }
-
-            _count.Value++;
-        }
-
-        private void SubscribeCount(int count)
-        {
-            countText.text = count.ToString();
             UpdateCountButtons();
         }
     }

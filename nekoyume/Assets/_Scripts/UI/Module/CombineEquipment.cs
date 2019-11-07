@@ -86,7 +86,7 @@ namespace Nekoyume.UI.Module
             return baseMaterial.IsEmpty ? 0 : GameConfig.CombineEquipmentCostAP;
         }
 
-        protected override bool TryAddBaseMaterial(InventoryItemView view, out CombinationMaterialView materialView)
+        protected override bool TryAddBaseMaterial(InventoryItemView view, int count, out CombinationMaterialView materialView)
         {
             if (view.Model is null ||
                 view.Model.ItemBase.Value.Data.ItemType != ItemType.Material ||
@@ -96,7 +96,7 @@ namespace Nekoyume.UI.Module
                 return false;
             }
 
-            if (base.TryAddBaseMaterial(view, out materialView))
+            if (base.TryAddBaseMaterial(view, count, out materialView))
             {
                 Game.Game.instance.TableSheets.ItemConfigForGradeSheet.TryGetValue(view.Model.ItemBase.Value.Data.Grade,
                     out var configRow, true);

@@ -91,7 +91,7 @@ namespace Nekoyume.UI.Module
             return baseMaterial.IsEmpty ? 0 : GameConfig.EnhanceEquipmentCostAP;
         }
 
-        protected override bool TryAddBaseMaterial(InventoryItemView view, out EnhancementMaterialView materialView)
+        protected override bool TryAddBaseMaterial(InventoryItemView view, int count, out EnhancementMaterialView materialView)
         {
             if (view.Model is null ||
                 view.Model.ItemBase.Value.Data.ItemType != ItemType.Equipment)
@@ -106,7 +106,7 @@ namespace Nekoyume.UI.Module
                 return false;
             }
 
-            if (!base.TryAddBaseMaterial(view, out materialView))
+            if (!base.TryAddBaseMaterial(view, count, out materialView))
                 return false;
             
             materialView.effectImage.enabled = true;
@@ -146,9 +146,9 @@ namespace Nekoyume.UI.Module
             return true;
         }
 
-        protected override bool TryAddOtherMaterial(InventoryItemView view, out EnhancementMaterialView materialView)
+        protected override bool TryAddOtherMaterial(InventoryItemView view, int count, out EnhancementMaterialView materialView)
         {
-            if (!base.TryAddOtherMaterial(view, out materialView))
+            if (!base.TryAddOtherMaterial(view, count, out materialView))
                 return false;
             
             materialView.effectImage.enabled = true;
