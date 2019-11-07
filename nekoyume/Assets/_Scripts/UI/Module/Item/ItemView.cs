@@ -41,8 +41,6 @@ namespace Nekoyume.UI.Module
         public bool IsEmpty => Model?.ItemBase.Value is null;
 
         public readonly Subject<ItemView<TViewModel>> OnClick = new Subject<ItemView<TViewModel>>();
-        public readonly Subject<ItemView<TViewModel>> OnRightClick = new Subject<ItemView<TViewModel>>();
-        // todo: `OnRightClick`을 `OnDoubleClick`으로 대체해야 함.
         public readonly Subject<ItemView<TViewModel>> OnDoubleClick = new Subject<ItemView<TViewModel>>();
 
         #region Mono
@@ -51,30 +49,25 @@ namespace Nekoyume.UI.Module
         {
             RectTransform = GetComponent<RectTransform>();
 
-            touchHandler.OnRightClick.Subscribe(_ =>
+            touchHandler.OnClick.Subscribe(_ =>
             {
-                OnRightClick.OnNext(this);
-                Model?.OnRightClick.OnNext(Model);
+                AudioController.PlayClick();
+                OnClick.OnNext(this);
+                Model?.OnClick.OnNext(Model);
             }).AddTo(gameObject);
-
-            itemButton.OnClickAsObservable()
-                .Subscribe(_ =>
-                {
-                    if (Model is null)
-                        return;
-
-                    AudioController.PlayClick();
-                    OnClick.OnNext(this);
-                    Model.OnClick.OnNext(Model);
-                })
-                .AddTo(gameObject);
+            touchHandler.OnDoubleClick.Subscribe(_ =>
+            {
+                AudioController.PlayClick();
+                OnDoubleClick.OnNext(this);
+                Model?.OnDoubleClick.OnNext(Model);
+            }).AddTo(gameObject);
         }
 
         protected virtual void OnDestroy()
         {
             Model?.Dispose();
             OnClick.Dispose();
-            OnRightClick.Dispose();
+            OnDoubleClick.Dispose();
             Clear();
         }
 
