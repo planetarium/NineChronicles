@@ -6,12 +6,14 @@ namespace Nekoyume.UI.Module
 {
     public class CombinationMaterialView : CountEditableItemView<CombinationMaterial>, ILockable
     {
+        public Image ncgEffectImage;
         public Image effectImage;
         public Image[] effectImages;
 
         public bool IsLocked => !itemButton.interactable;
 
         public InventoryItem InventoryItemViewModel { get; private set; }
+        public bool IsUnlockedAsNCG { get; private set; }
 
         public void Set(InventoryItemView inventoryItemView, int count = 1)
         {
@@ -46,6 +48,7 @@ namespace Nekoyume.UI.Module
         public override void Clear()
         {
             InventoryItemViewModel = null;
+            ncgEffectImage.enabled = IsUnlockedAsNCG;
             effectImage.enabled = false;
             SetEnableEffectImages(false);
             base.Clear();
@@ -55,22 +58,28 @@ namespace Nekoyume.UI.Module
         {
             Clear();
             itemButton.interactable = false;
-            backgroundImage.sprite = Resources.Load<Sprite>("UI/Textures/ui_box_Inventory_05");
+            backgroundImage.overrideSprite = Resources.Load<Sprite>("UI/Textures/ui_box_Inventory_05");
+            backgroundImage.SetNativeSize();
+            ncgEffectImage.enabled = false;
             effectImage.enabled = false;
         }
         
         public void Unlock()
         {
             itemButton.interactable = true;
-            backgroundImage.sprite = Resources.Load<Sprite>("UI/Textures/ui_box_Inventory_02");
-            effectImage.enabled = false;
+            backgroundImage.overrideSprite = Resources.Load<Sprite>("UI/Textures/ui_box_Inventory_02");
+            backgroundImage.SetNativeSize();
+            ncgEffectImage.enabled = false;
+            IsUnlockedAsNCG = false;
         }
 
         public void UnlockAsNCG()
         {
             itemButton.interactable = true;
-            backgroundImage.sprite = Resources.Load<Sprite>("UI/Textures/ui_box_Inventory_04");
-            effectImage.enabled = false;
+            backgroundImage.overrideSprite = Resources.Load<Sprite>("UI/Textures/ui_box_Inventory_04");
+            backgroundImage.SetNativeSize();
+            ncgEffectImage.enabled = true;
+            IsUnlockedAsNCG = true;
         }
 
         private void SetEnableEffectImages(bool enable)

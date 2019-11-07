@@ -55,9 +55,10 @@ namespace Nekoyume.UI.Module
             _count.SubscribeTo(countText).AddTo(gameObject);
         }
 
-        public override void Show()
+        public override bool Show()
         {
-            base.Show();
+            if (!base.Show())
+                return false;
 
             foreach (var otherMaterial in otherMaterials)
             {
@@ -67,13 +68,16 @@ namespace Nekoyume.UI.Module
             _count.SetValueAndForceNotify(1);
             UpdateResultItem();
             UpdateCountButtons();
+            return true;
         }
 
-        public override void Hide()
+        public override bool Hide()
         {
+            if (!base.Hide())
+                return false;
+            
             recipe.Hide();
-
-            base.Hide();
+            return true;
         }
 
         public override bool DimFunc(InventoryItem inventoryItem)
@@ -100,6 +104,44 @@ namespace Nekoyume.UI.Module
                 : 0;
         }
         
+        protected override void UpdateOtherMaterialsEffect()
+        {
+            var isFirst = true;
+            var setEffectEnabledIfEmpty = true;
+            foreach (var otherMaterial in otherMaterials)
+            {
+                if (isFirst)
+                {
+                    isFirst = false;
+                    setEffectEnabledIfEmpty = !otherMaterial.IsEmpty;
+                    otherMaterial.effectImage.enabled = true;
+                    continue;
+                }
+                
+                if (!otherMaterial.IsEmpty)
+                {
+                    otherMaterial.effectImage.enabled = true;
+                    continue;
+                }
+
+                if (otherMaterial.IsLocked)
+                {
+                    otherMaterial.effectImage.enabled = false;
+                    continue;
+                }
+                
+                if (setEffectEnabledIfEmpty)
+                {
+                    setEffectEnabledIfEmpty = false;
+                    otherMaterial.effectImage.enabled = true;
+                }
+                else
+                {
+                    otherMaterial.effectImage.enabled = false;
+                }
+            }
+        }
+        
         protected override bool TryAddOtherMaterial(InventoryItemView view, int count, out CombinationMaterialView materialView)
         {
             if (view.Model is null ||
@@ -115,21 +157,10 @@ namespace Nekoyume.UI.Module
             if (!base.TryAddOtherMaterial(view, count, out materialView))
                 return false;
             
-            materialView.effectImage.enabled = true;
             materialView.TryIncreaseCount(_count.Value - materialView.Model.Count.Value);
 
             UpdateResultItem();
             UpdateCountButtons();
-
-            return true;
-        }
-
-        protected override bool TryMoveMaterial(CombinationMaterialView fromView, CombinationMaterialView toView)
-        {
-            if (!base.TryMoveMaterial(fromView, toView))
-                return false;
-
-            toView.effectImage.enabled = true;
 
             return true;
         }
@@ -144,8 +175,6 @@ namespace Nekoyume.UI.Module
             {
                 _count.SetValueAndForceNotify(1);
             }
-            
-            materialView.effectImage.enabled = false;
             
             UpdateResultItem();
             UpdateCountButtons();

@@ -43,9 +43,10 @@ namespace Nekoyume.UI.Module
             submitButton.submitText.text = LocalizationManager.Localize("UI_COMBINATION_ENHANCEMENT");
         }
 
-        public override void Show()
+        public override bool Show()
         {
-            base.Show();
+            if (!base.Show())
+                return false;
 
             baseMaterial.Unlock();
 
@@ -53,6 +54,8 @@ namespace Nekoyume.UI.Module
             {
                 otherMaterial.Lock();
             }
+
+            return true;
         }
 
         public override bool DimFunc(InventoryItem inventoryItem)
@@ -90,6 +93,53 @@ namespace Nekoyume.UI.Module
         {
             return baseMaterial.IsEmpty ? 0 : GameConfig.EnhanceEquipmentCostAP;
         }
+        
+        protected override void UpdateOtherMaterialsEffect()
+        {
+            baseMaterial.effectImage.enabled = true;
+
+            var baseMaterialIsEmpty = baseMaterial.IsEmpty;
+            var isFirst = true;
+            var setEffectEnabledIfEmpty = true;
+            foreach (var otherMaterial in otherMaterials)
+            {
+                if (baseMaterialIsEmpty)
+                {
+                    otherMaterial.effectImage.enabled = false;
+                    continue;
+                }
+                
+                if (isFirst)
+                {
+                    isFirst = false;
+                    setEffectEnabledIfEmpty = !otherMaterial.IsEmpty;
+                    otherMaterial.effectImage.enabled = true;
+                    continue;
+                }
+                
+                if (!otherMaterial.IsEmpty)
+                {
+                    otherMaterial.effectImage.enabled = true;
+                    continue;
+                }
+
+                if (otherMaterial.IsLocked)
+                {
+                    otherMaterial.effectImage.enabled = false;
+                    continue;
+                }
+                
+                if (setEffectEnabledIfEmpty)
+                {
+                    setEffectEnabledIfEmpty = false;
+                    otherMaterial.effectImage.enabled = true;
+                }
+                else
+                {
+                    otherMaterial.effectImage.enabled = false;
+                }
+            }
+        }
 
         protected override bool TryAddBaseMaterial(InventoryItemView view, int count, out EnhancementMaterialView materialView)
         {
@@ -109,8 +159,6 @@ namespace Nekoyume.UI.Module
             if (!base.TryAddBaseMaterial(view, count, out materialView))
                 return false;
             
-            materialView.effectImage.enabled = true;
-
             if (!(view.Model.ItemBase.Value is Equipment equipment))
                 throw new InvalidCastException(nameof(view.Model.ItemBase.Value));
 
@@ -133,8 +181,6 @@ namespace Nekoyume.UI.Module
             if (!base.TryRemoveBaseMaterial(view, out materialView))
                 return false;
             
-            materialView.effectImage.enabled = false;
-
             foreach (var otherMaterial in otherMaterials)
             {
                 otherMaterial.Clear();
@@ -151,8 +197,6 @@ namespace Nekoyume.UI.Module
             if (!base.TryAddOtherMaterial(view, count, out materialView))
                 return false;
             
-            materialView.effectImage.enabled = true;
-
             var equipment = (Equipment) baseMaterial.Model.ItemBase.Value;
             var resultValue = equipment.TryGetUniqueStat(out var statType, out var value, true)
                 ? value + equipment.levelStats
@@ -187,8 +231,6 @@ namespace Nekoyume.UI.Module
             if (!base.TryRemoveOtherMaterial(view, out materialView))
                 return false;
             
-            materialView.effectImage.enabled = false;
-
             baseMaterial.UpdateStatView();
 
             return true;

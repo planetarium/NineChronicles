@@ -29,9 +29,10 @@ namespace Nekoyume.UI.Module
             submitButton.submitText.text = LocalizationManager.Localize("UI_COMBINATION_ITEM");
         }
 
-        public override void Show()
+        public override bool Show()
         {
-            base.Show();
+            if (!base.Show())
+                return false;
 
             baseMaterial.Unlock();
 
@@ -39,6 +40,8 @@ namespace Nekoyume.UI.Module
             {
                 material.Lock();
             }
+
+            return true;
         }
 
         public override bool DimFunc(InventoryItem inventoryItem)
@@ -84,6 +87,53 @@ namespace Nekoyume.UI.Module
         protected override int GetCostAP()
         {
             return baseMaterial.IsEmpty ? 0 : GameConfig.CombineEquipmentCostAP;
+        }
+        
+        protected override void UpdateOtherMaterialsEffect()
+        {
+            baseMaterial.effectImage.enabled = true;
+            
+            var baseMaterialIsEmpty = baseMaterial.IsEmpty;
+            var isFirst = true;
+            var setEffectEnabledIfEmpty = true;
+            foreach (var otherMaterial in otherMaterials)
+            {
+                if (baseMaterialIsEmpty)
+                {
+                    otherMaterial.effectImage.enabled = false;
+                    continue;
+                }
+                
+                if (isFirst)
+                {
+                    isFirst = false;
+                    setEffectEnabledIfEmpty = !otherMaterial.IsEmpty;
+                    otherMaterial.effectImage.enabled = true;
+                    continue;
+                }
+                
+                if (!otherMaterial.IsEmpty)
+                {
+                    otherMaterial.effectImage.enabled = true;
+                    continue;
+                }
+
+                if (otherMaterial.IsLocked)
+                {
+                    otherMaterial.effectImage.enabled = false;
+                    continue;
+                }
+                
+                if (setEffectEnabledIfEmpty)
+                {
+                    setEffectEnabledIfEmpty = false;
+                    otherMaterial.effectImage.enabled = true;
+                }
+                else
+                {
+                    otherMaterial.effectImage.enabled = false;
+                }
+            }
         }
 
         protected override bool TryAddBaseMaterial(InventoryItemView view, int count, out CombinationMaterialView materialView)

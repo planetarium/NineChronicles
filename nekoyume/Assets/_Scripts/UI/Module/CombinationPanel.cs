@@ -102,22 +102,28 @@ namespace Nekoyume.UI.Module
 
         #endregion
 
-        public virtual void Show()
+        public virtual bool Show()
         {
+            if (gameObject.activeSelf)
+                return false;
+            
             gameObject.SetActive(true);
             OnMaterialAddedOrRemoved();
             OnMaterialCountChanged();
             ReactiveAgentState.Gold.Subscribe(SubscribeNCG).AddTo(_disposablesAtShow);
             ReactiveCurrentAvatarState.ActionPoint.Subscribe(SubscribeActionPoint).AddTo(_disposablesAtShow);
+            return true;
         }
 
-        public virtual void Hide()
+        public virtual bool Hide()
         {
+            if (!gameObject.activeSelf)
+                return false;
+            
             _disposablesAtShow.DisposeAllAndClear();
-
             RemoveMaterialsAll();
-
             gameObject.SetActive(false);
+            return true;
         }
 
         public abstract bool DimFunc(InventoryItem inventoryItem);
@@ -168,6 +174,7 @@ namespace Nekoyume.UI.Module
 
         protected abstract int GetCostNCG();
         protected abstract int GetCostAP();
+        protected abstract void UpdateOtherMaterialsEffect();
 
         #region Add Material
 
@@ -274,14 +281,11 @@ namespace Nekoyume.UI.Module
                 toView is null ||
                 toView.IsLocked ||
                 !toView.IsEmpty)
-            {
-                Debug.LogWarning("TryMoveMaterial() called. some argument is null.");
                 return false;
-            }
             
             toView.Set(fromView.InventoryItemViewModel, fromView.Model.Count.Value);
             fromView.Clear();
-            Debug.LogWarning("TryMoveMaterial() called. return true.");
+            OnMaterialMoved();
             return true;
         } 
 
@@ -400,7 +404,7 @@ namespace Nekoyume.UI.Module
         }
 
         #endregion
-
+        
         private void SubscribeNCG(decimal ncg)
         {
             if (CostNCG > 0)
@@ -444,15 +448,6 @@ namespace Nekoyume.UI.Module
                     break;
                 }
 
-//                if (srcMaterial is null ||
-//                    srcMaterial.Model is null)
-//                    break;
-//
-//                var inventoryItemView = srcMaterial.InventoryItemViewModel.View;
-//                var count = srcMaterial.Model.Count.Value;
-//                if (!TryRemoveOtherMaterial(srcMaterial, out srcMaterial) ||
-//                    !TryAddOtherMaterial(inventoryItemView, count, out dstMaterial))
-//                    break;
                 if (!TryMoveMaterial(srcMaterial, dstMaterial))
                     break;
             }
@@ -460,6 +455,8 @@ namespace Nekoyume.UI.Module
 
         private void OnMaterialAddedOrRemoved()
         {
+            UpdateOtherMaterialsEffect();
+            
             if (!(baseMaterial is null) &&
                 baseMaterial.IsEmpty)
             {
@@ -471,7 +468,12 @@ namespace Nekoyume.UI.Module
                 otherMaterials.Any(otherMaterial => !otherMaterial.IsLocked && otherMaterial.IsEmpty);
         }
 
-        protected virtual void OnMaterialCountChanged()
+        private void OnMaterialMoved()
+        {
+            UpdateOtherMaterialsEffect();
+        }
+
+        private void OnMaterialCountChanged()
         {
             CostNCG = GetCostNCG();
             SubscribeNCG(ReactiveAgentState.Gold.Value);
