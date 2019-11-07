@@ -57,13 +57,13 @@ namespace Nekoyume.UI.Scroller
             buttonImage.rectTransform.offsetMin = mail.New ? _leftBottom : Vector2.zero;
             buttonImage.rectTransform.offsetMax = mail.New ? _minusRightTop : Vector2.zero;
             icon.overrideSprite = Mail.mailIcons[mail.MailType];
-            icon.SetNativeSize();
             content.text = text;
             content.color = color;
         }
 
         public void Read()
         {
+            submitText.text = LocalizationManager.Localize("UI_RECEIVED");
             buttonImage.rectTransform.offsetMin = Vector2.zero;
             buttonImage.rectTransform.offsetMax = Vector2.zero;
             if (!data.New)

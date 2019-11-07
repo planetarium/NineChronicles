@@ -18,10 +18,13 @@ namespace Nekoyume.UI.Scroller
     {
         public Action<QuestCellView> onClickSubmitButton;
 
-        private static readonly Color _highlightedColor = ColorHelper.HexToColorRGB("001870");
+        private static readonly Vector2 _leftBottom = new Vector2(-14f, -10.5f);
+        private static readonly Vector2 _minusRightTop = new Vector2(14f, 13f);
+        private static readonly Color _highlightedColor = ColorHelper.HexToColorRGB("a35400");
         public TextMeshProUGUI content;
         public Text buttonText;
         public Button button;
+        public Image buttonImage;
         public Game.Quest.Quest data;
         public SimpleCountableItemView[] rewardViews;
 
@@ -58,7 +61,8 @@ namespace Nekoyume.UI.Scroller
             button.interactable = quest.Complete && !quest.Receive;
             foreach (var shadow in _textShadows)
                 shadow.effectColor = button.interactable ? _highlightedColor : Color.black;
-
+            buttonImage.rectTransform.offsetMin = button.interactable ? _leftBottom : Vector2.zero;
+            buttonImage.rectTransform.offsetMax = button.interactable ? _minusRightTop : Vector2.zero;
             var itemMap = data.Reward.ItemMap;
             for (var i = 0; i < itemMap.Count; i++)
             {
@@ -75,6 +79,8 @@ namespace Nekoyume.UI.Scroller
 
         public void RequestReward()
         {
+            buttonImage.rectTransform.offsetMin = Vector2.zero;
+            buttonImage.rectTransform.offsetMax = Vector2.zero;
             button.interactable = false;
             foreach (var shadow in _textShadows)
                 shadow.effectColor = Color.black;
