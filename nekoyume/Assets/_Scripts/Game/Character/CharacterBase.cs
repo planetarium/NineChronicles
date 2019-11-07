@@ -56,7 +56,7 @@ namespace Nekoyume.Game.Character
 
         public float RunSpeed { get; set; }
 
-        protected HpBar HPBar { get; private set; }
+        public HpBar HPBar { get; private set; }
         private ProgressBar CastingBar { get; set; }
         protected SpeechBubble SpeechBubble { get; set; }
 
@@ -180,7 +180,7 @@ namespace Nekoyume.Game.Character
             }
 
             HPBar.UpdatePosition(gameObject, HUDOffset);
-            HPBar.Set(CurrentHP, HP);
+            HPBar.Set(CurrentHP, Model.Value.Stats.BuffStats.HP, HP);
             HPBar.SetBuffs(Model.Value.Buffs);
             
             OnUpdateHPBar.OnNext(this);

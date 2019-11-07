@@ -222,6 +222,7 @@ namespace Nekoyume.Action
                 var consumableItemRecipeSheet = Game.Game.instance.TableSheets.ConsumableItemRecipeSheet;
                 var consumableItemSheet = Game.Game.instance.TableSheets.ConsumableItemSheet;
                 var foodMaterials = materialRows.Keys.Where(pair => pair.ItemSubType == ItemSubType.FoodMaterial);
+                var foodCount = materialRows.Min(pair => pair.Value);
 
                 // 재료가 레시피에 맞지 않다면 200000(맛 없는 요리).
                 var resultConsumableItemId = !consumableItemRecipeSheet.TryGetValue(foodMaterials, out var recipeRow)
@@ -235,12 +236,15 @@ namespace Nekoyume.Action
                 }
 
                 // 조합 결과 획득.
-                var itemId = ctx.Random.GenerateRandomGuid();
-                var itemUsable = GetFood(consumableItemRow, itemId);
-                Result.itemUsable = itemUsable;
-                var mail = new CombinationMail(Result, ctx.BlockIndex);
-                avatarState.Update(mail);
-                avatarState.UpdateCombinationQuest(itemUsable);
+                for (var i = 0; i < foodCount; i++)
+                {
+                    var itemId = ctx.Random.GenerateRandomGuid();
+                    var itemUsable = GetFood(consumableItemRow, itemId);
+                    Result.itemUsable = itemUsable;
+                    var mail = new CombinationMail(Result, ctx.BlockIndex);
+                    avatarState.Update(mail);
+                    avatarState.UpdateCombinationQuest(itemUsable);    
+                }
             }
 
             avatarState.updatedAt = DateTimeOffset.UtcNow;

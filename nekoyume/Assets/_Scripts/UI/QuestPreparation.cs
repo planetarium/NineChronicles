@@ -61,7 +61,7 @@ namespace Nekoyume.UI
                 inventoryItem => inventoryItem.ItemBase.Value.Data.ItemType == ItemType.Material;
             inventory.SharedModel.SelectedItemView.Subscribe(SubscribeInventorySelectedItem)
                 .AddTo(gameObject);
-            inventory.SharedModel.OnRightClickItemView.Subscribe(itemView =>
+            inventory.SharedModel.OnDoubleClickItemView.Subscribe(itemView =>
                 {
                     if (itemView.Model.Dimmed.Value)
                         return;

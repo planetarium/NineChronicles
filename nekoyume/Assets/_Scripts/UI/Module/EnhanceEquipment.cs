@@ -108,6 +108,8 @@ namespace Nekoyume.UI.Module
 
             if (!base.TryAddBaseMaterial(view, out materialView))
                 return false;
+            
+            materialView.effectImage.enabled = true;
 
             if (!(view.Model.ItemBase.Value is Equipment equipment))
                 throw new InvalidCastException(nameof(view.Model.ItemBase.Value));
@@ -130,6 +132,8 @@ namespace Nekoyume.UI.Module
         {
             if (!base.TryRemoveBaseMaterial(view, out materialView))
                 return false;
+            
+            materialView.effectImage.enabled = false;
 
             foreach (var otherMaterial in otherMaterials)
             {
@@ -146,6 +150,8 @@ namespace Nekoyume.UI.Module
         {
             if (!base.TryAddOtherMaterial(view, out materialView))
                 return false;
+            
+            materialView.effectImage.enabled = true;
 
             var equipment = (Equipment) baseMaterial.Model.ItemBase.Value;
             var resultValue = equipment.TryGetUniqueStat(out var statType, out var value, true)
@@ -160,7 +166,7 @@ namespace Nekoyume.UI.Module
 
             var maxCount = baseEquipment.GetOptionCount();
 
-            foreach (var otherMaterial in otherMaterials.Where(e => !e.IsEmpty && !e.IsLocked))
+            foreach (var otherMaterial in otherMaterials.Where(e => !e.IsLocked && !e.IsEmpty))
             {
                 if (!(otherMaterial.Model.ItemBase.Value is Equipment otherEquipment))
                     throw new InvalidCastException(nameof(view.Model.ItemBase.Value));
@@ -180,6 +186,8 @@ namespace Nekoyume.UI.Module
         {
             if (!base.TryRemoveOtherMaterial(view, out materialView))
                 return false;
+            
+            materialView.effectImage.enabled = false;
 
             baseMaterial.UpdateStatView();
 

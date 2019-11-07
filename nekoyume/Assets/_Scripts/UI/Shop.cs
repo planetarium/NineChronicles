@@ -76,11 +76,11 @@ namespace Nekoyume.UI
 
             inventory.SharedModel.SelectedItemView.Subscribe(ShowTooltip)
                 .AddTo(gameObject);
-            inventory.SharedModel.OnRightClickItemView.Subscribe(view => ShowTooltipForAction(view.Model))
+            inventory.SharedModel.OnDoubleClickItemView.Subscribe(view => ShowTooltipForAction(view.Model))
                 .AddTo(gameObject);
             shopItems.SharedModel.SelectedItemView.Subscribe(ShowTooltip)
                 .AddTo(gameObject);
-            shopItems.SharedModel.OnRightClickItemView.Subscribe(view => ShowTooltipForAction(view.Model))
+            shopItems.SharedModel.OnDoubleClickItemView.Subscribe(view => ShowTooltipForAction(view.Model))
                 .AddTo(gameObject);
 
             SharedModel.State.Value = StateType.Show;
@@ -248,7 +248,6 @@ namespace Nekoyume.UI
 
         private void ShowTooltipForAction(CountableItem viewModel)
         {
-            inventory.Tooltip.Close();
             SharedModel.ShowItemPopup(viewModel);
         }
 

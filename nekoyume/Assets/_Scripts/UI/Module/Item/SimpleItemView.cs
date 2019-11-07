@@ -2,7 +2,7 @@ using Nekoyume.UI.Model;
 
 namespace Nekoyume.UI.Module
 {
-    public class SimpleItemView : ItemView<EnhanceMaterial>
+    public class SimpleItemView : ItemView<Item>
     {
     }
 }
