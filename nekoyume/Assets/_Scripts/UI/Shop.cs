@@ -8,13 +8,11 @@ using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Mail;
 using Nekoyume.Model;
-using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using TMPro;
 using UniRx;
 using UnityEngine;
-using UnityEngine.UI;
 using ShopItem = Nekoyume.UI.Model.ShopItem;
 using ShopItems = Nekoyume.UI.Module.ShopItems;
 
@@ -40,13 +38,13 @@ namespace Nekoyume.UI
         public CategoryButton buyButton;
         public CategoryButton sellButton;
         public RectTransform right;
-        public Text catQuoteText;
 
         public Module.Inventory inventory;
 
         public ShopItems shopItems;
         public GameObject shopNotice;
         public TextMeshProUGUI noticeText;
+        public SpeechBubble speechBubble;
 
         public Model.Shop SharedModel { get; private set; }
 
@@ -91,8 +89,6 @@ namespace Nekoyume.UI
             SharedModel.ItemCountAndPricePopup.Value.OnClickCancel.Subscribe(SubscribeItemPopupCancel)
                 .AddTo(gameObject);
 
-            catQuoteText.text = LocalizationManager.Localize("SPEECH_SHOP_0");
-
             buyButton.button.OnClickAsObservable()
                 .Subscribe(_ => SharedModel.State.Value = StateType.Buy)
                 .AddTo(gameObject);
@@ -129,6 +125,7 @@ namespace Nekoyume.UI
             _sequenceOfShopItems?.Kill();
             bg1.anchoredPosition = new Vector2(_defaultAnchoredPositionXOfBg1, bg1.anchoredPosition.y);
             right.anchoredPosition = new Vector2(_defaultAnchoredPositionXOfRight, right.anchoredPosition.y);
+            speechBubble.gameObject.SetActive(false);
 
             base.Close(ignoreCloseAnimation);
 
@@ -179,7 +176,19 @@ namespace Nekoyume.UI
             SetSequenceOfShopItems(true, ref _sequenceOfShopItems);
             _sequenceOfShopItems.AppendCallback(() => shopItems.SharedModel.State.Value = stateType);
             SetSequenceOfShopItems(false, ref _sequenceOfShopItems);
-            _sequenceOfShopItems.OnComplete(() => canvasGroup.interactable = true);
+            _sequenceOfShopItems.OnComplete(() =>
+            {
+                canvasGroup.interactable = true;
+                switch (stateType)
+                {
+                    case StateType.Buy:
+                        ShowSpeech("SPEECH_SHOP_BUY_");
+                        break;
+                    case StateType.Sell:
+                        ShowSpeech("SPEECH_SHOP_SELL_");
+                        break;
+                }
+            });
         }
 
         private void ShowTooltip(InventoryItemView view)
@@ -199,6 +208,7 @@ namespace Nekoyume.UI
             }
             else
             {
+                ShowSpeech("SPEECH_SHOP_REGISTER_ITEM_");
                 inventory.Tooltip.Show(
                     view.RectTransform,
                     view.Model,
@@ -432,6 +442,14 @@ namespace Nekoyume.UI
                                    Math.Abs(_defaultAnchoredPositionXOfRight - right.anchoredPosition.x)) /
                           goOutTweenXAbs)
                 .SetEase(isGoOut ? Ease.InQuint : Ease.OutQuint));
+        }
+
+        private void ShowSpeech(string key)
+        {
+            if (speechBubble.gameObject.activeSelf)
+                return;
+            speechBubble.SetKey(key);
+            StartCoroutine(speechBubble.CoShowText());
         }
     }
 }
