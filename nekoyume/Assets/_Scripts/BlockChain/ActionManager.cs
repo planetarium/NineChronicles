@@ -259,6 +259,17 @@ namespace Nekoyume.BlockChain
                 .ObserveOnMainThread()
                 .Timeout(ActionTimeout);
         }
+
+        public void PatchTableSheet(string tableName, string tableCsv)
+        {
+            var action = new PatchTableSheet
+            {
+                TableName = tableName,
+                TableCSV = tableCsv,
+            };
+            ProcessAction(action);
+        }
+
         #endregion
     }
 }
