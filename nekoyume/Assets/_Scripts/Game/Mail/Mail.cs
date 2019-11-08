@@ -39,9 +39,9 @@ namespace Nekoyume.Game.Mail
         }
 
         protected Mail(Bencodex.Types.Dictionary serialized)
-            : this((long) ((Integer) serialized[(Bencodex.Types.Text) "blockIndex"]).Value)
+            : this((long) ((Integer) serialized["blockIndex"]).Value)
         {
-            New = ((Bencodex.Types.Boolean) serialized[(Bencodex.Types.Text) "new"]).Value;
+            New = ((Bencodex.Types.Boolean) serialized["new"]).Value;
         }
 
         public abstract string ToInfo();
@@ -60,7 +60,7 @@ namespace Nekoyume.Game.Mail
 
         public static Mail Deserialize(Bencodex.Types.Dictionary serialized)
         {
-            string typeId = ((Text) serialized[(Text) "typeId"]).Value;
+            string typeId = ((Text) serialized["typeId"]).Value;
             Func<Dictionary, Mail> deserializer;
             try
             {

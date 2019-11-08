@@ -1,0 +1,160 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Bencodex</name>
+    </assembly>
+    <members>
+        <member name="T:Bencodex.Codec">
+            <summary>The most basic and the lowest-level interface to encode and
+            decode Bencodex values.  This provides two types of input and output:
+            <c cref="T:System.Byte">Byte</c> arrays and I/O
+            <c cref="T:System.IO.Stream">Stream</c>s.</summary>
+        </member>
+        <member name="M:Bencodex.Codec.Encode(Bencodex.Types.IValue)">
+            <summary>
+            Encodes a <paramref name="value"/> into a single
+            <c cref="T:System.Byte">Byte</c> array, rather than split into
+            multiple chunks.</summary>
+            <param name="value">A value to encode.</param>
+            <returns>A single <c cref="T:System.Byte">Byte</c> array which
+            contains the whole Bencodex representation of
+            the <paramref name="value"/>.</returns>
+        </member>
+        <member name="M:Bencodex.Codec.Encode(Bencodex.Types.IValue,System.IO.Stream)">
+            <summary>Encodes a <paramref name="value"/>,
+            and write it on an <paramref name="output"/> stream.</summary>
+            <param name="value">A value to encode.</param>
+            <param name="output">A stream that a value is printed on.</param>
+            <exception cref="T:System.ArgumentException">Thrown when a given
+            <paramref name="output"/> stream is not writable.</exception>
+        </member>
+        <member name="M:Bencodex.Codec.Decode(System.IO.Stream)">
+            <summary>Decodes an encoded value from an <paramref name="input"/>
+            stream.</summary>
+            <param name="input">An input stream to decode.</param>
+            <returns>A decoded value.</returns>
+            <exception cref="T:System.ArgumentException">Thrown when a given
+            <paramref name="input"/> stream is not readable.</exception>
+            <exception cref="T:Bencodex.DecodingException">Thrown when a binary
+            representation of an <paramref name="input"/> stream is not a valid
+            Bencodex encoding.</exception>
+        </member>
+        <member name="M:Bencodex.Codec.Decode(System.Byte[])">
+            <summary>Decodes an encoded value from a
+            <c cref="T:System.Byte">Byte</c> array.</summary>
+            <param name="bytes">A <c cref="T:System.Byte">Byte</c> array of
+            Bencodex encoding.</param>
+            <returns>A decoded value.</returns>
+            <exception cref="T:Bencodex.DecodingException">Thrown when a
+            <paramref name="bytes"/> representation is not a valid Bencodex
+            encoding.</exception>
+        </member>
+        <member name="T:Bencodex.CodecException">
+            <summary>Serves as the base class for codec exceptions.</summary>
+            <inheritdoc />
+        </member>
+        <member name="T:Bencodex.DecodingException">
+            <summary>The exception that is thrown when an input is not
+            a valid Bencodex encoding so that a decoder cannot parse it.</summary>
+            <inheritdoc />
+        </member>
+        <member name="T:Bencodex.Misc.ByteArrayComparer">
+            <summary>Similar to <c cref="T:System.StringComparer">StringComparer</c>
+            but for <c cref="T:System.Byte">Byte</c> arrays instead of
+            Unicode <c cref="T:System.String">String</c>s.</summary>
+        </member>
+        <member name="T:Bencodex.Misc.ByteChunkQueue">
+            <summary>A special-purpose queue for internal use, which accepts
+            inserting a chunk of <c cref="T:System.Byte">Byte</c>s into and
+            removing the number of <c cref="T:System.Byte">Byte</c>s from.
+            <para>For example, if <c>foo</c>, <c>bar</c>, and <c>baz</c> were
+            <c cref="M:Bencodex.Misc.ByteChunkQueue.Append(System.Byte[])">Push</c>ed into a queue, the first
+            <c cref="M:Bencodex.Misc.ByteChunkQueue.Pop(System.Int64)">Pop(5)</c> returns <c>fooba</c> and the second
+            <c cref="M:Bencodex.Misc.ByteChunkQueue.Pop(System.Int64)">Pop(5)</c> returns <c>rbaz</c>.</para>
+            </summary>
+        </member>
+        <member name="P:Bencodex.Misc.ByteChunkQueue.ByteLength">
+            <summary>The total size of <c cref="T:System.Byte">Byte</c>s that
+            the queue contains.</summary>
+        </member>
+        <member name="M:Bencodex.Misc.ByteChunkQueue.#ctor">
+            <summary>Creates a new empty queue.</summary>
+        </member>
+        <member name="P:Bencodex.Misc.ByteChunkQueue.Empty">
+            <summary>Whether the queue is empty or not.</summary>
+        </member>
+        <member name="M:Bencodex.Misc.ByteChunkQueue.Append(System.Byte[])">
+            <summary>Insert an array of <c cref="T:System.Byte">Byte</c>s chunk
+            into the end of the queue.</summary>
+            <param name="chunk">A chunk of <c cref="T:System.Byte">Byte</c>s to
+            insert.</param>
+        </member>
+        <member name="M:Bencodex.Misc.ByteChunkQueue.Pop(System.Int64)">
+            <summary>Fetches the specified size (<paramref name="byteSize"/>)
+            of leading <c cref="T:System.Byte">Byte</c>s and removes them from
+            the queue.</summary>
+            <param name="byteSize">The length of <c cref="T:System.Byte">Byte</c>s
+            to request.</param>
+            <returns>An array of <c cref="T:System.Byte">Byte</c>s.  Its size is
+            probably the requested <paramref name="byteSize"/>, but also may be
+            less than that if there's not enough <c cref="T:System.Byte">Byte</c>s
+            left.</returns>
+            <exception cref="T:System.ArgumentException">Thrown when a requested
+            <paramref name="byteSize"/> is negative or zero.</exception>
+        </member>
+        <member name="M:Bencodex.Misc.ByteChunkQueue.StartsWith(System.Byte[])">
+            <summary>Tests whether the queue shares the same leading
+            <c cref="T:System.Byte">Byte</c>s with the given
+            <paramref name="prefix"/>.</summary>
+            <param name="prefix">An array of <c cref="T:System.Byte">Byte</c>s to
+            test if it's appeared in the queue at first.</param>
+            <returns>A <c>true</c> if the given <paramref name="prefix"/> is
+            appeared in the queue at first, or <c>false</c>.</returns>
+        </member>
+        <member name="P:Bencodex.Misc.ByteChunkQueue.FirstByte">
+            <summary>A first <c cref="T:System.Byte">Byte</c> in the queue,
+            unless it's empty.  If the queue is empty, it is <c>null</c>.
+            </summary>
+        </member>
+        <member name="M:Bencodex.Misc.ByteChunkQueue.IndexOf(System.Byte)">
+            <summary>Determines the position of the given
+            <paramref name="element"/> is appeared first in the queue.</summary>
+            <param name="element">A <c cref="T:System.Byte">Byte</c> to look
+            up.</param>
+            <returns>A zero-indexed offset the given <paramref name="element"/>
+            is appeared in the queue.  It could be <c>-1</c> if
+            <paramref name="element"/> does not exist in the queue.</returns>
+        </member>
+        <member name="T:Bencodex.Misc.CompositeComparer`2">
+            <summary>Compose given two comparers into one comparer.</summary>
+            <typeparam name="A">An element type of the first comparer.</typeparam>
+            <typeparam name="B">An element type of the second comparer.</typeparam>
+        </member>
+        <member name="T:Bencodex.Types.Boolean">
+            <summary>Represents a Bencodex Boolean true (i.e., <c>t</c>)
+            or false (i.e., <c>f</c>).</summary>
+        </member>
+        <member name="T:Bencodex.Types.IValue">
+            <summary>Represents a possible value in Bencodex representation.
+            </summary>
+            <seealso cref="T:Bencodex.Types.Null"/>
+            <seealso cref="T:Bencodex.Types.Boolean"/>
+            <seealso cref="T:Bencodex.Types.Integer"/>
+            <seealso cref="T:Bencodex.Types.Binary"/>
+            <seealso cref="T:Bencodex.Types.Text"/>
+            <seealso cref="T:Bencodex.Types.List"/>
+            <seealso cref="T:Bencodex.Types.Dictionary"/>
+        </member>
+        <member name="M:Bencodex.Types.IValue.EncodeIntoChunks">
+            <summary>Encodes the value into <c cref="T:System.Byte">Byte</c>
+            arrays.</summary>
+            <returns><c cref="T:System.Byte">Byte</c> arrays of Bencodex
+            representation of the value.</returns>
+            <seealso cref="M:Bencodex.Codec.Encode(Bencodex.Types.IValue)"/>
+            <seealso cref="M:Bencodex.Codec.Encode(Bencodex.Types.IValue,System.IO.Stream)"/>
+        </member>
+        <member name="T:Bencodex.Types.Null">
+            <summary>Represents a Bencodex null value (i.e., <c>n</c>).</summary>
+        </member>
+    </members>
+</doc>

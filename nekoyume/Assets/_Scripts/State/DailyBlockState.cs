@@ -28,7 +28,7 @@ namespace Nekoyume.State
         public DailyBlockState(Bencodex.Types.Dictionary serialized)
             : base(serialized)
         {
-            nextBlockIndex = (long) ((Integer) serialized[(Text) "nextBlockIndex"]).Value;
+            nextBlockIndex = (long) ((Integer) serialized["nextBlockIndex"]).Value;
         }
 
         public override IValue Serialize() =>

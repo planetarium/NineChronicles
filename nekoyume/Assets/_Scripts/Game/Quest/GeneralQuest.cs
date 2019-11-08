@@ -22,8 +22,8 @@ namespace Nekoyume.Game.Quest
 
         public GeneralQuest(Dictionary serialized) : base(serialized)
         {
-            _current = (int) ((Integer) serialized[(Bencodex.Types.Text) "current"]).Value;
-            Event = (QuestEventType) (int) ((Integer) serialized[(Bencodex.Types.Text) "event"]).Value;
+            _current = (int) ((Integer) serialized["current"]).Value;
+            Event = (QuestEventType) (int) ((Integer) serialized["event"]).Value;
         }
 
         public override QuestType QuestType

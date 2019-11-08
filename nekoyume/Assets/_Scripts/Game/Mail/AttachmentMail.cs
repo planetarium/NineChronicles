@@ -23,7 +23,7 @@ namespace Nekoyume.Game.Mail
             : base(serialized)
         {
             attachment = AttachmentActionResult.Deserialize(
-                (Bencodex.Types.Dictionary) serialized[(Text) "attachment"]
+                (Bencodex.Types.Dictionary) serialized["attachment"]
             );
         }
 

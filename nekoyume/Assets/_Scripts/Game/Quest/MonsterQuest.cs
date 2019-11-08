@@ -22,8 +22,8 @@ namespace Nekoyume.Game.Quest
 
         public MonsterQuest(Bencodex.Types.Dictionary serialized) : base(serialized)
         {
-            _count = (int) ((Integer) serialized[(Bencodex.Types.Text) "count"]).Value;
-            _monsterId = (int) ((Integer) serialized[(Bencodex.Types.Text) "monsterId"]).Value;
+            _count = (int) ((Integer) serialized["count"]).Value;
+            _monsterId = (int) ((Integer) serialized["monsterId"]).Value;
         }
 
         public override QuestType QuestType => QuestType.Adventure;

@@ -35,9 +35,9 @@ namespace Nekoyume.Game.Item
             public Item(Bencodex.Types.Dictionary serialized)
             {
                 item = ItemFactory.Deserialize(
-                    (Bencodex.Types.Dictionary) serialized[(Text) "item"]
+                    (Bencodex.Types.Dictionary) serialized["item"]
                 );
-                count = (int) ((Integer) serialized[(Text) "count"]).Value;
+                count = (int) ((Integer) serialized["count"]).Value;
             }
 
             protected bool Equals(Item other)
