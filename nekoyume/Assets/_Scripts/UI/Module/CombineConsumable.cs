@@ -153,7 +153,7 @@ namespace Nekoyume.UI.Module
             if (ids.Count >= 2)
             {
                 resultItemView.gameObject.SetActive(true);
-                if (TableSheetsState.Current.ConsumableItemRecipeSheet.TryGetValue(ids, out var recipeRow))
+                if (TableSheets.FromTableSheetsState(TableSheetsState.Current).ConsumableItemRecipeSheet.TryGetValue(ids, out var recipeRow))
                 {
                     Game.Game.instance.TableSheets.ConsumableItemSheet.TryGetValue(recipeRow.ResultConsumableItemId,
                         out var itemRow, true);
