@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text;
 using Bencodex.Types;
 using Libplanet;
+using Nekoyume.EnumType;
+using Nekoyume.Game;
 
 namespace Nekoyume.State
 {
@@ -95,6 +97,19 @@ namespace Nekoyume.State
 
         public static Guid? ToNullableGuid(this IValue serialized) =>
             Deserialize(ToGuid, serialized);
+
+        public static IValue Serialize(this DecimalStat decimalStat) =>
+            Bencodex.Types.Dictionary.Empty
+                .Add("type", decimalStat.Type.Serialize())
+                .Add("value", decimalStat.Value.Serialize());
+
+        public static DecimalStat ToDecimalStat(this IValue serialized) =>
+            ToDecimalStat((Bencodex.Types.Dictionary) serialized);
+        
+        public static DecimalStat ToDecimalStat(this Bencodex.Types.Dictionary serialized) =>
+            new DecimalStat(
+                StatTypeExtension.Deserialize((Binary)serialized["type"]),
+                serialized["value"].ToDecimal());
 
         #region Generic
         

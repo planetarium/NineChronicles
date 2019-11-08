@@ -31,7 +31,7 @@ namespace Nekoyume
         public ScrollRect list;
         public ScrollRect skillList;
         public HorizontalLayoutGroup skillPanel;
-        public Dropdown TableSheets;
+        public Dropdown TableSheetsDropdown;
         public Transform OnChainTableSheet;
         public Transform LocalTableSheet;
         public GameObject PatchButton;
@@ -105,10 +105,7 @@ namespace Nekoyume
 
         public void RefreshTableSheets()
         {
-            var index = TableSheets.value;
-            var tableName = TableSheets.options[index].text;
-            Debug.Log($"index: {index} / tableName: {tableName}.");
-            Debug.Log($"onChainSheet.Count: {TableSheetsState.Current.TableSheets.Count} / localSheets.Count: '{tableName} {TableAssets[tableName]}'.");
+            var tableName = TableSheetsDropdown.options.Count == 0 ? string.Empty : GetTableName();
             if (TableSheetsState.Current.TableSheets.TryGetValue(tableName, out string onChainTableCsv))
             {
                 Display(nameof(OnChainTableSheet), onChainTableCsv);
@@ -178,7 +175,7 @@ namespace Nekoyume
 
         private string GetTableName()
         {
-            return TableSheets.options[TableSheets.value].text;
+            return TableSheetsDropdown.options[TableSheetsDropdown.value].text;
         }
 
         protected override void Awake()
@@ -248,7 +245,8 @@ namespace Nekoyume
                 var skill = SkillFactory.Get(skillRow, 50, 100);
                 skills.Add(skill);
                 Button newButton = Instantiate(buttonBase, skillList.content);
-                newButton.GetComponentInChildren<Text>().text = $"{skillRow.GetLocalizedName()}_{skillRow.ElementalType}";
+                newButton.GetComponentInChildren<Text>().text =
+                    $"{skillRow.GetLocalizedName()}_{skillRow.ElementalType}";
                 newButton.onClick.AddListener(() => SelectSkill(skill));
                 newButton.gameObject.SetActive(true);
             }
@@ -256,8 +254,8 @@ namespace Nekoyume
             _skills = skills.ToArray();
 
             TableAssets = GetTableAssetsHavingDifference();
-            TableSheets.options = TableAssets.Keys.Select(s => new Dropdown.OptionData(s)).ToList();
-            if (TableSheets.options.Count == 0)
+            TableSheetsDropdown.options = TableAssets.Keys.Select(s => new Dropdown.OptionData(s)).ToList();
+            if (TableSheetsDropdown.options.Count == 0)
             {
                 Debug.Log("It seems there is no table having difference.");
                 Display(nameof(OnChainTableSheet), "No content.");
@@ -271,16 +269,10 @@ namespace Nekoyume
 
             base.Show();
         }
-        
-        private static Dictionary<string, string> GetTableCsvAssets()
-        {
-            var addressableAssetsContainer = Resources.Load<AddressableAssetsContainer>("AddressableAssetsContainer");
-            return addressableAssetsContainer.tableCsvAssets.ToDictionary(asset => asset.name, asset => asset.text);
-        }
 
         private static Dictionary<string, string> GetTableAssetsHavingDifference()
         {
-            var tableCsvAssets = GetTableCsvAssets();
+            var tableCsvAssets = TableSheets.GetTableCsvAssets();
             var tableSheetsState = TableSheetsState.Current;
             return tableCsvAssets.Where(pair =>
                 !tableSheetsState.TableSheets.TryGetValue(pair.Key, out string onChainCsv) ||

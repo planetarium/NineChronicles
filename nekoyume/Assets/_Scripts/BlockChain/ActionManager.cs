@@ -265,7 +265,7 @@ namespace Nekoyume.BlockChain
             var action = new PatchTableSheet
             {
                 TableName = tableName,
-                TableCSV = tableCsv,
+                TableCsv = tableCsv,
             };
             ProcessAction(action);
         }
