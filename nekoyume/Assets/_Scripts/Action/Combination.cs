@@ -219,7 +219,8 @@ namespace Nekoyume.Action
             }
             else
             {
-                var consumableItemRecipeSheet = Game.Game.instance.TableSheets.ConsumableItemRecipeSheet;
+                var tableSheetsState = TableSheetsState.FromActionContext(ctx);
+                var consumableItemRecipeSheet = tableSheetsState.ConsumableItemRecipeSheet;
                 var consumableItemSheet = Game.Game.instance.TableSheets.ConsumableItemSheet;
                 var foodMaterials = materialRows.Keys.Where(pair => pair.ItemSubType == ItemSubType.FoodMaterial);
                 var foodCount = materialRows.Min(pair => pair.Value);
@@ -253,7 +254,7 @@ namespace Nekoyume.Action
                     Result.itemUsable = itemUsable;
                     var mail = new CombinationMail(Result, ctx.BlockIndex);
                     avatarState.Update(mail);
-                    avatarState.UpdateCombinationQuest(itemUsable);    
+                    avatarState.UpdateCombinationQuest(itemUsable);
                 }
             }
 
