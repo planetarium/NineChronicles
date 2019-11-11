@@ -23,9 +23,9 @@ namespace Nekoyume.Game.Quest
 
         public ItemEnhancementQuest(Dictionary serialized) : base(serialized)
         {
-            Grade = (int) ((Integer) serialized[(Bencodex.Types.Text) "grade"]).Value;
-            _count = (int) ((Integer) serialized[(Bencodex.Types.Text) "count"]).Value;
-            _current = (int) ((Integer) serialized[(Bencodex.Types.Text) "current"]).Value;
+            Grade = (int) ((Integer) serialized["grade"]).Value;
+            _count = (int) ((Integer) serialized["count"]).Value;
+            _current = (int) ((Integer) serialized["current"]).Value;
         }
 
         public override QuestType QuestType => QuestType.Craft;

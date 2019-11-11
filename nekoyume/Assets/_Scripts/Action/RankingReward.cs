@@ -30,10 +30,10 @@ namespace Nekoyume.Action
         public override void LoadPlainValue(IValue plainValue)
         {
             var dict = (Bencodex.Types.Dictionary) plainValue;
-            gold1 = dict[(Text) "gold1"].ToDecimal();
-            gold2 = dict[(Text) "gold2"].ToDecimal();
-            gold3 = dict[(Text) "gold3"].ToDecimal();
-            agentAddresses = dict[(Text) "agentAddresses"].ToArray(StateExtensions.ToAddress);
+            gold1 = dict["gold1"].ToDecimal();
+            gold2 = dict["gold2"].ToDecimal();
+            gold3 = dict["gold3"].ToDecimal();
+            agentAddresses = dict["agentAddresses"].ToArray(StateExtensions.ToAddress);
         }
 
         public override IAccountStateDelta Execute(IActionContext ctx)

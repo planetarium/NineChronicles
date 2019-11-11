@@ -31,7 +31,7 @@ namespace Nekoyume.Action
 
             public Result(Bencodex.Types.Dictionary serialized) : base(serialized)
             {
-                shopItem = new ShopItem((Bencodex.Types.Dictionary) serialized[(Text) "shopItem"]);
+                shopItem = new ShopItem((Bencodex.Types.Dictionary) serialized["shopItem"]);
             }
 
             public override IValue Serialize() =>

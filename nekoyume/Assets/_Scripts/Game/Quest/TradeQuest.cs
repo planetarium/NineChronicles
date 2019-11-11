@@ -22,8 +22,8 @@ namespace Nekoyume.Game.Quest
 
         public TradeQuest(Dictionary serialized) : base(serialized)
         {
-            _current = (int) ((Integer) serialized[(Bencodex.Types.Text) "current"]).Value;
-            Type = (TradeType) (int) ((Integer) serialized[(Bencodex.Types.Text) "type"]).Value;
+            _current = (int) ((Integer) serialized["current"]).Value;
+            Type = (TradeType) (int) ((Integer) serialized["type"]).Value;
         }
 
         public override void Check()

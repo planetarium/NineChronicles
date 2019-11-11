@@ -384,7 +384,7 @@
                                 dictionary.SetItem(
                                     (Text)"hp",
                                     (Integer)Math.Max(
-                                        (int)dictionary.GetValue<Integer>("hp").Value - 5,
+                                        dictionary.GetValue<Integer>("hp") - 5,
                                         0)
                                 );
                             break;
@@ -394,7 +394,7 @@
                                 dictionary.SetItem(
                                     (Text)"hp",
                                     (Integer)Math.Min(
-                                        (int)dictionary.GetValue<Integer>("hp").Value + 5,
+                                        dictionary.GetValue<Integer>("hp") + 5,
                                         20)
                                 );
                             break;
@@ -433,8 +433,8 @@
                             return;
                     }
                     c.Hp =
-                        (int)((Bencodex.Types.Dictionary)nextStates.GetState(TargetAddress))
-                            .GetValue<Integer>("hp").Value;
+                        ((Bencodex.Types.Dictionary)nextStates.GetState(TargetAddress))
+                            .GetValue<Integer>("hp");
                     c.Draw();
                 }
                 // Sometimes a block to which an action belongs can be
@@ -455,8 +455,8 @@
                         case ActType.Attack:
                         case ActType.Heal:
                             IAccountStateDelta prevStates = context.PreviousStates;
-                            c.Hp = (int)((Bencodex.Types.Dictionary)prevStates.GetState(TargetAddress))
-                                .GetValue<Integer>("hp").Value;
+                            c.Hp = ((Bencodex.Types.Dictionary)prevStates.GetState(TargetAddress))
+                                .GetValue<Integer>("hp");
                             c.Draw();
                             break;
                         default:
@@ -468,7 +468,7 @@
                 IValue IAction.PlainValue =>
                     new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
                     {
-                        [(Text)"type"] = (Integer)((int)Type),
+                        [(Text)"type"] = (Integer)(int)Type,
                         [(Text)"target_address"] = (Binary)TargetAddress.ToByteArray(),
                     });
                 // Deserializes "bound arguments".  That is, it is inverse
@@ -477,7 +477,7 @@
                     IValue plainValue)
                 {
                     var dictionary = (Bencodex.Types.Dictionary)plainValue;
-                    Type = (ActType)(int)dictionary.GetValue<Integer>("type").Value;
+                    Type = (ActType)(int)dictionary.GetValue<Integer>("type");
                     TargetAddress =
                         new Address(dictionary.GetValue<Binary>("target_address").Value);
                 }
@@ -810,7 +810,7 @@
                 {
                     var dictionary = (Bencodex.Types.Dictionary)plainValue;
                     TargetAddress =
-                        new Address(dictionary.GetValue<Binary>("target_address").Value);
+                        new Address(dictionary.GetValue<Binary>("target_address"));
                 }
             }
             // PolymorphicAction<T> requires concrete action classes marked with
@@ -847,10 +847,9 @@
                     var c = new Character
                     {
                         Address = TargetAddress,
-                        Hp = (int)((Integer)nextStates.GetState(TargetAddress)).Value,
+                        Hp = (Integer)nextStates.GetState(TargetAddress),
                     };
                     c.Draw();
-                    break;
                 }
                 void IAction.Unrender(
                     IActionContext context,
@@ -872,7 +871,7 @@
                         (Bencodex.Types.Dictionary)state
                             .SetItem(
                                 (Text)"hp",
-                                (Integer)Math.Max((int)state.GetValue<Integer>("hp").Value - 5, 0))
+                                (Integer)Math.Max(state.GetValue<Integer>("hp") - 5, 0))
                     );
                 }
                 void IAction.Render(
@@ -880,8 +879,8 @@
                     IAccountStateDelta nextStates)
                 {
                     Character c = Character.GetByAddress(TargetAddress);
-                    c.Hp = (int)((Bencodex.Types.Dictionary)nextStates.GetState(TargetAddress))
-                        .GetValue<Integer>("hp").Value;
+                    c.Hp = ((Bencodex.Types.Dictionary)nextStates.GetState(TargetAddress))
+                        .GetValue<Integer>("hp");
                     c.Draw();
                 }
                 void IAction.Unrender(
@@ -891,7 +890,7 @@
                     Character c = Character.GetByAddress(TargetAddress);
                     var target =
                         (Bencodex.Types.Dictionary)context.PreviousStates.GetState(TargetAddress);
-                    c.Hp = (int)target.GetValue<Integer>("hp").Value;
+                    c.Hp = target.GetValue<Integer>("hp");
                     c.Draw();
                 }
             }
@@ -907,7 +906,7 @@
                         (Bencodex.Types.Dictionary)state
                             .SetItem(
                                 (Text)"hp",
-                                (Integer)Math.Min((int)state.GetValue<Integer>("hp").Value + 5, 20))
+                                (Integer)Math.Min(state.GetValue<Integer>("hp") + 5, 20))
                     );
                 }
                 void IAction.Render(
@@ -917,7 +916,7 @@
                     Character c = Character.GetByAddress(TargetAddress);
                     var target =
                         (Bencodex.Types.Dictionary)context.PreviousStates.GetState(TargetAddress);
-                    c.Hp = (int)target.GetValue<Integer>("hp").Value;
+                    c.Hp = target.GetValue<Integer>("hp");
                     c.Draw();
                 }
                 void IAction.Unrender(
@@ -927,7 +926,7 @@
                     Character c = Character.GetByAddress(TargetAddress);
                     var target =
                         (Bencodex.Types.Dictionary)context.PreviousStates.GetState(TargetAddress);
-                    c.Hp = (int)target.GetValue<Integer>("hp").Value;
+                    c.Hp = target.GetValue<Integer>("hp");
                     c.Draw();
                 }
             }
@@ -1287,10 +1286,17 @@
             <summary>
             All <see cref="P:Libplanet.Blocks.Block`1.Hash"/>es in the current index.  The genesis block's hash goes
             first, and the tip goes last.
+            Returns a <see cref="T:System.Int64"/> integer that represents the number of elements in the
+            <see cref="T:Libplanet.Blockchain.BlockChain`1"/>.
             </summary>
         </member>
-        <member name="P:Libplanet.Blockchain.BlockChain`1.System#Collections#Generic#IReadOnlyCollection{Libplanet#Blocks#Block{T}}#Count">
-            <inheritdoc/>
+        <member name="P:Libplanet.Blockchain.BlockChain`1.Count">
+            <summary>
+            Returns a <see cref="T:System.Int64"/> integer that represents the number of elements in the
+            <see cref="T:Libplanet.Blockchain.BlockChain`1"/>.
+            </summary>
+            <returns>A number that represents how many elements in the <see cref="T:Libplanet.Blockchain.BlockChain`1"/>.
+            </returns>
         </member>
         <member name="P:Libplanet.Blockchain.BlockChain`1.Item(System.Int32)">
             <summary>
@@ -1316,6 +1322,17 @@
             </param>
             <exception cref="T:System.Collections.Generic.KeyNotFoundException">Thrown when there is no <see cref="T:Libplanet.Blocks.Block`1"/>
             with a given <paramref name="hash"/>.</exception>
+        </member>
+        <member name="M:Libplanet.Blockchain.BlockChain`1.Contains(Libplanet.Blocks.Block{`0})">
+            <summary>
+            Determines whether the <see cref="T:Libplanet.Blockchain.BlockChain`1"/> contains <see cref="T:Libplanet.Blocks.Block`1"/>.
+            </summary>
+            <param name="block">The <see cref="T:Libplanet.Blocks.Block`1"/> to check if it is in the
+            <see cref="T:Libplanet.Blockchain.BlockChain`1"/>.</param>
+            <returns>
+            <c>true</c> if the <see cref="T:Libplanet.Blockchain.BlockChain`1"/> contains <see cref="T:Libplanet.Blocks.Block`1"/>;
+            otherwise, <c>false</c>.
+            </returns>
         </member>
         <member name="M:Libplanet.Blockchain.BlockChain`1.Contains(Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
             <summary>
@@ -1350,14 +1367,6 @@
             <returns><see cref="T:Libplanet.Tx.Transaction`1"/> with <paramref name="txId"/>.</returns>
             <exception cref="T:System.Collections.Generic.KeyNotFoundException">Thrown when there is no
             <see cref="T:Libplanet.Tx.Transaction`1"/> with a given <paramref name="txId"/>.</exception>
-        </member>
-        <member name="M:Libplanet.Blockchain.BlockChain`1.LongCount">
-            <summary>
-            Returns a <see cref="T:System.Int64"/> integer that represents the number of elements in the
-            <see cref="T:Libplanet.Blockchain.BlockChain`1"/>.
-            </summary>
-            <returns>A number that represents how many elements in the <see cref="T:Libplanet.Blockchain.BlockChain`1"/>.
-            </returns>
         </member>
         <member name="M:Libplanet.Blockchain.BlockChain`1.GetState(Libplanet.Address,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.Boolean)">
             <summary>
@@ -1617,45 +1626,16 @@
             An appropriate interval between consecutive <see cref="T:Libplanet.Blocks.Block`1"/>s.
             It is usually from 20 to 30 seconds.
             <para>If a previous interval took longer than this
-            <see cref="M:Libplanet.Blockchain.Policies.BlockPolicy`1.GetNextBlockDifficulty(System.Collections.Generic.IReadOnlyList{Libplanet.Blocks.Block{`0}})"/> method
+            <see cref="M:Libplanet.Blockchain.Policies.BlockPolicy`1.GetNextBlockDifficulty(Libplanet.Blockchain.BlockChain{`0})"/> method
             raises the <see cref="P:Libplanet.Blocks.Block`1.Difficulty"/>.  If it took shorter
             than this <see cref="P:Libplanet.Blocks.Block`1.Difficulty"/> is dropped.</para>
             </summary>
         </member>
-        <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.ValidateNextBlock(System.Collections.Generic.IReadOnlyList{Libplanet.Blocks.Block{`0}},Libplanet.Blocks.Block{`0})">
+        <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.ValidateNextBlock(Libplanet.Blockchain.BlockChain{`0},Libplanet.Blocks.Block{`0})">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.GetNextBlockDifficulty(System.Collections.Generic.IReadOnlyList{Libplanet.Blocks.Block{`0}})">
+        <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.GetNextBlockDifficulty(Libplanet.Blockchain.BlockChain{`0})">
             <inheritdoc />
-        </member>
-        <member name="T:Libplanet.Blockchain.Policies.BlockPolicyExtension">
-            <summary>
-            This extension class enables some convenient methods (sugar for
-            the most part) to deal with <see cref="T:Libplanet.Blockchain.Policies.IBlockPolicy`1"/>.
-            </summary>
-            <seealso cref="T:Libplanet.Blockchain.Policies.IBlockPolicy`1"/>
-        </member>
-        <member name="M:Libplanet.Blockchain.Policies.BlockPolicyExtension.ValidateBlocks``1(Libplanet.Blockchain.Policies.IBlockPolicy{``0},System.Collections.Generic.IReadOnlyList{Libplanet.Blocks.Block{``0}},System.DateTimeOffset)">
-            <summary>
-            Checks if <paramref name="blocks"/> are invalid, and if that
-            returns the reason.
-            <para>Note that it returns <c>null</c> when blocks are
-            <em>valid</em>.</para>
-            </summary>
-            <param name="policy"><see cref="T:Libplanet.Blockchain.Policies.IBlockPolicy`1"/> to used for
-            validation <paramref name="blocks"/>.</param>
-            <param name="blocks">Consecutive <see cref="T:Libplanet.Blocks.Block`1"/>s to
-            validate.</param>
-            <param name="currentTime">The current time to be used to validate
-            of <see cref="P:Libplanet.Blocks.Block`1.Timestamp"/>s.
-            Usually <see cref="P:System.DateTimeOffset.UtcNow"/> is used.</param>
-            <returns>The reason why the given <paramref name="blocks"/> are
-            <em>invalid</em>, or <c>null</c> if <paramref name="blocks"/> are
-            <em>valid</em>.</returns>
-            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match
-            to <see cref="T:Libplanet.Blocks.Block`1"/>'s type parameter.</typeparam>
-            <seealso cref="T:Libplanet.Blockchain.Policies.IBlockPolicy`1"/>
-            <seealso cref="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.ValidateNextBlock(System.Collections.Generic.IReadOnlyList{Libplanet.Blocks.Block{`0}},Libplanet.Blocks.Block{`0})"/>
         </member>
         <member name="T:Libplanet.Blockchain.Policies.IBlockPolicy`1">
             <summary>
@@ -1665,14 +1645,13 @@
             </summary>
             <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match
             to <see cref="T:Libplanet.Blocks.Block`1"/>'s type parameter.</typeparam>
-            <seealso cref="T:Libplanet.Blockchain.Policies.BlockPolicyExtension"/>
         </member>
         <member name="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.BlockAction">
             <summary>
             A block action to execute and be rendered for every block.
             </summary>
         </member>
-        <member name="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.ValidateNextBlock(System.Collections.Generic.IReadOnlyList{Libplanet.Blocks.Block{`0}},Libplanet.Blocks.Block{`0})">
+        <member name="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.ValidateNextBlock(Libplanet.Blockchain.BlockChain{`0},Libplanet.Blocks.Block{`0})">
             <summary>
             Checks if <paramref name="nextBlock"/> is invalid, and if that
             returns the reason.
@@ -1686,9 +1665,8 @@
             <returns>The reason why the given <paramref name="blocks"/> are
             <em>invalid</em>, or <c>null</c> if <paramref name="blocks"/> are
             <em>valid</em>.</returns>
-            <seealso cref="M:Libplanet.Blockchain.Policies.BlockPolicyExtension.ValidateBlocks``1(Libplanet.Blockchain.Policies.IBlockPolicy{``0},System.Collections.Generic.IReadOnlyList{Libplanet.Blocks.Block{``0}},System.DateTimeOffset)"/>
         </member>
-        <member name="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.GetNextBlockDifficulty(System.Collections.Generic.IReadOnlyList{Libplanet.Blocks.Block{`0}})">
+        <member name="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.GetNextBlockDifficulty(Libplanet.Blockchain.BlockChain{`0})">
             <summary>
             Determines a right <see cref="P:Libplanet.Blocks.Block`1.Difficulty"/>
             for a new <see cref="T:Libplanet.Blocks.Block`1"/> to be mined
@@ -2552,6 +2530,67 @@
         <member name="M:Libplanet.KeyStore.Kdfs.Pbkdf2`1.WriteJson(System.Text.Json.Utf8JsonWriter)">
             <inheritdoc/>
         </member>
+        <member name="T:Libplanet.KeyStore.Kdfs.Scrypt">
+            <summary>
+            <a href="https://en.wikipedia.org/wiki/Scrypt">Scrypt</a>.
+            </summary>
+        </member>
+        <member name="M:Libplanet.KeyStore.Kdfs.Scrypt.#ctor(System.Int32,System.Byte[],System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Configures parameters of <a href="https://en.wikipedia.org/wiki/Scrypt">Scrypt</a>.
+            </summary>
+            <param name="cost">The CPU/memory cost parameter. Corresponds to <c>n</c>.</param>
+            <param name="salt">A cryptographic salt.</param>
+            <param name="keyLength">The desired byte-length of the derived key.
+            Corresponds to <c>dkLen</c> except that it's not bit-wise but byte-wise.</param>
+            <param name="parallelization">The parallelization parameter.
+            Corresponds to <c>p</c>.</param>
+            <param name="blockSize">The blocksize parameter. Corresponds to <c>r</c>.</param>
+        </member>
+        <member name="M:Libplanet.KeyStore.Kdfs.Scrypt.#ctor(System.Int32,System.Collections.Immutable.ImmutableArray{System.Byte}@,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Configures parameters of <a href="https://en.wikipedia.org/wiki/Scrypt">Scrypt</a>.
+            </summary>
+            <param name="cost">The CPU/memory cost parameter. Corresponds to <c>n</c>.</param>
+            <param name="salt">A cryptographic salt.</param>
+            <param name="keyLength">The desired byte-length of the derived key.
+            Corresponds to <c>dkLen</c> except that it's not bit-wise but byte-wise.</param>
+            <param name="parallelization">The parallelization parameter.
+            Corresponds to <c>p</c>.</param>
+            <param name="blockSize">The blocksize parameter. Corresponds to <c>r</c>.</param>
+        </member>
+        <member name="P:Libplanet.KeyStore.Kdfs.Scrypt.Cost">
+            <summary>
+            The CPU/memory cost parameter. Corresponds to <c>n</c>.
+            </summary>
+        </member>
+        <member name="P:Libplanet.KeyStore.Kdfs.Scrypt.KeyLength">
+            <summary>
+            The desired byte-length of the derived key.
+            Corresponds to <c>dkLen</c> except that it's not bit-wise but byte-wise.
+            </summary>
+        </member>
+        <member name="P:Libplanet.KeyStore.Kdfs.Scrypt.Salt">
+            <summary>
+            A cryptographic salt.
+            </summary>
+        </member>
+        <member name="P:Libplanet.KeyStore.Kdfs.Scrypt.Parallelization">
+            <summary>
+            The parallelization parameter. Corresponds to <c>p</c>.
+            </summary>
+        </member>
+        <member name="P:Libplanet.KeyStore.Kdfs.Scrypt.BlockSize">
+            <summary>
+            The blocksize parameter. Corresponds to <c>r</c>.
+            </summary>
+        </member>
+        <member name="M:Libplanet.KeyStore.Kdfs.Scrypt.Derive(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.KeyStore.Kdfs.Scrypt.WriteJson(System.Text.Json.Utf8JsonWriter)">
+            <inheritdoc/>
+        </member>
         <member name="T:Libplanet.KeyStore.KeyJsonException">
             <summary>
             Serves as the base class for exceptions thrown by
@@ -2672,6 +2711,12 @@
             </summary>
             <param name="passphrase">A user input passphrase (i.e., password).</param>
             <returns>A bare <see cref="T:Libplanet.Crypto.PrivateKey"/>.</returns>
+            <exception cref="T:Libplanet.KeyStore.IncorrectPassphraseException">Thrown when the given
+            <paramref name="passphrase"/> does not match to the <see cref="T:Libplanet.KeyStore.ProtectedPrivateKey"/>'s
+            passphrase.</exception>
+            <exception cref="T:Libplanet.KeyStore.MismatchedAddressException">Thrown when the unprotected
+            <see cref="T:Libplanet.Crypto.PrivateKey"/> does not match to the expected <see cref="P:Libplanet.KeyStore.ProtectedPrivateKey.Address"/>.
+            </exception>
         </member>
         <member name="M:Libplanet.KeyStore.ProtectedPrivateKey.WriteJson(System.Text.Json.Utf8JsonWriter,System.Nullable{System.Guid}@)">
             <summary>
@@ -2750,6 +2795,11 @@
         </member>
         <member name="P:Libplanet.Net.BlockDownloadState.CurrentPhase">
             <inheritdoc />
+        </member>
+        <member name="P:Libplanet.Net.BlockDownloadState.SourcePeer">
+            <summary>
+            The peer which sent the block.
+            </summary>
         </member>
         <member name="T:Libplanet.Net.BlockStateDownloadState">
             <summary>
@@ -3369,6 +3419,7 @@
         <member name="M:Libplanet.Store.IStore.PutBlock``1(Libplanet.Blocks.Block{``0})">
             <summary>
             Puts the given <paramref name="block"/> in to the store.
+            If the same block already exists in the store it does nothing.
             </summary>
             <param name="block">A <see cref="T:Libplanet.Blocks.Block`1"/> to put into the store.
             </param>

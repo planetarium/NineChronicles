@@ -103,25 +103,25 @@ namespace Nekoyume.State
         public AvatarState(Bencodex.Types.Dictionary serialized)
             : base(serialized)
         {
-            name = ((Text) serialized[(Text) "name"]).Value;
-            characterId = (int) ((Integer) serialized[(Text) "characterId"]).Value;
-            level = (int) ((Integer) serialized[(Text) "level"]).Value;
-            exp = (long) ((Integer) serialized[(Text) "exp"]).Value;
-            inventory = new Game.Item.Inventory((Bencodex.Types.List) serialized[(Text) "inventory"]);
-            worldStage = (int) ((Integer) serialized[(Text) "worldStage"]).Value;
-            updatedAt = serialized[(Text) "updatedAt"].ToDateTimeOffset();
-            clearedAt = serialized[(Text) "clearedAt"].ToNullableDateTimeOffset();
-            agentAddress = new Address(((Binary) serialized[(Text) "agentAddress"]).Value);
-            questList = new QuestList((Bencodex.Types.List) serialized[(Text) "questList"]);
-            mailBox = new MailBox((Bencodex.Types.List) serialized[(Text) "mailBox"]);
-            BlockIndex = (long) ((Integer) serialized[(Text) "blockIndex"]).Value;
-            nextDailyRewardIndex = (long) ((Integer) serialized[(Text) "nextDailyRewardIndex"]).Value;
-            actionPoint = (int) ((Integer) serialized[(Text) "actionPoint"]).Value;
-            stageMap = new CollectionMap((Bencodex.Types.Dictionary) serialized[(Text) "stageMap"]);
+            name = ((Text) serialized["name"]).Value;
+            characterId = (int) ((Integer) serialized["characterId"]).Value;
+            level = (int) ((Integer) serialized["level"]).Value;
+            exp = (long) ((Integer) serialized["exp"]).Value;
+            inventory = new Game.Item.Inventory((Bencodex.Types.List) serialized["inventory"]);
+            worldStage = (int) ((Integer) serialized["worldStage"]).Value;
+            updatedAt = serialized["updatedAt"].ToDateTimeOffset();
+            clearedAt = serialized["clearedAt"].ToNullableDateTimeOffset();
+            agentAddress = new Address(((Binary) serialized["agentAddress"]).Value);
+            questList = new QuestList((Bencodex.Types.List) serialized["questList"]);
+            mailBox = new MailBox((Bencodex.Types.List) serialized["mailBox"]);
+            BlockIndex = (long) ((Integer) serialized["blockIndex"]).Value;
+            nextDailyRewardIndex = (long) ((Integer) serialized["nextDailyRewardIndex"]).Value;
+            actionPoint = (int) ((Integer) serialized["actionPoint"]).Value;
+            stageMap = new CollectionMap((Bencodex.Types.Dictionary) serialized["stageMap"]);
             serialized.TryGetValue((Text) "monsterMap", out var value2);
             monsterMap = value2 is null ? new CollectionMap() : new CollectionMap((Bencodex.Types.Dictionary) value2);
-            itemMap = new CollectionMap((Bencodex.Types.Dictionary) serialized[(Text) "itemMap"]);
-            eventMap = new CollectionMap((Bencodex.Types.Dictionary) serialized[(Text) "eventMap"]);
+            itemMap = new CollectionMap((Bencodex.Types.Dictionary) serialized["itemMap"]);
+            eventMap = new CollectionMap((Bencodex.Types.Dictionary) serialized["eventMap"]);
         }
 
         public void Update(Simulator simulator)

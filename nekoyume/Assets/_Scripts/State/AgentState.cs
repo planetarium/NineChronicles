@@ -24,13 +24,13 @@ namespace Nekoyume.State
         public AgentState(Bencodex.Types.Dictionary serialized)
             : base(serialized)
         {
-            avatarAddresses = ((Bencodex.Types.Dictionary) serialized[(Text) "avatarAddresses"])
+            avatarAddresses = ((Bencodex.Types.Dictionary) serialized["avatarAddresses"])
                 .Where(kv => kv.Key is Binary)
                 .ToDictionary(
                     kv => BitConverter.ToInt32(((Binary) kv.Key).Value, 0),
                     kv => kv.Value.ToAddress()
                 );
-            gold = serialized[(Text) "gold"].ToDecimal();
+            gold = serialized["gold"].ToDecimal();
         }
 
         public object Clone()
