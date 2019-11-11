@@ -71,11 +71,13 @@ namespace Nekoyume.UI
 
             gameObject.SetActive(true);
 
+            var breakTime = speechBreakTime;
             string speech = LocalizationManager.Localize($"{localizationKey}{Random.Range(0, _speechCount)}");
             if (!string.IsNullOrEmpty(speech))
             {
                 if (speech.StartsWith("!"))
                 {
+                    breakTime /= 2;
                     speech = speech.Substring(1);
                     SetBubbleImage(1);
                 }
@@ -121,7 +123,7 @@ namespace Nekoyume.UI
                 yield return new WaitForSeconds(bubbleTweenTime);
             }
             
-            yield return new WaitForSeconds(speechBreakTime);
+            yield return new WaitForSeconds(breakTime);
 
             bubbleContainer.DOKill();
             textSize.transform.DOKill();
