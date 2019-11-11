@@ -11,12 +11,13 @@ using TMPro;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Events;
 
 namespace Nekoyume.UI.Scroller
 {
     public class QuestCellView : EnhancedScrollerCellView
     {
-        public Action<QuestCellView> onClickSubmitButton;
+        public Func<int, bool> onClickSubmitButton;
 
         private static readonly Vector2 _leftBottom = new Vector2(-14f, -10.5f);
         private static readonly Vector2 _minusRightTop = new Vector2(14f, 13f);
@@ -30,14 +31,16 @@ namespace Nekoyume.UI.Scroller
 
         public IDisposable onClickDisposable;
         private Shadow[] _textShadows;
+        private int _currentDataIndex;
 
         #region Mono
 
         private void Awake()
         {
             onClickDisposable = button.OnClickAsObservable()
-                .Subscribe(_ => onClickSubmitButton?.Invoke(this))
+                .Subscribe(_ => onClickSubmitButton?.Invoke(_currentDataIndex))
                 .AddTo(gameObject);
+            button.onClick.AddListener(() => buttonText.text = LocalizationManager.Localize("UI_RECEIVED"));
         }
 
         private void OnDisable()
@@ -48,8 +51,10 @@ namespace Nekoyume.UI.Scroller
 
         #endregion
 
-        public void SetData(Game.Quest.Quest quest)
+        public void SetData(Game.Quest.Quest quest, bool isLocalReceived, int index)
         {
+            _currentDataIndex = index;
+
             _textShadows = button.GetComponentsInChildren<Shadow>();
             data = quest;
             var text = quest.ToInfo();
@@ -57,12 +62,18 @@ namespace Nekoyume.UI.Scroller
             content.text = text;
             content.color = color;
 
-            buttonText.text = LocalizationManager.Localize("UI_GET_REWARD");
-            button.interactable = quest.Complete && !quest.Receive;
-            foreach (var shadow in _textShadows)
-                shadow.effectColor = button.interactable ? _highlightedColor : Color.black;
-            buttonImage.rectTransform.offsetMin = button.interactable ? _leftBottom : Vector2.zero;
-            buttonImage.rectTransform.offsetMax = button.interactable ? _minusRightTop : Vector2.zero;
+            button.gameObject.SetActive(quest.Complete);
+            if (quest.Complete || isLocalReceived)
+            {
+                button.interactable = !quest.Receive && !isLocalReceived;
+                buttonText.text = button.interactable ? LocalizationManager.Localize("UI_GET_REWARD") : LocalizationManager.Localize("UI_RECEIVED");
+
+                foreach (var shadow in _textShadows)
+                    shadow.effectColor = button.interactable ? _highlightedColor : Color.black;
+                buttonImage.rectTransform.offsetMin = button.interactable ? _leftBottom : Vector2.zero;
+                buttonImage.rectTransform.offsetMax = button.interactable ? _minusRightTop : Vector2.zero;
+            }
+
             var itemMap = data.Reward.ItemMap;
             for (var i = 0; i < itemMap.Count; i++)
             {
