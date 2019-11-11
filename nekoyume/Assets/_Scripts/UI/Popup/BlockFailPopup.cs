@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Nekoyume.UI
 {
-    public class BlockFailPopup : Alert
+    public class BlockFailPopup : SystemPopup
     {
         private long _index;
 
