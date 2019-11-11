@@ -26,6 +26,7 @@ namespace Nekoyume.UI.Scroller
 
         private Mail _mail;
         private Shadow[] _textShadows;
+        
 
         #region Mono
 
@@ -51,19 +52,19 @@ namespace Nekoyume.UI.Scroller
             var text = mail.ToInfo();
             Color32 color = mail.New ? ColorHelper.HexToColorRGB("fff9dd") : ColorHelper.HexToColorRGB("7a7a7a");
             button.interactable = mail.New;
-            submitText.text = LocalizationManager.Localize("UI_RECEIVE");
+            submitText.text = mail.New ? LocalizationManager.Localize("UI_RECEIVE") : LocalizationManager.Localize("UI_RECEIVED");
             foreach (var shadow in _textShadows)
                 shadow.effectColor = mail.New ? _highlightedColor : Color.black;
             buttonImage.rectTransform.offsetMin = mail.New ? _leftBottom : Vector2.zero;
             buttonImage.rectTransform.offsetMax = mail.New ? _minusRightTop : Vector2.zero;
             icon.overrideSprite = Mail.mailIcons[mail.MailType];
-            icon.SetNativeSize();
             content.text = text;
             content.color = color;
         }
 
         public void Read()
         {
+            submitText.text = LocalizationManager.Localize("UI_RECEIVED");
             buttonImage.rectTransform.offsetMin = Vector2.zero;
             buttonImage.rectTransform.offsetMax = Vector2.zero;
             if (!data.New)

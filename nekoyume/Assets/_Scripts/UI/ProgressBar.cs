@@ -1,4 +1,3 @@
-using System;
 using Nekoyume.Game;
 using UnityEngine;
 using UnityEngine.UI;
