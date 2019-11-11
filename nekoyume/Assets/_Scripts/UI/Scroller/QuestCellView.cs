@@ -73,7 +73,6 @@ namespace Nekoyume.UI.Scroller
                 buttonImage.rectTransform.offsetMin = button.interactable ? _leftBottom : Vector2.zero;
                 buttonImage.rectTransform.offsetMax = button.interactable ? _minusRightTop : Vector2.zero;
             }
-
             var itemMap = data.Reward.ItemMap;
             for (var i = 0; i < itemMap.Count; i++)
             {
