@@ -290,7 +290,7 @@ namespace Nekoyume.Model
         public Game.Skill Select(IRandom random)
         {
             var selected = _skills
-                .Select(skill => new {skill, chance = Math.Min(random.Next(0, 100), 99)})
+                .Select(skill => new {skill, chance = random.Next(0, 100)})
                 .Where(t => t.skill.chance > t.chance)
                 .OrderBy(t => t.skill.skillRow.Id)
                 .ThenBy(t => t.chance == 0 ? 1m : (decimal) t.chance / t.skill.chance)
