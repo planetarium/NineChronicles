@@ -178,7 +178,7 @@ namespace Nekoyume.Battle
                         var itemId = itemSelector.Pop();
                         if (Game.Game.instance.TableSheets.MaterialItemSheet.TryGetValue(itemId, out var itemData))
                         {
-                            var count = Random.Next(r.Min, r.Max);
+                            var count = Random.Next(r.Min, r.Max + 1);
                             for (var i = 0; i < count; i++)
                             {
                                 var guid = Random.GenerateRandomGuid();
