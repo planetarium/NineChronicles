@@ -6,6 +6,7 @@ using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Factory;
 using Nekoyume.Helper;
+using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using TMPro;
@@ -200,7 +201,7 @@ namespace Nekoyume.UI.Module
             if (ids.Count >= 2)
             {
                 resultItemView.gameObject.SetActive(true);
-                if (Game.Game.instance.TableSheets.ConsumableItemRecipeSheet.TryGetValue(ids, out var recipeRow))
+                if (TableSheetsState.Current.ConsumableItemRecipeSheet.TryGetValue(ids, out var recipeRow))
                 {
                     Game.Game.instance.TableSheets.ConsumableItemSheet.TryGetValue(recipeRow.ResultConsumableItemId,
                         out var itemRow, true);

@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Nekoyume.State;
 using UniRx;
 using UnityEngine;
 
@@ -39,15 +41,12 @@ namespace Nekoyume.TableData
         public EquipmentItemSetEffectSheet EquipmentItemSetEffectSheet { get; private set; }
         public EnemySkillSheet EnemySkillSheet { get; private set; }
         public ItemConfigForGradeSheet ItemConfigForGradeSheet { get; private set; }
-        public ConsumableItemRecipeSheet ConsumableItemRecipeSheet { get; private set; }
-
         public QuestRewardSheet QuestRewardSheet { get; private set; }
         public QuestItemRewardSheet QuestItemRewardSheet { get; set; }
 
         public IEnumerator CoInitialize()
         {
             loadProgress.Value = 0f;
-
             var request = Resources.LoadAsync<AddressableAssetsContainer>("AddressableAssetsContainer");
             yield return request;
             if (!(request.asset is AddressableAssetsContainer addressableAssetsContainer))
@@ -70,7 +69,7 @@ namespace Nekoyume.TableData
             QuestSheetInitialize();
         }
 
-        private void SetToSheet(string name, string csv)
+        public void SetToSheet(string name, string csv)
         {
             switch (name)
             {
@@ -175,8 +174,7 @@ namespace Nekoyume.TableData
                     ItemConfigForGradeSheet.Set(csv);
                     break;
                 case nameof(TableData.ConsumableItemRecipeSheet):
-                    ConsumableItemRecipeSheet = new ConsumableItemRecipeSheet();
-                    ConsumableItemRecipeSheet.Set(csv);
+                    Debug.LogWarning($"Now, {nameof(ConsumableItemRecipeSheet)} is on chain.");
                     break;
                 case nameof(TableData.QuestRewardSheet):
                     QuestRewardSheet = new QuestRewardSheet();
