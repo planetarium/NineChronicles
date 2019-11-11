@@ -37,7 +37,7 @@ namespace Nekoyume.Action
 
             public BuyerResult(Bencodex.Types.Dictionary serialized) : base(serialized)
             {
-                shopItem = new ShopItem((Bencodex.Types.Dictionary) serialized[(Text) "shopItem"]);
+                shopItem = new ShopItem((Bencodex.Types.Dictionary) serialized["shopItem"]);
             }
 
             public override IValue Serialize() =>
@@ -61,8 +61,8 @@ namespace Nekoyume.Action
 
             public SellerResult(Bencodex.Types.Dictionary serialized) : base(serialized)
             {
-                shopItem = new ShopItem((Bencodex.Types.Dictionary) serialized[(Text) "shopItem"]);
-                gold = serialized[(Text) "gold"].ToDecimal();
+                shopItem = new ShopItem((Bencodex.Types.Dictionary) serialized["shopItem"]);
+                gold = serialized["gold"].ToDecimal();
             }
 
             public override IValue Serialize() =>

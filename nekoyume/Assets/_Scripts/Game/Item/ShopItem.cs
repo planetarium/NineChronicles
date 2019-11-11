@@ -25,12 +25,12 @@ namespace Nekoyume.Game.Item
 
         public ShopItem(Bencodex.Types.Dictionary serialized)
         {
-            SellerAvatarAddress = serialized[(Text) "sellerAvatarAddress"].ToAddress();
-            ProductId = serialized[(Text) "productId"].ToGuid();
+            SellerAvatarAddress = serialized["sellerAvatarAddress"].ToAddress();
+            ProductId = serialized["productId"].ToGuid();
             ItemUsable = (ItemUsable) ItemFactory.Deserialize(
-                (Bencodex.Types.Dictionary) serialized[(Text) "itemUsable"]
+                (Bencodex.Types.Dictionary) serialized["itemUsable"]
             );
-            Price = serialized[(Text) "price"].ToDecimal();
+            Price = serialized["price"].ToDecimal();
         }
 
         protected bool Equals(ShopItem other)
