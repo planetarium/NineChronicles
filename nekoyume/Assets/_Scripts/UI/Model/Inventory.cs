@@ -266,9 +266,14 @@ namespace Nekoyume.UI.Model
 
         public bool TryGetMaterial(Material material, out InventoryItem inventoryItem)
         {
+            return TryGetMaterial(material.Data.Id, out inventoryItem);
+        }
+        
+        public bool TryGetMaterial(int id, out InventoryItem inventoryItem)
+        {
             foreach (var item in Materials)
             {
-                if (item.ItemBase.Value.Data.Id != material.Data.Id)
+                if (item.ItemBase.Value.Data.Id != id)
                 {
                     continue;
                 }

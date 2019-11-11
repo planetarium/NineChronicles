@@ -1,41 +1,15 @@
-using Nekoyume.Game.Controller;
 using TMPro;
-using UniRx;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
-    public class SubmitWithCostButton : MonoBehaviour
+    public class SubmitWithCostButton : SubmitButton
     {
-        public Button button;
-        public Image backgroundImage;
-        public Image backgroundImageForSubmittable;
         public GameObject costNCG;
         public TextMeshProUGUI costNCGText;
         public GameObject costAP;
         public TextMeshProUGUI costAPText;
-        public TextMeshProUGUI submitText;
         public GameObject rightSpacer;
-        
-        public readonly Subject<SubmitWithCostButton> OnSubmitClick = new Subject<SubmitWithCostButton>();
-
-        private void Awake()
-        {
-            button.OnClickAsObservable().Subscribe(_ =>
-            {
-                AudioController.PlayClick();
-                OnSubmitClick.OnNext(this);
-            }).AddTo(gameObject);
-        }
-
-        public void SetSubmittable(bool submittable)
-        {
-            button.interactable = submittable;
-            backgroundImage.enabled = !submittable;
-            backgroundImageForSubmittable.enabled = submittable;
-            submitText.alpha = submittable ? 1f : .3f;
-        }
 
         public void ShowNCG(decimal ncg, bool isEnough)
         {
