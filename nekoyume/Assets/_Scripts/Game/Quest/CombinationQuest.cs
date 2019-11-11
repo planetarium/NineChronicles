@@ -26,9 +26,9 @@ namespace Nekoyume.Game.Quest
 
         public CombinationQuest(Bencodex.Types.Dictionary serialized) : base(serialized)
         {
-            current = (int) ((Integer) serialized[(Bencodex.Types.Text) "current"]).Value;
-            ItemType = (ItemType) (int) ((Integer) serialized[(Bencodex.Types.Text) "itemType"]).Value;
-            ItemSubType = (ItemSubType) (int) ((Integer) serialized[(Bencodex.Types.Text) "itemSubType"]).Value;
+            current = (int) ((Integer) serialized["current"]).Value;
+            ItemType = (ItemType) (int) ((Integer) serialized["itemType"]).Value;
+            ItemSubType = (ItemSubType) (int) ((Integer) serialized["itemSubType"]).Value;
         }
 
         public override void Check()

@@ -38,7 +38,7 @@ namespace Nekoyume.Action
 
             public ResultModel(Dictionary serialized) : base(serialized)
             {
-                materials = serialized[(Text) "materials"].ToDictionary();
+                materials = serialized["materials"].ToDictionary();
             }
 
             public override IValue Serialize() =>

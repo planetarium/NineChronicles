@@ -23,9 +23,9 @@ namespace Nekoyume.Game.Quest
 
         public ItemGradeQuest(Dictionary serialized) : base(serialized)
         {
-            Grade = (int) ((Integer) serialized[(Bencodex.Types.Text) "grade"]).Value;
-            _count = (int) ((Integer) serialized[(Bencodex.Types.Text) "count"]).Value;
-            _itemIds = serialized[(Bencodex.Types.Text) "itemIds"].ToList(i => (int) ((Integer) i).Value);
+            Grade = (int) ((Integer) serialized["grade"]).Value;
+            _count = (int) ((Integer) serialized["count"]).Value;
+            _itemIds = serialized["itemIds"].ToList(i => (int) ((Integer) i).Value);
         }
 
         public override QuestType QuestType => QuestType.Craft;

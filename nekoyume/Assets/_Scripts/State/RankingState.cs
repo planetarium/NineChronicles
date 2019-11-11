@@ -31,7 +31,7 @@ namespace Nekoyume.State
         public RankingState(Bencodex.Types.Dictionary serialized)
             : base(serialized)
         {
-            _map = ((Bencodex.Types.Dictionary) serialized[(Text) "map"]).ToDictionary(
+            _map = ((Bencodex.Types.Dictionary) serialized["map"]).ToDictionary(
                 kv => kv.Key.ToAddress(),
                 kv => new AvatarState((Bencodex.Types.Dictionary) kv.Value)
             );

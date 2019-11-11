@@ -40,7 +40,7 @@ namespace Nekoyume.State
         public ShopState(Bencodex.Types.Dictionary serialized)
             : base(serialized)
         {
-            AgentProducts = ((Bencodex.Types.Dictionary) serialized[(Text) "agentProducts"]).ToDictionary(
+            AgentProducts = ((Bencodex.Types.Dictionary) serialized["agentProducts"]).ToDictionary(
                 kv => kv.Key.ToAddress(),
                 kv => ((Bencodex.Types.List) kv.Value)
                     .Select(d => new ShopItem((Bencodex.Types.Dictionary) d))

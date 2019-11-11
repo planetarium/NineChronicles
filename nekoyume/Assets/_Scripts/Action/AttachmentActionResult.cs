@@ -39,7 +39,7 @@ namespace Nekoyume.Action
         protected AttachmentActionResult(Bencodex.Types.Dictionary serialized)
         {
             itemUsable = (ItemUsable) ItemFactory.Deserialize(
-                (Bencodex.Types.Dictionary) serialized[(Text) "itemUsable"]
+                (Bencodex.Types.Dictionary) serialized["itemUsable"]
             );
         }
 
@@ -52,7 +52,7 @@ namespace Nekoyume.Action
 
         public static AttachmentActionResult Deserialize(Bencodex.Types.Dictionary serialized)
         {
-            string typeId = ((Text) serialized[(Text) "typeId"]).Value;
+            string typeId = ((Text) serialized["typeId"]).Value;
             Func<Dictionary, AttachmentActionResult> deserializer;
             try
             {

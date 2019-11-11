@@ -77,10 +77,10 @@ namespace Nekoyume.Game.Quest
 
         protected Quest(Bencodex.Types.Dictionary serialized)
         {
-            Complete = ((Bencodex.Types.Boolean) serialized[(Text) "complete"]).Value;
-            Goal = (int) ((Integer) serialized[(Bencodex.Types.Text) "goal"]).Value;
-            Id = (int) ((Integer) serialized[(Bencodex.Types.Text) "id"]).Value;
-            Reward = new QuestReward((Dictionary) serialized[(Text) "reward"]);
+            Complete = ((Bencodex.Types.Boolean) serialized["complete"]).Value;
+            Goal = (int) ((Integer) serialized["goal"]).Value;
+            Id = (int) ((Integer) serialized["id"]).Value;
+            Reward = new QuestReward((Dictionary) serialized["reward"]);
             serialized.TryGetValue((Text) "receive", out var receive);
             Receive = ((Bencodex.Types.Boolean?) receive)?.Value ?? false;
         }
@@ -98,7 +98,7 @@ namespace Nekoyume.Game.Quest
 
         public static Quest Deserialize(Bencodex.Types.Dictionary serialized)
         {
-            string typeId = ((Text) serialized[(Text) "typeId"]).Value;
+            string typeId = ((Text) serialized["typeId"]).Value;
             Func<Dictionary, Quest> deserializer;
             try
             {

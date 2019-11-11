@@ -22,8 +22,8 @@ namespace Nekoyume.Game.Quest
 
         public GoldQuest(Dictionary serialized) : base(serialized)
         {
-            _current = serialized[(Text) "current"].ToDecimal();
-            Type = (TradeType) (int) ((Integer) serialized[(Bencodex.Types.Text) "type"]).Value;
+            _current = serialized["current"].ToDecimal();
+            Type = (TradeType) (int) ((Integer) serialized["type"]).Value;
         }
 
         public override QuestType QuestType => QuestType.Exchange;

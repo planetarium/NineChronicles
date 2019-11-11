@@ -40,7 +40,7 @@ namespace Nekoyume.TableData
 
             public static Row Deserialize(Bencodex.Types.Dictionary serialized)
             {
-                var key = (int) ((Integer) serialized[(Text) "key"]).Value;
+                var key = (int) ((Integer) serialized["key"]).Value;
                 return Game.Game.instance.TableSheets.SkillSheet[key];
             }
         }

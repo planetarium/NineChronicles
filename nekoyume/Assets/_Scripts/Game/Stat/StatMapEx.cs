@@ -39,7 +39,7 @@ namespace Nekoyume.Game
 
         public StatMapEx(Bencodex.Types.Dictionary serialized) : base(serialized)
         {
-            AdditionalValue = serialized[(Text) "additionalValue"].ToDecimal();
+            AdditionalValue = serialized["additionalValue"].ToDecimal();
         }
 
         protected bool Equals(StatMapEx other)

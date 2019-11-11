@@ -25,9 +25,9 @@ namespace Nekoyume.Game.Quest
 
         public ItemTypeCollectQuest(Dictionary serialized) : base(serialized)
         {
-            _count = (int) ((Integer) serialized[(Bencodex.Types.Text) "count"]).Value;
-            _itemIds = serialized[(Bencodex.Types.Text) "itemIds"].ToList(i => (int) ((Integer) i).Value);
-            ItemType = (ItemType) (int) ((Integer) serialized[(Bencodex.Types.Text) "itemType"]).Value;
+            _count = (int) ((Integer) serialized["count"]).Value;
+            _itemIds = serialized["itemIds"].ToList(i => (int) ((Integer) i).Value);
+            ItemType = (ItemType) (int) ((Integer) serialized["itemType"]).Value;
         }
 
         public void Update(ItemBase item)

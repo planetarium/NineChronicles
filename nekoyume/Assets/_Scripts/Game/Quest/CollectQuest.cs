@@ -24,8 +24,8 @@ namespace Nekoyume.Game.Quest
 
         public CollectQuest(Dictionary serialized) : base(serialized)
         {
-            _itemId = (int) ((Integer) serialized[(Bencodex.Types.Text) "itemId"]).Value;
-            _current = (int) ((Integer) serialized[(Bencodex.Types.Text) "current"]).Value;
+            _itemId = (int) ((Integer) serialized["itemId"]).Value;
+            _current = (int) ((Integer) serialized["current"]).Value;
         }
 
         public override void Check()
