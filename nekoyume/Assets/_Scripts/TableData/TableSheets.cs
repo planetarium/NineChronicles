@@ -13,6 +13,7 @@ namespace Nekoyume.TableData
     {
         public readonly ReactiveProperty<float> loadProgress = new ReactiveProperty<float>();
 
+        public Dictionary<string, string> TableCsvAssets;
         public BackgroundSheet BackgroundSheet { get; private set; }
         public WorldSheet WorldSheet { get; private set; }
         public StageSheet StageSheet { get; private set; }
@@ -52,13 +53,14 @@ namespace Nekoyume.TableData
             if (!(request.asset is AddressableAssetsContainer addressableAssetsContainer))
                 throw new NullReferenceException(nameof(addressableAssetsContainer));
 
-            var tableCsvAssets = addressableAssetsContainer.tableCsvAssets;
-            var loadTaskCount = tableCsvAssets.Count;
+            TableCsvAssets =
+                addressableAssetsContainer.tableCsvAssets.ToDictionary(asset => asset.name, asset => asset.text);
+            var loadTaskCount = TableCsvAssets.Count;
             var loadedTaskCount = 0;
             //어드레서블어셋에 새로운 테이블을 추가하면 AddressableAssetsContainer.asset에도 해당 csv파일을 추가해줘야합니다.
-            foreach (var textAsset in tableCsvAssets)
+            foreach (var tableNameAndCsv in TableCsvAssets)
             {
-                SetToSheet(textAsset.name, textAsset.text);
+                SetToSheet(tableNameAndCsv.Key, tableNameAndCsv.Value);
                 loadedTaskCount++;
                 loadProgress.Value = (float)loadedTaskCount / loadTaskCount;
             }
