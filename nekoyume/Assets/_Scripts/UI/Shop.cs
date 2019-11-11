@@ -4,7 +4,9 @@ using Assets.SimpleLocalization;
 using DG.Tweening;
 using Nekoyume.BlockChain;
 using Nekoyume.EnumType;
+using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
+using Nekoyume.Game.Factory;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Mail;
 using Nekoyume.Model;
@@ -30,6 +32,9 @@ namespace Nekoyume.UI
         private float _defaultAnchoredPositionXOfBg1;
         private float _defaultAnchoredPositionXOfRight;
         private float _goOutTweenX = 800f;
+        private const int _npcId = 300000;
+        private static Vector2 _npcPosition = new Vector2(2.76f, -1.72f);
+        private Npc _npc;
 
         private Sequence _sequenceOfShopItems;
 
@@ -109,6 +114,10 @@ namespace Nekoyume.UI
 
             Find<BottomMenu>().Show(UINavigator.NavigationType.Back, SubscribeBackButtonClick);
 
+            var go = Game.Game.instance.stage.npcFactory.Create(_npcId, _npcPosition);
+            _npc = go.GetComponent<Npc>();
+            go.SetActive(true);
+
             AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
         }
 
@@ -116,6 +125,8 @@ namespace Nekoyume.UI
         {
             base.OnCompleteOfShowAnimation();
             canvasGroup.interactable = true;
+            _npc.Greeting();
+
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -128,6 +139,8 @@ namespace Nekoyume.UI
             speechBubble.gameObject.SetActive(false);
 
             base.Close(ignoreCloseAnimation);
+
+            _npc.gameObject.SetActive(false);
 
             AudioController.instance.PlayMusic(AudioController.MusicCode.Main);
         }
@@ -446,6 +459,7 @@ namespace Nekoyume.UI
 
         private void ShowSpeech(string key)
         {
+            _npc.Emotion();
             if (speechBubble.gameObject.activeSelf)
                 return;
             speechBubble.SetKey(key);

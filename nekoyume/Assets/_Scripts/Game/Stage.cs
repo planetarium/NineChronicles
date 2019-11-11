@@ -29,6 +29,7 @@ namespace Nekoyume.Game
         public ObjectPool objectPool;
         public PlayerFactory playerFactory;
         public EnemyFactory enemyFactory;
+        public NpcFactory npcFactory;
         public DropItemFactory dropItemFactory;
         public SkillController skillController;
         public BuffController buffController;

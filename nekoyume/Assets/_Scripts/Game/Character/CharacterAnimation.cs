@@ -20,7 +20,9 @@ namespace Nekoyume.Game.Character
             Hit,
             Die,
             Win,
-            Disappear
+            Disappear,
+            Greeting,
+            Emotion,
         }
 
         public static readonly List<Type> List = new List<Type>();
