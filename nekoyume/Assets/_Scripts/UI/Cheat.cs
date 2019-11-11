@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -206,10 +207,8 @@ namespace Nekoyume
         public override void Show()
         {
             _modal.gameObject.SetActive(true);
-            TableAssets = GetTableAssetsHavingDifference();
-            TableSheets.options = TableAssets.Keys.Select(s => new Dropdown.OptionData(s)).ToList();
 
-                Peers.Find("Scrollbar")
+            Peers.Find("Scrollbar")
                 .GetComponent<Scrollbar>()
                 .onValueChanged
                 .AddListener((location) => ScrollBarHandler(Peers, location));
@@ -233,7 +232,6 @@ namespace Nekoyume
             ScrollBarHandler(StagedTxs, 0);
             ScrollBarHandler(OnChainTableSheet, 0);
             ScrollBarHandler(LocalTableSheet, 0);
-            RefreshTableSheets();
 
             BtnOpen.gameObject.SetActive(false);
             foreach (var i in Enumerable.Range(1, Game.Game.instance.TableSheets.StageSheet.Count))
@@ -256,6 +254,20 @@ namespace Nekoyume
             }
 
             _skills = skills.ToArray();
+
+            TableAssets = GetTableAssetsHavingDifference();
+            TableSheets.options = TableAssets.Keys.Select(s => new Dropdown.OptionData(s)).ToList();
+            if (TableSheets.options.Count == 0)
+            {
+                Debug.Log("It seems there is no table having difference.");
+                Display(nameof(OnChainTableSheet), "No content.");
+                Display(nameof(LocalTableSheet), "No content.");
+                PatchButton.SetActive(false);
+            }
+            else
+            {
+                RefreshTableSheets();
+            }
 
             base.Show();
         }
