@@ -185,7 +185,6 @@ namespace Nekoyume.UI
 
             yield return StartCoroutine(CoUpdateRewards());
             
-            
             _coUpdateBottomText = StartCoroutine(CoUpdateBottomText(Timer));
         }
 
