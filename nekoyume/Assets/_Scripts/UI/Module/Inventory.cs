@@ -9,6 +9,7 @@ using Nekoyume.Helper;
 using Nekoyume.Model;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Scroller;
+using TMPro;
 using UniRx;
 using UniRx.Async;
 using UnityEngine;
@@ -21,19 +22,19 @@ namespace Nekoyume.UI.Module
         private static readonly Vector2 BtnHighlightSize = new Vector2(157f, 60f);
         private static readonly Vector2 BtnSize = new Vector2(130f, 36f);
 
-        public Text titleText;
+        public TextMeshProUGUI titleText;
         public Button equipmentsButton;
         public Image equipmentsButtonImage;
         public Image equipmentsButtonIconImage;
-        public Text equipmentsButtonText;
+        public TextMeshProUGUI equipmentsButtonText;
         public Button consumablesButton;
         public Image consumablesButtonImage;
         public Image consumablesButtonIconImage;
-        public Text consumablesButtonText;
+        public TextMeshProUGUI consumablesButtonText;
         public Button materialsButton;
         public Image materialsButtonImage;
         public Image materialsButtonIconImage;
-        public Text materialsButtonText;
+        public TextMeshProUGUI materialsButtonText;
         public InventoryScrollerController scrollerController;
 
         private Sprite _selectedButtonSprite;
@@ -172,24 +173,16 @@ namespace Nekoyume.UI.Module
             foreach (var pair in _switchButtonTransforms)
             {
                 var btn = pair.Value;
-                var shadows = btn.GetComponentsInChildren<Shadow>();
+                // TextMeshPro 그림자 마테리얼 변경 해줘야함
                 if (pair.Key == stateType)
                 {
                     btn.anchoredPosition = new Vector2(btn.anchoredPosition.x, 1);
                     btn.sizeDelta = BtnHighlightSize;
-                    foreach (var shadow in shadows)
-                    {
-                        shadow.effectColor = ColorHelper.HexToColorRGB("a35400");
-                    }   
                 }
                 else
                 {
                     btn.anchoredPosition = new Vector2(btn.anchoredPosition.x, 0);
                     btn.sizeDelta = BtnSize;
-                    foreach (var shadow in shadows)
-                    {
-                        shadow.effectColor = Color.black;
-                    }
                 }
             }
 

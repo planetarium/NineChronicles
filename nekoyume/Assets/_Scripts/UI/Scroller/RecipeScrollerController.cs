@@ -1,20 +1,22 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using EnhancedUI.EnhancedScroller;
+using JetBrains.Annotations;
 using Nekoyume.Game.Controller;
 using Nekoyume.UI.Model;
 using UniRx;
 
 namespace Nekoyume.UI.Scroller
 {
-    public class RecipeScrollerController : MonoBehaviour, IEnhancedScrollerDelegate
+    public class RecipeScrollerController : MonoBehaviour, IEnhancedScrollerDelegate, RecipeCellView.IEventListener
     {
         public EnhancedScroller scroller;
         public RecipeCellView cellViewPrefab;
-        public readonly Subject<RecipeCellView> OnSubmitClick = new Subject<RecipeCellView>();
 
         private List<RecipeInfo> _recipeList = new List<RecipeInfo>();
         private float _cellViewHeight = 90f;
+        
+        [CanBeNull] private RecipeCellView.IEventListener _eventListener;
 
         #region Mono
 
@@ -28,25 +30,13 @@ namespace Nekoyume.UI.Scroller
 
         public EnhancedScrollerCellView GetCellView(EnhancedScroller scroller, int dataIndex, int cellIndex)
         {
-            var cellView = scroller.GetCellView(cellViewPrefab) as RecipeCellView;
-            if(ReferenceEquals(cellView, null))
-            {
+            var cellView = (RecipeCellView) scroller.GetCellView(cellViewPrefab);
+            if (cellView is null)
                 throw new FailedToInstantiateGameObjectException(cellViewPrefab.name);
-            }
 
             cellView.name = $"Cell {dataIndex}";
+            cellView.RegisterListener(this);
             cellView.SetData(_recipeList[dataIndex]);
-            if (cellView.onClickDisposable == null)
-            {
-                cellView.onClickDisposable = cellView.submitButtonOnClick
-                    .Subscribe(_ =>
-                    {
-                        AudioController.PlayClick();
-                        cellView.onClickDisposable.Dispose();
-                        cellView.onClickDisposable = null;
-                        OnSubmitClick.OnNext(cellView);
-                    }).AddTo(cellView.gameObject);
-            }
             return cellView;
         }
 
@@ -64,6 +54,21 @@ namespace Nekoyume.UI.Scroller
         {
             _recipeList = recipeList;
             scroller.ReloadData();
+        }
+        
+        public void RegisterListener(RecipeCellView.IEventListener eventListener)
+        {
+            _eventListener = eventListener;
+        }
+
+        public void OnRecipeCellViewStarClick(RecipeCellView recipeCellView)
+        {
+            _eventListener?.OnRecipeCellViewStarClick(recipeCellView);
+        }
+
+        public void OnRecipeCellViewSubmitClick(RecipeCellView recipeCellView)
+        {
+            _eventListener?.OnRecipeCellViewSubmitClick(recipeCellView);
         }
     }
 }

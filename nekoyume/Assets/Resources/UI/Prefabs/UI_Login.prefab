@@ -882,8 +882,8 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_text: Name
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 76f23b4f2b0bc49c18792f72986c9673, type: 2}
-  m_sharedMaterial: {fileID: -7447916340868117875, guid: 76f23b4f2b0bc49c18792f72986c9673,
+  m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
+  m_sharedMaterial: {fileID: -2364689171920820918, guid: 8a682b7747d4a664089b7b1065aa0035,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -915,7 +915,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_textAlignment: 257
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -1040,8 +1040,8 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_text: Lv.999
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 76f23b4f2b0bc49c18792f72986c9673, type: 2}
-  m_sharedMaterial: {fileID: -7447916340868117875, guid: 76f23b4f2b0bc49c18792f72986c9673,
+  m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
+  m_sharedMaterial: {fileID: -2364689171920820918, guid: 8a682b7747d4a664089b7b1065aa0035,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -1073,7 +1073,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_textAlignment: 260
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -1143,7 +1143,7 @@ GameObject:
   - component: {fileID: 1581217026481524015}
   - component: {fileID: 7778491545853835066}
   m_Layer: 5
-  m_Name: TMP SubMeshUI [Mali-Medium SDF Material + PoorStory-Regular SDF Atlas]
+  m_Name: TMP SubMeshUI [Mali-Medium SDF Material + PoorStory-Regular Atlas]
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1196,12 +1196,12 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_fontAsset: {fileID: 11400000, guid: b409058ef9e1d4c8087cba2a7e83f8fd, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
   m_spriteAsset: {fileID: 0}
   m_material: {fileID: 0}
   m_sharedMaterial: {fileID: 0}
   m_isDefaultMaterial: 0
-  m_padding: 5.3125
+  m_padding: 8.5625
   m_canvasRenderer: {fileID: 1581217026481524015}
   m_TextComponent: {fileID: 8263727970895256854}
   m_materialReferenceIndex: 1
@@ -1272,8 +1272,8 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_text: Name
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 76f23b4f2b0bc49c18792f72986c9673, type: 2}
-  m_sharedMaterial: {fileID: -7447916340868117875, guid: 76f23b4f2b0bc49c18792f72986c9673,
+  m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
+  m_sharedMaterial: {fileID: -2364689171920820918, guid: 8a682b7747d4a664089b7b1065aa0035,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -1305,7 +1305,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_textAlignment: 257
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -1573,8 +1573,8 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_text: Name
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 76f23b4f2b0bc49c18792f72986c9673, type: 2}
-  m_sharedMaterial: {fileID: -7447916340868117875, guid: 76f23b4f2b0bc49c18792f72986c9673,
+  m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
+  m_sharedMaterial: {fileID: -2364689171920820918, guid: 8a682b7747d4a664089b7b1065aa0035,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -1606,7 +1606,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_textAlignment: 257
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -1732,8 +1732,8 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_text: "\uC0C8 \uCE90\uB9AD\uD130 \uC0DD\uC131"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 76f23b4f2b0bc49c18792f72986c9673, type: 2}
-  m_sharedMaterial: {fileID: -7447916340868117875, guid: 76f23b4f2b0bc49c18792f72986c9673,
+  m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
+  m_sharedMaterial: {fileID: -2364689171920820918, guid: 8a682b7747d4a664089b7b1065aa0035,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -1765,7 +1765,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_textAlignment: 258
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -1807,7 +1807,7 @@ MonoBehaviour:
     linkCount: 0
     lineCount: 1
     pageCount: 1
-    materialCount: 2
+    materialCount: 1
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_spriteAnimator: {fileID: 0}
@@ -2203,8 +2203,8 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_text: Lv.999
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 76f23b4f2b0bc49c18792f72986c9673, type: 2}
-  m_sharedMaterial: {fileID: -7447916340868117875, guid: 76f23b4f2b0bc49c18792f72986c9673,
+  m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
+  m_sharedMaterial: {fileID: -2364689171920820918, guid: 8a682b7747d4a664089b7b1065aa0035,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -2236,7 +2236,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_textAlignment: 260
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -2361,8 +2361,8 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_text: Lv.999
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 76f23b4f2b0bc49c18792f72986c9673, type: 2}
-  m_sharedMaterial: {fileID: -7447916340868117875, guid: 76f23b4f2b0bc49c18792f72986c9673,
+  m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
+  m_sharedMaterial: {fileID: -2364689171920820918, guid: 8a682b7747d4a664089b7b1065aa0035,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -2394,7 +2394,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_textAlignment: 260
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -2464,7 +2464,7 @@ GameObject:
   - component: {fileID: 3528776400030589854}
   - component: {fileID: 7492581158900879751}
   m_Layer: 5
-  m_Name: TMP SubMeshUI [Mali-Medium SDF Material + PoorStory-Regular SDF Atlas]
+  m_Name: TMP SubMeshUI [Mali-Medium SDF Material + PoorStory-Regular Atlas]
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2517,12 +2517,12 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_fontAsset: {fileID: 11400000, guid: b409058ef9e1d4c8087cba2a7e83f8fd, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
   m_spriteAsset: {fileID: 0}
   m_material: {fileID: 0}
   m_sharedMaterial: {fileID: 0}
   m_isDefaultMaterial: 0
-  m_padding: 5.3125
+  m_padding: 8.5625
   m_canvasRenderer: {fileID: 3528776400030589854}
   m_TextComponent: {fileID: 5021263611063817236}
   m_materialReferenceIndex: 1
@@ -2538,7 +2538,7 @@ GameObject:
   - component: {fileID: 4858993849902397493}
   - component: {fileID: 9206649949536131220}
   m_Layer: 5
-  m_Name: TMP SubMeshUI [Mali-Medium SDF Material + PoorStory-Regular SDF Atlas]
+  m_Name: TMP SubMeshUI [Mali-Medium SDF Material + PoorStory-Regular Atlas]
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2591,12 +2591,12 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_fontAsset: {fileID: 11400000, guid: b409058ef9e1d4c8087cba2a7e83f8fd, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
   m_spriteAsset: {fileID: 0}
   m_material: {fileID: 0}
   m_sharedMaterial: {fileID: 0}
   m_isDefaultMaterial: 0
-  m_padding: 5.3125
+  m_padding: 8.5625
   m_canvasRenderer: {fileID: 4858993849902397493}
   m_TextComponent: {fileID: 4947469744947175490}
   m_materialReferenceIndex: 1
@@ -2815,8 +2815,8 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_text: "\uC0AD\uC81C\uD558\uAE30"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 76f23b4f2b0bc49c18792f72986c9673, type: 2}
-  m_sharedMaterial: {fileID: -7447916340868117875, guid: 76f23b4f2b0bc49c18792f72986c9673,
+  m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
+  m_sharedMaterial: {fileID: -2364689171920820918, guid: 8a682b7747d4a664089b7b1065aa0035,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -2848,7 +2848,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_textAlignment: 514
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -2890,7 +2890,7 @@ MonoBehaviour:
     linkCount: 0
     lineCount: 1
     pageCount: 1
-    materialCount: 2
+    materialCount: 1
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_spriteAnimator: {fileID: 0}
@@ -3232,8 +3232,8 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_text: "\uC0AD\uC81C\uD558\uAE30"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 76f23b4f2b0bc49c18792f72986c9673, type: 2}
-  m_sharedMaterial: {fileID: -7447916340868117875, guid: 76f23b4f2b0bc49c18792f72986c9673,
+  m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
+  m_sharedMaterial: {fileID: -2364689171920820918, guid: 8a682b7747d4a664089b7b1065aa0035,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -3265,7 +3265,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_textAlignment: 514
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -3307,7 +3307,7 @@ MonoBehaviour:
     linkCount: 0
     lineCount: 1
     pageCount: 1
-    materialCount: 2
+    materialCount: 1
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_spriteAnimator: {fileID: 0}
@@ -3762,7 +3762,7 @@ GameObject:
   - component: {fileID: 4352432975525177019}
   - component: {fileID: 5602023979984232360}
   m_Layer: 5
-  m_Name: TMP SubMeshUI [Mali-Medium SDF Material + PoorStory-Regular SDF Atlas]
+  m_Name: TMP SubMeshUI [Mali-Medium SDF Material + PoorStory-Regular Atlas]
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3815,12 +3815,12 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_fontAsset: {fileID: 11400000, guid: b409058ef9e1d4c8087cba2a7e83f8fd, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
   m_spriteAsset: {fileID: 0}
   m_material: {fileID: 0}
   m_sharedMaterial: {fileID: 0}
   m_isDefaultMaterial: 0
-  m_padding: 5.3125
+  m_padding: 8.5625
   m_canvasRenderer: {fileID: 4352432975525177019}
   m_TextComponent: {fileID: 1956052609790370136}
   m_materialReferenceIndex: 1
@@ -3983,7 +3983,7 @@ GameObject:
   - component: {fileID: 4908486404997644722}
   - component: {fileID: 2649829849095169219}
   m_Layer: 5
-  m_Name: TMP SubMeshUI [Mali-Medium SDF Material + PoorStory-Regular SDF Atlas]
+  m_Name: TMP SubMeshUI [Mali-Medium SDF Material + PoorStory-Regular Atlas]
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4036,12 +4036,12 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_fontAsset: {fileID: 11400000, guid: b409058ef9e1d4c8087cba2a7e83f8fd, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
   m_spriteAsset: {fileID: 0}
   m_material: {fileID: 0}
   m_sharedMaterial: {fileID: 0}
   m_isDefaultMaterial: 0
-  m_padding: 5.3125
+  m_padding: 8.5625
   m_canvasRenderer: {fileID: 4908486404997644722}
   m_TextComponent: {fileID: 295799346488579217}
   m_materialReferenceIndex: 1
@@ -4113,8 +4113,8 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_text: "\uC0AD\uC81C\uD558\uAE30"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 76f23b4f2b0bc49c18792f72986c9673, type: 2}
-  m_sharedMaterial: {fileID: -7447916340868117875, guid: 76f23b4f2b0bc49c18792f72986c9673,
+  m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
+  m_sharedMaterial: {fileID: -2364689171920820918, guid: 8a682b7747d4a664089b7b1065aa0035,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -4146,7 +4146,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_textAlignment: 514
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -4188,7 +4188,7 @@ MonoBehaviour:
     linkCount: 0
     lineCount: 1
     pageCount: 1
-    materialCount: 2
+    materialCount: 1
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_spriteAnimator: {fileID: 0}
@@ -4642,8 +4642,8 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_text: "\uC0C8 \uCE90\uB9AD\uD130 \uC0DD\uC131"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 76f23b4f2b0bc49c18792f72986c9673, type: 2}
-  m_sharedMaterial: {fileID: -7447916340868117875, guid: 76f23b4f2b0bc49c18792f72986c9673,
+  m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
+  m_sharedMaterial: {fileID: -2364689171920820918, guid: 8a682b7747d4a664089b7b1065aa0035,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -4675,7 +4675,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_textAlignment: 258
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -4717,7 +4717,7 @@ MonoBehaviour:
     linkCount: 0
     lineCount: 1
     pageCount: 1
-    materialCount: 2
+    materialCount: 1
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_spriteAnimator: {fileID: 0}
@@ -5103,8 +5103,8 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_text: "\uC0C8 \uCE90\uB9AD\uD130 \uC0DD\uC131"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 76f23b4f2b0bc49c18792f72986c9673, type: 2}
-  m_sharedMaterial: {fileID: -7447916340868117875, guid: 76f23b4f2b0bc49c18792f72986c9673,
+  m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
+  m_sharedMaterial: {fileID: -2364689171920820918, guid: 8a682b7747d4a664089b7b1065aa0035,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -5136,7 +5136,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_textAlignment: 258
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -5178,7 +5178,7 @@ MonoBehaviour:
     linkCount: 0
     lineCount: 1
     pageCount: 1
-    materialCount: 2
+    materialCount: 1
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_spriteAnimator: {fileID: 0}
@@ -5206,7 +5206,7 @@ GameObject:
   - component: {fileID: 6983180289047295881}
   - component: {fileID: 832952207539428732}
   m_Layer: 5
-  m_Name: TMP SubMeshUI [Mali-Medium SDF Material + PoorStory-Regular SDF Atlas]
+  m_Name: TMP SubMeshUI [Mali-Medium SDF Material + PoorStory-Regular Atlas]
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5259,12 +5259,12 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_fontAsset: {fileID: 11400000, guid: b409058ef9e1d4c8087cba2a7e83f8fd, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
   m_spriteAsset: {fileID: 0}
   m_material: {fileID: 0}
   m_sharedMaterial: {fileID: 0}
   m_isDefaultMaterial: 0
-  m_padding: 5.3125
+  m_padding: 8.5625
   m_canvasRenderer: {fileID: 6983180289047295881}
   m_TextComponent: {fileID: 6468100062898671263}
   m_materialReferenceIndex: 1

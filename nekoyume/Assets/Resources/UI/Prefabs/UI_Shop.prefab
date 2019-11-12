@@ -68,8 +68,8 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_text: 8% of the selling price is collected in taxes.
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 76f23b4f2b0bc49c18792f72986c9673, type: 2}
-  m_sharedMaterial: {fileID: -7447916340868117875, guid: 76f23b4f2b0bc49c18792f72986c9673,
+  m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
+  m_sharedMaterial: {fileID: -2364689171920820918, guid: 8a682b7747d4a664089b7b1065aa0035,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -101,7 +101,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_textAlignment: 513
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -1065,7 +1065,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_fontAsset: {fileID: 11400000, guid: b409058ef9e1d4c8087cba2a7e83f8fd, type: 2}
+  m_fontAsset: {fileID: 0}
   m_spriteAsset: {fileID: 0}
   m_material: {fileID: 0}
   m_sharedMaterial: {fileID: 0}
@@ -3668,11 +3668,6 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4214294061895458757, guid: 53746e77bf093f04ab7301d07111ce65,
-        type: 3}
-      propertyPath: m_Text
-      value: 
-      objectReference: {fileID: 0}
     - target: {fileID: 4214294061895458759, guid: 53746e77bf093f04ab7301d07111ce65,
         type: 3}
       propertyPath: m_IsActive
@@ -3707,6 +3702,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4214294061895458757, guid: 53746e77bf093f04ab7301d07111ce65,
+        type: 3}
+      propertyPath: m_Text
+      value: 
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 53746e77bf093f04ab7301d07111ce65, type: 3}

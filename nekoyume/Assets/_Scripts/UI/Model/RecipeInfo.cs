@@ -10,22 +10,19 @@ namespace Nekoyume.UI.Model
         public class MaterialInfo
         {
             public readonly int Id;
-            public readonly int Amount = 1;
             public readonly bool IsEnough;
-            public bool IsObtained;
 
             public MaterialInfo(int id)
             {
                 Id = id;
                 IsEnough = States.Instance.CurrentAvatarState.Value.inventory.HasItem(id);
-                IsObtained = true;
             }
         }
 
         public readonly ConsumableItemRecipeSheet.Row Row;
         public readonly IReadOnlyList<MaterialInfo> MaterialInfos;
         public readonly string ResultItemName;
-        public readonly int ResultItemAmount = 1;
+        public readonly bool IsLocked;
 
         public RecipeInfo(ConsumableItemRecipeSheet.Row row)
         {
@@ -34,6 +31,7 @@ namespace Nekoyume.UI.Model
                 .Select(materialItemId => new MaterialInfo(materialItemId))
                 .ToList();
             ResultItemName = GetEquipmentName(Row.ResultConsumableItemId);
+            IsLocked = false;
         }
 
         private static string GetEquipmentName(int id)

@@ -1,6 +1,6 @@
 namespace Nekoyume.Game.VFX
 {
-    public class BattleWinVFX : VFX
+    public class BattleWin02VFX : VFX
     {
         protected override float EmitDuration => 3f;
     }

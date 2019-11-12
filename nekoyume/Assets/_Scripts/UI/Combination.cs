@@ -4,6 +4,7 @@ using System.Linq;
 using Assets.SimpleLocalization;
 using Nekoyume.BlockChain;
 using Nekoyume.EnumType;
+using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Mail;
@@ -12,10 +13,11 @@ using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
 using UniRx;
+using UnityEngine;
 
 namespace Nekoyume.UI
 {
-    public class Combination : Widget
+    public class Combination : Widget, RecipeCellView.IEventListener
     {
         public enum StateType
         {
@@ -27,6 +29,9 @@ namespace Nekoyume.UI
         public readonly ReactiveProperty<StateType> State =
             new ReactiveProperty<StateType>(StateType.CombineEquipment);
 
+        private const int NpcId = 300001;
+        private static readonly UnityEngine.Vector3 NpcPosition = new UnityEngine.Vector3(2.28f, -1.72f);
+
         public CategoryButton combineConsumableCategoryButton;
         public CategoryButton combineEquipmentCategoryButton;
         public CategoryButton enhanceEquipmentCategoryButton;
@@ -36,6 +41,11 @@ namespace Nekoyume.UI
         public CombineConsumable combineConsumable;
         public CombineEquipment combineEquipment;
         public EnhanceEquipment enhanceEquipment;
+        public SpeechBubble speechBubble;
+
+        private Npc _npc;
+
+        public Recipe recipe;
 
         #region Override
 
@@ -51,8 +61,11 @@ namespace Nekoyume.UI
             combineConsumable.RemoveMaterialsAll();
             combineConsumable.OnMaterialChange.Subscribe(SubscribeOnMaterialChange).AddTo(gameObject);
             combineConsumable.submitButton.OnSubmitClick.Subscribe(_ => ActionCombineConsumable()).AddTo(gameObject);
-            combineConsumable.recipe.scrollerController.OnSubmitClick.Subscribe(ActionCombineConsumable)
-                .AddTo(gameObject);
+            combineConsumable.recipeButton.OnClickAsObservable().Subscribe(_ =>
+            {
+                combineConsumable.submitButton.gameObject.SetActive(false);
+                recipe.Show();
+            }).AddTo(gameObject);
 
             combineEquipment.RemoveMaterialsAll();
             combineEquipment.OnMaterialChange.Subscribe(SubscribeOnMaterialChange).AddTo(gameObject);
@@ -61,6 +74,10 @@ namespace Nekoyume.UI
             enhanceEquipment.RemoveMaterialsAll();
             enhanceEquipment.OnMaterialChange.Subscribe(SubscribeOnMaterialChange).AddTo(gameObject);
             enhanceEquipment.submitButton.OnSubmitClick.Subscribe(_ => ActionEnhanceEquipment()).AddTo(gameObject);
+
+            recipe.RegisterListener(this);
+            recipe.closeButton.OnClickAsObservable()
+                .Subscribe(_ => combineConsumable.submitButton.gameObject.SetActive(true)).AddTo(gameObject);
 
             combineEquipmentCategoryButton.button.OnClickAsObservable()
                 .Subscribe(_ =>
@@ -98,6 +115,11 @@ namespace Nekoyume.UI
 
             Find<BottomMenu>().Show(UINavigator.NavigationType.Back, SubscribeBackButtonClick);
 
+            var go = Game.Game.instance.stage.npcFactory.Create(NpcId, NpcPosition);
+            _npc = go.GetComponent<Npc>();
+            go.SetActive(true);
+
+            ShowSpeech("SPEECH_COMBINE_GREETING_", CharacterAnimation.Type.Greeting);
             AudioController.instance.PlayMusic(AudioController.MusicCode.Combination);
         }
 
@@ -110,29 +132,73 @@ namespace Nekoyume.UI
             enhanceEquipment.RemoveMaterialsAll();
 
             base.Close(ignoreCloseAnimation);
+
+            _npc.gameObject.SetActive(false);
+            speechBubble.gameObject.SetActive(false);
         }
 
         #endregion
+
+        public void OnRecipeCellViewStarClick(RecipeCellView recipeCellView)
+        {
+            Debug.LogWarning($"Recipe Star Clicked. {recipeCellView.Model.Row.Id}");
+            // 즐겨찾기 등록.
+
+            // 레시피 재정렬.
+        }
+
+        public void OnRecipeCellViewSubmitClick(RecipeCellView recipeCellView)
+        {
+            if (recipeCellView is null ||
+                State.Value != StateType.CombineConsumable)
+                return;
+
+            Debug.LogWarning($"Recipe Submit Clicked. {recipeCellView.Model.Row.Id}");
+
+            var inventoryItemViewModels = new List<InventoryItem>();
+            if (recipeCellView.Model.MaterialInfos
+                .Any(e =>
+                {
+                    if (!inventory.SharedModel.TryGetMaterial(e.Id, out var viewModel))
+                        return true;
+
+                    inventoryItemViewModels.Add(viewModel);
+                    return false;
+                }))
+                return;
+
+            recipe.Hide();
+
+            combineConsumable.RemoveMaterialsAll();
+            combineConsumable.ResetCount();
+            foreach (var inventoryItemViewModel in inventoryItemViewModels)
+            {
+                combineConsumable.TryAddMaterial(inventoryItemViewModel);
+            }
+        }
 
         private void SubscribeState(StateType value)
         {
             inventory.Tooltip.Close();
             inventory.SharedModel.DeselectItemView();
+            recipe.Hide();
 
             switch (value)
             {
                 case StateType.CombineConsumable:
                     combineConsumableCategoryButton.SetToggledOn();
                     combineEquipmentCategoryButton.SetToggledOff();
+
                     enhanceEquipmentCategoryButton.SetToggledOff();
 
                     inventory.SharedModel.State.Value = ItemType.Material;
                     inventory.SharedModel.DimmedFunc.Value = combineConsumable.DimFunc;
                     inventory.SharedModel.EffectEnabledFunc.Value = combineConsumable.Contains;
 
-                    combineConsumable.Show();
+                    combineConsumable.Show(true);
                     combineEquipment.Hide();
                     enhanceEquipment.Hide();
+                    ShowSpeech("SPEECH_COMBINE_CONSUMABLE_");
                     break;
                 case StateType.CombineEquipment:
                     combineConsumableCategoryButton.SetToggledOff();
@@ -144,8 +210,9 @@ namespace Nekoyume.UI
                     inventory.SharedModel.EffectEnabledFunc.Value = combineEquipment.Contains;
 
                     combineConsumable.Hide();
-                    combineEquipment.Show();
+                    combineEquipment.Show(true);
                     enhanceEquipment.Hide();
+                    ShowSpeech("SPEECH_COMBINE_EQUIPMENT_");
                     break;
                 case StateType.EnhanceEquipment:
                     combineConsumableCategoryButton.SetToggledOff();
@@ -158,7 +225,8 @@ namespace Nekoyume.UI
 
                     combineConsumable.Hide();
                     combineEquipment.Hide();
-                    enhanceEquipment.Show();
+                    enhanceEquipment.Show(true);
+                    ShowSpeech("SPEECH_COMBINE_ENHANCE_EQUIPMENT_");
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(value), value, null);
@@ -185,6 +253,7 @@ namespace Nekoyume.UI
 
         private void StageMaterial(InventoryItemView itemView)
         {
+            ShowSpeech("SPEECH_COMBINE_STAGE_MATERIAL_");
             switch (State.Value)
             {
                 case StateType.CombineConsumable:
@@ -206,7 +275,7 @@ namespace Nekoyume.UI
             inventory.SharedModel.UpdateDimAll();
             inventory.SharedModel.UpdateEffectAll();
         }
-        
+
         private void SubscribeOnMaterialChange(CombinationPanel<EnhancementMaterialView> viewModel)
         {
             inventory.SharedModel.UpdateDimAll();
@@ -231,21 +300,6 @@ namespace Nekoyume.UI
             UpdateCurrentAvatarState(combineConsumable, materialInfoList);
             CreateCombinationAction(materialInfoList);
             combineConsumable.RemoveMaterialsAll();
-        }
-
-        private void ActionCombineConsumable(RecipeCellView view)
-        {
-            var materialInfoList = view.Model.MaterialInfos
-                .Where(materialInfo => materialInfo.Id != 0)
-                .Select(materialInfo => (materialInfo.Id, materialInfo.Amount))
-                .ToList();
-
-            UpdateCurrentAvatarState(combineConsumable, materialInfoList);
-            CreateCombinationAction(materialInfoList);
-
-            // 에셋의 버그 때문에 스크롤 맨 끝 포지션으로 스크롤 포지션 설정 시 스크롤이 비정상적으로 표시되는 문제가 있음.
-            var scroller = combineConsumable.recipe.scrollerController.scroller;
-            scroller.ReloadData(scroller.ScrollPosition - 0.1f);
         }
 
         private void ActionCombineEquipment()
@@ -325,5 +379,24 @@ namespace Nekoyume.UI
         }
 
         #endregion
+
+        private void ShowSpeech(string key, CharacterAnimation.Type type = CharacterAnimation.Type.Emotion)
+        {
+            if (_npc)
+            {
+                if (type == CharacterAnimation.Type.Greeting)
+                {
+                    _npc.Greeting();
+                }
+                else
+                {
+                    _npc.Emotion();
+                }
+                if (speechBubble.gameObject.activeSelf)
+                    return;
+                speechBubble.SetKey(key);
+                StartCoroutine(speechBubble.CoShowText());
+            }
+        }
     }
 }
