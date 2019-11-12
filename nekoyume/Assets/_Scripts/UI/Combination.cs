@@ -4,6 +4,7 @@ using System.Linq;
 using Assets.SimpleLocalization;
 using Nekoyume.BlockChain;
 using Nekoyume.EnumType;
+using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Mail;
@@ -28,6 +29,9 @@ namespace Nekoyume.UI
         public readonly ReactiveProperty<StateType> State =
             new ReactiveProperty<StateType>(StateType.CombineEquipment);
 
+        private const int NpcId = 300001;
+        private static readonly UnityEngine.Vector3 NpcPosition = new UnityEngine.Vector3(2.28f, -1.72f);
+
         public CategoryButton combineConsumableCategoryButton;
         public CategoryButton combineEquipmentCategoryButton;
         public CategoryButton enhanceEquipmentCategoryButton;
@@ -37,6 +41,9 @@ namespace Nekoyume.UI
         public CombineConsumable combineConsumable;
         public CombineEquipment combineEquipment;
         public EnhanceEquipment enhanceEquipment;
+        public SpeechBubble speechBubble;
+
+        private Npc _npc;
 
         public Recipe recipe;
 
@@ -108,6 +115,11 @@ namespace Nekoyume.UI
 
             Find<BottomMenu>().Show(UINavigator.NavigationType.Back, SubscribeBackButtonClick);
 
+            var go = Game.Game.instance.stage.npcFactory.Create(NpcId, NpcPosition);
+            _npc = go.GetComponent<Npc>();
+            go.SetActive(true);
+
+            ShowSpeech("SPEECH_COMBINE_GREETING_", CharacterAnimation.Type.Greeting);
             AudioController.instance.PlayMusic(AudioController.MusicCode.Combination);
         }
 
@@ -120,6 +132,9 @@ namespace Nekoyume.UI
             enhanceEquipment.RemoveMaterialsAll();
 
             base.Close(ignoreCloseAnimation);
+
+            _npc.gameObject.SetActive(false);
+            speechBubble.gameObject.SetActive(false);
         }
 
         #endregion
@@ -173,6 +188,7 @@ namespace Nekoyume.UI
                 case StateType.CombineConsumable:
                     combineConsumableCategoryButton.SetToggledOn();
                     combineEquipmentCategoryButton.SetToggledOff();
+
                     enhanceEquipmentCategoryButton.SetToggledOff();
 
                     inventory.SharedModel.State.Value = ItemType.Material;
@@ -182,6 +198,7 @@ namespace Nekoyume.UI
                     combineConsumable.Show(true);
                     combineEquipment.Hide();
                     enhanceEquipment.Hide();
+                    ShowSpeech("SPEECH_COMBINE_CONSUMABLE_");
                     break;
                 case StateType.CombineEquipment:
                     combineConsumableCategoryButton.SetToggledOff();
@@ -195,6 +212,7 @@ namespace Nekoyume.UI
                     combineConsumable.Hide();
                     combineEquipment.Show(true);
                     enhanceEquipment.Hide();
+                    ShowSpeech("SPEECH_COMBINE_EQUIPMENT_");
                     break;
                 case StateType.EnhanceEquipment:
                     combineConsumableCategoryButton.SetToggledOff();
@@ -208,6 +226,7 @@ namespace Nekoyume.UI
                     combineConsumable.Hide();
                     combineEquipment.Hide();
                     enhanceEquipment.Show(true);
+                    ShowSpeech("SPEECH_COMBINE_ENHANCE_EQUIPMENT_");
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(value), value, null);
@@ -234,6 +253,7 @@ namespace Nekoyume.UI
 
         private void StageMaterial(InventoryItemView itemView)
         {
+            ShowSpeech("SPEECH_COMBINE_STAGE_MATERIAL_");
             switch (State.Value)
             {
                 case StateType.CombineConsumable:
@@ -359,5 +379,24 @@ namespace Nekoyume.UI
         }
 
         #endregion
+
+        private void ShowSpeech(string key, CharacterAnimation.Type type = CharacterAnimation.Type.Emotion)
+        {
+            if (_npc)
+            {
+                if (type == CharacterAnimation.Type.Greeting)
+                {
+                    _npc.Greeting();
+                }
+                else
+                {
+                    _npc.Emotion();
+                }
+                if (speechBubble.gameObject.activeSelf)
+                    return;
+                speechBubble.SetKey(key);
+                StartCoroutine(speechBubble.CoShowText());
+            }
+        }
     }
 }
