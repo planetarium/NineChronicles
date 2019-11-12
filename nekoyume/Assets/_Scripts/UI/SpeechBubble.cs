@@ -2,6 +2,7 @@
 using DG.Tweening;
 using Nekoyume.Game;
 using System.Collections;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -19,8 +20,8 @@ namespace Nekoyume.UI
         public string localizationKey;
         public Transform bubbleContainer;
         public Image[] bubbleImages;
-        public Text textSize;
-        public Text text;
+        public TextMeshProUGUI textSize;
+        public TextMeshProUGUI text;
         public float speechSpeedInterval = 0.02f;
         public float speechWaitTime = 1.0f;
         public float bubbleTweenTime = 0.2f;
@@ -106,7 +107,7 @@ namespace Nekoyume.UI
                     if (i == speech.Length)
                         text.text = $"{speech.Substring(0, i)}";
                     else
-                        text.text = $"{speech.Substring(0, i)}<color=#ffffff00>{speech.Substring(i)}</color>";
+                        text.text = $"{speech.Substring(0, i)}<alpha=#00>{speech.Substring(i)}";
                     yield return new WaitForSeconds(speechSpeedInterval);
 
                     // check destroy

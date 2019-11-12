@@ -29,9 +29,9 @@ namespace Nekoyume.UI.Module
             submitButton.submitText.text = LocalizationManager.Localize("UI_COMBINATION_ITEM");
         }
 
-        public override bool Show()
+        public override bool Show(bool forced = false)
         {
-            if (!base.Show())
+            if (!base.Show(forced))
                 return false;
 
             baseMaterial.Unlock();
@@ -88,67 +88,20 @@ namespace Nekoyume.UI.Module
         {
             return baseMaterial.IsEmpty ? 0 : GameConfig.CombineEquipmentCostAP;
         }
-        
-        protected override void UpdateOtherMaterialsEffect()
-        {
-            baseMaterial.effectImage.enabled = true;
-            
-            var baseMaterialIsEmpty = baseMaterial.IsEmpty;
-            var isFirst = true;
-            var setEffectEnabledIfEmpty = true;
-            foreach (var otherMaterial in otherMaterials)
-            {
-                if (baseMaterialIsEmpty)
-                {
-                    otherMaterial.effectImage.enabled = false;
-                    continue;
-                }
-                
-                if (isFirst)
-                {
-                    isFirst = false;
-                    setEffectEnabledIfEmpty = !otherMaterial.IsEmpty;
-                    otherMaterial.effectImage.enabled = true;
-                    continue;
-                }
-                
-                if (!otherMaterial.IsEmpty)
-                {
-                    otherMaterial.effectImage.enabled = true;
-                    continue;
-                }
 
-                if (otherMaterial.IsLocked)
-                {
-                    otherMaterial.effectImage.enabled = false;
-                    continue;
-                }
-                
-                if (setEffectEnabledIfEmpty)
-                {
-                    setEffectEnabledIfEmpty = false;
-                    otherMaterial.effectImage.enabled = true;
-                }
-                else
-                {
-                    otherMaterial.effectImage.enabled = false;
-                }
-            }
-        }
-
-        protected override bool TryAddBaseMaterial(InventoryItemView view, int count, out CombinationMaterialView materialView)
+        protected override bool TryAddBaseMaterial(InventoryItem viewModel, int count, out CombinationMaterialView materialView)
         {
-            if (view.Model is null ||
-                view.Model.ItemBase.Value.Data.ItemType != ItemType.Material ||
-                view.Model.ItemBase.Value.Data.ItemSubType != ItemSubType.EquipmentMaterial)
+            if (viewModel is null ||
+                viewModel.ItemBase.Value.Data.ItemType != ItemType.Material ||
+                viewModel.ItemBase.Value.Data.ItemSubType != ItemSubType.EquipmentMaterial)
             {
                 materialView = null;
                 return false;
             }
 
-            if (base.TryAddBaseMaterial(view, count, out materialView))
+            if (base.TryAddBaseMaterial(viewModel, count, out materialView))
             {
-                Game.Game.instance.TableSheets.ItemConfigForGradeSheet.TryGetValue(view.Model.ItemBase.Value.Data.Grade,
+                Game.Game.instance.TableSheets.ItemConfigForGradeSheet.TryGetValue(viewModel.ItemBase.Value.Data.Grade,
                     out var configRow, true);
 
                 for (var i = 0; i < otherMaterials.Length; i++)

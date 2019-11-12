@@ -109,7 +109,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 38.5, y: 38.5}
+  m_SizeDelta: {x: 40.3, y: 40.3}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5035161357299684403
 CanvasRenderer:
@@ -237,24 +237,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cellIdentifier: 
-  resultNameText: {fileID: 8520511758456405266}
-  combineButton: {fileID: 0}
-  combineText: {fileID: 0}
   resultItemView: {fileID: 4989840608808737565}
-  resultItemIcon:
-    image: {fileID: 0}
-    mark: {fileID: 0}
-  materialIcons:
-  - image: {fileID: 0}
-    mark: {fileID: 0}
-  - image: {fileID: 0}
-    mark: {fileID: 0}
-  - image: {fileID: 0}
-    mark: {fileID: 0}
-  - image: {fileID: 0}
-    mark: {fileID: 0}
-  - image: {fileID: 0}
-    mark: {fileID: 0}
+  resultItemNameText: {fileID: 0}
+  materialItemViews: []
+  submitButton: {fileID: 0}
+  submitText: {fileID: 0}
 --- !u!1 &919300048339364099
 GameObject:
   m_ObjectHideFlags: 0
@@ -691,8 +678,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d710db0c8f34326bca10f1fe0a9fa88, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  iconImage: {fileID: 3827297046971377375}
+  touchHandler: {fileID: 0}
+  itemButton: {fileID: 0}
+  backgroundImage: {fileID: 0}
   gradeImage: {fileID: 5948850796279038979}
+  iconImage: {fileID: 3827297046971377375}
+  enhancementText: {fileID: 0}
+  selectionImage: {fileID: 0}
   countText: {fileID: 0}
 --- !u!1 &2074438620849391144
 GameObject:
@@ -1025,7 +1017,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 70, y: 70}
+  m_SizeDelta: {x: 74.5, y: 74.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8398436516032491423
 CanvasRenderer:
@@ -1413,8 +1405,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d710db0c8f34326bca10f1fe0a9fa88, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  iconImage: {fileID: 4852467282317011929}
+  touchHandler: {fileID: 0}
+  itemButton: {fileID: 0}
+  backgroundImage: {fileID: 0}
   gradeImage: {fileID: 3216698438233152806}
+  iconImage: {fileID: 4852467282317011929}
+  enhancementText: {fileID: 0}
+  selectionImage: {fileID: 0}
   countText: {fileID: 0}
 --- !u!1 &5705985501145602174
 GameObject:

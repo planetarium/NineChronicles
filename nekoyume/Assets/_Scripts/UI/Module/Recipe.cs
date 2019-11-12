@@ -1,6 +1,7 @@
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Scroller;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using Nekoyume.Game.Controller;
 using Nekoyume.State;
 using UniRx;
@@ -9,13 +10,17 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
-    public class Recipe : MonoBehaviour
+    public class Recipe : MonoBehaviour, RecipeCellView.IEventListener
     {
         public RecipeScrollerController scrollerController;
         public Button closeButton;
+        
+        [CanBeNull] private RecipeCellView.IEventListener _eventListener;
 
         private void Awake()
         {
+            scrollerController.RegisterListener(this);
+            
             closeButton.OnClickAsObservable().Subscribe(_ =>
             {
                 AudioController.PlayClick();
@@ -41,6 +46,21 @@ namespace Nekoyume.UI.Module
         public void Hide()
         {
             gameObject.SetActive(false);
+        }
+        
+        public void RegisterListener(RecipeCellView.IEventListener eventListener)
+        {
+            _eventListener = eventListener;
+        }
+
+        public void OnRecipeCellViewStarClick(RecipeCellView recipeCellView)
+        {
+            _eventListener?.OnRecipeCellViewStarClick(recipeCellView);
+        }
+
+        public void OnRecipeCellViewSubmitClick(RecipeCellView recipeCellView)
+        {
+            _eventListener?.OnRecipeCellViewSubmitClick(recipeCellView);
         }
     }
 }
