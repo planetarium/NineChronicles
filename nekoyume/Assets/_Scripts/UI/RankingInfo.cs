@@ -1,6 +1,7 @@
 using System.Linq;
 using Nekoyume.Game.Item;
 using Nekoyume.Helper;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,11 +9,11 @@ namespace Nekoyume.UI
 {
     public class RankingInfo : MonoBehaviour
     {
-        public Text rank;
+        public TextMeshProUGUI rank;
         public Image icon;
-        public Text level;
-        public Text id;
-        public Text stage;
+        public TextMeshProUGUI level;
+        public TextMeshProUGUI id;
+        public TextMeshProUGUI stage;
         public Image flag;
         public Tween.DOTweenRectTransformMoveBy tweenMove;
         public Tween.DOTweenGroupAlpha tweenAlpha;

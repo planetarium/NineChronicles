@@ -43,8 +43,6 @@ namespace Nekoyume.UI.Scroller
             _layoutGroupSpacing = layoutGroup.spacing;
             scrollRect.content.SetAnchor(AnchorPresetType.HorStretchBottom);
             scrollRect.content.SetPivot(PivotPresetType.BottomCenter);
-            var contentSizeFitter = scrollRect.content.gameObject.AddComponent<ContentSizeFitter>();
-            contentSizeFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
         }
 
         public void SetModel(IReadOnlyReactiveCollection<NotificationCellView.Model> model)

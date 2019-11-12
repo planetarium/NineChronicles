@@ -11,7 +11,7 @@ namespace Nekoyume.UI.Scroller
         public MailCellView cellViewPrefab;
         public readonly Subject<MailCellView> onClickCellView = new Subject<MailCellView>();
 
-        private List<Game.Mail.Mail> _data;
+        private IReadOnlyList<Game.Mail.Mail> _data;
         private float _cellViewHeight = 40f;
 
         #region Mono
