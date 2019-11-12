@@ -61,7 +61,7 @@ spec:
           timeoutSeconds: 1
         ports:
         - containerPort: 31234
-          name: miner
+          name: seed
         volumeMounts:
           - name: volume
             mountPath: /data
