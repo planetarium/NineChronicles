@@ -1,8 +1,6 @@
 ﻿using UnityEngine;
 using EnhancedUI.EnhancedScroller;
-using UniRx;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Nekoyume.UI.Scroller
 {
@@ -10,7 +8,6 @@ namespace Nekoyume.UI.Scroller
     {
         public EnhancedScroller scroller;
         public QuestCellView cellViewPrefab;
-        public readonly Subject<MailCellView> onClickCellView = new Subject<MailCellView>();
 
         private readonly HashSet<int> _buttonDisabledCells = new HashSet<int>();
         private List<Game.Quest.Quest> _data;
@@ -29,7 +26,7 @@ namespace Nekoyume.UI.Scroller
         public EnhancedScrollerCellView GetCellView(EnhancedScroller scroller, int dataIndex, int cellIndex)
         {
             var cellView = scroller.GetCellView(cellViewPrefab) as QuestCellView;
-            if (cellView is null)
+            if (cellView is null)   
             {
                 throw new FailedToInstantiateGameObjectException(cellViewPrefab.name);
             }

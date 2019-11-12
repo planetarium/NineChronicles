@@ -1,7 +1,6 @@
 using EnhancedUI.EnhancedScroller;
 using Nekoyume.Helper;
 using System;
-using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -22,24 +21,20 @@ namespace Nekoyume.UI.Scroller
         public TextMeshProUGUI content;
         public Button button;
         public Text submitText;
-        public IDisposable onClickDisposable;
 
         private Mail _mail;
         private Shadow[] _textShadows;
-        
 
         #region Mono
 
         private void Awake()
         {
-            onClickDisposable = button.OnClickAsObservable()
-                .Subscribe(_ => onClickSubmitButton?.Invoke(this))
-                .AddTo(gameObject);
+            button.onClick.AddListener(OnClickButton);
         }
 
         private void OnDisable()
         {
-            Clear();
+            button.interactable = true;
         }
 
         #endregion
@@ -78,10 +73,10 @@ namespace Nekoyume.UI.Scroller
             data.Read(_mail);
         }
 
-        private void Clear()
+        private void OnClickButton()
         {
-            onClickDisposable?.Dispose();
-            button.interactable = true;
+            Read();
+            onClickSubmitButton?.Invoke(this);
         }
     }
 }
