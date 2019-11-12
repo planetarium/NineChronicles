@@ -13,7 +13,7 @@ namespace Nekoyume.UI.Scroller
         public readonly Subject<MailCellView> onClickCellView = new Subject<MailCellView>();
 
         private readonly HashSet<int> _buttonDisabledCells = new HashSet<int>();
-        private List<Game.Quest.Quest> _data;
+        private IReadOnlyList<Game.Quest.Quest> _data;
         private float _cellViewHeight = 40f;
 
         #region Mono
