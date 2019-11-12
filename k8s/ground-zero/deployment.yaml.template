@@ -21,6 +21,9 @@ spec:
         volumeMounts:
           - name: volume
             mountPath: /data
+        resources:
+          requests:
+            cpu: 700m
       volumes:
         - name: volume
           persistentVolumeClaim:
@@ -62,6 +65,9 @@ spec:
         ports:
         - containerPort: 31234
           name: seed
+        resources:
+          requests:
+            cpu: 700m
         volumeMounts:
           - name: volume
             mountPath: /data
