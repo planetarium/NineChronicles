@@ -116,16 +116,16 @@ namespace Nekoyume.UI
         private void FindGlassMaterial(GameObject go)
         {
             var image = go.GetComponent<UnityEngine.UI.Image>();
-            if (!image || !image.material || image.material.shader.name != "UI/Unlit/FrostedGlass")
-            {
+            if (!image ||
+                !image.material ||
+                !image.material.shader.name.Equals("UI/Unlit/FrostedGlass"))
                 return;
-            }
 
             _glassOriginal = image.material;
             _originalBlurRadius = _glassOriginal.GetFloat(Radius);
-            if (!_glass)
-                _glass = new Material(_glassOriginal);
-            image.material = _glass;
+            _glass
+                = image.material
+                = new Material(_glassOriginal);
         }
         
         public virtual bool IsActive()
@@ -192,9 +192,7 @@ namespace Nekoyume.UI
         private IEnumerator Blur()
         {
             if (!_glass)
-            {
                 yield break;
-            }
 
             var from = 0f;
             var to = _originalBlurRadius;

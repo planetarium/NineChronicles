@@ -12,10 +12,11 @@ using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
 using UniRx;
+using UnityEngine;
 
 namespace Nekoyume.UI
 {
-    public class Combination : Widget
+    public class Combination : Widget, RecipeCellView.IEventListener
     {
         public enum StateType
         {
@@ -37,6 +38,8 @@ namespace Nekoyume.UI
         public CombineEquipment combineEquipment;
         public EnhanceEquipment enhanceEquipment;
 
+        public Recipe recipe;
+
         #region Override
 
         public override void Initialize()
@@ -51,8 +54,11 @@ namespace Nekoyume.UI
             combineConsumable.RemoveMaterialsAll();
             combineConsumable.OnMaterialChange.Subscribe(SubscribeOnMaterialChange).AddTo(gameObject);
             combineConsumable.submitButton.OnSubmitClick.Subscribe(_ => ActionCombineConsumable()).AddTo(gameObject);
-            combineConsumable.recipe.scrollerController.OnSubmitClick.Subscribe(ActionCombineConsumable)
-                .AddTo(gameObject);
+            combineConsumable.recipeButton.OnClickAsObservable().Subscribe(_ =>
+            {
+                combineConsumable.submitButton.gameObject.SetActive(false);
+                recipe.Show();
+            }).AddTo(gameObject);
 
             combineEquipment.RemoveMaterialsAll();
             combineEquipment.OnMaterialChange.Subscribe(SubscribeOnMaterialChange).AddTo(gameObject);
@@ -61,6 +67,10 @@ namespace Nekoyume.UI
             enhanceEquipment.RemoveMaterialsAll();
             enhanceEquipment.OnMaterialChange.Subscribe(SubscribeOnMaterialChange).AddTo(gameObject);
             enhanceEquipment.submitButton.OnSubmitClick.Subscribe(_ => ActionEnhanceEquipment()).AddTo(gameObject);
+
+            recipe.RegisterListener(this);
+            recipe.closeButton.OnClickAsObservable()
+                .Subscribe(_ => combineConsumable.submitButton.gameObject.SetActive(true)).AddTo(gameObject);
 
             combineEquipmentCategoryButton.button.OnClickAsObservable()
                 .Subscribe(_ =>
@@ -114,10 +124,49 @@ namespace Nekoyume.UI
 
         #endregion
 
+        public void OnRecipeCellViewStarClick(RecipeCellView recipeCellView)
+        {
+            Debug.LogWarning($"Recipe Star Clicked. {recipeCellView.Model.Row.Id}");
+            // 즐겨찾기 등록.
+
+            // 레시피 재정렬.
+        }
+
+        public void OnRecipeCellViewSubmitClick(RecipeCellView recipeCellView)
+        {
+            if (recipeCellView is null ||
+                State.Value != StateType.CombineConsumable)
+                return;
+
+            Debug.LogWarning($"Recipe Submit Clicked. {recipeCellView.Model.Row.Id}");
+
+            var inventoryItemViewModels = new List<InventoryItem>();
+            if (recipeCellView.Model.MaterialInfos
+                .Any(e =>
+                {
+                    if (!inventory.SharedModel.TryGetMaterial(e.Id, out var viewModel))
+                        return true;
+
+                    inventoryItemViewModels.Add(viewModel);
+                    return false;
+                }))
+                return;
+
+            recipe.Hide();
+
+            combineConsumable.RemoveMaterialsAll();
+            combineConsumable.ResetCount();
+            foreach (var inventoryItemViewModel in inventoryItemViewModels)
+            {
+                combineConsumable.TryAddMaterial(inventoryItemViewModel);
+            }
+        }
+
         private void SubscribeState(StateType value)
         {
             inventory.Tooltip.Close();
             inventory.SharedModel.DeselectItemView();
+            recipe.Hide();
 
             switch (value)
             {
@@ -130,7 +179,7 @@ namespace Nekoyume.UI
                     inventory.SharedModel.DimmedFunc.Value = combineConsumable.DimFunc;
                     inventory.SharedModel.EffectEnabledFunc.Value = combineConsumable.Contains;
 
-                    combineConsumable.Show();
+                    combineConsumable.Show(true);
                     combineEquipment.Hide();
                     enhanceEquipment.Hide();
                     break;
@@ -144,7 +193,7 @@ namespace Nekoyume.UI
                     inventory.SharedModel.EffectEnabledFunc.Value = combineEquipment.Contains;
 
                     combineConsumable.Hide();
-                    combineEquipment.Show();
+                    combineEquipment.Show(true);
                     enhanceEquipment.Hide();
                     break;
                 case StateType.EnhanceEquipment:
@@ -158,7 +207,7 @@ namespace Nekoyume.UI
 
                     combineConsumable.Hide();
                     combineEquipment.Hide();
-                    enhanceEquipment.Show();
+                    enhanceEquipment.Show(true);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(value), value, null);
@@ -206,7 +255,7 @@ namespace Nekoyume.UI
             inventory.SharedModel.UpdateDimAll();
             inventory.SharedModel.UpdateEffectAll();
         }
-        
+
         private void SubscribeOnMaterialChange(CombinationPanel<EnhancementMaterialView> viewModel)
         {
             inventory.SharedModel.UpdateDimAll();
@@ -231,21 +280,6 @@ namespace Nekoyume.UI
             UpdateCurrentAvatarState(combineConsumable, materialInfoList);
             CreateCombinationAction(materialInfoList);
             combineConsumable.RemoveMaterialsAll();
-        }
-
-        private void ActionCombineConsumable(RecipeCellView view)
-        {
-            var materialInfoList = view.Model.MaterialInfos
-                .Where(materialInfo => materialInfo.Id != 0)
-                .Select(materialInfo => (materialInfo.Id, materialInfo.Amount))
-                .ToList();
-
-            UpdateCurrentAvatarState(combineConsumable, materialInfoList);
-            CreateCombinationAction(materialInfoList);
-
-            // 에셋의 버그 때문에 스크롤 맨 끝 포지션으로 스크롤 포지션 설정 시 스크롤이 비정상적으로 표시되는 문제가 있음.
-            var scroller = combineConsumable.recipe.scrollerController.scroller;
-            scroller.ReloadData(scroller.ScrollPosition - 0.1f);
         }
 
         private void ActionCombineEquipment()
