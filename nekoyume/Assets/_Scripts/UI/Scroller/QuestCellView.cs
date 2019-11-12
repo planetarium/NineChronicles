@@ -11,7 +11,6 @@ using TMPro;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.Events;
 
 namespace Nekoyume.UI.Scroller
 {
@@ -29,7 +28,6 @@ namespace Nekoyume.UI.Scroller
         public Game.Quest.Quest data;
         public SimpleCountableItemView[] rewardViews;
 
-        public IDisposable onClickDisposable;
         private Shadow[] _textShadows;
         private int _currentDataIndex;
 
@@ -37,23 +35,19 @@ namespace Nekoyume.UI.Scroller
 
         private void Awake()
         {
-            onClickDisposable = button.OnClickAsObservable()
-                .Subscribe(_ => onClickSubmitButton?.Invoke(_currentDataIndex))
-                .AddTo(gameObject);
-            button.onClick.AddListener(() => buttonText.text = LocalizationManager.Localize("UI_RECEIVED"));
+            button.onClick.AddListener(OnClickButton);
         }
 
         private void OnDisable()
         {
-            onClickDisposable?.Dispose();
             button.interactable = true;
         }
 
         #endregion
 
-        public void SetData(Game.Quest.Quest quest, bool isLocalReceived, int index)
+        public void SetData(Game.Quest.Quest quest, bool isLocalReceived, int dataIndex)
         {
-            _currentDataIndex = index;
+            _currentDataIndex = dataIndex;
 
             _textShadows = button.GetComponentsInChildren<Shadow>();
             data = quest;
@@ -73,6 +67,7 @@ namespace Nekoyume.UI.Scroller
                 buttonImage.rectTransform.offsetMin = button.interactable ? _leftBottom : Vector2.zero;
                 buttonImage.rectTransform.offsetMax = button.interactable ? _minusRightTop : Vector2.zero;
             }
+
             var itemMap = data.Reward.ItemMap;
             for (var i = 0; i < itemMap.Count; i++)
             {
@@ -95,6 +90,12 @@ namespace Nekoyume.UI.Scroller
             foreach (var shadow in _textShadows)
                 shadow.effectColor = Color.black;
             ActionManager.instance.QuestReward(data.Id);
+        }
+
+        private void OnClickButton()
+        {
+            onClickSubmitButton?.Invoke(_currentDataIndex);
+            buttonText.text = LocalizationManager.Localize("UI_RECEIVED");
         }
     }
 }
