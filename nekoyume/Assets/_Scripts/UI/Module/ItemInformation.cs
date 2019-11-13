@@ -6,6 +6,7 @@ using Nekoyume.EnumType;
 using Nekoyume.Game.Item;
 using Nekoyume.TableData;
 using Nekoyume.UI.Model;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -18,22 +19,22 @@ namespace Nekoyume.UI.Module
         {
             public SimpleCountableItemView itemView;
             public List<Image> elementalTypeImages;
-            public Text commonText;
+            public TextMeshProUGUI commonText;
         }
 
         [Serializable]
         public struct DescriptionArea
         {
             public RectTransform root;
-            public Text text;
+            public TextMeshProUGUI text;
         }
 
         [Serializable]
         public struct StatsArea
         {
             public RectTransform root;
-            public Text commonText;
-            public Text levelLimitText;
+            public TextMeshProUGUI commonText;
+            public TextMeshProUGUI levelLimitText;
             public ItemInformationStat statPrefab;
             public List<ItemInformationStat> stats;
         }

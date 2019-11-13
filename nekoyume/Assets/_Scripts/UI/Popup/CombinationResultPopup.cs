@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Assets.SimpleLocalization;
 using Nekoyume.Game.Controller;
 using Nekoyume.UI.Module;
+using TMPro;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,12 +12,12 @@ namespace Nekoyume.UI
 {
     public class CombinationResultPopup : PopupWidget
     {
-        public Text titleText;
+        public TextMeshProUGUI titleText;
         public ItemInformation itemInformation;
-        public Text materialText;
+        public TextMeshProUGUI materialText;
         public SimpleCountableItemView[] materialItems;
         public Button submitButton;
-        public Text submitButtonText;
+        public TextMeshProUGUI submitButtonText;
         public GameObject resultItemVfx;
         
         private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();

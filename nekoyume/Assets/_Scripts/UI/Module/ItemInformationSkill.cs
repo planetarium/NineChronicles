@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using TMPro;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,9 +11,9 @@ namespace Nekoyume.UI.Module
     {
         public Image iconImage;
         public RectTransform informationArea;
-        public Text nameText;
-        public Text powerText;
-        public Text chanceText;
+        public TextMeshProUGUI nameText;
+        public TextMeshProUGUI powerText;
+        public TextMeshProUGUI chanceText;
         
         private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
 
