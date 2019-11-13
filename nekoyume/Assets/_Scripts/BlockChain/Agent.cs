@@ -189,7 +189,7 @@ namespace Nekoyume.BlockChain
                             break;
 
                         case StateReferenceDownloadState stateReferenceDownloadState:
-                            format = LocalizationManager.Localize("UI_LOADING_STATE_DOWNLOAD");
+                            format = LocalizationManager.Localize("UI_LOADING_STATE_REFERENCE_DOWNLOAD");
                             text = string.Format(format, stateReferenceDownloadState.ReceivedStateReferenceCount,
                                 stateReferenceDownloadState.TotalStateReferenceCount);
                             break;
@@ -492,16 +492,18 @@ namespace Nekoyume.BlockChain
         {
             public IAction BlockAction { get; } = new RewardGold {gold = 1};
 
-            public InvalidBlockException ValidateNextBlock(IReadOnlyList<Block<PolymorphicAction<ActionBase>>> blocks,
-                Block<PolymorphicAction<ActionBase>> nextBlock)
+            public InvalidBlockException ValidateNextBlock(
+                BlockChain<PolymorphicAction<ActionBase>> blocks, 
+                Block<PolymorphicAction<ActionBase>> nextBlock
+            )
             {
                 return null;
             }
 
-            public long GetNextBlockDifficulty(IReadOnlyList<Block<PolymorphicAction<ActionBase>>> blocks)
+            public long GetNextBlockDifficulty(BlockChain<PolymorphicAction<ActionBase>> blocks)
             {
                 Thread.Sleep(SleepInterval);
-                return blocks.Any() ? 1 : 0;
+                return blocks.Tip is null ? 0 : 1;
             }
         }
 

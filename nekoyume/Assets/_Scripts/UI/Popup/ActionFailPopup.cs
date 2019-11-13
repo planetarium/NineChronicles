@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
-    public class ActionFailPopup : Alert
+    public class ActionFailPopup : SystemPopup
     {
         public void Show(string msg)
         {

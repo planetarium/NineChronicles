@@ -138,9 +138,7 @@ namespace Assets.SimpleLocalization
             if (!Dictionary.ContainsKey(Language))
                 throw new KeyNotFoundException("Language not found: " + Language);
 
-            return Dictionary[Language].ContainsKey(localizationKey)
-                ? Dictionary[Language][localizationKey]
-                : $"!{localizationKey}!";
+            return Dictionary[Language][localizationKey];
         }
 
         public static string LocalizeCharacterName(int characterId)

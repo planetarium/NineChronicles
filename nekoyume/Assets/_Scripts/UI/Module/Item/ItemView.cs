@@ -72,6 +72,11 @@ namespace Nekoyume.UI.Module
         }
 
         #endregion
+        
+        public virtual void Show()
+        {
+            gameObject.SetActive(true);
+        }
 
         public virtual void SetData(TViewModel model)
         {
@@ -106,6 +111,11 @@ namespace Nekoyume.UI.Module
             _disposablesAtSetData.DisposeAllAndClear();
 
             UpdateView();
+        }
+
+        public virtual void Hide()
+        {
+            gameObject.SetActive(false);
         }
 
         protected virtual void SetDim(bool isDim)

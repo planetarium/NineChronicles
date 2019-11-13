@@ -38,7 +38,7 @@ namespace Nekoyume.Action
 
             public ResultModel(Dictionary serialized) : base(serialized)
             {
-                materials = serialized[(Text) "materials"].ToDictionary();
+                materials = serialized["materials"].ToDictionary();
             }
 
             public override IValue Serialize() =>
@@ -219,7 +219,8 @@ namespace Nekoyume.Action
             }
             else
             {
-                var consumableItemRecipeSheet = Game.Game.instance.TableSheets.ConsumableItemRecipeSheet;
+                var tableSheetsState = TableSheetsState.FromActionContext(ctx);
+                var consumableItemRecipeSheet = tableSheetsState.ConsumableItemRecipeSheet;
                 var consumableItemSheet = Game.Game.instance.TableSheets.ConsumableItemSheet;
                 var foodMaterials = materialRows.Keys.Where(pair => pair.ItemSubType == ItemSubType.FoodMaterial);
                 var foodCount = materialRows.Min(pair => pair.Value);
@@ -253,7 +254,7 @@ namespace Nekoyume.Action
                     Result.itemUsable = itemUsable;
                     var mail = new CombinationMail(Result, ctx.BlockIndex);
                     avatarState.Update(mail);
-                    avatarState.UpdateCombinationQuest(itemUsable);    
+                    avatarState.UpdateCombinationQuest(itemUsable);
                 }
             }
 
@@ -412,7 +413,7 @@ namespace Nekoyume.Action
 
         private static decimal GetRoll(IRandom random, int monsterPartsCount, int deltaLevel)
         {
-            var normalizedRandomValue = random.Next(0, 100000) * 0.00001m;
+            var normalizedRandomValue = random.Next(0, 100001) * 0.00001m;
             var rollMax = DecimalEx.Pow(1m / (1m + GameConfig.CombinationValueP1 / monsterPartsCount),
                               GameConfig.CombinationValueP2) *
                           (deltaLevel <= 0
@@ -466,7 +467,7 @@ namespace Nekoyume.Action
             var buffSkills = Game.Game.instance.TableSheets.SkillSheet.OrderedList
                 .Where(item => item.SkillType == SkillType.Buff)
                 .ToList();
-            var index = Math.Min(random.Next(0, buffSkills.Count), buffSkills.Count - 1);
+            var index = random.Next(0, buffSkills.Count);
             var row = buffSkills[index];
 
             buffSkill = new BuffSkill(row, 0, 20);

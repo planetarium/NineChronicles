@@ -561,6 +561,7 @@ GameObject:
   - component: {fileID: 1333831686}
   - component: {fileID: 1333831688}
   - component: {fileID: 1333831689}
+  - component: {fileID: 1333831690}
   m_Layer: 0
   m_Name: Stage
   m_TagString: Untagged
@@ -583,6 +584,7 @@ MonoBehaviour:
   objectPool: {fileID: 1333831684}
   playerFactory: {fileID: 1333831687}
   enemyFactory: {fileID: 1333831685}
+  npcFactory: {fileID: 1333831690}
   dropItemFactory: {fileID: 1333831686}
   skillController: {fileID: 1333831688}
   buffController: {fileID: 1333831689}
@@ -671,7 +673,7 @@ MonoBehaviour:
       type: 3}
     InitCount: 5
     AddCount: 3
-  - Prefab: {fileID: 7812389707914379057, guid: 5b8548ec6c3b8584b977c0723843752c,
+  - Prefab: {fileID: 7362964850041351188, guid: cb231aabb102c414a88197f07cf10c4f,
       type: 3}
     InitCount: 20
     AddCount: 10
@@ -723,6 +725,14 @@ MonoBehaviour:
       type: 3}
     InitCount: 10
     AddCount: 5
+  - Prefab: {fileID: 9171198395192100627, guid: 75875f77466b065489f94ef3745e1641,
+      type: 3}
+    InitCount: 3
+    AddCount: 1
+  - Prefab: {fileID: 1958956074637739899, guid: ba825d65f851a72458a2fe7776f8dcc4,
+      type: 3}
+    InitCount: 1
+    AddCount: 1
 --- !u!114 &1333831685
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -785,6 +795,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   buffs: []
+--- !u!114 &1333831690
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1333831681}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 46aa168a607c4d6e85c0d69f42b9935d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1346351531
 GameObject:
   m_ObjectHideFlags: 0

@@ -43,9 +43,9 @@ namespace Nekoyume.UI.Module
             submitButton.submitText.text = LocalizationManager.Localize("UI_COMBINATION_ENHANCEMENT");
         }
 
-        public override bool Show()
+        public override bool Show(bool forced = false)
         {
-            if (!base.Show())
+            if (!base.Show(forced))
                 return false;
 
             baseMaterial.Unlock();
@@ -93,58 +93,11 @@ namespace Nekoyume.UI.Module
         {
             return baseMaterial.IsEmpty ? 0 : GameConfig.EnhanceEquipmentCostAP;
         }
-        
-        protected override void UpdateOtherMaterialsEffect()
+
+        protected override bool TryAddBaseMaterial(InventoryItem viewModel, int count, out EnhancementMaterialView materialView)
         {
-            baseMaterial.effectImage.enabled = true;
-
-            var baseMaterialIsEmpty = baseMaterial.IsEmpty;
-            var isFirst = true;
-            var setEffectEnabledIfEmpty = true;
-            foreach (var otherMaterial in otherMaterials)
-            {
-                if (baseMaterialIsEmpty)
-                {
-                    otherMaterial.effectImage.enabled = false;
-                    continue;
-                }
-                
-                if (isFirst)
-                {
-                    isFirst = false;
-                    setEffectEnabledIfEmpty = !otherMaterial.IsEmpty;
-                    otherMaterial.effectImage.enabled = true;
-                    continue;
-                }
-                
-                if (!otherMaterial.IsEmpty)
-                {
-                    otherMaterial.effectImage.enabled = true;
-                    continue;
-                }
-
-                if (otherMaterial.IsLocked)
-                {
-                    otherMaterial.effectImage.enabled = false;
-                    continue;
-                }
-                
-                if (setEffectEnabledIfEmpty)
-                {
-                    setEffectEnabledIfEmpty = false;
-                    otherMaterial.effectImage.enabled = true;
-                }
-                else
-                {
-                    otherMaterial.effectImage.enabled = false;
-                }
-            }
-        }
-
-        protected override bool TryAddBaseMaterial(InventoryItemView view, int count, out EnhancementMaterialView materialView)
-        {
-            if (view.Model is null ||
-                view.Model.ItemBase.Value.Data.ItemType != ItemType.Equipment)
+            if (viewModel is null ||
+                viewModel.ItemBase.Value.Data.ItemType != ItemType.Equipment)
             {
                 materialView = null;
                 return false;
@@ -156,11 +109,11 @@ namespace Nekoyume.UI.Module
                 return false;
             }
 
-            if (!base.TryAddBaseMaterial(view, count, out materialView))
+            if (!base.TryAddBaseMaterial(viewModel, count, out materialView))
                 return false;
             
-            if (!(view.Model.ItemBase.Value is Equipment equipment))
-                throw new InvalidCastException(nameof(view.Model.ItemBase.Value));
+            if (!(viewModel.ItemBase.Value is Equipment equipment))
+                throw new InvalidCastException(nameof(viewModel.ItemBase.Value));
 
             foreach (var otherMaterial in otherMaterials)
             {
@@ -192,9 +145,9 @@ namespace Nekoyume.UI.Module
             return true;
         }
 
-        protected override bool TryAddOtherMaterial(InventoryItemView view, int count, out EnhancementMaterialView materialView)
+        protected override bool TryAddOtherMaterial(InventoryItem viewModel, int count, out EnhancementMaterialView materialView)
         {
-            if (!base.TryAddOtherMaterial(view, count, out materialView))
+            if (!base.TryAddOtherMaterial(viewModel, count, out materialView))
                 return false;
             
             var equipment = (Equipment) baseMaterial.Model.ItemBase.Value;
@@ -206,14 +159,14 @@ namespace Nekoyume.UI.Module
             materialView.statView.Hide();
 
             if (!(baseMaterial.Model.ItemBase.Value is Equipment baseEquipment))
-                throw new InvalidCastException(nameof(view.Model.ItemBase.Value));
+                throw new InvalidCastException(nameof(viewModel.ItemBase.Value));
 
             var maxCount = baseEquipment.GetOptionCount();
 
             foreach (var otherMaterial in otherMaterials.Where(e => !e.IsLocked && !e.IsEmpty))
             {
                 if (!(otherMaterial.Model.ItemBase.Value is Equipment otherEquipment))
-                    throw new InvalidCastException(nameof(view.Model.ItemBase.Value));
+                    throw new InvalidCastException(nameof(viewModel.ItemBase.Value));
 
                 maxCount = Math.Max(maxCount, otherEquipment.GetOptionCount());
             }

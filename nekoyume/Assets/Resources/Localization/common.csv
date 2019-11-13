@@ -98,7 +98,7 @@ UI_DELETE,Delete,삭제
 UI_COMBINATION_ITEM,Combine,아이템 제작
 UI_COMBINATION_ERROR,Error,조합 에러
 UI_COMBINATION_SUCCESS,Success!,조합 성공!
-UI_COMBINATION_NOTIFY_FORMAT,<size=14><color=#a2b4d6>[Workshop Cat]</color></size>[newline]Finished crafting <color=#ffd201>[{0}]</color>.,<size=14><color=#a2b4d6>[대장장이 고양이]</color></size>[newline]<color=#ffd201>[{0}]</color> 제작을 완료하였네.
+UI_COMBINATION_NOTIFY_FORMAT,<size=12><color=#a2b4d6>[Workshop Cat]</color></size>[newline]Finished crafting <color=#ffd201>[{0}]</color>.,<size=12><color=#a2b4d6>[대장장이 고양이]</color></size>[newline]<color=#ffd201>[{0}]</color> 제작을 완료하였네.
 UI_COMBINATION_FAIL,Failed..,조합 실패
 UI_COMBINATION_MATERIAL_COUNT_SELECTION,Material Amount,재료 수량 선택
 UI_ENHANCEMENT_EQUIPMENT_TO_ENHANCE,Equipment to enhance,강화할 장비
@@ -206,13 +206,21 @@ UI_LOADING_BOOTSTRAP_START,Connect to Network...,네트워크 연결을 수립�
 UI_LOADING_BLOCK_DOWNLOAD,Download Block... {0} / {1},블록 다운로드 중... {0} / {1}
 UI_LOADING_STATE_REFERENCE_DOWNLOAD,Download State... {0} / {1},상태 다운로드 중... {0} / {1}
 UI_RECEIVE,Receive,받기
+UI_RECEIVED,Received,받음
 UI_GET_REWARD,Get Reward,보상 받기
 UI_ITEM_ENHANCEMENT_MAIL_FORMAT,{0} Upgrade Complete,{0} 강화 완료
 UI_SELL_CANCEL_MAIL_FORMAT,{0} Unregister Complete,{0} 판매 취소 완료
 UI_BUYER_MAIL_FORMAT,{0} Purchased,{0} 구매 완료
 UI_SELLER_MAIL_FORMAT,{0} Sell Complete,{0} 판매 완료
+UI_SELECT,Select,선택
 SPEECH_SHOP_BUY_0,There's a lot of[newline]good stuff coming up.,좋은 물건이 많이 올라와있어![newline]시간 나면 보고 가
 SPEECH_SHOP_BUY_1,You need a variety of equipment[newline]to prepare for the ordeal.,다양한 장비가 있어야 시련을 대비할 수 있어
 SPEECH_SHOP_SELL_0,When you're worried about[newline]selling prices[newline]check out what other people[newline]put up on them.,판매 가격이 고민되면[newline]다른 사람들이[newline]얼마에 올렸는지 잘 살펴봐
 SPEECH_SHOP_SELL_1,You can always get back things[newline]that haven't been sold.,아직 팔리지 않은 물건은[newline]언제든지 다시 회수할 수 있어
 SPEECH_SHOP_REGISTER_ITEM_0,When you're worried about[newline]selling prices[newline]check out what other people[newline]put up on them.,판매 가격이 고민되면[newline]다른 사람들이[newline]얼마에 올렸는지 잘 살펴봐
+SPEECH_COMBINE_GREETING_0,The higher the grade.[newline]the more options there are…[newline]What? You already know that? Whoo!,높은 등급의 무기일수록[newline]많은 옵션이 붙지..[newline]뭐? 그것까지 알려줄 필욘 없다고? 흥!
+SPEECH_COMBINE_EQUIPMENT_0,I'll do my best to make[newline]weapons.,최선을 다해[newline]무기를 만들어주지
+SPEECH_COMBINE_CONSUMABLE_0,Consumable item disappears[newline]once you use it[newline]but it works just as well.,소모템은 한번 쓰면 사라지지만[newline]그만큼 효과가 강력하다오
+SPEECH_COMBINE_ENHANCE_EQUIPMENT_0,You can combine two equipments.,두 장비를 합칠 수 있어.
+SPEECH_COMBINE_STAGE_MATERIAL_0,You can pay gold to use extra slots.,추가 슬롯 사용에는 골드가 소모돼.
+SPEECH_RANKING_BOARD_GREETING_0,For the glorious cats[newline]the Frey is giving you the prize!,영예로운 고양이들에게는[newline]여신님께서 상을 주신다!

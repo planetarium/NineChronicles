@@ -6,6 +6,7 @@ using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Factory;
 using Nekoyume.Helper;
+using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using TMPro;
@@ -25,7 +26,6 @@ namespace Nekoyume.UI.Module
         public TextMeshProUGUI countText;
 
         public Button recipeButton;
-        public Recipe recipe;
 
         public override bool IsSubmittable =>
             !(States.Instance.AgentState.Value is null) &&
@@ -45,19 +45,19 @@ namespace Nekoyume.UI.Module
             countMinusButton.OnClickAsObservable().Subscribe(SubscribeCountMinusClick).AddTo(gameObject);
             countPlusButton.OnClickAsObservable().Subscribe(SubscribeCountPlusClick).AddTo(gameObject);
 
-            recipeButton.OnClickAsObservable()
-                .Subscribe(_ =>
-                {
-                    AudioController.PlayClick();
-                    recipe.Show();
-                }).AddTo(gameObject);
+            recipeButton.OnClickAsObservable().Subscribe(_ => AudioController.PlayClick()).AddTo(gameObject);
 
             _count.SubscribeTo(countText).AddTo(gameObject);
         }
 
-        public override bool Show()
+        public void ResetCount()
         {
-            if (!base.Show())
+            _count.SetValueAndForceNotify(1);
+        }
+
+        public override bool Show(bool forced = false)
+        {
+            if (!base.Show(forced))
                 return false;
 
             foreach (var otherMaterial in otherMaterials)
@@ -65,18 +65,9 @@ namespace Nekoyume.UI.Module
                 otherMaterial.Unlock();
             }
 
-            _count.SetValueAndForceNotify(1);
+            ResetCount();
             UpdateResultItem();
             UpdateCountButtons();
-            return true;
-        }
-
-        public override bool Hide()
-        {
-            if (!base.Hide())
-                return false;
-            
-            recipe.Hide();
             return true;
         }
 
@@ -104,57 +95,19 @@ namespace Nekoyume.UI.Module
                 : 0;
         }
         
-        protected override void UpdateOtherMaterialsEffect()
+        protected override bool TryAddOtherMaterial(InventoryItem viewModel, int count, out CombinationMaterialView materialView)
         {
-            var isFirst = true;
-            var setEffectEnabledIfEmpty = true;
-            foreach (var otherMaterial in otherMaterials)
-            {
-                if (isFirst)
-                {
-                    isFirst = false;
-                    setEffectEnabledIfEmpty = !otherMaterial.IsEmpty;
-                    otherMaterial.effectImage.enabled = true;
-                    continue;
-                }
-                
-                if (!otherMaterial.IsEmpty)
-                {
-                    otherMaterial.effectImage.enabled = true;
-                    continue;
-                }
-
-                if (otherMaterial.IsLocked)
-                {
-                    otherMaterial.effectImage.enabled = false;
-                    continue;
-                }
-                
-                if (setEffectEnabledIfEmpty)
-                {
-                    setEffectEnabledIfEmpty = false;
-                    otherMaterial.effectImage.enabled = true;
-                }
-                else
-                {
-                    otherMaterial.effectImage.enabled = false;
-                }
-            }
-        }
-        
-        protected override bool TryAddOtherMaterial(InventoryItemView view, int count, out CombinationMaterialView materialView)
-        {
-            if (view.Model is null ||
-                view.Model.ItemBase.Value.Data.ItemType != ItemType.Material ||
-                view.Model.ItemBase.Value.Data.ItemSubType != ItemSubType.FoodMaterial ||
-                view.Model.Count.Value < _count.Value ||
-                Contains(view.Model))
+            if (viewModel is null ||
+                viewModel.ItemBase.Value.Data.ItemType != ItemType.Material ||
+                viewModel.ItemBase.Value.Data.ItemSubType != ItemSubType.FoodMaterial ||
+                viewModel.Count.Value < _count.Value ||
+                Contains(viewModel))
             {
                 materialView = null;
                 return false;
             }
 
-            if (!base.TryAddOtherMaterial(view, count, out materialView))
+            if (!base.TryAddOtherMaterial(viewModel, count, out materialView))
                 return false;
             
             materialView.TryIncreaseCount(_count.Value - materialView.Model.Count.Value);
@@ -173,7 +126,7 @@ namespace Nekoyume.UI.Module
             
             if (otherMaterials.Where(e => !e.IsLocked).All(e => e.IsEmpty))
             {
-                _count.SetValueAndForceNotify(1);
+                ResetCount();
             }
             
             UpdateResultItem();
@@ -200,7 +153,7 @@ namespace Nekoyume.UI.Module
             if (ids.Count >= 2)
             {
                 resultItemView.gameObject.SetActive(true);
-                if (Game.Game.instance.TableSheets.ConsumableItemRecipeSheet.TryGetValue(ids, out var recipeRow))
+                if (TableSheetsState.Current.ConsumableItemRecipeSheet.TryGetValue(ids, out var recipeRow))
                 {
                     Game.Game.instance.TableSheets.ConsumableItemSheet.TryGetValue(recipeRow.ResultConsumableItemId,
                         out var itemRow, true);

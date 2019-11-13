@@ -34,8 +34,8 @@ namespace Nekoyume.Game
 
         public StatMap(Bencodex.Types.Dictionary serialized)
             : this(
-                StatTypeExtension.Deserialize((Binary) serialized[(Text) "statType"]),
-                serialized[(Text) "value"].ToDecimal()
+                StatTypeExtension.Deserialize((Binary) serialized["statType"]),
+                serialized["value"].ToDecimal()
             )
         {
         }

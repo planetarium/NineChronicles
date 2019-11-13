@@ -20,7 +20,7 @@ namespace Nekoyume.Action
         public override void LoadPlainValue(IValue plainValue)
         {
             var dict = (Bencodex.Types.Dictionary) plainValue;
-            gold = dict[(Text) "gold"].ToDecimal();
+            gold = dict["gold"].ToDecimal();
         }
 
         public override IAccountStateDelta Execute(IActionContext ctx)

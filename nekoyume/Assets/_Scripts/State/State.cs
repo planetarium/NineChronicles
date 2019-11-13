@@ -21,7 +21,7 @@ namespace Nekoyume.State
         }
 
         protected State(Bencodex.Types.Dictionary serialized)
-            : this(serialized[(Text) "address"].ToAddress())
+            : this(serialized["address"].ToAddress())
         {
         }
 
