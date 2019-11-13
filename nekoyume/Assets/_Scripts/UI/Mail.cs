@@ -21,9 +21,9 @@ namespace Nekoyume.UI
 {
     public class Mail : Widget, IMail
     {
-        public enum MailTabState
+        public enum MailTabState : int
         {
-            All = 0,
+            All,
             Workshop,
             Auction,
             System

@@ -106,7 +106,7 @@ namespace Nekoyume.Game
                 var anim = players[i].Animator;
                 if (index == i)
                 {
-                    var moveTo = new Vector3(-1.25f, -0.7f);
+                    var moveTo = new Vector3(-0.05f, -0.5f);
                     playerObject.transform.DOScale(1.1f, 2.0f).SetDelay(0.2f);
                     playerObject.transform.DOMove(moveTo, 2.4f).SetDelay(0.2f);
                     var seqPos = new Vector3(moveTo.x, moveTo.y - UnityEngine.Random.Range(0.05f, 0.1f), 0.0f);
@@ -129,6 +129,7 @@ namespace Nekoyume.Game
                 {
                     playerObject.transform.DOScale(0.9f, 1.0f);
                     playerObject.transform.DOMoveY(-3.6f, 2.0f);
+
                     if (!ReferenceEquals(anim, null) && anim.Target.activeSelf)
                     {
                         anim.Target.SetActive(true);
