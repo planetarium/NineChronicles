@@ -20,10 +20,9 @@ namespace Nekoyume.UI.Scroller
         public Image buttonImage;
         public TextMeshProUGUI content;
         public Button button;
-        public Text submitText;
+        public TextMeshProUGUI submitText;
 
         private Mail _mail;
-        private Shadow[] _textShadows;
 
         #region Mono
 
@@ -41,20 +40,18 @@ namespace Nekoyume.UI.Scroller
 
         public void SetData(Game.Mail.Mail mail)
         {   
-            _textShadows = button.GetComponentsInChildren<Shadow>();
             _mail = Widget.Find<Mail>();
             data = mail;
             var text = mail.ToInfo();
             Color32 color = mail.New ? ColorHelper.HexToColorRGB("fff9dd") : ColorHelper.HexToColorRGB("7a7a7a");
             button.interactable = mail.New;
             submitText.text = mail.New ? LocalizationManager.Localize("UI_RECEIVE") : LocalizationManager.Localize("UI_RECEIVED");
-            foreach (var shadow in _textShadows)
-                shadow.effectColor = mail.New ? _highlightedColor : Color.black;
             buttonImage.rectTransform.offsetMin = mail.New ? _leftBottom : Vector2.zero;
             buttonImage.rectTransform.offsetMax = mail.New ? _minusRightTop : Vector2.zero;
             icon.overrideSprite = Mail.mailIcons[mail.MailType];
             content.text = text;
             content.color = color;
+            // 버튼 텍스트의 마테리얼 변경처리해줘야함
         }
 
         public void Read()
@@ -67,8 +64,7 @@ namespace Nekoyume.UI.Scroller
 
             data.New = false;
             button.interactable = false;
-            foreach (var shadow in _textShadows)
-                shadow.effectColor = Color.black;
+            // 버튼 텍스트의 마테리얼 변경처리해줘야함
             content.color = ColorHelper.HexToColorRGB("7a7a7a");
             data.Read(_mail);
         }
