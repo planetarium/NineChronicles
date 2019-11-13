@@ -15,9 +15,9 @@ namespace Nekoyume
         public const int DefaultAvatarCharacterId = 100010;
         public const int DefaultAvatarWeaponId = 10100000;
         public const int DefaultAvatarArmorId = 10200000;
-        public const int ActionPoint = 1000;
+        public const int ActionPoint = 300;
         
-        public const int HackAndSlashCostAP = 1;
+        public const int HackAndSlashCostAP = 5;
 
         public const int CombineConsumableCostAP = 5;
         public const int CombineEquipmentCostAP = 5;

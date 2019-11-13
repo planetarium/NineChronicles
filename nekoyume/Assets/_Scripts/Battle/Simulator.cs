@@ -139,16 +139,20 @@ namespace Nekoyume.Battle
 
         private Wave SpawnWave(StageSheet.WaveData waveData)
         {
-            var wave = new Wave(waveData);
+            var wave = new Wave();
             var monsterTable = Game.Game.instance.TableSheets.CharacterSheet;
             foreach (var monsterData in waveData.Monsters)
             {
-                for (var i = 0; i < monsterData.Count; i++)
+                for (int i = 0; i < monsterData.Count; i++)
                 {
                     monsterTable.TryGetValue(monsterData.CharacterId, out var row, true);
                     var enemyModel = new Enemy(Player, row, monsterData.Level);
+
                     wave.Add(enemyModel);
+                    wave.IsBoss = waveData.IsBoss;
                 }
+
+                wave.Exp = waveData.Exp;
             }
 
             return wave;
