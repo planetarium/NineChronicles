@@ -17,15 +17,9 @@ namespace Nekoyume.UI
     public class LoginDetail : Widget
     {
         public GameObject btnLogin;
-        public TextMeshProUGUI btnLoginText;
         public GameObject btnCreate;
         public TextMeshProUGUI btnCreateText;
-        public InputField nameField;
-        public Text namePlaceHolder;
-        public TextMeshProUGUI textExp;
-        public Slider expBar;
-        public TextMeshProUGUI levelInfo;
-        public TextMeshProUGUI nameInfo;
+        public TextMeshProUGUI levelAndNameInfo;
         public RectTransform content;
         public GameObject profileImage;
         public GameObject statusGrid;
@@ -38,43 +32,45 @@ namespace Nekoyume.UI
         private int _selectedIndex;
         private bool _isCreateMode;
 
-        private Color _namePlaceHolderOriginColor;
-        private Color _namePlaceHolderFocusedColor;
-
         protected override void Awake()
         {
             base.Awake();
 
             btnCreateText.text = LocalizationManager.Localize("UI_CREATE_CHARACTER_CONFIRM");
-            btnLoginText.text = LocalizationManager.Localize("UI_GAME_START");
-            namePlaceHolder.text = LocalizationManager.Localize("UI_INPUT_NAME");
             paletteHairText.text = LocalizationManager.Localize("UI_HAIR");
             paletteLensText.text = LocalizationManager.Localize("UI_LENS");
             paletteTopText.text = LocalizationManager.Localize("UI_ETC");
 
-            nameField.gameObject.SetActive(false);
             Game.Event.OnLoginDetail.AddListener(Init);
-            
-            _namePlaceHolderOriginColor = namePlaceHolder.color;
-            _namePlaceHolderFocusedColor = namePlaceHolder.color;
-            _namePlaceHolderFocusedColor.a = 0.3f;
         }
 
         private void Update()
         {
-            if (nameField.isFocused)
-            {
-                namePlaceHolder.color = _namePlaceHolderFocusedColor;
-            }
-            else
-            {
-                namePlaceHolder.color = _namePlaceHolderOriginColor;
-            }
+            //if (nameField.isFocused)
+            //{
+            //    namePlaceHolder.color = _namePlaceHolderFocusedColor;
+            //}
+            //else
+            //{
+            //    namePlaceHolder.color = _namePlaceHolderOriginColor;
+            //}
         }
 
         public void CreateClick()
         {
-            var nickName = nameField.text;
+            var inputBox = Find<InputBox>();
+            inputBox.CloseCallback = result =>
+            {
+                if (result == ConfirmResult.Yes)
+                {
+                    CreateAndLogin(inputBox.text);
+                }
+            };
+            inputBox.Show("UI_INPUT_NAME", "123");
+        }
+
+        public void CreateAndLogin(string nickName)
+        {
             if (!Regex.IsMatch(nickName, GameConfig.AvatarNickNamePattern))
             {
                 Find<Alert>().Show("UI_ERROR", "UI_INVALID_NICKNAME");
@@ -97,7 +93,6 @@ namespace Nekoyume.UI
         public void LoginClick()
         {
             btnLogin.SetActive(false);
-            nameField.gameObject.SetActive(false);
             var avatarState = AvatarManager.SetIndex(_selectedIndex);
             OnDidAvatarStateLoaded(avatarState);
             AudioController.PlayClick();
@@ -120,20 +115,23 @@ namespace Nekoyume.UI
             if (_isCreateMode)
             {
                 player = new Player(1);
-                nameField.text = "";
-                nameInfo.text = "";
             }
             else
             {
                 States.Instance.CurrentAvatarState.Value = States.Instance.AvatarStates[_selectedIndex];
                 player = new Player(States.Instance.CurrentAvatarState.Value);
-                nameInfo.text = States.Instance.CurrentAvatarState.Value.name;
             }
-            
+
+            palette.SetActive(_isCreateMode);
             // create new or login
-            nameField.gameObject.SetActive(_isCreateMode);
-            nameInfo.gameObject.SetActive(!_isCreateMode);
             btnCreate.SetActive(_isCreateMode);
+            levelAndNameInfo.gameObject.SetActive(!_isCreateMode);
+            if (!_isCreateMode)
+            {
+                var level = player.Level;
+                var name = States.Instance.CurrentAvatarState.Value.name;
+                levelAndNameInfo.text = $"LV. {level} {name}";
+            }
 
             // 프로필 사진의 용도가 정리되지 않아서 주석 처리함.
             // profileImage.SetActive(!isCreateMode);
@@ -146,34 +144,6 @@ namespace Nekoyume.UI
 
         private void SetInformation(Player player)
         {
-            var level = player.Level;
-            levelInfo.text = $"LV. {level}";
-            
-            var expNeed = player.Exp.Need;
-            var levelExp = player.Exp.Max - expNeed;
-            var currentExp = player.Exp.Current - levelExp;
-
-            //hp, exp
-            textExp.text = $"{currentExp} / {expNeed}";
-
-            //percentage
-            var expPercentage = (float) currentExp / expNeed;
-
-            foreach (
-                var tuple in new[]
-                {
-                    new Tuple<Slider, float>(expBar, expPercentage)
-                }
-            )
-            {
-                var slide = tuple.Item1;
-                var percentage = tuple.Item2;
-                slide.fillRect.gameObject.SetActive(percentage > 0.0f);
-                percentage = Mathf.Min(Mathf.Max(percentage, 0.1f), 1.0f);
-                slide.value = 0.0f;
-                slide.DOValue(percentage, 2.0f).SetEase(Ease.OutCubic);
-            }
-
             var tuples = player.GetStatTuples();
             foreach(var (statType, value, additionalValue) in tuples)
             {
@@ -186,8 +156,6 @@ namespace Nekoyume.UI
         public override void Show()
         {
             base.Show();
-            nameField.Select();
-            nameField.ActivateInputField();
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
