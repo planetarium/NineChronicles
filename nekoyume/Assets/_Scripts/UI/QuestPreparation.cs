@@ -23,9 +23,9 @@ namespace Nekoyume.UI
     {
         public Module.Inventory inventory;
 
-        public Text consumableTitleText;
+        public TextMeshProUGUI consumableTitleText;
         public EquipSlot[] consumableSlots;
-        public Text equipmentTitleText;
+        public TextMeshProUGUI equipmentTitleText;
         public EquipmentSlots equipmentSlots;
 
         public Button questButton;
