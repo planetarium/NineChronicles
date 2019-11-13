@@ -3,6 +3,7 @@ using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.UI.Module;
+using TMPro;
 using Unity.Mathematics;
 using UnityEngine.UI;
 
@@ -11,7 +12,7 @@ namespace Nekoyume.UI
     public class HpBar : ProgressBar
     {
         public BuffLayout buffLayout;
-        public Text levelText;
+        public TextMeshProUGUI levelText;
         public Slider additionalSlider;
 
         public HpBarVFX HpVFX { get; protected set; }
