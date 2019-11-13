@@ -7,6 +7,7 @@ using Nekoyume.Game.Item;
 using Nekoyume.Manager;
 using Nekoyume.Pattern;
 using Nekoyume.UI.Model;
+using Nekoyume.UI.Module;
 using UniRx;
 
 namespace Nekoyume.BlockChain
@@ -85,17 +86,28 @@ namespace Nekoyume.BlockChain
                 .Timeout(ActionTimeout);
         }
 
-        public IObservable<ActionBase.ActionEvaluation<Action.Combination>> Combination(
-            List<CombinationMaterial> materials)
+        public IObservable<ActionBase.ActionEvaluation<Combination>> Combination(
+            List<(int itemId, int count)> materialInfoList)
         {
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionCombination);
 
-            var action = new Action.Combination();
-            materials.ForEach(m => action.Materials.Add(new Action.Combination.Material(m)));
-            action.avatarAddress = States.Instance.CurrentAvatarState.Value.address;
+            var action = new Combination();
+            materialInfoList.ForEach(info =>
+            {
+                var (itemId, count) = info;
+                if (action.Materials.ContainsKey(itemId))
+                {
+                    action.Materials[itemId] += count;
+                }
+                else
+                {
+                    action.Materials.Add(itemId, count);
+                }
+            });
+            action.AvatarAddress = States.Instance.CurrentAvatarState.Value.address;
             ProcessAction(action);
 
-            return ActionBase.EveryRender<Action.Combination>()
+            return ActionBase.EveryRender<Combination>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .Take(1)
                 .Last()
@@ -160,12 +172,13 @@ namespace Nekoyume.BlockChain
                 .Timeout(ActionTimeout); // Last() is for completion
         }
 
-        public IObservable<ActionBase.ActionEvaluation<AddItem>> AddItem(Guid itemId)
+        public IObservable<ActionBase.ActionEvaluation<AddItem>> AddItem(Guid itemId, bool canceled)
         {
             var action = new AddItem
             {
                 avatarAddress = States.Instance.CurrentAvatarState.Value.address,
                 itemId = itemId,
+                canceled = canceled
             };
             ProcessAction(action);
 
@@ -212,7 +225,7 @@ namespace Nekoyume.BlockChain
                 .Timeout(ActionTimeout);
         }
 
-        public IObservable<ActionBase.ActionEvaluation<ItemEnhancement>> ItemEnhancement(Guid itemId, List<Guid> materialIds)
+        public IObservable<ActionBase.ActionEvaluation<ItemEnhancement>> ItemEnhancement(Guid itemId, IEnumerable<Guid> materialIds)
         {
             var action = new ItemEnhancement
             {
@@ -229,6 +242,34 @@ namespace Nekoyume.BlockChain
                 .ObserveOnMainThread()
                 .Timeout(ActionTimeout);
         }
+
+        public IObservable<ActionBase.ActionEvaluation<QuestReward>> QuestReward(int id)
+        {
+            var action = new QuestReward
+            {
+                questId = id,
+                avatarAddress = States.Instance.CurrentAvatarState.Value.address,
+            };
+            ProcessAction(action);
+
+            return ActionBase.EveryRender<QuestReward>()
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .Take(1)
+                .Last()
+                .ObserveOnMainThread()
+                .Timeout(ActionTimeout);
+        }
+
+        public void PatchTableSheet(string tableName, string tableCsv)
+        {
+            var action = new PatchTableSheet
+            {
+                TableName = tableName,
+                TableCSV = tableCsv,
+            };
+            ProcessAction(action);
+        }
+
         #endregion
     }
 }

@@ -30,7 +30,7 @@ namespace Nekoyume.UI.Module
             
             _disposablesForModel.DisposeAllAndClear();
             Model = model;
-            Model.iconSprite.SubscribeToImage(iconImage).AddTo(_disposablesForModel);
+            Model.iconSprite.SubscribeTo(iconImage).AddTo(_disposablesForModel);
             Model.name.SubscribeToText(nameText).AddTo(_disposablesForModel);
             Model.power.SubscribeToText(powerText).AddTo(_disposablesForModel);
             Model.chance.SubscribeToText(chanceText).AddTo(_disposablesForModel);

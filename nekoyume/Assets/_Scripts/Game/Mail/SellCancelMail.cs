@@ -1,5 +1,7 @@
 using System;
+using Assets.SimpleLocalization;
 using Nekoyume.Action;
+using Nekoyume.TableData;
 
 namespace Nekoyume.Game.Mail
 {
@@ -7,7 +9,7 @@ namespace Nekoyume.Game.Mail
     public class SellCancelMail : AttachmentMail
     {
         protected override string TypeId => "sellCancel";
-        public override MailType MailType { get => MailType.Auction; }
+        public override MailType MailType => MailType.Auction;
 
         public SellCancelMail(SellCancellation.Result attachmentActionResult, long blockIndex) : base(attachmentActionResult, blockIndex)
         {
@@ -21,7 +23,8 @@ namespace Nekoyume.Game.Mail
 
         public override string ToInfo()
         {
-            return "판매 취소 완료";
+            var format = LocalizationManager.Localize("UI_SELL_CANCEL_MAIL_FORMAT");
+            return string.Format(format, attachment.itemUsable.Data.GetLocalizedName());
         }
 
         public override void Read(IMail mail)

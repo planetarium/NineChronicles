@@ -1,5 +1,7 @@
 using System;
+using Assets.SimpleLocalization;
 using Nekoyume.Action;
+using Nekoyume.TableData;
 
 namespace Nekoyume.Game.Mail
 {
@@ -7,7 +9,7 @@ namespace Nekoyume.Game.Mail
     public class ItemEnhanceMail : AttachmentMail
     {
         protected override string TypeId => "itemEnhance";
-        public override MailType MailType { get => MailType.Forge; }
+        public override MailType MailType => MailType.Workshop;
 
         public ItemEnhanceMail(AttachmentActionResult attachmentActionResult, long blockIndex) : base(attachmentActionResult, blockIndex)
         {
@@ -21,7 +23,8 @@ namespace Nekoyume.Game.Mail
 
         public override string ToInfo()
         {
-            return "아이템 강화 완료";
+            var format = LocalizationManager.Localize("UI_ITEM_ENHANCEMENT_MAIL_FORMAT");
+            return string.Format(format, attachment.itemUsable.Data.GetLocalizedName());
         }
 
         public override void Read(IMail mail)

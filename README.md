@@ -25,6 +25,7 @@ Nine Chronicles
 ### 커맨드라인 옵션
 
  - `--private-key` : 사용할 프라이빗 키를 지정합니다.
+ - `--keystore-path`: 비밀키가 저장될 디렉터리 경로.
  - `--host`        : 사용할 Host 이름을 지정합니다.
  - `--port`        : 사용할 Port를 지정합니다.
  - `--no-miner`    : 마이닝을 사용하지 않습니다.

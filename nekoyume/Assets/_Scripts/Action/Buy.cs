@@ -37,7 +37,7 @@ namespace Nekoyume.Action
 
             public BuyerResult(Bencodex.Types.Dictionary serialized) : base(serialized)
             {
-                shopItem = new ShopItem((Bencodex.Types.Dictionary) serialized[(Text) "shopItem"]);
+                shopItem = new ShopItem((Bencodex.Types.Dictionary) serialized["shopItem"]);
             }
 
             public override IValue Serialize() =>
@@ -61,8 +61,8 @@ namespace Nekoyume.Action
 
             public SellerResult(Bencodex.Types.Dictionary serialized) : base(serialized)
             {
-                shopItem = new ShopItem((Bencodex.Types.Dictionary) serialized[(Text) "shopItem"]);
-                gold = serialized[(Text) "price"].ToDecimal();
+                shopItem = new ShopItem((Bencodex.Types.Dictionary) serialized["shopItem"]);
+                gold = serialized["gold"].ToDecimal();
             }
 
             public override IValue Serialize() =>
@@ -164,8 +164,8 @@ namespace Nekoyume.Action
             sellerAvatarState.Update(sellerMail);
 
             // 퀘스트 업데이트
-            buyerAvatarState.questList.UpdateTradeQuest(TradeType.Buy);
-            sellerAvatarState.questList.UpdateTradeQuest(TradeType.Sell);
+            buyerAvatarState.questList.UpdateTradeQuest(TradeType.Buy, outPair.Value.Price);
+            sellerAvatarState.questList.UpdateTradeQuest(TradeType.Sell, outPair.Value.Price);
 
             var timestamp = DateTimeOffset.UtcNow;
             buyerAvatarState.updatedAt = timestamp;

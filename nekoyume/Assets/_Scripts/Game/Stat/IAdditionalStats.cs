@@ -15,5 +15,6 @@ namespace Nekoyume.Game
         bool HasAdditionalCRI { get; }
         bool HasAdditionalDOG { get; }
         bool HasAdditionalSPD { get; }
+        bool HasAdditionalStats { get; }
     }
 }

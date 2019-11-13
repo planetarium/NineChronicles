@@ -9,29 +9,31 @@ using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Text.RegularExpressions;
+using Nekoyume.UI.Module;
+using TMPro;
 
 namespace Nekoyume.UI
 {
     public class LoginDetail : Widget
     {
         public GameObject btnLogin;
-        public Text btnLoginText;
+        public TextMeshProUGUI btnLoginText;
         public GameObject btnCreate;
-        public Text btnCreateText;
+        public TextMeshProUGUI btnCreateText;
         public InputField nameField;
         public Text namePlaceHolder;
-        public Text textExp;
+        public TextMeshProUGUI textExp;
         public Slider expBar;
-        public Text levelInfo;
-        public Text nameInfo;
+        public TextMeshProUGUI levelInfo;
+        public TextMeshProUGUI nameInfo;
         public RectTransform content;
         public GameObject profileImage;
         public GameObject statusGrid;
         public GameObject statusRow;
         public GameObject palette;
-        public Text paletteHairText;
-        public Text paletteLensText;
-        public Text paletteTopText;
+        public TextMeshProUGUI paletteHairText;
+        public TextMeshProUGUI paletteLensText;
+        public TextMeshProUGUI paletteTopText;
 
         private int _selectedIndex;
         private bool _isCreateMode;
@@ -130,6 +132,7 @@ namespace Nekoyume.UI
             
             // create new or login
             nameField.gameObject.SetActive(_isCreateMode);
+            nameInfo.gameObject.SetActive(!_isCreateMode);
             btnCreate.SetActive(_isCreateMode);
 
             // 프로필 사진의 용도가 정리되지 않아서 주석 처리함.

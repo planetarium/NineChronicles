@@ -10,7 +10,10 @@ namespace Nekoyume.Game
 {
     /// <summary>
     /// 캐릭터의 스탯을 관리한다.
-    /// 스탯은 레벨에 의한 _levelStats > 장비에 의한 _equipmentStats > 소모품에 의한 _consumableStats > 버프에 의한 _buffStats
+    /// 스탯은에 레벨에 의한 _levelStats를 기본으로 하고
+    /// > 장비에 의한 _equipmentStats
+    /// > 소모품에 의한 _consumableStats
+    /// > 버프에 의한 _buffStats
     /// 마지막으로 모든 스탯을 합한 CharacterStats 순서로 계산한다.
     /// </summary>
     [Serializable]
@@ -33,21 +36,22 @@ namespace Nekoyume.Game
         public IStats EquipmentStats => _equipmentStats;
         public IStats ConsumableStats => _consumableStats;
         public IStats BuffStats => _buffStats;
-        
+
         public int AdditionalHP => HP - _levelStats.HP;
         public int AdditionalATK => ATK - _levelStats.ATK;
         public int AdditionalDEF => DEF - _levelStats.DEF;
         public int AdditionalCRI => CRI - _levelStats.CRI;
         public int AdditionalDOG => DOG - _levelStats.DOG;
         public int AdditionalSPD => SPD - _levelStats.SPD;
-        
+
         public bool HasAdditionalHP => AdditionalHP > 0;
         public bool HasAdditionalATK => AdditionalATK > 0;
         public bool HasAdditionalDEF => AdditionalDEF > 0;
         public bool HasAdditionalCRI => AdditionalCRI > 0;
         public bool HasAdditionalDOG => AdditionalDOG > 0;
         public bool HasAdditionalSPD => AdditionalSPD > 0;
-
+        public bool HasAdditionalStats => HasAdditionalHP || HasAdditionalATK || HasAdditionalDEF || HasAdditionalCRI ||
+                                          HasAdditionalDOG || HasAdditionalSPD;
         public CharacterStats(CharacterSheet.Row row, int level = 1, IReadOnlyList<Equipment> equipments = null,
             IReadOnlyList<Consumable> consumables = null, IReadOnlyList<Buff> buffs = null)
         {
@@ -58,7 +62,7 @@ namespace Nekoyume.Game
         protected CharacterStats(CharacterStats value) : base(value)
         {
             _row = value._row;
-            
+
             _levelStats = (Stats) value._levelStats.Clone();
             _equipmentStats = (Stats) value._equipmentStats.Clone();
             _consumableStats = (Stats) value._consumableStats.Clone();
@@ -178,10 +182,10 @@ namespace Nekoyume.Game
                 }
 
                 // set effects.
-                var setEffectRows = Game.instance.TableSheets.SetEffectSheet.GetSetEffectRows(value);
-                foreach (var statMap in setEffectRows.SelectMany(row => row.Stats))
+                var setEffectRows = Game.instance.TableSheets.EquipmentItemSetEffectSheet.GetSetEffectRows(value);
+                foreach (var statModifier in setEffectRows.SelectMany(row => row.StatModifiers.Values))
                 {
-                    _equipmentStatModifiers.Add(new StatModifier(statMap));
+                    _equipmentStatModifiers.Add(statModifier);
                 }
             }
 
@@ -244,7 +248,7 @@ namespace Nekoyume.Game
                     }
                 }
             }
-            
+
             if (updateImmediate)
             {
                 UpdateConsumableStats();
@@ -267,7 +271,7 @@ namespace Nekoyume.Game
                 foreach (var buff in value)
                 {
                     AddBuff(buff, false);
-                }   
+                }
             }
 
             if (updateImmediate)
@@ -281,7 +285,7 @@ namespace Nekoyume.Game
         public void AddBuff(Buff buff, bool updateImmediate = true)
         {
             _buffStatModifiers[buff.RowData.GroupId] = buff.RowData.StatModifier;
-            
+
             if (updateImmediate)
             {
                 UpdateBuffStats();
@@ -294,7 +298,7 @@ namespace Nekoyume.Game
                 return;
 
             _buffStatModifiers.Remove(buff.RowData.GroupId);
-            
+
             if (updateImmediate)
             {
                 UpdateBuffStats();
@@ -307,13 +311,13 @@ namespace Nekoyume.Game
             _levelStats.Set(statsData);
             UpdateEquipmentStats();
         }
-        
+
         private void UpdateEquipmentStats()
         {
             _equipmentStats.Set(_equipmentStatModifiers, _levelStats);
             UpdateConsumableStats();
         }
-        
+
         private void UpdateConsumableStats()
         {
             _consumableStats.Set(_consumableStatModifiers, _levelStats, _equipmentStats);
@@ -341,6 +345,34 @@ namespace Nekoyume.Game
         public override object Clone()
         {
             return new CharacterStats(this);
+        }
+
+        public IEnumerable<(StatType, int)> GetAdditionalStats(bool ignoreZero = false)
+        {
+            if (ignoreZero)
+            {
+                if (HasAdditionalHP)
+                    yield return (StatType.HP, AdditionalHP);
+                if (HasAdditionalATK)
+                    yield return (StatType.ATK, AdditionalATK);
+                if (HasAdditionalDEF)
+                    yield return (StatType.DEF, AdditionalDEF);
+                if (HasAdditionalDOG)
+                    yield return (StatType.DOG, AdditionalDOG);
+                if (HasAdditionalCRI)
+                    yield return (StatType.CRI, AdditionalCRI);
+                if (HasAdditionalSPD)
+                    yield return (StatType.SPD, AdditionalSPD);
+            }
+            else
+            {
+                yield return (StatType.HP, AdditionalHP);
+                yield return (StatType.ATK, AdditionalATK);
+                yield return (StatType.DEF, AdditionalDEF);
+                yield return (StatType.DOG, AdditionalDOG);
+                yield return (StatType.CRI, AdditionalCRI);
+                yield return (StatType.SPD, AdditionalSPD);
+            }
         }
     }
 }

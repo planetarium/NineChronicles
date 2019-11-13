@@ -1,28 +1,55 @@
 Key,English,Korean
 SKILL_NAME_100000,Normal Attack,기본 공격
 SKILL_NAME_100001,Blow Attack,일격
-SKILL_NAME_100002,Double Attack,연사
-SKILL_NAME_100003,Area Attack,광역 난사
+SKILL_NAME_100002,Entire Blow Attack,일격(전체)
+SKILL_NAME_100003,Double Attack,연사
+SKILL_NAME_100004,Entire Double Attack,연사(전체)
+SKILL_NAME_100005,Area Attack,광역 난사
 SKILL_NAME_110000,Fire Attack,불 공격
 SKILL_NAME_110001,Flame Blow Attack,불꽃 일격
-SKILL_NAME_110002,Flame Double Attack,불꽃 연사
-SKILL_NAME_110003,Magma Tsunami,용암 해일
+SKILL_NAME_110002,Flame Blow Attack(Entire),불꽃 일격(전체)
+SKILL_NAME_110003,Flame Double Attack,불꽃 연사
+SKILL_NAME_110004,Flame Double Attack(Entire),불꽃 연사(전체)
+SKILL_NAME_110005,Magma Tsunami,용암 해일
 SKILL_NAME_120000,Water Attack,물 공격
 SKILL_NAME_120001,Ice Blow Attack,얼음 일격
-SKILL_NAME_120002,Ice Double Attack,얼음 연사
-SKILL_NAME_120003,Ice Tsunami,얼음 해일
+SKILL_NAME_120002,Ice Blow Attack(Entire),얼음 일격(전체)
+SKILL_NAME_120003,Ice Double Attack,얼음 연사
+SKILL_NAME_120004,Ice Double Attack(Entire),얼음 연사(전체)
+SKILL_NAME_120005,Ice Tsunami,얼음 해일
 SKILL_NAME_130000,Land Attack,땅 공격
 SKILL_NAME_130001,Sand Blow Attack,모래 일격
-SKILL_NAME_130002,Sand Double Attack,모래 연사
-SKILL_NAME_130003,Sand Storm,모래 폭풍
+SKILL_NAME_130002,Sand Blow Attack(Entire),모래 일격(전체)
+SKILL_NAME_130003,Sand Double Attack,모래 연사
+SKILL_NAME_130004,Sand Double Attack(Entire),모래 연사(전체)
+SKILL_NAME_130005,Sand Storm,모래 폭풍
 SKILL_NAME_140000,Wind Attack,바람 공격
 SKILL_NAME_140001,Wind Blow Attack,바람 일격
-SKILL_NAME_140002,Wind Double Attack,바람 연사
-SKILL_NAME_140003,Huge Typhoon,거대 태풍
-SKILL_NAME_200000,HP Increase,체력 강화
+SKILL_NAME_140002,Wind Blow Attack(Entire),바람 일격(전체)
+SKILL_NAME_140003,Wind Double Attack,바람 연사
+SKILL_NAME_140004,Wind Double Attack(Entire),바람 연사(전체)
+SKILL_NAME_140005,Huge Typhoon,거대 태풍
+SKILL_NAME_200000,HP Increase,체력 증가
+SKILL_NAME_200001,Entire HP Increase,체력 증가(전체)
 SKILL_NAME_210000,Attack Increase,공격 강화
+SKILL_NAME_210001,Entire Attack Increase,공격 강화(전체)
+SKILL_NAME_210002,Attack Reduction,공격 약화
+SKILL_NAME_210003,Entire Attack Reduction,공격 약화(전체)
 SKILL_NAME_220000,Defense Increase,방어 강화
+SKILL_NAME_220001,Entire Defense Increase,방어 강화(전체)
+SKILL_NAME_220002,Defense Reduction,방어 약화
+SKILL_NAME_220003,Entire Defense Reduction,방어 약화(전체)
 SKILL_NAME_230000,Critical Increase,치명 증가
+SKILL_NAME_230001,Entire Critical Increase,치명 증가(전체)
+SKILL_NAME_230002,Critical Reduction,치명 감소
+SKILL_NAME_230003,Entire Critical Reduction,치명 감소(전체)
 SKILL_NAME_240000,Dodge Increase,회피 증가
+SKILL_NAME_240001,Entire Dodge Increase,회피 증가(전체)
+SKILL_NAME_240002,Dodge Reduction,회피 감소
+SKILL_NAME_240003,Entire Dodge Reduction,회피 감소(전체)
 SKILL_NAME_250000,Speed Increase,속도 증가
-SKILL_NAME_260000,Attack Reduction,공격 약화
+SKILL_NAME_250001,Entire Speed Increase,속도 증가(전체)
+SKILL_NAME_250002,Speed Reduction,속도 감소
+SKILL_NAME_250003,Entire Speed Reduction,속도 감소(전체)
+SKILL_NAME_300000,Heal,힐
+SKILL_NAME_300001,Entire Heal,힐(전체)

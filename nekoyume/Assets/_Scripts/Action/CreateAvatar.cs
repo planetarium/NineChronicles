@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -7,7 +6,6 @@ using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.BlockChain;
-using Nekoyume.Data;
 using Nekoyume.Game.Factory;
 using Nekoyume.Game.Item;
 using Nekoyume.State;
@@ -94,14 +92,14 @@ namespace Nekoyume.Action
         {
             foreach (var row in Game.Game.instance.TableSheets.MaterialItemSheet)
             {
-                avatarState.inventory.AddFungibleItem(ItemFactory.Create(row, default), 10);
+                avatarState.inventory.AddItem(ItemFactory.Create(row, default), 10);
             }
 
             foreach (var pair in Game.Game.instance.TableSheets.EquipmentItemSheet.Where(pair =>
                 pair.Value.Id > GameConfig.DefaultAvatarWeaponId))
             {
                 var itemId = random.GenerateRandomGuid();
-                avatarState.inventory.AddNonFungibleItem((ItemUsable) ItemFactory.Create(pair.Value, itemId));
+                avatarState.inventory.AddItem((ItemUsable) ItemFactory.Create(pair.Value, itemId));
             }
         }
     }

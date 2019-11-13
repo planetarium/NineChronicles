@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using Nekoyume.Manager;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
@@ -15,8 +14,7 @@ namespace Nekoyume.UI
 {
     public class Status : Widget
     {
-        public Text TextLevel;
-        public Text TextName;
+        public Text TextLvName;
         public Text TextHP;
         public Text TextExp;
         public Image HPBar;
@@ -66,7 +64,7 @@ namespace Nekoyume.UI
             }
 
             HPBar.transform.parent.gameObject.SetActive(false);
-            buffLayout.UpdateBuff(new List<Buff>());
+            buffLayout.SetBuff(null);
         }
 
         private void SubscribeOnUpdatePlayerStatus(Player player)
@@ -93,9 +91,9 @@ namespace Nekoyume.UI
 
         #region Buff
 
-        public void SetBuffs(Dictionary<int, Buff> value)
+        public void SetBuffs(IReadOnlyDictionary<int, Buff> value)
         {
-            buffLayout.UpdateBuff(value.Values);
+            buffLayout.SetBuff(value);
         }
 
         public void ShowBuffTooltip(GameObject sender)
@@ -122,8 +120,7 @@ namespace Nekoyume.UI
             var level = _player.Level;
 
             _avatarName = States.Instance.CurrentAvatarState.Value.name;
-            TextLevel.text = $"LV. {level}";
-            TextName.text = _avatarName;
+            TextLvName.text = $"<color=#B38271>LV. {level}</color> {_avatarName}";
             var displayHp = math.max(_player.CurrentHP, 0);
             TextHP.text = $"HP {displayHp} / {_player.HP}";
             TextExp.text = $"EXP {_player.Model.Value.Exp.Need - _player.EXPMax + _player.EXP} / {_player.Model.Value.Exp.Need}";

@@ -22,6 +22,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - TableCSV
+  - m_GUID: 1c1e07a983d0aaa4d8e5e65f066ff785
+    m_Address: Assets/AddressableAssets/TableCSV/QuestRewardSheet.csv
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - TableCSV
   - m_GUID: 1ddd193f5f195481d92ca512633e7072
     m_Address: Assets/AddressableAssets/TableCSV/WorldSheet.csv
     m_ReadOnly: 0
@@ -42,6 +47,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - TableCSV
+  - m_GUID: 3e8ad30e27e6ef0428523fcd2403aad0
+    m_Address: Assets/AddressableAssets/TableCSV/GoldQuestSheet.csv
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - TableCSV
   - m_GUID: 44bccdf66888dd54d892a81b9a897856
     m_Address: Assets/AddressableAssets/TableCSV/CharacterSheet.csv
     m_ReadOnly: 0
@@ -54,6 +64,11 @@ MonoBehaviour:
     - TableCSV
   - m_GUID: 5fb195c2ff01eb644b9aea6396bff952
     m_Address: Assets/AddressableAssets/TableCSV/BuffSheet.csv
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - TableCSV
+  - m_GUID: 67e772e1cf254ae41ad7400dbcf25f7a
+    m_Address: Assets/AddressableAssets/TableCSV/QuestItemRewardSheet.csv
     m_ReadOnly: 0
     m_SerializedLabels:
     - TableCSV
@@ -72,23 +87,28 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - TableCSV
+  - m_GUID: 7d3f5d16c2289497292b3794bb3b2036
+    m_Address: Assets/AddressableAssets/TableCSV/ConsumableItemRecipeSheet.csv
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - TableCSV
   - m_GUID: 9c9a281fa10de4732a69f1f7b08772b0
     m_Address: Assets/AddressableAssets/TableCSV/BackgroundSheet.csv
     m_ReadOnly: 0
     m_SerializedLabels:
     - TableCSV
-  - m_GUID: b5f9f2c3ca5844c30907904f7413f75f
-    m_Address: Assets/AddressableAssets/TableCSV/BattleQuestSheet.csv
+  - m_GUID: b69d4684822424a48a856b465bbbd3df
+    m_Address: Assets/AddressableAssets/TableCSV/ItemGradeQuestSheet.csv
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - TableCSV
+  - m_GUID: c47ace85da330454098f65864699958b
+    m_Address: Assets/AddressableAssets/TableCSV/ItemConfigForGradeSheet.csv
     m_ReadOnly: 0
     m_SerializedLabels:
     - TableCSV
   - m_GUID: db0d91fbecba94be9aa59f77d9e43d9f
     m_Address: Assets/AddressableAssets/TableCSV/SkillSheet.csv
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - TableCSV
-  - m_GUID: df3478f7e68f84922b18700afecae886
-    m_Address: Assets/AddressableAssets/TableCSV/SetEffectSheet.csv
     m_ReadOnly: 0
     m_SerializedLabels:
     - TableCSV
@@ -102,8 +122,38 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - TableCSV
+  - m_GUID: efb441575b9840b4195d878f528b4bb0
+    m_Address: Assets/AddressableAssets/TableCSV/ItemEnhancementQuestSheet.csv
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - TableCSV
+  - m_GUID: f418509c5d37fb04e835423f6a82e6ad
+    m_Address: Assets/AddressableAssets/TableCSV/ItemTypeCollectQuestSheet.csv
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - TableCSV
   - m_GUID: f51aefc4ac9a5c044b0fde0383fc7f6a
     m_Address: Assets/AddressableAssets/TableCSV/StageRewardSheet.csv
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - TableCSV
+  - m_GUID: f8453298aafb44de3aebe3158240166b
+    m_Address: Assets/AddressableAssets/TableCSV/EquipmentItemSetEffectSheet.csv
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - TableCSV
+  - m_GUID: f917470c05c72e2428b63e8302a98f9a
+    m_Address: Assets/AddressableAssets/TableCSV/MonsterQuestSheet.csv
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - TableCSV
+  - m_GUID: fe3cd94352f8121479d47d5c4be9fbf4
+    m_Address: Assets/AddressableAssets/TableCSV/WorldQuestSheet.csv
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - TableCSV
+  - m_GUID: ff74ba60c0f27354a879347c67c54974
+    m_Address: Assets/AddressableAssets/TableCSV/GeneralQuestSheet.csv
     m_ReadOnly: 0
     m_SerializedLabels:
     - TableCSV

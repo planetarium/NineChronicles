@@ -1,8 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text;
+using Assets.SimpleLocalization;
 using Bencodex.Types;
 using Nekoyume.Action;
+using Nekoyume.Game.Mail;
 using Nekoyume.Manager;
 using Nekoyume.State;
 using Nekoyume.TableData;
@@ -54,6 +58,7 @@ namespace Nekoyume.BlockChain
             AddGold();
             DailyReward();
             ItemEnhancement();
+            QuestReward();
         }
 
         public void Stop()
@@ -113,6 +118,25 @@ namespace Nekoyume.BlockChain
 
         private void UpdateCurrentAvatarState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
         {
+            var avatarState = evaluation.OutputStates.GetAvatarState(States.Instance.CurrentAvatarState.Value.address);
+            var questList = avatarState.questList.Where(i => i.Complete && !i.Receive).ToList();
+            if (questList.Count >= 1)
+            {
+                if (questList.Count == 1)
+                {
+                    var quest = questList.First();
+                    var format = LocalizationManager.Localize("NOTIFICATION_QUEST_COMPLETE");
+                    var msg = string.Format(format, quest.GetName());
+                    UI.Notification.Push(MailType.System, msg);
+                }
+                else
+                {
+                    var format = LocalizationManager.Localize("NOTIFICATION_MULTIPLE_QUEST_COMPLETE");
+                    var msg = string.Format(format, questList.Count);
+                    UI.Notification.Push(MailType.System, msg);
+
+                }
+            }
             UpdateAvatarState(evaluation, States.Instance.CurrentAvatarKey.Value);
         }
 
@@ -249,11 +273,7 @@ namespace Nekoyume.BlockChain
             ActionBase.EveryRender<ItemEnhancement>()
                 .Where(ValidateEvaluationForAgentState)
                 .ObserveOnMainThread()
-                .Subscribe(eval =>
-                {
-                    UpdateAgentState(eval);
-                    UpdateCurrentAvatarState(eval);
-                }).AddTo(_disposables);
+                .Subscribe(ResponseItemEnhancement).AddTo(_disposables);
         }
 
         private void DailyReward()
@@ -264,12 +284,30 @@ namespace Nekoyume.BlockChain
                 .Subscribe(UpdateCurrentAvatarState).AddTo(_disposables);
         }
 
+        private void QuestReward()
+        {
+            ActionBase.EveryRender<QuestReward>()
+                .Where(ValidateEvaluationForCurrentAvatarState)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseQuestReward).AddTo(_disposables);
+        }
+
         private void ResponseCombination(ActionBase.ActionEvaluation<Combination> evaluation)
         {
-            var isSuccess = !(evaluation.Action.result.itemUsable is null);
-            AnalyticsManager.Instance.OnEvent(isSuccess
-                ? AnalyticsManager.EventName.ActionCombinationSuccess
-                : AnalyticsManager.EventName.ActionCombinationFail);
+            var itemUsable = evaluation.Action.Result.itemUsable;
+            var isSuccess = !(itemUsable is null);
+            if (isSuccess)
+            {
+                var format = LocalizationManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");
+                UI.Notification.Push(MailType.Workshop, string.Format(format, itemUsable.Data.GetLocalizedName()));
+                AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionCombinationSuccess);
+            }
+            else
+            {
+                AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionCombinationFail);
+                var format = LocalizationManager.Localize("NOTIFICATION_COMBINATION_FAIL");
+                UI.Notification.Push(MailType.Workshop, format);
+            }
             UpdateCurrentAvatarState(evaluation);
         }
 
@@ -329,13 +367,15 @@ namespace Nekoyume.BlockChain
 
         private void ResponseSell(ActionBase.ActionEvaluation<Sell> eval)
         {
-            UI.Notification.Push($"{eval.Action.itemUsable.Data.GetLocalizedName()} 상점 등록 완료.");
+            var format = LocalizationManager.Localize("NOTIFICATION_SELL_COMPLETE");
+            UI.Notification.Push(MailType.Auction, string.Format(format, eval.Action.itemUsable.GetLocalizedName()));
             UpdateCurrentAvatarState(eval);
         }
 
         private void ResponseSellCancellation(ActionBase.ActionEvaluation<SellCancellation> eval)
         {
-            UI.Notification.Push($"{eval.Action.result.itemUsable.Data.GetLocalizedName()} 판매 취소 완료.");
+            var format = LocalizationManager.Localize("NOTIFICATION_SELL_CANCEL_COMPLETE");
+            UI.Notification.Push(MailType.Auction, string.Format(format, eval.Action.result.itemUsable.GetLocalizedName()));
             UpdateCurrentAvatarState(eval);
         }
 
@@ -343,13 +383,14 @@ namespace Nekoyume.BlockChain
         {
             if (eval.Action.buyerAvatarAddress == States.Instance.CurrentAvatarState.Value.address)
             {
-                UI.Notification.Push($"{eval.Action.buyerResult.itemUsable.Data.GetLocalizedName()} 구매 완료.");
+                var format = LocalizationManager.Localize("NOTIFICATION_BUY_BUYER_COMPLETE");
+                UI.Notification.Push(MailType.Auction, string.Format(format, eval.Action.buyerResult.itemUsable.GetLocalizedName()));
             }
             else
             {
+                var format = LocalizationManager.Localize("NOTIFICATION_BUY_SELLER_COMPLETE");
                 var result = eval.Action.sellerResult;
-                UI.Notification.Push(
-                    $"{result.itemUsable.Data.GetLocalizedName()} 판매 완료.\n세금 8% 제외 {result.gold}gold 획득");
+                UI.Notification.Push(MailType.Auction, string.Format(format, result.itemUsable.GetLocalizedName(), result.gold));
             }
 
             UpdateCurrentAvatarState(eval);
@@ -358,7 +399,9 @@ namespace Nekoyume.BlockChain
         private void ResponseHackAndSlash(ActionBase.ActionEvaluation<HackAndSlash> eval)
         {
             UpdateCurrentAvatarState(eval);
-            Widget.Find<ActionFailPopup>().Close();
+            var actionFailPopup = Widget.Find<ActionFailPopup>();
+            actionFailPopup.CloseCallback = null;
+            actionFailPopup.Close();
             if (Widget.Find<QuestPreparation>().IsActive())
             {
                 Widget.Find<QuestPreparation>().GoToStage(eval);
@@ -367,6 +410,23 @@ namespace Nekoyume.BlockChain
             {
                 Widget.Find<BattleResult>().NextStage(eval);
             }
+        }
+
+        private void ResponseQuestReward(ActionBase.ActionEvaluation<QuestReward> eval)
+        {
+            UpdateCurrentAvatarState(eval);
+            var format = LocalizationManager.Localize("NOTIFICATION_QUEST_REWARD");
+            var msg = string.Format(format, eval.Action.Result.GetName());
+            UI.Notification.Push(MailType.System, msg);
+        }
+
+        private void ResponseItemEnhancement(ActionBase.ActionEvaluation<ItemEnhancement> eval)
+        {
+            var format = LocalizationManager.Localize("NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE");
+            UI.Notification.Push(MailType.Workshop,
+                string.Format(format, eval.Action.result.itemUsable.Data.GetLocalizedName()));
+            UpdateAgentState(eval);
+            UpdateCurrentAvatarState(eval);
         }
     }
 }

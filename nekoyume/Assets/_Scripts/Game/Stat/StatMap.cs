@@ -6,6 +6,7 @@ using Nekoyume.State;
 
 namespace Nekoyume.Game
 {
+    // todo: `DecimalStat`나 `StatModifier`으로 대체되어야 함.
     [Serializable]
     public class StatMap : IState
     {
@@ -33,8 +34,8 @@ namespace Nekoyume.Game
 
         public StatMap(Bencodex.Types.Dictionary serialized)
             : this(
-                StatTypeExtension.Deserialize((Binary) serialized[(Text) "statType"]),
-                serialized[(Text) "value"].ToDecimal()
+                StatTypeExtension.Deserialize((Binary) serialized["statType"]),
+                serialized["value"].ToDecimal()
             )
         {
         }

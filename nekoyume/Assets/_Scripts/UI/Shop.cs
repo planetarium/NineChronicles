@@ -1,20 +1,20 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using Assets.SimpleLocalization;
 using DG.Tweening;
 using Nekoyume.BlockChain;
 using Nekoyume.EnumType;
+using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
+using Nekoyume.Game.Factory;
 using Nekoyume.Game.Item;
+using Nekoyume.Game.Mail;
 using Nekoyume.Model;
-using Nekoyume.State;
-using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
+using TMPro;
 using UniRx;
 using UnityEngine;
-using UnityEngine.UI;
 using ShopItem = Nekoyume.UI.Model.ShopItem;
 using ShopItems = Nekoyume.UI.Module.ShopItems;
 
@@ -32,6 +32,9 @@ namespace Nekoyume.UI
         private float _defaultAnchoredPositionXOfBg1;
         private float _defaultAnchoredPositionXOfRight;
         private float _goOutTweenX = 800f;
+        private const int _npcId = 300000;
+        private static Vector2 _npcPosition = new Vector2(2.76f, -1.72f);
+        private Npc _npc;
 
         private Sequence _sequenceOfShopItems;
 
@@ -40,10 +43,13 @@ namespace Nekoyume.UI
         public CategoryButton buyButton;
         public CategoryButton sellButton;
         public RectTransform right;
-        public Text catQuoteText;
+
         public Module.Inventory inventory;
+
         public ShopItems shopItems;
         public GameObject shopNotice;
+        public TextMeshProUGUI noticeText;
+        public SpeechBubble speechBubble;
 
         public Model.Shop SharedModel { get; private set; }
 
@@ -56,8 +62,9 @@ namespace Nekoyume.UI
             _defaultAnchoredPositionXOfBg1 = bg1.anchoredPosition.x;
             _defaultAnchoredPositionXOfRight = right.anchoredPosition.x;
             base.Awake();
-            
+
             SharedModel = new Model.Shop();
+            noticeText.text = LocalizationManager.Localize("UI_SHOP_NOTICE");
         }
 
         #endregion
@@ -70,9 +77,13 @@ namespace Nekoyume.UI
 
             ItemCountAndPricePopup = Find<ItemCountAndPricePopup>();
 
-            inventory.SharedModel.SelectedItemView.Subscribe(SubscribeInventorySelectedItemView)
+            inventory.SharedModel.SelectedItemView.Subscribe(ShowTooltip)
                 .AddTo(gameObject);
-            shopItems.SharedModel.SelectedItemView.Subscribe(SubscribeShopItemsSelectedItemView)
+            inventory.SharedModel.OnDoubleClickItemView.Subscribe(view => ShowTooltipForAction(view.Model))
+                .AddTo(gameObject);
+            shopItems.SharedModel.SelectedItemView.Subscribe(ShowTooltip)
+                .AddTo(gameObject);
+            shopItems.SharedModel.OnDoubleClickItemView.Subscribe(view => ShowTooltipForAction(view.Model))
                 .AddTo(gameObject);
 
             SharedModel.State.Value = StateType.Show;
@@ -82,8 +93,6 @@ namespace Nekoyume.UI
                 .AddTo(gameObject);
             SharedModel.ItemCountAndPricePopup.Value.OnClickCancel.Subscribe(SubscribeItemPopupCancel)
                 .AddTo(gameObject);
-
-            catQuoteText.text = LocalizationManager.Localize("SPEECH_SHOP_0");
 
             buyButton.button.OnClickAsObservable()
                 .Subscribe(_ => SharedModel.State.Value = StateType.Buy)
@@ -105,6 +114,10 @@ namespace Nekoyume.UI
 
             Find<BottomMenu>().Show(UINavigator.NavigationType.Back, SubscribeBackButtonClick);
 
+            var go = Game.Game.instance.stage.npcFactory.Create(_npcId, _npcPosition);
+            _npc = go.GetComponent<Npc>();
+            go.SetActive(true);
+
             AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
         }
 
@@ -112,6 +125,8 @@ namespace Nekoyume.UI
         {
             base.OnCompleteOfShowAnimation();
             canvasGroup.interactable = true;
+            _npc.Greeting();
+
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -121,8 +136,11 @@ namespace Nekoyume.UI
             _sequenceOfShopItems?.Kill();
             bg1.anchoredPosition = new Vector2(_defaultAnchoredPositionXOfBg1, bg1.anchoredPosition.y);
             right.anchoredPosition = new Vector2(_defaultAnchoredPositionXOfRight, right.anchoredPosition.y);
+            speechBubble.gameObject.SetActive(false);
 
             base.Close(ignoreCloseAnimation);
+
+            _npc.gameObject.SetActive(false);
 
             AudioController.instance.PlayMusic(AudioController.MusicCode.Main);
         }
@@ -133,6 +151,10 @@ namespace Nekoyume.UI
 
         private void SubscribeState(StateType stateType)
         {
+            inventory.Tooltip.Close();
+            inventory.SharedModel.DeselectItemView();
+            shopItems.SharedModel.DeselectItemView();
+            
             switch (stateType)
             {
                 case StateType.Show:
@@ -151,7 +173,6 @@ namespace Nekoyume.UI
                     break;
                 case StateType.Sell:
                     inventory.SharedModel.DimmedFunc.Value = DimmedFuncForSell;
-                    inventory.SharedModel.EquippedFunc.Value = EquippedFuncForSell;
                     buyButton.button.interactable = true;
                     sellButton.button.interactable = false;
                     shopNotice.SetActive(true);
@@ -162,32 +183,33 @@ namespace Nekoyume.UI
                     throw new ArgumentOutOfRangeException(nameof(stateType), stateType, null);
             }
 
-            inventory.Tooltip.Close();
-            inventory.SharedModel.DeselectItemView();
-            shopItems.SharedModel.DeselectItemView();
-
             canvasGroup.interactable = false;
             _sequenceOfShopItems?.Kill();
             _sequenceOfShopItems = DOTween.Sequence();
             SetSequenceOfShopItems(true, ref _sequenceOfShopItems);
             _sequenceOfShopItems.AppendCallback(() => shopItems.SharedModel.State.Value = stateType);
             SetSequenceOfShopItems(false, ref _sequenceOfShopItems);
-            _sequenceOfShopItems.OnComplete(() => canvasGroup.interactable = true);
+            _sequenceOfShopItems.OnComplete(() =>
+            {
+                canvasGroup.interactable = true;
+                switch (stateType)
+                {
+                    case StateType.Buy:
+                        ShowSpeech("SPEECH_SHOP_BUY_");
+                        break;
+                    case StateType.Sell:
+                        ShowSpeech("SPEECH_SHOP_SELL_");
+                        break;
+                }
+            });
         }
 
-        private void SubscribeInventorySelectedItemView(InventoryItemView view)
+        private void ShowTooltip(InventoryItemView view)
         {
             shopItems.SharedModel.DeselectItemView();
-            
+
             if (view is null ||
                 view.RectTransform == inventory.Tooltip.Target)
-            {
-                inventory.Tooltip.Close();
-
-                return;
-            }
-            
-            if (inventory.Tooltip.Model.target.Value == view.RectTransform)
             {
                 inventory.Tooltip.Close();
                 return;
@@ -199,19 +221,18 @@ namespace Nekoyume.UI
             }
             else
             {
-                inventory.Tooltip.Show(view.RectTransform, view.Model,
+                ShowSpeech("SPEECH_SHOP_REGISTER_ITEM_");
+                inventory.Tooltip.Show(
+                    view.RectTransform,
+                    view.Model,
                     value => !DimmedFuncForSell(view.Model),
                     LocalizationManager.Localize("UI_SELL"),
-                    tooltip =>
-                    {
-                        SharedModel.ShowItemPopup(tooltip.itemInformation.Model.item.Value);
-                        inventory.Tooltip.Close();
-                    },
+                    tooltip => SharedModel.ShowItemPopup(tooltip.itemInformation.Model.item.Value),
                     tooltip => inventory.SharedModel.DeselectItemView());
             }
         }
-        
-        private void SubscribeShopItemsSelectedItemView(ShopItemView view)
+
+        private void ShowTooltip(ShopItemView view)
         {
             inventory.SharedModel.DeselectItemView();
 
@@ -219,31 +240,24 @@ namespace Nekoyume.UI
                 view.RectTransform == inventory.Tooltip.Target)
             {
                 inventory.Tooltip.Close();
-
-                return;
-            }
-
-            if (inventory.Tooltip.Model.target.Value == view.RectTransform)
-            {
-                inventory.Tooltip.Close();
                 return;
             }
 
             if (SharedModel.State.Value == StateType.Buy)
             {
-                inventory.Tooltip.Show(view.RectTransform, view.Model,
+                inventory.Tooltip.Show(
+                    view.RectTransform,
+                    view.Model,
                     value => ButtonEnabledFuncForBuy(view.Model),
                     LocalizationManager.Localize("UI_BUY"),
-                    tooltip =>
-                    {
-                        SharedModel.ShowItemPopup(tooltip.itemInformation.Model.item.Value);
-                        inventory.Tooltip.Close();
-                    },
+                    tooltip => SharedModel.ShowItemPopup(tooltip.itemInformation.Model.item.Value),
                     tooltip => { shopItems.SharedModel.DeselectItemView(); });
             }
             else
             {
-                inventory.Tooltip.Show(view.RectTransform, view.Model,
+                inventory.Tooltip.Show(
+                    view.RectTransform,
+                    view.Model,
                     value => ButtonEnabledFuncForSell(view.Model),
                     LocalizationManager.Localize("UI_RETRIEVE"),
                     tooltip =>
@@ -254,7 +268,12 @@ namespace Nekoyume.UI
                     tooltip => { shopItems.SharedModel.DeselectItemView(); });
             }
         }
-        
+
+        private void ShowTooltipForAction(CountableItem viewModel)
+        {
+            SharedModel.ShowItemPopup(viewModel);
+        }
+
         private void SubscribeItemPopup(CountableItem data)
         {
             if (data is null)
@@ -320,13 +339,13 @@ namespace Nekoyume.UI
             return equipment.equipped;
         }
 
-        private static bool ButtonEnabledFuncForBuy(InventoryItem inventoryItem)
+        private static bool ButtonEnabledFuncForBuy(CountableItem inventoryItem)
         {
             return inventoryItem is ShopItem shopItem &&
                    ReactiveAgentState.Gold.Value >= shopItem.Price.Value;
         }
 
-        private static bool ButtonEnabledFuncForSell(InventoryItem inventoryItem)
+        private static bool ButtonEnabledFuncForSell(CountableItem inventoryItem)
         {
             switch (inventoryItem)
             {
@@ -348,13 +367,13 @@ namespace Nekoyume.UI
             var item = SharedModel.ItemCountAndPricePopup.Value.Item.Value;
             var price = SharedModel.ItemCountAndPricePopup.Value.Price.Value;
             SharedModel.ItemCountAndPricePopup.Value.Item.Value = null;
-            
+
             States.Instance.CurrentAvatarState.Value.inventory.RemoveNonFungibleItem((ItemUsable) item.ItemBase.Value);
             inventory.SharedModel.RemoveItem(item.ItemBase.Value);
-            
+
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
-            Notification.Push(
-                $"{item.ItemBase.Value.Data.GetLocalizedName()} 아이템을 상점에 등록합니다.\n아이템 판매시 {price} gold의 8%를 세금으로 차감합니다.");
+            var format = LocalizationManager.Localize("NOTIFICATION_SELL_START");
+            Notification.Push(MailType.Auction, string.Format(format, item.ItemBase.Value.GetLocalizedName()));
         }
 
         private void ResponseSellCancellation(ShopItem shopItem)
@@ -366,23 +385,25 @@ namespace Nekoyume.UI
 
             States.Instance.ShopState.Value.Unregister(sellerAgentAddress, productId);
             shopItems.SharedModel.RemoveCurrentAgentsProduct(productId);
-            
+
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
-            Notification.Push($"{shopItem.ItemBase.Value.Data.GetLocalizedName()} 아이템을 판매 취소합니다.");
+            var format = LocalizationManager.Localize("NOTIFICATION_SELL_CANCEL_START");
+            Notification.Push(MailType.Auction, string.Format(format, shopItem.ItemBase.Value.GetLocalizedName()));
         }
 
         private void ResponseBuy(ShopItem shopItem)
         {
             SharedModel.ItemCountAndPricePopup.Value.Item.Value = null;
-            
+
             var sellerAgentAddress = shopItem.SellerAgentAddress.Value;
             var productId = shopItem.ProductId.Value;
-            
+
             States.Instance.ShopState.Value.Unregister(sellerAgentAddress, productId);
             shopItems.SharedModel.RemoveOtherProduct(productId);
-            
+
             AudioController.instance.PlaySfx(AudioController.SfxCode.BuyItem);
-            Notification.Push($"{shopItem.ItemBase.Value.Data.GetLocalizedName()} 아이템을 구매합니다.");
+            var format = LocalizationManager.Localize("NOTIFICATION_BUY_START");
+            Notification.Push(MailType.Auction, string.Format(format, shopItem.ItemBase.Value.GetLocalizedName()));
         }
 
         #endregion
@@ -434,6 +455,15 @@ namespace Nekoyume.UI
                                    Math.Abs(_defaultAnchoredPositionXOfRight - right.anchoredPosition.x)) /
                           goOutTweenXAbs)
                 .SetEase(isGoOut ? Ease.InQuint : Ease.OutQuint));
+        }
+
+        private void ShowSpeech(string key)
+        {
+            _npc.Emotion();
+            if (speechBubble.gameObject.activeSelf)
+                return;
+            speechBubble.SetKey(key);
+            StartCoroutine(speechBubble.CoShowText());
         }
     }
 }

@@ -1,15 +1,20 @@
 using System;
+using Assets.SimpleLocalization;
 using Nekoyume.Action;
+using Nekoyume.Game.Item;
+using Nekoyume.TableData;
 
 namespace Nekoyume.Game.Mail
 {
+    // todo: `CombineConsumable`, `CombineEquipment`, `EnhanceEquipment`로 분리할 필요가 있어 보임(소모품을 n개 만들었을 때 재료가 n개 씩 노출됨)
     [Serializable]
     public class CombinationMail : AttachmentMail
     {
+        private static readonly string _format = LocalizationManager.Localize("UI_COMBINATION_NOTIFY_FORMAT");
         protected override string TypeId => "combinationMail";
-        public override MailType MailType { get => MailType.Forge; }
+        public override MailType MailType => MailType.Workshop;
 
-        public CombinationMail(Combination.Result attachmentActionResult, long blockIndex) : base(attachmentActionResult, blockIndex)
+        public CombinationMail(Combination.ResultModel attachmentActionResult, long blockIndex) : base(attachmentActionResult, blockIndex)
         {
             
         }
@@ -20,8 +25,8 @@ namespace Nekoyume.Game.Mail
         }
 
         public override string ToInfo()
-        {
-            return "조합 완료";
+        {   
+            return string.Format(_format, AttachmentName);
         }
 
         public override void Read(IMail mail)

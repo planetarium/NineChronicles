@@ -31,22 +31,27 @@ namespace Nekoyume
             collection.Clear();
         }
         
-        public static IDisposable SubscribeToGameObject(this IObservable<bool> source, GameObject gameObject)
+        public static IDisposable SubscribeTo(this IObservable<bool> source, GameObject gameObject)
         {
             return source.SubscribeWithState(gameObject, (x, t) => gameObject.SetActive(x));
         }
         
-        public static IDisposable SubscribeToBehaviour(this IObservable<bool> source, Behaviour behaviour)
+        public static IDisposable SubscribeTo(this IObservable<bool> source, Behaviour behaviour)
         {
             return source.SubscribeWithState(behaviour, (x, t) => behaviour.enabled = x);
         }
         
-        public static IDisposable SubscribeToImage(this IObservable<Sprite> source, Image image)
+        public static IDisposable SubscribeTo(this IObservable<Sprite> source, Image image)
         {
             return source.SubscribeWithState(image, (x, t) => t.sprite = x);
         }
         
-        public static IDisposable SubscribeToText(this IObservable<string> source, TextMeshProUGUI text)
+        public static IDisposable SubscribeTo(this IObservable<int> source, TextMeshProUGUI text)
+        {
+            return source.SubscribeWithState(text, (x, t) => t.text = x.ToString());
+        }
+        
+        public static IDisposable SubscribeTo(this IObservable<string> source, TextMeshProUGUI text)
         {
             return source.SubscribeWithState(text, (x, t) => t.text = x);
         }

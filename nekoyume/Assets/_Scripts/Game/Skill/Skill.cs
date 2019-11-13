@@ -16,29 +16,22 @@ namespace Nekoyume.Game
     {
         public readonly SkillSheet.Row skillRow;
         public readonly int power;
-        public readonly decimal chance;
-        public readonly SkillEffect effect;
+        public readonly int chance;
         public List<Buff> buffs;
 
-        protected Skill(SkillSheet.Row skillRow, int power, decimal chance)
+        protected Skill(SkillSheet.Row skillRow, int power, int chance)
         {
             this.skillRow = skillRow;
             this.power = power;
             this.chance = chance;
             buffs = skillRow.GetBuffs().Select(BuffFactory.Get).ToList();
-
-            if (!Tables.instance.SkillEffect.TryGetValue(skillRow.SkillEffectId, out effect))
-            {
-                throw new KeyNotFoundException(nameof(skillRow.SkillEffectId));
-            }
         }
 
         public abstract Model.Skill Use(CharacterBase caster);
 
         protected bool Equals(Skill other)
         {
-            return skillRow.Equals(other.skillRow) && power == other.power && chance.Equals(other.chance) &&
-                   Equals(effect, other.effect);
+            return skillRow.Equals(other.skillRow) && power == other.power && chance.Equals(other.chance);
         }
 
         public override bool Equals(object obj)
@@ -56,7 +49,6 @@ namespace Nekoyume.Game
                 var hashCode = skillRow.GetHashCode();
                 hashCode = (hashCode * 397) ^ power;
                 hashCode = (hashCode * 397) ^ chance.GetHashCode();
-                hashCode = (hashCode * 397) ^ (effect != null ? effect.GetHashCode() : 0);
                 return hashCode;
             }
         }
@@ -71,7 +63,7 @@ namespace Nekoyume.Game
                 {
                     target.AddBuff(buff);
                     infos.Add(new Model.Skill.SkillInfo((CharacterBase) target.Clone(), 0, false,
-                        effect.skillCategory, ElementalType.Normal, buff));
+                        skillRow.SkillCategory, ElementalType.Normal, buff));
                 }
             }
 
@@ -83,7 +75,7 @@ namespace Nekoyume.Game
             {
                 [(Text) "skillRow"] = skillRow.Serialize(),
                 [(Text) "power"] = (Integer) power,
-                [(Text) "chance"] = chance.Serialize(),
+                [(Text) "chance"] = (Integer) chance,
             });
     }
 }

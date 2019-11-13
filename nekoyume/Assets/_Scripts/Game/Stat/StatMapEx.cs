@@ -7,6 +7,7 @@ using Nekoyume.State;
 
 namespace Nekoyume.Game
 {
+    // todo: 없어질 대상.
     [Serializable]
     public class StatMapEx : StatMap
     {
@@ -38,7 +39,7 @@ namespace Nekoyume.Game
 
         public StatMapEx(Bencodex.Types.Dictionary serialized) : base(serialized)
         {
-            AdditionalValue = serialized[(Text) "additionalValue"].ToDecimal();
+            AdditionalValue = serialized["additionalValue"].ToDecimal();
         }
 
         protected bool Equals(StatMapEx other)

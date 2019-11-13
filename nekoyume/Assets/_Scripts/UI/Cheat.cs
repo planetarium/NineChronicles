@@ -5,19 +5,20 @@ using Libplanet.Action;
 using Nekoyume.Battle;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
-using Nekoyume.Game.Character;
 using Nekoyume.Game.Item;
 using Nekoyume.Model;
+using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.UI;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Enemy = Nekoyume.Game.Character.Enemy;
+using Text = UnityEngine.UI.Text;
 
 namespace Nekoyume
 {
-    public class Cheat : ScreenWidget
+    public class Cheat : PopupWidget
     {
         private static Cheat Instance;
 
@@ -29,7 +30,15 @@ namespace Nekoyume
         public ScrollRect list;
         public ScrollRect skillList;
         public HorizontalLayoutGroup skillPanel;
+        public Dropdown TableSheets;
+        public Transform OnChainTableSheet;
+        public Transform LocalTableSheet;
+        public GameObject PatchButton;
+        public GameObject[] Views;
 
+        private Dictionary<string, string> TableAssets;
+
+        private int _viewIndex;
         private Transform _modal;
         private float _updateTime = 0.0f;
         private StringBuilder _logString = new StringBuilder();
@@ -82,7 +91,42 @@ namespace Nekoyume
                     Instance.StagedTxs.Find("TextRect/Text").GetComponent<TextMeshProUGUI>().text = text;
                     Instance.Refresh(Instance.StagedTxs);
                     break;
+                case nameof(OnChainTableSheet):
+                    Instance.OnChainTableSheet.Find("TextRect/Text").GetComponent<TextMeshProUGUI>().text = text; 
+                    Instance.Refresh(Instance.OnChainTableSheet);
+                    break;
+                case nameof(LocalTableSheet):
+                    Instance.LocalTableSheet.Find("TextRect/Text").GetComponent<TextMeshProUGUI>().text = text; 
+                    Instance.Refresh(Instance.LocalTableSheet);
+                    break;
             }
+        }
+
+        public void RefreshTableSheets()
+        {
+            var index = TableSheets.value;
+            var tableName = TableSheets.options[index].text;
+            Debug.Log($"index: {index} / tableName: {tableName}.");
+            Debug.Log($"onChainSheet.Count: {TableSheetsState.Current.TableSheets.Count} / localSheets.Count: '{tableName} {TableAssets[tableName]}'.");
+            if (TableSheetsState.Current.TableSheets.TryGetValue(tableName, out string onChainTableCsv))
+            {
+                Display(nameof(OnChainTableSheet), onChainTableCsv);
+            }
+            else
+            {
+                Display(nameof(OnChainTableSheet), "No content.");
+            }
+
+            if (TableAssets.TryGetValue(tableName, out string localTableCsv))
+            {
+                Display(nameof(LocalTableSheet), localTableCsv);
+            }
+            else
+            {
+                Display(nameof(LocalTableSheet), "No content.");
+            }
+
+            PatchButton.SetActive(onChainTableCsv != localTableCsv);
         }
         
         public static void Log(string text)
@@ -124,6 +168,18 @@ namespace Nekoyume
                     new Vector2(0, 0);
         }
 
+        public void Patch()
+        {
+            var tableName = GetTableName();
+            var csv = LocalTableSheet.Find("TextRect/Text").GetComponent<TextMeshProUGUI>().text;
+            ActionManager.instance.PatchTableSheet(tableName, csv);
+        }
+
+        private string GetTableName()
+        {
+            return TableSheets.options[TableSheets.value].text;
+        }
+
         protected override void Awake()
         {
             base.Awake();
@@ -150,8 +206,10 @@ namespace Nekoyume
         public override void Show()
         {
             _modal.gameObject.SetActive(true);
+            TableAssets = GetTableAssetsHavingDifference();
+            TableSheets.options = TableAssets.Keys.Select(s => new Dropdown.OptionData(s)).ToList();
 
-            Peers.Find("Scrollbar")
+                Peers.Find("Scrollbar")
                 .GetComponent<Scrollbar>()
                 .onValueChanged
                 .AddListener((location) => ScrollBarHandler(Peers, location));
@@ -159,10 +217,23 @@ namespace Nekoyume
                 .GetComponent<Scrollbar>()
                 .onValueChanged
                 .AddListener((location) => ScrollBarHandler(StagedTxs, location));
+            OnChainTableSheet.Find("Scrollbar")
+                .GetComponent<Scrollbar>()
+                .onValueChanged
+                .AddListener((location) => ScrollBarHandler(OnChainTableSheet, location));
+            LocalTableSheet.Find("Scrollbar")
+                .GetComponent<Scrollbar>()
+                .onValueChanged
+                .AddListener((location) => ScrollBarHandler(LocalTableSheet, location));
+            Refresh(OnChainTableSheet);
+            Refresh(LocalTableSheet);
             Refresh(Peers);
             Refresh(StagedTxs);
             ScrollBarHandler(Peers, 0);
             ScrollBarHandler(StagedTxs, 0);
+            ScrollBarHandler(OnChainTableSheet, 0);
+            ScrollBarHandler(LocalTableSheet, 0);
+            RefreshTableSheets();
 
             BtnOpen.gameObject.SetActive(false);
             foreach (var i in Enumerable.Range(1, Game.Game.instance.TableSheets.StageSheet.Count))
@@ -176,7 +247,7 @@ namespace Nekoyume
             var skills = new List<Game.Skill>();
             foreach (var skillRow in Game.Game.instance.TableSheets.SkillSheet)
             {
-                var skill = SkillFactory.Get(skillRow, 50, 1m);
+                var skill = SkillFactory.Get(skillRow, 50, 100);
                 skills.Add(skill);
                 Button newButton = Instantiate(buttonBase, skillList.content);
                 newButton.GetComponentInChildren<Text>().text = $"{skillRow.GetLocalizedName()}_{skillRow.ElementalType}";
@@ -187,6 +258,21 @@ namespace Nekoyume
             _skills = skills.ToArray();
 
             base.Show();
+        }
+        
+        private static Dictionary<string, string> GetTableCsvAssets()
+        {
+            var addressableAssetsContainer = Resources.Load<AddressableAssetsContainer>("AddressableAssetsContainer");
+            return addressableAssetsContainer.tableCsvAssets.ToDictionary(asset => asset.name, asset => asset.text);
+        }
+
+        private static Dictionary<string, string> GetTableAssetsHavingDifference()
+        {
+            var tableCsvAssets = GetTableCsvAssets();
+            var tableSheetsState = TableSheetsState.Current;
+            return tableCsvAssets.Where(pair =>
+                !tableSheetsState.TableSheets.TryGetValue(pair.Key, out string onChainCsv) ||
+                onChainCsv != pair.Value).ToDictionary(pair => pair.Key, pair => pair.Value);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -207,6 +293,13 @@ namespace Nekoyume
         public override bool IsActive()
         {
             return _modal.gameObject.activeSelf;
+        }
+
+        public void SwitchView()
+        {
+            Views[_viewIndex].SetActive(false);
+            _viewIndex = (_viewIndex + 1) % Views.Length;
+            Views[_viewIndex].SetActive(true);
         }
 
         public void HandleClick(GameObject sender)

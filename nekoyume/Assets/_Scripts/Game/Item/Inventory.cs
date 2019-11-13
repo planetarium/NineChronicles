@@ -35,9 +35,9 @@ namespace Nekoyume.Game.Item
             public Item(Bencodex.Types.Dictionary serialized)
             {
                 item = ItemFactory.Deserialize(
-                    (Bencodex.Types.Dictionary) serialized[(Text) "item"]
+                    (Bencodex.Types.Dictionary) serialized["item"]
                 );
-                count = (int) ((Integer) serialized[(Text) "count"]).Value;
+                count = (int) ((Integer) serialized["count"]).Value;
             }
 
             protected bool Equals(Item other)
@@ -88,7 +88,7 @@ namespace Nekoyume.Game.Item
             }
         }
 
-        public void AddItem(ItemBase itemBase, int count = 1)
+        public KeyValuePair<int, int> AddItem(ItemBase itemBase, int count = 1)
         {
             switch (itemBase.Data.ItemType)
             {
@@ -102,9 +102,10 @@ namespace Nekoyume.Game.Item
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+            return new KeyValuePair<int, int>(itemBase.Data.Id, count);
         }
         
-        public Item AddFungibleItem(ItemBase itemBase, int count = 1)
+        private Item AddFungibleItem(ItemBase itemBase, int count = 1)
         {
             if (TryGetFungibleItem(itemBase, out var fungibleItem))
             {
@@ -117,7 +118,7 @@ namespace Nekoyume.Game.Item
             return fungibleItem;
         }
 
-        public void AddFungibleItem(int id, int count = 1)
+        private void AddFungibleItem(int id, int count = 1)
         {
             if (TryGetFungibleItem(id, out var fungibleItem))
             {
@@ -136,7 +137,7 @@ namespace Nekoyume.Game.Item
         }
 
         // Todo. NonFungibleItem 개발 후 `ItemBase itemBase` 인자를 `NonFungibleItem nonFungibleItem`로 수정.
-        public Item AddNonFungibleItem(ItemUsable itemBase)
+        private Item AddNonFungibleItem(ItemUsable itemBase)
         {
             var nonFungibleItem = new Item(itemBase);
             _items.Add(nonFungibleItem);
@@ -169,6 +170,11 @@ namespace Nekoyume.Game.Item
         public bool RemoveNonFungibleItem(ItemUsable itemUsable)
         {
             return TryGetNonFungibleItem(itemUsable, out Item item) && _items.Remove(item);
+        }
+        
+        public bool RemoveNonFungibleItem(Guid itemGuid)
+        {
+            return TryGetNonFungibleItem(itemGuid, out Item item) && _items.Remove(item);
         }
 
         public bool TryGetFungibleItem(ItemBase itemBase, out Item outFungibleItem)
@@ -235,6 +241,11 @@ namespace Nekoyume.Game.Item
 
         public bool TryGetNonFungibleItem(ItemUsable itemUsable, out Item outNonFungibleItem)
         {
+            return TryGetNonFungibleItem(itemUsable.ItemId, out outNonFungibleItem);
+        }
+        
+        public bool TryGetNonFungibleItem(Guid itemGuid, out Item outNonFungibleItem)
+        {
             foreach (var item in _items)
             {
                 if (!(item.item is ItemUsable nonFungibleItem))
@@ -242,7 +253,7 @@ namespace Nekoyume.Game.Item
                     continue;
                 }
 
-                if (nonFungibleItem.ItemId != itemUsable.ItemId)
+                if (nonFungibleItem.ItemId != itemGuid)
                 {
                     continue;
                 }

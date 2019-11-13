@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Bencodex.Types;
 using Nekoyume.Action;
+using Nekoyume.Game.Item;
+using Nekoyume.TableData;
 
 namespace Nekoyume.Game.Mail
 {
@@ -10,6 +12,7 @@ namespace Nekoyume.Game.Mail
     public abstract class AttachmentMail : Mail
     {
         public AttachmentActionResult attachment;
+        public string AttachmentName => attachment.itemUsable.GetLocalizedName();
 
         protected AttachmentMail(AttachmentActionResult attachmentActionResult, long blockIndex) : base(blockIndex)
         {
@@ -20,7 +23,7 @@ namespace Nekoyume.Game.Mail
             : base(serialized)
         {
             attachment = AttachmentActionResult.Deserialize(
-                (Bencodex.Types.Dictionary) serialized[(Text) "attachment"]
+                (Bencodex.Types.Dictionary) serialized["attachment"]
             );
         }
 

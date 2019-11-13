@@ -10,7 +10,7 @@ namespace Nekoyume.Game.Mail
 {
     public enum MailType
     {
-        Forge = 1,
+        Workshop = 1,
         Auction,
         System
     }
@@ -25,11 +25,12 @@ namespace Nekoyume.Game.Mail
                 ["combinationMail"] = d => new CombinationMail(d),
                 ["sellCancel"] = d => new SellCancelMail(d),
                 ["seller"] = d => new SellerMail(d),
+                ["itemEnhance"] = d => new ItemEnhanceMail(d),
             };
 
         public bool New;
         public long blockIndex;
-        public virtual MailType MailType { get => MailType.System; }
+        public virtual MailType MailType => MailType.System;
 
         protected Mail(long blockIndex)
         {
@@ -38,9 +39,9 @@ namespace Nekoyume.Game.Mail
         }
 
         protected Mail(Bencodex.Types.Dictionary serialized)
-            : this((long) ((Integer) serialized[(Bencodex.Types.Text) "blockIndex"]).Value)
+            : this((long) ((Integer) serialized["blockIndex"]).Value)
         {
-            New = ((Bencodex.Types.Boolean) serialized[(Bencodex.Types.Text) "new"]).Value;
+            New = ((Bencodex.Types.Boolean) serialized["new"]).Value;
         }
 
         public abstract string ToInfo();
@@ -59,7 +60,7 @@ namespace Nekoyume.Game.Mail
 
         public static Mail Deserialize(Bencodex.Types.Dictionary serialized)
         {
-            string typeId = ((Text) serialized[(Text) "typeId"]).Value;
+            string typeId = ((Text) serialized["typeId"]).Value;
             Func<Dictionary, Mail> deserializer;
             try
             {

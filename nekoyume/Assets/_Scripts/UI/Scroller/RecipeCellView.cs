@@ -5,7 +5,10 @@ using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using System;
 using System.Linq;
-using Nekoyume.BlockChain;
+using Assets.SimpleLocalization;
+using JetBrains.Annotations;
+using Nekoyume.Game.Controller;
+using TMPro;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,81 +18,114 @@ namespace Nekoyume.UI.Scroller
     [RequireComponent(typeof(RectTransform))]
     public class RecipeCellView : EnhancedScrollerCellView
     {
-        [Serializable]
-        public class MaterialIcon
+        public interface IEventListener
         {
-            public Image image;
-            public Text mark;
+            void OnRecipeCellViewStarClick(RecipeCellView recipeCellView);
+            void OnRecipeCellViewSubmitClick(RecipeCellView recipeCellView);
         }
-
-        public Text resultNameText;
-        public Button combineButton;
-        public IObservable<Unit> combineButtonOnClick;
-        public IDisposable onClickDisposable;
-        public Text combineText;
-        public SimpleCountableItemView resultItemView;
-        public SimpleCountableItemView[] materialItemViews;
-
-        private const float ResultIconScaleFactor = 1.2f;
-        private const float MaterialIconScaleFactor = 0.7f;
-        private readonly Color DimmedColor = new Color(0.3f, 0.3f, 0.3f);
-
+        
+        public Button starButton;
+        public SimpleItemView resultItemView;
+        public TextMeshProUGUI resultItemNameText;
+        public SimpleItemView[] materialItemViews;
+        public SubmitButton submitButton;
+        public TextMeshProUGUI submitText;
+        
         public RecipeInfo Model { get; private set; }
 
-        #region Mono
-
+        [CanBeNull] private IEventListener _eventListener;
+        
         private void Awake()
         {
-            this.ComponentFieldsNotNullTest();
-            combineButtonOnClick = combineButton.OnClickAsObservable();
+            starButton.OnClickAsObservable().Subscribe(_ =>
+            {
+                AudioController.PlayClick();
+                _eventListener?.OnRecipeCellViewStarClick(this);
+            }).AddTo(gameObject);
+            submitButton.OnSubmitClick.Subscribe(_ =>
+            {
+                AudioController.PlayClick();
+                _eventListener?.OnRecipeCellViewSubmitClick(this);
+            }).AddTo(gameObject);
+            submitText.text = LocalizationManager.Localize("UI_SELECT");
         }
 
-        private void OnDisable()
+        public void RegisterListener(IEventListener eventListener)
         {
-            Clear();
+            _eventListener = eventListener;
         }
-
-        #endregion
-
+        
         public void SetData(RecipeInfo recipeInfo)
         {
-            Model = recipeInfo;
-            resultNameText.text = recipeInfo.resultName;
-
-            SetItemView(recipeInfo.resultId, recipeInfo.resultAmount, resultItemView, ResultIconScaleFactor, false);
-
-            for (var i = 0; i < recipeInfo.materialInfos.Length; ++i)
+            if (recipeInfo is null)
             {
-                var info = recipeInfo.materialInfos[i];
-                if (info.id == 0) break;
-                SetItemView(info.id, info.amount, materialItemViews[i], MaterialIconScaleFactor, true, !info.isEnough);
+                Clear();
+                return;
             }
-
-            if (recipeInfo.materialInfos.Any(info => info.id != 0 && !info.isEnough) ||
-                States.Instance.CurrentAvatarState.Value.actionPoint < Action.Combination.RequiredPoint)
+            
+            Model = recipeInfo;
+            if (Model.IsLocked)
             {
-                combineButton.enabled = false;
-                combineButton.image.sprite = Resources.Load<Sprite>("UI/Textures/button_gray_01");
-                combineText.color = ColorHelper.HexToColorRGB("92A3B5");
+                resultItemNameText.text = "?";
+                resultItemView.SetToUnknown();
+                
+                var materialInfosCount = Model.MaterialInfos.Count;
+                for (var i = 0; i < materialItemViews.Length; i++)
+                {
+                    var view = materialItemViews[i];
+                    if (i < materialInfosCount)
+                    {
+                        view.Show();
+                        view.SetToUnknown();
+                    }
+                    else
+                    {
+                        view.Hide();
+                    }
+                }
+                
+                submitButton.SetSubmittable(false);
+                submitText.color = ColorHelper.HexToColorRGB("92A3B5");
+            }
+            else
+            {
+                resultItemNameText.text = Model.ResultItemName;
+                SetItemView(Model.Row.ResultConsumableItemId, resultItemView);
+                
+                var materialInfosCount = Model.MaterialInfos.Count;
+                for (var i = 0; i < materialItemViews.Length; i++)
+                {
+                    var view = materialItemViews[i];
+                    if (i < materialInfosCount)
+                    {
+                        var info = Model.MaterialInfos[i];
+                        view.Show();
+                        SetItemView(info.Id, view, !info.IsEnough);    
+                    }
+                    else
+                    {
+                        view.Hide();
+                    }
+                }
+                
+                if (Model.MaterialInfos.Any(info => info.Id != 0 && !info.IsEnough))
+                {
+                    submitButton.SetSubmittable(false);
+                    submitText.color = ColorHelper.HexToColorRGB("92A3B5");
+                }
+                else
+                {
+                    submitButton.SetSubmittable(true);
+                    submitText.color = Color.white;
+                }
             }
         }
 
-        private void SetItemView(int itemId, int amount, SimpleCountableItemView itemView, float scaleFactor, bool isMaterial, bool isDimmed = false)
+        private void SetItemView(int itemId, SimpleItemView itemView, bool isDimmed = false)
         {
             var row = Game.Game.instance.TableSheets.ItemSheet.Values.First(i => i.Id == itemId);
-            var item = ItemFactory.Create(row, new Guid());
-            var countableItem = new CountableItem(item, amount);
-            try
-            {
-                itemView.SetData(countableItem);
-            }
-            catch (FailedToLoadResourceException<Sprite> e)
-            {
-                Debug.LogWarning($"No sprite : {itemId} {e}");
-            }
+            itemView.SetData(new Item(ItemFactory.Create(row, new Guid())));
             itemView.Model.Dimmed.Value = isDimmed;
-            var rect = itemView.iconImage.GetComponent<RectTransform>();
-            rect.sizeDelta = new Vector2(rect.sizeDelta.x * scaleFactor, rect.sizeDelta.y * scaleFactor);
             itemView.gameObject.SetActive(true);
         }
 
@@ -100,9 +136,8 @@ namespace Nekoyume.UI.Scroller
             {
                 materialItemViews[i].Clear();
                 materialItemViews[i].gameObject.SetActive(false);
-                combineButton.enabled = true;
-                combineButton.image.sprite = Resources.Load<Sprite>("UI/Textures/button_blue_01");
-                combineText.color = Color.white;
+                submitButton.SetSubmittable(false);
+                submitText.color = ColorHelper.HexToColorRGB("92A3B5");
             }
         }
     }

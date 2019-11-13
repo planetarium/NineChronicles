@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Nekoyume.EnumType;
 using Nekoyume.Model;
 using Nekoyume.TableData;
@@ -10,18 +9,20 @@ namespace Nekoyume.Game
     [Serializable]
     public class Buff : ICloneable
     {
+        public int originalDuration;
         public int remainedDuration;
 
         public BuffSheet.Row RowData { get; }
 
         protected Buff(BuffSheet.Row row)
         {
-            remainedDuration = row.Duration;
+            originalDuration = remainedDuration = row.Duration;
             RowData = row;
         }
 
         protected Buff(Buff value)
         {
+            originalDuration = value.RowData.Duration;
             remainedDuration = value.remainedDuration;
             RowData = value.RowData;
         }

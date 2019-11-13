@@ -1,4 +1,6 @@
-﻿using Nekoyume.Helper;
+﻿using Nekoyume.Game;
+using Nekoyume.Game.Controller;
+using Nekoyume.Game.VFX;
 using Nekoyume.Model;
 using Nekoyume.TableData;
 using TMPro;
@@ -14,7 +16,7 @@ namespace Nekoyume.UI
         public Game.Buff Data { get; set; }
         public CharacterBase character;
 
-        public void Show(Game.Buff buff)
+        public void Show(Game.Buff buff, bool isAdded)
         {
             Data = buff;
             image.enabled = true;
@@ -22,13 +24,19 @@ namespace Nekoyume.UI
             var sprite = Data.RowData.GetIcon();
             image.overrideSprite = sprite;
             UpdateStatus(Data);
+
+            if (isAdded)
+            {
+                var vfx = VFXController.instance.CreateAndChaseRectTransform<DropItemInventoryVFX>
+                    (image.transform.position, image.rectTransform);
+            }
         }
 
         public void UpdateStatus(Game.Buff buff)
         {
             Data = buff;
             remainedDurationText.text = Data.remainedDuration.ToString();
-        }
+        } 
 
         public void Hide()
         {

@@ -24,8 +24,7 @@ namespace Nekoyume.Game.VFX.Skill
         public T Get<T>(CharacterBase target, Buff buff) where T : BuffVFX
         {
             var position = target.transform.position;
-            position.x -= 0.2f;
-            position.y += 0.32f;
+            position.y += 0.55f;
             var resource = buff.RowData.IconResource;
             var resourceName = resource.Replace("icon_", "");
             var go = _pool.Get(resourceName, false, position);
@@ -45,7 +44,17 @@ namespace Nekoyume.Game.VFX.Skill
 
         public BuffCastingVFX Get(Vector3 position, Buff buff)
         {
-            var buffName = buff.RowData.StatModifier.Value > 0 ? "buff_plus_casting" : "buff_minus_casting";
+            string buffName;
+            if (buff is HPBuff)
+            {
+                buffName = "buff_hp_casting";
+            }
+            else
+            {
+                buffName = buff.RowData.StatModifier.Value > 0 ? "buff_plus_casting" : "buff_minus_casting";
+            }
+
+            position.y += 0.55f;
             var go = _pool.Get(buffName, false, position);
             var effect = go.GetComponent<BuffCastingVFX>();
             effect.Stop();

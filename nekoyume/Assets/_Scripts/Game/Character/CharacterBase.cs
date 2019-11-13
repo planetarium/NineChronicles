@@ -56,7 +56,7 @@ namespace Nekoyume.Game.Character
 
         public float RunSpeed { get; set; }
 
-        protected HpBar HPBar { get; private set; }
+        public HpBar HPBar { get; private set; }
         private ProgressBar CastingBar { get; set; }
         protected SpeechBubble SpeechBubble { get; set; }
 
@@ -180,7 +180,7 @@ namespace Nekoyume.Game.Character
             }
 
             HPBar.UpdatePosition(gameObject, HUDOffset);
-            HPBar.Set(CurrentHP, HP);
+            HPBar.Set(CurrentHP, Model.Value.Stats.BuffStats.HP, HP);
             HPBar.SetBuffs(Model.Value.Buffs);
             
             OnUpdateHPBar.OnNext(this);
@@ -257,7 +257,7 @@ namespace Nekoyume.Game.Character
                 ActionCamera.instance.Shake();
                 AudioController.PlayDamagedCritical();
                 CriticalText.Show(position, force, dmg);
-                if (info.SkillCategory == SkillCategory.Normal)
+                if (info.SkillCategory == SkillCategory.NormalAttack)
                     VFXController.instance.Create<BattleAttackCritical01VFX>(pos);
             }
             else
@@ -266,7 +266,7 @@ namespace Nekoyume.Game.Character
                     ? info.ElementalType
                     : ElementalType.Normal);
                 DamageText.Show(position, force, dmg);
-                if (info.SkillCategory == SkillCategory.Normal)
+                if (info.SkillCategory == SkillCategory.NormalAttack)
                     VFXController.instance.Create<BattleAttack01VFX>(pos);
             }
         }
@@ -521,8 +521,6 @@ namespace Nekoyume.Game.Character
 
                 ProcessAttack(target, info, i == skillInfosCount - 1, true);
             }
-
-            yield return new WaitForSeconds(1.2f);
         }
 
         public IEnumerator CoAreaAttack(IReadOnlyList<Model.Skill.SkillInfo> skillInfos)

@@ -23,7 +23,6 @@ namespace Nekoyume.Action
         public int stage;
         public Address avatarAddress;
         public BattleLog Result { get; private set; }
-        public const int RequiredPoint = 5;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>
@@ -62,12 +61,12 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            if (avatarState.actionPoint < RequiredPoint)
+            if (avatarState.actionPoint < GameConfig.HackAndSlashCostAP)
             {
                 return states;
             }
 
-            avatarState.actionPoint -= RequiredPoint;
+            avatarState.actionPoint -= GameConfig.HackAndSlashCostAP;
             
             var inventoryEquipments = avatarState.inventory.Items
                 .Select(i => i.item)
@@ -89,11 +88,11 @@ namespace Nekoyume.Action
             }
             
             var simulator = new Simulator(ctx.Random, avatarState, foods, stage);
-            var player = simulator.Simulate();
+            simulator.Simulate();
             Debug.Log($"Execute HackAndSlash. stage: {stage} result: {simulator.Log?.result} " +
                       $"player : `{avatarAddress}` node : `{States.Instance?.AgentState?.Value?.address}` " +
                       $"current avatar: `{States.Instance?.CurrentAvatarState?.Value?.address}`");
-            avatarState.Update(player, simulator.rewards);
+            avatarState.Update(simulator);
             avatarState.updatedAt = DateTimeOffset.UtcNow;
             if (avatarState.worldStage > stage)
             {

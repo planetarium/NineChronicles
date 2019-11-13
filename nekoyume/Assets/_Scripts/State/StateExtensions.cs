@@ -67,6 +67,7 @@ namespace Nekoyume.State
         public static decimal? ToNullableDecimal(this IValue serialized) =>
             Deserialize(ToDecimal, serialized);
 
+        public static int ToInt(this IValue serialized) => int.Parse(serialized.ToString());
         public static IValue Serialize(this DateTimeOffset dateTime) =>
             new Binary(Encoding.ASCII.GetBytes(dateTime.ToString("O")));
 
@@ -94,5 +95,28 @@ namespace Nekoyume.State
 
         public static Guid? ToNullableGuid(this IValue serialized) =>
             Deserialize(ToGuid, serialized);
+
+        #region Generic
+        
+        public static IValue Serialize(this Dictionary<int, int> value)
+        {
+            return new Bencodex.Types.Dictionary(
+                value.ToDictionary<KeyValuePair<int, int>, IKey, IValue>(
+                    pair => new Binary(BitConverter.GetBytes(pair.Key)),
+                    pair => (Integer) pair.Value
+                )
+            );
+        }
+        
+        public static Dictionary<int, int> ToDictionary(this IValue serialized)
+        {
+            return ((Bencodex.Types.Dictionary) serialized)
+                .ToDictionary(
+                    pair => BitConverter.ToInt32(((Binary) pair.Key).Value, 0),
+                    pair => (int) ((Integer) pair.Value).Value
+                );
+        }
+
+        #endregion
     }
 }

@@ -5,11 +5,11 @@ using UniRx;
 
 namespace Nekoyume.UI.Model
 {
+    // todo: Item에 합쳐도 될 것 같음.
     public class CountableItem : Item
     {
         public readonly ReactiveProperty<int> Count = new ReactiveProperty<int>(0);
         public readonly ReactiveProperty<bool> CountEnabled = new ReactiveProperty<bool>(true);
-        public readonly ReactiveProperty<bool> Dimmed = new ReactiveProperty<bool>(false);
         public readonly ReactiveProperty<Func<CountableItem, bool>> CountEnabledFunc = new ReactiveProperty<Func<CountableItem, bool>>();
         
         public CountableItem(ItemBase item, int count) : base(item)
@@ -30,12 +30,10 @@ namespace Nekoyume.UI.Model
         
         public override void Dispose()
         {
-            base.Dispose();
-            
             Count.Dispose();
+            CountEnabled.Dispose();
             CountEnabledFunc.Dispose();
-            Dimmed.Dispose();
-            CountEnabledFunc.Dispose();
+            base.Dispose();
         }
 
         private bool CountEnabledFuncDefault(CountableItem countableItem)

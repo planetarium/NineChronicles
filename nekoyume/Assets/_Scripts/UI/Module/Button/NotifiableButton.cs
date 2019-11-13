@@ -31,7 +31,7 @@ namespace Nekoyume.UI.Module
         {
             base.Awake();
             
-            SharedModel.HasNotification.SubscribeToBehaviour(hasNotificationImage).AddTo(gameObject);
+            SharedModel.HasNotification.SubscribeTo(hasNotificationImage).AddTo(gameObject);
             
             button.OnClickAsObservable().Subscribe(_ =>
             {

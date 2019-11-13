@@ -29,6 +29,7 @@ namespace Nekoyume.Game
         public ObjectPool objectPool;
         public PlayerFactory playerFactory;
         public EnemyFactory enemyFactory;
+        public NpcFactory npcFactory;
         public DropItemFactory dropItemFactory;
         public SkillController skillController;
         public BuffController buffController;
@@ -288,8 +289,10 @@ namespace Nekoyume.Game
                 objectPool.ReleaseAll();
             }
 
-            _battleResultModel.state = log.result;
-            _battleResultModel.shouldRepeat = repeatStage;
+            _battleResultModel.State = log.result;
+            _battleResultModel.ShouldRepeat = repeatStage;
+            _battleResultModel.ActionPointNotEnough =
+                States.Instance.CurrentAvatarState.Value.actionPoint < GameConfig.HackAndSlashCostAP;
             Widget.Find<BattleResult>().Show(_battleResultModel);
 
             IsInStage = false;
@@ -330,42 +333,60 @@ namespace Nekoyume.Game
             IEnumerable<Model.Skill.SkillInfo> buffInfos)
         {
             var character = GetCharacter(caster);
-            yield return StartCoroutine(CoSkill(character, skillInfos, buffInfos, character.CoNormalAttack));
+            if (character)
+            {
+                yield return StartCoroutine(CoSkill(character, skillInfos, buffInfos, character.CoNormalAttack));
+            }
         }
 
         public IEnumerator CoBlowAttack(CharacterBase caster, IEnumerable<Model.Skill.SkillInfo> skillInfos,
             IEnumerable<Model.Skill.SkillInfo> buffInfos)
         {
             var character = GetCharacter(caster);
-            yield return StartCoroutine(CoSkill(character, skillInfos, buffInfos, character.CoBlowAttack));
+            if (character)
+            {
+                yield return StartCoroutine(CoSkill(character, skillInfos, buffInfos, character.CoBlowAttack));
+            }
         }
 
         public IEnumerator CoDoubleAttack(CharacterBase caster, IEnumerable<Model.Skill.SkillInfo> skillInfos,
             IEnumerable<Model.Skill.SkillInfo> buffInfos)
         {
             var character = GetCharacter(caster);
-            yield return StartCoroutine(CoSkill(character, skillInfos, buffInfos, character.CoDoubleAttack));
+            if (character)
+            {
+                yield return StartCoroutine(CoSkill(character, skillInfos, buffInfos, character.CoDoubleAttack));
+            }
         }
 
         public IEnumerator CoAreaAttack(CharacterBase caster, IEnumerable<Model.Skill.SkillInfo> skillInfos,
             IEnumerable<Model.Skill.SkillInfo> buffInfos)
         {
             var character = GetCharacter(caster);
-            yield return StartCoroutine(CoSkill(character, skillInfos, buffInfos, character.CoAreaAttack));
+            if (character)
+            {
+                yield return StartCoroutine(CoSkill(character, skillInfos, buffInfos, character.CoAreaAttack));
+            }
         }
 
         public IEnumerator CoHeal(CharacterBase caster, IEnumerable<Model.Skill.SkillInfo> skillInfos,
             IEnumerable<Model.Skill.SkillInfo> buffInfos)
         {
             var character = GetCharacter(caster);
-            yield return StartCoroutine(CoSkill(character, skillInfos, buffInfos, character.CoHeal));
+            if (character)
+            {
+                yield return StartCoroutine(CoSkill(character, skillInfos, buffInfos, character.CoHeal));
+            }
         }
 
         public IEnumerator CoBuff(CharacterBase caster, IEnumerable<Model.Skill.SkillInfo> skillInfos,
             IEnumerable<Model.Skill.SkillInfo> buffInfos)
         {
             var character = GetCharacter(caster);
-            yield return StartCoroutine(CoSkill(character, skillInfos, buffInfos, character.CoBuff));
+            if (character)
+            {
+                yield return StartCoroutine(CoSkill(character, skillInfos, buffInfos, character.CoBuff));
+            }
         }
 
         private IEnumerator CoSkill(Character.CharacterBase character, IEnumerable<Model.Skill.SkillInfo> skillInfos,
@@ -424,6 +445,8 @@ namespace Nekoyume.Game
                 foreach (var buffInfo in buffInfos)
                 {
                     var buffCharacter = GetCharacter(buffInfo.Target);
+                    if (!buffCharacter)
+                        throw new ArgumentNullException(nameof(buffCharacter));
                     buffCharacter.UpdateHpBar();
                 }
             }
@@ -439,7 +462,14 @@ namespace Nekoyume.Game
         public IEnumerator CoRemoveBuffs(CharacterBase caster)
         {
             var character = GetCharacter(caster);
-            character.UpdateHpBar();
+            if (character)
+            {
+                character.UpdateHpBar();
+                if (character.HPBar.HpVFX != null)
+                {
+                    character.HPBar.HpVFX.Stop();
+                }
+            }
 
             yield break;
         }
@@ -449,7 +479,7 @@ namespace Nekoyume.Game
             foreach (var item in rewards)
             {
                 var countableItem = new CountableItem(item, 1);
-                _battleResultModel.rewards.Add(countableItem);
+                _battleResultModel.Rewards.Add(countableItem);
             }
 
             yield return null;
@@ -473,7 +503,7 @@ namespace Nekoyume.Game
                 yield return new WaitForSeconds(2.0f);
                 StartCoroutine(Widget.Find<Blind>().FadeOut(0.2f));
                 yield return new WaitForSeconds(2.0f);
-                var boss = enemies[0];
+                var boss = enemies.Last();
                 Boss = boss;
                 var sprite = SpriteHelper.GetCharacterIcon(boss.RowData.Id);
                 battle.bossStatus.Show();
@@ -487,7 +517,7 @@ namespace Nekoyume.Game
 
         public IEnumerator CoGetExp(long exp)
         {
-            _battleResultModel.exp += exp;
+            _battleResultModel.Exp += exp;
             var player = GetPlayer();
             yield return StartCoroutine(player.CoGetExp(exp));
         }

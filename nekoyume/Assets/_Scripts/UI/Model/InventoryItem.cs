@@ -6,28 +6,22 @@ namespace Nekoyume.UI.Model
 {
     public class InventoryItem : CountableItem
     {
-        public readonly ReactiveProperty<bool> Covered = new ReactiveProperty<bool>(false);
-        public readonly ReactiveProperty<bool> Equipped = new ReactiveProperty<bool>(false);
-        public readonly ReactiveProperty<bool> Selected = new ReactiveProperty<bool>(false);
-        public readonly ReactiveProperty<bool> Glowed = new ReactiveProperty<bool>(false);
+        public readonly ReactiveProperty<bool> EffectEnabled = new ReactiveProperty<bool>(false);
+        public readonly ReactiveProperty<bool> GlowEnabled = new ReactiveProperty<bool>(false);
+        public readonly ReactiveProperty<bool> EquippedEnabled = new ReactiveProperty<bool>(false);
 
-        public readonly Subject<InventoryItemView> OnClick = new Subject<InventoryItemView>();
-        public readonly Subject<InventoryItemView> OnRightClick = new Subject<InventoryItemView>();
-
+        public InventoryItemView View;
+        
         public InventoryItem(ItemBase item, int count) : base(item, count)
         {
         }
 
         public override void Dispose()
         {
+            EffectEnabled.Dispose();
+            GlowEnabled.Dispose();
+            EquippedEnabled.Dispose();
             base.Dispose();
-            Covered.Dispose();
-            Equipped.Dispose();
-            Selected.Dispose();
-            Glowed.Dispose();
-
-            OnClick.Dispose();
-            OnRightClick.Dispose();
         }
     }
 }

@@ -1,5 +1,7 @@
 using System;
+using Assets.SimpleLocalization;
 using Nekoyume.Action;
+using Nekoyume.TableData;
 
 namespace Nekoyume.Game.Mail
 {
@@ -7,7 +9,7 @@ namespace Nekoyume.Game.Mail
     public class SellerMail : AttachmentMail
     {
         protected override string TypeId => "seller";
-        public override MailType MailType { get => MailType.Auction; }
+        public override MailType MailType => MailType.Auction;
 
         public SellerMail(AttachmentActionResult attachmentActionResult, long blockIndex) : base(attachmentActionResult, blockIndex)
         {
@@ -21,7 +23,8 @@ namespace Nekoyume.Game.Mail
 
         public override string ToInfo()
         {
-            return "판매 완료";
+            var format = LocalizationManager.Localize("UI_SELLER_MAIL_FORMAT");
+            return string.Format(format, attachment.itemUsable.Data.GetLocalizedName());
         }
 
         public override void Read(IMail mail)

@@ -1,4 +1,6 @@
 using System;
+using Nekoyume.BlockChain;
+using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
@@ -15,13 +17,17 @@ namespace Nekoyume.UI
             Filtered,
             Overall
         }
+        private const int NpcId = 300001;
+        private static readonly Vector3 NpcPosition = new Vector3(1.2f, -1.72f);
 
         public CategoryButton filteredButton;
         public CategoryButton overallButton;
         public RankingInfo rankingBase;
         public ScrollRect board;
+        public SpeechBubble speechBubble;
 
         private AvatarState[] _avatarStates;
+        private Npc _npc;
 
         private readonly ReactiveProperty<StateType> _state = new ReactiveProperty<StateType>(StateType.Filtered);
 
@@ -39,6 +45,14 @@ namespace Nekoyume.UI
                 .AddTo(gameObject);
         }
 
+        protected override void OnCompleteOfShowAnimation()
+        {
+            base.OnCompleteOfShowAnimation();
+
+            _npc.gameObject.SetActive(true);
+            ShowSpeech("SPEECH_RANKING_BOARD_GREETING_");
+        }
+
         public void Show(StateType stateType = StateType.Filtered)
         {
             base.Show();
@@ -51,6 +65,10 @@ namespace Nekoyume.UI
 
             Find<BottomMenu>()?.Show(UINavigator.NavigationType.Back, SubscribeBackButtonClick, true);
 
+            var go = Game.Game.instance.stage.npcFactory.Create(NpcId, NpcPosition);
+            _npc = go.GetComponent<Npc>();
+            _npc.gameObject.SetActive(false);
+
             AudioController.instance.PlayMusic(AudioController.MusicCode.Ranking);
         }
 
@@ -62,6 +80,9 @@ namespace Nekoyume.UI
             ClearBoard();
 
             base.Close(ignoreCloseAnimation);
+
+            _npc.gameObject.SetActive(false);
+            speechBubble.gameObject.SetActive(false);
 
             AudioController.instance.PlayMusic(AudioController.MusicCode.Main);
         }
@@ -111,9 +132,7 @@ namespace Nekoyume.UI
 
         private void GetAvatars(DateTimeOffset? dt)
         {
-            var dict = (Bencodex.Types.Dictionary) Game.Game.instance.agent.GetState(RankingState.Address);
-            var rankingBoard = new RankingState(dict);
-            _avatarStates = rankingBoard?.GetAvatars(dt) ?? new AvatarState[0];
+            _avatarStates = States.Instance.RankingState.Value?.GetAvatars(dt) ?? new AvatarState[0];
         }
 
         private void ClearBoard()
@@ -128,6 +147,25 @@ namespace Nekoyume.UI
         {
             Close();
             Find<Menu>().ShowRoom();
+        }
+
+        private void ShowSpeech(string key, CharacterAnimation.Type type = CharacterAnimation.Type.Emotion)
+        {
+            if (_npc)
+            {
+                if (type == CharacterAnimation.Type.Greeting)
+                {
+                    _npc.Greeting();
+                }
+                else
+                {
+                    _npc.Emotion();
+                }
+                if (speechBubble.gameObject.activeSelf)
+                    return;
+                speechBubble.SetKey(key);
+                StartCoroutine(speechBubble.CoShowText());
+            }
         }
     }
 }

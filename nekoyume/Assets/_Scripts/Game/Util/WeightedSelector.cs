@@ -24,13 +24,13 @@ namespace Nekoyume.Game.Util
             _weights.Add(weight);
         }
 
-        public T Select(bool pop = false)
+        private T Select(bool pop = false)
         {
-            int i = 0;
-            int len = _weights.Count;
+            var i = 0;
+            var len = _weights.Count;
 
-            decimal rnd = _random.Next(0, 100000) * 0.00001m;
-            int idx = -1;
+            var rnd = _random.Next(0, 100000) * 0.00001m;
+            var idx = -1;
             for (i = 0; i < len; ++i)
             {
                 if (rnd < _weights[i])
@@ -41,19 +41,15 @@ namespace Nekoyume.Game.Util
                 rnd -= _weights[i];
             }
 
-            if (idx >= 0)
-            {
-                T value = _values[i];
-                if (pop)
-                {
-                    _values.RemoveAt(idx);
-                    _weights.RemoveAt(idx);
-                }
+            var value = _values[i];
 
-                return value;
+            if (pop)
+            {
+                _values.RemoveAt(idx);
+                _weights.RemoveAt(idx);
             }
 
-            return default(T);
+            return value;
         }
 
         public T Pop()

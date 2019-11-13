@@ -25,12 +25,30 @@ namespace Nekoyume.UI.Model
             ItemCountAndPricePopup.DisposeAll();
         }
 
-        public void ShowItemPopup(CountableItem inventoryItem)
+        public void ShowItemPopup(CountableItem viewModel)
         {
-            switch (inventoryItem)
+            switch (viewModel)
             {
                 case null:
                     return;
+                case InventoryItem _:
+                {
+                    if (State.Value == UI.Shop.StateType.Sell)
+                    {
+                        // 판매하겠습니까?
+                        ItemCountAndPricePopup.Value.TitleText.Value = LocalizationManager.Localize("UI_SELL");
+                        
+                        ItemCountAndPricePopup.Value.CountEnabled.Value = true;
+                        ItemCountAndPricePopup.Value.PriceInteractable.Value = true;
+                        ItemCountAndPricePopup.Value.Item.Value = new CountEditableItem(
+                            viewModel.ItemBase.Value,
+                            1,
+                            1,
+                            viewModel.Count.Value);   
+                    }
+                    
+                    return;
+                }
                 case ShopItem shopItem:
                 {
                     if (State.Value == UI.Shop.StateType.Buy)
@@ -48,7 +66,7 @@ namespace Nekoyume.UI.Model
                     ItemCountAndPricePopup.Value.Price.Value = shopItem.Price.Value;
                     ItemCountAndPricePopup.Value.PriceInteractable.Value = false;
                     ItemCountAndPricePopup.Value.Item.Value = new CountEditableItem(
-                        inventoryItem.ItemBase.Value,
+                        viewModel.ItemBase.Value,
                         shopItem.Count.Value,
                         shopItem.Count.Value,
                         shopItem.Count.Value);
@@ -56,16 +74,6 @@ namespace Nekoyume.UI.Model
                     return;
                 }
             }
-
-            // 판매하겠습니까?
-            ItemCountAndPricePopup.Value.TitleText.Value = LocalizationManager.Localize("UI_SELL");
-            ItemCountAndPricePopup.Value.CountEnabled.Value = true;
-            ItemCountAndPricePopup.Value.PriceInteractable.Value = true;
-            ItemCountAndPricePopup.Value.Item.Value = new CountEditableItem(
-                inventoryItem.ItemBase.Value,
-                1,
-                1,
-                inventoryItem.Count.Value);
         }
     }
 }

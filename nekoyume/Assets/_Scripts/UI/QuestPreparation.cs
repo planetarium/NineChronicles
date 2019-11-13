@@ -44,8 +44,11 @@ namespace Nekoyume.UI
         private readonly Dictionary<StatType, StatusInfo> _stats =
             new Dictionary<StatType, StatusInfo>(StatTypeComparer.Instance);
 
+        private readonly Dictionary<StatType, int> _additionalStats = new Dictionary<StatType, int>();
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
         private readonly ReactiveProperty<bool> _buttonEnabled = new ReactiveProperty<bool>();
+
+        private CharacterStats _tempStats;
 
 
         #region override
@@ -58,7 +61,7 @@ namespace Nekoyume.UI
                 inventoryItem => inventoryItem.ItemBase.Value.Data.ItemType == ItemType.Material;
             inventory.SharedModel.SelectedItemView.Subscribe(SubscribeInventorySelectedItem)
                 .AddTo(gameObject);
-            inventory.SharedModel.OnRightClickItemView.Subscribe(itemView =>
+            inventory.SharedModel.OnDoubleClickItemView.Subscribe(itemView =>
                 {
                     if (itemView.Model.Dimmed.Value)
                         return;
@@ -67,7 +70,7 @@ namespace Nekoyume.UI
                 })
                 .AddTo(gameObject);
 
-            requiredPointText.text = HackAndSlash.RequiredPoint.ToString();
+            requiredPointText.text = GameConfig.HackAndSlashCostAP.ToString();
         }
 
         public override void Show()
@@ -107,19 +110,23 @@ namespace Nekoyume.UI
             var tuples = _player.Model.Value.GetStatTuples();
             if (!isStatInitialized)
             {
+                statusRowPrefab.SetActive(true);
                 foreach (var (statType, value, additionalValue) in tuples)
                 {
                     var go = Instantiate(statusRowPrefab, statusRowParent);
                     var info = go.GetComponent<StatusInfo>();
                     info.Set(statType, value, additionalValue);
                     _stats.Add(statType, info);
+                    _additionalStats.Add(statType, additionalValue);
                 }
+                statusRowPrefab.SetActive(false);
             }
             else
             {
                 foreach (var (statType, value, additionalValue) in tuples)
                 {
                     _stats[statType].Set(statType, value, additionalValue);
+                    _additionalStats[statType] = additionalValue;
                 }
             }
 
@@ -127,9 +134,9 @@ namespace Nekoyume.UI
             _stageId = worldMap.SelectedStageId;
 
             Find<BottomMenu>().Show(UINavigator.NavigationType.Back, SubscribeBackButtonClick);
-
             _buttonEnabled.Subscribe(SubscribeReadyToQuest).AddTo(_disposables);
             ReactiveCurrentAvatarState.ActionPoint.Subscribe(SubscribeActionPoint).AddTo(_disposables);
+            _tempStats = _player.Model.Value.Stats.Clone() as CharacterStats;
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -166,14 +173,10 @@ namespace Nekoyume.UI
 
             inventory.Tooltip.Show(view.RectTransform, view.Model,
                 value => !view.Model.Dimmed.Value,
-                view.Model.Equipped.Value
+                view.Model.EquippedEnabled.Value
                     ? LocalizationManager.Localize("UI_UNEQUIP")
                     : LocalizationManager.Localize("UI_EQUIP"),
-                tooltip =>
-                {
-                    OnClickEquip(tooltip.itemInformation.Model.item.Value);
-                    inventory.Tooltip.Close();
-                },
+                tooltip => OnClickEquip(tooltip.itemInformation.Model.item.Value),
                 tooltip =>
                 {
                     equipSlotGlow.SetActive(false);
@@ -235,7 +238,7 @@ namespace Nekoyume.UI
 
         private void SubscribeActionPoint(int point)
         {
-            _buttonEnabled.Value = point >= HackAndSlash.RequiredPoint;
+            _buttonEnabled.Value = point >= GameConfig.HackAndSlashCostAP;
         }
 
         #endregion
@@ -254,7 +257,7 @@ namespace Nekoyume.UI
                 equipSlotGlow.SetActive(false);
                 foreach (var item in inventory.SharedModel.Equipments)
                 {
-                    item.Glowed.Value = item.ItemBase.Value.Data.ItemSubType == slot.itemSubType;
+                    item.GlowEnabled.Value = item.ItemBase.Value.Data.ItemSubType == slot.itemSubType;
                 }
 
                 return;
@@ -262,7 +265,7 @@ namespace Nekoyume.UI
 
             var slotItem = slot.item;
 
-            slot.Unequip();
+            slot.Unequip(); 
             if (slot.itemSubType == ItemSubType.Armor)
             {
                 var armor = (Armor) slot.item;
@@ -281,8 +284,10 @@ namespace Nekoyume.UI
             if (inventory.SharedModel.TryGetEquipment(slotItem, out var inventoryItem) ||
                 inventory.SharedModel.TryGetConsumable(slotItem as Consumable, out inventoryItem))
             {
-                inventoryItem.Equipped.Value = false;
+                inventoryItem.EquippedEnabled.Value = false;
             }
+
+            UpdateStats();
 
             inventory.Tooltip.Close();
         }
@@ -292,7 +297,7 @@ namespace Nekoyume.UI
             var item = countableItem as InventoryItem;
             var itemSubType = countableItem.ItemBase.Value.Data.ItemSubType;
 
-            if (item != null && item.Equipped.Value)
+            if (item != null && item.EquippedEnabled.Value)
             {
                 var equipSlot = FindSlot(item.ItemBase.Value as ItemUsable, itemSubType);
                 if (equipSlot) Unequip(equipSlot);
@@ -301,26 +306,27 @@ namespace Nekoyume.UI
 
             var slot = FindSelectedItemSlot(itemSubType);
 
-            AudioController.instance.PlaySfx(itemSubType == ItemSubType.Food
-                ? AudioController.SfxCode.ChainMail2
-                : AudioController.SfxCode.Equipment);
-
+            var equipable = countableItem.ItemBase.Value as ItemUsable;
             if (slot != null)
             {
                 if (inventory.SharedModel.TryGetEquipment(slot.item, out var inventoryItem) ||
                     inventory.SharedModel.TryGetConsumable(slot.item as Consumable, out inventoryItem))
                 {
-                    inventoryItem.Equipped.Value = false;
+                    inventoryItem.EquippedEnabled.Value = false;
                 }
 
-                slot.Set(countableItem.ItemBase.Value as ItemUsable);
+                slot.Set(equipable);
                 slot.SetOnClickAction(ShowTooltip, Unequip);
                 SetGlowEquipSlot(false);
             }
 
+            AudioController.instance.PlaySfx(itemSubType == ItemSubType.Food
+                ? AudioController.SfxCode.ChainMail2
+                : AudioController.SfxCode.Equipment);
+
             if (itemSubType == ItemSubType.Armor)
             {
-                var armor = (Armor) countableItem.ItemBase.Value;
+                var armor = (Armor) equipable;
                 var weapon = (Weapon) _weaponSlot.item;
                 _player.UpdateSet(armor, weapon);
             }
@@ -331,10 +337,31 @@ namespace Nekoyume.UI
 
             if (item != null)
             {
-                item.Equipped.Value = true;
+                item.EquippedEnabled.Value = true;
             }
 
+            UpdateStats();
+            
             inventory.Tooltip.Close();
+        }
+
+        private void UpdateStats()
+        {
+            var equipments = equipmentSlots.slots
+                .Select(x => x.item as Equipment)
+                .Where(x => !(x is null))
+                .ToList();
+            var consumables = consumableSlots
+                .Select(x => x.item as Consumable)
+                .Where(x => !(x is null))
+                .ToList();
+
+            var stats = _tempStats.SetAll(_tempStats.Level, equipments, consumables, null);
+            var statMap = stats.GetAdditionalStats();
+            foreach (var (type, value) in statMap)
+            {
+                _stats[type].SetAdditional(type, value);
+            }
         }
 
         private void Quest(bool repeat)

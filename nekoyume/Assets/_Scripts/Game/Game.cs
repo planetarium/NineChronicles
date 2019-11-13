@@ -53,16 +53,18 @@ namespace Nekoyume.Game
             LocalizationManager.Initialize();
 #endif
             MainCanvas.instance.InitializeFirst();
-            Widget.Find<LoadingScreen>().Show();
         }
 
         private IEnumerator Start()
         {
+            // Table 초기화.
             Tables.instance.Initialize();
             yield return Addressables.InitializeAsync();
             TableSheets = new TableSheets();
             yield return StartCoroutine(TableSheets.CoInitialize());
-
+            // Agent 초기화.
+            // Agent를 초기화하기 전에 반드시 Table과 TableSheets를 초기화 함.
+            // Agent가 Table과 TableSheets에 약한 의존성을 갖고 있음.(Deserialize 단계 때문)
             var agentInitialized = false;
             var agentInitializeSucceed = false;
             agent.Initialize(succeed =>
@@ -71,8 +73,7 @@ namespace Nekoyume.Game
                 agentInitializeSucceed = succeed;
             });
             yield return new WaitUntil(() => agentInitialized);
-            Debug.LogWarning(agentInitializeSucceed);
-            
+            // UI 초기화 2차.
             yield return StartCoroutine(MainCanvas.instance.InitializeSecond());
             stage.objectPool.Initialize();
             yield return null;

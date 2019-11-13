@@ -7,7 +7,9 @@ using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.Model;
+using Nekoyume.UI.Model;
 using Nekoyume.UI.Scroller;
+using TMPro;
 using UniRx;
 using UniRx.Async;
 using UnityEngine;
@@ -20,19 +22,19 @@ namespace Nekoyume.UI.Module
         private static readonly Vector2 BtnHighlightSize = new Vector2(157f, 60f);
         private static readonly Vector2 BtnSize = new Vector2(130f, 36f);
 
-        public Text titleText;
+        public TextMeshProUGUI titleText;
         public Button equipmentsButton;
         public Image equipmentsButtonImage;
         public Image equipmentsButtonIconImage;
-        public Text equipmentsButtonText;
+        public TextMeshProUGUI equipmentsButtonText;
         public Button consumablesButton;
         public Image consumablesButtonImage;
         public Image consumablesButtonIconImage;
-        public Text consumablesButtonText;
+        public TextMeshProUGUI consumablesButtonText;
         public Button materialsButton;
         public Image materialsButtonImage;
         public Image materialsButtonIconImage;
-        public Text materialsButtonText;
+        public TextMeshProUGUI materialsButtonText;
         public InventoryScrollerController scrollerController;
 
         private Sprite _selectedButtonSprite;
@@ -44,6 +46,7 @@ namespace Nekoyume.UI.Module
         private Sprite _materialsButtonIconSpriteBlack;
         private Sprite _materialsButtonIconSpriteBlue;
 
+        // todo: 분리..
         private ItemInformationTooltip _tooltip;
 
         private readonly Dictionary<ItemType, RectTransform> _switchButtonTransforms =
@@ -53,6 +56,7 @@ namespace Nekoyume.UI.Module
 
         public RectTransform RectTransform { get; private set; }
 
+        // todo: 분리..
         public ItemInformationTooltip Tooltip => _tooltip
             ? _tooltip
             : _tooltip = Widget.Find<ItemInformationTooltip>();
@@ -63,8 +67,6 @@ namespace Nekoyume.UI.Module
 
         protected void Awake()
         {
-            this.ComponentFieldsNotNullTest();
-
             _selectedButtonSprite = Resources.Load<Sprite>("UI/Textures/button_yellow_02");
             _deselectedButtonSprite = Resources.Load<Sprite>("UI/Textures/button_brown_01");
             _equipmentsButtonIconSpriteBlack = Resources.Load<Sprite>("UI/Textures/icon_inventory_01_black");
@@ -111,7 +113,6 @@ namespace Nekoyume.UI.Module
                 {
                     scrollerController.DisposeAddedAtSetData();
                     SharedModel.ResetItems(value);
-                    SubscribeState(SharedModel.State.Value);
                 })
                 .AddTo(_disposablesAtOnEnable);
         }
@@ -172,24 +173,16 @@ namespace Nekoyume.UI.Module
             foreach (var pair in _switchButtonTransforms)
             {
                 var btn = pair.Value;
-                var shadows = btn.GetComponentsInChildren<Shadow>();
+                // TextMeshPro 그림자 마테리얼 변경 해줘야함
                 if (pair.Key == stateType)
                 {
                     btn.anchoredPosition = new Vector2(btn.anchoredPosition.x, 1);
                     btn.sizeDelta = BtnHighlightSize;
-                    foreach (var shadow in shadows)
-                    {
-                        shadow.effectColor = ColorHelper.HexToColorRGB("a35400");
-                    }   
                 }
                 else
                 {
                     btn.anchoredPosition = new Vector2(btn.anchoredPosition.x, 0);
                     btn.sizeDelta = BtnSize;
-                    foreach (var shadow in shadows)
-                    {
-                        shadow.effectColor = Color.black;
-                    }
                 }
             }
 
@@ -203,7 +196,7 @@ namespace Nekoyume.UI.Module
 
             AdjustmentScrollPosition(view);
         }
-
+        
         #endregion
 
         private void AdjustmentScrollPosition(InventoryItemView view)
@@ -223,19 +216,6 @@ namespace Nekoyume.UI.Module
                 scroller.ScrollPosition =
                     scroller.GetScrollPositionForCellViewIndex(index, EnhancedScroller.CellViewPositionEnum.Before);
             }
-        }
-
-        private void ShowTooltip(InventoryItemView view)
-        {
-            if (view is null ||
-                view.RectTransform == Tooltip.Target)
-            {
-                Tooltip.Close();
-
-                return;
-            }
-
-            Tooltip.Show(view.RectTransform, view.Model);
         }
     }
 }

@@ -22,7 +22,7 @@ namespace Assets.SimpleLocalization
         /// </summary>
         public static event Action LocalizationChanged = delegate { };
 
-        public const LanguageType DefaultLanguage = LanguageType.Korean;
+        public const LanguageType DefaultLanguage = LanguageType.English;
 
         private static readonly Dictionary<LanguageType, Dictionary<string, string>> Dictionary =
             new Dictionary<LanguageType, Dictionary<string, string>>();
@@ -138,9 +138,7 @@ namespace Assets.SimpleLocalization
             if (!Dictionary.ContainsKey(Language))
                 throw new KeyNotFoundException("Language not found: " + Language);
 
-            return Dictionary[Language].ContainsKey(localizationKey)
-                ? Dictionary[Language][localizationKey]
-                : $"!{localizationKey}!";
+            return Dictionary[Language][localizationKey];
         }
 
         public static string LocalizeCharacterName(int characterId)

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Game.Mail;
+using Nekoyume.Game.Quest;
 using Nekoyume.Model;
 using UniRx;
 
@@ -78,13 +79,13 @@ namespace Nekoyume.UI.Module
             _toggleGroup.RegisterToggleable(settingsButton);
             mailButton.SetWidgetType<Mail>();
             questButton.SetWidgetType<Quest>();
-            chatButton.button.OnClickAsObservable().Subscribe(SubscribeOnClick).AddTo(gameObject);
             illustratedBookButton.button.OnClickAsObservable().Subscribe(SubscribeOnClick).AddTo(gameObject);
+            chatButton.button.OnClickAsObservable().Subscribe(SubscribeOnClick).AddTo(gameObject);
             settingsButton.button.OnClickAsObservable().Subscribe(SubscribeOnClick).AddTo(gameObject);
         }
 
         private void SubscribeOnClick(Unit unit)
-        {
+        {   
             Find<Alert>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE", "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
         }
 
@@ -93,6 +94,7 @@ namespace Nekoyume.UI.Module
             base.OnEnable();
             _disposablesAtOnEnable.DisposeAllAndClear();
             ReactiveCurrentAvatarState.MailBox?.Subscribe(SubscribeAvatarMailBox).AddTo(_disposablesAtOnEnable);
+            ReactiveCurrentAvatarState.QuestList.Subscribe(SubscribeAvatarQuestList).AddTo(_disposablesAtOnEnable);
         }
 
         protected override void OnDisable()
@@ -156,6 +158,14 @@ namespace Nekoyume.UI.Module
         // 이 위젯은 애니메이션 없이 바로 닫히는 것을 기본으로 함.
         public override void Close(bool ignoreCloseAnimation = false)
         {
+            foreach (var toggleable in _toggleGroup.Toggleables)
+            {
+                if (!(toggleable is IWidgetControllable widgetControllable))
+                    continue;
+                
+                widgetControllable.HideWidget();
+            }
+            
             base.Close(true);
         }
 
@@ -217,6 +227,15 @@ namespace Nekoyume.UI.Module
                 return;
 
             mailButton.SharedModel.HasNotification.Value = mailBox.Any(i => i.New);
+            Find<Mail>().UpdateList();
+        }
+
+        private void SubscribeAvatarQuestList(QuestList questList)
+        {
+            if (questList is null)
+                return;
+
+            questButton.SharedModel.HasNotification.Value = questList.Any(i => i.Complete && !i.Receive);
         }
 
         #endregion

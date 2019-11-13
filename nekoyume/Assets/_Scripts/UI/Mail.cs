@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using Assets.SimpleLocalization;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
 using Nekoyume.Game.Factory;
@@ -8,7 +10,6 @@ using Nekoyume.Game.Item;
 using Nekoyume.Game.Mail;
 using Nekoyume.Helper;
 using Nekoyume.Model;
-using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Scroller;
 using UniRx;
@@ -22,7 +23,7 @@ namespace Nekoyume.UI
         public enum MailTabState
         {
             All = 0,
-            Forge,
+            Workshop,
             Auction,
             System
         }
@@ -30,52 +31,69 @@ namespace Nekoyume.UI
         [Serializable]
         public class TabButton
         {
-            private static readonly Color _highlightedColor = ColorHelper.HexToColorRGB("001870");
-            private static readonly Vector2 _highlightedSize = new Vector2(143f, 60f);
+            private static readonly Color _highlightedColor = ColorHelper.HexToColorRGB("a35400");
+            private static readonly Vector2 _highlightedSize = new Vector2(139f, 58f);
             private static readonly Vector2 _unHighlightedSize = new Vector2(116f, 36f);
+            private static readonly Vector2 _leftBottom = new Vector2(-15f, -10.5f);
+            private static readonly Vector2 _minusRightTop = new Vector2(15f, 13f);
+
             public Sprite highlightedSprite;
             public Button button;
             public Image image;
             public Image icon;
             public Text text;
-            public MailTabState state;
             private Shadow[] _textShadows;
 
-            public void Init(MailTabState state)
+            public void Init(string localizationKey)
             {
                 if (!button) return;
                 _textShadows = button.GetComponentsInChildren<Shadow>();
+                var localized = LocalizationManager.Localize(localizationKey);
+                var content = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(localized.ToLower());
+                text.text = content;
             }
 
             public void ChangeColor(bool isHighlighted = false)
             {
                 image.overrideSprite = isHighlighted ? _selectedButtonSprite : null;
-                // 금색 버튼 리소스로 변경 시 주석 해제
-                // image.rectTransform.sizeDelta = isHighlighted ? _highlightedSize : _unHighlightedSize;
+                image.rectTransform.offsetMin = isHighlighted ? _leftBottom : Vector2.zero;
+                image.rectTransform.offsetMax = isHighlighted ? _minusRightTop : Vector2.zero;
                 icon.overrideSprite = isHighlighted ? highlightedSprite : null;
                 foreach (var shadow in _textShadows)
                     shadow.effectColor = isHighlighted ? _highlightedColor : Color.black;
             }
         }
-        
+
+        public static readonly Dictionary<MailType, Sprite> mailIcons = new Dictionary<MailType, Sprite>();
+
         public MailTabState tabState;
         public MailScrollerController scroller;
         public TabButton allButton;
-        public TabButton forgeButton;
+        public TabButton workshopButton;
         public TabButton auctionButton;
         public TabButton systemButton;
 
         private static Sprite _selectedButtonSprite;
         private MailBox _mailBox;
 
+        #region override
+
         public override void Initialize()
         {
             base.Initialize();
-            _selectedButtonSprite = Resources.Load<Sprite>("UI/Textures/button_blue_01");
-            allButton.Init(MailTabState.All);
-            forgeButton.Init(MailTabState.Forge);
-            auctionButton.Init(MailTabState.Auction);
-            systemButton.Init(MailTabState.System);
+            _selectedButtonSprite = Resources.Load<Sprite>("UI/Textures/button_yellow_02");
+
+            var path = "UI/Textures/icon_mail_Auction";
+            mailIcons.Add(MailType.Auction, Resources.Load<Sprite>(path));
+            path = "UI/Textures/icon_mail_Workshop";
+            mailIcons.Add(MailType.Workshop, Resources.Load<Sprite>(path));
+            path = "UI/Textures/icon_mail_System";
+            mailIcons.Add(MailType.System, Resources.Load<Sprite>(path));
+
+            allButton.Init("ALL");
+            workshopButton.Init("UI_COMBINATION");
+            auctionButton.Init("UI_SHOP");
+            systemButton.Init("SYSTEM");
         }
 
         public override void Show()
@@ -86,11 +104,24 @@ namespace Nekoyume.UI
             base.Show();
         }
 
+        #endregion
+
+        public void UpdateList()
+        {
+            _mailBox = States.Instance.CurrentAvatarState.Value.mailBox;
+            if (_mailBox is null)
+                return;
+
+            float pos = scroller.scroller.ScrollPosition;
+            ChangeState((int) tabState);
+            scroller.scroller.ScrollPosition = pos;
+        }
+
         public void ChangeState(int state)
         {
             tabState = (MailTabState) state;
             allButton.ChangeColor(tabState == MailTabState.All);
-            forgeButton.ChangeColor(tabState == MailTabState.Forge);
+            workshopButton.ChangeColor(tabState == MailTabState.Workshop);
             auctionButton.ChangeColor(tabState == MailTabState.Auction);
             systemButton.ChangeColor(tabState == MailTabState.System);
 
@@ -105,12 +136,12 @@ namespace Nekoyume.UI
 
         public void Read(CombinationMail mail)
         {
-            var attachment = (Action.Combination.Result) mail.attachment;
+            var attachment = (Action.Combination.ResultModel) mail.attachment;
             var item = attachment.itemUsable;
             var popup = Find<CombinationResultPopup>();
             var materialItems = attachment.materials
-                .Select(material => new {material, item = ItemFactory.CreateMaterial(material.id, Guid.Empty)})
-                .Select(t => new CombinationMaterial(t.item, t.material.count, t.material.count, t.material.count))
+                .Select(pair => new {pair, item = ItemFactory.CreateMaterial(pair.Key, Guid.Empty)})
+                .Select(t => new CombinationMaterial(t.item, t.pair.Value, t.pair.Value, t.pair.Value))
                 .ToList();
             var model = new UI.Model.CombinationResultPopup(new CountableItem(item, 1))
             {
@@ -119,7 +150,7 @@ namespace Nekoyume.UI
             };
             popup.Pop(model);
 
-            AddItem(item);
+            AddItem(item, false);
         }
 
         public void Read(SellCancelMail mail)
@@ -135,12 +166,12 @@ namespace Nekoyume.UI
             model.Item.Value = new CountEditableItem(item, 1, 1, 1);
             model.OnClickSubmit.Subscribe(_ =>
             {
-                AddItem(item);
+                AddItem(item, true);
                 popup.Close();
             }).AddTo(gameObject);
             model.OnClickCancel.Subscribe(_ =>
             {
-                AddItem(item);
+                AddItem(item, true);
                 popup.Close();
             }).AddTo(gameObject);
             //TODO 재판매 처리추가되야함
@@ -159,7 +190,7 @@ namespace Nekoyume.UI
             };
             popup.Pop(model);
 
-            AddItem(item);
+            AddItem(item, false);
         }
 
         public void Read(SellerMail sellerMail)
@@ -167,7 +198,6 @@ namespace Nekoyume.UI
             var attachment = (Buy.SellerResult) sellerMail.attachment;
             //TODO 관련 기획이 끝나면 별도 UI를 생성
             AddGold(attachment.gold);
-            Notification.Push($"{attachment.shopItem.Price:n0} 골드 획득");
         }
 
         public void Read(ItemEnhanceMail itemEnhanceMail)
@@ -182,13 +212,13 @@ namespace Nekoyume.UI
             };
             popup.Pop(model);
 
-            AddItem(item);
+            AddItem(item, false);
         }
 
-        private static void AddItem(ItemUsable item)
+        private static void AddItem(ItemUsable item, bool canceled)
         {
             //아바타상태 인벤토리 업데이트
-            ActionManager.instance.AddItem(item.ItemId);
+            ActionManager.instance.AddItem(item.ItemId, canceled);
 
             //게임상의 인벤토리 업데이트
             States.Instance.CurrentAvatarState.Value.inventory.AddItem(item);

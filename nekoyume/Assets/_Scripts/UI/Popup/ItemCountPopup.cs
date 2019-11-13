@@ -32,8 +32,6 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
-            this.ComponentFieldsNotNullTest();
-            
             _countStringFormat = LocalizationManager.Localize("UI_TOTAL_COUNT_N");
             cancelButtonText.text = LocalizationManager.Localize("UI_CANCEL");
             submitButtonText.text = LocalizationManager.Localize("UI_OK");

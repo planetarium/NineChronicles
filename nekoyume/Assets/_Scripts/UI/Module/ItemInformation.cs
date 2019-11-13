@@ -5,6 +5,7 @@ using Assets.SimpleLocalization;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Item;
 using Nekoyume.TableData;
+using Nekoyume.UI.Model;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -109,7 +110,9 @@ namespace Nekoyume.UI.Module
             var itemRow = Model.item.Value.ItemBase.Value.Data;
 
             // 아이콘.
-            iconArea.itemView.SetData(Model.item.Value);
+            iconArea.itemView.SetData(new CountableItem(
+                Model.item.Value.ItemBase.Value,
+                Model.item.Value.Count.Value));
 
             // 속성.
             var sprite = itemRow.ElementalType.GetSprite();
@@ -149,7 +152,7 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            descriptionArea.text.text = Model.item.Value.ItemBase.Value.Data.GetLocalizedDescription();
+            descriptionArea.text.text = Model.item.Value.ItemBase.Value.GetLocalizedDescription();
             descriptionArea.root.gameObject.SetActive(true);
         }
 
@@ -166,7 +169,7 @@ namespace Nekoyume.UI.Module
             {
                 stat.Hide();
             }
-            
+
             var statCount = 0;
             if (Model.item.Value.ItemBase.Value is ItemUsable itemUsable)
             {

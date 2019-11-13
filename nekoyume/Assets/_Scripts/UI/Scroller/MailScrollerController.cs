@@ -11,15 +11,13 @@ namespace Nekoyume.UI.Scroller
         public MailCellView cellViewPrefab;
         public readonly Subject<MailCellView> onClickCellView = new Subject<MailCellView>();
 
-        private List<Game.Mail.Mail> _data;
+        private IReadOnlyList<Game.Mail.Mail> _data;
         private float _cellViewHeight = 40f;
 
         #region Mono
 
         private void Awake()
         {
-            this.ComponentFieldsNotNullTest();
-
             scroller.Delegate = this;
             _cellViewHeight = cellViewPrefab.GetComponent<RectTransform>().rect.height;
         }
@@ -29,23 +27,13 @@ namespace Nekoyume.UI.Scroller
         public EnhancedScrollerCellView GetCellView(EnhancedScroller scroller, int dataIndex, int cellIndex)
         {
             var cellView = scroller.GetCellView(cellViewPrefab) as MailCellView;
-            if(cellView is null)
+            if (cellView is null)
             {
                 throw new FailedToInstantiateGameObjectException(cellViewPrefab.name);
             }
-            
+
             cellView.name = $"Cell {dataIndex}";
             cellView.SetData(_data[dataIndex]);
-            if (cellView.onClickDisposable is null)
-            {
-                cellView.onClickDisposable = cellView.onClickButton
-                    .Subscribe(_ =>
-                    {
-                        onClickCellView.OnNext(cellView);
-                        cellView.onClickDisposable.Dispose();
-                        cellView.onClickDisposable = null;
-                    }).AddTo(cellView.gameObject);
-            }
             return cellView;
         }
 

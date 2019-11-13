@@ -1,9 +1,7 @@
-﻿using Nekoyume.BlockChain;
-using Nekoyume.Data;
-using Nekoyume.Game.Item;
+﻿using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.BlockChain;
 using Nekoyume.TableData;
-using UnityEngine;
 
 namespace Nekoyume.UI.Model
 {
@@ -11,39 +9,32 @@ namespace Nekoyume.UI.Model
     {
         public class MaterialInfo
         {
-            public int id;
-            public int amount = 1;
-            public bool isEnough;
-            public bool isObtained;
+            public readonly int Id;
+            public readonly bool IsEnough;
 
             public MaterialInfo(int id)
             {
-                this.id = id;
-                var inventory = States.Instance.CurrentAvatarState.Value.inventory;
-                isEnough = inventory.HasItem(id);
-                isObtained = true;
+                Id = id;
+                IsEnough = States.Instance.CurrentAvatarState.Value.inventory.HasItem(id);
             }
         }
 
-        public int recipeId;
-        public int resultId;
-        public int resultAmount = 1;
-        public string resultName;
-        public MaterialInfo[] materialInfos = new MaterialInfo[5];
+        public readonly ConsumableItemRecipeSheet.Row Row;
+        public readonly IReadOnlyList<MaterialInfo> MaterialInfos;
+        public readonly string ResultItemName;
+        public readonly bool IsLocked;
 
-        public RecipeInfo(int id, int resultId, params int[] materialIds)
+        public RecipeInfo(ConsumableItemRecipeSheet.Row row)
         {
-            recipeId = id;
-            this.resultId = resultId;
-            resultName = GetEquipmentName(resultId);
-
-            for (int i = 0; i < materialInfos.Length; ++i)
-            {
-                materialInfos[i] = new MaterialInfo(materialIds[i]);
-            }
+            Row = row;
+            MaterialInfos = row.MaterialItemIds
+                .Select(materialItemId => new MaterialInfo(materialItemId))
+                .ToList();
+            ResultItemName = GetEquipmentName(Row.ResultConsumableItemId);
+            IsLocked = false;
         }
 
-        private string GetEquipmentName(int id)
+        private static string GetEquipmentName(int id)
         {
             if (id == 0)
                 return string.Empty;

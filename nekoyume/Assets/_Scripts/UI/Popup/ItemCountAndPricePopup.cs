@@ -21,8 +21,6 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
-            this.ComponentFieldsNotNullTest();
-
             priceInputField.onValueChanged.AsObservable()
                 .Subscribe(_ =>
                 {
