@@ -1,10 +1,10 @@
-using UnityEngine.UI;
+using TMPro;
 
 namespace Nekoyume.UI
 {
     public class StageTitle : PopupWidget
     {
-        public Text textStage;
+        public TextMeshProUGUI textStage;
         
         public void Show(int stage)
         {

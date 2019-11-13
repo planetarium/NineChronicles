@@ -1,4 +1,5 @@
 using Nekoyume.Game;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,15 +16,8 @@ namespace Nekoyume.UI
         public Color redColor;
 
         public Image bar;
-        public Text label;
-        public Text[] labelShadows;
+        public TextMeshProUGUI label;
         public float colorChangeThreshold = 0.35f;
-
-        protected override void Awake()
-        {
-            base.Awake();
-            labelShadows = transform.Find("TextShadow").GetComponentsInChildren<Text>();
-        }
 
         public void UpdatePosition(GameObject target, Vector3 offset = new Vector3())
         {
@@ -40,11 +34,6 @@ namespace Nekoyume.UI
         protected void SetText(string text)
         {
             label.text = text;
-
-            foreach (var l in labelShadows)
-            {
-                l.text = text;
-            }
         }
 
         protected void SetValue(float value)

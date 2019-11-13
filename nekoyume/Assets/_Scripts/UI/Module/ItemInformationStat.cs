@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using TMPro;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,8 +9,8 @@ namespace Nekoyume.UI.Module
 {
     public class ItemInformationStat : MonoBehaviour
     {
-        public Text keyText;
-        public Text valueText;
+        public TextMeshProUGUI keyText;
+        public TextMeshProUGUI valueText;
 
         private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
 

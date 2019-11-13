@@ -8,7 +8,6 @@ using Nekoyume.Game.Factory;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using TMPro;
-using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -22,7 +21,7 @@ namespace Nekoyume.UI.Scroller
         private static readonly Vector2 _minusRightTop = new Vector2(14f, 13f);
         private static readonly Color _highlightedColor = ColorHelper.HexToColorRGB("a35400");
         public TextMeshProUGUI content;
-        public Text buttonText;
+        public TextMeshProUGUI buttonText;
         public Button button;
         public Image buttonImage;
         public Game.Quest.Quest data;

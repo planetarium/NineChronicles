@@ -12,6 +12,7 @@ using Nekoyume.Manager;
 using Nekoyume.Model;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
+using TMPro;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -32,17 +33,17 @@ namespace Nekoyume.UI
         [Serializable]
         public struct TopArea
         {
-            public Text topText;
+            public TextMeshProUGUI topText;
             public GameObject expContainer;
-            public Text expText;
-            public Text expValueText;
+            public TextMeshProUGUI expText;
+            public TextMeshProUGUI expValueText;
         }
 
         [Serializable]
         public struct RewardsArea
         {
             public GameObject root;
-            public Text text;
+            public TextMeshProUGUI text;
             public SimpleCountableItemView[] rewards;
         }
 
@@ -50,12 +51,12 @@ namespace Nekoyume.UI
         public struct SuggestionsArea
         {
             public GameObject root;
-            public Text text1;
-            public Text text2;
+            public TextMeshProUGUI text1;
+            public TextMeshProUGUI text2;
             public Button submitButton1;
             public Button submitButton2;
-            public Text submitButtonText1;
-            public Text submitButtonText2;
+            public TextMeshProUGUI submitButtonText1;
+            public TextMeshProUGUI submitButtonText2;
         }
 
         private const int Timer = 10;
@@ -68,11 +69,11 @@ namespace Nekoyume.UI
         public TopArea topArea;
         public RewardsArea rewardsArea;
         public SuggestionsArea suggestionsArea;
-        public Text bottomText;
+        public TextMeshProUGUI bottomText;
         public Button closeButton;
-        public Text closeButtonText;
+        public TextMeshProUGUI closeButtonText;
         public Button submitButton;
-        public Text submitButtonText;
+        public TextMeshProUGUI submitButtonText;
 
         private BattleWin01VFX _battleWin01VFX;
         private BattleWin02VFX _battleWin02VFX;

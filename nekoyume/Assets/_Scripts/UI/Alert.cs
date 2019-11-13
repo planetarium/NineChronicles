@@ -1,4 +1,5 @@
 using Assets.SimpleLocalization;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,9 +8,9 @@ namespace Nekoyume.UI
     public delegate void AlertDelegate();
     public class Alert : PopupWidget
     {
-        public Text title;
-        public Text content;
-        public Text labelOK;
+        public TextMeshProUGUI title;
+        public TextMeshProUGUI content;
+        public TextMeshProUGUI labelOK;
         public GameObject titleBorder;
         public AlertDelegate CloseCallback { get; set; }
         public void Show(string title, string content, string labelOK = "UI_OK", bool localize = true)

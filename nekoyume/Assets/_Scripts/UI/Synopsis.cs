@@ -1,12 +1,14 @@
-﻿using Assets.SimpleLocalization;
+﻿using System;
+using Assets.SimpleLocalization;
 using Nekoyume.Game.Controller;
+using TMPro;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
     public class Synopsis : Widget
     {
-        public Text[] texts;
+        public TextMeshProUGUI[] texts;
 
         protected override void Awake()
         {

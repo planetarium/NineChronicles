@@ -5,6 +5,7 @@ using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.UI.Module;
 using Nekoyume.Manager;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,14 +14,13 @@ namespace Nekoyume.UI
     public class Menu : Widget
     {
         public GameObject btnQuest;
-        public Text btnQuestText;
+        public TextMeshProUGUI btnQuestText;
         public GameObject btnCombination;
-        public Text btnCombinationText;
+        public TextMeshProUGUI btnCombinationText;
         public GameObject btnShop;
-        public Text btnShopText;
+        public TextMeshProUGUI btnShopText;
         public GameObject btnRanking;
-        public Text btnRankingText;
-        public Text LabelInfo;
+        public TextMeshProUGUI btnRankingText;
         public SpeechBubble[] SpeechBubbles;
 
         public Stage Stage;
@@ -60,8 +60,6 @@ namespace Nekoyume.UI
             ShowButtons(true);
             StartCoroutine(ShowSpeeches());
 
-            LabelInfo.text = "";
-
             AudioController.instance.PlayMusic(AudioController.MusicCode.Main);
         }
 
@@ -69,8 +67,6 @@ namespace Nekoyume.UI
         {
             Show();
             ShowButtons(false);
-
-            LabelInfo.text = "";
         }
 
         public void QuestClick()

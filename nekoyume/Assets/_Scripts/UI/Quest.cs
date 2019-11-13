@@ -6,6 +6,7 @@ using Nekoyume.UI.Scroller;
 using System;
 using System.Globalization;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -31,13 +32,11 @@ namespace Nekoyume.UI
             public Button button;
             public Image image;
             public Image icon;
-            public Text text;
-            private Shadow[] _textShadows;
+            public TextMeshProUGUI text;
 
             public void Init(string localizationKey)
             {
                 if (!button) return;
-                _textShadows = button.GetComponentsInChildren<Shadow>();
                 var localized = LocalizationManager.Localize(localizationKey);
                 var content = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(localized.ToLower());
                 text.text = content;
@@ -49,8 +48,7 @@ namespace Nekoyume.UI
                 image.rectTransform.offsetMin = isHighlighted ? _leftBottom : Vector2.zero;
                 image.rectTransform.offsetMax = isHighlighted ? _minusRightTop : Vector2.zero;
                 icon.overrideSprite = isHighlighted ? highlightedSprite : null;
-                foreach (var shadow in _textShadows)
-                    shadow.effectColor = isHighlighted ? _highlightedColor : Color.black;
+                // 마테리얼 변경시켜줘야함
             }
         }
 

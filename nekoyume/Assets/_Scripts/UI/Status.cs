@@ -7,6 +7,7 @@ using Nekoyume.Game.Controller;
 using UnityEngine;
 using UnityEngine.UI;
 using Nekoyume.UI.Module;
+using TMPro;
 using UniRx;
 using Unity.Mathematics;
 
@@ -14,11 +15,11 @@ namespace Nekoyume.UI
 {
     public class Status : Widget
     {
-        public Text TextLvName;
-        public Text TextHP;
-        public Text TextExp;
-        public Image HPBar;
-        public Image ExpBar;
+        public TextMeshProUGUI textLvName;
+        public TextMeshProUGUI textHp;
+        public TextMeshProUGUI textExp;
+        public Image hpBar;
+        public Image expBar;
         public BuffLayout buffLayout;
         public BuffTooltip buffTooltip;
 
@@ -63,7 +64,7 @@ namespace Nekoyume.UI
                 throw new NotFoundComponentException<Quest>();
             }
 
-            HPBar.transform.parent.gameObject.SetActive(false);
+            hpBar.transform.parent.gameObject.SetActive(false);
             buffLayout.SetBuff(null);
         }
 
@@ -120,22 +121,22 @@ namespace Nekoyume.UI
             var level = _player.Level;
 
             _avatarName = States.Instance.CurrentAvatarState.Value.name;
-            TextLvName.text = $"<color=#B38271>LV. {level}</color> {_avatarName}";
+            textLvName.text = $"<color=#B38271>LV. {level}</color> {_avatarName}";
             var displayHp = math.max(_player.CurrentHP, 0);
-            TextHP.text = $"HP {displayHp} / {_player.HP}";
-            TextExp.text = $"EXP {_player.Model.Value.Exp.Need - _player.EXPMax + _player.EXP} / {_player.Model.Value.Exp.Need}";
+            textHp.text = $"HP {displayHp} / {_player.HP}";
+            textExp.text = $"EXP {_player.Model.Value.Exp.Need - _player.EXPMax + _player.EXP} / {_player.Model.Value.Exp.Need}";
 
             float hpValue = _player.CurrentHP / (float)_player.HP;
-            HPBar.gameObject.SetActive(hpValue > 0.0f);
+            hpBar.gameObject.SetActive(hpValue > 0.0f);
             hpValue = Mathf.Min(Mathf.Max(hpValue, 0.1f), 1.0f);
-            HPBar.fillAmount = hpValue;
+            hpBar.fillAmount = hpValue;
 
             var expNeed = _player.Model.Value.Exp.Need;
             var levelExp = _player.EXPMax - expNeed;
             var expValue = (float)(_player.EXP - levelExp) / expNeed;
-            ExpBar.gameObject.SetActive(expValue > 0.0f);
+            expBar.gameObject.SetActive(expValue > 0.0f);
             expValue = Mathf.Min(Mathf.Max(expValue, 0.1f), 1.0f);
-            ExpBar.fillAmount = expValue;
+            expBar.fillAmount = expValue;
         }
 
         public void ToggleInventory()
@@ -178,7 +179,7 @@ namespace Nekoyume.UI
 
         public void ShowBattleStatus()
         {
-            HPBar.transform.parent.gameObject.SetActive(true);
+            hpBar.transform.parent.gameObject.SetActive(true);
         }
 
         public void ToggleQuest()

@@ -1,5 +1,6 @@
 using Assets.SimpleLocalization;
 using Nekoyume.Game.Controller;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,10 +16,10 @@ namespace Nekoyume.UI
 
     public class Confirm : PopupWidget
     {
-        public Text title;
-        public Text content;
-        public Text labelYes;
-        public Text labelNo;
+        public TextMeshProUGUI title;
+        public TextMeshProUGUI content;
+        public TextMeshProUGUI labelYes;
+        public TextMeshProUGUI labelNo;
         public GameObject titleBorder;
         public ConfirmDelegate CloseCallback { get; set; }
 
