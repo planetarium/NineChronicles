@@ -104,6 +104,7 @@ namespace Planetarium.Nekoyume.Editor
                         case CharacterAnimation.Type.Appear:
                         case CharacterAnimation.Type.Standing:
                         case CharacterAnimation.Type.StandingToIdle:
+                        case CharacterAnimation.Type.Run:
                         case CharacterAnimation.Type.Win:
                         case CharacterAnimation.Type.Disappear:
                         case CharacterAnimation.Type.Greeting:
