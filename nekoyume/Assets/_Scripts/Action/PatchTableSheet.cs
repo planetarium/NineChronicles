@@ -20,10 +20,10 @@ namespace Nekoyume.Action
         public override IAccountStateDelta Execute(IActionContext ctx)
         {
             var states = ctx.PreviousStates;
-            if (!Administrators.Contains(ctx.Signer))
-            {
-                return states;
-            }
+//            if (!Administrators.Contains(ctx.Signer))
+//            {
+//                return states;
+//            }
 
             var tableSheetsState = TableSheetsState.FromActionContext(ctx);
             tableSheetsState.TableSheets[TableName] = TableCSV;
