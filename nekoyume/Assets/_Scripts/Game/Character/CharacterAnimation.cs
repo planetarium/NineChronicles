@@ -21,8 +21,6 @@ namespace Nekoyume.Game.Character
             Die,
             Win,
             Disappear,
-            
-            // todo: NPCAnimation 으로 분리해야 좋겠음.
             Greeting,
             Emotion,
         }
