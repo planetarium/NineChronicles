@@ -71,7 +71,7 @@ namespace Nekoyume.Model
             Skills.Clear();
 
             atkElementType = RowData.ElementalType;
-            attackRange = RowData.AttackRange;
+            attackRange = RowData.AttackRange * (characterId == 100010 ? 1f : new Random().Next(90, 100) * 0.01f);
             defElementType = RowData.ElementalType;
             CurrentHP = HP;
         }
