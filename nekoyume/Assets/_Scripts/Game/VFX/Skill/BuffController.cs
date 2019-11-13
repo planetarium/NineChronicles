@@ -27,11 +27,7 @@ namespace Nekoyume.Game.VFX.Skill
             position.y += 0.55f;
             var resource = buff.RowData.IconResource;
             var resourceName = resource.Replace("icon_", "");
-            var go = _pool.Get(resourceName, false, position);
-            if (go == null)
-            {
-                go = _pool.Get(resourceName, true, position);
-            }
+            var go = _pool.Get(resourceName, true, position);
             var effect = go.GetComponent<T>();
             if (effect == null)
             {
