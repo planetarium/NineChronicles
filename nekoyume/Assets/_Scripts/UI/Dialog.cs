@@ -4,6 +4,7 @@ using Assets.SimpleLocalization;
 using Nekoyume.BlockChain;
 using Nekoyume.Helper;
 using Nekoyume.TableData;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -14,8 +15,8 @@ namespace Nekoyume.UI
         public float textInterval = 0.06f;
         public Color itemTextColor;
 
-        public Text txtName;
-        public Text txtDialog;
+        public TextMeshProUGUI txtName;
+        public TextMeshProUGUI txtDialog;
         public Image imgCharacter;
 
         private string _playerPrefsKey;
