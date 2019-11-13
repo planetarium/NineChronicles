@@ -1,19 +1,19 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
 using DG.Tweening;
+using TMPro;
 
 namespace Nekoyume.UI.Tween
 {
-    [RequireComponent(typeof(Text))]
+    [RequireComponent(typeof(TextMeshProUGUI))]
     public class DOTweenTextAlpha : DOTweenBase
     {
         public float BeginValue = 0.0f;
         public float EndValue = 1.0f;
-        private Text _text;
+        private TextMeshProUGUI _text;
 
         private void Awake()
         {
-            _text = GetComponent<Text>();
+            _text = GetComponent<TextMeshProUGUI>();
         }
 
         public override void PlayForward()
