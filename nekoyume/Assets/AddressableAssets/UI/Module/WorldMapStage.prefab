@@ -67,8 +67,8 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_text: 1
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 76f23b4f2b0bc49c18792f72986c9673, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: 528e43558d99d43a5a6e25301588d5bf, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: 619077c5916b69c4494b3d0ef8aadce2, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -99,7 +99,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_textAlignment: 4098
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -110,7 +110,7 @@ MonoBehaviour:
   m_enableWordWrapping: 1
   m_wordWrappingRatios: 0.4
   m_overflowMode: 0
-  m_firstOverflowCharacterIndex: 0
+  m_firstOverflowCharacterIndex: -1
   m_linkedTextComponent: {fileID: 0}
   m_isLinkedTextComponent: 0
   m_isTextTruncated: 0
@@ -387,8 +387,6 @@ MonoBehaviour:
   bossImage: {fileID: 2272024443980410211}
   button: {fileID: 2272024445161519699}
   buttonText: {fileID: 7501070511296419263}
-  tweenMove: {fileID: 0}
-  tweenAlpha: {fileID: 0}
 --- !u!1 &2272024445161519696
 GameObject:
   m_ObjectHideFlags: 0
@@ -504,7 +502,7 @@ MonoBehaviour:
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 1
-  m_TargetGraphic: {fileID: 0}
+  m_TargetGraphic: {fileID: 480336499885934697}
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
