@@ -37,6 +37,7 @@ namespace Nekoyume.Game
         public MonsterSpawner spawner;
 
         public GameObject background;
+
         // dummy for stage background moving.
         public GameObject dummy;
         public ParticleSystem defaultBGVFX;
@@ -155,7 +156,7 @@ namespace Nekoyume.Game
             {
                 if (background.name.Equals(prefabName))
                     return;
-                
+
                 if (fadeTime > 0.0f)
                 {
                     var sprites = background.GetComponentsInChildren<SpriteRenderer>();
@@ -180,7 +181,7 @@ namespace Nekoyume.Game
             var prefab = Resources.Load<GameObject>(path);
             if (!prefab)
                 throw new FailedToLoadResourceException<GameObject>(path);
-            
+
             background = Instantiate(prefab, transform);
             background.name = prefabName;
             foreach (Transform child in background.transform)
@@ -188,7 +189,7 @@ namespace Nekoyume.Game
                 var childName = child.name;
                 if (!childName.StartsWith("bgvfx"))
                     continue;
-                
+
                 var num = childName.Substring(childName.Length - 2);
                 switch (num)
                 {
@@ -272,8 +273,7 @@ namespace Nekoyume.Game
         {
             Boss = null;
             yield return new WaitForSeconds(2.0f);
-            var battle = Widget.Find<UI.Battle>();
-            battle.bossStatus.Close();
+            Widget.Find<UI.Battle>().bossStatus.Close();
             Widget.Find<UI.Battle>().Close();
             if (log.result == BattleLog.Result.Win)
             {
@@ -488,6 +488,7 @@ namespace Nekoyume.Game
 
         public IEnumerator CoSpawnWave(List<Enemy> enemies, bool isBoss)
         {
+            Widget.Find<UI.Battle>().bossStatus.Close();
             var playerCharacter = GetPlayer();
             playerCharacter.StartRun();
             var battle = Widget.Find<UI.Battle>();
