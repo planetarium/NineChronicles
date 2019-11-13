@@ -1,7 +1,6 @@
 using EnhancedUI.EnhancedScroller;
 using Nekoyume.Helper;
 using System;
-using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -22,7 +21,6 @@ namespace Nekoyume.UI.Scroller
         public TextMeshProUGUI content;
         public Button button;
         public Text submitText;
-        public IDisposable onClickDisposable;
 
         private Mail _mail;
         private Shadow[] _textShadows;
@@ -31,14 +29,12 @@ namespace Nekoyume.UI.Scroller
 
         private void Awake()
         {
-            onClickDisposable = button.OnClickAsObservable()
-                .Subscribe(_ => onClickSubmitButton?.Invoke(this))
-                .AddTo(gameObject);
+            button.onClick.AddListener(OnClickButton);
         }
 
         private void OnDisable()
         {
-            Clear();
+            button.interactable = true;
         }
 
         #endregion
@@ -51,19 +47,19 @@ namespace Nekoyume.UI.Scroller
             var text = mail.ToInfo();
             Color32 color = mail.New ? ColorHelper.HexToColorRGB("fff9dd") : ColorHelper.HexToColorRGB("7a7a7a");
             button.interactable = mail.New;
-            submitText.text = LocalizationManager.Localize("UI_RECEIVE");
+            submitText.text = mail.New ? LocalizationManager.Localize("UI_RECEIVE") : LocalizationManager.Localize("UI_RECEIVED");
             foreach (var shadow in _textShadows)
                 shadow.effectColor = mail.New ? _highlightedColor : Color.black;
             buttonImage.rectTransform.offsetMin = mail.New ? _leftBottom : Vector2.zero;
             buttonImage.rectTransform.offsetMax = mail.New ? _minusRightTop : Vector2.zero;
             icon.overrideSprite = Mail.mailIcons[mail.MailType];
-            icon.SetNativeSize();
             content.text = text;
             content.color = color;
         }
 
         public void Read()
         {
+            submitText.text = LocalizationManager.Localize("UI_RECEIVED");
             buttonImage.rectTransform.offsetMin = Vector2.zero;
             buttonImage.rectTransform.offsetMax = Vector2.zero;
             if (!data.New)
@@ -77,10 +73,10 @@ namespace Nekoyume.UI.Scroller
             data.Read(_mail);
         }
 
-        private void Clear()
+        private void OnClickButton()
         {
-            onClickDisposable?.Dispose();
-            button.interactable = true;
+            Read();
+            onClickSubmitButton?.Invoke(this);
         }
     }
 }

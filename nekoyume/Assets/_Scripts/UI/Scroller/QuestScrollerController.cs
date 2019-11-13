@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using EnhancedUI.EnhancedScroller;
-using UniRx;
 using System.Collections.Generic;
 
 namespace Nekoyume.UI.Scroller
@@ -9,9 +8,9 @@ namespace Nekoyume.UI.Scroller
     {
         public EnhancedScroller scroller;
         public QuestCellView cellViewPrefab;
-        public readonly Subject<MailCellView> onClickCellView = new Subject<MailCellView>();
 
-        private List<Game.Quest.Quest> _data;
+        private readonly HashSet<int> _buttonDisabledCells = new HashSet<int>();
+        private IReadOnlyList<Game.Quest.Quest> _data;
         private float _cellViewHeight = 40f;
 
         #region Mono
@@ -27,13 +26,15 @@ namespace Nekoyume.UI.Scroller
         public EnhancedScrollerCellView GetCellView(EnhancedScroller scroller, int dataIndex, int cellIndex)
         {
             var cellView = scroller.GetCellView(cellViewPrefab) as QuestCellView;
-            if (cellView is null)
+            if (cellView is null)   
             {
                 throw new FailedToInstantiateGameObjectException(cellViewPrefab.name);
             }
 
             cellView.name = $"Cell {dataIndex}";
-            cellView.SetData(_data[dataIndex]);
+            if (cellView.onClickSubmitButton is null)
+                cellView.onClickSubmitButton = _buttonDisabledCells.Add;
+            cellView.SetData(_data[dataIndex], _buttonDisabledCells.Contains(dataIndex), dataIndex);
             return cellView;
         }
 
@@ -50,6 +51,13 @@ namespace Nekoyume.UI.Scroller
         public void SetData(List<Game.Quest.Quest> dataList)
         {
             _data = dataList;
+
+            for (int i = 0; i < dataList.Count; ++i)
+            {
+                if (_data[i].Receive)
+                    _buttonDisabledCells.Add(i);
+            }
+
             scroller.ReloadData();
         }
     }

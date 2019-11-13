@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using DG.Tweening;
 using JetBrains.Annotations;
 using Nekoyume.Game.Item;
 using Nekoyume.Model;
@@ -102,9 +103,9 @@ namespace Nekoyume.UI.Module
 
         #endregion
 
-        public virtual bool Show()
+        public virtual bool Show(bool forced = false)
         {
-            if (gameObject.activeSelf)
+            if (!forced && gameObject.activeSelf)
                 return false;
             
             gameObject.SetActive(true);
@@ -115,9 +116,9 @@ namespace Nekoyume.UI.Module
             return true;
         }
 
-        public virtual bool Hide()
+        public bool Hide(bool forced = false)
         {
-            if (!gameObject.activeSelf)
+            if (!forced && !gameObject.activeSelf)
                 return false;
             
             _disposablesAtShow.DisposeAllAndClear();
@@ -174,52 +175,50 @@ namespace Nekoyume.UI.Module
 
         protected abstract int GetCostNCG();
         protected abstract int GetCostAP();
-        protected abstract void UpdateOtherMaterialsEffect();
 
         #region Add Material
 
         public bool TryAddMaterial(InventoryItemView view, int count = 1)
         {
-            return TryAddMaterial(view, count, out var materialView);
+            return TryAddMaterial(view.Model, count, out var materialView);
         }
 
-        public virtual bool TryAddMaterial(InventoryItemView view, out TMaterialView materialView)
+        public bool TryAddMaterial(InventoryItem viewModel, int count = 1)
         {
-            return TryAddMaterial(view, 1, out materialView);
+            return TryAddMaterial(viewModel, count, out var materialView);
         }
 
-        public virtual bool TryAddMaterial(InventoryItemView view, int count, out TMaterialView materialView)
+        public virtual bool TryAddMaterial(InventoryItem viewModel, int count, out TMaterialView materialView)
         {
-            if (view is null ||
-                view.Model is null ||
-                view.Model.Dimmed.Value)
+            if (viewModel is null ||
+                viewModel.Dimmed.Value)
             {
                 materialView = null;
                 return false;
             }
 
-            if (TryAddBaseMaterial(view, count, out materialView))
+            if (TryAddBaseMaterial(viewModel, count, out materialView))
             {
                 OnMaterialAddedOrRemoved();
                 OnMaterialCountChanged();
-                OnMaterialAdd.OnNext(view.Model);
-                OnBaseMaterialAdd.OnNext(view.Model);
+                OnMaterialAdd.OnNext(viewModel);
+                OnBaseMaterialAdd.OnNext(viewModel);
                 return true;
             }
 
-            if (TryAddOtherMaterial(view, count, out materialView))
+            if (TryAddOtherMaterial(viewModel, count, out materialView))
             {
                 OnMaterialAddedOrRemoved();
                 OnMaterialCountChanged();
-                OnMaterialAdd.OnNext(view.Model);
-                OnOtherMaterialAdd.OnNext(view.Model);
+                OnMaterialAdd.OnNext(viewModel);
+                OnOtherMaterialAdd.OnNext(viewModel);
                 return true;
             }
 
             return false;
         }
 
-        protected virtual bool TryAddBaseMaterial(InventoryItemView view, int count, out TMaterialView materialView)
+        protected virtual bool TryAddBaseMaterial(InventoryItem viewModel, int count, out TMaterialView materialView)
         {
             if (baseMaterial is null)
             {
@@ -233,20 +232,20 @@ namespace Nekoyume.UI.Module
                 OnBaseMaterialRemove.OnNext(baseMaterial.InventoryItemViewModel);
             }
 
-            baseMaterial.Set(view, count);
+            baseMaterial.Set(viewModel, count);
             materialView = baseMaterial;
             return true;
         }
 
-        protected virtual bool TryAddOtherMaterial(InventoryItemView view, int count, out TMaterialView materialView)
+        protected virtual bool TryAddOtherMaterial(InventoryItem viewModel, int count, out TMaterialView materialView)
         {
             var sameMaterial = otherMaterials.FirstOrDefault(e =>
             {
                 if (e.Model?.ItemBase.Value is null ||
-                    view.Model?.ItemBase.Value is null)
+                    viewModel?.ItemBase.Value is null)
                     return false;
 
-                return e.Model.ItemBase.Value.Data.Id == view.Model.ItemBase.Value.Data.Id;
+                return e.Model.ItemBase.Value.Data.Id == viewModel.ItemBase.Value.Data.Id;
             });
             if (sameMaterial is null)
             {
@@ -259,7 +258,7 @@ namespace Nekoyume.UI.Module
                     return false;
                 }
 
-                possibleMaterial.Set(view, count);
+                possibleMaterial.Set(viewModel, count);
                 materialView = possibleMaterial;
                 return true;
             }
@@ -483,6 +482,56 @@ namespace Nekoyume.UI.Module
             OnCostNCGChange.OnNext(CostNCG);
             OnCostAPChange.OnNext(CostAP);
             OnMaterialChange.OnNext(this);
+        }
+        
+        private void UpdateOtherMaterialsEffect()
+        {
+            var hasBaseMaterial = !(baseMaterial is null);
+            if (hasBaseMaterial)
+            {
+                if (baseMaterial.IsEmpty)
+                {
+                    baseMaterial.SetTwinkled(true);
+                }
+                else
+                {
+                    baseMaterial.SetTwinkled(false);
+                    baseMaterial.effectImage.enabled = true;
+                }   
+            }
+            
+            var setTwinkledOnIfEmpty = true;
+            foreach (var otherMaterial in otherMaterials)
+            {
+                if (hasBaseMaterial &&
+                    baseMaterial.IsEmpty)
+                {
+                    otherMaterial.effectImage.enabled = false;
+                    continue;
+                }
+                
+                if (otherMaterial.IsLocked)
+                {
+                    otherMaterial.SetTwinkled(false);
+                }
+                else if (otherMaterial.IsEmpty)
+                {
+                    if (setTwinkledOnIfEmpty)
+                    {
+                        setTwinkledOnIfEmpty = false;
+                        otherMaterial.SetTwinkled(true);
+                    }
+                    else
+                    {
+                        otherMaterial.SetTwinkled(false);
+                    }
+                }
+                else
+                {
+                    otherMaterial.SetTwinkled(false);
+                    otherMaterial.effectImage.enabled = true;
+                }
+            }
         }
 
         private void UpdateSubmittable()

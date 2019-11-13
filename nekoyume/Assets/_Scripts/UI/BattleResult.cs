@@ -59,7 +59,8 @@ namespace Nekoyume.UI
         }
 
         private const int Timer = 10;
-        private static readonly Vector3 VfxBattleWinOffset = new Vector3(-3.43f, -0.28f, 10f);
+        private static readonly Vector3 VfxBattleWin01Offset = new Vector3(-3.43f, -0.28f, 10f);
+        private static readonly Vector3 VfxBattleWin02Offset = new Vector3(0.0f, 0.85f, 10f);
 
         public CanvasGroup canvasGroup;
         public GameObject victoryImageContainer;
@@ -73,8 +74,10 @@ namespace Nekoyume.UI
         public Button submitButton;
         public Text submitButtonText;
 
-        private BattleWinVFX _battleWinVFX;
+        private BattleWin01VFX _battleWin01VFX;
+        private BattleWin02VFX _battleWin02VFX;
         private Coroutine _coUpdateBottomText;
+        private readonly WaitForSeconds _battleWin02VFXYield = new WaitForSeconds(0.55f);
 
         public Model SharedModel { get; private set; }
 
@@ -151,9 +154,11 @@ namespace Nekoyume.UI
         private IEnumerator CoUpdateViewAsVictory()
         {
             AudioController.instance.PlayMusic(AudioController.MusicCode.Win, 0.3f);
-            _battleWinVFX =
-                VFXController.instance.Create<BattleWinVFX>(ActionCamera.instance.transform, VfxBattleWinOffset);
+            _battleWin01VFX =
+                VFXController.instance.Create<BattleWin01VFX>(ActionCamera.instance.transform, VfxBattleWin01Offset);
+            StartCoroutine(EmitBattleWin02VFX());
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionBattleWin);
+
 
             victoryImageContainer.SetActive(true);
             defeatImageContainer.SetActive(false);
@@ -180,8 +185,14 @@ namespace Nekoyume.UI
 
             yield return StartCoroutine(CoUpdateRewards());
             
-            
             _coUpdateBottomText = StartCoroutine(CoUpdateBottomText(Timer));
+        }
+
+        private IEnumerator EmitBattleWin02VFX()
+        {
+            yield return _battleWin02VFXYield;
+            _battleWin02VFX =
+                 VFXController.instance.Create<BattleWin02VFX>(ActionCamera.instance.transform, VfxBattleWin02Offset);
         }
 
         private void UpdateViewAsDefeat()
@@ -295,9 +306,9 @@ namespace Nekoyume.UI
             stageLoadingScreen.Show(stage.zone);
             Find<Status>().Close();
 
-            if (_battleWinVFX)
+            if (_battleWin01VFX)
             {
-                _battleWinVFX.Stop();
+                _battleWin01VFX.Stop();
             }
 
             var player = stage.RunPlayer();
@@ -326,10 +337,9 @@ namespace Nekoyume.UI
         {
             SetShouldRepeatFalse();
 
-            if (_battleWinVFX)
-            {
-                _battleWinVFX.Stop();
-            }
+            _battleWin01VFX?.Stop();
+            _battleWin02VFX?.Stop();
+
 
             Find<Battle>().Close();
             Game.Event.OnRoomEnter.Invoke();
@@ -340,20 +350,16 @@ namespace Nekoyume.UI
         {
             SetShouldRepeatFalse();
 
-            if (_battleWinVFX)
-            {
-                _battleWinVFX.Stop();
-            }
+            _battleWin01VFX?.Stop();
+            _battleWin02VFX?.Stop();
         }
 
         private void GoToCraftShop()
         {
             SetShouldRepeatFalse();
 
-            if (_battleWinVFX)
-            {
-                _battleWinVFX.Stop();
-            }
+            _battleWin01VFX?.Stop();
+            _battleWin02VFX?.Stop();
         }
 
         private void SetShouldRepeatFalse()

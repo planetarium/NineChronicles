@@ -24,18 +24,17 @@ namespace Nekoyume.UI
         [Serializable]
         public class TabButton
         {
-            private static readonly Color _highlightedColor = ColorHelper.HexToColorRGB("001870");
-            private static readonly Vector2 _highlightedSize = new Vector2(143f, 60f);
-            private static readonly Vector2 _unHighlightedSize = new Vector2(116f, 36f);
+            private static readonly Color _highlightedColor = ColorHelper.HexToColorRGB("a35400");
+            private static readonly Vector2 _leftBottom = new Vector2(-15f, -10.5f);
+            private static readonly Vector2 _minusRightTop = new Vector2(15f, 13f);
             public Sprite highlightedSprite;
             public Button button;
             public Image image;
             public Image icon;
             public Text text;
-            public QuestTabState state;
             private Shadow[] _textShadows;
 
-            public void Init(QuestTabState state, string localizationKey)
+            public void Init(string localizationKey)
             {
                 if (!button) return;
                 _textShadows = button.GetComponentsInChildren<Shadow>();
@@ -47,8 +46,8 @@ namespace Nekoyume.UI
             public void ChangeColor(bool isHighlighted = false)
             {
                 image.overrideSprite = isHighlighted ? _selectedButtonSprite : null;
-                // 금색 버튼 리소스로 변경 시 주석 해제
-                // image.rectTransform.sizeDelta = isHighlighted ? _highlightedSize : _unHighlightedSize;
+                image.rectTransform.offsetMin = isHighlighted ? _leftBottom : Vector2.zero;
+                image.rectTransform.offsetMax = isHighlighted ? _minusRightTop : Vector2.zero;
                 icon.overrideSprite = isHighlighted ? highlightedSprite : null;
                 foreach (var shadow in _textShadows)
                     shadow.effectColor = isHighlighted ? _highlightedColor : Color.black;
@@ -70,12 +69,12 @@ namespace Nekoyume.UI
         public override void Initialize()
         {
             base.Initialize();
-            _selectedButtonSprite = Resources.Load<Sprite>("UI/Textures/button_blue_01");
+            _selectedButtonSprite = Resources.Load<Sprite>("UI/Textures/button_yellow_02");
 
-            adventureButton.Init(QuestTabState.Adventure, "ADVENTURE");
-            obtainButton.Init(QuestTabState.Obtain, "OBTAIN");
-            craftingButton.Init(QuestTabState.Crafting, "CRAFT");
-            exchangeButton.Init(QuestTabState.Exchange, "EXCHANGE");
+            adventureButton.Init("ADVENTURE");
+            obtainButton.Init("OBTAIN");
+            craftingButton.Init("CRAFT");
+            exchangeButton.Init("EXCHANGE");
         }
 
         public override void Show()

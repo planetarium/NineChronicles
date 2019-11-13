@@ -1,3 +1,5 @@
+using System;
+using DG.Tweening;
 using Nekoyume.UI.Model;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,17 +15,16 @@ namespace Nekoyume.UI.Module
         public bool IsLocked => !itemButton.interactable;
 
         public InventoryItem InventoryItemViewModel { get; private set; }
-        public bool IsUnlockedAsNCG { get; private set; }
+        
+        private bool _isUnlockedAsNCG;
+        private bool _isTwinkledOn;
+        private Tweener _twinkleTweener;
+        private Tweener _setTweener;
 
-        public void Set(InventoryItemView inventoryItemView, int count = 1)
+        private void OnDisable()
         {
-            if (inventoryItemView is null)
-            {
-                Clear();
-                return;
-            }
-            
-            Set(inventoryItemView.Model, count);
+            _twinkleTweener?.Kill();
+            _setTweener?.Kill();
         }
 
         public virtual void Set(InventoryItem inventoryItemViewModel, int count = 1)
@@ -34,22 +35,34 @@ namespace Nekoyume.UI.Module
                 Clear();
                 return;
             }
-
+            
             var model = new CombinationMaterial(
                 inventoryItemViewModel.ItemBase.Value,
                 count,
                 1,
                 inventoryItemViewModel.Count.Value);
             base.SetData(model);
+            SetTwinkled(_isTwinkledOn);
             SetEnableEffectImages(true);
             InventoryItemViewModel = inventoryItemViewModel;
+            
+            _setTweener?.Kill();
+            var origin = iconImage.transform.localScale;
+            iconImage.transform.localScale = Vector3.zero;
+            _setTweener = iconImage.transform
+                .DOScale(origin, 1f)
+                .SetEase(Ease.OutElastic);
+            _setTweener.onKill = () => iconImage.transform.localScale = origin;
         }
 
         public override void Clear()
         {
+            _setTweener?.Kill();
+            
             InventoryItemViewModel = null;
-            ncgEffectImage.enabled = IsUnlockedAsNCG;
+            ncgEffectImage.enabled = _isUnlockedAsNCG;
             effectImage.enabled = false;
+            SetTwinkled(false);
             SetEnableEffectImages(false);
             base.Clear();
         }
@@ -62,6 +75,7 @@ namespace Nekoyume.UI.Module
             backgroundImage.SetNativeSize();
             ncgEffectImage.enabled = false;
             effectImage.enabled = false;
+            SetTwinkled(false);
         }
         
         public void Unlock()
@@ -70,7 +84,8 @@ namespace Nekoyume.UI.Module
             backgroundImage.overrideSprite = Resources.Load<Sprite>("UI/Textures/ui_box_Inventory_02");
             backgroundImage.SetNativeSize();
             ncgEffectImage.enabled = false;
-            IsUnlockedAsNCG = false;
+            _isUnlockedAsNCG = false;
+            SetTwinkled(_isTwinkledOn);
         }
 
         public void UnlockAsNCG()
@@ -79,7 +94,30 @@ namespace Nekoyume.UI.Module
             backgroundImage.overrideSprite = Resources.Load<Sprite>("UI/Textures/ui_box_Inventory_04");
             backgroundImage.SetNativeSize();
             ncgEffectImage.enabled = true;
-            IsUnlockedAsNCG = true;
+            _isUnlockedAsNCG = true;
+            SetTwinkled(_isTwinkledOn);
+        }
+
+        public void SetTwinkled(bool isOn)
+        {
+            _twinkleTweener?.Kill();
+            var color = effectImage.color;
+            
+            if (isOn)
+            {
+                color.a = .2f;
+                effectImage.color = color;
+                color.a = 1f;
+                _twinkleTweener = effectImage.DOColor(color, 1.5f).SetEase(Ease.InCubic).SetLoops(-1, LoopType.Yoyo);
+            }
+            else
+            {
+                color.a = 1f;
+                effectImage.color = color;
+            }
+            
+            effectImage.enabled = isOn;
+            _isTwinkledOn = isOn;
         }
 
         private void SetEnableEffectImages(bool enable)

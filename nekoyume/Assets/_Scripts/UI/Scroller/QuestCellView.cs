@@ -16,37 +16,39 @@ namespace Nekoyume.UI.Scroller
 {
     public class QuestCellView : EnhancedScrollerCellView
     {
-        public Action<QuestCellView> onClickSubmitButton;
+        public Func<int, bool> onClickSubmitButton;
 
-        private static readonly Color _highlightedColor = ColorHelper.HexToColorRGB("001870");
+        private static readonly Vector2 _leftBottom = new Vector2(-14f, -10.5f);
+        private static readonly Vector2 _minusRightTop = new Vector2(14f, 13f);
+        private static readonly Color _highlightedColor = ColorHelper.HexToColorRGB("a35400");
         public TextMeshProUGUI content;
         public Text buttonText;
         public Button button;
+        public Image buttonImage;
         public Game.Quest.Quest data;
         public SimpleCountableItemView[] rewardViews;
 
-        public IDisposable onClickDisposable;
         private Shadow[] _textShadows;
+        private int _currentDataIndex;
 
         #region Mono
 
         private void Awake()
         {
-            onClickDisposable = button.OnClickAsObservable()
-                .Subscribe(_ => onClickSubmitButton?.Invoke(this))
-                .AddTo(gameObject);
+            button.onClick.AddListener(OnClickButton);
         }
 
         private void OnDisable()
         {
-            onClickDisposable?.Dispose();
             button.interactable = true;
         }
 
         #endregion
 
-        public void SetData(Game.Quest.Quest quest)
+        public void SetData(Game.Quest.Quest quest, bool isLocalReceived, int dataIndex)
         {
+            _currentDataIndex = dataIndex;
+
             _textShadows = button.GetComponentsInChildren<Shadow>();
             data = quest;
             var text = quest.ToInfo();
@@ -54,10 +56,17 @@ namespace Nekoyume.UI.Scroller
             content.text = text;
             content.color = color;
 
-            buttonText.text = LocalizationManager.Localize("UI_GET_REWARD");
-            button.interactable = quest.Complete && !quest.Receive;
-            foreach (var shadow in _textShadows)
-                shadow.effectColor = button.interactable ? _highlightedColor : Color.black;
+            button.gameObject.SetActive(quest.Complete);
+            if (quest.Complete || isLocalReceived)
+            {
+                button.interactable = !quest.Receive && !isLocalReceived;
+                buttonText.text = button.interactable ? LocalizationManager.Localize("UI_GET_REWARD") : LocalizationManager.Localize("UI_RECEIVED");
+
+                foreach (var shadow in _textShadows)
+                    shadow.effectColor = button.interactable ? _highlightedColor : Color.black;
+                buttonImage.rectTransform.offsetMin = button.interactable ? _leftBottom : Vector2.zero;
+                buttonImage.rectTransform.offsetMax = button.interactable ? _minusRightTop : Vector2.zero;
+            }
 
             var itemMap = data.Reward.ItemMap;
             for (var i = 0; i < itemMap.Count; i++)
@@ -75,10 +84,18 @@ namespace Nekoyume.UI.Scroller
 
         public void RequestReward()
         {
+            buttonImage.rectTransform.offsetMin = Vector2.zero;
+            buttonImage.rectTransform.offsetMax = Vector2.zero;
             button.interactable = false;
             foreach (var shadow in _textShadows)
                 shadow.effectColor = Color.black;
             ActionManager.instance.QuestReward(data.Id);
+        }
+
+        private void OnClickButton()
+        {
+            onClickSubmitButton?.Invoke(_currentDataIndex);
+            buttonText.text = LocalizationManager.Localize("UI_RECEIVED");
         }
     }
 }

@@ -189,7 +189,7 @@ namespace Nekoyume.BlockChain
                             break;
 
                         case StateReferenceDownloadState stateReferenceDownloadState:
-                            format = LocalizationManager.Localize("UI_LOADING_STATE_DOWNLOAD");
+                            format = LocalizationManager.Localize("UI_LOADING_STATE_REFERENCE_DOWNLOAD");
                             text = string.Format(format, stateReferenceDownloadState.ReceivedStateReferenceCount,
                                 stateReferenceDownloadState.TotalStateReferenceCount);
                             break;

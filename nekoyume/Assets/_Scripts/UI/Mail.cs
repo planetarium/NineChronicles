@@ -42,10 +42,9 @@ namespace Nekoyume.UI
             public Image image;
             public Image icon;
             public Text text;
-            public MailTabState state;
             private Shadow[] _textShadows;
 
-            public void Init(MailTabState state, string localizationKey)
+            public void Init(string localizationKey)
             {
                 if (!button) return;
                 _textShadows = button.GetComponentsInChildren<Shadow>();
@@ -91,10 +90,10 @@ namespace Nekoyume.UI
             path = "UI/Textures/icon_mail_System";
             mailIcons.Add(MailType.System, Resources.Load<Sprite>(path));
 
-            allButton.Init(MailTabState.All, "ALL");
-            workshopButton.Init(MailTabState.Workshop, "UI_COMBINATION");
-            auctionButton.Init(MailTabState.Auction, "UI_SHOP");
-            systemButton.Init(MailTabState.System, "SYSTEM");
+            allButton.Init("ALL");
+            workshopButton.Init("UI_COMBINATION");
+            auctionButton.Init("UI_SHOP");
+            systemButton.Init("SYSTEM");
         }
 
         public override void Show()
