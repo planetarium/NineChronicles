@@ -23,7 +23,7 @@ namespace Nekoyume.Model
         
         IEnumerator CoDropBox(List<ItemBase> items);
         IEnumerator CoGetReward(List<ItemBase> rewards);
-        IEnumerator CoSpawnWave(List<Enemy> enemies, bool isBoss);
+        IEnumerator CoSpawnWave(int number, List<Enemy> enemies, bool isBoss, long exp);
         IEnumerator CoGetExp(long exp);
     }
 }

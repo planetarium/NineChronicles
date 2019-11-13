@@ -485,11 +485,50 @@ namespace Nekoyume.Game
             yield return null;
         }
 
-        public IEnumerator CoSpawnWave(List<Enemy> enemies, bool isBoss)
+        public IEnumerator CoSpawnWave(int number, List<Enemy> enemies, bool isBoss, long exp)
         {
             var playerCharacter = GetPlayer();
             playerCharacter.StartRun();
             var battle = Widget.Find<UI.Battle>();
+
+            if (id == 1)
+            {
+                switch (number)
+                {
+                    case 2:
+                        LoadBackground("chapter_1_2", 1f);
+                        AudioController.instance.PlayMusic("bgm_stage_orange");
+                        break;
+                    case 3:
+                        LoadBackground("chapter_1_3", 1f);
+                        AudioController.instance.PlayMusic("bgm_stage_blue");
+                        break;
+                    case 4:
+                        LoadBackground("chapter_2_1", 1f);
+                        AudioController.instance.PlayMusic("bgm_stage_green");
+                        break;
+                    case 5:
+                        LoadBackground("chapter_2_2", 1f);
+                        AudioController.instance.PlayMusic("bgm_stage_orange");
+                        break;
+                    case 6:
+                        LoadBackground("chapter_2_3", 1f);
+                        AudioController.instance.PlayMusic("bgm_stage_blue");
+                        break;
+                    case 7:
+                        LoadBackground("chapter_3_1", 1f);
+                        AudioController.instance.PlayMusic("bgm_stage_green");
+                        break;
+                    case 8:
+                        LoadBackground("chapter_3_2", 1f);
+                        AudioController.instance.PlayMusic("bgm_stage_orange");
+                        break;
+                    case 9:
+                        LoadBackground("chapter_3_3", 1f);
+                        AudioController.instance.PlayMusic("bgm_stage_blue");
+                        break;
+                }
+            }
 
             if (isBoss)
             {
