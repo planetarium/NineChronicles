@@ -15,12 +15,16 @@ spec:
       - name: miner
         image: <<DOCKER_IMAGE_NAME>>
         command:
-          - /scripts/entrypoint.sh
-          - --peer=<<PUBLIC_KEY>>,52.231.74.24,31234
+          - /entrypoint.sh
+          - --console-sink
           - --storage-path=/data/miner
+          - --peer=<<PUBLIC_KEY>>,52.231.74.24,31234
         volumeMounts:
           - name: volume
             mountPath: /data
+        resources:
+          requests:
+            cpu: 700m
       volumes:
         - name: volume
           persistentVolumeClaim:
@@ -45,8 +49,9 @@ spec:
       - name: seed
         image: <<DOCKER_IMAGE_NAME>>
         command:
-          - /scripts/entrypoint.sh
+          - /entrypoint.sh
           - --no-miner
+          - --console-sink
           - --host=52.231.74.24
           - --port=31234
           - --private-key=<<PRIVATE_KEY>>
@@ -61,7 +66,10 @@ spec:
           timeoutSeconds: 1
         ports:
         - containerPort: 31234
-          name: miner
+          name: seed
+        resources:
+          requests:
+            cpu: 700m
         volumeMounts:
           - name: volume
             mountPath: /data
