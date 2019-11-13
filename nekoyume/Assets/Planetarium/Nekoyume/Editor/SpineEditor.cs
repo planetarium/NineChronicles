@@ -106,6 +106,8 @@ namespace Planetarium.Nekoyume.Editor
                         case CharacterAnimation.Type.StandingToIdle:
                         case CharacterAnimation.Type.Win:
                         case CharacterAnimation.Type.Disappear:
+                        case CharacterAnimation.Type.Greeting:
+                        case CharacterAnimation.Type.Emotion:
                             assetPath = Path.Combine(animationAssetsPath,
                                 $"{nameof(CharacterAnimation.Type.Idle)}.asset");
                             asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(assetPath);
