@@ -19,8 +19,8 @@ namespace Nekoyume.Game.Quest
         public QuestReward(Bencodex.Types.Dictionary serialized)
         {
             ItemMap = serialized.ToDictionary(
-                kv => kv.Key.ToInt(),
-                kv => kv.Value.ToInt()
+                kv => kv.Key.ToInteger(),
+                kv => kv.Value.ToInteger()
             );
         }
 

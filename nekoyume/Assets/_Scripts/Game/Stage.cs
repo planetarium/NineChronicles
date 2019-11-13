@@ -44,7 +44,8 @@ namespace Nekoyume.Game
         public ParticleSystem defaultBGVFX;
         public ParticleSystem bosswaveBGVFX;
 
-        public int id;
+        public int worldId;
+        public int stageId;
         public Character.Player selectedPlayer;
         public readonly Vector2 questPreparationPosition = new Vector2(2.1f, -0.2f);
         public readonly Vector2 roomPosition = new Vector2(-2.808f, -1.519f);
@@ -214,7 +215,7 @@ namespace Nekoyume.Game
 
         private IEnumerator PlayAsync(BattleLog log)
         {
-            yield return StartCoroutine(CoStageEnter(log.worldStage));
+            yield return StartCoroutine(CoStageEnter(log.worldId, log.stageId));
             foreach (EventBase e in log)
             {
                 yield return StartCoroutine(e.CoExecute(this));
@@ -243,25 +244,26 @@ namespace Nekoyume.Game
             yield return null;
         }
 
-        private IEnumerator CoStageEnter(int stage)
+        private IEnumerator CoStageEnter(int worldId, int stageId)
         {
             IsInStage = true;
 
-            if (!Game.instance.TableSheets.BackgroundSheet.TryGetValue(stage, out var data))
+            if (!Game.instance.TableSheets.BackgroundSheet.TryGetValue(stageId, out var data))
             {
                 yield break;
             }
 
             _battleResultModel = new BattleResult.Model();
 
-            id = stage;
+            this.worldId = worldId;
+            this.stageId = stageId;
             zone = data.Background;
             LoadBackground(zone, 3.0f);
             PlayBGVFX(false);
             RunPlayer();
 
             var title = Widget.Find<StageTitle>();
-            title.Show(stage);
+            title.Show(stageId);
 
             yield return new WaitForSeconds(2.0f);
 
@@ -279,7 +281,7 @@ namespace Nekoyume.Game
             if (log.result == BattleLog.Result.Win)
             {
                 yield return new WaitForSeconds(0.75f);
-                yield return StartCoroutine(CoDialog(log.worldStage));
+                yield return StartCoroutine(CoDialog(log.stageId));
                 var playerCharacter = GetPlayer();
                 playerCharacter.Animator.Win();
                 playerCharacter.ShowSpeech("PLAYER_WIN");
@@ -323,7 +325,7 @@ namespace Nekoyume.Game
             status.ShowBattleStatus();
 
             var battle = Widget.Find<UI.Battle>();
-            battle.Show(id);
+            battle.Show(stageId);
 
             ActionCamera.instance.ChaseX(player.transform);
             yield return null;
@@ -515,7 +517,7 @@ namespace Nekoyume.Game
                 playerCharacter.ShowSpeech("PLAYER_BOSS_ENCOUNTER");
             }
 
-            yield return StartCoroutine(spawner.CoSetData(id, enemies));
+            yield return StartCoroutine(spawner.CoSetData(stageId, enemies));
         }
 
         public IEnumerator CoGetExp(long exp)

@@ -63,7 +63,7 @@ namespace Nekoyume.UI
         {
             Close();
             var avatarState = States.Instance.CurrentAvatarState.Value;
-            Find<WorldMap>().Show(avatarState.worldStage);
+            Find<WorldMap>().Show(avatarState.worldInformation);
             AudioController.PlayClick();
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickMainBattle);
         }
@@ -136,11 +136,11 @@ namespace Nekoyume.UI
             {
                 speechBubble.Hide();
             }
-            
+
             Find<Inventory>().Close(ignoreCloseAnimation);
             Find<StatusDetail>().Close(ignoreCloseAnimation);
             Find<Quest>().Close(ignoreCloseAnimation);
-            
+
             Find<BottomMenu>().Close(ignoreCloseAnimation);
             Find<Status>().Close(ignoreCloseAnimation);
             base.Close(ignoreCloseAnimation);

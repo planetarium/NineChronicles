@@ -47,6 +47,7 @@ namespace Nekoyume.UI.Module
 
         // 토글 그룹과 버튼.
         private ToggleGroup _toggleGroup;
+        public IToggleGroup ToggleGroup => _toggleGroup;
         public NotifiableButton chatButton;
         public NotifiableButton mailButton;
         public NotifiableButton questButton;

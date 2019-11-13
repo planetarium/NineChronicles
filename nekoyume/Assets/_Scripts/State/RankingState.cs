@@ -41,7 +41,7 @@ namespace Nekoyume.State
         {
             if (_map.TryGetValue(state.address, out var current))
             {
-                if (current.worldStage < state.worldStage)
+                if (current.exp < state.exp)
                 {
                     _map[state.address] = (AvatarState) state.Clone();
                 }
@@ -55,7 +55,13 @@ namespace Nekoyume.State
         public AvatarState[] GetAvatars(DateTimeOffset? dt)
         {
             IEnumerable<AvatarState> map =
-                _map.Values.OrderByDescending(c => c.worldStage).ThenBy(c => c.clearedAt);
+                _map.Values.OrderByDescending(c => c.exp).ThenBy(c =>
+                {
+                    if (!c.worldInformation.TryGetUnlockedWorldByLastStageClearedAt(out var detail))
+                        throw new Exception($"worldInformation.TryGetLastNewlyClearedDetail() failed.");
+
+                    return detail.StageClearedAt;
+                });
             if (dt != null)
             {
                 map = map.Where(context => ((TimeSpan) (dt - context.updatedAt)).Days <= 1);

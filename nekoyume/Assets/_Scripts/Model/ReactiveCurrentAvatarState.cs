@@ -13,21 +13,19 @@ namespace Nekoyume.Model
     {
         public static readonly ReactiveProperty<Inventory> Inventory = new ReactiveProperty<Inventory>();
         public static readonly ReactiveProperty<MailBox> MailBox = new ReactiveProperty<MailBox>();
-        public static readonly ReactiveProperty<int> WorldStage = new ReactiveProperty<int>();
+        public static readonly ReactiveProperty<WorldInformation> WorldInformation = new ReactiveProperty<WorldInformation>();
         public static readonly ReactiveProperty<int> ActionPoint = new ReactiveProperty<int>();
         public static readonly ReactiveProperty<long> DailyRewardReceivedIndex = new ReactiveProperty<long>();
         public static readonly ReactiveProperty<QuestList> QuestList = new ReactiveProperty<QuestList>();
 
         public static void Initialize(AvatarState avatarState)
         {
-            if (ReferenceEquals(avatarState, null))
-            {
+            if (avatarState is null)
                 return;
-            }
             
             Inventory.SetValueAndForceNotify(avatarState.inventory);
             MailBox.SetValueAndForceNotify(avatarState.mailBox);
-            WorldStage.SetValueAndForceNotify(avatarState.worldStage);
+            WorldInformation.SetValueAndForceNotify(avatarState.worldInformation);
             ActionPoint.SetValueAndForceNotify(avatarState.actionPoint);
             DailyRewardReceivedIndex.SetValueAndForceNotify(avatarState.dailyRewardReceivedIndex);
             QuestList.SetValueAndForceNotify(avatarState.questList);

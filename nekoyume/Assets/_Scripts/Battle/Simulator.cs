@@ -15,7 +15,8 @@ namespace Nekoyume.Battle
     public class Simulator
     {
         public readonly IRandom Random;
-        public readonly int WorldStage;
+        public readonly int WorldId;
+        public readonly int StageId;
         private readonly List<Wave> _waves;
         public readonly BattleLog Log;
         public bool Lose = false;
@@ -30,12 +31,13 @@ namespace Nekoyume.Battle
         public CollectionMap ItemMap = new CollectionMap();
         public readonly TableSheets TableSheets;
 
-        public Simulator(IRandom random, AvatarState avatarState, List<Consumable> foods, int worldStage,
+        public Simulator(IRandom random, AvatarState avatarState, List<Consumable> foods, int worldId, int stageId,
             Game.Skill skill = null, TableSheetsState tableSheetsState = null)
         {
             Random = random;
             TableSheets = TableSheets.FromTableSheetsState(tableSheetsState);
-            WorldStage = worldStage;
+            WorldId = worldId;
+            StageId = stageId;
             Log = new BattleLog();
             _waves = new List<Wave>();
             Player = new Player(avatarState, this);
@@ -49,7 +51,8 @@ namespace Nekoyume.Battle
 
         public Player Simulate()
         {
-            Log.worldStage = WorldStage;
+            Log.worldId = WorldId;
+            Log.stageId = StageId;
             Player.Spawn();
             foreach (var wave in _waves)
             {
@@ -80,13 +83,6 @@ namespace Nekoyume.Battle
 
                         if (index == lastWave)
                         {
-                            var stageSheet = TableSheets.StageSheet;
-                            if (WorldStage == Player.worldStage
-                                && Player.worldStage < stageSheet.Last.Id)
-                            {
-                                Player.worldStage++;
-                            }
-
                             _result = BattleLog.Result.Win;
                             var rewards = _waveRewards.SelectMany(i => i).ToList();
                             ItemMap = Player.GetRewards(rewards);
@@ -126,8 +122,8 @@ namespace Nekoyume.Battle
         private void SetWave()
         {
             var stageSheet = TableSheets.StageSheet;
-            if (!stageSheet.TryGetValue(WorldStage, out var stageRow))
-                throw new SheetRowNotFoundException(nameof(stageSheet), WorldStage.ToString());
+            if (!stageSheet.TryGetValue(StageId, out var stageRow))
+                throw new SheetRowNotFoundException(nameof(stageSheet), StageId.ToString());
 
             var waves = stageRow.Waves;
             _totalWave = waves.Count;

@@ -16,11 +16,11 @@ namespace Nekoyume.Model
         {
         }
 
-        public CollectionMap(Bencodex.Types.Dictionary serialized) : base()
+        public CollectionMap(Bencodex.Types.Dictionary serialized)
         {
             _dictionary = serialized.ToDictionary(
-                kv => kv.Key.ToInt(),
-                kv => kv.Value.ToInt()
+                kv => kv.Key.ToInteger(),
+                kv => kv.Value.ToInteger()
             );
         }
 

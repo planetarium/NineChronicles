@@ -101,7 +101,7 @@ namespace Nekoyume.Action
 
         private static AvatarState CreateAvatarState(string name, Address avatarAddress, IActionContext ctx, long index)
         {
-            var avatarState = new AvatarState(avatarAddress, ctx.Signer, ctx.BlockIndex, name);
+            var avatarState = new AvatarState(avatarAddress, ctx.Signer, ctx.BlockIndex, index, name);
 #if UNITY_EDITOR
             var tableSheets = TableSheets.FromActionContext(ctx);
             AddItemsForTest(avatarState, ctx.Random, tableSheets);

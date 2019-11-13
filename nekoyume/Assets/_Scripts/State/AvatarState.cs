@@ -26,9 +26,8 @@ namespace Nekoyume.State
         public int level;
         public long exp;
         public Inventory inventory;
-        public int worldStage;
+        public WorldInformation worldInformation;
         public DateTimeOffset updatedAt;
-        public DateTimeOffset? clearedAt;
         public Address agentAddress;
         public QuestList questList;
         public MailBox mailBox;
@@ -44,12 +43,10 @@ namespace Nekoyume.State
         public int ear;
         public int tail;
 
-        public AvatarState(Address address, Address agentAddress, long blockIndex, string name = null) : base(address)
+        public AvatarState(Address address, Address agentAddress, long blockIndex, long rewardReceivedIndex, string name = null) : base(address)
         {
             if (address == null)
-            {
                 throw new ArgumentNullException(nameof(address));
-            }
             
             this.name = name ?? "";
             characterId = GameConfig.DefaultAvatarCharacterId;
@@ -57,9 +54,9 @@ namespace Nekoyume.State
             exp = 0;
             inventory = new Inventory();
 #if UNITY_EDITOR
-            worldStage = 150;
+            worldInformation = new WorldInformation(blockIndex, false);
 #else
-            worldStage = 1;
+            worldInformation = new WorldInformation(blockIndex);
 #endif
             updatedAt = DateTimeOffset.UtcNow;
             this.agentAddress = agentAddress;
@@ -67,6 +64,7 @@ namespace Nekoyume.State
             mailBox = new MailBox();
             this.blockIndex = blockIndex;
             actionPoint = GameConfig.ActionPoint;
+            dailyRewardReceivedIndex = rewardReceivedIndex;
             stageMap = new CollectionMap();
             monsterMap = new CollectionMap();
             itemMap = new CollectionMap();
@@ -84,22 +82,20 @@ namespace Nekoyume.State
         public AvatarState(AvatarState avatarState) : base(avatarState.address)
         {
             if (avatarState == null)
-            {
                 throw new ArgumentNullException(nameof(avatarState));
-            }
             
             name = avatarState.name;
             characterId = avatarState.characterId;
             level = avatarState.level;
             exp = avatarState.exp;
             inventory = avatarState.inventory;
-            worldStage = avatarState.worldStage;
+            worldInformation = avatarState.worldInformation;
             updatedAt = avatarState.updatedAt;
-            clearedAt = avatarState.clearedAt;
             agentAddress = avatarState.agentAddress;
             questList = avatarState.questList;
             mailBox = avatarState.mailBox;
             blockIndex = avatarState.blockIndex;
+            dailyRewardReceivedIndex = avatarState.dailyRewardReceivedIndex;
             actionPoint = avatarState.actionPoint;
             stageMap = avatarState.stageMap;
             monsterMap = avatarState.monsterMap;
@@ -119,13 +115,13 @@ namespace Nekoyume.State
             level = (int) ((Integer) serialized["level"]).Value;
             exp = (long) ((Integer) serialized["exp"]).Value;
             inventory = new Game.Item.Inventory((Bencodex.Types.List) serialized["inventory"]);
-            worldStage = (int) ((Integer) serialized["worldStage"]).Value;
+            worldInformation = new WorldInformation((Bencodex.Types.Dictionary) serialized["worldInformation"]);
             updatedAt = serialized["updatedAt"].ToDateTimeOffset();
-            clearedAt = serialized["clearedAt"].ToNullableDateTimeOffset();
             agentAddress = new Address(((Binary) serialized["agentAddress"]).Value);
             questList = new QuestList((Bencodex.Types.List) serialized["questList"]);
             mailBox = new MailBox((Bencodex.Types.List) serialized["mailBox"]);
             blockIndex = (long) ((Integer) serialized["blockIndex"]).Value;
+            dailyRewardReceivedIndex = (long) ((Integer) serialized["nextDailyRewardIndex"]).Value;
             actionPoint = (int) ((Integer) serialized["actionPoint"]).Value;
             stageMap = new CollectionMap((Bencodex.Types.Dictionary) serialized["stageMap"]);
             serialized.TryGetValue((Text) "monsterMap", out var value2);
@@ -147,7 +143,7 @@ namespace Nekoyume.State
             level = player.Level;
             exp = player.Exp.Current;
             inventory = player.Inventory;
-            worldStage = player.worldStage;
+            worldInformation = player.worldInformation;
             foreach (var pair in player.monsterMap)
             {
                 monsterMap.Add(pair);
@@ -158,7 +154,7 @@ namespace Nekoyume.State
             }
             if (simulator.Result == BattleLog.Result.Win)
             {
-                stageMap.Add(new KeyValuePair<int, int>(simulator.WorldStage, 1));
+                stageMap.Add(new KeyValuePair<int, int>(simulator.StageId, 1));
             }
             foreach (var pair in simulator.ItemMap)
             {
@@ -271,14 +267,13 @@ namespace Nekoyume.State
                 [(Text) "level"] = (Integer) level,
                 [(Text) "exp"] = (Integer) exp,
                 [(Text) "inventory"] = inventory.Serialize(),
-                [(Text) "worldStage"] = (Integer) worldStage,
+                [(Text) "worldInformation"] = worldInformation.Serialize(),
                 [(Text) "updatedAt"] = updatedAt.Serialize(),
-                [(Text) "clearedAt"] = clearedAt.Serialize(),
                 [(Text) "agentAddress"] = agentAddress.Serialize(),
                 [(Text) "questList"] = questList.Serialize(),
                 [(Text) "mailBox"] = mailBox.Serialize(),
                 [(Text) "blockIndex"] = (Integer) blockIndex,
-                [(Text) "dailyRewardReceivedIndex"] = (Integer) dailyRewardReceivedIndex,
+                [(Text) "nextDailyRewardIndex"] = (Integer) dailyRewardReceivedIndex,
                 [(Text) "actionPoint"] = (Integer) actionPoint,
                 [(Text) "stageMap"] = stageMap.Serialize(),
                 [(Text) "monsterMap"] = monsterMap.Serialize(),

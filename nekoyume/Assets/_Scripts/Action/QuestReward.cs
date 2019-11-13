@@ -52,7 +52,7 @@ namespace Nekoyume.Action
         }.ToImmutableDictionary();
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
         {
-            questId = plainValue["questId"].ToInt();
+            questId = plainValue["questId"].ToInteger();
             avatarAddress = plainValue["avatarAddress"].ToAddress();
         }
 
