@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Resources;
 using Bencodex.Types;
 using Libplanet.Action;
 using Nekoyume.State;
@@ -31,6 +32,7 @@ namespace Nekoyume.Action
                 states = states.SetState(RankingState.Address, MarkChanged);
                 states = states.SetState(ShopState.Address, MarkChanged);
                 states = states.SetState(DailyBlockState.Address, MarkChanged);
+                states = states.SetState(TableSheetsState.Address, MarkChanged);
                 return states.SetState(ctx.Miner, MarkChanged);
             }
 
@@ -41,7 +43,11 @@ namespace Nekoyume.Action
                 states = states
                     .SetState(RankingState.Address, new RankingState().Serialize())
                     .SetState(ShopState.Address, new ShopState().Serialize())
-                    .SetState(DailyBlockState.Address, new DailyBlockState(0).Serialize());
+                    .SetState(DailyBlockState.Address, new DailyBlockState(0).Serialize())
+                    .SetState(TableSheetsState.Address, new TableSheetsState
+                    {
+                        TableSheets = Game.Game.instance.TableSheets.TableCsvAssets
+                    }.Serialize());
             }
             else
             {
