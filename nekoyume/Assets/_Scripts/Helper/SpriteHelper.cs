@@ -11,7 +11,7 @@ namespace Nekoyume.Helper
         private const string ItemIconDefaultPath = "UI/Icons/Item/100000";
         private const string ItemIconPathFormat = "UI/Icons/Item/{0}";
 
-        private const string ItemBackgroundDefaultPath = "UI/Textures/item_bg_0";
+        private const string ItemBackgroundDefaultPath = "UI/Textures/item_bg_1";
         private const string ItemBackgroundPathFormat = "UI/Textures/item_bg_{0}";
 
         private const string BuffIconDefaultPath = "UI/Icons/Buff/icon_buff_resurrection";

@@ -147,9 +147,6 @@ namespace Nekoyume.UI.Module
             var item = Model.ItemBase.Value;
             
             var gradeSprite = item.GetBackgroundSprite();
-            if (gradeSprite is null)
-                throw new FailedToLoadResourceException<Sprite>(item.Data.Grade.ToString());
-
             gradeImage.overrideSprite = gradeSprite;
 
             var itemSprite = item.GetIconSprite();
