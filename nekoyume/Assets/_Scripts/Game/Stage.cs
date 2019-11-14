@@ -44,8 +44,6 @@ namespace Nekoyume.Game
 
         public int id;
         public Character.Player selectedPlayer;
-        public Vector3 selectPositionBegin(int index) => new Vector3(-2.2f + index * 2.22f, -2.6f, 0.0f);
-        public Vector3 selectPositionEnd(int index) => new Vector3(-2.2f + index * 2.22f, -0.88f, 0.0f);
         public readonly Vector2 questPreparationPosition = new Vector2(2.1f, -0.2f);
         public readonly Vector2 roomPosition = new Vector2(-2.66f, -1.85f);
         public bool repeatStage;
@@ -57,6 +55,8 @@ namespace Nekoyume.Game
 
         public bool IsInStage { get; private set; }
         public Enemy Boss { get; private set; }
+        public Vector3 SelectPositionBegin(int index) => new Vector3(-2.15f + index * 2.22f, -1.79f, 0.0f);
+        public Vector3 SelectPositionEnd(int index) => new Vector3(-2.15f + index * 2.22f, -0.25f, 0.0f);
 
         protected void Awake()
         {
