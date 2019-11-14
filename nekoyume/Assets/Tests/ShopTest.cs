@@ -23,8 +23,7 @@ namespace Tests
             yield return new WaitUntil(() => Widget.Find<Login>().ready);
             Widget.Find<Login>().SlotClick(2);
             var loginDetail = Widget.Find<LoginDetail>();
-            loginDetail.nameField.text = "sell";
-            loginDetail.CreateClick();
+            loginDetail.CreateAndLogin("Sell");
             yield return new WaitUntil(() => Game.instance.agent.StagedTransactions.Any());
             var createAvatarTx = Game.instance.agent.StagedTransactions.First();
             yield return miner.CoMine(createAvatarTx);
@@ -97,8 +96,7 @@ namespace Tests
             yield return new WaitUntil(() => Widget.Find<Login>().ready);
             Widget.Find<Login>().SlotClick(2);
             var loginDetail = Widget.Find<LoginDetail>();
-            loginDetail.nameField.text = "buy";
-            loginDetail.CreateClick();
+            loginDetail.CreateAndLogin("Buy");
             yield return new WaitUntil(() => Game.instance.agent.StagedTransactions.Any());
             var createAvatarTx = Game.instance.agent.StagedTransactions.First();
             yield return miner.CoMine(createAvatarTx);
@@ -156,8 +154,7 @@ namespace Tests
             yield return new WaitUntil(() => Widget.Find<Login>().ready);
             Widget.Find<Login>().SlotClick(2);
             var loginDetail = Widget.Find<LoginDetail>();
-            loginDetail.nameField.text = "buyFail";
-            loginDetail.CreateClick();
+            loginDetail.CreateAndLogin("BuyFail");
             Debug.Log(1);
             yield return new WaitUntil(() => Game.instance.agent.StagedTransactions.Any());
             var createAvatarTx = Game.instance.agent.StagedTransactions.First();

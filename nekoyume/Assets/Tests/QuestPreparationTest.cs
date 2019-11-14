@@ -100,8 +100,7 @@ namespace Tests
             yield return new WaitUntil(() => Widget.Find<Login>().ready);
             Widget.Find<Login>().SlotClick(2);
             var loginDetail = Widget.Find<LoginDetail>();
-            loginDetail.nameField.text = "has";
-            loginDetail.CreateClick();
+            loginDetail.CreateAndLogin("HackAndSlash");
             yield return new WaitUntil(() => Game.instance.agent.StagedTransactions.Any());
             var createAvatarTx = Game.instance.agent.StagedTransactions.First();
             yield return miner.CoMine(createAvatarTx);
