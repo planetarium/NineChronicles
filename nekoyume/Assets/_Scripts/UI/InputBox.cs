@@ -1,7 +1,6 @@
 using Assets.SimpleLocalization;
 using Nekoyume.Game.Controller;
 using TMPro;
-using UnityEngine;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
@@ -16,20 +15,21 @@ namespace Nekoyume.UI
 
     public class InputBox : PopupWidget
     {
-        public TMP_InputField inputField;
-        public TextMeshProUGUI inputFieldPlaceHolder;
+        public InputField inputField;
+        public Text inputFieldPlaceHolder;
         public TextMeshProUGUI content;
-        public Text labelYes;
-        public Text labelNo;
+        public TextMeshProUGUI labelYes;
+        public TextMeshProUGUI labelNo;
         public InputBoxDelegate CloseCallback { get; set; }
         public string text;
 
         public void Show(string placeHolderText, string content, string labelYes = "UI_OK", string labelNo = "UI_CANCEL",
             bool localize = true)
         {
+            text = inputField.text = string.Empty;
             if (localize)
             {
-                this.inputFieldPlaceHolder.text = LocalizationManager.Localize(content);
+                this.inputFieldPlaceHolder.text = LocalizationManager.Localize(placeHolderText);
                 this.content.text = LocalizationManager.Localize(content);
                 this.labelYes.text = LocalizationManager.Localize(labelYes);
                 this.labelNo.text = LocalizationManager.Localize(labelNo);
@@ -42,14 +42,13 @@ namespace Nekoyume.UI
                 this.labelNo.text = "CANCEL";
             }
 
-            text = inputField.text = string.Empty;
             base.Show();
         }
 
         public void Yes()
         {
-            CloseCallback?.Invoke(ConfirmResult.Yes);
             text = inputField.text;
+            CloseCallback?.Invoke(ConfirmResult.Yes);
 
             base.Close();
             AudioController.PlayClick();
@@ -57,8 +56,8 @@ namespace Nekoyume.UI
 
         public void No()
         {
-            CloseCallback?.Invoke(ConfirmResult.No);
             text = inputField.text = string.Empty;
+            CloseCallback?.Invoke(ConfirmResult.No);
 
             base.Close();
             AudioController.PlayClick();

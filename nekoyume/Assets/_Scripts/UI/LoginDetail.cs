@@ -11,6 +11,7 @@ using UnityEngine.UI;
 using System.Text.RegularExpressions;
 using Nekoyume.UI.Module;
 using TMPro;
+using System.Collections.Generic;
 
 namespace Nekoyume.UI
 {
@@ -66,14 +67,14 @@ namespace Nekoyume.UI
                     CreateAndLogin(inputBox.text);
                 }
             };
-            inputBox.Show("UI_INPUT_NAME", "123");
+            inputBox.Show("UI_INPUT_NAME", "UI_NICKNAME_CONDITION");
         }
 
         public void CreateAndLogin(string nickName)
         {
             if (!Regex.IsMatch(nickName, GameConfig.AvatarNickNamePattern))
             {
-                Find<Alert>().Show("UI_ERROR", "UI_INVALID_NICKNAME");
+                Find<Alert>().Show("UI_ERROR", "UI_NICKNAME_CONDITION");
                 return;
             }
 
