@@ -40,11 +40,11 @@ namespace Nekoyume.Game.Entrance
             {
                 Player player;
                 bool active;
-                var beginPos = stage.selectPositionBegin(i);
-                var endPos = stage.selectPositionEnd(i);
+                var beginPos = stage.SelectPositionBegin(i);
+                var endPos = stage.SelectPositionEnd(i);
                 var placeRes = Resources.Load<GameObject>("Prefab/PlayerPlace");
                 if (i % 2 == 0)
-                    endPos.y = -1.1f;
+                    endPos.y = -0.45f;
                 if (States.Instance.AvatarStates.TryGetValue(i, out var avatarState))
                 {
                     player = factory.Create(avatarState).GetComponent<Player>();
