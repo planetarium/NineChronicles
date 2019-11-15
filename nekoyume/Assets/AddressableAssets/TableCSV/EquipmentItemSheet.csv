@@ -15,6 +15,11 @@ id,_name,item_sub_type,grade,elemental_type,set_id,stat_type,stat_value,attack_r
 10132000,어둠 검(물),Weapon,3,Water,13,ATK,30,2
 10133000,어둠 검(땅),Weapon,3,Land,14,ATK,30,2
 10134000,어둠 검(바람),Weapon,3,Wind,15,ATK,30,2
+10140000,5티어 검,Weapon,5,Normal,11,ATK,30,2
+10141000,5티어 검(불),Weapon,5,Fire,12,ATK,30,2
+10142000,5티어 검(물),Weapon,5,Water,13,ATK,30,2
+10143000,5티어 검(땅),Weapon,5,Land,14,ATK,30,2
+10144000,5티어 검(바람),Weapon,5,Wind,15,ATK,30,2
 10200000,누더기,Armor,0,Normal,0,DEF,1,2
 10210000,옷,Armor,1,Normal,1,DEF,10,2
 10211000,옷(불),Armor,1,Fire,2,DEF,10,2
