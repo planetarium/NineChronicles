@@ -54,7 +54,7 @@ namespace Nekoyume.Action
 
             var deletedAvatarState = new DeletedAvatarState(avatarState, DateTimeOffset.UtcNow)
             {
-                BlockIndex = ctx.BlockIndex,
+                blockIndex = ctx.BlockIndex,
             };
 
             return states

@@ -2,9 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using Assets.SimpleLocalization;
-using Bencodex.Types;
 using Nekoyume.Action;
 using Nekoyume.Game.Mail;
 using Nekoyume.Manager;
@@ -331,7 +329,7 @@ namespace Nekoyume.BlockChain
         public static void UpdateLocalAvatarState(AvatarState avatarState, int index)
         {
             Debug.LogFormat("Update local avatarState. agentAddress: {0} address: {1} BlockIndex: {2}",
-                avatarState.agentAddress, avatarState.address, avatarState.BlockIndex);
+                avatarState.agentAddress, avatarState.address, avatarState.blockIndex);
             UpdateAvatarState(avatarState, index);
         }
 
@@ -357,7 +355,7 @@ namespace Nekoyume.BlockChain
                         var avatarState =
                             ByteSerializer.Deserialize<AvatarState>(File.ReadAllBytes(path));
                         Debug.LogFormat("Load local avatarState. agentAddress: {0} address: {1} BlockIndex: {2}",
-                            avatarState.agentAddress, avatarState.address, avatarState.BlockIndex);
+                            avatarState.agentAddress, avatarState.address, avatarState.blockIndex);
                         UpdateLocalAvatarState(avatarState, avatarAddress.Key);
                         File.Delete(path);
                     }

@@ -81,7 +81,7 @@ namespace Nekoyume.Action
 
         private static AvatarState CreateAvatarState(string name, Address avatarAddress, IActionContext ctx, long index)
         {
-            var avatarState = new AvatarState(avatarAddress, ctx.Signer, ctx.BlockIndex, index, name);
+            var avatarState = new AvatarState(avatarAddress, ctx.Signer, ctx.BlockIndex, name);
 #if UNITY_EDITOR
             AddItemsForTest(avatarState, ctx.Random);
 #endif
