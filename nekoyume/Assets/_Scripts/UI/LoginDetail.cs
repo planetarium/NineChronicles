@@ -1,17 +1,13 @@
-using System;
 using Assets.SimpleLocalization;
-using DG.Tweening;
 using Nekoyume.BlockChain;
 using Nekoyume.State;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model;
 using UniRx;
 using UnityEngine;
-using UnityEngine.UI;
 using System.Text.RegularExpressions;
 using Nekoyume.UI.Module;
 using TMPro;
-using System.Collections.Generic;
 
 namespace Nekoyume.UI
 {
@@ -23,12 +19,11 @@ namespace Nekoyume.UI
         public TextMeshProUGUI levelAndNameInfo;
         public RectTransform content;
         public GameObject profileImage;
-        public GameObject statusGrid;
-        public GameObject statusRow;
         public GameObject palette;
         public TextMeshProUGUI paletteHairText;
         public TextMeshProUGUI paletteLensText;
         public TextMeshProUGUI paletteTopText;
+        public StatusInfo[] statusRows;
 
         private int _selectedIndex;
         private bool _isCreateMode;
@@ -43,18 +38,6 @@ namespace Nekoyume.UI
             paletteTopText.text = LocalizationManager.Localize("UI_ETC");
 
             Game.Event.OnLoginDetail.AddListener(Init);
-        }
-
-        private void Update()
-        {
-            //if (nameField.isFocused)
-            //{
-            //    namePlaceHolder.color = _namePlaceHolderFocusedColor;
-            //}
-            //else
-            //{
-            //    namePlaceHolder.color = _namePlaceHolderOriginColor;
-            //}
         }
 
         public void CreateClick()
@@ -146,11 +129,12 @@ namespace Nekoyume.UI
         private void SetInformation(Player player)
         {
             var tuples = player.GetStatTuples();
+            int idx = 0;
             foreach(var (statType, value, additionalValue) in tuples)
             {
-                var go = Instantiate(statusRow, statusGrid.transform);
-                var info = go.GetComponent<StatusInfo>();
+                var info = statusRows[idx];
                 info.Set(statType, value, additionalValue);
+                ++idx;
             }
         }
 
@@ -161,16 +145,7 @@ namespace Nekoyume.UI
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
-            Clear();
             base.Close(ignoreCloseAnimation);
-        }
-
-        private void Clear()
-        {
-            foreach (Transform child in statusGrid.transform)
-            {
-                Destroy(child.gameObject);
-            }
         }
 
         private void OnDidAvatarStateLoaded(AvatarState avatarState)
