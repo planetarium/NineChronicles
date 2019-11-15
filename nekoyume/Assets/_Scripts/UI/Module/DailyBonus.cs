@@ -50,7 +50,7 @@ namespace Nekoyume.UI.Module
 
         private void SetIndex(long index)
         {
-            var min = Math.Min(index - _receivedIndex, 0);
+            var min = Math.Max(index - _receivedIndex, 0);
             var value = Math.Min(min, DailyBlockState.UpdateInterval);
             text.text = $"{value} / {DailyBlockState.UpdateInterval}";
             slider.value = value;
