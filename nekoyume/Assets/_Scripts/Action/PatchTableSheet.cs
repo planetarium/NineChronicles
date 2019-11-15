@@ -1,9 +1,9 @@
+using System;
 using System.Collections.Immutable;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.State;
-using Nekoyume.TableData;
 using UnityEngine;
 
 namespace Nekoyume.Action
@@ -30,17 +30,18 @@ namespace Nekoyume.Action
 //                return states;
 //            }
 
-
             var tableSheetsState = TableSheetsState.FromActionContext(ctx);
             Debug.Log($"[{ctx.BlockIndex}] {TableName} was patched by {ctx.Signer.ToHex()}\n" +
                       "before:\n" +
-                      tableSheetsState.TableSheets[TableName] +
+                      (tableSheetsState.TableSheets.TryGetValue(TableName, out string value) ? value : string.Empty) +
                       "\n" +
-                      "after:\n" + 
+                      "after:\n" +
                       TableCsv
             );
+
             tableSheetsState.TableSheets[TableName] = TableCsv;
             Game.Game.instance.TableSheets.SetToSheet(TableName, TableCsv);
+
             return states.SetState(TableSheetsState.Address, tableSheetsState.Serialize());
         }
 

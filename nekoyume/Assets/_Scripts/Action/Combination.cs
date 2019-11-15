@@ -15,6 +15,7 @@ using Nekoyume.Game.Mail;
 using Nekoyume.State;
 using Nekoyume.TableData;
 using UnityEngine;
+using Material = Nekoyume.Game.Item.Material;
 
 namespace Nekoyume.Action
 {
@@ -29,7 +30,7 @@ namespace Nekoyume.Action
         [Serializable]
         public class ResultModel : AttachmentActionResult
         {
-            public Dictionary<int, int> materials;
+            public Dictionary<Material, int> materials;
 
             protected override string TypeId => "combination.result-model";
 
@@ -49,7 +50,7 @@ namespace Nekoyume.Action
                 }.Union((Dictionary) base.Serialize()));
         }
 
-        public Dictionary<int, int> Materials { get; private set; }
+        public Dictionary<Material, int> Materials { get; private set; }
         public Address AvatarAddress;
         public ResultModel Result;
 
@@ -62,7 +63,7 @@ namespace Nekoyume.Action
 
         public Combination()
         {
-            Materials = new Dictionary<int, int>();
+            Materials = new Dictionary<Material, int>();
         }
 
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
@@ -113,12 +114,7 @@ namespace Nekoyume.Action
                 materials = Materials,
             };
 
-            // 모든 재료를 테이블 값으로.
-            var materialRows = Materials
-                .Where(pair => _tableSheets.MaterialItemSheet.ContainsKey(pair.Key))
-                .ToDictionary(
-                    pair => _tableSheets.MaterialItemSheet[pair.Key],
-                    pair => pair.Value);
+            var materialRows = Materials.ToDictionary(pair => pair.Key.Data, pair => pair.Value);
 
             var equipmentMaterials = materialRows
                 .Where(materialRow => materialRow.Key.ItemSubType == ItemSubType.EquipmentMaterial)

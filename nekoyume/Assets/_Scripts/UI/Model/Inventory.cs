@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Security.Cryptography;
+using Libplanet;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Item;
 using Nekoyume.UI.Module;
 using UniRx;
-using UnityEngine;
 using Material = Nekoyume.Game.Item.Material;
 
 namespace Nekoyume.UI.Model
@@ -266,7 +266,25 @@ namespace Nekoyume.UI.Model
 
         public bool TryGetMaterial(Material material, out InventoryItem inventoryItem)
         {
-            return TryGetMaterial(material.Data.Id, out inventoryItem);
+            return TryGetMaterial(material.Data.ItemId, out inventoryItem);
+        }
+
+        public bool TryGetMaterial(HashDigest<SHA256> itemId, out InventoryItem inventoryItem)
+        {
+            foreach (var item in Materials)
+            {
+                if (!(item.ItemBase.Value is Material material) ||
+                    !material.Data.ItemId.Equals(itemId))
+                {
+                    continue;
+                }
+
+                inventoryItem = item;
+                return true;
+            }
+
+            inventoryItem = null;
+            return false;
         }
         
         public bool TryGetMaterial(int id, out InventoryItem inventoryItem)
