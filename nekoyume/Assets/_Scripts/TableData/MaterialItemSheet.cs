@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using Bencodex.Types;
+using Libplanet;
 using Nekoyume.EnumType;
-using UnityEngine;
 
 namespace Nekoyume.TableData
 {
@@ -13,6 +14,7 @@ namespace Nekoyume.TableData
         [Serializable]
         public class Row : ItemSheet.Row
         {
+            public HashDigest<SHA256> ItemId { get; private set; }
             public override ItemType ItemType => ItemType.Material;
             public StatType? StatType { get; private set; }
             public int StatMin { get; private set; }
@@ -27,6 +29,7 @@ namespace Nekoyume.TableData
 
             public Row(Bencodex.Types.Dictionary serialized) : base(serialized)
             {
+                ItemId = Hashcash.Hash(serialized.EncodeIntoChunks().SelectMany(b => b).ToArray());
                 StatType = StatTypeExtension.Deserialize((Binary) serialized["stat_type"]);
                 StatMin = (Integer) serialized["stat_min"];
                 StatMax = (Integer) serialized["stat_max"];
@@ -50,6 +53,7 @@ namespace Nekoyume.TableData
                 SkillDamageMax = string.IsNullOrEmpty(fields[9]) ? 0 : int.Parse(fields[9]);
                 SkillChanceMin = string.IsNullOrEmpty(fields[10]) ? 0 : int.Parse(fields[10]);
                 SkillChanceMax = string.IsNullOrEmpty(fields[11]) ? 0 : int.Parse(fields[11]);
+                ItemId = Hashcash.Hash(Serialize().EncodeIntoChunks().SelectMany(b => b).ToArray());
             }
 
             public override IValue Serialize() => new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
