@@ -1,6 +1,5 @@
 using Assets.SimpleLocalization;
 using Nekoyume.Game.Controller;
-using Nekoyume.Model;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using UnityEngine;
@@ -22,6 +21,7 @@ namespace Nekoyume.UI
         public GameObject group;
         public GameObject statusInfo;
         public GameObject optionGroup;
+        public StatusInfo[] statusRows;
 
         private Game.Character.Player _player;
 
@@ -76,11 +76,12 @@ namespace Nekoyume.UI
 
             // status info
             var tuples = player.Value.GetStatTuples();
-            foreach (var (key, value, additional) in tuples)
+            int idx = 0;
+            foreach (var (statType, value, additionalValue) in tuples)
             {
-                var go = Instantiate(statusInfo, group.transform);
-                var info = go.GetComponent<StatusInfo>();
-                info.Set(key, value, additional);
+                var info = statusRows[idx];
+                info.Set(statType, value, additionalValue);
+                ++idx;
             }
 
 

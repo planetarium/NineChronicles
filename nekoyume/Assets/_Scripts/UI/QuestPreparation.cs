@@ -25,6 +25,7 @@ namespace Nekoyume.UI
 
         public TextMeshProUGUI consumableTitleText;
         public EquipSlot[] consumableSlots;
+        public StatusInfo[] statusRows;
         public TextMeshProUGUI equipmentTitleText;
         public EquipmentSlots equipmentSlots;
 
@@ -40,9 +41,6 @@ namespace Nekoyume.UI
         private EquipSlot _weaponSlot;
 
         private int _stageId;
-
-        private readonly Dictionary<StatType, StatusInfo> _stats =
-            new Dictionary<StatType, StatusInfo>(StatTypeComparer.Instance);
 
         private readonly Dictionary<StatType, int> _additionalStats = new Dictionary<StatType, int>();
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
@@ -106,29 +104,18 @@ namespace Nekoyume.UI
                 es.SetOnClickAction(ShowTooltip, Unequip);
             }
 
-            var isStatInitialized = _stats.Count > 0;
             var tuples = _player.Model.Value.GetStatTuples();
-            if (!isStatInitialized)
+
+            int idx = 0;
+            foreach (var (statType, value, additionalValue) in tuples)
             {
-                statusRowPrefab.SetActive(true);
-                foreach (var (statType, value, additionalValue) in tuples)
-                {
-                    var go = Instantiate(statusRowPrefab, statusRowParent);
-                    var info = go.GetComponent<StatusInfo>();
-                    info.Set(statType, value, additionalValue);
-                    _stats.Add(statType, info);
-                    _additionalStats.Add(statType, additionalValue);
-                }
-                statusRowPrefab.SetActive(false);
+                var info = statusRows[idx];
+                info.Set(statType, value, additionalValue);
+                _additionalStats[statType] = additionalValue;
+                ++idx;
             }
-            else
-            {
-                foreach (var (statType, value, additionalValue) in tuples)
-                {
-                    _stats[statType].Set(statType, value, additionalValue);
-                    _additionalStats[statType] = additionalValue;
-                }
-            }
+
+            
 
             var worldMap = Find<WorldMap>();
             _stageId = worldMap.SelectedStageId;
@@ -358,9 +345,11 @@ namespace Nekoyume.UI
 
             var stats = _tempStats.SetAll(_tempStats.Level, equipments, consumables, null);
             var statMap = stats.GetAdditionalStats();
+            int idx = 0;
             foreach (var (type, value) in statMap)
             {
-                _stats[type].SetAdditional(type, value);
+                statusRows[idx].SetAdditional(type, value);
+                ++idx;
             }
         }
 

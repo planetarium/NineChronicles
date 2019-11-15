@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 114691324272573458}
   - component: {fileID: 114319409973875060}
   m_Layer: 5
-  m_Name: UI_StatusInfo
+  m_Name: StatusInfo
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -104,9 +104,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cbb8812915f44721a1dfb0512f74af2f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  key: {fileID: 114112133397769512}
-  value: {fileID: 114861183108268658}
-  additional: {fileID: 114156783424807198}
+  key: {fileID: 0}
+  value: {fileID: 0}
+  additional: {fileID: 0}
 --- !u!114 &114319409973875060
 MonoBehaviour:
   m_ObjectHideFlags: 0

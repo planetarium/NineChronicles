@@ -2,7 +2,6 @@ using System;
 using Nekoyume.EnumType;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
@@ -22,7 +21,7 @@ namespace Nekoyume.UI.Module
                 case StatType.ATK:
                 case StatType.DEF:
                 case StatType.SPD:
-                    value.text = statValue.ToString();
+                    value.text = $"{statValue}";
                     additional.text = Mathf.Approximately(additionalStatValue, 0f)
                         ? ""
                         : $"(+{additionalStatValue})";
