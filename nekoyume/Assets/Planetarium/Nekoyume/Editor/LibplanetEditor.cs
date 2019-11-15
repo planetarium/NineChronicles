@@ -9,25 +9,23 @@ namespace Planetarium.Nekoyume.Editor
         [MenuItem("Tools/Libplanet/Delete All(Editor)")]
         public static void DeleteAllEditor()
         {
-            var path = Path.Combine(Application.persistentDataPath, "planetarium_dev.ldb");
+            var path = Path.Combine(Application.persistentDataPath, "planetarium_dev");
             DeleteAll(path);
         }
         
         [MenuItem("Tools/Libplanet/Delete All(Player)")]
         public static void DeleteAllPlayer()
         {
-            var path = Path.Combine(Application.persistentDataPath, "planetarium.ldb");
+            var path = Path.Combine(Application.persistentDataPath, "planetarium");
             DeleteAll(path);
         }
 
         private static void DeleteAll(string path)
         {
-            var info = new FileInfo(path);
-            if (!info.Exists)
+            if (Directory.Exists(path))
             {
-                return;
+                Directory.Delete(path, recursive: true);
             }
-            info.Delete();
         }
     }   
 }
