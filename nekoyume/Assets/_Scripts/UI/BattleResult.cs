@@ -386,7 +386,7 @@ namespace Nekoyume.UI
 
                 yield return null;
             }
-
+            _battleWin02VFX.Stop();
             canvasGroup.alpha = 0f;
         }
     }
