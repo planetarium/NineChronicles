@@ -101,7 +101,7 @@ namespace Nekoyume.Model
 
         private void UpdateExp()
         {
-            Game.Game.instance.TableSheets.LevelSheet.TryGetValue(Level, out var row, true);
+            Simulator.TableSheets.LevelSheet.TryGetValue(Level, out var row, true);
             Exp.Set(row);
         }
 
@@ -186,7 +186,7 @@ namespace Nekoyume.Model
                 return;
 
             var level = Level;
-            Level = Game.Game.instance.TableSheets.LevelSheet.GetLevel(Exp.Current);
+            Level = Simulator.TableSheets.LevelSheet.GetLevel(Exp.Current);
             // UI에서 레벨업 처리시 NRE 회피
             if (level < Level && !(eventMap is null))
             {
