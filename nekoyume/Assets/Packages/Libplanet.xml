@@ -1346,18 +1346,6 @@
             the specified <paramref name="hash"/>; otherwise, <c>false</c>.
             </returns>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain`1.Contains(Libplanet.Tx.TxId)">
-            <summary>
-            Determines whether the <see cref="T:Libplanet.Blockchain.BlockChain`1"/> contains <see cref="T:Libplanet.Tx.Transaction`1"/>
-            the specified <paramref name="txId"/>.
-            </summary>
-            <param name="txId">The <see cref="T:Libplanet.HashDigest`1"/> of the <see cref="T:Libplanet.Tx.Transaction`1"/>
-            to check if it is in the <see cref="T:Libplanet.Blockchain.BlockChain`1"/>.</param>
-            <returns>
-            <c>true</c> if the <see cref="T:Libplanet.Blockchain.BlockChain`1"/> contains <see cref="T:Libplanet.Tx.Transaction`1"/>
-            with the specified <paramref name="txId"/>; otherwise, <c>false</c>.
-            </returns>
-        </member>
         <member name="M:Libplanet.Blockchain.BlockChain`1.GetTransaction(Libplanet.Tx.TxId)">
             <summary>
             Gets the transaction corresponding to the <paramref name="txId"/>.
@@ -3281,6 +3269,9 @@
         <member name="M:Libplanet.Store.BaseStore.IncreaseTxNonce(System.Guid,Libplanet.Address,System.Int64)">
             <inheritdoc/>
         </member>
+        <member name="M:Libplanet.Store.BaseStore.ContainsTransaction(Libplanet.Tx.TxId)">
+            <inheritdoc />
+        </member>
         <member name="M:Libplanet.Store.BaseStore.DeleteChainId(System.Guid)">
             <inheritdoc/>
         </member>
@@ -3301,6 +3292,124 @@
             <summary>
             Gets the ID of the chain not found.
             </summary>
+        </member>
+        <member name="T:Libplanet.Store.DefaultStore">
+            <summary>
+            The default built-in <see cref="T:Libplanet.Store.IStore"/> implementation.  This stores data in
+            the file system or in memory.  It also uses <a href="https://www.litedb.org/">LiteDB</a>
+            for some complex indices.
+            </summary>
+            <seealso cref="T:Libplanet.Store.IStore"/>
+        </member>
+        <member name="M:Libplanet.Store.DefaultStore.#ctor(System.String,System.Boolean,System.Int32,System.Boolean,System.Boolean)">
+            <summary>
+            Creates a new <seealso cref="T:Libplanet.Store.DefaultStore"/>.
+            </summary>
+            <param name="path">The path of the directory where the storage files will be saved.
+            If the path is <c>null</c>, the database is created in memory.</param>
+            <param name="journal">
+            Enables or disables double write check to ensure durability.
+            </param>
+            <param name="cacheSize">Max number of pages in the cache.</param>
+            <param name="flush">Writes data direct to disk avoiding OS cache.  Turned on by default.
+            </param>
+            <param name="readOnly">Opens database readonly mode. Turned off by default.</param>
+        </member>
+        <member name="M:Libplanet.Store.DefaultStore.ListChainIds">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.DefaultStore.DeleteChainId(System.Guid)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.DefaultStore.GetCanonicalChainId">
+            <inheritdoc />
+        </member>
+        <member name="M:Libplanet.Store.DefaultStore.SetCanonicalChainId(System.Guid)">
+            <inheritdoc />
+        </member>
+        <member name="M:Libplanet.Store.DefaultStore.CountIndex(System.Guid)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.DefaultStore.IterateIndexes(System.Guid,System.Int32,System.Nullable{System.Int32})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.DefaultStore.IndexBlockHash(System.Guid,System.Int64)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.DefaultStore.AppendIndex(System.Guid,Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.DefaultStore.DeleteIndex(System.Guid,Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.DefaultStore.ForkBlockIndexes(System.Guid,System.Guid,Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.DefaultStore.ListAddresses(System.Guid)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.DefaultStore.StageTransactionIds(System.Collections.Immutable.IImmutableSet{Libplanet.Tx.TxId})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.DefaultStore.UnstageTransactionIds(System.Collections.Generic.ISet{Libplanet.Tx.TxId})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.DefaultStore.IterateStagedTransactionIds">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.DefaultStore.IterateTransactionIds">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.DefaultStore.GetTransaction``1(Libplanet.Tx.TxId)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.DefaultStore.PutTransaction``1(Libplanet.Tx.Transaction{``0})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.DefaultStore.DeleteTransaction(Libplanet.Tx.TxId)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.DefaultStore.ContainsTransaction(Libplanet.Tx.TxId)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.DefaultStore.IterateBlockHashes">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.DefaultStore.PutBlock``1(Libplanet.Blocks.Block{``0})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.DefaultStore.DeleteBlock(Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.DefaultStore.GetBlockStates(Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.DefaultStore.SetBlockStates(Libplanet.HashDigest{System.Security.Cryptography.SHA256},Libplanet.Action.AddressStateMap)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.DefaultStore.IterateStateReferences(System.Guid,Libplanet.Address,System.Nullable{System.Int64},System.Nullable{System.Int64},System.Nullable{System.Int32})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.DefaultStore.StoreStateReference(System.Guid,System.Collections.Immutable.IImmutableSet{Libplanet.Address},Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Int64)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.DefaultStore.ForkStateReferences``1(System.Guid,System.Guid,Libplanet.Blocks.Block{``0})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.DefaultStore.ListTxNonces(System.Guid)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.DefaultStore.GetTxNonce(System.Guid,Libplanet.Address)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.DefaultStore.IncreaseTxNonce(System.Guid,Libplanet.Address,System.Int64)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.DefaultStore.CountTransactions">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.DefaultStore.CountBlocks">
+            <inheritdoc/>
         </member>
         <member name="M:Libplanet.Store.IStore.ListChainIds">
             <summary>
@@ -3545,118 +3654,17 @@
             the counter.  1 by default.</param>
             <seealso cref="M:Libplanet.Store.IStore.GetTxNonce(System.Guid,Libplanet.Address)"/>
         </member>
-        <member name="T:Libplanet.Store.LiteDBStore">
+        <member name="M:Libplanet.Store.IStore.ContainsTransaction(Libplanet.Tx.TxId)">
             <summary>
-            <see cref="T:Libplanet.Store.IStore"/> implementation using <a href="https://www.litedb.org/">LiteDB</a>.
+            Determines whether the <see cref="T:Libplanet.Store.IStore"/> contains <see cref="T:Libplanet.Tx.Transaction`1"/>
+            the specified <paramref name="txId"/>.
             </summary>
-            <seealso cref="T:Libplanet.Store.IStore"/>
-        </member>
-        <member name="M:Libplanet.Store.LiteDBStore.#ctor(System.String,System.Boolean,System.Int32,System.Boolean,System.Boolean)">
-            <summary>
-            Creates a new <seealso cref="T:Libplanet.Store.LiteDBStore"/>.
-            </summary>
-            <param name="path">The path where the storage file will be saved.  If the path is
-            <c>null</c>, The database is created in memory with <see cref="T:System.IO.MemoryStream"/>.</param>
-            <param name="journal">
-            Enables or disables double write check to ensure durability.
-            </param>
-            <param name="cacheSize">Max number of pages in the cache.</param>
-            <param name="flush">Writes data direct to disk avoiding OS cache.  Turned on by default.
-            </param>
-            <param name="readOnly">Opens database readonly mode. Turned off by default.</param>
-        </member>
-        <member name="M:Libplanet.Store.LiteDBStore.ListChainIds">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.LiteDBStore.DeleteChainId(System.Guid)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.LiteDBStore.GetCanonicalChainId">
-            <inheritdoc />
-        </member>
-        <member name="M:Libplanet.Store.LiteDBStore.SetCanonicalChainId(System.Guid)">
-            <inheritdoc />
-        </member>
-        <member name="M:Libplanet.Store.LiteDBStore.CountIndex(System.Guid)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.LiteDBStore.IterateIndexes(System.Guid,System.Int32,System.Nullable{System.Int32})">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.LiteDBStore.IndexBlockHash(System.Guid,System.Int64)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.LiteDBStore.AppendIndex(System.Guid,Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.LiteDBStore.DeleteIndex(System.Guid,Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.LiteDBStore.ForkBlockIndexes(System.Guid,System.Guid,Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.LiteDBStore.ListAddresses(System.Guid)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.LiteDBStore.StageTransactionIds(System.Collections.Immutable.IImmutableSet{Libplanet.Tx.TxId})">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.LiteDBStore.UnstageTransactionIds(System.Collections.Generic.ISet{Libplanet.Tx.TxId})">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.LiteDBStore.IterateStagedTransactionIds">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.LiteDBStore.IterateTransactionIds">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.LiteDBStore.GetTransaction``1(Libplanet.Tx.TxId)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.LiteDBStore.PutTransaction``1(Libplanet.Tx.Transaction{``0})">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.LiteDBStore.DeleteTransaction(Libplanet.Tx.TxId)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.LiteDBStore.IterateBlockHashes">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.LiteDBStore.PutBlock``1(Libplanet.Blocks.Block{``0})">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.LiteDBStore.DeleteBlock(Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.LiteDBStore.GetBlockStates(Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.LiteDBStore.SetBlockStates(Libplanet.HashDigest{System.Security.Cryptography.SHA256},Libplanet.Action.AddressStateMap)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.LiteDBStore.IterateStateReferences(System.Guid,Libplanet.Address,System.Nullable{System.Int64},System.Nullable{System.Int64},System.Nullable{System.Int32})">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.LiteDBStore.StoreStateReference(System.Guid,System.Collections.Immutable.IImmutableSet{Libplanet.Address},Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Int64)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.LiteDBStore.ForkStateReferences``1(System.Guid,System.Guid,Libplanet.Blocks.Block{``0})">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.LiteDBStore.ListTxNonces(System.Guid)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.LiteDBStore.GetTxNonce(System.Guid,Libplanet.Address)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.LiteDBStore.IncreaseTxNonce(System.Guid,Libplanet.Address,System.Int64)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.LiteDBStore.CountTransactions">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.LiteDBStore.CountBlocks">
-            <inheritdoc/>
+            <param name="txId">The <see cref="T:Libplanet.Tx.TxId"/> of the <see cref="T:Libplanet.Tx.Transaction`1"/>
+            to check if it is in the <see cref="T:Libplanet.Store.IStore"/>.</param>
+            <returns>
+            <c>true</c> if the <see cref="T:Libplanet.Store.IStore"/> contains <see cref="T:Libplanet.Tx.Transaction`1"/>
+            with the specified <paramref name="txId"/>; otherwise, <c>false</c>.
+            </returns>
         </member>
         <member name="M:Libplanet.Store.StoreExtension.LookupStateReference``1(Libplanet.Store.IStore,System.Guid,Libplanet.Address,Libplanet.Blocks.Block{``0})">
             <summary>

@@ -63,10 +63,14 @@ namespace Tests
             if (!string.IsNullOrEmpty(_storePath))
             {
                 var dir = Directory.GetCurrentDirectory();
-                var path = Path.Combine(dir, $"{_storePath}.ldb");
+                var path = Path.Combine(dir, _storePath);
                 Debug.Log($"Delete {path}");
-                File.Delete(path);
-                yield return new WaitWhile(() => File.Exists(path));
+                if (Directory.Exists(path))
+                {
+                    Directory.Delete(path, recursive: true);
+                }
+
+                yield return new WaitWhile(() => Directory.Exists(path));
             }
         }
     }

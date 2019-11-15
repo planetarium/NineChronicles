@@ -1,0 +1,2783 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Zio</name>
+    </assembly>
+    <members>
+        <member name="T:Zio.DirectoryEntry">
+            <summary>
+            Exposes instance methods for creating, moving, and enumerating through directories and subdirectories. 
+            </summary>
+        </member>
+        <member name="M:Zio.DirectoryEntry.#ctor(Zio.IFileSystem,Zio.UPath)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Zio.DirectoryEntry"/> class.
+            </summary>
+            <param name="fileSystem">The file system.</param>
+            <param name="path">The directory path.</param>
+        </member>
+        <member name="M:Zio.DirectoryEntry.Create">
+            <summary>Creates a directory.</summary>
+            <exception cref="T:System.IO.IOException">The directory cannot be created. </exception>
+        </member>
+        <member name="M:Zio.DirectoryEntry.CreateSubdirectory(Zio.UPath)">
+            <summary>Creates a subdirectory or subdirectories on the specified path. The specified path can be relative to this instance of the <see cref="T:System.IO.DirectoryInfo" /> class.</summary>
+            <returns>The last directory specified in <paramref name="path" />.</returns>
+            <param name="path">The specified path. This cannot be a different disk volume or Universal Naming Convention (UNC) name. </param>
+            <exception cref="T:System.ArgumentException">
+            <paramref name="path" /> does not specify a valid file path or contains invalid DirectoryInfo characters. </exception>
+            <exception cref="T:System.ArgumentNullException">
+            <paramref name="path" /> is null. </exception>
+            <exception cref="T:System.IO.DirectoryNotFoundException">The specified path is invalid, such as being on an unmapped drive. </exception>
+            <exception cref="T:System.IO.IOException">The subdirectory cannot be created.-or- A file or directory already has the name specified by <paramref name="path" />. </exception>
+            <exception cref="T:System.IO.PathTooLongException">The specified path, file name, or both exceed the system-defined maximum length. For example, on Windows-based platforms, paths must be less than 248 characters, and file names must be less than 260 characters. The specified path, file name, or both are too long.</exception>
+            <exception cref="T:System.Security.SecurityException">The caller does not have code access permission to create the directory.-or-The caller does not have code access permission to read the directory described by the returned <see cref="T:System.IO.DirectoryInfo" /> object.  This can occur when the <paramref name="path" /> parameter describes an existing directory.</exception>
+            <exception cref="T:System.NotSupportedException">
+            <paramref name="path" /> contains a colon character (:) that is not part of a drive label ("C:\").</exception>
+        </member>
+        <member name="M:Zio.DirectoryEntry.Delete(System.Boolean)">
+            <summary>Deletes this instance of a <see cref="T:System.IO.DirectoryInfo" />, specifying whether to delete subdirectories and files.</summary>
+            <param name="recursive">true to delete this directory, its subdirectories, and all files; otherwise, false. </param>
+            <exception cref="T:System.UnauthorizedAccessException">The directory contains a read-only file.</exception>
+            <exception cref="T:System.IO.DirectoryNotFoundException">The directory described by this <see cref="T:System.IO.DirectoryInfo" /> object does not exist or could not be found.</exception>
+            <exception cref="T:System.IO.IOException">The directory is read-only.-or- The directory contains one or more files or subdirectories and <paramref name="recursive" /> is false.-or-The directory is the application's current working directory. -or-There is an open handle on the directory or on one of its files, and the operating system is Windows XP or earlier. This open handle can result from enumerating directories and files. For more information, see How to: Enumerate Directories and Files.</exception>
+            <exception cref="T:System.Security.SecurityException">The caller does not have the required permission. </exception>
+        </member>
+        <member name="M:Zio.DirectoryEntry.EnumerateDirectories(System.String,System.IO.SearchOption)">
+            <summary>Returns an enumerable collection of directory information that matches a specified search pattern and search subdirectory option. </summary>
+            <param name="searchPattern">The search string to match against the names of directories in path. This parameter can contain a combination 
+            of valid literal path and wildcard (* and ?) characters (see Remarks), but doesn't support regular expressions.</param>
+            <param name="searchOption">One of the enumeration values that specifies whether the search operation should include only the current directory 
+            or should include all subdirectories.
+            The default value is TopDirectoryOnly.</param>
+            <returns>An enumerable collection of directories.</returns>
+            <exception cref="T:System.IO.DirectoryNotFoundException">The path encapsulated in the <see cref="T:System.IO.DirectoryInfo" /> object is invalid (for example, it is on an unmapped drive). </exception>
+            <exception cref="T:System.Security.SecurityException">The caller does not have the required permission. </exception>
+        </member>
+        <member name="M:Zio.DirectoryEntry.EnumerateFiles(System.String,System.IO.SearchOption)">
+            <summary>Returns an enumerable collection of file information that matches a specified search pattern and search subdirectory option.</summary>
+            <param name="searchPattern">The search string to match against the names of directories in path. This parameter can contain a combination 
+            of valid literal path and wildcard (* and ?) characters (see Remarks), but doesn't support regular expressions.</param>
+            <param name="searchOption">One of the enumeration values that specifies whether the search operation should include only the current directory 
+            or should include all subdirectories.
+            The default value is TopDirectoryOnly.</param>
+            <returns>An enumerable collection of files.</returns>
+            <exception cref="T:System.IO.DirectoryNotFoundException">The path encapsulated in the <see cref="T:System.IO.DirectoryInfo" /> object is invalid (for example, it is on an unmapped drive). </exception>
+            <exception cref="T:System.Security.SecurityException">The caller does not have the required permission. </exception>
+        </member>
+        <member name="M:Zio.DirectoryEntry.EnumerateEntries(System.String,System.IO.SearchOption,Zio.SearchTarget)">
+            <summary>
+            Returns an enumerable collection of <see cref="T:Zio.FileSystemEntry"/> that match a search pattern in a specified path.
+            </summary>
+            <param name="searchPattern">The search string to match against the names of directories in path. This parameter can contain a combination 
+            of valid literal path and wildcard (* and ?) characters (see Remarks), but doesn't support regular expressions.</param>
+            <param name="searchOption">One of the enumeration values that specifies whether the search operation should include only the current directory 
+            or should include all subdirectories.
+            The default value is TopDirectoryOnly.</param>
+            <param name="searchTarget">The search target either <see cref="F:Zio.SearchTarget.Both"/> or only <see cref="F:Zio.SearchTarget.Directory"/> or <see cref="F:Zio.SearchTarget.File"/>.</param>
+            <returns>An enumerable collection of <see cref="T:Zio.FileSystemEntry"/> that match a search pattern in a specified path.</returns>
+        </member>
+        <member name="M:Zio.DirectoryEntry.MoveTo(Zio.UPath)">
+            <summary>Moves a <see cref="T:System.IO.DirectoryInfo" /> instance and its contents to a new path.</summary>
+            <param name="destDirName">The name and path to which to move this directory. The destination cannot be another disk volume or a directory with the identical name. It can be an existing directory to which you want to add this directory as a subdirectory. </param>
+            <exception cref="T:System.ArgumentNullException">
+            <paramref name="destDirName" /> is null. </exception>
+            <exception cref="T:System.ArgumentException">
+            <paramref name="destDirName" /> is an empty string (''"). </exception>
+            <exception cref="T:System.IO.IOException">An attempt was made to move a directory to a different volume. -or-<paramref name="destDirName" /> already exists.-or-You are not authorized to access this path.-or- The directory being moved and the destination directory have the same name.</exception>
+            <exception cref="T:System.Security.SecurityException">The caller does not have the required permission. </exception>
+            <exception cref="T:System.IO.DirectoryNotFoundException">The destination directory cannot be found.</exception>
+        </member>
+        <member name="P:Zio.DirectoryEntry.Exists">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.DirectoryEntry.Delete">
+            <inheritdoc />
+        </member>
+        <member name="T:Zio.FileChangedEventArgs">
+            <summary>
+            The <see cref="T:System.EventArgs"/> base class for file and directory events. Used for
+            <see cref="F:Zio.WatcherChangeTypes.Created"/>, <see cref="F:Zio.WatcherChangeTypes.Deleted"/>,
+            and <see cref="F:Zio.WatcherChangeTypes.Changed"/>.
+            </summary>
+            <inheritdoc />
+        </member>
+        <member name="P:Zio.FileChangedEventArgs.ChangeType">
+            <summary>
+            The type of change that occurred.
+            </summary>
+        </member>
+        <member name="P:Zio.FileChangedEventArgs.FileSystem">
+            <summary>
+            The filesystem originating this change.
+            </summary>
+        </member>
+        <member name="P:Zio.FileChangedEventArgs.FullPath">
+            <summary>
+            Absolute path to the file or directory.
+            </summary>
+        </member>
+        <member name="P:Zio.FileChangedEventArgs.Name">
+            <summary>
+            Name of the file or directory.
+            </summary>
+        </member>
+        <member name="T:Zio.FileEntry">
+            <summary>
+            Similar to <see cref="T:System.IO.FileInfo"/> but to use with <see cref="T:Zio.IFileSystem"/>, provides properties and instance methods 
+            for the creation, copying, deletion, moving, and opening of files, and aids in the creation of FileStream objects. 
+            Note that unlike <see cref="T:System.IO.FileInfo"/>, this class doesn't cache any data.
+            </summary>
+        </member>
+        <member name="M:Zio.FileEntry.#ctor(Zio.IFileSystem,Zio.UPath)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Zio.FileEntry"/> class.
+            </summary>
+            <param name="fileSystem">The file system.</param>
+            <param name="path">The file path.</param>
+        </member>
+        <member name="P:Zio.FileEntry.Directory">
+            <summary>Gets an instance of the parent directory.</summary>
+            <returns>A <see cref="T:Zio.DirectoryEntry" /> object representing the parent directory of this file.</returns>
+            <exception cref="T:System.IO.DirectoryNotFoundException">
+                The specified path is invalid, such as being on an unmapped
+                drive.
+            </exception>
+        </member>
+        <member name="P:Zio.FileEntry.IsReadOnly">
+            <summary>Gets or sets a value that determines if the current file is read only.</summary>
+            <returns>true if the current file is read only; otherwise, false.</returns>
+            <exception cref="T:System.IO.FileNotFoundException">
+                The file described by the current
+                <see cref="T:System.IO.FileInfo" /> object could not be found.
+            </exception>
+            <exception cref="T:System.IO.IOException">An I/O error occurred while opening the file.</exception>
+            <exception cref="T:System.UnauthorizedAccessException">
+                This operation is not supported on the current platform.-or- The
+                caller does not have the required permission.
+            </exception>
+            <exception cref="T:System.ArgumentException">
+                The user does not have write permission, but attempted to set this
+                property to false.
+            </exception>
+        </member>
+        <member name="P:Zio.FileEntry.Length">
+            <summary>Gets the size, in bytes, of the current file.</summary>
+            <returns>The size of the current file in bytes.</returns>
+            <exception cref="T:System.IO.IOException">
+                <see cref="M:System.IO.FileSystemInfo.Refresh" /> cannot update the state of the file or directory.
+            </exception>
+            <exception cref="T:System.IO.FileNotFoundException">
+                The file does not exist.-or- The Length property is called for a
+                directory.
+            </exception>
+        </member>
+        <member name="M:Zio.FileEntry.CopyTo(Zio.UPath,System.Boolean)">
+            <summary>Copies an existing file to a new file, allowing the overwriting of an existing file.</summary>
+            <returns>
+                A new file, or an overwrite of an existing file if <paramref name="overwrite" /> is true. If the file exists
+                and <paramref name="overwrite" /> is false, an <see cref="T:System.IO.IOException" /> is thrown.
+            </returns>
+            <param name="destFileName">The name of the new file to copy to. </param>
+            <param name="overwrite">true to allow an existing file to be overwritten; otherwise, false. </param>
+            <exception cref="T:System.ArgumentException">
+                <paramref name="destFileName" /> is empty, contains only white spaces, or contains invalid characters.
+            </exception>
+            <exception cref="T:System.IO.IOException">
+                An error occurs, or the destination file already exists and
+                <paramref name="overwrite" /> is false.
+            </exception>
+            <exception cref="T:System.Security.SecurityException">The caller does not have the required permission. </exception>
+            <exception cref="T:System.ArgumentNullException">
+                <paramref name="destFileName" /> is null.
+            </exception>
+            <exception cref="T:System.IO.DirectoryNotFoundException">
+                The directory specified in <paramref name="destFileName" />
+                does not exist.
+            </exception>
+            <exception cref="T:System.UnauthorizedAccessException">
+                A directory path is passed in, or the file is being moved to a
+                different drive.
+            </exception>
+            <exception cref="T:System.IO.PathTooLongException">
+                The specified path, file name, or both exceed the system-defined
+                maximum length. For example, on Windows-based platforms, paths must be less than 248 characters, and file names
+                must be less than 260 characters.
+            </exception>
+            <exception cref="T:System.NotSupportedException">
+                <paramref name="destFileName" /> contains a colon (:) in the middle of the string.
+            </exception>
+        </member>
+        <member name="M:Zio.FileEntry.CopyTo(Zio.FileEntry,System.Boolean)">
+            <summary>Copies an existing file to a new file on another <see cref="T:Zio.IFileSystem"/>, allowing the overwriting of an existing file.</summary>
+            <returns>
+                A new file, or an overwrite of an existing file if <paramref name="overwrite" /> is true. If the file exists
+                and <paramref name="overwrite" /> is false, an <see cref="T:System.IO.IOException" /> is thrown.
+            </returns>
+            <param name="destFile">The file entry to copy to. </param>
+            <param name="overwrite">true to allow an existing file to be overwritten; otherwise, false. </param>
+            <exception cref="T:System.ArgumentException">
+                <paramref name="destFile" /> is null.
+            </exception>
+            <exception cref="T:System.IO.IOException">
+                An error occurs, or the destination file already exists and
+                <paramref name="overwrite" /> is false.
+            </exception>
+            <exception cref="T:System.Security.SecurityException">The caller does not have the required permission. </exception>
+            <exception cref="T:System.IO.DirectoryNotFoundException">
+                The directory specified in <paramref name="destFile" />
+                does not exist.
+            </exception>
+            <exception cref="T:System.UnauthorizedAccessException">
+                A directory path is passed in, or the file is being moved to a
+                different drive.
+            </exception>
+            <exception cref="T:System.IO.PathTooLongException">
+                The specified path, file name, or both exceed the system-defined
+                maximum length. For example, on Windows-based platforms, paths must be less than 248 characters, and file names
+                must be less than 260 characters.
+            </exception>
+            <exception cref="T:System.NotSupportedException">
+                <paramref name="destFile" /> contains a colon (:) in the middle of the string.
+            </exception>
+        </member>
+        <member name="M:Zio.FileEntry.Create">
+            <summary>Creates a file.</summary>
+            <returns>A new file.</returns>
+        </member>
+        <member name="M:Zio.FileEntry.MoveTo(Zio.UPath)">
+            <summary>Moves a specified file to a new location, providing the option to specify a new file name.</summary>
+            <param name="destFileName">The path to move the file to, which can specify a different file name. </param>
+            <exception cref="T:System.IO.IOException">
+                An I/O error occurs, such as the destination file already exists or the
+                destination device is not ready.
+            </exception>
+            <exception cref="T:System.ArgumentNullException">
+                <paramref name="destFileName" /> is null.
+            </exception>
+            <exception cref="T:System.ArgumentException">
+                <paramref name="destFileName" /> is empty, contains only white spaces, or contains invalid characters.
+            </exception>
+            <exception cref="T:System.Security.SecurityException">The caller does not have the required permission. </exception>
+            <exception cref="T:System.UnauthorizedAccessException">
+                <paramref name="destFileName" /> is read-only or is a directory.
+            </exception>
+            <exception cref="T:System.IO.FileNotFoundException">The file is not found. </exception>
+            <exception cref="T:System.IO.DirectoryNotFoundException">
+                The specified path is invalid, such as being on an unmapped
+                drive.
+            </exception>
+            <exception cref="T:System.IO.PathTooLongException">
+                The specified path, file name, or both exceed the system-defined
+                maximum length. For example, on Windows-based platforms, paths must be less than 248 characters, and file names
+                must be less than 260 characters.
+            </exception>
+            <exception cref="T:System.NotSupportedException">
+                <paramref name="destFileName" /> contains a colon (:) in the middle of the string.
+            </exception>
+        </member>
+        <member name="M:Zio.FileEntry.Open(System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare)">
+            <summary>Opens a file in the specified mode with read, write, or read/write access and the specified sharing option.</summary>
+            <returns>A <see cref="T:System.IO.FileStream" /> object opened with the specified mode, access, and sharing options.</returns>
+            <param name="mode">
+                A <see cref="T:System.IO.FileMode" /> constant specifying the mode (for example, Open or Append) in
+                which to open the file.
+            </param>
+            <param name="access">
+                A <see cref="T:System.IO.FileAccess" /> constant specifying whether to open the file with Read,
+                Write, or ReadWrite file access.
+            </param>
+            <param name="share">
+                A <see cref="T:System.IO.FileShare" /> constant specifying the type of access other FileStream
+                objects have to this file.
+            </param>
+            <exception cref="T:System.Security.SecurityException">The caller does not have the required permission. </exception>
+            <exception cref="T:System.IO.FileNotFoundException">The file is not found. </exception>
+            <exception cref="T:System.UnauthorizedAccessException">
+                The path is read-only or is a directory.
+            </exception>
+            <exception cref="T:System.IO.DirectoryNotFoundException">
+                The specified path is invalid, such as being on an unmapped
+                drive.
+            </exception>
+            <exception cref="T:System.IO.IOException">The file is already open. </exception>
+        </member>
+        <member name="M:Zio.FileEntry.ReplaceTo(Zio.UPath,Zio.UPath,System.Boolean)">
+            <summary>
+            Replaces the contents of this file with the contents of another file, deleting the original file, and creating a backup of the replaced file and optionally ignores merge errors.
+            </summary>
+            <param name="destPath">The path of the file being replaced.</param>
+            <param name="destBackupPath">The path of the backup file (maybe null, in that case, it doesn't create any backup)</param>
+            <param name="ignoreMetadataErrors"><c>true</c> to ignore merge errors (such as attributes and access control lists (ACLs)) from the replaced file to the replacement file; otherwise, <c>false</c>.</param>
+        </member>
+        <member name="M:Zio.FileEntry.ReadAllText">
+            <summary>
+                Opens a file, reads all lines of the file with the specified encoding, and then closes the file.
+            </summary>
+            <returns>A string containing all lines of the file.</returns>
+            <remarks>
+                This method attempts to automatically detect the encoding of a file based on the presence of byte order marks.
+                Encoding formats UTF-8 and UTF-32 (both big-endian and little-endian) can be detected.
+            </remarks>
+        </member>
+        <member name="M:Zio.FileEntry.ReadAllText(System.Text.Encoding)">
+            <summary>
+                Opens a file, reads all lines of the file with the specified encoding, and then closes the file.
+            </summary>
+            <param name="encoding">The encoding to use to decode the text from <see cref="T:System.IO.Path" />.</param>
+            <returns>A string containing all lines of the file.</returns>
+        </member>
+        <member name="M:Zio.FileEntry.WriteAllText(System.String)">
+            <summary>
+                Creates a new file, writes the specified string to the file, and then closes the file.
+                If the target file already exists, it is overwritten.
+            </summary>
+            <param name="content">The content.</param>
+            <exception cref="T:System.ArgumentNullException">content</exception>
+            <remarks>
+                This method uses UTF-8 encoding without a Byte-Order Mark (BOM), so using the GetPreamble method will return an
+                empty byte array.
+                If it is necessary to include a UTF-8 identifier, such as a byte order mark, at the beginning of a file,
+                use the <see cref="M:Zio.FileEntry.WriteAllText(System.String,System.Text.Encoding)" /> method overload with UTF8 encoding.
+            </remarks>
+        </member>
+        <member name="M:Zio.FileEntry.WriteAllText(System.String,System.Text.Encoding)">
+            <summary>
+                Creates a new file, writes the specified string to the file using the specified encoding, and then
+                closes the file. If the target file already exists, it is overwritten.
+            </summary>
+            <param name="content">The content.</param>
+            <param name="encoding">The encoding to use to decode the text from <paramref name="path" />. </param>
+            <exception cref="T:System.ArgumentNullException">content</exception>
+            <remarks>
+                Given a string and a file path, this method opens the specified file, writes the string to the file using the
+                specified encoding, and then closes the file.
+                The file handle is guaranteed to be closed by this method, even if exceptions are raised.
+            </remarks>
+        </member>
+        <member name="M:Zio.FileEntry.AppendAllText(System.String)">
+            <summary>
+                Opens a file, appends the specified string to the file, and then closes the file. If the file does not exist,
+                this method creates a file, writes the specified string to the file, then closes the file.
+            </summary>
+            <param name="content">The content to append.</param>
+            <exception cref="T:System.ArgumentNullException">content</exception>
+            <remarks>
+                Given a string and a file path, this method opens the specified file, appends the string to the end of the file,
+                and then closes the file. The file handle is guaranteed to be closed by this method, even if exceptions are raised.
+                The method creates the file if it doesn’t exist, but it doesn't create new directories. Therefore, the value of the
+                path parameter must contain existing directories.
+            </remarks>
+        </member>
+        <member name="M:Zio.FileEntry.AppendAllText(System.String,System.Text.Encoding)">
+            <summary>
+                Appends the specified string to the file, creating the file if it does not already exist.
+            </summary>
+            <param name="content">The content to append.</param>
+            <param name="encoding">The encoding to use to encode the text from <paramref name="path" />.</param>
+            <exception cref="T:System.ArgumentNullException">content</exception>
+            <remarks>
+                Given a string and a file path, this method opens the specified file, appends the string to the end of the file,
+                and then closes the file. The file handle is guaranteed to be closed by this method, even if exceptions are raised.
+                The method creates the file if it doesn’t exist, but it doesn't create new directories. Therefore, the value of the
+                path parameter must contain existing directories.
+            </remarks>
+        </member>
+        <member name="M:Zio.FileEntry.ReadAllLines">
+            <summary>
+                Opens a file, reads all lines of the file with the specified encoding, and then closes the file.
+            </summary>
+            <returns>An array of strings containing all lines of the file.</returns>
+        </member>
+        <member name="M:Zio.FileEntry.ReadAllLines(System.Text.Encoding)">
+            <summary>
+                Opens a file, reads all lines of the file with the specified encoding, and then closes the file.
+            </summary>
+            <param name="encoding">The encoding to use to decode the text from <paramref name="path" />.</param>
+            <remarks>
+                This method attempts to automatically detect the encoding of a file based on the presence of byte order marks.
+                Encoding formats UTF-8 and UTF-32 (both big-endian and little-endian) can be detected.
+            </remarks>
+            <returns>An array of strings containing all lines of the file.</returns>
+        </member>
+        <member name="M:Zio.FileEntry.ReadAllBytes">
+            <summary>
+                Opens a binary file, reads the contents of the file into a byte array, and then closes the file.
+            </summary>
+            <returns>A byte array containing the contents of the file.</returns>
+        </member>
+        <member name="M:Zio.FileEntry.WriteAllBytes(System.Byte[])">
+            <summary>
+                Creates a new file, writes the specified byte array to the file, and then closes the file.
+                If the target file already exists, it is overwritten.
+            </summary>
+            <param name="content">The content.</param>
+            <exception cref="T:System.ArgumentNullException">content</exception>
+            <remarks>
+                Given a byte array and a file path, this method opens the specified file, writes the
+                contents of the byte array to the file, and then closes the file.
+            </remarks>
+        </member>
+        <member name="P:Zio.FileEntry.Exists">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileEntry.Delete">
+            <inheritdoc />
+        </member>
+        <member name="T:Zio.FileRenamedEventArgs">
+            <summary>
+            Represents a file or directory rename event.
+            </summary>
+            <inheritdoc />
+        </member>
+        <member name="P:Zio.FileRenamedEventArgs.OldFullPath">
+            <summary>
+            Absolute path to the old location of the file or directory.
+            </summary>
+        </member>
+        <member name="P:Zio.FileRenamedEventArgs.OldName">
+            <summary>
+            Old name of the file or directory.
+            </summary>
+        </member>
+        <member name="T:Zio.FileSystemEntry">
+            <summary>
+            Similar to <see cref="T:System.IO.FileSystemInfo"/> but to use with <see cref="T:Zio.IFileSystem"/>, provides the base class 
+            for both <see cref="T:Zio.FileEntry"/> and <see cref="T:Zio.DirectoryEntry"/> objects.
+            </summary>
+        </member>
+        <member name="M:Zio.FileSystemEntry.#ctor(Zio.IFileSystem,Zio.UPath)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Zio.FileSystemEntry"/> class.
+            </summary>
+            <param name="fileSystem">The file system.</param>
+            <param name="path">The path to the file or directory.</param>
+            <exception cref="T:System.ArgumentNullException">fileSystem</exception>
+        </member>
+        <member name="P:Zio.FileSystemEntry.Path">
+            <summary>
+            Gets the path of this entry.
+            </summary>
+        </member>
+        <member name="P:Zio.FileSystemEntry.FileSystem">
+            <summary>
+            Gets the file system used by this entry.
+            </summary>
+        </member>
+        <member name="P:Zio.FileSystemEntry.FullName">
+            <summary>
+            Gets the full path of the directory or file.
+            </summary>
+        </member>
+        <member name="P:Zio.FileSystemEntry.Name">
+            <summary>
+            Gets the name of the file or directory (with its extension).
+            </summary>
+        </member>
+        <member name="P:Zio.FileSystemEntry.NameWithoutExtension">
+            <summary>
+            Gets the name of the file or directory without its extension.
+            </summary>
+        </member>
+        <member name="P:Zio.FileSystemEntry.ExtensionWithDot">
+            <summary>
+            Gets the extension with a leading dot.
+            </summary>
+        </member>
+        <member name="P:Zio.FileSystemEntry.Attributes">
+            <summary>
+            Gets or sets the attributes for the current file or directory
+            </summary>
+        </member>
+        <member name="P:Zio.FileSystemEntry.Exists">
+            <summary>
+            Gets a value indicating whether this file or directory exists.
+            </summary>
+            <value><c>true</c> if this file or directory exists; otherwise, <c>false</c>.</value>
+        </member>
+        <member name="P:Zio.FileSystemEntry.CreationTime">
+            <summary>
+            Gets or sets the creation time of the current file or directory.
+            </summary>
+        </member>
+        <member name="P:Zio.FileSystemEntry.LastAccessTime">
+            <summary>
+            Gets or sets the last access time of the current file or directory.
+            </summary>
+        </member>
+        <member name="P:Zio.FileSystemEntry.LastWriteTime">
+            <summary>
+            Gets or sets the last write time of the current file or directory.
+            </summary>
+        </member>
+        <member name="P:Zio.FileSystemEntry.Parent">
+            <summary>Gets an instance of the parent directory.</summary>
+            <returns>A <see cref="T:Zio.DirectoryEntry" /> object representing the parent directory of this file.</returns>
+            <exception cref="T:System.IO.DirectoryNotFoundException">
+                The specified path is invalid, such as being on an unmapped
+                drive.
+            </exception>
+        </member>
+        <member name="M:Zio.FileSystemEntry.Delete">
+            <summary>
+            Deletes a file or directory.
+            </summary>
+        </member>
+        <member name="M:Zio.FileSystemEntry.ToString">
+            <summary>
+            Returns the <see cref="P:Zio.FileSystemEntry.FullName"/> of this instance.
+            </summary>
+            <returns>The <see cref="P:Zio.FileSystemEntry.FullName"/> of this instance.</returns>
+        </member>
+        <member name="M:Zio.FileSystemEntry.Equals(Zio.FileSystemEntry)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystemEntry.Equals(System.Object)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystemEntry.GetHashCode">
+            <inheritdoc />
+        </member>
+        <member name="T:Zio.FileSystemErrorEventArgs">
+            <summary>
+            Contains information about a filesystem error event.
+            </summary>
+            <inheritdoc />
+        </member>
+        <member name="P:Zio.FileSystemErrorEventArgs.Exception">
+            <summary>
+            Exception that was thrown in the filesystem.
+            </summary>
+        </member>
+        <member name="T:Zio.FileSystemExtensions">
+            <summary>
+                Extension methods for <see cref="T:Zio.IFileSystem" />
+            </summary>
+        </member>
+        <member name="M:Zio.FileSystemExtensions.GetOrCreateSubFileSystem(Zio.IFileSystem,Zio.UPath)">
+            <summary>
+            Gets or create a <see cref="T:Zio.FileSystems.SubFileSystem"/> from an existing filesystem and the specified sub folder
+            </summary>
+            <param name="fs">The filesystem to derive a new sub-filesystem from it</param>
+            <param name="subFolder">The folder of the sub-filesystem</param>
+            <returns>A sub-filesystem</returns>
+        </member>
+        <member name="M:Zio.FileSystemExtensions.CopyFileCross(Zio.IFileSystem,Zio.IFileSystem,Zio.UPath,Zio.UPath,System.Boolean)">
+            <summary>
+                Copies a file between two filesystems.
+            </summary>
+            <param name="fs">The source filesystem</param>
+            <param name="destFileSystem">The destination filesystem</param>
+            <param name="srcPath">The source path of the file to copy from the source filesystem</param>
+            <param name="destPath">The destination path of the file in the destination filesystem</param>
+            <param name="overwrite"><c>true</c> to overwrite an existing destination file</param>
+        </member>
+        <member name="M:Zio.FileSystemExtensions.MoveFileCross(Zio.IFileSystem,Zio.IFileSystem,Zio.UPath,Zio.UPath)">
+            <summary>
+                Moves a file between two filesystems.
+            </summary>
+            <param name="fs">The source filesystem</param>
+            <param name="destFileSystem">The destination filesystem</param>
+            <param name="srcPath">The source path of the file to move from the source filesystem</param>
+            <param name="destPath">The destination path of the file in the destination filesystem</param>
+        </member>
+        <member name="M:Zio.FileSystemExtensions.ReadAllBytes(Zio.IFileSystem,Zio.UPath)">
+            <summary>
+                Opens a binary file, reads the contents of the file into a byte array, and then closes the file.
+            </summary>
+            <param name="fs">The filesystem.</param>
+            <param name="path">The path of the file to open for reading.</param>
+            <returns>A byte array containing the contents of the file.</returns>
+        </member>
+        <member name="M:Zio.FileSystemExtensions.ReadAllText(Zio.IFileSystem,Zio.UPath)">
+            <summary>
+                Opens a file, reads all lines of the file with the specified encoding, and then closes the file.
+            </summary>
+            <param name="fs">The filesystem.</param>
+            <param name="path">The path of the file to open for reading.</param>
+            <returns>A string containing all lines of the file.</returns>
+            <remarks>
+                This method attempts to automatically detect the encoding of a file based on the presence of byte order marks.
+                Encoding formats UTF-8 and UTF-32 (both big-endian and little-endian) can be detected.
+            </remarks>
+        </member>
+        <member name="M:Zio.FileSystemExtensions.ReadAllText(Zio.IFileSystem,Zio.UPath,System.Text.Encoding)">
+            <summary>
+                Opens a file, reads all lines of the file with the specified encoding, and then closes the file.
+            </summary>
+            <param name="fs">The filesystem.</param>
+            <param name="path">The path of the file to open for reading.</param>
+            <param name="encoding">The encoding to use to decode the text from <paramref name="path" />.</param>
+            <returns>A string containing all lines of the file.</returns>
+        </member>
+        <member name="M:Zio.FileSystemExtensions.WriteAllBytes(Zio.IFileSystem,Zio.UPath,System.Byte[])">
+            <summary>
+                Creates a new file, writes the specified byte array to the file, and then closes the file.
+                If the target file already exists, it is overwritten.
+            </summary>
+            <param name="fs">The filesystem.</param>
+            <param name="path">The path of the file to open for writing.</param>
+            <param name="content">The content.</param>
+            <exception cref="T:System.ArgumentNullException">content</exception>
+            <remarks>
+                Given a byte array and a file path, this method opens the specified file, writes the
+                contents of the byte array to the file, and then closes the file.
+            </remarks>
+        </member>
+        <member name="M:Zio.FileSystemExtensions.ReadAllLines(Zio.IFileSystem,Zio.UPath)">
+            <summary>
+                Opens a file, reads all lines of the file with the specified encoding, and then closes the file.
+            </summary>
+            <param name="fs">The filesystem.</param>
+            <param name="path">The path of the file to open for reading.</param>
+            <returns>An array of strings containing all lines of the file.</returns>
+        </member>
+        <member name="M:Zio.FileSystemExtensions.ReadAllLines(Zio.IFileSystem,Zio.UPath,System.Text.Encoding)">
+            <summary>
+                Opens a file, reads all lines of the file with the specified encoding, and then closes the file.
+            </summary>
+            <param name="fs">The filesystem.</param>
+            <param name="path">The path of the file to open for reading.</param>
+            <param name="encoding">The encoding to use to decode the text from <paramref name="path" />.</param>
+            <remarks>
+                This method attempts to automatically detect the encoding of a file based on the presence of byte order marks.
+                Encoding formats UTF-8 and UTF-32 (both big-endian and little-endian) can be detected.
+            </remarks>
+            <returns>An array of strings containing all lines of the file.</returns>
+        </member>
+        <member name="M:Zio.FileSystemExtensions.WriteAllText(Zio.IFileSystem,Zio.UPath,System.String)">
+            <summary>
+                Creates a new file, writes the specified string to the file, and then closes the file.
+                If the target file already exists, it is overwritten.
+            </summary>
+            <param name="fs">The filesystem.</param>
+            <param name="path">The path of the file to open for writing.</param>
+            <param name="content">The content.</param>
+            <exception cref="T:System.ArgumentNullException">content</exception>
+            <remarks>
+                This method uses UTF-8 encoding without a Byte-Order Mark (BOM), so using the GetPreamble method will return an
+                empty byte array.
+                If it is necessary to include a UTF-8 identifier, such as a byte order mark, at the beginning of a file,
+                use the <see cref="M:Zio.FileSystemExtensions.WriteAllText(Zio.IFileSystem,Zio.UPath,System.String,System.Text.Encoding)" /> method overload with UTF8 encoding.
+            </remarks>
+        </member>
+        <member name="M:Zio.FileSystemExtensions.WriteAllText(Zio.IFileSystem,Zio.UPath,System.String,System.Text.Encoding)">
+            <summary>
+                Creates a new file, writes the specified string to the file using the specified encoding, and then
+                closes the file. If the target file already exists, it is overwritten.
+            </summary>
+            <param name="fs">The filesystem.</param>
+            <param name="path">The path of the file to open for writing.</param>
+            <param name="content">The content.</param>
+            <param name="encoding">The encoding to use to decode the text from <paramref name="path" />. </param>
+            <exception cref="T:System.ArgumentNullException">content</exception>
+            <remarks>
+                Given a string and a file path, this method opens the specified file, writes the string to the file using the
+                specified encoding, and then closes the file.
+                The file handle is guaranteed to be closed by this method, even if exceptions are raised.
+            </remarks>
+        </member>
+        <member name="M:Zio.FileSystemExtensions.AppendAllText(Zio.IFileSystem,Zio.UPath,System.String)">
+            <summary>
+                Opens a file, appends the specified string to the file, and then closes the file. If the file does not exist,
+                this method creates a file, writes the specified string to the file, then closes the file.
+            </summary>
+            <param name="fs">The filesystem.</param>
+            <param name="path">The path of the file to open for appending.</param>
+            <param name="content">The content to append.</param>
+            <exception cref="T:System.ArgumentNullException">content</exception>
+            <remarks>
+                Given a string and a file path, this method opens the specified file, appends the string to the end of the file,
+                and then closes the file. The file handle is guaranteed to be closed by this method, even if exceptions are raised.
+                The method creates the file if it doesn’t exist, but it doesn't create new directories. Therefore, the value of the
+                path parameter must contain existing directories.
+            </remarks>
+        </member>
+        <member name="M:Zio.FileSystemExtensions.AppendAllText(Zio.IFileSystem,Zio.UPath,System.String,System.Text.Encoding)">
+            <summary>
+                Appends the specified string to the file, creating the file if it does not already exist.
+            </summary>
+            <param name="fs">The filesystem.</param>
+            <param name="path">The path of the file to open for appending.</param>
+            <param name="content">The content to append.</param>
+            <param name="encoding">The encoding to use to encode the text from <paramref name="path" />.</param>
+            <exception cref="T:System.ArgumentNullException">content</exception>
+            <remarks>
+                Given a string and a file path, this method opens the specified file, appends the string to the end of the file,
+                and then closes the file. The file handle is guaranteed to be closed by this method, even if exceptions are raised.
+                The method creates the file if it doesn’t exist, but it doesn't create new directories. Therefore, the value of the
+                path parameter must contain existing directories.
+            </remarks>
+        </member>
+        <member name="M:Zio.FileSystemExtensions.CreateFile(Zio.IFileSystem,Zio.UPath)">
+            <summary>
+            Creates or overwrites a file in the specified path.
+            </summary>
+            <param name="fileSystem">The file system.</param>
+            <param name="path">The path and name of the file to create.</param>
+            <returns>A stream that provides read/write access to the file specified in path.</returns>
+        </member>
+        <member name="M:Zio.FileSystemExtensions.EnumerateDirectories(Zio.IFileSystem,Zio.UPath)">
+            <summary>
+            Returns an enumerable collection of directory names in a specified path.
+            </summary>
+            <param name="fileSystem">The file system.</param>
+            <param name="path">The path of the directory to look for directories.</param>
+            <returns>An enumerable collection of the full names (including paths) for the directories in the directory specified by path.</returns>
+        </member>
+        <member name="M:Zio.FileSystemExtensions.EnumerateDirectories(Zio.IFileSystem,Zio.UPath,System.String)">
+            <summary>
+            Returns an enumerable collection of directory names that match a search pattern in a specified path.
+            </summary>
+            <param name="fileSystem">The file system.</param>
+            <param name="path">The path of the directory to look for directories.</param>
+            <param name="searchPattern">The search string to match against the names of directories in path. This parameter can contain a combination 
+            of valid literal path and wildcard (* and ?) characters (see Remarks), but doesn't support regular expressions.</param>
+            <returns>An enumerable collection of the full names (including paths) for the directories in the directory specified by path.</returns>
+        </member>
+        <member name="M:Zio.FileSystemExtensions.EnumerateDirectories(Zio.IFileSystem,Zio.UPath,System.String,System.IO.SearchOption)">
+            <summary>
+            Returns an enumerable collection of directory names that match a search pattern in a specified path, and optionally searches subdirectories.
+            </summary>
+            <param name="fileSystem">The file system.</param>
+            <param name="path">The path of the directory to look for directories.</param>
+            <param name="searchPattern">The search string to match against the names of directories in path. This parameter can contain a combination 
+            of valid literal path and wildcard (* and ?) characters (see Remarks), but doesn't support regular expressions.</param>
+            <param name="searchOption">One of the enumeration values that specifies whether the search operation should include only the current directory 
+            or should include all subdirectories.
+            The default value is TopDirectoryOnly.</param>
+            <returns>An enumerable collection of the full names (including paths) for the directories in the directory specified by path.</returns>
+        </member>
+        <member name="M:Zio.FileSystemExtensions.EnumerateFiles(Zio.IFileSystem,Zio.UPath)">
+            <summary>
+            Returns an enumerable collection of file names in a specified path.
+            </summary>
+            <param name="fileSystem">The file system.</param>
+            <param name="path">The path of the directory to look for files.</param>
+            <returns>An enumerable collection of the full names (including paths) for the files in the directory specified by path.</returns>
+        </member>
+        <member name="M:Zio.FileSystemExtensions.EnumerateFiles(Zio.IFileSystem,Zio.UPath,System.String)">
+            <summary>
+            Returns an enumerable collection of file names that match a search pattern in a specified path.
+            </summary>
+            <param name="fileSystem">The file system.</param>
+            <param name="path">The path of the directory to look for files.</param>
+            <param name="searchPattern">The search string to match against the names of directories in path. This parameter can contain a combination 
+            of valid literal path and wildcard (* and ?) characters (see Remarks), but doesn't support regular expressions.</param>
+            <returns>An enumerable collection of the full names (including paths) for the files in the directory specified by path.</returns>
+        </member>
+        <member name="M:Zio.FileSystemExtensions.EnumerateFiles(Zio.IFileSystem,Zio.UPath,System.String,System.IO.SearchOption)">
+            <summary>
+            Returns an enumerable collection of file names in a specified path.
+            </summary>
+            <param name="fileSystem">The file system.</param>
+            <param name="path">The path of the directory to look for files.</param>
+            <param name="searchPattern">The search string to match against the names of directories in path. This parameter can contain a combination 
+            of valid literal path and wildcard (* and ?) characters (see Remarks), but doesn't support regular expressions.</param>
+            <param name="searchOption">One of the enumeration values that specifies whether the search operation should include only the current directory 
+            or should include all subdirectories.
+            The default value is TopDirectoryOnly.</param>
+            <returns>An enumerable collection of the full names (including paths) for the files in the directory specified by path.</returns>
+        </member>
+        <member name="M:Zio.FileSystemExtensions.EnumeratePaths(Zio.IFileSystem,Zio.UPath)">
+            <summary>
+            Returns an enumerable collection of file or directory names in a specified path.
+            </summary>
+            <param name="fileSystem">The file system.</param>
+            <param name="path">The path of the directory to look for files or directories.</param>
+            <returns>An enumerable collection of the full names (including paths) for the files and directories in the directory specified by path.</returns>
+        </member>
+        <member name="M:Zio.FileSystemExtensions.EnumeratePaths(Zio.IFileSystem,Zio.UPath,System.String)">
+            <summary>
+            Returns an enumerable collection of file or directory names in a specified path.
+            </summary>
+            <param name="fileSystem">The file system.</param>
+            <param name="path">The path of the directory to look for files or directories.</param>
+            <param name="searchPattern">The search string to match against the names of directories in path. This parameter can contain a combination 
+            of valid literal path and wildcard (* and ?) characters (see Remarks), but doesn't support regular expressions.</param>
+            <returns>An enumerable collection of the full names (including paths) for the files and directories in the directory specified by path.</returns>
+        </member>
+        <member name="M:Zio.FileSystemExtensions.EnumeratePaths(Zio.IFileSystem,Zio.UPath,System.String,System.IO.SearchOption)">
+            <summary>
+            Returns an enumerable collection of file or directory names in a specified path.
+            </summary>
+            <param name="fileSystem">The file system.</param>
+            <param name="path">The path of the directory to look for files or directories.</param>
+            <param name="searchPattern">The search string to match against the names of directories in path. This parameter can contain a combination 
+            of valid literal path and wildcard (* and ?) characters (see Remarks), but doesn't support regular expressions.</param>
+            <param name="searchOption">One of the enumeration values that specifies whether the search operation should include only the current directory 
+            or should include all subdirectories.
+            The default value is TopDirectoryOnly.</param>
+            <returns>An enumerable collection of the full names (including paths) for the files and directories in the directory specified by path.</returns>
+        </member>
+        <member name="M:Zio.FileSystemExtensions.EnumerateFileEntries(Zio.IFileSystem,Zio.UPath)">
+            <summary>
+            Returns an enumerable collection of <see cref="T:Zio.FileEntry"/> that match a search pattern in a specified path.
+            </summary>
+            <param name="fileSystem">The file system.</param>
+            <param name="path">The path of the directory to look for files.</param>
+            <returns>An enumerable collection of <see cref="T:Zio.FileEntry"/> from the specified path.</returns>
+        </member>
+        <member name="M:Zio.FileSystemExtensions.EnumerateFileEntries(Zio.IFileSystem,Zio.UPath,System.String)">
+            <summary>
+            Returns an enumerable collection of <see cref="T:Zio.FileEntry"/> that match a search pattern in a specified path.
+            </summary>
+            <param name="fileSystem">The file system.</param>
+            <param name="path">The path of the directory to look for files.</param>
+            <param name="searchPattern">The search string to match against the names of directories in path. This parameter can contain a combination 
+            of valid literal path and wildcard (* and ?) characters (see Remarks), but doesn't support regular expressions.</param>
+            <returns>An enumerable collection of <see cref="T:Zio.FileEntry"/> from the specified path.</returns>
+        </member>
+        <member name="M:Zio.FileSystemExtensions.EnumerateFileEntries(Zio.IFileSystem,Zio.UPath,System.String,System.IO.SearchOption)">
+            <summary>
+            Returns an enumerable collection of <see cref="T:Zio.FileEntry"/> that match a search pattern in a specified path.
+            </summary>
+            <param name="fileSystem">The file system.</param>
+            <param name="path">The path of the directory to look for files.</param>
+            <param name="searchPattern">The search string to match against the names of directories in path. This parameter can contain a combination 
+            of valid literal path and wildcard (* and ?) characters (see Remarks), but doesn't support regular expressions.</param>
+            <param name="searchOption">One of the enumeration values that specifies whether the search operation should include only the current directory 
+            or should include all subdirectories.
+            The default value is TopDirectoryOnly.</param>
+            <returns>An enumerable collection of <see cref="T:Zio.FileEntry"/> from the specified path.</returns>
+        </member>
+        <member name="M:Zio.FileSystemExtensions.EnumerateDirectoryEntries(Zio.IFileSystem,Zio.UPath)">
+            <summary>
+            Returns an enumerable collection of <see cref="T:Zio.DirectoryEntry"/> that match a search pattern in a specified path.
+            </summary>
+            <param name="fileSystem">The file system.</param>
+            <param name="path">The path of the directory to look for directories.</param>
+            <returns>An enumerable collection of <see cref="T:Zio.DirectoryEntry"/> from the specified path.</returns>
+        </member>
+        <member name="M:Zio.FileSystemExtensions.EnumerateDirectoryEntries(Zio.IFileSystem,Zio.UPath,System.String)">
+            <summary>
+            Returns an enumerable collection of <see cref="T:Zio.DirectoryEntry"/> that match a search pattern in a specified path.
+            </summary>
+            <param name="fileSystem">The file system.</param>
+            <param name="path">The path of the directory to look for directories.</param>
+            <param name="searchPattern">The search string to match against the names of directories in path. This parameter can contain a combination 
+            of valid literal path and wildcard (* and ?) characters (see Remarks), but doesn't support regular expressions.</param>
+            <returns>An enumerable collection of <see cref="T:Zio.DirectoryEntry"/> from the specified path.</returns>
+        </member>
+        <member name="M:Zio.FileSystemExtensions.EnumerateDirectoryEntries(Zio.IFileSystem,Zio.UPath,System.String,System.IO.SearchOption)">
+            <summary>
+            Returns an enumerable collection of <see cref="T:Zio.DirectoryEntry"/> that match a search pattern in a specified path.
+            </summary>
+            <param name="fileSystem">The file system.</param>
+            <param name="path">The path of the directory to look for directories.</param>
+            <param name="searchPattern">The search string to match against the names of directories in path. This parameter can contain a combination 
+            of valid literal path and wildcard (* and ?) characters (see Remarks), but doesn't support regular expressions.</param>
+            <param name="searchOption">One of the enumeration values that specifies whether the search operation should include only the current directory 
+            or should include all subdirectories.
+            The default value is TopDirectoryOnly.</param>
+            <returns>An enumerable collection of <see cref="T:Zio.DirectoryEntry"/> from the specified path.</returns>
+        </member>
+        <member name="M:Zio.FileSystemExtensions.EnumerateFileSystemEntries(Zio.IFileSystem,Zio.UPath)">
+            <summary>
+            Returns an enumerable collection of <see cref="T:Zio.FileSystemEntry"/> that match a search pattern in a specified path.
+            </summary>
+            <param name="fileSystem">The file system.</param>
+            <param name="path">The path of the directory to look for files and directories.</param>
+            <returns>An enumerable collection of <see cref="T:Zio.FileSystemEntry"/> that match a search pattern in a specified path.</returns>
+        </member>
+        <member name="M:Zio.FileSystemExtensions.EnumerateFileSystemEntries(Zio.IFileSystem,Zio.UPath,System.String)">
+            <summary>
+            Returns an enumerable collection of <see cref="T:Zio.FileSystemEntry"/> that match a search pattern in a specified path.
+            </summary>
+            <param name="fileSystem">The file system.</param>
+            <param name="path">The path of the directory to look for files and directories.</param>
+            <param name="searchPattern">The search string to match against the names of directories in path. This parameter can contain a combination 
+            of valid literal path and wildcard (* and ?) characters (see Remarks), but doesn't support regular expressions.</param>
+            <returns>An enumerable collection of <see cref="T:Zio.FileSystemEntry"/> that match a search pattern in a specified path.</returns>
+        </member>
+        <member name="M:Zio.FileSystemExtensions.EnumerateFileSystemEntries(Zio.IFileSystem,Zio.UPath,System.String,System.IO.SearchOption,Zio.SearchTarget)">
+            <summary>
+            Returns an enumerable collection of <see cref="T:Zio.FileSystemEntry"/> that match a search pattern in a specified path.
+            </summary>
+            <param name="fileSystem">The file system.</param>
+            <param name="path">The path of the directory to look for files and directories.</param>
+            <param name="searchPattern">The search string to match against the names of directories in path. This parameter can contain a combination 
+            of valid literal path and wildcard (* and ?) characters (see Remarks), but doesn't support regular expressions.</param>
+            <param name="searchOption">One of the enumeration values that specifies whether the search operation should include only the current directory 
+            or should include all subdirectories.
+            The default value is TopDirectoryOnly.</param>
+            <param name="searchTarget">The search target either <see cref="F:Zio.SearchTarget.Both"/> or only <see cref="F:Zio.SearchTarget.Directory"/> or <see cref="F:Zio.SearchTarget.File"/>. Default is <see cref="F:Zio.SearchTarget.Both"/></param>
+            <returns>An enumerable collection of <see cref="T:Zio.FileSystemEntry"/> that match a search pattern in a specified path.</returns>
+        </member>
+        <member name="M:Zio.FileSystemExtensions.GetFileSystemEntry(Zio.IFileSystem,Zio.UPath)">
+            <summary>
+            Gets a <see cref="T:Zio.FileSystemEntry"/> for the specified path. If the file or directory does not exist, throws a <see cref="T:System.IO.FileNotFoundException"/>
+            </summary>
+            <param name="fileSystem">The file system.</param>
+            <param name="path">The file or directory path.</param>
+            <returns>A new <see cref="T:Zio.FileSystemEntry"/> from the specified path.</returns>
+        </member>
+        <member name="M:Zio.FileSystemExtensions.TryGetFileSystemEntry(Zio.IFileSystem,Zio.UPath)">
+            <summary>
+            Tries to get a <see cref="T:Zio.FileSystemEntry"/> for the specified path. If the file or directory does not exist, returns null.
+            </summary>
+            <param name="fileSystem">The file system.</param>
+            <param name="path">The file or directory path.</param>
+            <returns>A new <see cref="T:Zio.FileSystemEntry"/> from the specified path.</returns>
+        </member>
+        <member name="M:Zio.FileSystemExtensions.GetFileEntry(Zio.IFileSystem,Zio.UPath)">
+            <summary>
+            Gets a <see cref="T:Zio.FileEntry"/> for the specified path. If the file does not exist, throws a <see cref="T:System.IO.FileNotFoundException"/>
+            </summary>
+            <param name="fileSystem">The file system.</param>
+            <param name="filePath">The file path.</param>
+            <returns>A new <see cref="T:Zio.FileEntry"/> from the specified path.</returns>
+        </member>
+        <member name="M:Zio.FileSystemExtensions.GetDirectoryEntry(Zio.IFileSystem,Zio.UPath)">
+            <summary>
+            Gets a <see cref="T:Zio.DirectoryEntry"/> for the specified path. If the file does not exist, throws a <see cref="T:System.IO.DirectoryNotFoundException"/>
+            </summary>
+            <param name="fileSystem">The file system.</param>
+            <param name="directoryPath">The directory path.</param>
+            <returns>A new <see cref="T:Zio.DirectoryEntry"/> from the specified path.</returns>
+        </member>
+        <member name="M:Zio.FileSystemExtensions.TryWatch(Zio.IFileSystem,Zio.UPath)">
+            <summary>
+            Tries to watch the specified path. If watching the file system or path is not supported, returns null.
+            </summary>
+            <param name="fileSystem">The file system.</param>
+            <param name="path">The path to watch for changes.</param>
+            <returns>An <see cref="T:Zio.IFileSystemWatcher"/> instance or null if not supported.</returns>
+        </member>
+        <member name="T:Zio.FileSystems.AggregateFileSystem">
+            <summary>
+            Provides a readonly merged view filesystem over multiple filesystems (overriding files/directory in order)
+            </summary>
+        </member>
+        <member name="M:Zio.FileSystems.AggregateFileSystem.#ctor(System.Boolean)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Zio.FileSystems.AggregateFileSystem"/> class.
+            </summary>
+            <param name="owned">True if filesystems should be disposed when this instance is disposed.</param>
+        </member>
+        <member name="M:Zio.FileSystems.AggregateFileSystem.#ctor(Zio.IFileSystem,System.Boolean)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Zio.FileSystems.AggregateFileSystem"/> class with a default <see cref="T:Zio.IFileSystem"/>
+            that will be used as a final filesystem while trying to resolve paths.
+            </summary>
+            <param name="fileSystem">The final backup filesystem (can be null).</param>
+            <param name="owned">True if <paramref name="fileSystem"/> and other filesystems should be disposed when this instance is disposed.</param>
+        </member>
+        <member name="M:Zio.FileSystems.AggregateFileSystem.GetFileSystems">
+            <summary>
+            Gets an ordered list of the filesystems registered to this instance. The backup filesystem passed to the constructor
+            is not part of the liset.
+            </summary>
+        </member>
+        <member name="M:Zio.FileSystems.AggregateFileSystem.ClearFileSystems">
+            <summary>
+            Clears the registered file systems.
+            </summary>
+        </member>
+        <member name="M:Zio.FileSystems.AggregateFileSystem.SetFileSystems(System.Collections.Generic.IEnumerable{Zio.IFileSystem})">
+            <summary>
+            Sets the filesystems by clearing all previously registered filesystems, from the lowest to highest priority filesystem.
+            </summary>
+            <param name="fileSystems">The file systems.</param>
+            <exception cref="T:System.ArgumentNullException">fileSystems</exception>
+            <exception cref="T:System.ArgumentException">
+            A null filesystem is invalid
+            or
+            Cannot add this instance as an aggregate delegate of itself
+            </exception>
+        </member>
+        <member name="M:Zio.FileSystems.AggregateFileSystem.AddFileSystem(Zio.IFileSystem)">
+            <summary>
+            Adds a filesystem to this aggregate view. The Last filesystem as more priority than the previous one when an overrides
+            of a file occurs. 
+            </summary>
+            <param name="fs">The filesystem to add to this aggregate.</param>
+            <exception cref="T:System.ArgumentNullException">fs</exception>
+            <exception cref="T:System.ArgumentException">Cannot add this instance as an aggregate delegate of itself</exception>
+            <exception cref="T:System.ArgumentException">The filesystem is already added</exception>
+        </member>
+        <member name="M:Zio.FileSystems.AggregateFileSystem.RemoveFileSystem(Zio.IFileSystem)">
+            <summary>
+            Removes a filesystem from this aggregate view.
+            </summary>
+            <param name="fs">The filesystem to remove to this aggregate.</param>
+            <exception cref="T:System.ArgumentNullException">fs</exception>
+            <exception cref="T:System.ArgumentException">FileSystem was not found - fs</exception>
+        </member>
+        <member name="M:Zio.FileSystems.AggregateFileSystem.FindFileSystemEntries(Zio.UPath)">
+            <summary>
+            Finds the list of <see cref="T:Zio.FileSystemEntry"/> for each file or directory found at the specified path for each registered filesystems (in order).
+            The type of the first entry (file or directory) dictates the type of the following entries in the list (e.g if a file is coming first, only files will be showned for the specified path).
+            </summary>
+            <param name="path">To check for an entry</param>
+            <returns>A list of file entries for the specified path</returns>
+        </member>
+        <member name="M:Zio.FileSystems.AggregateFileSystem.DirectoryExistsImpl(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.AggregateFileSystem.GetFileLengthImpl(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.AggregateFileSystem.FileExistsImpl(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.AggregateFileSystem.OpenFileImpl(Zio.UPath,System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.AggregateFileSystem.GetAttributesImpl(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.AggregateFileSystem.GetCreationTimeImpl(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.AggregateFileSystem.GetLastAccessTimeImpl(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.AggregateFileSystem.GetLastWriteTimeImpl(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.AggregateFileSystem.EnumeratePathsImpl(Zio.UPath,System.String,System.IO.SearchOption,Zio.SearchTarget)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.AggregateFileSystem.ConvertPathToDelegate(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.AggregateFileSystem.ConvertPathFromDelegate(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.AggregateFileSystem.CanWatchImpl(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.AggregateFileSystem.WatchImpl(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="T:Zio.FileSystems.AggregateFileSystemWatcher">
+            <summary>
+            Aggregates events from multiple <see cref="T:Zio.FileSystems.FileSystemWatcher"/> into one.
+            </summary>
+        </member>
+        <member name="M:Zio.FileSystems.AggregateFileSystemWatcher.Add(Zio.IFileSystemWatcher)">
+            <summary>
+            Adds an <see cref="T:Zio.IFileSystemWatcher"/> instance to aggregate events from.
+            </summary>
+            <param name="watcher">The <see cref="T:Zio.IFileSystemWatcher"/> instance to add.</param>
+        </member>
+        <member name="M:Zio.FileSystems.AggregateFileSystemWatcher.RemoveFrom(Zio.IFileSystem)">
+            <summary>
+            Removes <see cref="T:Zio.IFileSystemWatcher"/> instances from this instance.
+            </summary>
+            <param name="fileSystem">The <see cref="T:Zio.IFileSystem"/> to stop aggregating events from.</param>
+        </member>
+        <member name="M:Zio.FileSystems.AggregateFileSystemWatcher.Clear(Zio.IFileSystem)">
+            <summary>
+            Removes all <see cref="T:Zio.IFileSystemWatcher"/> instances from this instance.
+            </summary>
+            <param name="excludeFileSystem">Exclude this filesystem from removal.</param>
+        </member>
+        <member name="P:Zio.FileSystems.AggregateFileSystemWatcher.InternalBufferSize">
+            <inheritdoc />
+        </member>
+        <member name="P:Zio.FileSystems.AggregateFileSystemWatcher.NotifyFilter">
+            <inheritdoc />
+        </member>
+        <member name="P:Zio.FileSystems.AggregateFileSystemWatcher.EnableRaisingEvents">
+            <inheritdoc />
+        </member>
+        <member name="P:Zio.FileSystems.AggregateFileSystemWatcher.IncludeSubdirectories">
+            <inheritdoc />
+        </member>
+        <member name="P:Zio.FileSystems.AggregateFileSystemWatcher.Filter">
+            <inheritdoc />
+        </member>
+        <member name="T:Zio.FileSystems.ComposeFileSystem">
+            <summary>
+            Provides an abstract base <see cref="T:Zio.IFileSystem"/> for composing a filesystem with another FileSystem. 
+            This implementation delegates by default its implementation to the filesystem passed to the constructor.
+            </summary>
+        </member>
+        <member name="M:Zio.FileSystems.ComposeFileSystem.#ctor(Zio.IFileSystem,System.Boolean)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Zio.FileSystems.ComposeFileSystem"/> class.
+            </summary>
+            <param name="fileSystem">The delegated file system (can be null).</param>
+            <param name="owned">True if <paramref name="fileSystem"/> should be disposed when this instance is disposed.</param>
+        </member>
+        <member name="P:Zio.FileSystems.ComposeFileSystem.NextFileSystem">
+            <summary>
+            Gets the next delegated file system (may be null).
+            </summary>
+        </member>
+        <member name="P:Zio.FileSystems.ComposeFileSystem.NextFileSystemSafe">
+            <summary>
+            Gets the next delegated file system or throws an error if it is null.
+            </summary>
+        </member>
+        <member name="M:Zio.FileSystems.ComposeFileSystem.CreateDirectoryImpl(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.ComposeFileSystem.DirectoryExistsImpl(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.ComposeFileSystem.MoveDirectoryImpl(Zio.UPath,Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.ComposeFileSystem.DeleteDirectoryImpl(Zio.UPath,System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.ComposeFileSystem.CopyFileImpl(Zio.UPath,Zio.UPath,System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.ComposeFileSystem.ReplaceFileImpl(Zio.UPath,Zio.UPath,Zio.UPath,System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.ComposeFileSystem.GetFileLengthImpl(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.ComposeFileSystem.FileExistsImpl(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.ComposeFileSystem.MoveFileImpl(Zio.UPath,Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.ComposeFileSystem.DeleteFileImpl(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.ComposeFileSystem.OpenFileImpl(Zio.UPath,System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.ComposeFileSystem.GetAttributesImpl(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.ComposeFileSystem.SetAttributesImpl(Zio.UPath,System.IO.FileAttributes)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.ComposeFileSystem.GetCreationTimeImpl(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.ComposeFileSystem.SetCreationTimeImpl(Zio.UPath,System.DateTime)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.ComposeFileSystem.GetLastAccessTimeImpl(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.ComposeFileSystem.SetLastAccessTimeImpl(Zio.UPath,System.DateTime)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.ComposeFileSystem.GetLastWriteTimeImpl(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.ComposeFileSystem.SetLastWriteTimeImpl(Zio.UPath,System.DateTime)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.ComposeFileSystem.EnumeratePathsImpl(Zio.UPath,System.String,System.IO.SearchOption,Zio.SearchTarget)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.ComposeFileSystem.CanWatchImpl(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.ComposeFileSystem.WatchImpl(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.ComposeFileSystem.ConvertPathToInternalImpl(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.ComposeFileSystem.ConvertPathFromInternalImpl(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.ComposeFileSystem.ConvertPathToDelegate(Zio.UPath)">
+            <summary>
+            Converts the specified path to the path supported by the underlying <see cref="P:Zio.FileSystems.ComposeFileSystem.NextFileSystem"/>
+            </summary>
+            <param name="path">The path exposed by this filesystem</param>
+            <returns>A new path translated to the delegate path</returns>
+        </member>
+        <member name="M:Zio.FileSystems.ComposeFileSystem.ConvertPathFromDelegate(Zio.UPath)">
+            <summary>
+            Converts the specified delegate path to the path exposed by this filesystem.
+            </summary>
+            <param name="path">The path used by the underlying <see cref="P:Zio.FileSystems.ComposeFileSystem.NextFileSystem"/></param>
+            <returns>A new path translated to this filesystem</returns>
+        </member>
+        <member name="T:Zio.FileSystems.FileSystem">
+            <summary>
+            Abstract class for a <see cref="T:Zio.IFileSystem"/>. Provides default arguments safety checking and redirecting to safe implementation.
+            Implements also the <see cref="T:System.IDisposable"/> pattern.
+            </summary>
+        </member>
+        <member name="F:Zio.FileSystems.FileSystem.DefaultFileTime">
+            <summary>
+            The default file time if the file described in a path parameter does not exist.
+            The default file time is 12:00 midnight, January 1, 1601 A.D. (C.E.) Coordinated Universal Time (UTC), adjusted to local time.
+            </summary>
+        </member>
+        <member name="M:Zio.FileSystems.FileSystem.Finalize">
+            <summary>
+            Finalizes an instance of the <see cref="T:Zio.FileSystems.FileSystem"/> class.
+            </summary>
+        </member>
+        <member name="M:Zio.FileSystems.FileSystem.Dispose">
+            <inheritdoc />
+        </member>
+        <member name="P:Zio.FileSystems.FileSystem.IsDisposing">
+            <summary>
+            <c>true</c> if this instance if being disposed.
+            </summary>
+        </member>
+        <member name="P:Zio.FileSystems.FileSystem.IsDisposed">
+            <summary>
+            <c>true</c> if this instance if being disposed.
+            </summary>
+        </member>
+        <member name="M:Zio.FileSystems.FileSystem.CreateDirectory(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.FileSystem.CreateDirectoryImpl(Zio.UPath)">
+            <summary>
+            Implementation for <see cref="M:Zio.FileSystems.FileSystem.CreateDirectory(Zio.UPath)"/>, paths is guaranteed to be absolute and not the root path `/`
+            and validated through <see cref="M:Zio.FileSystems.FileSystem.ValidatePath(Zio.UPath,System.String,System.Boolean)"/>.
+            Creates all directories and subdirectories in the specified path unless they already exist.
+            </summary>
+            <param name="path">The directory to create.</param>
+        </member>
+        <member name="M:Zio.FileSystems.FileSystem.DirectoryExists(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.FileSystem.DirectoryExistsImpl(Zio.UPath)">
+            <summary>
+            Implementation for <see cref="M:Zio.FileSystems.FileSystem.DirectoryExists(Zio.UPath)"/>, paths is guaranteed to be absolute and validated through <see cref="M:Zio.FileSystems.FileSystem.ValidatePath(Zio.UPath,System.String,System.Boolean)"/>.
+            Determines whether the given path refers to an existing directory on disk.
+            </summary>
+            <param name="path">The path to test.</param>
+            <returns><c>true</c> if the given path refers to an existing directory on disk, <c>false</c> otherwise.</returns>
+        </member>
+        <member name="M:Zio.FileSystems.FileSystem.MoveDirectory(Zio.UPath,Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.FileSystem.MoveDirectoryImpl(Zio.UPath,Zio.UPath)">
+            <summary>
+            Implementation for <see cref="M:Zio.FileSystems.FileSystem.MoveDirectory(Zio.UPath,Zio.UPath)"/>, <paramref name="srcPath"/> and <paramref name="destPath"/>
+            are guaranteed to be absolute, not equal and different from root `/`, and validated through <see cref="M:Zio.FileSystems.FileSystem.ValidatePath(Zio.UPath,System.String,System.Boolean)"/>.
+            Moves a directory and its contents to a new location.
+            </summary>
+            <param name="srcPath">The path of the directory to move.</param>
+            <param name="destPath">The path to the new location for <paramref name="srcPath"/></param>
+        </member>
+        <member name="M:Zio.FileSystems.FileSystem.DeleteDirectory(Zio.UPath,System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.FileSystem.DeleteDirectoryImpl(Zio.UPath,System.Boolean)">
+            <summary>
+            Implementation for <see cref="M:Zio.FileSystems.FileSystem.DeleteDirectory(Zio.UPath,System.Boolean)"/>, <paramref name="path"/> is guaranteed to be absolute and different from root path `/` and validated through <see cref="M:Zio.FileSystems.FileSystem.ValidatePath(Zio.UPath,System.String,System.Boolean)"/>.
+            Deletes the specified directory and, if indicated, any subdirectories and files in the directory. 
+            </summary>
+            <param name="path">The path of the directory to remove.</param>
+            <param name="isRecursive"><c>true</c> to remove directories, subdirectories, and files in path; otherwise, <c>false</c>.</param>
+        </member>
+        <member name="M:Zio.FileSystems.FileSystem.CopyFile(Zio.UPath,Zio.UPath,System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.FileSystem.CopyFileImpl(Zio.UPath,Zio.UPath,System.Boolean)">
+            <summary>
+            Implementation for <see cref="M:Zio.FileSystems.FileSystem.CopyFile(Zio.UPath,Zio.UPath,System.Boolean)"/>, <paramref name="srcPath"/> and <paramref name="destPath"/>
+            are guaranteed to be absolute and validated through <see cref="M:Zio.FileSystems.FileSystem.ValidatePath(Zio.UPath,System.String,System.Boolean)"/>.
+            Copies an existing file to a new file. Overwriting a file of the same name is allowed.
+            </summary>
+            <param name="srcPath">The path of the file to copy.</param>
+            <param name="destPath">The path of the destination file. This cannot be a directory.</param>
+            <param name="overwrite"><c>true</c> if the destination file can be overwritten; otherwise, <c>false</c>.</param>
+        </member>
+        <member name="M:Zio.FileSystems.FileSystem.ReplaceFile(Zio.UPath,Zio.UPath,Zio.UPath,System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.FileSystem.ReplaceFileImpl(Zio.UPath,Zio.UPath,Zio.UPath,System.Boolean)">
+            <summary>
+            Implementation for <see cref="M:Zio.FileSystems.FileSystem.ReplaceFile(Zio.UPath,Zio.UPath,Zio.UPath,System.Boolean)"/>, <paramref name="srcPath"/>, <paramref name="destPath"/> and <paramref name="destBackupPath"/>
+            are guaranteed to be absolute and validated through <see cref="M:Zio.FileSystems.FileSystem.ValidatePath(Zio.UPath,System.String,System.Boolean)"/>.
+            Replaces the contents of a specified file with the contents of another file, deleting the original file, and creating a backup of the replaced file and optionally ignores merge errors.
+            </summary>
+            <param name="srcPath">The path of a file that replaces the file specified by <paramref name="destPath"/>.</param>
+            <param name="destPath">The path of the file being replaced.</param>
+            <param name="destBackupPath">The path of the backup file (maybe null, in that case, it doesn't create any backup)</param>
+            <param name="ignoreMetadataErrors"><c>true</c> to ignore merge errors (such as attributes and access control lists (ACLs)) from the replaced file to the replacement file; otherwise, <c>false</c>.</param>
+        </member>
+        <member name="M:Zio.FileSystems.FileSystem.GetFileLength(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.FileSystem.GetFileLengthImpl(Zio.UPath)">
+            <summary>
+            Implementation for <see cref="M:Zio.FileSystems.FileSystem.GetFileLength(Zio.UPath)"/>, <paramref name="path"/> is guaranteed to be absolute and validated through <see cref="M:Zio.FileSystems.FileSystem.ValidatePath(Zio.UPath,System.String,System.Boolean)"/>.
+            Gets the size, in bytes, of a file.
+            </summary>
+            <param name="path">The path of a file.</param>
+            <returns>The size, in bytes, of the file</returns>
+        </member>
+        <member name="M:Zio.FileSystems.FileSystem.FileExists(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.FileSystem.FileExistsImpl(Zio.UPath)">
+            <summary>
+            Implementation for <see cref="M:Zio.FileSystems.FileSystem.FileExists(Zio.UPath)"/>, <paramref name="path"/> is guaranteed to be absolute and validated through <see cref="M:Zio.FileSystems.FileSystem.ValidatePath(Zio.UPath,System.String,System.Boolean)"/>.
+            Determines whether the specified file exists.
+            </summary>
+            <param name="path">The path.</param>
+            <returns><c>true</c> if the caller has the required permissions and path contains the name of an existing file; 
+            otherwise, <c>false</c>. This method also returns false if path is null, an invalid path, or a zero-length string. 
+            If the caller does not have sufficient permissions to read the specified file, 
+            no exception is thrown and the method returns false regardless of the existence of path.</returns>
+        </member>
+        <member name="M:Zio.FileSystems.FileSystem.MoveFile(Zio.UPath,Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.FileSystem.MoveFileImpl(Zio.UPath,Zio.UPath)">
+            <summary>
+            Implementation for <see cref="M:Zio.FileSystems.FileSystem.CopyFile(Zio.UPath,Zio.UPath,System.Boolean)"/>, <paramref name="srcPath"/> and <paramref name="destPath"/>
+            are guaranteed to be absolute and validated through <see cref="M:Zio.FileSystems.FileSystem.ValidatePath(Zio.UPath,System.String,System.Boolean)"/>.
+            Moves a specified file to a new location, providing the option to specify a new file name.
+            </summary>
+            <param name="srcPath">The path of the file to move.</param>
+            <param name="destPath">The new path and name for the file.</param>
+        </member>
+        <member name="M:Zio.FileSystems.FileSystem.DeleteFile(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.FileSystem.DeleteFileImpl(Zio.UPath)">
+            <summary>
+            Implementation for <see cref="M:Zio.FileSystems.FileSystem.FileExists(Zio.UPath)"/>, <paramref name="path"/> is guaranteed to be absolute and validated through <see cref="M:Zio.FileSystems.FileSystem.ValidatePath(Zio.UPath,System.String,System.Boolean)"/>.
+            Deletes the specified file. 
+            </summary>
+            <param name="path">The path of the file to be deleted.</param>
+        </member>
+        <member name="M:Zio.FileSystems.FileSystem.OpenFile(Zio.UPath,System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.FileSystem.OpenFileImpl(Zio.UPath,System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare)">
+            <summary>
+            Implementation for <see cref="M:Zio.FileSystems.FileSystem.OpenFile(Zio.UPath,System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare)"/>, <paramref name="path"/> is guaranteed to be absolute and validated through <see cref="M:Zio.FileSystems.FileSystem.ValidatePath(Zio.UPath,System.String,System.Boolean)"/>.
+            Opens a file <see cref="T:System.IO.Stream"/> on the specified path, having the specified mode with read, write, or read/write access and the specified sharing option.
+            </summary>
+            <param name="path">The path to the file to open.</param>
+            <param name="mode">A <see cref="T:System.IO.FileMode"/> value that specifies whether a file is created if one does not exist, and determines whether the contents of existing files are retained or overwritten.</param>
+            <param name="access">A <see cref="T:System.IO.FileAccess"/> value that specifies the operations that can be performed on the file.</param>
+            <param name="share">A <see cref="T:System.IO.FileShare"/> value specifying the type of access other threads have to the file.</param>
+            <returns>A file <see cref="T:System.IO.Stream"/> on the specified path, having the specified mode with read, write, or read/write access and the specified sharing option.</returns>
+        </member>
+        <member name="M:Zio.FileSystems.FileSystem.GetAttributes(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.FileSystem.GetAttributesImpl(Zio.UPath)">
+            <summary>
+            Implementation for <see cref="M:Zio.FileSystems.FileSystem.GetAttributes(Zio.UPath)"/>, <paramref name="path"/> is guaranteed to be absolute and validated through <see cref="M:Zio.FileSystems.FileSystem.ValidatePath(Zio.UPath,System.String,System.Boolean)"/>.
+            Gets the <see cref="T:System.IO.FileAttributes"/> of the file or directory on the path.
+            </summary>
+            <param name="path">The path to the file or directory.</param>
+            <returns>The <see cref="T:System.IO.FileAttributes"/> of the file or directory on the path.</returns>
+        </member>
+        <member name="M:Zio.FileSystems.FileSystem.SetAttributes(Zio.UPath,System.IO.FileAttributes)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.FileSystem.SetAttributesImpl(Zio.UPath,System.IO.FileAttributes)">
+            <summary>
+            Implementation for <see cref="M:Zio.FileSystems.FileSystem.SetAttributes(Zio.UPath,System.IO.FileAttributes)"/>, <paramref name="path"/> is guaranteed to be absolute and validated through <see cref="M:Zio.FileSystems.FileSystem.ValidatePath(Zio.UPath,System.String,System.Boolean)"/>.
+            Sets the specified <see cref="T:System.IO.FileAttributes"/> of the file or directory on the specified path.
+            </summary>
+            <param name="path">The path to the file or directory.</param>
+            <param name="attributes">A bitwise combination of the enumeration values.</param>
+        </member>
+        <member name="M:Zio.FileSystems.FileSystem.GetCreationTime(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.FileSystem.GetCreationTimeImpl(Zio.UPath)">
+            <summary>
+            Implementation for <see cref="M:Zio.FileSystems.FileSystem.GetCreationTime(Zio.UPath)"/>, <paramref name="path"/> is guaranteed to be absolute and validated through <see cref="M:Zio.FileSystems.FileSystem.ValidatePath(Zio.UPath,System.String,System.Boolean)"/>.
+            Returns the creation date and time of the specified file or directory.
+            </summary>
+            <param name="path">The path to a file or directory for which to obtain creation date and time information.</param>
+            <returns>A <see cref="T:System.DateTime"/> structure set to the creation date and time for the specified file or directory. This value is expressed in local time.</returns>
+        </member>
+        <member name="M:Zio.FileSystems.FileSystem.SetCreationTime(Zio.UPath,System.DateTime)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.FileSystem.SetCreationTimeImpl(Zio.UPath,System.DateTime)">
+            <summary>
+            Implementation for <see cref="M:Zio.FileSystems.FileSystem.SetCreationTime(Zio.UPath,System.DateTime)"/>, <paramref name="path"/> is guaranteed to be absolute and validated through <see cref="M:Zio.FileSystems.FileSystem.ValidatePath(Zio.UPath,System.String,System.Boolean)"/>.
+            Sets the date and time the file was created.
+            </summary>
+            <param name="path">The path to a file or directory for which to set the creation date and time.</param>
+            <param name="time">A <see cref="T:System.DateTime"/> containing the value to set for the creation date and time of path. This value is expressed in local time.</param>
+        </member>
+        <member name="M:Zio.FileSystems.FileSystem.GetLastAccessTime(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.FileSystem.GetLastAccessTimeImpl(Zio.UPath)">
+            <summary>
+            Implementation for <see cref="M:Zio.FileSystems.FileSystem.GetLastAccessTime(Zio.UPath)"/>, <paramref name="path"/> is guaranteed to be absolute and validated through <see cref="M:Zio.FileSystems.FileSystem.ValidatePath(Zio.UPath,System.String,System.Boolean)"/>.
+            Returns the last access date and time of the specified file or directory.
+            </summary>
+            <param name="path">The path to a file or directory for which to obtain creation date and time information.</param>
+            <returns>A <see cref="T:System.DateTime"/> structure set to the last access date and time for the specified file or directory. This value is expressed in local time.</returns>
+        </member>
+        <member name="M:Zio.FileSystems.FileSystem.SetLastAccessTime(Zio.UPath,System.DateTime)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.FileSystem.SetLastAccessTimeImpl(Zio.UPath,System.DateTime)">
+            <summary>
+            Implementation for <see cref="M:Zio.FileSystems.FileSystem.SetLastAccessTime(Zio.UPath,System.DateTime)"/>, <paramref name="path"/> is guaranteed to be absolute and validated through <see cref="M:Zio.FileSystems.FileSystem.ValidatePath(Zio.UPath,System.String,System.Boolean)"/>.
+            Sets the date and time the file was last accessed.
+            </summary>
+            <param name="path">The path to a file or directory for which to set the last access date and time.</param>
+            <param name="time">A <see cref="T:System.DateTime"/> containing the value to set for the last access date and time of path. This value is expressed in local time.</param>
+        </member>
+        <member name="M:Zio.FileSystems.FileSystem.GetLastWriteTime(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.FileSystem.GetLastWriteTimeImpl(Zio.UPath)">
+            <summary>
+            Implementation for <see cref="M:Zio.FileSystems.FileSystem.GetLastWriteTime(Zio.UPath)"/>, <paramref name="path"/> is guaranteed to be absolute and validated through <see cref="M:Zio.FileSystems.FileSystem.ValidatePath(Zio.UPath,System.String,System.Boolean)"/>.
+            Returns the last write date and time of the specified file or directory.
+            </summary>
+            <param name="path">The path to a file or directory for which to obtain creation date and time information.</param>
+            <returns>A <see cref="T:System.DateTime"/> structure set to the last write date and time for the specified file or directory. This value is expressed in local time.</returns>
+        </member>
+        <member name="M:Zio.FileSystems.FileSystem.SetLastWriteTime(Zio.UPath,System.DateTime)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.FileSystem.SetLastWriteTimeImpl(Zio.UPath,System.DateTime)">
+            <summary>
+            Implementation for <see cref="M:Zio.FileSystems.FileSystem.SetLastWriteTime(Zio.UPath,System.DateTime)"/>, <paramref name="path"/> is guaranteed to be absolute and validated through <see cref="M:Zio.FileSystems.FileSystem.ValidatePath(Zio.UPath,System.String,System.Boolean)"/>.
+            Sets the date and time that the specified file was last written to.
+            </summary>
+            <param name="path">The path to a file or directory for which to set the last write date and time.</param>
+            <param name="time">A <see cref="T:System.DateTime"/> containing the value to set for the last write date and time of path. This value is expressed in local time.</param>
+        </member>
+        <member name="M:Zio.FileSystems.FileSystem.EnumeratePaths(Zio.UPath,System.String,System.IO.SearchOption,Zio.SearchTarget)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.FileSystem.EnumeratePathsImpl(Zio.UPath,System.String,System.IO.SearchOption,Zio.SearchTarget)">
+            <summary>
+            Implementation for <see cref="M:Zio.FileSystems.FileSystem.EnumeratePaths(Zio.UPath,System.String,System.IO.SearchOption,Zio.SearchTarget)"/>, <paramref name="path"/> is guaranteed to be absolute and validated through <see cref="M:Zio.FileSystems.FileSystem.ValidatePath(Zio.UPath,System.String,System.Boolean)"/>.
+            Returns an enumerable collection of file names and/or directory names that match a search pattern in a specified path, and optionally searches subdirectories.
+            </summary>
+            <param name="path">The path to the directory to search.</param>
+            <param name="searchPattern">The search string to match against file-system entries in path. This parameter can contain a combination of valid literal path and wildcard (* and ?) characters (see Remarks), but doesn't support regular expressions.</param>
+            <param name="searchOption">One of the enumeration values that specifies whether the search operation should include only the current directory or should include all subdirectories.</param>
+            <param name="searchTarget">The search target either <see cref="F:Zio.SearchTarget.Both"/> or only <see cref="F:Zio.SearchTarget.Directory"/> or <see cref="F:Zio.SearchTarget.File"/>.</param>
+            <returns>An enumerable collection of file-system paths in the directory specified by path and that match the specified search pattern, option and target.</returns>
+        </member>
+        <member name="M:Zio.FileSystems.FileSystem.CanWatch(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.FileSystem.CanWatchImpl(Zio.UPath)">
+            <summary>
+            Implementation for <see cref="M:Zio.FileSystems.FileSystem.CanWatch(Zio.UPath)"/>, <paramref name="path"/> is guaranteed to be absolute and validated through <see cref="M:Zio.FileSystems.FileSystem.ValidatePath(Zio.UPath,System.String,System.Boolean)"/>.
+            Checks if the file system and <paramref name="path"/> can be watched with <see cref="M:Zio.FileSystems.FileSystem.Watch(Zio.UPath)"/>.
+            </summary>
+            <param name="path">The path to check.</param>
+            <returns>True if the the path can be watched on this file system.</returns>
+        </member>
+        <member name="M:Zio.FileSystems.FileSystem.Watch(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.FileSystem.WatchImpl(Zio.UPath)">
+            <summary>
+            Implementation for <see cref="M:Zio.FileSystems.FileSystem.Watch(Zio.UPath)"/>, <paramref name="path"/> is guaranteed to be absolute and valudated through <see cref="M:Zio.FileSystems.FileSystem.ValidatePath(Zio.UPath,System.String,System.Boolean)"/>.
+            Returns an <see cref="T:Zio.IFileSystemWatcher"/> instance that can be used to watch for changes to files and directories in the given path. The instance must be
+            configured before events are raised.
+            </summary>
+            <param name="path">The path to watch for changes.</param>
+            <returns>An <see cref="T:Zio.IFileSystemWatcher"/> instance that watches the given path.</returns>
+        </member>
+        <member name="M:Zio.FileSystems.FileSystem.ConvertPathToInternal(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.FileSystem.ConvertPathToInternalImpl(Zio.UPath)">
+            <summary>
+            Implementation for <see cref="M:Zio.FileSystems.FileSystem.ConvertPathToInternal(Zio.UPath)"/>, <paramref name="path"/> is guaranteed to be absolute and validated through <see cref="M:Zio.FileSystems.FileSystem.ValidatePath(Zio.UPath,System.String,System.Boolean)"/>.
+            Converts the specified path to the underlying path used by this <see cref="T:Zio.IFileSystem"/>. In case of a <see cref="T:Zio.FileSystems.PhysicalFileSystem"/>, it 
+            would represent the actual path on the disk.
+            </summary>
+            <param name="path">The path.</param>
+            <returns>The converted system path according to the specified path.</returns>
+        </member>
+        <member name="M:Zio.FileSystems.FileSystem.ConvertPathFromInternal(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.FileSystem.ConvertPathFromInternalImpl(System.String)">
+            <summary>
+            Implementation for <see cref="M:Zio.FileSystems.FileSystem.ConvertPathToInternal(Zio.UPath)"/>, <paramref name="innerPath"/> is guaranteed to be not null and return path to be validated through <see cref="M:Zio.FileSystems.FileSystem.ValidatePath(Zio.UPath,System.String,System.Boolean)"/>.
+            Converts the specified system path to a <see cref="T:Zio.IFileSystem"/> path.
+            </summary>
+            <param name="innerPath">The system path.</param>
+            <returns>The converted path according to the system path.</returns>
+        </member>
+        <member name="M:Zio.FileSystems.FileSystem.ValidatePathImpl(Zio.UPath,System.String)">
+            <summary>
+            User overridable implementation for <see cref="M:Zio.FileSystems.FileSystem.ValidatePath(Zio.UPath,System.String,System.Boolean)"/> to validate the specified path.
+            </summary>
+            <param name="path">The path.</param>
+            <param name="name">The name.</param>
+            <returns>The path validated</returns>
+            <exception cref="T:System.NotSupportedException">The path cannot contain the `:` character</exception>
+        </member>
+        <member name="M:Zio.FileSystems.FileSystem.ValidatePath(Zio.UPath,System.String,System.Boolean)">
+            <summary>
+            Validates the specified path (Check that it is absolute by default)
+            </summary>
+            <param name="path">The path.</param>
+            <param name="name">The name.</param>
+            <param name="allowNull">if set to <c>true</c> the path is allowed to be null. <c>false</c> otherwise.</param>  
+            <returns>The path validated</returns>
+        </member>
+        <member name="M:Zio.FileSystems.FileSystem.Dispose(System.Boolean)">
+            <summary>
+            Releases unmanaged and - optionally - managed resources.
+            </summary>
+            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        </member>
+        <member name="T:Zio.FileSystems.FileSystemEventDispatcher`1">
+            <summary>
+            Stores <see cref="T:Zio.FileSystems.FileSystemWatcher"/> instances to dispatch events to. Events are
+            called on a separate thread.
+            </summary>
+            <typeparam name="T">The <see cref="T:Zio.FileSystems.FileSystemWatcher"/> type to store.</typeparam>
+        </member>
+        <member name="M:Zio.FileSystems.FileSystemEventDispatcher`1.Add(`0)">
+            <summary>
+            Adds a <see cref="T:Zio.FileSystems.FileSystemWatcher"/> instance to dispatch events to.
+            </summary>
+            <param name="watcher">Instance to add.</param>
+        </member>
+        <member name="M:Zio.FileSystems.FileSystemEventDispatcher`1.Remove(`0)">
+            <summary>
+            Removes a <see cref="T:Zio.FileSystems.FileSystemWatcher"/> instance to stop dispatching events.
+            </summary>
+            <param name="watcher">Instance to remove.</param>
+        </member>
+        <member name="M:Zio.FileSystems.FileSystemEventDispatcher`1.RaiseChange(Zio.UPath)">
+            <summary>
+            Raise the <see cref="E:Zio.IFileSystemWatcher.Changed"/> event on watchers.
+            </summary>
+            <param name="path">Absolute path to the changed file or directory.</param>
+        </member>
+        <member name="M:Zio.FileSystems.FileSystemEventDispatcher`1.RaiseCreated(Zio.UPath)">
+            <summary>
+            Raise the <see cref="E:Zio.IFileSystemWatcher.Created"/> event on watchers.
+            </summary>
+            <param name="path">Absolute path to the new file or directory.</param>
+        </member>
+        <member name="M:Zio.FileSystems.FileSystemEventDispatcher`1.RaiseDeleted(Zio.UPath)">
+            <summary>
+            Raise the <see cref="E:Zio.IFileSystemWatcher.Deleted"/> event on watchers.
+            </summary>
+            <param name="path">Absolute path to the changed file or directory.</param>
+        </member>
+        <member name="M:Zio.FileSystems.FileSystemEventDispatcher`1.RaiseRenamed(Zio.UPath,Zio.UPath)">
+            <summary>
+            Raise the <see cref="E:Zio.IFileSystemWatcher.Renamed"/> event on watchers.
+            </summary>
+            <param name="newPath">Absolute path to the new file or directory.</param>
+            <param name="oldPath">Absolute path to the old file or directory.</param>
+        </member>
+        <member name="M:Zio.FileSystems.FileSystemEventDispatcher`1.RaiseError(System.Exception)">
+            <summary>
+            Raise the <see cref="E:Zio.IFileSystemWatcher.Error"/> event on watchers.
+            </summary>
+            <param name="exception">Exception that occurred.</param>
+        </member>
+        <member name="E:Zio.FileSystems.FileSystemWatcher.Changed">
+            <inheritdoc />
+        </member>
+        <member name="E:Zio.FileSystems.FileSystemWatcher.Created">
+            <inheritdoc />
+        </member>
+        <member name="E:Zio.FileSystems.FileSystemWatcher.Deleted">
+            <inheritdoc />
+        </member>
+        <member name="E:Zio.FileSystems.FileSystemWatcher.Error">
+            <inheritdoc />
+        </member>
+        <member name="E:Zio.FileSystems.FileSystemWatcher.Renamed">
+            <inheritdoc />
+        </member>
+        <member name="P:Zio.FileSystems.FileSystemWatcher.FileSystem">
+            <inheritdoc />
+        </member>
+        <member name="P:Zio.FileSystems.FileSystemWatcher.Path">
+            <inheritdoc />
+        </member>
+        <member name="P:Zio.FileSystems.FileSystemWatcher.InternalBufferSize">
+            <inheritdoc />
+        </member>
+        <member name="P:Zio.FileSystems.FileSystemWatcher.NotifyFilter">
+            <inheritdoc />
+        </member>
+        <member name="P:Zio.FileSystems.FileSystemWatcher.EnableRaisingEvents">
+            <inheritdoc />
+        </member>
+        <member name="P:Zio.FileSystems.FileSystemWatcher.Filter">
+            <inheritdoc />
+        </member>
+        <member name="P:Zio.FileSystems.FileSystemWatcher.IncludeSubdirectories">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.FileSystemWatcher.RaiseChanged(Zio.FileChangedEventArgs)">
+            <summary>
+            Raises the <see cref="E:Zio.FileSystems.FileSystemWatcher.Changed"/> event. 
+            </summary>
+            <param name="args">Arguments for the event.</param>
+        </member>
+        <member name="M:Zio.FileSystems.FileSystemWatcher.RaiseCreated(Zio.FileChangedEventArgs)">
+            <summary>
+            Raises the <see cref="E:Zio.FileSystems.FileSystemWatcher.Created"/> event. 
+            </summary>
+            <param name="args">Arguments for the event.</param>
+        </member>
+        <member name="M:Zio.FileSystems.FileSystemWatcher.RaiseDeleted(Zio.FileChangedEventArgs)">
+            <summary>
+            Raises the <see cref="E:Zio.FileSystems.FileSystemWatcher.Deleted"/> event. 
+            </summary>
+            <param name="args">Arguments for the event.</param>
+        </member>
+        <member name="M:Zio.FileSystems.FileSystemWatcher.RaiseError(Zio.FileSystemErrorEventArgs)">
+            <summary>
+            Raises the <see cref="E:Zio.FileSystems.FileSystemWatcher.Error"/> event. 
+            </summary>
+            <param name="args">Arguments for the event.</param>
+        </member>
+        <member name="M:Zio.FileSystems.FileSystemWatcher.RaiseRenamed(Zio.FileRenamedEventArgs)">
+            <summary>
+            Raises the <see cref="E:Zio.FileSystems.FileSystemWatcher.Renamed"/> event. 
+            </summary>
+            <param name="args">Arguments for the event.</param>
+        </member>
+        <member name="M:Zio.FileSystems.FileSystemWatcher.ShouldRaiseEventImpl(Zio.FileChangedEventArgs)">
+            <summary>
+            Checks if the event should be raised for the given arguments. Default implementation
+            checks if the <see cref="P:Zio.FileChangedEventArgs.FullPath"/> is contained in <see cref="P:Zio.FileSystems.FileSystemWatcher.Path"/>.
+            </summary>
+            <param name="args">Arguments for the event.</param>
+            <returns>True if the event should be raised, false to ignore it.</returns>
+        </member>
+        <member name="M:Zio.FileSystems.FileSystemWatcher.RegisterEvents(Zio.IFileSystemWatcher)">
+            <summary>
+            Listens to events from another <see cref="T:Zio.IFileSystemWatcher"/> instance to forward them
+            into this instance.
+            </summary>
+            <param name="watcher">Other instance to listen to.</param>
+        </member>
+        <member name="M:Zio.FileSystems.FileSystemWatcher.UnregisterEvents(Zio.IFileSystemWatcher)">
+            <summary>
+            Stops listening to events from another <see cref="T:Zio.IFileSystemWatcher"/>.
+            </summary>
+            <param name="watcher">Instance to remove event handlers from.</param>
+        </member>
+        <member name="M:Zio.FileSystems.FileSystemWatcher.TryConvertPath(Zio.UPath)">
+            <summary>
+            Attempts to convert paths from an existing event in another <see cref="T:Zio.IFileSystem"/> into
+            this <see cref="P:Zio.FileSystems.FileSystemWatcher.FileSystem"/>. If this returns <c>null</c> the event will be discarded.
+            </summary>
+            <param name="pathFromEvent">Path from the other filesystem.</param>
+            <returns>Path in this filesystem, or null if it cannot be converted.</returns>
+        </member>
+        <member name="T:Zio.FileSystems.MemoryFileSystem">
+            <summary>
+            Provides an in-memory <see cref="T:Zio.IFileSystem"/> compatible with the way a real <see cref="T:Zio.FileSystems.PhysicalFileSystem"/> is working.
+            </summary>
+        </member>
+        <member name="M:Zio.FileSystems.MemoryFileSystem.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Zio.FileSystems.MemoryFileSystem"/> class.
+            </summary>
+        </member>
+        <member name="M:Zio.FileSystems.MemoryFileSystem.#ctor(Zio.FileSystems.MemoryFileSystem)">
+            <summary>
+            Constructor used for deep cloning.
+            </summary>
+            <param name="copyFrom">The MemoryFileStream to clone from</param>
+        </member>
+        <member name="M:Zio.FileSystems.MemoryFileSystem.Clone">
+            <summary>
+            Deep clone of this filesystem
+            </summary>
+            <returns>A deep clone of this filesystem</returns>
+        </member>
+        <member name="M:Zio.FileSystems.MemoryFileSystem.CreateDirectoryImpl(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.MemoryFileSystem.DirectoryExistsImpl(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.MemoryFileSystem.MoveDirectoryImpl(Zio.UPath,Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.MemoryFileSystem.DeleteDirectoryImpl(Zio.UPath,System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.MemoryFileSystem.CopyFileImpl(Zio.UPath,Zio.UPath,System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.MemoryFileSystem.ReplaceFileImpl(Zio.UPath,Zio.UPath,Zio.UPath,System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.MemoryFileSystem.GetFileLengthImpl(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.MemoryFileSystem.FileExistsImpl(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.MemoryFileSystem.MoveFileImpl(Zio.UPath,Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.MemoryFileSystem.DeleteFileImpl(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.MemoryFileSystem.OpenFileImpl(Zio.UPath,System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.MemoryFileSystem.GetAttributesImpl(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.MemoryFileSystem.SetAttributesImpl(Zio.UPath,System.IO.FileAttributes)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.MemoryFileSystem.GetCreationTimeImpl(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.MemoryFileSystem.SetCreationTimeImpl(Zio.UPath,System.DateTime)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.MemoryFileSystem.GetLastAccessTimeImpl(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.MemoryFileSystem.SetLastAccessTimeImpl(Zio.UPath,System.DateTime)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.MemoryFileSystem.GetLastWriteTimeImpl(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.MemoryFileSystem.SetLastWriteTimeImpl(Zio.UPath,System.DateTime)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.MemoryFileSystem.EnumeratePathsImpl(Zio.UPath,System.String,System.IO.SearchOption,Zio.SearchTarget)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.MemoryFileSystem.WatchImpl(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.MemoryFileSystem.ConvertPathToInternalImpl(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.MemoryFileSystem.ConvertPathFromInternalImpl(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="T:Zio.FileSystems.MemoryFileSystem.FileSystemNodeReadWriteLock">
+            <summary>
+            Internal class used to synchronize shared-exclusive access to a <see cref="T:Zio.FileSystems.MemoryFileSystem.FileSystemNode"/>
+            </summary>
+        </member>
+        <member name="T:Zio.FileSystems.MountFileSystem">
+            <summary>
+            A <see cref="T:Zio.IFileSystem"/> that can mount other filesystems on a root name. 
+            This mount filesystem supports also an optionnal fallback delegate FileSystem if a path was not found through a mount
+            </summary>
+        </member>
+        <member name="M:Zio.FileSystems.MountFileSystem.#ctor(System.Boolean)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Zio.FileSystems.MountFileSystem"/> class.
+            </summary>
+            <param name="owned">True if mounted filesystems should be disposed when this instance is disposed.</param>
+        </member>
+        <member name="M:Zio.FileSystems.MountFileSystem.#ctor(Zio.IFileSystem,System.Boolean)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Zio.FileSystems.MountFileSystem"/> class with a default backup filesystem.
+            </summary>
+            <param name="defaultBackupFileSystem">The default backup file system.</param>
+            <param name="owned">True if <paramref name="defaultBackupFileSystem"/> and mounted filesytems should be disposed when this instance is disposed.</param>
+        </member>
+        <member name="M:Zio.FileSystems.MountFileSystem.Mount(Zio.UPath,Zio.IFileSystem)">
+            <summary>
+            Mounts a filesystem for the specified mount name.
+            </summary>
+            <param name="name">The mount name.</param>
+            <param name="fileSystem">The file system.</param>
+            <exception cref="T:System.ArgumentNullException">fileSystem</exception>
+            <exception cref="T:System.ArgumentException">
+            Cannot recursively mount the filesystem to self - <paramref name="fileSystem"/>
+            or
+            There is already a mount with the same name: `{name}` - <paramref name="name"/>
+            </exception>
+        </member>
+        <member name="M:Zio.FileSystems.MountFileSystem.IsMounted(Zio.UPath)">
+            <summary>
+            Determines whether the specified mount name is mounted.
+            </summary>
+            <param name="name">The mount name.</param>
+            <returns><c>true</c> if the specified name is mounted; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:Zio.FileSystems.MountFileSystem.GetMounts">
+            <summary>
+            Gets all the mounts currently mounted
+            </summary>
+            <returns>A dictionary of mounted filesystems.</returns>
+        </member>
+        <member name="M:Zio.FileSystems.MountFileSystem.Unmount(Zio.UPath)">
+            <summary>
+            Unmounts the specified mount name and its attached filesystem.
+            </summary>
+            <param name="name">The mount name.</param>
+            <returns>The filesystem that was unmounted.</returns>
+            <exception cref="T:System.ArgumentException">The mount with the name <paramref name="name"/> was not found</exception>
+        </member>
+        <member name="M:Zio.FileSystems.MountFileSystem.TryGetMount(Zio.UPath,Zio.UPath@,Zio.IFileSystem@,Zio.UPath@)">
+            <summary>
+            Attempts to find information about the mount that a given path maps to.
+            </summary>
+            <param name="path">The path to search for.</param>
+            <param name="name">The mount name that the <paramref name="path"/> belongs to.</param>
+            <param name="fileSystem">The mounted filesystem that the <paramref name="path"/> is located in.</param>
+            <param name="fileSystemPath">The path inside of <paramref name="fileSystem"/> that refers to the file at <paramref name="path"/>.</param>
+            <returns>True if the <paramref name="path"/> was found in a mounted filesystem.</returns>
+            <exception cref="T:System.ArgumentNullException">The <paramref name="path"/> must not be null.</exception>
+            <exception cref="T:System.ArgumentException">The <paramref name="path"/> must be absolute.</exception>
+        </member>
+        <member name="M:Zio.FileSystems.MountFileSystem.TryGetMountName(Zio.IFileSystem,Zio.UPath@)">
+            <summary>
+            Attempts to find the mount name that a filesystem has been mounted to
+            </summary>
+            <param name="fileSystem">The mounted filesystem to search for.</param>
+            <param name="name">The mount name that the <paramref name="fileSystem"/> is mounted with.</param>
+            <returns>True if the <paramref name="fileSystem"/> is mounted.</returns>
+            <exception cref="T:System.ArgumentNullException">The <paramref name="fileSystem"/> must not be null.</exception>
+        </member>
+        <member name="M:Zio.FileSystems.MountFileSystem.CreateDirectoryImpl(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.MountFileSystem.DirectoryExistsImpl(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.MountFileSystem.MoveDirectoryImpl(Zio.UPath,Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.MountFileSystem.DeleteDirectoryImpl(Zio.UPath,System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.MountFileSystem.CopyFileImpl(Zio.UPath,Zio.UPath,System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.MountFileSystem.ReplaceFileImpl(Zio.UPath,Zio.UPath,Zio.UPath,System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.MountFileSystem.GetFileLengthImpl(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.MountFileSystem.FileExistsImpl(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.MountFileSystem.MoveFileImpl(Zio.UPath,Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.MountFileSystem.DeleteFileImpl(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.MountFileSystem.OpenFileImpl(Zio.UPath,System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.MountFileSystem.GetAttributesImpl(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.MountFileSystem.SetAttributesImpl(Zio.UPath,System.IO.FileAttributes)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.MountFileSystem.GetCreationTimeImpl(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.MountFileSystem.SetCreationTimeImpl(Zio.UPath,System.DateTime)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.MountFileSystem.GetLastAccessTimeImpl(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.MountFileSystem.SetLastAccessTimeImpl(Zio.UPath,System.DateTime)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.MountFileSystem.GetLastWriteTimeImpl(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.MountFileSystem.SetLastWriteTimeImpl(Zio.UPath,System.DateTime)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.MountFileSystem.EnumeratePathsImpl(Zio.UPath,System.String,System.IO.SearchOption,Zio.SearchTarget)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.MountFileSystem.CanWatchImpl(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.MountFileSystem.WatchImpl(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.MountFileSystem.ConvertPathToDelegate(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.MountFileSystem.ConvertPathFromDelegate(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.MountFileSystem.IsMountIncludedInWatch(Zio.UPath,Zio.UPath,Zio.UPath@)">
+            <summary>
+            Checks if a mount path would be included in the given watch path. Also provides the path to watch on the mounted
+            filesystem in <paramref name="remainingPath"/>.
+            </summary>
+        </member>
+        <member name="M:Zio.FileSystems.MountFileSystem.GetRemaining(Zio.UPath,Zio.UPath)">
+            <summary>
+            Gets the remaining path after the <see cref="!:prefix"/>.
+            </summary>
+            <param name="prefix">The prefix of the path.</param>
+            <param name="path">The path to search.</param>
+            <returns>The path after the prefix, or a <c>null</c> path if <see cref="!:path"/> does not have the correct prefix.</returns>
+        </member>
+        <member name="T:Zio.FileSystems.PhysicalFileSystem">
+            <summary>
+            Provides a <see cref="T:Zio.IFileSystem"/> for the physical filesystem.
+            </summary>
+        </member>
+        <member name="M:Zio.FileSystems.PhysicalFileSystem.CreateDirectoryImpl(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.PhysicalFileSystem.DirectoryExistsImpl(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.PhysicalFileSystem.MoveDirectoryImpl(Zio.UPath,Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.PhysicalFileSystem.DeleteDirectoryImpl(Zio.UPath,System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.PhysicalFileSystem.CopyFileImpl(Zio.UPath,Zio.UPath,System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.PhysicalFileSystem.ReplaceFileImpl(Zio.UPath,Zio.UPath,Zio.UPath,System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.PhysicalFileSystem.GetFileLengthImpl(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.PhysicalFileSystem.FileExistsImpl(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.PhysicalFileSystem.MoveFileImpl(Zio.UPath,Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.PhysicalFileSystem.DeleteFileImpl(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.PhysicalFileSystem.OpenFileImpl(Zio.UPath,System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.PhysicalFileSystem.GetAttributesImpl(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.PhysicalFileSystem.SetAttributesImpl(Zio.UPath,System.IO.FileAttributes)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.PhysicalFileSystem.GetCreationTimeImpl(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.PhysicalFileSystem.SetCreationTimeImpl(Zio.UPath,System.DateTime)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.PhysicalFileSystem.GetLastAccessTimeImpl(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.PhysicalFileSystem.SetLastAccessTimeImpl(Zio.UPath,System.DateTime)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.PhysicalFileSystem.GetLastWriteTimeImpl(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.PhysicalFileSystem.SetLastWriteTimeImpl(Zio.UPath,System.DateTime)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.PhysicalFileSystem.EnumeratePathsImpl(Zio.UPath,System.String,System.IO.SearchOption,Zio.SearchTarget)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.PhysicalFileSystem.CanWatchImpl(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.PhysicalFileSystem.WatchImpl(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.PhysicalFileSystem.ConvertPathToInternalImpl(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.PhysicalFileSystem.ConvertPathFromInternalImpl(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="T:Zio.FileSystems.ReadOnlyFileSystem">
+            <summary>
+            Provides a readonly filesystem on top of another <see cref="T:Zio.IFileSystem"/>.
+            </summary>
+            <seealso cref="T:Zio.FileSystems.ComposeFileSystem" />
+        </member>
+        <member name="F:Zio.FileSystems.ReadOnlyFileSystem.FileSystemIsReadOnly">
+            <summary>
+            The message "The filesystem is readonly" used to throw an <see cref="T:System.IO.IOException"/>.
+            </summary>
+        </member>
+        <member name="M:Zio.FileSystems.ReadOnlyFileSystem.#ctor(Zio.IFileSystem,System.Boolean)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Zio.FileSystems.ReadOnlyFileSystem"/> class.
+            </summary>
+            <param name="fileSystem">The file system.</param>
+            <param name="owned">True if <paramref name="fileSystem"/> should be disposed when this instance is disposed.</param>
+        </member>
+        <member name="M:Zio.FileSystems.ReadOnlyFileSystem.CreateDirectoryImpl(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.ReadOnlyFileSystem.MoveDirectoryImpl(Zio.UPath,Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.ReadOnlyFileSystem.DeleteDirectoryImpl(Zio.UPath,System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.ReadOnlyFileSystem.CopyFileImpl(Zio.UPath,Zio.UPath,System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.ReadOnlyFileSystem.ReplaceFileImpl(Zio.UPath,Zio.UPath,Zio.UPath,System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.ReadOnlyFileSystem.MoveFileImpl(Zio.UPath,Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.ReadOnlyFileSystem.DeleteFileImpl(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.ReadOnlyFileSystem.OpenFileImpl(Zio.UPath,System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.ReadOnlyFileSystem.GetAttributesImpl(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.ReadOnlyFileSystem.SetAttributesImpl(Zio.UPath,System.IO.FileAttributes)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.ReadOnlyFileSystem.SetCreationTimeImpl(Zio.UPath,System.DateTime)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.ReadOnlyFileSystem.SetLastAccessTimeImpl(Zio.UPath,System.DateTime)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.ReadOnlyFileSystem.SetLastWriteTimeImpl(Zio.UPath,System.DateTime)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.ReadOnlyFileSystem.ConvertPathToDelegate(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.ReadOnlyFileSystem.ConvertPathFromDelegate(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="T:Zio.FileSystems.SubFileSystem">
+            <summary>
+            Provides a secure view on a sub folder of another delegate <see cref="T:Zio.IFileSystem"/>
+            </summary>
+        </member>
+        <member name="M:Zio.FileSystems.SubFileSystem.#ctor(Zio.IFileSystem,Zio.UPath,System.Boolean)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Zio.FileSystems.SubFileSystem"/> class.
+            </summary>
+            <param name="fileSystem">The file system to create a view from.</param>
+            <param name="subPath">The sub path view to create filesystem.</param>
+            <param name="owned">True if <paramref name="fileSystem"/> should be disposed when this instance is disposed.</param>
+            <exception cref="T:System.IO.DirectoryNotFoundException">If the directory subPath does not exist in the delegate FileSystem</exception>
+        </member>
+        <member name="P:Zio.FileSystems.SubFileSystem.SubPath">
+            <summary>
+            Gets the sub path relative to the delegate <see cref="P:Zio.FileSystems.ComposeFileSystem.NextFileSystem"/>
+            </summary>
+        </member>
+        <member name="M:Zio.FileSystems.SubFileSystem.WatchImpl(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.SubFileSystem.ConvertPathToDelegate(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.FileSystems.SubFileSystem.ConvertPathFromDelegate(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="T:Zio.FileSystems.WrapFileSystemWatcher">
+            <summary>
+            Wraps another <see cref="T:Zio.IFileSystemWatcher"/> instance to allow event modification and filtering.
+            </summary>
+        </member>
+        <member name="P:Zio.FileSystems.WrapFileSystemWatcher.InternalBufferSize">
+            <inheritdoc />
+        </member>
+        <member name="P:Zio.FileSystems.WrapFileSystemWatcher.NotifyFilter">
+            <inheritdoc />
+        </member>
+        <member name="P:Zio.FileSystems.WrapFileSystemWatcher.EnableRaisingEvents">
+            <inheritdoc />
+        </member>
+        <member name="P:Zio.FileSystems.WrapFileSystemWatcher.Filter">
+            <inheritdoc />
+        </member>
+        <member name="P:Zio.FileSystems.WrapFileSystemWatcher.IncludeSubdirectories">
+            <inheritdoc />
+        </member>
+        <member name="T:Zio.FilterPattern">
+            <summary>
+            Filter pattern compiler used for <see cref="T:Zio.IFileSystemWatcher"/> implementation.
+            Use the method <see cref="M:Zio.FilterPattern.Parse(System.String)"/> to create a pattern.
+            </summary>
+        </member>
+        <member name="M:Zio.FilterPattern.Match(Zio.UPath)">
+            <summary>
+            Tries to match the specified path with this instance.
+            </summary>
+            <param name="path">The path to match.</param>
+            <returns><c>true</c> if the path was matched, <c>false</c> otherwise.</returns>
+        </member>
+        <member name="M:Zio.FilterPattern.Match(System.String)">
+            <summary>
+            Tries to match the specified file name with this instance.
+            </summary>
+            <param name="fileName">The file name to match.</param>
+            <returns><c>true</c> if the file name was matched, <c>false</c> otherwise.</returns>
+        </member>
+        <member name="T:Zio.IFileSystem">
+            <summary>
+            Interface of a FileSystem.
+            </summary>
+        </member>
+        <member name="M:Zio.IFileSystem.CreateDirectory(Zio.UPath)">
+            <summary>
+            Creates all directories and subdirectories in the specified path unless they already exist.
+            </summary>
+            <param name="path">The directory to create.</param>
+        </member>
+        <member name="M:Zio.IFileSystem.DirectoryExists(Zio.UPath)">
+            <summary>
+            Determines whether the given path refers to an existing directory on disk.
+            </summary>
+            <param name="path">The path to test.</param>
+            <returns><c>true</c> if the given path refers to an existing directory on disk, <c>false</c> otherwise.</returns>
+        </member>
+        <member name="M:Zio.IFileSystem.MoveDirectory(Zio.UPath,Zio.UPath)">
+            <summary>
+            Moves a directory and its contents to a new location.
+            </summary>
+            <param name="srcPath">The path of the directory to move.</param>
+            <param name="destPath">The path to the new location for <paramref name="srcPath"/></param>
+        </member>
+        <member name="M:Zio.IFileSystem.DeleteDirectory(Zio.UPath,System.Boolean)">
+            <summary>
+            Deletes the specified directory and, if indicated, any subdirectories and files in the directory. 
+            </summary>
+            <param name="path">The path of the directory to remove.</param>
+            <param name="isRecursive"><c>true</c> to remove directories, subdirectories, and files in path; otherwise, <c>false</c>.</param>
+        </member>
+        <member name="M:Zio.IFileSystem.CopyFile(Zio.UPath,Zio.UPath,System.Boolean)">
+            <summary>
+            Copies an existing file to a new file. Overwriting a file of the same name is allowed.
+            </summary>
+            <param name="srcPath">The path of the file to copy.</param>
+            <param name="destPath">The path of the destination file. This cannot be a directory.</param>
+            <param name="overwrite"><c>true</c> if the destination file can be overwritten; otherwise, <c>false</c>.</param>
+        </member>
+        <member name="M:Zio.IFileSystem.ReplaceFile(Zio.UPath,Zio.UPath,Zio.UPath,System.Boolean)">
+            <summary>
+            Replaces the contents of a specified file with the contents of another file, deleting the original file, and creating a backup of the replaced file and optionally ignores merge errors.
+            </summary>
+            <param name="srcPath">The path of a file that replaces the file specified by <paramref name="destPath"/>.</param>
+            <param name="destPath">The path of the file being replaced.</param>
+            <param name="destBackupPath">The path of the backup file (maybe null, in that case, it doesn't create any backup)</param>
+            <param name="ignoreMetadataErrors"><c>true</c> to ignore merge errors (such as attributes and access control lists (ACLs)) from the replaced file to the replacement file; otherwise, <c>false</c>.</param>
+        </member>
+        <member name="M:Zio.IFileSystem.GetFileLength(Zio.UPath)">
+            <summary>
+            Gets the size, in bytes, of a file.
+            </summary>
+            <param name="path">The path of a file.</param>
+            <returns>The size, in bytes, of the file</returns>
+        </member>
+        <member name="M:Zio.IFileSystem.FileExists(Zio.UPath)">
+            <summary>
+            Determines whether the specified file exists.
+            </summary>
+            <param name="path">The path.</param>
+            <returns><c>true</c> if the caller has the required permissions and path contains the name of an existing file; 
+            otherwise, <c>false</c>. This method also returns false if path is null, an invalid path, or a zero-length string. 
+            If the caller does not have sufficient permissions to read the specified file, 
+            no exception is thrown and the method returns false regardless of the existence of path.</returns>
+        </member>
+        <member name="M:Zio.IFileSystem.MoveFile(Zio.UPath,Zio.UPath)">
+            <summary>
+            Moves a specified file to a new location, providing the option to specify a new file name.
+            </summary>
+            <param name="srcPath">The path of the file to move.</param>
+            <param name="destPath">The new path and name for the file.</param>
+        </member>
+        <member name="M:Zio.IFileSystem.DeleteFile(Zio.UPath)">
+            <summary>
+            Deletes the specified file. 
+            </summary>
+            <param name="path">The path of the file to be deleted.</param>
+        </member>
+        <member name="M:Zio.IFileSystem.OpenFile(Zio.UPath,System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare)">
+            <summary>
+            Opens a file <see cref="T:System.IO.Stream"/> on the specified path, having the specified mode with read, write, or read/write access and the specified sharing option.
+            </summary>
+            <param name="path">The path to the file to open.</param>
+            <param name="mode">A <see cref="T:System.IO.FileMode"/> value that specifies whether a file is created if one does not exist, and determines whether the contents of existing files are retained or overwritten.</param>
+            <param name="access">A <see cref="T:System.IO.FileAccess"/> value that specifies the operations that can be performed on the file.</param>
+            <param name="share">A <see cref="T:System.IO.FileShare"/> value specifying the type of access other threads have to the file.</param>
+            <returns>A file <see cref="T:System.IO.Stream"/> on the specified path, having the specified mode with read, write, or read/write access and the specified sharing option.</returns>
+        </member>
+        <member name="M:Zio.IFileSystem.GetAttributes(Zio.UPath)">
+            <summary>
+            Gets the <see cref="T:System.IO.FileAttributes"/> of the file or directory on the path.
+            </summary>
+            <param name="path">The path to the file or directory.</param>
+            <returns>The <see cref="T:System.IO.FileAttributes"/> of the file or directory on the path.</returns>
+        </member>
+        <member name="M:Zio.IFileSystem.SetAttributes(Zio.UPath,System.IO.FileAttributes)">
+            <summary>
+            Sets the specified <see cref="T:System.IO.FileAttributes"/> of the file or directory on the specified path.
+            </summary>
+            <param name="path">The path to the file or directory.</param>
+            <param name="attributes">A bitwise combination of the enumeration values.</param>
+        </member>
+        <member name="M:Zio.IFileSystem.GetCreationTime(Zio.UPath)">
+            <summary>
+            Returns the creation date and time of the specified file or directory.
+            </summary>
+            <param name="path">The path to a file or directory for which to obtain creation date and time information.</param>
+            <returns>A <see cref="T:System.DateTime"/> structure set to the creation date and time for the specified file or directory. This value is expressed in local time.</returns>
+        </member>
+        <member name="M:Zio.IFileSystem.SetCreationTime(Zio.UPath,System.DateTime)">
+            <summary>
+            Sets the date and time the file was created.
+            </summary>
+            <param name="path">The path to a file or directory for which to set the creation date and time.</param>
+            <param name="time">A <see cref="T:System.DateTime"/> containing the value to set for the creation date and time of path. This value is expressed in local time.</param>
+        </member>
+        <member name="M:Zio.IFileSystem.GetLastAccessTime(Zio.UPath)">
+            <summary>
+            Returns the last access date and time of the specified file or directory.
+            </summary>
+            <param name="path">The path to a file or directory for which to obtain creation date and time information.</param>
+            <returns>A <see cref="T:System.DateTime"/> structure set to the last access date and time for the specified file or directory. This value is expressed in local time.</returns>
+        </member>
+        <member name="M:Zio.IFileSystem.SetLastAccessTime(Zio.UPath,System.DateTime)">
+            <summary>
+            Sets the date and time the file was last accessed.
+            </summary>
+            <param name="path">The path to a file or directory for which to set the last access date and time.</param>
+            <param name="time">A <see cref="T:System.DateTime"/> containing the value to set for the last access date and time of path. This value is expressed in local time.</param>
+        </member>
+        <member name="M:Zio.IFileSystem.GetLastWriteTime(Zio.UPath)">
+            <summary>
+            Returns the last write date and time of the specified file or directory.
+            </summary>
+            <param name="path">The path to a file or directory for which to obtain creation date and time information.</param>
+            <returns>A <see cref="T:System.DateTime"/> structure set to the last write date and time for the specified file or directory. This value is expressed in local time.</returns>
+        </member>
+        <member name="M:Zio.IFileSystem.SetLastWriteTime(Zio.UPath,System.DateTime)">
+            <summary>
+            Sets the date and time that the specified file was last written to.
+            </summary>
+            <param name="path">The path to a file or directory for which to set the last write date and time.</param>
+            <param name="time">A <see cref="T:System.DateTime"/> containing the value to set for the last write date and time of path. This value is expressed in local time.</param>
+        </member>
+        <member name="M:Zio.IFileSystem.EnumeratePaths(Zio.UPath,System.String,System.IO.SearchOption,Zio.SearchTarget)">
+            <summary>
+            Returns an enumerable collection of file names and/or directory names that match a search pattern in a specified path, and optionally searches subdirectories.
+            </summary>
+            <param name="path">The path to the directory to search.</param>
+            <param name="searchPattern">The search string to match against file-system entries in path. This parameter can contain a combination of valid literal path and wildcard (* and ?) characters (see Remarks), but doesn't support regular expressions.</param>
+            <param name="searchOption">One of the enumeration values that specifies whether the search operation should include only the current directory or should include all subdirectories.</param>
+            <param name="searchTarget">The search target either <see cref="F:Zio.SearchTarget.Both"/> or only <see cref="F:Zio.SearchTarget.Directory"/> or <see cref="F:Zio.SearchTarget.File"/>.</param>
+            <returns>An enumerable collection of file-system paths in the directory specified by path and that match the specified search pattern, option and target.</returns>
+        </member>
+        <member name="M:Zio.IFileSystem.CanWatch(Zio.UPath)">
+            <summary>
+            Checks if the file system and <paramref name="path"/> can be watched with <see cref="M:Zio.IFileSystem.Watch(Zio.UPath)"/>.
+            </summary>
+            <param name="path">The path to check.</param>
+            <returns>True if the the path can be watched on this file system.</returns>
+        </member>
+        <member name="M:Zio.IFileSystem.Watch(Zio.UPath)">
+            <summary>
+            Returns an <see cref="T:Zio.IFileSystemWatcher"/> instance that can be used to watch for changes to files and directories in the given path. The instance must be
+            configured before events are raised.
+            </summary>
+            <param name="path">The path to watch for changes.</param>
+            <returns>An <see cref="T:Zio.IFileSystemWatcher"/> instance that watches the given path.</returns>
+        </member>
+        <member name="M:Zio.IFileSystem.ConvertPathToInternal(Zio.UPath)">
+            <summary>
+            Converts the specified path to the underlying path used by this <see cref="T:Zio.IFileSystem"/>. In case of a <see cref="T:Zio.FileSystems.PhysicalFileSystem"/>, it 
+            would represent the actual path on the disk.
+            </summary>
+            <param name="path">The path.</param>
+            <returns>The converted system path according to the specified path.</returns>
+        </member>
+        <member name="M:Zio.IFileSystem.ConvertPathFromInternal(System.String)">
+            <summary>
+            Converts the specified system path to a <see cref="T:Zio.IFileSystem"/> path.
+            </summary>
+            <param name="systemPath">The system path.</param>
+            <returns>The converted path according to the system path.</returns>
+        </member>
+        <member name="T:Zio.IFileSystemWatcher">
+            <summary>
+            Interface for a filesystem watcher.
+            </summary>
+            <inheritdoc />
+        </member>
+        <member name="E:Zio.IFileSystemWatcher.Changed">
+            <summary>
+            Event for when a file or directory changes.
+            </summary>
+        </member>
+        <member name="E:Zio.IFileSystemWatcher.Created">
+            <summary>
+            Event for when a file or directory is created.
+            </summary>
+        </member>
+        <member name="E:Zio.IFileSystemWatcher.Deleted">
+            <summary>
+            Event for when a file or directory is deleted.
+            </summary>
+        </member>
+        <member name="E:Zio.IFileSystemWatcher.Error">
+            <summary>
+            Event for when the filesystem encounters an error.
+            </summary>
+        </member>
+        <member name="E:Zio.IFileSystemWatcher.Renamed">
+            <summary>
+            Event for when a file or directory is renamed.
+            </summary>
+        </member>
+        <member name="P:Zio.IFileSystemWatcher.FileSystem">
+            <summary>
+            The <see cref="T:Zio.IFileSystem"/> this instance is watching.
+            </summary>
+        </member>
+        <member name="P:Zio.IFileSystemWatcher.Path">
+            <summary>
+            The path being watched by the filesystem.
+            </summary>
+        </member>
+        <member name="P:Zio.IFileSystemWatcher.InternalBufferSize">
+            <summary>
+            Implementation-defined buffer size for storing events.
+            </summary>
+        </member>
+        <member name="P:Zio.IFileSystemWatcher.NotifyFilter">
+            <summary>
+            Implementation-defined filters for filtering events.
+            </summary>
+        </member>
+        <member name="P:Zio.IFileSystemWatcher.EnableRaisingEvents">
+            <summary>
+            True to enable raising events, false to never raise them. Default false.
+            </summary>
+        </member>
+        <member name="P:Zio.IFileSystemWatcher.Filter">
+            <summary>
+            File name and extension filter. Use <c>"*"</c> to specify variable length placeholder, <c>"?"</c>
+            for a single character placeholder. Default is <c>"*.*"</c> for all files.
+            </summary>
+        </member>
+        <member name="P:Zio.IFileSystemWatcher.IncludeSubdirectories">
+            <summary>
+            True to watch all subdirectories in <see cref="P:Zio.IFileSystemWatcher.Path"/>, false to only watch entries directly
+            in <see cref="P:Zio.IFileSystemWatcher.Path"/>.
+            </summary>
+        </member>
+        <member name="T:Zio.NotifyFilters">
+            <summary>
+            Specifies changes to watch for in a file or directory.
+            </summary>
+        </member>
+        <member name="F:Zio.NotifyFilters.FileName">
+            <summary>
+            The name of the file.
+            </summary>
+        </member>
+        <member name="F:Zio.NotifyFilters.DirectoryName">
+            <summary>
+            The name of the directory.
+            </summary>
+        </member>
+        <member name="F:Zio.NotifyFilters.Attributes">
+            <summary>
+            The attributes of the file or directory.
+            </summary>
+        </member>
+        <member name="F:Zio.NotifyFilters.Size">
+            <summary>
+            The size of the file or directory.
+            </summary>
+        </member>
+        <member name="F:Zio.NotifyFilters.LastWrite">
+            <summary>
+            The date the file or directory last had something written to it.
+            </summary>
+        </member>
+        <member name="F:Zio.NotifyFilters.LastAccess">
+            <summary>
+            The date the file or directory was last opened.
+            </summary>
+        </member>
+        <member name="F:Zio.NotifyFilters.CreationTime">
+            <summary>
+            The date the file or directory was created.
+            </summary>
+        </member>
+        <member name="F:Zio.NotifyFilters.Security">
+            <summary>
+            The security settings of the file or directory.
+            </summary>
+        </member>
+        <member name="F:Zio.NotifyFilters.Default">
+            <summary>
+            The default watch filters for <see cref="T:Zio.IFileSystemWatcher"/>.
+            </summary>
+        </member>
+        <member name="T:Zio.SearchPattern">
+            <summary>
+            Search pattern compiler used for custom <see cref="M:Zio.IFileSystem.EnumeratePaths(Zio.UPath,System.String,System.IO.SearchOption,Zio.SearchTarget)"/> implementations.
+            Use the method <see cref="M:Zio.SearchPattern.Parse(Zio.UPath@,System.String@)"/> to create a pattern.
+            </summary>
+        </member>
+        <member name="M:Zio.SearchPattern.Match(Zio.UPath)">
+            <summary>
+            Tries to match the specified path with this instance.
+            </summary>
+            <param name="path">The path to match.</param>
+            <returns><c>true</c> if the path was matched, <c>false</c> otherwise.</returns>
+        </member>
+        <member name="M:Zio.SearchPattern.Match(System.String)">
+            <summary>
+            Tries to match the specified path with this instance.
+            </summary>
+            <param name="name">The path to match.</param>
+            <returns><c>true</c> if the path was matched, <c>false</c> otherwise.</returns>
+        </member>
+        <member name="M:Zio.SearchPattern.Parse(Zio.UPath@,System.String@)">
+            <summary>
+            Parses and normalize the specified path and <see cref="T:Zio.SearchPattern"/>.
+            </summary>
+            <param name="path">The path.</param>
+            <param name="searchPattern">The search pattern.</param>
+            <returns>An instance of <see cref="T:Zio.SearchPattern"/> in order to use <see cref="M:Zio.SearchPattern.Match(Zio.UPath)"/> on a path.</returns>
+        </member>
+        <member name="M:Zio.SearchPattern.Normalize(Zio.UPath@,System.String@)">
+            <summary>
+            Normalizes the specified path and <see cref="T:Zio.SearchPattern"/>.
+            </summary>
+            <param name="path">The path.</param>
+            <param name="searchPattern">The search pattern.</param>
+        </member>
+        <member name="T:Zio.SearchTarget">
+            <summary>
+            Defines the behavior of <see cref="M:Zio.IFileSystem.EnumeratePaths(Zio.UPath,System.String,System.IO.SearchOption,Zio.SearchTarget)"/> when looking for files and/or folders.
+            </summary>
+        </member>
+        <member name="F:Zio.SearchTarget.Both">
+            <summary>
+            Search for both files and folders.
+            </summary>
+        </member>
+        <member name="F:Zio.SearchTarget.File">
+            <summary>
+            Search for files.
+            </summary>
+        </member>
+        <member name="F:Zio.SearchTarget.Directory">
+            <summary>
+            Search for directories.
+            </summary>
+        </member>
+        <member name="T:Zio.UPath">
+            <summary>
+            A uniform unix like path.
+            </summary>
+            <seealso cref="T:Zio.UPath" />
+        </member>
+        <member name="F:Zio.UPath.Empty">
+            <summary>
+            An empty path.
+            </summary>
+        </member>
+        <member name="F:Zio.UPath.Root">
+            <summary>
+            The root path `/`
+            </summary>
+        </member>
+        <member name="F:Zio.UPath.DirectorySeparator">
+            <summary>
+            The directory separator `/`
+            </summary>
+        </member>
+        <member name="F:Zio.UPath.DefaultComparer">
+            <summary>
+            The default comparer for a <see cref="T:Zio.UPath"/> that is case sensitive.
+            </summary>
+        </member>
+        <member name="F:Zio.UPath.DefaultComparerIgnoreCase">
+            <summary>
+            The default comparer for a <see cref="T:Zio.UPath"/> that is case insensitive.
+            </summary>
+        </member>
+        <member name="M:Zio.UPath.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Zio.UPath"/> struct.
+            </summary>
+            <param name="path">The path that will be normalized.</param>
+        </member>
+        <member name="P:Zio.UPath.FullName">
+            <summary>
+            Gets the full name of this path (Note that it may be null).
+            </summary>
+            <value>The full name of this path.</value>
+        </member>
+        <member name="P:Zio.UPath.IsNull">
+            <summary>
+            Gets a value indicating whether this path is null.
+            </summary>
+            <value><c>true</c> if this instance is null; otherwise, <c>false</c>.</value>
+        </member>
+        <member name="P:Zio.UPath.IsEmpty">
+            <summary>
+            Gets a value indicating whether this path is empty (<see cref="P:Zio.UPath.FullName"/> equals to the empty string)
+            </summary>
+            <value><c>true</c> if this instance is empty; otherwise, <c>false</c>.</value>
+        </member>
+        <member name="P:Zio.UPath.IsAbsolute">
+            <summary>
+            Gets a value indicating whether this path is absolute by starting with a leading `/`.
+            </summary>
+            <value><c>true</c> if this path is absolute; otherwise, <c>false</c>.</value>
+        </member>
+        <member name="P:Zio.UPath.IsRelative">
+            <summary>
+            Gets a value indicating whether this path is relative by **not** starting with a leading `/`.
+            </summary>
+            <value><c>true</c> if this instance is relative; otherwise, <c>false</c>.</value>
+        </member>
+        <member name="M:Zio.UPath.op_Implicit(System.String)~Zio.UPath">
+            <summary>
+            Performs an implicit conversion from <see cref="T:System.String"/> to <see cref="T:Zio.UPath"/>.
+            </summary>
+            <param name="path">The path as a string.</param>
+            <returns>The result of the conversion.</returns>
+        </member>
+        <member name="M:Zio.UPath.op_Explicit(Zio.UPath)~System.String">
+            <summary>
+            Performs an explicit conversion from <see cref="T:Zio.UPath"/> to <see cref="T:System.String"/>.
+            </summary>
+            <param name="path">The path.</param>
+            <returns>The result as a string of the conversion.</returns>
+        </member>
+        <member name="M:Zio.UPath.Combine(Zio.UPath,Zio.UPath)">
+            <summary>
+            Combines two paths into a new path.
+            </summary>
+            <param name="path1">The first path to combine.</param>
+            <param name="path2">The second path to combine.</param>
+            <returns>The combined paths. If one of the specified paths is a zero-length string, this method returns the other path. If path2 contains an absolute path, this method returns path2.</returns>
+            <exception cref="T:System.ArgumentNullException">
+            path1
+            or
+            path2
+            </exception>
+            <exception cref="T:System.ArgumentException">If an error occurs while trying to combine paths.</exception>
+        </member>
+        <member name="M:Zio.UPath.op_Division(Zio.UPath,Zio.UPath)">
+            <summary>
+            Implements the / operator equivalent of <see cref="M:Zio.UPath.Combine(Zio.UPath,Zio.UPath)"/>
+            </summary>
+            <param name="path1">The first path to combine.</param>
+            <param name="path2">The second path to combine.</param>
+            <returns>The combined paths. If one of the specified paths is a zero-length string, this method returns the other path. If path2 contains an absolute path, this method returns path2.</returns>
+            <exception cref="T:System.ArgumentNullException">
+            path1
+            or
+            path2
+            </exception>
+            <exception cref="T:System.ArgumentException">If an error occurs while trying to combine paths.</exception>
+        </member>
+        <member name="M:Zio.UPath.Equals(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.UPath.Equals(System.Object)">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.UPath.GetHashCode">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.UPath.op_Equality(Zio.UPath,Zio.UPath)">
+            <summary>
+            Implements the == operator.
+            </summary>
+            <param name="left">The left.</param>
+            <param name="right">The right.</param>
+            <returns>The result of the operator.</returns>
+        </member>
+        <member name="M:Zio.UPath.op_Inequality(Zio.UPath,Zio.UPath)">
+            <summary>
+            Implements the != operator.
+            </summary>
+            <param name="left">The left.</param>
+            <param name="right">The right.</param>
+            <returns>The result of the operator.</returns>
+        </member>
+        <member name="M:Zio.UPath.ToString">
+            <inheritdoc />
+        </member>
+        <member name="M:Zio.UPath.TryParse(System.String,Zio.UPath@)">
+            <summary>
+            Tries to parse the specified string into a <see cref="T:Zio.UPath"/>
+            </summary>
+            <param name="path">The path as a string.</param>
+            <param name="pathInfo">The path parsed if successfull.</param>
+            <returns><c>true</c> if path was parsed successfully, <c>false</c> otherwise.</returns>
+        </member>
+        <member name="M:Zio.UPath.CompareTo(Zio.UPath)">
+            <inheritdoc />
+        </member>
+        <member name="T:Zio.UPathExtensions">
+            <summary>
+            Extension methods for <see cref="T:Zio.UPath"/>
+            </summary>
+        </member>
+        <member name="M:Zio.UPathExtensions.ToRelative(Zio.UPath)">
+            <summary>
+            Converts the specified path to a relative path (by removing the leading `/`). If the path is already relative, returns the input.
+            </summary>
+            <param name="path">The path.</param>
+            <returns>A relative path.</returns>
+            <exception cref="T:System.ArgumentNullException">if path is <see cref="P:Zio.UPath.IsNull"/></exception>
+        </member>
+        <member name="M:Zio.UPathExtensions.ToAbsolute(Zio.UPath)">
+            <summary>
+            Converts the specified path to an absolute path (by adding a leading `/`). If the path is already absolute, returns the input.
+            </summary>
+            <param name="path">The path.</param>
+            <returns>An absolute path.</returns>
+            <exception cref="T:System.ArgumentNullException">if path is <see cref="P:Zio.UPath.IsNull"/></exception>
+        </member>
+        <member name="M:Zio.UPathExtensions.GetDirectory(Zio.UPath)">
+            <summary>
+            Gets the directory of the specified path.
+            </summary>
+            <param name="path">The path.</param>
+            <returns>The directory of the path.</returns>
+            <exception cref="T:System.ArgumentNullException">if path is <see cref="P:Zio.UPath.IsNull"/></exception>
+        </member>
+        <member name="M:Zio.UPathExtensions.GetFirstDirectory(Zio.UPath,Zio.UPath@)">
+            <summary>
+            Gets the first directory of the specified path and return the remaining path (/a/b/c, first directory: /a, remaining: b/c)
+            </summary>
+            <param name="path">The path to extract the first directory and remaining.</param>
+            <param name="remainingPath">The remaining relative path after the first directory</param>
+            <returns>The first directory of the path.</returns>
+            <exception cref="T:System.ArgumentNullException">if path is <see cref="P:Zio.UPath.IsNull"/></exception>
+        </member>
+        <member name="M:Zio.UPathExtensions.Split(Zio.UPath)">
+            <summary>
+            Splits the specified path by directories using the directory separator character `/`
+            </summary>
+            <param name="path">The path.</param>
+            <returns>A list of sub path for each directory entry in the path (/a/b/c returns [a,b,c], or a/b/c returns [a,b,c].</returns>
+        </member>
+        <member name="M:Zio.UPathExtensions.GetName(Zio.UPath)">
+            <summary>
+            Gets the file or last directory name and extension of the specified path.
+            </summary>
+            <param name="path">The path string from which to obtain the file name and extension.</param>
+            <returns>The characters after the last directory character in path. If path is null, this method returns null.</returns>
+        </member>
+        <member name="M:Zio.UPathExtensions.GetNameWithoutExtension(Zio.UPath)">
+            <summary>
+            Gets the file or last directory name without the extension for the specified path.
+            </summary>
+            <param name="path">The path string from which to obtain the file name without the extension.</param>
+            <returns>The characters after the last directory character in path without the extension. If path is null, this method returns null.</returns>
+        </member>
+        <member name="M:Zio.UPathExtensions.GetExtensionWithDot(Zio.UPath)">
+            <summary>
+            Gets the extension of the specified path.
+            </summary>
+            <param name="path">The path string from which to obtain the extension with a leading dot `.`.</param>
+            <returns>The extension of the specified path (including the period "."), or null, or String.Empty. If path is null, GetExtension returns null. If path does not have extension information, GetExtension returns String.Empty..</returns>
+        </member>
+        <member name="M:Zio.UPathExtensions.ChangeExtension(Zio.UPath,System.String)">
+            <summary>
+            Changes the extension of a path.
+            </summary>
+            <param name="path">The path information to modify. The path cannot contain any of the characters defined in GetInvalidPathChars.</param>
+            <param name="extension">The new extension (with or without a leading period). Specify null to remove an existing extension from path.</param>
+            <returns>The modified path information.</returns>
+        </member>
+        <member name="M:Zio.UPathExtensions.IsInDirectory(Zio.UPath,Zio.UPath,System.Boolean)">
+            <summary>
+            Checks if the path is in the given directory. Does not check if the paths exist.
+            </summary>
+            <param name="path">The path to check.</param>
+            <param name="directory">The directory to check the path against.</param>
+            <param name="recursive">True to check if it is anywhere in the directory, false to check if it is directly in the directory.</param>
+            <returns>True when the path is in the given directory.</returns>
+        </member>
+        <member name="M:Zio.UPathExtensions.AssertNotNull(Zio.UPath,System.String)">
+            <summary>
+            Asserts the specified path is not null.
+            </summary>
+            <param name="path">The path.</param>
+            <param name="name">The name of a parameter to include n the <see cref="T:System.ArgumentNullException"/>.</param>
+            <returns>A path not modified.</returns>
+            <exception cref="T:System.ArgumentNullException">If the path was null using the parameter name from <paramref name="name"/></exception>
+        </member>
+        <member name="M:Zio.UPathExtensions.AssertAbsolute(Zio.UPath,System.String)">
+            <summary>
+            Asserts the specified path is absolute.
+            </summary>
+            <param name="path">The path.</param>
+            <param name="name">The name of a parameter to include n the <see cref="T:System.ArgumentNullException"/>.</param>
+            <returns>A path not modified.</returns>
+            <exception cref="T:System.ArgumentException">If the path is not absolute using the parameter name from <paramref name="name"/></exception>
+        </member>
+        <member name="T:Zio.WatcherChangeTypes">
+            <summary>
+            Changes that might occur to a file or directory.
+            </summary>
+        </member>
+        <member name="F:Zio.WatcherChangeTypes.Created">
+            <summary>
+            The creation of a file or directory.
+            </summary>
+        </member>
+        <member name="F:Zio.WatcherChangeTypes.Deleted">
+            <summary>
+            The deletion of a file or directory.
+            </summary>
+        </member>
+        <member name="F:Zio.WatcherChangeTypes.Changed">
+            <summary>
+            The change of a file or directory. This could include attributes, contents, access time, etc.
+            </summary>
+        </member>
+        <member name="F:Zio.WatcherChangeTypes.Renamed">
+            <summary>
+            The renaming of a file or directory.
+            </summary>
+        </member>
+        <member name="F:Zio.WatcherChangeTypes.All">
+            <summary>
+            All possible changes.
+            </summary>
+        </member>
+    </members>
+</doc>

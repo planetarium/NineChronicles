@@ -75,7 +75,7 @@ namespace Nekoyume.BlockChain
 
         protected BlockChain<PolymorphicAction<ActionBase>> blocks;
         private Swarm<PolymorphicAction<ActionBase>> _swarm;
-        protected LiteDBStore store;
+        protected DefaultStore store;
         private ImmutableList<Peer> _seedPeers;
         private IImmutableSet<Address> _trustedPeers;
 
@@ -132,7 +132,7 @@ namespace Nekoyume.BlockChain
             var policy = GetPolicy();
             PrivateKey = privateKey;
             Address = privateKey.PublicKey.ToAddress();
-            store = new LiteDBStore($"{path}.ldb", flush: false);
+            store = new DefaultStore(path, flush: false);
             blocks = new BlockChain<PolymorphicAction<ActionBase>>(policy, store);
 #if BLOCK_LOG_USE
             FileHelper.WriteAllText("Block.log", "");

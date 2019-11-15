@@ -31,10 +31,10 @@ namespace Tests
         }
         public MinerFixture(string storeName)
         {
-            _storePath = $"{storeName}.ldb";
+            _storePath = storeName;
             var privateKey = new PrivateKey(ByteUtil.ParseHex(Hex));
-            if (File.Exists(_storePath))
-                File.Delete(_storePath);
+            if (Directory.Exists(_storePath))
+                Directory.Delete(_storePath, recursive: true);
             _agent = new GameObject().AddComponent<TestAgent>();
             _agent.Init(privateKey, storeName, new List<Peer>(), new List<IceServer>(),  "", null, true);
         }
