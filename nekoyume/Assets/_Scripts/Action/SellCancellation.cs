@@ -89,7 +89,7 @@ namespace Nekoyume.Action
             var mail = new SellCancelMail(result, ctx.BlockIndex);
             avatarState.Update(mail);
             avatarState.updatedAt = DateTimeOffset.UtcNow;
-            avatarState.BlockIndex = ctx.BlockIndex;
+            avatarState.blockIndex = ctx.BlockIndex;
             
             return states
                 .SetState(ctx.Signer, agentState.Serialize())

@@ -169,9 +169,9 @@ namespace Nekoyume.Action
 
             var timestamp = DateTimeOffset.UtcNow;
             buyerAvatarState.updatedAt = timestamp;
-            buyerAvatarState.BlockIndex = ctx.BlockIndex;
+            buyerAvatarState.blockIndex = ctx.BlockIndex;
             sellerAvatarState.updatedAt = timestamp;
-            sellerAvatarState.BlockIndex = ctx.BlockIndex;
+            sellerAvatarState.blockIndex = ctx.BlockIndex;
 
             return states
                 .SetState(buyerAvatarAddress, buyerAvatarState.Serialize())

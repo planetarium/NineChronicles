@@ -39,7 +39,7 @@ namespace Nekoyume.Action
             var gold = attachment.gold;
             agentState.gold += gold;
 
-            avatarState.BlockIndex = ctx.BlockIndex;
+            avatarState.blockIndex = ctx.BlockIndex;
             return states
                 .SetState(avatarAddress, avatarState.Serialize())
                 .SetState(agentAddress, agentState.Serialize());

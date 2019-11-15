@@ -18,9 +18,10 @@ namespace Nekoyume.UI.Module
         public CanvasGroup canvasGroup;
 
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
-        private long _nextBlockIndex;
         private bool _updateEnable;
+        private bool _isFull;
         private Animation _animation;
+        private long _receivedIndex;
 
         #region Mono
 
@@ -30,12 +31,13 @@ namespace Nekoyume.UI.Module
             text.text = $"0 / {DailyBlockState.UpdateInterval}";
             button.interactable = false;
             _animation = GetComponent<Animation>();
+            _updateEnable = true;
         }
 
         private void OnEnable()
         {
             Game.Game.instance.agent.blockIndex.ObserveOnMainThread().Subscribe(SetIndex).AddTo(_disposables);
-            ReactiveCurrentAvatarState.NextDailyRewardIndex.Subscribe(SetNextBlockIndex).AddTo(_disposables);
+            ReactiveCurrentAvatarState.DailyRewardReceivedIndex.Subscribe(SetReceivedIndex).AddTo(_disposables);
             canvasGroup.alpha = 0;
         }
 
@@ -48,42 +50,38 @@ namespace Nekoyume.UI.Module
 
         private void SetIndex(long index)
         {
-            if (_updateEnable)
-            {
-                var a = _nextBlockIndex - DailyBlockState.UpdateInterval;
-                var value = Math.Min(index - a, DailyBlockState.UpdateInterval);
-                text.text = $"{value} / {DailyBlockState.UpdateInterval}";
-                slider.value = value;
+            var min = Math.Min(index - _receivedIndex, 0);
+            var value = Math.Min(min, DailyBlockState.UpdateInterval);
+            text.text = $"{value} / {DailyBlockState.UpdateInterval}";
+            slider.value = value;
 
-                var isFull = value == DailyBlockState.UpdateInterval;
-                button.interactable = isFull;
-                canvasGroup.interactable = isFull;
-                if (isFull)
-                {
-                    _animation.Play();
-                }
+            _isFull = value >= DailyBlockState.UpdateInterval;
+            button.interactable = _isFull;
+            canvasGroup.interactable = _isFull;
+            if (_isFull && _updateEnable)
+            {
+                _animation.Play();
             }
         }
 
         public void GetReward()
         {
-            ActionManager.instance.DailyReward();
-            _nextBlockIndex += DailyBlockState.UpdateInterval;
-            slider.value = 0;
-            text.text = $"0 / {DailyBlockState.UpdateInterval}";
-            button.interactable = false;
             _updateEnable = false;
+            ActionManager.instance.DailyReward().Subscribe(_ => { _updateEnable = true; });
             _animation.Stop();
             canvasGroup.alpha = 0;
             canvasGroup.interactable = false;
+            button.interactable = false;
+            _isFull = false;
         }
 
-        private void SetNextBlockIndex(long index)
+        private void SetReceivedIndex(long index)
         {
-            _nextBlockIndex = index;
-            slider.value = 0;
-            text.text = $"0 / {DailyBlockState.UpdateInterval}";
-            _updateEnable = true;
+            if (index != _receivedIndex)
+            {
+                _receivedIndex = index;
+                _updateEnable = true;
+            }
         }
     }
 }

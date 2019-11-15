@@ -24,22 +24,22 @@ namespace Nekoyume.State
         public int characterId;
         public int level;
         public long exp;
-        public Game.Item.Inventory inventory;
+        public Inventory inventory;
         public int worldStage;
         public DateTimeOffset updatedAt;
         public DateTimeOffset? clearedAt;
         public Address agentAddress;
         public QuestList questList;
         public MailBox mailBox;
-        public long BlockIndex;
-        public long nextDailyRewardIndex;
+        public long blockIndex;
+        public long dailyRewardReceivedIndex;
         public int actionPoint;
         public CollectionMap stageMap;
         public CollectionMap monsterMap;
         public CollectionMap itemMap;
         public CollectionMap eventMap;
 
-        public AvatarState(Address address, Address agentAddress, long blockIndex, long rewardIndex, string name = null) : base(address)
+        public AvatarState(Address address, Address agentAddress, long blockIndex, string name = null) : base(address)
         {
             if (address == null)
             {
@@ -50,15 +50,14 @@ namespace Nekoyume.State
             characterId = GameConfig.DefaultAvatarCharacterId;
             level = 1;
             exp = 0;
-            inventory = new Game.Item.Inventory();
+            inventory = new Inventory();
             worldStage = 1;
             updatedAt = DateTimeOffset.UtcNow;
             this.agentAddress = agentAddress;
             questList = new QuestList();
             mailBox = new MailBox();
-            BlockIndex = blockIndex;
+            this.blockIndex = blockIndex;
             actionPoint = GameConfig.ActionPoint;
-            nextDailyRewardIndex = rewardIndex;
             stageMap = new CollectionMap();
             monsterMap = new CollectionMap();
             itemMap = new CollectionMap();
@@ -91,8 +90,7 @@ namespace Nekoyume.State
             agentAddress = avatarState.agentAddress;
             questList = avatarState.questList;
             mailBox = avatarState.mailBox;
-            BlockIndex = avatarState.BlockIndex;
-            nextDailyRewardIndex = avatarState.nextDailyRewardIndex;
+            blockIndex = avatarState.blockIndex;
             actionPoint = avatarState.actionPoint;
             stageMap = avatarState.stageMap;
             monsterMap = avatarState.monsterMap;
@@ -114,14 +112,15 @@ namespace Nekoyume.State
             agentAddress = new Address(((Binary) serialized["agentAddress"]).Value);
             questList = new QuestList((Bencodex.Types.List) serialized["questList"]);
             mailBox = new MailBox((Bencodex.Types.List) serialized["mailBox"]);
-            BlockIndex = (long) ((Integer) serialized["blockIndex"]).Value;
-            nextDailyRewardIndex = (long) ((Integer) serialized["nextDailyRewardIndex"]).Value;
+            blockIndex = (long) ((Integer) serialized["blockIndex"]).Value;
             actionPoint = (int) ((Integer) serialized["actionPoint"]).Value;
             stageMap = new CollectionMap((Bencodex.Types.Dictionary) serialized["stageMap"]);
             serialized.TryGetValue((Text) "monsterMap", out var value2);
             monsterMap = value2 is null ? new CollectionMap() : new CollectionMap((Bencodex.Types.Dictionary) value2);
             itemMap = new CollectionMap((Bencodex.Types.Dictionary) serialized["itemMap"]);
             eventMap = new CollectionMap((Bencodex.Types.Dictionary) serialized["eventMap"]);
+            serialized.TryGetValue((Text) "dailyRewardReceivedIndex", out var dri);
+            dailyRewardReceivedIndex = dri is null ? 0 : (long) ((Integer) dri).Value;
         }
 
         public void Update(Simulator simulator)
@@ -253,8 +252,8 @@ namespace Nekoyume.State
                 [(Text) "agentAddress"] = agentAddress.Serialize(),
                 [(Text) "questList"] = questList.Serialize(),
                 [(Text) "mailBox"] = mailBox.Serialize(),
-                [(Text) "blockIndex"] = (Integer) BlockIndex,
-                [(Text) "nextDailyRewardIndex"] = (Integer) nextDailyRewardIndex,
+                [(Text) "blockIndex"] = (Integer) blockIndex,
+                [(Text) "dailyRewardReceivedIndex"] = (Integer) dailyRewardReceivedIndex,
                 [(Text) "actionPoint"] = (Integer) actionPoint,
                 [(Text) "stageMap"] = stageMap.Serialize(),
                 [(Text) "monsterMap"] = monsterMap.Serialize(),

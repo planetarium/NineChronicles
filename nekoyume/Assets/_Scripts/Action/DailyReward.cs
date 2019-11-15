@@ -21,7 +21,7 @@ namespace Nekoyume.Action
                 return states.SetState(avatarAddress, MarkChanged);
             }
 
-            if (!states.TryGetAgentAvatarStates(ctx.Signer, avatarAddress, out AgentState agentState, out AvatarState avatarState))
+            if (!states.TryGetAgentAvatarStates(ctx.Signer, avatarAddress, out _, out AvatarState avatarState))
             {
                 return states;
             }
@@ -32,9 +32,9 @@ namespace Nekoyume.Action
             }
             var dailyBlockState = new DailyBlockState(d);
 
-            if (avatarState.nextDailyRewardIndex <= dailyBlockState.nextBlockIndex)
+            if (dailyBlockState.nextBlockIndex - avatarState.dailyRewardReceivedIndex >= DailyBlockState.UpdateInterval)
             {
-                avatarState.nextDailyRewardIndex = dailyBlockState.nextBlockIndex;
+                avatarState.dailyRewardReceivedIndex = ctx.BlockIndex;
                 avatarState.actionPoint = refillPoint;
             }
 

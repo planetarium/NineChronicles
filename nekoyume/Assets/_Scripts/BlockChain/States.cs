@@ -120,7 +120,7 @@ namespace Nekoyume.BlockChain
             
             var avatarState = Instance.CurrentAvatarState.Value;
             Debug.LogFormat("Save local avatarState. agentAddress: {0} address: {1} BlockIndex: {2}",
-                avatarState.agentAddress, avatarState.address, avatarState.BlockIndex);
+                avatarState.agentAddress, avatarState.address, avatarState.blockIndex);
 
             var fileName = string.Format(CurrentAvatarFileNameFormat, avatarState.agentAddress,
                 avatarState.address);

@@ -97,7 +97,7 @@ namespace Nekoyume.Action
             ));
 
             avatarState.updatedAt = DateTimeOffset.UtcNow;
-            avatarState.BlockIndex = ctx.BlockIndex;
+            avatarState.blockIndex = ctx.BlockIndex;
 
             return states
                 .SetState(sellerAvatarAddress, avatarState.Serialize())
