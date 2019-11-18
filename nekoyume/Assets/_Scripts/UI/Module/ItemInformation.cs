@@ -196,7 +196,7 @@ namespace Nekoyume.UI.Module
                 var data = Model.item.Value.ItemBase.Value.Data;
                 if (data.ItemType == ItemType.Material &&
                     data is MaterialItemSheet.Row materialData &&
-                    materialData.StatType != StatType.NONE)
+                    materialData.StatType.HasValue)
                 {
                     AddStat(new Model.ItemInformationStat(materialData));
                     statCount++;

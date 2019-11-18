@@ -90,7 +90,7 @@ namespace Nekoyume.BlockChain
                 .Select(store.GetTransaction<PolymorphicAction<ActionBase>>);
 
         protected PrivateKey PrivateKey { get; private set; }
-        public Address Address { get; set; }
+        private Address Address { get; set; }
 
         public event EventHandler BootstrapStarted;
         public event EventHandler PreloadStarted;

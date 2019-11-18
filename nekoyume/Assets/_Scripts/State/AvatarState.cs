@@ -11,7 +11,6 @@ using Nekoyume.Game.Item;
 using Nekoyume.Game.Mail;
 using Nekoyume.Game.Quest;
 using Nekoyume.Model;
-using Nekoyume.TableData;
 
 namespace Nekoyume.State
 {
@@ -214,15 +213,15 @@ namespace Nekoyume.State
                 questList.UpdateItemTypeCollectQuest(new []{itemUsable});
             }
             UpdateCompletedQuest();
+
         }
 
-        public void UpdateFromQuestReward(Quest quest, IRandom random, IActionContext context)
+        public void UpdateFromQuestReward(Quest quest, IRandom random)
         {
             var items = new List<ItemBase>();
             foreach (var pair in quest.Reward.ItemMap)
             {
-                var row = TableSheets.FromActionContext(context)
-                    .ItemSheet.Values.First(itemRow => itemRow.Id == pair.Key);
+                var row = Game.Game.instance.TableSheets.ItemSheet.Values.First(itemRow => itemRow.Id == pair.Key);
                 var item = ItemFactory.Create(row, random.GenerateRandomGuid());
                 var map = inventory.AddItem(item, pair.Value);
                 itemMap.Add(map);

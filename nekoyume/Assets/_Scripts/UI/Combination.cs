@@ -14,7 +14,6 @@ using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
 using UniRx;
 using UnityEngine;
-using Material = Nekoyume.Game.Item.Material;
 
 namespace Nekoyume.UI
 {
@@ -295,7 +294,7 @@ namespace Nekoyume.UI
         {
             var materialInfoList = combineConsumable.otherMaterials
                 .Where(e => !(e is null) && !e.IsEmpty)
-                .Select(e => ((Material) e.Model.ItemBase.Value, e.Model.Count.Value))
+                .Select(e => (e.Model.ItemBase.Value.Data.Id, e.Model.Count.Value))
                 .ToList();
 
             UpdateCurrentAvatarState(combineConsumable, materialInfoList);
@@ -305,13 +304,13 @@ namespace Nekoyume.UI
 
         private void ActionCombineEquipment()
         {
-            var materialInfoList = new List<(Material material, int value)>();
+            var materialInfoList = new List<(int id, int value)>();
             materialInfoList.Add((
-                (Material) combineEquipment.baseMaterial.Model.ItemBase.Value,
+                combineEquipment.baseMaterial.Model.ItemBase.Value.Data.Id,
                 combineEquipment.baseMaterial.Model.Count.Value));
             materialInfoList.AddRange(combineEquipment.otherMaterials
                 .Where(e => !(e is null) && !(e.Model is null))
-                .Select(e => ((Material)e.Model.ItemBase.Value, e.Model.Count.Value)));
+                .Select(e => (e.Model.ItemBase.Value.Data.Id, e.Model.Count.Value)));
 
             UpdateCurrentAvatarState(combineEquipment, materialInfoList);
             CreateCombinationAction(materialInfoList);
@@ -331,15 +330,15 @@ namespace Nekoyume.UI
         }
 
         private void UpdateCurrentAvatarState(ICombinationPanel combinationPanel,
-            IEnumerable<(Material material, int count)> materialInfoList)
+            IEnumerable<(int itemId, int count)> materialInfoList)
         {
             States.Instance.AgentState.Value.gold -= combinationPanel.CostNCG;
             States.Instance.CurrentAvatarState.Value.actionPoint -= combinationPanel.CostAP;
             ReactiveCurrentAvatarState.ActionPoint.SetValueAndForceNotify(
                 States.Instance.CurrentAvatarState.Value.actionPoint);
-            foreach (var (material, count) in materialInfoList)
+            foreach (var (itemId, count) in materialInfoList)
             {
-                States.Instance.CurrentAvatarState.Value.inventory.RemoveFungibleItem(material, count);
+                States.Instance.CurrentAvatarState.Value.inventory.RemoveFungibleItem(itemId, count);
             }
 
             ReactiveCurrentAvatarState.Inventory.SetValueAndForceNotify(
@@ -363,7 +362,7 @@ namespace Nekoyume.UI
                 States.Instance.CurrentAvatarState.Value.inventory);
         }
 
-        private void CreateCombinationAction(List<(Material material, int count)> materialInfoList)
+        private void CreateCombinationAction(List<(int itemId, int count)> materialInfoList)
         {
             var msg = LocalizationManager.Localize("NOTIFICATION_COMBINATION_START");
             Notification.Push(MailType.Workshop, msg);

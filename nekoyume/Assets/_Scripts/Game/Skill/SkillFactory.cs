@@ -49,8 +49,8 @@ namespace Nekoyume.Game
         public static Skill Deserialize(Bencodex.Types.Dictionary serialized) =>
             Get(
                 SkillSheet.Row.Deserialize((Bencodex.Types.Dictionary) serialized["skillRow"]),
-                (Integer) serialized["power"],
-                (Integer) serialized["chance"]
+                (int) ((Integer) serialized["power"]).Value,
+                (int) ((Integer) serialized["chance"]).Value
             );
     }
 }

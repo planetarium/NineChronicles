@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using JetBrains.Annotations;
 using Nekoyume.Game.Controller;
 using Nekoyume.State;
-using Nekoyume.TableData;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -34,7 +33,7 @@ namespace Nekoyume.UI.Module
             gameObject.SetActive(true);
             
             var recipeInfoList = new List<RecipeInfo>();
-            foreach (var row in TableSheets.FromTableSheetsState(TableSheetsState.Current).ConsumableItemRecipeSheet)
+            foreach (var row in TableSheetsState.Current.ConsumableItemRecipeSheet)
             {
                 var info = new RecipeInfo(row);
                 recipeInfoList.Add(info);

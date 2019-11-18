@@ -73,7 +73,6 @@ namespace Nekoyume.Game
                 agentInitializeSucceed = succeed;
             });
             yield return new WaitUntil(() => agentInitialized);
-            TableSheets.InitializeWithTableSheetsState();
             // UI 초기화 2차.
             yield return StartCoroutine(MainCanvas.instance.InitializeSecond());
             stage.objectPool.Initialize();
