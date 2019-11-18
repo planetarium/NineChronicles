@@ -16,8 +16,8 @@ namespace Nekoyume.UI
         public ItemSubType itemSubType;
 
         private EventTrigger _eventTrigger;
-        private System.Action<EquipSlot> _onLeftClick;
-        private System.Action<EquipSlot> _onRightClick;
+        private System.Action<EquipSlot> _onClick;
+        private System.Action<EquipSlot> _onDoubleClick;
 
         private void Awake()
         {
@@ -68,21 +68,26 @@ namespace Nekoyume.UI
 
         public void SetOnClickAction(System.Action<EquipSlot> onLeftClick, System.Action<EquipSlot> onRightClick)
         {
-            _onLeftClick = onLeftClick;
-            _onRightClick = onRightClick;
+            _onClick = onLeftClick;
+            _onDoubleClick = onRightClick;
         }
 
         public void OnClick(BaseEventData eventData)
         {
             PointerEventData data = eventData as PointerEventData;
 
-            if (!(data is null) && data.button == PointerEventData.InputButton.Left)
+            if (data is null ||
+                data.button != PointerEventData.InputButton.Left)
+                return;
+            
+            switch (data.clickCount)
             {
-                _onLeftClick?.Invoke(this);
-            }
-            else if (!(data is null) && data.button == PointerEventData.InputButton.Right)
-            {
-                _onRightClick?.Invoke(this);
+                case 1:
+                    _onClick?.Invoke(this);
+                    break;
+                case 2:
+                    _onDoubleClick?.Invoke(this);
+                    break;
             }
         }
     }
