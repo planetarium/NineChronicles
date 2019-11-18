@@ -1,26 +1,19 @@
 using System.Collections;
-using Assets.SimpleLocalization;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.UI.Module;
 using Nekoyume.Manager;
-using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
     public class Menu : Widget
     {
         public GameObject btnQuest;
-        public TextMeshProUGUI btnQuestText;
         public GameObject btnCombination;
-        public TextMeshProUGUI btnCombinationText;
         public GameObject btnShop;
-        public TextMeshProUGUI btnShopText;
         public GameObject btnRanking;
-        public TextMeshProUGUI btnRankingText;
         public SpeechBubble[] SpeechBubbles;
 
         public Stage Stage;
@@ -28,11 +21,6 @@ namespace Nekoyume.UI
         protected override void Awake()
         {
             base.Awake();
-
-            btnQuestText.text = LocalizationManager.Localize("UI_DUNGEON");
-            btnCombinationText.text = LocalizationManager.Localize("UI_COMBINATION");
-            btnShopText.text = LocalizationManager.Localize("UI_SHOP");
-            btnRankingText.text = LocalizationManager.Localize("UI_RANKING");
 
             Stage = GameObject.Find("Stage").GetComponent<Stage>();
             SpeechBubbles = GetComponentsInChildren<SpeechBubble>();
