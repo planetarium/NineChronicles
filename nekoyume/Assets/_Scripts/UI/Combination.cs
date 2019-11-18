@@ -30,7 +30,7 @@ namespace Nekoyume.UI
             new ReactiveProperty<StateType>(StateType.CombineEquipment);
 
         private const int NpcId = 300001;
-        private static readonly UnityEngine.Vector3 NpcPosition = new UnityEngine.Vector3(2.28f, -1.72f);
+        private static readonly UnityEngine.Vector3 NpcPosition = new UnityEngine.Vector3(2.28f, -2f);
 
         public CategoryButton combineConsumableCategoryButton;
         public CategoryButton combineEquipmentCategoryButton;
