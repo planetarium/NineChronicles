@@ -109,6 +109,7 @@ namespace Nekoyume.UI.Module
                 return false;
             
             gameObject.SetActive(true);
+            submitButton.gameObject.SetActive(true);
             OnMaterialAddedOrRemoved();
             OnMaterialCountChanged();
             ReactiveAgentState.Gold.Subscribe(SubscribeNCG).AddTo(_disposablesAtShow);

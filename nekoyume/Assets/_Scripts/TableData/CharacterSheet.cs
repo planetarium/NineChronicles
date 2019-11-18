@@ -49,7 +49,7 @@ namespace Nekoyume.TableData
                 LvCRI = decimal.TryParse(fields[12], out var lvCri) ? lvCri : 0m;
                 LvDOG = decimal.TryParse(fields[13], out var lvDog) ? lvDog : 0m;
                 LvSPD = decimal.TryParse(fields[14], out var lvSpd) ? lvSpd : 0m;
-                AttackRange = int.TryParse(fields[15], out var attackRange) ? attackRange : 1f;
+                AttackRange = float.TryParse(fields[15], out var attackRange) ? attackRange : 1f;
                 RunSpeed = int.TryParse(fields[16], out var runSpeed) ? runSpeed : 1f;
             }
         }
