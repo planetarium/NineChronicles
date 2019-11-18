@@ -8,6 +8,7 @@ using Nekoyume.Model;
 using Nekoyume.UI.Model;
 using UniRx;
 using UnityEngine;
+using Material = Nekoyume.Game.Item.Material;
 
 namespace Nekoyume.UI.Module
 {
@@ -166,8 +167,10 @@ namespace Nekoyume.UI.Module
             foreach (var otherMaterial in otherMaterials)
             {
                 if (!(otherMaterial.InventoryItemViewModel is null) &&
-                    otherMaterial.InventoryItemViewModel.ItemBase.Value.Data.Id.Equals(
-                        inventoryItem.ItemBase.Value.Data.Id))
+                    otherMaterial.InventoryItemViewModel.ItemBase.Value is Material material &&
+                    inventoryItem.ItemBase.Value is Material inventoryMaterial &&
+                    material.Data.ItemId.Equals(
+                        inventoryMaterial.Data.ItemId))
                     return true;
             }
 
@@ -246,7 +249,9 @@ namespace Nekoyume.UI.Module
                     viewModel?.ItemBase.Value is null)
                     return false;
 
-                return e.Model.ItemBase.Value.Data.Id == viewModel.ItemBase.Value.Data.Id;
+                return e.Model.ItemBase.Value is Material materialA &&
+                       viewModel.ItemBase.Value is Material materialB &&
+                       materialA.Data.ItemId.Equals(materialB.Data.ItemId);
             });
             if (sameMaterial is null)
             {

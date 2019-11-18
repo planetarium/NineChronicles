@@ -8,6 +8,11 @@ namespace Nekoyume.EnumType
     public enum StatType
     {
         /// <summary>
+        /// Default, It's same with null.
+        /// </summary>
+        NONE,
+        
+        /// <summary>
         /// Health Point
         /// </summary>
         HP,

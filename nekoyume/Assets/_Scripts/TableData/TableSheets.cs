@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Libplanet.Action;
+using Nekoyume.Data.Table;
 using Nekoyume.State;
 using UniRx;
 using UnityEngine;
@@ -29,6 +31,7 @@ namespace Nekoyume.TableData
         public QuestSheet QuestSheet { get; private set; }
         public WorldQuestSheet WorldQuestSheet { get; private set; }
         public CollectQuestSheet CollectQuestSheet { get; private set; }
+        public ConsumableItemRecipeSheet ConsumableItemRecipeSheet { get; private set; }
         public CombinationQuestSheet CombinationQuestSheet { get; private set; }
         public TradeQuestSheet TradeQuestSheet { get; private set; }
 
@@ -176,7 +179,8 @@ namespace Nekoyume.TableData
                     ItemConfigForGradeSheet.Set(csv);
                     break;
                 case nameof(TableData.ConsumableItemRecipeSheet):
-                    Debug.LogWarning($"Now, {nameof(ConsumableItemRecipeSheet)} is on chain.");
+                    ConsumableItemRecipeSheet = new ConsumableItemRecipeSheet();;
+                    ConsumableItemRecipeSheet.Set(csv);
                     break;
                 case nameof(TableData.QuestRewardSheet):
                     QuestRewardSheet = new QuestRewardSheet();
@@ -190,6 +194,39 @@ namespace Nekoyume.TableData
                     throw new InvalidDataException($"Not found {name} class in namespace `TableData`");
             }
         }
+        
+        public static Dictionary<string, string> GetTableCsvAssets()
+        {
+            var addressableAssetsContainer = Resources.Load<AddressableAssetsContainer>("AddressableAssetsContainer");
+            return addressableAssetsContainer.tableCsvAssets.ToDictionary(asset => asset.name, asset => asset.text);
+        }
+        
+        /// <summary>
+        /// TableSheetsState를 기준으로 초기화합니다.
+        /// </summary>
+        /// <param name="tableSheetsState">기준으로 삼을 상태입니다.</param>
+        public void InitializeWithTableSheetsState(TableSheetsState tableSheetsState = null)
+        {
+            tableSheetsState = tableSheetsState ?? TableSheetsState.Current;
+            foreach (var pair in tableSheetsState.TableSheets)
+            {
+                SetToSheet(pair.Key, pair.Value);
+            }
+        }
+
+        public static TableSheets FromTableSheetsState(TableSheetsState tableSheetsState)
+        {
+            var tableSheets = new TableSheets();
+            tableSheets.InitializeWithTableSheetsState(tableSheetsState);
+            return tableSheets;
+        }
+
+        public static TableSheets FromActionContext(IActionContext ctx)
+        {
+            var tableSheetsState = TableSheetsState.FromActionContext(ctx);
+            return FromTableSheetsState(tableSheetsState);
+        }
+
 
         private void ItemSheetInitialize()
         {

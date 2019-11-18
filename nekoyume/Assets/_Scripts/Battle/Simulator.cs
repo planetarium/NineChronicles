@@ -28,11 +28,13 @@ namespace Nekoyume.Battle
         public List<ItemBase> rewards => _waveRewards.SelectMany(i => i).ToList();
         public const float TurnPriority = 100f;
         public CollectionMap ItemMap = new CollectionMap();
+        public readonly TableSheets TableSheets;
 
         public Simulator(IRandom random, AvatarState avatarState, List<Consumable> foods, int worldStage,
-            Game.Skill skill = null)
+            Game.Skill skill = null, TableSheetsState tableSheetsState = null)
         {
             Random = random;
+            TableSheets = TableSheets.FromTableSheetsState(tableSheetsState);
             WorldStage = worldStage;
             Log = new BattleLog();
             _waves = new List<Wave>();
@@ -78,7 +80,7 @@ namespace Nekoyume.Battle
 
                         if (index == lastWave)
                         {
-                            var stageSheet = Game.Game.instance.TableSheets.StageSheet;
+                            var stageSheet = TableSheets.StageSheet;
                             if (WorldStage == Player.worldStage
                                 && Player.worldStage < stageSheet.Last.Id)
                             {
@@ -123,7 +125,7 @@ namespace Nekoyume.Battle
 
         private void SetWave()
         {
-            var stageSheet = Game.Game.instance.TableSheets.StageSheet;
+            var stageSheet = TableSheets.StageSheet;
             if (!stageSheet.TryGetValue(WorldStage, out var stageRow))
                 throw new SheetRowNotFoundException(nameof(stageSheet), WorldStage.ToString());
 
@@ -140,7 +142,7 @@ namespace Nekoyume.Battle
         private Wave SpawnWave(StageSheet.WaveData waveData)
         {
             var wave = new Wave();
-            var monsterTable = Game.Game.instance.TableSheets.CharacterSheet;
+            var monsterTable = TableSheets.CharacterSheet;
             foreach (var monsterData in waveData.Monsters)
             {
                 for (int i = 0; i < monsterData.Count; i++)
@@ -160,7 +162,7 @@ namespace Nekoyume.Battle
 
         private void GetReward(int id)
         {
-            var rewardTable = Game.Game.instance.TableSheets.StageRewardSheet;
+            var rewardTable = TableSheets.StageRewardSheet;
             var itemSelector = new WeightedSelector<int>(Random);
             var items = new List<ItemBase>();
             if (rewardTable.TryGetValue(id, out var reward))
@@ -176,7 +178,7 @@ namespace Nekoyume.Battle
                     try
                     {
                         var itemId = itemSelector.Pop();
-                        if (Game.Game.instance.TableSheets.MaterialItemSheet.TryGetValue(itemId, out var itemData))
+                        if (TableSheets.MaterialItemSheet.TryGetValue(itemId, out var itemData))
                         {
                             var count = Random.Next(r.Min, r.Max + 1);
                             for (var i = 0; i < count; i++)
