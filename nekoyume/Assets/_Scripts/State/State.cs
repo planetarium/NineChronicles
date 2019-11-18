@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Bencodex.Types;
 using Libplanet;
-using Libplanet.Action;
 
 namespace Nekoyume.State
 {
@@ -17,7 +16,7 @@ namespace Nekoyume.State
             {
                 throw new ArgumentNullException(nameof(address));
             }
-
+            
             this.address = address;
         }
 

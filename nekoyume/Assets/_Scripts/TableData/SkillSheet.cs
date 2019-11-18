@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
 using Assets.SimpleLocalization;
 using Bencodex.Types;
 using Nekoyume.EnumType;
@@ -24,19 +22,6 @@ namespace Nekoyume.TableData
             public SkillTargetType SkillTargetType { get; private set; }
             public int HitCount { get; private set; }
 
-            public Row() {}
-
-            public Row(Bencodex.Types.Dictionary serialized)
-            {
-                Id = (Bencodex.Types.Integer) serialized["id"];
-                ElementalType = (ElementalType) Enum.Parse(typeof(ElementalType),
-                    (Bencodex.Types.Text) serialized["elemental_type"]);
-                SkillType = (SkillType) Enum.Parse(typeof(SkillType), (Bencodex.Types.Text) serialized["skill_type"]);
-                SkillCategory = (SkillCategory) Enum.Parse(typeof(SkillCategory), (Bencodex.Types.Text) serialized["skill_category"]);
-                SkillTargetType = (SkillTargetType) Enum.Parse(typeof(SkillTargetType), (Bencodex.Types.Text) serialized["skill_target_type"]);
-                HitCount = (Bencodex.Types.Integer) serialized["hit_count"];
-            }
-
             public override void Set(IReadOnlyList<string> fields)
             {
                 Id = int.Parse(fields[0]);
@@ -46,18 +31,17 @@ namespace Nekoyume.TableData
                 SkillTargetType = (SkillTargetType) Enum.Parse(typeof(SkillTargetType), fields[4]);
                 HitCount = int.Parse(fields[5]);
             }
+
             public IValue Serialize() =>
-                Bencodex.Types.Dictionary.Empty
-                    .Add("id", Id)
-                    .Add("elemental_type", ElementalType.ToString())
-                    .Add("skill_type", SkillType.ToString())
-                    .Add("skill_category", SkillCategory.ToString())
-                    .Add("skill_target_type", SkillTargetType.ToString())
-                    .Add("hit_count", HitCount);
+                new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
+                {
+                    [(Text) "key"] = (Integer) Key,
+                });
 
             public static Row Deserialize(Bencodex.Types.Dictionary serialized)
             {
-                return new Row(serialized);
+                var key = (int) ((Integer) serialized["key"]).Value;
+                return Game.Game.instance.TableSheets.SkillSheet[key];
             }
         }
 

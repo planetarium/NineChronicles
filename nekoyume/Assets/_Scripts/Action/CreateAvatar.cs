@@ -9,7 +9,6 @@ using Nekoyume.BlockChain;
 using Nekoyume.Game.Factory;
 using Nekoyume.Game.Item;
 using Nekoyume.State;
-using Nekoyume.TableData;
 using UnityEngine;
 
 namespace Nekoyume.Action
@@ -84,20 +83,19 @@ namespace Nekoyume.Action
         {
             var avatarState = new AvatarState(avatarAddress, ctx.Signer, ctx.BlockIndex, name);
 #if UNITY_EDITOR
-            var tableSheets = TableSheets.FromActionContext(ctx);
-            AddItemsForTest(avatarState, ctx.Random, tableSheets);
+            AddItemsForTest(avatarState, ctx.Random);
 #endif
             return avatarState;
         }
 
-        private static void AddItemsForTest(AvatarState avatarState, IRandom random, TableSheets tableSheets)
+        private static void AddItemsForTest(AvatarState avatarState, IRandom random)
         {
-            foreach (var row in tableSheets.MaterialItemSheet)
+            foreach (var row in Game.Game.instance.TableSheets.MaterialItemSheet)
             {
                 avatarState.inventory.AddItem(ItemFactory.Create(row, default), 10);
             }
 
-            foreach (var pair in tableSheets.EquipmentItemSheet.Where(pair =>
+            foreach (var pair in Game.Game.instance.TableSheets.EquipmentItemSheet.Where(pair =>
                 pair.Value.Id > GameConfig.DefaultAvatarWeaponId))
             {
                 var itemId = random.GenerateRandomGuid();

@@ -6,6 +6,8 @@ using Nekoyume.Action;
 using Nekoyume.Game.Item;
 using Nekoyume.Manager;
 using Nekoyume.Pattern;
+using Nekoyume.UI.Model;
+using Nekoyume.UI.Module;
 using UniRx;
 
 namespace Nekoyume.BlockChain
@@ -85,21 +87,21 @@ namespace Nekoyume.BlockChain
         }
 
         public IObservable<ActionBase.ActionEvaluation<Combination>> Combination(
-            List<(Material material, int count)> materialInfoList)
+            List<(int itemId, int count)> materialInfoList)
         {
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionCombination);
 
             var action = new Combination();
             materialInfoList.ForEach(info =>
             {
-                var (material, count) = info;
-                if (action.Materials.ContainsKey(material))
+                var (itemId, count) = info;
+                if (action.Materials.ContainsKey(itemId))
                 {
-                    action.Materials[material] += count;
+                    action.Materials[itemId] += count;
                 }
                 else
                 {
-                    action.Materials.Add(material, count);
+                    action.Materials.Add(itemId, count);
                 }
             });
             action.AvatarAddress = States.Instance.CurrentAvatarState.Value.address;
@@ -263,7 +265,7 @@ namespace Nekoyume.BlockChain
             var action = new PatchTableSheet
             {
                 TableName = tableName,
-                TableCsv = tableCsv,
+                TableCSV = tableCsv,
             };
             ProcessAction(action);
         }

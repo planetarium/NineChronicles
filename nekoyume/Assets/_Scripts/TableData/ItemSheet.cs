@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using Assets.SimpleLocalization;
 using Bencodex.Types;
 using Nekoyume.EnumType;
-using Nekoyume.State;
-using UnityEngine;
 
 namespace Nekoyume.TableData
 {
@@ -12,13 +10,7 @@ namespace Nekoyume.TableData
     public class ItemSheet : Sheet<int, ItemSheet.Row>
     {
         [Serializable]
-        public abstract class RowBase : SheetRow<int>
-        {
-            public abstract IValue Serialize();
-        }
-
-        [Serializable]
-        public class Row : RowBase
+        public class Row : SheetRow<int>
         {
             public override int Key => Id;
             public int Id { get; private set; }
@@ -26,19 +18,7 @@ namespace Nekoyume.TableData
             public ItemSubType ItemSubType { get; protected set; }
             public int Grade { get; private set; }
             public ElementalType ElementalType { get; private set; }
-
-            public Row()
-            {
-            }
-
-            public Row(Bencodex.Types.Dictionary serialized)
-            {
-                Id = (Integer) serialized["item_id"];
-                ItemSubType = (ItemSubType) Enum.Parse(typeof(ItemSubType), (Bencodex.Types.Text) serialized["item_sub_type"]);
-                Grade = (Integer) serialized["grade"];
-                ElementalType = (ElementalType) Enum.Parse(typeof(ElementalType), (Bencodex.Types.Text) serialized["elemental_type"]);
-            }
-
+            
             public override void Set(IReadOnlyList<string> fields)
             {
                 Id = int.Parse(fields[0]);
@@ -47,16 +27,16 @@ namespace Nekoyume.TableData
                 ElementalType = (ElementalType) Enum.Parse(typeof(ElementalType), fields[3]);
             }
 
-            public override IValue Serialize() =>
-                Bencodex.Types.Dictionary.Empty
-                    .Add("item_id", Id)
-                    .Add("item_sub_type", ItemSubType.ToString())
-                    .Add("grade", Grade)
-                    .Add("elemental_type", ElementalType.ToString());
+            public IValue Serialize() =>
+                new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
+                {
+                    [(Text) "key"] = (Integer) Key,
+                });
 
             public static Row Deserialize(Bencodex.Types.Dictionary serialized)
             {
-                return new Row(serialized);
+                var key = (int) ((Integer) serialized["key"]).Value;
+                return Game.Game.instance.TableSheets.ItemSheet[key];
             }
         }
         

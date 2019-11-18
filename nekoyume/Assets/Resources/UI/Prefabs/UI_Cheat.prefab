@@ -1335,7 +1335,7 @@ MonoBehaviour:
   list: {fileID: 114910487472176304}
   skillList: {fileID: 5771432675253649700}
   skillPanel: {fileID: 3447065985429651417}
-  TableSheetsDropdown: {fileID: 1040763306601414837}
+  TableSheets: {fileID: 1040763306601414837}
   OnChainTableSheet: {fileID: 5266879774606134845}
   LocalTableSheet: {fileID: 6163941605307593958}
   PatchButton: {fileID: 729427763511116957}
@@ -2563,7 +2563,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -31.425049, y: -624.47}
+  m_AnchoredPosition: {x: -31.425, y: -624.47}
   m_SizeDelta: {x: 62.85, y: 31.07}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7481427407714552722

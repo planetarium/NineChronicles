@@ -5,10 +5,6 @@ using System.Linq;
 using System.Text;
 using Bencodex.Types;
 using Libplanet;
-using Nekoyume.EnumType;
-using Nekoyume.Game;
-using Nekoyume.Game.Factory;
-using Nekoyume.Game.Item;
 
 namespace Nekoyume.State
 {
@@ -100,39 +96,24 @@ namespace Nekoyume.State
         public static Guid? ToNullableGuid(this IValue serialized) =>
             Deserialize(ToGuid, serialized);
 
-        public static IValue Serialize(this DecimalStat decimalStat) =>
-            Bencodex.Types.Dictionary.Empty
-                .Add("type", decimalStat.Type.Serialize())
-                .Add("value", decimalStat.Value.Serialize());
-
-        public static DecimalStat ToDecimalStat(this IValue serialized) =>
-            ToDecimalStat((Bencodex.Types.Dictionary) serialized);
-        
-        public static DecimalStat ToDecimalStat(this Bencodex.Types.Dictionary serialized) =>
-            new DecimalStat(
-                StatTypeExtension.Deserialize((Binary)serialized["type"]),
-                serialized["value"].ToDecimal());
-
         #region Generic
         
-        public static IValue Serialize(this Dictionary<Material, int> value)
+        public static IValue Serialize(this Dictionary<int, int> value)
         {
-            return
-                new Bencodex.Types.List(
-                    value.Select(
-                        pair =>
-                        (IValue)Bencodex.Types.Dictionary.Empty
-                            .Add("material", pair.Key.Serialize())
-                            .Add("count", pair.Value)));
+            return new Bencodex.Types.Dictionary(
+                value.ToDictionary<KeyValuePair<int, int>, IKey, IValue>(
+                    pair => new Binary(BitConverter.GetBytes(pair.Key)),
+                    pair => (Integer) pair.Value
+                )
+            );
         }
         
-        public static Dictionary<Material, int> ToDictionary(this IValue serialized)
+        public static Dictionary<int, int> ToDictionary(this IValue serialized)
         {
-            return ((Bencodex.Types.List) serialized)
-                .Cast<Bencodex.Types.Dictionary>()
+            return ((Bencodex.Types.Dictionary) serialized)
                 .ToDictionary(
-                    value => (Material) ItemFactory.Deserialize((Bencodex.Types.Dictionary) value["material"]),
-                    value => value["count"].ToInt()
+                    pair => BitConverter.ToInt32(((Binary) pair.Key).Value, 0),
+                    pair => (int) ((Integer) pair.Value).Value
                 );
         }
 

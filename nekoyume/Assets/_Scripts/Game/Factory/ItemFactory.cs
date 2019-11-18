@@ -1,6 +1,5 @@
 ﻿using Nekoyume.Game.Item;
 using System;
-using System.Linq;
 using Bencodex.Types;
 using Nekoyume.EnumType;
 using Nekoyume.State;
@@ -68,7 +67,7 @@ namespace Nekoyume.Game.Factory
             var data = (Bencodex.Types.Dictionary) serialized["data"];
             serialized.TryGetValue((Text) "itemId", out IValue id);
             var item = Create(
-                DeserializeRow(data),
+                ItemSheet.Row.Deserialize(data),
                 id?.ToGuid() ?? default
             );
             if (item is ItemUsable itemUsable)
@@ -105,36 +104,6 @@ namespace Nekoyume.Game.Factory
             }
 
             return item;
-        }
-
-        private static ItemSheet.Row DeserializeRow(Bencodex.Types.Dictionary serialized)
-        {
-            var itemSubType = (ItemSubType) Enum.Parse(typeof(ItemSubType), (Bencodex.Types.Text) serialized["item_sub_type"]);
-            switch (itemSubType)
-            {
-                // Consumable
-                case ItemSubType.Food:
-                    return new ConsumableItemSheet.Row(serialized);
-                // Equipment
-                case ItemSubType.Weapon:
-                case ItemSubType.RangedWeapon:
-                case ItemSubType.Armor:
-                case ItemSubType.Belt:
-                case ItemSubType.Necklace:
-                case ItemSubType.Ring:
-                case ItemSubType.Helm:
-                case ItemSubType.Set:
-                case ItemSubType.Shoes:
-                    return new EquipmentItemSheet.Row(serialized);
-                // Material
-                case ItemSubType.EquipmentMaterial:
-                case ItemSubType.FoodMaterial:
-                case ItemSubType.MonsterPart:
-                case ItemSubType.NormalMaterial:
-                    return new MaterialItemSheet.Row(serialized);
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
         }
     }
 }
