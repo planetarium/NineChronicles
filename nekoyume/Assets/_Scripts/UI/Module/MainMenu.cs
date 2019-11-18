@@ -12,7 +12,10 @@ namespace Nekoyume.UI.Module
         public float TweenDuration = 0.3f;
         public float BgScale = 1.05f;
         public string BgName;
-        public CanvasGroup Caption;
+        public SpeechBubble speechBubble;
+        public string pointerEnterKey;
+        public string pointerClickKey;
+        private string _defaultKey;
 
         private readonly List<IDisposable> _disposablesForAwake = new List<IDisposable>();
 
@@ -24,11 +27,16 @@ namespace Nekoyume.UI.Module
             if (!parent)
                 throw new NotFoundComponentException<Menu>();
 
+            if (speechBubble)
+            {
+                _defaultKey = speechBubble.localizationKey;
+            }
+
             gameObject.AddComponent<ObservablePointerClickTrigger>()
                 .OnPointerClickAsObservable()
                 .Subscribe(x => {
                     parent.Stage.background.transform.Find(BgName)?.DOScale(1.0f, 0.0f);
-                    Caption?.DOFade(0.0f, 0.0f);
+                    ShowSpeech(pointerClickKey);
                 })
                 .AddTo(_disposablesForAwake);
 
@@ -36,7 +44,7 @@ namespace Nekoyume.UI.Module
                 .OnPointerEnterAsObservable()
                 .Subscribe(x => {
                     parent.Stage.background.transform.Find(BgName)?.DOScale(BgScale, TweenDuration);
-                    Caption?.DOFade(1.0f, 0.2f);
+                    ShowSpeech(pointerEnterKey);
                 })
                 .AddTo(_disposablesForAwake);
 
@@ -44,14 +52,9 @@ namespace Nekoyume.UI.Module
                 .OnPointerExitAsObservable()
                 .Subscribe(x => {
                     parent.Stage.background.transform.Find(BgName)?.DOScale(1.0f, TweenDuration);
-                    Caption?.DOFade(0.0f, 0.2f);
+                    ResetLocalizationKey();
                 })
                 .AddTo(_disposablesForAwake); ;
-        }
-
-        private void Start()
-        {
-            Caption.alpha = 0.0f;
         }
 
         private void OnDestroy()
@@ -60,5 +63,21 @@ namespace Nekoyume.UI.Module
         }
 
         #endregion
+
+        private void ShowSpeech(string key)
+        {
+            if (speechBubble is null)
+                return;
+            if (speechBubble.gameObject.activeSelf)
+                return;
+            speechBubble.SetKey(key);
+            StartCoroutine(speechBubble.CoShowText());
+        }
+
+        private void ResetLocalizationKey()
+        {
+            speechBubble?.SetKey(_defaultKey);
+            speechBubble?.gameObject.SetActive(false);
+        }
     }
 }
