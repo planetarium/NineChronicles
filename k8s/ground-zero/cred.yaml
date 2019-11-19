@@ -1,0 +1,8 @@
+apiVersion: v1
+data:
+  .dockerconfigjson: eyJhdXRocyI6eyJodHRwczovL3BsYW5ldGFyaXVtLmF6dXJlY3IuaW8vIjp7InVzZXJuYW1lIjoicGxhbmV0YXJpdW0iLCJwYXNzd29yZCI6Ijd4UGVRZWRlM1ZmeW1tejhhT21aRDIrazhwa2N3VlZHIiwiYXV0aCI6ImNHeGhibVYwWVhKcGRXMDZOM2hRWlZGbFpHVXpWbVo1YlcxNk9HRlBiVnBFTWl0ck9IQnJZM2RXVmtjPSJ9fX0=
+kind: Secret
+metadata:
+  name: acr-regcred
+  namespace: default
+type: kubernetes.io/dockerconfigjson

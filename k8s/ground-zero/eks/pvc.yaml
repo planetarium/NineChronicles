@@ -1,11 +1,11 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: azurefile
+  name: default-claim
 spec:
+  storageClassName: gp2
   accessModes:
-    - ReadWriteMany
-  storageClassName: azurefile
+    - ReadWriteOnce
   resources:
     requests:
-      storage: 100Gi
+      storage: 10Gi
