@@ -10,16 +10,21 @@ id,_name,item_sub_type,grade,elemental_type,set_id,stat_type,stat_value,attack_r
 10122000,마력 검(물),Weapon,2,Water,8,ATK,20,2
 10123000,마력 검(땅),Weapon,2,Land,9,ATK,20,2
 10124000,마력 검(바람),Weapon,2,Wind,10,ATK,20,2
-10130000,어둠 검,Weapon,3,Normal,11,ATK,30,2
-10131000,어둠 검(불),Weapon,3,Fire,12,ATK,30,2
-10132000,어둠 검(물),Weapon,3,Water,13,ATK,30,2
-10133000,어둠 검(땅),Weapon,3,Land,14,ATK,30,2
-10134000,어둠 검(바람),Weapon,3,Wind,15,ATK,30,2
-10140000,5티어 검,Weapon,5,Normal,11,ATK,30,2
-10141000,5티어 검(불),Weapon,5,Fire,12,ATK,30,2
-10142000,5티어 검(물),Weapon,5,Water,13,ATK,30,2
-10143000,5티어 검(땅),Weapon,5,Land,14,ATK,30,2
-10144000,5티어 검(바람),Weapon,5,Wind,15,ATK,30,2
+10130000,어둠 검,Weapon,3,Normal,11,ATK,40,2
+10131000,어둠 검(불),Weapon,3,Fire,12,ATK,40,2
+10132000,어둠 검(물),Weapon,3,Water,13,ATK,40,2
+10133000,어둠 검(땅),Weapon,3,Land,14,ATK,40,2
+10134000,어둠 검(바람),Weapon,3,Wind,15,ATK,40,2
+10140000,그람,Weapon,4,Normal,11,ATK,80,2
+10141000,그람(불),Weapon,4,Fire,12,ATK,80,2
+10142000,그람(물),Weapon,4,Water,13,ATK,80,2
+10143000,그람(땅),Weapon,4,Land,14,ATK,80,2
+10144000,그람(바람),Weapon,4,Wind,15,ATK,80,2
+10150000,다인슬레이프,Weapon,5,Normal,16,ATK,160,2
+10151000,다인슬레이프(불),Weapon,5,Fire,17,ATK,160,2
+10152000,다인슬레이프(물),Weapon,5,Water,18,ATK,160,2
+10153000,다인슬레이프(땅),Weapon,5,Land,19,ATK,160,2
+10154000,다인슬레이프(바람),Weapon,5,Wind,20,ATK,160,2
 10200000,누더기,Armor,0,Normal,0,DEF,1,2
 10210000,옷,Armor,1,Normal,1,DEF,10,2
 10211000,옷(불),Armor,1,Fire,2,DEF,10,2
