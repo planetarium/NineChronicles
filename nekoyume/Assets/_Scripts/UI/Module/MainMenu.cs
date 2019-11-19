@@ -4,6 +4,7 @@ using UniRx;
 using UniRx.Triggers;
 using UnityEngine;
 using System.Collections.Generic;
+using Assets.SimpleLocalization;
 
 namespace Nekoyume.UI.Module
 {
@@ -77,7 +78,17 @@ namespace Nekoyume.UI.Module
         private void ResetLocalizationKey()
         {
             speechBubble?.SetKey(_defaultKey);
-            speechBubble?.gameObject.SetActive(false);
+            speechBubble?.Hide();
+        }
+
+        public void ShowRequiredLevelSpeech(int level)
+        {
+            speechBubble.SetKey(pointerClickKey);
+            var format =
+                LocalizationManager.Localize(
+                    $"{pointerClickKey}{UnityEngine.Random.Range(0, speechBubble.SpeechCount)}");
+            var speech = string.Format(format, level);
+            StartCoroutine(speechBubble.CoShowText(speech));
         }
     }
 }

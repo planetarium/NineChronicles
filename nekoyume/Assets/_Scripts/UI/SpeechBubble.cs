@@ -29,11 +29,12 @@ namespace Nekoyume.UI
         public float speechBreakTime;
         public float destroyTime = 4.0f;
 
-        private int _speechCount = 0;
+        public int SpeechCount { get; private set; }
+        private Coroutine _coroutine;
 
         public void Init()
         {
-            _speechCount = LocalizationManager.LocalizedCount(localizationKey);
+            SpeechCount = LocalizationManager.LocalizedCount(localizationKey);
             gameObject.SetActive(false);
         }
 
@@ -53,8 +54,8 @@ namespace Nekoyume.UI
         public bool SetKey(string value)
         {
             localizationKey = value;
-            _speechCount = LocalizationManager.LocalizedCount(localizationKey);
-            return _speechCount > 0;
+            SpeechCount = LocalizationManager.LocalizedCount(localizationKey);
+            return SpeechCount > 0;
         }
 
         public void SetBubbleImage(int index)
@@ -63,6 +64,12 @@ namespace Nekoyume.UI
             {
                 bubbleImages[i].gameObject.SetActive(index == i);
             }
+        }
+
+        public void Hide()
+        {
+            text.text = "";
+            gameObject.SetActive(false);
         }
 
         private void BeforeSpeech()
@@ -74,19 +81,28 @@ namespace Nekoyume.UI
 
             gameObject.SetActive(true);
         }
+
         public IEnumerator CoShowText()
         {
-            if (_speechCount == 0)
+            if (SpeechCount == 0)
                 yield break;
+            BeforeSpeech();
+            var speech = LocalizationManager.Localize($"{localizationKey}{Random.Range(0, SpeechCount)}");
+            _coroutine = StartCoroutine(ShowText(speech));
+            yield return _coroutine;
+        }
+
+        public IEnumerator CoShowText(string speech)
+        {
             BeforeSpeech();
             _coroutine = StartCoroutine(ShowText(speech));
             yield return _coroutine;
+        }
 
-            gameObject.SetActive(true);
-
+        private IEnumerator ShowText(string speech)
+        {
             text.text = "";
             var breakTime = speechBreakTime;
-            string speech = LocalizationManager.Localize($"{localizationKey}{Random.Range(0, _speechCount)}");
             if (!string.IsNullOrEmpty(speech))
             {
                 gameObject.SetActive(true);
@@ -102,7 +118,7 @@ namespace Nekoyume.UI
                 textSize.text = speech;
                 textSize.rectTransform.DOScale(0.0f, 0.0f);
                 textSize.rectTransform.DOScale(1.0f, bubbleTweenTime).SetEase(Ease.OutBack);
-                
+
                 var tweenScale = DOTween.Sequence();
                 tweenScale.Append(bubbleContainer.DOScale(1.1f, 1.4f));
                 tweenScale.Append(bubbleContainer.DOScale(1.0f, 1.4f));
@@ -134,17 +150,11 @@ namespace Nekoyume.UI
                 textSize.rectTransform.DOScale(0.0f, bubbleTweenTime).SetEase(Ease.InBack);
                 yield return new WaitForSeconds(bubbleTweenTime);
             }
-            
+
             yield return new WaitForSeconds(breakTime);
 
             bubbleContainer.DOKill();
             textSize.transform.DOKill();
-            gameObject.SetActive(false);
-        }
-
-        public void Hide()
-        {
-            text.text = "";
             gameObject.SetActive(false);
         }
     }

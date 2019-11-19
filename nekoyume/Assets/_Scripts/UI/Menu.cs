@@ -10,10 +10,10 @@ namespace Nekoyume.UI
 {
     public class Menu : Widget
     {
-        public GameObject btnQuest;
-        public GameObject btnCombination;
-        public GameObject btnShop;
-        public GameObject btnRanking;
+        public MainMenu btnQuest;
+        public MainMenu btnCombination;
+        public MainMenu btnShop;
+        public MainMenu btnRanking;
         public SpeechBubble[] SpeechBubbles;
 
         public Stage Stage;
@@ -26,12 +26,12 @@ namespace Nekoyume.UI
             SpeechBubbles = GetComponentsInChildren<SpeechBubble>();
         }
 
-        public void ShowButtons(bool value)
+        private void ShowButtons(bool value)
         {
-            btnQuest.SetActive(value);
-            btnCombination.SetActive(value);
-            btnShop.SetActive(value);
-            btnRanking.SetActive(value);
+            btnQuest.gameObject.SetActive(value);
+            btnCombination.gameObject.SetActive(value);
+            btnShop.gameObject.SetActive(value);
+            btnRanking.gameObject.SetActive(value);
         }
 
         public void ShowRoom()
@@ -68,25 +68,46 @@ namespace Nekoyume.UI
 
         public void ShopClick()
         {
-            Close();
-            Find<Shop>().Show();
-            AudioController.PlayClick();
-            AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickMainShop);
+            if (States.Instance.CurrentAvatarState.Value.level >= GameConfig.ShopRequiredLevel)
+            {
+                Close();
+                Find<Shop>().Show();
+                AudioController.PlayClick();
+                AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickMainShop);
+            }
+            else
+            {
+                btnShop.ShowRequiredLevelSpeech(GameConfig.ShopRequiredLevel);
+            }
         }
 
         public void CombinationClick()
         {
-            Close();
-            Find<Combination>().Show();
-            AudioController.PlayClick();
-            AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickMainCombination);
+            if (States.Instance.CurrentAvatarState.Value.level >= GameConfig.CombinationRequiredLevel)
+            {
+                Close();
+                Find<Combination>().Show();
+                AudioController.PlayClick();
+                AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickMainCombination);
+            }
+            else
+            {
+                btnCombination.ShowRequiredLevelSpeech(GameConfig.CombinationRequiredLevel);
+            }
         }
 
         public void RankingClick()
         {
-            Close();
-            Find<RankingBoard>().Show();
-            AudioController.PlayClick();
+            if (States.Instance.CurrentAvatarState.Value.level >= GameConfig.RankingRequiredLevel)
+            {
+                Close();
+                Find<RankingBoard>().Show();
+                AudioController.PlayClick();
+            }
+            else
+            {
+                btnRanking.ShowRequiredLevelSpeech(GameConfig.RankingRequiredLevel);
+            }
         }
 
         public override void Show()
