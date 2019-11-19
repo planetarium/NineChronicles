@@ -10,7 +10,6 @@ namespace Nekoyume.UI.Model
     public class EquipmentSlots : MonoBehaviour, IEnumerable<EquipSlot>
     {
         public EquipSlot[] slots;
-        
 
         private void Awake()
         {

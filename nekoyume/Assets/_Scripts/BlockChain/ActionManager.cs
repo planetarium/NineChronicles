@@ -6,8 +6,6 @@ using Nekoyume.Action;
 using Nekoyume.Game.Item;
 using Nekoyume.Manager;
 using Nekoyume.Pattern;
-using Nekoyume.UI.Model;
-using Nekoyume.UI.Module;
 using UniRx;
 
 namespace Nekoyume.BlockChain
@@ -26,12 +24,15 @@ namespace Nekoyume.BlockChain
         #region Actions
 
         public IObservable<ActionBase.ActionEvaluation<CreateAvatar>> CreateAvatar(Address avatarAddress, int index,
-            string nickName)
+            string nickName, int hair = 0, int lens = 0, int etc = 0)
         {
             var action = new CreateAvatar
             {
                 avatarAddress = avatarAddress,
                 index = index,
+                hair = hair,
+                lens = lens,
+                etc = etc,
                 name = nickName,
             };
             ProcessAction(action);

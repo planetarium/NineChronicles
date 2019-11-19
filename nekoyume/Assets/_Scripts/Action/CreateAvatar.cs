@@ -18,12 +18,18 @@ namespace Nekoyume.Action
     {
         public Address avatarAddress;
         public int index;
+        public int hair;
+        public int lens;
+        public int etc;
         public string name;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal => new Dictionary<string, IValue>()
         {
             ["avatarAddress"] = avatarAddress.Serialize(),
             ["index"] = (Integer) index,
+            ["hair"] = (Integer) hair,
+            ["lens"] = (Integer) lens,
+            ["etc"] = (Integer) etc,
             ["name"] = (Text) name,
         }.ToImmutableDictionary();
 
@@ -31,6 +37,9 @@ namespace Nekoyume.Action
         {
             avatarAddress = plainValue["avatarAddress"].ToAddress();
             index = (int) ((Integer) plainValue["index"]).Value;
+            hair = (int) ((Integer) plainValue["hair"]).Value;
+            lens = (int) ((Integer) plainValue["lens"]).Value;
+            etc = (int) ((Integer) plainValue["etc"]).Value;
             name = (Text) plainValue["name"];
         }
 
@@ -73,6 +82,12 @@ namespace Nekoyume.Action
             // Avoid NullReferenceException in test
             var nextBlockIndex = dailyBlockState?.nextBlockIndex ?? DailyBlockState.UpdateInterval;
             avatarState = CreateAvatarState(name, avatarAddress, ctx, nextBlockIndex);
+
+            if (hair < 0) hair = 0;
+            if (lens < 0) lens = 0;
+            if (etc < 0) etc = 0;
+
+            avatarState.Customize(hair, lens, etc);
 
             return states
                 .SetState(ctx.Signer, agentState.Serialize())
