@@ -7,7 +7,6 @@ using DecimalMath;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.BlockChain;
-using Nekoyume.Data;
 using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.Game.Factory;
@@ -81,6 +80,11 @@ namespace Nekoyume.Action
 
             if (!states.TryGetAgentAvatarStates(ctx.Signer, AvatarAddress, out AgentState agentState,
                 out AvatarState avatarState))
+            {
+                return states;
+            }
+
+            if (avatarState.level < GameConfig.CombinationRequiredLevel)
             {
                 return states;
             }

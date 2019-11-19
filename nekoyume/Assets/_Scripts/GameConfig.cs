@@ -9,7 +9,8 @@ namespace Nekoyume
         public const float WaitSeconds = 180f;
         public const string AvatarNickNamePattern = @"^[0-9가-힣a-zA-Z]{2,20}$";
         public const float PlayerSpeechBreakTime = 2f;
-        
+
+        //TODO 온체인으로 옮겨야함.
         #region action
 
         public const int DefaultAvatarCharacterId = 100010;
@@ -29,7 +30,10 @@ namespace Nekoyume
         public const decimal CombinationValueL2 = 1m;
         public const decimal CombinationValueR1 = 1.5m; // 2f;
         public const int CombinationDefaultFoodId = 200000;
-        
+        public const int CombinationRequiredLevel = 5;
+        public const int ShopRequiredLevel = 10;
+        public const int RankingRequiredLevel = 15;
+
         #endregion
 
         #region Color

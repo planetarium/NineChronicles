@@ -398,11 +398,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ded8021858983437eab04b38bf769d43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  btnQuest: {fileID: 1690004906704222}
-  btnQuestText: {fileID: 0}
-  btnCombination: {fileID: 1054939152201896}
-  btnShop: {fileID: 1057739395603766}
-  btnRanking: {fileID: 1853928540865328}
+  btnQuest: {fileID: 7983721594100104734}
+  btnCombination: {fileID: 4877393150678171673}
+  btnShop: {fileID: 3450333501486923500}
+  btnRanking: {fileID: 5615811817025174728}
   SpeechBubbles: []
   Stage: {fileID: 0}
 --- !u!1 &1690004906704222
