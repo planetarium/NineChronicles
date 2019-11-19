@@ -956,6 +956,8 @@ MonoBehaviour:
       - {fileID: 3096257609243414905}
       - {fileID: 3569833982373682532}
       - {fileID: 6342760540122614475}
+      - {fileID: 808801209610667819}
+      - {fileID: 425632127338087766}
     rewardsArea:
       root: {fileID: 5930969435814047693}
       text: {fileID: 2223791308601599816}
@@ -970,6 +972,8 @@ MonoBehaviour:
       - {fileID: 4543024253595861869}
       - {fileID: 3934282770992080475}
       - {fileID: 3766837619696846315}
+      - {fileID: 3771924928084366379}
+      - {fileID: 1389678854179190088}
     expText: {fileID: 6903115757467056880}
   submitButton: {fileID: 5390402305300572033}
   submitText: {fileID: 8833303014043659119}
@@ -4972,7 +4976,7 @@ MonoBehaviour:
     textComponent: {fileID: 2457375941984089844}
     characterCount: 19
     spriteCount: 0
-    spaceCount: 4
+    spaceCount: 3
     wordCount: 3
     linkCount: 0
     lineCount: 2
@@ -25319,11 +25323,6 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.x
       value: -45
       objectReference: {fileID: 0}
-    - target: {fileID: -1655370076528185621, guid: f369b2e4b7b2243dc8c0bb82d1d4d0ae,
-        type: 3}
-      propertyPath: localizationKey
-      value: UI_WORLD_MAP
-      objectReference: {fileID: 0}
     - target: {fileID: 2766020459735579445, guid: f369b2e4b7b2243dc8c0bb82d1d4d0ae,
         type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -25333,6 +25332,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_SizeDelta.x
       value: -35
+      objectReference: {fileID: 0}
+    - target: {fileID: -1655370076528185621, guid: f369b2e4b7b2243dc8c0bb82d1d4d0ae,
+        type: 3}
+      propertyPath: localizationKey
+      value: UI_WORLD_MAP
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f369b2e4b7b2243dc8c0bb82d1d4d0ae, type: 3}
