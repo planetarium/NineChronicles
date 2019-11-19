@@ -956,6 +956,8 @@ MonoBehaviour:
       - {fileID: 3096257609243414905}
       - {fileID: 3569833982373682532}
       - {fileID: 6342760540122614475}
+      - {fileID: 808801209610667819}
+      - {fileID: 425632127338087766}
     rewardsArea:
       root: {fileID: 5930969435814047693}
       text: {fileID: 2223791308601599816}
@@ -970,6 +972,8 @@ MonoBehaviour:
       - {fileID: 4543024253595861869}
       - {fileID: 3934282770992080475}
       - {fileID: 3766837619696846315}
+      - {fileID: 3771924928084366379}
+      - {fileID: 1389678854179190088}
     expText: {fileID: 6903115757467056880}
   submitButton: {fileID: 5390402305300572033}
   submitText: {fileID: 8833303014043659119}
@@ -4972,7 +4976,7 @@ MonoBehaviour:
     textComponent: {fileID: 2457375941984089844}
     characterCount: 19
     spriteCount: 0
-    spaceCount: 4
+    spaceCount: 3
     wordCount: 3
     linkCount: 0
     lineCount: 2
@@ -5614,7 +5618,8 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_text: fox forest fox forest fox forest fox forest
+  m_text: The woods on the outskirts of the peaceful Alfheim. Sometimes little monsters
+    appear.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 297785a41d7708c47a0155b152d0ac02, type: 2}
@@ -5683,12 +5688,12 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_textInfo:
     textComponent: {fileID: 4416423373661967185}
-    characterCount: 43
+    characterCount: 85
     spriteCount: 0
-    spaceCount: 7
-    wordCount: 8
+    spaceCount: 12
+    wordCount: 13
     linkCount: 0
-    lineCount: 1
+    lineCount: 2
     pageCount: 1
     materialCount: 1
   m_isUsingLegacyAnimationComponent: 0
@@ -8695,7 +8700,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &7838175904441193899
 RectTransform:
   m_ObjectHideFlags: 0
@@ -8743,7 +8748,8 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_text: fox forest fox forest fox forest fox forest
+  m_text: The woods on the outskirts of the peaceful Alfheim. Sometimes little monsters
+    appear.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 297785a41d7708c47a0155b152d0ac02, type: 2}
@@ -8812,12 +8818,12 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_textInfo:
     textComponent: {fileID: 5180276536600861770}
-    characterCount: 43
+    characterCount: 85
     spriteCount: 0
-    spaceCount: 7
-    wordCount: 8
+    spaceCount: 12
+    wordCount: 13
     linkCount: 0
-    lineCount: 1
+    lineCount: 2
     pageCount: 1
     materialCount: 1
   m_isUsingLegacyAnimationComponent: 0
@@ -25319,11 +25325,6 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.x
       value: -45
       objectReference: {fileID: 0}
-    - target: {fileID: -1655370076528185621, guid: f369b2e4b7b2243dc8c0bb82d1d4d0ae,
-        type: 3}
-      propertyPath: localizationKey
-      value: UI_WORLD_MAP
-      objectReference: {fileID: 0}
     - target: {fileID: 2766020459735579445, guid: f369b2e4b7b2243dc8c0bb82d1d4d0ae,
         type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -25333,6 +25334,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_SizeDelta.x
       value: -35
+      objectReference: {fileID: 0}
+    - target: {fileID: -1655370076528185621, guid: f369b2e4b7b2243dc8c0bb82d1d4d0ae,
+        type: 3}
+      propertyPath: localizationKey
+      value: UI_WORLD_MAP
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f369b2e4b7b2243dc8c0bb82d1d4d0ae, type: 3}

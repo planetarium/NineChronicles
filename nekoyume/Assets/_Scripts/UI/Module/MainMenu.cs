@@ -37,7 +37,6 @@ namespace Nekoyume.UI.Module
                 .OnPointerClickAsObservable()
                 .Subscribe(x => {
                     parent.Stage.background.transform.Find(BgName)?.DOScale(1.0f, 0.0f);
-                    ShowSpeech(pointerClickKey);
                 })
                 .AddTo(_disposablesForAwake);
 
@@ -77,8 +76,11 @@ namespace Nekoyume.UI.Module
 
         private void ResetLocalizationKey()
         {
-            speechBubble?.SetKey(_defaultKey);
-            speechBubble?.Hide();
+            if (speechBubble)
+            {
+                speechBubble.SetKey(_defaultKey);
+                speechBubble.Hide();
+            }
         }
 
         public void ShowRequiredLevelSpeech(int level)
