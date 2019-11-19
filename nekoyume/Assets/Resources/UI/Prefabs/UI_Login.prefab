@@ -1728,7 +1728,7 @@ MonoBehaviour:
     textComponent: {fileID: 5021263611063817236}
     characterCount: 8
     spriteCount: 0
-    spaceCount: 4
+    spaceCount: 2
     wordCount: 3
     linkCount: 0
     lineCount: 1
@@ -1891,6 +1891,7 @@ GameObject:
   - component: {fileID: 804349794341687056}
   - component: {fileID: 6775275517436822750}
   - component: {fileID: 8045778206722840524}
+  - component: {fileID: 888973794794075530}
   m_Layer: 5
   m_Name: NameView
   m_TagString: Untagged
@@ -1955,6 +1956,18 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
+--- !u!225 &888973794794075530
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1437619221949717498}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &1827059002215513467
 GameObject:
   m_ObjectHideFlags: 0
@@ -2810,8 +2823,8 @@ MonoBehaviour:
     textComponent: {fileID: 1956052609790370136}
     characterCount: 4
     spriteCount: 0
-    spaceCount: 1
-    wordCount: 2
+    spaceCount: 0
+    wordCount: 1
     linkCount: 0
     lineCount: 1
     pageCount: 1
@@ -3227,8 +3240,8 @@ MonoBehaviour:
     textComponent: {fileID: 295799346488579217}
     characterCount: 4
     spriteCount: 0
-    spaceCount: 1
-    wordCount: 2
+    spaceCount: 0
+    wordCount: 1
     linkCount: 0
     lineCount: 1
     pageCount: 1
@@ -3328,6 +3341,7 @@ GameObject:
   - component: {fileID: 1282111778463223168}
   - component: {fileID: 4941024252029478736}
   - component: {fileID: 3354257712185632450}
+  - component: {fileID: 8926486690013548999}
   m_Layer: 5
   m_Name: NameView
   m_TagString: Untagged
@@ -3392,6 +3406,18 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
+--- !u!225 &8926486690013548999
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5040517195933148406}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &5077367929602462887
 GameObject:
   m_ObjectHideFlags: 0
@@ -3403,6 +3429,7 @@ GameObject:
   - component: {fileID: 1153662533183968106}
   - component: {fileID: 6692681947373704850}
   - component: {fileID: 1614848372133091693}
+  - component: {fileID: 2243140503648568079}
   m_Layer: 5
   m_Name: NameView
   m_TagString: Untagged
@@ -3467,6 +3494,18 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
+--- !u!225 &2243140503648568079
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5077367929602462887}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &5107315632115269272
 GameObject:
   m_ObjectHideFlags: 0
@@ -3958,8 +3997,8 @@ MonoBehaviour:
     textComponent: {fileID: 8263727970895256854}
     characterCount: 4
     spriteCount: 0
-    spaceCount: 1
-    wordCount: 2
+    spaceCount: 0
+    wordCount: 1
     linkCount: 0
     lineCount: 1
     pageCount: 1
@@ -4487,7 +4526,7 @@ MonoBehaviour:
     textComponent: {fileID: 6468100062898671263}
     characterCount: 8
     spriteCount: 0
-    spaceCount: 4
+    spaceCount: 2
     wordCount: 3
     linkCount: 0
     lineCount: 1
@@ -4948,7 +4987,7 @@ MonoBehaviour:
     textComponent: {fileID: 4947469744947175490}
     characterCount: 8
     spriteCount: 0
-    spaceCount: 4
+    spaceCount: 2
     wordCount: 3
     linkCount: 0
     lineCount: 1
@@ -5052,8 +5091,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3959136606871321057}
-  - component: {fileID: 8426646398829451641}
   - component: {fileID: 6460932024523800020}
+  - component: {fileID: 8426646398829451641}
   m_Layer: 5
   m_Name: HLayout
   m_TagString: Untagged
@@ -5083,14 +5122,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &8426646398829451641
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8885126178586864492}
-  m_CullTransparentMesh: 0
 --- !u!114 &6460932024523800020
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5116,3 +5147,11 @@ MonoBehaviour:
   m_ChildControlHeight: 0
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
+--- !u!222 &8426646398829451641
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8885126178586864492}
+  m_CullTransparentMesh: 0

@@ -8,6 +8,7 @@ using UnityEngine;
 using System.Text.RegularExpressions;
 using Nekoyume.UI.Module;
 using TMPro;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
@@ -24,6 +25,10 @@ namespace Nekoyume.UI
         public TextMeshProUGUI paletteLensText;
         public TextMeshProUGUI paletteTopText;
         public StatusInfo[] statusRows;
+
+        public Button archerButton;
+        public Button mageButton;
+        public Button acholyteButton;
 
         private int _selectedIndex;
         private bool _isCreateMode;
@@ -136,6 +141,20 @@ namespace Nekoyume.UI
                 info.Set(statType, value, additionalValue);
                 ++idx;
             }
+        }
+
+        public override void Initialize()
+        {
+            base.Initialize();
+            archerButton.onClick.AddListener(OnClickNotImplemented);
+            mageButton.onClick.AddListener(OnClickNotImplemented);
+            acholyteButton.onClick.AddListener(OnClickNotImplemented);
+        }
+
+        private void OnClickNotImplemented()
+        {
+            if (_isCreateMode)
+                Find<Alert>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE", "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
         }
 
         public override void Show()
