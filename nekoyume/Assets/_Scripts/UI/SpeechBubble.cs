@@ -105,7 +105,6 @@ namespace Nekoyume.UI
             var breakTime = speechBreakTime;
             if (!string.IsNullOrEmpty(speech))
             {
-                gameObject.SetActive(true);
                 if (speech.StartsWith("!"))
                 {
                     breakTime /= 2;
