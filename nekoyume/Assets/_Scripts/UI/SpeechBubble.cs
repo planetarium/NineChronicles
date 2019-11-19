@@ -65,17 +65,31 @@ namespace Nekoyume.UI
             }
         }
 
+        private void BeforeSpeech()
+        {
+            if (!(_coroutine is null))
+            {
+                StopCoroutine(_coroutine);
+            }
+
+            gameObject.SetActive(true);
+        }
         public IEnumerator CoShowText()
         {
             if (_speechCount == 0)
                 yield break;
+            BeforeSpeech();
+            _coroutine = StartCoroutine(ShowText(speech));
+            yield return _coroutine;
 
             gameObject.SetActive(true);
 
+            text.text = "";
             var breakTime = speechBreakTime;
             string speech = LocalizationManager.Localize($"{localizationKey}{Random.Range(0, _speechCount)}");
             if (!string.IsNullOrEmpty(speech))
             {
+                gameObject.SetActive(true);
                 if (speech.StartsWith("!"))
                 {
                     breakTime /= 2;
@@ -102,12 +116,9 @@ namespace Nekoyume.UI
                 tweenMoveBy.Play();
 
                 yield return new WaitForSeconds(bubbleTweenTime);
-                for (int i = 1; i <= speech.Length; ++i)
+                for (var i = 1; i <= speech.Length; ++i)
                 {
-                    if (i == speech.Length)
-                        text.text = $"{speech.Substring(0, i)}";
-                    else
-                        text.text = $"{speech.Substring(0, i)}<alpha=#00>{speech.Substring(i)}";
+                    text.text = i == speech.Length ? $"{speech.Substring(0, i)}" : $"{speech.Substring(0, i)}<alpha=#00>{speech.Substring(i)}";
                     yield return new WaitForSeconds(speechSpeedInterval);
 
                     // check destroy
