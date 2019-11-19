@@ -48,3 +48,4 @@ workflows:
           repo: $CIRCLE_PROJECT_REPONAME
           extra-build-args: >-
             --build-arg ulf="$ULF"
+            --build-arg prior_dlls="git-$CIRCLE_SHA1"
