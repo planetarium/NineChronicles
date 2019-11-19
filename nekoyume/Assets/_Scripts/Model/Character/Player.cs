@@ -188,9 +188,9 @@ namespace Nekoyume.Model
             var level = Level;
             Level = Game.Game.instance.TableSheets.LevelSheet.GetLevel(Exp.Current);
             // UI에서 레벨업 처리시 NRE 회피
-            if (level < Level && !(eventMap is null))
+            if (level < Level)
             {
-                eventMap[(int) QuestEventType.Level] = Level;
+                eventMap?.Add(new KeyValuePair<int, int>((int) QuestEventType.Level, Level - level));
             }
             UpdateExp();
         }
