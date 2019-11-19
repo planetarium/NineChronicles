@@ -57,6 +57,7 @@ namespace Nekoyume.Game.Controller
             public const string DamageWind = "sfx_damage_wind";
             public const string Critical01 = "sfx_critical01";
             public const string Critical02 = "sfx_critical02";
+            public const string Miss = "sfx_miss";
             public const string LevelUp = "sfx_levelup";
             public const string Cancel = "sfx_cancel";
             public const string Popup = "sfx_popup";
@@ -460,6 +461,11 @@ namespace Nekoyume.Game.Controller
         {
             var random = Random.value;
             instance.PlaySfx(random < 0.5f ? SfxCode.Critical01 : SfxCode.Critical02);
+        }
+
+        public static void PlayMiss()
+        {
+            instance.PlaySfx(SfxCode.Miss);
         }
 
         #endregion

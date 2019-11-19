@@ -237,6 +237,7 @@ namespace Nekoyume.Game.Character
                 {
                     index = 1;
                 }
+                AudioController.PlayMiss();
                 MissText.Show(position, force, index);
                 yield break;
             }
