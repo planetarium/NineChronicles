@@ -29,7 +29,7 @@ namespace Nekoyume.UI
 
         public Button archerButton;
         public Button mageButton;
-        public Button acholyteButton;
+        public Button acolyteButton;
 
         private int _selectedIndex;
         private bool _isCreateMode;
@@ -157,7 +157,7 @@ namespace Nekoyume.UI
             base.Initialize();
             archerButton.onClick.AddListener(OnClickNotImplemented);
             mageButton.onClick.AddListener(OnClickNotImplemented);
-            acholyteButton.onClick.AddListener(OnClickNotImplemented);
+            acolyteButton.onClick.AddListener(OnClickNotImplemented);
         }
 
         private void OnClickNotImplemented()

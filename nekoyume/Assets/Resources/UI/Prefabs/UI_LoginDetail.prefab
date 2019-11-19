@@ -399,7 +399,7 @@ MonoBehaviour:
   - {fileID: 8179355260961676273}
   archerButton: {fileID: 4650205287956590923}
   mageButton: {fileID: 3038912650596757150}
-  acholyteButton: {fileID: 8396022032546504639}
+  acolyteButton: {fileID: 8396022032546504639}
 --- !u!95 &95374830036940920
 Animator:
   serializedVersion: 3
@@ -2967,8 +2967,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 0, y: -13}
-  m_SizeDelta: {x: 250, y: 50}
+  m_AnchoredPosition: {x: 0, y: -20}
+  m_SizeDelta: {x: 250, y: 65}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7769439853149215676
 CanvasRenderer:
@@ -3028,15 +3028,15 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 14
-  m_fontSizeBase: 14
+  m_fontSize: 18
+  m_fontSizeBase: 18
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 1
   m_textAlignment: 258
-  m_characterSpacing: -8
+  m_characterSpacing: -2
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -4008,7 +4008,7 @@ GameObject:
   - component: {fileID: 4976060972675802608}
   - component: {fileID: 8396022032546504639}
   m_Layer: 5
-  m_Name: AcholyteButton
+  m_Name: AcolyteButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4031,7 +4031,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 89, y: -510}
-  m_SizeDelta: {x: 80, y: 78}
+  m_SizeDelta: {x: 70, y: 78}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &543998962987370507
 CanvasRenderer:
