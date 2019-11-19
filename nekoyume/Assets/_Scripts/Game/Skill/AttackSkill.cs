@@ -34,25 +34,25 @@ namespace Nekoyume.Game
             {
                 foreach (var target in targetList)
                 {
-                    if (target.Simulator.Random.Next(0, 100) < target.Stats.DOG)
+                    // damage 0 = dodged.
+                    var damage = 0;
+                    var critical = false;
+                    if (target.Simulator.Random.Next(0, 100) >= target.Stats.DOG)
                     {
-                        Debug.LogWarning($"Dodged! caster: {caster.RowData.Id}, target: {target.RowData.Id}");
-                        continue;
-                    }
+                        var multiply = multiplier[i];
+                        critical = caster.IsCritical();
+                        damage = elemental.GetDamage(target.defElementType, skillDamage);
+                        // https://gamedev.stackexchange.com/questions/129319/rpg-formula-attack-and-defense
+                        damage = (int) ((long) damage * damage / (damage + target.DEF));
+                        damage = (int) (damage * multiply);
+                        damage = math.max(damage, 1);
+                        if (critical)
+                        {
+                            damage = (int) (damage * CharacterBase.CriticalMultiplier);
+                        }
 
-                    var multiply = multiplier[i];
-                    var critical = caster.IsCritical();
-                    var damage = elemental.GetDamage(target.defElementType, skillDamage);
-                    // https://gamedev.stackexchange.com/questions/129319/rpg-formula-attack-and-defense
-                    damage = (int) ((long) damage * damage / (damage + target.DEF));
-                    damage = (int) (damage * multiply);
-                    damage = math.max(damage, 1);
-                    if (critical)
-                    {
-                        damage = (int) (damage * CharacterBase.CriticalMultiplier);
+                        target.CurrentHP -= damage;
                     }
-
-                    target.CurrentHP -= damage;
 
                     infos.Add(new Model.Skill.SkillInfo((CharacterBase) target.Clone(), damage, critical,
                         skillRow.SkillCategory, skillRow.ElementalType));

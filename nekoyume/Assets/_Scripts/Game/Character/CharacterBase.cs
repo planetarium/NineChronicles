@@ -229,8 +229,17 @@ namespace Nekoyume.Game.Character
             var position = HudTextPosition;
             var force = DamageTextForce;
 
+            // damage 0 = dodged.
             if (dmg <= 0)
+            {
+                var index = 0;
+                if (this is Enemy)
+                {
+                    index = 1;
+                }
+                MissText.Show(position, force, index);
                 yield break;
+            }
 
             CurrentHP -= dmg;
             if (isConsiderDie && IsDead())
