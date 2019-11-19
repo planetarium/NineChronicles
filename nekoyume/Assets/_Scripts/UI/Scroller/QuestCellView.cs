@@ -68,17 +68,23 @@ namespace Nekoyume.UI.Scroller
             }
 
             var itemMap = data.Reward.ItemMap;
-            for (var i = 0; i < itemMap.Count; i++)
+            for (var i = 0; i < rewardViews.Length; i++)
             {
-                var pair = itemMap.ElementAt(i);
-                var info = rewardViews[i];
-                var row = Game.Game.instance.TableSheets.ItemSheet.Values.First(itemRow => itemRow.Id == pair.Key);
-                var item = ItemFactory.Create(row, new Guid());
-                var countableItem = new CountableItem(item, pair.Value);
-                info.SetData(countableItem);
-                info.gameObject.SetActive(true);
+                if (i < itemMap.Count)
+                {
+                    var pair = itemMap.ElementAt(i);
+                    var info = rewardViews[i];
+                    var row = Game.Game.instance.TableSheets.ItemSheet.Values.First(itemRow => itemRow.Id == pair.Key);
+                    var item = ItemFactory.Create(row, new Guid());
+                    var countableItem = new CountableItem(item, pair.Value);
+                    info.SetData(countableItem);
+                    info.gameObject.SetActive(true);
+                }
+                else
+                {
+                    rewardViews[i].gameObject.SetActive(false);
+                }
             }
-
         }
 
         public void RequestReward()
