@@ -29,6 +29,8 @@ namespace Nekoyume.Game.Character
         public readonly Subject<CharacterBase> OnUpdateHPBar = new Subject<CharacterBase>();
         
         protected abstract float RunSpeedDefault { get; }
+        protected abstract Vector3 DamageTextForce { get; }
+        protected abstract Vector3 HudTextPosition { get; }
 
         public string TargetTag { get; protected set; }
 
@@ -224,6 +226,8 @@ namespace Nekoyume.Game.Character
             bool isConsiderElementalType)
         {
             var dmg = info.Effect;
+            var position = HudTextPosition;
+            var force = DamageTextForce;
 
             if (dmg <= 0)
                 yield break;
@@ -237,6 +241,7 @@ namespace Nekoyume.Game.Character
             {
                 Animator.Hit();
             }
+            PopUpDmg(position, force, info, isConsiderElementalType);
         }
 
         protected virtual void OnDead()

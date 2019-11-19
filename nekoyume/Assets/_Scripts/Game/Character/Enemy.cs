@@ -18,7 +18,8 @@ namespace Nekoyume.Game.Character
         // todo: 적의 이동속도에 따라서 인게임 연출 버그가 발생할 수 있으니 '-1f'로 값을 고정함. 이후 이 문제를 해결해서 몬스터 별 이동속도를 구현할 필요가 있음.
         protected override float RunSpeedDefault => -1f; // Model.Value.RunSpeed;
 
-        protected Vector3 DamageTextForce => new Vector3(0.0f, 0.8f);
+        protected override Vector3 DamageTextForce => new Vector3(0.0f, 0.8f);
+        protected override Vector3 HudTextPosition => transform.TransformPoint(0f, 1f, 0f);
 
         #region Mono
 
@@ -81,9 +82,6 @@ namespace Nekoyume.Game.Character
             bool isConsiderElementalType)
         {
             yield return StartCoroutine(base.CoProcessDamage(info, isConsiderDie, isConsiderElementalType));
-            var position = transform.TransformPoint(0f, 1f, 0f);
-            var force = DamageTextForce;
-            PopUpDmg(position, force, info, isConsiderElementalType);
 
             if (!IsDead())
                 ShowSpeech("ENEMY_DAMAGE");

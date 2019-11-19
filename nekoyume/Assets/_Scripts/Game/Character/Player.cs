@@ -31,7 +31,8 @@ namespace Nekoyume.Game.Character
 
         protected override float RunSpeedDefault => Model.Value.RunSpeed;
 
-        protected Vector3 DamageTextForce => new Vector3(-0.1f, 0.5f);
+        protected override Vector3 DamageTextForce => new Vector3(-0.1f, 0.5f);
+        protected override Vector3 HudTextPosition => transform.TransformPoint(0f, 1.7f, 0f);
 
         #region Mono
 
@@ -92,14 +93,6 @@ namespace Nekoyume.Game.Character
             SpeechBubble.speechBreakTime = GameConfig.PlayerSpeechBreakTime;
         }
 
-        protected override IEnumerator CoProcessDamage(Model.Skill.SkillInfo info, bool isConsiderDie, bool isConsiderElementalType)
-        {
-            yield return StartCoroutine(base.CoProcessDamage(info, isConsiderDie, isConsiderElementalType));
-            var position = transform.TransformPoint(0f, 1.7f, 0f);
-            var force = DamageTextForce;
-            PopUpDmg(position, force, info, isConsiderElementalType);
-        }
-        
         protected override IEnumerator Dying()
         {
             SpeechBubble?.Clear();
