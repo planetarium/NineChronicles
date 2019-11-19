@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4191817209636232775}
   - component: {fileID: 2652410883994408545}
   m_Layer: 0
-  m_Name: sfx_miss 1
+  m_Name: sfx_miss
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -42,7 +42,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 8b8ce4a39ea86473faab9a0ec4f6f845, type: 3}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 0
