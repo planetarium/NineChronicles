@@ -1,7 +1,9 @@
 using Assets.SimpleLocalization;
+using DG.Tweening;
 using Nekoyume.Game.Controller;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -14,12 +16,10 @@ namespace Nekoyume.UI
     /// </summary>
     public class StatusDetail : Widget
     {
-        public Text statusTitleText;
-        public Text equipmentTitleText;
+        public TextMeshProUGUI statusTitleText;
+        public TextMeshProUGUI equipmentTitleText;
         public EquipmentSlots equipmentSlots;
         public GameObject textOption;
-        public GameObject group;
-        public GameObject statusInfo;
         public GameObject optionGroup;
         public StatusInfo[] statusRows;
 
@@ -37,14 +37,6 @@ namespace Nekoyume.UI
 
         protected override void OnDisable()
         {
-            if (group != null)
-            {
-                foreach (Transform child in group.transform)
-                {
-                    Destroy(child.gameObject);
-                }
-            }
-
             if (optionGroup != null)
             {
                 foreach (Transform child in optionGroup.transform)
@@ -83,7 +75,6 @@ namespace Nekoyume.UI
                 info.Set(statType, value, additionalValue);
                 ++idx;
             }
-
 
             //option info
             foreach (var option in player.Value.GetOptions())

@@ -112,7 +112,14 @@ namespace Nekoyume.UI
             shopItems.SharedModel.State.Value = StateType.Buy;
             SharedModel.State.Value = StateType.Show;
 
-            Find<BottomMenu>().Show(UINavigator.NavigationType.Back, SubscribeBackButtonClick);
+            Find<BottomMenu>().Show(
+                UINavigator.NavigationType.Back,
+                SubscribeBackButtonClick,
+                true,
+                BottomMenu.ToggleableType.Mail,
+                BottomMenu.ToggleableType.Quest,
+                BottomMenu.ToggleableType.Chat,
+                BottomMenu.ToggleableType.IllustratedBook);
 
             var go = Game.Game.instance.stage.npcFactory.Create(_npcId, _npcPosition);
             _npc = go.GetComponent<Npc>();
