@@ -191,7 +191,6 @@ namespace Nekoyume.UI
                 throw new SheetRowNotFoundException("StageSheet", SelectedStageId.ToString());
 
             stageInformation.titleText.text = $"Stage #{SelectedStageId}";
-            stageInformation.descriptionText.text = stageRow.GetLocalizedDescription();
 
             var monsterCount = stageRow.TotalMonsterIds.Count;
             for (var i = 0; i < stageInformation.monstersArea.iconImages.Count; i++)
