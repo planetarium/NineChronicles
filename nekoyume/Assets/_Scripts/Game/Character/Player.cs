@@ -8,6 +8,7 @@ using Nekoyume.Game.Item;
 using Nekoyume.Game.VFX;
 using Nekoyume.Helper;
 using Nekoyume.Manager;
+using Nekoyume.TableData;
 using Nekoyume.UI;
 using UniRx;
 using UnityEngine;
@@ -165,19 +166,19 @@ namespace Nekoyume.Game.Character
 
         public void UpdateEar(int index)
         {
-            UpdateEar($"ear_{index + 1:d4}_L", $"ear_{index + 1:d4}_R");
+            UpdateEar($"ear_{index + 1:d4}_left", $"ear_{index + 1:d4}_right");
         }
 
         public void UpdateEar(string earLeftResource, string earRightResource)
         {
             if (string.IsNullOrEmpty(earLeftResource))
             {
-//                earLeftResource = Model.Value.earLeft;
+                earLeftResource = $"ear_{Model.Value.earIndex + 1:d4}_left";
             }
 
             if (string.IsNullOrEmpty(earRightResource))
             {
-//                earRightResource = Model.Value.earRight;
+                earRightResource = $"ear_{Model.Value.earIndex + 1:d4}_right";
             }
 
             var controller = GetComponentInChildren<SkeletonAnimationController>();
@@ -188,24 +189,24 @@ namespace Nekoyume.Game.Character
             var spriteRight = SpriteHelper.GetPlayerSpineTextureEarRight(earRightResource);
             controller.UpdateEar(spriteLeft, spriteRight);
         }
-        
+
         public void UpdateEye(int index)
         {
-            UpdateEye($"eye_{index + 1:d4}_open", $"eye_{index + 1:d4}_half");
+            UpdateEye(CostumeSheet.GetEyeOpenResourceByIndex(index), CostumeSheet.GetEyeHalfResourceByIndex(index));
         }
 
         public void UpdateEye(string eyeOpenResource, string eyeHalfResource)
         {
             if (string.IsNullOrEmpty(eyeOpenResource))
             {
-//                eyeOpenResource = Model.Value.eyeOpen;
+                eyeOpenResource = CostumeSheet.GetEyeOpenResourceByIndex(Model.Value.lensIndex);
             }
-            
+
             if (string.IsNullOrEmpty(eyeHalfResource))
             {
-//                eyeHalfResource = Model.Value.eyeHalf;
+                eyeHalfResource = CostumeSheet.GetEyeHalfResourceByIndex(Model.Value.lensIndex);
             }
-            
+
             var controller = GetComponentInChildren<SkeletonAnimationController>();
             if (!controller)
                 return;
@@ -224,7 +225,7 @@ namespace Nekoyume.Game.Character
         {
             if (string.IsNullOrEmpty(tailResource))
             {
-//                tailResource = Model.Value.tail;
+                tailResource = $"tail_{Model.Value.tailIndex + 1:d4}";
             }
 
             var controller = GetComponentInChildren<SkeletonAnimationController>();

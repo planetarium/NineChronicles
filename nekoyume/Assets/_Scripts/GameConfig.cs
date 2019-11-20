@@ -16,10 +16,10 @@ namespace Nekoyume
         public const int DefaultAvatarCharacterId = 100010;
         public const int DefaultAvatarWeaponId = 10100000;
         public const int DefaultAvatarArmorId = 10200000;
-        public const string DefaultPlayerEarLeftResource = "ear_0001_L";
-        public const string DefaultPlayerEarRightResource = "ear_0001_R";
-        public const string DefaultPlayerEyeOpenResource = "eye_0001_open";
-        public const string DefaultPlayerEyeHalfResource = "eye_0001_half";
+        public const string DefaultPlayerEarLeftResource = "ear_0001_left";
+        public const string DefaultPlayerEarRightResource = "ear_0001_right";
+        public const string DefaultPlayerEyeOpenResource = "eye_red_open";
+        public const string DefaultPlayerEyeHalfResource = "eye_red_half";
         public const string DefaultPlayerTailResource = "tail_0001";
         public const int ActionPoint = 300;
         
