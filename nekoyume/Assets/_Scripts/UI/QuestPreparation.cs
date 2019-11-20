@@ -48,7 +48,6 @@ namespace Nekoyume.UI
 
         private CharacterStats _tempStats;
 
-
         #region override
 
         public override void Initialize()
@@ -69,6 +68,9 @@ namespace Nekoyume.UI
                 .AddTo(gameObject);
 
             requiredPointText.text = GameConfig.HackAndSlashCostAP.ToString();
+
+            questButton.OnClickAsObservable().Subscribe(_ => QuestClick(false)).AddTo(gameObject);
+            questRepeatButton.button.OnClickAsObservable().Subscribe(_ => QuestClick(true)).AddTo(gameObject);
         }
 
         public override void Show()
@@ -115,7 +117,6 @@ namespace Nekoyume.UI
                 ++idx;
             }
 
-            
 
             var worldMap = Find<WorldMap>();
             _stageId = worldMap.SelectedStageId;
@@ -136,7 +137,7 @@ namespace Nekoyume.UI
         public override void Close(bool ignoreCloseAnimation = false)
         {
             Find<BottomMenu>().Close(ignoreCloseAnimation);
-            
+
             Find<Inventory>().Close(ignoreCloseAnimation);
             Find<StatusDetail>().Close(ignoreCloseAnimation);
             Find<Quest>().Close(ignoreCloseAnimation);
@@ -259,7 +260,7 @@ namespace Nekoyume.UI
 
             var slotItem = slot.item;
 
-            slot.Unequip(); 
+            slot.Unequip();
             if (slot.itemSubType == ItemSubType.Armor)
             {
                 var armor = (Armor) slot.item;
@@ -335,7 +336,7 @@ namespace Nekoyume.UI
             }
 
             UpdateStats();
-            
+
             inventory.Tooltip.Close();
         }
 
@@ -388,7 +389,8 @@ namespace Nekoyume.UI
 
             _stage.repeatStage = repeat;
             ActionManager.instance.HackAndSlash(equipments, consumables, _stageId)
-                .Subscribe(_ => {}, e => Find<ActionFailPopup>().Show("Action timeout during HackAndSlash.")).AddTo(this);
+                .Subscribe(_ => { }, e => Find<ActionFailPopup>().Show("Action timeout during HackAndSlash."))
+                .AddTo(this);
         }
 
         public void GoToStage(ActionBase.ActionEvaluation<HackAndSlash> eval)
