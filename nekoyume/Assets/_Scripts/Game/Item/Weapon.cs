@@ -12,7 +12,7 @@ namespace Nekoyume.Game.Item
         public static Sprite GetSprite(Equipment equipment)
         {
             return equipment is null
-                ? null
+                ? GetSprite(GameConfig.DefaultAvatarWeaponId)
                 : GetSprite(equipment.Data.Id);
         }
         

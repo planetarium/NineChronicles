@@ -26,39 +26,26 @@ namespace Nekoyume.Game.Character
         {
             base.ResetTarget(value);
 
-            if (!ReferenceEquals(Skeleton, null))
+            if (!(Skeleton is null))
             {
                 Skeleton.AnimationState.Event -= RaiseEvent;
             }
 
             MeshRenderer = value.GetComponent<MeshRenderer>();
-
-            if (ReferenceEquals(MeshRenderer, null))
-            {
+            if (MeshRenderer is null)
                 throw new NotFoundComponentException<MeshRenderer>();
-            }
 
             Skeleton = value.GetComponent<SkeletonAnimation>();
-
-            if (ReferenceEquals(Skeleton, null))
-            {
+            if (Skeleton is null)
                 throw new NotFoundComponentException<SkeletonAnimation>();
-            }
 
             Skeleton.timeScale = TimeScale;
 
             var hud = Skeleton.skeleton.FindBone(StringHUD);
-            if (ReferenceEquals(hud, null))
-            {
-                // FixMe. HUD 본이 없는 임시 스파인에 대한 위치 처리.
-//                throw new SpineBoneNotFoundException(StringHUD);
-                HUDPosition = Vector3.zero;
-            }
-            else
-            {
-                HUDPosition = hud.GetWorldPosition(Target.transform) - Root.transform.position;
-            }
-
+            if (hud is null)
+                throw new SpineBoneNotFoundException(StringHUD);
+            
+            HUDPosition = hud.GetWorldPosition(Target.transform) - Root.transform.position;
             Skeleton.AnimationState.Event += RaiseEvent;
         }
 

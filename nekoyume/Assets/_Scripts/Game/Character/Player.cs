@@ -83,7 +83,7 @@ namespace Nekoyume.Game.Character
             Model.SetValueAndForceNotify(model);
 
             InitStats(model);
-            StartCoroutine(CoUpdateSet(Model.Value.armor));
+            UpdateEquipments();
 
             if (ReferenceEquals(SpeechBubble, null))
             {
@@ -111,42 +111,44 @@ namespace Nekoyume.Game.Character
             Event.OnPlayerDead.Invoke();
         }
 
-        public void UpdateSet(Armor armor, Weapon weapon = null)
+        public void UpdateEquipments(Armor armor = null, Weapon weapon = null)
         {
-            StartCoroutine(CoUpdateSet(armor, weapon));
+            UpdateArmor(armor);
+            UpdateWeapon(weapon);
         }
-
-        private IEnumerator CoUpdateSet(Armor armor, Weapon weapon = null)
+        
+        private void UpdateArmor(Armor armor)
         {
-            if (weapon == null)
-                weapon = Model.Value.weapon;
-
+            if (armor is null)
+            {
+                armor = Model.Value.armor;
+            }
+            
             var itemId = armor?.Data.Id ?? GameConfig.DefaultAvatarArmorId;
-            if (!ReferenceEquals(Animator.Target, null))
+            
+            if (!(Animator.Target is null))
             {
                 if (Animator.Target.name.Contains(itemId.ToString()))
-                {
-                    UpdateWeapon(weapon);
-                    yield break;
-                }
+                    return;
+                
                 Animator.DestroyTarget();
-                // 오브젝트가 파괴될때까지 기다립니다.
-                // https://docs.unity3d.com/ScriptReference/Object.Destroy.html
-                yield return new WaitForEndOfFrame();
             }
+            
             var origin = Resources.Load<GameObject>($"Character/Player/{itemId}");
             var go = Instantiate(origin, gameObject.transform);
             Animator.ResetTarget(go);
-            UpdateWeapon(weapon);
         }
 
         public void UpdateWeapon(Weapon weapon)
         {
+            if (weapon == null)
+            {
+                weapon = Model.Value.weapon;
+            }
+            
             var controller = GetComponentInChildren<SkeletonAnimationController>();
             if (!controller)
-            {
                 return;
-            }
             
             var sprite = Weapon.GetSprite(weapon);
             controller.UpdateWeapon(sprite);

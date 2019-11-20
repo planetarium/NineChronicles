@@ -39,7 +39,6 @@ namespace Nekoyume.UI
         private Stage _stage;
         private Game.Character.Player _player;
         private EquipSlot _weaponSlot;
-
         private int _stageId;
 
         private readonly Dictionary<StatType, int> _additionalStats = new Dictionary<StatType, int>();
@@ -86,13 +85,10 @@ namespace Nekoyume.UI
             _stage.LoadBackground("dungeon");
             _player = _stage.GetPlayer(_stage.questPreparationPosition);
             if (_player is null)
-            {
                 throw new NotFoundComponentException<Game.Character.Player>();
-            }
-
-            _weaponSlot = equipmentSlots.First(es => es.itemSubType == ItemSubType.Weapon);
 
             // stop run immediately.
+            _player.UpdateEquipments();
             _player.gameObject.SetActive(false);
             _player.gameObject.SetActive(true);
             _player.DoFade(1f, 0.3f);
@@ -108,7 +104,7 @@ namespace Nekoyume.UI
 
             var tuples = _player.Model.Value.GetStatTuples();
 
-            int idx = 0;
+            var idx = 0;
             foreach (var (statType, value, additionalValue) in tuples)
             {
                 var info = statusRows[idx];
@@ -116,10 +112,9 @@ namespace Nekoyume.UI
                 _additionalStats[statType] = additionalValue;
                 ++idx;
             }
-
-
-            var worldMap = Find<WorldMap>();
-            _stageId = worldMap.SelectedStageId;
+            
+            _weaponSlot = equipmentSlots.First(es => es.itemSubType == ItemSubType.Weapon);
+            _stageId = Find<WorldMap>().SelectedStageId;
 
             Find<BottomMenu>().Show(
                 UINavigator.NavigationType.Back,
@@ -265,7 +260,7 @@ namespace Nekoyume.UI
             {
                 var armor = (Armor) slot.item;
                 var weapon = (Weapon) _weaponSlot.item;
-                _player.UpdateSet(armor, weapon);
+                _player.UpdateEquipments(armor, weapon);
             }
             else if (slot.itemSubType == ItemSubType.Weapon)
             {
@@ -323,7 +318,7 @@ namespace Nekoyume.UI
             {
                 var armor = (Armor) equipable;
                 var weapon = (Weapon) _weaponSlot.item;
-                _player.UpdateSet(armor, weapon);
+                _player.UpdateEquipments(armor, weapon);
             }
             else if (itemSubType == ItemSubType.Weapon)
             {
