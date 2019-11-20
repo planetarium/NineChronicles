@@ -35,10 +35,16 @@ namespace Nekoyume
         public const decimal CombinationValueL2 = 1m;
         public const decimal CombinationValueR1 = 1.5m; // 2f;
         public const int CombinationDefaultFoodId = 200000;
-        
+
+#if UNITY_EDITOR
+        public const int CombinationRequiredLevel = 1;
+        public const int ShopRequiredLevel = 1;
+        public const int RankingRequiredLevel = 1;
+#else
         public const int CombinationRequiredLevel = 5;
         public const int ShopRequiredLevel = 10;
         public const int RankingRequiredLevel = 15;
+#endif
 
         #endregion
 
