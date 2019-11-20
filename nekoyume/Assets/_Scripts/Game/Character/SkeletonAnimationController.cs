@@ -88,24 +88,37 @@ namespace Nekoyume.Game.Character
                 MakeAttachment(SpriteHelper.GetPlayerSpineTextureWeapon(GameConfig.DefaultAvatarWeaponId));
 
             _eyeOpenSlot = SkeletonAnimation.skeleton.FindSlot(EyeOpenSlot);
-            _eyeOpenSlotIndex = SkeletonAnimation.skeleton.FindSlotIndex(EyeOpenSlot);
-            _eyeHalfSlot = SkeletonAnimation.skeleton.FindSlot(EyeHalfSlot);
-            _eyeHalfSlotIndex = SkeletonAnimation.skeleton.FindSlotIndex(EyeHalfSlot);
-            _eyeOpenAttachmentDefault = RemapAttachment(_eyeOpenSlot, SpriteHelper.GetPlayerSpineTextureEyeOpen(null));
-            _eyeHalfAttachmentDefault =
-                RemapAttachment(_eyeHalfSlot, SpriteHelper.GetPlayerSpineTextureEyeHalf(null));
-            
+            if (!(_eyeOpenSlot is null))
+            {
+                _eyeOpenSlotIndex = SkeletonAnimation.skeleton.FindSlotIndex(EyeOpenSlot);
+                _eyeHalfSlot = SkeletonAnimation.skeleton.FindSlot(EyeHalfSlot);
+                _eyeHalfSlotIndex = SkeletonAnimation.skeleton.FindSlotIndex(EyeHalfSlot);
+                _eyeOpenAttachmentDefault = RemapAttachment(_eyeOpenSlot, SpriteHelper.GetPlayerSpineTextureEyeOpen(null));
+                _eyeHalfAttachmentDefault =
+                    RemapAttachment(_eyeHalfSlot, SpriteHelper.GetPlayerSpineTextureEyeHalf(null));
+            }
+
             _earLeftSlot = SkeletonAnimation.skeleton.FindSlot(EarLeftSlot);
-            _earLeftSlotIndex = SkeletonAnimation.skeleton.FindSlotIndex(EarLeftSlot);
+            if (!(_earLeftSlot is null))
+            {
+                _earLeftSlotIndex = SkeletonAnimation.skeleton.FindSlotIndex(EarLeftSlot);
+                _earLeftAttachmentDefault = RemapAttachment(_earLeftSlot, SpriteHelper.GetPlayerSpineTextureEarLeft(null));
+            }
+
             _earRightSlot = SkeletonAnimation.skeleton.FindSlot(EarRightSlot);
-            _earRightSlotIndex = SkeletonAnimation.skeleton.FindSlotIndex(EarRightSlot);
-            _earLeftAttachmentDefault = RemapAttachment(_earLeftSlot, SpriteHelper.GetPlayerSpineTextureEarLeft(null));
-            _earRightAttachmentDefault =
-                RemapAttachment(_earRightSlot, SpriteHelper.GetPlayerSpineTextureEarRight(null));
+            if (!(_earRightSlot is null))
+            {
+                _earRightSlotIndex = SkeletonAnimation.skeleton.FindSlotIndex(EarRightSlot);
+                _earRightAttachmentDefault =
+                    RemapAttachment(_earRightSlot, SpriteHelper.GetPlayerSpineTextureEarRight(null));
+            }
 
             _tailSlot = SkeletonAnimation.skeleton.FindSlot(TailSlot);
-            _tailSlotIndex = SkeletonAnimation.skeleton.FindSlotIndex(TailSlot);
-            _tailAttachmentDefault = RemapAttachment(_tailSlot, SpriteHelper.GetPlayerSpineTextureTail(null));
+            if (!(_tailSlot is null))
+            {
+                _tailSlotIndex = SkeletonAnimation.skeleton.FindSlotIndex(TailSlot);
+                _tailAttachmentDefault = RemapAttachment(_tailSlot, SpriteHelper.GetPlayerSpineTextureTail(null));
+            }
         }
 
         #endregion
@@ -157,6 +170,9 @@ namespace Nekoyume.Game.Character
 
         public void UpdateEar(Sprite spriteLeft, Sprite spriteRight)
         {
+            if (_earLeftSlot is null || _earRightSlot is null)
+                return;
+
             if (spriteLeft is null)
             {
                 _clonedSkin.SetAttachment(_earLeftSlotIndex, EarLeftSlot, _earLeftAttachmentDefault);
@@ -182,6 +198,9 @@ namespace Nekoyume.Game.Character
         
         public void UpdateEye(Sprite spriteEyeOpen, Sprite spriteEyeHalf)
         {
+            if (_eyeOpenSlot is null || _eyeHalfSlot is null)
+                return;
+
             if (spriteEyeOpen is null)
             {
                 _clonedSkin.SetAttachment(_eyeOpenSlotIndex, EyeOpenSlot, _eyeOpenAttachmentDefault);
@@ -207,6 +226,9 @@ namespace Nekoyume.Game.Character
 
         public void UpdateTail(Sprite sprite)
         {
+            if (_tailSlot is null)
+                return;
+
             if (sprite is null)
             {
                 _clonedSkin.SetAttachment(_tailSlotIndex, TailSlot, _tailAttachmentDefault);

@@ -84,8 +84,8 @@ namespace Nekoyume.Game.Character
             Model.SetValueAndForceNotify(model);
 
             InitStats(model);
-            UpdateCustomize();
             UpdateEquipments();
+            UpdateCustomize();
 
             if (ReferenceEquals(SpeechBubble, null))
             {
@@ -115,6 +115,7 @@ namespace Nekoyume.Game.Character
 
         public void UpdateCustomize()
         {
+            UpdateEye(Model.Value.lensIndex);
             UpdateEar(Model.Value.earIndex);
             UpdateTail(Model.Value.tailIndex);
         }

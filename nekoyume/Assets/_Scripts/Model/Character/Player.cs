@@ -68,6 +68,10 @@ namespace Nekoyume.Model
             Exp.Current = avatarState.exp;
             Inventory = avatarState.inventory;
             worldStage = avatarState.worldStage;
+            hairIndex = avatarState.hair;
+            lensIndex = avatarState.lens;
+            earIndex = avatarState.ear;
+            tailIndex = avatarState.tail;
             monsterMap = new CollectionMap();
             eventMap = new CollectionMap();
             PostConstruction();
@@ -86,7 +90,11 @@ namespace Nekoyume.Model
             Exp = (ExpData) value.Exp.Clone();
             Inventory = value.Inventory;
             worldStage = value.worldStage;
-            
+            hairIndex = value.hairIndex;
+            lensIndex = value.lensIndex;
+            earIndex = value.earIndex;
+            tailIndex = value.tailIndex;
+
             weapon = value.weapon;
             armor = value.armor;
             belt = value.belt;

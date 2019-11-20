@@ -41,8 +41,8 @@ namespace Nekoyume.UI
             stage.GetPlayer(stage.roomPosition);
 
             var player = stage.GetPlayer();
-            player.UpdateCustomize();
             player.UpdateEquipments();
+            player.UpdateCustomize();
             player.gameObject.SetActive(true);
 
             Show();
