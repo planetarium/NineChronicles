@@ -108,6 +108,11 @@ namespace Planetarium.Nekoyume.Editor
                         case CharacterAnimation.Type.Disappear:
                         case CharacterAnimation.Type.Greeting:
                         case CharacterAnimation.Type.Emotion:
+                        case CharacterAnimation.Type.Attack:
+                        case CharacterAnimation.Type.Run:
+                        case CharacterAnimation.Type.Casting:
+                        case CharacterAnimation.Type.Hit:
+                        case CharacterAnimation.Type.Die:
                             assetPath = Path.Combine(animationAssetsPath,
                                 $"{nameof(CharacterAnimation.Type.Idle)}.asset");
                             asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(assetPath);
@@ -124,7 +129,14 @@ namespace Planetarium.Nekoyume.Editor
                             throw new AssetNotFoundException(assetPath);
                     }
 
-                    if (ReferenceEquals(asset, null))
+                    if (asset is null)
+                    {
+                        assetPath = Path.Combine(animationAssetsPath,
+                            $"{nameof(CharacterAnimation.Type.Idle)}.asset");
+                        asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(assetPath);
+                    }
+
+                    if (asset is null)
                     {
                         Object.DestroyImmediate(gameObject);
                         throw new AssetNotFoundException(assetPath);
