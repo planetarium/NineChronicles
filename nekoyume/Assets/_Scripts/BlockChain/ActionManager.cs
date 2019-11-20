@@ -24,7 +24,7 @@ namespace Nekoyume.BlockChain
         #region Actions
 
         public IObservable<ActionBase.ActionEvaluation<CreateAvatar>> CreateAvatar(Address avatarAddress, int index,
-            string nickName, int hair = 0, int lens = 0, int etc = 0)
+            string nickName, int hair = 0, int lens = 0, int ear = 0, int tail = 0)
         {
             var action = new CreateAvatar
             {
@@ -32,7 +32,8 @@ namespace Nekoyume.BlockChain
                 index = index,
                 hair = hair,
                 lens = lens,
-                etc = etc,
+                ear = ear,
+                tail = tail,
                 name = nickName,
             };
             ProcessAction(action);
