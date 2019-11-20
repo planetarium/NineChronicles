@@ -20,7 +20,16 @@ namespace Nekoyume.UI
             base.Show();
             stageTitle.Show(stage);
 
-            Find<BottomMenu>()?.Show(UINavigator.NavigationType.None, null, true);
+            Find<BottomMenu>()?.Show(
+                UINavigator.NavigationType.None,
+                null,
+                true,
+                BottomMenu.ToggleableType.Mail,
+                BottomMenu.ToggleableType.Quest,
+                BottomMenu.ToggleableType.Chat,
+                BottomMenu.ToggleableType.IllustratedBook,
+                BottomMenu.ToggleableType.Character,
+                BottomMenu.ToggleableType.Inventory);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)

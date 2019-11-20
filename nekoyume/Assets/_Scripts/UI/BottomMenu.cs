@@ -16,6 +16,9 @@ namespace Nekoyume.UI.Module
             Quest,
             Chat,
             IllustratedBook,
+            Character,
+            Inventory,
+            WorldMap,
             Settings
         }
 
@@ -30,13 +33,16 @@ namespace Nekoyume.UI.Module
             public readonly ReactiveProperty<bool> HasNotificationInQuest = new ReactiveProperty<bool>();
             public readonly ReactiveProperty<bool> HasNotificationInChat = new ReactiveProperty<bool>();
             public readonly ReactiveProperty<bool> HasNotificationInIllustratedBook = new ReactiveProperty<bool>();
+            public readonly ReactiveProperty<bool> HasNotificationInCharacter = new ReactiveProperty<bool>();
+            public readonly ReactiveProperty<bool> HasNotificationInInventory = new ReactiveProperty<bool>();
+            public readonly ReactiveProperty<bool> HasNotificationInWorldMap = new ReactiveProperty<bool>();
             public readonly ReactiveProperty<bool> HasNotificationInSettings = new ReactiveProperty<bool>();
         }
 
         // 네비게이션 버튼.
-        public NormalButton backButton;
-        public NormalButton mainButton;
         public NormalButton quitButton;
+        public NormalButton mainButton;
+        public NormalButton backButton;
 
         // 토글 그룹과 버튼.
         private ToggleGroup _toggleGroup;
@@ -44,6 +50,9 @@ namespace Nekoyume.UI.Module
         public NotifiableButton questButton;
         public NotifiableButton chatButton;
         public NotifiableButton illustratedBookButton;
+        public NotifiableButton characterButton;
+        public NotifiableButton inventoryButton;
+        public NotifiableButton worldMapButton;
         public NotifiableButton settingsButton;
 
         private readonly List<IDisposable> _disposablesAtOnEnable = new List<IDisposable>();
@@ -62,6 +71,12 @@ namespace Nekoyume.UI.Module
             SharedModel.HasNotificationInChat.SubscribeTo(chatButton.SharedModel.HasNotification).AddTo(gameObject);
             SharedModel.HasNotificationInIllustratedBook.SubscribeTo(illustratedBookButton.SharedModel.HasNotification)
                 .AddTo(gameObject);
+            SharedModel.HasNotificationInCharacter.SubscribeTo(characterButton.SharedModel.HasNotification)
+                .AddTo(gameObject);
+            SharedModel.HasNotificationInInventory.SubscribeTo(inventoryButton.SharedModel.HasNotification)
+                .AddTo(gameObject);
+            SharedModel.HasNotificationInWorldMap.SubscribeTo(worldMapButton.SharedModel.HasNotification)
+                .AddTo(gameObject);
             SharedModel.HasNotificationInSettings.SubscribeTo(settingsButton.SharedModel.HasNotification)
                 .AddTo(gameObject);
 
@@ -76,16 +91,21 @@ namespace Nekoyume.UI.Module
             _toggleGroup.RegisterToggleable(questButton);
             _toggleGroup.RegisterToggleable(chatButton);
             _toggleGroup.RegisterToggleable(illustratedBookButton);
+            _toggleGroup.RegisterToggleable(characterButton);
+            _toggleGroup.RegisterToggleable(inventoryButton);
+            _toggleGroup.RegisterToggleable(worldMapButton);
             _toggleGroup.RegisterToggleable(settingsButton);
             mailButton.SetWidgetType<Mail>();
             questButton.SetWidgetType<Quest>();
-            illustratedBookButton.button.OnClickAsObservable().Subscribe(SubscribeOnClick).AddTo(gameObject);
             chatButton.button.OnClickAsObservable().Subscribe(SubscribeOnClick).AddTo(gameObject);
+            illustratedBookButton.button.OnClickAsObservable().Subscribe(SubscribeOnClick).AddTo(gameObject);
+            characterButton.SetWidgetType<StatusDetail>();
+            inventoryButton.SetWidgetType<UI.Inventory>();
             settingsButton.button.OnClickAsObservable().Subscribe(SubscribeOnClick).AddTo(gameObject);
         }
 
         private void SubscribeOnClick(Unit unit)
-        {   
+        {
             Find<Alert>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE", "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
         }
 
@@ -119,17 +139,23 @@ namespace Nekoyume.UI.Module
                 questButton.Show();
                 chatButton.Show();
                 illustratedBookButton.Show();
+                characterButton.Show();
+                inventoryButton.Show();
+                worldMapButton.Show();
                 settingsButton.Show();
-                
+
                 return;
             }
-            
+
             mailButton.Hide();
             questButton.Hide();
             chatButton.Hide();
             illustratedBookButton.Hide();
+            characterButton.Hide();
+            inventoryButton.Hide();
+            worldMapButton.Hide();
             settingsButton.Hide();
-            
+
             foreach (var toggleableType in showButtons)
             {
                 switch (toggleableType)
@@ -145,6 +171,15 @@ namespace Nekoyume.UI.Module
                         break;
                     case ToggleableType.IllustratedBook:
                         illustratedBookButton.Show();
+                        break;
+                    case ToggleableType.Character:
+                        characterButton.Show();
+                        break;
+                    case ToggleableType.Inventory:
+                        inventoryButton.Show();
+                        break;
+                    case ToggleableType.WorldMap:
+                        worldMapButton.Show();
                         break;
                     case ToggleableType.Settings:
                         settingsButton.Show();
@@ -162,10 +197,10 @@ namespace Nekoyume.UI.Module
             {
                 if (!(toggleable is IWidgetControllable widgetControllable))
                     continue;
-                
+
                 widgetControllable.HideWidget();
             }
-            
+
             base.Close(true);
         }
 

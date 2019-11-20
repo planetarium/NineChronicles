@@ -120,7 +120,14 @@ namespace Nekoyume.UI
             var worldMap = Find<WorldMap>();
             _stageId = worldMap.SelectedStageId;
 
-            Find<BottomMenu>().Show(UINavigator.NavigationType.Back, SubscribeBackButtonClick);
+            Find<BottomMenu>().Show(
+                UINavigator.NavigationType.Back,
+                SubscribeBackButtonClick,
+                true,
+                BottomMenu.ToggleableType.Mail,
+                BottomMenu.ToggleableType.Quest,
+                BottomMenu.ToggleableType.Chat,
+                BottomMenu.ToggleableType.IllustratedBook);
             _buttonEnabled.Subscribe(SubscribeReadyToQuest).AddTo(_disposables);
             ReactiveCurrentAvatarState.ActionPoint.Subscribe(SubscribeActionPoint).AddTo(_disposables);
             _tempStats = _player.Model.Value.Stats.Clone() as CharacterStats;

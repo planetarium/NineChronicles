@@ -41,7 +41,6 @@ namespace Nekoyume.UI
         }
 
         public List<WorldMapWorld> worlds = new List<WorldMapWorld>();
-        public NormalButton worldMapButton;
 
         public GameObject worldMapRoot;
         public Button alfheimButton;
@@ -51,6 +50,8 @@ namespace Nekoyume.UI
         public StageInformation stageInformation;
         public Button submitButton;
         public TextMeshProUGUI submitText;
+        
+        private readonly List<IDisposable> _disposablesAtShow = new List<IDisposable>();
 
         public ViewModel SharedViewModel { get; private set; }
 
@@ -68,7 +69,19 @@ namespace Nekoyume.UI
             var firstStageId = Game.Game.instance.TableSheets.StageSheet.First?.Id ?? 1;
             SharedViewModel = new ViewModel();
             SharedViewModel.SelectedStageId.Value = firstStageId;
-            SharedViewModel.IsWorldShown.Subscribe(worldMapRoot.SetActive)
+            SharedViewModel.IsWorldShown.Subscribe(isWorldShown =>
+                {
+                    if (isWorldShown)
+                    {
+                        Find<BottomMenu>().worldMapButton.Hide();
+                        worldMapRoot.SetActive(true);    
+                    }
+                    else
+                    {
+                        worldMapRoot.SetActive(false);
+                        Find<BottomMenu>().worldMapButton.Show();
+                    }
+                })
                 .AddTo(gameObject);
             SharedViewModel.SelectedStageId.Subscribe(UpdateStageInformation)
                 .AddTo(gameObject);
@@ -119,12 +132,6 @@ namespace Nekoyume.UI
                     AudioController.PlayClick();
                     GoToQuestPreparation();
                 }).AddTo(gameObject);
-            worldMapButton.button.OnClickAsObservable()
-                .Subscribe(_ =>
-                {
-                    AudioController.PlayClick();
-                    SharedViewModel.IsWorldShown.Value = true;
-                }).AddTo(gameObject);
 
             ReactiveCurrentAvatarState.WorldStage.Subscribe(clearedStageId =>
             {
@@ -158,12 +165,21 @@ namespace Nekoyume.UI
 
             Show();
 
-            Find<BottomMenu>()?.Show(UINavigator.NavigationType.Back, SubscribeBackButtonClick, true);
+            var bottomMenu = Find<BottomMenu>();
+            bottomMenu.Show(
+                UINavigator.NavigationType.Back,
+                SubscribeBackButtonClick,
+                true,
+                BottomMenu.ToggleableType.WorldMap);
+            bottomMenu.worldMapButton.button.OnClickAsObservable()
+                .Subscribe(_ => SharedViewModel.IsWorldShown.Value = true)
+                .AddTo(_disposablesAtShow);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
-            Find<BottomMenu>()?.Close(ignoreCloseAnimation);
+            _disposablesAtShow.DisposeAllAndClear();
+            Find<BottomMenu>().Close(ignoreCloseAnimation);
             base.Close(ignoreCloseAnimation);
         }
 
