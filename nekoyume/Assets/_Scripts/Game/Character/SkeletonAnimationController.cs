@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Nekoyume.Game.Item;
+using Nekoyume.Helper;
 using Spine;
 using Spine.Unity;
 using Spine.Unity.Modules.AttachmentTools;
@@ -18,8 +18,20 @@ namespace Nekoyume.Game.Character
             public AnimationReferenceAsset animation;
         }
 
-        public const string DefaultPMAShader = "Spine/Skeleton";
-        public const string DefaultStraightAlphaShader = "Sprites/Default";
+        private const string DefaultPMAShader = "Spine/Skeleton";
+        private const string DefaultStraightAlphaShader = "Sprites/Default";
+        private const string WeaponSlot = "weapon";
+        private const string EarLeftSlot = "ear_0001_L";
+        private const string EarRightSlot = "ear_0001_R";
+        private const string EyeOpenSlot = "eye_red_01";
+        private const string EyeHalfSlot = "eye_red_02";
+        private const string Hair01Slot = "hair_brown_01";
+        private const string Hair02Slot = "hair_brown_02";
+        private const string Hair03Slot = "hair_brown_03";
+        private const string Hair04Slot = "hair_brown_04";
+        private const string Hair05Slot = "hair_brown_05";
+        private const string Hair06Slot = "hair_brown_06";
+        private const string TailSlot = "tail_0002";
 
         public List<StateNameToAnimationReference> statesAndAnimations = new List<StateNameToAnimationReference>();
 
@@ -27,17 +39,32 @@ namespace Nekoyume.Game.Character
 
         private Spine.Animation TargetAnimation { get; set; }
 
-        [SpineSlot]
-        public string weaponSlot = "weapon";
-
+        private Skin _clonedSkin;
         private bool _applyPMA;
-        private Shader _weaponShader;
-        private AtlasPage _weaponAtlasPage;
-        private int _weaponSlotIndex;
+        private Shader _shader;
+        private Material _material;
+        private AtlasPage _atlasPage;
+        
+        private Slot _earLeftSlot;
+        private int _earLeftSlotIndex;
+        private Slot _earRightSlot;
+        private int _earRightSlotIndex;
+        private Attachment _earLeftAttachmentDefault;
+        private Attachment _earRightAttachmentDefault;
+        
+        private Slot _eyeOpenSlot;
+        private int _eyeOpenSlotIndex;
+        private Slot _eyeHalfSlot;
+        private int _eyeHalfSlotIndex;
+        private Attachment _eyeOpenAttachmentDefault;
+        private Attachment _eyeHalfAttachmentDefault;
 
-        private Skin _clonedSkinForChangeWeapon;
-        private RegionAttachment _defaultWeaponAttachment;
-        private RegionAttachment _currentWeaponAttachment;
+        private Slot _tailSlot;
+        private int _tailSlotIndex;
+        private Attachment _tailAttachmentDefault;
+        
+        private int _weaponSlotIndex;
+        private RegionAttachment _weaponAttachmentDefault;
 
         #region Mono
 
@@ -50,13 +77,48 @@ namespace Nekoyume.Game.Character
 
             SkeletonAnimation = GetComponent<SkeletonAnimation>();
 
+            _clonedSkin = SkeletonAnimation.skeleton.Data.DefaultSkin.GetClone();
             _applyPMA = SkeletonAnimation.pmaVertexColors;
-            _weaponShader = _applyPMA ? Shader.Find(DefaultPMAShader) : Shader.Find(DefaultStraightAlphaShader);
-            _weaponAtlasPage = new UnityEngine.Material(_weaponShader).ToSpineAtlasPage();
-            _weaponSlotIndex = SkeletonAnimation.skeleton.FindSlotIndex(weaponSlot);
+            _shader = _applyPMA ? Shader.Find(DefaultPMAShader) : Shader.Find(DefaultStraightAlphaShader);
+            _material = new Material(_shader);
+            _atlasPage = _material.ToSpineAtlasPage();
 
-            _clonedSkinForChangeWeapon = SkeletonAnimation.skeleton.Data.DefaultSkin.GetClone();
-            _defaultWeaponAttachment = MakeWeaponAttachment(Weapon.GetSprite(GameConfig.DefaultAvatarWeaponId));
+            _weaponSlotIndex = SkeletonAnimation.skeleton.FindSlotIndex(WeaponSlot);
+            _weaponAttachmentDefault =
+                MakeAttachment(SpriteHelper.GetPlayerSpineTextureWeapon(GameConfig.DefaultAvatarWeaponId));
+
+            _eyeOpenSlot = SkeletonAnimation.skeleton.FindSlot(EyeOpenSlot);
+            if (!(_eyeOpenSlot is null))
+            {
+                _eyeOpenSlotIndex = SkeletonAnimation.skeleton.FindSlotIndex(EyeOpenSlot);
+                _eyeHalfSlot = SkeletonAnimation.skeleton.FindSlot(EyeHalfSlot);
+                _eyeHalfSlotIndex = SkeletonAnimation.skeleton.FindSlotIndex(EyeHalfSlot);
+                _eyeOpenAttachmentDefault = RemapAttachment(_eyeOpenSlot, SpriteHelper.GetPlayerSpineTextureEyeOpen(null));
+                _eyeHalfAttachmentDefault =
+                    RemapAttachment(_eyeHalfSlot, SpriteHelper.GetPlayerSpineTextureEyeHalf(null));
+            }
+
+            _earLeftSlot = SkeletonAnimation.skeleton.FindSlot(EarLeftSlot);
+            if (!(_earLeftSlot is null))
+            {
+                _earLeftSlotIndex = SkeletonAnimation.skeleton.FindSlotIndex(EarLeftSlot);
+                _earLeftAttachmentDefault = RemapAttachment(_earLeftSlot, SpriteHelper.GetPlayerSpineTextureEarLeft(null));
+            }
+
+            _earRightSlot = SkeletonAnimation.skeleton.FindSlot(EarRightSlot);
+            if (!(_earRightSlot is null))
+            {
+                _earRightSlotIndex = SkeletonAnimation.skeleton.FindSlotIndex(EarRightSlot);
+                _earRightAttachmentDefault =
+                    RemapAttachment(_earRightSlot, SpriteHelper.GetPlayerSpineTextureEarRight(null));
+            }
+
+            _tailSlot = SkeletonAnimation.skeleton.FindSlot(TailSlot);
+            if (!(_tailSlot is null))
+            {
+                _tailSlotIndex = SkeletonAnimation.skeleton.FindSlotIndex(TailSlot);
+                _tailAttachmentDefault = RemapAttachment(_tailSlot, SpriteHelper.GetPlayerSpineTextureTail(null));
+            }
         }
 
         #endregion
@@ -106,29 +168,113 @@ namespace Nekoyume.Game.Character
             return Animator.StringToHash(s);
         }
 
+        public void UpdateEar(Sprite spriteLeft, Sprite spriteRight)
+        {
+            if (_earLeftSlot is null || _earRightSlot is null)
+                return;
+
+            if (spriteLeft is null)
+            {
+                _clonedSkin.SetAttachment(_earLeftSlotIndex, EarLeftSlot, _earLeftAttachmentDefault);
+            }
+            else
+            {
+                var newEarLeft = RemapAttachment(_earLeftSlot, spriteLeft);
+                _clonedSkin.SetAttachment(_earLeftSlotIndex, EarLeftSlot, newEarLeft);
+            }
+
+            if (spriteRight is null)
+            {
+                _clonedSkin.SetAttachment(_earRightSlotIndex, EarRightSlot, _earRightAttachmentDefault);    
+            }
+            else
+            {
+                var newEarRight = RemapAttachment(_earRightSlot, spriteRight);
+                _clonedSkin.SetAttachment(_earRightSlotIndex, EarRightSlot, newEarRight);
+            }
+
+            UpdateInternal();
+        }
+        
+        public void UpdateEye(Sprite spriteEyeOpen, Sprite spriteEyeHalf)
+        {
+            if (_eyeOpenSlot is null || _eyeHalfSlot is null)
+                return;
+
+            if (spriteEyeOpen is null)
+            {
+                _clonedSkin.SetAttachment(_eyeOpenSlotIndex, EyeOpenSlot, _eyeOpenAttachmentDefault);
+            }
+            else
+            {
+                var newEyeOpen = RemapAttachment(_eyeOpenSlot, spriteEyeOpen);
+                _clonedSkin.SetAttachment(_eyeOpenSlotIndex, EyeOpenSlot, newEyeOpen);
+            }
+            
+            if (spriteEyeHalf is null)
+            {
+                _clonedSkin.SetAttachment(_eyeHalfSlotIndex, EyeHalfSlot, _eyeHalfAttachmentDefault);
+            }
+            else
+            {
+                var newEyeHalf = RemapAttachment(_eyeHalfSlot, spriteEyeHalf);
+                _clonedSkin.SetAttachment(_eyeHalfSlotIndex, EyeHalfSlot, newEyeHalf);
+            }
+
+            UpdateInternal();
+        }
+
+        public void UpdateTail(Sprite sprite)
+        {
+            if (_tailSlot is null)
+                return;
+
+            if (sprite is null)
+            {
+                _clonedSkin.SetAttachment(_tailSlotIndex, TailSlot, _tailAttachmentDefault);
+            }
+            else
+            {
+                var newTail = RemapAttachment(_tailSlot, sprite);
+                _clonedSkin.SetAttachment(_tailSlotIndex, TailSlot, newTail);
+            }
+
+            UpdateInternal();
+        }
+        
         public void UpdateWeapon(Sprite sprite)
         {
             if (sprite is null)
             {
-                _clonedSkinForChangeWeapon.SetAttachment(_weaponSlotIndex, weaponSlot, _defaultWeaponAttachment);
+                _clonedSkin.SetAttachment(_weaponSlotIndex, WeaponSlot, _weaponAttachmentDefault);
             }
             else
             {
-                var newWeapon = MakeWeaponAttachment(sprite);
-                _clonedSkinForChangeWeapon.SetAttachment(_weaponSlotIndex, weaponSlot, newWeapon);
+                var newWeapon = MakeAttachment(sprite);
+                _clonedSkin.SetAttachment(_weaponSlotIndex, WeaponSlot, newWeapon);
             }
 
+            UpdateInternal();
+        }
+
+        private void UpdateInternal()
+        {
             var skeleton = SkeletonAnimation.skeleton;
-            skeleton.SetSkin(_clonedSkinForChangeWeapon);
+            skeleton.SetSkin(_clonedSkin);
             skeleton.SetSlotsToSetupPose();
             SkeletonAnimation.Update(0);
         }
 
-        private RegionAttachment MakeWeaponAttachment(Sprite sprite)
+        private Attachment RemapAttachment(Slot slot, Sprite sprite)
+        {
+            return slot.Attachment.GetRemappedClone(sprite, _material);
+        }
+
+        private RegionAttachment MakeAttachment(Sprite sprite)
         {
             var attachment = _applyPMA
-                ? sprite.ToRegionAttachmentPMAClone(_weaponShader)
-                : sprite.ToRegionAttachment(_weaponAtlasPage);
+                ? sprite.ToRegionAttachmentPMAClone(_shader)
+                : sprite.ToRegionAttachment(_atlasPage);
 
             return attachment;
         }

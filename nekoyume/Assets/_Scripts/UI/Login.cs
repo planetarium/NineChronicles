@@ -34,10 +34,6 @@ namespace Nekoyume.UI
             AudioController.PlayClick();
         }
 
-        /// <summary>
-        /// ToDo. DeleteAvatar 액션을 통해서 삭제되도록.
-        /// </summary>
-        /// <param name="index"></param>
         public void SlotDeleteClick(int index)
         {
             if (!ready)

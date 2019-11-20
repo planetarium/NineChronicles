@@ -23,27 +23,20 @@ namespace Nekoyume.Game.Character
         public virtual void ResetTarget(GameObject value)
         {
             if (!value)
-            {
                 throw new ArgumentNullException();
-            }
             
             Target = value;
             Animator = value.GetComponentInChildren<T>();
-
             if (Animator is null)
-            {
                 throw new NotFoundComponentException<T>();
-            }
         }
 
         public void DestroyTarget()
         {
             if (Target is null)
-            {
                 throw new ArgumentNullException();
-            }
 
-            Object.Destroy(Target);
+            Object.DestroyImmediate(Target);
             Target = null;
         }
 

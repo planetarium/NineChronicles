@@ -6,6 +6,7 @@ using DG.Tweening;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.VFX;
+using Nekoyume.Helper;
 using Nekoyume.Manager;
 using Nekoyume.UI;
 using UniRx;
@@ -20,7 +21,7 @@ namespace Nekoyume.Game.Character
 
         public long EXP = 0;
         public long EXPMax { get; private set; }
-        
+
         public Item.Inventory Inventory;
         public TouchHandler touchHandler;
 
@@ -52,7 +53,7 @@ namespace Nekoyume.Game.Character
                 {
                     if (Game.instance.stage.IsInStage)
                         return;
-                    
+
                     Animator.Touch();
                 })
                 .AddTo(gameObject);
@@ -83,7 +84,8 @@ namespace Nekoyume.Game.Character
             Model.SetValueAndForceNotify(model);
 
             InitStats(model);
-            StartCoroutine(CoUpdateSet(Model.Value.armor));
+            UpdateEquipments();
+            UpdateCustomize();
 
             if (ReferenceEquals(SpeechBubble, null))
             {
@@ -111,45 +113,126 @@ namespace Nekoyume.Game.Character
             Event.OnPlayerDead.Invoke();
         }
 
-        public void UpdateSet(Armor armor, Weapon weapon = null)
+        public void UpdateCustomize()
         {
-            StartCoroutine(CoUpdateSet(armor, weapon));
+            UpdateEye(Model.Value.lensIndex);
+            UpdateEar(Model.Value.earIndex);
+            UpdateTail(Model.Value.tailIndex);
         }
 
-        private IEnumerator CoUpdateSet(Armor armor, Weapon weapon = null)
+        public void UpdateEquipments(Armor armor = null, Weapon weapon = null)
         {
-            if (weapon == null)
-                weapon = Model.Value.weapon;
+            UpdateArmor(armor);
+            UpdateWeapon(weapon);
+        }
+
+        private void UpdateArmor(Armor armor)
+        {
+            if (armor is null)
+            {
+                armor = Model.Value.armor;
+            }
 
             var itemId = armor?.Data.Id ?? GameConfig.DefaultAvatarArmorId;
-            if (!ReferenceEquals(Animator.Target, null))
+
+            if (!(Animator.Target is null))
             {
                 if (Animator.Target.name.Contains(itemId.ToString()))
-                {
-                    UpdateWeapon(weapon);
-                    yield break;
-                }
+                    return;
+
                 Animator.DestroyTarget();
-                // 오브젝트가 파괴될때까지 기다립니다.
-                // https://docs.unity3d.com/ScriptReference/Object.Destroy.html
-                yield return new WaitForEndOfFrame();
             }
+
             var origin = Resources.Load<GameObject>($"Character/Player/{itemId}");
             var go = Instantiate(origin, gameObject.transform);
             Animator.ResetTarget(go);
-            UpdateWeapon(weapon);
         }
 
         public void UpdateWeapon(Weapon weapon)
         {
+            if (weapon == null)
+            {
+                weapon = Model.Value.weapon;
+            }
+
             var controller = GetComponentInChildren<SkeletonAnimationController>();
             if (!controller)
-            {
                 return;
+
+            var sprite = weapon.GetPlayerSpineTexture();
+            controller.UpdateWeapon(sprite);
+        }
+
+        public void UpdateEar(int index)
+        {
+            UpdateEar($"ear_{index + 1:d4}_L", $"ear_{index + 1:d4}_R");
+        }
+
+        public void UpdateEar(string earLeftResource, string earRightResource)
+        {
+            if (string.IsNullOrEmpty(earLeftResource))
+            {
+//                earLeftResource = Model.Value.earLeft;
+            }
+
+            if (string.IsNullOrEmpty(earRightResource))
+            {
+//                earRightResource = Model.Value.earRight;
+            }
+
+            var controller = GetComponentInChildren<SkeletonAnimationController>();
+            if (!controller)
+                return;
+
+            var spriteLeft = SpriteHelper.GetPlayerSpineTextureEarLeft(earLeftResource);
+            var spriteRight = SpriteHelper.GetPlayerSpineTextureEarRight(earRightResource);
+            controller.UpdateEar(spriteLeft, spriteRight);
+        }
+        
+        public void UpdateEye(int index)
+        {
+            UpdateEye($"eye_{index + 1:d4}_open", $"eye_{index + 1:d4}_half");
+        }
+
+        public void UpdateEye(string eyeOpenResource, string eyeHalfResource)
+        {
+            if (string.IsNullOrEmpty(eyeOpenResource))
+            {
+//                eyeOpenResource = Model.Value.eyeOpen;
             }
             
-            var sprite = Weapon.GetSprite(weapon);
-            controller.UpdateWeapon(sprite);
+            if (string.IsNullOrEmpty(eyeHalfResource))
+            {
+//                eyeHalfResource = Model.Value.eyeHalf;
+            }
+            
+            var controller = GetComponentInChildren<SkeletonAnimationController>();
+            if (!controller)
+                return;
+
+            var eyeOpenSprite = SpriteHelper.GetPlayerSpineTextureEyeOpen(eyeOpenResource);
+            var eyeHalfSprite = SpriteHelper.GetPlayerSpineTextureEyeHalf(eyeHalfResource);
+            controller.UpdateEye(eyeOpenSprite, eyeHalfSprite);
+        }
+
+        public void UpdateTail(int index)
+        {
+            UpdateTail($"tail_{index + 1:d4}");
+        }
+
+        public void UpdateTail(string tailResource)
+        {
+            if (string.IsNullOrEmpty(tailResource))
+            {
+//                tailResource = Model.Value.tail;
+            }
+
+            var controller = GetComponentInChildren<SkeletonAnimationController>();
+            if (!controller)
+                return;
+
+            var sprite = SpriteHelper.GetPlayerSpineTextureTail(tailResource);
+            controller.UpdateTail(sprite);
         }
 
         public IEnumerator CoGetExp(long exp)
@@ -212,16 +295,17 @@ namespace Nekoyume.Game.Character
             return canRun;
         }
 
-        protected override void ProcessAttack(CharacterBase target, Model.Skill.SkillInfo skill, bool isLastHit, bool isConsiderElementalType)
+        protected override void ProcessAttack(CharacterBase target, Model.Skill.SkillInfo skill, bool isLastHit,
+            bool isConsiderElementalType)
         {
-            ShowSpeech("PLAYER_SKILL", (int) skill.ElementalType, (int)skill.SkillCategory);
+            ShowSpeech("PLAYER_SKILL", (int) skill.ElementalType, (int) skill.SkillCategory);
             base.ProcessAttack(target, skill, isLastHit, isConsiderElementalType);
             ShowSpeech("PLAYER_ATTACK");
         }
 
         protected override IEnumerator CoAnimationCast(Model.Skill.SkillInfo info)
         {
-            ShowSpeech("PLAYER_SKILL", (int) info.ElementalType, (int)info.SkillCategory);
+            ShowSpeech("PLAYER_SKILL", (int) info.ElementalType, (int) info.SkillCategory);
             yield return StartCoroutine(base.CoAnimationCast(info));
         }
 
