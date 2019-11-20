@@ -21,7 +21,7 @@ namespace Nekoyume.Game.Character
 
         public long EXP = 0;
         public long EXPMax { get; private set; }
-        
+
         public Item.Inventory Inventory;
         public TouchHandler touchHandler;
 
@@ -53,7 +53,7 @@ namespace Nekoyume.Game.Character
                 {
                     if (Game.instance.stage.IsInStage)
                         return;
-                    
+
                     Animator.Touch();
                 })
                 .AddTo(gameObject);
@@ -123,24 +123,24 @@ namespace Nekoyume.Game.Character
             UpdateArmor(armor);
             UpdateWeapon(weapon);
         }
-        
+
         private void UpdateArmor(Armor armor)
         {
             if (armor is null)
             {
                 armor = Model.Value.armor;
             }
-            
+
             var itemId = armor?.Data.Id ?? GameConfig.DefaultAvatarArmorId;
-            
+
             if (!(Animator.Target is null))
             {
                 if (Animator.Target.name.Contains(itemId.ToString()))
                     return;
-                
+
                 Animator.DestroyTarget();
             }
-            
+
             var origin = Resources.Load<GameObject>($"Character/Player/{itemId}");
             var go = Instantiate(origin, gameObject.transform);
             Animator.ResetTarget(go);
@@ -152,7 +152,7 @@ namespace Nekoyume.Game.Character
             {
                 weapon = Model.Value.weapon;
             }
-            
+
             var controller = GetComponentInChildren<SkeletonAnimationController>();
             if (!controller)
                 return;
@@ -160,19 +160,24 @@ namespace Nekoyume.Game.Character
             var sprite = weapon.GetPlayerSpineTexture();
             controller.UpdateWeapon(sprite);
         }
-        
+
         public void UpdateEar(int index)
         {
             UpdateEar($"ear_{index + 1:d4}_L", $"ear_{index + 1:d4}_R");
         }
-        
+
         public void UpdateEar(string earLeftResource, string earRightResource)
         {
             if (string.IsNullOrEmpty(earLeftResource))
             {
-//                earResource = Model.Value.ear;
+//                earLeftResource = Model.Value.earLeft;
             }
-            
+
+            if (string.IsNullOrEmpty(earRightResource))
+            {
+//                earRightResource = Model.Value.earRight;
+            }
+
             var controller = GetComponentInChildren<SkeletonAnimationController>();
             if (!controller)
                 return;
@@ -181,19 +186,45 @@ namespace Nekoyume.Game.Character
             var spriteRight = SpriteHelper.GetPlayerSpineTextureEarRight(earRightResource);
             controller.UpdateEar(spriteLeft, spriteRight);
         }
+        
+        public void UpdateEye(int index)
+        {
+            UpdateEye($"eye_{index + 1:d4}_01", $"eye_{index + 1:d4}_02");
+        }
+
+        public void UpdateEye(string eye01Resource, string eye02Resource)
+        {
+            if (string.IsNullOrEmpty(eye01Resource))
+            {
+//                eye01Resource = Model.Value.eye01;
+            }
+            
+            if (string.IsNullOrEmpty(eye02Resource))
+            {
+//                eye02Resource = Model.Value.eye02;
+            }
+            
+            var controller = GetComponentInChildren<SkeletonAnimationController>();
+            if (!controller)
+                return;
+
+            var eye01Sprite = SpriteHelper.GetPlayerSpineTextureEye01(eye01Resource);
+            var eye02Sprite = SpriteHelper.GetPlayerSpineTextureEye02(eye02Resource);
+            controller.UpdateEye(eye01Sprite, eye02Sprite);
+        }
 
         public void UpdateTail(int index)
         {
             UpdateTail($"tail_{index + 1:d4}");
         }
-        
+
         public void UpdateTail(string tailResource)
         {
             if (string.IsNullOrEmpty(tailResource))
             {
 //                tailResource = Model.Value.tail;
             }
-            
+
             var controller = GetComponentInChildren<SkeletonAnimationController>();
             if (!controller)
                 return;
@@ -262,16 +293,17 @@ namespace Nekoyume.Game.Character
             return canRun;
         }
 
-        protected override void ProcessAttack(CharacterBase target, Model.Skill.SkillInfo skill, bool isLastHit, bool isConsiderElementalType)
+        protected override void ProcessAttack(CharacterBase target, Model.Skill.SkillInfo skill, bool isLastHit,
+            bool isConsiderElementalType)
         {
-            ShowSpeech("PLAYER_SKILL", (int) skill.ElementalType, (int)skill.SkillCategory);
+            ShowSpeech("PLAYER_SKILL", (int) skill.ElementalType, (int) skill.SkillCategory);
             base.ProcessAttack(target, skill, isLastHit, isConsiderElementalType);
             ShowSpeech("PLAYER_ATTACK");
         }
 
         protected override IEnumerator CoAnimationCast(Model.Skill.SkillInfo info)
         {
-            ShowSpeech("PLAYER_SKILL", (int) info.ElementalType, (int)info.SkillCategory);
+            ShowSpeech("PLAYER_SKILL", (int) info.ElementalType, (int) info.SkillCategory);
             yield return StartCoroutine(base.CoAnimationCast(info));
         }
 

@@ -186,21 +186,40 @@ namespace Nekoyume.UI
 
         public void ChangeHair(int offset)
         {
-            _hair += offset;
-            if (_hair < 0) _hair = 0;
+            var hair = Mathf.Clamp(_hair + offset, 0, 0);
+            if (hair == _hair)
+                return;
+
+            _hair = hair;
+            
             paletteHairText.text = $"{LocalizationManager.Localize("UI_HAIR")} {_hair + 1}";
         }
 
         public void ChangeLens(int offset)
         {
-            _lens += offset;
-            if (_lens < 0) _lens = 0;
+            var lens = Mathf.Clamp(_lens + offset, 0, 5);
+            if (lens == _lens)
+                return;
+            
+            _lens = lens;
+            
             paletteLensText.text = $"{LocalizationManager.Localize("UI_LENS")} {_lens + 1}";
+            
+            var player = Game.Game.instance.stage.selectedPlayer;
+            if (player is null)
+                throw new NullReferenceException(nameof(player));
+            
+            player.UpdateEye(_lens);
         }
 
         public void ChangeEar(int offset)
         {
-            _ear = Mathf.Clamp(_ear + offset, 0, 9);
+            var ear = Mathf.Clamp(_ear + offset, 0, 9);
+            if (ear == _ear)
+                return;
+            
+            _ear = ear;
+            
             paletteEarText.text = $"{LocalizationManager.Localize("UI_EAR")} {_ear + 1}";
             
             var player = Game.Game.instance.stage.selectedPlayer;
@@ -212,7 +231,12 @@ namespace Nekoyume.UI
 
         public void ChangeTail(int offset)
         {
-            _tail = Mathf.Clamp(_tail + offset, 0, 9);
+            var tail = Mathf.Clamp(_tail + offset, 0, 9);
+            if (tail == _tail)
+                return;
+            
+            _tail = tail;
+            
             paletteTailText.text = $"{LocalizationManager.Localize("UI_TAIL")} {_tail + 1}";
             
             var player = Game.Game.instance.stage.selectedPlayer;
