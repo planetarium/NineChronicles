@@ -113,7 +113,14 @@ namespace Nekoyume.UI
 
             State.SetValueAndForceNotify(StateType.CombineEquipment);
 
-            Find<BottomMenu>().Show(UINavigator.NavigationType.Back, SubscribeBackButtonClick);
+            Find<BottomMenu>().Show(
+                UINavigator.NavigationType.Back,
+                SubscribeBackButtonClick,
+                true,
+                BottomMenu.ToggleableType.Mail,
+                BottomMenu.ToggleableType.Quest,
+                BottomMenu.ToggleableType.Chat,
+                BottomMenu.ToggleableType.IllustratedBook);
 
             var go = Game.Game.instance.stage.npcFactory.Create(NpcId, NpcPosition);
             _npc = go.GetComponent<Npc>();

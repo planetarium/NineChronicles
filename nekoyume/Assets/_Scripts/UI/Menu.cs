@@ -114,7 +114,17 @@ namespace Nekoyume.UI
         {
             base.Show();
             Find<Status>().Show();
-            Find<BottomMenu>().Show(UINavigator.NavigationType.Quit, _ => Game.Game.Quit());
+            Find<BottomMenu>().Show(
+                UINavigator.NavigationType.Quit,
+                _ => Game.Game.Quit(),
+                true,
+                BottomMenu.ToggleableType.Mail,
+                BottomMenu.ToggleableType.Quest,
+                BottomMenu.ToggleableType.Chat,
+                BottomMenu.ToggleableType.IllustratedBook,
+                BottomMenu.ToggleableType.Character,
+                BottomMenu.ToggleableType.Inventory,
+                BottomMenu.ToggleableType.Settings);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
