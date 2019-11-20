@@ -40,8 +40,12 @@ namespace Nekoyume.UI
 
         public CanvasGroup canvasGroup;
         public RectTransform bg1;
+        
+        // 토글 그룹과 카테고리 버튼들.
+        private ToggleGroup _toggleGroup;
         public CategoryButton buyButton;
         public CategoryButton sellButton;
+        
         public RectTransform right;
 
         public Module.Inventory inventory;
@@ -74,6 +78,11 @@ namespace Nekoyume.UI
         public override void Initialize()
         {
             base.Initialize();
+            
+            _toggleGroup = new ToggleGroup();
+            _toggleGroup.OnToggledOn.Subscribe(SubscribeOnToggledOn).AddTo(gameObject);
+            _toggleGroup.RegisterToggleable(buyButton);
+            _toggleGroup.RegisterToggleable(sellButton);
 
             ItemCountAndPricePopup = Find<ItemCountAndPricePopup>();
 
@@ -92,13 +101,6 @@ namespace Nekoyume.UI
             SharedModel.ItemCountAndPricePopup.Value.OnClickSubmit.Subscribe(SubscribeItemPopupSubmit)
                 .AddTo(gameObject);
             SharedModel.ItemCountAndPricePopup.Value.OnClickCancel.Subscribe(SubscribeItemPopupCancel)
-                .AddTo(gameObject);
-
-            buyButton.button.OnClickAsObservable()
-                .Subscribe(_ => SharedModel.State.Value = StateType.Buy)
-                .AddTo(gameObject);
-            sellButton.button.OnClickAsObservable()
-                .Subscribe(_ => SharedModel.State.Value = StateType.Sell)
                 .AddTo(gameObject);
         }
 
@@ -167,24 +169,21 @@ namespace Nekoyume.UI
                 case StateType.Show:
                     shopItems.SharedModel.State.Value = stateType;
                     SharedModel.State.Value = StateType.Buy;
-                    buyButton.SetToggledOn();
-                    sellButton.SetToggledOff();
+                    _toggleGroup.SetToggledOn(buyButton);
                     return;
                 case StateType.Buy:
                     inventory.SharedModel.DimmedFunc.Value = null;
                     buyButton.button.interactable = false;
                     sellButton.button.interactable = true;
                     shopNotice.SetActive(false);
-                    buyButton.SetToggledOn();
-                    sellButton.SetToggledOff();
+                    _toggleGroup.SetToggledOn(buyButton);
                     break;
                 case StateType.Sell:
                     inventory.SharedModel.DimmedFunc.Value = DimmedFuncForSell;
                     buyButton.button.interactable = true;
                     sellButton.button.interactable = false;
                     shopNotice.SetActive(true);
-                    buyButton.SetToggledOff();
-                    sellButton.SetToggledOn();
+                    _toggleGroup.SetToggledOn(sellButton);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(stateType), stateType, null);
@@ -327,6 +326,24 @@ namespace Nekoyume.UI
             ItemCountAndPricePopup.Close();
         }
 
+        private void SubscribeBackButtonClick(BottomMenu bottomMenu)
+        {
+            Close();
+            Find<Menu>().ShowRoom();
+        }
+        
+        private void SubscribeOnToggledOn(IToggleable toggleable)
+        {
+            if (toggleable.Name.Equals(buyButton.Name))
+            {
+                SharedModel.State.Value = StateType.Buy;
+            }
+            else if (toggleable.Name.Equals(sellButton.Name))
+            {
+                SharedModel.State.Value = StateType.Sell;
+            }
+        }
+        
         #endregion
 
         #region Private Static Methods
@@ -414,12 +431,6 @@ namespace Nekoyume.UI
         }
 
         #endregion
-
-        private void SubscribeBackButtonClick(BottomMenu bottomMenu)
-        {
-            Close();
-            Find<Menu>().ShowRoom();
-        }
 
         private void SetSequenceOfShopItems(bool isGoOut, ref Sequence sequence)
         {

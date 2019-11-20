@@ -1,33 +1,49 @@
+using Nekoyume.Game.Controller;
 using UniRx;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
-    // todo: 카테고리 버튼의 성격 상 `IToggleable`을 구현하고, 사용하는 쪽에서 `ToggleGroup` 객체를 통해서 상태를 관리하는 것이 좋겠음.
-    public class CategoryButton : NormalButton
+    public class CategoryButton : MonoBehaviour, IToggleable
     {
-        public Sprite toggledOn;
-        public Sprite toggledOff;
+        public Button button;
+        public Image effectImage;
         
-        protected override void Awake()
+        private IToggleListener _toggleListener;
+
+        protected void Awake()
         {
-            base.Awake();
-            
             button.OnClickAsObservable().Subscribe(_ =>
             {
-                
+                AudioController.PlayClick();
+                _toggleListener?.OnToggle(this);
             }).AddTo(gameObject);
         }
         
+        #region IToggleable
+
+        public string Name => name;
+        
+        public bool IsToggledOn => effectImage.enabled;
+
+        public void SetToggleListener(IToggleListener toggleListener)
+        {
+            _toggleListener = toggleListener;
+        }
+
         public void SetToggledOn()
         {
             button.interactable = false;
-            image.sprite = toggledOn;
+            effectImage.enabled = true;
         }
+        
         public void SetToggledOff()
         {
             button.interactable = true;
-            image.sprite = toggledOff;
+            effectImage.enabled = false;
         }
+
+        #endregion
     }
 }

@@ -32,14 +32,15 @@ namespace Nekoyume.UI
         private const int NpcId = 300001;
         private static readonly UnityEngine.Vector3 NpcPosition = new UnityEngine.Vector3(2.28f, -2f);
 
-        public CategoryButton combineConsumableCategoryButton;
+        private ToggleGroup _toggleGroup;
         public CategoryButton combineEquipmentCategoryButton;
+        public CategoryButton combineConsumableCategoryButton;
         public CategoryButton enhanceEquipmentCategoryButton;
 
         public Module.Inventory inventory;
 
-        public CombineConsumable combineConsumable;
         public CombineEquipment combineEquipment;
+        public CombineConsumable combineConsumable;
         public EnhanceEquipment enhanceEquipment;
         public SpeechBubble speechBubble;
 
@@ -52,12 +53,22 @@ namespace Nekoyume.UI
         public override void Initialize()
         {
             base.Initialize();
+            
+            _toggleGroup = new ToggleGroup();
+            _toggleGroup.OnToggledOn.Subscribe(SubscribeOnToggledOn).AddTo(gameObject);
+            _toggleGroup.RegisterToggleable(combineEquipmentCategoryButton);
+            _toggleGroup.RegisterToggleable(combineConsumableCategoryButton);
+            _toggleGroup.RegisterToggleable(enhanceEquipmentCategoryButton);
 
             State.Subscribe(SubscribeState).AddTo(gameObject);
 
             inventory.SharedModel.SelectedItemView.Subscribe(ShowTooltip).AddTo(gameObject);
             inventory.SharedModel.OnDoubleClickItemView.Subscribe(StageMaterial).AddTo(gameObject);
 
+            combineEquipment.RemoveMaterialsAll();
+            combineEquipment.OnMaterialChange.Subscribe(SubscribeOnMaterialChange).AddTo(gameObject);
+            combineEquipment.submitButton.OnSubmitClick.Subscribe(_ => ActionCombineEquipment()).AddTo(gameObject);
+            
             combineConsumable.RemoveMaterialsAll();
             combineConsumable.OnMaterialChange.Subscribe(SubscribeOnMaterialChange).AddTo(gameObject);
             combineConsumable.submitButton.OnSubmitClick.Subscribe(_ => ActionCombineConsumable()).AddTo(gameObject);
@@ -67,10 +78,6 @@ namespace Nekoyume.UI
                 recipe.Show();
             }).AddTo(gameObject);
 
-            combineEquipment.RemoveMaterialsAll();
-            combineEquipment.OnMaterialChange.Subscribe(SubscribeOnMaterialChange).AddTo(gameObject);
-            combineEquipment.submitButton.OnSubmitClick.Subscribe(_ => ActionCombineEquipment()).AddTo(gameObject);
-
             enhanceEquipment.RemoveMaterialsAll();
             enhanceEquipment.OnMaterialChange.Subscribe(SubscribeOnMaterialChange).AddTo(gameObject);
             enhanceEquipment.submitButton.OnSubmitClick.Subscribe(_ => ActionEnhanceEquipment()).AddTo(gameObject);
@@ -78,28 +85,6 @@ namespace Nekoyume.UI
             recipe.RegisterListener(this);
             recipe.closeButton.OnClickAsObservable()
                 .Subscribe(_ => combineConsumable.submitButton.gameObject.SetActive(true)).AddTo(gameObject);
-
-            combineEquipmentCategoryButton.button.OnClickAsObservable()
-                .Subscribe(_ =>
-                {
-                    AudioController.PlayClick();
-                    State.Value = StateType.CombineEquipment;
-                })
-                .AddTo(gameObject);
-            combineConsumableCategoryButton.button.OnClickAsObservable()
-                .Subscribe(_ =>
-                {
-                    AudioController.PlayClick();
-                    State.Value = StateType.CombineConsumable;
-                })
-                .AddTo(gameObject);
-            enhanceEquipmentCategoryButton.button.OnClickAsObservable()
-                .Subscribe(_ =>
-                {
-                    AudioController.PlayClick();
-                    State.Value = StateType.EnhanceEquipment;
-                })
-                .AddTo(gameObject);
         }
 
         public override void Show()
@@ -134,8 +119,8 @@ namespace Nekoyume.UI
         {
             Find<BottomMenu>().Close(ignoreCloseAnimation);
 
-            combineConsumable.RemoveMaterialsAll();
             combineEquipment.RemoveMaterialsAll();
+            combineConsumable.RemoveMaterialsAll();
             enhanceEquipment.RemoveMaterialsAll();
 
             base.Close(ignoreCloseAnimation);
@@ -193,45 +178,38 @@ namespace Nekoyume.UI
             switch (value)
             {
                 case StateType.CombineConsumable:
-                    combineConsumableCategoryButton.SetToggledOn();
-                    combineEquipmentCategoryButton.SetToggledOff();
-
-                    enhanceEquipmentCategoryButton.SetToggledOff();
+                    _toggleGroup.SetToggledOn(combineConsumableCategoryButton);
 
                     inventory.SharedModel.State.Value = ItemType.Material;
                     inventory.SharedModel.DimmedFunc.Value = combineConsumable.DimFunc;
                     inventory.SharedModel.EffectEnabledFunc.Value = combineConsumable.Contains;
 
-                    combineConsumable.Show(true);
                     combineEquipment.Hide();
+                    combineConsumable.Show(true);
                     enhanceEquipment.Hide();
                     ShowSpeech("SPEECH_COMBINE_CONSUMABLE_");
                     break;
                 case StateType.CombineEquipment:
-                    combineConsumableCategoryButton.SetToggledOff();
-                    combineEquipmentCategoryButton.SetToggledOn();
-                    enhanceEquipmentCategoryButton.SetToggledOff();
+                    _toggleGroup.SetToggledOn(combineEquipmentCategoryButton);
 
                     inventory.SharedModel.State.Value = ItemType.Material;
                     inventory.SharedModel.DimmedFunc.Value = combineEquipment.DimFunc;
                     inventory.SharedModel.EffectEnabledFunc.Value = combineEquipment.Contains;
 
-                    combineConsumable.Hide();
                     combineEquipment.Show(true);
+                    combineConsumable.Hide();
                     enhanceEquipment.Hide();
                     ShowSpeech("SPEECH_COMBINE_EQUIPMENT_");
                     break;
                 case StateType.EnhanceEquipment:
-                    combineConsumableCategoryButton.SetToggledOff();
-                    combineEquipmentCategoryButton.SetToggledOff();
-                    enhanceEquipmentCategoryButton.SetToggledOn();
+                    _toggleGroup.SetToggledOn(enhanceEquipmentCategoryButton);
 
                     inventory.SharedModel.State.Value = ItemType.Equipment;
                     inventory.SharedModel.DimmedFunc.Value = enhanceEquipment.DimFunc;
                     inventory.SharedModel.EffectEnabledFunc.Value = enhanceEquipment.Contains;
 
-                    combineConsumable.Hide();
                     combineEquipment.Hide();
+                    combineConsumable.Hide();
                     enhanceEquipment.Show(true);
                     ShowSpeech("SPEECH_COMBINE_ENHANCE_EQUIPMENT_");
                     break;
@@ -287,6 +265,22 @@ namespace Nekoyume.UI
         {
             inventory.SharedModel.UpdateDimAll();
             inventory.SharedModel.UpdateEffectAll();
+        }
+
+        private void SubscribeOnToggledOn(IToggleable toggleable)
+        {
+            if (toggleable.Name.Equals(combineConsumableCategoryButton.Name))
+            {
+                State.Value = StateType.CombineConsumable;
+            }
+            else if (toggleable.Name.Equals(combineEquipmentCategoryButton.Name))
+            {
+                State.Value = StateType.CombineEquipment;
+            }
+            else if (toggleable.Name.Equals(enhanceEquipmentCategoryButton.Name))
+            {
+                State.Value = StateType.EnhanceEquipment;
+            }
         }
 
         private void SubscribeBackButtonClick(BottomMenu bottomMenu)
