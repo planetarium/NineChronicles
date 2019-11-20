@@ -19,9 +19,11 @@ namespace Nekoyume.Game.Character
             public AnimationReferenceAsset animation;
         }
 
-        public const string DefaultPMAShader = "Spine/Skeleton";
-        public const string DefaultStraightAlphaShader = "Sprites/Default";
+        private const string DefaultPMAShader = "Spine/Skeleton";
+        private const string DefaultStraightAlphaShader = "Sprites/Default";
         private const string WeaponSlot = "weapon";
+        private const string EarLeftSlot = "ear_0001_L";
+        private const string EarRightSlot = "ear_0001_R";
         private const string TailSlot = "tail_0002";
 
         public List<StateNameToAnimationReference> statesAndAnimations = new List<StateNameToAnimationReference>();
@@ -32,18 +34,19 @@ namespace Nekoyume.Game.Character
 
         private Skin _clonedSkin;
         private bool _applyPMA;
+        private Shader _shader;
+        private AtlasPage _atlasPage;
         
-        private Shader _weaponShader;
-        private AtlasPage _weaponAtlasPage;
         private int _weaponSlotIndex;
-        private RegionAttachment _defaultWeaponAttachment;
-        private RegionAttachment _currentWeaponAttachment;
+        private RegionAttachment _weaponAttachmentDefault;
         
-        private Shader _tailShader;
-        private AtlasPage _tailAtlasPage;
+        private int _earLeftSlotIndex;
+        private int _earRightSlotIndex;
+        private RegionAttachment _earLeftAttachmentDefault;
+        private RegionAttachment _earRightAttachmentDefault;
+        
         private int _tailSlotIndex;
-        private RegionAttachment _defaultTailAttachment;
-        private RegionAttachment _currentTailAttachment;
+        private RegionAttachment _tailAttachmentDefault;
 
         #region Mono
 
@@ -58,16 +61,19 @@ namespace Nekoyume.Game.Character
 
             _clonedSkin = SkeletonAnimation.skeleton.Data.DefaultSkin.GetClone();
             _applyPMA = SkeletonAnimation.pmaVertexColors;
+            _shader = _applyPMA ? Shader.Find(DefaultPMAShader) : Shader.Find(DefaultStraightAlphaShader);
+            _atlasPage = new UnityEngine.Material(_shader).ToSpineAtlasPage();
             
-            _weaponShader = _applyPMA ? Shader.Find(DefaultPMAShader) : Shader.Find(DefaultStraightAlphaShader);
-            _weaponAtlasPage = new UnityEngine.Material(_weaponShader).ToSpineAtlasPage();
             _weaponSlotIndex = SkeletonAnimation.skeleton.FindSlotIndex(WeaponSlot);
-            _defaultWeaponAttachment = MakeWeaponAttachment(SpriteHelper.GetPlayerSpineTextureWeapon(GameConfig.DefaultAvatarWeaponId));
+            _weaponAttachmentDefault = MakeAttachment(SpriteHelper.GetPlayerSpineTextureWeapon(GameConfig.DefaultAvatarWeaponId));
             
-            _tailShader = _applyPMA ? Shader.Find(DefaultPMAShader) : Shader.Find(DefaultStraightAlphaShader);
-            _tailAtlasPage = new UnityEngine.Material(_tailShader).ToSpineAtlasPage();
+            _earLeftSlotIndex = SkeletonAnimation.skeleton.FindSlotIndex(EarLeftSlot);
+            _earRightSlotIndex = SkeletonAnimation.skeleton.FindSlotIndex(EarRightSlot);
+            _earLeftAttachmentDefault = MakeAttachment(SpriteHelper.GetPlayerSpineTextureEarLeft(null));
+            _earRightAttachmentDefault = MakeAttachment(SpriteHelper.GetPlayerSpineTextureEarRight(null));
+            
             _tailSlotIndex = SkeletonAnimation.skeleton.FindSlotIndex(TailSlot);
-            _defaultTailAttachment = MakeTailAttachment(SpriteHelper.GetPlayerSpineTextureTail(null));
+            _tailAttachmentDefault = MakeAttachment(SpriteHelper.GetPlayerSpineTextureTail(null));
         }
 
         #endregion
@@ -121,12 +127,33 @@ namespace Nekoyume.Game.Character
         {
             if (sprite is null)
             {
-                _clonedSkin.SetAttachment(_weaponSlotIndex, WeaponSlot, _defaultWeaponAttachment);
+                _clonedSkin.SetAttachment(_weaponSlotIndex, WeaponSlot, _weaponAttachmentDefault);
             }
             else
             {
-                var newWeapon = MakeWeaponAttachment(sprite);
+                var newWeapon = MakeAttachment(sprite);
                 _clonedSkin.SetAttachment(_weaponSlotIndex, WeaponSlot, newWeapon);
+            }
+
+            var skeleton = SkeletonAnimation.skeleton;
+            skeleton.SetSkin(_clonedSkin);
+            skeleton.SetSlotsToSetupPose();
+            SkeletonAnimation.Update(0);
+        }
+        
+        public void UpdateEar(Sprite spriteLeft, Sprite spriteRight)
+        {
+            if (spriteLeft is null)
+            {
+                _clonedSkin.SetAttachment(_earLeftSlotIndex, EarLeftSlot, _earLeftAttachmentDefault);
+                _clonedSkin.SetAttachment(_earRightSlotIndex, EarRightSlot, _earRightAttachmentDefault);
+            }
+            else
+            {
+                var newEarLeft = MakeAttachment(spriteLeft);
+                var newEarRight = MakeAttachment(spriteRight);
+                _clonedSkin.SetAttachment(_earLeftSlotIndex, EarLeftSlot, newEarLeft);
+                _clonedSkin.SetAttachment(_earRightSlotIndex, EarRightSlot, newEarRight);
             }
 
             var skeleton = SkeletonAnimation.skeleton;
@@ -139,11 +166,11 @@ namespace Nekoyume.Game.Character
         {
             if (sprite is null)
             {
-                _clonedSkin.SetAttachment(_tailSlotIndex, TailSlot, _defaultTailAttachment);
+                _clonedSkin.SetAttachment(_tailSlotIndex, TailSlot, _tailAttachmentDefault);
             }
             else
             {
-                var newTail = MakeTailAttachment(sprite);
+                var newTail = MakeAttachment(sprite);
                 _clonedSkin.SetAttachment(_tailSlotIndex, TailSlot, newTail);
             }
 
@@ -153,20 +180,11 @@ namespace Nekoyume.Game.Character
             SkeletonAnimation.Update(0);
         }
 
-        private RegionAttachment MakeWeaponAttachment(Sprite sprite)
+        private RegionAttachment MakeAttachment(Sprite sprite)
         {
             var attachment = _applyPMA
-                ? sprite.ToRegionAttachmentPMAClone(_weaponShader)
-                : sprite.ToRegionAttachment(_weaponAtlasPage);
-
-            return attachment;
-        }
-
-        private RegionAttachment MakeTailAttachment(Sprite sprite)
-        {
-            var attachment = _applyPMA
-                ? sprite.ToRegionAttachmentPMAClone(_tailShader)
-                : sprite.ToRegionAttachment(_tailAtlasPage);
+                ? sprite.ToRegionAttachmentPMAClone(_shader)
+                : sprite.ToRegionAttachment(_atlasPage);
 
             return attachment;
         }

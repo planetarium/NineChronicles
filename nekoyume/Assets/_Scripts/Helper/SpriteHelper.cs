@@ -18,6 +18,7 @@ namespace Nekoyume.Helper
         private const string BuffIconPathFormat = "UI/Icons/Buff/{0}";
 
         private const string PlayerSpineTextureWeaponPath = "Character/PlayerSpineTexture/Weapon/{0}";
+        private const string PlayerSpineTextureEarPath = "Character/PlayerSpineTexture/Ear/{0}";
         private const string PlayerSpineTextureTailPath = "Character/PlayerSpineTexture/Tail/{0}";
 
         public static Sprite GetCharacterIcon(int characterId)
@@ -58,6 +59,28 @@ namespace Nekoyume.Helper
         {
             return Resources.Load<Sprite>(string.Format(PlayerSpineTextureWeaponPath, equipmentId)) ??
                    Resources.Load<Sprite>(string.Format(PlayerSpineTextureWeaponPath, GameConfig.DefaultAvatarWeaponId));
+        }
+        
+        public static Sprite GetPlayerSpineTextureEarLeft(string earLeftResource)
+        {
+            if (string.IsNullOrEmpty(earLeftResource))
+            {
+                return Resources.Load<Sprite>(string.Format(PlayerSpineTextureEarPath, GameConfig.DefaultPlayerEarLeftResource));
+            }
+            
+            return Resources.Load<Sprite>(string.Format(PlayerSpineTextureEarPath, earLeftResource)) ??
+                   Resources.Load<Sprite>(string.Format(PlayerSpineTextureEarPath, GameConfig.DefaultPlayerEarLeftResource));
+        }
+        
+        public static Sprite GetPlayerSpineTextureEarRight(string earRightResource)
+        {
+            if (string.IsNullOrEmpty(earRightResource))
+            {
+                return Resources.Load<Sprite>(string.Format(PlayerSpineTextureEarPath, GameConfig.DefaultPlayerEarRightResource));
+            }
+            
+            return Resources.Load<Sprite>(string.Format(PlayerSpineTextureEarPath, earRightResource)) ??
+                   Resources.Load<Sprite>(string.Format(PlayerSpineTextureEarPath, GameConfig.DefaultPlayerEarRightResource));
         }
         
         public static Sprite GetPlayerSpineTextureTail(string tailResource)

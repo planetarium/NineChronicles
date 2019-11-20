@@ -200,15 +200,21 @@ namespace Nekoyume.UI
 
         public void ChangeEar(int offset)
         {
-            _ear += offset;
-            if (_ear < 0) _ear = 0;
+            _ear = Mathf.Clamp(_ear + offset, 0, 9);
             paletteEarText.text = $"{LocalizationManager.Localize("UI_EAR")} {_ear + 1}";
+            
+            var player = Game.Game.instance.stage.selectedPlayer;
+            if (player is null)
+                throw new NullReferenceException(nameof(player));
+            
+            player.UpdateEar(_ear);
         }
 
         public void ChangeTail(int offset)
         {
             _tail = Mathf.Clamp(_tail + offset, 0, 9);
             paletteTailText.text = $"{LocalizationManager.Localize("UI_TAIL")} {_tail + 1}";
+            
             var player = Game.Game.instance.stage.selectedPlayer;
             if (player is null)
                 throw new NullReferenceException(nameof(player));

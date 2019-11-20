@@ -160,6 +160,27 @@ namespace Nekoyume.Game.Character
             var sprite = weapon.GetPlayerSpineTexture();
             controller.UpdateWeapon(sprite);
         }
+        
+        public void UpdateEar(int index)
+        {
+            UpdateEar($"ear_{index + 1:d4}_L", $"ear_{index + 1:d4}_R");
+        }
+        
+        public void UpdateEar(string earLeftResource, string earRightResource)
+        {
+            if (string.IsNullOrEmpty(earLeftResource))
+            {
+//                earResource = Model.Value.ear;
+            }
+            
+            var controller = GetComponentInChildren<SkeletonAnimationController>();
+            if (!controller)
+                return;
+
+            var spriteLeft = SpriteHelper.GetPlayerSpineTextureEarLeft(earLeftResource);
+            var spriteRight = SpriteHelper.GetPlayerSpineTextureEarRight(earRightResource);
+            controller.UpdateEar(spriteLeft, spriteRight);
+        }
 
         public void UpdateTail(int index)
         {
