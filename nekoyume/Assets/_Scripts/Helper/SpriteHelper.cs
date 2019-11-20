@@ -78,26 +78,26 @@ namespace Nekoyume.Helper
                    Resources.Load<Sprite>(string.Format(PlayerSpineTextureEarPath, GameConfig.DefaultPlayerEarRightResource));
         }
         
-        public static Sprite GetPlayerSpineTextureEye01(string eye01Resource)
+        public static Sprite GetPlayerSpineTextureEyeOpen(string eyeOpenResource)
         {
-            if (string.IsNullOrEmpty(eye01Resource))
+            if (string.IsNullOrEmpty(eyeOpenResource))
             {
-                return Resources.Load<Sprite>(string.Format(PlayerSpineTextureEyePath, GameConfig.DefaultPlayerEye01Resource));
+                return Resources.Load<Sprite>(string.Format(PlayerSpineTextureEyePath, GameConfig.DefaultPlayerEyeOpenResource));
             }
             
-            return Resources.Load<Sprite>(string.Format(PlayerSpineTextureEyePath, eye01Resource)) ??
-                   Resources.Load<Sprite>(string.Format(PlayerSpineTextureEyePath, GameConfig.DefaultPlayerEye01Resource));
+            return Resources.Load<Sprite>(string.Format(PlayerSpineTextureEyePath, eyeOpenResource)) ??
+                   Resources.Load<Sprite>(string.Format(PlayerSpineTextureEyePath, GameConfig.DefaultPlayerEyeOpenResource));
         }
         
-        public static Sprite GetPlayerSpineTextureEye02(string eye02Resource)
+        public static Sprite GetPlayerSpineTextureEyeHalf(string eyeHalfResource)
         {
-            if (string.IsNullOrEmpty(eye02Resource))
+            if (string.IsNullOrEmpty(eyeHalfResource))
             {
-                return Resources.Load<Sprite>(string.Format(PlayerSpineTextureEyePath, GameConfig.DefaultPlayerEye02Resource));
+                return Resources.Load<Sprite>(string.Format(PlayerSpineTextureEyePath, GameConfig.DefaultPlayerEyeHalfResource));
             }
             
-            return Resources.Load<Sprite>(string.Format(PlayerSpineTextureEyePath, eye02Resource)) ??
-                   Resources.Load<Sprite>(string.Format(PlayerSpineTextureEyePath, GameConfig.DefaultPlayerEye02Resource));
+            return Resources.Load<Sprite>(string.Format(PlayerSpineTextureEyePath, eyeHalfResource)) ??
+                   Resources.Load<Sprite>(string.Format(PlayerSpineTextureEyePath, GameConfig.DefaultPlayerEyeHalfResource));
         }
         
         public static Sprite GetPlayerSpineTextureTail(string tailResource)

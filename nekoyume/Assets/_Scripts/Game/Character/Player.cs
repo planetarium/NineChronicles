@@ -189,28 +189,28 @@ namespace Nekoyume.Game.Character
         
         public void UpdateEye(int index)
         {
-            UpdateEye($"eye_{index + 1:d4}_01", $"eye_{index + 1:d4}_02");
+            UpdateEye($"eye_{index + 1:d4}_open", $"eye_{index + 1:d4}_half");
         }
 
-        public void UpdateEye(string eye01Resource, string eye02Resource)
+        public void UpdateEye(string eyeOpenResource, string eyeHalfResource)
         {
-            if (string.IsNullOrEmpty(eye01Resource))
+            if (string.IsNullOrEmpty(eyeOpenResource))
             {
-//                eye01Resource = Model.Value.eye01;
+//                eyeOpenResource = Model.Value.eyeOpen;
             }
             
-            if (string.IsNullOrEmpty(eye02Resource))
+            if (string.IsNullOrEmpty(eyeHalfResource))
             {
-//                eye02Resource = Model.Value.eye02;
+//                eyeHalfResource = Model.Value.eyeHalf;
             }
             
             var controller = GetComponentInChildren<SkeletonAnimationController>();
             if (!controller)
                 return;
 
-            var eye01Sprite = SpriteHelper.GetPlayerSpineTextureEye01(eye01Resource);
-            var eye02Sprite = SpriteHelper.GetPlayerSpineTextureEye02(eye02Resource);
-            controller.UpdateEye(eye01Sprite, eye02Sprite);
+            var eyeOpenSprite = SpriteHelper.GetPlayerSpineTextureEyeOpen(eyeOpenResource);
+            var eyeHalfSprite = SpriteHelper.GetPlayerSpineTextureEyeHalf(eyeHalfResource);
+            controller.UpdateEye(eyeOpenSprite, eyeHalfSprite);
         }
 
         public void UpdateTail(int index)
