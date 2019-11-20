@@ -280,7 +280,12 @@ namespace Nekoyume.Game.Character
                 AudioController.PlayDamaged(isConsiderElementalType
                     ? info.ElementalType
                     : ElementalType.Normal);
-                DamageText.Show(position, force, dmg);
+                var group = DamageText.TextGroupState.Basic;
+                if (this is Player)
+                {
+                    group = DamageText.TextGroupState.Damage;
+                }
+                DamageText.Show(position, force, dmg, group);
                 if (info.SkillCategory == SkillCategory.NormalAttack)
                     VFXController.instance.Create<BattleAttack01VFX>(pos);
             }
@@ -390,7 +395,7 @@ namespace Nekoyume.Game.Character
 
         private void PopUpHeal(Vector3 position, Vector3 force, string dmg, bool critical)
         {
-            DamageText.Show(position, force, dmg);
+            DamageText.Show(position, force, dmg, DamageText.TextGroupState.Heal);
             VFXController.instance.Create<BattleHeal01VFX>(transform, HUDOffset - new Vector3(0f, 0.4f));
         }
 

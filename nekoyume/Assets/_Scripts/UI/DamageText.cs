@@ -7,22 +7,37 @@ namespace Nekoyume.UI
 {
     public class DamageText : HudWidget
     {
+        public enum TextGroupState
+        {
+            Basic,
+            Damage,
+            Heal,
+        }
+
         private const float TweenDuration = 0.3f;
         private const float DestroyDelay = 1.4f;
         
         private static readonly Vector3 LocalScaleBefore = new Vector3(2.4f, 2.4f, 1f);
         private static readonly Vector3 LocalScaleAfter = new Vector3(1.2f, 1.2f, 1f);
-        
-        public TextMeshProUGUI label;
-        public TextMeshProUGUI shadow;
         public CanvasGroup group;
+        public TextMeshProUGUI[] labels;
+        public TextMeshProUGUI[] shadows;
 
-        public static DamageText Show(Vector3 position, Vector3 force, string text)
+        public static DamageText Show(Vector3 position, Vector3 force, string text, TextGroupState group)
         {
             var result = Create<DamageText>(true);
-            result.label.text = text;
-            result.shadow.text = text;
-            
+            for (var i = 0; i < result.labels.Length; i++)
+            {
+                result.labels[i].gameObject.SetActive(false);
+                result.shadows[i].gameObject.SetActive(false);
+                if ((int) group == i)
+                {
+                    result.labels[i].gameObject.SetActive(true);
+                    result.shadows[i].gameObject.SetActive(true);
+                    result.labels[i].text = text;
+                    result.shadows[i].text = text;
+                }
+            }
             var rect = result.RectTransform;
             rect.anchoredPosition = position.ToCanvasPosition(ActionCamera.instance.Cam, MainCanvas.instance.Canvas);
             rect.localScale = LocalScaleBefore;
