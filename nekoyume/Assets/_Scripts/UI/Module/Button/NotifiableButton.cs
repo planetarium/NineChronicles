@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using UniRx;
 using UnityEngine.UI;
 
@@ -21,7 +20,7 @@ namespace Nekoyume.UI.Module
         
         private Widget _widget;
         
-        private readonly List<IToggleListener> _toggleListeners = new List<IToggleListener>();
+        private IToggleListener _toggleListener;
 
         public readonly Model SharedModel = new Model();
 
@@ -33,13 +32,8 @@ namespace Nekoyume.UI.Module
             
             SharedModel.HasNotification.SubscribeTo(hasNotificationImage).AddTo(gameObject);
             
-            button.OnClickAsObservable().Subscribe(_ =>
-            {
-                foreach (var toggleListener in _toggleListeners)
-                {
-                    toggleListener.OnToggled(this);
-                }
-            }).AddTo(gameObject);
+            button.OnClickAsObservable().Subscribe(_ => _toggleListener?.OnToggle(this))
+                .AddTo(gameObject);
         }
 
         protected void OnDestroy()
@@ -75,12 +69,14 @@ namespace Nekoyume.UI.Module
         #endregion
 
         #region IToggleable
+        
+        public string Name => name;
 
         public bool IsToggledOn => _widget is null ? false : _widget.gameObject.activeSelf;
 
-        public void RegisterToggleListener(IToggleListener toggleListener)
+        public void SetToggleListener(IToggleListener toggleListener)
         {
-            _toggleListeners.Add(toggleListener);
+            _toggleListener = toggleListener;
         }
 
         public void SetToggledOn()

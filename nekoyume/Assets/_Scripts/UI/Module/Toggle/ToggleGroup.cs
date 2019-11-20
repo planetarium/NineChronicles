@@ -15,7 +15,7 @@ namespace Nekoyume.UI.Module
 
         #region IToggleListener
 
-        public void OnToggled(IToggleable toggleable)
+        public void OnToggle(IToggleable toggleable)
         {
             var id = toggleable.GetInstanceID();
             foreach (var pair in _idAndToggleablePairs.Where(pair => pair.Key != id && pair.Value.IsToggledOn))
@@ -44,7 +44,8 @@ namespace Nekoyume.UI.Module
             if (_idAndToggleablePairs.ContainsKey(id))
                 return;
             
-            RegisterToggleableInternal(toggleable);
+            _idAndToggleablePairs.Add(id, toggleable);
+            toggleable.SetToggleListener(this);
         }
 
         public void SetToggledOn(IToggleable toggleable)
@@ -64,13 +65,6 @@ namespace Nekoyume.UI.Module
             {
                 _idAndToggleablePairs[pair.Key].SetToggledOff();
             }
-        }
-
-        private void RegisterToggleableInternal(IToggleable toggleable)
-        {
-            var id = toggleable.GetInstanceID();
-            _idAndToggleablePairs.Add(id, toggleable);
-            toggleable.RegisterToggleListener(this);
         }
     }
 }
