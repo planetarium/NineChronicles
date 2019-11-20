@@ -6,6 +6,7 @@ using DG.Tweening;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.VFX;
+using Nekoyume.Helper;
 using Nekoyume.Manager;
 using Nekoyume.UI;
 using UniRx;
@@ -83,6 +84,7 @@ namespace Nekoyume.Game.Character
             Model.SetValueAndForceNotify(model);
 
             InitStats(model);
+            UpdateCustomize();
             UpdateEquipments();
 
             if (ReferenceEquals(SpeechBubble, null))
@@ -109,6 +111,11 @@ namespace Nekoyume.Game.Character
         {
             gameObject.SetActive(false);
             Event.OnPlayerDead.Invoke();
+        }
+
+        public void UpdateCustomize()
+        {
+//            UpdateTail();
         }
 
         public void UpdateEquipments(Armor armor = null, Weapon weapon = null)
@@ -149,9 +156,29 @@ namespace Nekoyume.Game.Character
             var controller = GetComponentInChildren<SkeletonAnimationController>();
             if (!controller)
                 return;
-            
-            var sprite = Weapon.GetSprite(weapon);
+
+            var sprite = weapon.GetPlayerSpineTexture();
             controller.UpdateWeapon(sprite);
+        }
+
+        public void UpdateTail(int index)
+        {
+            UpdateTail($"tail_{index + 1:d4}");
+        }
+        
+        public void UpdateTail(string tailResource)
+        {
+            if (string.IsNullOrEmpty(tailResource))
+            {
+//                tailResource = Model.Value.tail;
+            }
+            
+            var controller = GetComponentInChildren<SkeletonAnimationController>();
+            if (!controller)
+                return;
+
+            var sprite = SpriteHelper.GetPlayerSpineTextureTail(tailResource);
+            controller.UpdateTail(sprite);
         }
 
         public IEnumerator CoGetExp(long exp)

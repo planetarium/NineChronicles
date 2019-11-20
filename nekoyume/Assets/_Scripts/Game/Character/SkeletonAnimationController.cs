@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Nekoyume.Game.Item;
+using Nekoyume.Helper;
 using Spine;
 using Spine.Unity;
 using Spine.Unity.Modules.AttachmentTools;
@@ -20,6 +21,8 @@ namespace Nekoyume.Game.Character
 
         public const string DefaultPMAShader = "Spine/Skeleton";
         public const string DefaultStraightAlphaShader = "Sprites/Default";
+        private const string WeaponSlot = "weapon";
+        private const string TailSlot = "tail_0002";
 
         public List<StateNameToAnimationReference> statesAndAnimations = new List<StateNameToAnimationReference>();
 
@@ -27,17 +30,20 @@ namespace Nekoyume.Game.Character
 
         private Spine.Animation TargetAnimation { get; set; }
 
-        [SpineSlot]
-        public string weaponSlot = "weapon";
-
+        private Skin _clonedSkin;
         private bool _applyPMA;
+        
         private Shader _weaponShader;
         private AtlasPage _weaponAtlasPage;
         private int _weaponSlotIndex;
-
-        private Skin _clonedSkinForChangeWeapon;
         private RegionAttachment _defaultWeaponAttachment;
         private RegionAttachment _currentWeaponAttachment;
+        
+        private Shader _tailShader;
+        private AtlasPage _tailAtlasPage;
+        private int _tailSlotIndex;
+        private RegionAttachment _defaultTailAttachment;
+        private RegionAttachment _currentTailAttachment;
 
         #region Mono
 
@@ -50,13 +56,18 @@ namespace Nekoyume.Game.Character
 
             SkeletonAnimation = GetComponent<SkeletonAnimation>();
 
+            _clonedSkin = SkeletonAnimation.skeleton.Data.DefaultSkin.GetClone();
             _applyPMA = SkeletonAnimation.pmaVertexColors;
+            
             _weaponShader = _applyPMA ? Shader.Find(DefaultPMAShader) : Shader.Find(DefaultStraightAlphaShader);
             _weaponAtlasPage = new UnityEngine.Material(_weaponShader).ToSpineAtlasPage();
-            _weaponSlotIndex = SkeletonAnimation.skeleton.FindSlotIndex(weaponSlot);
-
-            _clonedSkinForChangeWeapon = SkeletonAnimation.skeleton.Data.DefaultSkin.GetClone();
-            _defaultWeaponAttachment = MakeWeaponAttachment(Weapon.GetSprite(GameConfig.DefaultAvatarWeaponId));
+            _weaponSlotIndex = SkeletonAnimation.skeleton.FindSlotIndex(WeaponSlot);
+            _defaultWeaponAttachment = MakeWeaponAttachment(SpriteHelper.GetPlayerSpineTextureWeapon(GameConfig.DefaultAvatarWeaponId));
+            
+            _tailShader = _applyPMA ? Shader.Find(DefaultPMAShader) : Shader.Find(DefaultStraightAlphaShader);
+            _tailAtlasPage = new UnityEngine.Material(_tailShader).ToSpineAtlasPage();
+            _tailSlotIndex = SkeletonAnimation.skeleton.FindSlotIndex(TailSlot);
+            _defaultTailAttachment = MakeTailAttachment(SpriteHelper.GetPlayerSpineTextureTail(null));
         }
 
         #endregion
@@ -110,16 +121,34 @@ namespace Nekoyume.Game.Character
         {
             if (sprite is null)
             {
-                _clonedSkinForChangeWeapon.SetAttachment(_weaponSlotIndex, weaponSlot, _defaultWeaponAttachment);
+                _clonedSkin.SetAttachment(_weaponSlotIndex, WeaponSlot, _defaultWeaponAttachment);
             }
             else
             {
                 var newWeapon = MakeWeaponAttachment(sprite);
-                _clonedSkinForChangeWeapon.SetAttachment(_weaponSlotIndex, weaponSlot, newWeapon);
+                _clonedSkin.SetAttachment(_weaponSlotIndex, WeaponSlot, newWeapon);
             }
 
             var skeleton = SkeletonAnimation.skeleton;
-            skeleton.SetSkin(_clonedSkinForChangeWeapon);
+            skeleton.SetSkin(_clonedSkin);
+            skeleton.SetSlotsToSetupPose();
+            SkeletonAnimation.Update(0);
+        }
+
+        public void UpdateTail(Sprite sprite)
+        {
+            if (sprite is null)
+            {
+                _clonedSkin.SetAttachment(_tailSlotIndex, TailSlot, _defaultTailAttachment);
+            }
+            else
+            {
+                var newTail = MakeTailAttachment(sprite);
+                _clonedSkin.SetAttachment(_tailSlotIndex, TailSlot, newTail);
+            }
+
+            var skeleton = SkeletonAnimation.skeleton;
+            skeleton.SetSkin(_clonedSkin);
             skeleton.SetSlotsToSetupPose();
             SkeletonAnimation.Update(0);
         }
@@ -129,6 +158,15 @@ namespace Nekoyume.Game.Character
             var attachment = _applyPMA
                 ? sprite.ToRegionAttachmentPMAClone(_weaponShader)
                 : sprite.ToRegionAttachment(_weaponAtlasPage);
+
+            return attachment;
+        }
+
+        private RegionAttachment MakeTailAttachment(Sprite sprite)
+        {
+            var attachment = _applyPMA
+                ? sprite.ToRegionAttachmentPMAClone(_tailShader)
+                : sprite.ToRegionAttachment(_tailAtlasPage);
 
             return attachment;
         }
