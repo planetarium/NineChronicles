@@ -94,8 +94,8 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 12
-  m_fontSizeBase: 12
+  m_fontSize: 14
+  m_fontSizeBase: 14
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -851,11 +851,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 6362550720826168048}
     m_Modifications:
-    - target: {fileID: 6890140511217779253, guid: 3f592bbdd28ed9047860b8c5f43ab585,
-        type: 3}
-      propertyPath: m_Name
-      value: UI_BuffLayout
-      objectReference: {fileID: 0}
     - target: {fileID: 5467385540938619002, guid: 3f592bbdd28ed9047860b8c5f43ab585,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -971,6 +966,11 @@ PrefabInstance:
       propertyPath: m_LocalScale.y
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6890140511217779253, guid: 3f592bbdd28ed9047860b8c5f43ab585,
+        type: 3}
+      propertyPath: m_Name
+      value: UI_BuffLayout
+      objectReference: {fileID: 0}
     - target: {fileID: 2651630853703027692, guid: 3f592bbdd28ed9047860b8c5f43ab585,
         type: 3}
       propertyPath: m_IsActive
@@ -1066,16 +1066,6 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 6429339512382613919, guid: 3f592bbdd28ed9047860b8c5f43ab585,
-        type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 40
-      objectReference: {fileID: 0}
-    - target: {fileID: 6429339512382613919, guid: 3f592bbdd28ed9047860b8c5f43ab585,
-        type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 20
-      objectReference: {fileID: 0}
     - target: {fileID: 8487414319864085356, guid: 3f592bbdd28ed9047860b8c5f43ab585,
         type: 3}
       propertyPath: m_textInfo.characterCount
@@ -1125,6 +1115,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_isRightToLeft
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6429339512382613919, guid: 3f592bbdd28ed9047860b8c5f43ab585,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 40
+      objectReference: {fileID: 0}
+    - target: {fileID: 6429339512382613919, guid: 3f592bbdd28ed9047860b8c5f43ab585,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 20
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3f592bbdd28ed9047860b8c5f43ab585, type: 3}
