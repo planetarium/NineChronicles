@@ -115,7 +115,8 @@ namespace Nekoyume.Game.Character
 
         public void UpdateCustomize()
         {
-//            UpdateTail();
+            UpdateEar(Model.Value.earIndex);
+            UpdateTail(Model.Value.tailIndex);
         }
 
         public void UpdateEquipments(Armor armor = null, Weapon weapon = null)

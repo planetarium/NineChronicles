@@ -88,6 +88,7 @@ namespace Nekoyume.UI
                 throw new NotFoundComponentException<Game.Character.Player>();
 
             // stop run immediately.
+            _player.UpdateCustomize();
             _player.UpdateEquipments();
             _player.gameObject.SetActive(false);
             _player.gameObject.SetActive(true);
@@ -260,6 +261,7 @@ namespace Nekoyume.UI
             {
                 var armor = (Armor) slot.item;
                 var weapon = (Weapon) _weaponSlot.item;
+                _player.UpdateCustomize();
                 _player.UpdateEquipments(armor, weapon);
             }
             else if (slot.itemSubType == ItemSubType.Weapon)
@@ -318,6 +320,7 @@ namespace Nekoyume.UI
             {
                 var armor = (Armor) equipable;
                 var weapon = (Weapon) _weaponSlot.item;
+                _player.UpdateCustomize();
                 _player.UpdateEquipments(armor, weapon);
             }
             else if (itemSubType == ItemSubType.Weapon)

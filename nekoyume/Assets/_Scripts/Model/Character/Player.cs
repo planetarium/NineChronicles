@@ -56,6 +56,11 @@ namespace Nekoyume.Model
         public CollectionMap monsterMap;
         public CollectionMap eventMap;
 
+        public int hairIndex;
+        public int lensIndex;
+        public int earIndex;
+        public int tailIndex;
+
         private List<Equipment> Equipments { get; set; }
 
         public Player(AvatarState avatarState, Simulator simulator = null) : base(simulator, avatarState.characterId, avatarState.level)
