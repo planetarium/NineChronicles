@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Nekoyume.Game.Item;
 using Nekoyume.Helper;
 using Spine;
 using Spine.Unity;
@@ -35,18 +34,22 @@ namespace Nekoyume.Game.Character
         private Skin _clonedSkin;
         private bool _applyPMA;
         private Shader _shader;
+        private Material _material;
         private AtlasPage _atlasPage;
         
         private int _weaponSlotIndex;
         private RegionAttachment _weaponAttachmentDefault;
-        
+
+        private Slot _earLeftSlot;
         private int _earLeftSlotIndex;
+        private Slot _earRightSlot;
         private int _earRightSlotIndex;
-        private RegionAttachment _earLeftAttachmentDefault;
-        private RegionAttachment _earRightAttachmentDefault;
+        private Attachment _earLeftAttachmentDefault;
+        private Attachment _earRightAttachmentDefault;
         
+        private Slot _tailSlot;
         private int _tailSlotIndex;
-        private RegionAttachment _tailAttachmentDefault;
+        private Attachment _tailAttachmentDefault;
 
         #region Mono
 
@@ -62,18 +65,22 @@ namespace Nekoyume.Game.Character
             _clonedSkin = SkeletonAnimation.skeleton.Data.DefaultSkin.GetClone();
             _applyPMA = SkeletonAnimation.pmaVertexColors;
             _shader = _applyPMA ? Shader.Find(DefaultPMAShader) : Shader.Find(DefaultStraightAlphaShader);
-            _atlasPage = new UnityEngine.Material(_shader).ToSpineAtlasPage();
+            _material = new Material(_shader);
+            _atlasPage = _material.ToSpineAtlasPage();
             
             _weaponSlotIndex = SkeletonAnimation.skeleton.FindSlotIndex(WeaponSlot);
             _weaponAttachmentDefault = MakeAttachment(SpriteHelper.GetPlayerSpineTextureWeapon(GameConfig.DefaultAvatarWeaponId));
             
+            _earLeftSlot = SkeletonAnimation.skeleton.FindSlot(EarLeftSlot);
             _earLeftSlotIndex = SkeletonAnimation.skeleton.FindSlotIndex(EarLeftSlot);
+            _earRightSlot = SkeletonAnimation.skeleton.FindSlot(EarRightSlot);
             _earRightSlotIndex = SkeletonAnimation.skeleton.FindSlotIndex(EarRightSlot);
-            _earLeftAttachmentDefault = MakeAttachment(SpriteHelper.GetPlayerSpineTextureEarLeft(null));
-            _earRightAttachmentDefault = MakeAttachment(SpriteHelper.GetPlayerSpineTextureEarRight(null));
+            _earLeftAttachmentDefault = RemapAttachment(_earLeftSlot, SpriteHelper.GetPlayerSpineTextureEarLeft(null));
+            _earRightAttachmentDefault = RemapAttachment(_earRightSlot, SpriteHelper.GetPlayerSpineTextureEarRight(null));
             
+            _tailSlot = SkeletonAnimation.skeleton.FindSlot(TailSlot);
             _tailSlotIndex = SkeletonAnimation.skeleton.FindSlotIndex(TailSlot);
-            _tailAttachmentDefault = MakeAttachment(SpriteHelper.GetPlayerSpineTextureTail(null));
+            _tailAttachmentDefault = RemapAttachment(_tailSlot, SpriteHelper.GetPlayerSpineTextureTail(null));
         }
 
         #endregion
@@ -150,8 +157,8 @@ namespace Nekoyume.Game.Character
             }
             else
             {
-                var newEarLeft = MakeAttachment(spriteLeft);
-                var newEarRight = MakeAttachment(spriteRight);
+                var newEarLeft = RemapAttachment(_earLeftSlot, spriteLeft);
+                var newEarRight = RemapAttachment(_earRightSlot, spriteRight);
                 _clonedSkin.SetAttachment(_earLeftSlotIndex, EarLeftSlot, newEarLeft);
                 _clonedSkin.SetAttachment(_earRightSlotIndex, EarRightSlot, newEarRight);
             }
@@ -170,7 +177,7 @@ namespace Nekoyume.Game.Character
             }
             else
             {
-                var newTail = MakeAttachment(sprite);
+                var newTail = RemapAttachment(_tailSlot, sprite);
                 _clonedSkin.SetAttachment(_tailSlotIndex, TailSlot, newTail);
             }
 
@@ -178,6 +185,11 @@ namespace Nekoyume.Game.Character
             skeleton.SetSkin(_clonedSkin);
             skeleton.SetSlotsToSetupPose();
             SkeletonAnimation.Update(0);
+        }
+
+        private Attachment RemapAttachment(Slot slot, Sprite sprite)
+        {
+            return slot.Attachment.GetRemappedClone(sprite, _material);
         }
 
         private RegionAttachment MakeAttachment(Sprite sprite)
