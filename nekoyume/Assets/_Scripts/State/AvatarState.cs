@@ -40,7 +40,8 @@ namespace Nekoyume.State
         public CollectionMap eventMap;
         public int hair;
         public int lens;
-        public int etc;
+        public int ear;
+        public int tail;
 
         public AvatarState(Address address, Address agentAddress, long blockIndex, string name = null) : base(address)
         {
@@ -101,7 +102,8 @@ namespace Nekoyume.State
             eventMap = avatarState.eventMap;
             hair = avatarState.hair;
             lens = avatarState.lens;
-            etc = avatarState.etc;
+            ear = avatarState.ear;
+            tail = avatarState.tail;
         }
 
         public AvatarState(Bencodex.Types.Dictionary serialized)
@@ -129,7 +131,8 @@ namespace Nekoyume.State
             dailyRewardReceivedIndex = dri is null ? 0 : (long) ((Integer) dri).Value;
             hair = (int) ((Integer) serialized["hair"]).Value;
             lens = (int) ((Integer) serialized["lens"]).Value;
-            etc = (int) ((Integer) serialized["etc"]).Value;
+            ear = (int) ((Integer) serialized["ear"]).Value;
+            tail = (int) ((Integer) serialized["tail"]).Value;
         }
 
         public void Update(Simulator simulator)
@@ -170,11 +173,12 @@ namespace Nekoyume.State
             mailBox.Add(mail);
         }
 
-        public void Customize(int hair, int lens, int etc)
+        public void Customize(int hair, int lens, int ear, int tail)
         {
             this.hair = hair;
             this.lens = lens;
-            this.etc = etc;
+            this.ear = ear;
+            this.tail = tail;
         }
 
         public void UpdateGeneralQuest(IEnumerable<QuestEventType> types)
@@ -277,7 +281,8 @@ namespace Nekoyume.State
                 [(Text) "eventMap"] = eventMap.Serialize(),
                 [(Text) "hair"] = (Integer) hair,
                 [(Text) "lens"] = (Integer) lens,
-                [(Text) "etc"] = (Integer) etc,
+                [(Text) "ear"] = (Integer) ear,
+                [(Text) "tail"] = (Integer) tail,
             }.Union((Bencodex.Types.Dictionary) base.Serialize()));
 
         public void UpdateQuestFromQuestReward(Dictionary<int, int> rewardItemMap, IRandom random)

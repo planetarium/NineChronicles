@@ -20,7 +20,8 @@ namespace Nekoyume.Action
         public int index;
         public int hair;
         public int lens;
-        public int etc;
+        public int ear;
+        public int tail;
         public string name;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal => new Dictionary<string, IValue>()
@@ -29,7 +30,8 @@ namespace Nekoyume.Action
             ["index"] = (Integer) index,
             ["hair"] = (Integer) hair,
             ["lens"] = (Integer) lens,
-            ["etc"] = (Integer) etc,
+            ["ear"] = (Integer) ear,
+            ["tail"] = (Integer) tail,
             ["name"] = (Text) name,
         }.ToImmutableDictionary();
 
@@ -39,7 +41,8 @@ namespace Nekoyume.Action
             index = (int) ((Integer) plainValue["index"]).Value;
             hair = (int) ((Integer) plainValue["hair"]).Value;
             lens = (int) ((Integer) plainValue["lens"]).Value;
-            etc = (int) ((Integer) plainValue["etc"]).Value;
+            ear = (int) ((Integer) plainValue["ear"]).Value;
+            tail = (int) ((Integer) plainValue["tail"]).Value;
             name = (Text) plainValue["name"];
         }
 
@@ -85,9 +88,10 @@ namespace Nekoyume.Action
 
             if (hair < 0) hair = 0;
             if (lens < 0) lens = 0;
-            if (etc < 0) etc = 0;
+            if (ear < 0) ear = 0;
+            if (tail < 0) tail = 0;
 
-            avatarState.Customize(hair, lens, etc);
+            avatarState.Customize(hair, lens, ear, tail);
 
             return states
                 .SetState(ctx.Signer, agentState.Serialize())

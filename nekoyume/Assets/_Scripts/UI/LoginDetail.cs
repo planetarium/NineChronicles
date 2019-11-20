@@ -23,10 +23,12 @@ namespace Nekoyume.UI
         public GameObject palette;
         public TextMeshProUGUI paletteHairText;
         public TextMeshProUGUI paletteLensText;
-        public TextMeshProUGUI paletteTopText;
+        public TextMeshProUGUI paletteEarText;
+        public TextMeshProUGUI paletteTailText;
         public TextMeshProUGUI jobDescriptionText;
         public StatusInfo[] statusRows;
 
+        public Button warriorButton;
         public Button archerButton;
         public Button mageButton;
         public Button acolyteButton;
@@ -36,7 +38,8 @@ namespace Nekoyume.UI
 
         private int _hair;
         private int _lens;
-        private int _etc;
+        private int _ear;
+        private int _tail;
         
 
         protected override void Awake()
@@ -44,9 +47,6 @@ namespace Nekoyume.UI
             base.Awake();
 
             btnCreateText.text = LocalizationManager.Localize("UI_CREATE_CHARACTER_CONFIRM");
-            paletteHairText.text = $"{LocalizationManager.Localize("UI_HAIR")} {_hair}";
-            paletteLensText.text = $"{LocalizationManager.Localize("UI_LENS")} {_lens}";
-            paletteTopText.text = $"{LocalizationManager.Localize("UI_ETC")} {_etc}";
             jobDescriptionText.text = LocalizationManager.Localize("UI_WARRIOR_DESCRIPTION");
 
             Game.Event.OnLoginDetail.AddListener(Init);
@@ -76,7 +76,7 @@ namespace Nekoyume.UI
             Find<GrayLoadingScreen>().Show();
 
             ActionManager.instance
-                .CreateAvatar(AvatarManager.CreateAvatarAddress(), _selectedIndex, nickName, _hair, _lens, _etc)
+                .CreateAvatar(AvatarManager.CreateAvatarAddress(), _selectedIndex, nickName, _hair, _lens, _ear, _tail)
                 .Subscribe(eval =>
                 {
                     var avatarState = AvatarManager.SetIndex(_selectedIndex);
@@ -93,7 +93,7 @@ namespace Nekoyume.UI
             OnDidAvatarStateLoaded(avatarState);
             AudioController.PlayClick();
 
-            Debug.LogWarning($"customize : {avatarState.hair}, {avatarState.lens}, {avatarState.etc}");
+            Debug.LogWarning($"customize : {avatarState.hair}, {avatarState.lens}, {avatarState.ear}, {avatarState.tail}");
         }
 
         public void BackClick()
@@ -168,7 +168,18 @@ namespace Nekoyume.UI
 
         public override void Show()
         {
-            _hair = _lens = _etc = 0;
+            warriorButton.gameObject.SetActive(_isCreateMode);
+            archerButton.gameObject.SetActive(_isCreateMode);
+            mageButton.gameObject.SetActive(_isCreateMode);
+            acolyteButton.gameObject.SetActive(_isCreateMode);
+            if (_isCreateMode)
+            {
+                _hair = _lens = _ear = _tail =  0;
+                paletteHairText.text = $"{LocalizationManager.Localize("UI_HAIR")} {_hair}";
+                paletteLensText.text = $"{LocalizationManager.Localize("UI_LENS")} {_lens}";
+                paletteEarText.text = $"{LocalizationManager.Localize("UI_EAR")} {_ear}";
+                paletteTailText.text = $"{LocalizationManager.Localize("UI_TAIL")} {_tail}";
+            }
             base.Show();
         }
 
@@ -191,11 +202,18 @@ namespace Nekoyume.UI
             paletteLensText.text = $"{LocalizationManager.Localize("UI_LENS")} {_lens}";
         }
 
-        public void ChangeEtc(int offset)
+        public void ChangeEar(int offset)
         {
-            _etc += offset;
-            if (_etc < 0) _etc = 0;
-            paletteTopText.text = $"{LocalizationManager.Localize("UI_ETC")} {_etc}";
+            _ear += offset;
+            if (_ear < 0) _ear = 0;
+            paletteEarText.text = $"{LocalizationManager.Localize("UI_EAR")} {_ear}";
+        }
+
+        public void ChangeTail(int offset)
+        {
+            _tail += offset;
+            if (_tail < 0) _tail = 0;
+            paletteTailText.text = $"{LocalizationManager.Localize("UI_TAIL")} {_tail}";
         }
 
         private void OnDidAvatarStateLoaded(AvatarState avatarState)
