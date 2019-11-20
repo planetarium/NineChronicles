@@ -20,10 +20,7 @@ namespace Nekoyume.UI.Module
         {
             text.text = LocalizationManager.Localize(string.IsNullOrEmpty(localizationKey) ? "null" : localizationKey);
 
-            button.OnClickAsObservable().Subscribe(_ =>
-            {
-                AudioController.PlayClick();
-            }).AddTo(gameObject);
+            button.OnClickAsObservable().Subscribe(_ => AudioController.PlayClick()).AddTo(gameObject);
         }
 
         #endregion

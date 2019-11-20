@@ -2,9 +2,10 @@ namespace Nekoyume.UI.Module
 {
     public interface IToggleable
     {
+        string Name { get; }
         bool IsToggledOn { get; }
         int GetInstanceID();
-        void RegisterToggleListener(IToggleListener toggleListener);
+        void SetToggleListener(IToggleListener toggleListener);
         void SetToggledOn();
         void SetToggledOff();
     }
