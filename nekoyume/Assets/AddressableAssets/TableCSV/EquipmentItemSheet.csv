@@ -15,6 +15,7 @@ id,_name,item_sub_type,grade,elemental_type,set_id,stat_type,stat_value,attack_r
 10132000,어둠 검(물),Weapon,3,Water,13,ATK,40,2
 10133000,어둠 검(땅),Weapon,3,Land,14,ATK,40,2
 10134000,어둠 검(바람),Weapon,3,Wind,15,ATK,40,2
+10135000,어둠 검,Weapon,3,Normal,15,ATK,40,2
 10140000,그람,Weapon,4,Normal,11,ATK,80,2
 10141000,그람(불),Weapon,4,Fire,12,ATK,80,2
 10142000,그람(물),Weapon,4,Water,13,ATK,80,2
@@ -41,6 +42,7 @@ id,_name,item_sub_type,grade,elemental_type,set_id,stat_type,stat_value,attack_r
 10232000,어둠 의상(물),Armor,3,Water,13,DEF,30,2
 10233000,어둠 의상(땅),Armor,3,Land,14,DEF,30,2
 10234000,어둠 의상(바람),Armor,3,Wind,15,DEF,30,2
+10235000,어둠 의상,Armor,3,Normal,11,DEF,30,2
 10310000,장식띠,Belt,1,Normal,1,HP,30,2
 10311000,장식띠(불),Belt,1,Fire,2,HP,30,2
 10312000,장식띠(물),Belt,1,Water,3,HP,30,2
