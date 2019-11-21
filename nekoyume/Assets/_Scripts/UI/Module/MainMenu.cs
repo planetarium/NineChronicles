@@ -5,6 +5,7 @@ using UniRx.Triggers;
 using UnityEngine;
 using System.Collections.Generic;
 using Assets.SimpleLocalization;
+using Nekoyume.Game.Character;
 
 namespace Nekoyume.UI.Module
 {
@@ -12,11 +13,13 @@ namespace Nekoyume.UI.Module
     {
         public float TweenDuration = 0.3f;
         public float BgScale = 1.05f;
-        public string BgName;
         public SpeechBubble speechBubble;
         public string pointerEnterKey;
         public string pointerClickKey;
+        public Npc npc;
+        public Transform bgTransform;
         private string _defaultKey;
+        private Vector3 _scaler;
 
         private readonly List<IDisposable> _disposablesForAwake = new List<IDisposable>();
 
@@ -24,8 +27,7 @@ namespace Nekoyume.UI.Module
 
         private void Awake()
         {
-            Menu parent = GetComponentInParent<Menu>();
-            if (!parent)
+            if (!GetComponentInParent<Menu>())
                 throw new NotFoundComponentException<Menu>();
 
             if (speechBubble)
@@ -33,17 +35,19 @@ namespace Nekoyume.UI.Module
                 _defaultKey = speechBubble.localizationKey;
             }
 
+            _scaler = bgTransform.localScale;
+
             gameObject.AddComponent<ObservablePointerClickTrigger>()
                 .OnPointerClickAsObservable()
                 .Subscribe(x => {
-                    parent.Stage.background.transform.Find(BgName)?.DOScale(1.0f, 0.0f);
+                    bgTransform.DOScale(_scaler * 1.0f, 0.0f);
                 })
                 .AddTo(_disposablesForAwake);
 
             gameObject.AddComponent<ObservablePointerEnterTrigger>()
                 .OnPointerEnterAsObservable()
                 .Subscribe(x => {
-                    parent.Stage.background.transform.Find(BgName)?.DOScale(BgScale, TweenDuration);
+                    bgTransform.DOScale(_scaler * BgScale, TweenDuration);
                     ShowSpeech(pointerEnterKey);
                 })
                 .AddTo(_disposablesForAwake);
@@ -51,7 +55,7 @@ namespace Nekoyume.UI.Module
             gameObject.AddComponent<ObservablePointerExitTrigger>()
                 .OnPointerExitAsObservable()
                 .Subscribe(x => {
-                    parent.Stage.background.transform.Find(BgName)?.DOScale(1.0f, TweenDuration);
+                    bgTransform.DOScale(_scaler * 1.0f, TweenDuration);
                     ResetLocalizationKey();
                 })
                 .AddTo(_disposablesForAwake); ;
@@ -72,6 +76,10 @@ namespace Nekoyume.UI.Module
                 return;
             speechBubble.SetKey(key);
             StartCoroutine(speechBubble.CoShowText());
+            if (npc)
+            {
+                npc.Emotion();
+            }
         }
 
         private void ResetLocalizationKey()
@@ -91,6 +99,10 @@ namespace Nekoyume.UI.Module
                     $"{pointerClickKey}{UnityEngine.Random.Range(0, speechBubble.SpeechCount)}");
             var speech = string.Format(format, level);
             StartCoroutine(speechBubble.CoShowText(speech));
+            if (npc)
+            {
+                npc.Emotion();
+            }
         }
     }
 }
