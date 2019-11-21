@@ -267,11 +267,17 @@ namespace Nekoyume.Game.Character
             var pos = transform.position;
             pos.x -= 0.2f;
             pos.y += 0.32f;
+            var group = DamageText.TextGroupState.Basic;
+            if (this is Player)
+            {
+                group = DamageText.TextGroupState.Damage;
+            }
+
             if (info.Critical)
             {
                 ActionCamera.instance.Shake();
                 AudioController.PlayDamagedCritical();
-                CriticalText.Show(position, force, dmg);
+                CriticalText.Show(position, force, dmg, group);
                 if (info.SkillCategory == SkillCategory.NormalAttack)
                     VFXController.instance.Create<BattleAttackCritical01VFX>(pos);
             }
@@ -280,11 +286,6 @@ namespace Nekoyume.Game.Character
                 AudioController.PlayDamaged(isConsiderElementalType
                     ? info.ElementalType
                     : ElementalType.Normal);
-                var group = DamageText.TextGroupState.Basic;
-                if (this is Player)
-                {
-                    group = DamageText.TextGroupState.Damage;
-                }
                 DamageText.Show(position, force, dmg, group);
                 if (info.SkillCategory == SkillCategory.NormalAttack)
                     VFXController.instance.Create<BattleAttack01VFX>(pos);
