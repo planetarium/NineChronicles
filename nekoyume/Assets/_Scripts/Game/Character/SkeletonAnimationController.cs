@@ -21,17 +21,17 @@ namespace Nekoyume.Game.Character
         private const string DefaultPMAShader = "Spine/Skeleton";
         private const string DefaultStraightAlphaShader = "Sprites/Default";
         private const string WeaponSlot = "weapon";
-        private const string EarLeftSlot = "ear_0001_L";
-        private const string EarRightSlot = "ear_0001_R";
-        private const string EyeOpenSlot = "eye_red_01";
-        private const string EyeHalfSlot = "eye_red_02";
-        private const string Hair01Slot = "hair_brown_01";
-        private const string Hair02Slot = "hair_brown_02";
-        private const string Hair03Slot = "hair_brown_03";
-        private const string Hair04Slot = "hair_brown_04";
-        private const string Hair05Slot = "hair_brown_05";
-        private const string Hair06Slot = "hair_brown_06";
-        private const string TailSlot = "tail_0002";
+        private const string EarLeftSlot = "ear_L";
+        private const string EarRightSlot = "ear_R";
+        private const string EyeOpenSlot = "eye_01";
+        private const string EyeHalfSlot = "eye_02";
+        private const string Hair01Slot = "hair_01";
+        private const string Hair02Slot = "hair_02";
+        private const string Hair03Slot = "hair_03";
+        private const string Hair04Slot = "hair_04";
+        private const string Hair05Slot = "hair_05";
+        private const string Hair06Slot = "hair_06";
+        private const string TailSlot = "tail";
 
         public List<StateNameToAnimationReference> statesAndAnimations = new List<StateNameToAnimationReference>();
 
