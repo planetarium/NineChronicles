@@ -15,6 +15,7 @@ namespace Nekoyume.Game.Character
         public NpcAnimator(Npc root, float animatorTimeScale)
         {
             _root = root;
+            _animator = root.GetComponentInChildren<Animator>();
             _timeScale = animatorTimeScale;
         }
 
