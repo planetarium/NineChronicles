@@ -13,19 +13,29 @@ id,_name,item_sub_type,grade,elemental_type,stat_type,stat_min,stat_max,skill_id
 302009,일품급 고기,FoodMaterial,1,Normal,,,,,,,,
 303000,녹슨 칼,EquipmentMaterial,1,Normal,,,,,,,,
 303001,버려진 검,EquipmentMaterial,2,Normal,,,,,,,,
-303002,영험한 기운의 검,EquipmentMaterial,3,Normal,,,,,,,,
-303100,녹슨 갑옷,EquipmentMaterial,1,Normal,,,,,,,,
-303101,버려진 갑주,EquipmentMaterial,2,Normal,,,,,,,,
-303102,영험한 기운의 갑옷,EquipmentMaterial,3,Normal,,,,,,,,
+303002,단단한 검,EquipmentMaterial,3,Normal,,,,,,,,
+303003,영험한 기운의 검,EquipmentMaterial,4,Normal,,,,,,,,
+303004,전설의 검,EquipmentMaterial,5,Normal,,,,,,,,
+303100,낡은 옷,EquipmentMaterial,1,Normal,,,,,,,,
+303101,버려진 옷,EquipmentMaterial,2,Normal,,,,,,,,
+303102,단단한 옷,EquipmentMaterial,3,Normal,,,,,,,,
+303103,영험한 기운의 갑옷,EquipmentMaterial,4,Normal,,,,,,,,
+303104,전설의 옷,EquipmentMaterial,5,Normal,,,,,,,,
 303200,낡은 끈,EquipmentMaterial,1,Normal,,,,,,,,
 303201,버려진 허리띠,EquipmentMaterial,2,Normal,,,,,,,,
-303202,영험한 기운의 벨트,EquipmentMaterial,3,Normal,,,,,,,,
+303202,단단한 벨트,EquipmentMaterial,3,Normal,,,,,,,,
+303203,영험한 기운의 벨트,EquipmentMaterial,4,Normal,,,,,,,,
+303204,전설의 벨트,EquipmentMaterial,5,Normal,,,,,,,,
 303300,낡은 목걸이,EquipmentMaterial,1,Normal,,,,,,,,
 303301,버려진 목걸이,EquipmentMaterial,2,Normal,,,,,,,,
-303302,영험한 기운의 목걸이,EquipmentMaterial,3,Normal,,,,,,,,
+303302,단단한 목걸이,EquipmentMaterial,3,Normal,,,,,,,,
+303303,영험한 기운의 목걸이,EquipmentMaterial,4,Normal,,,,,,,,
+303304,전설의 목걸이,EquipmentMaterial,5,Normal,,,,,,,,
 303400,낡은 반지,EquipmentMaterial,1,Normal,,,,,,,,
 303401,버려진 반지,EquipmentMaterial,2,Normal,,,,,,,,
-303402,영험한 기운의 반지,EquipmentMaterial,3,Normal,,,,,,,,
+303402,단단한 반지,EquipmentMaterial,3,Normal,,,,,,,,
+303403,영험한 기운의 반지,EquipmentMaterial,4,Normal,,,,,,,,
+303404,전설의 반지,EquipmentMaterial,5,Normal,,,,,,,,
 304000,불의 정수,NormalMaterial,1,Fire,,,,,,,,
 304001,대지의 정수,NormalMaterial,1,Land,,,,,,,,
 304002,물의 정수,NormalMaterial,1,Water,,,,,,,,
@@ -70,8 +80,24 @@ id,_name,item_sub_type,grade,elemental_type,stat_type,stat_min,stat_max,skill_id
 306032,화염의 부러진 지팡이,MonsterPart,2,Fire,ATK,25,50,110003,25,50,5,15
 306033,화염의 제림니르 도끼,MonsterPart,1,Fire,ATK,15,40,,15,40,5,15
 306034,화염의 제림니르 철퇴,MonsterPart,1,Fire,ATK,15,40,,15,40,5,15
-306035,수액 덩어리,MonsterPart,1,Normal,ATK,3,10,,3,10,5,15
-306036,화염의 수액 덩어리,MonsterPart,1,Fire,ATK,3,10,,3,10,5,15
-306037,바람의 수액 덩어리,MonsterPart,1,Wind,DEF,3,10,,3,10,5,15
-306038,대지의 수액 덩어리,MonsterPart,1,Land,ATK,3,10,,3,10,5,15
-306039,물의 수액 덩어리,MonsterPart,1,Water,DEF,3,10,,3,10,5,15
+306035,수액 덩어리,MonsterPart,2,Normal,ATK,3,10,,3,10,5,15
+306036,화염의 수액 덩어리,MonsterPart,2,Fire,ATK,3,10,,3,10,5,15
+306037,바람의 수액 덩어리,MonsterPart,2,Wind,DEF,3,10,,3,10,5,15
+306038,대지의 수액 덩어리,MonsterPart,2,Land,ATK,3,10,,3,10,5,15
+306039,물의 수액 덩어리,MonsterPart,2,Water,DEF,3,10,,3,10,5,15
+306040,수액 덩어리(소),MonsterPart,1,Normal,ATK,3,10,,3,10,5,15
+306041,화염의 수액 덩어리(소),MonsterPart,1,Fire,ATK,3,10,,3,10,5,15
+306042,바람의 수액 덩어리(소),MonsterPart,1,Wind,DEF,3,10,,3,10,5,15
+306043,대지의 수액 덩어리(소),MonsterPart,1,Land,ATK,3,10,,3,10,5,15
+306044,물의 수액 덩어리(소),MonsterPart,1,Water,DEF,3,10,,3,10,5,15
+306045,수액 덩어리(대),MonsterPart,3,Normal,ATK,3,10,,3,10,5,15
+306046,화염의 수액 덩어리(대),MonsterPart,3,Fire,ATK,3,10,,3,10,5,15
+306047,바람의 수액 덩어리(대),MonsterPart,3,Wind,DEF,3,10,,3,10,5,15
+306048,대지의 수액 덩어리(대),MonsterPart,3,Land,ATK,3,10,,3,10,5,15
+306049,물의 수액 덩어리(대),MonsterPart,3,Water,DEF,3,10,,3,10,5,15
+306050,유령의 투구,MonsterPart,1,Wind,DEF,3,10,,3,10,5,15
+306051,유령의 검 조각,MonsterPart,2,Wind,ATK,3,10,,3,10,5,15
+306052,유령의 혼,MonsterPart,3,Wind,ATK,3,10,,3,10,5,15
+306053,펜리르의 발톱,MonsterPart,4,Wind,DEF,3,10,,3,10,5,15
+306054,펜리르의 황금 족쇄,MonsterPart,4,Wind,ATK,3,10,,3,10,5,15
+306055,펜리르의 갈기,MonsterPart,5,Wind,DEF,3,10,,3,10,5,15
