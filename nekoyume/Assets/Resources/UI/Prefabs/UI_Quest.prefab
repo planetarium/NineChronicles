@@ -109,8 +109,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 235, y: 205}
-  m_SizeDelta: {x: 16, y: 18}
+  m_AnchoredPosition: {x: 236.8, y: 208.6}
+  m_SizeDelta: {x: 18, y: 21}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3846098193255051168
 CanvasRenderer:
@@ -639,7 +639,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -181.8, y: 209}
+  m_AnchoredPosition: {x: -191.6, y: 209}
   m_SizeDelta: {x: 51.8, y: 25}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7840068124358727615
@@ -849,6 +849,7 @@ GameObject:
   - component: {fileID: 3106393234482413173}
   - component: {fileID: 2979225613781371167}
   - component: {fileID: 57150101083656574}
+  - component: {fileID: 2600531884049954384}
   m_Layer: 5
   m_Name: UI_Quest
   m_TagString: Untagged
@@ -945,6 +946,35 @@ MonoBehaviour:
     image: {fileID: 105231457820702483}
     icon: {fileID: 8203283650499997947}
     text: {fileID: 263692543438632600}
+--- !u!114 &2600531884049954384
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2886511627788967075}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -765806418, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 2100000, guid: 4baecb0cd497d4436911f7d5fd7b9b0c, type: 2}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
+      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
 --- !u!1 &2886678452255110699
 GameObject:
   m_ObjectHideFlags: 0
