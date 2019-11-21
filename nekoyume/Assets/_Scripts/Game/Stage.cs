@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Assets.SimpleLocalization;
 using DG.Tweening;
 using Nekoyume.BlockChain;
 using Nekoyume.Data;
@@ -510,7 +511,7 @@ namespace Nekoyume.Game
                 var sprite = SpriteHelper.GetCharacterIcon(boss.RowData.Id);
                 battle.bossStatus.Show();
                 battle.bossStatus.SetHp(boss.HP, boss.HP);
-                battle.bossStatus.SetProfile(boss.Level, boss.RowData.Id.ToString(), sprite);
+                battle.bossStatus.SetProfile(boss.Level, LocalizationManager.LocalizeCharacterName(boss.RowData.Id), sprite);
                 playerCharacter.ShowSpeech("PLAYER_BOSS_ENCOUNTER");
             }
 
