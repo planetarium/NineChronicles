@@ -167,6 +167,7 @@ namespace Nekoyume.UI
             {
                 combineConsumable.TryAddMaterial(inventoryItemViewModel);
             }
+            combineConsumable.submitButton.gameObject.SetActive(true);
         }
 
         private void SubscribeState(StateType value)
