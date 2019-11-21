@@ -5885,7 +5885,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   autoParallaxSize: 0
   parallaxSize: 9.3625
-  parallaxSpeed: 0.21
+  parallaxSpeed: 0.1
 --- !u!1 &1558443722714468
 GameObject:
   m_ObjectHideFlags: 0
@@ -6093,7 +6093,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   autoParallaxSize: 1
   parallaxSize: 0
-  parallaxSpeed: -0.2
+  parallaxSpeed: 0
 --- !u!1 &1849977712382426
 GameObject:
   m_ObjectHideFlags: 0
@@ -6220,7 +6220,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   autoParallaxSize: 1
   parallaxSize: 0
-  parallaxSpeed: -0.2
+  parallaxSpeed: 0
 --- !u!1 &1906038057865162
 GameObject:
   m_ObjectHideFlags: 0
@@ -6268,7 +6268,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   autoParallaxSize: 0
   parallaxSize: 9.3625
-  parallaxSpeed: 0.3
+  parallaxSpeed: 0.15
 --- !u!1 &1999469400951756
 GameObject:
   m_ObjectHideFlags: 0
@@ -6432,10 +6432,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 276155728023524057, guid: e41d7c32ecdeb7e4c99142781c2bda8d,
+    - target: {fileID: 103231418968682941, guid: e41d7c32ecdeb7e4c99142781c2bda8d,
         type: 3}
-      propertyPath: m_Layer
-      value: 11
+      propertyPath: moveWithTransform
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 77774332240579537, guid: e41d7c32ecdeb7e4c99142781c2bda8d,
         type: 3}
@@ -6452,10 +6452,10 @@ PrefabInstance:
       propertyPath: m_SortingOrder
       value: 5
       objectReference: {fileID: 0}
-    - target: {fileID: 103231418968682941, guid: e41d7c32ecdeb7e4c99142781c2bda8d,
+    - target: {fileID: 276155728023524057, guid: e41d7c32ecdeb7e4c99142781c2bda8d,
         type: 3}
-      propertyPath: moveWithTransform
-      value: 1
+      propertyPath: m_Layer
+      value: 11
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e41d7c32ecdeb7e4c99142781c2bda8d, type: 3}
