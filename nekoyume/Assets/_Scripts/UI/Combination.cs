@@ -394,8 +394,6 @@ namespace Nekoyume.UI
                 {
                     _npc.Emotion();
                 }
-                if (speechBubble.gameObject.activeSelf)
-                    return;
                 speechBubble.SetKey(key);
                 StartCoroutine(speechBubble.CoShowText());
             }

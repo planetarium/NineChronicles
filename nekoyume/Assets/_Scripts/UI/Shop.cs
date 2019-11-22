@@ -29,11 +29,12 @@ namespace Nekoyume.UI
             Sell
         }
 
+        private const float GoOutTweenX = 800f;
+        private const int NpcId = 300000;
+        private static readonly Vector2 NpcPosition = new Vector2(2.76f, -1.72f);
+
         private float _defaultAnchoredPositionXOfBg1;
         private float _defaultAnchoredPositionXOfRight;
-        private float _goOutTweenX = 800f;
-        private const int _npcId = 300000;
-        private static Vector2 _npcPosition = new Vector2(2.76f, -1.72f);
         private Npc _npc;
 
         private Sequence _sequenceOfShopItems;
@@ -123,7 +124,7 @@ namespace Nekoyume.UI
                 BottomMenu.ToggleableType.Chat,
                 BottomMenu.ToggleableType.IllustratedBook);
 
-            var go = Game.Game.instance.stage.npcFactory.Create(_npcId, _npcPosition);
+            var go = Game.Game.instance.stage.npcFactory.Create(NpcId, NpcPosition);
             _npc = go.GetComponent<Npc>();
             go.SetActive(true);
 
@@ -134,7 +135,7 @@ namespace Nekoyume.UI
         {
             base.OnCompleteOfShowAnimation();
             canvasGroup.interactable = true;
-            _npc.Greeting();
+            ShowSpeech("SPEECH_SHOP_GREETING_", CharacterAnimation.Type.Greeting);
 
         }
 
@@ -198,15 +199,6 @@ namespace Nekoyume.UI
             _sequenceOfShopItems.OnComplete(() =>
             {
                 canvasGroup.interactable = true;
-                switch (stateType)
-                {
-                    case StateType.Buy:
-                        ShowSpeech("SPEECH_SHOP_BUY_");
-                        break;
-                    case StateType.Sell:
-                        ShowSpeech("SPEECH_SHOP_SELL_");
-                        break;
-                }
             });
         }
 
@@ -334,13 +326,16 @@ namespace Nekoyume.UI
         
         private void SubscribeOnToggledOn(IToggleable toggleable)
         {
+            // NPC Greeting, Emotion 구분을 위해 SubscribeState 외부에서 처리
             if (toggleable.Name.Equals(buyButton.Name))
             {
                 SharedModel.State.Value = StateType.Buy;
+                ShowSpeech("SPEECH_SHOP_BUY_");
             }
             else if (toggleable.Name.Equals(sellButton.Name))
             {
                 SharedModel.State.Value = StateType.Sell;
+                ShowSpeech("SPEECH_SHOP_SELL_");
             }
         }
         
@@ -434,7 +429,7 @@ namespace Nekoyume.UI
 
         private void SetSequenceOfShopItems(bool isGoOut, ref Sequence sequence)
         {
-            var goOutTweenXAbs = Math.Abs(_goOutTweenX);
+            var goOutTweenXAbs = Math.Abs(GoOutTweenX);
             sequence.Append(DOTween
                 .To(
                     () => bg1.anchoredPosition.x,
@@ -445,7 +440,7 @@ namespace Nekoyume.UI
                         bg1.anchoredPosition = p;
                     },
                     isGoOut
-                        ? _defaultAnchoredPositionXOfBg1 + _goOutTweenX
+                        ? _defaultAnchoredPositionXOfBg1 + GoOutTweenX
                         : _defaultAnchoredPositionXOfBg1,
                     isGoOut
                         ? Math.Abs(goOutTweenXAbs - Math.Abs(bg1.anchoredPosition.x - _defaultAnchoredPositionXOfBg1)) /
@@ -463,7 +458,7 @@ namespace Nekoyume.UI
                         right.anchoredPosition = p;
                     },
                     isGoOut
-                        ? _defaultAnchoredPositionXOfRight + _goOutTweenX
+                        ? _defaultAnchoredPositionXOfRight + GoOutTweenX
                         : _defaultAnchoredPositionXOfRight,
                     isGoOut
                         ? Math.Abs(goOutTweenXAbs -
@@ -475,11 +470,16 @@ namespace Nekoyume.UI
                 .SetEase(isGoOut ? Ease.InQuint : Ease.OutQuint));
         }
 
-        private void ShowSpeech(string key)
+        private void ShowSpeech(string key, CharacterAnimation.Type type = CharacterAnimation.Type.Emotion)
         {
-            _npc.Emotion();
-            if (speechBubble.gameObject.activeSelf)
-                return;
+            if (type == CharacterAnimation.Type.Greeting)
+            {
+                _npc.Greeting();
+            }
+            else
+            {
+                _npc.Emotion();
+            }
             speechBubble.SetKey(key);
             StartCoroutine(speechBubble.CoShowText());
         }
