@@ -40,6 +40,11 @@ namespace Nekoyume.Game.Character
             _animator.Play(nameof(CharacterAnimation.Type.Greeting), _baseLayerIndex, 0f);
         }
 
+        public void Appear()
+        {
+            _animator.Play(nameof(CharacterAnimation.Type.Appear), _baseLayerIndex, 0f);
+        }
+
         public void ResetTarget(GameObject value)
         {
             if (!value)
