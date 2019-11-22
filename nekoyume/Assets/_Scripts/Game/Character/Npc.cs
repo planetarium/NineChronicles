@@ -39,5 +39,10 @@ namespace Nekoyume.Game.Character
         {
             animator.Touch();
         }
+
+        public void Appear()
+        {
+            animator.Appear();
+        }
     }
 }
