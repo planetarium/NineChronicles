@@ -8,7 +8,6 @@ using Nekoyume.Battle;
 using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.TableData;
-using UniRx;
 
 namespace Nekoyume.Model
 {
@@ -214,6 +213,20 @@ namespace Nekoyume.Model
         {
             var chance = Simulator.Random.Next(0, 100);
             return chance < CRI;
+        }
+
+        public bool IsCritical(ElementalResult result)
+        {
+            var correction = result == ElementalResult.Win ? 50 : 0;
+            var chance = Simulator.Random.Next(0, 100);
+            return CRI + correction > chance;
+        }
+
+        public bool IsHit(ElementalResult result)
+        {
+            var correction = result == ElementalResult.Lose ? 50 : 0;
+            var chance = Simulator.Random.Next(0, 100);
+            return chance >= Stats.DOG + correction;
         }
 
         private bool IsAlive()

@@ -36,11 +36,15 @@ namespace Nekoyume.Game
                 {
                     // damage 0 = dodged.
                     var damage = 0;
-                    var critical = false;
-                    if (target.Simulator.Random.Next(0, 100) >= target.Stats.DOG)
+                    var elementalResult = elemental.GetBattleResult(target.defElementType);
+                    var critical = elementalResult == ElementalResult.Win;
+                    if (target.IsHit(elementalResult))
                     {
                         var multiply = multiplier[i];
-                        critical = caster.IsCritical();
+                        if (!critical)
+                        {
+                            critical = caster.IsCritical(elementalResult);
+                        }
                         damage = elemental.GetDamage(target.defElementType, skillDamage);
                         // https://gamedev.stackexchange.com/questions/129319/rpg-formula-attack-and-defense
                         damage = (int) ((long) damage * damage / (damage + target.DEF));
