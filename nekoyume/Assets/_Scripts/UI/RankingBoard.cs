@@ -17,7 +17,7 @@ namespace Nekoyume.UI
             Filtered,
             Overall
         }
-        private const int NpcId = 300001;
+        private const int NpcId = 300002;
         private static readonly Vector3 NpcPosition = new Vector3(1.2f, -1.72f);
 
         public CategoryButton filteredButton;
