@@ -17,7 +17,7 @@ namespace Nekoyume.UI
             Filtered,
             Overall
         }
-        private const int NpcId = 300001;
+        private const int NpcId = 300002;
         private static readonly Vector3 NpcPosition = new Vector3(1.2f, -1.72f);
 
         public CategoryButton filteredButton;
@@ -38,10 +38,20 @@ namespace Nekoyume.UI
             _state.Subscribe(SubscribeState).AddTo(gameObject);
 
             filteredButton.button.OnClickAsObservable()
-                .Subscribe(_ => _state.Value = StateType.Filtered)
+                .Subscribe(_ =>
+                {
+                    _state.Value = StateType.Filtered;
+                    // SubScribeState대신 밖에서 처리하는 이유는 랭킹보드 진입시에도 상태가 상태가 바뀌기 때문
+                    ShowSpeech("SPEECH_RANKING_BOARD_FILTERED_");
+                })
                 .AddTo(gameObject);
             overallButton.button.OnClickAsObservable()
-                .Subscribe(_ => _state.Value = StateType.Overall)
+                .Subscribe(_ =>
+                {
+                    _state.Value = StateType.Overall;
+                    // SubScribeState대신 밖에서 처리하는 이유는 랭킹보드 진입시에도 상태가 상태가 바뀌기 때문
+                    ShowSpeech("SPEECH_RANKING_BOARD_ALL_");
+                })
                 .AddTo(gameObject);
         }
 
@@ -50,7 +60,7 @@ namespace Nekoyume.UI
             base.OnCompleteOfShowAnimation();
 
             _npc.gameObject.SetActive(true);
-            ShowSpeech("SPEECH_RANKING_BOARD_GREETING_");
+            ShowSpeech("SPEECH_RANKING_BOARD_GREETING_", CharacterAnimation.Type.Greeting);
         }
 
         public void Show(StateType stateType = StateType.Filtered)
@@ -82,7 +92,7 @@ namespace Nekoyume.UI
             base.Close(ignoreCloseAnimation);
 
             _npc.gameObject.SetActive(false);
-            speechBubble.gameObject.SetActive(false);
+            speechBubble.Hide();
 
             AudioController.instance.PlayMusic(AudioController.MusicCode.Main);
         }
@@ -161,8 +171,6 @@ namespace Nekoyume.UI
                 {
                     _npc.Emotion();
                 }
-                if (speechBubble.gameObject.activeSelf)
-                    return;
                 speechBubble.SetKey(key);
                 StartCoroutine(speechBubble.CoShowText());
             }
