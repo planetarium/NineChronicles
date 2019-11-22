@@ -21,12 +21,12 @@ namespace Nekoyume.Game
         public int DOG => HasDOG ? StatMaps[StatType.DOG].TotalValueAsInt : 0;
         public int SPD => HasSPD ? StatMaps[StatType.SPD].TotalValueAsInt : 0;
         
-        public bool HasHP => StatMaps.ContainsKey(StatType.HP) && StatMaps[StatType.HP].Value > 0m;
-        public bool HasATK => StatMaps.ContainsKey(StatType.ATK) && StatMaps[StatType.ATK].Value > 0m;
-        public bool HasDEF => StatMaps.ContainsKey(StatType.DEF) && StatMaps[StatType.DEF].Value > 0m;
-        public bool HasCRI => StatMaps.ContainsKey(StatType.CRI) && StatMaps[StatType.CRI].Value > 0m;
-        public bool HasDOG => StatMaps.ContainsKey(StatType.DOG) && StatMaps[StatType.DOG].Value > 0m;
-        public bool HasSPD => StatMaps.ContainsKey(StatType.SPD) && StatMaps[StatType.SPD].Value > 0m;
+        public bool HasHP => StatMaps.ContainsKey(StatType.HP) && StatMaps[StatType.HP].Value > 0m || HasAdditionalHP;
+        public bool HasATK => StatMaps.ContainsKey(StatType.ATK) && StatMaps[StatType.ATK].Value > 0m || HasAdditionalATK;
+        public bool HasDEF => StatMaps.ContainsKey(StatType.DEF) && StatMaps[StatType.DEF].Value > 0m || HasAdditionalDEF;
+        public bool HasCRI => StatMaps.ContainsKey(StatType.CRI) && StatMaps[StatType.CRI].Value > 0m || HasAdditionalCRI;
+        public bool HasDOG => StatMaps.ContainsKey(StatType.DOG) && StatMaps[StatType.DOG].Value > 0m || HasAdditionalDOG;
+        public bool HasSPD => StatMaps.ContainsKey(StatType.SPD) && StatMaps[StatType.SPD].Value > 0m || HasAdditionalSPD;
 
         public int AdditionalHP => HasAdditionalHP ? StatMaps[StatType.HP].AdditionalValueAsInt : 0;
         public int AdditionalATK => HasAdditionalATK ? StatMaps[StatType.ATK].AdditionalValueAsInt : 0;
