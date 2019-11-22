@@ -21,17 +21,17 @@ namespace Nekoyume.Game.Character
         private const string DefaultPMAShader = "Spine/Skeleton";
         private const string DefaultStraightAlphaShader = "Sprites/Default";
         private const string WeaponSlot = "weapon";
-        private const string EarLeftSlot = "ear_0001_L";
-        private const string EarRightSlot = "ear_0001_R";
-        private const string EyeOpenSlot = "eye_red_01";
-        private const string EyeHalfSlot = "eye_red_02";
-        private const string Hair01Slot = "hair_brown_01";
-        private const string Hair02Slot = "hair_brown_02";
-        private const string Hair03Slot = "hair_brown_03";
-        private const string Hair04Slot = "hair_brown_04";
-        private const string Hair05Slot = "hair_brown_05";
-        private const string Hair06Slot = "hair_brown_06";
-        private const string TailSlot = "tail_0002";
+        private const string EarLeftSlot = "ear_L";
+        private const string EarRightSlot = "ear_R";
+        private const string EyeOpenSlot = "eye_01";
+        private const string EyeHalfSlot = "eye_02";
+        private const string Hair01Slot = "hair_01";
+        private const string Hair02Slot = "hair_02";
+        private const string Hair03Slot = "hair_03";
+        private const string Hair04Slot = "hair_04";
+        private const string Hair05Slot = "hair_05";
+        private const string Hair06Slot = "hair_06";
+        private const string TailSlot = "tail";
 
         public List<StateNameToAnimationReference> statesAndAnimations = new List<StateNameToAnimationReference>();
 
@@ -65,6 +65,8 @@ namespace Nekoyume.Game.Character
         
         private int _weaponSlotIndex;
         private RegionAttachment _weaponAttachmentDefault;
+
+        private readonly List<string> _attachmentNames = new List<string>();
 
         #region Mono
 
@@ -173,24 +175,42 @@ namespace Nekoyume.Game.Character
             if (_earLeftSlot is null || _earRightSlot is null)
                 return;
 
-            if (spriteLeft is null)
+            _attachmentNames.Clear();
+            _clonedSkin.FindNamesForSlot(_earLeftSlotIndex, _attachmentNames);
+
+            var attachmentName = _attachmentNames.Count > 0 ? _attachmentNames[0] : string.Empty;
+
+            if (string.IsNullOrEmpty(attachmentName))
             {
-                _clonedSkin.SetAttachment(_earLeftSlotIndex, EarLeftSlot, _earLeftAttachmentDefault);
+                _clonedSkin.AddAttachment(_earLeftSlotIndex, EarLeftSlot, _earLeftAttachmentDefault);
+            }
+            else if (spriteLeft is null)
+            {
+                _clonedSkin.SetAttachment(_earLeftSlotIndex, attachmentName, _earLeftAttachmentDefault);
             }
             else
             {
                 var newEarLeft = RemapAttachment(_earLeftSlot, spriteLeft);
-                _clonedSkin.SetAttachment(_earLeftSlotIndex, EarLeftSlot, newEarLeft);
+                _clonedSkin.SetAttachment(_earLeftSlotIndex, attachmentName, newEarLeft);
             }
 
-            if (spriteRight is null)
+            _attachmentNames.Clear();
+            _clonedSkin.FindNamesForSlot(_earRightSlotIndex, _attachmentNames);
+
+            attachmentName = _attachmentNames.Count > 0 ? _attachmentNames[0] : string.Empty;
+
+            if (string.IsNullOrEmpty(attachmentName))
             {
-                _clonedSkin.SetAttachment(_earRightSlotIndex, EarRightSlot, _earRightAttachmentDefault);    
+                _clonedSkin.AddAttachment(_earRightSlotIndex, EarRightSlot, _earRightAttachmentDefault);
+            }
+            else if (spriteRight is null)
+            {
+                _clonedSkin.SetAttachment(_earRightSlotIndex, attachmentName, _earRightAttachmentDefault);    
             }
             else
             {
                 var newEarRight = RemapAttachment(_earRightSlot, spriteRight);
-                _clonedSkin.SetAttachment(_earRightSlotIndex, EarRightSlot, newEarRight);
+                _clonedSkin.SetAttachment(_earRightSlotIndex, attachmentName, newEarRight);
             }
 
             UpdateInternal();
@@ -201,24 +221,42 @@ namespace Nekoyume.Game.Character
             if (_eyeOpenSlot is null || _eyeHalfSlot is null)
                 return;
 
-            if (spriteEyeOpen is null)
+            _attachmentNames.Clear();
+            _clonedSkin.FindNamesForSlot(_eyeOpenSlotIndex, _attachmentNames);
+
+            var attachmentName = _attachmentNames.Count > 0 ? _attachmentNames[0] : string.Empty;
+
+            if (string.IsNullOrEmpty(attachmentName))
             {
-                _clonedSkin.SetAttachment(_eyeOpenSlotIndex, EyeOpenSlot, _eyeOpenAttachmentDefault);
+                _clonedSkin.AddAttachment(_eyeOpenSlotIndex, EyeOpenSlot, _earRightAttachmentDefault);
+            }
+            else if (spriteEyeOpen is null)
+            {
+                _clonedSkin.SetAttachment(_eyeOpenSlotIndex, attachmentName, _eyeOpenAttachmentDefault);
             }
             else
             {
                 var newEyeOpen = RemapAttachment(_eyeOpenSlot, spriteEyeOpen);
-                _clonedSkin.SetAttachment(_eyeOpenSlotIndex, EyeOpenSlot, newEyeOpen);
+                _clonedSkin.SetAttachment(_eyeOpenSlotIndex, attachmentName, newEyeOpen);
             }
             
-            if (spriteEyeHalf is null)
+             _attachmentNames.Clear();
+            _clonedSkin.FindNamesForSlot(_eyeHalfSlotIndex, _attachmentNames);
+
+            attachmentName = _attachmentNames.Count > 0 ? _attachmentNames[0] : string.Empty;
+
+            if (string.IsNullOrEmpty(attachmentName))
             {
-                _clonedSkin.SetAttachment(_eyeHalfSlotIndex, EyeHalfSlot, _eyeHalfAttachmentDefault);
+                _clonedSkin.AddAttachment(_eyeHalfSlotIndex, EyeHalfSlot, _eyeHalfAttachmentDefault);
+            }
+            else if (spriteEyeHalf is null)
+            {
+                _clonedSkin.SetAttachment(_eyeHalfSlotIndex, attachmentName, _eyeHalfAttachmentDefault);
             }
             else
             {
                 var newEyeHalf = RemapAttachment(_eyeHalfSlot, spriteEyeHalf);
-                _clonedSkin.SetAttachment(_eyeHalfSlotIndex, EyeHalfSlot, newEyeHalf);
+                _clonedSkin.SetAttachment(_eyeHalfSlotIndex, attachmentName, newEyeHalf);
             }
 
             UpdateInternal();
@@ -229,14 +267,23 @@ namespace Nekoyume.Game.Character
             if (_tailSlot is null)
                 return;
 
-            if (sprite is null)
+            _attachmentNames.Clear();
+            _clonedSkin.FindNamesForSlot(_tailSlotIndex, _attachmentNames);
+
+            var attachmentName = _attachmentNames.Count > 0 ? _attachmentNames[0] : string.Empty;
+
+            if (string.IsNullOrEmpty(attachmentName))
             {
-                _clonedSkin.SetAttachment(_tailSlotIndex, TailSlot, _tailAttachmentDefault);
+                _clonedSkin.AddAttachment(_tailSlotIndex, TailSlot, _tailAttachmentDefault);
+            }
+            else if (sprite is null)
+            {
+                _clonedSkin.SetAttachment(_tailSlotIndex, attachmentName, _tailAttachmentDefault);
             }
             else
             {
                 var newTail = RemapAttachment(_tailSlot, sprite);
-                _clonedSkin.SetAttachment(_tailSlotIndex, TailSlot, newTail);
+                _clonedSkin.SetAttachment(_tailSlotIndex, attachmentName, newTail);
             }
 
             UpdateInternal();
