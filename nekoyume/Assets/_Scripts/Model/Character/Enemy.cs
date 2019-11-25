@@ -31,7 +31,7 @@ namespace Nekoyume.Model
         {
             base.SetSkill();
             
-            var dmg = (int) (ATK * 1.3m);
+            var dmg = (int) (ATK * 0.3m);
             var skillIds = Game.Game.instance.TableSheets.EnemySkillSheet.Values.Where(r => r.characterId == RowData.Id)
                 .Select(r => r.skillId).ToList();
             var enemySkills = Game.Game.instance.TableSheets.SkillSheet.Values.Where(r => skillIds.Contains(r.Id))
