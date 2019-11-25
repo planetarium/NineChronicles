@@ -88,7 +88,7 @@ namespace Nekoyume.UI
                 throw new NotFoundComponentException<Game.Character.Player>();
 
             // stop run immediately.
-            _player.UpdateEquipments();
+            _player.UpdateEquipments(_player.Model.Value.armor, _player.Model.Value.weapon);
             _player.UpdateCustomize();
             _player.gameObject.SetActive(false);
             _player.gameObject.SetActive(true);

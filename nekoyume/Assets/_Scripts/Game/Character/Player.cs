@@ -85,7 +85,7 @@ namespace Nekoyume.Game.Character
             Model.SetValueAndForceNotify(model);
 
             InitStats(model);
-            UpdateEquipments();
+            UpdateEquipments(model.armor, model.weapon);
             UpdateCustomize();
 
             if (ReferenceEquals(SpeechBubble, null))
@@ -121,7 +121,7 @@ namespace Nekoyume.Game.Character
             UpdateTail(Model.Value.tailIndex);
         }
 
-        public void UpdateEquipments(Armor armor = null, Weapon weapon = null)
+        public void UpdateEquipments(Armor armor, Weapon weapon = null)
         {
             UpdateArmor(armor);
             UpdateWeapon(weapon);
@@ -129,11 +129,6 @@ namespace Nekoyume.Game.Character
 
         private void UpdateArmor(Armor armor)
         {
-            if (armor is null)
-            {
-                armor = Model.Value.armor;
-            }
-
             var itemId = armor?.Data.Id ?? GameConfig.DefaultAvatarArmorId;
 
             if (!(Animator.Target is null))
@@ -151,11 +146,6 @@ namespace Nekoyume.Game.Character
 
         public void UpdateWeapon(Weapon weapon)
         {
-            if (weapon == null)
-            {
-                weapon = Model.Value.weapon;
-            }
-
             var controller = GetComponentInChildren<SkeletonAnimationController>();
             if (!controller)
                 return;
