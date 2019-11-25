@@ -16,10 +16,11 @@ namespace Nekoyume.Game
         public override Model.Skill Use(CharacterBase caster)
         {
             var infos = new List<Model.Skill.SkillInfo>();
+            var healPoint = caster.ATK + power;
             foreach (var target in skillRow.SkillTargetType.GetTarget(caster))
             {
-                target.Heal(power);
-                infos.Add(new Model.Skill.SkillInfo(target, power, caster.IsCritical(), skillRow.SkillCategory));
+                target.Heal(healPoint);
+                infos.Add(new Model.Skill.SkillInfo(target, healPoint, caster.IsCritical(), skillRow.SkillCategory));
             }
 
             return new Model.HealSkill((CharacterBase) caster.Clone(), infos, ProcessBuff(caster));
