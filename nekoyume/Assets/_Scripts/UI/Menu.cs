@@ -36,6 +36,7 @@ namespace Nekoyume.UI
 
         public void ShowRoom()
         {
+            Find<QuestPreparation>().Close();
             var stage = Game.Game.instance.stage;
             stage.LoadBackground("room");
             stage.GetPlayer(stage.roomPosition);

@@ -257,7 +257,7 @@ namespace Nekoyume.UI
         private void GoToQuestPreparation()
         {
             Close();
-            Find<QuestPreparation>().Show();
+            Find<QuestPreparation>().ToggleWorldMap();
         }
     }
 }
