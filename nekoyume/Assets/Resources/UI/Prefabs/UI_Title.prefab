@@ -182,7 +182,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -247}
+  m_AnchoredPosition: {x: 0, y: -412}
   m_SizeDelta: {x: 345, y: 211}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6736393874832673055
@@ -243,8 +243,8 @@ MonoBehaviour:
   ComponentIndex: 3
   Target: {fileID: 6736393873814236505}
   CompleteDelay: 0
-  BeginValue: {x: 2.4, y: -1.6, z: -50}
-  EndValue: {x: 2.4, y: -1.2, z: -50}
+  BeginValue: {x: 0, y: -1.8, z: -50}
+  EndValue: {x: 0, y: -1.4, z: -50}
 --- !u!1 &6736393875610996747
 GameObject:
   m_ObjectHideFlags: 0
