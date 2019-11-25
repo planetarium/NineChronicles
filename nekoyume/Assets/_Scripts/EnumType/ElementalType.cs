@@ -14,6 +14,13 @@ namespace Nekoyume.EnumType
         Wind,
     }
 
+    public enum ElementalResult
+    {
+        Win,
+        Draw,
+        Lose,
+    }
+
     public class ElementalTypeComparer : IEqualityComparer<ElementalType>
     {
         public static readonly ElementalTypeComparer Instance = new ElementalTypeComparer();
@@ -36,7 +43,7 @@ namespace Nekoyume.EnumType
         private const string LandIconResourcePath = "UI/Textures/icon_elemental_land";
         private const string WindIconResourcePath = "UI/Textures/icon_elemental_wind";
 
-        private const float Multiplier = .5f;
+        private const decimal Multiplier = .5m;
 
         private static readonly Dictionary<ElementalType, Dictionary<StatType, List<string>>> GetOptionsCache =
             new Dictionary<ElementalType, Dictionary<StatType, List<string>>>(ElementalTypeComparer.Instance);
@@ -184,29 +191,45 @@ namespace Nekoyume.EnumType
         /// 0: Draw
         /// -1: Lose
         /// </returns>
-        public static int GetBattleResult(this ElementalType from, ElementalType to)
+        public static ElementalResult GetBattleResult(this ElementalType from, ElementalType to)
         {
             if (from == ElementalType.Normal)
-                return 0;
+                return ElementalResult.Draw;
 
             if (from == to)
-                return 0;
+                return ElementalResult.Draw;
 
             if (from.TryGetWinCase(out var lose) &&
                 lose == to)
-                return 1;
+                return ElementalResult.Win;
 
             if (from.TryGetLoseCase(out var win) &&
                 win == to)
-                return -1;
+                return ElementalResult.Lose;
 
-            return 0;
+            return ElementalResult.Draw;
         }
 
         public static int GetDamage(this ElementalType from, ElementalType to, int damage)
         {
+            return Convert.ToInt32(damage * GetMultiplier(from, to));
+        }
+
+        private static decimal GetMultiplier(this ElementalType from, ElementalType to)
+        {
             var battleResult = from.GetBattleResult(to);
-            return Convert.ToInt32(damage * (1 + battleResult * Multiplier));
+            var multiplier = 0;
+            switch (battleResult)
+            {
+                case ElementalResult.Win:
+                    multiplier = 1;
+                    break;
+                case ElementalResult.Lose:
+                    multiplier = -1;
+                    break;
+            }
+
+            return 1 + multiplier * Multiplier;
         }
     }
 }
