@@ -36,12 +36,13 @@ namespace Nekoyume.UI
 
         public void ShowRoom()
         {
+            Find<QuestPreparation>().Close();
             var stage = Game.Game.instance.stage;
             stage.LoadBackground("room");
             stage.GetPlayer(stage.roomPosition);
 
             var player = stage.GetPlayer();
-            player.UpdateEquipments();
+            player.UpdateEquipments(player.Model.Value.armor, player.Model.Value.weapon);
             player.UpdateCustomize();
             player.gameObject.SetActive(true);
 

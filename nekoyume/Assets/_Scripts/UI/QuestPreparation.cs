@@ -88,7 +88,7 @@ namespace Nekoyume.UI
                 throw new NotFoundComponentException<Game.Character.Player>();
 
             // stop run immediately.
-            _player.UpdateEquipments();
+            _player.UpdateEquipments(_player.Model.Value.armor, _player.Model.Value.weapon);
             _player.UpdateCustomize();
             _player.gameObject.SetActive(false);
             _player.gameObject.SetActive(true);
@@ -216,7 +216,6 @@ namespace Nekoyume.UI
 
         private void SubscribeBackButtonClick(BottomMenu bottomMenu)
         {
-            Close();
             Find<WorldMap>().Show(_stageId);
         }
 
@@ -239,6 +238,26 @@ namespace Nekoyume.UI
             Quest(repeat);
             AudioController.PlayClick();
             AnalyticsManager.Instance.BattleEntrance(repeat);
+        }
+
+        public void ToggleWorldMap()
+        {
+            if (isActiveAndEnabled)
+            {
+                _stageId = Find<WorldMap>().SelectedStageId;
+                Find<BottomMenu>().Show(
+                    UINavigator.NavigationType.Back,
+                    SubscribeBackButtonClick,
+                    true,
+                    BottomMenu.ToggleableType.Mail,
+                    BottomMenu.ToggleableType.Quest,
+                    BottomMenu.ToggleableType.Chat,
+                    BottomMenu.ToggleableType.IllustratedBook);
+            }
+            else
+            {
+                Show();
+            }
         }
 
         private void Unequip(EquipSlot slot)
