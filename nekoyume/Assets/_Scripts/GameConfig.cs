@@ -54,7 +54,7 @@ namespace Nekoyume
         public const string ColorHexForGrade2 = "12ff00";
         public const string ColorHexForGrade3 = "0f91ff";
         public const string ColorHexForGrade4 = "ffae00";
-        public const string ColorHexForGrade5 = "f73e26";
+        public const string ColorHexForGrade5 = "ba00ff";
 
         public static readonly Color ColorForGrade1 = ColorHelper.HexToColorRGB(ColorHexForGrade1);
         public static readonly Color ColorForGrade2 = ColorHelper.HexToColorRGB(ColorHexForGrade2);
