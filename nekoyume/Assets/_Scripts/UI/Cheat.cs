@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
+using Bencodex.Types;
 using Libplanet.Action;
 using Nekoyume.Battle;
 using Nekoyume.BlockChain;
@@ -377,6 +379,30 @@ namespace Nekoyume
         private void DummySkill()
         {
             skillPanel.gameObject.SetActive(true);
+        }
+
+        private void ExportState()
+        {
+            var avatarStates = new Bencodex.Types.Dictionary(
+                States.Instance.AvatarStates.Select(kv =>
+                    new KeyValuePair<IKey, IValue>(
+                        new Binary(BitConverter.GetBytes(kv.Key)),
+                        kv.Value.Serialize()
+                    )
+                )
+            );
+            var states = Bencodex.Types.Dictionary.Empty
+                .Add("AgentState", States.Instance.AgentState.Value.Serialize())
+                .Add("AvatarStates", avatarStates)
+                .Add("RankingState", States.Instance.RankingState.Value.Serialize())
+                .Add("ShopState", States.Instance.ShopState.Value.Serialize())
+                .Add("TableSheetsState", TableSheetsState.Current.Serialize());
+            var codec = new Bencodex.Codec();
+            var path = Path.Combine(Application.persistentDataPath, DateTimeOffset.Now + ".states");
+            using (FileStream stream = File.Create(path))
+            {
+                codec.Encode(states, stream);
+            }
         }
 
         private void SelectSkill(Game.Skill skill)
