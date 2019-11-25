@@ -8,17 +8,17 @@ CRAFT,Craft,제작
 EXCHANGE,Exchange,거래
 OBTAIN,Obtain,획득
 SYSTEM,System,시스템
-SPEECH_SHOP_0,Did you make something nice?[newline]Then come and sell it here.,괜찮은 물건을 제작했어?[newline]그럼 여기 와서 팔아봐
+SPEECH_SHOP_0,Did you make something nice?[newline]Come and sell it!,괜찮은 물건을 제작했어?[newline]그럼 여기 와서 팔아봐
 SPEECH_SHOP_1,There's a lot of[newline]good stuff coming up.,좋은 물건이 많이 올라와있어![newline]시간 나면 보고 가
-SPEECH_SHOP_2,When you're worried about[newline]selling prices[newline]check out what other people[newline]put up on them.,판매 가격이 고민되면[newline]다른 사람들이[newline]얼마에 올렸는지 잘 살펴봐
-SPEECH_SHOP_3,You can always get back things[newline]that haven't been sold.,아직 팔리지 않은 물건은[newline]언제든지 다시 회수할 수 있어
-SPEECH_SHOP_4,How many cats does[newline]Frey want to bring[newline]to the world..?,프레이야님은 신계에[newline]얼마나 많은 고양이를[newline]불러모으려고 하는걸까..?
+SPEECH_SHOP_2,When you're worried about[newline]setting the right price[newline]check out what other people[newline]are selling them for.,판매 가격이 고민되면[newline]다른 사람들이[newline]얼마에 올렸는지 잘 살펴봐
+SPEECH_SHOP_3,You can always retrieve items[newline]that haven't been sold.,아직 팔리지 않은 물건은[newline]언제든지 다시 회수할 수 있어
+SPEECH_SHOP_4,How many cats does[newline]Freya want to bring[newline]to the world..?,프레이야님은 신계에[newline]얼마나 많은 고양이를[newline]불러모으려고 하는걸까..?
 SPEECH_SHOP_5,Unidentified creatures[newline]from Igdrasil have[newline]engulfed the whole world.,세계수에서 생겨난 정체불명의[newline]생명체들이 온 세계를 뒤덮고 말았어..
 SPEECH_SHOP_6,You need a variety of equipment[newline]to prepare for the ordeal.,다양한 장비가 있어야 시련을 대비할 수 있어
-SPEECH_COMBINE_0,Did you collect[newline]the materials in battle?[newline]Then come to me.,전투로 재료를 모았나?[newline]그럼 내게 오시게
-SPEECH_COMBINE_1,I'll do my best to make[newline]newline weapons.,최선을 다해[newline]무기를 만들어주지
-SPEECH_COMBINE_2,You want to build[newline]a stronger weapon?[newline]Gather a lot of material[newline]for the desired effect.,더 강한 무기를 만들고 싶다고?[newline]원하는 효과의 재료를 많이 모으게
-SPEECH_COMBINE_3,Do you know the fact that[newline]there is 4 elemental in the world?,속성이 있다는[newline]사실을 알고 있나?
+SPEECH_COMBINE_0,Did you collect[newline]the materials?[newline]Then come to me.,전투로 재료를 모았나?[newline]그럼 내게 오시게
+SPEECH_COMBINE_1,I'll do my best job on this one.,최선을 다해[newline]무기를 만들어주지
+SPEECH_COMBINE_2,You want to build[newline]a stronger weapon?[newline]Gather more materials[newline]for the desired effect.,더 강한 무기를 만들고 싶다고?[newline]원하는 효과의 재료를 많이 모으게
+SPEECH_COMBINE_3,Do you know the fact that[newline]there are four elementals in the world?,속성이 있다는[newline]사실을 알고 있나?
 SPEECH_COMBINE_4,Don't be too upset.[newline]have you ever heard of[newline]a consumable item?,속성무기를 못 만든다고[newline]너무 상심하지 말게.[newline]소모템이라고 들어보았나?
 SPEECH_COMBINE_5,Consumable item disappears[newline]once you use it[newline]but it works just as well.,소모템은 한번 쓰면 사라지지만[newline]그만큼 효과가 강력하다오
 SPEECH_COMBINE_6,You want more weapons?[newline] Make a weapon and synthesize it.,무기를 더 강화하고 싶다고?[newline]같은 무기를 만들어서 합성해보게
@@ -34,10 +34,10 @@ SPEECH_RANK_6,Every life has[newline]an elemental property!,신계의 생명은 
 SPEECH_DUNGEON_0,You can begin the expedition[newline]through the magicians below.,아래 마법진을 누르면[newline]탐험을 시작할 수 있다옹
 SPEECH_DUNGEON_1,You want to collect[newline]a lot of the same ingredients?[newline]Have you fought it[newline]over and over again?,똑같은 재료를 많이 모으고 싶다고?[newline]반복전투는 해봤나옹?
 SPEECH_DUNGEON_2,What monsters drop looks trivial[newline]but it makes a good material.,몬스터가 떨어뜨리는 것들은[newline]하찮아 보이지만 좋은 재작 재료가 된다옹
-SPEECH_DUNGEON_3,The Frey has always liked our cats.,여신님은 예로부터[newline]우리 고양이들을 좋아하셨다옹
-SPEECH_DUNGEON_4,The new world is balanced[newline]by the forces of 4 elements.,신계는 4가지 원소의 힘으로[newline]균형이 이루어지고 있다옹
-PLAYER_INIT_0,This place is filled[newline]with little monsters.,여기도 우글우글하군
-PLAYER_INIT_1,Let's get started.,시작해볼까?
+SPEECH_DUNGEON_3,Freya has always liked us, cats.,여신님은 예로부터[newline]우리 고양이들을 좋아하셨다옹
+SPEECH_DUNGEON_4,The new world is balanced[newline]by the forces of four elements.,신계는 4가지 원소의 힘으로[newline]균형이 이루어지고 있다옹
+PLAYER_INIT_0,This place is full of little monsters.,여기도 우글우글하군
+PLAYER_INIT_1,Let's get started!,시작해볼까?
 PLAYER_ATTACK_0,Oops!,이얍!
 PLAYER_ATTACK_1,,
 PLAYER_ATTACK_2,,
@@ -47,44 +47,44 @@ ENEMY_INIT_0_2,,
 ENEMY_INIT_0_3,,
 ENEMY_INIT_0_4,,
 PLAYER_SKILL_1_2_0,!Burn them all!,!다 불태워버려라!
-PLAYER_SKILL_3_2_0,!Get rid of it all!,!다 쓸어버려라!
-PLAYER_SKILL_4_2_0,!I'm gonna[newline]blow them all up!,!모두 날려버리겠다!
-PLAYER_SKILL_2_2_0,!I'm going to[newline]destroy it all!,!다 부셔버리겠다!
+PLAYER_SKILL_3_2_0,!Wipe them all out!,!다 쓸어버려라!
+PLAYER_SKILL_4_2_0,!I'm going to[newline]blow it all up!,!모두 날려버리겠다!
+PLAYER_SKILL_2_2_0,!I'm going to[newline]blow it all up!,!다 부셔버리겠다!
 PLAYER_SKILL_0_2_0,!You can't[newline]avoid this!,!이건 못 피할 걸?
-PLAYER_BOSS_STAGE_0,I feel bad[newline]for some reason..,왠지 불길한데..?
+PLAYER_BOSS_STAGE_0,Hey... what's that?,왠지 불길한데..?
 PLAYER_BOSS_STAGE_1,,
 PLAYER_BOSS_ENCOUNTER_0,Come on!,와라!
 PLAYER_BOSS_ENCOUNTER_1,,
 PLAYER_WIN_0,Great!,좋았어!
-PLAYER_WIN_1,It was hard..,힘들었어..
+PLAYER_WIN_1,It was difficult...,힘들었어..
 PLAYER_WIN_2,Yeah!,야호!
-PLAYER_LOSE_0,Ugh..,으악!
+PLAYER_LOSE_0,Ugh...,으악!
 PLAYER_LOSE_1,,
 ENEMY_SKILL_1_2_0,!Burn them all!,!다 불태워버려라!
-ENEMY_SKILL_3_2_0,!Get rid of it all!,!다 쓸어버려라!
-ENEMY_SKILL_4_2_0,!I'm gonna[newline]blow them all up!,!모두 날려버리겠다!
+ENEMY_SKILL_3_2_0,!Wipe them out!,!다 쓸어버려라!
+ENEMY_SKILL_4_2_0,!I'm going to[newline]blow it all up!,!모두 날려버리겠다!
 ENEMY_SKILL_2_2_0,!I'm going to[newline]destroy it all!,!다 부셔버리겠다!
 ENEMY_SKILL_0_2_0,!You can't[newline]avoid this!,!이건 못 피할 걸?
 ENEMY_DAMAGE_0,Ugh!,으악!
 ENEMY_DAMAGE_1,,
-ENEMY_DEAD_0,Ugh..,으윽..
+ENEMY_DEAD_0,Ugh...,으윽..
 ENEMY_DEAD_1,,
 ENEMY_DEAD_2,,
 ENEMY_DEAD_3,,
-ENEMY_201003_0,My head is itchy..,머리가 너무 간지러워..
+ENEMY_201003_0,My head is itchy...,머리가 너무 간지러워..
 ENEMY_201003_1,,
-ENEMY_201005_0,I'm sick all over..,온 몸이 아파.. 씩씩
+ENEMY_201005_0,I don't feel good...,온 몸이 아파.. 씩씩
 ENEMY_201005_1,,
 UI_NEXT_STAGE,Next Stage,다음 스테이지
 UI_BATTLE_RESULT_NEXT_STAGE_FORMAT,{0} you’ll be taken to the next stage.,{0} 다음 스테이지로 이동합니다.
-UI_BATTLE_RESULT_NOT_ENOUGH_ACTION_POINT,,행동력이 부족하기 때문에 {0} 메인으로 이동합니다.
+UI_BATTLE_RESULT_NOT_ENOUGH_ACTION_POINT,You don't have enough action point.,행동력이 부족하기 때문에 {0} 메인으로 이동합니다.
 UI_BATTLE_AGAIN,Again,다시 전투
-UI_BATTLE_AGAIN_FORMAT,{0} Start a battle again.,{0} 다시 전투를 시작합니다.
-UI_BATTLE_WIN,Battle Win!,전투 승리!
+UI_BATTLE_AGAIN_FORMAT,{0} Start the Battle Again,{0} 다시 전투를 시작합니다.
+UI_BATTLE_WIN,Stage Won!,전투 승리!
 UI_REWARDS,Rewards,획득한 아이템
 UI_BATTLE_RETRY,Retry,다시 도전
-UI_BATTLE_RETRY_FORMAT,You can be stronger[newline]by playing the last stage to level up[newline]or build the equipment.,지난 스테이지를 플레이하여 레벨을 올리거나[newline]장비를 제작하면 더 강해질 수 있습니다.
-UI_BATTLE_LOSE,Battle Lose..,전투 패배
+UI_BATTLE_RETRY_FORMAT,You can become stronger[newline]by leveling up[newline]or crafting stronger equipment.,지난 스테이지를 플레이하여 레벨을 올리거나[newline]장비를 제작하면 더 강해질 수 있습니다.
+UI_BATTLE_LOSE,Lost...,전투 패배
 UI_AFTER_N_SECONDS,After {0:0} seconds[comma],{0:0}초 후
 UI_YES,Yes,네
 UI_NO,No,아니오
@@ -113,9 +113,9 @@ UI_BUY,Buy,구매
 UI_EQUIP,Equip,장착
 UI_UNEQUIP,Unequip,해제
 UI_IN_MINING_A_BLOCK,Mining blocks...,블록을 생성하고 있습니다..
-UI_TIPS_0,If you want to your character to be more powerful? Try to use set item.,세트 아이템을 장착하면 캐릭터의 능력치가 더욱 상승합니다.
-UI_TIPS_1,You just go to the auction when you feel difficult to make a nice weapon.,좋은 무기를 만들기 너무 어려우신가요? 경매장에서 물건을 골라보세요.
-UI_TIPS_2,Be sure to check the elemental of the equipment. It can be useless for some monsters.,전열을 가다듬을 때에는 장비의 속성을 확인하세요. 특정 속성의 몬스터에게는 무용지물일 수도 있습니다.
+UI_TIPS_0,If you want to raise your stats, try equiping a set of items with similar properties.,세트 아이템을 장착하면 캐릭터의 능력치가 더욱 상승합니다.
+UI_TIPS_1,There are always interesting options in the auction house.,좋은 무기를 만들기 너무 어려우신가요? 경매장에서 물건을 골라보세요.
+UI_TIPS_2,Check the elemental types of your equipment - they may be useless against the monsters you face.,전열을 가다듬을 때에는 장비의 속성을 확인하세요. 특정 속성의 몬스터에게는 무용지물일 수도 있습니다.
 UI_CREATE_CHARACTER,NEW CHARACTER,캐릭터 생성
 UI_DELETE_CHARACTER,DELETE CHARACTER,캐릭터 삭제
 UI_CREATE_CHARACTER_CONFIRM,CREATE,생성하기
@@ -127,11 +127,11 @@ UI_TAIL,Tail,꼬리
 UI_INPUT_NAME,Choose your name.,이름을 정해주세요.
 UI_DUNGEON,DUNGEON,던전
 UI_COMBINATION,WORKSHOP,공방
-UI_SHOP,AUCTION,경매장
+UI_SHOP,MARKET,경매장
 UI_RANKING,RANKING,랭킹
 UI_EQUIP_CONSUMABLES,Food to eat,소모품을 장착하세요.
 UI_EQUIP_EQUIPMENTS,Equipments,장비를 장착하세요.
-UI_BATTLE_AUTO_REPEAT,Auto Repeat,반복 전투
+UI_BATTLE_AUTO_REPEAT,Repeat Stage,반복 전투
 UI_OVERALL_RANKING,Overall Ranking,전체 랭킹
 UI_RANKING_IN_24HOURS,24 Hour Ranking,24시간 내 랭킹
 UI_REFRESH,Refresh,새로고침
@@ -151,13 +151,13 @@ UI_WORLD,World,월드
 UI_ITEM_INFORMATION,Information,아이템 정보
 UI_SELECT_AN_ITEM,Select an Item,아이템을 선택하세요.
 UI_ADDITIONAL_ABILITIES_WHEN_COMBINED,The following effects are granted when crafted,아이템 제작 시 다음 효과 부여
-NPC_01_NAME,Frey's Cat,프레이야의 하수인
+NPC_01_NAME,Freya's Cat,프레이야의 하수인
 NPC_02_NAME,Fox Wizard,여우부족 마도사
 NPC_03_NAME,Fox Thief,여우부족 대장
 NPC_04_NAME,Gerimnir,제림니르
 NPC_05_NAME,Workshop Cat,대장장이 고양이
-NPC_06_NAME,Auction Cat,경매장 고양이
-NPC_07_NAME,The Godness Freya,여신 프레이야
+NPC_06_NAME,Market Cat,경매장 고양이
+NPC_07_NAME,The Goddess Freya,여신 프레이야
 UI_COMBINE_EQUIPMENT,Equip,장비 제작
 UI_COMBINE_CONSUMABLE,Food,소모품 제작
 UI_ENHANCE_EQUIPMENT,Enhancement,장비 강화
@@ -168,18 +168,18 @@ UI_SKILL_CHANCE,Chance,확률
 UI_SKILL_DESCRIPTION_FORMAT,{0} ({1:0%} chance to add damage {2}),{0} ({1:0%} 확률로 추가 데미지 {2})
 UI_EXP,Exp,경험치
 UI_BATTLE_RESULT_VICTORY_MESSAGE,You won the battle!,전투에서 승리하였습니다!
-UI_BATTLE_RESULT_DEFEAT_MESSAGE,You have to be stronger.,당신은 더욱 강해져야 합니다.
+UI_BATTLE_RESULT_DEFEAT_MESSAGE,You have to grow stronger.,당신은 더욱 강해져야 합니다.
 UI_ADDITIONAL_REWARDS,Additional Rewards,추가 보상
-UI_BATTLE_RESULT_DEFEAT_SUGGESTION_1,Level up with battles!,반복 전투로 레벨업!
+UI_BATTLE_RESULT_DEFEAT_SUGGESTION_1,Raise your level through battles!,반복 전투로 레벨업!
 UI_BATTLE_RESULT_DEFEAT_SUGGESTION_1_BUTTON,A월드맵으로 가기,월드맵으로 가기
-UI_BATTLE_RESULT_DEFEAT_SUGGESTION_2,Make strong equipments!,장비를 만들어 장착!
+UI_BATTLE_RESULT_DEFEAT_SUGGESTION_2,Craft stronger equipment!,장비를 만들어 장착!
 UI_BATTLE_RESULT_DEFEAT_SUGGESTION_2_BUTTON,A조합하러 가기,조합하러 가기
 UI_GO_BACK,Back,뒤로가기
 UI_GO_MAIN,Main,메인
 UI_QUIT,Quit,종료
 UI_EXIT,Exit,나가기
 UI_ERROR,Error,에러
-UI_NICKNAME_CONDITION,Nickname can only be used in Korean[comma] English[comma] and numbers between 2 and 20.,닉네임은 2~20자여야 하며 한글[comma] 영문자[comma] 숫자만 사용할 수 있습니다.
+UI_NICKNAME_CONDITION,Nickname must be between 2-20 characters and only include English[comma] Korean[comma] and digits.,닉네임은 2~20자여야 하며 한글[comma] 영문자[comma] 숫자만 사용할 수 있습니다.
 UI_ERROR_FORMAT,Error occurred. ({0})[newline]Please restart the game.[newline]Press OK to quit the game.,오류가 발생했습니다. ({0})[newline]게임을 다시 실행해 주세요.[newline]확인을 누르면 게임이 종료됩니다.
 UI_MAIL,Mail,우편
 UI_QUEST,Quest,퀘스트
@@ -193,47 +193,47 @@ UI_WORLD_MAP_MONSTERS,Monsters,몬스터
 UI_WORLD_MAP_REWARDS,Rewards,보상
 UI_STAGE,Stage,스테이지
 UI_REMAININGTURN,Remaining Turn : {0},남은 턴 : {0}
-UI_ALERT_NOT_IMPLEMENTED_TITLE,In Prepare,준비 중
-UI_ALERT_NOT_IMPLEMENTED_CONTENT,This feature is currently under construction.,준비 중입니다.
+UI_ALERT_NOT_IMPLEMENTED_TITLE,In Development,준비 중
+UI_ALERT_NOT_IMPLEMENTED_CONTENT,This feature is currently under development.,준비 중입니다.
 UI_CONFIRM_DELETE_CHARACTER_TITLE,Delete Character,캐릭터 삭제
-UI_CONFIRM_DELETE_CHARACTER_CONTENT,Do you want to delete this character?,정말 삭제하겠습니까?
+UI_CONFIRM_DELETE_CHARACTER_CONTENT,Do you really want to delete this character?,정말 삭제하겠습니까?
 UI_CONFIRM_QUIT_TITLE,Quit Game,게임 종료
-UI_CONFIRM_QUIT_CONTENT,Do you want to quit game?,게임을 종료하겠습니까?
-UI_COMBINATION_ENHANCEMENT_POPUP,Item Enhnacement,아이템 강화
+UI_CONFIRM_QUIT_CONTENT,Do you want to quit?,게임을 종료하겠습니까?
+UI_COMBINATION_ENHANCEMENT_POPUP,Item Enhancement,아이템 강화
 UI_COMBINATION_ENHANCEMENT,Item Enhancement,아이템 강화
 UI_COMBINATION_RECIPE_CLOSE,Recipe Close,레시피 닫기
-UI_RECIPE_COMBINATION,Combine,조합
-UI_SHOP_NOTICE,Tax 8% of sales item price,판매가의 8%를 세금으로 징수합니다.
-UI_LOADING_BOOTSTRAP_START,Connect to Network...,네트워크 연결을 수립하고 있습니다...
-UI_LOADING_BLOCK_DOWNLOAD,Download Block... {0} / {1},블록 다운로드 중... {0} / {1}
-UI_LOADING_STATE_REFERENCE_DOWNLOAD,Download State... {0} / {1},상태 다운로드 중... {0} / {1}
+UI_RECIPE_COMBINATION,Craft,조합
+UI_SHOP_NOTICE,8% of sales item price is taxed,판매가의 8%를 세금으로 징수합니다.
+UI_LOADING_BOOTSTRAP_START,Connecting to Network...,네트워크 연결을 수립하고 있습니다...
+UI_LOADING_BLOCK_DOWNLOAD,Downloading Block... {0} / {1},블록 다운로드 중... {0} / {1}
+UI_LOADING_STATE_REFERENCE_DOWNLOAD,Downloading State... {0} / {1},상태 다운로드 중... {0} / {1}
 UI_RECEIVE,Receive,받기
 UI_RECEIVED,Received,받음
-UI_GET_REWARD,Get Reward,보상 받기
-UI_ITEM_ENHANCEMENT_MAIL_FORMAT,{0} Upgrade Complete,{0} 강화 완료
-UI_SELL_CANCEL_MAIL_FORMAT,{0} Unregister Complete,{0} 판매 취소 완료
+UI_GET_REWARD,Receive Reward,보상 받기
+UI_ITEM_ENHANCEMENT_MAIL_FORMAT,{0} Upgraded,{0} 강화 완료
+UI_SELL_CANCEL_MAIL_FORMAT,{0} Retrieved,{0} 판매 취소 완료
 UI_BUYER_MAIL_FORMAT,{0} Purchased,{0} 구매 완료
-UI_SELLER_MAIL_FORMAT,{0} Sell Complete,{0} 판매 완료
+UI_SELLER_MAIL_FORMAT,{0} Sold,{0} 판매 완료
 UI_SELECT,Select,선택
-UI_WARRIOR_DESCRIPTION,The warrior is good at close combat and is highly defensive[comma] always on the front line of battle.,전사는 근접 전투에 능하고 방어력이 높아[comma]항상 전투의 최전방에 선다.
+UI_WARRIOR_DESCRIPTION,The warrior is good at close combat and [comma] is always on the front line of battle.,전사는 근접 전투에 능하고 방어력이 높아[comma]항상 전투의 최전방에 선다.
 SPEECH_SHOP_BUY_0,There's a lot of[newline]good stuff coming up.,좋은 물건이 많이 올라와있어![newline]시간 나면 보고 가
-SPEECH_SHOP_BUY_1,You need a variety of equipment[newline]to prepare for the ordeal.,다양한 장비가 있어야 시련을 대비할 수 있어
-SPEECH_SHOP_SELL_0,When you're worried about[newline]selling prices[newline]check out what other people[newline]put up on them.,판매 가격이 고민되면[newline]다른 사람들이[newline]얼마에 올렸는지 잘 살펴봐
-SPEECH_SHOP_SELL_1,You can always get back things[newline]that haven't been sold.,아직 팔리지 않은 물건은[newline]언제든지 다시 회수할 수 있어
-SPEECH_SHOP_REGISTER_ITEM_0,When you're worried about[newline]selling prices[newline]check out what other people[newline]put up on them.,판매 가격이 고민되면[newline]다른 사람들이[newline]얼마에 올렸는지 잘 살펴봐
-SPEECH_SHOP_GREETING_0,You need a variety of equipment[newline]to prepare for the ordeal.,다양한 장비가 있어야 시련을 대비할 수 있어
-SPEECH_COMBINE_GREETING_0,The higher the grade.[newline]the more options there are…[newline]What? You already know that? Whoo!,높은 등급의 무기일수록[newline]많은 옵션이 붙지..[newline]뭐? 그것까지 알려줄 필욘 없다고? 흥!
-SPEECH_COMBINE_EQUIPMENT_0,I'll do my best to make[newline]weapons.,최선을 다해[newline]무기를 만들어주지
-SPEECH_COMBINE_CONSUMABLE_0,Consumable item disappears[newline]once you use it[newline]but it works just as well.,소모템은 한번 쓰면 사라지지만[newline]그만큼 효과가 강력하다오
-SPEECH_COMBINE_ENHANCE_EQUIPMENT_0,You can combine two equipments.,두 장비를 합칠 수 있어.
-SPEECH_COMBINE_STAGE_MATERIAL_0,You can pay gold to use extra slots.,추가 슬롯 사용에는 골드가 소모돼.
-SPEECH_RANKING_BOARD_GREETING_0,For the glorious cats[newline]the Frey is giving you the prize!,영예로운 고양이들에게는[newline]여신님께서 상을 주신다!
+SPEECH_SHOP_BUY_1,You need different equipments[newline]to prepare for the ordeal.,다양한 장비가 있어야 시련을 대비할 수 있어
+SPEECH_SHOP_SELL_0,When you're worried about[newline]setting the right price[newline]check out what other people[newline]are selling them for.,판매 가격이 고민되면[newline]다른 사람들이[newline]얼마에 올렸는지 잘 살펴봐
+SPEECH_SHOP_SELL_1,You can always retrieve items[newline]that haven't been sold yet.,아직 팔리지 않은 물건은[newline]언제든지 다시 회수할 수 있어
+SPEECH_SHOP_REGISTER_ITEM_0,When you're worried about[newline]setting the right price[newline]check out what other people[newline]are selling them for.,판매 가격이 고민되면[newline]다른 사람들이[newline]얼마에 올렸는지 잘 살펴봐
+SPEECH_SHOP_GREETING_0,You need different equipments[newline]to prepare for the ordeal.,다양한 장비가 있어야 시련을 대비할 수 있어
+SPEECH_COMBINE_GREETING_0,The higher the grade[newline]the more slots there are...[newline]What? You already knew that?,높은 등급의 무기일수록[newline]많은 옵션이 붙지..[newline]뭐? 그것까지 알려줄 필욘 없다고? 흥!
+SPEECH_COMBINE_EQUIPMENT_0,I'll do my best job on this one.,최선을 다해[newline]무기를 만들어주지
+SPEECH_COMBINE_CONSUMABLE_0,Consumable item disappears[newline]once you use it[newline]but it has a strong effect.,소모템은 한번 쓰면 사라지지만[newline]그만큼 효과가 강력하다오
+SPEECH_COMBINE_ENHANCE_EQUIPMENT_0,You can combine two equipments into one.,두 장비를 합칠 수 있어.
+SPEECH_COMBINE_STAGE_MATERIAL_0,You can melt gold to use the extra slots.,추가 슬롯 사용에는 골드가 소모돼.
+SPEECH_RANKING_BOARD_GREETING_0,For the glorious cats[newline]Freya is handing out prizes!,영예로운 고양이들에게는[newline]여신님께서 상을 주신다!
 SPEECH_RANKING_BOARD_FILTERED_0,Don't be afraid of[newline]the enemy in front of you[newline]and trust your own inner self!,눈 앞의 적을 두려워 하지 말고[newline]자신의 내면을 믿어라!
 SPEECH_RANKING_BOARD_ALL_0,Don't be afraid of[newline]the enemy in front of you[newline]and trust your own inner self!,눈 앞의 적을 두려워 하지 말고[newline]자신의 내면을 믿어라!
-SPEECH_SHOP_MOUSE_ENTER_0,This is the auction house ~[newline]You can buy and sell things with others!,괜찮은 물건을 제작했어?[newline]그럼 여기 와서 팔아봐
-SPEECH_SHOP_CLICK_0,If you achieve level {0}[comma][newline]you can enter the auction.,{0} 레벨을 먼저 달성해야 해.
-SPEECH_COMBINE_MOUSE_ENTER_0,Want to equipments or food?[newline]You can make it here.,전투로 재료를 모았나?[newline]그럼 내게 오시게
-SPEECH_COMBINE_CLICK_0,Hmm… Do you want to make items?[newline]You need to reach level {0} first.,{0} 레벨을 먼저 달성해야 해.
-SPEECH_RANK_MOUSE_ENTER_0,Do you want to know how strong you are?[newline]Check your ranking here!,영예의 전당에[newline]이름을 올려라!
-SPEECH_RANK_CLICK_0,Get back![newline]You can’t see it until level {0}.,{0} 레벨을 먼저 달성해야 해.
+SPEECH_SHOP_MOUSE_ENTER_0,Welcome to the market![newline]You can buy and sell things here!,괜찮은 물건을 제작했어?[newline]그럼 여기 와서 팔아봐
+SPEECH_SHOP_CLICK_0,If you reach level {0}[comma][newline]you can enter the market.,{0} 레벨을 먼저 달성해야 해.
+SPEECH_COMBINE_MOUSE_ENTER_0,Want to make equipment or food?[newline]Here.,전투로 재료를 모았나?[newline]그럼 내게 오시게
+SPEECH_COMBINE_CLICK_0,Do you want to craft items?[newline]You need to reach level {0} first.,{0} 레벨을 먼저 달성해야 해.
+SPEECH_RANK_MOUSE_ENTER_0,Do you want to know how strong you are?[newline]Check out the rankings here!,영예의 전당에[newline]이름을 올려라!
+SPEECH_RANK_CLICK_0,Stand back![newline]You can’t enter until you reach level {0}.,{0} 레벨을 먼저 달성해야 해.
 SPEECH_DUNGEON_MOUSE_ENTER_0,Press the portal below.[newline]Let’s go to the world and[newline]start the battle!,아래 마법진을 누르면[newline]탐험을 시작할 수 있다옹
