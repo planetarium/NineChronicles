@@ -1,13 +1,9 @@
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Linq;
-using System.Resources;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
-using Nekoyume.Data.Table;
 using Nekoyume.TableData;
-using UnityEngine;
 
 namespace Nekoyume.State
 {
@@ -18,20 +14,6 @@ namespace Nekoyume.State
                 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x3
             }
         );
-
-        public ConsumableItemRecipeSheet ConsumableItemRecipeSheet
-        {
-            get
-            {
-                if (TableSheets.TryGetValue(nameof(ConsumableItemRecipeSheet), out string csv))
-                {
-                    var sheet = new ConsumableItemRecipeSheet();
-                    sheet.Set(csv);
-                    return sheet;
-                }
-                return null;
-            }
-        }
 
         // key = TableSheet Name / value = TableSheet csv.
         public Dictionary<string, string> TableSheets = new Dictionary<string, string>();

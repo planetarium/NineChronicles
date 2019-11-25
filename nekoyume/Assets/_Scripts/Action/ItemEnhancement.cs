@@ -11,6 +11,7 @@ using Nekoyume.Game;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Mail;
 using Nekoyume.State;
+using Nekoyume.TableData;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -19,6 +20,7 @@ namespace Nekoyume.Action
     [ActionType("item_enhancement")]
     public class ItemEnhancement : GameAction
     {
+        private TableSheets _tableSheets;
         public Guid itemId;
         public IEnumerable<Guid> materialIds;
         public Address avatarAddress;
@@ -59,6 +61,7 @@ namespace Nekoyume.Action
                 return states;
             }
 
+            _tableSheets = TableSheets.FromActionContext(ctx);
             var materials = new List<Equipment>();
             var options = new List<object>();
             var materialOptionCount = 0;
@@ -139,9 +142,9 @@ namespace Nekoyume.Action
             avatarAddress = plainValue["avatarAddress"].ToAddress();
         }
 
-        private static BuffSkill GetRandomBuffSkill(IRandom random)
+        private BuffSkill GetRandomBuffSkill(IRandom random)
         {
-            var skillRows = Game.Game.instance.TableSheets.SkillSheet.OrderedList
+            var skillRows = _tableSheets.SkillSheet.OrderedList
                 .Where(i => (i.SkillType == SkillType.Debuff || i.SkillType == SkillType.Buff) &&
                             i.SkillCategory != SkillCategory.Heal)
                 .ToList();

@@ -87,7 +87,8 @@ namespace Nekoyume.Action
                 ((Equipment) outNonFungibleItem).Equip();
             }
             
-            var simulator = new Simulator(ctx.Random, avatarState, foods, stage);
+            var simulator = new Simulator(ctx.Random, avatarState, foods, stage,
+                tableSheetsState: TableSheetsState.FromActionContext(ctx));
             simulator.Simulate();
             Debug.Log($"Execute HackAndSlash. stage: {stage} result: {simulator.Log?.result} " +
                       $"player : `{avatarAddress}` node : `{States.Instance?.AgentState?.Value?.address}` " +

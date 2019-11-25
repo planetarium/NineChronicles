@@ -138,7 +138,7 @@ namespace Nekoyume.UI
             var item = attachment.itemUsable;
             var popup = Find<CombinationResultPopup>();
             var materialItems = attachment.materials
-                .Select(pair => new {pair, item = ItemFactory.CreateMaterial(pair.Key, Guid.Empty)})
+                .Select(pair => new {pair, item = pair.Key})
                 .Select(t => new CombinationMaterial(t.item, t.pair.Value, t.pair.Value, t.pair.Value))
                 .ToList();
             var model = new UI.Model.CombinationResultPopup(new CountableItem(item, 1))

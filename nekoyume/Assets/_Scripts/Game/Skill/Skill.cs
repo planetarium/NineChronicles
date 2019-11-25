@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Bencodex.Types;
-using Nekoyume.Data;
-using Nekoyume.Data.Table;
 using Nekoyume.EnumType;
 using Nekoyume.Model;
 using Nekoyume.State;

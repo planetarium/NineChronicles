@@ -15,6 +15,7 @@ using Nekoyume.Game.Mail;
 using Nekoyume.State;
 using Nekoyume.TableData;
 using UnityEngine;
+using Material = Nekoyume.Game.Item.Material;
 
 namespace Nekoyume.Action
 {
@@ -22,12 +23,14 @@ namespace Nekoyume.Action
     [ActionType("combination")]
     public class Combination : GameAction
     {
+        private TableSheets _tableSheets;
+
         // todo: ResultModel.materials는 Combination.Materials 와 같은 값이기 때문에 추가로 더해주지 않아도 될 것으로 보임.
         // 클라이언트가 이미 알고 있거나 알 수 있는 액션의 구분자를 통해서 갖고 오는 형태가 좋아 보임.
         [Serializable]
         public class ResultModel : AttachmentActionResult
         {
-            public Dictionary<int, int> materials;
+            public Dictionary<Material, int> materials;
 
             protected override string TypeId => "combination.result-model";
 
@@ -47,7 +50,7 @@ namespace Nekoyume.Action
                 }.Union((Dictionary) base.Serialize()));
         }
 
-        public Dictionary<int, int> Materials { get; private set; }
+        public Dictionary<Material, int> Materials { get; private set; }
         public Address AvatarAddress;
         public ResultModel Result;
 
@@ -60,7 +63,7 @@ namespace Nekoyume.Action
 
         public Combination()
         {
-            Materials = new Dictionary<int, int>();
+            Materials = new Dictionary<Material, int>();
         }
 
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
@@ -88,6 +91,8 @@ namespace Nekoyume.Action
             {
                 return states;
             }
+            
+            _tableSheets = TableSheets.FromActionContext(ctx);
 
             Debug.Log($"Execute Combination. player : `{AvatarAddress}` " +
                       $"node : `{States.Instance?.AgentState?.Value?.address}` " +
@@ -109,12 +114,7 @@ namespace Nekoyume.Action
                 materials = Materials,
             };
 
-            // 모든 재료를 테이블 값으로.
-            var materialRows = Materials
-                .Where(pair => Game.Game.instance.TableSheets.MaterialItemSheet.ContainsKey(pair.Key))
-                .ToDictionary(
-                    pair => Game.Game.instance.TableSheets.MaterialItemSheet[pair.Key],
-                    pair => pair.Value);
+            var materialRows = Materials.ToDictionary(pair => pair.Key.Data, pair => pair.Value);
 
             var equipmentMaterials = materialRows
                 .Where(materialRow => materialRow.Key.ItemSubType == ItemSubType.EquipmentMaterial)
@@ -153,7 +153,7 @@ namespace Nekoyume.Action
                     return states;
                 }
 
-                if (!Game.Game.instance.TableSheets.ItemConfigForGradeSheet.TryGetValue(equipmentMaterial.Grade,
+                if (!_tableSheets.ItemConfigForGradeSheet.TryGetValue(equipmentMaterial.Grade,
                     out var configRow))
                 {
                     // 아이템 설정 테이블 값 가져오기 실패.
@@ -202,7 +202,7 @@ namespace Nekoyume.Action
                     if (TryGetStat(monsterPart.Key, GetRoll(ctx.Random, monsterPart.Value, 0), out var statMap))
                         equipment.StatsMap.AddStatAdditionalValue(statMap.StatType, statMap.Value);
 
-                    if (TryGetSkill(monsterPart.Key, GetRoll(ctx.Random, monsterPart.Value, 0), out var skill))
+                    if (TryGetSkill(monsterPart.Key, GetRoll(ctx.Random, monsterPart.Value, 0), out var skill, _tableSheets))
                         equipment.Skills.Add(skill);
                 }
 
@@ -223,9 +223,8 @@ namespace Nekoyume.Action
             }
             else
             {
-                var tableSheetsState = TableSheetsState.FromActionContext(ctx);
-                var consumableItemRecipeSheet = tableSheetsState.ConsumableItemRecipeSheet;
-                var consumableItemSheet = Game.Game.instance.TableSheets.ConsumableItemSheet;
+                var consumableItemRecipeSheet = _tableSheets.ConsumableItemRecipeSheet;
+                var consumableItemSheet = _tableSheets.ConsumableItemSheet;
                 var foodMaterials = materialRows.Keys.Where(pair => pair.ItemSubType == ItemSubType.FoodMaterial);
                 var foodCount = materialRows.Min(pair => pair.Value);
                 var costAP = foodCount * GameConfig.CombineConsumableCostAP;
@@ -397,10 +396,10 @@ namespace Nekoyume.Action
             }
         }
 
-        private static bool TryGetItemEquipmentRow(ItemSubType itemSubType, ElementalType elementalType,
+        private bool TryGetItemEquipmentRow(ItemSubType itemSubType, ElementalType elementalType,
             int grade, out EquipmentItemSheet.Row outItemEquipmentRow)
         {
-            foreach (var row in Game.Game.instance.TableSheets.EquipmentItemSheet)
+            foreach (var row in _tableSheets.EquipmentItemSheet)
             {
                 if (row.ItemSubType != itemSubType ||
                     row.ElementalType != elementalType ||
@@ -431,7 +430,7 @@ namespace Nekoyume.Action
 
         private static bool TryGetStat(MaterialItemSheet.Row itemRow, decimal roll, out StatMap statMap)
         {
-            if (!itemRow.StatType.HasValue)
+            if (itemRow.StatType == StatType.NONE)
             {
                 statMap = null;
 
@@ -444,12 +443,13 @@ namespace Nekoyume.Action
             return true;
         }
 
-        public static bool TryGetSkill(MaterialItemSheet.Row monsterParts, decimal roll, out Skill skill)
+        public static bool TryGetSkill(MaterialItemSheet.Row monsterParts, decimal roll, out Skill skill, TableSheets tableSheets = null)
         {
+            tableSheets = tableSheets ?? Game.Game.instance.TableSheets;
             try
             {
                 var skillRow =
-                    Game.Game.instance.TableSheets.SkillSheet.OrderedList.First(r => r.Id == monsterParts.SkillId);
+                    tableSheets.SkillSheet.OrderedList.First(r => r.Id == monsterParts.SkillId);
                 var chance = (int) (monsterParts.SkillChanceMin +
                                     (monsterParts.SkillChanceMax - monsterParts.SkillChanceMin) * roll);
                 chance = Math.Max(monsterParts.SkillChanceMin, chance);
@@ -466,9 +466,9 @@ namespace Nekoyume.Action
             }
         }
 
-        private static bool TryGetBuffSkill(IRandom random, out BuffSkill buffSkill)
+        private bool TryGetBuffSkill(IRandom random, out BuffSkill buffSkill)
         {
-            var buffSkills = Game.Game.instance.TableSheets.SkillSheet.OrderedList
+            var buffSkills = _tableSheets.SkillSheet.OrderedList
                 .Where(item => item.SkillType == SkillType.Buff)
                 .ToList();
             var index = random.Next(0, buffSkills.Count);

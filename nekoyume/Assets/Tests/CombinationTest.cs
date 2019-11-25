@@ -6,6 +6,7 @@ using Nekoyume.Game.Factory;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Mail;
 using Nekoyume.State;
+using Nekoyume.TableData;
 using Nekoyume.UI;
 using Nekoyume.UI.Module;
 using NUnit.Framework;
@@ -75,7 +76,7 @@ namespace Tests
             w.Show();
             yield return new WaitUntil(() => w.isActiveAndEnabled);
             w.State.Value = Combination.StateType.CombineConsumable;
-            var row = TableSheetsState.Current.ConsumableItemRecipeSheet.Values.First();
+            var row = TableSheets.FromTableSheetsState(TableSheetsState.Current).ConsumableItemRecipeSheet.Values.First();
             var rect = w.inventory.scrollerController.GetComponentInChildren<ScrollRect>();
             foreach (var material in row.MaterialItemIds)
             {

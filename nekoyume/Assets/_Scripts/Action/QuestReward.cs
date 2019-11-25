@@ -37,7 +37,7 @@ namespace Nekoyume.Action
 
             quest.Receive = true;
 
-            avatarState.UpdateFromQuestReward(quest, ctx.Random);
+            avatarState.UpdateFromQuestReward(quest, ctx.Random, ctx);
 
             Result = quest;
 

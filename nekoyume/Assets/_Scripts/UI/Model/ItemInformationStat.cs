@@ -13,7 +13,7 @@ namespace Nekoyume.UI.Model
 
         public ItemInformationStat(MaterialItemSheet.Row itemRow)
         {
-            key.Value = itemRow.StatType.HasValue
+            key.Value = itemRow.StatType != StatType.NONE
                 ? itemRow.StatType.Value.GetLocalizedString()
                 : $"{nameof(itemRow.StatType)} has not value";
             value.Value = $"{itemRow.StatMin} - {itemRow.StatMax}";

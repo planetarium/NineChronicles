@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Nekoyume.Data;
+using System.Security.Cryptography;
 using Nekoyume.EnumType;
 using Bencodex.Types;
+using Libplanet;
 using Nekoyume.Game.Factory;
 using Nekoyume.State;
 using UnityEngine;
@@ -118,24 +119,6 @@ namespace Nekoyume.Game.Item
             return fungibleItem;
         }
 
-        private void AddFungibleItem(int id, int count = 1)
-        {
-            if (TryGetFungibleItem(id, out var fungibleItem))
-            {
-                fungibleItem.count += count;
-
-                return;
-            }
-
-            if (!Game.instance.TableSheets.MaterialItemSheet.TryGetValue(id, out var itemRow))
-            {
-                throw new KeyNotFoundException($"itemId: {id}");
-            }
-
-            var newFungibleItem = ItemFactory.Create(itemRow, default);
-            _items.Add(new Item(newFungibleItem, count));
-        }
-
         // Todo. NonFungibleItem 개발 후 `ItemBase itemBase` 인자를 `NonFungibleItem nonFungibleItem`로 수정.
         private Item AddNonFungibleItem(ItemUsable itemBase)
         {
@@ -146,10 +129,10 @@ namespace Nekoyume.Game.Item
 
         public bool RemoveFungibleItem(ItemBase itemBase, int count = 1)
         {
-            return RemoveFungibleItem(itemBase.Data.Id, count);
+            return itemBase is Material material && RemoveFungibleItem(material.Data.ItemId, count);
         }
 
-        public bool RemoveFungibleItem(int id, int count = 1)
+        public bool RemoveFungibleItem(HashDigest<SHA256> id, int count = 1)
         {
             if (!TryGetFungibleItem(id, out var item) ||
                 item.count < count)
@@ -177,16 +160,21 @@ namespace Nekoyume.Game.Item
             return TryGetNonFungibleItem(itemGuid, out Item item) && _items.Remove(item);
         }
 
+        // FungibleItem, NonFungibleItem 만들기
         public bool TryGetFungibleItem(ItemBase itemBase, out Item outFungibleItem)
         {
-            return TryGetFungibleItem(itemBase.Data.Id, out outFungibleItem);
+            if (itemBase is Material material)
+                return TryGetFungibleItem(material.Data.ItemId, out outFungibleItem);
+
+            outFungibleItem = null;
+            return false;
         }
 
-        public bool TryGetFungibleItem(int id, out Item outFungibleItem)
+        public bool TryGetFungibleItem(HashDigest<SHA256> itemId, out Item outFungibleItem)
         {
             foreach (var fungibleItem in _items)
             {
-                if (fungibleItem.item.Data.Id != id)
+                if (!(fungibleItem.item is Material material) || !material.Data.ItemId.Equals(itemId))
                 {
                     continue;
                 }

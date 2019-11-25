@@ -89,21 +89,21 @@ namespace Nekoyume.BlockChain
         }
 
         public IObservable<ActionBase.ActionEvaluation<Combination>> Combination(
-            List<(int itemId, int count)> materialInfoList)
+            List<(Material material, int count)> materialInfoList)
         {
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionCombination);
 
             var action = new Combination();
             materialInfoList.ForEach(info =>
             {
-                var (itemId, count) = info;
-                if (action.Materials.ContainsKey(itemId))
+                var (material, count) = info;
+                if (action.Materials.ContainsKey(material))
                 {
-                    action.Materials[itemId] += count;
+                    action.Materials[material] += count;
                 }
                 else
                 {
-                    action.Materials.Add(itemId, count);
+                    action.Materials.Add(material, count);
                 }
             });
             action.AvatarAddress = States.Instance.CurrentAvatarState.Value.address;
@@ -267,7 +267,7 @@ namespace Nekoyume.BlockChain
             var action = new PatchTableSheet
             {
                 TableName = tableName,
-                TableCSV = tableCsv,
+                TableCsv = tableCsv,
             };
             ProcessAction(action);
         }

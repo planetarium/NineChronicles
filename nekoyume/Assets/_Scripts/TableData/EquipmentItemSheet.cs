@@ -1,7 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using Bencodex.Types;
 using Nekoyume.EnumType;
 using Nekoyume.Game;
+using Nekoyume.State;
 
 namespace Nekoyume.TableData
 {
@@ -16,6 +20,15 @@ namespace Nekoyume.TableData
             public DecimalStat Stat { get; private set; }
             public decimal AttackRange { get; private set; }
 
+            public Row() {}
+
+            public Row(Bencodex.Types.Dictionary serialized) : base(serialized)
+            {
+                SetId = (Integer) serialized["set_id"];
+                Stat = serialized["stat"].ToDecimalStat();
+                AttackRange = serialized["attack_range"].ToDecimal();
+            }
+
             public override void Set(IReadOnlyList<string> fields)
             {
                 base.Set(fields);
@@ -25,6 +38,13 @@ namespace Nekoyume.TableData
                     decimal.Parse(fields[6]));
                 AttackRange = decimal.Parse(fields[7]);
             }
+            
+            public override IValue Serialize() => new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
+            {
+                [(Text) "set_id"] = (Integer) SetId,
+                [(Text) "stat"] = Stat.Serialize(),
+                [(Text) "attack_range"] = AttackRange.Serialize(),
+            }.Union((Bencodex.Types.Dictionary) base.Serialize()));
         }
         
         public EquipmentItemSheet() : base(nameof(EquipmentItemSheet))
