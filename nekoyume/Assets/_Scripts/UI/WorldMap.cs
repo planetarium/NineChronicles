@@ -74,7 +74,7 @@ namespace Nekoyume.UI
                     if (isWorldShown)
                     {
                         Find<BottomMenu>().worldMapButton.Hide();
-                        worldMapRoot.SetActive(true);    
+                        worldMapRoot.SetActive(true);
                     }
                     else
                     {

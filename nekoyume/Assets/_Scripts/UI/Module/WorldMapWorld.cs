@@ -184,6 +184,8 @@ namespace Nekoyume.UI.Module
                 horizontalScrollSnap.ChangePage(SharedViewModel.currentPageNumber.Value - 1);
             }
 
+            horizontalScrollSnap.StartingScreen = SharedViewModel.currentPageNumber.Value - 1;
+
             gameObject.SetActive(true);
         }
 
@@ -199,7 +201,7 @@ namespace Nekoyume.UI.Module
             foreach (var page in pages)
             {
                 stageOffset += page.stages.Count;
-                if (stageOffset < stageId)
+                if (stageOffset < stageId && pageNumber < pages.Count)
                 {
                     pageNumber++;
 
