@@ -114,7 +114,7 @@ namespace Nekoyume.Model
 
         private void UpdateExp()
         {
-            Simulator.TableSheets.LevelSheet.TryGetValue(Level, out var row, true);
+            TableSheets.FromTableSheetsState(TableSheetsState.Current).LevelSheet.TryGetValue(Level, out var row, true);
             Exp.Set(row);
         }
 
