@@ -48,7 +48,7 @@ namespace Nekoyume.State
         {
             if (address == null)
             {
-                throw new ArgumentNullException(nameof(address));                
+                throw new ArgumentNullException(nameof(address));
             }
             
             this.name = name ?? "";
@@ -56,7 +56,11 @@ namespace Nekoyume.State
             level = 1;
             exp = 0;
             inventory = new Inventory();
+#if UNITY_EDITOR
+            worldStage = 150;
+#else
             worldStage = 1;
+#endif
             updatedAt = DateTimeOffset.UtcNow;
             this.agentAddress = agentAddress;
             questList = new QuestList();
