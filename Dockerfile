@@ -31,4 +31,8 @@ COPY --from=build /src/Build/LinuxHeadless /app
 COPY --from=build /scripts/entrypoint.sh /entrypoint.sh
 VOLUME /data
 
+ARG prior_dlls="prior_dlls"
+
+ENV PRIOR_DLLS ${PRIOR_DLLS}
+
 ENTRYPOINT ["/entrypoint.sh", "--storage-path=/data/planetarium"]
