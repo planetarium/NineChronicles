@@ -178,12 +178,12 @@ namespace Nekoyume.Game.Character
             if (!HPBar)
             {
                 HPBar = Widget.Create<HpBar>(true);
-                HPBar.SetLevel(Level);
             }
 
             HPBar.UpdatePosition(gameObject, HUDOffset);
             HPBar.Set(CurrentHP, Model.Value.Stats.BuffStats.HP, HP);
             HPBar.SetBuffs(Model.Value.Buffs);
+            HPBar.SetLevel(Level);
             
             OnUpdateHPBar.OnNext(this);
         }

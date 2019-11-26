@@ -242,11 +242,9 @@ namespace Nekoyume.Game.Character
                 AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionStatusLevelUp, level);
                 AudioController.instance.PlaySfx(AudioController.SfxCode.LevelUp);
                 VFXController.instance.Create<BattleLevelUp01VFX>(transform, HUDOffset);
-                HPBar.SetLevel(Level);
                 InitStats(Model.Value);
             }
-
-            Event.OnUpdatePlayerStatus.OnNext(this);
+            UpdateHpBar();
         }
 
         private void InitStats(Model.Player character)
