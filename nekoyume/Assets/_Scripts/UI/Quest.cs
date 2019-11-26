@@ -77,10 +77,19 @@ namespace Nekoyume.UI
 
         public override void Show()
         {
+            var blur = Find<ModuleBlur>();
+            blur.onClick = () => Close();
+            blur?.Show();
             tabState = QuestTabState.Adventure;
             _questList = States.Instance.CurrentAvatarState.Value.questList;
             ChangeState(0);
             base.Show();
+        }
+
+        public override void Close(bool ignoreCloseAnimation = false)
+        {
+            base.Close(ignoreCloseAnimation);
+            Find<ModuleBlur>()?.Close();
         }
 
         #endregion

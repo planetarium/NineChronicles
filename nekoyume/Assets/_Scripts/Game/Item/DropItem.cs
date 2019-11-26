@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Nekoyume.Game.VFX;
 using Nekoyume.UI;
 using UnityEngine;
+using Nekoyume.UI.Module;
 
 namespace Nekoyume.Game.Item
 {
@@ -114,8 +115,12 @@ namespace Nekoyume.Game.Item
             }
             else
             {
-                // todo: 인벤토리 아이콘 위치 논의 후 활성화.
-//                _inventoryPosition = _battle.bottomMenu.inventoryButton.image.transform.position;
+                var bottomMenu = Widget.Find<BottomMenu>();
+                if (!bottomMenu)
+                {
+                    throw new WidgetNotFoundException<BottomMenu>();
+                }
+                _inventoryPosition = bottomMenu.inventoryButton.image.transform.position;
                 _inventoryPosition.z = transform.position.z;
             }
         }

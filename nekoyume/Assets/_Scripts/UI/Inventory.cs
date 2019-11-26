@@ -40,8 +40,17 @@ namespace Nekoyume.UI
 
         public override void Show()
         {
+            var blur = Find<ModuleBlur>();
+            blur.onClick = () => Close();
+            blur?.Show();
             base.Show();
             inventory.SharedModel.State.Value = ItemType.Equipment;
+        }
+
+        public override void Close(bool ignoreCloseAnimation = false)
+        {
+            base.Close(ignoreCloseAnimation);
+            Find<ModuleBlur>()?.Close();
         }
 
         #endregion

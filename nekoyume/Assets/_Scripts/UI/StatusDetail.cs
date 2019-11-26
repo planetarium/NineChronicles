@@ -1,5 +1,4 @@
 using Assets.SimpleLocalization;
-using DG.Tweening;
 using Nekoyume.Game.Controller;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
@@ -53,6 +52,9 @@ namespace Nekoyume.UI
 
         public override void Show()
         {
+            var blur = Find<ModuleBlur>();
+            blur.onClick = () => Close();
+            blur?.Show();
             _player = FindObjectOfType<Game.Character.Player>();
             var player = _player.Model;
 
@@ -86,6 +88,12 @@ namespace Nekoyume.UI
             }
 
             base.Show();
+        }
+
+        public override void Close(bool ignoreCloseAnimation = false)
+        {
+            base.Close(ignoreCloseAnimation);
+            Find<ModuleBlur>()?.Close();
         }
 
         public void CloseClick()
