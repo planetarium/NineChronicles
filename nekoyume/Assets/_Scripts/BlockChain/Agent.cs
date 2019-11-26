@@ -588,10 +588,11 @@ namespace Nekoyume.BlockChain
                 try
                 {
                     await _swarm.BootstrapAsync(
-                        _seedPeers,
-                        5000,
-                        5000,
-                        _cancellationTokenSource.Token);
+                        seedPeers: _seedPeers,
+                        pingSeedTimeout: 5000,
+                        findPeerTimeout: 5000,
+                        cancellationToken: _cancellationTokenSource.Token
+                    );
                 }
                 catch (SwarmException e)
                 {

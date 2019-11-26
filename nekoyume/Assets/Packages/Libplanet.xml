@@ -1316,34 +1316,23 @@
         </member>
         <member name="P:Libplanet.Blockchain.BlockChain`1.Item(Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
             <summary>
-            Gets the block corresponding to the <paramref name="hash"/>.
+            Gets the block corresponding to the <paramref name="blockHash"/>.
             </summary>
-            <param name="hash">A <see cref="P:Libplanet.Blocks.Block`1.Hash"/> of the <see cref="T:Libplanet.Blocks.Block`1"/> to get.
-            </param>
+            <param name="blockHash">A <see cref="P:Libplanet.Blocks.Block`1.Hash"/> of the <see cref="T:Libplanet.Blocks.Block`1"/> to
+            get. </param>
             <exception cref="T:System.Collections.Generic.KeyNotFoundException">Thrown when there is no <see cref="T:Libplanet.Blocks.Block`1"/>
-            with a given <paramref name="hash"/>.</exception>
+            with a given <paramref name="blockHash"/>.</exception>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain`1.Contains(Libplanet.Blocks.Block{`0})">
-            <summary>
-            Determines whether the <see cref="T:Libplanet.Blockchain.BlockChain`1"/> contains <see cref="T:Libplanet.Blocks.Block`1"/>.
-            </summary>
-            <param name="block">The <see cref="T:Libplanet.Blocks.Block`1"/> to check if it is in the
-            <see cref="T:Libplanet.Blockchain.BlockChain`1"/>.</param>
-            <returns>
-            <c>true</c> if the <see cref="T:Libplanet.Blockchain.BlockChain`1"/> contains <see cref="T:Libplanet.Blocks.Block`1"/>;
-            otherwise, <c>false</c>.
-            </returns>
-        </member>
-        <member name="M:Libplanet.Blockchain.BlockChain`1.Contains(Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
+        <member name="M:Libplanet.Blockchain.BlockChain`1.ContainsBlock(Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
             <summary>
             Determines whether the <see cref="T:Libplanet.Blockchain.BlockChain`1"/> contains <see cref="T:Libplanet.Blocks.Block`1"/>
-            the specified <paramref name="hash"/>.
+            the specified <paramref name="blockHash"/>.
             </summary>
-            <param name="hash">The <see cref="T:Libplanet.HashDigest`1"/> of the <see cref="T:Libplanet.Blocks.Block`1"/> to
+            <param name="blockHash">The <see cref="T:Libplanet.HashDigest`1"/> of the <see cref="T:Libplanet.Blocks.Block`1"/> to
             check if it is in the <see cref="T:Libplanet.Blockchain.BlockChain`1"/>.</param>
             <returns>
             <c>true</c> if the <see cref="T:Libplanet.Blockchain.BlockChain`1"/> contains <see cref="T:Libplanet.Blocks.Block`1"/> with
-            the specified <paramref name="hash"/>; otherwise, <c>false</c>.
+            the specified <paramref name="blockHash"/>; otherwise, <c>false</c>.
             </returns>
         </member>
         <member name="M:Libplanet.Blockchain.BlockChain`1.GetTransaction(Libplanet.Tx.TxId)">
@@ -2995,7 +2984,7 @@
             The current phase.
             </summary>
         </member>
-        <member name="M:Libplanet.Net.Protocols.KademliaProtocol`1.RefreshTableAsync(System.TimeSpan,System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Net.Protocols.KademliaProtocol.RefreshTableAsync(System.TimeSpan,System.Threading.CancellationToken)">
             <summary>
             Checks whether <see cref="T:Libplanet.Net.Peer"/>s in <see cref="T:Libplanet.Net.Protocols.RoutingTable"/> is online by
             sending <see cref="T:Libplanet.Net.Messages.Ping"/>.
@@ -3005,7 +2994,7 @@
             that this operation should be canceled.</param>
             <returns>An awaitable task without value.</returns>
         </member>
-        <member name="M:Libplanet.Net.Protocols.KademliaProtocol`1.RebuildConnectionAsync(System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Net.Protocols.KademliaProtocol.RebuildConnectionAsync(System.Threading.CancellationToken)">
             <summary>
             Reconstructs network connection between peers on network.
             </summary>
@@ -3013,7 +3002,7 @@
             that this operation should be canceled.</param>
             <returns>>An awaitable task without value.</returns>
         </member>
-        <member name="M:Libplanet.Net.Protocols.KademliaProtocol`1.CheckReplacementCacheAsync(System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Net.Protocols.KademliaProtocol.CheckReplacementCacheAsync(System.Threading.CancellationToken)">
             <summary>
             Checks the <see cref="T:Libplanet.Net.Protocols.KBucket"/> in the <see cref="T:Libplanet.Net.Protocols.RoutingTable"/> and if
             there is an empty <see cref="T:Libplanet.Net.Protocols.KBucket"/>, fill it with <see cref="T:Libplanet.Net.Peer"/>s
@@ -3023,7 +3012,7 @@
             that this operation should be canceled.</param>
             <returns>>An awaitable task without value.</returns>
         </member>
-        <member name="M:Libplanet.Net.Protocols.KademliaProtocol`1.ValidateAsync(Libplanet.Net.BoundPeer,System.TimeSpan,System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Net.Protocols.KademliaProtocol.ValidateAsync(Libplanet.Net.BoundPeer,System.TimeSpan,System.Threading.CancellationToken)">
             <summary>
             Validate peer by send <see cref="T:Libplanet.Net.Messages.Ping"/> to <paramref name="peer"/>. If target peer
             does not responds, remove it from the table.
@@ -3034,11 +3023,12 @@
             that this operation should be canceled.</param>
             <returns>An awaitable task without value.</returns>
         </member>
-        <member name="M:Libplanet.Net.Protocols.KademliaProtocol`1.FindPeerAsync(Libplanet.Address,Libplanet.Net.BoundPeer,System.Int32,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Net.Protocols.KademliaProtocol.FindPeerAsync(System.Collections.Concurrent.ConcurrentBag{Libplanet.Net.BoundPeer},Libplanet.Address,Libplanet.Net.BoundPeer,System.Int32,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
             <summary>
             Send <see cref="T:Libplanet.Net.Messages.FindNeighbors"/> messages to <paramref name="viaPeer"/>
             to find <see cref="T:Libplanet.Net.Peer"/>s near <paramref name="target"/>.
             </summary>
+            <param name="history">The <see cref="T:Libplanet.Net.Peer"/> that searched.</param>
             <param name="target">The <see cref="T:Libplanet.Address"/> to find.</param>
             <param name="viaPeer">The target <see cref="T:Libplanet.Net.Peer"/> to send <see cref="T:Libplanet.Net.Messages.FindNeighbors"/>
             message. If null, selects 3 <see cref="T:Libplanet.Net.Peer"/>s from <see cref="T:Libplanet.Net.Protocols.RoutingTable"/> of
@@ -3050,17 +3040,18 @@
             that this operation should be canceled.</param>
             <returns>An awaitable task without value.</returns>
         </member>
-        <member name="M:Libplanet.Net.Protocols.KademliaProtocol`1.ProcessFoundAsync(System.Collections.Immutable.ImmutableList{Libplanet.Net.BoundPeer},Libplanet.Address,System.Int32,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Net.Protocols.KademliaProtocol.ProcessFoundAsync(System.Collections.Concurrent.ConcurrentBag{Libplanet.Net.BoundPeer},System.Collections.Generic.IEnumerable{Libplanet.Net.BoundPeer},Libplanet.Address,System.Int32,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
             <summary>
             Process <see cref="T:Libplanet.Net.Peer"/>s that is replied by sending <see cref="T:Libplanet.Net.Messages.FindNeighbors"/>
             request.
             </summary>
+            <param name="history"><see cref="T:Libplanet.Net.Peer"/>s that already searched.</param>
             <param name="found"><see cref="T:Libplanet.Net.Peer"/>s that found.</param>
             <param name="target">The target <see cref="T:Libplanet.Address"/> to search.</param>
             <param name="depth">Target depth of recursive operation. If -1 is given,
             it runs until the closest peer is found.</param>
             <param name="timeout"><see cref="T:System.TimeSpan"/> for next depth's
-            <see cref="M:Libplanet.Net.Protocols.KademliaProtocol`1.FindPeerAsync(Libplanet.Address,Libplanet.Net.BoundPeer,System.Int32,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)"/> operation.</param>
+            <see cref="M:Libplanet.Net.Protocols.KademliaProtocol.FindPeerAsync(System.Collections.Concurrent.ConcurrentBag{Libplanet.Net.BoundPeer},Libplanet.Address,Libplanet.Net.BoundPeer,System.Int32,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)"/> operation.</param>
             <param name="cancellationToken">A cancellation token used to propagate notification
             that this operation should be canceled.</param>
             <returns>An awaitable task without value.</returns>
@@ -3134,13 +3125,15 @@
             "M:Libplanet.Net.Swarm`1.PreloadAsync(System.Nullable{System.TimeSpan},System.IProgress{Libplanet.Net.PreloadState},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Threading.CancellationToken)"
             /> method too.</remarks>
         </member>
-        <member name="M:Libplanet.Net.Swarm`1.BootstrapAsync(System.Collections.Generic.IEnumerable{Libplanet.Net.Peer},System.Nullable{System.TimeSpan},System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Net.Swarm`1.BootstrapAsync(System.Collections.Generic.IEnumerable{Libplanet.Net.Peer},System.Nullable{System.TimeSpan},System.Nullable{System.TimeSpan},System.Int32,System.Threading.CancellationToken)">
             <summary>
             Join to the peer-to-peer network using seed peers.
             </summary>
             <param name="seedPeers">List of seed peers.</param>
             <param name="pingSeedTimeout">Timeout for connecting to seed peers.</param>
             <param name="findNeighborsTimeout">Timeout for requesting neighbors.</param>
+            <param name="depth">Depth to find neighbors of current <see cref="T:Libplanet.Net.Peer"/>
+            from seed peers.</param>
             <param name="cancellationToken">A cancellation token used to propagate notification
             that this operation should be canceled.</param>
             <returns>An awaitable task without value.</returns>
@@ -3254,6 +3247,9 @@
         <member name="M:Libplanet.Store.BaseStore.PutBlock``1(Libplanet.Blocks.Block{``0})">
             <inheritdoc />
         </member>
+        <member name="M:Libplanet.Store.BaseStore.ContainsBlock(Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
+            <inheritdoc />
+        </member>
         <member name="M:Libplanet.Store.BaseStore.IterateStateReferences(System.Guid,Libplanet.Address,System.Nullable{System.Int64},System.Nullable{System.Int64},System.Nullable{System.Int32})">
             <inheritdoc />
         </member>
@@ -3301,7 +3297,7 @@
             </summary>
             <seealso cref="T:Libplanet.Store.IStore"/>
         </member>
-        <member name="M:Libplanet.Store.DefaultStore.#ctor(System.String,System.Boolean,System.Int32,System.Boolean,System.Boolean)">
+        <member name="M:Libplanet.Store.DefaultStore.#ctor(System.String,System.Boolean,System.Int32,System.Int32,System.Int32,System.Boolean,System.Boolean)">
             <summary>
             Creates a new <seealso cref="T:Libplanet.Store.DefaultStore"/>.
             </summary>
@@ -3310,7 +3306,9 @@
             <param name="journal">
             Enables or disables double write check to ensure durability.
             </param>
-            <param name="cacheSize">Max number of pages in the cache.</param>
+            <param name="indexCacheSize">Max number of pages in the index cache.</param>
+            <param name="blockCacheSize">The capacity of the block cache.</param>
+            <param name="txCacheSize">The capacity of the transaction cache.</param>
             <param name="flush">Writes data direct to disk avoiding OS cache.  Turned on by default.
             </param>
             <param name="readOnly">Opens database readonly mode. Turned off by default.</param>
@@ -3379,6 +3377,9 @@
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Store.DefaultStore.DeleteBlock(Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.DefaultStore.ContainsBlock(Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Store.DefaultStore.GetBlockStates(Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
@@ -3534,6 +3535,18 @@
             </param>
             <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> class used with
             <paramref name="block"/>.</typeparam>
+        </member>
+        <member name="M:Libplanet.Store.IStore.ContainsBlock(Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
+            <summary>
+            Determines whether the <see cref="T:Libplanet.Store.IStore"/> contains <see cref="T:Libplanet.Blocks.Block`1"/>
+            the specified <paramref name="blockHash"/>.
+            </summary>
+            <param name="blockHash">The <see cref="T:Libplanet.HashDigest`1"/> of the <see cref="T:Libplanet.Blocks.Block`1"/> to
+            check if it is in the <see cref="T:Libplanet.Store.IStore"/>.</param>
+            <returns>
+            <c>true</c> if the <see cref="T:Libplanet.Store.IStore"/> contains <see cref="T:Libplanet.Blocks.Block`1"/> with
+            the specified <paramref name="blockHash"/>; otherwise, <c>false</c>.
+            </returns>
         </member>
         <member name="M:Libplanet.Store.IStore.GetBlockStates(Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
             <summary>
