@@ -17,21 +17,21 @@ CSV_OUTPUT_FOLDER_PATH = "nekoyume/Assets/AddressableAssets/TableCSV"
 WAVE_CSV_NAME = "waves.csv"
 
 WAVE_BASE = {
-    "low": [],
-    "mid": [],
-    "high": []
+    "low": [4000, 4001, 4002, 4005, 4006, 4007, 4010, 4011, 4012, 4015, 4016, 4017],
+    "mid": [4100, 4101, 4102, 4110, 4111],
+    "high": [4200, 4201, 4202]
 }
 
 WAVE_WORLD_1 = {
-    "low": [],
-    "mid": [],
-    "high": [],
+    "low": range(1000, 1010),
+    "mid": range(1100, 1108),
+    "high": range(1200, 1203),
 }
 
 WAVE_WORLD_2 = {
-    "low": [],
-    "mid": [],
-    "high": [],
+    "low": range(2000, 2011),
+    "mid": range(2100, 2104),
+    "high": range(2200, 2201),
 }
 
 WAVE_WORLD_3 = {
@@ -250,7 +250,7 @@ for stage in range(1, STAGES_PER_WORLD+1):
     last_monster = None
     # Append each wave
     # print waves
-    is_boss_level = (stage % 5 == 0)
+    is_boss_level = (stage % 10 == 0)
     for wave_idx, wave in enumerate(waves):
         is_last_wave = (wave_idx == len(waves) - 1)
         is_boss_wave = int(bool(is_last_wave and is_boss_level))
