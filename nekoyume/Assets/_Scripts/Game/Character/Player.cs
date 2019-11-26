@@ -129,17 +129,17 @@ namespace Nekoyume.Game.Character
 
         private void UpdateArmor(Armor armor)
         {
-            var itemId = armor?.Data.Id ?? GameConfig.DefaultAvatarArmorId;
+            var spineResourcePath = armor?.Data.SpineResourcePath ?? $"Character/Player/{GameConfig.DefaultAvatarArmorId}";
 
             if (!(Animator.Target is null))
             {
-                if (Animator.Target.name.Contains(itemId.ToString()))
+                if (Animator.Target.name.Contains(spineResourcePath))
                     return;
 
                 Animator.DestroyTarget();
             }
 
-            var origin = Resources.Load<GameObject>($"Character/Player/{itemId}");
+            var origin = Resources.Load<GameObject>(spineResourcePath);
             var go = Instantiate(origin, gameObject.transform);
             Animator.ResetTarget(go);
         }
