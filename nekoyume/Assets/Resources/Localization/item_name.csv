@@ -29,11 +29,15 @@ ITEM_NAME_10122000,Gladiator Sword (Water),검투사 검(물)
 ITEM_NAME_10123000,Gladiator Sword (Land),검투사 검(땅)
 ITEM_NAME_10124000,Gladiator Sword (Wind),검투사 검(바람)
 ITEM_NAME_10130000,War Sword,전쟁 검
+ITEM_NAME_10130001,Heavy Sword,무거운 검
 ITEM_NAME_10131000,War Sword (Fire),전쟁 검(불)
+ITEM_NAME_10131001,Heavy Sword(Fire),무거운 검(불)
 ITEM_NAME_10132000,War Sword (Water),전쟁 검(물)
+ITEM_NAME_10132001,Heavy Sword(Water),무거운 검(물)
 ITEM_NAME_10133000,War Sword (Land),전쟁 검(땅)
+ITEM_NAME_10133001,Heavy Sword(Land),무거운 검(땅)
 ITEM_NAME_10134000,War Sword (Wind),전쟁 검(바람)
-ITEM_NAME_10135000,Valkyrie’s Sword,발키리의 검
+ITEM_NAME_10134001,Heavy Sword(Wind),무거운 검(바람)
 ITEM_NAME_10140000,Gramr,그람
 ITEM_NAME_10141000,Gramr (Fire),그람(불)
 ITEM_NAME_10142000,Gramr (Water),그람(물)
@@ -44,6 +48,7 @@ ITEM_NAME_10151000,Dainsleif (Fire),다인슬레이프(불)
 ITEM_NAME_10152000,Dainsleif (Water),다인슬레이프(물)
 ITEM_NAME_10153000,Dainsleif (Land),다인슬레이프(땅)
 ITEM_NAME_10154000,Dainsleif (Wind),다인슬레이프(바람)
+ITEM_NAME_10155000,Valkyrie’s Sword,발키리의 검
 ITEM_NAME_10200000,Ragged Clothes,누더기 옷
 ITEM_NAME_10210000,Casual Clothes,천 옷
 ITEM_NAME_10211000,Casual Clothes (Fire),천 옷(불)
@@ -55,12 +60,22 @@ ITEM_NAME_10221000,Leather Clothes (Fire),가죽 옷(불)
 ITEM_NAME_10222000,Leather Clothes (Water),가죽 옷(물)
 ITEM_NAME_10223000,Leather Clothes (Land),가죽 옷(땅)
 ITEM_NAME_10224000,Leather Clothes (Wind),가죽 옷(바람)
-ITEM_NAME_10230000,War Armor,전쟁 갑옷
-ITEM_NAME_10231000,War Armor (Fire),전쟁 갑옷(불)
-ITEM_NAME_10232000,War Armor (Water),전쟁 갑옷(물)
-ITEM_NAME_10233000,War Armor (Land),전쟁 갑옷(땅)
-ITEM_NAME_10234000,War Armor (Wind),전쟁 갑옷(바람)
-ITEM_NAME_10235000,Valkyrie’s Armor,발키리의 갑옷
+ITEM_NAME_10230000,Leather Clothes,가죽 옷
+ITEM_NAME_10231000,Leather Clothes (Fire),가죽 옷(불)
+ITEM_NAME_10232000,Leather Clothes (Water),가죽 옷(물)
+ITEM_NAME_10233000,Leather Clothes (Land),가죽 옷(땅)
+ITEM_NAME_10234000,Leather Clothes (Wind),가죽 옷(바람)
+ITEM_NAME_10240000,War Armor,전쟁 갑옷
+ITEM_NAME_10241000,War Armor (Fire),전쟁 갑옷(불)
+ITEM_NAME_10242000,War Armor (Water),전쟁 갑옷(물)
+ITEM_NAME_10243000,War Armor (Land),전쟁 갑옷(땅)
+ITEM_NAME_10244000,War Armor (Wind),전쟁 갑옷(바람)
+ITEM_NAME_10250000,Legend Armor,전설의 갑옷
+ITEM_NAME_10251000,Legend Armor (Fire),전설의 갑옷(불)
+ITEM_NAME_10252000,Legend Armor (Water),전설의 갑옷(물)
+ITEM_NAME_10253000,Legend Armor (Land),전설의 갑옷(땅)
+ITEM_NAME_10254000,Legend Armor (Wind),전설의 갑옷(바람)
+ITEM_NAME_10255000,Valkyrie’s Armor,발키리의 갑옷
 ITEM_NAME_10310000,Belt,허리끈
 ITEM_NAME_10311000,Belt (Fire),허리끈(불)
 ITEM_NAME_10312000,Belt (Water),허리끈(물)
@@ -76,6 +91,16 @@ ITEM_NAME_10331000,War Belt (Fire),전쟁 벨트(불)
 ITEM_NAME_10332000,War Belt (Water),전쟁 벨트(물)
 ITEM_NAME_10333000,War Belt (Land),전쟁 벨트(땅)
 ITEM_NAME_10334000,War Belt (Wind),전쟁 벨트(바람)
+ITEM_NAME_10340000,War Belt,전쟁 벨트
+ITEM_NAME_10341000,War Belt (Fire),전쟁 벨트(불)
+ITEM_NAME_10342000,War Belt (Water),전쟁 벨트(물)
+ITEM_NAME_10343000,War Belt (Land),전쟁 벨트(땅)
+ITEM_NAME_10344000,War Belt (Wind),전쟁 벨트(바람)
+ITEM_NAME_10350000,Legend Belt,전설의 벨트
+ITEM_NAME_10351000,Legend Belt (Fire),전설의 벨트(불)
+ITEM_NAME_10352000,Legend Belt (Water),전설의 벨트(물)
+ITEM_NAME_10353000,Legend Belt (Land),전설의 벨트(땅)
+ITEM_NAME_10354000,Legend Belt (Wind),전설의 벨트(바람)
 ITEM_NAME_10410000,Thin Necklace,얇은 목걸이
 ITEM_NAME_10411000,Thin Necklace (Fire),얇은 목걸이(불)
 ITEM_NAME_10412000,Thin Necklace (Water),얇은 목걸이(물)
@@ -91,6 +116,16 @@ ITEM_NAME_10431000,Warrior's Necklace (Fire),전사의 목걸이(불)
 ITEM_NAME_10432000,Warrior's Necklace (Water),전사의 목걸이(물)
 ITEM_NAME_10433000,Warrior's Necklace (Land),전사의 목걸이(땅)
 ITEM_NAME_10434000,Warrior's Necklace (Wind),전사의 목걸이(바람)
+ITEM_NAME_10440000,Warrior's Necklace,전사의 목걸이
+ITEM_NAME_10441000,Warrior's Necklace (Fire),전사의 목걸이(불)
+ITEM_NAME_10442000,Warrior's Necklace (Water),전사의 목걸이(물)
+ITEM_NAME_10443000,Warrior's Necklace (Land),전사의 목걸이(땅)
+ITEM_NAME_10444000,Warrior's Necklace (Wind),전사의 목걸이(바람)
+ITEM_NAME_10450000,Legend Necklace,전설의 목걸이
+ITEM_NAME_10451000,Legend Necklace (Fire),전설의 목걸이(불)
+ITEM_NAME_10452000,Legend Necklace (Water),전설의 목걸이(물)
+ITEM_NAME_10453000,Legend Necklace (Land),전설의 목걸이(땅)
+ITEM_NAME_10454000,Legend Necklace (Wind),전설의 목걸이(바람)
 ITEM_NAME_10510000,Thin Ring,얇은 반지
 ITEM_NAME_10511000,Thin Ring (Fire),얇은 반지(불)
 ITEM_NAME_10512000,Thin Ring (Water),얇은 반지(물)
@@ -106,6 +141,16 @@ ITEM_NAME_10531000,Warrior's Ring (Fire),전사의 반지(불)
 ITEM_NAME_10532000,Warrior's Ring (Water),전사의 반지(물)
 ITEM_NAME_10533000,Warrior's Ring (Land),전사의 반지(땅)
 ITEM_NAME_10534000,Warrior's Ring (Wind),전사의 반지(바람)
+ITEM_NAME_10540000,Warrior's Ring,전사의 반지
+ITEM_NAME_10541000,Warrior's Ring (Fire),전사의 반지(불)
+ITEM_NAME_10542000,Warrior's Ring (Water),전사의 반지(물)
+ITEM_NAME_10543000,Warrior's Ring (Land),전사의 반지(땅)
+ITEM_NAME_10544000,Warrior's Ring (Wind),전사의 반지(바람)
+ITEM_NAME_10550000,Legend Ring,전설의 반지
+ITEM_NAME_10551000,Legend Ring (Fire),전설의 반지(불)
+ITEM_NAME_10552000,Legend Ring (Water),전설의 반지(물)
+ITEM_NAME_10553000,Legend Ring (Land),전설의 반지(땅)
+ITEM_NAME_10554000,Legend Ring (Wind),전설의 반지(바람)
 ITEM_NAME_100000,Treasure Box,보물상자
 ITEM_NAME_301000,Life Stone,생명
 ITEM_NAME_302000,Rice,쌀
