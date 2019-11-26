@@ -62,6 +62,8 @@ namespace Nekoyume.Game
             yield return Addressables.InitializeAsync();
             TableSheets = new TableSheets();
             yield return StartCoroutine(TableSheets.CoInitialize());
+            AudioController.instance.Initialize();
+            yield return null;
             // Agent 초기화.
             // Agent를 초기화하기 전에 반드시 Table과 TableSheets를 초기화 함.
             // Agent가 Table과 TableSheets에 약한 의존성을 갖고 있음.(Deserialize 단계 때문)
@@ -79,8 +81,6 @@ namespace Nekoyume.Game
             stage.objectPool.Initialize();
             yield return null;
             stage.dropItemFactory.Initialize();
-            yield return null;
-            AudioController.instance.Initialize();
             yield return null;
 
             Observable.EveryUpdate()
