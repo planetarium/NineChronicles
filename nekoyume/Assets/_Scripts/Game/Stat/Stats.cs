@@ -168,10 +168,10 @@ namespace Nekoyume.Game
                     yield return (StatType.ATK, ATK);
                 if (HasDEF)
                     yield return (StatType.DEF, DEF);
-                if (HasDOG)
-                    yield return (StatType.DOG, DOG);
                 if (HasCRI)
                     yield return (StatType.CRI, CRI);
+                if (HasDOG)
+                    yield return (StatType.DOG, DOG);
                 if (HasSPD)
                     yield return (StatType.SPD, SPD);
             }

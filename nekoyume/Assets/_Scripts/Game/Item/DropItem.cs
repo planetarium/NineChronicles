@@ -120,7 +120,7 @@ namespace Nekoyume.Game.Item
                 {
                     throw new WidgetNotFoundException<BottomMenu>();
                 }
-                _inventoryPosition = bottomMenu.inventoryButton.image.transform.position;
+                _inventoryPosition = bottomMenu.inventoryButton.button.transform.position;
                 _inventoryPosition.z = transform.position.z;
             }
         }

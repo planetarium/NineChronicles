@@ -15,8 +15,11 @@ namespace Nekoyume.UI
             public Widget widget;
         }
 
-        protected static readonly Subject<Widget> OnEnableSubject = new Subject<Widget>();
-        protected static readonly Subject<Widget> OnDisableSubject = new Subject<Widget>();
+        public static readonly Subject<Widget> OnEnableStaticSubject = new Subject<Widget>();
+        public static readonly Subject<Widget> OnDisableStaticSubject = new Subject<Widget>();
+
+        public readonly Subject<Widget> OnEnableSubject = new Subject<Widget>();
+        public readonly Subject<Widget> OnDisableSubject = new Subject<Widget>();
 
         private Animator _animator;
 
@@ -36,12 +39,20 @@ namespace Nekoyume.UI
 
         protected virtual void OnEnable()
         {
+            OnEnableStaticSubject.OnNext(this);
             OnEnableSubject.OnNext(this);
         }
 
         protected virtual void OnDisable()
         {
+            OnDisableStaticSubject.OnNext(this);
             OnDisableSubject.OnNext(this);
+        }
+
+        protected virtual void OnDestroy()
+        {
+            OnEnableSubject.Dispose();
+            OnDisableSubject.Dispose();
         }
 
         #endregion
@@ -169,12 +180,19 @@ namespace Nekoyume.UI
 
         protected virtual void OnCompleteOfShowAnimation()
         {
-            _animator.enabled = false;
+            if (_animator)
+            {
+                _animator.enabled = false;
+            }
         }
 
         protected virtual void OnCompleteOfCloseAnimation()
         {
-            _animator.enabled = false;
+            if (_animator)
+            {
+                _animator.enabled = false;
+            }
+
             _isCloseAnimationCompleted = true;
         }
         

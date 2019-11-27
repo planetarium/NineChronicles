@@ -85,8 +85,6 @@ namespace Nekoyume.UI.Module
             quitButton.button.OnClickAsObservable().Subscribe(SubscribeNavigationButtonClick).AddTo(gameObject);
 
             _toggleGroup = new ToggleGroup();
-            _toggleGroup.OnToggledOn.Subscribe(SubscribeOnToggledOn).AddTo(gameObject);
-            _toggleGroup.OnToggledOff.Subscribe(SubscribeOnToggledOff).AddTo(gameObject);
             _toggleGroup.RegisterToggleable(mailButton);
             _toggleGroup.RegisterToggleable(questButton);
             _toggleGroup.RegisterToggleable(chatButton);
@@ -95,18 +93,24 @@ namespace Nekoyume.UI.Module
             _toggleGroup.RegisterToggleable(inventoryButton);
             _toggleGroup.RegisterToggleable(worldMapButton);
             _toggleGroup.RegisterToggleable(settingsButton);
+
             mailButton.SetWidgetType<Mail>();
             questButton.SetWidgetType<Quest>();
-            chatButton.button.OnClickAsObservable().Subscribe(SubscribeOnClick).AddTo(gameObject);
-            illustratedBookButton.button.OnClickAsObservable().Subscribe(SubscribeOnClick).AddTo(gameObject);
             characterButton.SetWidgetType<StatusDetail>();
             inventoryButton.SetWidgetType<UI.Inventory>();
+
+            // 미구현
+            chatButton.button.OnClickAsObservable().Subscribe(SubscribeOnClick).AddTo(gameObject);
+            illustratedBookButton.button.OnClickAsObservable().Subscribe(SubscribeOnClick).AddTo(gameObject);
             settingsButton.button.OnClickAsObservable().Subscribe(SubscribeOnClick).AddTo(gameObject);
+            chatButton.SetWidgetType<Alert>();
+            illustratedBookButton.SetWidgetType<Alert>();
+            settingsButton.SetWidgetType<Alert>();
         }
 
         private void SubscribeOnClick(Unit unit)
         {
-            Find<Alert>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE", "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
+            Find<Alert>().Set("UI_ALERT_NOT_IMPLEMENTED_TITLE", "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
         }
 
         protected override void OnEnable()
@@ -114,7 +118,7 @@ namespace Nekoyume.UI.Module
             base.OnEnable();
             _disposablesAtOnEnable.DisposeAllAndClear();
             ReactiveCurrentAvatarState.MailBox?.Subscribe(SubscribeAvatarMailBox).AddTo(_disposablesAtOnEnable);
-            ReactiveCurrentAvatarState.QuestList.Subscribe(SubscribeAvatarQuestList).AddTo(_disposablesAtOnEnable);
+            ReactiveCurrentAvatarState.QuestList?.Subscribe(SubscribeAvatarQuestList).AddTo(_disposablesAtOnEnable);
         }
 
         protected override void OnDisable()
@@ -238,22 +242,6 @@ namespace Nekoyume.UI.Module
         private void SubscribeNavigationButtonClick(Unit unit)
         {
             SharedModel.NavigationAction?.Invoke(this);
-        }
-
-        private static void SubscribeOnToggledOn(IToggleable toggleable)
-        {
-            if (!(toggleable is IWidgetControllable widgetControllable))
-                return;
-
-            widgetControllable.ShowWidget();
-        }
-
-        private static void SubscribeOnToggledOff(IToggleable toggleable)
-        {
-            if (!(toggleable is IWidgetControllable widgetControllable))
-                return;
-
-            widgetControllable.HideWidget();
         }
 
         private void SubscribeAvatarMailBox(MailBox mailBox)

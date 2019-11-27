@@ -14,9 +14,23 @@ namespace Nekoyume.UI
         public AlertDelegate CloseCallback { get; set; }
         public void Show(string title, string content, string labelOK = "UI_OK", bool localize = true)
         {
-            var blur = Find<PopupBlur>();
+            if (gameObject.activeSelf)
+            {
+                Close(true);
+                Show(title, content, labelOK, localize);
+                return;
+            }
+
+            var blur = Find<ModuleBlur>();
             blur.onClick = () => Close();
             blur?.Show();
+
+            Set(title, content, labelOK, localize);
+            base.Show();
+        }
+
+        public void Set(string title, string content, string labelOK = "UI_OK", bool localize = true)
+        {
             bool titleExists = !string.IsNullOrEmpty(title);
             if (localize)
             {
@@ -34,15 +48,13 @@ namespace Nekoyume.UI
 
             this.title.gameObject.SetActive(titleExists);
             titleBorder.SetActive(titleExists);
-
-            base.Show();
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
             CloseCallback?.Invoke();
             Game.Controller.AudioController.PlayClick();
-            Find<PopupBlur>()?.Close();
+            Find<ModuleBlur>()?.Close();
             base.Close(ignoreCloseAnimation);
         }
     }
