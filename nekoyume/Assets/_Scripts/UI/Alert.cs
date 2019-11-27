@@ -12,6 +12,15 @@ namespace Nekoyume.UI
         public TextMeshProUGUI labelOK;
         public GameObject titleBorder;
         public AlertDelegate CloseCallback { get; set; }
+
+        public override void Show()
+        {
+            var blur = Find<ModuleBlur>();
+            blur.onClick = () => Close();
+            blur?.Show();
+            base.Show();
+        }
+
         public void Show(string title, string content, string labelOK = "UI_OK", bool localize = true)
         {
             if (gameObject.activeSelf)
@@ -21,12 +30,8 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var blur = Find<ModuleBlur>();
-            blur.onClick = () => Close();
-            blur?.Show();
-
             Set(title, content, labelOK, localize);
-            base.Show();
+            Show();
         }
 
         public void Set(string title, string content, string labelOK = "UI_OK", bool localize = true)
@@ -54,7 +59,7 @@ namespace Nekoyume.UI
         {
             CloseCallback?.Invoke();
             Game.Controller.AudioController.PlayClick();
-            Find<ModuleBlur>()?.Close();
+            Find<ModuleBlur>()?.Close(ignoreCloseAnimation);
             base.Close(ignoreCloseAnimation);
         }
     }
