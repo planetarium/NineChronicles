@@ -41,9 +41,9 @@ namespace Nekoyume
         public const int ShopRequiredLevel = 1;
         public const int RankingRequiredLevel = 1;
 #else
-        public const int CombinationRequiredLevel = 5;
-        public const int ShopRequiredLevel = 10;
-        public const int RankingRequiredLevel = 15;
+        public const int CombinationRequiredLevel = 3;
+        public const int ShopRequiredLevel = 7;
+        public const int RankingRequiredLevel = 5;
 #endif
 
         #endregion
