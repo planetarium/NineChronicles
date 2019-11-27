@@ -133,8 +133,8 @@ namespace Nekoyume.UI
             yield return null;
 
             // 팝업류.
-            _secondWidgets.Add(Widget.Create<PopupBlur>());
-            yield return null;
+            //_secondWidgets.Add(Widget.Create<PopupBlur>());
+            //yield return null;
             _secondWidgets.Add(Widget.Create<BattleResult>());
             yield return null;
             _secondWidgets.Add(Widget.Create<SimpleItemCountPopup>());

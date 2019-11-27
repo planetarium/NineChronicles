@@ -26,7 +26,7 @@ namespace Nekoyume.UI
         public void Show(string title, string content, string labelYes = "UI_OK", string labelNo = "UI_CANCEL",
             bool localize = true)
         {
-            var blur = Find<PopupBlur>();
+            var blur = Find<ModuleBlur>();
             blur.onClick = () => No();
             blur?.Show();
 
@@ -56,7 +56,7 @@ namespace Nekoyume.UI
         public void Yes()
         {
             CloseCallback?.Invoke(ConfirmResult.Yes);
-            Find<PopupBlur>()?.Close();
+            Find<ModuleBlur>()?.Close();
 
             base.Close();
             AudioController.PlayClick();
@@ -65,7 +65,7 @@ namespace Nekoyume.UI
         public void No()
         {
             CloseCallback?.Invoke(ConfirmResult.No);
-            Find<PopupBlur>()?.Close();
+            Find<ModuleBlur>()?.Close();
 
             base.Close();
             AudioController.PlayClick();

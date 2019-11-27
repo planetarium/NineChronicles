@@ -9,9 +9,9 @@ namespace Nekoyume.UI.Module
 {
     public class NormalButton : MonoBehaviour
     {
-        public Button button;
-        public Image image;
         public TextMeshProUGUI text;
+        public Image image;
+        public Button button;
         public string localizationKey;
         
         #region Mono
@@ -19,7 +19,6 @@ namespace Nekoyume.UI.Module
         protected virtual void Awake()
         {
             text.text = LocalizationManager.Localize(string.IsNullOrEmpty(localizationKey) ? "null" : localizationKey);
-
             button.OnClickAsObservable().Subscribe(_ => AudioController.PlayClick()).AddTo(gameObject);
         }
 
