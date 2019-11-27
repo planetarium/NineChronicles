@@ -493,7 +493,7 @@ namespace Nekoyume.BlockChain
             public IAction BlockAction { get; } = new RewardGold {gold = 1};
 
             public InvalidBlockException ValidateNextBlock(
-                BlockChain<PolymorphicAction<ActionBase>> blocks, 
+                BlockChain<PolymorphicAction<ActionBase>> blocks,
                 Block<PolymorphicAction<ActionBase>> nextBlock
             )
             {
@@ -546,7 +546,7 @@ namespace Nekoyume.BlockChain
         {
             _cancellationTokenSource?.Cancel();
             // `_swarm`의 내부 큐가 비워진 다음 완전히 종료할 때까지 더 기다립니다.
-            Task.Run(async () => 
+            Task.Run(async () =>
             {
                 await _swarm?.StopAsync(TimeSpan.FromMilliseconds(SwarmLinger));
             }).ContinueWith(_ => { store?.Dispose(); })
@@ -808,6 +808,12 @@ namespace Nekoyume.BlockChain
                             {
                                 Debug.Log($"Tx[{invalidTxException.TxId}] is invalid. mark to unstage.");
                                 invalidTxs.Add(blocks.GetTransaction(invalidTxException.TxId));
+                            }
+                            else if (ex is UnexpectedlyTerminatedActionException actionException
+                                && actionException.TxId is TxId txId)
+                            {
+                                Debug.Log($"Tx[{actionException.TxId}]'s action is invalid. mark to unstage. {ex}");
+                                invalidTxs.Add(blocks.GetTransaction(txId));
                             }
 
                             Debug.LogException(ex);
