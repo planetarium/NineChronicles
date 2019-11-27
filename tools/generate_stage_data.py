@@ -8,7 +8,7 @@ from operator import itemgetter
 ### EDIT: WORLD
 MONSTER_PARTS_DROP_RATE = 0.4
 STAGES_PER_WORLD = 150
-STAGES_PER_MONSTER_LV = 4
+STAGES_PER_MONSTER_LV = 5
 BASE_EXP = 50
 ADDITIONAL_EXP_PER_STAGE = 8
 MIN_WAVES = 4
@@ -286,12 +286,17 @@ for stage in range(1, STAGES_PER_WORLD+1):
     food_mat = random.choice(FOOD_MATERIAL)
     g1_mat = random.choice(EQ_MAT_G1)
     g2_mat = random.choice(EQ_MAT_G2)
+    g3_mat = random.choice(EQ_MAT_G3)
 
     reward_row += [MONSTER_PARTS[random_monster], MONSTER_PARTS_DROP_RATE, 1, 3]
     reward_row += [MONSTER_PARTS[last_monster], MONSTER_PARTS_DROP_RATE/2.0, 1, 2]
     reward_row += [food_mat, FOOD_DROP_RATE, 1, 2]
-    reward_row += [g1_mat, EQ_G1_DROP_RATE, 1, 1]
-    reward_row += [g2_mat, EQ_G2_DROP_RATE, 1, 1]
+    if stage < 75:
+        reward_row += [g1_mat, EQ_G1_DROP_RATE, 1, 1]
+        reward_row += [g2_mat, EQ_G2_DROP_RATE, 1, 1]
+    else:
+        reward_row += [g2_mat, EQ_G1_DROP_RATE, 1, 1]
+        reward_row += [g3_mat, EQ_G2_DROP_RATE, 1, 1]
 
 #    if additional_mat:
 #        reward_row += [additional_mat, 1, 1, 2]
