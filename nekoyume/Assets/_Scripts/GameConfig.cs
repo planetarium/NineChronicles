@@ -21,7 +21,7 @@ namespace Nekoyume
         public const string DefaultPlayerEyeOpenResource = "eye_red_open";
         public const string DefaultPlayerEyeHalfResource = "eye_red_half";
         public const string DefaultPlayerTailResource = "tail_0001";
-        public const int ActionPoint = 300;
+        public const int ActionPoint = 400;
         
         public const int HackAndSlashCostAP = 5;
 
