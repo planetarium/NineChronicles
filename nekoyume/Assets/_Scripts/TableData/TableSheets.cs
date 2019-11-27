@@ -212,6 +212,8 @@ namespace Nekoyume.TableData
             {
                 SetToSheet(pair.Key, pair.Value);
             }
+            ItemSheetInitialize();
+            QuestSheetInitialize();
         }
 
         public static TableSheets FromTableSheetsState(TableSheetsState tableSheetsState)
