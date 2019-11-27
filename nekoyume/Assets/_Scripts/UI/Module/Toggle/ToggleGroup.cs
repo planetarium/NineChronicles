@@ -36,6 +36,12 @@ namespace Nekoyume.UI.Module
             }
         }
 
+        public void RequestToggledOff(IToggleable toggleable)
+        {
+            toggleable.SetToggledOff();
+            OnToggledOff.OnNext(toggleable);
+        }
+
         #endregion
 
         public void RegisterToggleable(IToggleable toggleable)
@@ -57,6 +63,15 @@ namespace Nekoyume.UI.Module
             }
 
             toggleable.SetToggledOn();
+        }
+
+        public void SetToggledOff(IToggleable toggleable)
+        {
+            var id = toggleable.GetInstanceID();
+            foreach (var pair in _idAndToggleablePairs.Where(pair => pair.Key == id))
+            {
+                pair.Value.SetToggledOff();
+            }
         }
 
         public void SetToggledOffAll()

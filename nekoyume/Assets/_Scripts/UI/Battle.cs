@@ -48,7 +48,7 @@ namespace Nekoyume.UI
             {
                 throw new WidgetNotFoundException<BottomMenu>();
             }
-            VFXController.instance.Create<DropItemInventoryVFX>(bottomMenu.inventoryButton.image.transform, Vector3.zero);
+            VFXController.instance.Create<DropItemInventoryVFX>(bottomMenu.inventoryButton.button.transform, Vector3.zero);
         }
 
         protected override void OnCompleteOfCloseAnimation()

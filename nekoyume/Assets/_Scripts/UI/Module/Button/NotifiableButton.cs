@@ -1,4 +1,6 @@
+using Assets.SimpleLocalization;
 using System;
+using TMPro;
 using UniRx;
 using UnityEngine.UI;
 
@@ -16,9 +18,9 @@ namespace Nekoyume.UI.Module
             }
         }
 
+        public TextMeshProUGUI selectedText;
+        public Image selectedImage;
         public Image hasNotificationImage;
-        
-        private Widget _widget;
         
         private IToggleListener _toggleListener;
 
@@ -26,12 +28,12 @@ namespace Nekoyume.UI.Module
 
         #region Mono
 
-        protected override void Awake()
+        protected override void Awake() 
         {
             base.Awake();
-            
+            selectedText.text = LocalizationManager.Localize(string.IsNullOrEmpty(localizationKey) ? "null" : localizationKey);
             SharedModel.HasNotification.SubscribeTo(hasNotificationImage).AddTo(gameObject);
-            
+
             button.OnClickAsObservable().Subscribe(_ => _toggleListener?.OnToggle(this))
                 .AddTo(gameObject);
         }
@@ -44,6 +46,11 @@ namespace Nekoyume.UI.Module
         #endregion
 
         #region IWidgetControllable
+
+        private Widget _widget;
+        private IDisposable _disposableForWidgetControllable;
+
+        public bool HasWidget => !(_widget is null);
         
         public void SetWidgetType<T>() where T : Widget
         {
@@ -56,14 +63,16 @@ namespace Nekoyume.UI.Module
                 return;
             
             _widget.Show();
+            _disposableForWidgetControllable = _widget.OnDisableSubject.Subscribe(_ => _toggleListener?.RequestToggledOff(this));
         }
 
         public void HideWidget()
         {
             if (_widget is null)
                 return;
-            
-            _widget.Close();
+
+            _disposableForWidgetControllable?.Dispose();
+            _widget.Close(true);
         }
         
         #endregion
@@ -81,12 +90,20 @@ namespace Nekoyume.UI.Module
 
         public void SetToggledOn()
         {
-            // Do nothing.
+            image.gameObject.SetActive(false);
+            selectedImage.gameObject.SetActive(true);
+            button.targetGraphic = selectedImage;
+
+            ShowWidget();
         }
 
         public void SetToggledOff()
         {
-            // Do nothing.
+            image.gameObject.SetActive(true);
+            selectedImage.gameObject.SetActive(false);
+            button.targetGraphic = image;
+
+            HideWidget();
         }
         
         #endregion
