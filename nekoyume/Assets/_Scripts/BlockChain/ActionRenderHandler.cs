@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Assets.SimpleLocalization;
 using Nekoyume.Action;
@@ -40,7 +39,6 @@ namespace Nekoyume.BlockChain
 
         public void Start()
         {
-            LoadLocalAvatarState();
             Shop();
             Ranking();
             RewardGold();
@@ -338,29 +336,6 @@ namespace Nekoyume.BlockChain
             Debug.LogFormat("Update local agentSTate. agentAddress: {0} BlockIndex: {1}",
                 agentState.address, Game.Game.instance.agent.BlockIndex);
             UpdateAgentState(agentState);
-        }
-
-        private void LoadLocalAvatarState()
-        {
-            if (!(States.Instance.AgentState?.Value is null))
-            {
-                foreach (var avatarAddress in States.Instance.AgentState.Value.avatarAddresses)
-                {
-                    var fileName = string.Format(States.CurrentAvatarFileNameFormat,
-                        States.Instance.AgentState.Value.address,
-                        avatarAddress.Value);
-                    var path = Path.Combine(Application.persistentDataPath, fileName);
-                    if (File.Exists(path))
-                    {
-                        var avatarState =
-                            ByteSerializer.Deserialize<AvatarState>(File.ReadAllBytes(path));
-                        Debug.LogFormat("Load local avatarState. agentAddress: {0} address: {1} BlockIndex: {2}",
-                            avatarState.agentAddress, avatarState.address, avatarState.blockIndex);
-                        UpdateLocalAvatarState(avatarState, avatarAddress.Key);
-                        File.Delete(path);
-                    }
-                }
-            }
         }
 
         private void ResponseSell(ActionBase.ActionEvaluation<Sell> eval)

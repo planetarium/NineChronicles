@@ -100,33 +100,6 @@ namespace Nekoyume.BlockChain
         }
 
         #endregion
-        
-        private static bool WantsToQuit()
-        {
-            SaveLocalAvatarState();
-            return true;
-        }
-
-        [RuntimeInitializeOnLoadMethod]
-        private static void RunOnStart()
-        {
-            Application.wantsToQuit += WantsToQuit;
-        }
-
-        private static void SaveLocalAvatarState()
-        {
-            if (Instance.CurrentAvatarState?.Value is null)
-                return;
-            
-            var avatarState = Instance.CurrentAvatarState.Value;
-            Debug.LogFormat("Save local avatarState. agentAddress: {0} address: {1} BlockIndex: {2}",
-                avatarState.agentAddress, avatarState.address, avatarState.blockIndex);
-
-            var fileName = string.Format(CurrentAvatarFileNameFormat, avatarState.agentAddress,
-                avatarState.address);
-            var path = Path.Combine(Application.persistentDataPath, fileName);
-            File.WriteAllBytes(path, ByteSerializer.Serialize(avatarState));
-        }
 
         internal static void Dispose()
         {
