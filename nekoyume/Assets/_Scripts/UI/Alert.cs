@@ -1,7 +1,6 @@
 using Assets.SimpleLocalization;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
@@ -15,6 +14,9 @@ namespace Nekoyume.UI
         public AlertDelegate CloseCallback { get; set; }
         public void Show(string title, string content, string labelOK = "UI_OK", bool localize = true)
         {
+            var blur = Find<PopupBlur>();
+            blur.onClick = () => Close();
+            blur?.Show();
             bool titleExists = !string.IsNullOrEmpty(title);
             if (localize)
             {
@@ -40,6 +42,7 @@ namespace Nekoyume.UI
         {
             CloseCallback?.Invoke();
             Game.Controller.AudioController.PlayClick();
+            Find<PopupBlur>()?.Close();
             base.Close(ignoreCloseAnimation);
         }
     }

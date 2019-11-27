@@ -1,5 +1,8 @@
-﻿using Nekoyume.Game.Item;
+﻿using Nekoyume.Game.Controller;
+using Nekoyume.Game.Item;
+using Nekoyume.Game.VFX;
 using Nekoyume.UI.Module;
+using UnityEngine;
 
 namespace Nekoyume.UI
 {
@@ -40,8 +43,12 @@ namespace Nekoyume.UI
 
         private void OnGetItem(DropItem dropItem)
         {
-            // todo: 인벤토리 아이콘 위치 논의 후 활성화.
-//            VFXController.instance.Create<DropItemInventoryVFX>(bottomMenu.inventoryButton.image.transform, Vector3.zero);
+            var bottomMenu = Find<BottomMenu>();
+            if (!bottomMenu)
+            {
+                throw new WidgetNotFoundException<BottomMenu>();
+            }
+            VFXController.instance.Create<DropItemInventoryVFX>(bottomMenu.inventoryButton.image.transform, Vector3.zero);
         }
 
         protected override void OnCompleteOfCloseAnimation()

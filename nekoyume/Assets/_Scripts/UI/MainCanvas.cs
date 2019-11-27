@@ -117,7 +117,7 @@ namespace Nekoyume.UI
             yield return null;
 
             // 모듈류.
-            _secondWidgets.Add(Widget.Create<BottomMenu>());
+            _secondWidgets.Add(Widget.Create<ModuleBlur>());
             yield return null;
             _secondWidgets.Add(Widget.Create<StatusDetail>());
             yield return null;
@@ -127,9 +127,13 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<Quest>());
             yield return null;
+            _secondWidgets.Add(Widget.Create<BottomMenu>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<Dialog>());
+            yield return null;
 
             // 팝업류.
-            _secondWidgets.Add(Widget.Create<Dialog>());
+            _secondWidgets.Add(Widget.Create<PopupBlur>());
             yield return null;
             _secondWidgets.Add(Widget.Create<BattleResult>());
             yield return null;

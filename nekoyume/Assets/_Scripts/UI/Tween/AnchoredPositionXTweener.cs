@@ -1,4 +1,6 @@
 using DG.Tweening;
+using DG.Tweening.Core;
+using DG.Tweening.Plugins.Options;
 using UnityEngine;
 
 namespace Nekoyume.UI.Tween
@@ -14,6 +16,7 @@ namespace Nekoyume.UI.Tween
         [SerializeField] private bool from;
 
         private RectTransform _rectTransform;
+        private TweenerCore<Vector2, Vector2, VectorOptions> tween;
 
         private void Awake()
         {
@@ -24,15 +27,20 @@ namespace Nekoyume.UI.Tween
         {
             if (from)
             {
-                _rectTransform.DOAnchorPosX(to, duration, snapping)
+                tween = _rectTransform.DOAnchorPosX(to, duration, snapping)
                     .SetEase(ease)
                     .From();
             }
             else
             {
-                _rectTransform.DOAnchorPosX(to, duration, snapping)
+                tween = _rectTransform.DOAnchorPosX(to, duration, snapping)
                     .SetEase(ease);
             }
+        }
+
+        private void OnDisable()
+        {
+            tween?.Complete();
         }
     }
 }

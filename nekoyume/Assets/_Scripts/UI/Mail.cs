@@ -99,7 +99,16 @@ namespace Nekoyume.UI
             tabState = MailTabState.All;
             _mailBox = States.Instance.CurrentAvatarState.Value.mailBox;
             ChangeState(0);
+            var blur = Find<ModuleBlur>();
+            blur.onClick = () => Close();
+            blur?.Show();
             base.Show();
+        }
+
+        public override void Close(bool ignoreCloseAnimation = false)
+        {
+            base.Close(ignoreCloseAnimation);
+            Find<ModuleBlur>()?.Close();
         }
 
         #endregion

@@ -18,14 +18,10 @@ namespace Nekoyume.UI
         protected static readonly Subject<Widget> OnEnableSubject = new Subject<Widget>();
         protected static readonly Subject<Widget> OnDisableSubject = new Subject<Widget>();
 
-        private static readonly Dictionary<Type, PoolElementModel> Pool = new Dictionary<Type, PoolElementModel>();
-        private static readonly int Radius = Shader.PropertyToID("_Radius");
-
-        private static Material _glass;
-        private Material _glassOriginal;
         private Animator _animator;
+
+        private static readonly Dictionary<Type, PoolElementModel> Pool = new Dictionary<Type, PoolElementModel>();
         private bool _isCloseAnimationCompleted;
-        private float _originalBlurRadius;
 
         public RectTransform RectTransform { get; private set; }
         public virtual WidgetType WidgetType => WidgetType.Widget;
@@ -34,8 +30,6 @@ namespace Nekoyume.UI
 
         protected virtual void Awake()
         {
-            FindGlassMaterial(gameObject);
-
             _animator = GetComponent<Animator>();
             RectTransform = GetComponent<RectTransform>();
         }
@@ -111,22 +105,6 @@ namespace Nekoyume.UI
 
             return (T) model.widget;
         }
-
-
-        private void FindGlassMaterial(GameObject go)
-        {
-            var image = go.GetComponent<UnityEngine.UI.Image>();
-            if (!image ||
-                !image.material ||
-                !image.material.shader.name.Equals("UI/Unlit/FrostedGlass"))
-                return;
-
-            _glassOriginal = image.material;
-            _originalBlurRadius = _glassOriginal.GetFloat(Radius);
-            _glass
-                = image.material
-                = new Material(_glassOriginal);
-        }
         
         public virtual bool IsActive()
         {
@@ -153,8 +131,6 @@ namespace Nekoyume.UI
                 _animator.enabled = true;
                 _animator.Play("Show");
             }
-
-            StartCoroutine(Blur());
         }
         
         public virtual void Close(bool ignoreCloseAnimation = false)
@@ -187,34 +163,6 @@ namespace Nekoyume.UI
             }
 
             gameObject.SetActive(false);
-        }
-
-        private IEnumerator Blur()
-        {
-            if (!_glass)
-                yield break;
-
-            var from = 0f;
-            var to = _originalBlurRadius;
-
-            _glass.SetFloat(Radius, from);
-            var time = 0f;
-            while (true)
-            {
-                var current = Mathf.Lerp(from, to, time);
-                _glass.SetFloat(Radius, current);
-
-                time += Time.deltaTime * 3f;
-                if (time > 1f ||
-                    !gameObject.activeInHierarchy)
-                {
-                    break;
-                }
-
-                yield return null;
-            }
-
-            _glass.SetFloat(Radius, to);
         }
 
         #region Call From Animation

@@ -62,6 +62,11 @@ namespace Nekoyume.UI
             _coroutine = StartCoroutine(CoShowText());
         }
 
+        public override void Close(bool ignoreCloseAnimation = false)
+        {
+            base.Close(ignoreCloseAnimation);
+        }
+
         public void Skip()
         {
             if (_coroutine != null)
