@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Assets.SimpleLocalization;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
@@ -23,11 +24,26 @@ namespace Nekoyume.UI
     {
         public class Model
         {
+            private readonly List<CountableItem> _rewards = new List<CountableItem>();
+            
             public BattleLog.Result State;
             public long Exp;
-            public readonly List<CountableItem> Rewards = new List<CountableItem>();
             public bool ShouldRepeat;
             public bool ActionPointNotEnough;
+            
+            public IReadOnlyList<CountableItem> Rewards => _rewards;
+
+            public void AddReward(CountableItem reward)
+            {
+                var sameReward = _rewards.FirstOrDefault(e => e.ItemBase.Value.Equals(reward.ItemBase.Value));
+                if (sameReward is null)
+                {
+                    _rewards.Add(reward);
+                    return;
+                }
+
+                sameReward.Count.Value += reward.Count.Value;
+            }
         }
 
         [Serializable]

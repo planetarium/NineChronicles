@@ -481,7 +481,7 @@ namespace Nekoyume.Game
             foreach (var item in rewards)
             {
                 var countableItem = new CountableItem(item, 1);
-                _battleResultModel.Rewards.Add(countableItem);
+                _battleResultModel.AddReward(countableItem);
             }
 
             yield return null;
