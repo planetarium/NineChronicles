@@ -82,10 +82,9 @@ namespace Nekoyume.Action
             {
                 return states;
             }
-            var dailyBlockState = new DailyBlockState(d);
+            
             // Avoid NullReferenceException in test
-            var nextBlockIndex = dailyBlockState?.nextBlockIndex ?? DailyBlockState.UpdateInterval;
-            avatarState = CreateAvatarState(name, avatarAddress, ctx, nextBlockIndex);
+            avatarState = CreateAvatarState(name, avatarAddress, ctx);
 
             if (hair < 0) hair = 0;
             if (lens < 0) lens = 0;
@@ -99,9 +98,9 @@ namespace Nekoyume.Action
                 .SetState(avatarAddress, avatarState.Serialize());
         }
 
-        private static AvatarState CreateAvatarState(string name, Address avatarAddress, IActionContext ctx, long index)
+        private static AvatarState CreateAvatarState(string name, Address avatarAddress, IActionContext ctx)
         {
-            var avatarState = new AvatarState(avatarAddress, ctx.Signer, ctx.BlockIndex, index, name);
+            var avatarState = new AvatarState(avatarAddress, ctx.Signer, ctx.BlockIndex, name);
 #if UNITY_EDITOR
             var tableSheets = TableSheets.FromActionContext(ctx);
             AddItemsForTest(avatarState, ctx.Random, tableSheets);

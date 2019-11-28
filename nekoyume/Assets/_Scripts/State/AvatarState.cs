@@ -43,7 +43,7 @@ namespace Nekoyume.State
         public int ear;
         public int tail;
 
-        public AvatarState(Address address, Address agentAddress, long blockIndex, long rewardReceivedIndex, string name = null) : base(address)
+        public AvatarState(Address address, Address agentAddress, long blockIndex, string name = null) : base(address)
         {
             if (address == null)
                 throw new ArgumentNullException(nameof(address));
@@ -54,7 +54,7 @@ namespace Nekoyume.State
             exp = 0;
             inventory = new Inventory();
 #if UNITY_EDITOR
-            worldInformation = new WorldInformation(blockIndex, false);
+            worldInformation = new WorldInformation(blockIndex, true);
 #else
             worldInformation = new WorldInformation(blockIndex);
 #endif
@@ -64,7 +64,6 @@ namespace Nekoyume.State
             mailBox = new MailBox();
             this.blockIndex = blockIndex;
             actionPoint = GameConfig.ActionPoint;
-            dailyRewardReceivedIndex = rewardReceivedIndex;
             stageMap = new CollectionMap();
             monsterMap = new CollectionMap();
             itemMap = new CollectionMap();
