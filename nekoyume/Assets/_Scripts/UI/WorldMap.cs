@@ -20,18 +20,12 @@ namespace Nekoyume.UI
         [Serializable]
         public struct StageInformation
         {
-            [Serializable]
-            public struct IconsArea
-            {
-                public RectTransform root;
-                public TextMeshProUGUI text;
-                public List<Image> iconImages;
-            }
-
             public TextMeshProUGUI titleText;
             public TextMeshProUGUI descriptionText;
-            public IconsArea monstersArea;
-            public IconsArea rewardsArea;
+            public TextMeshProUGUI monstersAreaText;
+            public List<VanillaCharacterView> monstersAreaCharacterViews;
+            public TextMeshProUGUI rewardsAreaText;
+            public List<VanillaItemView> rewardsAreaItemViews;
             public TextMeshProUGUI expText;
         }
 
@@ -101,8 +95,8 @@ namespace Nekoyume.UI
                 }
             }
 
-            stageInformation.monstersArea.text.text = LocalizationManager.Localize("UI_WORLD_MAP_MONSTERS");
-            stageInformation.rewardsArea.text.text = LocalizationManager.Localize("UI_WORLD_MAP_REWARDS");
+            stageInformation.monstersAreaText.text = LocalizationManager.Localize("UI_WORLD_MAP_MONSTERS");
+            stageInformation.rewardsAreaText.text = LocalizationManager.Localize("UI_WORLD_MAP_REWARDS");
             submitButton.submitText.text = LocalizationManager.Localize("UI_WORLD_MAP_ENTER");
 
             alfheimButton.OnClickAsObservable()
@@ -263,33 +257,34 @@ namespace Nekoyume.UI
             stageInformation.titleText.text = $"Stage #{SelectedStageId}";
 
             var monsterCount = stageRow.TotalMonsterIds.Count;
-            for (var i = 0; i < stageInformation.monstersArea.iconImages.Count; i++)
+            for (var i = 0; i < stageInformation.monstersAreaCharacterViews.Count; i++)
             {
-                var image = stageInformation.monstersArea.iconImages[i];
+                var characterView = stageInformation.monstersAreaCharacterViews[i];
                 if (i < monsterCount)
                 {
-                    image.transform.parent.gameObject.SetActive(true);
-                    image.sprite = SpriteHelper.GetCharacterIcon(stageRow.TotalMonsterIds[i]);
+                    characterView.Show();
+                    characterView.SetData(stageRow.TotalMonsterIds[i]);
 
                     continue;
                 }
 
-                image.transform.parent.gameObject.SetActive(false);
+                characterView.Hide();
             }
 
             var rewardItemRows = stageRow.GetRewardItemRows();
-            for (var i = 0; i < stageInformation.rewardsArea.iconImages.Count; i++)
+            var rewardItemCount = rewardItemRows.Count;
+            for (var i = 0; i < stageInformation.rewardsAreaItemViews.Count; i++)
             {
-                var image = stageInformation.rewardsArea.iconImages[i];
-                if (i < rewardItemRows.Count)
+                var itemView = stageInformation.rewardsAreaItemViews[i];
+                if (i < rewardItemCount)
                 {
-                    image.transform.parent.gameObject.SetActive(true);
-                    image.sprite = SpriteHelper.GetItemIcon(rewardItemRows[i].Id);
+                    itemView.Show();
+                    itemView.SetData(rewardItemRows[i]);
 
                     continue;
                 }
 
-                image.transform.parent.gameObject.SetActive(false);
+                itemView.Hide();
             }
 
             stageInformation.expText.text = $"EXP +{stageRow.TotalExp}";
