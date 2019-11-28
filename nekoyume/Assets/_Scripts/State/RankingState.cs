@@ -60,7 +60,7 @@ namespace Nekoyume.State
                     if (!c.worldInformation.TryGetUnlockedWorldByLastStageClearedAt(out var detail))
                         throw new Exception($"worldInformation.TryGetLastNewlyClearedDetail() failed.");
 
-                    return detail.StageClearedAt;
+                    return detail.StageClearedBlockIndex;
                 });
             if (dt != null)
             {

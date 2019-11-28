@@ -81,7 +81,7 @@ namespace Nekoyume.Model
         {
             Exp.Current = 0;
             Inventory = new Inventory();
-            worldInformation = new WorldInformation(0);
+            worldInformation = null;
             PostConstruction();
         }
 

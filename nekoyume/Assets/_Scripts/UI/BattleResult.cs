@@ -332,11 +332,12 @@ namespace Nekoyume.UI
             var player = stage.RunPlayer();
             player.DisableHUD();
 
+            var worldId = stage.worldId;
             var stageId = SharedModel.ShouldRepeat
-                ? stage.id
-                : stage.id + 1;
+                ? stage.stageId
+                : stage.stageId + 1;
             yield return ActionManager.instance
-                .HackAndSlash(player.Equipments, new List<Consumable>(), stage.worldId, stageId)
+                .HackAndSlash(player.Equipments, new List<Consumable>(), worldId, stageId)
                 .Subscribe(_ => { }, (_) => Find<ActionFailPopup>().Show("Action timeout during HackAndSlash."));
         }
 

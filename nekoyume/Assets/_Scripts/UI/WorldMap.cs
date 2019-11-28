@@ -156,7 +156,7 @@ namespace Nekoyume.UI
                 {
                     UnlockWorld(world,
                         worldModel.GetNextStageIdForPlay(),
-                        worldModel.GetNextStageIdForSelect());
+                        worldModel.GetNextStageId());
                 }
                 else
                 {
@@ -167,7 +167,7 @@ namespace Nekoyume.UI
             if (!worldInformation.TryGetFirstWorld(out var firstWorld))
                 throw new Exception("worldInformation.TryGetFirstWorld() failed!");
 
-            Show(firstWorld.Id, firstWorld.GetNextStageIdForSelect());
+            Show(firstWorld.Id, firstWorld.GetNextStageId());
             SharedViewModel.IsWorldShown.Value = true;
         }
 
@@ -209,7 +209,7 @@ namespace Nekoyume.UI
             if (!SharedViewModel.WorldInformation.TryGetWorld(worldId, out var world))
                 throw new ArgumentException(nameof(worldId));
 
-            ShowWorld(world.Id, world.GetNextStageIdForSelect());
+            ShowWorld(world.Id, world.GetNextStageId());
         }
 
         private void ShowWorld(int worldId, int stageId)

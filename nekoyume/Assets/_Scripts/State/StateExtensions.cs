@@ -126,6 +126,16 @@ namespace Nekoyume.State
             Deserialize(ToDecimal, serialized);
 
         #endregion
+
+        #region Text
+
+        public static IValue Serialize(this string text) =>
+            (Text) text;
+        
+        public static string ToString(this IValue serialized) =>
+            ((Text) serialized).Value;
+        
+        #endregion
         
         #region DateTimeOffset
         
@@ -163,6 +173,8 @@ namespace Nekoyume.State
         
         #endregion
 
+        #region DecimalStat
+
         public static IValue Serialize(this DecimalStat decimalStat) =>
             Bencodex.Types.Dictionary.Empty
                 .Add("type", decimalStat.Type.Serialize())
@@ -176,6 +188,8 @@ namespace Nekoyume.State
                 StatTypeExtension.Deserialize((Binary)serialized["type"]),
                 serialized["value"].ToDecimal());
 
+        #endregion
+        
         #region Generic
         
         public static IValue Serialize(this Dictionary<Material, int> value)
@@ -197,6 +211,73 @@ namespace Nekoyume.State
                     value => (Material) ItemFactory.Deserialize((Bencodex.Types.Dictionary) value["material"]),
                     value => value["count"].ToInteger()
                 );
+        }
+
+        #endregion
+
+        #region Bencodex.Types.Dictionary Getter
+
+        public static Address GetAddress(this Bencodex.Types.Dictionary serialized, string key, Address defaultValue = default)
+        {
+            return serialized.ContainsKey((Bencodex.Types.Text)key)
+                ? serialized[key].ToAddress()
+                : defaultValue;
+        }
+        
+        public static bool GetBoolean(this Bencodex.Types.Dictionary serialized, string key, bool defaultValue = false)
+        {
+            return serialized.ContainsKey((Bencodex.Types.Text)key)
+                ? serialized[key].ToBoolean()
+                : defaultValue;
+        }
+        
+        public static int GetInteger(this Bencodex.Types.Dictionary serialized, string key, int defaultValue = 0)
+        {
+            return serialized.ContainsKey((Bencodex.Types.Text)key)
+                ? serialized[key].ToInteger()
+                : defaultValue;
+        }
+        
+        public static long GetLong(this Bencodex.Types.Dictionary serialized, string key, long defaultValue = 0L)
+        {
+            return serialized.ContainsKey((Bencodex.Types.Text)key)
+                ? serialized[key].ToLong()
+                : defaultValue;
+        }
+        
+        public static decimal GetDecimal(this Bencodex.Types.Dictionary serialized, string key, decimal defaultValue = 0M)
+        {
+            return serialized.ContainsKey((Bencodex.Types.Text)key)
+                ? serialized[key].ToDecimal()
+                : defaultValue;
+        }
+        
+        public static string GetString(this Bencodex.Types.Dictionary serialized, string key, string defaultValue = "")
+        {
+            return serialized.ContainsKey((Bencodex.Types.Text)key)
+                ? ToString(serialized[key])
+                : defaultValue;
+        }
+        
+        public static DateTimeOffset GetDateTimeOffset(this Bencodex.Types.Dictionary serialized, string key, DateTimeOffset defaultValue = default)
+        {
+            return serialized.ContainsKey((Bencodex.Types.Text)key)
+                ? serialized[key].ToDateTimeOffset()
+                : defaultValue;
+        }
+        
+        public static Guid GetGuid(this Bencodex.Types.Dictionary serialized, string key, Guid defaultValue = default)
+        {
+            return serialized.ContainsKey((Bencodex.Types.Text)key)
+                ? serialized[key].ToGuid()
+                : defaultValue;
+        }
+        
+        public static DecimalStat GetDecimalStat(this Bencodex.Types.Dictionary serialized, string key, DecimalStat defaultValue = default)
+        {
+            return serialized.ContainsKey((Bencodex.Types.Text)key)
+                ? serialized[key].ToDecimalStat()
+                : defaultValue;
         }
 
         #endregion
