@@ -12,14 +12,12 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
-    public class ItemView<TViewModel> : MonoBehaviour
+    public class ItemView<TViewModel> : VanillaItemView
         where TViewModel : Model.Item
     {
         public TouchHandler touchHandler;
         public Button itemButton;
         public Image backgroundImage;
-        public Image gradeImage;
-        public Image iconImage;
         public TextMeshProUGUI enhancementText;
         public Image selectionImage;
 
@@ -73,11 +71,6 @@ namespace Nekoyume.UI.Module
 
         #endregion
         
-        public virtual void Show()
-        {
-            gameObject.SetActive(true);
-        }
-
         public virtual void SetData(TViewModel model)
         {
             if (model is null)
@@ -86,6 +79,7 @@ namespace Nekoyume.UI.Module
                 return;
             }
             
+            base.SetData(model.ItemBase.Value.Data);
             _disposablesAtSetData.DisposeAllAndClear();
             Model = model;
             Model.GradeEnabled.SubscribeTo(gradeImage).AddTo(_disposablesAtSetData);
@@ -105,31 +99,22 @@ namespace Nekoyume.UI.Module
             iconImage.SetNativeSize();
         }
 
-        public virtual void Clear()
+        public override void Clear()
         {
             Model = null;
             _disposablesAtSetData.DisposeAllAndClear();
 
             UpdateView();
+            base.Clear();
         }
 
-        public virtual void Hide()
+        protected override void SetDim(bool isDim)
         {
-            gameObject.SetActive(false);
-        }
-
-        protected virtual void SetDim(bool isDim)
-        {
+            base.SetDim(isDim);
+            
             var alpha = isDim ? .3f : 1f;
-            gradeImage.color = GetColor(gradeImage.color, alpha);
-            iconImage.color = GetColor(gradeImage.color, alpha);
-            enhancementText.color = GetColor(gradeImage.color, alpha);
-            selectionImage.color = GetColor(gradeImage.color, alpha);
-        }
-
-        protected Color GetColor(Color color, float alpha)
-        {
-            return new Color(color.r, color.g, color.b, alpha);
+            enhancementText.color = GetColor(enhancementText.color, alpha);
+            selectionImage.color = GetColor(selectionImage.color, alpha);
         }
 
         private void UpdateView()
@@ -137,25 +122,9 @@ namespace Nekoyume.UI.Module
             if (Model is null ||
                 Model.ItemBase.Value is null)
             {
-                gradeImage.enabled = false;
-                iconImage.enabled = false;
                 enhancementText.enabled = false;
                 selectionImage.enabled = false;
-                return;
             }
-
-            var item = Model.ItemBase.Value;
-            
-            var gradeSprite = item.GetBackgroundSprite();
-            gradeImage.overrideSprite = gradeSprite;
-
-            var itemSprite = item.GetIconSprite();
-            if (itemSprite is null)
-                throw new FailedToLoadResourceException<Sprite>(item.Data.Id.ToString());
-
-            iconImage.enabled = true;
-            iconImage.overrideSprite = itemSprite;
-            iconImage.SetNativeSize();
         }
     }
 }
