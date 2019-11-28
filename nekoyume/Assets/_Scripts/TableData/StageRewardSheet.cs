@@ -34,11 +34,14 @@ namespace Nekoyume.TableData
             {
                 Id = int.TryParse(fields[0], out var id) ? id : 0;
                 Rewards = new List<RewardData>();
-                for (var i = 0; i < 5; i++)
+                for (var i = 0; i < 10; i++)
                 {
                     var offset = i * 4;
+                    if (!int.TryParse(fields[1 + offset], out var itemId))
+                        continue;
+                    
                     Rewards.Add(new RewardData(
-                        int.TryParse(fields[1 + offset], out var itemId) ? itemId : 0,
+                        itemId,
                         decimal.TryParse(fields[2 + offset], out var ratio) ? ratio : 0m,
                         int.TryParse(fields[3 + offset], out var min) ? min : 0,
                         int.TryParse(fields[4 + offset], out var max) ? max : 0
