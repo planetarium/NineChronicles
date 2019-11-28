@@ -44,10 +44,10 @@ namespace Nekoyume.UI.Module
         public NormalButton quitButton;
         public NormalButton mainButton;
         public NormalButton backButton;
-        public NormalButton chatButton;
 
         // 토글 그룹과 버튼.
         private ToggleGroup _toggleGroup;
+        public NotifiableButton chatButton;
         public NotifiableButton mailButton;
         public NotifiableButton questButton;
         public NotifiableButton illustratedBookButton;
@@ -105,6 +105,7 @@ namespace Nekoyume.UI.Module
             settingsButton.button.OnClickAsObservable().Subscribe(SubscribeOnClick).AddTo(gameObject);
             illustratedBookButton.SetWidgetType<Alert>();
             settingsButton.SetWidgetType<Alert>();
+            chatButton.SetWidgetType<Confirm>();
         } 
 
         private void SubScribeOnClickChat(Unit unit)
