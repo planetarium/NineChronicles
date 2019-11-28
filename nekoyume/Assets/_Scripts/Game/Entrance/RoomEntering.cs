@@ -19,7 +19,7 @@ namespace Nekoyume.Game.Entrance
             
             Widget.Find<LoadingScreen>().Show();
 
-            stage.id = 0;
+            stage.stageId = 0;
             stage.LoadBackground("room");
 
             var clearPlayers = stage.GetComponentsInChildren<Character.Player>();

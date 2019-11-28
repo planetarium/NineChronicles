@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Nekoyume.UI.Module
 {
-    public class ToggleGroup : IToggleListener
+    public class ToggleGroup : IToggleGroup, IToggleListener
     {
         private readonly Dictionary<int, IToggleable> _idAndToggleablePairs = new Dictionary<int, IToggleable>();
         
@@ -14,37 +14,8 @@ namespace Nekoyume.UI.Module
 
         public IEnumerable<IToggleable> Toggleables => _idAndToggleablePairs.Values;
 
-        #region IToggleListener
-
-        public void OnToggle(IToggleable toggleable)
-        {
-            var id = toggleable.GetInstanceID();
-            foreach (var pair in _idAndToggleablePairs.Where(pair => pair.Key != id && pair.Value.IsToggledOn))
-            {
-                pair.Value.SetToggledOff();
-                OnToggledOff.OnNext(pair.Value);
-            }
-
-            if (toggleable.IsToggledOn)
-            {
-                toggleable.SetToggledOff();
-                OnToggledOff.OnNext(toggleable);
-            }
-            else
-            {
-                toggleable.SetToggledOn();
-                OnToggledOn.OnNext(toggleable);
-            }
-        }
-
-        public void RequestToggledOff(IToggleable toggleable)
-        {
-            toggleable.SetToggledOff();
-            OnToggledOff.OnNext(toggleable);
-        }
-
-        #endregion
-
+        #region IToggleGroup
+        
         public void RegisterToggleable(IToggleable toggleable)
         {
             var id = toggleable.GetInstanceID();
@@ -82,5 +53,38 @@ namespace Nekoyume.UI.Module
                 _idAndToggleablePairs[pair.Key].SetToggledOff();
             }
         }
+        
+        #endregion
+        
+        #region IToggleListener
+
+        public void OnToggle(IToggleable toggleable)
+        {
+            var id = toggleable.GetInstanceID();
+            foreach (var pair in _idAndToggleablePairs.Where(pair => pair.Key != id && pair.Value.IsToggledOn))
+            {
+                pair.Value.SetToggledOff();
+                OnToggledOff.OnNext(pair.Value);
+            }
+
+            if (toggleable.IsToggledOn)
+            {
+                toggleable.SetToggledOff();
+                OnToggledOff.OnNext(toggleable);
+            }
+            else
+            {
+                toggleable.SetToggledOn();
+                OnToggledOn.OnNext(toggleable);
+            }
+        }
+
+        public void RequestToggledOff(IToggleable toggleable)
+        {
+            toggleable.SetToggledOff();
+            OnToggledOff.OnNext(toggleable);
+        }
+
+        #endregion
     }
 }

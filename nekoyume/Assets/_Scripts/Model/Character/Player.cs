@@ -44,7 +44,7 @@ namespace Nekoyume.Model
 
         public readonly ExpData Exp = new ExpData();
         public readonly Inventory Inventory;
-        public int worldStage;
+        public WorldInformation worldInformation;
         
         public Weapon weapon;
         public Armor armor;
@@ -67,7 +67,7 @@ namespace Nekoyume.Model
         {
             Exp.Current = avatarState.exp;
             Inventory = avatarState.inventory;
-            worldStage = avatarState.worldStage;
+            worldInformation = avatarState.worldInformation;
             hairIndex = avatarState.hair;
             lensIndex = avatarState.lens;
             earIndex = avatarState.ear;
@@ -81,7 +81,7 @@ namespace Nekoyume.Model
         {
             Exp.Current = 0;
             Inventory = new Inventory();
-            worldStage = 1;
+            worldInformation = null;
             PostConstruction();
         }
 
@@ -89,12 +89,11 @@ namespace Nekoyume.Model
         {
             Exp = (ExpData) value.Exp.Clone();
             Inventory = value.Inventory;
-            worldStage = value.worldStage;
+            worldInformation = value.worldInformation;
             hairIndex = value.hairIndex;
             lensIndex = value.lensIndex;
             earIndex = value.earIndex;
             tailIndex = value.tailIndex;
-
             weapon = value.weapon;
             armor = value.armor;
             belt = value.belt;

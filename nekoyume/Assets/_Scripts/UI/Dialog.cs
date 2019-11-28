@@ -103,7 +103,7 @@ namespace Nekoyume.UI
             {
                 var localizedName = LocalizationManager.LocalizeCharacterName(_characterId);
                 var res = Resources.Load<Sprite>($"Images/character_{characterData.Id}");
-                imgCharacter.sprite = res;
+                imgCharacter.overrideSprite = res;
                 imgCharacter.SetNativeSize();
                 imgCharacter.enabled = imgCharacter.sprite != null;
                 txtName.text = localizedName;
@@ -123,9 +123,9 @@ namespace Nekoyume.UI
                 }
 
                 var res = Resources.Load<Sprite>($"Images/npc/NPC_{_npc}");
-                imgCharacter.sprite = res;
+                imgCharacter.overrideSprite = res;
                 imgCharacter.SetNativeSize();
-                imgCharacter.enabled = imgCharacter.sprite != null;
+                imgCharacter.enabled = imgCharacter.overrideSprite != null;
                 txtName.text = localizedName;
             }
 

@@ -2,6 +2,13 @@ using System;
 
 namespace Nekoyume.TableData
 {
+    public class SheetRowColumnException : Exception
+    {
+        public SheetRowColumnException(string message) : base(message)
+        {
+        }
+    }
+    
     public class SheetRowValidateException : Exception
     {
         public SheetRowValidateException(string message) : base(message)

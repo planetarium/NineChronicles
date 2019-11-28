@@ -47,6 +47,8 @@ namespace Nekoyume.State
             return serialized.ToEnumerable(deserializer).ToList();
         }
 
+        #region Address
+
         public static IValue Serialize(this Address address) =>
             new Binary(address.ToByteArray());
 
@@ -58,20 +60,85 @@ namespace Nekoyume.State
 
         public static Address? ToNullableAddress(this IValue serialized) =>
             Deserialize(ToAddress, serialized);
+        
+        #endregion
 
+        #region Boolean
+
+        public static IValue Serialize(this bool boolean) =>
+            new Bencodex.Types.Boolean(boolean);
+        
+        public static IValue Serialize(this bool? boolean) =>
+            Serialize(Serialize, boolean);
+
+        public static bool ToBoolean(this IValue serialized) =>
+            ((Bencodex.Types.Boolean) serialized).Value;
+        
+        public static bool? ToNullableBoolean(this IValue serialized) =>
+            Deserialize(ToBoolean, serialized);
+
+        #endregion
+        
+        #region Integer
+        
+        public static IValue Serialize(this int number) =>
+            (Text) number.ToString();
+        
+        public static IValue Serialize(this int? number) =>
+            Serialize(Serialize, number);
+
+        public static int ToInteger(this IValue serialized) =>
+            int.Parse(((Text) serialized).Value, CultureInfo.InvariantCulture);
+        
+        public static int? ToNullableInteger(this IValue serialized) =>
+            Deserialize(ToInteger, serialized);
+        
+        #endregion
+        
+        #region Long
+        
+        public static IValue Serialize(this long number) =>
+            (Text) number.ToString();
+        
+        public static IValue Serialize(this long? number) =>
+            Serialize(Serialize, number);
+
+        public static long ToLong(this IValue serialized) =>
+            int.Parse(((Text) serialized).Value, CultureInfo.InvariantCulture);
+        
+        public static long? ToNullableLong(this IValue serialized) =>
+            Deserialize(ToInteger, serialized);
+        
+        #endregion
+
+        #region Decimal
+        
         public static IValue Serialize(this decimal number) =>
             (Text) number.ToString(CultureInfo.InvariantCulture);
 
         public static IValue Serialize(this decimal? number) =>
             Serialize(Serialize, number);
-
+        
         public static decimal ToDecimal(this IValue serialized) =>
             decimal.Parse(((Text) serialized).Value, CultureInfo.InvariantCulture);
 
         public static decimal? ToNullableDecimal(this IValue serialized) =>
             Deserialize(ToDecimal, serialized);
 
-        public static int ToInt(this IValue serialized) => int.Parse(serialized.ToString());
+        #endregion
+
+        #region Text
+
+        public static IValue Serialize(this string text) =>
+            (Text) text;
+        
+        public static string ToString(this IValue serialized) =>
+            ((Text) serialized).Value;
+        
+        #endregion
+        
+        #region DateTimeOffset
+        
         public static IValue Serialize(this DateTimeOffset dateTime) =>
             new Binary(Encoding.ASCII.GetBytes(dateTime.ToString("O")));
 
@@ -88,6 +155,10 @@ namespace Nekoyume.State
         public static DateTimeOffset? ToNullableDateTimeOffset(this IValue serialized) =>
             Deserialize(ToDateTimeOffset, serialized);
 
+        #endregion
+
+        #region Guid
+        
         public static IValue Serialize(this Guid number) =>
             new Binary(number.ToByteArray());
 
@@ -99,6 +170,10 @@ namespace Nekoyume.State
 
         public static Guid? ToNullableGuid(this IValue serialized) =>
             Deserialize(ToGuid, serialized);
+        
+        #endregion
+
+        #region DecimalStat
 
         public static IValue Serialize(this DecimalStat decimalStat) =>
             Bencodex.Types.Dictionary.Empty
@@ -113,6 +188,8 @@ namespace Nekoyume.State
                 StatTypeExtension.Deserialize((Binary)serialized["type"]),
                 serialized["value"].ToDecimal());
 
+        #endregion
+        
         #region Generic
         
         public static IValue Serialize(this Dictionary<Material, int> value)
@@ -132,8 +209,75 @@ namespace Nekoyume.State
                 .Cast<Bencodex.Types.Dictionary>()
                 .ToDictionary(
                     value => (Material) ItemFactory.Deserialize((Bencodex.Types.Dictionary) value["material"]),
-                    value => value["count"].ToInt()
+                    value => value["count"].ToInteger()
                 );
+        }
+
+        #endregion
+
+        #region Bencodex.Types.Dictionary Getter
+
+        public static Address GetAddress(this Bencodex.Types.Dictionary serialized, string key, Address defaultValue = default)
+        {
+            return serialized.ContainsKey((Bencodex.Types.Text)key)
+                ? serialized[key].ToAddress()
+                : defaultValue;
+        }
+        
+        public static bool GetBoolean(this Bencodex.Types.Dictionary serialized, string key, bool defaultValue = false)
+        {
+            return serialized.ContainsKey((Bencodex.Types.Text)key)
+                ? serialized[key].ToBoolean()
+                : defaultValue;
+        }
+        
+        public static int GetInteger(this Bencodex.Types.Dictionary serialized, string key, int defaultValue = 0)
+        {
+            return serialized.ContainsKey((Bencodex.Types.Text)key)
+                ? serialized[key].ToInteger()
+                : defaultValue;
+        }
+        
+        public static long GetLong(this Bencodex.Types.Dictionary serialized, string key, long defaultValue = 0L)
+        {
+            return serialized.ContainsKey((Bencodex.Types.Text)key)
+                ? serialized[key].ToLong()
+                : defaultValue;
+        }
+        
+        public static decimal GetDecimal(this Bencodex.Types.Dictionary serialized, string key, decimal defaultValue = 0M)
+        {
+            return serialized.ContainsKey((Bencodex.Types.Text)key)
+                ? serialized[key].ToDecimal()
+                : defaultValue;
+        }
+        
+        public static string GetString(this Bencodex.Types.Dictionary serialized, string key, string defaultValue = "")
+        {
+            return serialized.ContainsKey((Bencodex.Types.Text)key)
+                ? ToString(serialized[key])
+                : defaultValue;
+        }
+        
+        public static DateTimeOffset GetDateTimeOffset(this Bencodex.Types.Dictionary serialized, string key, DateTimeOffset defaultValue = default)
+        {
+            return serialized.ContainsKey((Bencodex.Types.Text)key)
+                ? serialized[key].ToDateTimeOffset()
+                : defaultValue;
+        }
+        
+        public static Guid GetGuid(this Bencodex.Types.Dictionary serialized, string key, Guid defaultValue = default)
+        {
+            return serialized.ContainsKey((Bencodex.Types.Text)key)
+                ? serialized[key].ToGuid()
+                : defaultValue;
+        }
+        
+        public static DecimalStat GetDecimalStat(this Bencodex.Types.Dictionary serialized, string key, DecimalStat defaultValue = default)
+        {
+            return serialized.ContainsKey((Bencodex.Types.Text)key)
+                ? serialized[key].ToDecimalStat()
+                : defaultValue;
         }
 
         #endregion

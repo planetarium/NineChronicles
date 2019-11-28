@@ -47,7 +47,7 @@ namespace Nekoyume.UI
         }
 
         [Serializable]
-        public struct TopArea
+        public struct TopArea 
         {
             public TextMeshProUGUI topText;
             public GameObject expContainer;
@@ -332,10 +332,12 @@ namespace Nekoyume.UI
             var player = stage.RunPlayer();
             player.DisableHUD();
 
+            var worldId = stage.worldId;
             var stageId = SharedModel.ShouldRepeat
-                ? stage.id
-                : stage.id + 1;
-            yield return ActionManager.instance.HackAndSlash(player.Equipments, new List<Consumable>(), stageId)
+                ? stage.stageId
+                : stage.stageId + 1;
+            yield return ActionManager.instance
+                .HackAndSlash(player.Equipments, new List<Consumable>(), worldId, stageId)
                 .Subscribe(_ => { }, (_) => Find<ActionFailPopup>().Show("Action timeout during HackAndSlash."));
         }
 

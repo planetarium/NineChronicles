@@ -15,19 +15,21 @@ namespace Nekoyume.UI.Module
     {
         public class ViewModel : IDisposable
         {
-            public readonly string worldName;
-            public readonly ReactiveProperty<int> stageIdToShow = new ReactiveProperty<int>(0);
-            public readonly ReactiveProperty<int> pageCount = new ReactiveProperty<int>(0);
-            public readonly ReactiveProperty<int> currentPageNumber = new ReactiveProperty<int>(0);
+            public readonly WorldSheet.Row RowData;
+            public readonly string WorldName;
+            public readonly ReactiveProperty<int> StageIdToShow = new ReactiveProperty<int>(0);
+            public readonly ReactiveProperty<int> PageCount = new ReactiveProperty<int>(0);
+            public readonly ReactiveProperty<int> CurrentPageNumber = new ReactiveProperty<int>(0);
 
-            public ViewModel(string worldName)
+            public ViewModel(WorldSheet.Row rowData)
             {
-                this.worldName = worldName;
+                RowData = rowData;
+                WorldName = RowData.GetLocalizedName();
             }
 
             public void Dispose()
             {
-                currentPageNumber.Dispose();
+                CurrentPageNumber.Dispose();
             }
         }
 
@@ -53,7 +55,7 @@ namespace Nekoyume.UI.Module
                 .AddTo(gameObject);
 
             horizontalScrollSnap.OnSelectionPageChangedEvent.AddListener(value =>
-                SharedViewModel.currentPageNumber.Value = value + 1);
+                SharedViewModel.CurrentPageNumber.Value = value + 1);
 
             foreach (var stage in pages.SelectMany(page => page.stages))
             {
@@ -68,7 +70,7 @@ namespace Nekoyume.UI.Module
                 throw new ArgumentNullException(nameof(worldRow));
 
             _disposablesForModel.DisposeAllAndClear();
-            SharedViewModel = new ViewModel(worldRow.GetLocalizedName());
+            SharedViewModel = new ViewModel(worldRow);
 
             var stageRows = Game.Game.instance.TableSheets.StageSheet.Values
                 .Where(stageRow => stageRow.Id >= worldRow.StageBegin && stageRow.Id <= worldRow.StageEnd)
@@ -128,36 +130,35 @@ namespace Nekoyume.UI.Module
                 Destroy(shouldDestroyPage.gameObject);
             }
 
-            SharedViewModel.stageIdToShow.Value = worldRow.StageBegin + stageRowsCount - 1;
-            SharedViewModel.pageCount.Value = pages.Count;
-            SharedViewModel.currentPageNumber.Value = 1;
+            SharedViewModel.StageIdToShow.Value = worldRow.StageBegin + stageRowsCount - 1;
+            SharedViewModel.PageCount.Value = pages.Count;
+            SharedViewModel.CurrentPageNumber.Value = 1;
 
-            SharedViewModel.pageCount
-                .Subscribe(pageCount => stagePageText.text = $"{SharedViewModel.currentPageNumber.Value}/{pageCount}")
+            SharedViewModel.PageCount
+                .Subscribe(pageCount => stagePageText.text = $"{SharedViewModel.CurrentPageNumber.Value}/{pageCount}")
                 .AddTo(_disposablesForModel);
-            SharedViewModel.currentPageNumber
+            SharedViewModel.CurrentPageNumber
                 .Subscribe(currentPageNumber =>
-                    stagePageText.text = $"{currentPageNumber}/{SharedViewModel.pageCount.Value}")
+                    stagePageText.text = $"{currentPageNumber}/{SharedViewModel.PageCount.Value}")
                 .AddTo(_disposablesForModel);
 
-            stageNameText.text = SharedViewModel.worldName;
+            stageNameText.text = SharedViewModel.WorldName;
 
-            horizontalScrollSnap.ChangePage(SharedViewModel.currentPageNumber.Value - 1);
+            horizontalScrollSnap.ChangePage(SharedViewModel.CurrentPageNumber.Value - 1);
         }
 
-        public void Set(int clearedStageId, int selectedStageId)
+        public void Set(int openedStageId = -1, int selectedStageId = -1)
         {
-            var firstStageId = Game.Game.instance.TableSheets.StageSheet.First.Id;
             foreach (var stage in pages.SelectMany(page => page.stages))
             {
                 var stageId = stage.SharedViewModel.stageId;
                 var stageState = WorldMapStage.State.Normal;
-                if (stageId < firstStageId ||
-                    stageId > SharedViewModel.stageIdToShow.Value)
+                if (stageId < SharedViewModel.RowData.StageBegin ||
+                    stageId > SharedViewModel.StageIdToShow.Value)
                 {
                     stageState = WorldMapStage.State.Hidden;
                 }
-                else if (stageId > clearedStageId)
+                else if (stageId > openedStageId)
                 {
                     stageState = WorldMapStage.State.Disabled;
                 }
@@ -177,14 +178,14 @@ namespace Nekoyume.UI.Module
 
         public void ShowByPageNumber(int value)
         {
-            SharedViewModel.currentPageNumber.Value = value;
+            SharedViewModel.CurrentPageNumber.Value = value;
 
-            if (horizontalScrollSnap.CurrentPage != SharedViewModel.currentPageNumber.Value)
+            if (horizontalScrollSnap.CurrentPage != SharedViewModel.CurrentPageNumber.Value)
             {
-                horizontalScrollSnap.ChangePage(SharedViewModel.currentPageNumber.Value - 1);
+                horizontalScrollSnap.ChangePage(SharedViewModel.CurrentPageNumber.Value - 1);
             }
 
-            horizontalScrollSnap.StartingScreen = SharedViewModel.currentPageNumber.Value - 1;
+            horizontalScrollSnap.StartingScreen = SharedViewModel.CurrentPageNumber.Value - 1;
 
             gameObject.SetActive(true);
         }
@@ -197,11 +198,12 @@ namespace Nekoyume.UI.Module
         private int GetPageNumber(int stageId)
         {
             var pageNumber = 1;
-            var stageOffset = 0;
+            var stageOffset = SharedViewModel.RowData.StageBegin - 1;
             foreach (var page in pages)
             {
                 stageOffset += page.stages.Count;
-                if (stageOffset < stageId && pageNumber < pages.Count)
+                if (stageId > stageOffset &&
+                    pageNumber < pages.Count)
                 {
                     pageNumber++;
 

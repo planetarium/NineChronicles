@@ -39,6 +39,8 @@ namespace Nekoyume.UI
         private Stage _stage;
         private Game.Character.Player _player;
         private EquipSlot _weaponSlot;
+
+        private int _worldId;
         private int _stageId;
 
         private readonly Dictionary<StatType, int> _additionalStats = new Dictionary<StatType, int>();
@@ -92,7 +94,7 @@ namespace Nekoyume.UI
             _player.UpdateCustomize();
             _player.gameObject.SetActive(false);
             _player.gameObject.SetActive(true);
-            _player.DoFade(1f, 0.3f);
+            _player.DoFade(1f, 0.3f); 
 
             foreach (var equipment in _player.Equipments)
             {
@@ -113,18 +115,21 @@ namespace Nekoyume.UI
                 _additionalStats[statType] = additionalValue;
                 ++idx;
             }
-            
+
             _weaponSlot = equipmentSlots.First(es => es.itemSubType == ItemSubType.Weapon);
-            _stageId = Find<WorldMap>().SelectedStageId;
+
+            var worldMap = Find<WorldMap>();
+            _worldId = worldMap.SelectedWorldId;
+            _stageId = worldMap.SelectedStageId;
 
             Find<BottomMenu>().Show(
-                UINavigator.NavigationType.Back,
-                SubscribeBackButtonClick,
-                true,
-                BottomMenu.ToggleableType.Mail,
-                BottomMenu.ToggleableType.Quest,
-                BottomMenu.ToggleableType.Chat,
-                BottomMenu.ToggleableType.IllustratedBook);
+                    UINavigator.NavigationType.Back,
+                    SubscribeBackButtonClick,
+                    true,
+                    BottomMenu.ToggleableType.Mail,
+                    BottomMenu.ToggleableType.Quest,
+                    BottomMenu.ToggleableType.Chat,
+                    BottomMenu.ToggleableType.IllustratedBook);
             _buttonEnabled.Subscribe(SubscribeReadyToQuest).AddTo(_disposables);
             ReactiveCurrentAvatarState.ActionPoint.Subscribe(SubscribeActionPoint).AddTo(_disposables);
             _tempStats = _player.Model.Value.Stats.Clone() as CharacterStats;
@@ -216,7 +221,7 @@ namespace Nekoyume.UI
 
         private void SubscribeBackButtonClick(BottomMenu bottomMenu)
         {
-            Find<WorldMap>().Show(_stageId);
+            Find<WorldMap>().Show(_worldId, _stageId);
         }
 
         private void SubscribeReadyToQuest(bool ready)
@@ -244,7 +249,9 @@ namespace Nekoyume.UI
         {
             if (isActiveAndEnabled)
             {
-                _stageId = Find<WorldMap>().SelectedStageId;
+                var worldMap = Find<WorldMap>();
+                _worldId = worldMap.SelectedWorldId;
+                _stageId = worldMap.SelectedStageId;
                 Find<BottomMenu>().Show(
                     UINavigator.NavigationType.Back,
                     SubscribeBackButtonClick,
@@ -405,9 +412,8 @@ namespace Nekoyume.UI
             }
 
             _stage.repeatStage = repeat;
-            ActionManager.instance.HackAndSlash(equipments, consumables, _stageId)
-                .Subscribe(_ => { }, e => Find<ActionFailPopup>().Show("Action timeout during HackAndSlash."))
-                .AddTo(this);
+            ActionManager.instance.HackAndSlash(equipments, consumables, _worldId, _stageId)
+                .Subscribe(_ => {}, e => Find<ActionFailPopup>().Show("Action timeout during HackAndSlash.")).AddTo(this);
         }
 
         public void GoToStage(ActionBase.ActionEvaluation<HackAndSlash> eval)

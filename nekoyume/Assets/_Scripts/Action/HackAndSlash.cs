@@ -20,7 +20,8 @@ namespace Nekoyume.Action
     {
         public List<Equipment> equipments;
         public List<Consumable> foods;
-        public int stage;
+        public int worldId;
+        public int stageId;
         public Address avatarAddress;
         public BattleLog Result { get; private set; }
 
@@ -29,7 +30,8 @@ namespace Nekoyume.Action
             {
                 ["equipments"] = new Bencodex.Types.List(equipments.Select(e => e.Serialize())),
                 ["foods"] = new Bencodex.Types.List(foods.Select(e => e.Serialize())),
-                ["stage"] = (Integer) stage,
+                ["worldId"] = (Integer) worldId,
+                ["stageId"] = (Integer) stageId,
                 ["avatarAddress"] = avatarAddress.Serialize(),
             }.ToImmutableDictionary();
 
@@ -42,7 +44,8 @@ namespace Nekoyume.Action
             foods = ((Bencodex.Types.List) plainValue["foods"]).Select(
                 e => (Consumable) ItemFactory.Deserialize((Bencodex.Types.Dictionary) e)
             ).ToList();
-            stage = (int) ((Integer) plainValue["stage"]).Value;
+            worldId = (int) ((Integer) plainValue["worldId"]).Value;
+            stageId = (int) ((Integer) plainValue["stageId"]).Value;
             avatarAddress = plainValue["avatarAddress"].ToAddress();
         }
 
@@ -56,7 +59,8 @@ namespace Nekoyume.Action
                 return states.SetState(ctx.Signer, MarkChanged);
             }
 
-            if (!states.TryGetAgentAvatarStates(ctx.Signer, avatarAddress, out AgentState agentState, out AvatarState avatarState))
+            if (!states.TryGetAgentAvatarStates(ctx.Signer, avatarAddress, out AgentState agentState,
+                out AvatarState avatarState))
             {
                 return states;
             }
@@ -67,7 +71,7 @@ namespace Nekoyume.Action
             }
 
             avatarState.actionPoint -= GameConfig.HackAndSlashCostAP;
-            
+
             var inventoryEquipments = avatarState.inventory.Items
                 .Select(i => i.item)
                 .OfType<Equipment>()
@@ -87,27 +91,28 @@ namespace Nekoyume.Action
                 ((Equipment) outNonFungibleItem).Equip();
             }
             
-            var simulator = new Simulator(ctx.Random, avatarState, foods, stage,
+            var simulator = new Simulator(ctx.Random, avatarState, foods, worldId, stageId,
                 tableSheetsState: TableSheetsState.FromActionContext(ctx));
             simulator.Simulate();
-            Debug.Log($"Execute HackAndSlash. stage: {stage} result: {simulator.Log?.result} " +
+            Debug.Log($"Execute HackAndSlash. worldId: {worldId} stageId: {stageId} result: {simulator.Log?.result} " +
                       $"player : `{avatarAddress}` node : `{States.Instance?.AgentState?.Value?.address}` " +
                       $"current avatar: `{States.Instance?.CurrentAvatarState?.Value?.address}`");
-            avatarState.Update(simulator);
-            avatarState.updatedAt = DateTimeOffset.UtcNow;
-            if (avatarState.worldStage > stage)
+            if (simulator.Result == BattleLog.Result.Win)
             {
+                simulator.Player.worldInformation.ClearStage(worldId, stageId, ctx.BlockIndex);
+                
                 if (!states.TryGetState(RankingState.Address, out Bencodex.Types.Dictionary d))
                 {
                     return states;
                 }
 
                 var ranking = new RankingState(d);
-                avatarState.clearedAt = DateTimeOffset.UtcNow;
                 ranking.Update(avatarState);
                 states = states.SetState(RankingState.Address, ranking.Serialize());
             }
 
+            avatarState.Update(simulator);
+            avatarState.updatedAt = DateTimeOffset.UtcNow;
             states = states.SetState(avatarAddress, avatarState.Serialize());
             Result = simulator.Log;
             return states.SetState(ctx.Signer, agentState.Serialize());

@@ -32,7 +32,7 @@ namespace Nekoyume.Action
             }
             var dailyBlockState = new DailyBlockState(d);
 
-            if (dailyBlockState.nextBlockIndex - avatarState.dailyRewardReceivedIndex >= DailyBlockState.UpdateInterval)
+            if (dailyBlockState.nextBlockIndex - avatarState.dailyRewardReceivedIndex  >= DailyBlockState.UpdateInterval)
             {
                 avatarState.dailyRewardReceivedIndex = ctx.BlockIndex;
                 avatarState.actionPoint = refillPoint;

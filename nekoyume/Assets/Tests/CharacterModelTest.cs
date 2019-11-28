@@ -27,7 +27,7 @@ namespace Tests
             var address = new Address();
             var agentAddress = new Address();
             var avatarState = new AvatarState(address, agentAddress, 1);
-            var simulator = new Simulator(_random, avatarState, new List<Consumable>(), 1);
+            var simulator = new Simulator(_random, avatarState, new List<Consumable>(), 1, 1);
             _player = simulator.Player;
             _player.InitAI();
             yield return null;

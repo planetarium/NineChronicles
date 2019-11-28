@@ -53,6 +53,7 @@ namespace Nekoyume
         public class DebugRandom : IRandom
         {
             private readonly System.Random _random = new System.Random();
+
             public int Next()
             {
                 return _random.Next();
@@ -95,11 +96,11 @@ namespace Nekoyume
                     Instance.Refresh(Instance.StagedTxs);
                     break;
                 case nameof(OnChainTableSheet):
-                    Instance.OnChainTableSheet.Find("TextRect/Text").GetComponent<TextMeshProUGUI>().text = text; 
+                    Instance.OnChainTableSheet.Find("TextRect/Text").GetComponent<TextMeshProUGUI>().text = text;
                     Instance.Refresh(Instance.OnChainTableSheet);
                     break;
                 case nameof(LocalTableSheet):
-                    Instance.LocalTableSheet.Find("TextRect/Text").GetComponent<TextMeshProUGUI>().text = text; 
+                    Instance.LocalTableSheet.Find("TextRect/Text").GetComponent<TextMeshProUGUI>().text = text;
                     Instance.Refresh(Instance.LocalTableSheet);
                     break;
             }
@@ -128,7 +129,7 @@ namespace Nekoyume
 
             PatchButton.SetActive(onChainTableCsv != localTableCsv);
         }
-        
+
         public static void Log(string text)
         {
             Instance._logString.Insert(0, $"> {text}\n");
@@ -142,7 +143,7 @@ namespace Nekoyume
                         target.GetComponent<RectTransform>().rect.height;
             target.Find("TextRect/Text").GetComponent<RectTransform>().sizeDelta =
                 new Vector2(0, delta < 0 ? 0 : delta);
-            
+
             // 스크롤바 조정
             if (delta < 0)
             {
@@ -163,9 +164,7 @@ namespace Nekoyume
             var delta = target.Find("TextRect/Text").GetComponent<TextMeshProUGUI>().preferredHeight -
                         target.GetComponent<RectTransform>().rect.height;
             target.Find("TextRect/Text").GetComponent<RectTransform>().anchoredPosition =
-                delta > 0 ?
-                    new Vector2(0, delta * (location - 1)) :
-                    new Vector2(0, 0);
+                delta > 0 ? new Vector2(0, delta * (location - 1)) : new Vector2(0, 0);
         }
 
         public void Patch()
@@ -289,6 +288,7 @@ namespace Nekoyume
             {
                 Destroy(child.gameObject);
             }
+
             list.gameObject.SetActive(false);
             skillPanel.gameObject.SetActive(false);
 
@@ -323,6 +323,7 @@ namespace Nekoyume
                 Log("Need Enemy.");
                 return;
             }
+
             GameObject playerObj = GameObject.Find("Player");
             if (playerObj != null)
             {
@@ -330,6 +331,7 @@ namespace Nekoyume
                 player.Level += 1;
                 Log($"Level Up to {player.Level}");
             }
+
             var enemy = enemyObj.GetComponent<Enemy>();
             Game.Event.OnEnemyDead.Invoke(enemy);
         }
@@ -357,14 +359,18 @@ namespace Nekoyume
             Find<BattleResult>()?.Close();
             Find<Menu>()?.Close();
             Find<Menu>()?.ShowWorld();
-            
-            var simulator = new Simulator(new DebugRandom(), States.Instance.CurrentAvatarState.Value, new List<Consumable>(), stageId, _selectedSkill);
+
+            if (!Game.Game.instance.TableSheets.WorldSheet.TryGetByStageId(stageId, out var worldRow))
+                throw new KeyNotFoundException($"WorldSheet.TryGetByStageId() {nameof(stageId)}({stageId})");
+
+            var simulator = new Simulator(new DebugRandom(), States.Instance.CurrentAvatarState.Value,
+                new List<Consumable>(), worldRow.Id, stageId, _selectedSkill);
             simulator.Simulate();
             simulator.Log.result = _result;
-            
+
             var stage = Game.Game.instance.stage;
             stage.Play(simulator.Log);
-            
+
             Close();
         }
 

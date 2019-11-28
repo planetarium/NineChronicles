@@ -69,6 +69,12 @@ namespace Nekoyume.TableData
             return LocalizationManager.Localize($"WORLD_NAME_{worldRow.Name.ToUpper()}");
         }
 
+        public static bool ContainsStageId(this WorldSheet.Row worldRow, int stageId)
+        {
+            return stageId >= worldRow.StageBegin &&
+                   stageId <= worldRow.StageEnd;
+        }
+
         public static bool TryGetStageId(this WorldSheet.Row worldRow, int stageId, out int stageNumber)
         {
             if (stageId < worldRow.StageBegin || stageId > worldRow.StageEnd)

@@ -58,20 +58,20 @@ namespace Tests
             var state = new RankingState();
             var avatar1 = new AvatarState(GetNewAddress(), GetNewAddress(), 1)
             {
-                worldStage = 2, clearedAt = DateTimeOffset.UtcNow
+                exp = 2, updatedAt = DateTimeOffset.UtcNow
             };
             var avatar2 = new AvatarState(GetNewAddress(), GetNewAddress(), 1)
             {
-                worldStage = 2, clearedAt = DateTimeOffset.UtcNow
+                exp = 2, updatedAt = DateTimeOffset.UtcNow
             };
-            Assert.Greater(avatar2.clearedAt, avatar1.clearedAt);
+            
+            Assert.Greater(avatar2.updatedAt, avatar1.updatedAt);
             state.Update(avatar2);
             state.Update(avatar1);
             var result = state.GetAvatars(null);
             Assert.AreEqual(2, result.Length);
-            Assert.AreEqual(avatar1.clearedAt, result.First().clearedAt);
-            Assert.AreEqual(avatar2.clearedAt, result.Last().clearedAt);
-
+            Assert.AreEqual(avatar1.updatedAt, result.First().updatedAt);
+            Assert.AreEqual(avatar2.updatedAt, result.Last().updatedAt);
         }
 
         [Test]
@@ -80,27 +80,26 @@ namespace Tests
             var state = new RankingState();
             var avatar1 = new AvatarState(GetNewAddress(), GetNewAddress(), 1)
             {
-                worldStage = 2, clearedAt = DateTimeOffset.UtcNow
+                exp = 2, updatedAt = DateTimeOffset.UtcNow
             };
             var avatar2 = new AvatarState(GetNewAddress(), GetNewAddress(), 1)
             {
-                worldStage = 2, clearedAt = DateTimeOffset.UtcNow
+                exp = 2, updatedAt = DateTimeOffset.UtcNow
             };
             var avatar3 = new AvatarState(GetNewAddress(), GetNewAddress(), 1)
             {
-                worldStage = 3, clearedAt = DateTimeOffset.UtcNow, updatedAt =  DateTimeOffset.UtcNow.AddDays(-2)
+                exp = 3, updatedAt = DateTimeOffset.UtcNow.AddDays(-2)
             };
 
-            Assert.Greater(avatar2.clearedAt, avatar1.clearedAt);
+            Assert.Greater(avatar2.updatedAt, avatar1.updatedAt);
             state.Update(avatar2);
             state.Update(avatar1);
             state.Update(avatar3);
-            Assert.AreEqual(3, state.GetAvatars(null).First().worldStage);
+            Assert.AreEqual(3, state.GetAvatars(null).First().exp);
             var result = state.GetAvatars(DateTimeOffset.UtcNow);
             Assert.AreEqual(2, result.Length);
-            Assert.AreEqual(avatar1.clearedAt, result.First().clearedAt);
-            Assert.AreEqual(avatar2.clearedAt, result.Last().clearedAt);
-
+            Assert.AreEqual(avatar1.updatedAt, result.First().updatedAt);
+            Assert.AreEqual(avatar2.updatedAt, result.Last().updatedAt);
         }
 
         [Test]
@@ -109,20 +108,19 @@ namespace Tests
             var state = new RankingState();
             var avatar1 = new AvatarState(GetNewAddress(), GetNewAddress(), 1)
             {
-                worldStage = 2, clearedAt = DateTimeOffset.UtcNow
+                exp = 2, updatedAt = DateTimeOffset.UtcNow
             };
 
             state.Update(avatar1);
-            var avatar2 = avatar1;
-            Assert.AreEqual(2, state.GetAvatars(null).First().worldStage);
+            Assert.AreEqual(2, state.GetAvatars(null).First().exp);
 
-            avatar1.worldStage = 1;
+            avatar1.exp = 1;
             state.Update(avatar1);
-            Assert.AreEqual(2, state.GetAvatars(null).First().worldStage);
+            Assert.AreEqual(1, state.GetAvatars(null).First().exp);
 
-            avatar1.worldStage = 3;
+            avatar1.exp = 3;
             state.Update(avatar1);
-            Assert.AreEqual(3, state.GetAvatars(null).First().worldStage);
+            Assert.AreEqual(3, state.GetAvatars(null).First().exp);
         }
 
         [Test]

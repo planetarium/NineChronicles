@@ -114,7 +114,6 @@ namespace Nekoyume.UI.Module
                 normalImage.enabled = false;
                 disabledImage.enabled = false;
                 selectedImage.enabled = true;
-                button.enabled = true;
 
                 return;
             }
@@ -126,14 +125,12 @@ namespace Nekoyume.UI.Module
                     normalImage.enabled = true;
                     disabledImage.enabled = false;
                     selectedImage.enabled = false;
-                    button.enabled = true;
                     break;
                 case State.Disabled:
                     gameObject.SetActive(true);
                     normalImage.enabled = false;
                     disabledImage.enabled = true;
                     selectedImage.enabled = false;
-                    button.enabled = false;
                     break;
                 case State.Hidden:
                     gameObject.SetActive(false);

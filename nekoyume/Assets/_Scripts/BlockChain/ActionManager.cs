@@ -67,13 +67,15 @@ namespace Nekoyume.BlockChain
         public IObservable<ActionBase.ActionEvaluation<HackAndSlash>> HackAndSlash(
             List<Equipment> equipments,
             List<Consumable> foods,
-            int stage)
+            int worldId,
+            int stageId)
         {
             var action = new HackAndSlash
             {
                 equipments = equipments,
                 foods = foods,
-                stage = stage,
+                worldId = worldId,
+                stageId = stageId,
                 avatarAddress = States.Instance.CurrentAvatarState.Value.address,
             };
             ProcessAction(action);
