@@ -99,6 +99,8 @@ namespace Nekoyume.UI.Module
             questButton.SetWidgetType<Quest>();
             characterButton.SetWidgetType<StatusDetail>();
             inventoryButton.SetWidgetType<UI.Inventory>();
+            // todo: 지금 월드맵 띄우는 것을 위젯으로 빼고, 여기서 설정하기?
+            // worldMapButton.SetWidgetType<WorldMapPaper>();
 
             chatButton.button.OnClickAsObservable().Subscribe(SubScribeOnClickChat).AddTo(gameObject);
             // 미구현

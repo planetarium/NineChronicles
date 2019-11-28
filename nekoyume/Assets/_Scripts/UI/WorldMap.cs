@@ -243,7 +243,7 @@ namespace Nekoyume.UI
                 worldMapRoot.SetActive(false);
                 var bottomMenu = Find<BottomMenu>();
                 bottomMenu.worldMapButton.Show();
-                bottomMenu.ToggleGroup.SetToggledOffAll();
+                bottomMenu.ToggleGroup?.SetToggledOffAll();
             }
         }
 
@@ -302,7 +302,6 @@ namespace Nekoyume.UI
             if (SharedViewModel.IsWorldShown.Value)
             {
                 SharedViewModel.IsWorldShown.Value = false;
-                bottomMenu.worldMapButton.SetToggledOff();
             }
             else
             {

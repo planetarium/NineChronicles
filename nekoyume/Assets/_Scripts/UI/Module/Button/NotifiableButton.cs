@@ -81,7 +81,7 @@ namespace Nekoyume.UI.Module
         
         public string Name => name;
 
-        public bool IsToggledOn => _widget is null ? false : _widget.gameObject.activeSelf;
+        public bool IsToggledOn => selectedImage.gameObject.activeSelf;
 
         public void SetToggleListener(IToggleListener toggleListener)
         {
