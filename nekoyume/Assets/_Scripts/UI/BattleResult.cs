@@ -25,12 +25,12 @@ namespace Nekoyume.UI
         public class Model
         {
             private readonly List<CountableItem> _rewards = new List<CountableItem>();
-            
+
             public BattleLog.Result State;
             public long Exp;
             public bool ShouldRepeat;
             public bool ActionPointNotEnough;
-            
+
             public IReadOnlyList<CountableItem> Rewards => _rewards;
 
             public void AddReward(CountableItem reward)
@@ -139,7 +139,7 @@ namespace Nekoyume.UI
                 .Subscribe(_ =>
                 {
                     AudioController.PlayClick();
-                    StartCoroutine(CoGoToNextStage());
+                    StartCoroutine(CoRepeatCurrentOrProceedNextStage());
                     AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickBattleResultNext);
                 })
                 .AddTo(gameObject);
@@ -176,7 +176,6 @@ namespace Nekoyume.UI
             StartCoroutine(EmitBattleWin02VFX());
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionBattleWin);
 
-
             victoryImageContainer.SetActive(true);
             defeatImageContainer.SetActive(false);
             topArea.topText.text = LocalizationManager.Localize("UI_BATTLE_RESULT_VICTORY_MESSAGE");
@@ -201,7 +200,7 @@ namespace Nekoyume.UI
             }
 
             yield return StartCoroutine(CoUpdateRewards());
-            
+
             _coUpdateBottomText = StartCoroutine(CoUpdateBottomText(Timer));
         }
 
@@ -209,7 +208,7 @@ namespace Nekoyume.UI
         {
             yield return _battleWin02VFXYield;
             _battleWin02VFX =
-                 VFXController.instance.Create<BattleWin02VFX>(ActionCamera.instance.transform, VfxBattleWin02Offset);
+                VFXController.instance.Create<BattleWin02VFX>(ActionCamera.instance.transform, VfxBattleWin02Offset);
         }
 
         private void UpdateViewAsDefeat()
@@ -275,8 +274,10 @@ namespace Nekoyume.UI
         {
             var secondsFormat = LocalizationManager.Localize("UI_AFTER_N_SECONDS");
             var fullFormat = SharedModel.ActionPointNotEnough
-                ? LocalizationManager.Localize("UI_BATTLE_RESULT_NOT_ENOUGH_ACTION_POINT")
-                : LocalizationManager.Localize("UI_BATTLE_RESULT_NEXT_STAGE_FORMAT");
+                ? LocalizationManager.Localize("UI_BATTLE_RESULT_NOT_ENOUGH_ACTION_POINT_FORMAT")
+                : SharedModel.ShouldRepeat
+                    ? LocalizationManager.Localize("UI_BATTLE_RESULT_REPEAT_STAGE_FORMAT")
+                    : LocalizationManager.Localize("UI_BATTLE_RESULT_NEXT_STAGE_FORMAT");
             bottomText.text = string.Format(fullFormat, string.Format(secondsFormat, limitSeconds));
             bottomText.enabled = true;
 
@@ -303,11 +304,11 @@ namespace Nekoyume.UI
             }
             else
             {
-                StartCoroutine(CoGoToNextStage());   
+                StartCoroutine(CoRepeatCurrentOrProceedNextStage());
             }
         }
 
-        private IEnumerator CoGoToNextStage()
+        private IEnumerator CoRepeatCurrentOrProceedNextStage()
         {
             if (!submitButton.interactable)
                 yield break;
@@ -331,7 +332,9 @@ namespace Nekoyume.UI
             var player = stage.RunPlayer();
             player.DisableHUD();
 
-            var stageId = SharedModel.ShouldRepeat ? stage.id : stage.id + 1;
+            var stageId = SharedModel.ShouldRepeat
+                ? stage.id
+                : stage.id + 1;
             yield return ActionManager.instance.HackAndSlash(player.Equipments, new List<Consumable>(), stageId)
                 .Subscribe(_ => { }, (_) => Find<ActionFailPopup>().Show("Action timeout during HackAndSlash."));
         }
@@ -402,6 +405,7 @@ namespace Nekoyume.UI
 
                 yield return null;
             }
+
             _battleWin02VFX.Stop();
             canvasGroup.alpha = 0f;
         }
