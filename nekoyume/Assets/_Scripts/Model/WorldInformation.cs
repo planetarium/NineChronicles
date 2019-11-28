@@ -249,18 +249,19 @@ namespace Nekoyume.Model
         /// <returns></returns>
         public bool TryGetUnlockedWorldByLastStageClearedAt(out World world)
         {
-            var worlds = _worlds.Values
-                .Where(e => e.IsStageCleared)
-                .OrderByDescending(e => e.StageClearedBlockIndex)
-                .ToList();
-            if (worlds.Count == 0)
+            try
+            {
+                world = _worlds.Values
+                    .Where(e => e.IsStageCleared)
+                    .OrderByDescending(e => e.StageClearedBlockIndex)
+                    .First();
+                return true;
+            }
+            catch
             {
                 world = default;
                 return false;
             }
-
-            world = worlds[0];
-            return true;
         }
 
         /// <summary>
