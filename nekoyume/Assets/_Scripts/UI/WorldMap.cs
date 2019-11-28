@@ -186,6 +186,8 @@ namespace Nekoyume.UI
         private void ChangeWorld(string value)
         {
             SharedViewModel.IsWorldShown.Value = false;
+            var bottomMenu = Find<BottomMenu>();
+            bottomMenu.worldMapButton.SetToggledOff();
 
             foreach (var world in worlds)
             {
@@ -246,6 +248,7 @@ namespace Nekoyume.UI
             if (SharedViewModel.IsWorldShown.Value)
             {
                 SharedViewModel.IsWorldShown.Value = false;
+                bottomMenu.worldMapButton.SetToggledOff();
             }
             else
             {

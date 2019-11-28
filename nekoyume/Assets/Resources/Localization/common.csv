@@ -217,6 +217,8 @@ UI_SELL_CANCEL_MAIL_FORMAT,{0} Retrieved,{0} 판매 취소 완료
 UI_BUYER_MAIL_FORMAT,{0} Purchased,{0} 구매 완료
 UI_SELLER_MAIL_FORMAT,{0} Sold,{0} 판매 완료
 UI_SELECT,Select,선택
+UI_EXTERNAL_LINK,Proceeding to External Website,외부 웹사이트 이동
+UI_PROCEED_DISCORD,Are you sure to proceed to the Nine Chronicles discord server?,나인 크로니클 디스코드 서버로 이동하시겠습니까?
 UI_WARRIOR_DESCRIPTION,The warrior is good at close combat and is always on the front line of battle.,전사는 근접 전투에 능하고 방어력이 높아[comma]항상 전투의 최전방에 선다.
 SPEECH_SHOP_BUY_0,There's a lot of[newline]good stuff coming up.,좋은 물건이 많이 올라와있어![newline]시간 나면 보고 가
 SPEECH_SHOP_BUY_1,You need different equipments[newline]to prepare for the ordeal.,다양한 장비가 있어야 시련을 대비할 수 있어
@@ -237,5 +239,5 @@ SPEECH_SHOP_CLICK_0,If you reach level {0}[comma][newline]you can enter the mark
 SPEECH_COMBINE_MOUSE_ENTER_0,Want to make equipment or food?[newline]Here.,전투로 재료를 모았나?[newline]그럼 내게 오시게
 SPEECH_COMBINE_CLICK_0,Do you want to craft items?[newline]You need to reach level {0} first.,{0} 레벨을 먼저 달성해야 해.
 SPEECH_RANK_MOUSE_ENTER_0,Do you want to know how strong you are?[newline]Check out the rankings here!,영예의 전당에[newline]이름을 올려라!
-SPEECH_RANK_CLICK_0,Stand back![newline]You can’t enter until you reach level {0}.,{0} 레벨을 먼저 달성해야 해.
+SPEECH_RANK_CLICK_0,Stand back![newline]You can’t enter until you reach level {0}.,{0} 레벨을 먼저 달성해야 해. 
 SPEECH_DUNGEON_MOUSE_ENTER_0,Press the portal below.[newline]Let’s go to the world and[newline]start the battle!,아래 마법진을 누르면[newline]탐험을 시작할 수 있다옹

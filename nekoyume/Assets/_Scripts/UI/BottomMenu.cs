@@ -5,6 +5,7 @@ using Nekoyume.Game.Mail;
 using Nekoyume.Game.Quest;
 using Nekoyume.Model;
 using UniRx;
+using UnityEngine;
 
 namespace Nekoyume.UI.Module
 {
@@ -31,7 +32,7 @@ namespace Nekoyume.UI.Module
 
             public readonly ReactiveProperty<bool> HasNotificationInMail = new ReactiveProperty<bool>();
             public readonly ReactiveProperty<bool> HasNotificationInQuest = new ReactiveProperty<bool>();
-            public readonly ReactiveProperty<bool> HasNotificationInChat = new ReactiveProperty<bool>();
+            //public readonly ReactiveProperty<bool> HasNotificationInChat = new ReactiveProperty<bool>();
             public readonly ReactiveProperty<bool> HasNotificationInIllustratedBook = new ReactiveProperty<bool>();
             public readonly ReactiveProperty<bool> HasNotificationInCharacter = new ReactiveProperty<bool>();
             public readonly ReactiveProperty<bool> HasNotificationInInventory = new ReactiveProperty<bool>();
@@ -43,12 +44,12 @@ namespace Nekoyume.UI.Module
         public NormalButton quitButton;
         public NormalButton mainButton;
         public NormalButton backButton;
+        public NormalButton chatButton;
 
         // 토글 그룹과 버튼.
         private ToggleGroup _toggleGroup;
         public NotifiableButton mailButton;
         public NotifiableButton questButton;
-        public NotifiableButton chatButton;
         public NotifiableButton illustratedBookButton;
         public NotifiableButton characterButton;
         public NotifiableButton inventoryButton;
@@ -68,7 +69,6 @@ namespace Nekoyume.UI.Module
             SharedModel.NavigationType.Subscribe(SubscribeNavigationType).AddTo(gameObject);
             SharedModel.HasNotificationInMail.SubscribeTo(mailButton.SharedModel.HasNotification).AddTo(gameObject);
             SharedModel.HasNotificationInQuest.SubscribeTo(questButton.SharedModel.HasNotification).AddTo(gameObject);
-            SharedModel.HasNotificationInChat.SubscribeTo(chatButton.SharedModel.HasNotification).AddTo(gameObject);
             SharedModel.HasNotificationInIllustratedBook.SubscribeTo(illustratedBookButton.SharedModel.HasNotification)
                 .AddTo(gameObject);
             SharedModel.HasNotificationInCharacter.SubscribeTo(characterButton.SharedModel.HasNotification)
@@ -80,6 +80,7 @@ namespace Nekoyume.UI.Module
             SharedModel.HasNotificationInSettings.SubscribeTo(settingsButton.SharedModel.HasNotification)
                 .AddTo(gameObject);
 
+            backButton.button.OnClickAsObservable().Subscribe(_ => _toggleGroup.SetToggledOffAll()).AddTo(gameObject);
             backButton.button.OnClickAsObservable().Subscribe(SubscribeNavigationButtonClick).AddTo(gameObject);
             mainButton.button.OnClickAsObservable().Subscribe(SubscribeNavigationButtonClick).AddTo(gameObject);
             quitButton.button.OnClickAsObservable().Subscribe(SubscribeNavigationButtonClick).AddTo(gameObject);
@@ -87,7 +88,6 @@ namespace Nekoyume.UI.Module
             _toggleGroup = new ToggleGroup();
             _toggleGroup.RegisterToggleable(mailButton);
             _toggleGroup.RegisterToggleable(questButton);
-            _toggleGroup.RegisterToggleable(chatButton);
             _toggleGroup.RegisterToggleable(illustratedBookButton);
             _toggleGroup.RegisterToggleable(characterButton);
             _toggleGroup.RegisterToggleable(inventoryButton);
@@ -99,13 +99,24 @@ namespace Nekoyume.UI.Module
             characterButton.SetWidgetType<StatusDetail>();
             inventoryButton.SetWidgetType<UI.Inventory>();
 
+            chatButton.button.OnClickAsObservable().Subscribe(SubScribeOnClickChat).AddTo(gameObject);
             // 미구현
-            chatButton.button.OnClickAsObservable().Subscribe(SubscribeOnClick).AddTo(gameObject);
             illustratedBookButton.button.OnClickAsObservable().Subscribe(SubscribeOnClick).AddTo(gameObject);
             settingsButton.button.OnClickAsObservable().Subscribe(SubscribeOnClick).AddTo(gameObject);
-            chatButton.SetWidgetType<Alert>();
             illustratedBookButton.SetWidgetType<Alert>();
             settingsButton.SetWidgetType<Alert>();
+        } 
+
+        private void SubScribeOnClickChat(Unit unit)
+        {
+            var confirm = Find<Confirm>();
+            confirm.CloseCallback = result =>
+            {
+                if (result == ConfirmResult.No)
+                    return;
+                Application.OpenURL(GameConfig.DiscordLink);
+            };
+            confirm?.Show("UI_EXTERNAL_LINK", "UI_PROCEED_DISCORD");
         }
 
         private void SubscribeOnClick(Unit unit)
