@@ -21,6 +21,7 @@ namespace Nekoyume.UI
         protected override void Awake()
         {
             base.Awake();
+            FindGlassMaterial(gameObject);
             button.OnClickAsObservable()
                 .Subscribe(_ => onClick?.Invoke())
                 .AddTo(gameObject);
@@ -29,14 +30,12 @@ namespace Nekoyume.UI
         public virtual void Show(float time = 0.33f)
         {
             base.Show();
-            FindGlassMaterial(gameObject);
             StartBlur(_originalBlurRadius, time);
         }
 
         public virtual void Show(float radius, float time = 0.33f)
         {
             base.Show();
-            FindGlassMaterial(gameObject);
             StartBlur(radius, time);
         }
 
