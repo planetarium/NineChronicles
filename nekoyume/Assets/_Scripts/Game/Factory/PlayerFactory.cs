@@ -2,6 +2,7 @@ using System;
 using Nekoyume.Game.Util;
 using Nekoyume.Model;
 using Nekoyume.State;
+using Nekoyume.TableData;
 using UnityEngine;
 
 namespace Nekoyume.Game.Factory
@@ -17,14 +18,16 @@ namespace Nekoyume.Game.Factory
                 throw new ArgumentNullException("`Model.Avatar` can't be null.");
             }
 
-            return Create(new Player(avatarState));
+            // FIXME TableSheetsState.Current 써도 괜찮은지 체크해야 합니다.
+            return Create(new Player(avatarState, TableSheets.FromTableSheetsState(TableSheetsState.Current)));
         }
 
         public GameObject Create(Player model = null)
         {
             if (ReferenceEquals(model, null))
             {
-                model = new Player(1);
+                // FIXME TableSheetsState.Current 써도 괜찮은지 체크해야 합니다.
+                model = new Player(1, TableSheets.FromTableSheetsState(TableSheetsState.Current));
             }
 
             var objectPool = GetComponent<ObjectPool>();
