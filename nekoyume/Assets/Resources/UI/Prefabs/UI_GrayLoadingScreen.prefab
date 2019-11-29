@@ -60,7 +60,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   koreanImage: {fileID: 114402686584578616}
   englishImageContainer: {fileID: 3116608274210667223}
-  englishText: {fileID: 0}
+  englishText: {fileID: 722838303863489654}
 --- !u!1 &1334572938244390
 GameObject:
   m_ObjectHideFlags: 0
@@ -343,7 +343,8 @@ MonoBehaviour:
   m_text: Mining Blocks...
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: 3ce8a300a89531e44983f4eb1a016c8c, type: 2}
+  m_sharedMaterial: {fileID: -2364689171920820918, guid: 8a682b7747d4a664089b7b1065aa0035,
+    type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
