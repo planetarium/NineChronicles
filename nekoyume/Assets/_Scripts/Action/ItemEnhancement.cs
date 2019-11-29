@@ -56,7 +56,12 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            if (!avatarState.inventory.TryGetNonFungibleItem(itemId, out ItemUsable item))
+            if (!avatarState.inventory.TryGetNonFungibleItem(itemId, out ItemUsable enhancementItem))
+            {
+                return states;
+            }
+
+            if (!(enhancementItem is Equipment enhancementEquipment))
             {
                 return states;
             }
@@ -67,45 +72,66 @@ namespace Nekoyume.Action
             var materialOptionCount = 0;
             foreach (var materialId in materialIds)
             {
-                if (!avatarState.inventory.TryGetNonFungibleItem(materialId, out ItemUsable nonFungibleItem))
+                if (!avatarState.inventory.TryGetNonFungibleItem(materialId, out ItemUsable materialItem))
+                {
+                    // 인벤토리에 재료로 등록한 장비가 없는 에러.
+                    return states;
+                }
+
+                if (!(materialItem is Equipment materialEquipment))
                 {
                     return states;
                 }
 
-                if (materials.Contains(nonFungibleItem))
+                if (materials.Contains(materialEquipment))
                 {
-                    Debug.LogWarning($"Duplicate materials found. {nonFungibleItem}");
+                    // 같은 guid의 아이템이 중복해서 등록된 에러.
+                    Debug.LogWarning($"Duplicate materials found. {materialEquipment}");
                     return states;
                 }
 
-                if (item.ItemId == materialId)
+                if (enhancementEquipment.ItemId == materialId)
                 {
+                    // 강화 장비와 재료로 등록한 장비가 같은 에러.
                     return states;
                 }
 
-                if (nonFungibleItem.Data.ItemSubType != item.Data.ItemSubType)
+                if (materialEquipment.Data.ItemSubType != enhancementEquipment.Data.ItemSubType)
                 {
-                    Debug.LogWarning($"Expected ItemSubType is {item.Data.ItemSubType}. " +
+                    // 서브 타입이 다른 에러.
+                    Debug.LogWarning($"Expected ItemSubType is {enhancementEquipment.Data.ItemSubType}. " +
                                      "but Material SubType is {material.Data.ItemSubType}");
                     return states;
                 }
 
-                var material = (Equipment) nonFungibleItem;
-                material.Unequip();
-                materials.Add(material);
-                var materialOptions = material.GetOptions();
+                if (materialEquipment.Data.Grade != enhancementEquipment.Data.Grade)
+                {
+                    // 등급이 다른 에러.
+                    return states;
+                }
+
+                if (materialEquipment.level != enhancementEquipment.level)
+                {
+                    // 강화도가 다른 에러.
+                    return states;
+                }
+
+                materialEquipment.Unequip();
+                materials.Add(materialEquipment);
+                var materialOptions = materialEquipment.GetOptions();
                 options.AddRange(materialOptions);
                 materialOptionCount = Math.Max(materialOptionCount, materialOptions.Count);
             }
 
-            var equipment = (Equipment) item;
-            equipment.Unequip();
-            var equipmentOptions = equipment.GetOptions();
+            enhancementEquipment.Unequip();
+            var equipmentOptions = enhancementEquipment.GetOptions();
             options.AddRange(equipmentOptions);
             var equipmentOptionCount = Math.Max(materialOptionCount, equipmentOptions.Count);
-            equipment = UpgradeEquipment(equipment, ctx.Random, options, equipmentOptionCount);
+            
+            enhancementEquipment = UpgradeEquipment(enhancementEquipment, ctx.Random, options, equipmentOptionCount);
+            
             var requiredGold = Math.Max(GameConfig.EnhanceEquipmentCostAP,
-                GameConfig.EnhanceEquipmentCostAP * equipment.level * equipment.level);
+                GameConfig.EnhanceEquipmentCostAP * enhancementEquipment.level * enhancementEquipment.level);
 
             if (agentState.gold < requiredGold)
             {
@@ -113,16 +139,17 @@ namespace Nekoyume.Action
             }
 
             agentState.gold -= requiredGold;
+            
             foreach (var material in materials)
             {
                 avatarState.inventory.RemoveNonFungibleItem(material);
             }
 
-            result = new Result {itemUsable = equipment};
+            result = new Result {itemUsable = enhancementEquipment};
             var mail = new ItemEnhanceMail(result, ctx.BlockIndex);
-            avatarState.inventory.RemoveNonFungibleItem(equipment);
+            avatarState.inventory.RemoveNonFungibleItem(enhancementEquipment);
             avatarState.Update(mail);
-            avatarState.UpdateItemEnhancementQuest(equipment);
+            avatarState.UpdateItemEnhancementQuest(enhancementEquipment);
             return states
                 .SetState(ctx.Signer, agentState.Serialize())
                 .SetState(avatarAddress, avatarState.Serialize());
@@ -172,40 +199,9 @@ namespace Nekoyume.Action
                     case AttackSkill attackSkill:
                         equipment.Skills.Add(attackSkill);
                         break;
-                    case StatsMap statsMap:
-                    {
-                        if (statsMap.HasAdditionalHP)
-                        {
-                            equipment.StatsMap.SetStatAdditionalValue(StatType.HP, statsMap.AdditionalHP);
-                        }
-
-                        if (statsMap.HasAdditionalATK)
-                        {
-                            equipment.StatsMap.SetStatAdditionalValue(StatType.ATK, statsMap.AdditionalATK);
-                        }
-
-                        if (statsMap.HasAdditionalCRI)
-                        {
-                            equipment.StatsMap.SetStatAdditionalValue(StatType.CRI, statsMap.AdditionalCRI);
-                        }
-
-                        if (statsMap.HasAdditionalDEF)
-                        {
-                            equipment.StatsMap.SetStatAdditionalValue(StatType.DEF, statsMap.AdditionalDEF);
-                        }
-
-                        if (statsMap.HasAdditionalDOG)
-                        {
-                            equipment.StatsMap.SetStatAdditionalValue(StatType.DOG, statsMap.AdditionalDOG);
-                        }
-
-                        if (statsMap.HasAdditionalSPD)
-                        {
-                            equipment.StatsMap.SetStatAdditionalValue(StatType.SPD, statsMap.AdditionalSPD);
-                        }
-
+                    case StatModifier statModifier:
+                        equipment.StatsMap.AddStatAdditionalValue(statModifier);
                         break;
-                    }
                 }
 
                 sortedSkills.Remove(selected);

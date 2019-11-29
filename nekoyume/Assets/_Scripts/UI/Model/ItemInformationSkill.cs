@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Assets.SimpleLocalization;
 using Nekoyume.Game;
 using Nekoyume.TableData;
@@ -35,6 +36,22 @@ namespace Nekoyume.UI.Model
             iconSprite.Value = skill.skillRow.GetIcon();
             name.Value = skill.skillRow.GetLocalizedName();
             power.Value = $"{LocalizationManager.Localize("UI_SKILL_POWER")}: {skill.power}";
+            chance.Value = $"{LocalizationManager.Localize("UI_SKILL_CHANCE")}: {skill.chance}%";
+        }
+        
+        public ItemInformationSkill(BuffSkill skill)
+        {
+            var powerValue = string.Empty;
+            var buffs = skill.skillRow.GetBuffs();
+            if (buffs.Count > 0)
+            {
+                var buff = buffs[0];
+                powerValue = buff.StatModifier.ToString();
+            }
+            
+            iconSprite.Value = skill.skillRow.GetIcon();
+            name.Value = skill.skillRow.GetLocalizedName();
+            power.Value = $"{LocalizationManager.Localize("UI_SKILL_EFFECT")}: {powerValue}";
             chance.Value = $"{LocalizationManager.Localize("UI_SKILL_CHANCE")}: {skill.chance}%";
         }
 

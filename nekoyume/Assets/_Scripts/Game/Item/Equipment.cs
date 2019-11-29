@@ -34,7 +34,7 @@ namespace Nekoyume.Game.Item
             equipped = false;
             return true;
         }
-        
+
         public bool TryGetUniqueStat(out StatType statType, out int value, bool ignoreAdditional = false)
         {
             statType = Data.Stat.Type;
@@ -47,7 +47,7 @@ namespace Nekoyume.Game.Item
             level++;
             StatsMap.AddStatValue(Data.Stat.Type, levelStats);
         }
-        
+
         public override string GetLocalizedName()
         {
             var name = base.GetLocalizedName();
@@ -88,10 +88,11 @@ namespace Nekoyume.Game.Item
             var options = new List<object>();
             options.AddRange(Skills);
             options.AddRange(BuffSkills);
-            if (StatsMap.HasAdditionalStats)
+            foreach (var (statType, value) in StatsMap.GetAdditionalStats())
             {
-                options.Add(StatsMap);
+                options.Add(new StatModifier(statType, StatModifier.OperationType.Add, value));
             }
+
             return options;
         }
     }

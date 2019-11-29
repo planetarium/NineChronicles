@@ -13,6 +13,8 @@ namespace Nekoyume.Game
     {
         private decimal _additionalValue;
 
+        public bool HasAdditionalValue => AdditionalValue > 0m;
+        
         public decimal AdditionalValue
         {
             get => _additionalValue;

@@ -23,7 +23,8 @@ namespace Nekoyume.Model
             public readonly long StageClearedBlockIndex;
             public readonly int StageClearedId;
 
-            public World(WorldSheet.Row worldRow, long unlockedBlockIndex = -1, long stageClearedBlockIndex = -1, int stageClearedId = -1)
+            public World(WorldSheet.Row worldRow, long unlockedBlockIndex = -1, long stageClearedBlockIndex = -1,
+                int stageClearedId = -1)
             {
                 Id = worldRow.Id;
                 Name = worldRow.Name;
@@ -96,12 +97,12 @@ namespace Nekoyume.Model
                 return stageId >= StageBegin &&
                        stageId <= StageEnd;
             }
-            
+
             public bool IsPlayable(int stageId)
             {
                 return stageId <= GetNextStageIdForPlay();
             }
-            
+
             public int GetNextStageIdForPlay()
             {
                 if (!IsUnlocked)
@@ -109,7 +110,7 @@ namespace Nekoyume.Model
 
                 return GetNextStageId();
             }
-            
+
             public int GetNextStageId()
             {
                 return IsStageCleared ? Math.Min(StageEnd, StageClearedId + 1) : StageBegin;
@@ -142,7 +143,7 @@ namespace Nekoyume.Model
                     _worlds.Add(worldId, world);
                     if (!isFirst)
                         continue;
-                    
+
                     isFirst = false;
                     UnlockWorld(world, blockIndex);
                 }
@@ -151,23 +152,18 @@ namespace Nekoyume.Model
 
         public WorldInformation(Bencodex.Types.Dictionary serialized)
         {
-            _worlds = ((Bencodex.Types.Dictionary) serialized["_worlds"])
-                .ToDictionary(
-                    kv => kv.Key.ToInteger(),
-                    kv => new World((Bencodex.Types.Dictionary) kv.Value)
-                );
+            _worlds = serialized.ToDictionary(
+                kv => kv.Key.ToInteger(),
+                kv => new World((Bencodex.Types.Dictionary) kv.Value)
+            );
         }
 
         public IValue Serialize()
         {
-            return new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
-            {
-                [(Bencodex.Types.Text) "_worlds"] = new Bencodex.Types.Dictionary(
-                    _worlds.Select(kv =>
-                        new KeyValuePair<IKey, IValue>(
-                            (Bencodex.Types.Text) kv.Key.Serialize(),
-                            (Bencodex.Types.Dictionary) kv.Value.Serialize())))
-            });
+            return new Bencodex.Types.Dictionary(_worlds.Select(kv =>
+                new KeyValuePair<IKey, IValue>(
+                    (Bencodex.Types.Text) kv.Key.Serialize(),
+                    (Bencodex.Types.Dictionary) kv.Value.Serialize())));
         }
 
         /// <summary>
@@ -185,7 +181,7 @@ namespace Nekoyume.Model
             world = _worlds[worldId];
             return true;
         }
-        
+
         /// <summary>
         /// `CurrentWorldId`와 `CurrentStageId`를 초기화 한다.
         /// </summary>
@@ -200,7 +196,7 @@ namespace Nekoyume.Model
             world = _worlds.First(e => true).Value;
             return true;
         }
-        
+
         /// <summary>
         /// 인자로 받은 `stageId`가 속한 `World` 객체를 얻는다.
         /// </summary>
@@ -298,7 +294,7 @@ namespace Nekoyume.Model
                 UnlockWorld(worldIdToUnlock, clearedAt);
             }
         }
-        
+
         /// <summary>
         /// 특정 월드를 잠금 해제한다.
         /// </summary>
@@ -312,7 +308,7 @@ namespace Nekoyume.Model
 
             _worlds[world.Id] = new World(world, unlockedAt);
         }
-        
+
         /// <summary>
         /// 특정 월드를 잠금 해제한다.
         /// </summary>

@@ -203,7 +203,7 @@ namespace Nekoyume.State
                             .Add("count", pair.Value.Serialize())));
         }
         
-        public static Dictionary<Material, int> ToDictionary(this IValue serialized)
+        public static Dictionary<Material, int> ToDictionary_Material_int(this IValue serialized)
         {
             return ((Bencodex.Types.List) serialized)
                 .Cast<Bencodex.Types.Dictionary>()
