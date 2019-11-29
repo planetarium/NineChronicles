@@ -593,7 +593,8 @@ MonoBehaviour:
   dummy: {fileID: 282372974}
   defaultBGVFX: {fileID: 0}
   bosswaveBGVFX: {fileID: 0}
-  id: 0
+  worldId: 0
+  stageId: 0
   selectedPlayer: {fileID: 0}
   repeatStage: 0
   zone: 
