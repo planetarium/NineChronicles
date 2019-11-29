@@ -10,6 +10,7 @@ using System.Text.RegularExpressions;
 using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine.UI;
+using Nekoyume.TableData;
 
 namespace Nekoyume.UI
 {
@@ -111,14 +112,21 @@ namespace Nekoyume.UI
             _selectedIndex = index;
             Player player;
             _isCreateMode = !States.Instance.AvatarStates.ContainsKey(index);
+            
+            // FIXME TableSheetsState.Current 써도 괜찮은지 체크해야 합니다.
+            TableSheets tableSheets = TableSheets.FromTableSheetsState(TableSheetsState.Current);
+
             if (_isCreateMode)
             {
-                player = new Player(1);
+                player = new Player(1, tableSheets);
             }
             else
             {
                 States.Instance.CurrentAvatarState.Value = States.Instance.AvatarStates[_selectedIndex];
-                player = new Player(States.Instance.CurrentAvatarState.Value);
+                player = new Player(
+                    States.Instance.CurrentAvatarState.Value,
+                    tableSheets
+                );
             }
 
             palette.SetActive(_isCreateMode);

@@ -63,8 +63,9 @@ namespace Nekoyume.Model
 
         private List<Equipment> Equipments { get; set; }
 
-        public Player(AvatarState avatarState, Simulator simulator = null) : base(simulator, avatarState.characterId, avatarState.level)
+        public Player(AvatarState avatarState, Simulator simulator) : base(simulator, avatarState.characterId, avatarState.level)
         {
+            // FIXME 중복 코드 제거할 것
             Exp.Current = avatarState.exp;
             Inventory = avatarState.inventory;
             worldInformation = avatarState.worldInformation;
@@ -74,15 +75,30 @@ namespace Nekoyume.Model
             tailIndex = avatarState.tail;
             monsterMap = new CollectionMap();
             eventMap = new CollectionMap();
-            PostConstruction();
+            PostConstruction(simulator?.TableSheets);
         }
 
-        public Player(int level) : base(null, GameConfig.DefaultAvatarCharacterId, level)
+        public Player(AvatarState avatarState, TableSheets tableSheets) : base (null, avatarState.characterId, avatarState.level)
+        {
+            // FIXME 중복 코드 제거할 것
+            Exp.Current = avatarState.exp;
+            Inventory = avatarState.inventory;
+            worldInformation = avatarState.worldInformation;
+            hairIndex = avatarState.hair;
+            lensIndex = avatarState.lens;
+            earIndex = avatarState.ear;
+            tailIndex = avatarState.tail;
+            monsterMap = new CollectionMap();
+            eventMap = new CollectionMap();
+            PostConstruction(tableSheets);
+        }
+
+        public Player(int level, TableSheets tableSheets) : base(null, GameConfig.DefaultAvatarCharacterId, level)
         {
             Exp.Current = 0;
             Inventory = new Inventory();
             worldInformation = null;
-            PostConstruction();
+            PostConstruction(tableSheets);
         }
 
         protected Player(Player value) : base(value)
@@ -105,15 +121,15 @@ namespace Nekoyume.Model
             Equipments = value.Equipments;
         }
 
-        private void PostConstruction()
+        private void PostConstruction(TableSheets sheets)
         {
-            UpdateExp();
+            UpdateExp(sheets);
             Equip(Inventory.Items);
         }
 
-        private void UpdateExp()
+        private void UpdateExp(TableSheets sheets)
         {
-            TableSheets.FromTableSheetsState(TableSheetsState.Current).LevelSheet.TryGetValue(Level, out var row, true);
+            sheets.LevelSheet.TryGetValue(Level, out var row, true);
             Exp.Set(row);
         }
 
@@ -204,7 +220,7 @@ namespace Nekoyume.Model
             {
                 eventMap?.Add(new KeyValuePair<int, int>((int) QuestEventType.Level, Level - level));
             }
-            UpdateExp();
+            UpdateExp(Simulator.TableSheets);
         }
 
         // ToDo. 지금은 스테이지에서 재료 아이템만 주고 있음. 추후 대체 불가능 아이템도 줄 경우 수정 대상.
