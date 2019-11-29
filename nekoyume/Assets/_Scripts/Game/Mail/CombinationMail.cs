@@ -1,8 +1,6 @@
 using System;
 using Assets.SimpleLocalization;
 using Nekoyume.Action;
-using Nekoyume.Game.Item;
-using Nekoyume.TableData;
 
 namespace Nekoyume.Game.Mail
 {
