@@ -10,6 +10,7 @@ using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Nekoyume.Game.Controller;
 
 namespace Nekoyume.UI.Scroller
 {
@@ -100,6 +101,7 @@ namespace Nekoyume.UI.Scroller
         private void OnClickButton()
         {
             onClickSubmitButton?.Invoke(_currentDataIndex);
+            AudioController.instance.PlaySfx(AudioController.SfxCode.LevelUp);
             buttonText.text = LocalizationManager.Localize("UI_RECEIVED");
         }
     }

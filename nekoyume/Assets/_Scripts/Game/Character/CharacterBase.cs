@@ -237,7 +237,6 @@ namespace Nekoyume.Game.Character
                 {
                     index = 1;
                 }
-                AudioController.PlayMiss();
                 MissText.Show(position, force, index);
                 yield break;
             }
@@ -439,10 +438,10 @@ namespace Nekoyume.Game.Character
         }
 
         protected virtual IEnumerator CoAnimationCast(Model.Skill.SkillInfo info)
-        {
+        {   
             PreAnimationForTheKindOfAttack();
 
-            AudioController.instance.PlaySfx(AudioController.SfxCode.BattleCast);
+            AudioController.instance.PlaySfx(AudioController.SfxCode.LevelUp);
             Animator.Cast();
             var pos = transform.position;
             var effect = Game.instance.stage.skillController.Get(pos, info);
@@ -456,7 +455,7 @@ namespace Nekoyume.Game.Character
         {
             PreAnimationForTheKindOfAttack();
 
-            AudioController.instance.PlaySfx(AudioController.SfxCode.BattleCast);
+            AudioController.instance.PlaySfx(AudioController.SfxCode.LevelUp);
             Animator.Cast();
             var pos = transform.position;
             var effect = Game.instance.stage.buffController.Get(pos, info.Buff);

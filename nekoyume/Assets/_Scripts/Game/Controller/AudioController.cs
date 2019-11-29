@@ -463,11 +463,6 @@ namespace Nekoyume.Game.Controller
             instance.PlaySfx(random < 0.5f ? SfxCode.Critical01 : SfxCode.Critical02);
         }
 
-        public static void PlayMiss()
-        {
-            instance.PlaySfx(SfxCode.Miss);
-        }
-
         #endregion
     }
 }
