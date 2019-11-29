@@ -165,7 +165,7 @@ namespace Nekoyume.Model
                 [(Bencodex.Types.Text) "_worlds"] = new Bencodex.Types.Dictionary(
                     _worlds.Select(kv =>
                         new KeyValuePair<IKey, IValue>(
-                            (Bencodex.Types.Text) kv.Key.ToString(),
+                            (Bencodex.Types.Text) kv.Key.Serialize(),
                             (Bencodex.Types.Dictionary) kv.Value.Serialize())))
             });
         }

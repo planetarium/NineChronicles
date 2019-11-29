@@ -200,7 +200,7 @@ namespace Nekoyume.State
                         pair =>
                         (IValue)Bencodex.Types.Dictionary.Empty
                             .Add("material", pair.Key.Serialize())
-                            .Add("count", pair.Value)));
+                            .Add("count", pair.Value.Serialize())));
         }
         
         public static Dictionary<Material, int> ToDictionary(this IValue serialized)
