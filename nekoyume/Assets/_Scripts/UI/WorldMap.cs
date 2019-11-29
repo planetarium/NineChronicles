@@ -294,15 +294,9 @@ namespace Nekoyume.UI
 
         private void SubscribeBackButtonClick(BottomMenu bottomMenu)
         {
-            if (SharedViewModel.IsWorldShown.Value)
-            {
-                SharedViewModel.IsWorldShown.Value = false;
-            }
-            else
-            {
-                Close();
-                Find<Menu>().ShowRoom();
-            }
+            SharedViewModel.IsWorldShown.Value = false;
+            Close();
+            Find<Menu>().ShowRoom();
         }
 
         private void GoToQuestPreparation()
