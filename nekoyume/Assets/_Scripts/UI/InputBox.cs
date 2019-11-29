@@ -47,6 +47,8 @@ namespace Nekoyume.UI
             }
 
             base.Show();
+
+            inputField.Select();
         }
 
         public void Yes()
