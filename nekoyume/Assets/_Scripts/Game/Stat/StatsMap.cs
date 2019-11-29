@@ -21,12 +21,12 @@ namespace Nekoyume.Game
         public int DOG => HasDOG ? StatMaps[StatType.DOG].TotalValueAsInt : 0;
         public int SPD => HasSPD ? StatMaps[StatType.SPD].TotalValueAsInt : 0;
         
-        public bool HasHP => StatMaps.ContainsKey(StatType.HP) && StatMaps[StatType.HP].Value > 0m || HasAdditionalHP;
-        public bool HasATK => StatMaps.ContainsKey(StatType.ATK) && StatMaps[StatType.ATK].Value > 0m || HasAdditionalATK;
-        public bool HasDEF => StatMaps.ContainsKey(StatType.DEF) && StatMaps[StatType.DEF].Value > 0m || HasAdditionalDEF;
-        public bool HasCRI => StatMaps.ContainsKey(StatType.CRI) && StatMaps[StatType.CRI].Value > 0m || HasAdditionalCRI;
-        public bool HasDOG => StatMaps.ContainsKey(StatType.DOG) && StatMaps[StatType.DOG].Value > 0m || HasAdditionalDOG;
-        public bool HasSPD => StatMaps.ContainsKey(StatType.SPD) && StatMaps[StatType.SPD].Value > 0m || HasAdditionalSPD;
+        public bool HasHP => StatMaps.ContainsKey(StatType.HP) && StatMaps[StatType.HP].HasValue || HasAdditionalHP;
+        public bool HasATK => StatMaps.ContainsKey(StatType.ATK) && StatMaps[StatType.ATK].HasValue || HasAdditionalATK;
+        public bool HasDEF => StatMaps.ContainsKey(StatType.DEF) && StatMaps[StatType.DEF].HasValue || HasAdditionalDEF;
+        public bool HasCRI => StatMaps.ContainsKey(StatType.CRI) && StatMaps[StatType.CRI].HasValue || HasAdditionalCRI;
+        public bool HasDOG => StatMaps.ContainsKey(StatType.DOG) && StatMaps[StatType.DOG].HasValue || HasAdditionalDOG;
+        public bool HasSPD => StatMaps.ContainsKey(StatType.SPD) && StatMaps[StatType.SPD].HasValue || HasAdditionalSPD;
 
         public int AdditionalHP => HasAdditionalHP ? StatMaps[StatType.HP].AdditionalValueAsInt : 0;
         public int AdditionalATK => HasAdditionalATK ? StatMaps[StatType.ATK].AdditionalValueAsInt : 0;
@@ -35,12 +35,12 @@ namespace Nekoyume.Game
         public int AdditionalDOG => HasAdditionalDOG ? StatMaps[StatType.DOG].AdditionalValueAsInt : 0;
         public int AdditionalSPD => HasAdditionalSPD ? StatMaps[StatType.SPD].AdditionalValueAsInt : 0;
         
-        public bool HasAdditionalHP => StatMaps.ContainsKey(StatType.HP) && StatMaps[StatType.HP].AdditionalValue > 0m;
-        public bool HasAdditionalATK => StatMaps.ContainsKey(StatType.ATK) && StatMaps[StatType.ATK].AdditionalValue > 0m;
-        public bool HasAdditionalDEF => StatMaps.ContainsKey(StatType.DEF) && StatMaps[StatType.DEF].AdditionalValue > 0m;
-        public bool HasAdditionalCRI => StatMaps.ContainsKey(StatType.CRI) && StatMaps[StatType.CRI].AdditionalValue > 0m;
-        public bool HasAdditionalDOG => StatMaps.ContainsKey(StatType.DOG) && StatMaps[StatType.DOG].AdditionalValue > 0m;
-        public bool HasAdditionalSPD => StatMaps.ContainsKey(StatType.SPD) && StatMaps[StatType.SPD].AdditionalValue > 0m;
+        public bool HasAdditionalHP => StatMaps.ContainsKey(StatType.HP) && StatMaps[StatType.HP].HasAdditionalValue;
+        public bool HasAdditionalATK => StatMaps.ContainsKey(StatType.ATK) && StatMaps[StatType.ATK].HasAdditionalValue;
+        public bool HasAdditionalDEF => StatMaps.ContainsKey(StatType.DEF) && StatMaps[StatType.DEF].HasAdditionalValue;
+        public bool HasAdditionalCRI => StatMaps.ContainsKey(StatType.CRI) && StatMaps[StatType.CRI].HasAdditionalValue;
+        public bool HasAdditionalDOG => StatMaps.ContainsKey(StatType.DOG) && StatMaps[StatType.DOG].HasAdditionalValue;
+        public bool HasAdditionalSPD => StatMaps.ContainsKey(StatType.SPD) && StatMaps[StatType.SPD].HasAdditionalValue;
 
         public bool HasAdditionalStats => HasAdditionalHP || HasAdditionalATK || HasAdditionalDEF || HasAdditionalCRI ||
                                           HasAdditionalDOG || HasAdditionalSPD;
@@ -78,6 +78,7 @@ namespace Nekoyume.Game
             }
 
             _statMaps[key].Value += value;
+            PostStatValueChanged(key);
         }
 
         public void AddStatAdditionalValue(StatType key, decimal additionalValue)
@@ -88,6 +89,12 @@ namespace Nekoyume.Game
             }
 
             _statMaps[key].AdditionalValue += additionalValue;
+            PostStatValueChanged(key);
+        }
+
+        public void AddStatAdditionalValue(StatModifier statModifier)
+        {
+            AddStatAdditionalValue(statModifier.StatType, statModifier.Value);
         }
 
         public void SetStatAdditionalValue(StatType key, decimal additionalValue)
@@ -98,6 +105,20 @@ namespace Nekoyume.Game
             }
 
             _statMaps[key].AdditionalValue = additionalValue;
+            PostStatValueChanged(key);
+        }
+
+        private void PostStatValueChanged(StatType key)
+        {
+            if (!_statMaps.ContainsKey(key))
+                return;
+
+            var statMap = _statMaps[key];
+            if (statMap.HasValue ||
+                statMap.HasAdditionalValue)
+                return;
+
+            _statMaps.Remove(key);
         }
         
         public int GetValue(StatType statType, bool ignoreAdditional = false)
@@ -157,7 +178,7 @@ namespace Nekoyume.Game
             }
         }
 
-        public IEnumerable<(StatType, int)> GetStats(bool ignoreZero = false)
+        public IEnumerable<(StatType, int)> GetStats(bool ignoreZero = true)
         {
             if (ignoreZero)
             {
@@ -185,7 +206,7 @@ namespace Nekoyume.Game
             }
         }
         
-        public IEnumerable<(StatType, int)> GetAdditionalStats(bool ignoreZero = false)
+        public IEnumerable<(StatType, int)> GetAdditionalStats(bool ignoreZero = true)
         {
             if (ignoreZero)
             {

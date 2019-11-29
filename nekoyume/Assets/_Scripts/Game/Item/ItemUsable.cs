@@ -63,7 +63,7 @@ namespace Nekoyume.Game.Item
 
         public int GetOptionCount()
         {
-            return StatsMap.GetAdditionalStats(true).Count()
+            return StatsMap.GetAdditionalStats().Count()
                    + Skills.Count
                    + BuffSkills.Count;
         }

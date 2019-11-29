@@ -27,10 +27,11 @@ namespace Nekoyume.Game
         {
         }
 
-        public StatModifier(StatMapEx statMapEx) : this(statMapEx.StatType, OperationType.Add, statMapEx.TotalValueAsInt)
+        public StatModifier(StatMapEx statMapEx) : this(statMapEx.StatType, OperationType.Add,
+            statMapEx.TotalValueAsInt)
         {
         }
-        
+
         /// <summary>
         /// value와 함께 value를 바탕으로 변경시킨 값의 합을 리턴한다.
         /// </summary>
@@ -50,7 +51,7 @@ namespace Nekoyume.Game
         {
             return value + GetModifiedPart(value);
         }
-        
+
         /// <summary>
         /// value를 바탕으로 변경시킨 값만을 리턴한다.
         /// </summary>
@@ -98,7 +99,7 @@ namespace Nekoyume.Game
         {
             value.AddValue(GetModifiedPart(Value));
         }
-        
+
         /// <summary>
         /// value를 변경시킨다.
         /// </summary>
@@ -111,10 +112,10 @@ namespace Nekoyume.Game
 
             if (ignoreCurrent)
                 return;
-            
+
             value.AddCurrent(GetModifiedPart(Value));
         }
-        
+
         /// <summary>
         /// value를 변경시킨다.
         /// </summary>
@@ -124,7 +125,7 @@ namespace Nekoyume.Game
         {
             value.AddValue(GetModifiedPart(Value));
         }
-        
+
         /// <summary>
         /// value를 변경시킨다.
         /// </summary>
@@ -137,8 +138,16 @@ namespace Nekoyume.Game
 
             if (ignoreCurrent)
                 return;
-            
+
             value.AddCurrent(GetModifiedPart(Value));
+        }
+
+        public override string ToString()
+        {
+            return string.Format("{0}{1}{2}",
+                Value >= 0 ? "+" : string.Empty,
+                Value,
+                Operation == OperationType.Percentage ? "%" : string.Empty);
         }
 
         #region PlayModeTest

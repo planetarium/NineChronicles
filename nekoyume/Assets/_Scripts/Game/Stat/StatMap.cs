@@ -13,6 +13,8 @@ namespace Nekoyume.Game
         private decimal _value;
         
         public StatType StatType { get; }
+
+        public bool HasValue => Value > 0m;
         
         public decimal Value
         {

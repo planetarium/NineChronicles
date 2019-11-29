@@ -40,7 +40,7 @@ namespace Nekoyume.Action
 
             public ResultModel(Dictionary serialized) : base(serialized)
             {
-                materials = serialized["materials"].ToDictionary();
+                materials = serialized["materials"].ToDictionary_Material_int();
             }
 
             public override IValue Serialize() =>
@@ -68,7 +68,7 @@ namespace Nekoyume.Action
 
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
         {
-            Materials = plainValue["Materials"].ToDictionary();
+            Materials = plainValue["Materials"].ToDictionary_Material_int();
             AvatarAddress = plainValue["avatarAddress"].ToAddress();
         }
 
