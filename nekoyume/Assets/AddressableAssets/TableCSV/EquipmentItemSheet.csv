@@ -25,11 +25,21 @@ id,_name,item_sub_type,grade,elemental_type,set_id,stat_type,stat_value,attack_r
 10142000,그람(물),Weapon,4,Water,13,ATK,80,2,10142000
 10143000,그람(땅),Weapon,4,Land,14,ATK,80,2,10143000
 10144000,그람(바람),Weapon,4,Wind,15,ATK,80,2,10144000
+10140001,고대의 검,Weapon,4,Normal,11,SPD,50,2,10140001
+10141001,고대의 검(불),Weapon,4,Fire,12,SPD,50,2,10141001
+10142001,고대의 검(물),Weapon,4,Water,13,SPD,50,2,10142001
+10143001,고대의 검(땅),Weapon,4,Land,14,SPD,50,2,10143001
+10144001,고대의 검(바람),Weapon,4,Wind,15,SPD,50,2,10144001
 10150000,다인슬레이프,Weapon,5,Normal,16,ATK,160,2,10150000
 10151000,다인슬레이프(불),Weapon,5,Fire,17,ATK,160,2,10151000
 10152000,다인슬레이프(물),Weapon,5,Water,18,ATK,160,2,10152000
 10153000,다인슬레이프(땅),Weapon,5,Land,19,ATK,160,2,10153000
 10154000,다인슬레이프(바람),Weapon,5,Wind,20,ATK,160,2,10154000
+10150001,수르트의 검,Weapon,5,Normal,16,CRI,5,2,10150001
+10151001,수르트의 검(불),Weapon,5,Fire,17,CRI,5,2,10151001
+10152001,수르트의 검(물),Weapon,5,Water,18,CRI,5,2,10152001
+10153001,수르트의 검(땅),Weapon,5,Land,19,CRI,5,2,10153001
+10154001,수르트의 검(바람),Weapon,5,Wind,20,CRI,5,2,10154001
 10155000,발키리의 검,Weapon,5,Normal,15,ATK,500,2,10155000
 10200000,누더기,Armor,0,Normal,0,DEF,1,2,Character/Player/10200000
 10210000,옷,Armor,1,Normal,1,DEF,10,2,Character/Player/10210000
