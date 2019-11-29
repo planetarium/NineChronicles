@@ -222,7 +222,7 @@ namespace Nekoyume.Game.Controller
             _fadeInMusic = StartCoroutine(CoFadeIn(audioInfo, fadeIn));
         }
 
-        public void PlaySfx(string audioName)
+        public void PlaySfx(string audioName, float volume = 1.0f)
         {
             if (CurrentState != State.Idle)
             {
@@ -236,6 +236,7 @@ namespace Nekoyume.Game.Controller
 
             var audioInfo = PopFromSfxPool(audioName);
             Push(_sfxPlaylist, audioName, audioInfo);
+            audioInfo.source.volume = volume;
             audioInfo.source.Play();
         }
 

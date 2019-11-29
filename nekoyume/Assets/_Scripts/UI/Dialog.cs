@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Assets.SimpleLocalization;
 using Nekoyume.BlockChain;
+using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.TableData;
 using TMPro;
@@ -157,6 +158,8 @@ namespace Nekoyume.UI
                     txtDialog.text = $"{_text.Substring(0, textIndex)}";
                 else
                     txtDialog.text = $"{_text.Substring(0, textIndex)}</color>";
+
+                AudioController.instance.PlaySfx(AudioController.SfxCode.Click, 0.1f);
 
                 if (_effects.TryGetValue(textIndex, out var effect))
                 {
