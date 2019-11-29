@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using Assets.SimpleLocalization;
 using DG.Tweening;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,7 +14,7 @@ namespace Nekoyume.UI
         
         public Image koreanImage;
         public GameObject englishImageContainer;
-        public Text englishText;
+        public TextMeshProUGUI englishText;
         
         private Color _color;
         private Sequence _sequence;

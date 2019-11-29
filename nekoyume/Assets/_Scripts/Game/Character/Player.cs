@@ -131,10 +131,11 @@ namespace Nekoyume.Game.Character
         {
             var armorId = armor?.Data.Id ?? GameConfig.DefaultAvatarArmorId;
             var spineResourcePath = armor?.Data.SpineResourcePath ?? $"Character/Player/{armorId}";
-
+            
             if (!(Animator.Target is null))
             {
-                if (Animator.Target.name.Contains(armorId.ToString()))
+                var animatorTargetName = spineResourcePath.Split('/').Last(); 
+                if (Animator.Target.name.Contains(animatorTargetName))
                     return;
 
                 Animator.DestroyTarget();
