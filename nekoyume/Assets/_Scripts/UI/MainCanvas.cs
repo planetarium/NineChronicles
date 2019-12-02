@@ -70,6 +70,7 @@ namespace Nekoyume.UI
                 Widget.Create<BlockFailPopup>(),
                 Widget.Create<ActionFailPopup>(),
                 Widget.Create<Notification>(true),
+                Widget.Create<LoginPopup>(),
             };
 
             foreach (var value in _firstWidgets)
