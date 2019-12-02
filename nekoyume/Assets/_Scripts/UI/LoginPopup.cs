@@ -21,6 +21,7 @@ namespace Nekoyume.UI
             SignUp,
             Login,
             FindPassphrase,
+            ResetPassphrase,
         }
 
         public override WidgetType WidgetType => WidgetType.SystemInfo;
@@ -74,6 +75,7 @@ namespace Nekoyume.UI
                     submitButton.interactable = true;
                     break;
                 case State.SignUp:
+                case State.ResetPassphrase:
                     titleText.text = "Your account";
                     submitText.text = "Game Start";
                     passPhraseGroup.SetActive(true);
@@ -124,21 +126,36 @@ namespace Nekoyume.UI
         public void Submit()
         {
             submitButton.interactable = false;
-            if (_state.Value == State.Show)
+            switch (_state.Value)
             {
-                _state.Value = State.SignUp;
-            }
-            else if (_state.Value == State.SignUp)
-            {
-                CreatePrivateKey();
-                Login = !(_privateKey is null);
-                Close();
-            }
-            else if (_state.Value == State.Login)
-            {
-                _privateKey = CheckPrivateKey(GetProtectedPrivateKeys(), loginField.text);
-                Login = !(_privateKey is null);
-                Close();
+                case State.Show:
+                    _state.Value = State.SignUp;
+                    break;
+                case State.SignUp:
+                    CreatePrivateKey();
+                    Login = !(_privateKey is null);
+                    Close();
+                    break;
+                case State.Login:
+                    _privateKey = CheckPrivateKey(GetProtectedPrivateKeys(), loginField.text);
+                    Login = !(_privateKey is null);
+                    Close();
+                    break;
+                case State.FindPassphrase:
+                {
+                    if (CheckPrivateKeyHex())
+                    {
+                        _state.Value = State.ResetPassphrase;
+                    }
+                    break;
+                }
+                case State.ResetPassphrase:
+                    ResetPassphrase();
+                    Login = !(_privateKey is null);
+                    Close();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
 
@@ -162,7 +179,7 @@ namespace Nekoyume.UI
             Login = false;
         }
 
-        public void CreatePrivateKey()
+        private void CreatePrivateKey()
         {
             PrivateKey privateKey = null;
 
@@ -184,26 +201,9 @@ namespace Nekoyume.UI
             if (privateKey is null)
             {
                 privateKey = new PrivateKey();
-                ProtectedPrivateKey ppk = ProtectedPrivateKey.Protect(privateKey, passPhraseField.text);
-                // FIXME: passphrase 제대로 UI 통해서 입력 받아야 함. --------------------^
-
-                Guid keyId = Guid.NewGuid();
-                DateTimeOffset now = DateTimeOffset.UtcNow;
-                string keyPath = Path.Combine(
-                    _keyStorePath,
-                    $"UTC--{now:yyyy-MM-dd}T{now:HH-mm-ss}Z--{keyId:D}"
-                );
-                using (Stream f = new FileStream(keyPath, FileMode.CreateNew))
-                {
-                    ppk.WriteJson(f, keyId);
-                }
-
-                Debug.LogFormat(
-                    "As there hadn't been any key file, a new key file was created ({0}): {1}",
-                    ppk.Address,
-                    keyPath
-                );
+                CreateProtectedPrivateKey(privateKey);
             }
+            Debug.Log(ByteUtil.Hex(privateKey.ByteArray));
 
             _privateKey = privateKey;
         }
@@ -215,10 +215,10 @@ namespace Nekoyume.UI
                 Directory.CreateDirectory(_keyStorePath);
             }
 
-            IEnumerable<string> keyPaths = Directory.EnumerateFiles(_keyStorePath);
+            var keyPaths = Directory.EnumerateFiles(_keyStorePath);
 
-            var ppks = new Dictionary<string, ProtectedPrivateKey>();
-            foreach (string keyPath in keyPaths)
+            var protectedPrivateKeys = new Dictionary<string, ProtectedPrivateKey>();
+            foreach (var keyPath in keyPaths)
             {
                 if (Path.GetFileName(keyPath) is string f && f.StartsWith("."))
                 {
@@ -226,11 +226,11 @@ namespace Nekoyume.UI
                 }
 
                 using (Stream stream = new FileStream(keyPath, FileMode.Open))
-                using (StreamReader reader = new StreamReader(stream))
+                using (var reader = new StreamReader(stream))
                 {
                     try
                     {
-                        ppks[keyPath] = ProtectedPrivateKey.FromJson(reader.ReadToEnd());
+                        protectedPrivateKeys[keyPath] = ProtectedPrivateKey.FromJson(reader.ReadToEnd());
                     }
                     catch (Exception e)
                     {
@@ -241,22 +241,23 @@ namespace Nekoyume.UI
 
             Debug.LogFormat(
                 "Loaded {0} protected keys in the keystore:\n{1}",
-                ppks.Count,
-                string.Join("\n", ppks.Select(kv => $"- {kv.Value}: {kv.Key}"))
+                protectedPrivateKeys.Count,
+                string.Join("\n", protectedPrivateKeys.Select(kv => $"- {kv.Value}: {kv.Key}"))
             );
 
             // FIXME: 키가 여러 개 있을 수 있으므로 UI에서 목록으로 표시하고 유저가 선택하게 해야 함.
-            return ppks;
+            return protectedPrivateKeys;
         }
 
-        private PrivateKey CheckPrivateKey(Dictionary<string, ProtectedPrivateKey> ppks, string passpharse)
+        private static PrivateKey CheckPrivateKey(Dictionary<string, ProtectedPrivateKey> protectedPrivateKeys,
+            string passphrase)
         {
             PrivateKey privateKey = null;
-            foreach (var kv in ppks)
+            foreach (var kv in protectedPrivateKeys)
             {
                 try
                 {
-                    privateKey = kv.Value.Unprotect(passphrase: passpharse);
+                    privateKey = kv.Value.Unprotect(passphrase: passphrase);
                     // FIXME: passphrase 제대로 UI 통해서 입력 받아야 함 -^
                 }
                 catch (IncorrectPassphraseException)
@@ -274,6 +275,7 @@ namespace Nekoyume.UI
                 );
                 break;
             }
+
             return privateKey;
         }
 
@@ -298,6 +300,61 @@ namespace Nekoyume.UI
                     }
                 }
             }
+        }
+
+        private bool CheckPrivateKeyHex()
+        {
+            var hex = findPassphraseField.text;
+            try
+            {
+                var pk = new PrivateKey(ByteUtil.ParseHex(hex));
+                return GetProtectedPrivateKeys().Select(kv => kv.Value)
+                    .Any(ppk => ppk.Address == pk.PublicKey.ToAddress());
+
+            }
+            catch (InvalidOperationException)
+            {
+                return false;
+            }
+        }
+
+        private void ResetPassphrase()
+        {
+            var hex = findPassphraseField.text;
+            var pk = new PrivateKey(ByteUtil.ParseHex(hex));
+            var protectedPrivateKeys = GetProtectedPrivateKeys();
+            var key = protectedPrivateKeys.First(i => i.Value.Address == pk.PublicKey.ToAddress());
+            var path = Path.Combine(_keyStorePath, key.Key);
+            if (File.Exists(path))
+            {
+                File.Delete(path);
+            }
+
+            CreateProtectedPrivateKey(pk);
+        }
+
+        private void CreateProtectedPrivateKey(PrivateKey privateKey)
+        {
+            var ppk = ProtectedPrivateKey.Protect(privateKey, passPhraseField.text);
+            // FIXME: passphrase 제대로 UI 통해서 입력 받아야 함. --------------------^
+
+            var keyId = Guid.NewGuid();
+            var now = DateTimeOffset.UtcNow;
+            var keyPath = Path.Combine(
+                _keyStorePath,
+                $"UTC--{now:yyyy-MM-dd}T{now:HH-mm-ss}Z--{keyId:D}"
+            );
+            using (Stream f = new FileStream(keyPath, FileMode.CreateNew))
+            {
+                ppk.WriteJson(f, keyId);
+            }
+
+            Debug.LogFormat(
+                "As there hadn't been any key file, a new key file was created ({0}): {1}",
+                ppk.Address,
+                keyPath
+            );
+            _privateKey = privateKey;
         }
     }
 }
