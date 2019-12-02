@@ -22,6 +22,7 @@ namespace Nekoyume.UI
             Login,
             FindPassphrase,
             ResetPassphrase,
+            Failed,
         }
 
         public override WidgetType WidgetType => WidgetType.SystemInfo;
@@ -48,6 +49,8 @@ namespace Nekoyume.UI
         private string _keyStorePath;
         private string _privateKeyString;
         private PrivateKey _privateKey;
+        private State _prevState;
+        private Dictionary<string, ProtectedPrivateKey> _protectedPrivateKeys = new Dictionary<string, ProtectedPrivateKey>();
 
         protected override void Awake()
         {
@@ -68,6 +71,7 @@ namespace Nekoyume.UI
             findPassphraseButton.gameObject.SetActive(false);
             backToLoginButton.gameObject.SetActive(false);
             titleText.gameObject.SetActive(true);
+
             switch (state)
             {
                 case State.Show:
@@ -96,6 +100,13 @@ namespace Nekoyume.UI
                     submitText.text = "Enter";
                     findPassphraseField.Select();
                     break;
+                case State.Failed:
+                    titleText.text = "Failed";
+                    contentText.gameObject.SetActive(true);
+                    contentText.text = _prevState.ToString();
+                    submitText.text = "OK";
+                    submitButton.interactable = true;
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(state), state, null);
             }
@@ -111,16 +122,27 @@ namespace Nekoyume.UI
 
         public void CheckRetypePassphrase()
         {
-            var same = passPhraseField.text == retypeField.text;
+            var result = Zxcvbn.Zxcvbn.MatchPassword(passPhraseField.text);
+            var strong = result.Score == 2;
+            var same = passPhraseField.text == retypeField.text && strong;
             submitButton.interactable = same;
             correctText.gameObject.SetActive(same);
             incorrectText.gameObject.SetActive(!same);
         }
 
-        public void CheckLogin()
+        private void CheckLogin()
         {
-            var result = CheckPrivateKey(GetProtectedPrivateKeys(), loginField.text) is null;
-            submitButton.interactable = !result;
+            _privateKey = CheckPrivateKey(GetProtectedPrivateKeys(), loginField.text);
+            Login = !(_privateKey is null);
+            if (Login)
+            {
+                Close();
+            }
+            else
+            {
+                SetState(State.Failed);
+            }
+
         }
 
         public void Submit()
@@ -129,7 +151,7 @@ namespace Nekoyume.UI
             switch (_state.Value)
             {
                 case State.Show:
-                    _state.Value = State.SignUp;
+                    SetState(State.SignUp);
                     break;
                 case State.SignUp:
                     CreatePrivateKey();
@@ -137,22 +159,21 @@ namespace Nekoyume.UI
                     Close();
                     break;
                 case State.Login:
-                    _privateKey = CheckPrivateKey(GetProtectedPrivateKeys(), loginField.text);
-                    Login = !(_privateKey is null);
-                    Close();
+                    CheckLogin();
                     break;
                 case State.FindPassphrase:
                 {
-                    if (CheckPrivateKeyHex())
-                    {
-                        _state.Value = State.ResetPassphrase;
-                    }
+                    var state = CheckPrivateKeyHex() ? State.ResetPassphrase : State.Failed;
+                    SetState(state);
                     break;
                 }
                 case State.ResetPassphrase:
                     ResetPassphrase();
                     Login = !(_privateKey is null);
                     Close();
+                    break;
+                case State.Failed:
+                    SetState(_prevState);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -161,12 +182,12 @@ namespace Nekoyume.UI
 
         public void FindPassphrase()
         {
-            _state.Value = State.FindPassphrase;
+            SetState(State.FindPassphrase);
         }
 
         public void BackToLogin()
         {
-            _state.Value = State.Login;
+            SetState(State.Login);
         }
 
         public void Show(string path, string privateKeyString)
@@ -175,7 +196,8 @@ namespace Nekoyume.UI
 
             _keyStorePath = path;
             _privateKeyString = privateKeyString;
-            _state.Value = GetProtectedPrivateKeys().Any() ? State.Login : State.Show;
+            var state = GetProtectedPrivateKeys().Any() ? State.Login : State.Show;
+            SetState(state);
             Login = false;
         }
 
@@ -210,6 +232,11 @@ namespace Nekoyume.UI
 
         private Dictionary<string, ProtectedPrivateKey> GetProtectedPrivateKeys()
         {
+            if (_protectedPrivateKeys.Any())
+            {
+                return _protectedPrivateKeys;
+            }
+
             if (!Directory.Exists(_keyStorePath))
             {
                 Directory.CreateDirectory(_keyStorePath);
@@ -246,6 +273,7 @@ namespace Nekoyume.UI
             );
 
             // FIXME: 키가 여러 개 있을 수 있으므로 UI에서 목록으로 표시하고 유저가 선택하게 해야 함.
+            _protectedPrivateKeys = protectedPrivateKeys;
             return protectedPrivateKeys;
         }
 
@@ -312,7 +340,7 @@ namespace Nekoyume.UI
                     .Any(ppk => ppk.Address == pk.PublicKey.ToAddress());
 
             }
-            catch (InvalidOperationException)
+            catch (Exception)
             {
                 return false;
             }
@@ -323,11 +351,12 @@ namespace Nekoyume.UI
             var hex = findPassphraseField.text;
             var pk = new PrivateKey(ByteUtil.ParseHex(hex));
             var protectedPrivateKeys = GetProtectedPrivateKeys();
-            var key = protectedPrivateKeys.First(i => i.Value.Address == pk.PublicKey.ToAddress());
-            var path = Path.Combine(_keyStorePath, key.Key);
+            var protectedPrivateKey = protectedPrivateKeys.First(i => i.Value.Address == pk.PublicKey.ToAddress());
+            var path = Path.Combine(_keyStorePath, protectedPrivateKey.Key);
             if (File.Exists(path))
             {
                 File.Delete(path);
+                _protectedPrivateKeys.Remove(protectedPrivateKey.Key);
             }
 
             CreateProtectedPrivateKey(pk);
@@ -355,6 +384,12 @@ namespace Nekoyume.UI
                 keyPath
             );
             _privateKey = privateKey;
+        }
+
+        private void SetState(State state)
+        {
+            _prevState = _state.Value;
+            _state.Value = state;
         }
     }
 }
