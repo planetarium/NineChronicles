@@ -58,9 +58,6 @@ namespace Nekoyume.UI
 
         private void SubscribeState(State state)
         {
-            passPhraseField.gameObject.SetActive(false);
-            retypeField.gameObject.SetActive(false);
-            loginField.gameObject.SetActive(false);
             contentText.gameObject.SetActive(false);
             passPhraseGroup.SetActive(false);
             retypeGroup.SetActive(false);
@@ -77,25 +74,25 @@ namespace Nekoyume.UI
                     submitButton.interactable = true;
                     break;
                 case State.SignUp:
-                    passPhraseField.gameObject.SetActive(true);
-                    retypeField.gameObject.SetActive(true);
                     titleText.text = "Your account";
                     submitText.text = "Game Start";
                     passPhraseGroup.SetActive(true);
                     retypeGroup.SetActive(true);
+                    passPhraseField.Select();
                     break;
                 case State.Login:
-                    loginField.gameObject.SetActive(true);
                     titleText.text = "Your account";
                     submitText.text = "Game Start";
                     loginGroup.SetActive(true);
                     findPassphraseButton.gameObject.SetActive(true);
+                    loginField.Select();
                     break;
                 case State.FindPassphrase:
                     titleText.gameObject.SetActive(false);
                     findPassphraseGroup.SetActive(true);
                     backToLoginButton.gameObject.SetActive(true);
                     submitText.text = "Enter";
+                    findPassphraseField.Select();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(state), state, null);
@@ -157,12 +154,12 @@ namespace Nekoyume.UI
 
         public void Show(string path, string privateKeyString)
         {
+            base.Show();
+
             _keyStorePath = path;
             _privateKeyString = privateKeyString;
             _state.Value = GetProtectedPrivateKeys().Any() ? State.Login : State.Show;
             Login = false;
-
-            base.Show();
         }
 
         public void CreatePrivateKey()
@@ -283,6 +280,24 @@ namespace Nekoyume.UI
         public PrivateKey GetPrivateKey()
         {
             return _privateKey;
+        }
+
+        private void Update()
+        {
+            if (_state.Value == State.SignUp)
+            {
+                if (Input.GetKeyUp(KeyCode.Tab))
+                {
+                    if (passPhraseField.isFocused)
+                    {
+                        retypeField.Select();
+                    }
+                    else
+                    {
+                        passPhraseField.Select();
+                    }
+                }
+            }
         }
     }
 }
