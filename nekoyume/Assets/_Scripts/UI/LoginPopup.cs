@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Assets.SimpleLocalization;
 using Libplanet;
 using Libplanet.Crypto;
 using Libplanet.KeyStore;
@@ -42,6 +43,13 @@ namespace Nekoyume.UI
         public TextMeshProUGUI correctText;
         public TextMeshProUGUI incorrectText;
         public TextMeshProUGUI informationText;
+        public TextMeshProUGUI findPassphraseText;
+        public TextMeshProUGUI backToLoginText;
+        public TextMeshProUGUI passPhraseText;
+        public TextMeshProUGUI retypeText;
+        public TextMeshProUGUI loginText;
+        public TextMeshProUGUI enterPrivateKeyText;
+        public TextMeshProUGUI accountText;
         public Button submitButton;
         public Button findPassphraseButton;
         public Button backToLoginButton;
@@ -63,6 +71,14 @@ namespace Nekoyume.UI
             weakText.gameObject.SetActive(false);
             correctText.gameObject.SetActive(false);
             incorrectText.gameObject.SetActive(false);
+            contentText.text = LocalizationManager.Localize("UI_LOGIN_CONTENT");
+            findPassphraseText.text = LocalizationManager.Localize("UI_LOGIN_FIND_PASSPHRASE");
+            backToLoginText.text = LocalizationManager.Localize("UI_LOGIN_BACK_TO_LOGIN");
+            passPhraseText.text = LocalizationManager.Localize("UI_LOGIN_INPUT_PASSPHRASE");
+            retypeText.text = LocalizationManager.Localize("UI_LOGIN_RETYPE_PASSPHRASE");
+            loginText.text = LocalizationManager.Localize("UI_LOGIN_LOGIN");
+            enterPrivateKeyText.text = LocalizationManager.Localize("UI_LOGIN_ENTER_PRIVATE_KEY");
+            accountText.text = LocalizationManager.Localize("UI_LOGIN_ACCOUNT");
             base.Awake();
         }
 
@@ -88,7 +104,7 @@ namespace Nekoyume.UI
                     break;
                 case State.SignUp:
                     titleText.gameObject.SetActive(false);
-                    submitText.text = "Game Start";
+                    submitText.text = LocalizationManager.Localize("UI_GAME_START");
                     informationText.text = "Sign up";
                     passPhraseGroup.SetActive(true);
                     retypeGroup.SetActive(true);
@@ -97,7 +113,7 @@ namespace Nekoyume.UI
                     break;
                 case State.ResetPassphrase:
                     titleText.gameObject.SetActive(false);
-                    submitText.text = "Game Start";
+                    submitText.text = LocalizationManager.Localize("UI_GAME_START");
                     informationText.text = "Reset passphrase";
                     passPhraseGroup.SetActive(true);
                     retypeGroup.SetActive(true);
@@ -106,7 +122,7 @@ namespace Nekoyume.UI
                     break;
                 case State.Login:
                     titleText.gameObject.SetActive(false);
-                    submitText.text = "Game Start";
+                    submitText.text = LocalizationManager.Localize("UI_GAME_START");
                     informationText.text = "Login";
                     loginGroup.SetActive(true);
                     accountGroup.SetActive(true);
@@ -117,16 +133,19 @@ namespace Nekoyume.UI
                     titleText.gameObject.SetActive(false);
                     findPassphraseGroup.SetActive(true);
                     backToLoginButton.gameObject.SetActive(true);
-                    submitText.text = "Enter";
+                    submitText.text = LocalizationManager.Localize("UI_OK");
                     informationText.text = "Find an account";
                     findPassphraseField.Select();
                     break;
                 case State.Failed:
-                    titleText.text = "Failed";
+                    var upper = _prevState.ToString().ToUpper();
+                    var format = LocalizationManager.Localize($"UI_LOGIN_{upper}_FAIL");
+                    titleText.text = string.Format(format, _prevState);
                     informationText.text = "Error";
                     contentText.gameObject.SetActive(true);
-                    contentText.text = _prevState.ToString();
-                    submitText.text = "OK";
+                    var contentFormat = LocalizationManager.Localize($"UI_LOGIN_{upper}_CONTENT");
+                    contentText.text = string.Format(contentFormat);
+                    submitText.text = LocalizationManager.Localize("UI_OK");
                     submitButton.interactable = true;
                     break;
                 default:

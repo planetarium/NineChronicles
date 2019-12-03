@@ -854,7 +854,7 @@ GameObject:
   - component: {fileID: 7552405073753835520}
   - component: {fileID: 7247492109166561366}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: EnterPrivateKeyText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1170,7 +1170,7 @@ GameObject:
   - component: {fileID: 2198686816965054486}
   - component: {fileID: 8134440647035746807}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: LoginText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1946,7 +1946,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_text: Back to login page
+  m_text: Back to lo<voffset=1>g</voffset>in pa<voffset=1>g</voffset>e
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
   m_sharedMaterial: {fileID: -2364689171920820918, guid: 8a682b7747d4a664089b7b1065aa0035,
@@ -3159,6 +3159,13 @@ MonoBehaviour:
   correctText: {fileID: 8982525103109909512}
   incorrectText: {fileID: 8982525101640386765}
   informationText: {fileID: 8982525103173217040}
+  findPassphraseText: {fileID: 8546934586717003951}
+  backToLoginText: {fileID: 7730270195095015184}
+  passPhraseText: {fileID: 8982525103194669091}
+  retypeText: {fileID: 8982525103036616412}
+  loginText: {fileID: 8134440647035746807}
+  enterPrivateKeyText: {fileID: 7247492109166561366}
+  accountText: {fileID: 7681432356088768550}
   submitButton: {fileID: 8982525103484219913}
   findPassphraseButton: {fileID: 1408186267810140111}
   backToLoginButton: {fileID: 7441353160012381959}
@@ -4592,7 +4599,7 @@ GameObject:
   - component: {fileID: 8982525103036616403}
   - component: {fileID: 8982525103036616412}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: RetypeText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5224,7 +5231,7 @@ GameObject:
   - component: {fileID: 8982525103194669090}
   - component: {fileID: 8982525103194669091}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: PassphraseText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
