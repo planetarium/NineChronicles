@@ -41,10 +41,11 @@ namespace Nekoyume.UI
             }).AddTo(gameObject);
         }
 
-        private void OnDestroy()
+        protected override void OnDestroy()
         {
             Model.Dispose();
             Model = null;
+            base.OnDestroy();
         }
 
         public void Show(RectTransform target, CountableItem item, Action<ItemInformationTooltip> onClose = null)

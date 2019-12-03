@@ -136,7 +136,9 @@ namespace Assets.SimpleLocalization
             }
 
             if (!Dictionary.ContainsKey(Language))
+            {
                 throw new KeyNotFoundException("Language not found: " + Language);
+            }
 
             try
             {
@@ -144,7 +146,8 @@ namespace Assets.SimpleLocalization
             }
             catch (KeyNotFoundException)
             {
-                throw new KeyNotFoundException("Key not found: " + localizationKey);
+                Debug.LogError($"Key not found: {localizationKey}");
+                return $"!{localizationKey}!";
             }
         }
 
