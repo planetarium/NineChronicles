@@ -7,7 +7,7 @@ namespace Editor
 {
     public class Builder {
 
-        public static string PlayerName = "nekoyume";
+        public static string PlayerName = PlayerSettings.productName;
 
         [MenuItem("Build/Windows + Mac OSX + Linux")]
         public static void BuildAll()
@@ -76,7 +76,7 @@ namespace Editor
                 scenes = scenes,
                 locationPathName = locationPathName,
                 target = buildTarget,
-                options = options | BuildOptions.Development,
+                options = EditorUserBuildSettings.development ? options | BuildOptions.Development : options,
             };
 
             BuildReport report = BuildPipeline.BuildPlayer(buildPlayerOptions);
