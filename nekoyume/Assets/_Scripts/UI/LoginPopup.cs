@@ -115,7 +115,7 @@ namespace Nekoyume.UI
         public void CheckPassphrase()
         {
             var result = Zxcvbn.Zxcvbn.MatchPassword(passPhraseField.text);
-            var strong = result.Score == 2;
+            var strong = result.Score >= 2;
             strongText.gameObject.SetActive(strong);
             weakText.gameObject.SetActive(!strong);
         }
@@ -123,7 +123,7 @@ namespace Nekoyume.UI
         public void CheckRetypePassphrase()
         {
             var result = Zxcvbn.Zxcvbn.MatchPassword(passPhraseField.text);
-            var strong = result.Score == 2;
+            var strong = result.Score >= 2;
             var same = passPhraseField.text == retypeField.text && strong;
             submitButton.interactable = same;
             correctText.gameObject.SetActive(same);
