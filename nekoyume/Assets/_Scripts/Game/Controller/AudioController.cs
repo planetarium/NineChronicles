@@ -66,9 +66,16 @@ namespace Nekoyume.Game.Controller
             public const string Swing2 = "sfx_swing2";
             public const string Swing3 = "sfx_swing3";
             public const string BattleCast = "sfx_battle_cast";
+            public const string CastingNormal = "sfx_casting_normal";
+            public const string CastingFire = "sfx_casting_fire";
+            public const string CastingWater = "sfx_casting_water";
+            public const string CastingLand = "sfx_casting_land";
+            public const string CastingWind = "sfx_casting_wind";
             public const string RewardItem = "sfx_reward_item";
             public const string BuyItem = "sfx_buy_item";
-            public const string Notification = "sfx_notification";
+            public const string Notice = "sfx_notice";
+            public const string Typing = "sfx_typing";
+            public const string Win = "sfx_win";
         }
 
         private enum State
@@ -462,6 +469,27 @@ namespace Nekoyume.Game.Controller
         {
             var random = Random.value;
             instance.PlaySfx(random < 0.5f ? SfxCode.Critical01 : SfxCode.Critical02);
+        }
+
+
+        public static string GetElementalCastingSFX(ElementalType type)
+        {
+            switch (type)
+            {
+                case ElementalType.Normal:
+                    return SfxCode.CastingNormal;
+                case ElementalType.Fire:
+                    return SfxCode.CastingFire;
+                case ElementalType.Water:
+                    return SfxCode.CastingWater;
+                case ElementalType.Land:
+                    return SfxCode.CastingLand;
+                case ElementalType.Wind:
+                    return SfxCode.CastingWind;
+                default:
+                    Debug.LogError("Elemental type is invaild.");
+                    return SfxCode.CastingNormal;
+            }
         }
 
         #endregion

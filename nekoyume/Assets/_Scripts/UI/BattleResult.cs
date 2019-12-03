@@ -207,6 +207,7 @@ namespace Nekoyume.UI
         private IEnumerator EmitBattleWin02VFX()
         {
             yield return _battleWin02VFXYield;
+            AudioController.instance.PlaySfx(AudioController.SfxCode.Win);
             _battleWin02VFX =
                 VFXController.instance.Create<BattleWin02VFX>(ActionCamera.instance.transform, VfxBattleWin02Offset);
         }
