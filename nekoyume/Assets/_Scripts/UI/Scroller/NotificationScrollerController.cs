@@ -52,7 +52,7 @@ namespace Nekoyume.UI.Scroller
             SharedModel.ObserveAdd()
                 .Subscribe(_ =>
                 {
-                    AudioController.instance.PlaySfx(AudioController.SfxCode.Notification);
+                    AudioController.instance.PlaySfx(AudioController.SfxCode.Notice);
                     ReloadDataWithFactor(true);
                 })
                 .AddTo(_disposablesForModel);

@@ -159,7 +159,7 @@ namespace Nekoyume.UI
                 else
                     txtDialog.text = $"{_text.Substring(0, textIndex)}</color>";
 
-                AudioController.instance.PlaySfx(AudioController.SfxCode.Click, 0.1f);
+                AudioController.instance.PlaySfx(AudioController.SfxCode.Typing, 0.1f);
 
                 if (_effects.TryGetValue(textIndex, out var effect))
                 {

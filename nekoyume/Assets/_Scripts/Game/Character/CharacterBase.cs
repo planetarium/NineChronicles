@@ -441,7 +441,8 @@ namespace Nekoyume.Game.Character
         {   
             PreAnimationForTheKindOfAttack();
 
-            AudioController.instance.PlaySfx(AudioController.SfxCode.LevelUp);
+            var sfxCode = AudioController.GetElementalCastingSFX(info.ElementalType);
+            AudioController.instance.PlaySfx(sfxCode);
             Animator.Cast();
             var pos = transform.position;
             var effect = Game.instance.stage.skillController.Get(pos, info);
@@ -455,7 +456,8 @@ namespace Nekoyume.Game.Character
         {
             PreAnimationForTheKindOfAttack();
 
-            AudioController.instance.PlaySfx(AudioController.SfxCode.LevelUp);
+            var sfxCode = AudioController.GetElementalCastingSFX(info.ElementalType);
+            AudioController.instance.PlaySfx(sfxCode);
             Animator.Cast();
             var pos = transform.position;
             var effect = Game.instance.stage.buffController.Get(pos, info.Buff);
