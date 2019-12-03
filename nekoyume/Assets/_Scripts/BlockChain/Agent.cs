@@ -50,6 +50,7 @@ namespace Nekoyume.BlockChain
 
         private static readonly string CommandLineOptionsJsonPath =
             Path.Combine(Application.streamingAssetsPath, "clo.json");
+
         private const string PeersFileName = "peers.dat";
         private const string IceServersFileName = "ice_servers.dat";
         private const int MaxSeed = 3;
@@ -98,6 +99,8 @@ namespace Nekoyume.BlockChain
         public event EventHandler<PreloadState> PreloadProcessed;
         public event EventHandler PreloadEnded;
         public event EventHandler<long> TipChanged;
+        public static event Action<Guid> OnEnqueueOwnGameAction;
+        public static event Action<bool> OnHasOwnTx;
 
         private bool SyncSucceed { get; set; }
 
@@ -120,6 +123,7 @@ namespace Nekoyume.BlockChain
                 Debug.Log("Agent Exist");
                 return;
             }
+
             disposed = false;
             StartCoroutine(CoLogin(callback));
         }
@@ -281,6 +285,7 @@ namespace Nekoyume.BlockChain
 #endif
 
             StartSystemCoroutines();
+            StartCoroutine(CoCheckStagedTxs());
         }
 
         private IEnumerator CoCheckBlockTip()
@@ -478,10 +483,8 @@ namespace Nekoyume.BlockChain
         {
             _cancellationTokenSource?.Cancel();
             // `_swarm`의 내부 큐가 비워진 다음 완전히 종료할 때까지 더 기다립니다.
-            Task.Run(async () =>
-            {
-                await _swarm?.StopAsync(TimeSpan.FromMilliseconds(SwarmLinger));
-            }).ContinueWith(_ => { store?.Dispose(); })
+            Task.Run(async () => { await _swarm?.StopAsync(TimeSpan.FromMilliseconds(SwarmLinger)); })
+                .ContinueWith(_ => { store?.Dispose(); })
                 .Wait(SwarmLinger + 1 * 1000);
 
             States.Dispose();
@@ -507,6 +510,7 @@ namespace Nekoyume.BlockChain
                     log += $"-Actions\n";
                     log = tx.Actions.Aggregate(log, (current, action) => current + $" -{action.InnerAction}\n");
                 }
+
                 Cheat.Display("StagedTxs", log);
                 yield return new WaitForSeconds(0.1f);
             }
@@ -637,6 +641,7 @@ namespace Nekoyume.BlockChain
             while (true)
             {
                 yield return new WaitForSeconds(TxProcessInterval);
+
                 var actions = new List<PolymorphicAction<ActionBase>>();
 
                 Debug.LogFormat("Try Dequeue Actions. Total Count: {0}", _queuedActions.Count);
@@ -746,7 +751,7 @@ namespace Nekoyume.BlockChain
                                 invalidTxs.Add(blocks.GetTransaction(invalidTxException.TxId));
                             }
                             else if (ex is UnexpectedlyTerminatedActionException actionException
-                                && actionException.TxId is TxId txId)
+                                     && actionException.TxId is TxId txId)
                             {
                                 Debug.Log($"Tx[{actionException.TxId}]'s action is invalid. mark to unstage. {ex}");
                                 invalidTxs.Add(blocks.GetTransaction(txId));
@@ -770,6 +775,8 @@ namespace Nekoyume.BlockChain
         {
             Debug.LogFormat("Enqueue GameAction: {0} Id: {1}", gameAction, gameAction.Id);
             _queuedActions.Enqueue(gameAction);
+            Debug.LogWarning($"OnEnqueueOwnGameAction({gameAction.Id})");
+            OnEnqueueOwnGameAction?.Invoke(gameAction.Id);
         }
 
         public IValue GetState(Address address)
@@ -874,6 +881,39 @@ namespace Nekoyume.BlockChain
             w.Show(options.keyStorePath, options.privateKey);
             yield return new WaitUntil(() => w.Login);
             InitAgent(callback, w.GetPrivateKey());
+        }
+
+        private IEnumerator CoCheckStagedTxs()
+        {
+            var hasOwnTx = false;
+            while (true)
+            {
+                var txs = store.IterateStagedTransactionIds()
+                    .Select(id => store.GetTransaction<PolymorphicAction<ActionBase>>(id))
+                    .Where(tx => tx.Signer.Equals(Address))
+                    .ToList();
+
+                if (hasOwnTx)
+                {
+                    if (txs.Count == 0)
+                    {
+                        Debug.LogWarning("OnHasOwnTx(false)");
+                        hasOwnTx = false;
+                        OnHasOwnTx?.Invoke(false);
+                    }
+                }
+                else
+                {
+                    if (txs.Count > 0)
+                    {
+                        Debug.LogWarning("OnHasOwnTx(true)");
+                        hasOwnTx = true;
+                        OnHasOwnTx?.Invoke(true);
+                    }   
+                }
+                
+                yield return new WaitForSeconds(.3f);
+            }
         }
     }
 }
