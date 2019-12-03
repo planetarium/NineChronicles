@@ -41,6 +41,7 @@ namespace Nekoyume.UI
         public TextMeshProUGUI weakText;
         public TextMeshProUGUI correctText;
         public TextMeshProUGUI incorrectText;
+        public TextMeshProUGUI informationText;
         public Button submitButton;
         public Button findPassphraseButton;
         public Button backToLoginButton;
@@ -58,7 +59,10 @@ namespace Nekoyume.UI
         {
             _state.Value = State.Show;
             _state.Subscribe(SubscribeState).AddTo(gameObject);
-
+            strongText.gameObject.SetActive(false);
+            weakText.gameObject.SetActive(false);
+            correctText.gameObject.SetActive(false);
+            incorrectText.gameObject.SetActive(false);
             base.Awake();
         }
 
@@ -80,11 +84,21 @@ namespace Nekoyume.UI
                 case State.Show:
                     contentText.gameObject.SetActive(true);
                     submitButton.interactable = true;
+                    informationText.text = "Sign up";
                     break;
                 case State.SignUp:
+                    titleText.gameObject.SetActive(false);
+                    submitText.text = "Game Start";
+                    informationText.text = "Sign up";
+                    passPhraseGroup.SetActive(true);
+                    retypeGroup.SetActive(true);
+                    accountGroup.SetActive(true);
+                    passPhraseField.Select();
+                    break;
                 case State.ResetPassphrase:
                     titleText.gameObject.SetActive(false);
                     submitText.text = "Game Start";
+                    informationText.text = "Reset passphrase";
                     passPhraseGroup.SetActive(true);
                     retypeGroup.SetActive(true);
                     accountGroup.SetActive(true);
@@ -93,6 +107,7 @@ namespace Nekoyume.UI
                 case State.Login:
                     titleText.gameObject.SetActive(false);
                     submitText.text = "Game Start";
+                    informationText.text = "Login";
                     loginGroup.SetActive(true);
                     accountGroup.SetActive(true);
                     findPassphraseButton.gameObject.SetActive(true);
@@ -103,10 +118,12 @@ namespace Nekoyume.UI
                     findPassphraseGroup.SetActive(true);
                     backToLoginButton.gameObject.SetActive(true);
                     submitText.text = "Enter";
+                    informationText.text = "Find an account";
                     findPassphraseField.Select();
                     break;
                 case State.Failed:
                     titleText.text = "Failed";
+                    informationText.text = "Error";
                     contentText.gameObject.SetActive(true);
                     contentText.text = _prevState.ToString();
                     submitText.text = "OK";
@@ -157,8 +174,8 @@ namespace Nekoyume.UI
             switch (_state.Value)
             {
                 case State.Show:
-                    _privateKey = new PrivateKey();
                     SetState(State.SignUp);
+                    _privateKey = new PrivateKey();
                     SetImage(_privateKey.PublicKey.ToAddress());
                     break;
                 case State.SignUp:
@@ -333,7 +350,7 @@ namespace Nekoyume.UI
 
         private void Update()
         {
-            if (_state.Value == State.SignUp)
+            if (_state.Value == State.SignUp || _state.Value == State.ResetPassphrase)
             {
                 if (Input.GetKeyUp(KeyCode.Tab))
                 {
@@ -414,6 +431,15 @@ namespace Nekoyume.UI
         private void SetImage(Address address)
         {
             accountImage.Set(address);
+        }
+
+        public void Exit()
+        {
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.ExitPlaymode();
+#else
+            Application.Quit();
+#endif
         }
     }
 }

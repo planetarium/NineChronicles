@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using Jdenticon;
 using Libplanet;
@@ -12,6 +13,11 @@ namespace Nekoyume.UI
     {
         public Image accountImage;
         public TextMeshProUGUI accountAddressText;
+
+        private void Awake()
+        {
+            accountAddressText.transform.parent.gameObject.SetActive(false);
+        }
 
         public void OnPointerEnter(PointerEventData eventData)
         {
