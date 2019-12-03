@@ -78,7 +78,8 @@ namespace Nekoyume.State
             Deserialize(ToBoolean, serialized);
 
         #endregion
-        
+
+        //FIXME (Text) 대신 (Integer) 로 직렬화해야함
         #region Integer
         
         public static IValue Serialize(this int number) =>
