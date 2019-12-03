@@ -1,6 +1,7 @@
 using Nekoyume.UI;
 using System;
 using System.Collections;
+using Nekoyume.Game.Controller;
 using System.Collections.Generic;
 using UniRx;
 using UnityEngine;
@@ -109,6 +110,7 @@ namespace Nekoyume.Game.Character
             switch (eventName)
             {
                 case "attackStart":
+                    AudioController.PlaySwing();
                     break;
                 case "attackPoint":
                     Event.OnAttackEnd.Invoke(this);
