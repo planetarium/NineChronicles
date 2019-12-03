@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Assets.SimpleLocalization;
 using DG.Tweening;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
@@ -245,6 +246,26 @@ namespace Nekoyume.Game.Character
                 AudioController.instance.PlaySfx(AudioController.SfxCode.LevelUp);
                 VFXController.instance.Create<BattleLevelUp01VFX>(transform, HUDOffset);
                 InitStats(Model.Value);
+                var key = "";
+                if (Level == GameConfig.CombinationRequiredLevel)
+                {
+                    key = "UI_UNLOCK_COMBINATION";
+                }
+                else if (Level == GameConfig.ShopRequiredLevel)
+                {
+                    key = "UI_UNLOCK_SHOP";
+                }
+                else if (Level == GameConfig.RankingRequiredLevel)
+                {
+                    key = "UI_UNLOCK_RANKING";
+                }
+
+                if (!string.IsNullOrEmpty(key))
+                {
+                    var w = Widget.Find<Alert>();
+                    w.Show("UI_UNLOCK_TITLE", key);
+                    yield return new WaitWhile(() => w.isActiveAndEnabled);
+                }
             }
             UpdateHpBar();
         }
