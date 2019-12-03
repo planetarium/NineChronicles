@@ -33,6 +33,7 @@ using NetMQ;
 using Serilog;
 using UniRx;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace Nekoyume.BlockChain
 {
@@ -149,12 +150,40 @@ namespace Nekoyume.BlockChain
         {
             InitializeLogger(consoleSink, development);
 
+#if UNITY_EDITOR
+            // 변경사항을 바로 적용하기 위해 새로운 제네시스 블럭을 만듭니다.
+            var newGenesisBlock = BlockHelper.MineGenesisBlock();
+            var genesisBlockPath = BlockHelper.BlockPath(BlockHelper.GenesisBlockPathDev);
+#else
+            var genesisBlockPath = BlockHelper.BlockPath(BlockHelper.GenesisBlockPathProd);
+#endif
+            var genesisBlock = BlockHelper.ImportBlock(genesisBlockPath);
+#if UNITY_EDITOR
+            if (BlockHelper.CheckGenesisBlocksDifference(genesisBlock, newGenesisBlock))
+            {
+                Debug.Log("The genesis block was changed.");
+                BlockHelper.ExportBlock(newGenesisBlock, genesisBlockPath);
+                BlockHelper.DeleteAllEditor();  // 변경사항이 생기면 자동 체인 초기화.
+                genesisBlock = newGenesisBlock;
+            }
+#endif
             Debug.Log(path);
             var policy = GetPolicy();
             PrivateKey = privateKey;
             Address = privateKey.PublicKey.ToAddress();
             store = new DefaultStore(path, flush: false);
-            blocks = new BlockChain<PolymorphicAction<ActionBase>>(policy, store);
+
+            try
+            {
+                blocks = new BlockChain<PolymorphicAction<ActionBase>>(policy, store, genesisBlock);
+            }
+            catch (InvalidGenesisBlockException e)
+            {
+                Debug.Log(e.Message);
+                // FIXME: 팝업으로 유저에게 정보알리고 게임 종료하기.
+                // NOTE: 다른 체인이 사용한 스토어에 붙었을 때 발생. 
+            }
+
 #if BLOCK_LOG_USE
             FileHelper.WriteAllText("Block.log", "");
 #endif
@@ -250,6 +279,10 @@ namespace Nekoyume.BlockChain
             };
             PreloadEnded += (_, __) =>
             {
+                Assert.IsNotNull(GetState(RankingState.Address));
+                Assert.IsNotNull(GetState(ShopState.Address));
+                Assert.IsNotNull(GetState(TableSheetsState.Address));
+
                 // 랭킹의 상태를 한 번 동기화 한다.
                 States.Instance.SetRankingState(
                     GetState(RankingState.Address) is Bencodex.Types.Dictionary rankingDict

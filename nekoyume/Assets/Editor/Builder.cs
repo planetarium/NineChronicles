@@ -1,4 +1,8 @@
 using System.IO;
+using Libplanet.Action;
+using Libplanet.Blocks;
+using Nekoyume.Action;
+using Nekoyume.BlockChain;
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
@@ -134,6 +138,8 @@ namespace Editor
             string scriptName = null,
             string snapshotName = null)
         {
+            Prebuild();
+
             string[] scenes = { "Assets/_Scenes/Game.unity" };
 
             targetDirName = targetDirName ?? buildTarget.ToString();
@@ -183,7 +189,7 @@ namespace Editor
         private static void DownloadSnapshotManager(BuildTarget buildTarget, string targetDir)
         {
             string url;
-            
+
             if (buildTarget == BuildTarget.StandaloneWindows64)
             {
                 url = "https://9c-data-snapshots.s3.amazonaws.com/9c-snapshot.win-x64.zip";
@@ -192,20 +198,20 @@ namespace Editor
             {
                 url = "https://9c-data-snapshots.s3.amazonaws.com/9c-snapshot.osx-x64.tar.gz";
             }
-            else 
+            else
             {
                 Debug.LogWarning($"Snapshot Manager for {buildTarget} isn't supported. skipping...");
                 return;
             }
-            
+
             using (var client = new WebClient())
             {
                 var tempFilePath = Path.GetTempFileName();
-                try 
+                try
                 {
                     client.DownloadFile(url, tempFilePath);
-                    
-                    if (url.EndsWith(".zip")) 
+
+                    if (url.EndsWith(".zip"))
                     {
                         var fz = new FastZip();
                         fz.ExtractZip(tempFilePath, targetDir, null);
@@ -222,11 +228,22 @@ namespace Editor
                 }
                 finally
                 {
-                    if (File.Exists(tempFilePath)) 
+                    if (File.Exists(tempFilePath))
                     {
                         File.Delete(tempFilePath);
                     }
                 }
+            }
+        }
+
+        private static void Prebuild()
+        {
+            string blockPath = BlockHelper.BlockPath(BlockHelper.GenesisBlockPathProd);
+            var genesisBlock = BlockHelper.ImportBlock(blockPath);
+            var newGenesisBlock = BlockHelper.MineGenesisBlock();
+            if (BlockHelper.CheckGenesisBlocksDifference(genesisBlock, newGenesisBlock))
+            {
+                BlockHelper.ExportBlock(newGenesisBlock, BlockHelper.GenesisBlockPathProd);
             }
         }
     }

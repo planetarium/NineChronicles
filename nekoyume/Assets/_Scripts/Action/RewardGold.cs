@@ -27,20 +27,16 @@ namespace Nekoyume.Action
             var states = ctx.PreviousStates;
             if (ctx.Rehearsal)
             {
-                states = states.SetState(RankingState.Address, MarkChanged);
-                states = states.SetState(ShopState.Address, MarkChanged);
-                states = states.SetState(TableSheetsState.Address, MarkChanged);
+                states = states.SetState(DailyBlockState.Address, MarkChanged);
                 return states.SetState(ctx.Miner, MarkChanged);
             }
 
-            // 랭킹보드, 상점을 블록체인에 한번만 새로 생성하게 하기 위함.
-            // 다른 액션에서는 항상 블록체인에 상태들이 존재한다고 가정합니다.
-            if (ctx.BlockIndex == 0)
+            if (ctx.BlockIndex % DailyBlockState.UpdateInterval == 0)
             {
-                states = states
-                    .SetState(RankingState.Address, new RankingState().Serialize())
-                    .SetState(ShopState.Address, new ShopState().Serialize())
-                    .SetState(TableSheetsState.Address, new TableSheetsState(Game.Game.instance.TableSheets.TableCsvAssets).Serialize());
+                states = states.SetState(
+                    DailyBlockState.Address,
+                    new DailyBlockState(ctx.BlockIndex).Serialize()
+                );
             }
 
             AgentState agentState = states.GetAgentState(ctx.Signer) ?? new AgentState(ctx.Signer);

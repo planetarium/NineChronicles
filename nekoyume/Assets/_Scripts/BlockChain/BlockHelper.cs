@@ -1,0 +1,112 @@
+using System.IO;
+using System.Linq;
+using System.Security.Cryptography;
+using Bencodex.Types;
+using Libplanet;
+using Libplanet.Action;
+using Libplanet.Blocks;
+using Nekoyume.Action;
+using Nekoyume.State;
+using Nekoyume.TableData;
+using UnityEngine;
+
+using Libplanet.Blockchain;
+
+namespace Nekoyume.BlockChain
+{
+    public static class BlockHelper
+    {
+        // Editor가 아닌 환경에서 사용할 제네시스 블록의 파일명입니다.
+        // 만약 이 값을 수정할 경우 entrypoint.sh도 같이 수정할 필요가 있습니다.
+        public const string GenesisBlockPathProd = "genesis-block";
+        
+        // Editor 환경에서 사용할 제네시스 블록의 파일명입니다.
+        public const string GenesisBlockPathDev = "genesis-block-dev";
+
+        /// <summary>
+        /// 블록은 인코딩하여 파일로 내보냅니다.
+        /// </summary>
+        /// <param name="path">블록이 저장될 파일경로.</param>
+        public static void ExportBlock(
+            Block<PolymorphicAction<ActionBase>> block,
+            string path)
+        {
+            byte[] encoded = block.ToBencodex(true, true);
+            File.WriteAllBytes(path, encoded);
+        }
+
+        /// <summary>
+        /// 파일로 부터 블록을 읽어옵니다.
+        /// </summary>
+        /// <param name="path">블록이 저장되어있는 파일경로.</param>
+        /// <returns>읽어들인 블록 객체.</returns>
+        public static Block<PolymorphicAction<ActionBase>> ImportBlock(string path)
+        {
+            if (File.Exists(path))
+            {
+                var buffer = File.ReadAllBytes(path);
+                return Block<PolymorphicAction<ActionBase>>.FromBencodex(buffer);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public static Block<PolymorphicAction<ActionBase>> MineGenesisBlock()
+        {
+            var tableSheets = TableSheets.GetTableCsvAssets();
+            var initialStatesAction = new InitializeStates
+            {
+                RankingState = new RankingState(),
+                DailyBlockState = new DailyBlockState(0),
+                ShopState = new ShopState(),
+                TableSheetsState = new TableSheetsState{TableSheets = tableSheets},
+            };
+            var actions = new PolymorphicAction<ActionBase>[]
+            {
+                initialStatesAction,
+            };
+            return
+                BlockChain<PolymorphicAction<ActionBase>>.MakeGenesisBlock(actions);
+        }
+
+        /// <summary>
+        /// 블럭의 첫번째 액션의 <see cref="PolymorphicAction{T}.InnerAction"/> 내용을 기준으로 블록을 비교합니다.
+        /// </summary>
+        /// <param name="blockA">블록.</param>
+        /// <param name="blockB">블록.</param>
+        /// <returns>블록이 다르다면 true, 같다면 false를 밥환합니다.</returns>
+        public static bool CheckGenesisBlocksDifference(Block<PolymorphicAction<ActionBase>> blockA,
+            Block<PolymorphicAction<ActionBase>> blockB)
+        {
+            return blockA == null || blockB == null ||
+                   !GetHashOfFirstAction(blockA).Equals(GetHashOfFirstAction(blockB));
+        }
+        
+        private static HashDigest<SHA256> GetHashOfFirstAction(Block<PolymorphicAction<ActionBase>> block)
+        {
+            Bencodex.Types.Dictionary action = (Bencodex.Types.Dictionary)block.Transactions.First().Actions[0].InnerAction.PlainValue;
+            action = action.SetItem("id", default(Null)); // except GameAction.Id
+            var bytes = action.EncodeIntoChunks().SelectMany(b => b).ToArray();
+            return Hashcash.Hash(bytes);
+        }
+
+        public static string BlockPath(string filename) => $"{Application.streamingAssetsPath}/{filename}";
+        
+        // Copied from Planetarium.Nekoyume.LibplanetEditor.
+        public static void DeleteAllEditor()
+        {
+            var path = Path.Combine(Application.persistentDataPath, "planetarium_dev");
+            DeleteAll(path);
+        }
+
+        private static void DeleteAll(string path)
+        {
+            if (Directory.Exists(path))
+            {
+                Directory.Delete(path, recursive: true);
+            }
+        }
+    }
+}

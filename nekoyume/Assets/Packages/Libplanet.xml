@@ -1163,6 +1163,8 @@
             A class have <see cref="T:Libplanet.Blocks.Block`1"/>s, <see cref="T:Libplanet.Tx.Transaction`1"/>s, and the chain
             information.
             </summary>
+            <remarks>This object is guaranteed that it has at least one block, since it takes a genesis
+            block when it's instantiated.</remarks>
             <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match
             to <see cref="T:Libplanet.Blocks.Block`1"/>'s type parameter.</typeparam>
             <seealso cref="T:Libplanet.Action.IAction"/>
@@ -1185,7 +1187,7 @@
             their corresponding <see cref="T:Libplanet.Tx.Transaction`1"/>s.
             </summary>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain`1.#ctor(Libplanet.Blockchain.Policies.IBlockPolicy{`0},Libplanet.Store.IStore)">
+        <member name="M:Libplanet.Blockchain.BlockChain`1.#ctor(Libplanet.Blockchain.Policies.IBlockPolicy{`0},Libplanet.Store.IStore,Libplanet.Blocks.Block{`0})">
             <summary>
             Initializes a new instance of the <see cref="T:Libplanet.Blockchain.BlockChain`1"/> class.
             </summary>
@@ -1193,6 +1195,15 @@
             <see cref="T:Libplanet.Blockchain.BlockChain`1"/>.</param>
             <param name="store"><see cref="T:Libplanet.Store.IStore"/> to store <see cref="T:Libplanet.Blocks.Block`1"/>s,
             <see cref="T:Libplanet.Tx.Transaction`1"/>s, and <see cref="T:Libplanet.Blockchain.BlockChain`1"/> information.</param>
+            <param name="genesisBlock">The genesis <see cref="T:Libplanet.Blocks.Block`1"/> of
+            the <see cref="T:Libplanet.Blockchain.BlockChain`1"/>, which is a part of the consensus.
+            If the given <paramref name="store"/> already contains the genesis block
+            it checks if the existing genesis block and this argument is the same.
+            If the <paramref name="store"/> has no genesis block yet this argument will
+            be used for that.</param>
+            <exception cref="T:Libplanet.Blocks.InvalidGenesisBlockException">Thrown when the <paramref name="store"/>
+            has a genesis block and it does not match to what the network expects
+            (i.e., <paramref name="genesisBlock"/>).</exception>
         </member>
         <member name="E:Libplanet.Blockchain.BlockChain`1.TipChanged">
             <summary>
@@ -1203,6 +1214,11 @@
             <summary>
             The topmost <see cref="T:Libplanet.Blocks.Block`1"/> of the current blockchain.
             Can be <c>null</c> if the blockchain is empty.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Blockchain.BlockChain`1.Genesis">
+            <summary>
+            The first <see cref="T:Libplanet.Blocks.Block`1"/> in the <see cref="T:Libplanet.Blockchain.BlockChain`1"/>.
             </summary>
         </member>
         <member name="P:Libplanet.Blockchain.BlockChain`1.BlockHashes">
@@ -1245,6 +1261,19 @@
             get. </param>
             <exception cref="T:System.Collections.Generic.KeyNotFoundException">Thrown when there is no <see cref="T:Libplanet.Blocks.Block`1"/>
             with a given <paramref name="blockHash"/>.</exception>
+        </member>
+        <member name="M:Libplanet.Blockchain.BlockChain`1.MakeGenesisBlock(System.Collections.Generic.IEnumerable{`0},Libplanet.Crypto.PrivateKey,System.Nullable{System.DateTimeOffset})">
+            <summary>
+            Mine the genesis block of the blockchain.
+            </summary>
+            <param name="actions">List of actions will be included in the genesis block.
+            If it's null, it will be replaced with <see cref="F:System.Collections.Immutable.ImmutableArray`1.Empty"/>
+            as default.</param>
+            <param name="privateKey">A private key to sign the transaction in the genesis block.
+            If it's null, it will use new private key as default.</param>
+            <param name="timestamp">The timestamp of the genesis block. If it's null, it will
+            use <see cref="P:System.DateTimeOffset.UtcNow"/> as default.</param>
+            <returns>The genesis block mined with parameters.</returns>
         </member>
         <member name="M:Libplanet.Blockchain.BlockChain`1.ContainsBlock(Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
             <summary>
@@ -1686,6 +1715,33 @@
             any <see cref="T:Libplanet.Action.IAction"/> of <see cref="P:Libplanet.Blocks.Block`1.Transactions"/> tries
             to update the states of <see cref="T:Libplanet.Address"/>es not included
             in <see cref="P:Libplanet.Tx.Transaction`1.UpdatedAddresses"/>.</exception>
+        </member>
+        <member name="T:Libplanet.Blocks.InvalidGenesisBlockException">
+            <summary>
+            The exception that is thrown when the genesis block the <see cref="T:Libplanet.Store.IStore"/> contains
+            mismatches to the genesis block the <see cref="T:Libplanet.Blockchain.BlockChain`1"/> constructor (i.e., network)
+            expects.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Blocks.InvalidGenesisBlockException.#ctor(Libplanet.HashDigest{System.Security.Cryptography.SHA256},Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.String)">
+            <summary>
+            Initializes a new instance of the
+            <see cref="T:Libplanet.Blocks.InvalidGenesisBlockException"/> class.
+            </summary>
+            <param name="networkExpected">The genesis block that the network expects.</param>
+            <param name="stored">The genesis block that a local <see cref="T:Libplanet.Store.IStore"/> contains.
+            </param>
+            <param name="message">The message that describes the error.</param>
+        </member>
+        <member name="P:Libplanet.Blocks.InvalidGenesisBlockException.NetworkExpected">
+            <summary>
+            The genesis block that the network expects.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Blocks.InvalidGenesisBlockException.Stored">
+            <summary>
+            The genesis block that a local <see cref="T:Libplanet.Store.IStore"/> contains.
+            </summary>
         </member>
         <member name="T:Libplanet.ByteUtil">
             <summary>
@@ -3164,8 +3220,13 @@
         <member name="M:Libplanet.Store.BaseStore.ListAddresses(System.Guid)">
             <inheritdoc />
         </member>
+<<<<<<< HEAD
         <member name="M:Libplanet.Store.BaseStore.ListAllStateReferences(System.Guid,System.Int64,System.Int64)">
             <inheritdoc/>
+=======
+        <member name="M:Libplanet.Store.BaseStore.ListAllStateReferences(System.Guid,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}})">
+            <inheritdoc />
+>>>>>>> Bump Libplanet 0.8.0-dev.20191204071245
         </member>
         <member name="M:Libplanet.Store.BaseStore.StageTransactionIds(System.Collections.Immutable.IImmutableSet{Libplanet.Tx.TxId})">
             <inheritdoc />
@@ -3282,7 +3343,11 @@
         <member name="M:Libplanet.Store.DefaultStore.ListAddresses(System.Guid)">
             <inheritdoc/>
         </member>
+<<<<<<< HEAD
         <member name="M:Libplanet.Store.DefaultStore.ListAllStateReferences(System.Guid,System.Int64,System.Int64)">
+=======
+        <member name="M:Libplanet.Store.DefaultStore.ListAllStateReferences(System.Guid,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}})">
+>>>>>>> Bump Libplanet 0.8.0-dev.20191204071245
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Store.DefaultStore.StageTransactionIds(System.Collections.Immutable.IImmutableSet{Libplanet.Tx.TxId})">
@@ -3419,16 +3484,27 @@
             <returns>All addresses in an arbitrary order.  The order might
             be vary for each call.</returns>
         </member>
+<<<<<<< HEAD
         <member name="M:Libplanet.Store.IStore.ListAllStateReferences(System.Guid,System.Int64,System.Int64)">
+=======
+        <member name="M:Libplanet.Store.IStore.ListAllStateReferences(System.Guid,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}})">
+>>>>>>> Bump Libplanet 0.8.0-dev.20191204071245
             <summary>
             Lists all accounts, that have any states, in the given <paramref name="chainId"/> and
             their state references.
             </summary>
             <param name="chainId">The chain ID to look up state references.</param>
+<<<<<<< HEAD
             <param name="lowestIndex">Includes state references only made after the block
             this argument refers to.</param>
             <param name="highestIndex">Excludes state references made after the block
             this argument refers to.</param>
+=======
+            <param name="onlyAfter">Includes state references only made after the block
+            this argument refers to, if present.</param>
+            <param name="ignoreAfter">Excludes state references made after the block
+            this argument refers to, if present.</param>
+>>>>>>> Bump Libplanet 0.8.0-dev.20191204071245
             <returns>A dictionary of account addresses to lists of their corresponding state
             references.  Each list of state references is in ascending order, i.e., the block
             closest to the genesis goes first and the block closest to the tip goes last.</returns>
