@@ -36,6 +36,7 @@ namespace Nekoyume.UI
         public GameObject retypeGroup;
         public GameObject loginGroup;
         public GameObject findPassphraseGroup;
+        public GameObject accountGroup;
         public TextMeshProUGUI strongText;
         public TextMeshProUGUI weakText;
         public TextMeshProUGUI correctText;
@@ -44,6 +45,7 @@ namespace Nekoyume.UI
         public Button findPassphraseButton;
         public Button backToLoginButton;
         public TextMeshProUGUI submitText;
+        public AddressImage accountImage;
         private readonly ReactiveProperty<State> _state = new ReactiveProperty<State>();
         public bool Login { get; private set; }
         private string _keyStorePath;
@@ -67,6 +69,7 @@ namespace Nekoyume.UI
             retypeGroup.SetActive(false);
             loginGroup.SetActive(false);
             findPassphraseGroup.SetActive(false);
+            accountGroup.SetActive(false);
             submitButton.interactable = false;
             findPassphraseButton.gameObject.SetActive(false);
             backToLoginButton.gameObject.SetActive(false);
@@ -80,16 +83,18 @@ namespace Nekoyume.UI
                     break;
                 case State.SignUp:
                 case State.ResetPassphrase:
-                    titleText.text = "Your account";
+                    titleText.gameObject.SetActive(false);
                     submitText.text = "Game Start";
                     passPhraseGroup.SetActive(true);
                     retypeGroup.SetActive(true);
+                    accountGroup.SetActive(true);
                     passPhraseField.Select();
                     break;
                 case State.Login:
-                    titleText.text = "Your account";
+                    titleText.gameObject.SetActive(false);
                     submitText.text = "Game Start";
                     loginGroup.SetActive(true);
+                    accountGroup.SetActive(true);
                     findPassphraseButton.gameObject.SetActive(true);
                     loginField.Select();
                     break;
@@ -136,6 +141,7 @@ namespace Nekoyume.UI
             Login = !(_privateKey is null);
             if (Login)
             {
+                Debug.Log(ByteUtil.Hex(_privateKey.ByteArray));
                 Close();
             }
             else
@@ -151,10 +157,12 @@ namespace Nekoyume.UI
             switch (_state.Value)
             {
                 case State.Show:
+                    _privateKey = new PrivateKey();
                     SetState(State.SignUp);
+                    SetImage(_privateKey.PublicKey.ToAddress());
                     break;
                 case State.SignUp:
-                    CreatePrivateKey();
+                    CreateProtectedPrivateKey(_privateKey);
                     Login = !(_privateKey is null);
                     Close();
                     break;
@@ -268,6 +276,7 @@ namespace Nekoyume.UI
                     try
                     {
                         protectedPrivateKeys[keyPath] = ProtectedPrivateKey.FromJson(reader.ReadToEnd());
+                        SetImage(protectedPrivateKeys[keyPath].Address);
                     }
                     catch (Exception e)
                     {
@@ -400,6 +409,11 @@ namespace Nekoyume.UI
         {
             _prevState = _state.Value;
             _state.Value = state;
+        }
+
+        private void SetImage(Address address)
+        {
+            accountImage.Set(address);
         }
     }
 }
