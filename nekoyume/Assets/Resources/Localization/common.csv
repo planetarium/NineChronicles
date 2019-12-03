@@ -242,3 +242,15 @@ SPEECH_COMBINE_CLICK_0,Do you want to craft items?[newline]You need to reach lev
 SPEECH_RANK_MOUSE_ENTER_0,Do you want to know how strong you are?[newline]Check out the rankings here!,영예의 전당에[newline]이름을 올려라!
 SPEECH_RANK_CLICK_0,Stand back![newline]You can’t enter until you reach level {0}.,{0} 레벨을 먼저 달성해야 해. 
 SPEECH_DUNGEON_MOUSE_ENTER_0,Press the portal below.[newline]Let’s go to the world and[newline]start the battle!,아래 마법진을 누르면[newline]탐험을 시작할 수 있다옹
+UI_LOGIN_CONTENT,It is a fantasy world on the blockchain.[newline]To start the game, you need to create your account.,It is a fantasy world on the blockchain.[newline]To start the game, you need to create your account.
+UI_LOGIN_FIND_PASSPHRASE,For<voffset=1>g</voffset>ot a passphrase?,For<voffset=1>g</voffset>ot a passphrase?
+UI_LOGIN_BACK_TO_LOGIN,Back to lo<voffset=1>g</voffset>in pa<voffset=1>g</voffset>e,Back to lo<voffset=1>g</voffset>in pa<voffset=1>g</voffset>e
+UI_LOGIN_LOGIN_FAIL,Login Failed,로그인 실패
+UI_LOGIN_LOGIN_CONTENT,Invalid Passphrase,잘못된 비밀번호
+UI_LOGIN_FINDPASSPHRASE_FAIL,Find Account Failed,계정 찾기 실패
+UI_LOGIN_FINDPASSPHRASE_CONTENT,Private key not found,비밀키를 찾을 수 없음
+UI_LOGIN_INPUT_PASSPHRASE,Input a passphrase,비밀번호 입력
+UI_LOGIN_RETYPE_PASSPHRASE,Retype a passphrase,비밀번호 재입력
+UI_LOGIN_LOGIN,Passphrase,비밀번호
+UI_LOGIN_ENTER_PRIVATE_KEY,Enter your private key,비밀키 입력
+UI_LOGIN_ACCOUNT,Your Account,계정

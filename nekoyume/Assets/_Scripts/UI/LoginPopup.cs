@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Assets.SimpleLocalization;
 using Libplanet;
 using Libplanet.Crypto;
 using Libplanet.KeyStore;
@@ -36,14 +37,24 @@ namespace Nekoyume.UI
         public GameObject retypeGroup;
         public GameObject loginGroup;
         public GameObject findPassphraseGroup;
+        public GameObject accountGroup;
         public TextMeshProUGUI strongText;
         public TextMeshProUGUI weakText;
         public TextMeshProUGUI correctText;
         public TextMeshProUGUI incorrectText;
+        public TextMeshProUGUI informationText;
+        public TextMeshProUGUI findPassphraseText;
+        public TextMeshProUGUI backToLoginText;
+        public TextMeshProUGUI passPhraseText;
+        public TextMeshProUGUI retypeText;
+        public TextMeshProUGUI loginText;
+        public TextMeshProUGUI enterPrivateKeyText;
+        public TextMeshProUGUI accountText;
         public Button submitButton;
         public Button findPassphraseButton;
         public Button backToLoginButton;
         public TextMeshProUGUI submitText;
+        public AddressImage accountImage;
         private readonly ReactiveProperty<State> _state = new ReactiveProperty<State>();
         public bool Login { get; private set; }
         private string _keyStorePath;
@@ -56,7 +67,18 @@ namespace Nekoyume.UI
         {
             _state.Value = State.Show;
             _state.Subscribe(SubscribeState).AddTo(gameObject);
-
+            strongText.gameObject.SetActive(false);
+            weakText.gameObject.SetActive(false);
+            correctText.gameObject.SetActive(false);
+            incorrectText.gameObject.SetActive(false);
+            contentText.text = LocalizationManager.Localize("UI_LOGIN_CONTENT");
+            findPassphraseText.text = LocalizationManager.Localize("UI_LOGIN_FIND_PASSPHRASE");
+            backToLoginText.text = LocalizationManager.Localize("UI_LOGIN_BACK_TO_LOGIN");
+            passPhraseText.text = LocalizationManager.Localize("UI_LOGIN_INPUT_PASSPHRASE");
+            retypeText.text = LocalizationManager.Localize("UI_LOGIN_RETYPE_PASSPHRASE");
+            loginText.text = LocalizationManager.Localize("UI_LOGIN_LOGIN");
+            enterPrivateKeyText.text = LocalizationManager.Localize("UI_LOGIN_ENTER_PRIVATE_KEY");
+            accountText.text = LocalizationManager.Localize("UI_LOGIN_ACCOUNT");
             base.Awake();
         }
 
@@ -67,6 +89,7 @@ namespace Nekoyume.UI
             retypeGroup.SetActive(false);
             loginGroup.SetActive(false);
             findPassphraseGroup.SetActive(false);
+            accountGroup.SetActive(false);
             submitButton.interactable = false;
             findPassphraseButton.gameObject.SetActive(false);
             backToLoginButton.gameObject.SetActive(false);
@@ -77,19 +100,32 @@ namespace Nekoyume.UI
                 case State.Show:
                     contentText.gameObject.SetActive(true);
                     submitButton.interactable = true;
+                    informationText.text = "Sign up";
                     break;
                 case State.SignUp:
-                case State.ResetPassphrase:
-                    titleText.text = "Your account";
-                    submitText.text = "Game Start";
+                    titleText.gameObject.SetActive(false);
+                    submitText.text = LocalizationManager.Localize("UI_GAME_START");
+                    informationText.text = "Sign up";
                     passPhraseGroup.SetActive(true);
                     retypeGroup.SetActive(true);
+                    accountGroup.SetActive(true);
+                    passPhraseField.Select();
+                    break;
+                case State.ResetPassphrase:
+                    titleText.gameObject.SetActive(false);
+                    submitText.text = LocalizationManager.Localize("UI_GAME_START");
+                    informationText.text = "Reset passphrase";
+                    passPhraseGroup.SetActive(true);
+                    retypeGroup.SetActive(true);
+                    accountGroup.SetActive(true);
                     passPhraseField.Select();
                     break;
                 case State.Login:
-                    titleText.text = "Your account";
-                    submitText.text = "Game Start";
+                    titleText.gameObject.SetActive(false);
+                    submitText.text = LocalizationManager.Localize("UI_GAME_START");
+                    informationText.text = "Login";
                     loginGroup.SetActive(true);
+                    accountGroup.SetActive(true);
                     findPassphraseButton.gameObject.SetActive(true);
                     loginField.Select();
                     break;
@@ -97,14 +133,19 @@ namespace Nekoyume.UI
                     titleText.gameObject.SetActive(false);
                     findPassphraseGroup.SetActive(true);
                     backToLoginButton.gameObject.SetActive(true);
-                    submitText.text = "Enter";
+                    submitText.text = LocalizationManager.Localize("UI_OK");
+                    informationText.text = "Find an account";
                     findPassphraseField.Select();
                     break;
                 case State.Failed:
-                    titleText.text = "Failed";
+                    var upper = _prevState.ToString().ToUpper();
+                    var format = LocalizationManager.Localize($"UI_LOGIN_{upper}_FAIL");
+                    titleText.text = string.Format(format, _prevState);
+                    informationText.text = "Error";
                     contentText.gameObject.SetActive(true);
-                    contentText.text = _prevState.ToString();
-                    submitText.text = "OK";
+                    var contentFormat = LocalizationManager.Localize($"UI_LOGIN_{upper}_CONTENT");
+                    contentText.text = string.Format(contentFormat);
+                    submitText.text = LocalizationManager.Localize("UI_OK");
                     submitButton.interactable = true;
                     break;
                 default:
@@ -115,7 +156,7 @@ namespace Nekoyume.UI
         public void CheckPassphrase()
         {
             var result = Zxcvbn.Zxcvbn.MatchPassword(passPhraseField.text);
-            var strong = result.Score == 2;
+            var strong = result.Score >= 2;
             strongText.gameObject.SetActive(strong);
             weakText.gameObject.SetActive(!strong);
         }
@@ -123,7 +164,7 @@ namespace Nekoyume.UI
         public void CheckRetypePassphrase()
         {
             var result = Zxcvbn.Zxcvbn.MatchPassword(passPhraseField.text);
-            var strong = result.Score == 2;
+            var strong = result.Score >= 2;
             var same = passPhraseField.text == retypeField.text && strong;
             submitButton.interactable = same;
             correctText.gameObject.SetActive(same);
@@ -136,6 +177,7 @@ namespace Nekoyume.UI
             Login = !(_privateKey is null);
             if (Login)
             {
+                Debug.Log(ByteUtil.Hex(_privateKey.ByteArray));
                 Close();
             }
             else
@@ -152,9 +194,11 @@ namespace Nekoyume.UI
             {
                 case State.Show:
                     SetState(State.SignUp);
+                    _privateKey = new PrivateKey();
+                    SetImage(_privateKey.PublicKey.ToAddress());
                     break;
                 case State.SignUp:
-                    CreatePrivateKey();
+                    CreateProtectedPrivateKey(_privateKey);
                     Login = !(_privateKey is null);
                     Close();
                     break;
@@ -268,6 +312,7 @@ namespace Nekoyume.UI
                     try
                     {
                         protectedPrivateKeys[keyPath] = ProtectedPrivateKey.FromJson(reader.ReadToEnd());
+                        SetImage(protectedPrivateKeys[keyPath].Address);
                     }
                     catch (Exception e)
                     {
@@ -324,7 +369,7 @@ namespace Nekoyume.UI
 
         private void Update()
         {
-            if (_state.Value == State.SignUp)
+            if (_state.Value == State.SignUp || _state.Value == State.ResetPassphrase)
             {
                 if (Input.GetKeyUp(KeyCode.Tab))
                 {
@@ -400,6 +445,20 @@ namespace Nekoyume.UI
         {
             _prevState = _state.Value;
             _state.Value = state;
+        }
+
+        private void SetImage(Address address)
+        {
+            accountImage.Set(address);
+        }
+
+        public void Exit()
+        {
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.ExitPlaymode();
+#else
+            Application.Quit();
+#endif
         }
     }
 }
