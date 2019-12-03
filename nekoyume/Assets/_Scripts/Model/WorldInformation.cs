@@ -122,13 +122,13 @@ namespace Nekoyume.Model
         /// </summary>
         private readonly Dictionary<int, World> _worlds = new Dictionary<int, World>();
 
-        public WorldInformation(long blockIndex, bool openAllOfWorldsAndStages = false)
+        public WorldInformation(long blockIndex, WorldSheet worldSheet, bool openAllOfWorldsAndStages = false)
         {
-            var worldSheet = Game.Game.instance.TableSheets.WorldSheet.OrderedList;
+            var orderedSheet = worldSheet.OrderedList;
 
             if (openAllOfWorldsAndStages)
             {
-                foreach (var row in worldSheet)
+                foreach (var row in orderedSheet)
                 {
                     _worlds.Add(row.Id, new World(row, 0, 0, row.StageEnd));
                 }
@@ -136,7 +136,7 @@ namespace Nekoyume.Model
             else
             {
                 var isFirst = true;
-                foreach (var row in worldSheet)
+                foreach (var row in orderedSheet)
                 {
                     var worldId = row.Id;
                     var world = new World(row);
@@ -267,7 +267,7 @@ namespace Nekoyume.Model
         /// <param name="stageId"></param>
         /// <param name="clearedAt"></param>
         /// <exception cref="ArgumentException"></exception>
-        public void ClearStage(int worldId, int stageId, long clearedAt)
+        public void ClearStage(int worldId, int stageId, long clearedAt, WorldUnlockSheet unlockSheet)
         {
             if (!_worlds.ContainsKey(worldId))
                 throw new ArgumentException(
@@ -288,7 +288,6 @@ namespace Nekoyume.Model
 
             _worlds[worldId] = new World(world, clearedAt, stageId);
 
-            var unlockSheet = Game.Game.instance.TableSheets.WorldUnlockSheet;
             if (unlockSheet.TryGetUnlockedInformation(worldId, stageId, out var worldIdToUnlock))
             {
                 UnlockWorld(worldIdToUnlock, clearedAt);

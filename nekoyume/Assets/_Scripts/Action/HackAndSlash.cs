@@ -11,6 +11,7 @@ using Nekoyume.Game.Factory;
 using Nekoyume.Game.Item;
 using Nekoyume.Model;
 using Nekoyume.State;
+using Nekoyume.TableData;
 using UnityEngine;
 
 namespace Nekoyume.Action
@@ -91,15 +92,28 @@ namespace Nekoyume.Action
                 ((Equipment) outNonFungibleItem).Equip();
             }
             
-            var simulator = new Simulator(ctx.Random, avatarState, foods, worldId, stageId,
-                tableSheetsState: TableSheetsState.FromActionContext(ctx));
+            var tableSheetState = TableSheetsState.FromActionContext(ctx);
+            var tableSheets = TableSheets.FromTableSheetsState(tableSheetState);
+            var simulator = new Simulator(
+                ctx.Random, 
+                avatarState, 
+                foods, 
+                worldId, 
+                stageId,
+                tableSheetsState: tableSheetState
+            );
             simulator.Simulate();
             Debug.Log($"Execute HackAndSlash. worldId: {worldId} stageId: {stageId} result: {simulator.Log?.result} " +
                       $"player : `{avatarAddress}` node : `{States.Instance?.AgentState?.Value?.address}` " +
                       $"current avatar: `{States.Instance?.CurrentAvatarState?.Value?.address}`");
             if (simulator.Result == BattleLog.Result.Win)
             {
-                simulator.Player.worldInformation.ClearStage(worldId, stageId, ctx.BlockIndex);
+                simulator.Player.worldInformation.ClearStage(
+                    worldId, 
+                    stageId, 
+                    ctx.BlockIndex,
+                    tableSheets.WorldUnlockSheet
+                );
                 
                 if (!states.TryGetState(RankingState.Address, out Bencodex.Types.Dictionary d))
                 {
