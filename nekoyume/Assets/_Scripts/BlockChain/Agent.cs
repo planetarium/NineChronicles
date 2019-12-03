@@ -170,7 +170,7 @@ namespace Nekoyume.BlockChain
             Init(privateKey, storagePath, peers, iceServers, host, port, consoleSink);
 
             // 별도 쓰레드에서는 GameObject.GetComponent<T> 를 사용할 수 없기때문에 미리 선언.
-            var loadingScreen = Widget.Find<LoadingScreen>();
+            var loadingScreen = Widget.Find<PreloadingScreen>();
             BootstrapStarted += (_, state) => { loadingScreen.Message = LocalizationManager.Localize("UI_LOADING_BOOTSTRAP_START"); };
             PreloadProcessed += (_, state) =>
             {

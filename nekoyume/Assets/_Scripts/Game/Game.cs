@@ -98,7 +98,7 @@ namespace Nekoyume.Game
             Debug.LogWarning(succeed);
             if (succeed)
             {
-                Widget.Find<LoadingScreen>().Close();
+                Widget.Find<PreloadingScreen>().Close();
                 Widget.Find<Title>().Show();
             }
             else
