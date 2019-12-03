@@ -47,7 +47,7 @@ namespace Nekoyume.Action
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal => new Dictionary<string, IValue>
         {
-            ["questId"] = (Integer) questId,
+            ["questId"] = questId.Serialize(),
             ["avatarAddress"] = avatarAddress.Serialize(),
         }.ToImmutableDictionary();
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
