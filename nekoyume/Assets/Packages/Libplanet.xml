@@ -142,83 +142,6 @@
             <see cref="T:Libplanet.Action.ActionTypeAttribute"/>.  If it's not annotated returns
             <c>null</c>.</returns>
         </member>
-        <member name="T:Libplanet.Action.AddressStateMap">
-            <summary>
-            An immutable key&#x2013;value data structure to represent states of
-            multiple accounts.  Keys are an account <see cref="T:Libplanet.Address"/>,
-            and values are their state.
-            <para>Since this implements <see
-            cref="T:System.Collections.Immutable.IImmutableDictionary`2"/>
-            interface, the usage is same.</para>
-            </summary>
-        </member>
-        <member name="M:Libplanet.Action.AddressStateMap.#ctor">
-            <summary>
-            Creates an empty map.
-            </summary>
-        </member>
-        <member name="M:Libplanet.Action.AddressStateMap.#ctor(System.Collections.Immutable.IImmutableDictionary{Libplanet.Address,Bencodex.Types.IValue})">
-            <summary>
-            Creates a new map from the items of the
-            <paramref name="dictionary"/>.
-            </summary>
-            <param name="dictionary">A dictionary of items to
-            fill the new map with.</param>
-        </member>
-        <member name="P:Libplanet.Action.AddressStateMap.Keys">
-            <inheritdoc />
-        </member>
-        <member name="P:Libplanet.Action.AddressStateMap.Values">
-            <inheritdoc />
-        </member>
-        <member name="P:Libplanet.Action.AddressStateMap.Count">
-            <inheritdoc />
-        </member>
-        <member name="P:Libplanet.Action.AddressStateMap.Item(Libplanet.Address)">
-            <inheritdoc />
-        </member>
-        <member name="M:Libplanet.Action.AddressStateMap.Add(Libplanet.Address,Bencodex.Types.IValue)">
-            <inheritdoc />
-        </member>
-        <member name="M:Libplanet.Action.AddressStateMap.AddRange(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{Libplanet.Address,Bencodex.Types.IValue}})">
-            <inheritdoc />
-        </member>
-        <member name="M:Libplanet.Action.AddressStateMap.Clear">
-            <inheritdoc />
-        </member>
-        <member name="M:Libplanet.Action.AddressStateMap.Contains(System.Collections.Generic.KeyValuePair{Libplanet.Address,Bencodex.Types.IValue})">
-            <inheritdoc />
-        </member>
-        <member name="M:Libplanet.Action.AddressStateMap.ContainsKey(Libplanet.Address)">
-            <inheritdoc />
-        </member>
-        <member name="M:Libplanet.Action.AddressStateMap.GetEnumerator">
-            <inheritdoc />
-        </member>
-        <member name="M:Libplanet.Action.AddressStateMap.Remove(Libplanet.Address)">
-            <inheritdoc />
-        </member>
-        <member name="M:Libplanet.Action.AddressStateMap.RemoveRange(System.Collections.Generic.IEnumerable{Libplanet.Address})">
-            <inheritdoc />
-        </member>
-        <member name="M:Libplanet.Action.AddressStateMap.SetItem(Libplanet.Address,Bencodex.Types.IValue)">
-            <inheritdoc />
-        </member>
-        <member name="M:Libplanet.Action.AddressStateMap.SetItems(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{Libplanet.Address,Bencodex.Types.IValue}})">
-            <inheritdoc />
-        </member>
-        <member name="M:Libplanet.Action.AddressStateMap.TryGetKey(Libplanet.Address,Libplanet.Address@)">
-            <inheritdoc />
-        </member>
-        <member name="M:Libplanet.Action.AddressStateMap.TryGetValue(Libplanet.Address,Bencodex.Types.IValue@)">
-            <inheritdoc />
-        </member>
-        <member name="M:Libplanet.Action.AddressStateMap.System#Collections#IEnumerable#GetEnumerator">
-            <inheritdoc />
-        </member>
-        <member name="M:Libplanet.Action.AddressStateMap.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
-            <inheritdoc />
-        </member>
         <member name="T:Libplanet.Action.IAccountStateDelta">
             <summary>
             An interface to manipulate account states with
@@ -522,7 +445,7 @@
             and a deterministic random seed.</para>
             <para>Other &#x201c;bound&#x201d; information resides in the action
             object in itself, as its properties (or fields).</para>
-            <para>A returned <see cref="T:Libplanet.Action.AddressStateMap"/> object functions as
+            <para>A returned <see cref="T:Libplanet.Action.IAccountStateDelta"/> object functions as
             a delta which shifts from previous states to next states.</para>
             </summary>
             <param name="context">A context object containing addresses that
@@ -1364,8 +1287,8 @@
             for the same situation.
             Just-in-time calculation of states could take a long time so that
             the overall latency of an application may rise.</param>
-            <returns>The <see cref="T:Libplanet.Action.AddressStateMap"/> of given
-            <paramref name="address"/>.</returns>
+            <returns>The current state of given <paramref name="address"/>.  This can be <c>null</c>
+            if <paramref name="address"/> has no value.</returns>
             <exception cref="T:Libplanet.Blockchain.IncompleteBlockStatesException">Thrown when
             the <see cref="T:Libplanet.Blockchain.BlockChain`1"/> instance does not contain
             states dirty of the block which lastly updated states of a requested
@@ -2974,6 +2897,17 @@
         <member name="M:Libplanet.Net.Peer.ToString">
             <inheritdoc/>
         </member>
+        <member name="T:Libplanet.Net.PreloadBlockDownloadFailEventArgs">
+            <summary>
+            The event data that provides value to the event handler which is triggered when the block
+            downloading fails during preloading.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.PreloadBlockDownloadFailEventArgs.InnerExceptions">
+            <summary>
+            The exceptions thrown while the block downloading in preloading.
+            </summary>
+        </member>
         <member name="F:Libplanet.Net.PreloadState.TotalPhase">
             <summary>
             The number of total phases.
@@ -3058,6 +2992,16 @@
             <exception cref="T:System.TimeoutException">Thrown when all peers that found are
             not online.</exception>
         </member>
+        <member name="P:Libplanet.Net.Protocols.KBucket.Head">
+            <summary>
+            Most recently used peer.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Protocols.KBucket.Tail">
+            <summary>
+            Least recently used peer.
+            </summary>
+        </member>
         <member name="T:Libplanet.Net.StateReferenceDownloadState">
             <summary>
             Indicates a progress of downloading state references.
@@ -3078,7 +3022,7 @@
         </member>
         <member name="E:Libplanet.Net.Swarm`1.DifferentVersionPeerEncountered">
             <summary>
-            The <see cref="T:System.EventHandler" /> called when the different version of
+            The <see cref="T:System.EventHandler" /> triggered when the different version of
             <see cref="T:Libplanet.Net.Peer" /> is discovered.
             </summary>
         </member>
@@ -3100,7 +3044,7 @@
             <returns>A <see cref="T:System.Threading.Tasks.Task"/> completed when <see cref="P:Libplanet.Net.Swarm`1.Running"/>
             property becomes <c>true</c>.</returns>
         </member>
-        <member name="M:Libplanet.Net.Swarm`1.StartAsync(System.TimeSpan,System.TimeSpan,System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Net.Swarm`1.StartAsync(System.TimeSpan,System.TimeSpan,System.EventHandler{Libplanet.Net.PreloadBlockDownloadFailEventArgs},System.Threading.CancellationToken)">
             <summary>
             Starts to periodically synchronize the <see cref="P:Libplanet.Net.Swarm`1.BlockChain"/>.
             </summary>
@@ -3108,6 +3052,11 @@
             A timeout value for dialing.
             </param>
             <param name="broadcastTxInterval">The time period of exchange of staged transactions.
+            </param>
+            <param name="preloadBlockDownloadFailed">
+            The <see cref="T:System.EventHandler" /> triggered when
+            <see cref="M:Libplanet.Net.Swarm`1.PreloadAsync(System.Nullable{System.TimeSpan},System.IProgress{Libplanet.Net.PreloadState},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.EventHandler{Libplanet.Net.PreloadBlockDownloadFailEventArgs},System.Threading.CancellationToken)" />
+            fails to download blocks.
             </param>
             /// <param name="cancellationToken">
             A cancellation token used to propagate notification that this
@@ -3122,7 +3071,7 @@
             so that there are a lot of calls to <see cref="M:Libplanet.Action.IAction.Render(Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/> method in a short
             period of time.  This can lead a game startup slow.  If you want to omit rendering of
             these actions in the behind blocks use <see cref=
-            "M:Libplanet.Net.Swarm`1.PreloadAsync(System.Nullable{System.TimeSpan},System.IProgress{Libplanet.Net.PreloadState},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Threading.CancellationToken)"
+            "M:Libplanet.Net.Swarm`1.PreloadAsync(System.Nullable{System.TimeSpan},System.IProgress{Libplanet.Net.PreloadState},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.EventHandler{Libplanet.Net.PreloadBlockDownloadFailEventArgs},System.Threading.CancellationToken)"
             /> method too.</remarks>
         </member>
         <member name="M:Libplanet.Net.Swarm`1.BootstrapAsync(System.Collections.Generic.IEnumerable{Libplanet.Net.Peer},System.Nullable{System.TimeSpan},System.Nullable{System.TimeSpan},System.Int32,System.Threading.CancellationToken)">
@@ -3140,7 +3089,7 @@
             <exception cref="T:Libplanet.Net.SwarmException">Thrown when this <see cref="T:Libplanet.Net.Swarm`1"/> instance is
             not <see cref="P:Libplanet.Net.Swarm`1.Running"/>.</exception>
         </member>
-        <member name="M:Libplanet.Net.Swarm`1.PreloadAsync(System.Nullable{System.TimeSpan},System.IProgress{Libplanet.Net.PreloadState},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Net.Swarm`1.PreloadAsync(System.Nullable{System.TimeSpan},System.IProgress{Libplanet.Net.PreloadState},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.EventHandler{Libplanet.Net.PreloadBlockDownloadFailEventArgs},System.Threading.CancellationToken)">
             <summary>
             Preemptively downloads blocks from registered <see cref="T:Libplanet.Net.Peer"/>s.
             </summary>
@@ -3159,6 +3108,9 @@
             intended to be exposed to end users through a feasible user
             interface so that they can decide whom to trust for themselves.
             </param>
+            <param name="blockDownloadFailed">
+            The <see cref="T:System.EventHandler" /> triggered when block downloading fails.
+            </param>
             <param name="cancellationToken">
             A cancellation token used to propagate notification that this
             operation should be canceled.
@@ -3169,8 +3121,11 @@
             </returns>
             <remarks>This does not render downloaded <see cref="T:Libplanet.Action.IAction"/>s, but fills states only.
             If you want to render all <see cref="T:Libplanet.Action.IAction"/>s from the genesis block to the recent
-            blocks use <see cref="M:Libplanet.Net.Swarm`1.StartAsync(System.TimeSpan,System.TimeSpan,System.Threading.CancellationToken)"/> method
-            instead.</remarks>
+            blocks use
+            <see cref="M:Libplanet.Net.Swarm`1.StartAsync(System.TimeSpan,System.TimeSpan,System.EventHandler{Libplanet.Net.PreloadBlockDownloadFailEventArgs},System.Threading.CancellationToken)"/>
+            method instead.</remarks>
+            <exception cref="T:System.AggregateException">Thrown when the given the block downloading is
+            failed and if <paramref name="blockDownloadFailed "/> is <c>null</c>.</exception>
         </member>
         <member name="T:Libplanet.Nonce">
             <summary>
@@ -3297,7 +3252,7 @@
             </summary>
             <seealso cref="T:Libplanet.Store.IStore"/>
         </member>
-        <member name="M:Libplanet.Store.DefaultStore.#ctor(System.String,System.Boolean,System.Int32,System.Int32,System.Int32,System.Boolean,System.Boolean)">
+        <member name="M:Libplanet.Store.DefaultStore.#ctor(System.String,System.Boolean,System.Int32,System.Int32,System.Int32,System.Int32,System.Boolean,System.Boolean)">
             <summary>
             Creates a new <seealso cref="T:Libplanet.Store.DefaultStore"/>.
             </summary>
@@ -3309,6 +3264,7 @@
             <param name="indexCacheSize">Max number of pages in the index cache.</param>
             <param name="blockCacheSize">The capacity of the block cache.</param>
             <param name="txCacheSize">The capacity of the transaction cache.</param>
+            <param name="statesCacheSize">The capacity of the states cache.</param>
             <param name="flush">Writes data direct to disk avoiding OS cache.  Turned on by default.
             </param>
             <param name="readOnly">Opens database readonly mode. Turned off by default.</param>
@@ -3385,7 +3341,7 @@
         <member name="M:Libplanet.Store.DefaultStore.GetBlockStates(Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Store.DefaultStore.SetBlockStates(Libplanet.HashDigest{System.Security.Cryptography.SHA256},Libplanet.Action.AddressStateMap)">
+        <member name="M:Libplanet.Store.DefaultStore.SetBlockStates(Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Collections.Immutable.IImmutableDictionary{Libplanet.Address,Bencodex.Types.IValue})">
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Store.DefaultStore.IterateStateReferences(System.Guid,Libplanet.Address,System.Nullable{System.Int64},System.Nullable{System.Int64},System.Nullable{System.Int32})">

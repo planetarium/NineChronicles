@@ -11,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Assets.SimpleLocalization;
 using AsyncIO;
+using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Blockchain;
@@ -732,11 +733,9 @@ namespace Nekoyume.BlockChain
             _queuedActions.Enqueue(gameAction);
         }
 
-        public object GetState(Address address)
+        public IValue GetState(Address address)
         {
-            var states = blocks.GetState(address);
-            states.TryGetValue(address, out var value);
-            return value;
+            return blocks.GetState(address);
         }
 
         private IBlockPolicy<PolymorphicAction<ActionBase>> GetPolicy()
