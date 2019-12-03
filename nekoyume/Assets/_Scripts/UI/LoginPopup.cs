@@ -196,9 +196,19 @@ namespace Nekoyume.UI
 
             _keyStorePath = path;
             _privateKeyString = privateKeyString;
-            var state = GetProtectedPrivateKeys().Any() ? State.Login : State.Show;
-            SetState(state);
-            Login = false;
+            //Auto login for miner, seed
+            if (!string.IsNullOrEmpty(_privateKeyString) || Application.isBatchMode)
+            {
+                CreatePrivateKey();
+                Login = true;
+                Close();
+            }
+            else
+            {
+                var state = GetProtectedPrivateKeys().Any() ? State.Login : State.Show;
+                SetState(state);
+                Login = false;
+            }
         }
 
         private void CreatePrivateKey()
