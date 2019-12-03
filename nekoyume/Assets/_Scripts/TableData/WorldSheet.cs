@@ -16,7 +16,7 @@ namespace Nekoyume.TableData
             public string Name { get; private set; }
             public int StageBegin { get; private set; }
             public int StageEnd { get; private set; }
-            
+
             public int StagesCount { get; private set; }
 
             public override void Set(IReadOnlyList<string> fields)
@@ -28,7 +28,7 @@ namespace Nekoyume.TableData
                 StagesCount = StageEnd - StageBegin + 1;
             }
         }
-        
+
         public WorldSheet() : base(nameof(WorldSheet))
         {
         }
@@ -47,7 +47,7 @@ namespace Nekoyume.TableData
             worldRow = null;
             return false;
         }
-        
+
         public static bool TryGetByStageId(this WorldSheet sheet, int stageId,
             out WorldSheet.Row worldRow)
         {
@@ -55,7 +55,7 @@ namespace Nekoyume.TableData
             {
                 if (stageId < row.StageBegin || stageId > row.StageEnd)
                     continue;
-                
+
                 worldRow = row;
                 return true;
             }
@@ -66,7 +66,7 @@ namespace Nekoyume.TableData
 
         public static string GetLocalizedName(this WorldSheet.Row worldRow)
         {
-            return LocalizationManager.Localize($"WORLD_NAME_{worldRow.Name.ToUpper()}");
+            return LocalizationManager.Localize($"WORLD_NAME_{worldRow.Name.ToUpper().Replace(" ", "_")}");
         }
 
         public static bool ContainsStageId(this WorldSheet.Row worldRow, int stageId)

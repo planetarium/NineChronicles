@@ -8,15 +8,15 @@ namespace Nekoyume.UI.Tween
     [RequireComponent(typeof(RectTransform))]
     public class AnchoredPositionXTweener : MonoBehaviour
     {
-        [SerializeField] private float to;
-        [SerializeField] private float duration;
-        [SerializeField] private bool snapping;
+        [SerializeField] private float to = 0f;
+        [SerializeField] private float duration = 1f;
+        [SerializeField] private bool snapping = false;
 
         [SerializeField] private Ease ease = Ease.Linear;
-        [SerializeField] private bool from;
+        [SerializeField] private bool from = false;
 
         private RectTransform _rectTransform;
-        private TweenerCore<Vector2, Vector2, VectorOptions> tween;
+        private TweenerCore<Vector2, Vector2, VectorOptions> _tween;
 
         private void Awake()
         {
@@ -27,20 +27,20 @@ namespace Nekoyume.UI.Tween
         {
             if (from)
             {
-                tween = _rectTransform.DOAnchorPosX(to, duration, snapping)
+                _tween = _rectTransform.DOAnchorPosX(to, duration, snapping)
                     .SetEase(ease)
                     .From();
             }
             else
             {
-                tween = _rectTransform.DOAnchorPosX(to, duration, snapping)
+                _tween = _rectTransform.DOAnchorPosX(to, duration, snapping)
                     .SetEase(ease);
             }
         }
 
         private void OnDisable()
         {
-            tween?.Complete();
+            _tween?.Complete();
         }
     }
 }

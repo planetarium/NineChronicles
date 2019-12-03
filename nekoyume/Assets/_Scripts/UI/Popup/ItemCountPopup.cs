@@ -69,10 +69,11 @@ namespace Nekoyume.UI
                 .AddTo(_disposablesForAwake);
         }
 
-        protected virtual void OnDestroy()
+        protected override void OnDestroy()
         {
             _disposablesForAwake.DisposeAllAndClear();
             Clear();
+            base.OnDestroy();
         }
 
         #endregion

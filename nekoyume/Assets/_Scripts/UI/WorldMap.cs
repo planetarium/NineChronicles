@@ -44,6 +44,7 @@ namespace Nekoyume.UI
         public Button alfheimButton;
         public Button svartalfaheimrButton;
         public Button asgardButton;
+        public Button hardModeButton;
 
         public StageInformation stageInformation;
         public SubmitButton submitButton;
@@ -63,6 +64,8 @@ namespace Nekoyume.UI
             get => SharedViewModel.SelectedStageId.Value;
             private set => SharedViewModel.SelectedStageId.SetValueAndForceNotify(value);
         }
+
+        private int SelectedWorldStageBegin { get; set; }
 
         #region Mono
 
@@ -116,6 +119,12 @@ namespace Nekoyume.UI
                 {
                     AudioController.PlayClick();
                     ShowWorld(3);
+                }).AddTo(gameObject);
+            hardModeButton.OnClickAsObservable()
+                .Subscribe(_ =>
+                {
+                    AudioController.PlayClick();
+                    ShowWorld(101);
                 }).AddTo(gameObject);
             submitButton.OnSubmitClick
                 .Subscribe(_ =>
@@ -210,6 +219,8 @@ namespace Nekoyume.UI
         {
             SharedViewModel.IsWorldShown.Value = false;
             SelectedWorldId = worldId;
+            Game.Game.instance.TableSheets.WorldSheet.TryGetValue(SelectedWorldId, out var worldRow, true);
+            SelectedWorldStageBegin = worldRow.StageBegin;
             SelectedStageId = stageId;
 
             foreach (var world in worlds)
@@ -254,7 +265,7 @@ namespace Nekoyume.UI
 
             var stageSheet = Game.Game.instance.TableSheets.StageSheet;
             stageSheet.TryGetValue(stageId, out var stageRow, true);
-            stageInformation.titleText.text = $"Stage #{SelectedStageId}";
+            stageInformation.titleText.text = $"Stage #{stageRow.Id - SelectedWorldStageBegin + 1}";
 
             var monsterCount = stageRow.TotalMonsterIds.Count;
             for (var i = 0; i < stageInformation.monstersAreaCharacterViews.Count; i++)

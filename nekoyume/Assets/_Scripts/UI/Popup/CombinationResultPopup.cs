@@ -42,9 +42,10 @@ namespace Nekoyume.UI
                 .AddTo(gameObject);
         }
 
-        private void OnDestroy()
+        protected override void OnDestroy()
         {
             Clear();
+            base.OnDestroy();
         }
 
         #endregion
