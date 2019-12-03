@@ -91,6 +91,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ready: 1
+  animator: {fileID: 4505301955976567871}
 --- !u!114 &6736393873814236508
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -159,6 +160,7 @@ GameObject:
   - component: {fileID: 6736393874832673055}
   - component: {fileID: 6736393874832673052}
   - component: {fileID: 6736393874832673053}
+  - component: {fileID: 4505301955976567871}
   m_Layer: 5
   m_Name: NCLogo
   m_TagString: Untagged
@@ -245,6 +247,25 @@ MonoBehaviour:
   CompleteDelay: 0
   BeginValue: {x: 0, y: -1.8, z: -50}
   EndValue: {x: 0, y: -1.4, z: -50}
+--- !u!95 &4505301955976567871
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6736393874832673051}
+  m_Enabled: 0
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 346f7a4200f82a548961c53b51a0605b, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &6736393875610996747
 GameObject:
   m_ObjectHideFlags: 0
