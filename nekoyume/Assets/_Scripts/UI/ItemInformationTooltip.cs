@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Nekoyume.Game.Controller;
 using Nekoyume.UI.Model;
+using TMPro;
 using UniRx;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -13,14 +14,14 @@ namespace Nekoyume.UI
 {
     public class ItemInformationTooltip : VerticalTooltipWidget<Model.ItemInformationTooltip>
     {
-        public Text titleText;
+        public TextMeshProUGUI titleText;
         public Module.ItemInformation itemInformation;
-        public GameObject submitGameObject;
         public GameObject footerRoot;
+        public GameObject submitGameObject;
         public Button submitButton;
-        public Text submitButtonText;
+        public TextMeshProUGUI submitButtonText;
         public GameObject priceContainer;
-        public Text priceText;
+        public TextMeshProUGUI priceText;
         
         private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
 
@@ -76,7 +77,7 @@ namespace Nekoyume.UI
             Model.PriceEnabled.SubscribeTo(priceText).AddTo(_disposablesForModel);
             Model.Price.SubscribeToText(priceText).AddTo(_disposablesForModel);
             Model.SubmitButtonText.SubscribeToText(submitButtonText).AddTo(_disposablesForModel);
-            Model.SubmitButtonEnabled.Subscribe(submitGameObject.SetActive).AddTo(_disposablesForModel);
+            Model.SubmitButtonEnabled.SubscribeTo(submitGameObject).AddTo(_disposablesForModel);
             Model.OnSubmitClick.Subscribe(onSubmit).AddTo(_disposablesForModel);
             if (onClose != null)
             {

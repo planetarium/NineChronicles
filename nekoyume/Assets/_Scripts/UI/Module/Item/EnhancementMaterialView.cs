@@ -30,14 +30,15 @@ namespace Nekoyume.UI.Module
             if (!(Model?.ItemBase.Value is Equipment equipment))
                 return;
 
-            equipment.TryGetUniqueStat(out var type, out var value, true);            
+            var statType = equipment.UniqueStatType;
+            var statValue = equipment.StatsMap.GetStatValue(equipment.UniqueStatType);
             if (string.IsNullOrEmpty(additionalValueText))
             {
-                statView.Show(type, value);
+                statView.Show(statType, statValue);
             }
             else
             {
-                statView.Show(type.ToString(), $"{value}{additionalValueText}");
+                statView.Show(statType.ToString(), $"{statValue}{additionalValueText}");
             }
         }
 

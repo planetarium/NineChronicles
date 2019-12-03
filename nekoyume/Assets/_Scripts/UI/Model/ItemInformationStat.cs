@@ -8,27 +8,38 @@ namespace Nekoyume.UI.Model
 {
     public class ItemInformationStat : IDisposable
     {
-        public readonly ReactiveProperty<string> key = new ReactiveProperty<string>();
-        public readonly ReactiveProperty<string> value = new ReactiveProperty<string>();
+        public readonly ReactiveProperty<bool> IsMainStat = new ReactiveProperty<bool>();
+        public readonly ReactiveProperty<string> Key = new ReactiveProperty<string>();
+        public readonly ReactiveProperty<string> Value = new ReactiveProperty<string>();
 
-        public ItemInformationStat(MaterialItemSheet.Row itemRow)
+        public ItemInformationStat(MaterialItemSheet.Row itemRow, bool isMainStat = false)
         {
-            key.Value = itemRow.StatType != StatType.NONE
-                ? itemRow.StatType.Value.GetLocalizedString()
+            IsMainStat.Value = isMainStat;
+            Key.Value = itemRow.StatType != StatType.NONE
+                ? itemRow.StatType.GetLocalizedString()
                 : $"{nameof(itemRow.StatType)} has not value";
-            value.Value = $"{itemRow.StatMin} - {itemRow.StatMax}";
+            Value.Value = $"{itemRow.StatMin} - {itemRow.StatMax}";
         }
 
-        public ItemInformationStat(StatMapEx statMapEx)
+        public ItemInformationStat(StatMapEx statMapEx, bool isMainStat = false)
         {
-            key.Value = statMapEx.StatType.GetLocalizedString();
-            value.Value = $"{statMapEx.TotalValueAsInt}";
+            IsMainStat.Value = isMainStat;
+            Key.Value = statMapEx.StatType.GetLocalizedString();
+
+            if (isMainStat && statMapEx.HasAdditionalValue)
+            {
+                Value.Value = $"{statMapEx.ValueAsInt} <color=green>(+{statMapEx.AdditionalValueAsInt})</color>";
+            }
+            else
+            {
+                Value.Value = $"{statMapEx.TotalValueAsInt}";
+            }
         }
 
         public void Dispose()
         {
-            key.Dispose();
-            value.Dispose();
+            Key.Dispose();
+            Value.Dispose();
         }
     }
 }

@@ -9,6 +9,8 @@ namespace Nekoyume.UI.Module
 {
     public class ItemInformationStat : MonoBehaviour
     {
+        public Image bulletMainImage;
+        public Image bulletSubImage;
         public TextMeshProUGUI keyText;
         public TextMeshProUGUI valueText;
 
@@ -28,8 +30,13 @@ namespace Nekoyume.UI.Module
             
             _disposablesForModel.DisposeAllAndClear();
             Model = model;
-            Model.key.SubscribeToText(keyText).AddTo(_disposablesForModel);
-            Model.value.SubscribeToText(valueText).AddTo(_disposablesForModel);
+            Model.IsMainStat.Subscribe(isMainStat =>
+            {
+                bulletMainImage.enabled = isMainStat;
+                bulletSubImage.enabled = !isMainStat;
+            }).AddTo(_disposablesForModel);
+            Model.Key.SubscribeToText(keyText).AddTo(_disposablesForModel);
+            Model.Value.SubscribeToText(valueText).AddTo(_disposablesForModel);
             
             gameObject.SetActive(true);
         }

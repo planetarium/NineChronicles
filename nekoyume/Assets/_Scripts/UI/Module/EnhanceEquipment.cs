@@ -151,9 +151,8 @@ namespace Nekoyume.UI.Module
                 return false;
             
             var equipment = (Equipment) baseMaterial.Model.ItemBase.Value;
-            var resultValue = equipment.TryGetUniqueStat(out var statType, out var value, true)
-                ? value + equipment.levelStats
-                : equipment.levelStats;
+            var statValue = equipment.StatsMap.GetStatValue(equipment.UniqueStatType);
+            var resultValue = statValue + equipment.levelStats;
             baseMaterial.UpdateStatView(
                 $" -> <color=#00ff00><size=120%>{resultValue}</size></color>");
             materialView.statView.Hide();

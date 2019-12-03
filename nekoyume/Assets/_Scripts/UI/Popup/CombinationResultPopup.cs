@@ -96,12 +96,12 @@ namespace Nekoyume.UI
                 return;
             }
             
-            resultItemVfx.SetActive(false);
+//            resultItemVfx.SetActive(false);
             if (Model.isSuccess)
             {
                 titleText.text = LocalizationManager.Localize("UI_COMBINATION_SUCCESS");
                 itemInformation.gameObject.SetActive(true);
-                resultItemVfx.SetActive(true);
+//                resultItemVfx.SetActive(true);
                 AudioController.instance.PlaySfx(AudioController.SfxCode.Success);
             }
             else
