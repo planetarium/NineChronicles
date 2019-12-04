@@ -207,15 +207,15 @@ UI_COMBINATION_ENHANCEMENT,Item Enhancement,아이템 강화
 UI_COMBINATION_RECIPE_CLOSE,Recipe Close,레시피 닫기
 UI_RECIPE_COMBINATION,Craft,조합
 UI_SHOP_NOTICE,8% of sales item price is taxed,판매가의 8%를 세금으로 징수합니다.
-UI_LOADING_BOOTSTRAP_START,Connecting to Network...,네트워크를 연결하고 있습니다...
-UI_LOADING_BLOCK_DOWNLOAD,Downloading Block... {0} / {1},블록 다운로드 중... {0} / {1}
-UI_LOADING_STATE_REFERENCE_DOWNLOAD,Downloading State... {0} / {1},상태 다운로드 중... {0} / {1}
+UI_LOADING_BOOTSTRAP_START,Connecting to the network...,네트워크에 연결하고 있습니다...
+UI_LOADING_BLOCK_DOWNLOAD,Downloading blocks... {0} / {1},블록 다운로드 중... {0} / {1}
+UI_LOADING_STATE_REFERENCE_DOWNLOAD,Downloading states... {0} / {1},상태 다운로드 중... {0} / {1}
 UI_RECEIVE,Receive,받기
 UI_RECEIVED,Received,받음
 UI_GET_REWARD,Receive Reward,보상 받기
 UI_ITEM_ENHANCEMENT_MAIL_FORMAT,<size=12><color=#a2b4d6>[Workshop Cat]</color></size>[newline]I've finished upgrade the {0},{0} 강화를 완료했소
 UI_SELL_CANCEL_MAIL_FORMAT,<size=12><color=#a2b4d6>[Market Cat]</color></size>[newline]I canceled the sales of the <color=#ffd201>{0}</color>,{0} 판매를 취소했어!
-UI_BUYER_MAIL_FORMAT,<size=12><color=#a2b4d6>[Market Cat]</color></size>[newline]Purchased! {0} is yours now!,구매 완료! {0}는 이제 네거야! 
+UI_BUYER_MAIL_FORMAT,<size=12><color=#a2b4d6>[Market Cat]</color></size>[newline]Purchased! {0} is yours now!,구매 완료! {0}는 이제 네거야!
 UI_SELLER_MAIL_FORMAT,<size=12><color=#a2b4d6>[Market Cat]</color></size>[newline]{0} was sold to [무뼈닭발#3243]! You got 300G.,[무뼈닭발#3243]에게 {0} 판매 완료! 300G를 얻었어.
 UI_SELECT,Select,선택
 UI_EXTERNAL_LINK,Proceeding to External Website,외부 웹사이트 이동
@@ -240,7 +240,7 @@ SPEECH_SHOP_CLICK_0,If you reach level {0}[comma][newline]you can enter the mark
 SPEECH_COMBINE_MOUSE_ENTER_0,Want to make equipment or food?[newline]Here.,전투로 재료를 모았나?[newline]그럼 내게 오시게
 SPEECH_COMBINE_CLICK_0,Do you want to craft items?[newline]You need to reach level {0} first.,{0} 레벨을 먼저 달성해야 해.
 SPEECH_RANK_MOUSE_ENTER_0,Do you want to know how strong you are?[newline]Check out the rankings here!,영예의 전당에[newline]이름을 올려라!
-SPEECH_RANK_CLICK_0,Stand back![newline]You can’t enter until you reach level {0}.,{0} 레벨을 먼저 달성해야 해. 
+SPEECH_RANK_CLICK_0,Stand back![newline]You can’t enter until you reach level {0}.,{0} 레벨을 먼저 달성해야 해.
 SPEECH_DUNGEON_MOUSE_ENTER_0,Press the portal below.[newline]Let’s go to the world and[newline]start the battle!,아래 마법진을 누르면[newline]탐험을 시작할 수 있다옹
 UI_LOGIN_CONTENT,It is a fantasy world on the blockchain.[newline]To start the game, you need to create your account.,It is a fantasy world on the blockchain.[newline]To start the game, you need to create your account.
 UI_LOGIN_FIND_PASSPHRASE,For<voffset=1>g</voffset>ot a passphrase?,For<voffset=1>g</voffset>ot a passphrase?

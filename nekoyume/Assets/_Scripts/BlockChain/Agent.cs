@@ -52,6 +52,7 @@ namespace Nekoyume.BlockChain
             Path.Combine(Application.streamingAssetsPath, "clo.json");
         private const string PeersFileName = "peers.dat";
         private const string IceServersFileName = "ice_servers.dat";
+        private const int MaxSeed = 3;
 
         private string _defaultStoragePath;
 
@@ -149,7 +150,11 @@ namespace Nekoyume.BlockChain
 
             if (!consoleSink) InitializeTelemetryClient(_swarm.Address);
 
-            _seedPeers = peers.Where(peer => peer.PublicKey != privateKey.PublicKey).ToImmutableList();
+            ImmutableList<Peer> peerList = peers
+                .Where(peer => peer.PublicKey != privateKey.PublicKey)
+                .ToImmutableList();
+            _seedPeers = (peerList.Count > MaxSeed ? peerList.Sample(MaxSeed) : peerList)
+                .ToImmutableList();
             // Init SyncSucceed
             SyncSucceed = true;
 
