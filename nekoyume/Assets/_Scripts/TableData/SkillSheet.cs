@@ -5,6 +5,7 @@ using System.Linq;
 using Assets.SimpleLocalization;
 using Bencodex.Types;
 using Nekoyume.EnumType;
+using Nekoyume.Helper;
 using Nekoyume.State;
 using UnityEngine;
 
@@ -68,8 +69,6 @@ namespace Nekoyume.TableData
 
     public static class SkillSheetExtension
     {
-        private const string DefaultIconPath = "UI/Icons/Skill/100000";
-
         private static readonly Dictionary<int, List<BuffSheet.Row>> SkillBuffs =
             new Dictionary<int, List<BuffSheet.Row>>();
 
@@ -80,16 +79,7 @@ namespace Nekoyume.TableData
 
         public static Sprite GetIcon(this SkillSheet.Row row)
         {
-            var path = $"UI/Icons/Skill/{row.Id}";
-            var sprite = Resources.Load<Sprite>(path);
-            if (sprite)
-            {
-                return sprite;
-            }
-
-            sprite = Resources.Load<Sprite>(DefaultIconPath);
-
-            return sprite;
+            return SpriteHelper.GetSkillIcon(row.Id);
         }
 
         // 매번 결정적인 결과를 리턴하기에 캐싱함.

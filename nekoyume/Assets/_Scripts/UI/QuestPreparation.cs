@@ -25,7 +25,7 @@ namespace Nekoyume.UI
 
         public TextMeshProUGUI consumableTitleText;
         public EquipSlot[] consumableSlots;
-        public StatusInfo[] statusRows;
+        public DetailedStatView[] statusRows;
         public TextMeshProUGUI equipmentTitleText;
         public EquipmentSlots equipmentSlots;
 

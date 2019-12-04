@@ -28,7 +28,7 @@ namespace Nekoyume.UI
         public TextMeshProUGUI paletteEarText;
         public TextMeshProUGUI paletteTailText;
         public TextMeshProUGUI jobDescriptionText;
-        public StatusInfo[] statusRows;
+        public DetailedStatView[] statusRows;
 
         public Button warriorButton;
         public Button archerButton;

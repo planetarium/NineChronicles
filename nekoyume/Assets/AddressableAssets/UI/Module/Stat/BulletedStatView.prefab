@@ -150,7 +150,7 @@ GameObject:
   - component: {fileID: 150920139428712515}
   - component: {fileID: 7560583334187168}
   m_Layer: 5
-  m_Name: ItemInformationStat
+  m_Name: BulletedStatView
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -228,10 +228,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15d9ad9d177545b88118766df111a25d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  statTypeText: {fileID: 732636119190544291}
+  valueText: {fileID: 5840235146756711947}
   bulletMainImage: {fileID: 1667141630305464622}
   bulletSubImage: {fileID: 9219847652665097189}
-  keyText: {fileID: 732636119190544291}
-  valueText: {fileID: 5840235146756711947}
 --- !u!1 &3825508186134750907
 GameObject:
   m_ObjectHideFlags: 0

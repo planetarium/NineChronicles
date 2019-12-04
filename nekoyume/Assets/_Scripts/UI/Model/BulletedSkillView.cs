@@ -6,13 +6,13 @@ using UniRx;
 
 namespace Nekoyume.UI.Model
 {
-    public class ItemInformationStat : IDisposable
+    public class BulletedStatView : IDisposable
     {
         public readonly ReactiveProperty<bool> IsMainStat = new ReactiveProperty<bool>();
         public readonly ReactiveProperty<string> Key = new ReactiveProperty<string>();
         public readonly ReactiveProperty<string> Value = new ReactiveProperty<string>();
 
-        public ItemInformationStat(MaterialItemSheet.Row itemRow, bool isMainStat = false)
+        public BulletedStatView(MaterialItemSheet.Row itemRow, bool isMainStat = false)
         {
             IsMainStat.Value = isMainStat;
             Key.Value = itemRow.StatType != StatType.NONE
@@ -21,7 +21,7 @@ namespace Nekoyume.UI.Model
             Value.Value = $"{itemRow.StatMin} - {itemRow.StatMax}";
         }
 
-        public ItemInformationStat(StatMapEx statMapEx, bool isMainStat = false)
+        public BulletedStatView(StatMapEx statMapEx, bool isMainStat = false)
         {
             IsMainStat.Value = isMainStat;
             Key.Value = statMapEx.StatType.GetLocalizedString();

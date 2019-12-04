@@ -37,14 +37,14 @@ namespace Nekoyume.UI.Module
         public struct StatsArea
         {
             public RectTransform root;
-            public List<ItemInformationStat> stats;
+            public List<BulletedStatView> stats;
         }
 
         [Serializable]
         public struct SkillsArea
         {
             public RectTransform root;
-            public List<ItemInformationSkill> skills;
+            public List<SkillView> skills;
         }
 
         public IconArea iconArea;
@@ -182,7 +182,7 @@ namespace Nekoyume.UI.Module
                     if (!statMapEx.StatType.Equals(uniqueStatType))
                         continue;
                     
-                    AddStat(new Model.ItemInformationStat(statMapEx, true));
+                    AddStat(new Model.BulletedStatView(statMapEx, true));
                     statCount++;
                 }
                 
@@ -191,7 +191,7 @@ namespace Nekoyume.UI.Module
                     if (statMapEx.StatType.Equals(uniqueStatType))
                         continue;
                     
-                    AddStat(new Model.ItemInformationStat(statMapEx));
+                    AddStat(new Model.BulletedStatView(statMapEx));
                     statCount++;
                 }
             }
@@ -202,7 +202,7 @@ namespace Nekoyume.UI.Module
 
                 foreach (var statMapEx in itemUsable.StatsMap.GetStats())
                 {
-                    AddStat(new Model.ItemInformationStat(statMapEx));
+                    AddStat(new Model.BulletedStatView(statMapEx));
                     statCount++;
                 }
             }
@@ -217,7 +217,7 @@ namespace Nekoyume.UI.Module
                     data is MaterialItemSheet.Row materialData &&
                     materialData.StatType != StatType.NONE)
                 {
-                    AddStat(new Model.ItemInformationStat(materialData));
+                    AddStat(new Model.BulletedStatView(materialData));
                     statCount++;
                 }
             }
@@ -251,13 +251,13 @@ namespace Nekoyume.UI.Module
             {
                 foreach (var skill in itemUsable.Skills)
                 {
-                    AddSkill(new Model.ItemInformationSkill(skill));
+                    AddSkill(new Model.SkillView(skill));
                     skillCount++;
                 }
 
                 foreach (var skill in itemUsable.BuffSkills)
                 {
-                    AddSkill(new Model.ItemInformationSkill(skill));
+                    AddSkill(new Model.SkillView(skill));
                     skillCount++;
                 }
             }
@@ -268,7 +268,7 @@ namespace Nekoyume.UI.Module
                     data is MaterialItemSheet.Row materialData &&
                     materialData.SkillId != 0)
                 {
-                    AddSkill(new Model.ItemInformationSkill(materialData));
+                    AddSkill(new Model.SkillView(materialData));
                     skillCount++;
                 }
             }
@@ -283,7 +283,7 @@ namespace Nekoyume.UI.Module
             skillsArea.root.gameObject.SetActive(true);
         }
 
-        private void AddStat(Model.ItemInformationStat model)
+        private void AddStat(Model.BulletedStatView model)
         {
             foreach (var stat in statsArea.stats)
             {
@@ -298,11 +298,12 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        private void AddSkill(Model.ItemInformationSkill model)
+        private void AddSkill(Model.SkillView model)
         {
-            foreach (var skill in skillsArea.skills.Where(skill => !skill.IsShow))
+            foreach (var skill in skillsArea.skills.Where(skill => !skill.IsShown))
             {
-                skill.Show(model);
+                skill.SetData(model);
+                skill.Show();
 
                 return;
             }

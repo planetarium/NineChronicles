@@ -5,44 +5,33 @@ using UnityEngine;
 
 namespace Nekoyume.UI.Module
 {
-    public class StatusInfo : MonoBehaviour
+    public class DetailedStatView : StatView
     {
-        public TextMeshProUGUI key;
-        public TextMeshProUGUI value;
-        public TextMeshProUGUI additional;
+        public TextMeshProUGUI additionalText;
 
         public void Set(StatType statType, int statValue, int additionalStatValue)
         {
-            key.text = statType.ToString();
-            
-            switch (statType)
-            {
-                case StatType.HP:
-                case StatType.ATK:
-                case StatType.DEF:
-                case StatType.SPD:
-                    value.text = $"{statValue}";
-                    additional.text = Mathf.Approximately(additionalStatValue, 0f)
-                        ? ""
-                        : $"(+{additionalStatValue})";
-                    break;
-                case StatType.CRI:
-                case StatType.DOG:
-                    value.text = $"{statValue:0.#\\%}";
-                    additional.text = Mathf.Approximately(additionalStatValue, 0f)
-                        ? ""
-                        : $"(+{additionalStatValue:0.#\\%})";
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(statType), statType, null);
-            }
-            
+            statTypeText.text = statType.ToString();
+
+            valueText.text = GetStatString(statType, statValue);
+            additionalText.text = $"+({GetStatString(statType, additionalStatValue)})";
+
             gameObject.SetActive(true);
+        }
+
+        public void Set(string keyText, int statValue, int additionalStatValue)
+        {
+            if(!Enum.TryParse<StatType>(keyText, out var statType))
+            {
+                Debug.LogError("Failed to parse StatType.");
+            }
+
+            Set(statType, statValue, additionalStatValue);
         }
 
         public void SetAdditional(StatType statType, int additionalStatValue)
         {
-            if (additionalStatValue == 0) additional.text = string.Empty;
+            if (additionalStatValue == 0) additionalText.text = string.Empty;
 
             switch (statType)
             {
@@ -50,13 +39,13 @@ namespace Nekoyume.UI.Module
                 case StatType.ATK:
                 case StatType.DEF:
                 case StatType.SPD:
-                    additional.text = Mathf.Approximately(additionalStatValue, 0f)
+                    additionalText.text = Mathf.Approximately(additionalStatValue, 0f)
                         ? ""
                         : $"(+{additionalStatValue})";
                     break;
                 case StatType.CRI:
                 case StatType.DOG:
-                    additional.text = Mathf.Approximately(additionalStatValue, 0f)
+                    additionalText.text = Mathf.Approximately(additionalStatValue, 0f)
                         ? ""
                         : $"(+{additionalStatValue:0.#\\%})";
                     break;
@@ -65,6 +54,23 @@ namespace Nekoyume.UI.Module
             }
 
             gameObject.SetActive(true);
+        }
+
+        protected string GetStatString(StatType statType, int value)
+        {
+            switch(statType)
+            {
+                case StatType.HP:
+                case StatType.ATK:
+                case StatType.DEF:
+                case StatType.SPD:
+                    return value.ToString();
+                case StatType.CRI:
+                case StatType.DOG:
+                    return $"{value:0.#\\%}";
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(statType), statType, null);
+            }
         }
     }
 }

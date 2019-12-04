@@ -20,7 +20,7 @@ namespace Nekoyume.UI
         public EquipmentSlots equipmentSlots;
         public GameObject textOption;
         public GameObject optionGroup;
-        public StatusInfo[] statusRows;
+        public DetailedStatView[] statusRows;
 
         private Game.Character.Player _player;
 

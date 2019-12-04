@@ -39,11 +39,15 @@ namespace Nekoyume.UI.Module
         {
             statTypeText.text = statType;
             valueText.text = value;
+        }
+
+        public virtual void Show()
+        {
             statTypeText.enabled = true;
             valueText.enabled = true;
         }
 
-        public void Hide()
+        public virtual void Hide()
         {
             statTypeText.enabled = false;
             valueText.enabled = false;
