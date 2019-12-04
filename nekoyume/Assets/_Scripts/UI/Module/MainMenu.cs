@@ -6,9 +6,17 @@ using UnityEngine;
 using System.Collections.Generic;
 using Assets.SimpleLocalization;
 using Nekoyume.Game.Character;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
+    public enum MenuType
+    {
+        Combination,
+        Ranking,
+        Shop,
+        Quest,
+    }
     public class MainMenu : MonoBehaviour
     {
         public float TweenDuration = 0.3f;
@@ -20,6 +28,10 @@ namespace Nekoyume.UI.Module
         public Transform bgTransform;
         private string _defaultKey;
         private Vector3 _scaler;
+        public MenuType type;
+        public GameObject[] lockObjects;
+        public GameObject[] unLockObjects;
+        private bool _unlock;
 
         private readonly List<IDisposable> _disposablesForAwake = new List<IDisposable>();
 
@@ -90,19 +102,41 @@ namespace Nekoyume.UI.Module
                 speechBubble.Hide();
             }
         }
-
-        public void ShowRequiredLevelSpeech(int level)
+        public void Set(Player player)
         {
-            speechBubble.SetKey(pointerClickKey);
-            var format =
-                LocalizationManager.Localize(
-                    $"{pointerClickKey}{UnityEngine.Random.Range(0, speechBubble.SpeechCount)}");
-            var speech = string.Format(format, level);
-            StartCoroutine(speechBubble.CoShowText(speech));
+            var requiredLevel = 1;
+            switch (type)
+            {
+                case MenuType.Combination:
+                    requiredLevel = GameConfig.CombinationRequiredLevel;
+                    break;
+                case MenuType.Ranking:
+                    requiredLevel = GameConfig.RankingRequiredLevel;
+                    break;
+                case MenuType.Shop:
+                    requiredLevel = GameConfig.ShopRequiredLevel;
+                    break;
+            }
+
+            _unlock = player.Level >= requiredLevel;
+
             if (npc)
             {
-                npc.Emotion();
+                npc.gameObject.SetActive(_unlock);
             }
+
+            foreach (var go in lockObjects)
+            {
+                go.SetActive(!_unlock);
+            }
+
+            foreach (var go in unLockObjects)
+            {
+                go.SetActive(_unlock);
+            }
+
+            gameObject.SetActive(true);
+            speechBubble.Init(_unlock);
         }
     }
 }

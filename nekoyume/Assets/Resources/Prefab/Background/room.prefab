@@ -590,6 +590,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: bg_main_waterfall_02
       objectReference: {fileID: 0}
+    - target: {fileID: 4745791726076107926, guid: 1699bc9f413f4f849b386d12d86445ce,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4745791726076345414, guid: 1699bc9f413f4f849b386d12d86445ce,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -760,6 +765,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: bg_main_waterfalldrop
       objectReference: {fileID: 0}
+    - target: {fileID: 6321483329841963043, guid: 7720bef8fb54c3843b4ae167b871a72c,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1061202668307491497, guid: 7720bef8fb54c3843b4ae167b871a72c,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -839,6 +849,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: bg_main_waterfall_01
+      objectReference: {fileID: 0}
+    - target: {fileID: 7961774492754948799, guid: 87db98ffdd7e08e44884bf327739f13a,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1246790852913944193, guid: 87db98ffdd7e08e44884bf327739f13a,
         type: 3}
@@ -1173,6 +1188,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: bg_main_waterfall_03
+      objectReference: {fileID: 0}
+    - target: {fileID: 7961774492754948799, guid: 87db98ffdd7e08e44884bf327739f13a,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1246790852913944193, guid: 87db98ffdd7e08e44884bf327739f13a,
         type: 3}

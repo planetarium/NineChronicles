@@ -28,12 +28,14 @@ namespace Nekoyume.UI
 
         public float speechBreakTime;
         public float destroyTime = 4.0f;
+        public bool enable;
 
         public int SpeechCount { get; private set; }
         private Coroutine _coroutine;
 
-        public void Init()
+        public void Init(bool active=true)
         {
+            enable = active;
             SpeechCount = LocalizationManager.LocalizedCount(localizationKey);
             gameObject.SetActive(false);
         }
@@ -84,22 +86,24 @@ namespace Nekoyume.UI
 
         public IEnumerator CoShowText()
         {
-            if (SpeechCount == 0)
+            if (!enable || SpeechCount == 0)
+            {
                 yield break;
+            }
             BeforeSpeech();
             var speech = LocalizationManager.Localize($"{localizationKey}{Random.Range(0, SpeechCount)}");
             _coroutine = StartCoroutine(ShowText(speech));
             yield return _coroutine;
         }
 
-        public IEnumerator CoShowText(string speech)
+        public IEnumerator CoShowText(string speech, bool instant = false)
         {
             BeforeSpeech();
-            _coroutine = StartCoroutine(ShowText(speech));
+            _coroutine = StartCoroutine(ShowText(speech, instant));
             yield return _coroutine;
         }
 
-        private IEnumerator ShowText(string speech)
+        private IEnumerator ShowText(string speech, bool instant = false)
         {
             text.text = "";
             var breakTime = speechBreakTime;
@@ -131,15 +135,22 @@ namespace Nekoyume.UI
                 tweenMoveBy.Play();
 
                 yield return new WaitForSeconds(bubbleTweenTime);
-                for (var i = 1; i <= speech.Length; ++i)
+                if (instant)
                 {
-                    text.text = i == speech.Length ? $"{speech.Substring(0, i)}" : $"{speech.Substring(0, i)}<alpha=#00>{speech.Substring(i)}";
-                    yield return new WaitForSeconds(speechSpeedInterval);
-
-                    // check destroy
-                    if (!gameObject)
+                    text.text = speech;
+                }
+                else
+                {
+                    for (var i = 1; i <= speech.Length; ++i)
                     {
-                        break;
+                        text.text = i == speech.Length ? $"{speech.Substring(0, i)}" : $"{speech.Substring(0, i)}<alpha=#00>{speech.Substring(i)}";
+                        yield return new WaitForSeconds(speechSpeedInterval);
+
+                        // check destroy
+                        if (!gameObject)
+                        {
+                            break;
+                        }
                     }
                 }
 
