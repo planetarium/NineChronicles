@@ -1,7 +1,7 @@
 #!/bin/bash
 
 PRIOR_DLLS_PATH=/data/$PRIOR_DLLS
-UNITY_MANAGED_PATH=/app/nekoyume_Data/Managed
+UNITY_MANAGED_PATH="/app/Nine Chronicles_Data/Managed"
 
 # replace dlls with uploaded dlls if exists.
 if [ -d $PRIOR_DLLS_PATH ]; then
@@ -9,4 +9,4 @@ if [ -d $PRIOR_DLLS_PATH ]; then
 fi
 
 # entrypoint.
-/app/nekoyume "$@"
+"/app/Nine Chronicles" "$@"

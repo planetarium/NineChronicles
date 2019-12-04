@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using UnityEngine;
 using UnityEditor;
@@ -57,6 +58,16 @@ namespace Editor
         {
             Debug.Log("Build Windows Headless");
             Build(BuildTarget.StandaloneWindows64, BuildOptions.EnableHeadlessMode, "WindowsHeadless");
+        }
+
+        [MenuItem("Build/Linux Headless Development")]
+        public static void BuildLinuxHeadlessDevelopment()
+        {
+            Debug.Log("Build Linux Headless");
+            Build(
+                BuildTarget.StandaloneLinux64,
+                BuildOptions.EnableHeadlessMode | BuildOptions.Development,
+                "LinuxHeadless");
         }
 
         public static void Build(
