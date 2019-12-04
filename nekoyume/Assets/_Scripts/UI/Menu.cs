@@ -1,6 +1,8 @@
 using System.Collections;
+using Assets.SimpleLocalization;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
+using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.UI.Module;
 using Nekoyume.Manager;
@@ -15,6 +17,8 @@ namespace Nekoyume.UI
         public MainMenu btnShop;
         public MainMenu btnRanking;
         public SpeechBubble[] SpeechBubbles;
+        public Npc npc;
+        public SpeechBubble speechBubble;
 
         public Stage Stage;
 
@@ -26,12 +30,20 @@ namespace Nekoyume.UI
             SpeechBubbles = GetComponentsInChildren<SpeechBubble>();
         }
 
-        private void ShowButtons(bool value)
+        private void ShowButtons(Player player)
         {
-            btnQuest.gameObject.SetActive(value);
-            btnCombination.gameObject.SetActive(value);
-            btnShop.gameObject.SetActive(value);
-            btnRanking.gameObject.SetActive(value);
+            btnQuest.Set(player);
+            btnCombination.Set(player);
+            btnShop.Set(player);
+            btnRanking.Set(player);
+        }
+
+        private void HideButtons()
+        {
+            btnQuest.gameObject.SetActive(false);
+            btnCombination.gameObject.SetActive(false);
+            btnShop.gameObject.SetActive(false);
+            btnRanking.gameObject.SetActive(false);
         }
 
         public void ShowRoom()
@@ -47,8 +59,8 @@ namespace Nekoyume.UI
             player.gameObject.SetActive(true);
 
             Show();
-            ShowButtons(true);
             StartCoroutine(ShowSpeeches());
+            ShowButtons(player);
 
             AudioController.instance.PlayMusic(AudioController.MusicCode.Main);
         }
@@ -56,7 +68,7 @@ namespace Nekoyume.UI
         public void ShowWorld()
         {
             Show();
-            ShowButtons(false);
+            HideButtons();
         }
 
         public void QuestClick()
@@ -79,7 +91,7 @@ namespace Nekoyume.UI
             }
             else
             {
-                btnShop.ShowRequiredLevelSpeech(GameConfig.ShopRequiredLevel);
+                ShowRequiredLevelSpeech(btnShop.pointerClickKey, GameConfig.ShopRequiredLevel);
             }
         }
 
@@ -94,7 +106,7 @@ namespace Nekoyume.UI
             }
             else
             {
-                btnCombination.ShowRequiredLevelSpeech(GameConfig.CombinationRequiredLevel);
+                ShowRequiredLevelSpeech(btnCombination.pointerClickKey, GameConfig.CombinationRequiredLevel);
             }
         }
 
@@ -108,7 +120,7 @@ namespace Nekoyume.UI
             }
             else
             {
-                btnRanking.ShowRequiredLevelSpeech(GameConfig.RankingRequiredLevel);
+                ShowRequiredLevelSpeech(btnRanking.pointerClickKey, GameConfig.RankingRequiredLevel);
             }
         }
 
@@ -132,9 +144,9 @@ namespace Nekoyume.UI
         public override void Close(bool ignoreCloseAnimation = false)
         {
             StopCoroutine(ShowSpeeches());
-            foreach (var speechBubble in SpeechBubbles)
+            foreach (var bubble in SpeechBubbles)
             {
-                speechBubble.Hide();
+                bubble.Hide();
             }
 
             Find<Inventory>().Close(ignoreCloseAnimation);
@@ -148,9 +160,9 @@ namespace Nekoyume.UI
 
         private IEnumerator ShowSpeeches()
         {
-            foreach (var speechBubble in SpeechBubbles)
+            foreach (var bubble in SpeechBubbles)
             {
-                speechBubble.Init();
+                bubble.Init();
             }
 
             yield return new WaitForSeconds(2.0f);
@@ -167,11 +179,25 @@ namespace Nekoyume.UI
                     SpeechBubbles[n] = value;
                 }
 
-                foreach (var speechBubble in SpeechBubbles)
+                foreach (var bubble in SpeechBubbles)
                 {
-                    yield return StartCoroutine(speechBubble.CoShowText());
+                    yield return StartCoroutine(bubble.CoShowText());
                     yield return new WaitForSeconds(Random.Range(2.0f, 4.0f));
                 }
+            }
+        }
+
+        private void ShowRequiredLevelSpeech(string pointerClickKey, int level)
+        {
+            speechBubble.SetKey(pointerClickKey);
+            var format =
+                LocalizationManager.Localize(
+                    $"{pointerClickKey}{Random.Range(0, speechBubble.SpeechCount)}");
+            var speech = string.Format(format, level);
+            StartCoroutine(speechBubble.CoShowText(speech, true));
+            if (npc)
+            {
+                npc.Emotion();
             }
         }
     }
