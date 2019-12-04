@@ -43,7 +43,12 @@ namespace Nekoyume.State
         public int ear;
         public int tail;
 
-        public AvatarState(Address address, Address agentAddress, long blockIndex, string name = null) : base(address)
+        public AvatarState(
+            Address address, 
+            Address agentAddress, 
+            long blockIndex, 
+            WorldSheet worldSheet,
+            string name = null) : base(address)
         {
             if (address == null)
                 throw new ArgumentNullException(nameof(address));
@@ -54,9 +59,9 @@ namespace Nekoyume.State
             exp = 0;
             inventory = new Inventory();
 #if UNITY_EDITOR
-            worldInformation = new WorldInformation(blockIndex, true);
+            worldInformation = new WorldInformation(blockIndex, worldSheet, true);
 #else
-            worldInformation = new WorldInformation(blockIndex);
+            worldInformation = new WorldInformation(blockIndex, worldSheet);
 #endif
             updatedAt = DateTimeOffset.UtcNow;
             this.agentAddress = agentAddress;
