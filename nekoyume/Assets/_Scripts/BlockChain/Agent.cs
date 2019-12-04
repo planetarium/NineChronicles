@@ -694,7 +694,11 @@ namespace Nekoyume.BlockChain
                 var task = Task.Run(async () =>
                 {
                     var block = await blocks.MineBlock(Address);
-                    _swarm.BroadcastBlocks(new[] {block});
+                    if (_swarm.Running) 
+                    {
+                        _swarm.BroadcastBlocks(new[] {block});
+                    }
+
                     return block;
                 });
                 yield return new WaitUntil(() => task.IsCompleted);
