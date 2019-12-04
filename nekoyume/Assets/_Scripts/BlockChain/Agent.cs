@@ -123,10 +123,17 @@ namespace Nekoyume.BlockChain
             StartCoroutine(CoLogin(callback));
         }
 
-        public void Init(PrivateKey privateKey, string path, IEnumerable<Peer> peers,
-            IEnumerable<IceServer> iceServers, string host, int? port, bool consoleSink)
+        public void Init(
+            PrivateKey privateKey, 
+            string path, 
+            IEnumerable<Peer> peers,
+            IEnumerable<IceServer> iceServers, 
+            string host, 
+            int? port,
+            bool consoleSink,
+            bool development)
         {
-            InitializeLogger(consoleSink);
+            InitializeLogger(consoleSink, development);
 
             Debug.Log(path);
             var policy = GetPolicy();
@@ -167,7 +174,17 @@ namespace Nekoyume.BlockChain
             var port = options.Port;
             var consoleSink = options.ConsoleSink;
             var storagePath = options.StoragePath ?? _defaultStoragePath;
-            Init(privateKey, storagePath, peers, iceServers, host, port, consoleSink);
+            var development = options.Development;
+            Init(
+                privateKey, 
+                storagePath, 
+                peers, 
+                iceServers, 
+                host, 
+                port, 
+                consoleSink, 
+                development
+            );
 
             // 별도 쓰레드에서는 GameObject.GetComponent<T> 를 사용할 수 없기때문에 미리 선언.
             var loadingScreen = Widget.Find<PreloadingScreen>();
@@ -249,6 +266,15 @@ namespace Nekoyume.BlockChain
             };
             _miner = options.NoMiner ? null : CoMiner();
             _autoPlayer = options.AutoPlay ? CoAutoPlayer() : null;
+
+#if DEBUG
+            if (development && Widget.Find<Cheat>() is Cheat cheatWidget)
+            {
+                cheatWidget.Show();
+                _logger = CoLogger();
+            }
+#endif
+
             StartSystemCoroutines();
         }
 
@@ -356,9 +382,6 @@ namespace Nekoyume.BlockChain
         {
             _txProcessor = CoTxProcessor();
             _swarmRunner = CoSwarmRunner();
-#if DEBUG
-            _logger = CoLogger();
-#endif
 
             StartNullableCoroutine(_txProcessor);
             StartNullableCoroutine(_swarmRunner);
@@ -410,10 +433,17 @@ namespace Nekoyume.BlockChain
             _telemetryClient.Context.Session.Id = Guid.NewGuid().ToString();
         }
 
-        private static void InitializeLogger(bool consoleSink)
+        private static void InitializeLogger(bool consoleSink, bool development)
         {
-            var loggerConfiguration = new LoggerConfiguration()
-                .MinimumLevel.Verbose();
+            LoggerConfiguration loggerConfiguration;
+            if (development)
+            {
+                loggerConfiguration = new LoggerConfiguration().MinimumLevel.Verbose();
+            }
+            else 
+            {
+                loggerConfiguration = new LoggerConfiguration().MinimumLevel.Information();
+            }
 
             if (consoleSink)
             {
