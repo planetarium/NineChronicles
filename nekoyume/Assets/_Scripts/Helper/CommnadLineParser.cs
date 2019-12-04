@@ -36,6 +36,8 @@ namespace Nekoyume.Helper
 
         public bool consoleSink;
 
+        public bool development;
+
         [Option("private-key", Required = false, HelpText = "The private key to use.")]
         public string PrivateKey { get => privateKey; set => privateKey = value; }
 
@@ -69,6 +71,13 @@ namespace Nekoyume.Helper
         {
             get => consoleSink;
             set => consoleSink = value;
+        }
+
+        [Option("development", Required = false, HelpText = "Turn on development mode.")]
+        public bool Development
+        {
+            get => development;
+            set => development = value;
         }
     }
 

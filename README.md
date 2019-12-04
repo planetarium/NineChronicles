@@ -33,6 +33,7 @@ Nine Chronicles
  - `--storage-path`: 데이터를 저장할 경로를 지정합니다.
  - `--auto-play`   : 백그라운드에서 캐릭터 생성 및 자동 전투를 수행합니다.
  - `--console-sink`: 로그를 콘솔로 출력합니다.
+ - `--development` : 개발 모드로 실행합니다. 디버그용 UI를 표시하고 로그 레벨을 조정합니다.
 
 #### Unity Editor 에서 커맨드라인 옵션 사용
 

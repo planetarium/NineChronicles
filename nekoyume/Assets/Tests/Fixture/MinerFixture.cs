@@ -36,7 +36,7 @@ namespace Tests
             if (Directory.Exists(_storePath))
                 Directory.Delete(_storePath, recursive: true);
             _agent = new GameObject().AddComponent<TestAgent>();
-            _agent.Init(privateKey, storeName, new List<Peer>(), new List<IceServer>(),  "", null, true);
+            _agent.Init(privateKey, storeName, new List<Peer>(), new List<IceServer>(),  "", null, true, true);
         }
 
         public IEnumerator CoMine(Transaction<PolymorphicAction<ActionBase>> transaction)

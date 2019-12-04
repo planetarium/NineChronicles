@@ -64,7 +64,7 @@ namespace Nekoyume.UI
                 Widget.Create<PreloadingScreen>(true),
 
 #if DEBUG
-                Widget.Create<Cheat>(true),
+                Widget.Create<Cheat>(),
 #endif
                 //최상단 알림 영역.
                 Widget.Create<UpdatePopup>(),

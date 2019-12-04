@@ -184,10 +184,6 @@ namespace Nekoyume
             base.Awake();
 
             Instance = this;
-        }
-
-        private void Start()
-        {
             _modal = transform.Find("Modal");
             _modal.gameObject.SetActive(false);
 #if DEBUG
