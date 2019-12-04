@@ -1,82 +1,75 @@
 
 main_tower.png
-size: 512,512
+size: 64,64
 format: RGBA8888
 filter: Linear,Linear
 repeat: none
-ranking_01
-  rotate: false
-  xy: 2, 10
-  size: 174, 499
-  orig: 174, 499
-  offset: 0, 0
-  index: -1
 ranking_02
   rotate: false
-  xy: 178, 424
+  xy: 21, 20
   size: 13, 42
   orig: 13, 42
   offset: 0, 0
   index: -1
 ranking_03
   rotate: false
-  xy: 178, 468
+  xy: 2, 21
   size: 17, 41
   orig: 17, 41
   offset: 0, 0
   index: -1
 ranking_04
   rotate: false
-  xy: 178, 401
+  xy: 49, 41
   size: 10, 21
   orig: 10, 21
   offset: 0, 0
   index: -1
 ranking_05
-  rotate: true
-  xy: 2, 2
+  rotate: false
+  xy: 21, 7
   size: 6, 11
   orig: 6, 11
   offset: 0, 0
   index: -1
 ranking_06
   rotate: false
-  xy: 178, 382
+  xy: 2, 2
   size: 10, 17
   orig: 10, 17
   offset: 0, 0
   index: -1
 ranking_07
   rotate: false
-  xy: 197, 485
+  xy: 36, 38
   size: 11, 24
   orig: 11, 24
   offset: 0, 0
   index: -1
 ranking_08
   rotate: false
-  xy: 210, 489
+  xy: 36, 16
   size: 11, 20
   orig: 11, 20
   offset: 0, 0
   index: -1
 ranking_09
-  rotate: false
-  xy: 178, 370
+  rotate: true
+  xy: 49, 13
   size: 6, 10
   orig: 6, 10
   offset: 0, 0
   index: -1
 ranking_10
   rotate: false
-  xy: 223, 491
+  xy: 49, 21
   size: 8, 18
   orig: 8, 18
   offset: 0, 0
   index: -1
 ranking_11
   rotate: false
-  xy: 197, 471
+  xy: 14, 7
   size: 5, 12
   orig: 5, 12
   offset: 0, 0
