@@ -11,6 +11,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Nekoyume.Game.Controller;
+using Nekoyume.Game.Mail;
 
 namespace Nekoyume.UI.Scroller
 {
@@ -96,6 +97,9 @@ namespace Nekoyume.UI.Scroller
             foreach (var shadow in _textShadows)
                 shadow.effectColor = Color.black;
             ActionManager.instance.QuestReward(data.Id);
+            var format = LocalizationManager.Localize("NOTIFICATION_QUEST_REQUEST_REWARD");
+            var msg = string.Format(format, data.GetName());
+            Notification.Push(MailType.System, msg);
         }
 
         private void OnClickButton()
