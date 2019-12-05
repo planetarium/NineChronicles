@@ -20,7 +20,6 @@ using Nekoyume.State;
 using Nekoyume.UI;
 using Nekoyume.UI.Model;
 using Spine.Unity;
-using UnityEditorInternal.VersionControl;
 using UnityEngine;
 
 namespace Nekoyume.Game

@@ -30,6 +30,7 @@ Nine Chronicles
  - `--port`        : 사용할 Port를 지정합니다.
  - `--no-miner`    : 마이닝을 사용하지 않습니다.
  - `--peer`        : Peer 를 추가합니다. 추가하려는 Peer가 여럿일 경우 --peer peerA peerB ... 와 같이 추가할 수 있습니다.
+ - `--ice-servers` : NAT 우회에 사용할 TURN 서버 정보를 지정합니다. 지정하는 서버가 여럿일 경우 `--ice-servers serverA serverB` 와 같이 추가할 수 있습니다.
  - `--storage-path`: 데이터를 저장할 경로를 지정합니다.
  - `--auto-play`   : 백그라운드에서 캐릭터 생성 및 자동 전투를 수행합니다.
  - `--console-sink`: 로그를 콘솔로 출력합니다.

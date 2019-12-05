@@ -6,7 +6,6 @@ using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Assets.SimpleLocalization;
@@ -47,12 +46,10 @@ namespace Nekoyume.BlockChain
 #else
         private const string AgentStoreDirName = "planetarium";
 #endif
+        private const string DefaultIceServer = "turn://0ed3e48007413e7c2e638f13ddd75ad272c6c507e081bd76a75e4b7adc86c9af:0apejou+ycZFfwtREeXFKdfLj2gCclKzz5ZJ49Cmy6I=@planetarium-turn.koreacentral.cloudapp.azure.com:3478/";
 
         private static readonly string CommandLineOptionsJsonPath =
             Path.Combine(Application.streamingAssetsPath, "clo.json");
-
-        private const string PeersFileName = "peers.dat";
-        private const string IceServersFileName = "ice_servers.dat";
         private const int MaxSeed = 3;
 
         private string _defaultStoragePath;
@@ -177,8 +174,13 @@ namespace Nekoyume.BlockChain
         private void InitAgent(Action<bool> callback, PrivateKey privateKey)
         {
             var options = GetOptions(CommandLineOptionsJsonPath);
-            var peers = GetPeers(options);
-            var iceServers = GetIceServers();
+            var peers = options.Peers.Select(LoadPeer);
+            var iceServers = options.IceServers.Select(LoadIceServer);
+
+            if (!iceServers.Any())
+            {
+                iceServers = new[] { LoadIceServer(DefaultIceServer) };
+            }
             var host = GetHost(options);
             var port = options.Port;
             var consoleSink = options.ConsoleSink;
@@ -317,18 +319,6 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private static IEnumerable<Peer> GetPeers(CommandLineOptions options)
-        {
-            return options.Peers?.Any() ?? false
-                ? options.Peers.Select(LoadPeer)
-                : LoadConfigLines(PeersFileName).Select(LoadPeer);
-        }
-
-        private static IEnumerable<IceServer> GetIceServers()
-        {
-            return LoadIceServers();
-        }
-
         private static string GetHost(CommandLineOptions options)
         {
             return string.IsNullOrEmpty(options.host) ? null : options.Host;
@@ -344,39 +334,12 @@ namespace Nekoyume.BlockChain
             return new BoundPeer(pubKey, new DnsEndPoint(host, port), 0);
         }
 
-        private static IEnumerable<string> LoadConfigLines(string fileName)
+        private static IceServer LoadIceServer(string iceServerInfo)
         {
-            var userPath = Path.Combine(
-                Application.persistentDataPath,
-                fileName
-            );
-            string content;
+            var uri = new Uri(iceServerInfo);
+            string[] userInfo = uri.UserInfo.Split(':');
 
-            if (File.Exists(userPath))
-            {
-                content = File.ReadAllText(userPath);
-            }
-            else
-            {
-                var assetName = Path.GetFileNameWithoutExtension(fileName);
-                content = Resources.Load<TextAsset>($"Config/{assetName}").text;
-            }
-
-            foreach (var line in Regex.Split(content, "\n|\r|\r\n"))
-            {
-                if (!string.IsNullOrEmpty(line.Trim()))
-                {
-                    yield return line;
-                }
-            }
-        }
-
-        private static IEnumerable<IceServer> LoadIceServers()
-        {
-            return LoadConfigLines(IceServersFileName)
-                .Select(line => new Uri(line))
-                .Select(uri => new {uri, userInfo = uri.UserInfo.Split(':')})
-                .Select(@t => new IceServer(new[] {@t.uri}, @t.userInfo[0], @t.userInfo[1]));
+            return new IceServer(new[] {uri}, userInfo[0], userInfo[1]);
         }
 
         #region Mono
