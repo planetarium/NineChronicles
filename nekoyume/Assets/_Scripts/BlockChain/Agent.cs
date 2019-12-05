@@ -877,10 +877,12 @@ namespace Nekoyume.BlockChain
         private IEnumerator CoLogin(Action<bool> callback)
         {
             var options = GetOptions(CommandLineOptionsJsonPath);
-            var w = Widget.Find<LoginPopup>();
+            var w = Widget.Find<Title>();
             w.Show(options.keyStorePath, options.privateKey);
-            yield return new WaitUntil(() => w.Login);
-            InitAgent(callback, w.GetPrivateKey());
+            var loginPopup = Widget.Find<LoginPopup>();
+            yield return new WaitUntil(() => loginPopup.Login);
+            w.Close();
+            InitAgent(callback, loginPopup.GetPrivateKey());
         }
 
         private IEnumerator CoCheckStagedTxs()

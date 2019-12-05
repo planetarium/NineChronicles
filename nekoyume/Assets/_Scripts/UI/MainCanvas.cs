@@ -62,6 +62,7 @@ namespace Nekoyume.UI
                 Widget.Create<StageLoadingScreen>(),
                 Widget.Create<LoadingScreen>(),
                 Widget.Create<PreloadingScreen>(true),
+                Widget.Create<Title>(true),
 
 #if DEBUG
                 Widget.Create<Cheat>(),
@@ -94,8 +95,6 @@ namespace Nekoyume.UI
             yield return null;
             
             // 일반.
-            _secondWidgets.Add(Widget.Create<Title>());
-            yield return null;
             _secondWidgets.Add(Widget.Create<Synopsis>());
             yield return null;
             _secondWidgets.Add(Widget.Create<Login>());

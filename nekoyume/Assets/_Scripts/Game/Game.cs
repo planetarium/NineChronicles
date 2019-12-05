@@ -99,7 +99,6 @@ namespace Nekoyume.Game
             if (succeed)
             {
                 Widget.Find<PreloadingScreen>().Close();
-                Widget.Find<Title>().Show();
             }
             else
             {
