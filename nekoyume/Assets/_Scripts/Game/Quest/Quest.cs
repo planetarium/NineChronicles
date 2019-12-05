@@ -132,10 +132,10 @@ namespace Nekoyume.Game.Quest
     {
         private readonly List<Quest> quests;
 
-        public QuestList()
+        public QuestList(QuestSheet sheet)
         {
             quests = new List<Quest>();
-            foreach (var questData in Game.instance.TableSheets.QuestSheet.OrderedList)
+            foreach (var questData in sheet.OrderedList)
             {
                 Quest quest;
                 switch (questData)
@@ -185,13 +185,9 @@ namespace Nekoyume.Game.Quest
         }
 
 
-        public QuestList(Bencodex.Types.List serialized) : this()
+        public QuestList(Bencodex.Types.List serialized)
         {
-            var current = serialized.Select(q => Quest.Deserialize((Bencodex.Types.Dictionary) q))
-                .ToList();
-            var currentIds = current.Select(i => i.Id).ToList();
-            quests = quests
-                .Select(q => currentIds.Contains(q.Id) ? current.First(i => i.Id == q.Id) : q)
+            quests = serialized.Select(q => Quest.Deserialize((Bencodex.Types.Dictionary) q))
                 .ToList();
         }
 

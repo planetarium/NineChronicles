@@ -33,6 +33,7 @@ namespace Nekoyume.BlockChain
         public static readonly ActionRenderHandler Instance = Singleton.Value;
 
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
+        public bool pending;
 
         private ActionRenderHandler()
         {
@@ -115,26 +116,9 @@ namespace Nekoyume.BlockChain
 
         private void UpdateCurrentAvatarState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
         {
+            //전투중이면 게임에서의 아바타상태를 바로 업데이트하지말고 쌓아둔다.
             var avatarState = evaluation.OutputStates.GetAvatarState(States.Instance.CurrentAvatarState.Value.address);
-            var questList = avatarState.questList.Where(i => i.Complete && !i.Receive).ToList();
-            if (questList.Count >= 1)
-            {
-                if (questList.Count == 1)
-                {
-                    var quest = questList.First();
-                    var format = LocalizationManager.Localize("NOTIFICATION_QUEST_COMPLETE");
-                    var msg = string.Format(format, quest.GetName());
-                    UI.Notification.Push(MailType.System, msg);
-                }
-                else
-                {
-                    var format = LocalizationManager.Localize("NOTIFICATION_MULTIPLE_QUEST_COMPLETE");
-                    var msg = string.Format(format, questList.Count);
-                    UI.Notification.Push(MailType.System, msg);
-
-                }
-            }
-            UpdateAvatarState(evaluation, States.Instance.CurrentAvatarKey.Value);
+            UpdateCurrentAvatarState(avatarState);
         }
 
         private void UpdateShopState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
@@ -308,7 +292,7 @@ namespace Nekoyume.BlockChain
             UpdateCurrentAvatarState(evaluation);
         }
 
-        private static void UpdateAvatarState(AvatarState avatarState, int index)
+        private void UpdateAvatarState(AvatarState avatarState, int index)
         {
             if (States.Instance.AvatarStates.ContainsKey(index))
             {
@@ -325,7 +309,7 @@ namespace Nekoyume.BlockChain
             States.Instance.AgentState.Value = state;
         }
 
-        public static void UpdateLocalAvatarState(AvatarState avatarState, int index)
+        public void UpdateLocalAvatarState(AvatarState avatarState, int index)
         {
             Debug.LogFormat("Update local avatarState. agentAddress: {0} address: {1} BlockIndex: {2}",
                 avatarState.agentAddress, avatarState.address, avatarState.blockIndex);
@@ -372,7 +356,6 @@ namespace Nekoyume.BlockChain
         
         private void ResponseHackAndSlash(ActionBase.ActionEvaluation<HackAndSlash> eval)
         {
-            UpdateCurrentAvatarState(eval);
             var actionFailPopup = Widget.Find<ActionFailPopup>();
             actionFailPopup.CloseCallback = null;
             actionFailPopup.Close();
@@ -401,6 +384,36 @@ namespace Nekoyume.BlockChain
                 string.Format(format, eval.Action.result.itemUsable.Data.GetLocalizedName()));
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
+        }
+
+        public void UpdateCurrentAvatarState(AvatarState avatarState)
+        {
+            if (pending)
+            {
+                Game.Game.instance.stage.AvatarState = avatarState;
+                return;
+            }
+
+            Game.Game.instance.stage.AvatarState = null;
+            var questList = avatarState.questList.Where(i => i.Complete && !i.Receive).ToList();
+            if (questList.Count >= 1)
+            {
+                if (questList.Count == 1)
+                {
+                    var quest = questList.First();
+                    var format = LocalizationManager.Localize("NOTIFICATION_QUEST_COMPLETE");
+                    var msg = string.Format(format, quest.GetName());
+                    UI.Notification.Push(MailType.System, msg);
+                }
+                else
+                {
+                    var format = LocalizationManager.Localize("NOTIFICATION_MULTIPLE_QUEST_COMPLETE");
+                    var msg = string.Format(format, questList.Count);
+                    UI.Notification.Push(MailType.System, msg);
+
+                }
+            }
+            UpdateAvatarState(avatarState, States.Instance.CurrentAvatarKey.Value);
         }
     }
 }

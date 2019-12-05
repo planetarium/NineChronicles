@@ -29,7 +29,8 @@ namespace Tests
         {
             _address = new Address();
             var agentAddress = new Address();
-            _avatarState = new AvatarState(_address, agentAddress, 1, Game.instance.TableSheets.WorldSheet);
+            _avatarState = new AvatarState(_address, agentAddress, 1, Game.instance.TableSheets.WorldSheet,
+                Game.instance.TableSheets.QuestSheet);
         }
 
         [TearDown]

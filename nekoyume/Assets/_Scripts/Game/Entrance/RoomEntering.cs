@@ -1,5 +1,6 @@
 using System.Collections;
 using Nekoyume.BlockChain;
+using Nekoyume.State;
 using Nekoyume.UI;
 using UnityEngine;
 
@@ -61,6 +62,10 @@ namespace Nekoyume.Game.Entrance
 
             var dialog = Widget.Find<Dialog>();
             dialog.Show(1);
+            if (!(stage.AvatarState is null))
+            {
+                ActionRenderHandler.Instance.UpdateCurrentAvatarState(stage.AvatarState);
+            }
 
             Destroy(this);
         }

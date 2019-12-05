@@ -16,9 +16,11 @@ using Nekoyume.Game.VFX;
 using Nekoyume.Game.VFX.Skill;
 using Nekoyume.Helper;
 using Nekoyume.Model;
+using Nekoyume.State;
 using Nekoyume.UI;
 using Nekoyume.UI.Model;
 using Spine.Unity;
+using UnityEditorInternal.VersionControl;
 using UnityEngine;
 
 namespace Nekoyume.Game
@@ -58,6 +60,7 @@ namespace Nekoyume.Game
 
         public bool IsInStage { get; private set; }
         public Enemy Boss { get; private set; }
+        public AvatarState AvatarState { get; set; }
         public Vector3 SelectPositionBegin(int index) => new Vector3(-2.15f + index * 2.22f, -1.79f, 0.0f);
         public Vector3 SelectPositionEnd(int index) => new Vector3(-2.15f + index * 2.22f, -0.25f, 0.0f);
 
@@ -77,7 +80,6 @@ namespace Nekoyume.Game
             Event.OnNestEnter.AddListener(OnNestEnter);
             Event.OnLoginDetail.AddListener(OnLoginDetail);
             Event.OnRoomEnter.AddListener(OnRoomEnter);
-            Event.OnPlayerDead.AddListener(OnPlayerDead);
             Event.OnStageStart.AddListener(OnStageStart);
         }
 
@@ -145,10 +147,6 @@ namespace Nekoyume.Game
         private void OnRoomEnter()
         {
             gameObject.AddComponent<RoomEntering>();
-        }
-
-        private void OnPlayerDead()
-        {
         }
 
         // todo: 배경 캐싱.
@@ -247,7 +245,6 @@ namespace Nekoyume.Game
         private IEnumerator CoStageEnter(int worldId, int stageId)
         {
             IsInStage = true;
-
             if (!Game.instance.TableSheets.BackgroundSheet.TryGetValue(stageId, out var data))
             {
                 yield break;
@@ -300,6 +297,7 @@ namespace Nekoyume.Game
             Widget.Find<BattleResult>().Show(_battleResultModel);
 
             IsInStage = false;
+            ActionRenderHandler.Instance.pending = false;
             yield return null;
         }
 
@@ -326,6 +324,12 @@ namespace Nekoyume.Game
 
             var battle = Widget.Find<UI.Battle>();
             battle.Show(stageId);
+            if (!(AvatarState is null) && !ActionRenderHandler.Instance.pending)
+            {
+                ActionRenderHandler.Instance.UpdateCurrentAvatarState(AvatarState);
+            }
+
+            ActionRenderHandler.Instance.pending = true;
 
             ActionCamera.instance.ChaseX(player.transform);
             yield return null;
