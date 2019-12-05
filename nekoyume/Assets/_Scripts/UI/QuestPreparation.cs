@@ -421,6 +421,7 @@ namespace Nekoyume.UI
             Game.Event.OnStageStart.Invoke(eval.Action.Result);
             Find<LoadingScreen>().Close();
             Close();
+            ActionRenderHandler.Instance.pending = true;
         }
 
         public EquipSlot FindSelectedItemSlot(ItemSubType type)
