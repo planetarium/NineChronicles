@@ -5,7 +5,7 @@ namespace Nekoyume.UI
 {
     public class Title : ScreenWidget
     {
-        public bool ready = false;
+        private bool _ready;
         public Animator animator;
 
         private string _keyStorePath;
@@ -22,7 +22,7 @@ namespace Nekoyume.UI
 
         public void OnClick()
         {
-            if (!ready)
+            if (!_ready)
                 return;
 
             Find<LoginPopup>().Show(_keyStorePath, _privateKey);
@@ -30,7 +30,7 @@ namespace Nekoyume.UI
 
         public void Ready()
         {
-            ready = true;
+            _ready = true;
             animator.enabled = true;
         }
     }
