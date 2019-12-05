@@ -94,6 +94,7 @@ namespace Nekoyume.UI
         {
             base.Close(ignoreCloseAnimation);
             Find<ModuleBlur>()?.Close();
+            equipmentSlots.Clear();
         }
 
         public void CloseClick()
