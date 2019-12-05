@@ -109,6 +109,9 @@ namespace Nekoyume.Action
                 tableSheets.QuestSheet,
                 name
             );
+#if UNITY_EDITOR
+            AddItemsForTest(avatarState, ctx.Random, tableSheets);
+#endif
             return avatarState;
         }
 
