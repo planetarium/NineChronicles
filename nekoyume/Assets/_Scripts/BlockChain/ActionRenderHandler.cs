@@ -33,7 +33,7 @@ namespace Nekoyume.BlockChain
         public static readonly ActionRenderHandler Instance = Singleton.Value;
 
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
-        public bool pending;
+        public bool Pending;
 
         private ActionRenderHandler()
         {
@@ -356,6 +356,7 @@ namespace Nekoyume.BlockChain
         
         private void ResponseHackAndSlash(ActionBase.ActionEvaluation<HackAndSlash> eval)
         {
+            UpdateCurrentAvatarState(eval);
             var actionFailPopup = Widget.Find<ActionFailPopup>();
             actionFailPopup.CloseCallback = null;
             actionFailPopup.Close();
@@ -388,7 +389,7 @@ namespace Nekoyume.BlockChain
 
         public void UpdateCurrentAvatarState(AvatarState avatarState)
         {
-            if (pending)
+            if (Pending)
             {
                 Game.Game.instance.stage.AvatarState = avatarState;
                 return;

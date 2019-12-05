@@ -53,6 +53,10 @@ namespace Nekoyume.UI
             stage.LoadBackground("room");
             stage.GetPlayer(stage.roomPosition);
 
+            if (!(stage.AvatarState is null))
+            {
+                ActionRenderHandler.Instance.UpdateCurrentAvatarState(stage.AvatarState);
+            }
             var player = stage.GetPlayer();
             player.UpdateEquipments(player.Model.Value.armor, player.Model.Value.weapon);
             player.UpdateCustomize();

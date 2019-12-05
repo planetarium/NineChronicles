@@ -297,7 +297,7 @@ namespace Nekoyume.Game
             Widget.Find<BattleResult>().Show(_battleResultModel);
 
             IsInStage = false;
-            ActionRenderHandler.Instance.pending = false;
+            ActionRenderHandler.Instance.Pending = false;
             yield return null;
         }
 
@@ -324,12 +324,12 @@ namespace Nekoyume.Game
 
             var battle = Widget.Find<UI.Battle>();
             battle.Show(stageId);
-            if (!(AvatarState is null) && !ActionRenderHandler.Instance.pending)
+            if (!(AvatarState is null) && !ActionRenderHandler.Instance.Pending)
             {
                 ActionRenderHandler.Instance.UpdateCurrentAvatarState(AvatarState);
             }
 
-            ActionRenderHandler.Instance.pending = true;
+            ActionRenderHandler.Instance.Pending = true;
 
             ActionCamera.instance.ChaseX(player.transform);
             yield return null;
