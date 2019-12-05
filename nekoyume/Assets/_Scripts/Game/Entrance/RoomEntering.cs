@@ -17,7 +17,7 @@ namespace Nekoyume.Game.Entrance
         {
             var stage = Game.instance.stage;
             var objectPool = stage.objectPool;
-            
+
             Widget.Find<LoadingScreen>().Show();
 
             stage.stageId = 0;
@@ -62,10 +62,6 @@ namespace Nekoyume.Game.Entrance
 
             var dialog = Widget.Find<Dialog>();
             dialog.Show(1);
-            if (!(stage.AvatarState is null))
-            {
-                ActionRenderHandler.Instance.UpdateCurrentAvatarState(stage.AvatarState);
-            }
 
             Destroy(this);
         }
