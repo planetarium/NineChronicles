@@ -121,6 +121,7 @@ namespace Nekoyume.UI
                     passPhraseField.Select();
                     break;
                 case State.Login:
+                    submitButton.interactable = true;
                     titleText.gameObject.SetActive(false);
                     submitText.text = LocalizationManager.Localize("UI_GAME_START");
                     informationText.text = "Login";
@@ -189,6 +190,10 @@ namespace Nekoyume.UI
 
         public void Submit()
         {
+            if (!submitButton.interactable)
+            {
+                return;
+            }
             submitButton.interactable = false;
             switch (_state.Value)
             {
@@ -369,18 +374,39 @@ namespace Nekoyume.UI
 
         private void Update()
         {
-            if (_state.Value == State.SignUp || _state.Value == State.ResetPassphrase)
+            if (Input.GetKeyDown(KeyCode.Return))
             {
-                if (Input.GetKeyUp(KeyCode.Tab))
+                Submit();
+            }
+
+            if (Input.GetKeyUp(KeyCode.Tab))
+            {
+                switch (_state.Value)
                 {
-                    if (passPhraseField.isFocused)
+                    case State.SignUp:
+                    case State.ResetPassphrase:
                     {
-                        retypeField.Select();
+                        {
+                            if (passPhraseField.isFocused)
+                            {
+                                retypeField.Select();
+                            }
+                            else
+                            {
+                                passPhraseField.Select();
+                            }
+                        }
+                        break;
                     }
-                    else
-                    {
-                        passPhraseField.Select();
-                    }
+                    case State.Login:
+                        loginField.Select();
+                        break;
+                    case State.FindPassphrase:
+                        findPassphraseField.Select();
+                        break;
+                    case State.Show:
+                    case State.Failed:
+                        break;
                 }
             }
         }
