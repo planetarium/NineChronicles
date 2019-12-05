@@ -69,7 +69,7 @@ namespace Nekoyume.UI
             }
 
             // status info
-            var tuples = player.Value.GetStatTuples();
+            var tuples = player.GetStatTuples();
             int idx = 0;
             foreach (var (statType, value, additionalValue) in tuples)
             {
@@ -79,7 +79,7 @@ namespace Nekoyume.UI
             }
 
             //option info
-            foreach (var option in player.Value.GetOptions())
+            foreach (var option in player.GetOptions())
             {
                 GameObject go = Instantiate(textOption, optionGroup.transform);
                 var text = go.GetComponent<Text>();

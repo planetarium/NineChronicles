@@ -90,7 +90,7 @@ namespace Nekoyume.UI
                 throw new NotFoundComponentException<Game.Character.Player>();
 
             // stop run immediately.
-            _player.UpdateEquipments(_player.Model.Value.armor, _player.Model.Value.weapon);
+            _player.UpdateEquipments(_player.Model.armor, _player.Model.weapon);
             _player.UpdateCustomize();
             _player.gameObject.SetActive(false);
             _player.gameObject.SetActive(true);
@@ -105,7 +105,7 @@ namespace Nekoyume.UI
                 es.SetOnClickAction(ShowTooltip, Unequip);
             }
 
-            var tuples = _player.Model.Value.GetStatTuples();
+            var tuples = _player.Model.GetStatTuples();
 
             var idx = 0;
             foreach (var (statType, value, additionalValue) in tuples)
@@ -132,7 +132,7 @@ namespace Nekoyume.UI
                     BottomMenu.ToggleableType.IllustratedBook);
             _buttonEnabled.Subscribe(SubscribeReadyToQuest).AddTo(_disposables);
             ReactiveCurrentAvatarState.ActionPoint.Subscribe(SubscribeActionPoint).AddTo(_disposables);
-            _tempStats = _player.Model.Value.Stats.Clone() as CharacterStats;
+            _tempStats = _player.Model.Stats.Clone() as CharacterStats;
         }
 
         public override void Close(bool ignoreCloseAnimation = false)

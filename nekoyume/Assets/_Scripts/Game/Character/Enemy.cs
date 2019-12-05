@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using Nekoyume.Game.Controller;
 using System.Collections.Generic;
+using System.Linq;
 using UniRx;
 using UnityEngine;
 
@@ -10,18 +11,22 @@ namespace Nekoyume.Game.Character
 {
     public class Enemy : CharacterBase
     {
+        public new Model.Enemy Model { get; private set; }
+        
         private Player _player;
 
         private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
-
-        public new readonly ReactiveProperty<Model.Enemy> Model = new ReactiveProperty<Model.Enemy>();
 
         // todo: 적의 이동속도에 따라서 인게임 연출 버그가 발생할 수 있으니 '-1f'로 값을 고정함. 이후 이 문제를 해결해서 몬스터 별 이동속도를 구현할 필요가 있음.
         protected override float RunSpeedDefault => -1f; // Model.Value.RunSpeed;
 
         protected override Vector3 DamageTextForce => new Vector3(0.0f, 0.8f);
         protected override Vector3 HudTextPosition => transform.TransformPoint(0f, 1f, 0f);
+        
+        protected override bool CanRun => base.CanRun && !TargetInAttackRange(_player);
 
+        private SkeletonAnimationController AnimationController { get; set; }
+        
         #region Mono
 
         protected override void Awake()
@@ -55,8 +60,10 @@ namespace Nekoyume.Game.Character
             base.Set(model, updateCurrentHP);
 
             _disposablesForModel.DisposeAllAndClear();
-            Model.SetValueAndForceNotify(model);
+            Model = model;
 
+            UpdateArmor();
+            
             _player = player;
 
             StartRun();
@@ -84,13 +91,8 @@ namespace Nekoyume.Game.Character
         {
             yield return StartCoroutine(base.CoProcessDamage(info, isConsiderDie, isConsiderElementalType));
 
-            if (!IsDead())
+            if (!IsDead)
                 ShowSpeech("ENEMY_DAMAGE");
-        }
-
-        protected override bool CanRun()
-        {
-            return base.CanRun() && !TargetInRange(_player);
         }
 
         protected override IEnumerator Dying()
@@ -104,6 +106,52 @@ namespace Nekoyume.Game.Character
             Event.OnEnemyDead.Invoke(this);
             base.OnDead();
         }
+
+        protected override BoxCollider GetAnimatorHitPointBoxCollider()
+        {
+            return AnimationController.BoxCollider;
+        }
+        
+        #region AttackPoint & HitPoint
+
+        protected override void UpdateHitPoint()
+        {
+            base.UpdateHitPoint();
+            
+            var center = HitPointBoxCollider.center;
+            var size = HitPointBoxCollider.size;
+            HitPointLocalOffset = new Vector3(center.x - size.x / 2, center.y - size.y / 2);
+            attackPoint.transform.localPosition = new Vector3(HitPointLocalOffset.x - Model.attackRange, 0f);
+        }
+        
+        #endregion
+
+        #region Equipments & Customize
+        
+        private const int DefaultCharacter = 201000;
+        
+        private void UpdateArmor()
+        {
+            var armorId = Model?.RowData.Id ?? DefaultCharacter;
+            var spineResourcePath = $"Character/Monster/{armorId}";
+            
+            if (!(Animator.Target is null))
+            {
+                var animatorTargetName = spineResourcePath.Split('/').Last(); 
+                if (Animator.Target.name.Contains(animatorTargetName))
+                    return;
+
+                Animator.DestroyTarget();
+            }
+            
+            var origin = Resources.Load<GameObject>(spineResourcePath);
+            var go = Instantiate(origin, gameObject.transform);
+            AnimationController = go.GetComponent<SkeletonAnimationController>();
+            Animator.ResetTarget(go);
+            UpdateHitPoint();
+        }
+        
+        #endregion
 
         private void OnAnimatorEvent(string eventName)
         {

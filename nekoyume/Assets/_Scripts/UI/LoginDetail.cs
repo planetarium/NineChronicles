@@ -94,8 +94,6 @@ namespace Nekoyume.UI
             var avatarState = AvatarManager.SetIndex(_selectedIndex);
             OnDidAvatarStateLoaded(avatarState);
             AudioController.PlayClick();
-
-            Debug.LogWarning($"customize : {avatarState.hair}, {avatarState.lens}, {avatarState.ear}, {avatarState.tail}");
         }
 
         public void BackClick()

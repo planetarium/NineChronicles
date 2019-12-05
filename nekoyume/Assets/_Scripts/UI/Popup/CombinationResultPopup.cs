@@ -68,7 +68,7 @@ namespace Nekoyume.UI
         private void SetData(Model.CombinationResultPopup data)
         {
             if (data is null)
-            {
+            {                   
                 Clear();
                 return;
             }
@@ -96,10 +96,9 @@ namespace Nekoyume.UI
                 itemInformation.gameObject.SetActive(false);
                 return;
             }
-
+            
             var item = Model.itemInformation.Value.item.Value.ItemBase.Value;
-
-            bool isEquipment = item is Equipment;
+            var isEquipment = item is Equipment;
             materialPlusImage.gameObject.SetActive(isEquipment);
             
             //resultItemVfx.SetActive(false);

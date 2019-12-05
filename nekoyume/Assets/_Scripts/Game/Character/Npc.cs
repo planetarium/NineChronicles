@@ -1,4 +1,3 @@
-using Nekoyume.UI;
 using UniRx;
 using UnityEngine;
 

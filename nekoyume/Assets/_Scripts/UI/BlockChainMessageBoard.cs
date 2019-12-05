@@ -24,9 +24,9 @@ namespace Nekoyume.UI
         private static readonly string[] AnimationTextAtlas = {".", "..", "..."};
         private static readonly int AnimationTextAtlasLength = AnimationTextAtlas.Length;
 
-        [SerializeField] private GameObject panel;
-        [SerializeField] private TextMeshProUGUI messageText;
-        [SerializeField] private TextMeshProUGUI animationText;
+        public GameObject panel;
+        public TextMeshProUGUI messageText;
+        public TextMeshProUGUI animationText;
 
         private AnimationState _currentAnimationState;
         private AnimationState _nextAnimationState;
@@ -69,7 +69,6 @@ namespace Nekoyume.UI
 
         private async void UpdateAnimation()
         {
-            Debug.LogWarning("UpdateAnimation() started");
             _animationTextAtlasIndex = 0;
             while (_currentAnimationState == AnimationState.On)
             {
@@ -79,8 +78,6 @@ namespace Nekoyume.UI
                     ? _animationTextAtlasIndex + 1
                     : 0;
             }
-
-            Debug.LogWarning("UpdateAnimation() ended");
         }
     }
 }
