@@ -30,6 +30,8 @@ namespace Nekoyume.Helper
 
         public string[] peers = new string[]{ };
 
+        public string[] iceServers = new string[]{ };
+
         public string storagePath;
 
         public bool autoPlay;
@@ -56,6 +58,9 @@ namespace Nekoyume.Helper
 
         [Option("no-miner", Required = false, HelpText = "Do not mine block.")]
         public bool NoMiner { get => noMiner; set => noMiner = value; }
+        
+        [Option("ice-servers", Required = false, HelpText = "STUN/TURN servers to use. (Usage: --ice-servers serverA serverB ...)")]
+        public IEnumerable<string> IceServers { get => iceServers; set => iceServers = value.ToArray(); }
 
         [Option("peer", Required = false, HelpText = "Peers to add. (Usage: --peer peerA peerB ...)")]
         public IEnumerable<string> Peers { get => peers; set => peers = value.ToArray(); }
