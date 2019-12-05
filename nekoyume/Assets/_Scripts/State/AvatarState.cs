@@ -48,6 +48,7 @@ namespace Nekoyume.State
             Address agentAddress, 
             long blockIndex, 
             WorldSheet worldSheet,
+            QuestSheet questSheet,
             string name = null) : base(address)
         {
             if (address == null)
@@ -65,7 +66,7 @@ namespace Nekoyume.State
 #endif
             updatedAt = DateTimeOffset.UtcNow;
             this.agentAddress = agentAddress;
-            questList = new QuestList();
+            questList = new QuestList(questSheet);
             mailBox = new MailBox();
             this.blockIndex = blockIndex;
             actionPoint = GameConfig.ActionPoint;

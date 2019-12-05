@@ -26,7 +26,8 @@ namespace Tests
             _random = new TestRandom();
             var address = new Address();
             var agentAddress = new Address();
-            var avatarState = new AvatarState(address, agentAddress, 1, Game.instance.TableSheets.WorldSheet);
+            var avatarState = new AvatarState(address, agentAddress, 1, Game.instance.TableSheets.WorldSheet,
+                Game.instance.TableSheets.QuestSheet);
             var simulator = new Simulator(_random, avatarState, new List<Consumable>(), 1, 1);
             _player = simulator.Player;
             _player.InitAI();

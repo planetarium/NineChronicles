@@ -106,6 +106,7 @@ namespace Nekoyume.Action
                 ctx.Signer, 
                 ctx.BlockIndex, 
                 tableSheets.WorldSheet,
+                tableSheets.QuestSheet,
                 name
             );
 #if UNITY_EDITOR

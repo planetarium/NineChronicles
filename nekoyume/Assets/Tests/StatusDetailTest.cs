@@ -22,7 +22,8 @@ namespace Tests
         {
             var address = new Address();
             var agentAddress = new Address();
-            var avatarState = new AvatarState(address, agentAddress, 1, Game.instance.TableSheets.WorldSheet);
+            var avatarState = new AvatarState(address, agentAddress, 1, Game.instance.TableSheets.WorldSheet,
+                Game.instance.TableSheets.QuestSheet);
             var go = Game.instance.stage.playerFactory.Create(avatarState);
             _player = go.GetComponent<Player>();
 
