@@ -477,14 +477,5 @@ namespace Nekoyume.UI
         {
             accountImage.Set(address);
         }
-
-        public void Exit()
-        {
-#if UNITY_EDITOR
-            UnityEditor.EditorApplication.ExitPlaymode();
-#else
-            Application.Quit();
-#endif
-        }
     }
 }
