@@ -129,11 +129,11 @@ namespace Nekoyume.BlockChain
         }
 
         public void Init(
-            PrivateKey privateKey, 
-            string path, 
+            PrivateKey privateKey,
+            string path,
             IEnumerable<Peer> peers,
-            IEnumerable<IceServer> iceServers, 
-            string host, 
+            IEnumerable<IceServer> iceServers,
+            string host,
             int? port,
             bool consoleSink,
             bool development)
@@ -185,19 +185,20 @@ namespace Nekoyume.BlockChain
             var storagePath = options.StoragePath ?? _defaultStoragePath;
             var development = options.Development;
             Init(
-                privateKey, 
-                storagePath, 
-                peers, 
-                iceServers, 
-                host, 
-                port, 
-                consoleSink, 
+                privateKey,
+                storagePath,
+                peers,
+                iceServers,
+                host,
+                port,
+                consoleSink,
                 development
             );
 
             // 별도 쓰레드에서는 GameObject.GetComponent<T> 를 사용할 수 없기때문에 미리 선언.
             var loadingScreen = Widget.Find<PreloadingScreen>();
-            BootstrapStarted += (_, state) => { loadingScreen.Message = LocalizationManager.Localize("UI_LOADING_BOOTSTRAP_START"); };
+            BootstrapStarted += (_, state) =>
+                loadingScreen.Message = LocalizationManager.Localize("UI_LOADING_BOOTSTRAP_START");
             PreloadProcessed += (_, state) =>
             {
                 if (loadingScreen)
@@ -450,7 +451,7 @@ namespace Nekoyume.BlockChain
             {
                 loggerConfiguration = new LoggerConfiguration().MinimumLevel.Verbose();
             }
-            else 
+            else
             {
                 loggerConfiguration = new LoggerConfiguration().MinimumLevel.Information();
             }
@@ -704,7 +705,7 @@ namespace Nekoyume.BlockChain
                 var task = Task.Run(async () =>
                 {
                     var block = await blocks.MineBlock(Address);
-                    if (_swarm.Running) 
+                    if (_swarm.Running)
                     {
                         _swarm.BroadcastBlocks(new[] {block});
                     }
@@ -775,7 +776,6 @@ namespace Nekoyume.BlockChain
         {
             Debug.LogFormat("Enqueue GameAction: {0} Id: {1}", gameAction, gameAction.Id);
             _queuedActions.Enqueue(gameAction);
-            Debug.LogWarning($"OnEnqueueOwnGameAction({gameAction.Id})");
             OnEnqueueOwnGameAction?.Invoke(gameAction.Id);
         }
 
@@ -897,7 +897,6 @@ namespace Nekoyume.BlockChain
                 {
                     if (txs.Count == 0)
                     {
-                        Debug.LogWarning("OnHasOwnTx(false)");
                         hasOwnTx = false;
                         OnHasOwnTx?.Invoke(false);
                     }
@@ -906,12 +905,11 @@ namespace Nekoyume.BlockChain
                 {
                     if (txs.Count > 0)
                     {
-                        Debug.LogWarning("OnHasOwnTx(true)");
                         hasOwnTx = true;
                         OnHasOwnTx?.Invoke(true);
-                    }   
+                    }
                 }
-                
+
                 yield return new WaitForSeconds(.3f);
             }
         }
