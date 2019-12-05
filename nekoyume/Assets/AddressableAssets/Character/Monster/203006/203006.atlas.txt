@@ -1,13 +1,300 @@
 
 203006.png
-size: 512,512
+size: 1024,1024
 format: RGBA8888
 filter: Linear,Linear
 repeat: none
-203006
+arm_L_01
+  rotate: true
+  xy: 2, 199
+  size: 75, 64
+  orig: 75, 64
+  offset: 0, 0
+  index: -1
+arm_L_02
+  rotate: true
+  xy: 911, 941
+  size: 23, 80
+  orig: 23, 80
+  offset: 0, 0
+  index: -1
+arm_L_03
   rotate: false
-  xy: 2, 122
-  size: 437, 315
-  orig: 437, 315
+  xy: 228, 584
+  size: 50, 56
+  orig: 50, 56
+  offset: 0, 0
+  index: -1
+arm_R
+  rotate: false
+  xy: 2, 276
+  size: 57, 104
+  orig: 57, 104
+  offset: 0, 0
+  index: -1
+arm_R_01
+  rotate: true
+  xy: 189, 504
+  size: 57, 48
+  orig: 57, 48
+  offset: 0, 0
+  index: -1
+arm_R_02
+  rotate: true
+  xy: 372, 808
+  size: 19, 80
+  orig: 19, 80
+  offset: 0, 0
+  index: -1
+arm_R_03
+  rotate: true
+  xy: 468, 824
+  size: 55, 65
+  orig: 55, 65
+  offset: 0, 0
+  index: -1
+back_1
+  rotate: false
+  xy: 715, 937
+  size: 101, 83
+  orig: 101, 83
+  offset: 0, 0
+  index: -1
+back_2
+  rotate: true
+  xy: 217, 936
+  size: 84, 229
+  orig: 84, 229
+  offset: 0, 0
+  index: -1
+body_00
+  rotate: false
+  xy: 2, 125
+  size: 68, 72
+  orig: 68, 72
+  offset: 0, 0
+  index: -1
+body_01
+  rotate: true
+  xy: 74, 640
+  size: 152, 146
+  orig: 152, 146
+  offset: 0, 0
+  index: -1
+body_02
+  rotate: true
+  xy: 818, 943
+  size: 77, 91
+  orig: 77, 91
+  offset: 0, 0
+  index: -1
+body_03
+  rotate: false
+  xy: 372, 829
+  size: 94, 105
+  orig: 94, 105
+  offset: 0, 0
+  index: -1
+body_04
+  rotate: false
+  xy: 2, 4
+  size: 57, 36
+  orig: 57, 36
+  offset: 0, 0
+  index: -1
+body_05
+  rotate: true
+  xy: 2, 42
+  size: 81, 50
+  orig: 81, 50
+  offset: 0, 0
+  index: -1
+body_06
+  rotate: true
+  xy: 911, 966
+  size: 54, 105
+  orig: 54, 105
+  offset: 0, 0
+  index: -1
+cape_L
+  rotate: true
+  xy: 448, 947
+  size: 73, 160
+  orig: 73, 160
+  offset: 0, 0
+  index: -1
+cloth_03
+  rotate: false
+  xy: 534, 892
+  size: 69, 53
+  orig: 69, 53
+  offset: 0, 0
+  index: -1
+cloth_L
+  rotate: false
+  xy: 74, 503
+  size: 113, 135
+  orig: 113, 135
+  offset: 0, 0
+  index: -1
+cloth_R
+  rotate: true
+  xy: 217, 806
+  size: 128, 153
+  orig: 128, 153
+  offset: 0, 0
+  index: -1
+ear_L
+  rotate: false
+  xy: 280, 614
+  size: 13, 26
+  orig: 13, 26
+  offset: 0, 0
+  index: -1
+ear_R
+  rotate: true
+  xy: 993, 939
+  size: 25, 29
+  orig: 25, 29
+  offset: 0, 0
+  index: -1
+face_01
+  rotate: true
+  xy: 679, 876
+  size: 64, 31
+  orig: 64, 31
+  offset: 0, 0
+  index: -1
+face_02
+  rotate: false
+  xy: 535, 835
+  size: 65, 55
+  orig: 65, 55
+  offset: 0, 0
+  index: -1
+face_03
+  rotate: true
+  xy: 302, 649
+  size: 29, 21
+  orig: 29, 21
+  offset: 0, 0
+  index: -1
+face_04
+  rotate: false
+  xy: 712, 876
+  size: 29, 21
+  orig: 29, 21
+  offset: 0, 0
+  index: -1
+foot_L
+  rotate: true
+  xy: 605, 894
+  size: 46, 72
+  orig: 46, 72
+  offset: 0, 0
+  index: -1
+glow_fire
+  rotate: false
+  xy: 468, 881
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+hair_L
+  rotate: false
+  xy: 189, 563
+  size: 37, 75
+  orig: 37, 75
+  offset: 0, 0
+  index: -1
+hair_R
+  rotate: false
+  xy: 54, 47
+  size: 25, 76
+  orig: 25, 76
+  offset: 0, 0
+  index: -1
+hand_L_01
+  rotate: false
+  xy: 327, 674
+  size: 42, 46
+  orig: 42, 46
+  offset: 0, 0
+  index: -1
+hand_L_02
+  rotate: false
+  xy: 768, 901
+  size: 33, 34
+  orig: 33, 34
+  offset: 0, 0
+  index: -1
+hand_L_03
+  rotate: false
+  xy: 228, 563
+  size: 13, 19
+  orig: 13, 19
+  offset: 0, 0
+  index: -1
+hand_R
+  rotate: false
+  xy: 712, 899
+  size: 54, 36
+  orig: 54, 36
+  offset: 0, 0
+  index: -1
+head
+  rotate: false
+  xy: 222, 680
+  size: 103, 124
+  orig: 103, 124
+  offset: 0, 0
+  index: -1
+shadow
+  rotate: true
+  xy: 2, 496
+  size: 296, 70
+  orig: 296, 70
+  offset: 0, 0
+  index: -1
+shoulder_L
+  rotate: false
+  xy: 327, 722
+  size: 41, 82
+  orig: 41, 82
+  offset: 0, 0
+  index: -1
+shoulder_L_02
+  rotate: false
+  xy: 2, 382
+  size: 65, 112
+  orig: 65, 112
+  offset: 0, 0
+  index: -1
+shoulder_R_01
+  rotate: true
+  xy: 610, 942
+  size: 78, 103
+  orig: 78, 103
+  offset: 0, 0
+  index: -1
+tear
+  rotate: true
+  xy: 535, 825
+  size: 8, 19
+  orig: 8, 19
+  offset: 0, 0
+  index: -1
+thigh_L
+  rotate: true
+  xy: 222, 642
+  size: 36, 78
+  orig: 36, 78
+  offset: 0, 0
+  index: -1
+weapon
+  rotate: false
+  xy: 2, 794
+  size: 213, 226
+  orig: 213, 226
   offset: 0, 0
   index: -1
