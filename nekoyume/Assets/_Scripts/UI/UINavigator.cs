@@ -18,6 +18,7 @@ namespace Nekoyume.UI
             None,
             Back,
             Main,
+            Battle,
             Quit
         }
     }

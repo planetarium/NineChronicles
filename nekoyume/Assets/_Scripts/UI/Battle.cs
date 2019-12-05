@@ -23,11 +23,11 @@ namespace Nekoyume.UI
             base.Show();
             stageTitle.Show(stage);
 
-            Find<BottomMenu>()?.Show(
-                UINavigator.NavigationType.None,
+            var bottomMenu = Find<BottomMenu>();
+            bottomMenu?.Show(
+                UINavigator.NavigationType.Battle,
                 null,
                 true,
-                BottomMenu.ToggleableType.LeaveBattle,
                 BottomMenu.ToggleableType.Mail,
                 BottomMenu.ToggleableType.Quest,
                 BottomMenu.ToggleableType.Chat,

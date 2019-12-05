@@ -13,7 +13,6 @@ namespace Nekoyume.UI.Module
     {
         public enum ToggleableType
         {
-            LeaveBattle,
             Mail,
             Quest,
             Chat,
@@ -42,6 +41,7 @@ namespace Nekoyume.UI.Module
         }
 
         // 네비게이션 버튼.
+        public GlowingButton leaveBattleButton;
         public NormalButton quitButton;
         public NormalButton mainButton;
         public NormalButton backButton;
@@ -49,7 +49,6 @@ namespace Nekoyume.UI.Module
         // 토글 그룹과 버튼.
         private ToggleGroup _toggleGroup;
         public IToggleGroup ToggleGroup => _toggleGroup;
-        public NotifiableButton leaveBattleButton;
         public NotifiableButton chatButton;
         public NotifiableButton mailButton;
         public NotifiableButton questButton;
@@ -156,7 +155,6 @@ namespace Nekoyume.UI.Module
 
             if (!useShowButtons)
             {
-                leaveBattleButton.Show();
                 mailButton.Show();
                 questButton.Show();
                 chatButton.Show();
@@ -169,7 +167,6 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            leaveBattleButton.Hide();
             mailButton.Hide();
             questButton.Hide();
             chatButton.Hide();
@@ -183,9 +180,6 @@ namespace Nekoyume.UI.Module
             {
                 switch (toggleableType)
                 {
-                    case ToggleableType.LeaveBattle:
-                        leaveBattleButton.Show();
-                        break;
                     case ToggleableType.Mail:
                         mailButton.Show();
                         break;
@@ -237,21 +231,31 @@ namespace Nekoyume.UI.Module
             switch (navigationType)
             {
                 case UINavigator.NavigationType.None:
+                    leaveBattleButton.Hide();
                     backButton.Hide();
                     mainButton.Hide();
                     quitButton.Hide();
                     break;
                 case UINavigator.NavigationType.Back:
+                    leaveBattleButton.Hide();
                     backButton.Show();
                     mainButton.Hide();
                     quitButton.Hide();
                     break;
                 case UINavigator.NavigationType.Main:
+                    leaveBattleButton.Hide();
                     backButton.Hide();
                     mainButton.Show();
                     quitButton.Hide();
                     break;
+                case UINavigator.NavigationType.Battle:
+                    leaveBattleButton.Show();
+                    backButton.Hide();
+                    mainButton.Hide();
+                    quitButton.Hide();
+                    break;
                 case UINavigator.NavigationType.Quit:
+                    leaveBattleButton.Hide();
                     backButton.Hide();
                     mainButton.Hide();
                     quitButton.Show();
