@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Assets.SimpleLocalization;
 using Nekoyume.Game.Controller;
+using Nekoyume.Game.Item;
 using Nekoyume.UI.Module;
 using TMPro;
 using UniRx;
@@ -12,12 +13,13 @@ namespace Nekoyume.UI
 {
     public class CombinationResultPopup : PopupWidget
     {
-        public TextMeshProUGUI titleText;
-        public ItemInformation itemInformation;
+        public TextMeshProUGUI itemNameText;
+        public CombinationItemInformation itemInformation;
         public TextMeshProUGUI materialText;
         public SimpleCountableItemView[] materialItems;
         public Button submitButton;
         public TextMeshProUGUI submitButtonText;
+        public Image materialPlusImage;
         public GameObject resultItemVfx;
         
         private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
@@ -52,7 +54,7 @@ namespace Nekoyume.UI
 
         public void Pop(Model.CombinationResultPopup data)
         {
-            if (ReferenceEquals(data, null))
+            if (data is null)
             {
                 return;
             }
@@ -65,8 +67,8 @@ namespace Nekoyume.UI
 
         private void SetData(Model.CombinationResultPopup data)
         {
-            if (ReferenceEquals(data, null))
-            {
+            if (data is null)
+            {                   
                 Clear();
                 return;
             }
@@ -88,42 +90,48 @@ namespace Nekoyume.UI
 
         private void UpdateView()
         {
-            if (ReferenceEquals(Model, null))
+            var item = Model.itemInformation.Value.item.Value.ItemBase.Value;
+
+            if (Model is null)
             {
-                titleText.text = LocalizationManager.Localize("UI_COMBINATION_ERROR");
+                itemNameText.text = LocalizationManager.Localize("UI_COMBINATION_ERROR");
                 itemInformation.gameObject.SetActive(false);
-                
                 return;
             }
+
+            bool isEquipment = item is Equipment;
+            materialPlusImage.gameObject.SetActive(isEquipment);
             
-            resultItemVfx.SetActive(false);
+            //resultItemVfx.SetActive(false);
             if (Model.isSuccess)
             {
-                titleText.text = LocalizationManager.Localize("UI_COMBINATION_SUCCESS");
+                itemNameText.text = item.GetLocalizedName();
                 itemInformation.gameObject.SetActive(true);
-                resultItemVfx.SetActive(true);
+                //resultItemVfx.SetActive(true);
                 AudioController.instance.PlaySfx(AudioController.SfxCode.Success);
             }
             else
             {
-                titleText.text = LocalizationManager.Localize("UI_COMBINATION_FAIL");
+                itemNameText.text = LocalizationManager.Localize("UI_COMBINATION_FAIL");
                 itemInformation.gameObject.SetActive(false);
                 AudioController.instance.PlaySfx(AudioController.SfxCode.Failed);
             }
 
             using (var e = Model.materialItems.GetEnumerator())
             {
-                foreach (var item in materialItems)
+                foreach (var material in materialItems)
                 {
                     e.MoveNext();
-                    if (ReferenceEquals(e.Current, null))
+                    if (e.Current is null)
                     {
-                        item.Clear();
+                        material.Clear();
+                        material.gameObject.SetActive(false);
                     }
                     else
                     {
                         var data = e.Current;
-                        item.SetData(data);
+                        material.SetData(data);
+                        material.gameObject.SetActive(true);
                     }
                 }
             }

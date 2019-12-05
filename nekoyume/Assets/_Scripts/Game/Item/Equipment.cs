@@ -12,11 +12,11 @@ namespace Nekoyume.Game.Item
     public class Equipment : ItemUsable
     {
         public bool equipped = false;
-
-        public new EquipmentItemSheet.Row Data { get; }
-
         public int level;
         public int levelStats = 5;
+
+        public new EquipmentItemSheet.Row Data { get; }
+        public StatType UniqueStatType => Data.Stat.Type;
 
         public Equipment(EquipmentItemSheet.Row data, Guid id) : base(data, id)
         {
@@ -32,13 +32,6 @@ namespace Nekoyume.Game.Item
         public bool Unequip()
         {
             equipped = false;
-            return true;
-        }
-
-        public bool TryGetUniqueStat(out StatType statType, out int value, bool ignoreAdditional = false)
-        {
-            statType = Data.Stat.Type;
-            value = StatsMap.GetValue(statType, ignoreAdditional);
             return true;
         }
 
@@ -88,9 +81,9 @@ namespace Nekoyume.Game.Item
             var options = new List<object>();
             options.AddRange(Skills);
             options.AddRange(BuffSkills);
-            foreach (var (statType, value) in StatsMap.GetAdditionalStats())
+            foreach (var statMapEx in StatsMap.GetAdditionalStats())
             {
-                options.Add(new StatModifier(statType, StatModifier.OperationType.Add, value));
+                options.Add(new StatModifier(statMapEx));
             }
 
             return options;

@@ -25,7 +25,7 @@ namespace Nekoyume.UI
 
         public TextMeshProUGUI consumableTitleText;
         public EquipSlot[] consumableSlots;
-        public StatusInfo[] statusRows;
+        public DetailedStatView[] statusRows;
         public TextMeshProUGUI equipmentTitleText;
         public EquipmentSlots equipmentSlots;
 
@@ -111,7 +111,7 @@ namespace Nekoyume.UI
             foreach (var (statType, value, additionalValue) in tuples)
             {
                 var info = statusRows[idx];
-                info.Set(statType, value, additionalValue);
+                info.Show(statType, value, additionalValue);
                 _additionalStats[statType] = additionalValue;
                 ++idx;
             }

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Assets.SimpleLocalization;
 using Nekoyume.Game;
 using Nekoyume.TableData;
@@ -9,14 +8,14 @@ using UnityEngine;
 
 namespace Nekoyume.UI.Model
 {
-    public class ItemInformationSkill : IDisposable
+    public class SkillView : IDisposable
     {
         public readonly ReactiveProperty<Sprite> iconSprite = new ReactiveProperty<Sprite>();
         public readonly ReactiveProperty<string> name = new ReactiveProperty<string>();
         public readonly ReactiveProperty<string> power = new ReactiveProperty<string>();
         public readonly ReactiveProperty<string> chance = new ReactiveProperty<string>();
 
-        public ItemInformationSkill(MaterialItemSheet.Row itemRow)
+        public SkillView(MaterialItemSheet.Row itemRow)
         {
             if (!Game.Game.instance.TableSheets.SkillSheet.TryGetValue(itemRow.SkillId, out var skillRow))
             {
@@ -31,7 +30,7 @@ namespace Nekoyume.UI.Model
                 $"{LocalizationManager.Localize("UI_SKILL_CHANCE")}: {itemRow.SkillChanceMin}% - {itemRow.SkillChanceMax}%";
         }
 
-        public ItemInformationSkill(Skill skill)
+        public SkillView(Skill skill)
         {
             iconSprite.Value = skill.skillRow.GetIcon();
             name.Value = skill.skillRow.GetLocalizedName();
@@ -39,7 +38,7 @@ namespace Nekoyume.UI.Model
             chance.Value = $"{LocalizationManager.Localize("UI_SKILL_CHANCE")}: {skill.chance}%";
         }
         
-        public ItemInformationSkill(BuffSkill skill)
+        public SkillView(BuffSkill skill)
         {
             var powerValue = string.Empty;
             var buffs = skill.skillRow.GetBuffs();

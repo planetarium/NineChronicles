@@ -20,7 +20,7 @@ namespace Nekoyume.UI
         public EquipmentSlots equipmentSlots;
         public GameObject textOption;
         public GameObject optionGroup;
-        public StatusInfo[] statusRows;
+        public DetailedStatView[] statusRows;
 
         private Game.Character.Player _player;
 
@@ -74,7 +74,7 @@ namespace Nekoyume.UI
             foreach (var (statType, value, additionalValue) in tuples)
             {
                 var info = statusRows[idx];
-                info.Set(statType, value, additionalValue);
+                info.Show(statType, value, additionalValue);
                 ++idx;
             }
 

@@ -433,11 +433,10 @@ namespace Nekoyume.Action
             if (itemRow.StatType == StatType.NONE)
             {
                 statMap = null;
-
                 return false;
             }
 
-            var key = itemRow.StatType.Value;
+            var key = itemRow.StatType;
             var value = Math.Floor(itemRow.StatMin + (itemRow.StatMax - itemRow.StatMin) * roll);
             statMap = new StatMap(key, value);
             return true;

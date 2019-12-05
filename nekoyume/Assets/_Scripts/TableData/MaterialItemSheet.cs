@@ -16,7 +16,7 @@ namespace Nekoyume.TableData
         {
             public HashDigest<SHA256> ItemId { get; private set; }
             public override ItemType ItemType => ItemType.Material;
-            public StatType? StatType { get; private set; }
+            public StatType StatType { get; private set; }
             public int StatMin { get; private set; }
             public int StatMax { get; private set; }
             public int SkillId { get; private set; }
@@ -44,7 +44,7 @@ namespace Nekoyume.TableData
             {
                 base.Set(fields);
                 StatType = string.IsNullOrEmpty(fields[4])
-                    ? EnumType.StatType.NONE
+                    ? StatType.NONE
                     : (StatType) Enum.Parse(typeof(StatType), fields[4]);
                 StatMin = string.IsNullOrEmpty(fields[5]) ? 0 : int.Parse(fields[5]);
                 StatMax = string.IsNullOrEmpty(fields[6]) ? 0 : int.Parse(fields[6]);
@@ -58,7 +58,7 @@ namespace Nekoyume.TableData
 
             public override IValue Serialize() => new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
             {
-                [(Text) "stat_type"] = (StatType ?? EnumType.StatType.NONE).Serialize(),
+                [(Text) "stat_type"] = StatType.Serialize(),
                 [(Text) "stat_min"] = (Integer) StatMin,
                 [(Text) "stat_max"] = (Integer) StatMax,
                 [(Text) "skill_id"] = (Integer) SkillId,

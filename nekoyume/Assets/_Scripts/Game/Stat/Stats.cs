@@ -180,8 +180,8 @@ namespace Nekoyume.Game
                 yield return (StatType.HP, HP);
                 yield return (StatType.ATK, ATK);
                 yield return (StatType.DEF, DEF);
-                yield return (StatType.DOG, DOG);
                 yield return (StatType.CRI, CRI);
+                yield return (StatType.DOG, DOG);
                 yield return (StatType.SPD, SPD);
             }
         }

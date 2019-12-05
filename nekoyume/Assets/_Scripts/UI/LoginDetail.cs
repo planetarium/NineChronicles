@@ -28,7 +28,7 @@ namespace Nekoyume.UI
         public TextMeshProUGUI paletteEarText;
         public TextMeshProUGUI paletteTailText;
         public TextMeshProUGUI jobDescriptionText;
-        public StatusInfo[] statusRows;
+        public DetailedStatView[] statusRows;
 
         public Button warriorButton;
         public Button archerButton;
@@ -156,7 +156,7 @@ namespace Nekoyume.UI
             foreach(var (statType, value, additionalValue) in tuples)
             {
                 var info = statusRows[idx];
-                info.Set(statType, value, additionalValue);
+                info.Show(statType, value, additionalValue);
                 ++idx;
             }
         }

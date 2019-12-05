@@ -3,13 +3,11 @@ using System.Collections.Generic;
 using TMPro;
 using UniRx;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
-    public class ItemInformationSkill : MonoBehaviour
+    public class SkillView : VanillaSkillView
     {
-        public Image iconImage;
         public RectTransform informationArea;
         public TextMeshProUGUI nameText;
         public TextMeshProUGUI powerText;
@@ -17,10 +15,9 @@ namespace Nekoyume.UI.Module
         
         private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
 
-        public bool IsShow => gameObject.activeSelf;
-        public Model.ItemInformationSkill Model { get; private set; }
+        public Model.SkillView Model { get; private set; }
 
-        public void Show(Model.ItemInformationSkill model)
+        public void SetData(Model.SkillView model)
         {
             if (model is null)
             {
@@ -28,19 +25,19 @@ namespace Nekoyume.UI.Module
                 
                 return;
             }
-            
+
             _disposablesForModel.DisposeAllAndClear();
             Model = model;
-            Model.iconSprite.SubscribeTo(iconImage).AddTo(_disposablesForModel);
             Model.name.SubscribeToText(nameText).AddTo(_disposablesForModel);
             Model.power.SubscribeToText(powerText).AddTo(_disposablesForModel);
             Model.chance.SubscribeToText(chanceText).AddTo(_disposablesForModel);
-            gameObject.SetActive(true);
+
+            base.SetData(model.iconSprite.Value);
         }
 
-        public void Hide()
+        public override void Hide()
         {
-            gameObject.SetActive(false);
+            base.Hide();
             Model?.Dispose();
             Model = null;
             _disposablesForModel.DisposeAllAndClear();

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Assets.SimpleLocalization;
 using Nekoyume.EnumType;
+using Nekoyume.Game;
 using Nekoyume.Game.Item;
 using Nekoyume.TableData;
 using Nekoyume.UI.Model;
@@ -25,33 +26,33 @@ namespace Nekoyume.UI.Module
         [Serializable]
         public struct DescriptionArea
         {
-            public RectTransform root;
-            public TextMeshProUGUI text;
+            public GameObject itemDescriptionGameObject;
+            public TextMeshProUGUI itemDescriptionText;
+            public GameObject dividerImageGameObject;
+            public GameObject commonGameObject;
+            public TextMeshProUGUI commonText;
+            public GameObject levelLimitGameObject;
+            public TextMeshProUGUI levelLimitText;
         }
 
         [Serializable]
         public struct StatsArea
         {
             public RectTransform root;
-            public TextMeshProUGUI commonText;
-            public TextMeshProUGUI levelLimitText;
-            public ItemInformationStat statPrefab;
-            public List<ItemInformationStat> stats;
+            public List<BulletedStatView> stats;
         }
 
         [Serializable]
         public struct SkillsArea
         {
             public RectTransform root;
-            public ItemInformationSkill skillPrefab;
-            public List<ItemInformationSkill> skills;
+            public List<SkillView> skills;
         }
 
         public IconArea iconArea;
         public DescriptionArea descriptionArea;
         public StatsArea statsArea;
         public SkillsArea skillsArea;
-        public SkillsArea buffSkillsArea;
 
         public Model.ItemInformation Model { get; private set; }
 
@@ -87,7 +88,6 @@ namespace Nekoyume.UI.Module
             UpdateDescriptionArea();
             UpdateStatsArea();
             UpdateSkillsArea();
-            UpdateBuffSkillsArea();
         }
 
         private void UpdateViewIconArea()
@@ -130,6 +130,7 @@ namespace Nekoyume.UI.Module
 
                 image.enabled = true;
                 image.overrideSprite = sprite;
+                image.SetNativeSize();
             }
 
             // 텍스트.
@@ -148,13 +149,13 @@ namespace Nekoyume.UI.Module
         {
             if (Model?.item.Value is null)
             {
-                descriptionArea.root.gameObject.SetActive(false);
+                descriptionArea.itemDescriptionGameObject.SetActive(false);
 
                 return;
             }
 
-            descriptionArea.text.text = Model.item.Value.ItemBase.Value.GetLocalizedDescription();
-            descriptionArea.root.gameObject.SetActive(true);
+            descriptionArea.itemDescriptionGameObject.SetActive(true);
+            descriptionArea.itemDescriptionText.text = Model.item.Value.ItemBase.Value.GetLocalizedDescription();
         }
 
         private void UpdateStatsArea()
@@ -172,31 +173,62 @@ namespace Nekoyume.UI.Module
             }
 
             var statCount = 0;
-            if (Model.item.Value.ItemBase.Value is ItemUsable itemUsable)
+            if (Model.item.Value.ItemBase.Value is Equipment equipment)
             {
-                statsArea.commonText.enabled = false;
-                // todo: 장비에 레벨 제한이 들어가면 이곳에서 적용해줘야 함.
-                statsArea.levelLimitText.enabled = false;
-
-                foreach (var statMap in itemUsable.StatsMap.StatMaps.Where(e => e.Value.TotalValueAsInt > 0))
+                descriptionArea.commonGameObject.SetActive(false);
+                descriptionArea.dividerImageGameObject.SetActive(false);
+                descriptionArea.levelLimitGameObject.SetActive(false);
+                
+                var uniqueStatType = equipment.UniqueStatType;
+                foreach (var statMapEx in equipment.StatsMap.GetStats())
                 {
-                    AddStat(new Model.ItemInformationStat(statMap.Value));
+                    if (!statMapEx.StatType.Equals(uniqueStatType))
+                        continue;
+                    
+                    AddStat(statMapEx, true);
+                    statCount++;
+                }
+                
+                foreach (var statMapEx in equipment.StatsMap.GetStats())
+                {
+                    if (statMapEx.StatType.Equals(uniqueStatType))
+                        continue;
+                    
+                    AddStat(statMapEx);
+                    statCount++;
+                }
+            }
+            else if (Model.item.Value.ItemBase.Value is ItemUsable itemUsable)
+            {
+                descriptionArea.commonGameObject.SetActive(false);
+                descriptionArea.dividerImageGameObject.SetActive(false);
+                descriptionArea.levelLimitGameObject.SetActive(false);
+
+                foreach (var statMapEx in itemUsable.StatsMap.GetStats())
+                {
+                    AddStat(statMapEx);
                     statCount++;
                 }
             }
             else
             {
-                statsArea.commonText.enabled = true;
-                statsArea.commonText.text = LocalizationManager.Localize("UI_ADDITIONAL_ABILITIES_WHEN_COMBINED");
-                statsArea.levelLimitText.enabled = false;
+                descriptionArea.levelLimitGameObject.SetActive(false);
 
                 var data = Model.item.Value.ItemBase.Value.Data;
                 if (data.ItemType == ItemType.Material &&
                     data is MaterialItemSheet.Row materialData &&
                     materialData.StatType != StatType.NONE)
                 {
-                    AddStat(new Model.ItemInformationStat(materialData));
+                    descriptionArea.commonGameObject.SetActive(true);
+                    descriptionArea.dividerImageGameObject.SetActive(true);
+                    descriptionArea.commonText.text = LocalizationManager.Localize("UI_ADDITIONAL_ABILITIES_WHEN_COMBINED");
+                    AddStat(materialData);
                     statCount++;
+                }
+                else
+                {
+                    descriptionArea.commonGameObject.SetActive(false);
+                    descriptionArea.dividerImageGameObject.SetActive(false);
                 }
             }
 
@@ -229,7 +261,13 @@ namespace Nekoyume.UI.Module
             {
                 foreach (var skill in itemUsable.Skills)
                 {
-                    AddSkill(new Model.ItemInformationSkill(skill));
+                    AddSkill(new Model.SkillView(skill));
+                    skillCount++;
+                }
+
+                foreach (var skill in itemUsable.BuffSkills)
+                {
+                    AddSkill(new Model.SkillView(skill));
                     skillCount++;
                 }
             }
@@ -240,7 +278,7 @@ namespace Nekoyume.UI.Module
                     data is MaterialItemSheet.Row materialData &&
                     materialData.SkillId != 0)
                 {
-                    AddSkill(new Model.ItemInformationSkill(materialData));
+                    AddSkill(new Model.SkillView(materialData));
                     skillCount++;
                 }
             }
@@ -255,41 +293,23 @@ namespace Nekoyume.UI.Module
             skillsArea.root.gameObject.SetActive(true);
         }
 
-        private void UpdateBuffSkillsArea()
+        private void AddStat(MaterialItemSheet.Row model, bool isMainStat = false)
         {
-            if (Model?.item.Value is null)
-            {
-                buffSkillsArea.root.gameObject.SetActive(false);
-
-                return;
-            }
-
-            foreach (var skill in buffSkillsArea.skills)
-            {
-                skill.Hide();
-            }
-
-            var buffSkillCount = 0;
-            if (Model.item.Value.ItemBase.Value is ItemUsable itemUsable)
-            {
-                foreach (var buffSkill in itemUsable.BuffSkills)
-                {
-                    AddBuffSkill(new Model.ItemInformationSkill(buffSkill));
-                    buffSkillCount++;
-                }
-            }
-
-            if (buffSkillCount <= 0)
-            {
-                buffSkillsArea.root.gameObject.SetActive(false);
-
-                return;
-            }
-
-            buffSkillsArea.root.gameObject.SetActive(true);
+            var statView = GetDisabledStatView();
+            if (statView is null)
+                throw new NotFoundComponentException<BulletedStatView>();
+            statView.Show(model, isMainStat);
         }
 
-        private void AddStat(Model.ItemInformationStat model)
+        private void AddStat(StatMapEx model, bool isMainStat = false)
+        {
+            var statView = GetDisabledStatView();
+            if (statView is null)
+                throw new NotFoundComponentException<BulletedStatView>();
+            statView.Show(model, isMainStat);
+        }
+
+        private BulletedStatView GetDisabledStatView()
         {
             foreach (var stat in statsArea.stats)
             {
@@ -298,45 +318,22 @@ namespace Nekoyume.UI.Module
                     continue;
                 }
 
-                stat.Show(model);
-
-                return;
+                return stat;
             }
 
-            var go = Instantiate(statsArea.statPrefab.gameObject, statsArea.root);
-            var comp = go.GetComponent<ItemInformationStat>();
-            statsArea.stats.Add(comp);
-            comp.Show(model);
+            return null;
         }
 
-        private void AddSkill(Model.ItemInformationSkill model)
+
+        private void AddSkill(Model.SkillView model)
         {
-            foreach (var skill in skillsArea.skills.Where(skill => !skill.IsShow))
+            foreach (var skill in skillsArea.skills.Where(skill => !skill.IsShown))
             {
-                skill.Show(model);
+                skill.SetData(model);
+                skill.Show();
 
                 return;
             }
-
-            var go = Instantiate(skillsArea.skillPrefab.gameObject, skillsArea.root);
-            var comp = go.GetComponent<ItemInformationSkill>();
-            skillsArea.skills.Add(comp);
-            comp.Show(model);
-        }
-
-        private void AddBuffSkill(Model.ItemInformationSkill model)
-        {
-            foreach (var skill in buffSkillsArea.skills.Where(skill => !skill.IsShow))
-            {
-                skill.Show(model);
-
-                return;
-            }
-
-            var go = Instantiate(buffSkillsArea.skillPrefab.gameObject, buffSkillsArea.root);
-            var comp = go.GetComponent<ItemInformationSkill>();
-            buffSkillsArea.skills.Add(comp);
-            comp.Show(model);
         }
     }
 }
