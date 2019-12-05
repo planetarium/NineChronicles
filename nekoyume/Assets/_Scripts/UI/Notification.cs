@@ -1,11 +1,8 @@
 using System;
 using System.Collections.Generic;
-using DefaultNamespace;
-using Nekoyume.Game.Controller;
 using Nekoyume.Game.Mail;
 using Nekoyume.UI.Scroller;
 using UniRx;
-using UnityEngine;
 
 namespace Nekoyume.UI
 {

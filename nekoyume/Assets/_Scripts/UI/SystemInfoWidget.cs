@@ -1,7 +1,7 @@
 using Nekoyume.EnumType;
 using Nekoyume.UI;
 
-namespace DefaultNamespace
+namespace Nekoyume.UI
 {
     public class SystemInfoWidget : Widget
     {

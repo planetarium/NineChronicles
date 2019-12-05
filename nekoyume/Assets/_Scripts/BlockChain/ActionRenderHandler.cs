@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Assets.SimpleLocalization;
+using Libplanet.Action;
 using Nekoyume.Action;
 using Nekoyume.Game.Mail;
 using Nekoyume.Manager;

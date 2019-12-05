@@ -16,9 +16,10 @@ namespace Nekoyume.BlockChain
     public class ActionManager : MonoSingleton<ActionManager>
     {
         private static readonly TimeSpan ActionTimeout = TimeSpan.FromSeconds(GameConfig.WaitSeconds);
-        private static void ProcessAction(GameAction action)
+        
+        private static void ProcessAction(GameAction gameAction)
         {
-            Game.Game.instance.agent.EnqueueAction(action);
+            Game.Game.instance.agent.EnqueueAction(gameAction);
         }
 
         #region Actions

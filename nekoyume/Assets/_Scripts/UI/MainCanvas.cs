@@ -66,12 +66,15 @@ namespace Nekoyume.UI
 #if DEBUG
                 Widget.Create<Cheat>(),
 #endif
-                //최상단 알림 영역.
+                // 알림 영역.
                 Widget.Create<UpdatePopup>(),
                 Widget.Create<BlockFailPopup>(),
                 Widget.Create<ActionFailPopup>(),
-                Widget.Create<Notification>(true),
                 Widget.Create<LoginPopup>(),
+                
+                // 시스템 정보 영역.
+                Widget.Create<BlockChainMessageBoard>(true),
+                Widget.Create<Notification>(true),
             };
 
             foreach (var value in _firstWidgets)
