@@ -156,7 +156,7 @@ namespace Nekoyume.UI
             foreach(var (statType, value, additionalValue) in tuples)
             {
                 var info = statusRows[idx];
-                info.Set(statType, value, additionalValue);
+                info.Show(statType, value, additionalValue);
                 ++idx;
             }
         }

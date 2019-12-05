@@ -133,13 +133,36 @@ namespace Nekoyume.UI.Module
             }
 
             var statCount = 0;
-            if (Model.item.Value.ItemBase.Value is ItemUsable itemUsable)
+            if (Model.item.Value.ItemBase.Value is Equipment equipment)
             {
                 statsArea.commonText.enabled = false;
 
-                foreach (var statMap in itemUsable.StatsMap.GetStats())
+                var uniqueStatType = equipment.UniqueStatType;
+                foreach (var statMapEx in equipment.StatsMap.GetStats())
                 {
-                    SetStat(new Model.BulletedStatView(statMap));
+                    if (!statMapEx.StatType.Equals(uniqueStatType))
+                        continue;
+
+                    AddStat(statMapEx, true);
+                    statCount++;
+                }
+
+                foreach (var statMapEx in equipment.StatsMap.GetStats())
+                {
+                    if (statMapEx.StatType.Equals(uniqueStatType))
+                        continue;
+
+                    AddStat(statMapEx);
+                    statCount++;
+                }
+            }
+            else if (Model.item.Value.ItemBase.Value is ItemUsable itemUsable)
+            {
+                statsArea.commonText.enabled = false;
+
+                foreach (var statMapEx in itemUsable.StatsMap.GetStats())
+                {
+                    AddStat(statMapEx);
                     statCount++;
                 }
             }
@@ -153,7 +176,7 @@ namespace Nekoyume.UI.Module
                     data is MaterialItemSheet.Row materialData &&
                     materialData.StatType != StatType.NONE)
                 {
-                    SetStat(new Model.BulletedStatView(materialData));
+                    AddStat(materialData);
                     statCount++;
                 }
             }
@@ -219,7 +242,23 @@ namespace Nekoyume.UI.Module
             skillsArea.root.gameObject.SetActive(true);
         }
 
-        private void SetStat(Model.BulletedStatView model)
+        private void AddStat(MaterialItemSheet.Row model, bool isMainStat = false)
+        {
+            var statView = GetDisabledStatView();
+            if (statView is null)
+                throw new NotFoundComponentException<BulletedStatView>();
+            statView.Show(model, isMainStat);
+        }
+
+        private void AddStat(StatMapEx model, bool isMainStat = false)
+        {
+            var statView = GetDisabledStatView();
+            if (statView is null)
+                throw new NotFoundComponentException<BulletedStatView>();
+            statView.Show(model, isMainStat);
+        }
+
+        private BulletedStatView GetDisabledStatView()
         {
             foreach (var stat in statsArea.stats)
             {
@@ -228,10 +267,10 @@ namespace Nekoyume.UI.Module
                     continue;
                 }
 
-                stat.Show(model);
-
-                return;
+                return stat;
             }
+
+            return null;
         }
 
         private void AddSkill(Skill model)

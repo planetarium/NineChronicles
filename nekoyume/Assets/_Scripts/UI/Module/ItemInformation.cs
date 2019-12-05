@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Assets.SimpleLocalization;
 using Nekoyume.EnumType;
+using Nekoyume.Game;
 using Nekoyume.Game.Item;
 using Nekoyume.TableData;
 using Nekoyume.UI.Model;
@@ -182,7 +183,7 @@ namespace Nekoyume.UI.Module
                     if (!statMapEx.StatType.Equals(uniqueStatType))
                         continue;
                     
-                    AddStat(new Model.BulletedStatView(statMapEx, true));
+                    AddStat(statMapEx, true);
                     statCount++;
                 }
                 
@@ -191,7 +192,7 @@ namespace Nekoyume.UI.Module
                     if (statMapEx.StatType.Equals(uniqueStatType))
                         continue;
                     
-                    AddStat(new Model.BulletedStatView(statMapEx));
+                    AddStat(statMapEx);
                     statCount++;
                 }
             }
@@ -202,7 +203,7 @@ namespace Nekoyume.UI.Module
 
                 foreach (var statMapEx in itemUsable.StatsMap.GetStats())
                 {
-                    AddStat(new Model.BulletedStatView(statMapEx));
+                    AddStat(statMapEx);
                     statCount++;
                 }
             }
@@ -217,7 +218,7 @@ namespace Nekoyume.UI.Module
                     data is MaterialItemSheet.Row materialData &&
                     materialData.StatType != StatType.NONE)
                 {
-                    AddStat(new Model.BulletedStatView(materialData));
+                    AddStat(materialData);
                     statCount++;
                 }
             }
@@ -283,7 +284,23 @@ namespace Nekoyume.UI.Module
             skillsArea.root.gameObject.SetActive(true);
         }
 
-        private void AddStat(Model.BulletedStatView model)
+        private void AddStat(MaterialItemSheet.Row model, bool isMainStat = false)
+        {
+            var statView = GetDisabledStatView();
+            if (statView is null)
+                throw new NotFoundComponentException<BulletedStatView>();
+            statView.Show(model, isMainStat);
+        }
+
+        private void AddStat(StatMapEx model, bool isMainStat = false)
+        {
+            var statView = GetDisabledStatView();
+            if (statView is null)
+                throw new NotFoundComponentException<BulletedStatView>();
+            statView.Show(model, isMainStat);
+        }
+
+        private BulletedStatView GetDisabledStatView()
         {
             foreach (var stat in statsArea.stats)
             {
@@ -292,11 +309,12 @@ namespace Nekoyume.UI.Module
                     continue;
                 }
 
-                stat.Show(model);
-
-                return;
+                return stat;
             }
+
+            return null;
         }
+
 
         private void AddSkill(Model.SkillView model)
         {
