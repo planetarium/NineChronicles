@@ -1,8 +1,5 @@
 using Nekoyume.Game;
 using Nekoyume.TableData;
-using System;
-using System.Collections.Generic;
-using UniRx;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
