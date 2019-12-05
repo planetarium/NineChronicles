@@ -125,11 +125,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60b34e1b4dae4a92b087851eec8ed335, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gradeImage: {fileID: 2650375935617888556}
+  iconImage: {fileID: 3039963743564158088}
   touchHandler: {fileID: 4025693513094548536}
   itemButton: {fileID: 5931948236368318217}
   backgroundImage: {fileID: 7513606143651724244}
-  gradeImage: {fileID: 2650375935617888556}
-  iconImage: {fileID: 3039963743564158088}
   enhancementText: {fileID: 3817915473142263136}
   selectionImage: {fileID: 3918994983039227069}
   countText: {fileID: 5725448963532472889}
@@ -1027,7 +1027,7 @@ PrefabInstance:
     - target: {fileID: 6819667595002607110, guid: 56e687da739cb48f38d8a589a8165df2,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 150
       objectReference: {fileID: 0}
     - target: {fileID: 6819667595002607110, guid: 56e687da739cb48f38d8a589a8165df2,
         type: 3}
@@ -1134,28 +1134,7 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7461163998194178364, guid: 56e687da739cb48f38d8a589a8165df2,
-        type: 3}
-      propertyPath: m_firstOverflowCharacterIndex
-      value: -1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7461163998194178364, guid: 56e687da739cb48f38d8a589a8165df2,
-        type: 3}
-      propertyPath: m_textInfo.lineCount
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2582966022442302826, guid: 56e687da739cb48f38d8a589a8165df2,
-        type: 3}
-      propertyPath: m_firstOverflowCharacterIndex
-      value: -1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2582966022442302826, guid: 56e687da739cb48f38d8a589a8165df2,
-        type: 3}
-      propertyPath: m_textInfo.lineCount
-      value: 1
-      objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 8392729951291582032, guid: 56e687da739cb48f38d8a589a8165df2, type: 3}
+    m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 56e687da739cb48f38d8a589a8165df2, type: 3}
 --- !u!114 &8553046600463006932 stripped
 MonoBehaviour:

@@ -28,6 +28,7 @@ namespace Nekoyume.UI.Module
         {
             public GameObject itemDescriptionGameObject;
             public TextMeshProUGUI itemDescriptionText;
+            public GameObject dividerImageGameObject;
             public GameObject commonGameObject;
             public TextMeshProUGUI commonText;
             public GameObject levelLimitGameObject;
@@ -175,6 +176,7 @@ namespace Nekoyume.UI.Module
             if (Model.item.Value.ItemBase.Value is Equipment equipment)
             {
                 descriptionArea.commonGameObject.SetActive(false);
+                descriptionArea.dividerImageGameObject.SetActive(false);
                 descriptionArea.levelLimitGameObject.SetActive(false);
                 
                 var uniqueStatType = equipment.UniqueStatType;
@@ -199,6 +201,7 @@ namespace Nekoyume.UI.Module
             else if (Model.item.Value.ItemBase.Value is ItemUsable itemUsable)
             {
                 descriptionArea.commonGameObject.SetActive(false);
+                descriptionArea.dividerImageGameObject.SetActive(false);
                 descriptionArea.levelLimitGameObject.SetActive(false);
 
                 foreach (var statMapEx in itemUsable.StatsMap.GetStats())
@@ -209,8 +212,6 @@ namespace Nekoyume.UI.Module
             }
             else
             {
-                descriptionArea.commonGameObject.SetActive(true);
-                descriptionArea.commonText.text = LocalizationManager.Localize("UI_ADDITIONAL_ABILITIES_WHEN_COMBINED");
                 descriptionArea.levelLimitGameObject.SetActive(false);
 
                 var data = Model.item.Value.ItemBase.Value.Data;
@@ -218,8 +219,16 @@ namespace Nekoyume.UI.Module
                     data is MaterialItemSheet.Row materialData &&
                     materialData.StatType != StatType.NONE)
                 {
+                    descriptionArea.commonGameObject.SetActive(true);
+                    descriptionArea.dividerImageGameObject.SetActive(true);
+                    descriptionArea.commonText.text = LocalizationManager.Localize("UI_ADDITIONAL_ABILITIES_WHEN_COMBINED");
                     AddStat(materialData);
                     statCount++;
+                }
+                else
+                {
+                    descriptionArea.commonGameObject.SetActive(false);
+                    descriptionArea.dividerImageGameObject.SetActive(false);
                 }
             }
 

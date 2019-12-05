@@ -39,6 +39,7 @@ namespace Nekoyume.UI.Module
         {
             statTypeText.text = statType;
             valueText.text = value;
+            Show();
         }
 
         public virtual void Show()

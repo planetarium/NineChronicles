@@ -125,11 +125,13 @@ namespace Nekoyume.UI
                     if (e.Current is null)
                     {
                         material.Clear();
+                        material.gameObject.SetActive(false);
                     }
                     else
                     {
                         var data = e.Current;
                         material.SetData(data);
+                        material.gameObject.SetActive(true);
                     }
                 }
             }

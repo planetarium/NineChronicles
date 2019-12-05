@@ -135,7 +135,7 @@ namespace Nekoyume.UI.Module
             var statCount = 0;
             if (Model.item.Value.ItemBase.Value is Equipment equipment)
             {
-                statsArea.commonText.enabled = false;
+                statsArea.commonText.gameObject.SetActive(false);
 
                 var uniqueStatType = equipment.UniqueStatType;
                 foreach (var statMapEx in equipment.StatsMap.GetStats())
@@ -158,7 +158,7 @@ namespace Nekoyume.UI.Module
             }
             else if (Model.item.Value.ItemBase.Value is ItemUsable itemUsable)
             {
-                statsArea.commonText.enabled = false;
+                statsArea.commonText.gameObject.SetActive(false);
 
                 foreach (var statMapEx in itemUsable.StatsMap.GetStats())
                 {
@@ -168,7 +168,7 @@ namespace Nekoyume.UI.Module
             }
             else
             {
-                statsArea.commonText.enabled = true;
+                statsArea.commonText.gameObject.SetActive(true);
                 statsArea.commonText.text = LocalizationManager.Localize("UI_ADDITIONAL_ABILITIES_WHEN_COMBINED");
 
                 var data = Model.item.Value.ItemBase.Value.Data;

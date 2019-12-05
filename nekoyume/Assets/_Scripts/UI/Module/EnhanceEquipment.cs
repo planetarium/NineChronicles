@@ -155,7 +155,6 @@ namespace Nekoyume.UI.Module
             var resultValue = statValue + equipment.levelStats;
             baseMaterial.UpdateStatView(
                 $" -> <color=#00ff00><size=120%>{resultValue}</size></color>");
-            materialView.statView.Hide();
 
             if (!(baseMaterial.Model.ItemBase.Value is Equipment baseEquipment))
                 throw new InvalidCastException(nameof(viewModel.ItemBase.Value));
