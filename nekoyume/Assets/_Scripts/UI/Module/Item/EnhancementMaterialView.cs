@@ -8,7 +8,7 @@ namespace Nekoyume.UI.Module
     {
         public TextMeshProUGUI titleText;
         public TextMeshProUGUI itemNameText;
-        public StatView statView;
+        public EnhancementStatView statView;
 
         public override void Set(InventoryItem inventoryItemViewModel, int count = 1)
         {
@@ -38,7 +38,7 @@ namespace Nekoyume.UI.Module
             }
             else
             {
-                statView.Show(statType.ToString(), $"{statValue}{additionalValueText}");
+                statView.Show(statType.ToString(), statValue.ToString(), additionalValueText);
             }
         }
 

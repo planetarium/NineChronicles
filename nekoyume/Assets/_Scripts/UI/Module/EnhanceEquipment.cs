@@ -153,8 +153,7 @@ namespace Nekoyume.UI.Module
             var equipment = (Equipment) baseMaterial.Model.ItemBase.Value;
             var statValue = equipment.StatsMap.GetStatValue(equipment.UniqueStatType);
             var resultValue = statValue + equipment.levelStats;
-            baseMaterial.UpdateStatView(
-                $" -> <color=#00ff00><size=120%>{resultValue}</size></color>");
+            baseMaterial.UpdateStatView(resultValue.ToString());
 
             if (!(baseMaterial.Model.ItemBase.Value is Equipment baseEquipment))
                 throw new InvalidCastException(nameof(viewModel.ItemBase.Value));

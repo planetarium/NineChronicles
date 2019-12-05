@@ -10,32 +10,32 @@ namespace Nekoyume.UI.Module
         public TextMeshProUGUI statTypeText;
         public TextMeshProUGUI valueText;
 
-        public void Show(IntStat intStat)
+        public virtual void Show(IntStat intStat)
         {
             Show(intStat.Type, intStat.Value);
         }
         
-        public void Show(DecimalStat decimalStat)
+        public virtual void Show(DecimalStat decimalStat)
         {
             Show(decimalStat.Type, (int) decimalStat.Value);
         }
 
-        public void Show(StatMap statMap)
+        public virtual void Show(StatMap statMap)
         {
             Show(statMap.StatType, (int) statMap.Value);
         }
         
-        public void Show(StatMapEx statMapEx)
+        public virtual void Show(StatMapEx statMapEx)
         {
             Show(statMapEx.StatType, statMapEx.TotalValueAsInt);
         }
 
-        public void Show(StatType statType, int value)
+        public virtual void Show(StatType statType, int value)
         {
             Show(statType.ToString(), value.ToString());
         }
 
-        public void Show(string statType, string value)
+        public virtual void Show(string statType, string value)
         {
             statTypeText.text = statType;
             valueText.text = value;
