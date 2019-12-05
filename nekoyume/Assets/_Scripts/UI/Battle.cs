@@ -27,6 +27,7 @@ namespace Nekoyume.UI
                 UINavigator.NavigationType.None,
                 null,
                 true,
+                BottomMenu.ToggleableType.LeaveBattle,
                 BottomMenu.ToggleableType.Mail,
                 BottomMenu.ToggleableType.Quest,
                 BottomMenu.ToggleableType.Chat,
