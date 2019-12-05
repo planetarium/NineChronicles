@@ -68,6 +68,8 @@ namespace Nekoyume.Game.Character
         protected Vector3 HUDOffset => Animator.GetHUDPosition();
         public bool AttackEndCalled { get; private set; }
 
+        private bool _forceQuit = false;
+
         #region Mono
 
         private void OnApplicationQuit()
@@ -405,6 +407,12 @@ namespace Nekoyume.Game.Character
             RunSpeed = 0.0f;
         }
 
+        private IEnumerator CoTimeOut()
+        {
+            yield return new WaitForSeconds(2f);
+            _forceQuit = true;
+        }
+
         private IEnumerator CoAnimationAttack(bool isCritical)
         {
             PreAnimationForTheKindOfAttack();
@@ -417,7 +425,21 @@ namespace Nekoyume.Game.Character
                 Animator.Attack();
             }
 
-            yield return new WaitUntil(() => AttackEndCalled);
+            _forceQuit = false;
+            var coroutine = StartCoroutine(CoTimeOut());
+            yield return new WaitUntil(() => AttackEndCalled || _forceQuit);
+            StopCoroutine(coroutine);
+            if (_forceQuit)
+            {
+                if (isCritical)
+                {
+                    Animator.CriticalAttack();
+                }
+                else
+                {
+                    Animator.Attack();
+                }
+            }
             PostAnimationForTheKindOfAttack();
         }
 
@@ -432,8 +454,22 @@ namespace Nekoyume.Game.Character
             {
                 Animator.CastAttack();
             }
+            _forceQuit = false;
+            var coroutine = StartCoroutine(CoTimeOut());
+            yield return new WaitUntil(() => AttackEndCalled || _forceQuit);
+            StopCoroutine(coroutine);
+            if (_forceQuit)
+            {
+                if (isCritical)
+                {
+                    Animator.CriticalAttack();
+                }
+                else
+                {
+                    Animator.CastAttack();
+                }
+            }
 
-            yield return new WaitUntil(() => AttackEndCalled);
             PostAnimationForTheKindOfAttack();
         }
 
