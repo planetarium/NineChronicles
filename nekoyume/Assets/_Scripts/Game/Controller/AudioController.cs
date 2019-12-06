@@ -1,6 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
 using Nekoyume.EnumType;
 using Nekoyume.Pattern;
 using UnityEngine;
@@ -22,7 +25,7 @@ namespace Nekoyume.Game.Controller
             }
         }
         
-        public struct MusicCode
+        public class MusicCode
         {
             public const string Title = "bgm_title";
             public const string Prologue = "bgm_prologue";
@@ -39,7 +42,7 @@ namespace Nekoyume.Game.Controller
             public const string Lose = "bgm_lose";
         }
 
-        public struct SfxCode
+        public class SfxCode
         {
             public const string Select = "sfx_select";
             public const string Cash = "sfx_cash";
@@ -83,6 +86,9 @@ namespace Nekoyume.Game.Controller
             InInitializing,
             Idle
         }
+        
+        private const string MusicContainerPath = "Audio/Music/Prefabs";
+        private const string SfxContainerPath = "Audio/Sfx/Prefabs";
 
         private State CurrentState { get; set; }
 
@@ -172,7 +178,7 @@ namespace Nekoyume.Game.Controller
 
         #endregion
 
-        #region Initialize
+        #region Initialize & Validate
 
         public void Initialize()
         {
@@ -182,26 +188,40 @@ namespace Nekoyume.Game.Controller
             }
 
             CurrentState = State.InInitializing;
-
-            InitializeInternal("Audio/Music/Prefabs", _musicPrefabs, _musicPool);
-            InitializeInternal("Audio/Sfx/Prefabs", _sfxPrefabs, _sfxPool);
-
+            InitializeInternal(MusicContainerPath, typeof(MusicCode), _musicPrefabs, _musicPool);
+            InitializeInternal(SfxContainerPath, typeof(SfxCode), _sfxPrefabs, _sfxPool);
             CurrentState = State.Idle;
         }
 
-        private void InitializeInternal(string folderPath, IDictionary<string, AudioSource> prefabs, IDictionary<string, Stack<AudioInfo>> pool)
+        private void InitializeInternal(string containerPath, Type codeType, IDictionary<string, AudioSource> prefabs, IDictionary<string, Stack<AudioInfo>> pool)
         {
-            var assets = Resources.LoadAll<GameObject>(folderPath);
+            var assets = Resources.LoadAll<GameObject>(containerPath);
             foreach (var asset in assets)
             {
                 var audioSource = asset.GetComponent<AudioSource>();
-                if (ReferenceEquals(audioSource, null))
+                if (!audioSource)
                 {
-                    throw new NotFoundComponentException<AudioSource>();
+                    Debug.LogError($"There is no AudioSource component: {Path.Combine(containerPath, asset.name)}");
+                    continue;
                 }
 
                 prefabs.Add(asset.name, audioSource);
                 Push(pool, asset.name, new AudioInfo(Instantiate(asset.name, prefabs)));
+            }
+            
+            Validate(containerPath, codeType, prefabs);
+        }
+
+        private void Validate(string containerPath, Type codeType, IDictionary<string, AudioSource> prefabs)
+        {
+            var fields = codeType.GetFields(BindingFlags.Public | BindingFlags.Static);
+            foreach (var fieldInfo in fields)
+            {
+                var code = (string) fieldInfo.GetRawConstantValue();
+                if (prefabs.ContainsKey(code))
+                    continue;
+                
+                Debug.LogError($"There is no audio prefab: {Path.Combine(containerPath, code)}");
             }
         }
         
