@@ -114,9 +114,7 @@ namespace Nekoyume.UI
                 {
                     var current = EventSystem.current.currentSelectedGameObject;
                     if (current == submitButton.gameObject)
-                    {
                         yield break;
-                    }
                     
                     Model.OnCloseClick.OnNext(this);
                     Close();
