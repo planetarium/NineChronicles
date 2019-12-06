@@ -50,7 +50,12 @@ namespace Nekoyume.Game.Controller
             return vfx;
         }
 
-        public T CreateAndChaseRectTransform<T>(Vector3 position, RectTransform target) where T : VFX.VFX
+        public T CreateAndChaseRectTransform<T>(RectTransform target) where T : VFX.VFX
+        {
+            return CreateAndChaseRectTransform<T>(target, target.position);
+        }
+
+        public T CreateAndChaseRectTransform<T>(RectTransform target, Vector3 position) where T : VFX.VFX
         {
             var offset = position - target.position;
             offset.z += 10f;

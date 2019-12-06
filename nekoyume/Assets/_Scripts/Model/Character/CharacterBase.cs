@@ -53,7 +53,7 @@ namespace Nekoyume.Model
         public int CurrentHP
         {
             get => Stats.CurrentHP;
-            set => Stats.CurrentHP = value;
+            set => Stats.CurrentHP = Math.Min(Math.Max(value, 0), HP);
         }
 
         public bool IsDead => CurrentHP <= 0;
@@ -247,8 +247,7 @@ namespace Nekoyume.Model
 
         public void Heal(int heal)
         {
-            var current = CurrentHP;
-            CurrentHP = Math.Min(heal + current, HP);
+            CurrentHP += heal;
         }
 
         protected virtual void SetSkill()

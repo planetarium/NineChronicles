@@ -122,7 +122,7 @@ namespace Nekoyume.UI
 
             _avatarName = States.Instance.CurrentAvatarState.Value.name;
             textLvName.text = $"<color=#B38271>LV. {level}</color> {_avatarName}";
-            var displayHp = math.max(_player.CurrentHP, 0);
+            var displayHp = _player.CurrentHP;
             textHp.text = $"HP {displayHp} / {_player.HP}";
             textExp.text = $"EXP {_player.Model.Exp.Need - _player.EXPMax + _player.EXP} / {_player.Model.Exp.Need}";
 

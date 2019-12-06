@@ -23,14 +23,21 @@ namespace Nekoyume.UI
 
             if (buffLayout.IsBuffAdded(EnumType.StatType.HP))
             {
-                HpVFX?.Stop();
+                if (HpVFX)
+                {
+                    HpVFX.Stop();
+                }
+                
                 var rectTransform = bar.rectTransform;
-                HpVFX = VFXController.instance.CreateAndChaseRectTransform<HpBarVFX>(rectTransform.position, rectTransform);
+                HpVFX = VFXController.instance.CreateAndChaseRectTransform<HpBarVFX>(rectTransform);
                 HpVFX.Play();
             }
             else if (!buffLayout.HasBuff(EnumType.StatType.HP))
             {
-                HpVFX?.Stop();
+                if (HpVFX)
+                {
+                    HpVFX.Stop();
+                }
             }
         }
 
@@ -48,6 +55,16 @@ namespace Nekoyume.UI
             additionalSlider.gameObject.SetActive(isHPBoosted);
             if (isHPBoosted)
                 additionalSlider.value = (float) current / max;
+        }
+
+        protected override void OnDestroy()
+        {
+            if (HpVFX)
+            {
+                HpVFX.Stop();
+            }
+            
+            base.OnDestroy();
         }
     }
 }

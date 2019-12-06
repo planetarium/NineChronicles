@@ -28,7 +28,7 @@ namespace Nekoyume.UI
             if (isAdded)
             {
                 var vfx = VFXController.instance.CreateAndChaseRectTransform<DropItemInventoryVFX>
-                    (image.transform.position, image.rectTransform);
+                    (image.rectTransform);
             }
         }
 

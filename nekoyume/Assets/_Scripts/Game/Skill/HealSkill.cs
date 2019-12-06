@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Nekoyume.EnumType;
 using Nekoyume.Model;
 using Nekoyume.TableData;
@@ -15,15 +16,21 @@ namespace Nekoyume.Game
 
         public override Model.Skill Use(CharacterBase caster)
         {
+            return new Model.HealSkill((CharacterBase) caster.Clone(), ProcessHeal(caster), ProcessBuff(caster));
+        }
+
+        protected IEnumerable<Model.Skill.SkillInfo> ProcessHeal(CharacterBase caster)
+        {
             var infos = new List<Model.Skill.SkillInfo>();
             var healPoint = caster.ATK + power;
             foreach (var target in skillRow.SkillTargetType.GetTarget(caster))
             {
                 target.Heal(healPoint);
-                infos.Add(new Model.Skill.SkillInfo(target, healPoint, caster.IsCritical(), skillRow.SkillCategory));
+                infos.Add(new Model.Skill.SkillInfo((CharacterBase) target.Clone(), healPoint, caster.IsCritical(),
+                    skillRow.SkillCategory));
             }
 
-            return new Model.HealSkill((CharacterBase) caster.Clone(), infos, ProcessBuff(caster));
+            return infos;
         }
     }
 }

@@ -53,8 +53,13 @@ namespace Nekoyume.Game.Character
             get => _currentHp;
             private set
             {
-                _currentHp = Math.Max(0, value);
+                _currentHp = Math.Min(Math.Max(value, 0), HP);
                 UpdateHpBar();
+                
+//                if (Animator?.Target != null)
+//                {
+//                    Debug.LogWarning($"{Animator.Target.name}'s {nameof(CurrentHP)} setter called: {CurrentHP}({Model.Stats.CurrentHP}) / {HP}({Model.Stats.LevelStats.HP}+{Model.Stats.BuffStats.HP})");
+//                }
             }
         }
 
@@ -130,12 +135,12 @@ namespace Nekoyume.Game.Character
         protected virtual void Update()
         {
             _root?.Tick();
-            if (!ReferenceEquals(HPBar, null))
+            if (HPBar)
             {
                 HPBar.UpdatePosition(gameObject, HUDOffset);
             }
 
-            if (!ReferenceEquals(SpeechBubble, null))
+            if (SpeechBubble)
             {
                 SpeechBubble.UpdatePosition(gameObject, HUDOffset);
             }
@@ -373,7 +378,7 @@ namespace Nekoyume.Game.Character
 
         public void DisableHUD()
         {
-            if (!ReferenceEquals(HPBar, null))
+            if (HPBar)
             {
                 Destroy(HPBar.gameObject);
                 HPBar = null;
@@ -406,12 +411,13 @@ namespace Nekoyume.Game.Character
         {
             if (target && target.IsAlive)
             {
-                target.CurrentHP = Math.Min(info.Effect + target.CurrentHP, target.HP);
+                target.CurrentHP = Math.Min(target.CurrentHP + info.Effect, target.HP);
 
                 var position = transform.TransformPoint(0f, 1.7f, 0f);
                 var force = new Vector3(-0.1f, 0.5f);
                 var txt = info.Effect.ToString();
                 PopUpHeal(position, force, txt, info.Critical);
+//                Debug.LogWarning($"{Animator.Target.name}'s {nameof(ProcessHeal)} called: {CurrentHP}({Model.Stats.CurrentHP}) / {HP}({Model.Stats.LevelStats.HP}+{Model.Stats.BuffStats.HP})");
             }
         }
 
@@ -425,6 +431,7 @@ namespace Nekoyume.Game.Character
                 var effect = Game.instance.stage.buffController.Get<BuffVFX>(target, buff);
                 effect.Play();
                 target.UpdateHpBar();
+//                Debug.LogWarning($"{Animator.Target.name}'s {nameof(ProcessBuff)} called: {CurrentHP}({Model.Stats.CurrentHP}) / {HP}({Model.Stats.LevelStats.HP}+{Model.Stats.BuffStats.HP})");
             }
         }
 
