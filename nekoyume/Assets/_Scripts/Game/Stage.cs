@@ -439,7 +439,7 @@ namespace Nekoyume.Game
                 .OrderBy(c => c.transform.position.x).FirstOrDefault();
             if (!enemy || character.TargetInAttackRange(enemy))
                 yield break;
-            
+
             character.StartRun();
             var time = Time.time;
             yield return new WaitUntil(() => Time.time - time > 2f || character.TargetInAttackRange(enemy));
@@ -461,6 +461,8 @@ namespace Nekoyume.Game
                     if (!buffCharacter)
                         throw new ArgumentNullException(nameof(buffCharacter));
                     buffCharacter.UpdateHpBar();
+//                    Debug.LogWarning(
+//                        $"{buffCharacter.Animator.Target.name}'s {nameof(CoAfterSkill)} called: {buffCharacter.CurrentHP}({buffCharacter.Model.Stats.CurrentHP}) / {buffCharacter.HP}({buffCharacter.Model.Stats.LevelStats.HP}+{buffCharacter.Model.Stats.BuffStats.HP})");
                 }
             }
 
@@ -522,7 +524,8 @@ namespace Nekoyume.Game
                 var sprite = SpriteHelper.GetCharacterIcon(boss.RowData.Id);
                 battle.bossStatus.Show();
                 battle.bossStatus.SetHp(boss.HP, boss.HP);
-                battle.bossStatus.SetProfile(boss.Level, LocalizationManager.LocalizeCharacterName(boss.RowData.Id), sprite);
+                battle.bossStatus.SetProfile(boss.Level, LocalizationManager.LocalizeCharacterName(boss.RowData.Id),
+                    sprite);
                 playerCharacter.ShowSpeech("PLAYER_BOSS_ENCOUNTER");
             }
 

@@ -101,14 +101,14 @@ namespace Nekoyume.Game.Character
 
         protected override IEnumerator Dying()
         {
-            SpeechBubble?.Clear();
+            if (SpeechBubble)
+            {
+                SpeechBubble.Clear();
+            }
+            
             ShowSpeech("PLAYER_LOSE");
-            StopRun();
-            Animator.Die();
-            yield return new WaitForSeconds(.5f);
-            DisableHUD();
-            yield return new WaitForSeconds(.8f);
-            OnDead();
+
+            yield return StartCoroutine(base.Dying());
         }
 
         protected override void OnDead()
