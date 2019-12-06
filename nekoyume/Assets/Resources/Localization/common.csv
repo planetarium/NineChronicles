@@ -101,7 +101,7 @@ UI_DELETE,Delete,삭제
 UI_COMBINATION_ITEM,Combine,아이템 제작
 UI_COMBINATION_ERROR,Error,조합 에러
 UI_COMBINATION_SUCCESS,Success!,조합 성공!
-UI_COMBINATION_NOTIFY_FORMAT,<size=12><color=#a2b4d6>[Workshop Cat]</color></size>[newline]I've finished crafting <color=#ffd201>{0}</color>,<size=12><color=#a2b4d6>[대장장이 고양이]</color></size>[newline]<color=#ffd201>{0}</color> 제작을 완료하였네.
+UI_COMBINATION_NOTIFY_FORMAT,<size=12><color=#a2b4d6>[Workshop Cat]</color></size>[newline]I've finished crafting {0},<size=12><color=#a2b4d6>[대장장이 고양이]</color></size>[newline]{0} 제작을 완료하였네.
 UI_COMBINATION_FAIL,Oh[comma] I failed crafting. My hand slipped...,어이쿠, 조합을 실패헸네. 손이 미끄러졌어.
 UI_COMBINATION_MATERIAL_COUNT_SELECTION,Material Amount,재료 수량 선택
 UI_ENHANCEMENT_EQUIPMENT_TO_ENHANCE,Equipment to enhance,강화할 장비
@@ -216,11 +216,11 @@ UI_RECEIVE,Receive,받기
 UI_RECEIVED,Received,받음
 UI_GET_REWARD,Receive Reward,보상 받기
 UI_ITEM_ENHANCEMENT_MAIL_FORMAT,<size=12><color=#a2b4d6>[Workshop Cat]</color></size>[newline]I've finished upgrade the {0},{0} 강화를 완료했소
-UI_SELL_CANCEL_MAIL_FORMAT,<size=12><color=#a2b4d6>[Market Cat]</color></size>[newline]I canceled the sales of the <color=#ffd201>{0}</color>,{0} 판매를 취소했어!
+UI_SELL_CANCEL_MAIL_FORMAT,<size=12><color=#a2b4d6>[Market Cat]</color></size>[newline]I canceled the sales of the {0},{0} 판매를 취소했어!
 UI_BUYER_MAIL_FORMAT,<size=12><color=#a2b4d6>[Market Cat]</color></size>[newline]Purchased! {0} is yours now!,구매 완료! {0}는 이제 네거야!
-UI_SELLER_MAIL_FORMAT,<size=12><color=#a2b4d6>[Market Cat]</color></size>[newline]{0} was sold to [무뼈닭발#3243]! You got 300G.,[무뼈닭발#3243]에게 {0} 판매 완료! 300G를 얻었어.
+UI_SELLER_MAIL_FORMAT,<size=12><color=#a2b4d6>[Market Cat]</color></size>[newline]{0} was sold! You got Gold.,{0} 판매 완료! 골드를 얻었어.
 UI_SELECT,Select,선택
-UI_EXTERNAL_LINK,Proceeding to External Website,외부 웹사이트 이동
+UI_EXTERNAL_LINK,Go to usergroup chat,디스코드 채팅 이동
 UI_PROCEED_DISCORD,Are you sure to proceed to the Nine Chronicles discord channel?,나인 크로니클 디스코드 채널로 이동하시겠습니까?
 UI_WARRIOR_DESCRIPTION,The warrior is good at close combat and is always on the front line of battle.,전사는 근접 전투에 능하고 방어력이 높아[comma]항상 전투의 최전방에 선다.
 SPEECH_SHOP_BUY_0,There's a lot of[newline]good stuff coming up.,좋은 물건이 많이 올라와있어![newline]시간 나면 보고 가
@@ -262,10 +262,10 @@ UI_UNLOCK_RANKING,Congratulation![newline]You can now check your ranking![newlin
 UI_UNLOCK_TITLE,New Menu Open,컨텐츠 개방
 UI_BATTLE_EXIT_RESERVATION_TITLE,Battle Exit Reservation,전투 나가기 예약
 UI_BATTLE_EXIT_RESERVATION_CONTENT,Are you sure to proceed to the main after this battle ends?,이 전투가 끝난 후 메인으로 이동하시겠습니까?
-UI_BLESS_OF_GODDESS,Bless of the goddess,여신의 가호
-UI_BLESS_OF_GODDESS_DESCRIPTION,The Goddess Freya blesses for cats. Every cats can't make any action without <b>Bless of the Goddess</b>. Bless of the Goddess is refilled when <b>Prosperity Degree</b> is full.,프레이야 여신은 고양이를 위해 가호를 선사합니다. 고양이는 가호가 있어야 모든 행동을 할 수 있습니다. 여신의 가호는 왕국 번영도가 가득 차면 갱신시킬 수 있습니다.
+UI_BLESS_OF_GODDESS,Action Power,행동력
+UI_BLESS_OF_GODDESS_DESCRIPTION,<b>The Goddess Freya blesses for cats. Every cats can't make any action without Action Power. Action Power is refilled when <b>Prosperity Degree is full.</b>,프레이야 여신은 고양이를 위해 가호를 선사합니다. 고양이는 가호가 있어야 모든 행동을 할 수 있습니다. 여신의 가호는 왕국 번영도가 가득 차면 갱신시킬 수 있습니다.
 UI_PROSPERITY_DEGREE,Prosperity Degree,번영도
-UI_PROSPERITY_DEGREE_DESCRIPTION,Thanks to the cat's remarkable activities[comma] the new world gradually stabilizes and prospers. <b>Bless of the Goddess</b> can be refilled when <b>Prosperity Degree</b> is full.,고양이들의 활약으로 신계는 점차 안정되고 번영합니다. 번영도가 꽉 차면 여신의 가호를 갱신할 수 있습니다.
+UI_PROSPERITY_DEGREE_DESCRIPTION,<b>Thanks to the cat's remarkable activities[comma] the new world gradually stabilizes and prospers. Action Power can be refilled when Prosperity Degree is full.</b>,고양이들의 활약으로 신계는 점차 안정되고 번영합니다. 번영도가 꽉 차면 여신의 가호를 갱신할 수 있습니다.
 BLOCK_CHAIN_MINING_TX,Mining Transactions,트랜젝션을 채굴 중
 BLOCK_DOWNLOAD_FAIL,Block Download Failed,블록 다운로드 실패
 BOOTSTRAP_FAIL,Network Initialization Failed,네트워크 초기 설정 실패
