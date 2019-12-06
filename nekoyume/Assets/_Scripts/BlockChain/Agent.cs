@@ -502,7 +502,10 @@ namespace Nekoyume.BlockChain
                 catch (SwarmException e)
                 {
                     Debug.LogFormat("Bootstrap failed. {0}", e.Message);
-                    throw;
+                    if (!Application.isBatchMode)
+                    {
+                        throw;
+                    }
                 }
                 catch (Exception e)
                 {
