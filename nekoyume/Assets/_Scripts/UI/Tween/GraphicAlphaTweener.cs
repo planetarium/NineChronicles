@@ -19,21 +19,21 @@ namespace Nekoyume.UI.Tween
 
         private Graphic _graphic;
         private TweenerCore<Color, Color, ColorOptions> _tween;
-        private Color _color;
+        private Color _originColor;
 
         private void Awake()
         {
             _graphic = GetComponent<Graphic>();
+            _originColor = _graphic.color;
         }
 
         private void OnEnable()
         {
-            _color = _graphic.color;
-            _color.a = beginValue;
-            _tween = _graphic.DOColor(_color, 0.0f);
+            var color = new Color(_originColor.r, _originColor.g, _originColor.b, beginValue);
+            _graphic.color = color;
 
-            _color.a = endValue;
-            _tween = _graphic.DOColor(_color, duration)
+            color.a = endValue;
+            _tween = _graphic.DOColor(color, duration)
                 .SetEase(ease);
 
             if (infiniteLoop)
@@ -43,8 +43,7 @@ namespace Nekoyume.UI.Tween
         private void OnDisable()
         {
             _tween?.Kill();
-            _color.a = beginValue;
-            _graphic.color = _color;
+            _graphic.color = _originColor;
         }
     }
 }
