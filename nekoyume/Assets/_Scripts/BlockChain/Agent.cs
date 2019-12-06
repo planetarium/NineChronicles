@@ -100,6 +100,7 @@ namespace Nekoyume.BlockChain
         public static event Action<bool> OnHasOwnTx;
 
         private bool SyncSucceed { get; set; }
+        public bool BlockDownloadFailed { get; private set; }
 
         private static TelemetryClient _telemetryClient;
 
@@ -448,7 +449,11 @@ namespace Nekoyume.BlockChain
             _cancellationTokenSource?.Cancel();
             // `_swarm`의 내부 큐가 비워진 다음 완전히 종료할 때까지 더 기다립니다.
             Task.Run(async () => { await _swarm?.StopAsync(TimeSpan.FromMilliseconds(SwarmLinger)); })
-                .ContinueWith(_ => { store?.Dispose(); })
+                .ContinueWith(_ =>
+                {
+                    store?.Dispose();
+                    _swarm?.Dispose();
+                })
                 .Wait(SwarmLinger + 1 * 1000);
 
             States.Dispose();
@@ -497,15 +502,28 @@ namespace Nekoyume.BlockChain
                 catch (SwarmException e)
                 {
                     Debug.LogFormat("Bootstrap failed. {0}", e.Message);
+                    throw;
                 }
                 catch (Exception e)
                 {
                     Debug.LogFormat("Exception occurred during bootstrap {0}", e);
+                    throw;
                 }
             });
-
             yield return new WaitUntil(() => bootstrapTask.IsCompleted);
+            if (bootstrapTask.IsFaulted || bootstrapTask.IsCanceled)
+            {
+                var errorMsg = string.Format(LocalizationManager.Localize("UI_ERROR_FORMAT"),
+                    LocalizationManager.Localize("BOOTSTRAP_FAIL"));
 
+                Widget.Find<SystemPopup>().Show(
+                    LocalizationManager.Localize("UI_ERROR"),
+                    errorMsg,
+                    LocalizationManager.Localize("UI_OK"),
+                    false
+                );
+                yield break;
+            }
             PreloadStarted?.Invoke(this, null);
             Debug.Log("PreloadingStarted event was invoked");
 
@@ -523,7 +541,8 @@ namespace Nekoyume.BlockChain
                         PreloadProcessed?.Invoke(this, state)
                     ),
                     trustedStateValidators: _trustedPeers,
-                    cancellationToken: _cancellationTokenSource.Token
+                    cancellationToken: _cancellationTokenSource.Token,
+                    blockDownloadFailed: PreloadBLockDownloadFailed
                 );
             });
 
@@ -553,7 +572,7 @@ namespace Nekoyume.BlockChain
             {
                 try
                 {
-                    await _swarm.StartAsync();
+                    await _swarm.StartAsync(preloadBlockDownloadFailed: PreloadBLockDownloadFailed);
                 }
                 catch (TaskCanceledException)
                 {
@@ -877,6 +896,12 @@ namespace Nekoyume.BlockChain
 
                 yield return new WaitForSeconds(.3f);
             }
+        }
+
+        private void PreloadBLockDownloadFailed(object sender, PreloadBlockDownloadFailEventArgs e)
+        {
+            SyncSucceed = false;
+            BlockDownloadFailed = true;
         }
     }
 }

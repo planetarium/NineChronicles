@@ -102,7 +102,22 @@ namespace Nekoyume.Game
             }
             else
             {
-                Widget.Find<UpdatePopup>().Show();
+                if (agent.BlockDownloadFailed)
+                {
+                    var errorMsg = string.Format(LocalizationManager.Localize("UI_ERROR_FORMAT"),
+                        LocalizationManager.Localize("BLOCK_DOWNLOAD_FAIL"));
+
+                    Widget.Find<SystemPopup>().Show(
+                        LocalizationManager.Localize("UI_ERROR"),
+                        errorMsg,
+                        LocalizationManager.Localize("UI_OK"),
+                        false
+                    );
+                }
+                else
+                {
+                    Widget.Find<UpdatePopup>().Show();
+                }
             }
         }
 
