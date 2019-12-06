@@ -6,9 +6,9 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    [RequireComponent(typeof(RectTransform))]
     public class EquipSlot : MonoBehaviour
     {
-        public RectTransform rectTransform;
         public Image gradeImage;
         public Image defaultImage;
         public Image itemImage;
@@ -18,6 +18,8 @@ namespace Nekoyume.UI
         private EventTrigger _eventTrigger;
         private System.Action<EquipSlot> _onClick;
         private System.Action<EquipSlot> _onDoubleClick;
+        
+        public RectTransform RectTransform { get; private set; }
 
         private void Awake()
         {
@@ -31,6 +33,8 @@ namespace Nekoyume.UI
             entry.eventID = EventTriggerType.PointerClick;
             entry.callback.AddListener(OnClick);
             _eventTrigger.triggers.Add(entry);
+            
+            RectTransform = GetComponent<RectTransform>();
         }
 
         public void Unequip()
@@ -66,13 +70,13 @@ namespace Nekoyume.UI
             gradeImage.overrideSprite = gradeSprite;
         }
 
-        public void SetOnClickAction(System.Action<EquipSlot> onLeftClick, System.Action<EquipSlot> onRightClick)
+        public void SetOnClickAction(System.Action<EquipSlot> onClick, System.Action<EquipSlot> onDoubleClick)
         {
-            _onClick = onLeftClick;
-            _onDoubleClick = onRightClick;
+            _onClick = onClick;
+            _onDoubleClick = onDoubleClick;
         }
 
-        public void OnClick(BaseEventData eventData)
+        private void OnClick(BaseEventData eventData)
         {
             PointerEventData data = eventData as PointerEventData;
 

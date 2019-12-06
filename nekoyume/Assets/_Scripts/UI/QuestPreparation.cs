@@ -183,7 +183,7 @@ namespace Nekoyume.UI
         private void ShowTooltip(EquipSlot slot)
         {
             if (slot is null ||
-                slot.rectTransform == inventory.Tooltip.Target)
+                slot.RectTransform == inventory.Tooltip.Target)
             {
                 inventory.Tooltip.Close();
 
@@ -193,7 +193,7 @@ namespace Nekoyume.UI
             if (inventory.SharedModel.TryGetEquipment(slot.item, out var item) ||
                 inventory.SharedModel.TryGetConsumable(slot.item as Consumable, out item))
             {
-                inventory.Tooltip.Show(slot.rectTransform, item, tooltip => inventory.SharedModel.DeselectItemView());
+                inventory.Tooltip.Show(slot.RectTransform, item, tooltip => inventory.SharedModel.DeselectItemView());
             }
         }
 

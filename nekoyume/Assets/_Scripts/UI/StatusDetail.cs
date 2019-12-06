@@ -64,8 +64,11 @@ namespace Nekoyume.UI
 
             foreach (var equipment in _player.Equipments)
             {
-                if (equipmentSlots.TryGet(equipment.Data.ItemSubType, out var slot))
-                    slot.Set(equipment);
+                if (!equipmentSlots.TryGet(equipment.Data.ItemSubType, out var slot))
+                    continue;
+                
+                slot.Set(equipment);
+                slot.SetOnClickAction(ShowTooltip, null);
             }
 
             // status info
@@ -95,6 +98,21 @@ namespace Nekoyume.UI
             base.Close(ignoreCloseAnimation);
             Find<ModuleBlur>()?.Close();
             equipmentSlots.Clear();
+        }
+        
+        private void ShowTooltip(EquipSlot slot)
+        {
+            var tooltip = Find<ItemInformationTooltip>();
+            
+            if (slot is null ||
+                slot.item is null ||
+                slot.RectTransform == tooltip.Target)
+            {
+                tooltip.Close();
+                return;
+            }
+            
+            tooltip.Show(slot.RectTransform, new CountableItem(slot.item, 1));
         }
 
         public void CloseClick()
