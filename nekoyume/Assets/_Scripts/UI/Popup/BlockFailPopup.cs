@@ -15,11 +15,6 @@ namespace Nekoyume.UI
 
             base.Show(LocalizationManager.Localize("UI_ERROR"), errorMsg,
                 LocalizationManager.Localize("UI_OK"), false);
-#if UNITY_EDITOR
-            CloseCallback = UnityEditor.EditorApplication.ExitPlaymode;
-#else
-            CloseCallback = Application.Quit;
-#endif
             _index = idx;
             StartCoroutine(CoCheckBlockIndex());
         }

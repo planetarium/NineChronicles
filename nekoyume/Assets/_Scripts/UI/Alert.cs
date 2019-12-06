@@ -21,7 +21,7 @@ namespace Nekoyume.UI
             base.Show();
         }
 
-        public void Show(string title, string content, string labelOK = "UI_OK", bool localize = true)
+        public virtual void Show(string title, string content, string labelOK = "UI_OK", bool localize = true)
         {
             if (gameObject.activeSelf)
             {

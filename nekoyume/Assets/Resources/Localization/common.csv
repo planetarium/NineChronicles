@@ -183,7 +183,7 @@ UI_QUIT,Quit,종료
 UI_EXIT,Exit,나가기
 UI_ERROR,Error,에러
 UI_NICKNAME_CONDITION,Nickname must be between 2-20 characters and only include English[comma] Korean[comma] and digits.,닉네임은 2~20자여야 하며 한글[comma] 영문자[comma] 숫자만 사용할 수 있습니다.
-UI_ERROR_FORMAT,Error occurred. ({0})[newline]Please restart the game.[newline]Press OK to quit the game.,오류가 발생했습니다. ({0})[newline]게임을 다시 실행해 주세요.[newline]확인을 누르면 게임이 종료됩니다.
+UI_ERROR_FORMAT,Error occurred.[newline]({0})[newline]Please restart the game.,오류가 발생했습니다. ({0})[newline]게임을 다시 실행해 주세요.
 UI_MAIL,Mail,우편
 UI_QUEST,Quest,퀘스트
 UI_CHAT,Chat,채팅
@@ -259,3 +259,5 @@ UI_UNLOCK_SHOP,Congratulation![newline]You can enter the market now![newline]Go 
 UI_UNLOCK_RANKING,Congratulation![newline]You can now check your ranking![newline]Go back to main and see how strong you are.,랭킹 개방
 UI_UNLOCK_TITLE,New Menu Open,컨텐츠 개방
 BLOCK_CHAIN_MINING_TX,Mining Transactions,트랜젝션을 채굴 중
+BLOCK_DOWNLOAD_FAIL,Block Download Failed,블록 다운로드 실패
+BOOTSTRAP_FAIL,Network Initialization Failed,네트워크 초기 설정 실패
