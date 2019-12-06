@@ -511,6 +511,7 @@ namespace Nekoyume.BlockChain
                 }
             });
             yield return new WaitUntil(() => bootstrapTask.IsCompleted);
+#if !UNITY_EDITOR
             if (bootstrapTask.IsFaulted || bootstrapTask.IsCanceled)
             {
                 var errorMsg = string.Format(LocalizationManager.Localize("UI_ERROR_FORMAT"),
@@ -524,6 +525,7 @@ namespace Nekoyume.BlockChain
                 );
                 yield break;
             }
+#endif
             PreloadStarted?.Invoke(this, null);
             Debug.Log("PreloadingStarted event was invoked");
 

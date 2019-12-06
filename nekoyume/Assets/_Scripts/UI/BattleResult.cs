@@ -162,7 +162,8 @@ namespace Nekoyume.UI
                     StartCoroutine(CoUpdateViewAsVictory());
                     break;
                 case BattleLog.Result.Lose:
-                    UpdateViewAsDefeat();
+                case BattleLog.Result.TimeOver:
+                    UpdateViewAsDefeat(SharedModel.State);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -213,7 +214,7 @@ namespace Nekoyume.UI
                 VFXController.instance.Create<BattleWin02VFX>(ActionCamera.instance.transform, VfxBattleWin02Offset);
         }
 
-        private void UpdateViewAsDefeat()
+        private void UpdateViewAsDefeat(BattleLog.Result result)
         {
             AudioController.instance.PlayMusic(AudioController.MusicCode.Lose);
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionBattleLose);
@@ -222,7 +223,12 @@ namespace Nekoyume.UI
 
             victoryImageContainer.SetActive(false);
             defeatImageContainer.SetActive(true);
-            topArea.topText.text = LocalizationManager.Localize("UI_BATTLE_RESULT_DEFEAT_MESSAGE");
+            var key = "UI_BATTLE_RESULT_DEFEAT_MESSAGE";
+            if (result == BattleLog.Result.TimeOver)
+            {
+                key = "UI_BATTLE_RESULT_TIMEOUT_MESSAGE";
+            }
+            topArea.topText.text = LocalizationManager.Localize(key);
             topArea.expContainer.SetActive(false);
             suggestionsArea.root.SetActive(true);
             suggestionsArea.submitButton1.interactable = true;

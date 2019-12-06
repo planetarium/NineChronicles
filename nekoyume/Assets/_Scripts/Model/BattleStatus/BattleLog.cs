@@ -11,7 +11,8 @@ namespace Nekoyume.Model
         public enum Result
         {
             Win,
-            Lose
+            Lose,
+            TimeOver,
         }
 
         public List<EventBase> events = new List<EventBase>();
