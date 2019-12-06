@@ -50,6 +50,7 @@ namespace Nekoyume.UI.Scroller
 
         public void SetData(List<Game.Quest.Quest> dataList)
         {
+            _buttonDisabledCells.Clear();
             _data = dataList;
 
             for (int i = 0; i < dataList.Count; ++i)
