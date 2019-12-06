@@ -87,7 +87,7 @@ namespace Nekoyume.Game.Character
 
         protected virtual void Awake()
         {
-            #if UNITY_EDITOR
+            #if !UNITY_EDITOR
             attackPoint.SetActive(false);
             #endif
         
@@ -335,7 +335,19 @@ namespace Nekoyume.Game.Character
             
             StopRunIfTargetInAttackRange(character);
         }
-        
+
+        private void OnTriggerStay(Collider other)
+        {
+            if (!other.gameObject.CompareTag(TargetTag))
+                return;
+
+            var character = other.gameObject.GetComponent<CharacterBase>();
+            if (!character)
+                return;
+            
+            StopRunIfTargetInAttackRange(character);
+        }
+
         private void StopRunIfTargetInAttackRange(CharacterBase target)
         {
             if (target.IsDead || !TargetInAttackRange(target))
