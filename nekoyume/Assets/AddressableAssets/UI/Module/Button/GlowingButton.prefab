@@ -109,8 +109,8 @@ MonoBehaviour:
   image: {fileID: 2312043304162746749}
   button: {fileID: 680059685548267356}
   localizationKey: 
-  imageTweener: {fileID: 4300503753900404019}
-  textTweener: {fileID: 5907212134953594325}
+  imageTweener: {fileID: 1795198906802418692}
+  textTweener: {fileID: 5513284234621367451}
   glowText: {fileID: 2583198327438354970}
 --- !u!1 &4585602318324760801
 GameObject:
@@ -355,7 +355,7 @@ GameObject:
   - component: {fileID: 1038370315772822082}
   - component: {fileID: 920422331580678835}
   - component: {fileID: 2583198327438354970}
-  - component: {fileID: 5907212134953594325}
+  - component: {fileID: 5513284234621367451}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -502,7 +502,7 @@ MonoBehaviour:
   - {fileID: 0}
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!114 &5907212134953594325
+--- !u!114 &5513284234621367451
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -511,21 +511,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 5801930203432965220}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7c14ca50aa2eb114686b18d870d6efd2, type: 3}
+  m_Script: {fileID: 11500000, guid: b0e2d7e1f5f0fcf4aa7cc90aaf97dfe6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  StartWithPlay: 0
-  StartDelay: 0
-  Duration: 1
-  TweenType_: 4
-  Ease_: 1
-  CompleteMethod: 
-  ComponentIndex: 0
-  Target: {fileID: 0}
-  CompleteDelay: 0
-  BeginValue: 0
-  EndValue: 1
-  ClearOnStop: 1
+  beginValue: 0
+  endValue: 1
+  duration: 0.85
+  infiniteLoop: 1
+  ease: 1
+  loopType: 1
 --- !u!1 &5919209257470328525
 GameObject:
   m_ObjectHideFlags: 0
@@ -537,7 +531,7 @@ GameObject:
   - component: {fileID: 8609929034400584436}
   - component: {fileID: 2022690111418651177}
   - component: {fileID: 2217026018396690228}
-  - component: {fileID: 4300503753900404019}
+  - component: {fileID: 1795198906802418692}
   m_Layer: 5
   m_Name: SelectedButton
   m_TagString: Untagged
@@ -602,7 +596,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
---- !u!114 &4300503753900404019
+--- !u!114 &1795198906802418692
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -611,18 +605,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 5919209257470328525}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ea01e3caa21d0264cab5f5afa838df19, type: 3}
+  m_Script: {fileID: 11500000, guid: b0e2d7e1f5f0fcf4aa7cc90aaf97dfe6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  StartWithPlay: 0
-  StartDelay: 0
-  Duration: 1
-  TweenType_: 4
-  Ease_: 1
-  CompleteMethod: 
-  ComponentIndex: 0
-  Target: {fileID: 0}
-  CompleteDelay: 0
-  BeginValue: 0
-  EndValue: 1
-  ClearOnStop: 1
+  beginValue: 0
+  endValue: 1
+  duration: 0.85
+  infiniteLoop: 1
+  ease: 1
+  loopType: 1

@@ -19,8 +19,8 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        public DOTweenImageAlpha imageTweener;
-        public DOTweenTextAlpha textTweener;
+        public GraphicAlphaTweener imageTweener;
+        public GraphicAlphaTweener textTweener;
         public TextMeshProUGUI glowText;
 
         public readonly Model SharedModel = new Model();
@@ -31,16 +31,8 @@ namespace Nekoyume.UI.Module
             glowText.text = LocalizationManager.Localize(string.IsNullOrEmpty(localizationKey) ? "null" : localizationKey);
             SharedModel.IsEnabled.Subscribe(value =>
             {
-                if (value)
-                {
-                    imageTweener.Play();
-                    textTweener.Play();
-                }
-                else
-                {
-                    imageTweener.Stop();
-                    textTweener.Stop();
-                }
+                imageTweener.enabled = value;
+                textTweener.enabled = value;
             }).AddTo(gameObject);
         }
     }
