@@ -16,12 +16,15 @@ namespace Nekoyume.UI.Module
         public Slider slider;
         public Button button;
         public CanvasGroup canvasGroup;
+        public RectTransform tooltipArea;
 
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
         private bool _updateEnable;
         private bool _isFull;
         private Animation _animation;
         private long _receivedIndex;
+
+        private VanilaTooltip _tooltip;
 
         #region Mono
 
@@ -73,6 +76,18 @@ namespace Nekoyume.UI.Module
             canvasGroup.interactable = false;
             button.interactable = false;
             _isFull = false;
+        }
+
+        public void ShowTooltip()
+        {
+            _tooltip = Widget.Find<VanilaTooltip>();
+            _tooltip?.Show("UI_PROSPERITY_DEGREE", "UI_PROSPERITY_DEGREE_DESCRIPTION", tooltipArea.position);
+        }
+
+        public void HideTooltip()
+        {
+            _tooltip?.Close();
+            _tooltip = null;
         }
 
         private void SetReceivedIndex(long index)

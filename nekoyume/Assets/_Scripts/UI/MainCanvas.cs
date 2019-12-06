@@ -95,6 +95,8 @@ namespace Nekoyume.UI
             // 툴팁류.
             _secondWidgets.Add(Widget.Create<ItemInformationTooltip>());
             yield return null;
+            _secondWidgets.Add(Widget.Create<VanilaTooltip>());
+            yield return null;
             
             // 일반.
             _secondWidgets.Add(Widget.Create<Synopsis>());

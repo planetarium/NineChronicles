@@ -11,8 +11,10 @@ namespace Nekoyume.UI.Module
     {
         public TextMeshProUGUI text;
         public Slider slider;
+        public RectTransform tooltipArea;
 
         private IDisposable _disposable;
+        private VanilaTooltip _tooltip;
 
         #region Mono
 
@@ -39,6 +41,18 @@ namespace Nekoyume.UI.Module
         {
             text.text = $"{actionPoint} / {slider.maxValue}";
             slider.value = actionPoint;
+        }
+
+        public void ShowTooltip()
+        {
+            _tooltip = Widget.Find<VanilaTooltip>();
+            _tooltip?.Show("UI_BLESS_OF_GODDESS", "UI_BLESS_OF_GODDESS_DESCRIPTION", tooltipArea.position);
+        }
+
+        public void HideTooltip()
+        {
+            _tooltip?.Close();
+            _tooltip = null;
         }
     }
 }
