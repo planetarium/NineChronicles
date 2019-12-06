@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Libplanet.Action;
 using Nekoyume.Game.Factory;
@@ -30,6 +31,7 @@ namespace Nekoyume.Battle
         public const float TurnPriority = 100f;
         public CollectionMap ItemMap = new CollectionMap();
         public readonly TableSheets TableSheets;
+        private const int MaxTurn = 3000;
 
         public Simulator(IRandom random, AvatarState avatarState, List<Consumable> foods, int worldId, int stageId,
             Game.Skill skill = null, TableSheetsState tableSheetsState = null)
@@ -54,6 +56,7 @@ namespace Nekoyume.Battle
             Log.worldId = WorldId;
             Log.stageId = StageId;
             Player.Spawn();
+            var turn = 0;
             foreach (var wave in _waves)
             {
                 Characters = new SimplePriorityQueue<CharacterBase>();
@@ -62,6 +65,13 @@ namespace Nekoyume.Battle
                 wave.Spawn(this);
                 while (true)
                 {
+                    turn++;
+                    if (turn >= MaxTurn)
+                    {
+                        _result = BattleLog.Result.TimeOver;
+                        Lose = true;
+                        break;
+                    }
                     if (Characters.TryDequeue(out var character))
                     {
                         character.Tick();
