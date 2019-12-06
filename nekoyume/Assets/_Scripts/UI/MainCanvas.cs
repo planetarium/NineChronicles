@@ -109,6 +109,9 @@ namespace Nekoyume.UI
             _secondWidgets.Add(Widget.Create<LoginDetail>());
             yield return null;
             _secondWidgets.Add(Widget.Create<Menu>());
+            // 메뉴보단 더 앞에 나와야 합니다.
+            _secondWidgets.Add(Widget.Create<VanilaTooltip>());
+            yield return null;
             yield return null;
             _secondWidgets.Add(Widget.Create<Status>());
             yield return null;
