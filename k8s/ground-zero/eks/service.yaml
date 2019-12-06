@@ -10,3 +10,18 @@ spec:
   selector:
     app: seed
   type: LoadBalancer
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: explorer
+spec:
+  ports:
+  - port: 31235
+    nodePort: 31235
+    targetPort: 31235
+  selector:
+    app: explorer
+  type: LoadBalancer

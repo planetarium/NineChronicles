@@ -1,8 +1,9 @@
 apiVersion: apps/v1beta1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: miner
 spec:
+  serviceName: miner
   replicas: 1
   template:
     metadata:
@@ -18,25 +19,32 @@ spec:
           - /entrypoint.sh
           - --console-sink
           - --storage-path=/data/miner
-          - --peer=<<PUBLIC_KEY>>,ground-zero.planetarium.dev,31234
+          - --peer=<<PUBLIC_KEY>>,<<HOST_NAME>>,31234
         volumeMounts:
-          - name: volume
+          - name: miner-data
             mountPath: /data
         resources:
           requests:
             cpu: 700m
-      volumes:
-        - name: volume
-          persistentVolumeClaim:
-            claimName: default-claim
-
+      imagePullSecrets:
+        - name: acr-regcred
+  volumeClaimTemplates:
+  - metadata:
+      name: miner-data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: gp2
+      resources:
+        requests:
+          storage: 10Gi
 ---
 
 apiVersion: apps/v1beta1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: seed
 spec:
+  serviceName: seed
   replicas: 1
   template:
     metadata:
@@ -52,7 +60,7 @@ spec:
           - /entrypoint.sh
           - --no-miner
           - --console-sink
-          - --host=ground-zero.planetarium.dev
+          - --host=<<HOST_NAME>>
           - --port=31234
           - --private-key=<<PRIVATE_KEY>>
           - --storage-path=/data/seed
@@ -71,11 +79,65 @@ spec:
           requests:
             cpu: 700m
         volumeMounts:
-          - name: volume
+          - name: seed-data
             mountPath: /data
       imagePullSecrets:
         - name: acr-regcred
-      volumes:
-        - name: volume
-          persistentVolumeClaim:
-            claimName: default-claim
+  volumeClaimTemplates:
+  - metadata:
+      name: seed-data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: gp2
+      resources:
+        requests:
+          storage: 10Gi
+
+---
+
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: explorer
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  selector:
+    matchLabels:
+      app: explorer
+  template:
+    metadata:
+      labels:
+        app: explorer-test
+    spec:
+      containers:
+      - name: explorer-test
+        image: planetariumhq/<<EXPLORER_DOCKER_IMAGE_NAME>>
+        command:
+          - dotnet
+          - ./Libplanet.Explorer.Executable/out/Libplanet.Explorer.Executable.dll
+          - -p 31235
+          - -d
+          - -s
+          - <<PUBLIC_KEY>>,<<HOST_NAME>>,31234
+          - -I
+          - turn://0ed3e48007413e7c2e638f13ddd75ad272c6c507e081bd76a75e4b7adc86c9af:0apejou+ycZFfwtREeXFKdfLj2gCclKzz5ZJ49Cmy6I=@planetarium-turn.koreacentral.cloudapp.azure.com:3478/
+          - -i 10000
+          - -m 100000
+          - -D 2048
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 31235
+          name: explorer
+          protocol: TCP
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      imagePullSecrets:
+        - name: acr-regcred
+      dnsPolicy: ClusterFirst
+      nodeSelector:
+        beta.kubernetes.io/os: linux
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
