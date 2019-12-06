@@ -87,6 +87,7 @@ namespace Nekoyume.UI
                 case WidgetType.Tooltip:
                 case WidgetType.Widget:
                 case WidgetType.SystemInfo:
+                case WidgetType.Development:
                     go.transform.SetParent(MainCanvas.instance.widget.transform);
                     go.SetActive(activate);
                     Pool.Add(type, new PoolElementModel
