@@ -7,6 +7,7 @@ using Bencodex.Types;
 using Libplanet.Action;
 using Nekoyume.Battle;
 using Nekoyume.BlockChain;
+using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.Game.Item;
 using Nekoyume.Model;
@@ -21,7 +22,7 @@ using Text = UnityEngine.UI.Text;
 
 namespace Nekoyume
 {
-    public class Cheat : PopupWidget
+    public class Cheat : Widget
     {
         private static Cheat Instance;
 
@@ -49,6 +50,7 @@ namespace Nekoyume
         private int[,] _stageRange;
         private Game.Skill[] _skills;
         private Game.Skill _selectedSkill;
+        public override WidgetType WidgetType => WidgetType.Development;
 
         public class DebugRandom : IRandom
         {

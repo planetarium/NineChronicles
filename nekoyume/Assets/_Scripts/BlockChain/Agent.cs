@@ -281,9 +281,8 @@ namespace Nekoyume.BlockChain
             _autoPlayer = options.AutoPlay ? CoAutoPlayer() : null;
 
 #if DEBUG
-            if (development && Widget.Find<Cheat>() is Cheat cheatWidget)
+            if (development)
             {
-                cheatWidget.Show();
                 _logger = CoLogger();
             }
 #endif

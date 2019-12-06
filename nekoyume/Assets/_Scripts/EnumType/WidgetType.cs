@@ -8,5 +8,6 @@ namespace Nekoyume.EnumType
         Tooltip,
         Widget,
         SystemInfo,
+        Development,
     }
 }

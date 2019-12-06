@@ -17,6 +17,7 @@ namespace Nekoyume.UI
         public GameObject tooltip;
         public GameObject widget;
         public GameObject systemInfo;
+        public GameObject development;
 
         private List<Widget> _firstWidgets;
         private List<Widget> _secondWidgets;
@@ -40,6 +41,8 @@ namespace Nekoyume.UI
                     return widget.transform;
                 case WidgetType.SystemInfo:
                     return systemInfo.transform;
+                case WidgetType.Development:
+                    return development.transform;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(widgetType), widgetType, null);
             }
@@ -65,9 +68,6 @@ namespace Nekoyume.UI
                 Widget.Create<Title>(true),
                 Widget.Create<ModuleBlur>(),
 
-#if DEBUG
-                Widget.Create<Cheat>(),
-#endif
                 // 알림 영역.
                 Widget.Create<UpdatePopup>(),
                 Widget.Create<BlockFailPopup>(),
@@ -78,6 +78,11 @@ namespace Nekoyume.UI
                 // 시스템 정보 영역.
                 Widget.Create<BlockChainMessageBoard>(true),
                 Widget.Create<Notification>(true),
+
+                //개발용 최상단 영역.
+#if DEBUG
+                Widget.Create<Cheat>(true),
+#endif
             };
 
             foreach (var value in _firstWidgets)
