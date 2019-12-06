@@ -28,6 +28,7 @@ namespace Nekoyume.UI
 
             public BattleLog.Result State;
             public long Exp;
+            public bool ShouldExit;
             public bool ShouldRepeat;
             public bool ActionPointNotEnough;
 
@@ -193,6 +194,7 @@ namespace Nekoyume.UI
             else
             {
                 submitButton.interactable = true;
+
                 submitButtonText.text = SharedModel.ShouldRepeat
                     ? LocalizationManager.Localize("UI_BATTLE_AGAIN")
                     : LocalizationManager.Localize("UI_NEXT_STAGE");
@@ -273,11 +275,23 @@ namespace Nekoyume.UI
         private IEnumerator CoUpdateBottomText(int limitSeconds)
         {
             var secondsFormat = LocalizationManager.Localize("UI_AFTER_N_SECONDS");
-            var fullFormat = SharedModel.ActionPointNotEnough
-                ? LocalizationManager.Localize("UI_BATTLE_RESULT_NOT_ENOUGH_ACTION_POINT_FORMAT")
-                : SharedModel.ShouldRepeat
+            string fullFormat;
+            if (SharedModel.ShouldExit)
+            {
+                fullFormat = LocalizationManager.Localize("UI_BATTLE_EXIT_FORMAT");
+            }
+            else if (SharedModel.ActionPointNotEnough)
+            {
+                fullFormat = LocalizationManager.Localize("UI_BATTLE_RESULT_NOT_ENOUGH_ACTION_POINT_FORMAT");
+            }
+            else
+            {
+                fullFormat = SharedModel.ShouldRepeat
                     ? LocalizationManager.Localize("UI_BATTLE_RESULT_REPEAT_STAGE_FORMAT")
                     : LocalizationManager.Localize("UI_BATTLE_RESULT_NEXT_STAGE_FORMAT");
+            }
+
+
             bottomText.text = string.Format(fullFormat, string.Format(secondsFormat, limitSeconds));
             bottomText.enabled = true;
 
@@ -298,7 +312,7 @@ namespace Nekoyume.UI
                 floatTimeMinusOne = limitSeconds - 1f;
             }
 
-            if (SharedModel.ActionPointNotEnough)
+            if (SharedModel.ShouldExit || SharedModel.ActionPointNotEnough)
             {
                 GoToMain();
             }

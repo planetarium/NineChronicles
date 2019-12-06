@@ -44,6 +44,7 @@ namespace Nekoyume.UI.Module
         public NormalButton quitButton;
         public NormalButton mainButton;
         public NormalButton backButton;
+        public GlowingButton leaveBattleButton;
 
         // 토글 그룹과 버튼.
         private ToggleGroup _toggleGroup;
@@ -85,6 +86,7 @@ namespace Nekoyume.UI.Module
             backButton.button.OnClickAsObservable().Subscribe(SubscribeNavigationButtonClick).AddTo(gameObject);
             mainButton.button.OnClickAsObservable().Subscribe(SubscribeNavigationButtonClick).AddTo(gameObject);
             quitButton.button.OnClickAsObservable().Subscribe(SubscribeNavigationButtonClick).AddTo(gameObject);
+            leaveBattleButton.button.OnClickAsObservable().Subscribe(SubscribeNavigationButtonClick).AddTo(gameObject);
 
             _toggleGroup = new ToggleGroup();
             _toggleGroup.RegisterToggleable(mailButton);
@@ -230,21 +232,31 @@ namespace Nekoyume.UI.Module
             switch (navigationType)
             {
                 case UINavigator.NavigationType.None:
+                    leaveBattleButton.Hide();
                     backButton.Hide();
                     mainButton.Hide();
                     quitButton.Hide();
                     break;
                 case UINavigator.NavigationType.Back:
+                    leaveBattleButton.Hide();
                     backButton.Show();
                     mainButton.Hide();
                     quitButton.Hide();
                     break;
                 case UINavigator.NavigationType.Main:
+                    leaveBattleButton.Hide();
                     backButton.Hide();
                     mainButton.Show();
                     quitButton.Hide();
                     break;
+                case UINavigator.NavigationType.Battle:
+                    leaveBattleButton.Show();
+                    backButton.Hide();
+                    mainButton.Hide();
+                    quitButton.Hide();
+                    break;
                 case UINavigator.NavigationType.Quit:
+                    leaveBattleButton.Hide();
                     backButton.Hide();
                     mainButton.Hide();
                     quitButton.Show();

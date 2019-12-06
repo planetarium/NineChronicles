@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
 using DG.Tweening;
 using System.Collections;
+using UniRx;
 
 namespace Nekoyume.UI.Tween
 {
@@ -29,6 +29,13 @@ namespace Nekoyume.UI.Tween
         public GameObject Target = null;
         [HideInInspector]
         public float CompleteDelay = 0.0f;
+        public DG.Tweening.Tween currentTween;
+        public readonly Subject<DG.Tweening.Tween> onStop = new Subject<DG.Tweening.Tween>();
+
+        protected virtual void Awake()
+        {
+            onStop.Subscribe(_ => OnStopTweening()).AddTo(gameObject);
+        }
 
         protected virtual IEnumerator Start()
         {
@@ -36,8 +43,22 @@ namespace Nekoyume.UI.Tween
             if (StartWithPlay)
             {
                 yield return new WaitForSeconds(StartDelay);
-                Invoke($"Play{TweenType_.ToString()}", 0.0f);
+                Play();
             }
+        }
+
+        public virtual void Play()
+        {
+            Invoke($"Play{TweenType_.ToString()}", 0.0f);
+        }
+
+        public virtual void Stop()
+        {
+            if (currentTween is null)
+                return;
+
+            currentTween.Kill();
+            onStop.OnNext(currentTween);
         }
 
         public virtual void PlayForward()
@@ -62,6 +83,10 @@ namespace Nekoyume.UI.Tween
         public virtual void PlayPingPongRepeat()
         {
             PlayForward();
+        }
+
+        public virtual void OnStopTweening()
+        {
         }
 
         public void OnComplete()
