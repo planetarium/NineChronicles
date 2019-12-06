@@ -12,6 +12,34 @@
 1. Swen 에게 요청해서 AWS IAM 계정을 생성합니다.
 2. [공식 문서](https://docs.aws.amazon.com/ko_kr/cli/latest/userguide/cli-chap-install.html)를 참조하여 AWS CLI를 설치합니다.
 
+## 클러스터 생성하기
+
+1. [eksctl](https://github.com/weaveworks/eksctl)을 설치합니다.
+2. eksctl 을 이용하여 클러스터를 생성합니다.
+
+        $ eksctl create cluster -n <cluster-name> -r <region-name> --nodegroup-name <nodegroup-name> -N <number-of-nodes>
+
+3. 다음 명령으로 `kubectl`에서 사용할 클러스터를 생성한 클러스터로 변경합니다.
+
+        $ aws eks update-kubeconfig --name <cluster-name>
+
+4. 다음 명령으로 configmap 설정을 띄웁니다.
+
+        $ kubectl edit configmap -n kube-system aws-auth
+
+5. mapRoles 아래에 아래 그룹을 추가합니다.
+
+        - groups:
+          - system:masters
+          rolearn: arn:aws:iam::319679068466:role/EKS
+          username: admins
+
+6. 다음 명령을 입력하여 configmap 설정이 반영 되었는지 확인합니다.
+
+        $ aws eks update-kubeconfig --name <cluster-name> --role-arn arn:aws:iam::319679068466:role/EKS
+        $ kubectl get pod
+
+
 # 시작 버전 정하기
 
 - 테스트 기간에 사용할 9C 빌드 버전을 정하기 위해서, 에디터에서 검수된 태그 (예. [1](https://github.com/planetarium/nekoyume-unity/tree/20190910-01), [2](https://github.com/planetarium/nekoyume-unity/tree/20190906-01))를 확인합니다.
@@ -61,13 +89,13 @@ Docker가 설치된 환경이라면 다음 명령어로 이미지를 빌드할 �
         Default region name [None]: ap-northeast-2
         Default output format [None]: json
 
-        $ aws eks update-kubeconfig --name 9c-internal
+        $ aws eks update-kubeconfig --name 9c-internal --role-arn arn:aws:iam::319679068466:role/EKS
 
 - [다음 페이지](https://codepen.io/hongminhee/pen/LBJPQp)에서 시드 노드에서 사용할 비밀키 / 공개 키를 생성합니다.
 - `k8s/ground-zero/deployment.yaml.template` 을 적절히 수정하여 `k8s/ground-zero/deployment.yaml`을 만듭니다.
 - 다음 명령으로 변경된 템플릿을 클러스터에 반영합니다.
 
-        $ kubectl apply -f k8s/ground-zero/deployment.yaml --role-arn arn:aws:iam::319679068466:role/EKS
+        $ kubectl apply -f k8s/ground-zero/deployment.yaml
 
 # 클라이언트 빌드 하기
 
