@@ -51,6 +51,7 @@ namespace Nekoyume.Game
         public readonly Vector2 questPreparationPosition = new Vector2(2.1f, -0.2f);
         public readonly Vector2 roomPosition = new Vector2(-2.808f, -1.519f);
         public bool repeatStage;
+        public bool isExitReserved;
         public string zone;
 
         private Camera _camera;
@@ -290,6 +291,7 @@ namespace Nekoyume.Game
             }
 
             _battleResultModel.State = log.result;
+            _battleResultModel.ShouldExit = isExitReserved;
             _battleResultModel.ShouldRepeat = repeatStage;
             _battleResultModel.ActionPointNotEnough =
                 States.Instance.CurrentAvatarState.Value.actionPoint < GameConfig.HackAndSlashCostAP;
@@ -322,7 +324,8 @@ namespace Nekoyume.Game
             status.ShowBattleStatus();
 
             var battle = Widget.Find<UI.Battle>();
-            battle.Show(stageId);
+            isExitReserved = false;
+            battle.Show(stageId, isExitReserved);
             if (!(AvatarState is null) && !ActionRenderHandler.Instance.Pending)
             {
                 ActionRenderHandler.Instance.UpdateCurrentAvatarState(AvatarState);

@@ -109,7 +109,8 @@ MonoBehaviour:
   image: {fileID: 2312043304162746749}
   button: {fileID: 680059685548267356}
   localizationKey: 
-  glowImage: {fileID: 2217026018396690228}
+  imageTweener: {fileID: 4300503753900404019}
+  textTweener: {fileID: 5907212134953594325}
   glowText: {fileID: 2583198327438354970}
 --- !u!1 &4585602318324760801
 GameObject:
@@ -354,6 +355,7 @@ GameObject:
   - component: {fileID: 1038370315772822082}
   - component: {fileID: 920422331580678835}
   - component: {fileID: 2583198327438354970}
+  - component: {fileID: 5907212134953594325}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -417,8 +419,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4290440703
-  m_fontColor: {r: 1, g: 0.92941177, b: 0.7294118, a: 1}
+    rgba: 12250623
+  m_fontColor: {r: 1, g: 0.92941177, b: 0.7294118, a: 0}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -500,6 +502,30 @@ MonoBehaviour:
   - {fileID: 0}
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &5907212134953594325
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5801930203432965220}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c14ca50aa2eb114686b18d870d6efd2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  StartWithPlay: 0
+  StartDelay: 0
+  Duration: 2
+  TweenType_: 4
+  Ease_: 1
+  CompleteMethod: 
+  ComponentIndex: 0
+  Target: {fileID: 0}
+  CompleteDelay: 0
+  BeginValue: 0
+  EndValue: 0.7
+  ClearOnStop: 1
 --- !u!1 &5919209257470328525
 GameObject:
   m_ObjectHideFlags: 0
@@ -511,13 +537,14 @@ GameObject:
   - component: {fileID: 8609929034400584436}
   - component: {fileID: 2022690111418651177}
   - component: {fileID: 2217026018396690228}
+  - component: {fileID: 4300503753900404019}
   m_Layer: 5
   m_Name: SelectedButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &8609929034400584436
 RectTransform:
   m_ObjectHideFlags: 0
@@ -559,7 +586,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -575,3 +602,27 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
+--- !u!114 &4300503753900404019
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5919209257470328525}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea01e3caa21d0264cab5f5afa838df19, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  StartWithPlay: 0
+  StartDelay: 0
+  Duration: 2
+  TweenType_: 4
+  Ease_: 1
+  CompleteMethod: 
+  ComponentIndex: 0
+  Target: {fileID: 0}
+  CompleteDelay: 0
+  BeginValue: 0
+  EndValue: 0.7
+  ClearOnStop: 1

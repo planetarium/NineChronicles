@@ -18,15 +18,16 @@ namespace Nekoyume.UI
             Game.Event.OnGetItem.AddListener(OnGetItem);
         }
 
-        public void Show(int stage)
+        public void Show(int stage, bool isExitReserved)
         {
             base.Show();
             stageTitle.Show(stage);
 
             var bottomMenu = Find<BottomMenu>();
+            bottomMenu.leaveBattleButton.SharedModel.IsEnabled.Value = false;
             bottomMenu?.Show(
                 UINavigator.NavigationType.Battle,
-                null,
+                SubscribeOnExitButtonClick,
                 true,
                 BottomMenu.ToggleableType.Mail,
                 BottomMenu.ToggleableType.Quest,
@@ -34,6 +35,30 @@ namespace Nekoyume.UI
                 BottomMenu.ToggleableType.IllustratedBook,
                 BottomMenu.ToggleableType.Character,
                 BottomMenu.ToggleableType.Inventory);
+        }
+
+        public void SubscribeOnExitButtonClick(BottomMenu bottomMenu)
+        {
+            var stage = Game.Game.instance.stage;
+            if (stage.isExitReserved)
+            {
+                stage.isExitReserved = false;
+                bottomMenu.leaveBattleButton.SharedModel.IsEnabled.Value = false;
+                return;
+            }
+            else
+            {
+                var confirm = Find<Confirm>();
+                confirm.CloseCallback = result =>
+                {
+                    if (result == ConfirmResult.Yes)
+                    {
+                        stage.isExitReserved = true;
+                        bottomMenu.leaveBattleButton.SharedModel.IsEnabled.Value = true;
+                    }
+                };
+                confirm?.Show("UI_BATTLE_EXIT_RESERVATION_TITLE", "UI_BATTLE_EXIT_RESERVATION_CONTENT");
+            }
         }
 
         public override void Close(bool ignoreCloseAnimation = false)

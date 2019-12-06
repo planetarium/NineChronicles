@@ -82,6 +82,7 @@ UI_BATTLE_RESULT_REPEAT_STAGE_FORMAT,{0} you will repeat the current stage.,{0} 
 UI_BATTLE_RESULT_NOT_ENOUGH_ACTION_POINT_FORMAT,You don't have enough action point.,행동력이 부족하기 때문에 {0} 메인으로 이동합니다.
 UI_BATTLE_AGAIN,Again,다시 전투
 UI_BATTLE_AGAIN_FORMAT,{0} Start the Battle Again,{0} 다시 전투를 시작합니다.
+UI_BATTLE_EXIT_FORMAT,{0} you will proceed to the main.,{0} 메인으로 이동합니다.
 UI_BATTLE_WIN,Stage Won!,전투 승리!
 UI_REWARDS,Rewards,획득한 아이템
 UI_BATTLE_RETRY,Retry,다시 도전
@@ -258,4 +259,6 @@ UI_UNLOCK_COMBINATION,Congratulation![newline]You can enter the workshop now![ne
 UI_UNLOCK_SHOP,Congratulation![newline]You can enter the market now![newline]Go back to main and trade thing with others.,상점 개방
 UI_UNLOCK_RANKING,Congratulation![newline]You can now check your ranking![newline]Go back to main and see how strong you are.,랭킹 개방
 UI_UNLOCK_TITLE,New Menu Open,컨텐츠 개방
+UI_BATTLE_EXIT_RESERVATION_TITLE,Battle Exit Reservation,전투 나가기 예약
+UI_BATTLE_EXIT_RESERVATION_CONTENT,Are you sure to proceed to the main after this battle ends?,이 전투가 끝난 후 메인으로 이동하시겠습니까?
 BLOCK_CHAIN_MINING_TX,Mining Transactions,트랜젝션을 채굴 중

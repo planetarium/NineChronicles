@@ -41,10 +41,10 @@ namespace Nekoyume.UI.Module
         }
 
         // 네비게이션 버튼.
-        public GlowingButton leaveBattleButton;
         public NormalButton quitButton;
         public NormalButton mainButton;
         public NormalButton backButton;
+        public GlowingButton leaveBattleButton;
 
         // 토글 그룹과 버튼.
         private ToggleGroup _toggleGroup;
@@ -86,6 +86,7 @@ namespace Nekoyume.UI.Module
             backButton.button.OnClickAsObservable().Subscribe(SubscribeNavigationButtonClick).AddTo(gameObject);
             mainButton.button.OnClickAsObservable().Subscribe(SubscribeNavigationButtonClick).AddTo(gameObject);
             quitButton.button.OnClickAsObservable().Subscribe(SubscribeNavigationButtonClick).AddTo(gameObject);
+            leaveBattleButton.button.OnClickAsObservable().Subscribe(SubscribeNavigationButtonClick).AddTo(gameObject);
 
             _toggleGroup = new ToggleGroup();
             _toggleGroup.RegisterToggleable(mailButton);
