@@ -63,6 +63,7 @@ namespace Nekoyume.UI
                 Widget.Create<LoadingScreen>(),
                 Widget.Create<PreloadingScreen>(true),
                 Widget.Create<Title>(true),
+                Widget.Create<ModuleBlur>(),
 
 #if DEBUG
                 Widget.Create<Cheat>(),
@@ -72,6 +73,7 @@ namespace Nekoyume.UI
                 Widget.Create<BlockFailPopup>(),
                 Widget.Create<ActionFailPopup>(),
                 Widget.Create<LoginPopup>(),
+                Widget.Create<SystemPopup>(),
                 
                 // 시스템 정보 영역.
                 Widget.Create<BlockChainMessageBoard>(true),
@@ -121,8 +123,6 @@ namespace Nekoyume.UI
             yield return null;
 
             // 모듈류.
-            _secondWidgets.Add(Widget.Create<ModuleBlur>());
-            yield return null;
             _secondWidgets.Add(Widget.Create<StatusDetail>());
             yield return null;
             _secondWidgets.Add(Widget.Create<Inventory>());
