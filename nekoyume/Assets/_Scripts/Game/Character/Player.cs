@@ -19,6 +19,8 @@ namespace Nekoyume.Game.Character
     // todo: 경험치 정보를 `CharacterBase`로 옮기는 것이 좋겠음.
     public class Player : CharacterBase
     {
+        public new Model.Player Model { get; private set; }
+
         private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
 
         public long EXP = 0;
@@ -27,15 +29,15 @@ namespace Nekoyume.Game.Character
         public Item.Inventory Inventory;
         public TouchHandler touchHandler;
 
-        public new readonly ReactiveProperty<Model.Player> Model = new ReactiveProperty<Model.Player>();
-
         public List<Equipment> Equipments =>
             Inventory.Items.Select(i => i.item).OfType<Equipment>().Where(e => e.equipped).ToList();
 
-        protected override float RunSpeedDefault => Model.Value.RunSpeed;
+        protected override float RunSpeedDefault => Model.RunSpeed;
 
         protected override Vector3 DamageTextForce => new Vector3(-0.1f, 0.5f);
         protected override Vector3 HudTextPosition => transform.TransformPoint(0f, 1.7f, 0f);
+
+        private PlayerAnimationController AnimationController { get; set; }
 
         #region Mono
 
@@ -83,13 +85,13 @@ namespace Nekoyume.Game.Character
             base.Set(model, updateCurrentHP);
 
             _disposablesForModel.DisposeAllAndClear();
-            Model.SetValueAndForceNotify(model);
+            Model = model;
 
             InitStats(model);
             UpdateEquipments(model.armor, model.weapon);
             UpdateCustomize();
 
-            if (ReferenceEquals(SpeechBubble, null))
+            if (!SpeechBubble)
             {
                 SpeechBubble = Widget.Create<SpeechBubble>();
             }
@@ -115,12 +117,26 @@ namespace Nekoyume.Game.Character
             Event.OnPlayerDead.Invoke();
         }
 
-        public void UpdateCustomize()
+        protected override BoxCollider GetAnimatorHitPointBoxCollider()
         {
-            UpdateEye(Model.Value.lensIndex);
-            UpdateEar(Model.Value.earIndex);
-            UpdateTail(Model.Value.tailIndex);
+            return AnimationController.BoxCollider;
         }
+        
+        #region AttackPoint & HitPoint
+
+        protected override void UpdateHitPoint()
+        {
+            base.UpdateHitPoint();
+            
+            var center = HitPointBoxCollider.center;
+            var size = HitPointBoxCollider.size;
+            HitPointLocalOffset = new Vector3(center.x + size.x / 2, center.y - size.y / 2);
+            attackPoint.transform.localPosition = new Vector3(HitPointLocalOffset.x + Model.attackRange, 0f);
+        }
+        
+        #endregion
+
+        #region Equipments & Customize
 
         public void UpdateEquipments(Armor armor, Weapon weapon = null)
         {
@@ -132,10 +148,10 @@ namespace Nekoyume.Game.Character
         {
             var armorId = armor?.Data.Id ?? GameConfig.DefaultAvatarArmorId;
             var spineResourcePath = armor?.Data.SpineResourcePath ?? $"Character/Player/{armorId}";
-            
+
             if (!(Animator.Target is null))
             {
-                var animatorTargetName = spineResourcePath.Split('/').Last(); 
+                var animatorTargetName = spineResourcePath.Split('/').Last();
                 if (Animator.Target.name.Contains(animatorTargetName))
                     return;
 
@@ -144,17 +160,25 @@ namespace Nekoyume.Game.Character
 
             var origin = Resources.Load<GameObject>(spineResourcePath);
             var go = Instantiate(origin, gameObject.transform);
+            AnimationController = go.GetComponent<PlayerAnimationController>();
             Animator.ResetTarget(go);
+            UpdateHitPoint();
         }
 
         public void UpdateWeapon(Weapon weapon)
         {
-            var controller = GetComponentInChildren<SkeletonAnimationController>();
-            if (!controller)
+            if (!AnimationController)
                 return;
 
             var sprite = weapon.GetPlayerSpineTexture();
-            controller.UpdateWeapon(sprite);
+            AnimationController.UpdateWeapon(sprite);
+        }
+
+        public void UpdateCustomize()
+        {
+            UpdateEye(Model.lensIndex);
+            UpdateEar(Model.earIndex);
+            UpdateTail(Model.tailIndex);
         }
 
         public void UpdateEar(int index)
@@ -164,23 +188,22 @@ namespace Nekoyume.Game.Character
 
         public void UpdateEar(string earLeftResource, string earRightResource)
         {
+            if (!AnimationController)
+                return;
+
             if (string.IsNullOrEmpty(earLeftResource))
             {
-                earLeftResource = $"ear_{Model.Value.earIndex + 1:d4}_left";
+                earLeftResource = $"ear_{Model.earIndex + 1:d4}_left";
             }
 
             if (string.IsNullOrEmpty(earRightResource))
             {
-                earRightResource = $"ear_{Model.Value.earIndex + 1:d4}_right";
+                earRightResource = $"ear_{Model.earIndex + 1:d4}_right";
             }
-
-            var controller = GetComponentInChildren<SkeletonAnimationController>();
-            if (!controller)
-                return;
 
             var spriteLeft = SpriteHelper.GetPlayerSpineTextureEarLeft(earLeftResource);
             var spriteRight = SpriteHelper.GetPlayerSpineTextureEarRight(earRightResource);
-            controller.UpdateEar(spriteLeft, spriteRight);
+            AnimationController.UpdateEar(spriteLeft, spriteRight);
         }
 
         public void UpdateEye(int index)
@@ -190,23 +213,22 @@ namespace Nekoyume.Game.Character
 
         public void UpdateEye(string eyeOpenResource, string eyeHalfResource)
         {
+            if (!AnimationController)
+                return;
+
             if (string.IsNullOrEmpty(eyeOpenResource))
             {
-                eyeOpenResource = CostumeSheet.GetEyeOpenResourceByIndex(Model.Value.lensIndex);
+                eyeOpenResource = CostumeSheet.GetEyeOpenResourceByIndex(Model.lensIndex);
             }
 
             if (string.IsNullOrEmpty(eyeHalfResource))
             {
-                eyeHalfResource = CostumeSheet.GetEyeHalfResourceByIndex(Model.Value.lensIndex);
+                eyeHalfResource = CostumeSheet.GetEyeHalfResourceByIndex(Model.lensIndex);
             }
-
-            var controller = GetComponentInChildren<SkeletonAnimationController>();
-            if (!controller)
-                return;
 
             var eyeOpenSprite = SpriteHelper.GetPlayerSpineTextureEyeOpen(eyeOpenResource);
             var eyeHalfSprite = SpriteHelper.GetPlayerSpineTextureEyeHalf(eyeHalfResource);
-            controller.UpdateEye(eyeOpenSprite, eyeHalfSprite);
+            AnimationController.UpdateEye(eyeOpenSprite, eyeHalfSprite);
         }
 
         public void UpdateTail(int index)
@@ -216,18 +238,19 @@ namespace Nekoyume.Game.Character
 
         public void UpdateTail(string tailResource)
         {
-            if (string.IsNullOrEmpty(tailResource))
-            {
-                tailResource = $"tail_{Model.Value.tailIndex + 1:d4}";
-            }
-
-            var controller = GetComponentInChildren<SkeletonAnimationController>();
-            if (!controller)
+            if (!AnimationController)
                 return;
 
+            if (string.IsNullOrEmpty(tailResource))
+            {
+                tailResource = $"tail_{Model.tailIndex + 1:d4}";
+            }
+
             var sprite = SpriteHelper.GetPlayerSpineTextureTail(tailResource);
-            controller.UpdateTail(sprite);
+            AnimationController.UpdateTail(sprite);
         }
+
+        #endregion
 
         public IEnumerator CoGetExp(long exp)
         {
@@ -237,7 +260,7 @@ namespace Nekoyume.Game.Character
             }
 
             var level = Level;
-            Model.Value.GetExp(exp);
+            Model.GetExp(exp);
             EXP += exp;
 
             if (Level != level)
@@ -245,7 +268,7 @@ namespace Nekoyume.Game.Character
                 AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionStatusLevelUp, level);
                 AudioController.instance.PlaySfx(AudioController.SfxCode.LevelUp);
                 VFXController.instance.Create<BattleLevelUp01VFX>(transform, HUDOffset);
-                InitStats(Model.Value);
+                InitStats(Model);
                 var key = "";
                 if (Level == GameConfig.CombinationRequiredLevel)
                 {
@@ -267,6 +290,7 @@ namespace Nekoyume.Game.Character
                     yield return new WaitWhile(() => w.isActiveAndEnabled);
                 }
             }
+
             UpdateHpBar();
         }
 
@@ -291,20 +315,6 @@ namespace Nekoyume.Game.Character
                     AudioController.PlayFootStep();
                     break;
             }
-        }
-
-        protected override bool CanRun()
-        {
-            var canRun = base.CanRun();
-            var enemy = GetComponentsInChildren<CharacterBase>()
-                .Where(c => c.gameObject.CompareTag(TargetTag))
-                .OrderBy(c => c.transform.position.x).FirstOrDefault();
-            if (enemy != null)
-            {
-                return canRun && !TargetInRange(enemy);
-            }
-
-            return canRun;
         }
 
         protected override void ProcessAttack(CharacterBase target, Model.Skill.SkillInfo skill, bool isLastHit,

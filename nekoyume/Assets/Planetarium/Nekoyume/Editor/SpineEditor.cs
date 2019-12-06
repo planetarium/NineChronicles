@@ -12,6 +12,7 @@ using Object = UnityEngine.Object;
 
 namespace Planetarium.Nekoyume.Editor
 {
+    // todo: NPC 로직 추가
     public static class SpineEditor
     {
         private const string FindAssetFilter = "CharacterAnimator t:AnimatorController";
@@ -54,6 +55,9 @@ namespace Planetarium.Nekoyume.Editor
 
         private static void CreateSpinePrefabInternal(SkeletonDataAsset skeletonDataAsset)
         {
+            if (!Validate(skeletonDataAsset))
+                return;
+            
             CreateAnimationReferenceAssets(skeletonDataAsset);
             
             var assetPath = AssetDatabase.GetAssetPath(skeletonDataAsset);
@@ -92,7 +96,9 @@ namespace Planetarium.Nekoyume.Editor
             animator.runtimeAnimatorController =
                 AssetDatabase.LoadAssetAtPath<AnimatorController>(animatorControllerPath);
 
-            var controller = gameObject.AddComponent<SkeletonAnimationController>();
+            var controller = isPlayer
+                ? gameObject.AddComponent<PlayerAnimationController>()
+                : gameObject.AddComponent<SkeletonAnimationController>();
             foreach (var animationType in CharacterAnimation.List)
             {
                 assetPath = Path.Combine(animationAssetsPath, $"{animationType}.asset");
@@ -150,9 +156,15 @@ namespace Planetarium.Nekoyume.Editor
                         animation = asset
                     });
             }
-
+            
             if (File.Exists(prefabPath))
             {
+                var boxCollider = controller.GetComponent<BoxCollider>();
+                var sac = AssetDatabase.LoadAssetAtPath<SkeletonAnimationController>(prefabPath);
+                var sourceBoxCollider = AssetDatabase.LoadAssetAtPath<BoxCollider>(prefabPath);
+                boxCollider.center = sourceBoxCollider.center;
+                boxCollider.size = sourceBoxCollider.size;
+                
                 AssetDatabase.DeleteAsset(prefabPath);
             }
 
@@ -167,6 +179,14 @@ namespace Planetarium.Nekoyume.Editor
                 Object.DestroyImmediate(gameObject);
                 throw new FailedToSaveAsPrefabAssetException(prefabPath);
             }
+        }
+
+        private static bool Validate(SkeletonDataAsset skeletonDataAsset)
+        {
+            var data = skeletonDataAsset.GetSkeletonData(false);
+            var hud = data.FindBone("HUD");
+            
+            return !(hud is null);
         }
 
         /// <summary>

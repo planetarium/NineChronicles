@@ -197,7 +197,7 @@ public class AddOutOfSpecificRangeException<T> : Exception
 
 public class AssetNotFoundException : Exception
 {
-    public AssetNotFoundException(string assetPath) : base(assetPath)
+    public AssetNotFoundException(string message) : base(message)
     {
     }
 }

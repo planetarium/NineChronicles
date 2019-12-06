@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 4022189738255766372}
   - component: {fileID: 4022189738255766375}
   - component: {fileID: 310521987456049046}
+  - component: {fileID: 7053228895258162235}
   m_Layer: 0
   m_Name: 300001
   m_TagString: Untagged
@@ -136,7 +137,6 @@ MonoBehaviour:
     animation: {fileID: 11400000, guid: af995bff9c9dec14f8b8c4812604ed08, type: 2}
   - stateName: Touch
     animation: {fileID: 11400000, guid: c22455f6cf066b94ca2a96faf12e556e, type: 2}
-  weaponSlot: weapon
 --- !u!95 &310521987456049046
 Animator:
   serializedVersion: 3
@@ -156,3 +156,16 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!65 &7053228895258162235
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4022189738255766374}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 5.247982, y: 4.4466476, z: 0}
+  m_Center: {x: 0.39368486, y: 2.1008239, z: 0}

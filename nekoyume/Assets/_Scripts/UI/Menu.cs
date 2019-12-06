@@ -58,7 +58,7 @@ namespace Nekoyume.UI
                 ActionRenderHandler.Instance.UpdateCurrentAvatarState(stage.AvatarState);
             }
             var player = stage.GetPlayer();
-            player.UpdateEquipments(player.Model.Value.armor, player.Model.Value.weapon);
+            player.UpdateEquipments(player.Model.armor, player.Model.weapon);
             player.UpdateCustomize();
             player.gameObject.SetActive(true);
 

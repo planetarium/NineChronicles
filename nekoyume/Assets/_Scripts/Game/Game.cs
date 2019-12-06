@@ -95,7 +95,6 @@ namespace Nekoyume.Game
         private void ShowNext(bool succeed)
         {
             initialized = true;
-            Debug.LogWarning(succeed);
             if (succeed)
             {
                 Widget.Find<PreloadingScreen>().Close();

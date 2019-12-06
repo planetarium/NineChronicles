@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 5063668899789467732}
   - component: {fileID: 4066690425107072514}
   - component: {fileID: 6877182967224026258}
+  - component: {fileID: 141673539472097821}
   m_Layer: 8
   m_Name: main_com
   m_TagString: Untagged
@@ -179,3 +180,16 @@ MonoBehaviour:
     animation: {fileID: 11400000, guid: b41e6f7d85e920c47bf28f961805df0f, type: 2}
   - stateName: Emotion
     animation: {fileID: 11400000, guid: be0947900e8361c4ead214ee1624c14c, type: 2}
+--- !u!65 &141673539472097821
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 165991570617174920}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.1770532, y: 1.0156732, z: 0}
+  m_Center: {x: 0.05661404, y: 0.4202366, z: 0}

@@ -71,11 +71,11 @@ namespace Nekoyume.UI
         private void SubscribeOnUpdatePlayerStatus(Player player)
         {
             if (player is null ||
-                player.Model.Value is null)
+                player.Model is null)
                 return;
             
             UpdateExp();
-            SetBuffs(player.Model.Value.Buffs);
+            SetBuffs(player.Model.Buffs);
         }
         
         public void UpdatePlayer(GameObject playerObj)
@@ -124,14 +124,14 @@ namespace Nekoyume.UI
             textLvName.text = $"<color=#B38271>LV. {level}</color> {_avatarName}";
             var displayHp = math.max(_player.CurrentHP, 0);
             textHp.text = $"HP {displayHp} / {_player.HP}";
-            textExp.text = $"EXP {_player.Model.Value.Exp.Need - _player.EXPMax + _player.EXP} / {_player.Model.Value.Exp.Need}";
+            textExp.text = $"EXP {_player.Model.Exp.Need - _player.EXPMax + _player.EXP} / {_player.Model.Exp.Need}";
 
             float hpValue = _player.CurrentHP / (float)_player.HP;
             hpBar.gameObject.SetActive(hpValue > 0.0f);
             hpValue = Mathf.Min(Mathf.Max(hpValue, 0.1f), 1.0f);
             hpBar.fillAmount = hpValue;
 
-            var expNeed = _player.Model.Value.Exp.Need;
+            var expNeed = _player.Model.Exp.Need;
             var levelExp = _player.EXPMax - expNeed;
             var expValue = (float)(_player.EXP - levelExp) / expNeed;
             expBar.gameObject.SetActive(expValue > 0.0f);

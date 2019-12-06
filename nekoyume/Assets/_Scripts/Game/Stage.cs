@@ -432,11 +432,14 @@ namespace Nekoyume.Game
                 throw new ArgumentNullException(nameof(character));
 
             var enemy = GetComponentsInChildren<Character.CharacterBase>()
-                .Where(c => c.gameObject.CompareTag(character.TargetTag) && c.IsAlive())
+                .Where(c => c.gameObject.CompareTag(character.TargetTag) && c.IsAlive)
                 .OrderBy(c => c.transform.position.x).FirstOrDefault();
-            if (enemy == null || character.TargetInRange(enemy)) yield break;
+            if (!enemy || character.TargetInAttackRange(enemy))
+                yield break;
+            
             character.StartRun();
-            yield return new WaitUntil(() => character.TargetInRange(enemy));
+            var time = Time.time;
+            yield return new WaitUntil(() => Time.time - time > 2f || character.TargetInAttackRange(enemy));
         }
 
         private IEnumerator CoAfterSkill(Character.CharacterBase character,
@@ -460,9 +463,9 @@ namespace Nekoyume.Game
 
             yield return new WaitForSeconds(SkillDelay);
             var enemy = GetComponentsInChildren<Character.CharacterBase>()
-                .Where(c => c.gameObject.CompareTag(character.TargetTag) && c.IsAlive())
+                .Where(c => c.gameObject.CompareTag(character.TargetTag) && c.IsAlive)
                 .OrderBy(c => c.transform.position.x).FirstOrDefault();
-            if (enemy != null && !character.TargetInRange(enemy))
+            if (enemy && !character.TargetInAttackRange(enemy))
                 character.StartRun();
         }
 
