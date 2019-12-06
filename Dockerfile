@@ -33,6 +33,6 @@ VOLUME /data
 
 ARG prior_dlls="prior_dlls"
 
-ENV PRIOR_DLLS ${PRIOR_DLLS}
+ENV PRIOR_DLLS=$prior_dlls
 
 ENTRYPOINT ["/entrypoint.sh", "--storage-path=/data/planetarium"]
