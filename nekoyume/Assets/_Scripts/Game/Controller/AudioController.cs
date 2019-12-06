@@ -78,6 +78,7 @@ namespace Nekoyume.Game.Controller
             public const string BuyItem = "sfx_buy_item";
             public const string Notice = "sfx_notice";
             public const string Typing = "sfx_typing";
+            public const string Win = "sfx_win";
         }
 
         private enum State
