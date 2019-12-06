@@ -36,7 +36,7 @@
 
 6. 다음 명령을 입력하여 configmap 설정이 반영 되었는지 확인합니다.
 
-        $ aws eks update-kubeconfig --name 9c-internal --role-arn arn:aws:iam::319679068466:role/EKS
+        $ aws eks update-kubeconfig --name <cluster-name> --role-arn arn:aws:iam::319679068466:role/EKS
         $ kubectl get pod
 
 
