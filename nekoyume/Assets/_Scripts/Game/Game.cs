@@ -110,7 +110,7 @@ namespace Nekoyume.Game
                     Widget.Find<SystemPopup>().Show(
                         LocalizationManager.Localize("UI_ERROR"),
                         errorMsg,
-                        LocalizationManager.Localize("UI_OK"),
+                        LocalizationManager.Localize("UI_QUIT"),
                         false
                     );
                 }
