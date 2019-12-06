@@ -8346,6 +8346,26 @@ PrefabInstance:
       propertyPath: m_textInfo.pageCount
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4300503753900404019, guid: fad22e1d013efca48b8f810cc5c1e81d,
+        type: 3}
+      propertyPath: EndValue
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4300503753900404019, guid: fad22e1d013efca48b8f810cc5c1e81d,
+        type: 3}
+      propertyPath: Duration
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5907212134953594325, guid: fad22e1d013efca48b8f810cc5c1e81d,
+        type: 3}
+      propertyPath: Duration
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5907212134953594325, guid: fad22e1d013efca48b8f810cc5c1e81d,
+        type: 3}
+      propertyPath: EndValue
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fad22e1d013efca48b8f810cc5c1e81d, type: 3}
 --- !u!114 &7453070620903959453 stripped

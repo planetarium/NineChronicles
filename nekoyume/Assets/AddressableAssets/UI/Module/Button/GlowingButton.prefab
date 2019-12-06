@@ -516,7 +516,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   StartWithPlay: 0
   StartDelay: 0
-  Duration: 2
+  Duration: 1
   TweenType_: 4
   Ease_: 1
   CompleteMethod: 
@@ -524,7 +524,7 @@ MonoBehaviour:
   Target: {fileID: 0}
   CompleteDelay: 0
   BeginValue: 0
-  EndValue: 0.7
+  EndValue: 1
   ClearOnStop: 1
 --- !u!1 &5919209257470328525
 GameObject:
@@ -616,7 +616,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   StartWithPlay: 0
   StartDelay: 0
-  Duration: 2
+  Duration: 1
   TweenType_: 4
   Ease_: 1
   CompleteMethod: 
@@ -624,5 +624,5 @@ MonoBehaviour:
   Target: {fileID: 0}
   CompleteDelay: 0
   BeginValue: 0
-  EndValue: 0.7
+  EndValue: 1
   ClearOnStop: 1
