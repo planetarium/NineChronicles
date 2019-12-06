@@ -100,6 +100,9 @@ namespace Nekoyume.UI.Scroller
             var format = LocalizationManager.Localize("NOTIFICATION_QUEST_REQUEST_REWARD");
             var msg = string.Format(format, data.GetName());
             Notification.Push(MailType.System, msg);
+
+            // 로컬 아바타의 퀘스트 상태 업데이트
+            States.Instance.CurrentAvatarState.Value.questList.First(q => q == data).Receive = true;
         }
 
         private void OnClickButton()
