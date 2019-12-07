@@ -37,9 +37,6 @@ workflows:
   version: 2
   build_and_deploy:
     jobs:
-      - unittest:
-          name: unittest
-
       - azure-acr/build-and-push-image:
           name: build-and-push-image
           tag: "git-$CIRCLE_SHA1"

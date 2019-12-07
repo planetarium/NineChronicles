@@ -501,10 +501,7 @@ namespace Nekoyume.BlockChain
                 catch (SwarmException e)
                 {
                     Debug.LogFormat("Bootstrap failed. {0}", e.Message);
-                    if (!Application.isBatchMode)
-                    {
-                        throw;
-                    }
+                    throw;
                 }
                 catch (Exception e)
                 {
@@ -514,7 +511,7 @@ namespace Nekoyume.BlockChain
             });
             yield return new WaitUntil(() => bootstrapTask.IsCompleted);
 #if !UNITY_EDITOR
-            if (bootstrapTask.IsFaulted || bootstrapTask.IsCanceled)
+            if (!Application.isBatchMode && (bootstrapTask.IsFaulted || bootstrapTask.IsCanceled))
             {
                 var errorMsg = string.Format(LocalizationManager.Localize("UI_ERROR_FORMAT"),
                     LocalizationManager.Localize("BOOTSTRAP_FAIL"));
@@ -863,11 +860,19 @@ namespace Nekoyume.BlockChain
         private IEnumerator CoLogin(Action<bool> callback)
         {
             var options = GetOptions(CommandLineOptionsJsonPath);
-            var w = Widget.Find<Title>();
-            w.Show(options.keyStorePath, options.privateKey);
             var loginPopup = Widget.Find<LoginPopup>();
-            yield return new WaitUntil(() => loginPopup.Login);
-            w.Close();
+
+            if (Application.isBatchMode)
+            {
+                loginPopup.Show(options.KeyStorePath, options.PrivateKey);
+            }
+            else
+            {
+                var title = Widget.Find<Title>();
+                title.Show(options.keyStorePath, options.privateKey);
+                yield return new WaitUntil(() => loginPopup.Login);
+                title.Close();
+            }
             InitAgent(callback, loginPopup.GetPrivateKey());
         }
 
