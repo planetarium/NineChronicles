@@ -182,6 +182,8 @@ namespace Nekoyume.Game.Controller
 
         public void Initialize()
         {
+            AudioListener.volume = Settings.Instance.VolumeMaster;
+
             if (CurrentState != State.None)
             {
                 throw new FsmException("Already initialized.");
