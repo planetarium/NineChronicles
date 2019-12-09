@@ -239,9 +239,9 @@ for idx, row in enumerate(wave_csv):
 for idx, row in enumerate(stage_to_wave_csv):
     row_id = row[0]
     waves = row[1:]
-    #waves = filter(lambda x: x, row[1:]) # wave_id, wave_level
+    grouped = filter(lambda row: row[0] , [waves[i:i+2] for i in range(0, len(waves), 2)])
     if idx > 0:
-        stage_dict[int(row_id)] = waves
+        stage_dict[int(row_id)] = grouped
         stage_ids.append(int(row_id))
 
 ## LOGIC ##
@@ -259,8 +259,8 @@ for stage in stage_ids:
     # Append each wave
     # print waves
     is_boss_level = (stage % 10 == 0)
-    wave_cnt = len(waves)/2
-    for wave_idx, wave_info in enumerate([waves[i:i+2] for i in range(0, len(waves), 2)]):
+    wave_cnt = len(waves)
+    for wave_idx, wave_info in enumerate(waves):
         print wave_info
         wave = wave_info[0]
         m_level = wave_info[1]
