@@ -108,9 +108,8 @@ namespace Nekoyume.UI.Module
             chatButton.button.OnClickAsObservable().Subscribe(SubScribeOnClickChat).AddTo(gameObject);
             // 미구현
             illustratedBookButton.button.OnClickAsObservable().Subscribe(SubscribeOnClick).AddTo(gameObject);
-            settingsButton.button.OnClickAsObservable().Subscribe(SubscribeOnClick).AddTo(gameObject);
             illustratedBookButton.SetWidgetType<Alert>();
-            settingsButton.SetWidgetType<Alert>();
+            settingsButton.SetWidgetType<Settings>();
             chatButton.SetWidgetType<Confirm>();
         } 
 
