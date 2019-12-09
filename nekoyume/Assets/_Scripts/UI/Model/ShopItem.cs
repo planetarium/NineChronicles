@@ -23,7 +23,7 @@ namespace Nekoyume.UI.Model
         private ShopItem(Address sellerAgentAddress, Address sellerAvatarAddress, decimal price, Guid productId,
             ItemBase item) : base(item, 1)
         {
-            GradeEnabled.Value = false;
+            GradeEnabled.Value = true;
             SellerAgentAddress.Value = sellerAgentAddress;
             SellerAvatarAddress.Value = sellerAvatarAddress;
             Price.Value = price;

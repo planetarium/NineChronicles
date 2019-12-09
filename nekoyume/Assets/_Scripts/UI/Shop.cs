@@ -55,6 +55,8 @@ namespace Nekoyume.UI
         public GameObject shopNotice;
         public TextMeshProUGUI noticeText;
         public SpeechBubble speechBubble;
+        public SpriteRenderer sellImage;
+        public SpriteRenderer buyImage;
 
         public Model.Shop SharedModel { get; private set; }
 
@@ -178,6 +180,8 @@ namespace Nekoyume.UI
                     sellButton.button.interactable = true;
                     shopNotice.SetActive(false);
                     _toggleGroup.SetToggledOn(buyButton);
+                    buyImage.gameObject.SetActive(true);
+                    sellImage.gameObject.SetActive(false);
                     break;
                 case StateType.Sell:
                     inventory.SharedModel.DimmedFunc.Value = DimmedFuncForSell;
@@ -185,6 +189,8 @@ namespace Nekoyume.UI
                     sellButton.button.interactable = false;
                     shopNotice.SetActive(true);
                     _toggleGroup.SetToggledOn(sellButton);
+                    buyImage.gameObject.SetActive(false);
+                    sellImage.gameObject.SetActive(true);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(stateType), stateType, null);
