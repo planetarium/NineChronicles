@@ -164,6 +164,8 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<InputBox>());
             yield return null;
+            _secondWidgets.Add(Widget.Create<Settings>());
+            yield return null;
 
             Widget last = null;
             foreach (var value in _secondWidgets)
