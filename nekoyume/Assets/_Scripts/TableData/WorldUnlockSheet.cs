@@ -34,16 +34,14 @@ namespace Nekoyume.TableData
         {
         }
 
-        public bool TryGetUnlockedInformation(int clearedWorldId, int clearedStageId, out int worldIdToUnlock)
+        public bool TryGetUnlockedInformation(int clearedWorldId, int clearedStageId, out List<int> worldIdsToUnlock)
         {
-            foreach (var value in Values.Where(e => e.WorldId == clearedWorldId && e.StageId == clearedStageId))
-            {
-                worldIdToUnlock = value.WorldIdToUnlock;
-                return true;
-            }
+            worldIdsToUnlock = Values
+                .Where(e => e.WorldId == clearedWorldId && e.StageId == clearedStageId)
+                .Select(value => value.WorldIdToUnlock)
+                .ToList();
 
-            worldIdToUnlock = 0;
-            return false;
+            return worldIdsToUnlock.Count > 0;
         }
     }
 }

@@ -200,11 +200,13 @@ namespace Nekoyume.UI
         private void LockWorld(WorldMapWorld world)
         {
             world.Set(-1, world.SharedViewModel.RowData.StageBegin);
+            world.worldButton.SetActive(false);
         }
 
         private void UnlockWorld(WorldMapWorld world, int openedStageId = -1, int selectedStageId = -1)
         {
             world.Set(openedStageId, selectedStageId);
+            world.worldButton.SetActive(true);
         }
 
         private void ShowWorld(int worldId)
