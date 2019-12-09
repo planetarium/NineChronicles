@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Assets.SimpleLocalization;
 using Libplanet;
 using Libplanet.Crypto;
@@ -157,17 +158,23 @@ namespace Nekoyume.UI
 
         public void CheckPassphrase()
         {
-            var result = Zxcvbn.Zxcvbn.MatchPassword(passPhraseField.text);
-            var strong = result.Score >= 2;
+            var text = passPhraseField.text;
+            var strong = CheckPassWord(text);
             strongText.gameObject.SetActive(strong);
             weakText.gameObject.SetActive(!strong);
         }
 
+        private static bool CheckPassWord(string text)
+        {
+            var result = Zxcvbn.Zxcvbn.MatchPassword(text);
+            return result.Score >= 2 && Regex.IsMatch(text, GameConfig.PasswordPattern);
+        }
+
         public void CheckRetypePassphrase()
         {
-            var result = Zxcvbn.Zxcvbn.MatchPassword(passPhraseField.text);
-            var strong = result.Score >= 2;
-            var same = passPhraseField.text == retypeField.text && strong;
+
+            var text = passPhraseField.text;
+            var same = text == retypeField.text && CheckPassWord(text);
             submitButton.interactable = same;
             correctText.gameObject.SetActive(same);
             incorrectText.gameObject.SetActive(!same);
@@ -175,7 +182,15 @@ namespace Nekoyume.UI
 
         private void CheckLogin()
         {
-            _privateKey = CheckPrivateKey(GetProtectedPrivateKeys(), loginField.text);
+            try
+            {
+                _privateKey = CheckPrivateKey(GetProtectedPrivateKeys(), loginField.text);
+            }
+            catch (Exception e)
+            {
+                SetState(State.Failed);
+                return;
+            }
             Login = !(_privateKey is null);
             if (Login)
             {

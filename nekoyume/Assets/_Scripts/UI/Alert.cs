@@ -15,9 +15,15 @@ namespace Nekoyume.UI
 
         public override void Show()
         {
-            var blur = Find<ModuleBlur>();
-            blur.onClick = () => Close();
-            blur?.Show();
+            try
+            {
+                var blur = Find<ModuleBlur>();
+                blur.onClick = () => Close();
+                blur.Show();
+            }
+            catch (WidgetNotFoundException)
+            {
+            }
             base.Show();
         }
 

@@ -8,6 +8,7 @@ namespace Nekoyume
         public const int SlotCount = 3;
         public const float WaitSeconds = 180f;
         public const string AvatarNickNamePattern = @"^[0-9가-힣a-zA-Z]{2,20}$";
+        public const string PasswordPattern = @"^[A-Za-z\d!@#$%^&*()_+{}|?]+$";
         public const string DiscordLink = "https://discord.gg/NqshYve";
         public const float PlayerSpeechBreakTime = 2f;
 
