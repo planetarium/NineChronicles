@@ -8,66 +8,185 @@ namespace Nekoyume.UI
 {
     public class Settings : PopupWidget
     {
-        public TextMeshProUGUI masterVolumeText;
-        public Slider masterVolumeSlider;
-        public Toggle masterVolumeToggle;
-        public TextMeshProUGUI musicVolumeText;
-        public Slider musicVolumeSlider;
-        public Toggle musicVolumeToggle;
-        public TextMeshProUGUI sfxVolumeText;
-        public Slider sfxVolumeSlider;
-        public Toggle sfxVolumeToggle;
+        private const string VolumeMasterKey = "SETTINGS_VOLUME_MASTER";
+        private const string VolumeMasterIsMutedKey = "SETTINGS_VOLUME_MASTER_ISMUTED";
+        private const string VolumeMusicKey = "SETTINGS_VOLUME_MUSIC";
+        private const string VolumeMusicIsMutedKey = "SETTINGS_VOLUME_MUSIC_ISMUTED";
+        private const string VolumeSfxKey = "SETTINGS_VOLUME_SFX";
+        private const string VolumeSfxIsMutedKey = "SETTINGS_VOLUME_SFX_ISMUTED";
 
+        public TextMeshProUGUI addressText;
+        public TextMeshProUGUI volumeMasterText;
+        public Slider volumeMasterSlider;
+        public Toggle volumeMasterToggle;
+        public TextMeshProUGUI volumeMusicText;
+        public Slider volumeMusicSlider;
+        public Toggle volumeMusicToggle;
+        public TextMeshProUGUI volumeSfxText;
+        public Slider volumeSfxSlider;
+        public Toggle volumeSfxToggle;
         public List<TextMeshProUGUI> muteTexts;
+
+        #region Mono
 
         protected override void Awake()
         {
-            masterVolumeSlider.onValueChanged.AddListener(value =>
+            volumeMasterSlider.onValueChanged.AddListener(value =>
             {
-                if (masterVolumeToggle.isOn)
-                    return;
-
-                SetMasterVolume(value);
+                SetVolumeMaster(value);
+            });
+            volumeMusicSlider.onValueChanged.AddListener(value =>
+            {
+                SetVolumeMusic(value);
+            });
+            volumeSfxSlider.onValueChanged.AddListener(value =>
+            {
+                SetVolumeSfx(value);
             });
 
-            masterVolumeToggle.onValueChanged.AddListener(value =>
+            volumeMasterToggle.onValueChanged.AddListener(value =>
             {
-                if (value)
-                {
-                    SetMasterVolume(0.0f);
-                }
-                else
-                {
-                    SetMasterVolume(masterVolumeSlider.value);
-                }
+                SetVolumeMasterMute(value);
+            });
+            volumeMusicToggle.onValueChanged.AddListener(value =>
+            {
+                SetVolumeMusicMute(value);
+            });
+            volumeSfxToggle.onValueChanged.AddListener(value =>
+            {
+                SetVolumeSfxMute(value);
             });
         }
 
+        #endregion
+
         public override void Show()
         {
+            var addressString = $"{LocalizationManager.Localize("UI_YOUR_ADDRESS")}\n<color=white>{Game.Game.instance.agent.Address}</color>";
+            addressText.text = addressString;
+
             var muteString = LocalizationManager.Localize("UI_MUTE_AUDIO");
             foreach (var text in muteTexts)
             {
                 text.text = muteString;
             }
 
+            var settings = Nekoyume.Settings.Instance;
+            UpdateSoundSettings();
+
+            volumeMasterSlider.value = settings.VolumeMaster;
+            volumeMusicSlider.value = settings.VolumeMusic;
+            volumeSfxSlider.value = settings.VolumeSfx;
+            volumeMasterToggle.isOn = settings.isVolumeMasterMuted;
+            volumeMusicToggle.isOn = settings.isVolumeMusicMuted;
+            volumeSfxToggle.isOn = settings.isVolumeSfxMuted;
+
             base.Show();
         }
 
-        public void Apply()
+        public void ApplyCurrentSettings()
         {
-            var masterVolume = masterVolumeSlider.value;
-            var musicVolume = musicVolumeSlider.value;
-            var sfxVolume = sfxVolumeSlider.value;
-
-
+            Nekoyume.Settings.Instance.ApplyCurrentSettings();
+            Close();
         }
 
-        private void SetMasterVolume(float value)
+        public void RevertSettings()
         {
-            AudioListener.volume = value;
-            var volumeString = Mathf.Approximately(value, 0.0f) ? LocalizationManager.Localize("UI_MUTE_AUDIO") : $"{Mathf.CeilToInt(value * 100.0f)}%";
-            masterVolumeText.text = $"{LocalizationManager.Localize("UI_MASTER_VOLUME")} : {volumeString}";
+            Nekoyume.Settings.Instance.ReloadSettings();
+            UpdateSoundSettings();
+            Close();
+        }
+
+        public void UpdateSoundSettings()
+        {
+            var settings = Nekoyume.Settings.Instance;
+            SetVolumeMaster(settings.VolumeMaster);
+            SetVolumeMusic(settings.VolumeMusic);
+            SetVolumeSfx(settings.VolumeSfx);
+            SetVolumeMasterMute(settings.isVolumeMasterMuted);
+            SetVolumeMusicMute(settings.isVolumeMusicMuted);
+            SetVolumeSfxMute(settings.isVolumeSfxMuted);
+        }
+
+        public void CopyAddressToClipboard()
+        {
+            var address = Game.Game.instance.agent.Address;
+
+            TextEditor editor = new TextEditor()
+            {
+                text = address.ToString()
+            };
+            editor.SelectAll();
+            editor.Copy();
+        }
+
+        private void SetVolumeMaster(float value)
+        {
+            var settings = Nekoyume.Settings.Instance;
+            settings.VolumeMaster = value;
+            AudioListener.volume = settings.isVolumeMasterMuted ? 0f : settings.VolumeMaster;
+            UpdateVolumeMasterText();
+        }
+
+        private void SetVolumeMasterMute(bool value)
+        {
+            var settings = Nekoyume.Settings.Instance;
+            settings.isVolumeMasterMuted = value;
+            AudioListener.volume = value ? 0f : settings.VolumeMaster;
+            UpdateVolumeMasterText();
+        }
+
+        private void UpdateVolumeMasterText()
+        {
+            var volumeString = Mathf.Approximately(AudioListener.volume, 0.0f) ?
+                LocalizationManager.Localize("UI_MUTE_AUDIO") : $"{Mathf.CeilToInt(AudioListener.volume * 100.0f)}%";
+            volumeMasterText.text = $"{LocalizationManager.Localize("UI_MASTER_VOLUME")} : {volumeString}";
+        }
+
+        private void SetVolumeMusic(float value)
+        {
+            var settings = Nekoyume.Settings.Instance;
+            settings.VolumeMusic = value;
+            UpdateVolumeMusicText();
+        }
+
+        private void SetVolumeMusicMute(bool value)
+        {
+            var settings = Nekoyume.Settings.Instance;
+            settings.isVolumeMusicMuted = value;
+            UpdateVolumeMusicText();
+        }
+
+        private void UpdateVolumeMusicText()
+        {
+            var settings = Nekoyume.Settings.Instance;
+            var volumeString = settings.isVolumeMusicMuted || Mathf.Approximately(settings.VolumeMusic, 0.0f) ?
+                LocalizationManager.Localize("UI_MUTE_AUDIO") : $"{Mathf.CeilToInt(settings.VolumeMusic * 100.0f)}%";
+
+            volumeMusicText.text = $"{LocalizationManager.Localize("UI_MUSIC_VOLUME")} : {volumeString}";
+        }
+
+        private void SetVolumeSfx(float value)
+        {
+            var settings = Nekoyume.Settings.Instance;
+            settings.VolumeSfx = value;
+            UpdateVolumeSfxText();
+        }
+
+        private void SetVolumeSfxMute(bool value)
+        {
+            var settings = Nekoyume.Settings.Instance;
+            settings.isVolumeSfxMuted = value;
+            UpdateVolumeSfxText();
+        }
+
+        private void UpdateVolumeSfxText()
+        {
+            var settings = Nekoyume.Settings.Instance;
+            var volumeString = settings.isVolumeSfxMuted || Mathf.Approximately(settings.VolumeSfx, 0.0f) ?
+                LocalizationManager.Localize("UI_MUTE_AUDIO") : $"{Mathf.CeilToInt(settings.VolumeSfx * 100.0f)}%";
+
+            volumeSfxText.text = $"{LocalizationManager.Localize("UI_SFX_VOLUME")} : {volumeString}";
         }
     }
 }
