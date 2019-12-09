@@ -66,7 +66,6 @@ namespace Nekoyume.UI
                 Widget.Create<LoadingScreen>(),
                 Widget.Create<PreloadingScreen>(true),
                 Widget.Create<Title>(true),
-                Widget.Create<ModuleBlur>(),
 
                 // 알림 영역.
                 Widget.Create<UpdatePopup>(),
@@ -100,7 +99,7 @@ namespace Nekoyume.UI
             // 툴팁류.
             _secondWidgets.Add(Widget.Create<ItemInformationTooltip>());
             yield return null;
-            
+
             // 일반.
             _secondWidgets.Add(Widget.Create<Synopsis>());
             yield return null;
@@ -109,11 +108,13 @@ namespace Nekoyume.UI
             _secondWidgets.Add(Widget.Create<LoginDetail>());
             yield return null;
             _secondWidgets.Add(Widget.Create<Menu>());
+            yield return null;
             // 메뉴보단 더 앞에 나와야 합니다.
             _secondWidgets.Add(Widget.Create<VanilaTooltip>());
             yield return null;
-            yield return null;
             _secondWidgets.Add(Widget.Create<Status>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<ModuleBlur>());
             yield return null;
             _secondWidgets.Add(Widget.Create<Blind>());
             yield return null;

@@ -55,9 +55,7 @@ namespace Nekoyume.UI
         {
             text = inputField.text;
             CloseCallback?.Invoke(ConfirmResult.Yes);
-            Find<ModuleBlur>()?.Close();
-
-            base.Close();
+            Close();
             AudioController.PlayClick();
         }
 
@@ -65,10 +63,14 @@ namespace Nekoyume.UI
         {
             text = inputField.text = string.Empty;
             CloseCallback?.Invoke(ConfirmResult.No);
-            Find<ModuleBlur>()?.Close();
-
-            base.Close();
+            Close();
             AudioController.PlayClick();
+        }
+
+        public override void Close(bool ignoreCloseAnimation = false)
+        {
+            Find<ModuleBlur>()?.Close();
+            base.Close(ignoreCloseAnimation);
         }
     }
 }
