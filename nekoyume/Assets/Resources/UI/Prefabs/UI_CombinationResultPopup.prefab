@@ -204,7 +204,7 @@ MonoBehaviour:
   m_Script: {fileID: -765806418, guid: f70555f144d8491a825f0804e09c671c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 2100000, guid: a4e1e9019a3fbd847a05e2144c674d42, type: 2}
+  m_Material: {fileID: 2100000, guid: 3d234b369f44823448c5c1656261a989, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
@@ -1000,11 +1000,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 224572706135938076}
     m_Modifications:
-    - target: {fileID: 1885807040530065394, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
-        type: 3}
-      propertyPath: m_Name
-      value: SimpleCountableItemView (2)
-      objectReference: {fileID: 0}
     - target: {fileID: 1997588973851837028, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
         type: 3}
       propertyPath: m_textInfo.characterCount
@@ -1023,11 +1018,6 @@ PrefabInstance:
     - target: {fileID: 1997588973851837028, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
         type: 3}
       propertyPath: m_textInfo.pageCount
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1997897827266943112, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
-        type: 3}
-      propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1816018180843216220, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
@@ -1135,8 +1125,24 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 1885807040530065394, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
+        type: 3}
+      propertyPath: m_Name
+      value: SimpleCountableItemView (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1997897827266943112, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5a7ec89f001bf46e686e8583d2f3a60e, type: 3}
+--- !u!224 &2082937058141875872 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 1816018180843216220, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
+    type: 3}
+  m_PrefabInstance: {fileID: 422176035669586940}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &2189195569330965580 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1997991965690462128, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
@@ -1149,12 +1155,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d710db0c8f34326bca10f1fe0a9fa88, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!224 &2082937058141875872 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 1816018180843216220, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
-    type: 3}
-  m_PrefabInstance: {fileID: 422176035669586940}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1930775622374587517
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1162,11 +1162,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 224572706135938076}
     m_Modifications:
-    - target: {fileID: 1885807040530065394, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
-        type: 3}
-      propertyPath: m_Name
-      value: SimpleCountableItemView (3)
-      objectReference: {fileID: 0}
     - target: {fileID: 1997588973851837028, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
         type: 3}
       propertyPath: m_textInfo.characterCount
@@ -1185,11 +1180,6 @@ PrefabInstance:
     - target: {fileID: 1997588973851837028, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
         type: 3}
       propertyPath: m_textInfo.pageCount
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1997897827266943112, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
-        type: 3}
-      propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1816018180843216220, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
@@ -1297,6 +1287,16 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 1885807040530065394, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
+        type: 3}
+      propertyPath: m_Name
+      value: SimpleCountableItemView (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1997897827266943112, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5a7ec89f001bf46e686e8583d2f3a60e, type: 3}
 --- !u!224 &286177429134860577 stripped
@@ -1324,11 +1324,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 224572706135938076}
     m_Modifications:
-    - target: {fileID: 1885807040530065394, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
-        type: 3}
-      propertyPath: m_Name
-      value: SimpleCountableItemView (1)
-      objectReference: {fileID: 0}
     - target: {fileID: 1997588973851837028, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
         type: 3}
       propertyPath: m_textInfo.characterCount
@@ -1347,11 +1342,6 @@ PrefabInstance:
     - target: {fileID: 1997588973851837028, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
         type: 3}
       propertyPath: m_textInfo.pageCount
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1997897827266943112, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
-        type: 3}
-      propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1816018180843216220, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
@@ -1459,8 +1449,24 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 1885807040530065394, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
+        type: 3}
+      propertyPath: m_Name
+      value: SimpleCountableItemView (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1997897827266943112, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5a7ec89f001bf46e686e8583d2f3a60e, type: 3}
+--- !u!224 &4023569595307211628 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 1816018180843216220, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
+    type: 3}
+  m_PrefabInstance: {fileID: 3379210257431963184}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &3845817655659780480 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1997991965690462128, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
@@ -1473,12 +1479,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d710db0c8f34326bca10f1fe0a9fa88, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!224 &4023569595307211628 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 1816018180843216220, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
-    type: 3}
-  m_PrefabInstance: {fileID: 3379210257431963184}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &3704459861879745628
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1486,11 +1486,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 224572706135938076}
     m_Modifications:
-    - target: {fileID: 1885807040530065394, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
-        type: 3}
-      propertyPath: m_Name
-      value: SimpleCountableItemView (4)
-      objectReference: {fileID: 0}
     - target: {fileID: 1997588973851837028, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
         type: 3}
       propertyPath: m_textInfo.characterCount
@@ -1509,11 +1504,6 @@ PrefabInstance:
     - target: {fileID: 1997588973851837028, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
         type: 3}
       propertyPath: m_textInfo.pageCount
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1997897827266943112, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
-        type: 3}
-      propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1816018180843216220, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
@@ -1621,14 +1611,18 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 1885807040530065394, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
+        type: 3}
+      propertyPath: m_Name
+      value: SimpleCountableItemView (4)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1997897827266943112, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5a7ec89f001bf46e686e8583d2f3a60e, type: 3}
---- !u!224 &3052077667911692544 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 1816018180843216220, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
-    type: 3}
-  m_PrefabInstance: {fileID: 3704459861879745628}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &2941599897118872556 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1997991965690462128, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
@@ -1641,6 +1635,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d710db0c8f34326bca10f1fe0a9fa88, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!224 &3052077667911692544 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 1816018180843216220, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
+    type: 3}
+  m_PrefabInstance: {fileID: 3704459861879745628}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &7004336996513212912
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1648,11 +1648,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 224572706135938076}
     m_Modifications:
-    - target: {fileID: 1885807040530065394, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
-        type: 3}
-      propertyPath: m_Name
-      value: SimpleCountableItemView
-      objectReference: {fileID: 0}
     - target: {fileID: 1997588973851837028, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
         type: 3}
       propertyPath: m_textInfo.characterCount
@@ -1671,11 +1666,6 @@ PrefabInstance:
     - target: {fileID: 1997588973851837028, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
         type: 3}
       propertyPath: m_textInfo.pageCount
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1997897827266943112, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
-        type: 3}
-      propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1816018180843216220, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
@@ -1782,6 +1772,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1885807040530065394, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
+        type: 3}
+      propertyPath: m_Name
+      value: SimpleCountableItemView
+      objectReference: {fileID: 0}
+    - target: {fileID: 1997897827266943112, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5a7ec89f001bf46e686e8583d2f3a60e, type: 3}
