@@ -96,6 +96,7 @@ namespace Nekoyume.UI.Module
             _toggleGroup.RegisterToggleable(inventoryButton);
             _toggleGroup.RegisterToggleable(worldMapButton);
             _toggleGroup.RegisterToggleable(settingsButton);
+            _toggleGroup.RegisterToggleable(chatButton);
 
             mailButton.SetWidgetType<Mail>();
             questButton.SetWidgetType<Quest>();
@@ -122,7 +123,7 @@ namespace Nekoyume.UI.Module
                     return;
                 Application.OpenURL(GameConfig.DiscordLink);
             };
-            confirm?.Show("UI_EXTERNAL_LINK", "UI_PROCEED_DISCORD");
+            confirm?.Show("UI_PROCEED_DISCORD", "UI_PROCEED_DISCORD_CONTENT");
         }
 
         private void SubscribeOnClick(Unit unit)
