@@ -114,7 +114,7 @@ UI_RETRIEVE,Retrieve,판매 취소
 UI_BUY,Buy,구매
 UI_EQUIP,Equip,장착
 UI_UNEQUIP,Unequip,해제
-UI_IN_MINING_A_BLOCK,Mining blocks...,블록을 생성하고 있습니다..
+UI_IN_MINING_A_BLOCK,Mining the next block...,블록을 생성하고 있습니다..
 UI_TIPS_0,If you want to raise your stats[comma] try equiping a set of items with similar properties.,세트 아이템을 장착하면 캐릭터의 능력치가 더욱 상승합니다.
 UI_TIPS_1,There are always interesting options in the auction house.,좋은 무기를 만들기 너무 어려우신가요? 경매장에서 물건을 골라보세요.
 UI_TIPS_2,Check the elemental types of your equipment - they may be useless against the monsters you face.,전열을 가다듬을 때에는 장비의 속성을 확인하세요. 특정 속성의 몬스터에게는 무용지물일 수도 있습니다.
@@ -172,10 +172,10 @@ UI_SKILL_CHANCE,Chance,확률
 UI_SKILL_DESCRIPTION_FORMAT,{0} ({1:0%} chance to add damage {2}),{0} ({1:0%} 확률로 추가 데미지 {2})
 UI_EXP,Exp,경험치
 UI_BATTLE_RESULT_VICTORY_MESSAGE,You won the battle!,전투에서 승리하였습니다!
-UI_BATTLE_RESULT_DEFEAT_MESSAGE,You have to grow stronger.,당신은 더욱 강해져야 합니다.
+UI_BATTLE_RESULT_DEFEAT_MESSAGE,You must grow stronger.,당신은 더욱 강해져야 합니다.
 UI_BATTLE_RESULT_TIMEOUT_MESSAGE,You fell down exhausted.,당신은 지쳐 쓰러졌습니다.
 UI_ADDITIONAL_REWARDS,Additional Rewards,추가 보상
-UI_BATTLE_RESULT_DEFEAT_SUGGESTION_1,Raise your level through battles!,반복 전투로 레벨업!
+UI_BATTLE_RESULT_DEFEAT_SUGGESTION_1,Raise your level through battle!,반복 전투로 레벨업!
 UI_BATTLE_RESULT_DEFEAT_SUGGESTION_1_BUTTON,A월드맵으로 가기,월드맵으로 가기
 UI_BATTLE_RESULT_DEFEAT_SUGGESTION_2,Craft stronger equipment!,장비를 만들어 장착!
 UI_BATTLE_RESULT_DEFEAT_SUGGESTION_2_BUTTON,A조합하러 가기,조합하러 가기
@@ -184,7 +184,7 @@ UI_GO_MAIN,Main,메인
 UI_QUIT,Quit,종료
 UI_EXIT,Exit,나가기
 UI_ERROR,Error,에러
-UI_NICKNAME_CONDITION,Nickname must be between 2-20 characters and only include English[comma] Korean[comma] and digits.,닉네임은 2~20자여야 하며 한글[comma] 영문자[comma] 숫자만 사용할 수 있습니다.
+UI_NICKNAME_CONDITION,Nickname must be between 2-20 characters and can only include English and numbers.,닉네임은 2~20자여야 하며 한글[comma] 영문자[comma] 숫자만 사용할 수 있습니다.
 UI_ERROR_FORMAT,Error occurred.[newline]({0})[newline]Please restart the game.,오류가 발생했습니다. ({0})[newline]게임을 다시 실행해 주세요.
 UI_MAIL,Mail,우편
 UI_QUEST,Quest,퀘스트
@@ -220,8 +220,8 @@ UI_SELL_CANCEL_MAIL_FORMAT,<size=12><color=#a2b4d6>[Market Cat]</color></size>[n
 UI_BUYER_MAIL_FORMAT,<size=12><color=#a2b4d6>[Market Cat]</color></size>[newline]Purchased! {0} is yours now!,구매 완료! {0}는 이제 네거야!
 UI_SELLER_MAIL_FORMAT,<size=12><color=#a2b4d6>[Market Cat]</color></size>[newline]{0} was sold! You got Gold.,{0} 판매 완료! 골드를 얻었어.
 UI_SELECT,Select,선택
-UI_PROCEED_DISCORD,Go to usergroup chat,디스코드 채팅 이동
-UI_PROCEED_DISCORD_CONTENT,Are you sure to proceed to the Nine Chronicles discord channel?,나인 크로니클 디스코드 채널로 이동하시겠습니까?
+UI_PROCEED_DISCORD,Join user group,디스코드 채팅 이동
+UI_PROCEED_DISCORD_CONTENT,Open the link to Nine Chronicles Discord channel?,나인 크로니클 디스코드 채널로 이동하시겠습니까?
 UI_WARRIOR_DESCRIPTION,The warrior is good at close combat and is always on the front line of battle.,전사는 근접 전투에 능하고 방어력이 높아[comma]항상 전투의 최전방에 선다.
 SPEECH_SHOP_BUY_0,There's a lot of[newline]good stuff coming up.,좋은 물건이 많이 올라와있어![newline]시간 나면 보고 가
 SPEECH_SHOP_BUY_1,You need different equipments[newline]to prepare for the ordeal.,다양한 장비가 있어야 시련을 대비할 수 있어
@@ -243,32 +243,32 @@ SPEECH_COMBINE_MOUSE_ENTER_0,Want to make equipment or food?[newline]Here.,전�
 SPEECH_COMBINE_CLICK_0,Do you want to craft items?[newline]You need to reach level {0} first.,{0} 레벨을 먼저 달성해야 해.
 SPEECH_RANK_MOUSE_ENTER_0,Do you want to know how strong you are?[newline]Check out the rankings here!,영예의 전당에[newline]이름을 올려라!
 SPEECH_RANK_CLICK_0,Stand back![newline]You can’t enter until you reach level {0}.,{0} 레벨을 먼저 달성해야 해.
-SPEECH_DUNGEON_MOUSE_ENTER_0,Press the portal below.[newline]Let’s go to the world and[newline]start the battle!,아래 마법진을 누르면[newline]탐험을 시작할 수 있다옹
-UI_LOGIN_CONTENT,It is a fantasy world on the blockchain.[newline]To start the game, you need to create your account.,It is a fantasy world on the blockchain.[newline]To start the game, you need to create your account.
-UI_LOGIN_FIND_PASSPHRASE,For<voffset=1>g</voffset>ot a passphrase?,For<voffset=1>g</voffset>ot a passphrase?
+SPEECH_DUNGEON_MOUSE_ENTER_0,Press the portal below.[newline]Let’s visit other worlds and[newline]join the battle!,아래 마법진을 누르면[newline]탐험을 시작할 수 있다옹
+UI_LOGIN_CONTENT,This is a community-powered[newline]fantasy world that fully runs on blockchain.,It is a fantasy world on the blockchain.[newline]To start the game[comma] you need to create your account.
+UI_LOGIN_FIND_PASSPHRASE,For<voffset=1>g</voffset>ot passphrase?,For<voffset=1>g</voffset>ot passphrase?
 UI_LOGIN_BACK_TO_LOGIN,Back to lo<voffset=1>g</voffset>in pa<voffset=1>g</voffset>e,Back to lo<voffset=1>g</voffset>in pa<voffset=1>g</voffset>e
 UI_LOGIN_LOGIN_FAIL,Login Failed,로그인 실패
 UI_LOGIN_LOGIN_CONTENT,Invalid Passphrase,잘못된 비밀번호
 UI_LOGIN_FINDPASSPHRASE_FAIL,Find Account Failed,계정 찾기 실패
 UI_LOGIN_FINDPASSPHRASE_CONTENT,Private key not found,비밀키를 찾을 수 없음
-UI_LOGIN_INPUT_PASSPHRASE,Input a passphrase,비밀번호 입력
-UI_LOGIN_RETYPE_PASSPHRASE,Retype a passphrase,비밀번호 재입력
+UI_LOGIN_INPUT_PASSPHRASE,Input passphrase,비밀번호 입력
+UI_LOGIN_RETYPE_PASSPHRASE,Retype passphrase,비밀번호 재입력
 UI_LOGIN_LOGIN,Passphrase,비밀번호
 UI_LOGIN_ENTER_PRIVATE_KEY,Enter your private key,비밀키 입력
 UI_LOGIN_ACCOUNT,Your Account,계정
-UI_UNLOCK_COMBINATION,Congratulation![newline]You can enter the workshop now![newline]Go back to main and craft someting now.,조합 개방
+UI_UNLOCK_COMBINATION,Congratulation![newline]You can enter the workshop now![newline]Go back to main and craft something now.,조합 개방
 UI_UNLOCK_SHOP,Congratulation![newline]You can enter the market now![newline]Go back to main and trade thing with others.,상점 개방
 UI_UNLOCK_RANKING,Congratulation![newline]You can now check your ranking![newline]Go back to main and see how strong you are.,랭킹 개방
 UI_UNLOCK_TITLE,New Menu Open,컨텐츠 개방
 UI_BATTLE_EXIT_RESERVATION_TITLE,Battle Exit Reservation,전투 나가기 예약
-UI_BATTLE_EXIT_RESERVATION_CONTENT,Are you sure to proceed to the main after this battle ends?,이 전투가 끝난 후 메인으로 이동하시겠습니까?
+UI_BATTLE_EXIT_RESERVATION_CONTENT,Do you want to exit to the menu after this battle?,이 전투가 끝난 후 메인으로 이동하시겠습니까?
 UI_BLESS_OF_GODDESS,Action Power,행동력
-UI_BLESS_OF_GODDESS_DESCRIPTION,<b>The Goddess Freya blesses for cats. Every cats can't make any action without Action Power. Action Power is refilled when <b>Prosperity Degree is full.</b>,프레이야 여신은 고양이를 위해 가호를 선사합니다. 고양이는 가호가 있어야 모든 행동을 할 수 있습니다. 여신의 가호는 왕국 번영도가 가득 차면 갱신시킬 수 있습니다.
-UI_PROSPERITY_DEGREE,Prosperity Degree,번영도
-UI_PROSPERITY_DEGREE_DESCRIPTION,<b>Thanks to the cat's remarkable activities[comma] the new world gradually stabilizes and prospers. Action Power can be refilled when Prosperity Degree is full.</b>,고양이들의 활약으로 신계는 점차 안정되고 번영합니다. 번영도가 꽉 차면 여신의 가호를 갱신할 수 있습니다.
+UI_BLESS_OF_GODDESS_DESCRIPTION,<b>Without the blessings of the Goddess Freya[comma] cats cannot carry out their mission. Action Power is refilled when the Prosperity Meter is full.</b>,프레이야 여신은 고양이를 위해 가호를 선사합니다. 고양이는 가호가 있어야 모든 행동을 할 수 있습니다. 여신의 가호는 왕국 번영도가 가득 차면 갱신시킬 수 있습니다.
+UI_PROSPERITY_DEGREE,Prosperity Meter,번영도
+UI_PROSPERITY_DEGREE_DESCRIPTION,<b>The world gradually stabilizes and prospers thanks to the cats' remarkable deeds. Action Power can be refilled when the Prosperity Meter is full.</b>,고양이들의 활약으로 신계는 점차 안정되고 번영합니다. 번영도가 꽉 차면 여신의 가호를 갱신할 수 있습니다.
 UI_MASTER_VOLUME,Master Volume,마스터 볼륨
 UI_MUTE_AUDIO,Mute,음소거
 BLOCK_CHAIN_MINING_TX,Mining Transactions,트랜젝션을 채굴 중
 BLOCK_DOWNLOAD_FAIL,Block Download Failed,블록 다운로드 실패
 BOOTSTRAP_FAIL,Network Initialization Failed,네트워크 초기 설정 실패
-UI_GAME_SIGN_UP,Sign up,가입하기
+UI_GAME_SIGN_UP,Create Account,가입하기
