@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Bencodex.Types;
-using Nekoyume.Data.Table;
 using Nekoyume.State;
 using Nekoyume.TableData;
 
@@ -130,7 +129,7 @@ namespace Nekoyume.Model
             {
                 foreach (var row in orderedSheet)
                 {
-                    _worlds.Add(row.Id, new World(row, 0, 0, row.StageEnd));
+                    _worlds.Add(row.Id, new World(row, blockIndex, blockIndex, row.StageEnd));
                 }
             }
             else
@@ -139,13 +138,15 @@ namespace Nekoyume.Model
                 foreach (var row in orderedSheet)
                 {
                     var worldId = row.Id;
-                    var world = new World(row);
-                    _worlds.Add(worldId, world);
-                    if (!isFirst)
-                        continue;
-
-                    isFirst = false;
-                    UnlockWorld(world, blockIndex);
+                    if (isFirst)
+                    {
+                        isFirst = false;
+                        _worlds.Add(worldId, new World(row, blockIndex));
+                    }
+                    else
+                    {
+                        _worlds.Add(worldId, new World(row));
+                    }
                 }
             }
         }
@@ -217,28 +218,6 @@ namespace Nekoyume.Model
         }
 
         /// <summary>
-        /// 잠금 해제된 시간이 가장 최근인 월드를 얻는다. 
-        /// </summary>
-        /// <param name="world"></param>
-        /// <returns></returns>
-        private bool TryGetUnlockedWorldByLastUnlockedAt(out World world)
-        {
-            try
-            {
-                world = _worlds.Values
-                    .Where(e => e.IsUnlocked)
-                    .OrderByDescending(e => e.UnlockedBlockIndex)
-                    .First();
-                return true;
-            }
-            catch
-            {
-                world = default;
-                return false;
-            }
-        }
-
-        /// <summary>
         /// 새롭게 스테이지를 클리어한 시간이 가장 최근인 월드를 얻는다. 
         /// </summary>
         /// <param name="world"></param>
@@ -282,30 +261,19 @@ namespace Nekoyume.Model
             {
                 var sb = new StringBuilder();
                 sb.AppendLine($"{nameof(worldId)}({worldId})-{nameof(stageId)}({stageId}) is too big.");
-                sb.AppendLine($"Cleared {nameof(stageId)} is ({world}).");
+                sb.AppendLine($"Cleared {nameof(stageId)} is ({world.StageClearedId}).");
                 throw new ArgumentException(sb.ToString());
             }
 
             _worlds[worldId] = new World(world, clearedAt, stageId);
 
-            if (unlockSheet.TryGetUnlockedInformation(worldId, stageId, out var worldIdToUnlock))
+            if (unlockSheet.TryGetUnlockedInformation(worldId, stageId, out var worldIdsToUnlock))
             {
-                UnlockWorld(worldIdToUnlock, clearedAt);
+                foreach (var worldIdToUnlock in worldIdsToUnlock)
+                {
+                    UnlockWorld(worldIdToUnlock, clearedAt);
+                }
             }
-        }
-
-        /// <summary>
-        /// 특정 월드를 잠금 해제한다.
-        /// </summary>
-        /// <param name="world"></param>
-        /// <param name="unlockedAt"></param>
-        /// <exception cref="ArgumentException"></exception>
-        private void UnlockWorld(World world, long unlockedAt)
-        {
-            if (!_worlds.ContainsKey(world.Id))
-                throw new KeyNotFoundException($"{nameof(world.Id)}: {world.Id}");
-
-            _worlds[world.Id] = new World(world, unlockedAt);
         }
 
         /// <summary>
@@ -318,6 +286,9 @@ namespace Nekoyume.Model
         {
             if (!_worlds.ContainsKey(worldId))
                 throw new KeyNotFoundException($"{nameof(worldId)}: {worldId}");
+
+            if (_worlds[worldId].IsUnlocked)
+                return;
 
             var world = _worlds[worldId];
             _worlds[worldId] = new World(world, unlockedAt);
