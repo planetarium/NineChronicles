@@ -6,9 +6,9 @@ from collections import Counter, OrderedDict
 from operator import itemgetter
 
 ### EDIT: WORLD
-MONSTER_PARTS_DROP_RATE = 0.4
-STAGES_PER_WORLD = 150
-STAGES_PER_MONSTER_LV = 5
+MONSTER_PARTS_DROP_RATE = 0.3
+#STAGES_PER_WORLD = 150
+STAGES_PER_MONSTER_LV = 4
 BASE_EXP = 50
 ADDITIONAL_EXP_PER_STAGE = 8
 MIN_WAVES = 4
@@ -187,26 +187,34 @@ REWARD_FIELD_NAMES = [
     "item3","item3_ratio","item3_min","item3_max",
     "item4","item4_ratio","item4_min","item4_max",
     "item5","item5_ratio","item5_min","item5_max",
+    "item6","item6_ratio","item6_min","item6_max",
+    "item7","item7_ratio","item7_min","item7_max",
+    "item8","item8_ratio","item8_min","item8_max",
+    "item9","item9_ratio","item9_min","item9_max",
+    "item10","item10_ratio","item10_min","item10_max",
 ]
 
 def expand_wave_id(wid):
     return "20" + wid[0] + "0" + wid[1:]
 
 
+# TODO food grade
 FOOD_MATERIAL = [302000, 302001, 302002, 302003, 302004, 302005, 302006, 302007, 302008, 302009]
-FOOD_DROP_RATE = 0.25;
+FOOD_DROP_RATE = 0.15;
 
 EQ_MAT_G1 = [303000, 303100, 303200, 303300, 303400]
-EQ_G1_DROP_RATE = 0.20;
+EQ_G1_DROP_RATE = 0.25;
 EQ_MAT_G2 = [303001, 303101, 303201, 303301, 303401]
-EQ_G2_DROP_RATE = 0.10;
+EQ_G2_DROP_RATE = 0.125;
 EQ_MAT_G3 = [303002, 303102, 303202, 303302, 303402]
-EQ_G3_DROP_RATE = 0.03;
+EQ_G3_DROP_RATE = 0.05;
 EQ_MAT_G4 = [303003, 303103, 303203, 303303, 303403]
-EQ_G4_DROP_RATE = 0.05;
+EQ_G4_DROP_RATE = 0.025;
 EQ_MAT_G5 = [303004, 303104, 303204, 303304, 303404]
 EQ_G5_DROP_RATE = 0.01;
 
+CHALLENGE_DROP = [301000, 304000, 304001, 304002, 304003]
+CHALLENGE_DROP_RATE = 0.05;
 
 
 
@@ -223,6 +231,7 @@ stage_to_wave_csv = csv.reader(open("WaveTable/sheet-stage_to_waves.csv", "r"))
 
 wave_dict = {}
 stage_dict = {}
+stage_ids = []
 
 for idx, row in enumerate(wave_csv):
     row_id = row[0]
@@ -232,18 +241,22 @@ for idx, row in enumerate(wave_csv):
 
 for idx, row in enumerate(stage_to_wave_csv):
     row_id = row[0]
-    waves = filter(lambda x: x, row[1:])
+    waves = row[1:]
+    grouped = filter(lambda row: row[0] , [waves[i:i+2] for i in range(0, len(waves), 2)])
     if idx > 0:
-        stage_dict[int(row_id)] = waves
+        stage_dict[int(row_id)] = grouped
+        stage_ids.append(int(row_id))
+
 
 ## LOGIC ##
 reward_id = 0
-for stage in range(1, STAGES_PER_WORLD+1):
+for stage in stage_ids:
+    world = int((stage-1) / 50)
     waves = stage_dict[stage]
-    exp = BASE_EXP + ADDITIONAL_EXP_PER_STAGE * stage
-    # monster level increases 1 per 3 stages
-    m_level = int((stage - 1) / STAGES_PER_MONSTER_LV) + 1
-    #dstage = (stage-1) % int(STAGES_PER_MONSTER_LV) # between 0 and 2
+    exp = 0
+    stage_idx = (stage-1) % 50
+    if (world < 3):
+        exp = int((BASE_EXP + ADDITIONAL_EXP_PER_STAGE * stage_idx) * (world + 1.5)/1.5)
 
     #monster_parts = []
     random_monster = None
@@ -251,33 +264,38 @@ for stage in range(1, STAGES_PER_WORLD+1):
     # Append each wave
     # print waves
     is_boss_level = (stage % 10 == 0)
-    for wave_idx, wave in enumerate(waves):
-        is_last_wave = (wave_idx == len(waves) - 1)
+    wave_cnt = len(waves)
+    for wave_idx, wave_info in enumerate(waves):
+        print wave_info
+        wave = wave_info[0]
+        m_level = wave_info[1]
+        is_last_wave = (wave_idx == wave_cnt - 1)
         is_boss_wave = int(bool(is_last_wave and is_boss_level))
 
-        monster_picked = wave_dict[wave]
-        monster_count = Counter(monster_picked)
-        monster_ids = sorted(monster_count.keys())
+        if wave in wave_dict:
+            monster_picked = wave_dict[wave]
+            monster_count = Counter(monster_picked)
+            monster_ids = sorted(monster_count.keys())
 
-        # add 3 to 5 monsters
-        # add row
-        row = [stage, wave_idx+1]
-        for i in range(0, 4):
-            # sort monsters by count
-            if (i < len(monster_ids)):
-                mid = monster_ids[i]
-                #row += [mid, level, '', monster_count[mid]]
-                row += [mid, m_level, monster_count[mid]]
-                last_monster = mid
-                if (random_monster is None) or ((random.random() > 0.5) and (wave_idx is 0)):
-                    random_monster = mid
+            # add 3 to monsters
+            # add row
+            row = [stage, wave_idx+1]
+            for i in range(0, 4):
+                # sort monsters by count
+                if (i < len(monster_ids)):
+                    mid = monster_ids[i]
+                    #row += [mid, level, '', monster_count[mid]]
+                    row += [mid, m_level, monster_count[mid]]
+                    last_monster = mid
+                    if (random_monster is None) or ((random.random() > 0.5) and (wave_idx is 0)):
+                        random_monster = mid
+                else:
+                    row += ['', '', '']
+            if is_last_wave: # if last wave, check if boss, add exp and reward
+                row += [is_boss_wave, stage, exp]
             else:
-                row += ['', '', '']
-        if is_last_wave: # if last wave, check if boss, add exp and reward
-            row += [is_boss_wave, stage, exp]
-        else:
-            row += [0, 0, 0]
-        stage_csv.writerow(row)
+                row += [0, 0, 0]
+            stage_csv.writerow(row)
 
     # setup stage reward
     reward_row = [stage]
@@ -287,16 +305,59 @@ for stage in range(1, STAGES_PER_WORLD+1):
     g1_mat = random.choice(EQ_MAT_G1)
     g2_mat = random.choice(EQ_MAT_G2)
     g3_mat = random.choice(EQ_MAT_G3)
+    g4_mat = random.choice(EQ_MAT_G4)
+    g5_mat = random.choice(EQ_MAT_G5)
 
-    reward_row += [MONSTER_PARTS[random_monster], MONSTER_PARTS_DROP_RATE, 1, 3]
-    reward_row += [MONSTER_PARTS[last_monster], MONSTER_PARTS_DROP_RATE/2.0, 1, 2]
-    reward_row += [food_mat, FOOD_DROP_RATE, 1, 2]
-    if stage < 75:
-        reward_row += [g1_mat, EQ_G1_DROP_RATE, 1, 1]
-        reward_row += [g2_mat, EQ_G2_DROP_RATE, 1, 1]
+    if stage < 151:
+        reward_row += [MONSTER_PARTS[random_monster], MONSTER_PARTS_DROP_RATE, 1, max(1, int(stage_idx/8))]
+        reward_row += [MONSTER_PARTS[last_monster], MONSTER_PARTS_DROP_RATE/2.0, 1, max(1, int(stage_idx/12))]
+        reward_row += [food_mat, FOOD_DROP_RATE, 1, 2]
+
+    if stage < 11:
+        reward_row += [g1_mat, 0.15, 1, 1]
+        g1_mat_2 = random.choice(EQ_MAT_G1)
+        reward_row += [g1_mat_2, 0.10, 1, 1]
+    elif stage < 31:
+        reward_row += [g1_mat, 0.20, 1, 1]
+        reward_row += [g2_mat, 0.05, 1, 1]
+    elif stage < 51:
+        reward_row += [g1_mat, 0.15, 1, 1]
+        reward_row += [g2_mat, 0.08, 1, 1]
+        reward_row += [g3_mat, 0.02, 1, 1]
+    elif stage < 61:
+        reward_row += [g1_mat, 0.15, 1, 1]
+        reward_row += [g2_mat, 0.10, 1, 1]
+    elif stage < 81:
+        reward_row += [g1_mat, 0.10, 1, 1]
+        reward_row += [g2_mat, 0.10, 1, 1]
+        reward_row += [g3_mat, 0.05, 1, 1]
+    elif stage < 101:
+        reward_row += [g1_mat, 0.05, 1, 1]
+        reward_row += [g2_mat, 0.15, 1, 1]
+        reward_row += [g3_mat, 0.04, 1, 1]
+        reward_row += [g4_mat, 0.01, 1, 1]
+    elif stage < 111:
+        reward_row += [g2_mat, 0.15, 1, 1]
+        reward_row += [g3_mat, 0.09, 1, 1]
+        reward_row += [g4_mat, 0.01, 1, 1]
+    elif stage < 131:
+        reward_row += [g2_mat, 0.12, 1, 1]
+        reward_row += [g3_mat, 0.11, 1, 1]
+        reward_row += [g4_mat, 0.02, 1, 1]
+    elif stage < 151:
+        reward_row += [g2_mat, 0.05, 1, 1]
+        reward_row += [g3_mat, 0.15, 1, 1]
+        reward_row += [g4_mat, 0.04, 1, 1]
+        reward_row += [g5_mat, 0.01, 1, 1]
     else:
-        reward_row += [g2_mat, EQ_G1_DROP_RATE, 1, 1]
-        reward_row += [g3_mat, EQ_G2_DROP_RATE, 1, 1]
+        # final stages, wrong reward
+        ch_mat = random.choice(CHALLENGE_DROP)
+        ch_mat_2 = random.choice(CHALLENGE_DROP)
+        reward_row += [ch_mat, CHALLENGE_DROP_RATE, 1, 1]
+        reward_row += [ch_mat, CHALLENGE_DROP_RATE, 1, 1]
+
+    while len(reward_row) < 41:
+        reward_row += ['','','',''] # add five empty rows
 
 #    if additional_mat:
 #        reward_row += [additional_mat, 1, 1, 2]
