@@ -46,7 +46,7 @@ namespace Nekoyume.BlockChain
 #else
         private const string AgentStoreDirName = "planetarium";
 #endif
-        private const string DefaultIceServer = "turn://0ed3e48007413e7c2e638f13ddd75ad272c6c507e081bd76a75e4b7adc86c9af:0apejou+ycZFfwtREeXFKdfLj2gCclKzz5ZJ49Cmy6I=@planetarium-turn.koreacentral.cloudapp.azure.com:3478/";
+        private const string DefaultIceServer = "turn://0ed3e48007413e7c2e638f13ddd75ad272c6c507e081bd76a75e4b7adc86c9af:0apejou+ycZFfwtREeXFKdfLj2gCclKzz5ZJ49Cmy6I=@turn.planetarium.dev:3478/";
 
         private static readonly string CommandLineOptionsJsonPath =
             Path.Combine(Application.streamingAssetsPath, "clo.json");
