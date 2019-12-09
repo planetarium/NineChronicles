@@ -2701,29 +2701,6 @@
             The peer which sent the block.
             </summary>
         </member>
-        <member name="T:Libplanet.Net.BlockStateDownloadState">
-            <summary>
-            Indicates a progress of downloading block states.
-            </summary>
-        </member>
-        <member name="P:Libplanet.Net.BlockStateDownloadState.TotalBlockStateCount">
-            <summary>
-            Total number of block states to receive in the current batch.
-            </summary>
-        </member>
-        <member name="P:Libplanet.Net.BlockStateDownloadState.ReceivedBlockStateCount">
-            <summary>
-            The number of received block states until now.
-            </summary>
-        </member>
-        <member name="P:Libplanet.Net.BlockStateDownloadState.ReceivedBlockHash">
-            <summary>
-            The blcok hash of the states just received.
-            </summary>
-        </member>
-        <member name="P:Libplanet.Net.BlockStateDownloadState.CurrentPhase">
-            <inheritdoc />
-        </member>
         <member name="M:Libplanet.Net.BoundPeer.#ctor(Libplanet.Crypto.PublicKey,System.Net.DnsEndPoint,System.Int32)">
             <summary>
             Initializes a new instance of the <see cref="T:Libplanet.Net.BoundPeer"/> class.
@@ -3002,22 +2979,22 @@
             Least recently used peer.
             </summary>
         </member>
-        <member name="T:Libplanet.Net.StateReferenceDownloadState">
+        <member name="T:Libplanet.Net.StateDownloadState">
             <summary>
-            Indicates a progress of downloading state references.
+            Indicates a progress of downloading states.
             </summary>
         </member>
-        <member name="P:Libplanet.Net.StateReferenceDownloadState.TotalStateReferenceCount">
+        <member name="P:Libplanet.Net.StateDownloadState.TotalIterationCount">
             <summary>
-            Total number of state references to receive in the current batch.
+            Total number of messages to receive in the current batch.
             </summary>
         </member>
-        <member name="P:Libplanet.Net.StateReferenceDownloadState.ReceivedStateReferenceCount">
+        <member name="P:Libplanet.Net.StateDownloadState.ReceivedIterationCount">
             <summary>
-            The number of received state references until now.
+            The number of received messages until now.
             </summary>
         </member>
-        <member name="P:Libplanet.Net.StateReferenceDownloadState.CurrentPhase">
+        <member name="P:Libplanet.Net.StateDownloadState.CurrentPhase">
             <inheritdoc />
         </member>
         <member name="E:Libplanet.Net.Swarm`1.DifferentVersionPeerEncountered">
@@ -3187,6 +3164,9 @@
         <member name="M:Libplanet.Store.BaseStore.ListAddresses(System.Guid)">
             <inheritdoc />
         </member>
+        <member name="M:Libplanet.Store.BaseStore.ListAllStateReferences(System.Guid,System.Int64,System.Int64)">
+            <inheritdoc/>
+        </member>
         <member name="M:Libplanet.Store.BaseStore.StageTransactionIds(System.Collections.Immutable.IImmutableSet{Libplanet.Tx.TxId})">
             <inheritdoc />
         </member>
@@ -3300,6 +3280,9 @@
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Store.DefaultStore.ListAddresses(System.Guid)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.DefaultStore.ListAllStateReferences(System.Guid,System.Int64,System.Int64)">
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Store.DefaultStore.StageTransactionIds(System.Collections.Immutable.IImmutableSet{Libplanet.Tx.TxId})">
@@ -3435,6 +3418,20 @@
             <param name="chainId">The ID of the chain to list addresses.</param>
             <returns>All addresses in an arbitrary order.  The order might
             be vary for each call.</returns>
+        </member>
+        <member name="M:Libplanet.Store.IStore.ListAllStateReferences(System.Guid,System.Int64,System.Int64)">
+            <summary>
+            Lists all accounts, that have any states, in the given <paramref name="chainId"/> and
+            their state references.
+            </summary>
+            <param name="chainId">The chain ID to look up state references.</param>
+            <param name="lowestIndex">Includes state references only made after the block
+            this argument refers to.</param>
+            <param name="highestIndex">Excludes state references made after the block
+            this argument refers to.</param>
+            <returns>A dictionary of account addresses to lists of their corresponding state
+            references.  Each list of state references is in ascending order, i.e., the block
+            closest to the genesis goes first and the block closest to the tip goes last.</returns>
         </member>
         <member name="M:Libplanet.Store.IStore.StageTransactionIds(System.Collections.Immutable.IImmutableSet{Libplanet.Tx.TxId})">
             <summary>
@@ -3652,21 +3649,6 @@
             <paramref name="lookupUntil"/>.</typeparam>
             <seealso cref="M:Libplanet.Store.IStore.StoreStateReference(System.Guid,System.Collections.Immutable.IImmutableSet{Libplanet.Address},Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Int64)"/>
             <seealso cref="M:Libplanet.Store.IStore.IterateStateReferences(System.Guid,Libplanet.Address,System.Nullable{System.Int64},System.Nullable{System.Int64},System.Nullable{System.Int32})"/>
-        </member>
-        <member name="M:Libplanet.Store.StoreExtension.ListAllStateReferences(Libplanet.Store.IStore,System.Guid,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}})">
-            <summary>
-            Lists all accounts, that have any states, in the given <paramref name="chainId"/> and
-            their state references.
-            </summary>
-            <param name="store">A store object.</param>
-            <param name="chainId">The chain ID to look up state references.</param>
-            <param name="onlyAfter">Includes state references only made after the block
-            this argument refers to, if present.</param>
-            <param name="ignoreAfter">Excludes state references made after the block
-            this argument refers to, if present.</param>
-            <returns>A dictionary of account addresses to lists of their corresponding state
-            references.  Each list of state references is in ascending order, i.e., the block
-            closest to the genesis goes first and the block closest to the tip goes last.</returns>
         </member>
         <member name="T:Libplanet.Tx.InvalidTxException">
             <summary>

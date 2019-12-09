@@ -217,15 +217,10 @@ namespace Nekoyume.BlockChain
                                 blockDownloadState.TotalBlockCount);
                             break;
 
-                        case StateReferenceDownloadState stateReferenceDownloadState:
+                        case StateDownloadState stateReferenceDownloadState:
                             format = LocalizationManager.Localize("UI_LOADING_STATE_REFERENCE_DOWNLOAD");
-                            text = string.Format(format, stateReferenceDownloadState.ReceivedStateReferenceCount,
-                                stateReferenceDownloadState.TotalStateReferenceCount);
-                            break;
-
-                        case BlockStateDownloadState blockStateDownloadState:
-                            text =
-                                $"{blockStateDownloadState.ReceivedBlockStateCount} / {blockStateDownloadState.TotalBlockStateCount}";
+                            text = string.Format(format, stateReferenceDownloadState.ReceivedIterationCount,
+                                stateReferenceDownloadState.TotalIterationCount);
                             break;
 
                         case ActionExecutionState actionExecutionState:
