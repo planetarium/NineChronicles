@@ -33,6 +33,7 @@ namespace Nekoyume.UI.Module
             }
         }
 
+        public GameObject worldButton;
         public string worldName;
         public TextMeshProUGUI stageNameText;
         public TextMeshProUGUI stagePageText;
