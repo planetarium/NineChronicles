@@ -203,15 +203,18 @@ FOOD_MATERIAL = [302000, 302001, 302002, 302003, 302004, 302005, 302006, 302007,
 FOOD_DROP_RATE = 0.15;
 
 EQ_MAT_G1 = [303000, 303100, 303200, 303300, 303400]
-EQ_G1_DROP_RATE = 0.13;
+EQ_G1_DROP_RATE = 0.25;
 EQ_MAT_G2 = [303001, 303101, 303201, 303301, 303401]
-EQ_G2_DROP_RATE = 0.7;
+EQ_G2_DROP_RATE = 0.125;
 EQ_MAT_G3 = [303002, 303102, 303202, 303302, 303402]
-EQ_G3_DROP_RATE = 0.03;
+EQ_G3_DROP_RATE = 0.05;
 EQ_MAT_G4 = [303003, 303103, 303203, 303303, 303403]
-EQ_G4_DROP_RATE = 0.05;
+EQ_G4_DROP_RATE = 0.025;
 EQ_MAT_G5 = [303004, 303104, 303204, 303304, 303404]
 EQ_G5_DROP_RATE = 0.01;
+
+CHALLENGE_DROP = [301000, 304000, 304001, 304002, 304003]
+CHALLENGE_DROP_RATE = 0.05;
 
 
 
@@ -244,14 +247,16 @@ for idx, row in enumerate(stage_to_wave_csv):
         stage_dict[int(row_id)] = grouped
         stage_ids.append(int(row_id))
 
+
 ## LOGIC ##
 reward_id = 0
 for stage in stage_ids:
+    world = int((stage-1) / 50)
     waves = stage_dict[stage]
-    exp = BASE_EXP + ADDITIONAL_EXP_PER_STAGE * stage
-    # monster level increases 1 per 3 stages
-    #m_level = int((stage - 1) / STAGES_PER_MONSTER_LV) + 1
-    #dstage = (stage-1) % int(STAGES_PER_MONSTER_LV) # between 0 and 2
+    exp = 0
+    stage_idx = (stage-1) % 50
+    if (world < 3):
+        exp = int((BASE_EXP + ADDITIONAL_EXP_PER_STAGE * stage_idx) * (world + 1.5)/1.5)
 
     #monster_parts = []
     random_monster = None
@@ -272,7 +277,7 @@ for stage in stage_ids:
             monster_count = Counter(monster_picked)
             monster_ids = sorted(monster_count.keys())
 
-            # add 3 to 5 monsters
+            # add 3 to monsters
             # add row
             row = [stage, wave_idx+1]
             for i in range(0, 4):
@@ -300,21 +305,58 @@ for stage in stage_ids:
     g1_mat = random.choice(EQ_MAT_G1)
     g2_mat = random.choice(EQ_MAT_G2)
     g3_mat = random.choice(EQ_MAT_G3)
+    g4_mat = random.choice(EQ_MAT_G4)
+    g5_mat = random.choice(EQ_MAT_G5)
 
-    reward_row += [MONSTER_PARTS[random_monster], MONSTER_PARTS_DROP_RATE, 1, 2]
-    reward_row += [MONSTER_PARTS[last_monster], MONSTER_PARTS_DROP_RATE/2.0, 1, 1]
-    reward_row += [food_mat, FOOD_DROP_RATE, 1, 2]
+    if stage < 151:
+        reward_row += [MONSTER_PARTS[random_monster], MONSTER_PARTS_DROP_RATE, 1, max(1, int(stage_idx/8))]
+        reward_row += [MONSTER_PARTS[last_monster], MONSTER_PARTS_DROP_RATE/2.0, 1, max(1, int(stage_idx/12))]
+        reward_row += [food_mat, FOOD_DROP_RATE, 1, 2]
+
     if stage < 11:
-        reward_row += [g1_mat, EQ_G1_DROP_RATE, 1, 1]
-        reward_row += [g1_mat, EQ_G2_DROP_RATE, 1, 1]
-    elif stage < 75:
-        reward_row += [g1_mat, EQ_G1_DROP_RATE, 1, 1]
-        reward_row += [g2_mat, EQ_G2_DROP_RATE, 1, 1]
+        reward_row += [g1_mat, 0.15, 1, 1]
+        g1_mat_2 = random.choice(EQ_MAT_G1)
+        reward_row += [g1_mat_2, 0.10, 1, 1]
+    elif stage < 31:
+        reward_row += [g1_mat, 0.20, 1, 1]
+        reward_row += [g2_mat, 0.05, 1, 1]
+    elif stage < 51:
+        reward_row += [g1_mat, 0.15, 1, 1]
+        reward_row += [g2_mat, 0.08, 1, 1]
+        reward_row += [g3_mat, 0.02, 1, 1]
+    elif stage < 61:
+        reward_row += [g1_mat, 0.15, 1, 1]
+        reward_row += [g2_mat, 0.10, 1, 1]
+    elif stage < 81:
+        reward_row += [g1_mat, 0.10, 1, 1]
+        reward_row += [g2_mat, 0.10, 1, 1]
+        reward_row += [g3_mat, 0.05, 1, 1]
+    elif stage < 101:
+        reward_row += [g1_mat, 0.05, 1, 1]
+        reward_row += [g2_mat, 0.15, 1, 1]
+        reward_row += [g3_mat, 0.04, 1, 1]
+        reward_row += [g4_mat, 0.01, 1, 1]
+    elif stage < 111:
+        reward_row += [g2_mat, 0.15, 1, 1]
+        reward_row += [g3_mat, 0.09, 1, 1]
+        reward_row += [g4_mat, 0.01, 1, 1]
+    elif stage < 131:
+        reward_row += [g2_mat, 0.12, 1, 1]
+        reward_row += [g3_mat, 0.11, 1, 1]
+        reward_row += [g4_mat, 0.02, 1, 1]
+    elif stage < 151:
+        reward_row += [g2_mat, 0.05, 1, 1]
+        reward_row += [g3_mat, 0.15, 1, 1]
+        reward_row += [g4_mat, 0.04, 1, 1]
+        reward_row += [g5_mat, 0.01, 1, 1]
     else:
-        reward_row += [g2_mat, EQ_G1_DROP_RATE, 1, 1]
-        reward_row += [g3_mat, EQ_G2_DROP_RATE, 1, 1]
+        # final stages, wrong reward
+        ch_mat = random.choice(CHALLENGE_DROP)
+        ch_mat_2 = random.choice(CHALLENGE_DROP)
+        reward_row += [ch_mat, CHALLENGE_DROP_RATE, 1, 1]
+        reward_row += [ch_mat, CHALLENGE_DROP_RATE, 1, 1]
 
-    for _ in range(0, 5):
+    while len(reward_row) < 41:
         reward_row += ['','','',''] # add five empty rows
 
 #    if additional_mat:
