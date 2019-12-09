@@ -127,11 +127,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 66089a8a6f6e47bfbaf63c507fb10d84, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gradeImage: {fileID: 3391675021744039151}
+  iconImage: {fileID: 2443693465550471499}
   touchHandler: {fileID: 4325569190006708731}
   itemButton: {fileID: 6452290287222659786}
   backgroundImage: {fileID: 7177629858911792663}
-  gradeImage: {fileID: 3391675021744039151}
-  iconImage: {fileID: 2443693465550471499}
   enhancementText: {fileID: 4549292360185264291}
   selectionImage: {fileID: 4448062766832828798}
   countText: {fileID: 4948683952959936506}
@@ -330,6 +330,7 @@ MonoBehaviour:
   CompleteDelay: 0
   BeginValue: 0.5
   EndValue: 1
+  ClearOnStop: 0
 --- !u!1001 &6851555308607067550
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -341,6 +342,22 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: SimpleCountableItemView
+      objectReference: {fileID: 0}
+    - target: {fileID: 4362172828940499849, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 23bc1f293e20d4c15b583a7a67bab116,
+        type: 3}
+    - target: {fileID: 4362172828940499849, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
+        type: 3}
+      propertyPath: m_Type
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1997897827266943112, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1816018180843216220, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
         type: 3}
@@ -446,22 +463,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 4362172828940499849, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
-        type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: 23bc1f293e20d4c15b583a7a67bab116,
-        type: 3}
-    - target: {fileID: 4362172828940499849, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
-        type: 3}
-      propertyPath: m_Type
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1997897827266943112, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3160591040635807083, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
         type: 3}
