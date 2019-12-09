@@ -101,6 +101,7 @@ namespace Nekoyume.UI
                     contentText.gameObject.SetActive(true);
                     submitButton.interactable = true;
                     informationText.text = "Sign up";
+                    submitText.text = LocalizationManager.Localize("UI_GAME_SIGN_UP");
                     break;
                 case State.SignUp:
                     titleText.gameObject.SetActive(false);
