@@ -17,6 +17,7 @@ using Libplanet.Blockchain;
 using Libplanet.Blockchain.Policies;
 using Libplanet.Blocks;
 using Libplanet.Crypto;
+using Libplanet.KeyStore;
 using Libplanet.Net;
 using Libplanet.Store;
 using Libplanet.Tx;
@@ -450,8 +451,14 @@ namespace Nekoyume.BlockChain
             Task.Run(async () => { await _swarm?.StopAsync(TimeSpan.FromMilliseconds(SwarmLinger)); })
                 .ContinueWith(_ =>
                 {
-                    store?.Dispose();
-                    _swarm?.Dispose();
+                    try
+                    {
+                        store?.Dispose();
+                        _swarm?.Dispose();
+                    }
+                    catch (ObjectDisposedException)
+                    {
+                    }
                 })
                 .Wait(SwarmLinger + 1 * 1000);
 
@@ -911,6 +918,74 @@ namespace Nekoyume.BlockChain
         {
             SyncSucceed = false;
             BlockDownloadFailed = true;
+        }
+
+        public void ResetStore()
+        {
+            var confirm = Widget.Find<Confirm>();
+            confirm.CloseCallback = result =>
+            {
+                if (result == ConfirmResult.No)
+                    return;
+                Dispose();
+                if (Directory.Exists(_defaultStoragePath))
+                {
+                    Directory.Delete(_defaultStoragePath, true);
+                }
+#if UNITY_EDITOR
+                UnityEditor.EditorApplication.ExitPlaymode();
+#else
+                Application.Quit();
+#endif
+            };
+            confirm.Show("UI_CONFIRM_RESET_STORE_TITLE", "UI_CONFIRM_RESET_STORE_CONTENT");
+        }
+
+        public void ResetKeyStore()
+        {
+            var confirm = Widget.Find<Confirm>();
+            confirm.CloseCallback = result =>
+            {
+                if (result == ConfirmResult.No)
+                    return;
+                Dispose();
+                var options = GetOptions(CommandLineOptionsJsonPath);
+                var keyPath = options.keyStorePath;
+                var keyPaths = Directory.EnumerateFiles(keyPath);
+
+                foreach (var path in keyPaths)
+                {
+                    if (Path.GetFileName(keyPath) is string f && f.StartsWith("."))
+                    {
+                        continue;
+                    }
+                    ProtectedPrivateKey ppk = null;
+
+                    using (Stream stream = new FileStream(path, FileMode.Open))
+                    using (var reader = new StreamReader(stream))
+                    {
+                        try
+                        {
+                            ppk = ProtectedPrivateKey.FromJson(reader.ReadToEnd());
+                        }
+                        catch (Exception e)
+                        {
+                            Debug.LogWarningFormat("The key file {0} is invalid: {1}", keyPath, e);
+                        }
+                    }
+                    if (ppk?.Address == Address)
+                    {
+                        File.Delete(path);
+                    }
+                }
+
+#if UNITY_EDITOR
+                UnityEditor.EditorApplication.ExitPlaymode();
+#else
+                Application.Quit();
+#endif
+            };
+            confirm.Show("UI_CONFIRM_RESET_KEYSTORE_TITLE", "UI_CONFIRM_RESET_KEYSTORE_CONTENT");
         }
     }
 }

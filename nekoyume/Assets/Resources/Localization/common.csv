@@ -275,3 +275,8 @@ BLOCK_CHAIN_MINING_TX,Mining Transactions,트랜젝션을 채굴 중
 BLOCK_DOWNLOAD_FAIL,Block Download Failed,블록 다운로드 실패
 BOOTSTRAP_FAIL,Network Initialization Failed,네트워크 초기 설정 실패
 UI_GAME_SIGN_UP,Create Account,가입하기
+UI_CONFIRM_RESET_STORE_TITLE,Clear Cache,캐시 비우기
+UI_CONFIRM_RESET_KEYSTORE_TITLE,Revocation PrivateKey,비밀키 폐기
+UI_CONFIRM_RESET_STORE_CONTENT,Clear Cache with close Nine Chronicles.,캐시를 비우고 나인 크로니클을 종료합니다.
+UI_CONFIRM_RESET_KEYSTORE_CONTENT,Revocation private key with close Nine Chronicles.[newline]Revoked private can't be recovered.,나인 크로니클을 종료하고 비밀 키를 폐기 합니다.[newline]폐기된 비밀 키는 되돌릴 수 없습니다.
+UI_OPEN_LOG,Open log,로그 열기

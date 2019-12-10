@@ -67,6 +67,9 @@ namespace Nekoyume.UI
                 Widget.Create<PreloadingScreen>(true),
                 Widget.Create<Title>(true),
 
+                //팝업
+                Widget.Create<Settings>(),
+                Widget.Create<Confirm>(),
                 // 알림 영역.
                 Widget.Create<UpdatePopup>(),
                 Widget.Create<BlockFailPopup>(),
@@ -160,11 +163,7 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<Alert>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<Confirm>());
-            yield return null;
             _secondWidgets.Add(Widget.Create<InputBox>());
-            yield return null;
-            _secondWidgets.Add(Widget.Create<Settings>());
             yield return null;
 
             Widget last = null;

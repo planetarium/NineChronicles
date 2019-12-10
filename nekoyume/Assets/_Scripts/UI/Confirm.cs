@@ -22,14 +22,11 @@ namespace Nekoyume.UI
         public TextMeshProUGUI labelNo;
         public GameObject titleBorder;
         public ConfirmDelegate CloseCallback { get; set; }
+        public ModuleBlur blur;
 
         public void Show(string title, string content, string labelYes = "UI_OK", string labelNo = "UI_CANCEL",
             bool localize = true)
         {
-            var blur = Find<ModuleBlur>();
-            blur.onClick = () => No();
-            blur?.Show();
-
             bool titleExists = !string.IsNullOrEmpty(title);
             if (localize)
             {
@@ -51,12 +48,13 @@ namespace Nekoyume.UI
             titleBorder.SetActive(titleExists);
 
             base.Show();
+            blur.Show();
         }
 
         public void Yes()
         {
             CloseCallback?.Invoke(ConfirmResult.Yes);
-            Find<ModuleBlur>()?.Close();
+            blur.Close();
 
             base.Close();
             AudioController.PlayClick();
@@ -65,7 +63,7 @@ namespace Nekoyume.UI
         public void No()
         {
             CloseCallback?.Invoke(ConfirmResult.No);
-            Find<ModuleBlur>()?.Close();
+            blur.Close();
 
             base.Close();
             AudioController.PlayClick();
