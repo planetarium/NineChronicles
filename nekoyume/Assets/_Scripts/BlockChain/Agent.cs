@@ -6,6 +6,7 @@ using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Assets.SimpleLocalization;
@@ -47,6 +48,9 @@ namespace Nekoyume.BlockChain
         private const string AgentStoreDirName = "planetarium";
 #endif
         private const string DefaultIceServer = "turn://0ed3e48007413e7c2e638f13ddd75ad272c6c507e081bd76a75e4b7adc86c9af:0apejou+ycZFfwtREeXFKdfLj2gCclKzz5ZJ49Cmy6I=@turn.planetarium.dev:3478/";
+        
+        private const string WebCommandLineOptionsPathInit = "https://9c-test.s3.ap-northeast-2.amazonaws.com/clo.json";
+        private const string WebCommandLineOptionsPathLogin = "https://9c-test.s3.ap-northeast-2.amazonaws.com/clo.json";
 
         private static readonly string CommandLineOptionsJsonPath =
             Path.Combine(Application.streamingAssetsPath, "clo.json");
@@ -174,7 +178,7 @@ namespace Nekoyume.BlockChain
 
         private void InitAgent(Action<bool> callback, PrivateKey privateKey)
         {
-            var options = GetOptions(CommandLineOptionsJsonPath);
+            var options = GetOptions(CommandLineOptionsJsonPath, WebCommandLineOptionsPathInit);
             var peers = options.Peers.Select(LoadPeer);
             var iceServers = options.IceServers.Select(LoadIceServer);
 
@@ -305,18 +309,43 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        public static CommandLineOptions GetOptions(string jsonPath)
+        public static CommandLineOptions GetOptions(string localPath, string onlinePath)
         {
-            if (File.Exists(jsonPath))
+            var options = CommnadLineParser.GetCommandLineOptions();
+            if (!options.Empty)
             {
-                return JsonUtility.FromJson<CommandLineOptions>(
-                    File.ReadAllText(jsonPath)
-                );
+                Debug.Log($"Get options from commandline.");
+                return options;
             }
-            else
+
+            try
             {
-                return CommnadLineParser.GetCommandLineOptions() ?? new CommandLineOptions();
+                var webResponse = WebRequest.Create(onlinePath).GetResponse();
+                using (var stream = webResponse.GetResponseStream())
+                {
+                    if (!(stream is null))
+                    {
+                        byte[] data = new byte[stream.Length];
+                        stream.Read(data, 0, data.Length);
+                        string jsonData = Encoding.UTF8.GetString(data);
+                        Debug.Log($"Get options from web: {onlinePath}");
+                        return JsonUtility.FromJson<CommandLineOptions>(jsonData);
+                    }
+                }
             }
+            catch (Exception e)
+            {
+                Debug.LogWarning(e);
+            }
+                
+            if (File.Exists(localPath))
+            {
+                Debug.Log($"Get options from local: {localPath}");
+                return JsonUtility.FromJson<CommandLineOptions>(File.ReadAllText(localPath));
+            }
+
+            Debug.Log("Failed to find options. Creating...");
+            return new CommandLineOptions();
         }
 
         private static string GetHost(CommandLineOptions options)
@@ -859,7 +888,7 @@ namespace Nekoyume.BlockChain
 
         private IEnumerator CoLogin(Action<bool> callback)
         {
-            var options = GetOptions(CommandLineOptionsJsonPath);
+            var options = GetOptions(CommandLineOptionsJsonPath, WebCommandLineOptionsPathLogin);
             var loginPopup = Widget.Find<LoginPopup>();
 
             if (Application.isBatchMode)

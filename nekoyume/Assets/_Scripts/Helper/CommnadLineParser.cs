@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
+using BTAI;
 using UnityEngine;
 
 namespace Nekoyume.Helper
@@ -40,49 +42,131 @@ namespace Nekoyume.Helper
 
         public bool development;
 
+        public bool Empty { get; private set; } = true;
+
         [Option("private-key", Required = false, HelpText = "The private key to use.")]
-        public string PrivateKey { get => privateKey; set => privateKey = value; }
+        public string PrivateKey
+        {
+            get => privateKey;
+            set
+            {
+                privateKey = value;
+                Empty = false;
+            }
+        }
 
         [Option("keystore-path", Required = false, HelpText = "The keystore path.")]
         public string KeyStorePath
         {
             get => keyStorePath;
-            set => keyStorePath = value;
+            set
+            {
+                keyStorePath = value;
+                Empty = false;
+            }
         }
 
         [Option("host", Required = false, HelpText = "The host name to use.")]
-        public string Host { get => host; set => host = value; }
+        public string Host
+        {
+            get => host;
+            set
+            {
+                host = value;
+                Empty = false;
+            }
+        }
 
         [Option("port", Required = false, HelpText = "The source port to use.")]
-        public int? Port { get => port == 0 ? default(int?) : port; set => port = value ?? 0; }
+        public int? Port
+        {
+            get => port == 0 ? default(int?) : port;
+            set
+            {
+                port = value ?? 0;
+                Empty = false;
+            }
+        }
 
         [Option("no-miner", Required = false, HelpText = "Do not mine block.")]
-        public bool NoMiner { get => noMiner; set => noMiner = value; }
-        
+        public bool NoMiner
+        {
+            get => noMiner;
+            set
+            {
+                noMiner = value;
+                Empty = false;
+            }
+        }
+
         [Option("ice-servers", Required = false, HelpText = "STUN/TURN servers to use. (Usage: --ice-servers serverA serverB ...)")]
-        public IEnumerable<string> IceServers { get => iceServers; set => iceServers = value.ToArray(); }
+        public IEnumerable<string> IceServers
+        {
+            get => iceServers;
+            set
+            {
+                iceServers = value.ToArray();
+                Empty = !value.Any();
+            }
+        }
 
         [Option("peer", Required = false, HelpText = "Peers to add. (Usage: --peer peerA peerB ...)")]
-        public IEnumerable<string> Peers { get => peers; set => peers = value.ToArray(); }
+        public IEnumerable<string> Peers    
+        {
+            get => peers;
+            set
+            {
+                peers = value.ToArray();
+                Empty = !value.Any();
+            }
+        }
 
         [Option("storage-path", Required = false, HelpText = "The path to store game data.")]
-        public string StoragePath { get => storagePath; set => storagePath = value; }
+        public string StoragePath
+        {
+            get => storagePath;
+            set
+            {
+                Debug.Log("NotEmpty! storage-path");
+                storagePath = value;
+                Empty = false;
+            }
+        }
 
         [Option("auto-play", Required = false, HelpText = "Play automatically in background.")]
-        public bool AutoPlay { get => autoPlay; set => autoPlay = value; }
-        
+        public bool AutoPlay
+        {
+            get => autoPlay;
+            set
+            {
+                Debug.Log("NotEmpty! auto-play");
+                autoPlay = value;
+                Empty = false;
+            }
+        }
+
         [Option("console-sink", Required = false, HelpText = "Write logs on console.")]
         public bool ConsoleSink
         {
             get => consoleSink;
-            set => consoleSink = value;
+            set
+            {
+                Debug.Log("NotEmpty! console-sink");
+                consoleSink = value;
+                Empty = false;
+            }
         }
 
         [Option("development", Required = false, HelpText = "Turn on development mode.")]
         public bool Development
         {
             get => development;
-            set => development = value;
+            set
+            {
+                Debug.Log("NotEmpty! development");
+                development = value;
+                Empty = false;
+            }
         }
     }
 
