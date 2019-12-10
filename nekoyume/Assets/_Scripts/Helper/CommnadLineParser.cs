@@ -127,7 +127,6 @@ namespace Nekoyume.Helper
             get => storagePath;
             set
             {
-                Debug.Log("NotEmpty! storage-path");
                 storagePath = value;
                 Empty = false;
             }
@@ -139,7 +138,6 @@ namespace Nekoyume.Helper
             get => autoPlay;
             set
             {
-                Debug.Log("NotEmpty! auto-play");
                 autoPlay = value;
                 Empty = false;
             }
@@ -151,7 +149,6 @@ namespace Nekoyume.Helper
             get => consoleSink;
             set
             {
-                Debug.Log("NotEmpty! console-sink");
                 consoleSink = value;
                 Empty = false;
             }
@@ -163,7 +160,6 @@ namespace Nekoyume.Helper
             get => development;
             set
             {
-                Debug.Log("NotEmpty! development");
                 development = value;
                 Empty = false;
             }
