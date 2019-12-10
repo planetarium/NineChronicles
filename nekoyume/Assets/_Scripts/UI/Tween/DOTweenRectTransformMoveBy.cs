@@ -12,8 +12,9 @@ namespace Nekoyume.UI.Tween
         private Vector3 EndValue = new Vector3();
         private RectTransform _transform;
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             _transform = GetComponent<RectTransform>();
             BeginValue = StartFromDelta ? _transform.localPosition - DeltaValue : _transform.localPosition;
             EndValue = StartFromDelta ? _transform.localPosition : _transform.localPosition + DeltaValue;

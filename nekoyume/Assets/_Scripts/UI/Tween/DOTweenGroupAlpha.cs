@@ -11,8 +11,9 @@ namespace Nekoyume.UI.Tween
         public float EndValue = 1.0f;
         private CanvasGroup _group;
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             _group = GetComponent<CanvasGroup>();
             if (StartWithPlay)
                 _group.DOFade(BeginValue, 0.0f);

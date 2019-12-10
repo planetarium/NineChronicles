@@ -10,8 +10,9 @@ namespace Nekoyume.UI.Tween
         public Vector3 EndValue = new Vector3();
         private RectTransform _transform;
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             _transform = GetComponent<RectTransform>();
         }
 
