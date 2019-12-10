@@ -151,7 +151,7 @@ namespace Nekoyume.UI.Module
             bool useShowButtons = false, params ToggleableType[] showButtons)
         {
             base.Show();
-            SharedModel.NavigationType.Value = navigationType;
+            SharedModel.NavigationType.SetValueAndForceNotify(navigationType);
             SharedModel.NavigationAction = navigationAction;
 
             if (!useShowButtons)
