@@ -75,9 +75,10 @@ namespace Nekoyume.TableData
                    stageId <= worldRow.StageEnd;
         }
 
-        public static bool TryGetStageId(this WorldSheet.Row worldRow, int stageId, out int stageNumber)
+        public static bool TryGetStageNumber(this WorldSheet.Row worldRow, int stageId, out int stageNumber)
         {
-            if (stageId < worldRow.StageBegin || stageId > worldRow.StageEnd)
+            if (stageId < worldRow.StageBegin ||
+                stageId > worldRow.StageEnd)
             {
                 stageNumber = 0;
                 return false;
