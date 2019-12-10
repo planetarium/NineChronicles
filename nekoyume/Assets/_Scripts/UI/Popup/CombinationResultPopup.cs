@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Assets.SimpleLocalization;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
@@ -21,6 +22,7 @@ namespace Nekoyume.UI
         public TextMeshProUGUI submitButtonText;
         public Image materialPlusImage;
         public GameObject resultItemVfx;
+        public GameObject materialView;
         
         private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
 
@@ -116,23 +118,33 @@ namespace Nekoyume.UI
                 AudioController.instance.PlaySfx(AudioController.SfxCode.Failed);
             }
 
-            using (var e = Model.materialItems.GetEnumerator())
+            if (Model.materialItems.Any())
             {
-                foreach (var material in materialItems)
+                materialText.gameObject.SetActive(true);
+                materialView.SetActive(true);
+                using (var e = Model.materialItems.GetEnumerator())
                 {
-                    e.MoveNext();
-                    if (e.Current is null)
+                    foreach (var material in materialItems)
                     {
-                        material.Clear();
-                        material.gameObject.SetActive(false);
-                    }
-                    else
-                    {
-                        var data = e.Current;
-                        material.SetData(data);
-                        material.gameObject.SetActive(true);
+                        e.MoveNext();
+                        if (e.Current is null)
+                        {
+                            material.Clear();
+                            material.gameObject.SetActive(false);
+                        }
+                        else
+                        {
+                            var data = e.Current;
+                            material.SetData(data);
+                            material.gameObject.SetActive(true);
+                        }
                     }
                 }
+            }
+            else
+            {
+                materialText.gameObject.SetActive(false);
+                materialView.SetActive(false);
             }
         }
     }
